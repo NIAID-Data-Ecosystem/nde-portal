@@ -8,7 +8,15 @@ interface SectionProps extends BoxProps {
 
 const Section: React.FC<SectionProps> = ({children, title, ...props}) => {
   return (
-    <StyledSection id={`${title.toLowerCase()}`} as='section' {...props}>
+    <StyledSection
+      id={`${title
+        .replace(/[^\w\s]/gi, '')
+        .split(' ')
+        .join('-')
+        .toLowerCase()}`}
+      as='section'
+      {...props}
+    >
       <Box borderBottom='2px solid' borderColor='gray.200'>
         <Heading size='h3' fontFamily='body'>
           {title}

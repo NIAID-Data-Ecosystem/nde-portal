@@ -4,6 +4,7 @@ const Button = {
     borderRadius: 'base', // <-- border radius is same for all variants and sizes
     fontWeight: 'normal',
     fontFamily: 'body',
+    cursor: 'pointer',
   },
   // Two sizes: sm and md
   sizes: {
@@ -20,6 +21,10 @@ const Button = {
   },
   // Two variants: outline and solid
   variants: {
+    link: {
+      textDecoration: 'underline',
+      color: 'nde.link.bg',
+    },
     solid: ({colorScheme, ...props}: {colorScheme: string}) => {
       let bg;
       let hoverBg;

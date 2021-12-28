@@ -25,9 +25,9 @@ const sizes: Record<string, SystemStyleObject> = {
     fontSize: ['xl', null, '2xl'],
     lineHeight: ['base', null, 'base'],
   },
-  h6: {fontSize: 'lg', lineHeight: 1.3},
-  sm: {fontSize: 'md', lineHeight: 1.3},
-  xs: {fontSize: 'sm', lineHeight: 1.3},
+  h6: {fontSize: 'lg', lineHeight: 'base'},
+  sm: {fontSize: 'md', lineHeight: 'base'},
+  xs: {fontSize: 'sm', lineHeight: 'base'},
 };
 
 export default {baseStyle, sizes};
