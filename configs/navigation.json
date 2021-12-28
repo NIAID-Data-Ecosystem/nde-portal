@@ -1,0 +1,28 @@
+{
+  "routes": [
+    {"label": "About", "href": "/about"},
+
+    {"label": "Getting Started", "href": "/getting-started"},
+
+    {
+      "label": "Resources",
+      "routes": [
+        {
+          "label": "F.A.Q",
+          "subLabel": "Frequently Asked Questions",
+          "href": "/faq"
+        },
+        {
+          "label": "Schemas",
+          "subLabel": "Dataset and Computational Tool schemas",
+          "href": "/schema"
+        },
+        {
+          "label": "Latest",
+          "subLabel": "Changelog for additions/subtractions/feature launches",
+          "href": "/latest"
+        }
+      ]
+    }
+  ]
+}
