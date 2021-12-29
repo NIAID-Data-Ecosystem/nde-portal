@@ -1,5 +1,6 @@
-import {Box, Heading, Flex, Link, Icon, Text, Button} from '@chakra-ui/react';
+import {Box, Heading, Flex, Icon, Text, Button} from '@chakra-ui/react';
 import type {NextPage} from 'next';
+import Link from 'src/components/global/link';
 import Head from 'next/head';
 import {
   Navigation,
@@ -9,7 +10,6 @@ import {
 } from 'src/components/styleguide';
 import {theme} from 'src/theme';
 import {
-  FaExternalLinkAlt,
   FaRegFile,
   FaRegUser,
   FaRegPaperPlane,
@@ -434,18 +434,21 @@ const Styleguide: NextPage = () => {
 
           {/* Link */}
           <Section title='Link'>
-            <Link href='/'>
+            <Link href='/a'>
               <Text>This is a link</Text>
             </Link>
             <br />
-            <Link href='/' isExternal>
-              This is an external link
-              <Icon as={FaExternalLinkAlt} boxSize={3} ml={2} />
+            <Link href='/b' variant={'underline'}>
+              <Text>This is an underline variant link</Text>
             </Link>
             <br />
-            <Link href='/' isExternal>
+            <Link href='/c' isExternal>
+              <Text>This is an external link</Text>
+            </Link>
+            <br />
+            <Link href='/'>
               This is a link to a document or pdf
-              <Icon as={FaRegFile} boxSize={4} ml={2} />
+              <Icon lineHeight={1.3} as={FaRegFile} w={3} h={4} ml={2} />
             </Link>
           </Section>
 

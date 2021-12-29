@@ -3,31 +3,25 @@ import {
   Flex,
   Text,
   IconButton,
-  Button,
   Stack,
   Collapse,
   Image,
   Icon,
   Link,
   Popover,
+  PopoverArrow,
   PopoverTrigger,
   PopoverContent,
-  useColorModeValue,
   useBreakpointValue,
   useDisclosure,
+  PopoverBody,
 } from '@chakra-ui/react';
 import {FaCaretDown, FaChevronRight, FaChevronDown} from 'react-icons/fa';
 import {IoClose, IoMenu} from 'react-icons/io5';
-
-interface NavItem {
-  label: string;
-  subLabel?: string;
-  routes?: Array<NavItem>;
-  href?: string;
-}
+import {NavItem} from 'src/components/page-container';
 
 interface NavigationBarProps {
-  navItems: NavItem[];
+  navItems: Array<NavItem>;
 }
 
 const NavigationBar: React.FC<NavigationBarProps> = ({navItems}) => {
@@ -71,11 +65,14 @@ const NavigationBar: React.FC<NavigationBarProps> = ({navItems}) => {
                   rounded={'xl'}
                   minW={'sm'}
                 >
-                  <Stack>
-                    {navItem.routes.map(route => (
-                      <DesktopSubNav key={route.label} {...route} />
-                    ))}
-                  </Stack>
+                  <PopoverArrow />
+                  <PopoverBody>
+                    <Stack>
+                      {navItem.routes.map(route => (
+                        <DesktopSubNav key={route.label} {...route} />
+                      ))}
+                    </Stack>
+                  </PopoverBody>
                 </PopoverContent>
               )}
             </Popover>
@@ -231,7 +228,7 @@ const NavigationBar: React.FC<NavigationBarProps> = ({navItems}) => {
   };
 
   return (
-    <Box as={'nav'}>
+    <Box as={'nav'} aria-label={'Main navigation'} w={'100%'}>
       <Flex
         bg='nde.primary.500'
         color={'white'}
@@ -247,17 +244,16 @@ const NavigationBar: React.FC<NavigationBarProps> = ({navItems}) => {
           flex={{base: 1, md: 'auto'}}
           ml={{base: -2}}
           alignItems={'center'}
-          // display={{base: 'flex', md: 'none'}}
         >
           <Flex flex={{base: 1}} justify={'start'}>
-            <Link display='flex' alignItems='center' href='/'>
+            <Link display='flex' alignItems='center' href='/landing'>
               <Image
-                w={['50px', '50px', '150px']}
+                w={['220px', '220px', '350px']}
                 h={'auto'}
                 src={
                   isMobile
-                    ? '/assets/logos/NIH-logo-acronym-white.svg'
-                    : '/assets/logos/NIH-logo-white.svg'
+                    ? '/assets/logos/nde-logo-acronym-white.svg'
+                    : '/assets/logos/nde-logo-white.svg'
                 }
                 alt={'niaid logo'}
               />

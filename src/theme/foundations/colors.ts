@@ -71,6 +71,9 @@ const colors = {
     800: '#585858',
     900: '#444444',
   },
+  socials: {
+    ig: 'linear-gradient(45deg,#f6874f 0%,#cf4679 50%,#8c2f8f 100%)',
+  },
 };
 
 export default colors;

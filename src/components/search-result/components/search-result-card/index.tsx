@@ -258,7 +258,7 @@ export const SearchResultCard: React.FC<SearchResultCardProps> = ({
           <Flex flexWrap={'wrap'}>
             {keywords &&
               keywords.map(keyword => {
-                return <Label>{keyword}</Label>;
+                return <Label key={keyword}>{keyword}</Label>;
               })}
           </Flex>
         </Flex>

@@ -14,6 +14,7 @@ const Card: React.FC<CardProps> = props => {
   return (
     <Box
       __css={styles}
+      variant={variant}
       sx={{
         gap: 0,
         '> *': {
