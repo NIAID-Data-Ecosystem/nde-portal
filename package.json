@@ -16,11 +16,13 @@
     "@fontsource/martel": "^4.5.0",
     "@fontsource/merriweather": "^4.5.1",
     "@fontsource/public-sans": "^4.5.0",
+    "axios": "^0.24.0",
     "framer-motion": "^4",
     "next": "12.0.3",
     "react": "17.0.2",
     "react-dom": "17.0.2",
     "react-icons": "^4.3.1",
+    "react-query": "^3.34.7",
     "styled-system": "^5.1.5"
   },
   "devDependencies": {

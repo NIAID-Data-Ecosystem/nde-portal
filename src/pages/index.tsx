@@ -6,10 +6,11 @@ import {Flex} from '@chakra-ui/react';
 import {useEffect, useState} from 'react';
 
 const Home: NextPage = () => {
+  // Search term entered in search bar
   const [searchTerm, setSearchTerm] = useState('');
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
-    return setSearchTerm(e.target.value);
-  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>): void =>
+    setSearchTerm(e.target.value);
 
   return (
     <div>
@@ -29,7 +30,6 @@ const Home: NextPage = () => {
           <SearchBar
             value={searchTerm}
             onChange={handleChange}
-            onSubmit={() => {}}
             href={`/search?q=${searchTerm}`}
           />
         </Flex>

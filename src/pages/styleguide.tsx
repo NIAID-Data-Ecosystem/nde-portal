@@ -23,7 +23,7 @@ import {
   FaRegCompass,
   FaRegTrashAlt,
 } from 'react-icons/fa';
-import {SearchResultCard} from 'src/components/search-result';
+import {SearchResultCard} from 'src/components/search-results';
 import SearchBar from 'src/components/search-bar';
 
 // Style Guide for the NDE Portal
