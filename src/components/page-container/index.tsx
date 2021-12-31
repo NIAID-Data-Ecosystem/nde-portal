@@ -25,7 +25,12 @@ const PageContainer: React.FC<PageContainerProps> = ({
   return (
     <Flex as={'main'} w={'100%'} flexDirection={'column'}>
       {hasNavigation && <NavigationBar navItems={navItems.routes} />}
-      <Flex bg={'niaid.100'} minH={'80vh'} {...rest}>
+      <Flex
+        bg={'niaid.100'}
+        minH={'80vh'}
+        px={{base: '4', sm: '6', xl: '8'}}
+        {...rest}
+      >
         {children}
       </Flex>
       <Footer navItems={navItems.routes} footerItems={footerItems.routes} />

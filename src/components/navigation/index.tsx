@@ -41,13 +41,13 @@ const NavigationBar: React.FC<NavigationBarProps> = ({navItems}) => {
                   href={navItem.href ?? '#'}
                   fontSize={'sm'}
                   fontWeight={500}
-                  textDecoration={'none'}
                   color={'white'}
                   _visited={{color: 'white'}}
                   _hover={{
-                    textDecoration: 'none',
                     opacity: 0.85,
+                    color: 'white',
                   }}
+                  variant='no-line'
                   cursor={'pointer'}
                   alignItems={'center'}
                 >
@@ -93,6 +93,7 @@ const NavigationBar: React.FC<NavigationBarProps> = ({navItems}) => {
         textDecoration={'none'}
         rounded={'md'}
         _hover={{bg: 'nde.primary.50'}}
+        variant='no-line'
       >
         <Stack direction={'row'} align={'center'}>
           <Box>
@@ -148,16 +149,15 @@ const NavigationBar: React.FC<NavigationBarProps> = ({navItems}) => {
         <Flex
           p={2}
           as={href ? Link : Box}
+          variant={'no-line'}
           href={href ?? '#'}
           justify={'space-between'}
           align={'center'}
-          textDecoration={'none'}
           color={href ? 'nde.primary.600' : 'nde.text.heading'}
           rounded={'md'}
           _hover={{
             bg: href ? 'nde.primary.50' : 'transparent',
             color: href ? 'nde.primary.500' : 'nde.text.heading',
-            textDecoration: 'none',
           }}
         >
           <Text fontWeight={600}>{label}</Text>
@@ -194,10 +194,10 @@ const NavigationBar: React.FC<NavigationBarProps> = ({navItems}) => {
                   color={'nde.primary.700'}
                   textDecoration={'none'}
                   rounded={'md'}
+                  variant={'no-line'}
                   _hover={{
                     bg: 'nde.primary.50',
                     color: route.href ? 'nde.primary.500' : 'nde.text.heading',
-                    textDecoration: 'none',
                   }}
                 >
                   {route.label}
@@ -246,7 +246,12 @@ const NavigationBar: React.FC<NavigationBarProps> = ({navItems}) => {
           alignItems={'center'}
         >
           <Flex flex={{base: 1}} justify={'start'}>
-            <Link display='flex' alignItems='center' href='/landing'>
+            <Link
+              display='flex'
+              alignItems='center'
+              href='/landing'
+              variant={'no-line'}
+            >
               <Image
                 w={['220px', '220px', '350px']}
                 h={'auto'}

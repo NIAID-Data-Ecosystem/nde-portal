@@ -91,8 +91,8 @@ const Footer: React.FC<FooterProps> = ({navItems, footerItems}) => {
                       <Text fontWeight={'semibold'}>{label}</Text>
                       {routes &&
                         routes.map(route => (
-                          <Box>
-                            <StyledLink key={route.label} href={route.href}>
+                          <Box key={route.label}>
+                            <StyledLink href={route.href}>
                               {route.label}
                             </StyledLink>
                           </Box>
@@ -119,9 +119,8 @@ const Footer: React.FC<FooterProps> = ({navItems, footerItems}) => {
                     <ListHeader>{label}</ListHeader>
                     {routes &&
                       routes.map(route => (
-                        <Box>
+                        <Box key={route.label}>
                           <StyledLink
-                            key={route.label}
                             href={route.href}
                             isExternal={route.isExternal ?? false}
                           >

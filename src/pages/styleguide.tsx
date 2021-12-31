@@ -24,6 +24,7 @@ import {
   FaRegTrashAlt,
 } from 'react-icons/fa';
 import {SearchResultCard} from 'src/components/search-result';
+import SearchBar from 'src/components/search-bar';
 
 // Style Guide for the NDE Portal
 const Styleguide: NextPage = () => {
@@ -85,6 +86,9 @@ const Styleguide: NextPage = () => {
                 <Link href='#component-search-result-card'>
                   Search Result Card
                 </Link>
+              </li>
+              <li>
+                <Link href='#component-search-bar'>Search Bar</Link>
               </li>
             </ul>
           </Navigation>
@@ -782,6 +786,9 @@ const Styleguide: NextPage = () => {
                 'machine learning',
               ]}
             />
+          </Section>
+          <Section title='Component: Search Bar'>
+            <SearchBar />
           </Section>
         </Flex>
       </Flex>

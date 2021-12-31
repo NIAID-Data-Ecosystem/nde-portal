@@ -40,6 +40,19 @@ const Link = {
         },
       };
     },
+    'no-line': {
+      borderBottom: 'none',
+      textDecoration: 'none',
+      _hover: {textDecoration: 'none', borderBottom: 'none'},
+      ':hover, :visited:hover': {
+        textDecoration: 'none',
+        borderBottom: 'none',
+      },
+      ':visited': {
+        textDecoration: 'none',
+        borderBottom: 'none',
+      },
+    },
   },
 };
 
