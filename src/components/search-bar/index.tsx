@@ -27,12 +27,6 @@ const SearchBar: React.FC<SearchBarProps> = ({
   ...props
 }) => {
   const router = useRouter();
-  const [searchTerm, setSearchTerm] = useState(value || '');
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(e.currentTarget.value);
-    onChange && onChange(e);
-  };
 
   return (
     <Flex
@@ -49,12 +43,12 @@ const SearchBar: React.FC<SearchBarProps> = ({
           type='text'
           placeholder={'Search for tool or dataset'}
           focusBorderColor={'nde.primary.400'}
-          value={searchTerm}
-          onChange={handleChange}
+          value={value}
+          onChange={onChange}
         ></Input>
         <Button
           aria-label='search datasets'
-          isDisabled={searchTerm.length < 1}
+          isDisabled={!value || value.length < 1}
           onClick={e => {
             e.preventDefault();
             href && router.push(href);
@@ -70,7 +64,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
         <InputRightElement display={['none', 'none', 'flex']} width={'9.5rem'}>
           <Button
             aria-label='search datasets'
-            isDisabled={searchTerm.length < 1}
+            isDisabled={!value || value.length < 1}
             onClick={e => {
               e.preventDefault();
               href && router.push(href);
