@@ -1,11 +1,13 @@
 import React from 'react';
-import Card from 'src/components/global/card';
 import {
+  Card,
+  CardHeader,
+  CardTitle,
   Badge,
   Box,
   Button,
-  Divider,
   Flex,
+  Divider,
   Heading,
   Icon,
   Image,
@@ -13,10 +15,9 @@ import {
   Text,
   useBreakpointValue,
   useDisclosure,
-} from '@chakra-ui/react';
+} from 'nde-design-system';
 import {StyledTitle} from './styles';
 import {FaLockOpen, FaLock, FaExternalLinkAlt} from 'react-icons/fa';
-import Label from 'src/components/global/Label';
 
 /**
  * [TO DO]
@@ -36,7 +37,7 @@ const Title: React.FC<SearchResultCardTitleProps> = ({title, url}) => {
   return (
     <StyledTitle>
       {url ? (
-        <Link variant='title' size='sm' href={url}>
+        <Link size='sm' href={url}>
           {title}
         </Link>
       ) : (
@@ -54,7 +55,7 @@ const Title: React.FC<SearchResultCardTitleProps> = ({title, url}) => {
 interface AuthorProps {
   name: string;
   affiliation: {name: string};
-  orcid: string;
+  orcid?: string;
 }
 
 interface SearchResultCardAuthorProps {
@@ -71,7 +72,7 @@ const Author: React.FC<SearchResultCardAuthorProps> = ({authorDetails}) => {
             size={'xs'}
             mr={2}
             whiteSpace={'nowrap'}
-            color={'nde.text.body'}
+            color={'text.body'}
           >
             {author.name}
             {i < authorDetails.length - 1 ? ',' : ''}
@@ -88,10 +89,13 @@ const Author: React.FC<SearchResultCardAuthorProps> = ({authorDetails}) => {
 type RestrictedTypes = 'restricted' | 'some restrictions' | 'unrestricted';
 
 interface SearchResultCardBadgeProps {
-  accessType: RestrictedTypes;
+  accessType?: RestrictedTypes;
 }
 
 const AccessBadge: React.FC<SearchResultCardBadgeProps> = ({accessType}) => {
+  if (!accessType) {
+    return <></>;
+  }
   return (
     <>
       {accessType === 'restricted' ? (
@@ -151,7 +155,7 @@ const Description: React.FC<SearchResultCardDescription> = ({description}) => {
             variant={'outline'}
             my={2}
             onClick={onToggle}
-            colorScheme={'nde.primary'}
+            colorScheme={'primary'}
           >
             {isOpen ? 'Show Less' : 'Show More'}
           </Button>
@@ -166,7 +170,7 @@ const Description: React.FC<SearchResultCardDescription> = ({description}) => {
  */
 interface SourceProps {
   id: string;
-  imageUrl: string;
+  imageUrl?: string;
   name: string;
   url: string;
 }
@@ -186,14 +190,14 @@ const ExternalLinks: React.FC<SearchResultCardExternalLinks> = ({
     >
       <Button
         as='a'
-        colorScheme={'nde.primary'}
+        colorScheme={'primary'}
         flexDirection={'column'}
         w='100%'
         display={'flex'}
         alignItems={'center'}
         whiteSpace={['normal', 'normal', 'nowrap']}
       >
-        <Text py={2}>
+        <Text py={2} color={'inherit'}>
           Open in the workspace
           <Icon as={FaExternalLinkAlt} boxSize={3} ml={2} />
         </Text>
@@ -208,12 +212,14 @@ const ExternalLinks: React.FC<SearchResultCardExternalLinks> = ({
         alignItems={'center'}
         whiteSpace={['normal', 'normal', 'nowrap']}
       >
-        <Image
-          w={['50%', '50%', '100%']}
-          src={sourceDetails.imageUrl}
-          alt={'link to dataset on the repo'}
-          whiteSpace={'normal'}
-        ></Image>
+        {sourceDetails.imageUrl && (
+          <Image
+            w={['50%', '50%', '100%']}
+            src={sourceDetails.imageUrl}
+            alt={'link to dataset on the repo'}
+            whiteSpace={'normal'}
+          ></Image>
+        )}
         <Text py={2}>
           Open in {sourceDetails.name}
           <Icon as={FaExternalLinkAlt} boxSize={3} ml={2} />
@@ -231,7 +237,7 @@ interface SearchResultCardProps
     SearchResultCardAuthorProps,
     SearchResultCardDescription,
     SearchResultCardExternalLinks {
-  accessType: RestrictedTypes | null;
+  accessType?: RestrictedTypes | null;
   keywords: string[];
 }
 
@@ -245,8 +251,10 @@ export const SearchResultCard: React.FC<SearchResultCardProps> = ({
   sourceDetails,
 }) => {
   return (
-    <Card w={'100%'}>
-      {title && <Title title={title} url={url} />}
+    <Card w={'100%'} my={4}>
+      <CardHeader>
+        <CardTitle>{title && <Title title={title} url={url} />}</CardTitle>
+      </CardHeader>
       <Flex w={'100%'} alignItems={['flex-start', 'center']} py={0} pr={0}>
         <Author authorDetails={authorDetails} />
         {accessType && <AccessBadge accessType={accessType} />}
@@ -258,7 +266,7 @@ export const SearchResultCard: React.FC<SearchResultCardProps> = ({
           <Flex flexWrap={'wrap'}>
             {keywords &&
               keywords.map(keyword => {
-                return <Label key={keyword}>{keyword}</Label>;
+                return <div key={keyword}>{keyword}</div>;
               })}
           </Flex>
         </Flex>

@@ -1,10 +1,10 @@
-import {Box, BoxProps} from '@chakra-ui/react';
+import {Box, BoxProps} from 'nde-design-system';
 import styled from '@emotion/styled';
 
 export const StyledTitle = styled(Box)<BoxProps>(() => ({}));
 StyledTitle.defaultProps = {
-  bg: 'nde.primary.100',
+  bg: 'primary.100',
   w: '100%',
   borderLeft: '4px',
-  borderColor: 'nde.primary.500',
+  borderColor: 'primary.500',
 };

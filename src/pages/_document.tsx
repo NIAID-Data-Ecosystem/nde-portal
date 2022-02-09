@@ -1,4 +1,3 @@
-import {ColorModeScript} from '@chakra-ui/react';
 import NextDocument, {
   DocumentContext,
   Head,
@@ -17,16 +16,16 @@ class Document extends NextDocument {
     return (
       <Html lang='en'>
         <Head>
+          {/* prevent font FOUT  */}
           <link
             rel='preload'
-            href='/fonts/public-sans/public-sans-v7-latin-400.woff2'
+            href={`https://fonts.googleapis.com/css2?family=Public+Sans:wght@100;200;300;400;500;600;700;800;900&display=optional`}
             as='font'
             type='font/woff2'
             crossOrigin='anonymous'
           />
         </Head>
         <body>
-          <ColorModeScript />
           <Main />
           <NextScript />
         </body>

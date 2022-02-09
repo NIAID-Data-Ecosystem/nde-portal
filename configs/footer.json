@@ -1,64 +1,11 @@
 {
   "routes": [
     {
-      "label": "Policies",
+      "label": "Discovery Portal",
       "routes": [
         {
-          "label": "Accessibility [todo]",
-          "href": "https://policy-prod-varnish-1734617591.us-east-1.elb.amazonaws.com/policies/accessibility-content"
-        },
-        {
-          "label": "Disclaimer [todo]",
-          "href": "https://policy-prod-varnish-1734617591.us-east-1.elb.amazonaws.com/policies/disclaimer"
-        },
-        {
-          "label": "Privacy Policy [todo]",
-          "href": "https://policy-prod-varnish-1734617591.us-east-1.elb.amazonaws.com/policies/privacy-policy-content"
-        },
-        {
-          "label": "Freedom of Information Act (FOIA)",
-          "href": "https://www.niaid.nih.gov/global/freedom-information-act",
-          "isExternal": true
-        },
-        {
-          "label": "Vulnerability Disclosure Policy",
-          "href": "https://www.hhs.gov/vulnerability-disclosure-policy/index.html",
-          "isExternal": true
-        },
-        {
-          "label": "No Fear Act Data",
-          "href": "https://www.niaid.nih.gov/global/no-fear-act-notice",
-          "isExternal": true
-        }
-      ]
-    },
-    {
-      "label": "Related Government Websites",
-      "routes": [
-        {
-          "label": "National Institute of Allergy and Infectious Diseases",
-          "href": "https://www.niaid.nih.gov/",
-          "isExternal": true
-        },
-        {
-          "label": "National Institutes of Health",
-          "href": "https://www.nih.gov/",
-          "isExternal": true
-        },
-        {
-          "label": "Health and Human Services",
-          "href": "https://www.hhs.gov/",
-          "isExternal": true
-        },
-        {
-          "label": "USA.gov",
-          "href": "https://www.usa.gov/",
-          "isExternal": true
-        },
-        {
-          "label": "USAGov en Español",
-          "href": "https://www.usa.gov/espanol/",
-          "isExternal": true
+          "label": "Portal Page",
+          "href": "#"
         }
       ]
     }

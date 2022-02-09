@@ -1,9 +1,6 @@
-import {Box, Flex} from '@chakra-ui/react';
-import NavigationBar from 'src/components/navigation';
-import Footer from 'src/components/footer';
+import {Flex, Navigation, Footer} from 'nde-design-system';
 import navItems from 'configs/nav.json';
 import footerItems from 'configs/footer.json';
-import {Link} from '@chakra-ui/react';
 
 export interface NavItem {
   label: string;
@@ -24,7 +21,7 @@ const PageContainer: React.FC<PageContainerProps> = ({
 }) => {
   return (
     <Flex as={'main'} w={'100%'} flexDirection={'column'}>
-      {hasNavigation && <NavigationBar navItems={navItems.routes} />}
+      {hasNavigation && <Navigation navItems={navItems.routes} />}
       <Flex
         bg={'niaid.100'}
         minH={'80vh'}
@@ -33,7 +30,7 @@ const PageContainer: React.FC<PageContainerProps> = ({
       >
         {children}
       </Flex>
-      <Footer navItems={navItems.routes} footerItems={footerItems.routes} />
+      <Footer navigation={footerItems.routes} />
     </Flex>
   );
 };

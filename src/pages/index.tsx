@@ -1,11 +1,12 @@
+import {useState} from 'react';
 import type {NextPage} from 'next';
 import Head from 'next/head';
+import {Flex, SearchBar} from 'nde-design-system';
 import PageContainer from 'src/components/page-container';
-import SearchBar from 'src/components/search-bar';
-import {Flex} from '@chakra-ui/react';
-import {useEffect, useState} from 'react';
+import {useRouter} from 'next/router';
 
 const Home: NextPage = () => {
+  const router = useRouter();
   // Search term entered in search bar
   const [searchTerm, setSearchTerm] = useState('');
 
@@ -29,8 +30,11 @@ const Home: NextPage = () => {
         >
           <SearchBar
             value={searchTerm}
-            onChange={handleChange}
-            href={`/search?q=${searchTerm}`}
+            handleChange={handleChange}
+            handleClick={e => {
+              e.preventDefault();
+              searchTerm && router.push(`/search?q=${searchTerm}`);
+            }}
           />
         </Flex>
         {/* <Box

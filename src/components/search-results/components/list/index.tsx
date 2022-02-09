@@ -1,4 +1,4 @@
-import {Flex} from '@chakra-ui/react';
+import {Flex} from 'nde-design-system';
 import React from 'react';
 
 interface SearchResultsListProps {

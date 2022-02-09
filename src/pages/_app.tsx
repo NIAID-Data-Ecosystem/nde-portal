@@ -1,6 +1,4 @@
 import type {AppProps} from 'next/app';
-import {ChakraProvider} from '@chakra-ui/react';
-import FontFace from 'src/components/font-face';
 import {QueryClient, QueryClientProvider} from 'react-query';
 import {ThemeProvider} from 'nde-design-system';
 
@@ -15,7 +13,6 @@ function App({Component, pageProps}: AppProps) {
           <Component {...pageProps} />
         </ThemeProvider>
       </QueryClientProvider>
-      <FontFace />
     </>
   );
 }
