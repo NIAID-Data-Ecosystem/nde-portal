@@ -18,7 +18,8 @@ import {
 } from 'nde-design-system';
 import {StyledTitle} from './styles';
 import {FaLockOpen, FaLock, FaExternalLinkAlt} from 'react-icons/fa';
-
+import {useRouter} from 'next/router';
+import NextLink from 'next/link';
 /**
  * [TO DO]
  * * [ ] Responsive badge with hover over icon
@@ -29,22 +30,21 @@ import {FaLockOpen, FaLock, FaExternalLinkAlt} from 'react-icons/fa';
  * Card Title
  */
 interface SearchResultCardTitleProps {
+  id: string;
   title: string;
-  url?: string;
 }
 
-const Title: React.FC<SearchResultCardTitleProps> = ({title, url}) => {
+const Title: React.FC<SearchResultCardTitleProps> = ({id, title}) => {
   return (
     <StyledTitle>
-      {url ? (
-        <Link size='sm' href={url}>
-          {title}
-        </Link>
-      ) : (
+      <Link size='sm' href={`dataset/${id}`}>
+        {title}
+      </Link>
+      {/* ) : (
         <Heading fontWeight='extrabold' size='sm'>
           {title}
         </Heading>
-      )}
+      )} */}
     </StyledTitle>
   );
 };
@@ -202,29 +202,33 @@ const ExternalLinks: React.FC<SearchResultCardExternalLinks> = ({
           <Icon as={FaExternalLinkAlt} boxSize={3} ml={2} />
         </Text>
       </Button>
-      <Button
-        as='a'
-        h={'unset'}
-        colorScheme={'gray'}
-        flexDirection={'column'}
-        w='100%'
-        display={'flex'}
-        alignItems={'center'}
-        whiteSpace={['normal', 'normal', 'nowrap']}
-      >
-        {sourceDetails.imageUrl && (
-          <Image
-            w={['50%', '50%', '100%']}
-            src={sourceDetails.imageUrl}
-            alt={'link to dataset on the repo'}
-            whiteSpace={'normal'}
-          ></Image>
-        )}
-        <Text py={2}>
-          Open in {sourceDetails.name}
-          <Icon as={FaExternalLinkAlt} boxSize={3} ml={2} />
-        </Text>
-      </Button>
+      {sourceDetails.url && (
+        <NextLink href={sourceDetails.url} passHref>
+          <Button
+            as='a'
+            h={'unset'}
+            colorScheme={'gray'}
+            flexDirection={'column'}
+            w='100%'
+            display={'flex'}
+            alignItems={'center'}
+            whiteSpace={['normal', 'normal', 'nowrap']}
+          >
+            {sourceDetails.imageUrl && (
+              <Image
+                w={['50%', '50%', '100%']}
+                src={sourceDetails.imageUrl}
+                alt={'link to dataset in the source repo'}
+                whiteSpace={'normal'}
+              ></Image>
+            )}
+            <Text py={2}>
+              Open in {sourceDetails.name}
+              <Icon as={FaExternalLinkAlt} boxSize={3} ml={2} />
+            </Text>
+          </Button>
+        </NextLink>
+      )}
     </Flex>
   );
 };
@@ -242,8 +246,8 @@ interface SearchResultCardProps
 }
 
 export const SearchResultCard: React.FC<SearchResultCardProps> = ({
+  id,
   title,
-  url,
   authorDetails,
   accessType,
   description,
@@ -253,7 +257,7 @@ export const SearchResultCard: React.FC<SearchResultCardProps> = ({
   return (
     <Card w={'100%'} my={4}>
       <CardHeader>
-        <CardTitle>{title && <Title title={title} url={url} />}</CardTitle>
+        <CardTitle>{title && <Title id={id} title={title} />}</CardTitle>
       </CardHeader>
       <Flex w={'100%'} alignItems={['flex-start', 'center']} py={0} pr={0}>
         <Author authorDetails={authorDetails} />

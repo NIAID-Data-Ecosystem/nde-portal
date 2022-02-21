@@ -17,11 +17,12 @@ const Home: NextPage = () => {
     <div>
       <Head>
         <title>NDE Portal</title>
-        <meta name='description' content='Discovery Portal home page.' />
-        <link rel='icon' href='/favicon.ico' />
       </Head>
 
-      <PageContainer hasNavigation>
+      <PageContainer
+        hasNavigation
+        metaDescription='Discovery Portal home page.'
+      >
         <Flex
           w={'100%'}
           justifyContent='center'

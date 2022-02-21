@@ -14,16 +14,17 @@ class Document extends NextDocument {
 
   render() {
     return (
-      <Html lang='en'>
+      <Html lang='en' style={{minWidth: '300px'}}>
         <Head>
           {/* prevent font FOUT  */}
           <link
-            rel='preload'
+            rel='prefetch'
             href={`https://fonts.googleapis.com/css2?family=Public+Sans:wght@100;200;300;400;500;600;700;800;900&display=optional`}
             as='font'
             type='font/woff2'
             crossOrigin='anonymous'
           />
+          <link rel='icon' href='/favicon.png' />
         </Head>
         <body>
           <Main />

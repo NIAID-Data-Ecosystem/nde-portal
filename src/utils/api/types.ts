@@ -2,10 +2,10 @@ export interface SearchResultsData {
   max_score: number;
   took: number;
   total: number;
-  hits: SearchResult[];
+  hits: SearchResultProps[];
 }
 
-export interface SearchResult {
+export interface SearchResultProps {
   '@context': string;
   '@id': string;
   '@type': string;
@@ -20,14 +20,19 @@ export interface SearchResult {
   license: string;
   name: string;
   url: string;
+  temporalCoverage?: string[] | string;
+  spatialCoverage?: string[] | string;
+  inLanguage?: inLanguage | string;
   _id: string;
   _ignored: string[];
   _score: number;
 }
 
 export interface Creator {
+  // orcid id
+  '@id'?: string;
   '@type': string;
-  affiliation: {name: string};
+  affiliation?: {name: string};
   name: string;
 }
 
@@ -36,4 +41,15 @@ export interface CuratedBy {
   name: string;
   url: string;
   versionDate: string;
+}
+
+export interface inLanguage {
+  '@type': string;
+  name: string;
+  alternateName: string;
+}
+
+export interface Error {
+  status: string;
+  message: string;
 }
