@@ -1,6 +1,6 @@
 import axios from 'axios';
+import {formatAPIResource} from './helpers';
 
-// Get data resource by id field.
 export const getResourceById = async (id?: string | string[]) => {
   if (!id) {
     return;
@@ -10,8 +10,8 @@ export const getResourceById = async (id?: string | string[]) => {
   }
   try {
     const {data} = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/${id}`);
-
-    // [TO DO]:format properties
+    const formattedData = formatAPIResource(data);
+    console.log(data, formattedData);
 
     return data;
   } catch (err) {
