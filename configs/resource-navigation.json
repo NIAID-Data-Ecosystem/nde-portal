@@ -1,0 +1,21 @@
+{
+  "title": "Sections",
+  "routes": [
+    {
+      "title": "Overview",
+      "hash": "overview"
+    },
+    {
+      "title": "Description",
+      "hash": "description"
+    },
+    {
+      "title": "Files",
+      "hash": "files"
+    },
+    {
+      "title": "Provenance",
+      "hash": "provenance"
+    }
+  ]
+}

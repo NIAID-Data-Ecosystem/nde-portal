@@ -46,27 +46,25 @@ interface APICitation {
   identifier?: string;
   date?: string;
   pmid?: string;
+  doi?: string;
 }
 
 // Format the citation field
 export const formatCitation = (
   citationData?: APICitation | APICitation[],
 ): Citation[] | null => {
-  if (!citationData) {
-    return null;
-  }
-
-  const getCitationFields = (data: APICitation) => {
+  const getCitationFields = (data?: APICitation) => {
     return {
-      id: data.identifier || 'citationId',
-      url: data.url || 'citationUrl',
-      name: data.name || 'citationName',
+      id: data?.identifier || 'citationId',
+      url: data?.url || 'citationUrl',
+      name: data?.name || 'citationName',
       author: data?.author?.name
         ? {name: data?.author?.name}
         : {name: 'citationAuthor'},
-      journalName: data.journalName || 'citationJournalName',
-      date: data.date || 'citationDatePublished',
-      pmid: data.pmid || 'citationPMID',
+      journalName: data?.journalName || 'citationJournalName',
+      date: data?.date || 'citationDatePublished',
+      pmid: data?.pmid || 'citationPMID',
+      doi: data?.doi || 'citationDOI',
     };
   };
 
@@ -83,10 +81,12 @@ interface APIFunding {
   funder?: {
     name?: string | null;
     role?: string | null;
+    alternateName?: string | string[] | null;
+    description?: string | null;
+    parentOrganization?: string | null;
+    url?: string | null;
   } | null;
   identifier?: string | null;
-  description?: string | null;
-  url?: string | null;
 }
 
 export const formatFunding = (
@@ -99,11 +99,16 @@ export const formatFunding = (
   const getFundingFields = (data: APIFunding) => {
     return {
       funder: data.funder
-        ? {name: data.funder.name || null, role: data.funder.role || null}
+        ? {
+            name: data.funder.name || null,
+            role: data.funder.role || null,
+            alternateName: data.funder.alternateName || null,
+            description: data.funder.description || null,
+            parentOrganization: data.funder.parentOrganization || null,
+            url: data.funder.url || null,
+          }
         : null,
       identifier: data.identifier || null,
-      description: data.description || null,
-      url: data.url || null,
     };
   };
 
@@ -120,9 +125,9 @@ interface APIDistribution {
   '@type'?: string;
   encodingFormat?: string | null;
   contentUrl?: string | null;
-  dateCreated?: Date | null;
-  dateModified?: Date | null;
-  datePublished?: Date | null;
+  dateCreated?: Date | string | null;
+  dateModified?: Date | string | null;
+  datePublished?: Date | string | null;
   description?: string | null;
   name?: string | null;
 }
@@ -175,14 +180,14 @@ export const formatType = (type: string | null): ResourceType | null => {
 export const formatAPIResource = (data: any) => {
   const formattedResource: FormattedResource = {
     id: data._id,
-    doi: data['@id'] || null,
     type: formatType(data['@type']),
     name: data.name || 'null',
-    appearsIn: formatCitation(data.citation),
-    citation: formatCitation(data.citation),
+    author: formatCreator(data.author) || formatCreator(data.creator),
+    citation: formatCitation(data.citations),
+    citedBy: data.citedBy || null,
     codeRepository: data.codeRepository || null,
+    condition: data.condition || null,
     conditionsOfAccess: data.conditionsOfAccess || null,
-    creator: formatCreator(data.creator),
     curatedBy: data.curatedBy
       ? {
           name: data.curatedBy.name || null,
@@ -196,8 +201,19 @@ export const formatAPIResource = (data: any) => {
     dateModified: data.dateModified || null,
     datePublished: data.datePublished || null,
     description: data.description || null,
+    disease: data.disease || null,
     distribution: formatDistribution(data.distribution),
+    doi: data['doi'] || data['@id'] || null,
     funding: formatFunding(data.funding),
+    includedInDataCatalog: data.includedInDataCatalog
+      ? {
+          name: data.includedInDataCatalog.name || null,
+          url: data.includedInDataCatalog.url || null,
+          versionDate: data.includedInDataCatalog.versionDate || null,
+          image: data.image || null,
+          identifier: data.includedInDataCatalog.identifier || null,
+        }
+      : null,
     keywords: data.keywords
       ? Array.isArray(data.keywords)
         ? data.keywords
@@ -220,24 +236,27 @@ export const formatAPIResource = (data: any) => {
         : [data.measurementTechnique]
       : null,
     numberOfDownloads: data.numberOfDownloads || null,
+    numberOfViews: data.numberOfViews || null,
+    rawData: data,
     sameAs: data.sameAs || null,
     spatialCoverage:
       typeof data.spatialCoverage === 'string' ? data.spatialCoverage : null,
+    species: data.species || null,
     temporalCoverage:
       typeof data.temporalCoverage === 'string' ? data.spatialCoverage : null,
+    // Maybe add species or organism field to topic
     topic: data.topic
       ? Array.isArray(data.topic)
         ? data.topic
         : [data.topic]
       : null,
-    url: data.url || null, //link to dataset on the repo
+    url: data.url || null,
     variableMeasured: data.variableMeasured
       ? Array.isArray(data.variableMeasured)
         ? data.variableMeasured
         : [data.variableMeasured]
       : null,
     version: data.version || null,
-    numberOfViews: data.numberOfViews || null,
   };
   return formattedResource;
 };

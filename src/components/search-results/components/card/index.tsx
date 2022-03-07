@@ -20,6 +20,7 @@ import {StyledTitle} from './styles';
 import {FaLockOpen, FaLock, FaExternalLinkAlt} from 'react-icons/fa';
 import {useRouter} from 'next/router';
 import NextLink from 'next/link';
+import {Creator} from 'src/utils/api/types';
 /**
  * [TO DO]
  * * [ ] Responsive badge with hover over icon
@@ -37,7 +38,7 @@ interface SearchResultCardTitleProps {
 const Title: React.FC<SearchResultCardTitleProps> = ({id, title}) => {
   return (
     <StyledTitle>
-      <Link size='sm' href={`dataset/${id}`}>
+      <Link size='sm' href={`resources/${id}`}>
         {title}
       </Link>
       {/* ) : (
@@ -52,14 +53,9 @@ const Title: React.FC<SearchResultCardTitleProps> = ({id, title}) => {
 /**
  * Card Author
  */
-interface AuthorProps {
-  name: string;
-  affiliation: {name: string};
-  orcid?: string;
-}
 
 interface SearchResultCardAuthorProps {
-  authorDetails: AuthorProps[];
+  authorDetails: Creator[];
 }
 
 const Author: React.FC<SearchResultCardAuthorProps> = ({authorDetails}) => {

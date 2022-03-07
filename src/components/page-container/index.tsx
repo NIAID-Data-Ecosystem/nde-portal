@@ -1,8 +1,8 @@
-import {Flex, Navigation, Footer} from 'nde-design-system';
+import {useEffect, useRef, useState} from 'react';
+import {Box, Flex, Navigation, Footer, FlexProps} from 'nde-design-system';
 import navItems from 'configs/nav.json';
 import footerItems from 'configs/footer.json';
 import Head from 'next/head';
-import {Html} from 'next/document';
 
 export interface NavItem {
   label: string;
@@ -12,7 +12,21 @@ export interface NavItem {
   isExternal?: boolean;
 }
 
-interface PageContainerProps {
+export const PageContent: React.FC<FlexProps> = ({children, ...props}) => {
+  return (
+    <Flex
+      bg={'page.alt'}
+      minH={'80vh'}
+      p={{base: '4', sm: '6', xl: '8'}}
+      w={'100%'}
+      {...props}
+    >
+      {children}
+    </Flex>
+  );
+};
+
+interface PageContainerProps extends FlexProps {
   hasNavigation: boolean;
   title?: string;
   metaDescription: string;
@@ -25,6 +39,13 @@ const PageContainer: React.FC<PageContainerProps> = ({
   metaDescription,
   ...rest
 }) => {
+  const [height, setHeight] = useState(0);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    setHeight(ref?.current?.clientHeight || 0);
+  });
+
   return (
     <>
       <Head>
@@ -34,16 +55,17 @@ const PageContainer: React.FC<PageContainerProps> = ({
       </Head>
 
       <Flex as={'main'} w={'100%'} flexDirection={'column'}>
-        {hasNavigation && <Navigation navItems={navItems.routes} />}
-        <Flex
-          bg={'niaid.100'}
-          minH={'80vh'}
-          px={{base: '4', sm: '6', xl: '8'}}
-          {...rest}
-        >
-          {children}
-        </Flex>
-        <Footer navigation={footerItems.routes} />
+        {hasNavigation && (
+          // Sticky Nav Bar.
+          <Box ref={ref} position='fixed' w='100%' zIndex={100}>
+            <Navigation navItems={navItems.routes} />
+          </Box>
+        )}
+        {/*Page content has margin-top to compensate for fixed nav bar. */}
+        <Box id={'pagebody'} mt={`${height}px` || 0}>
+          <PageContent {...rest}>{children}</PageContent>
+          <Footer navigation={footerItems.routes} />
+        </Box>
       </Flex>
     </>
   );

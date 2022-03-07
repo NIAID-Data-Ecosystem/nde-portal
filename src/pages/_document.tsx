@@ -14,9 +14,9 @@ class Document extends NextDocument {
 
   render() {
     return (
-      <Html lang='en' style={{minWidth: '300px'}}>
+      <Html lang='en' style={{scrollPaddingTop: '60px'}}>
         <Head>
-          {/* prevent font FOUT  */}
+          {/* prevent font FOUC  */}
           <link
             rel='prefetch'
             href={`https://fonts.googleapis.com/css2?family=Public+Sans:wght@100;200;300;400;500;600;700;800;900&display=optional`}

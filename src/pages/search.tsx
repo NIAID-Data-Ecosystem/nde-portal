@@ -11,13 +11,19 @@ import {SearchResultsData} from 'src/utils/api/types';
 const Search: NextPage = () => {
   // Get search term from url params
   const router = useRouter();
-  const {q: searchTerm} = router.query;
 
-  // Access query client
-  const {isLoading, error, data} = useQuery<SearchResultsData, Error>(
-    ['search-results', {searchTerm}],
-    () => getSearchResults(searchTerm),
+  const querystring = Object.entries(router.query).reduce(
+    (r, [prop, value]) => {
+      return (r += `&${prop}=${value}`);
+    },
+    '',
   );
+
+  const {isLoading, error, data} = useQuery<SearchResultsData, Error>(
+    ['search-results', {searchTerm: querystring}],
+    () => getSearchResults(querystring),
+  );
+
   return (
     <PageContainer
       hasNavigation
@@ -31,7 +37,6 @@ const Search: NextPage = () => {
         <List isLoading={isLoading} error={error}>
           <ul>
             {data?.hits.map(result => {
-              console.log(result);
               // Card
               return (
                 <SearchResultCard
