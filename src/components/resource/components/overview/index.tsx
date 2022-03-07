@@ -59,7 +59,7 @@ const Overview: React.FC<Overview> = ({
     <Flex p={4} flexWrap='wrap' flexDirection={['column', 'column', 'row']}>
       <Box flex={1}>
         <Flex px={4} py={2}>
-          <AltmetricBadge doi={doi_number} />
+          {/* <AltmetricBadge doi={doi_number} /> */}
           <Box>
             <Flex>
               <Stat

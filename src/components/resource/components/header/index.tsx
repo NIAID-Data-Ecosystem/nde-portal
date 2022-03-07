@@ -73,7 +73,7 @@ const ResourceAuthors = ({authors}: {authors: FormattedResource['author']}) => {
     }
     if (withAffiliation) {
       return (
-        <Text>
+        <Text key={author.name}>
           <strong>{author.name}</strong>
           {author?.affiliation?.name &&
             `${
@@ -127,7 +127,7 @@ const ResourceAuthors = ({authors}: {authors: FormattedResource['author']}) => {
             <AccordionPanel p={4} bg='page.alt'>
               {authors.map(author => {
                 return (
-                  <Box>
+                  <Box key={author.name}>
                     {author.id ? (
                       // link to orcid if available.
                       <Link href={author.id} isExternal target='_blank'>

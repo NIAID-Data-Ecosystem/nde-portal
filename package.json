@@ -13,7 +13,7 @@
     "axios": "^0.24.0",
     "framer-motion": "^4",
     "lodash": "^4.17.21",
-    "nde-design-system": "^0.2.9",
+    "nde-design-system": "^0.2.10",
     "next": "12.0.3",
     "react": "17.0.2",
     "react-dom": "17.0.2",

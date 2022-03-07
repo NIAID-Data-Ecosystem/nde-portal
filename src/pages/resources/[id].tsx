@@ -94,7 +94,7 @@ const Dataset: NextPage = props => {
             </Empty>
           </Card>
         ) : (
-          <Flex w='100%' h='100%' flexDirection='column'>
+          <Flex w='100%' h='100%' flexDirection='column' minW={300}>
             <SearchResultsButton variant='link' alignSelf='start' />
             <Flex
               height='100%'
@@ -114,7 +114,7 @@ const Dataset: NextPage = props => {
                     <ResourceLinks
                       isLoading={isLoading}
                       url={data?.url}
-                      curatedBy={data?.curatedBy}
+                      includedInDataCatalog={data?.curatedBy}
                     />
                   )}
                 </Box>
@@ -154,14 +154,14 @@ const Dataset: NextPage = props => {
                   />
                 </section>
               </Card>
-              <Card flex={1} ml={[0, 0, 4]} my={2}>
+              <Card flex={1} ml={[0, 0, 4]} my={[2, 2, 0]} p={0}>
                 <Box position={'sticky'} top={'80px'} w={'100%'} h={'60vh'}>
                   {/* Show external links in header when on mobile */}
                   {!isMobile && (
                     <ResourceLinks
                       isLoading={isLoading}
                       url={data?.url}
-                      curatedBy={data?.curatedBy}
+                      includedInDataCatalog={data?.curatedBy}
                     />
                   )}
                   <RelatedDatasets />
