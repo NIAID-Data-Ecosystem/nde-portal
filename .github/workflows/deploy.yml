@@ -15,8 +15,9 @@ jobs:
           node-version: '14'
       - run: npm install
       - name: build website
-        run: npm run build
-        run: npm run start
+        run: |
+        npm run build
+        npm run start
       - name: sync s3
         uses: jakejarvis/s3-sync-action@master
         with:
