@@ -25,6 +25,6 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ${{ secrets.AWS_REGION }}
-          SOURCE_DIR: './out'
+          SOURCE_DIR: './dist'
           DEST_DIR: 'production'
           NEXT_PUBLIC_API_URL: https://api.data.niaid.nih.gov/v1
