@@ -94,11 +94,11 @@ export interface Funding {
 }
 
 export interface includedInDataCatalog {
-  name: string | null;
-  url: string | null; //source repo url
-  versionDate: string | null;
-  image: string | null;
-  identifier: string | null;
+  name?: string | null;
+  url?: string | null; //source repo url
+  versionDate?: string | null;
+  image?: string | null;
+  identifier?: string | null;
 }
 
 export interface inLanguage {
@@ -139,6 +139,7 @@ export interface FormattedResource {
     alternateName: string | null;
     name: string | null;
   } | null;
+
   license: string | null;
   mainEntityOfPage: string | null;
   measurementTechnique: string[] | null;

@@ -10,7 +10,7 @@ export const getResourceById = async (id?: string | string[]) => {
   }
   try {
     const {data} = await axios.get(
-      `${process.env.NEXT_PUBLIC_API_URL}/query?&q=_id:${id}`,
+      `${process.env.NEXT_PUBLIC_API_URL}/query?&q=identifier:${id}`,
     );
 
     const formattedData = await formatAPIResource(data.hits[0]);
@@ -32,8 +32,9 @@ export const getSearchResults = async (searchTerm?: string | string[]) => {
   }
   try {
     const {data} = await axios.get(
-      `${process.env.NEXT_PUBLIC_API_URL}/query?${searchTerm}`,
+      `${process.env.NEXT_PUBLIC_API_URL}/query?q=${searchTerm}`,
     );
+
     return data;
   } catch (err) {
     throw err;

@@ -167,7 +167,7 @@ const Description: React.FC<SearchResultCardDescription> = ({description}) => {
 interface SourceProps {
   id: string;
   imageUrl?: string;
-  name: string;
+  name?: string;
   url: string;
 }
 interface SearchResultCardExternalLinks {
@@ -218,10 +218,12 @@ const ExternalLinks: React.FC<SearchResultCardExternalLinks> = ({
                 whiteSpace={'normal'}
               ></Image>
             )}
-            <Text py={2}>
-              Open in {sourceDetails.name}
-              <Icon as={FaExternalLinkAlt} boxSize={3} ml={2} />
-            </Text>
+            {sourceDetails.name && (
+              <Text py={2}>
+                Open in {sourceDetails.name}
+                <Icon as={FaExternalLinkAlt} boxSize={3} ml={2} />
+              </Text>
+            )}
           </Button>
         </NextLink>
       )}

@@ -23,7 +23,7 @@ const Search: NextPage = () => {
     ['search-results', {searchTerm: querystring}],
     () => getSearchResults(querystring),
   );
-
+  console.log(data);
   return (
     <PageContainer
       hasNavigation
@@ -40,18 +40,18 @@ const Search: NextPage = () => {
               // Card
               return (
                 <SearchResultCard
-                  key={result._id}
-                  id={result._id}
-                  title={result.name}
-                  authorDetails={result.creator}
-                  description={result.description}
+                  key={result?._id}
+                  id={result?.identifier}
+                  title={result?.name}
+                  authorDetails={result?.creator}
+                  description={result?.description}
                   accessType={'unrestricted'}
-                  keywords={result.keywords || []}
+                  keywords={result?.keywords || []}
                   sourceDetails={{
-                    id: result._id,
-                    imageUrl: result.image,
-                    name: result.curatedBy.name,
-                    url: result.url,
+                    id: result?._id,
+                    imageUrl: result?.image,
+                    name: result?.curatedBy?.name,
+                    url: result?.url,
                   }}
                 />
               );

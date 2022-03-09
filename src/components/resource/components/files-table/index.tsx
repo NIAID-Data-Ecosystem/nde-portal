@@ -39,61 +39,40 @@ const FilesTable: React.FC<FilesTable> = ({distribution}) => {
   };
 
   return (
-    <>
-      <StyledSectionHead>
-        <StyledSectionHeading>Files</StyledSectionHeading>
-      </StyledSectionHead>
-
-      <Box p={4}>
-        {!distribution || distribution.length === 0 ? (
-          <Text>No files available.</Text>
-        ) : (
-          <Table variant='simple' colorScheme={'primary'}>
-            <TableCaption
-              fontSize='xs'
-              fontFamily={'body'}
-              fontStyle={'italic'}
-            >
-              Files available for download
-            </TableCaption>
-            <Thead>
-              <Tr>
-                {tableColumns.map((column, i) => {
-                  return (
-                    <Th
-                      key={column}
-                      fontSize='xs'
-                      fontFamily={'body'}
-                      bg={i % 2 ? 'primary.500' : 'primary.700'}
-                      color={'white'}
-                    >
-                      {formatColumnString(column)}
-                    </Th>
-                  );
-                })}
-              </Tr>
-            </Thead>
-            <Tbody>
-              {distribution.map((d, i) => {
+    <Box p={4}>
+      {!distribution || distribution.length === 0 ? (
+        <Text>No files available.</Text>
+      ) : (
+        <Table variant='simple' colorScheme={'primary'}>
+          <TableCaption fontSize='xs' fontFamily={'body'} fontStyle={'italic'}>
+            Files available for download
+          </TableCaption>
+          <Thead>
+            <Tr>
+              {tableColumns.map((column, i) => {
                 return (
-                  <Tr key={i}>
-                    {Object.entries(d).map(([prop, fileValue], j) => {
-                      if (!fileValue) {
-                        return;
-                      }
-                      if (prop === 'contentUrl') {
-                        return (
-                          <Td
-                            key={`${fileValue}-${i}-${j}`}
-                            borderLeft={'1px solid'}
-                            borderLeftColor={'primary.100'}
-                            borderRight={'1px solid'}
-                            borderRightColor={'primary.100'}
-                          >
-                            <Link href={fileValue}>{fileValue}</Link>
-                          </Td>
-                        );
-                      }
+                  <Th
+                    key={column}
+                    fontSize='xs'
+                    fontFamily={'body'}
+                    bg={i % 2 ? 'primary.500' : 'primary.700'}
+                    color={'white'}
+                  >
+                    {formatColumnString(column)}
+                  </Th>
+                );
+              })}
+            </Tr>
+          </Thead>
+          <Tbody>
+            {distribution.map((d, i) => {
+              return (
+                <Tr key={i}>
+                  {Object.entries(d).map(([prop, fileValue], j) => {
+                    if (!fileValue) {
+                      return;
+                    }
+                    if (prop === 'contentUrl') {
                       return (
                         <Td
                           key={`${fileValue}-${i}-${j}`}
@@ -102,35 +81,46 @@ const FilesTable: React.FC<FilesTable> = ({distribution}) => {
                           borderRight={'1px solid'}
                           borderRightColor={'primary.100'}
                         >
-                          {fileValue}
+                          <Link href={fileValue}>{fileValue}</Link>
                         </Td>
                       );
-                    })}
-                  </Tr>
+                    }
+                    return (
+                      <Td
+                        key={`${fileValue}-${i}-${j}`}
+                        borderLeft={'1px solid'}
+                        borderLeftColor={'primary.100'}
+                        borderRight={'1px solid'}
+                        borderRightColor={'primary.100'}
+                      >
+                        {fileValue}
+                      </Td>
+                    );
+                  })}
+                </Tr>
+              );
+            })}
+          </Tbody>
+          <Tfoot>
+            <Tr>
+              {tableColumns.map((column, i) => {
+                return (
+                  <Th
+                    key={column}
+                    fontSize='xs'
+                    fontFamily={'body'}
+                    bg={i % 2 ? 'primary.500' : 'primary.700'}
+                    color={'white'}
+                  >
+                    {formatColumnString(column)}
+                  </Th>
                 );
               })}
-            </Tbody>
-            <Tfoot>
-              <Tr>
-                {tableColumns.map((column, i) => {
-                  return (
-                    <Th
-                      key={column}
-                      fontSize='xs'
-                      fontFamily={'body'}
-                      bg={i % 2 ? 'primary.500' : 'primary.700'}
-                      color={'white'}
-                    >
-                      {formatColumnString(column)}
-                    </Th>
-                  );
-                })}
-              </Tr>
-            </Tfoot>
-          </Table>
-        )}
-      </Box>
-    </>
+            </Tr>
+          </Tfoot>
+        </Table>
+      )}
+    </Box>
   );
 };
 

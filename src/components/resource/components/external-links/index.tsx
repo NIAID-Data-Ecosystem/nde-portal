@@ -1,12 +1,9 @@
 import React, {ReactElement} from 'react';
 import {
-  Box,
   Button,
   ButtonProps,
-  Flex,
   Icon,
   Image,
-  Link,
   Skeleton,
   Stack,
   Text,
@@ -37,6 +34,8 @@ const PanelButton: React.FC<PanelButton> = ({
         whiteSpace={'normal'}
         minW={250}
         color={'white'}
+        // @ts-ignore
+        target={'_blank'}
         {...rest}
       >
         <Text color='white'>{children}</Text>
@@ -48,14 +47,14 @@ const PanelButton: React.FC<PanelButton> = ({
 
 interface ExternalLinks {
   isLoading: boolean;
-  url?: FormattedResource['url'];
+  showWorkspaceLink?: boolean;
   includedInDataCatalog?: FormattedResource['includedInDataCatalog'];
 }
 
 const ExternalLinks: React.FC<ExternalLinks> = ({
   isLoading,
-  url,
   includedInDataCatalog,
+  showWorkspaceLink = true,
 }) => {
   const {repositories} = sourceData;
   const getSourceImage = (repoName?: string | null) => {
@@ -80,11 +79,11 @@ const ExternalLinks: React.FC<ExternalLinks> = ({
         shouldWrapChildren={true}
         flexWrap='wrap'
       >
-        {url && (
-          <NextLink href={url} passHref>
+        {includedInDataCatalog?.url && (
+          <NextLink href={includedInDataCatalog.url} passHref>
             <PanelButton
               flex={1}
-              href={url}
+              href={includedInDataCatalog.url}
               colorScheme={'secondary'}
               icon={<Icon m={1} boxSize='16px' as={FaDatabase} />}
             >
@@ -93,21 +92,23 @@ const ExternalLinks: React.FC<ExternalLinks> = ({
           </NextLink>
         )}
 
-        <PanelButton
-          flex={1}
-          href={'/workspace'}
-          icon={
-            <Image
-              m={1}
-              boxSize='16px'
-              objectFit='contain'
-              src={'/assets/workspace-logo.png'}
-              alt={'Analysis workspace logo'}
-            />
-          }
-        >
-          Analyze in Workspace
-        </PanelButton>
+        {showWorkspaceLink && (
+          <PanelButton
+            flex={1}
+            href={'/workspace'}
+            icon={
+              <Image
+                m={1}
+                boxSize='16px'
+                objectFit='contain'
+                src={'/assets/workspace-logo.png'}
+                alt={'Analysis workspace logo'}
+              />
+            }
+          >
+            Analyze in Workspace
+          </PanelButton>
+        )}
       </Stack>
     </Skeleton>
   );

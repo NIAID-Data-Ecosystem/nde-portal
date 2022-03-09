@@ -1,19 +1,17 @@
 import React, {useEffect, useRef, useState} from 'react';
-
 import {
   Box,
   Button,
-  Text,
   Skeleton,
   Tabs,
   TabList,
-  Tab as ChakraTab,
   TabPanels,
   TabPanel,
+  Text,
 } from 'nde-design-system';
 import {FormattedResource} from 'src/utils/api/types';
-import {StyledSectionHeading} from '../../styles';
 import {StyledTab} from './styles';
+import {TabProps as ChakraTabProps} from '@chakra-ui/tabs';
 
 const ContentDrawer: React.FC<{height?: number}> = ({
   children,
@@ -49,58 +47,42 @@ const ContentDrawer: React.FC<{height?: number}> = ({
 interface ResourceTabs {
   isLoading: boolean;
   description?: FormattedResource['description'];
-  citation?: FormattedResource['citation'];
-  citedBy?: FormattedResource['appearsIn'];
+  metadata?: FormattedResource['rawData'];
 }
 const ResourceTabs: React.FC<ResourceTabs> = ({
   isLoading,
   description,
-  // citation,
-  // citedBy,
+  metadata,
 }) => {
-  let citation = [{name: 'citation'}];
-  let citedBy = [{name: 'citedBy'}];
   if (isLoading) {
     return <Skeleton height='100px' />;
   }
   return (
-    <Tabs size='md' variant='enclosed' w='100%' p={4} isLazy>
-      <TabList bg={'page.alt'}>
+    <Tabs size='md' variant='unstyled' w='100%' p={4} isLazy>
+      <TabList boxShadow={'base'} borderRadius={'md'}>
         {description && <Tab>Description</Tab>}
-        {citation && citation.length > 0 && <Tab>Citation</Tab>}
-        {citedBy && citedBy.length > 0 && <Tab>Cited By</Tab>}
+        {metadata && <Tab>Metadata</Tab>}
       </TabList>
       <TabPanels>
         {description && (
           <TabPanel w='100%'>
-            <ContentDrawer>
-              <Box
-                w='100%'
-                dangerouslySetInnerHTML={{
-                  __html: description,
-                }}
-              ></Box>
-            </ContentDrawer>
+            <Box
+              height={500}
+              overflow={'auto'}
+              w='100%'
+              dangerouslySetInnerHTML={{
+                __html: description,
+              }}
+            ></Box>
           </TabPanel>
         )}
-        {citation && (
+        {metadata && (
           <TabPanel w='100%'>
-            <ContentDrawer>
-              [To Do]:
-              {citation.map((c, i) => {
-                return <Text key={i}>{c.name || 'name'}</Text>;
-              })}
-            </ContentDrawer>
-          </TabPanel>
-        )}
-        {citedBy && (
-          <TabPanel w='100%'>
-            <ContentDrawer>
-              [To Do]:
-              {citedBy.map((c, i) => {
-                return <Text key={i}>{c.name || 'name'}</Text>;
-              })}
-            </ContentDrawer>
+            <Box height={500} overflow={'auto'}>
+              <Text fontSize={'10px'}>
+                <pre>{JSON.stringify(metadata, null, 2)}</pre>
+              </Text>
+            </Box>
           </TabPanel>
         )}
       </TabPanels>
@@ -110,10 +92,11 @@ const ResourceTabs: React.FC<ResourceTabs> = ({
 
 export default ResourceTabs;
 
-const Tab: React.FC<{children: string}> = ({children}) => {
+interface TabProps extends ChakraTabProps {}
+const Tab: React.FC<TabProps> = ({children, ...props}) => {
   return (
-    <StyledTab>
-      <StyledSectionHeading color={'inherit'}>{children}</StyledSectionHeading>
+    <StyledTab _selected={{color: 'white', bg: 'blue.500'}} {...props}>
+      <Text color={'inherit'}>{children}</Text>
     </StyledTab>
   );
 };

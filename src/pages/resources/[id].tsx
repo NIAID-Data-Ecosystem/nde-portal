@@ -12,6 +12,8 @@ import {
   ButtonProps,
   Card,
   Flex,
+  Skeleton,
+  Tag,
   Text,
   useBreakpointValue,
 } from 'nde-design-system';
@@ -24,10 +26,12 @@ import {
   ResourceLinks,
   ResourceFilesTable,
   ResourceProvenance,
+  Section,
 } from 'src/components/resource';
 import {FaChevronLeft} from 'react-icons/fa';
 import {useLocalStorage} from 'usehooks-ts';
 import Head from 'next/head';
+import Script from 'next/script';
 
 /*
 To do:
@@ -51,7 +55,7 @@ const Dataset: NextPage = props => {
     FormattedResource | undefined,
     Error
   >(['search-result', {id}], () => getResourceById(id));
-
+  console.log(data);
   if (!id) {
     return <></>;
   }
@@ -76,6 +80,11 @@ const Dataset: NextPage = props => {
 
   return (
     <>
+      <Script
+        type='text/javascript'
+        src='https://d1bxh8uas1mnw7.cloudfront.net/assets/embed.js'
+        strategy='afterInteractive'
+      />
       <PageContainer
         hasNavigation
         title='Dataset'
@@ -102,7 +111,7 @@ const Dataset: NextPage = props => {
               flexDirection={['column', 'column', 'row']}
             >
               <Card flex={3} p={0} width='100%'>
-                <Box p={4}>
+                <Section id={'header'} borderBottom='1px solid gray'>
                   <ResourceHeader
                     isLoading={isLoading}
                     conditionsOfAccess={data?.conditionsOfAccess}
@@ -113,13 +122,12 @@ const Dataset: NextPage = props => {
                   {isMobile && (
                     <ResourceLinks
                       isLoading={isLoading}
-                      url={data?.url}
-                      includedInDataCatalog={data?.curatedBy}
+                      includedInDataCatalog={data?.includedInDataCatalog}
                     />
                   )}
-                </Box>
-                <Navigation resourceType={data?.type} />
-                <section id='overview'>
+                </Section>
+                {/* <Navigation resourceType={data?.type} /> */}
+                <Section id='overview'>
                   <ResourceOverview
                     isLoading={isLoading}
                     doi={data?.doi}
@@ -130,29 +138,48 @@ const Dataset: NextPage = props => {
                     numberOfViews={data?.numberOfViews}
                     spatialCoverage={data?.spatialCoverage}
                     temporalCoverage={data?.temporalCoverage}
+                    citation={data?.citation}
+                    variableMeasured={data?.variableMeasured}
+                    measurementTechnique={data?.measurementTechnique}
+                    species={data?.species}
                   />
-                </section>
+                </Section>
+                {data?.keywords && data?.keywords.length > 0 && (
+                  <Section id={'keywords'} name={'Keywords'}>
+                    <Skeleton isLoaded={!isLoading}>
+                      <Flex flexWrap='wrap'>
+                        {data.keywords &&
+                          data.keywords.map(keyword => {
+                            return (
+                              <Tag key={keyword} m={2} colorScheme='primary'>
+                                {keyword}
+                              </Tag>
+                            );
+                          })}
+                      </Flex>
+                    </Skeleton>
+                  </Section>
+                )}
 
-                <section id='description'>
+                <Section id='description' name={'Description'}>
                   <ResourceTabs
                     isLoading={isLoading}
                     description={data?.description}
-                    citation={data?.citation}
-                    citedBy={data?.appearsIn}
+                    metadata={data?.rawData}
                   />
-                </section>
-                <section id='files'>
+                </Section>
+                <Section id='files' name={'Files'}>
                   <ResourceFilesTable
                     isLoading={true}
                     distribution={data?.distribution}
                   />
-                </section>
-                <section id='provenance'>
+                </Section>
+                <Section id='provenance' name={'Provenance'}>
                   <ResourceProvenance
                     isLoading={isLoading}
-                    curatedBy={data?.curatedBy}
+                    includedInDataCatalog={data?.includedInDataCatalog}
                   />
-                </section>
+                </Section>
               </Card>
               <Card flex={1} ml={[0, 0, 4]} my={[2, 2, 0]} p={0}>
                 <Box position={'sticky'} top={'80px'} w={'100%'} h={'60vh'}>
@@ -160,8 +187,7 @@ const Dataset: NextPage = props => {
                   {!isMobile && (
                     <ResourceLinks
                       isLoading={isLoading}
-                      url={data?.url}
-                      includedInDataCatalog={data?.curatedBy}
+                      includedInDataCatalog={data?.includedInDataCatalog}
                     />
                   )}
                   <RelatedDatasets />

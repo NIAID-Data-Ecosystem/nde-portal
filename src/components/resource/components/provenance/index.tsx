@@ -1,54 +1,51 @@
 import React from 'react';
-import {
-  StyledSectionHead,
-  StyledSectionHeading,
-} from 'src/components/resource/styles';
 import {Box, Image, Link, Text} from 'nde-design-system';
 import {FormattedResource} from 'src/utils/api/types';
 import {Skeleton} from '@chakra-ui/skeleton';
-import Stat from '../stat';
+import {MetadataField} from '../section';
+import {ResourceLinks} from 'src/components/resource/';
 
 interface Provenance {
   isLoading: boolean;
-  curatedBy?: FormattedResource['curatedBy'];
+  includedInDataCatalog?: FormattedResource['includedInDataCatalog'];
 }
 
-const Provenance: React.FC<Provenance> = ({curatedBy, isLoading}) => {
+const Provenance: React.FC<Provenance> = ({
+  includedInDataCatalog,
+  isLoading,
+}) => {
   return (
-    <>
-      <StyledSectionHead>
-        <StyledSectionHeading>Provenance</StyledSectionHeading>
-      </StyledSectionHead>
-      <Box p={4}>
-        <Skeleton isLoaded={!isLoading} p={4}>
-          <Box>
-            {curatedBy?.image && (
-              <Image src={curatedBy.image} alt='Data source logo' />
-            )}
+    <Skeleton isLoaded={!isLoading} p={4}>
+      <Box>
+        {includedInDataCatalog?.name && (
+          <ResourceLinks
+            isLoading={isLoading}
+            showWorkspaceLink={false}
+            includedInDataCatalog={{name: includedInDataCatalog.name}}
+          />
+        )}
 
-            {curatedBy?.name && (
-              <Stat isLoading={isLoading} label={`Organization's name`}>
-                {curatedBy.url ? (
-                  <Link href={curatedBy.url} target='_blank' isExternal>
-                    {curatedBy.name}
-                  </Link>
-                ) : (
-                  <Text>{curatedBy.name}</Text>
-                )}
-              </Stat>
+        {includedInDataCatalog?.name && (
+          <MetadataField isLoading={isLoading} label={`Organization's name`}>
+            {includedInDataCatalog.url ? (
+              <Link href={includedInDataCatalog.url} target='_blank' isExternal>
+                {includedInDataCatalog.name}
+              </Link>
+            ) : (
+              <Text>{includedInDataCatalog.name}</Text>
             )}
+          </MetadataField>
+        )}
 
-            {curatedBy?.versionDate && (
-              <Stat
-                isLoading={isLoading}
-                label='Version Date'
-                value={new Date(curatedBy.versionDate).toLocaleString()}
-              ></Stat>
-            )}
-          </Box>
-        </Skeleton>
+        {includedInDataCatalog?.versionDate && (
+          <MetadataField
+            isLoading={isLoading}
+            label='Version Date'
+            value={new Date(includedInDataCatalog.versionDate).toLocaleString()}
+          ></MetadataField>
+        )}
       </Box>
-    </>
+    </Skeleton>
   );
 };
 
