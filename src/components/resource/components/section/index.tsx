@@ -50,6 +50,7 @@ const MetadataField: React.FC<MetadataFieldProps> = ({
         {Array.isArray(value) &&
           value.map(v => (
             <Heading
+              key={v}
               size={typeof value === 'number' ? 'lg' : 'sm'}
               fontFamily='body'
               fontWeight='semibold'

@@ -55,7 +55,6 @@ const Dataset: NextPage = props => {
     FormattedResource | undefined,
     Error
   >(['search-result', {id}], () => getResourceById(id));
-  console.log(data);
   if (!id) {
     return <></>;
   }

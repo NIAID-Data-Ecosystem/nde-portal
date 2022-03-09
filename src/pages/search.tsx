@@ -23,7 +23,6 @@ const Search: NextPage = () => {
     ['search-results', {searchTerm: querystring}],
     () => getSearchResults(querystring),
   );
-  console.log(data);
   return (
     <PageContainer
       hasNavigation

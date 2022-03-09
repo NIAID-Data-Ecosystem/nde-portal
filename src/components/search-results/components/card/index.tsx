@@ -165,10 +165,10 @@ const Description: React.FC<SearchResultCardDescription> = ({description}) => {
  * External Links for data source.
  */
 interface SourceProps {
-  id: string;
-  imageUrl?: string;
-  name?: string;
-  url: string;
+  id: string | null;
+  imageUrl?: string | null;
+  name?: string | null;
+  url?: string | null;
 }
 interface SearchResultCardExternalLinks {
   sourceDetails: SourceProps;

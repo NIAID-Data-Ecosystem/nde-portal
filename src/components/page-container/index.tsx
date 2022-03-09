@@ -44,7 +44,7 @@ const PageContainer: React.FC<PageContainerProps> = ({
 
   useEffect(() => {
     setHeight(ref?.current?.clientHeight || 0);
-  });
+  }, []);
 
   return (
     <>

@@ -3,7 +3,6 @@ import {
   Flex,
   Heading,
   Icon,
-  Link,
   Text,
   Button,
   useBreakpointValue,
@@ -13,7 +12,7 @@ import {
   Box,
 } from 'nde-design-system';
 import navigationData from 'configs/resource-navigation.json';
-import {FaChevronLeft, FaChevronDown} from 'react-icons/fa';
+import {FaChevronDown} from 'react-icons/fa';
 import {IoClose} from 'react-icons/io5';
 import {
   StyledNavigation,
@@ -59,7 +58,6 @@ const Navigation: React.FC<{resourceType?: string | null}> = ({
   const isMobile = useBreakpointValue({base: true, sm: true, md: false});
 
   const {isOpen, onToggle} = useDisclosure();
-  const router = useRouter();
 
   // Navigation config
   const {routes} = navigationData as navigationConfig;
@@ -69,7 +67,7 @@ const Navigation: React.FC<{resourceType?: string | null}> = ({
   const [marginTop, setMarginTop] = useState(0);
   useEffect(() => {
     setMarginTop(ref?.current?.parentElement?.offsetTop || 0);
-  });
+  }, []);
 
   // Detect active section and update nav accordingly
   const sectionNodesRefs = useRef<(HTMLElement | null)[]>([]);
@@ -125,7 +123,7 @@ const Navigation: React.FC<{resourceType?: string | null}> = ({
     return () => {
       window.removeEventListener('scroll', updateActiveSection);
     };
-  }, [itemClicked]);
+  }, [activeSection, routes, itemClicked]);
 
   const NavigationLinks = ({isOpen}: {isOpen: boolean}) => {
     return (

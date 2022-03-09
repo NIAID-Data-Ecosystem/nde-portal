@@ -27,7 +27,7 @@ const ContentDrawer: React.FC<{height?: number}> = ({
 
   useEffect(() => {
     setShowMore(contentHeight < height);
-  }, [contentHeight]);
+  }, [height, contentHeight]);
 
   return (
     <Box py={4}>
