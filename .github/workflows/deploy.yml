@@ -15,7 +15,7 @@ jobs:
           node-version: '14'
       - run: npm install
       - name: build website
-        run: npm run build && npm run start
+        run: npm run build
       - name: sync s3
         uses: jakejarvis/s3-sync-action@master
         with:
@@ -25,6 +25,6 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ${{ secrets.AWS_REGION }}
-          SOURCE_DIR: './dist'
+          SOURCE_DIR: './out'
           DEST_DIR: 'production'
           NEXT_PUBLIC_API_URL: https://api.data.niaid.nih.gov/v1
