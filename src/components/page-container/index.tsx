@@ -18,6 +18,7 @@ export const PageContent: React.FC<FlexProps> = ({children, ...props}) => {
       bg={'page.alt'}
       minH={'80vh'}
       p={{base: '4', sm: '6', xl: '8'}}
+      px={{base: '4', sm: '6', lg: '5%', xl: '10%'}}
       w={'100%'}
       {...props}
     >

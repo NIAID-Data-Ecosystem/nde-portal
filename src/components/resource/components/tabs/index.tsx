@@ -67,21 +67,29 @@ const ResourceTabs: React.FC<ResourceTabs> = ({
         {description && (
           <TabPanel w='100%'>
             <Box
-              height={500}
-              overflow={'auto'}
+              maxHeight={500}
+              overflow='auto'
               w='100%'
               dangerouslySetInnerHTML={{
                 __html: description,
               }}
+              tabindex='0'
             ></Box>
           </TabPanel>
         )}
         {metadata && (
           <TabPanel w='100%'>
-            <Box height={500} overflow={'auto'}>
-              <Text fontSize={'10px'}>
-                <pre>{JSON.stringify(metadata, null, 2)}</pre>
-              </Text>
+            <Box maxHeight={500} overflow='auto' w='100%' tabindex='0'>
+              <pre
+                style={{
+                  whiteSpace: 'pre-wrap',
+                  padding: '2rem',
+                }}
+              >
+                <Text fontSize={'10px'}>
+                  {JSON.stringify(metadata, null, 2)}
+                </Text>
+              </pre>
             </Box>
           </TabPanel>
         )}
@@ -95,8 +103,8 @@ export default ResourceTabs;
 interface TabProps extends ChakraTabProps {}
 const Tab: React.FC<TabProps> = ({children, ...props}) => {
   return (
-    <StyledTab _selected={{color: 'white', bg: 'blue.500'}} {...props}>
-      <Text color={'inherit'}>{children}</Text>
+    <StyledTab _selected={{color: 'white', bg: 'link.color'}} {...props}>
+      <Text color='inherit'>{children}</Text>
     </StyledTab>
   );
 };

@@ -43,8 +43,13 @@ const FilesTable: React.FC<FilesTable> = ({distribution}) => {
       {!distribution || distribution.length === 0 ? (
         <Text>No files available.</Text>
       ) : (
-        <Table variant='simple' colorScheme={'primary'}>
-          <TableCaption fontSize='xs' fontFamily={'body'} fontStyle={'italic'}>
+        <Table variant='simple' colorScheme='primary'>
+          <TableCaption
+            fontSize='xs'
+            fontFamily='body'
+            fontStyle='italic'
+            color='text.body'
+          >
             Files available for download
           </TableCaption>
           <Thead>
@@ -52,11 +57,13 @@ const FilesTable: React.FC<FilesTable> = ({distribution}) => {
               {tableColumns.map((column, i) => {
                 return (
                   <Th
+                    role='columnheader'
+                    scope='col'
                     key={column}
                     fontSize='xs'
-                    fontFamily={'body'}
+                    fontFamily='body'
                     bg={i % 2 ? 'primary.500' : 'primary.700'}
-                    color={'white'}
+                    color='white'
                   >
                     {formatColumnString(column)}
                   </Th>
@@ -75,11 +82,12 @@ const FilesTable: React.FC<FilesTable> = ({distribution}) => {
                     if (prop === 'contentUrl') {
                       return (
                         <Td
+                          role='cell'
                           key={`${fileValue}-${i}-${j}`}
-                          borderLeft={'1px solid'}
-                          borderLeftColor={'primary.100'}
-                          borderRight={'1px solid'}
-                          borderRightColor={'primary.100'}
+                          borderLeft='1px solid'
+                          borderLeftColor='primary.100'
+                          borderRight='1px solid'
+                          borderRightColor='primary.100'
                         >
                           <Link href={fileValue}>{fileValue}</Link>
                         </Td>
@@ -88,10 +96,10 @@ const FilesTable: React.FC<FilesTable> = ({distribution}) => {
                     return (
                       <Td
                         key={`${fileValue}-${i}-${j}`}
-                        borderLeft={'1px solid'}
-                        borderLeftColor={'primary.100'}
-                        borderRight={'1px solid'}
-                        borderRightColor={'primary.100'}
+                        borderLeft='1px solid'
+                        borderLeftColor='primary.100'
+                        borderRight='1px solid'
+                        borderRightColor='primary.100'
                       >
                         {fileValue}
                       </Td>
@@ -101,23 +109,6 @@ const FilesTable: React.FC<FilesTable> = ({distribution}) => {
               );
             })}
           </Tbody>
-          <Tfoot>
-            <Tr>
-              {tableColumns.map((column, i) => {
-                return (
-                  <Th
-                    key={column}
-                    fontSize='xs'
-                    fontFamily={'body'}
-                    bg={i % 2 ? 'primary.500' : 'primary.700'}
-                    color={'white'}
-                  >
-                    {formatColumnString(column)}
-                  </Th>
-                );
-              })}
-            </Tr>
-          </Tfoot>
         </Table>
       )}
     </Box>
