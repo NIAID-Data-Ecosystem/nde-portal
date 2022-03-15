@@ -1,3 +1,8 @@
+export interface FetchSearchResultsResponse {
+  results: FormattedResource[];
+  total: number;
+}
+
 export interface SearchResultsData {
   max_score: number;
   took: number;
