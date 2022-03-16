@@ -1,7 +1,8 @@
+import Card from './components/card';
 import List from './components/list';
 import Pagination from './components/pagination';
-import {Filter, FilterCheckbox} from './components/filters';
+import {Filter} from './components/filters';
 
-export * from './components/card';
+export * from './components/card/draft';
 
-export {Filter, FilterCheckbox, List, Pagination};
+export {Card, Filter, List, Pagination};

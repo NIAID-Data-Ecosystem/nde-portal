@@ -4,7 +4,7 @@ import {useRouter} from 'next/router';
 import {useQuery} from 'react-query';
 import Empty from 'src/components/empty';
 import PageContainer from 'src/components/page-container';
-import {Pagination, Filter} from 'src/components/search-results';
+import {Pagination, Filter, Card} from 'src/components/search-results';
 import {fetchSearchResults} from 'src/utils/api';
 import {encodeString} from 'src/utils/querystring-helpers';
 import {FetchSearchResultsResponse} from 'src/utils/api/types';
@@ -14,8 +14,10 @@ import {
   Flex,
   Heading,
   Link,
+  ListItem,
   Skeleton,
   Text,
+  UnorderedList,
 } from 'nde-design-system';
 import {
   queryFilterObject2String,
@@ -92,7 +94,7 @@ const Search: NextPage = () => {
       });
     },
   );
-  // console.log(data);
+  console.log(data);
   // Set initial state based on route params.
   useEffect(() => {
     const {q, size, filters, from} = router.query;
@@ -204,7 +206,7 @@ const Search: NextPage = () => {
           total={totalItems}
         />
         <Flex>
-          <Box w={300}>
+          <Box w={400}>
             {facets &&
               Object.entries(facets).map(([filterKey, filterValue]) => {
                 if (!filterKey || filterValue?.terms?.length === 0) {
@@ -229,6 +231,18 @@ const Search: NextPage = () => {
                   ></Filter>
                 );
               })}
+          </Box>
+          <Box flex={1} p={6}>
+            <UnorderedList>
+              {data?.results &&
+                data.results.map(result => {
+                  return (
+                    <ListItem key={result.id} my={4}>
+                      <Card {...result}></Card>
+                    </ListItem>
+                  );
+                })}
+            </UnorderedList>
           </Box>
         </Flex>
       </Box>
