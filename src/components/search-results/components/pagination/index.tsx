@@ -117,7 +117,14 @@ const Pagination: React.FC<PaginationProps> = ({
             // Always display first and last page buttons.
             if (page_number === 1 || page_number === total_pages) {
               return (
-                <PageButton key={page_number} {...props}>
+                <PageButton
+                  key={
+                    page_number === 1
+                      ? `first-${page_number}`
+                      : `last-${page_number}`
+                  }
+                  {...props}
+                >
                   {page_number}
                 </PageButton>
               );
@@ -139,13 +146,11 @@ const Pagination: React.FC<PaginationProps> = ({
               page_number === selectedPage + 1
             ) {
               return (
-                <>
+                <React.Fragment key={page_number}>
                   {page_number === selectedPage - 1 && '...'}
-                  <PageButton key={page_number} {...props}>
-                    {page_number}
-                  </PageButton>
+                  <PageButton {...props}>{page_number}</PageButton>
                   {page_number === selectedPage + 1 && '...'}
-                </>
+                </React.Fragment>
               );
             }
           })}

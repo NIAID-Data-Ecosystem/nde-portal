@@ -27,10 +27,12 @@ interface Params {
   q: string;
   size: string;
   from: string;
+  facet_size: number;
+  facets: string;
 }
 
 export const fetchSearchResults = async (params: Params) => {
-  if (!params) {
+  if (!params || !params.q) {
     return;
   }
 
@@ -43,13 +45,17 @@ export const fetchSearchResults = async (params: Params) => {
       `${process.env.NEXT_PUBLIC_API_URL}/query?`,
       {params},
     );
+    if (!data.hits) {
+      return {results: [], total: 0, facets: data.facets || null};
+    }
 
     const results: FetchSearchResultsResponse['results'] = data.hits.map(
       (d: any) => formatAPIResource(d),
     );
     const total: FetchSearchResultsResponse['total'] = data.total;
+    const facets: FetchSearchResultsResponse['facets'] = data.facets;
 
-    return {results, total};
+    return {results, total, facets};
   } catch (err) {
     throw err;
   }

@@ -1,6 +1,22 @@
 export interface FetchSearchResultsResponse {
   results: FormattedResource[];
   total: number;
+  facets: Facet;
+}
+
+interface Facet {
+  [key: string]: {
+    missing: number;
+    other: number;
+    terms: FacetTerm[];
+    total: number;
+    _type: string;
+  };
+}
+
+export interface FacetTerm {
+  count: number;
+  term: string;
 }
 
 export interface SearchResultsData {
