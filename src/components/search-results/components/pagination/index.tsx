@@ -23,7 +23,7 @@ const PageButton: React.FC<PageButtonProps> = ({
   ...props
 }) => {
   return (
-    <Button bg={isActive ? 'red.900' : 'primary.500'} {...props}>
+    <Button bg={isActive ? 'red.900' : 'primary.500'} px={3} py={2} {...props}>
       {children}
     </Button>
   );
@@ -97,7 +97,7 @@ const Pagination: React.FC<PaginationProps> = ({
           </Box>
         </Flex>
       )}
-      <Flex bg={'white'} w={'100%'}>
+      <Flex bg={'white'} w={'100%'} justifyContent={'space-around'}>
         {/* No previous page if selected is first page */}
         <PageButton
           isDisabled={selectedPage - 1 === 0}
@@ -105,55 +105,58 @@ const Pagination: React.FC<PaginationProps> = ({
         >
           Prev
         </PageButton>
-        {Array(total_pages)
-          .fill(0)
-          .map((_, i) => {
-            const page_number = i + 1;
-            const props = {
-              isActive: page_number === selectedPage,
-              onClick: () => handleSelectedPage(page_number),
-            };
+        <Flex>
+          {Array(total_pages)
+            .fill(0)
+            .map((_, i) => {
+              const page_number = i + 1;
+              const props = {
+                isActive: page_number === selectedPage,
+                onClick: () => handleSelectedPage(page_number),
+              };
 
-            // Always display first and last page buttons.
-            if (page_number === 1 || page_number === total_pages) {
-              return (
-                <PageButton
-                  key={
-                    page_number === 1
-                      ? `first-${page_number}`
-                      : `last-${page_number}`
-                  }
-                  {...props}
-                >
-                  {page_number}
-                </PageButton>
-              );
-            }
+              // Always display first and last page buttons.
+              if (page_number === 1 || page_number === total_pages) {
+                return (
+                  <PageButton
+                    key={
+                      page_number === 1
+                        ? `first-${page_number}`
+                        : `last-${page_number}`
+                    }
+                    {...props}
+                  >
+                    {page_number}
+                  </PageButton>
+                );
+              }
 
-            // If total pages are less than five we can just display them all.
-            if (total_pages < 5) {
-              return (
-                <PageButton key={page_number} {...props}>
-                  {page_number}
-                </PageButton>
-              );
-            }
+              // If total pages are less than five we can just display them all.
+              if (total_pages < 5) {
+                return (
+                  <PageButton key={page_number} {...props}>
+                    {page_number}
+                  </PageButton>
+                );
+              }
 
-            // Display only three consecutive page buttons otherwise.
-            if (
-              page_number === selectedPage - 1 ||
-              page_number === selectedPage ||
-              page_number === selectedPage + 1
-            ) {
-              return (
-                <React.Fragment key={page_number}>
-                  {page_number === selectedPage - 1 && '...'}
-                  <PageButton {...props}>{page_number}</PageButton>
-                  {page_number === selectedPage + 1 && '...'}
-                </React.Fragment>
-              );
-            }
-          })}
+              // Display only three consecutive page buttons otherwise.
+
+              if (
+                page_number === selectedPage - 1 ||
+                page_number === selectedPage ||
+                page_number === selectedPage + 1
+              ) {
+                return (
+                  <React.Fragment key={page_number}>
+                    {page_number === selectedPage - 1 && '...'}
+                    <PageButton {...props}>{page_number}</PageButton>
+                    {page_number === selectedPage + 1 && '...'}
+                  </React.Fragment>
+                );
+              }
+            })}
+        </Flex>
         {/* No next page if selected is last page */}
         <PageButton
           isDisabled={selectedPage === total_pages}
@@ -161,7 +164,6 @@ const Pagination: React.FC<PaginationProps> = ({
         >
           Next
         </PageButton>
-        pagination
       </Flex>
     </>
   );

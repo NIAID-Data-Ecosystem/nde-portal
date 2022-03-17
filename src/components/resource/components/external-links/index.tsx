@@ -13,6 +13,7 @@ import {FaDatabase, FaExternalLinkAlt} from 'react-icons/fa';
 import sourceData from 'configs/resource-sources.json';
 import {IconType} from 'react-icons';
 import NextLink from 'next/link';
+import {getRepositoryImage} from 'src/utils/helpers';
 
 interface PanelButton extends ButtonProps {
   href: string;
@@ -56,18 +57,10 @@ const ExternalLinks: React.FC<ExternalLinks> = ({
   includedInDataCatalog,
   showWorkspaceLink = true,
 }) => {
-  const {repositories} = sourceData;
-  const getSourceImage = (repoName?: string | null) => {
-    if (!repoName) {
-      return null;
-    }
-    const sourceRepoIndex = repositories.findIndex(source => {
-      return source.name.toLowerCase().includes(repoName.toLowerCase());
-    });
-    return sourceRepoIndex >= 0 ? repositories[sourceRepoIndex].imageUrl : null;
-  };
+  const imageURL =
+    includedInDataCatalog?.name &&
+    getRepositoryImage(includedInDataCatalog.name);
 
-  const imageURL = getSourceImage(includedInDataCatalog?.name);
   return (
     <Skeleton isLoaded={!isLoading} p={[0, 0, 4]}>
       {imageURL && (

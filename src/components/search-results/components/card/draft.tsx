@@ -195,7 +195,7 @@ const ExternalLinks: React.FC<SearchResultCardExternalLinks> = ({
       >
         <Text py={2} color={'inherit'}>
           Open in the workspace
-          <Icon as={FaExternalLinkAlt} boxSize={3} ml={2} />
+          <Icon as={FaExternalLinkAlt} w={4} ml={2} />
         </Text>
       </Button>
       {sourceDetails.url && (

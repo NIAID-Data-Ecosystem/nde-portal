@@ -9,6 +9,7 @@ import {fetchSearchResults} from 'src/utils/api';
 import {encodeString} from 'src/utils/querystring-helpers';
 import {FetchSearchResultsResponse} from 'src/utils/api/types';
 import {
+  Accordion,
   Box,
   Button,
   Flex,
@@ -198,6 +199,7 @@ const Search: NextPage = () => {
         <Heading as={'h1'} size={'h4'}>
           Search Results
         </Heading>
+        {isLoading && <div>Loading...{isLoading}</div>}
         <Pagination
           selectedPage={selectedPage}
           handleSelectedPage={v => updateRoute({from: v})}
@@ -206,39 +208,67 @@ const Search: NextPage = () => {
           total={totalItems}
         />
         <Flex>
-          <Box w={400}>
-            {facets &&
-              Object.entries(facets).map(([filterKey, filterValue]) => {
-                if (!filterKey || filterValue?.terms?.length === 0) {
-                  return;
+          <Box
+            w={400}
+            position={'sticky'}
+            h={'100vh'}
+            top={'62px'}
+            boxShadow='base'
+            background={'white'}
+            // borderRadius={'md'}
+            my={4}
+            overflowY='auto'
+          >
+            <Flex justifyContent={'space-between'} px={4} py={2}>
+              <Heading size={'sm'} fontWeight={'semibold'}>
+                Filters
+              </Heading>
+              <Button
+                variant={'link'}
+                color={'link.color'}
+                onClick={() =>
+                  updateRoute({
+                    from: defaultQuery.selectedPage,
+                    filters: defaultFilters,
+                  })
                 }
-                return (
-                  <Filter
-                    key={filterKey}
-                    name={filterKey}
-                    terms={filterValue.terms}
-                    selectedFilters={selectedFilters[filterKey]}
-                    handleSelectedFilters={updatedFilters => {
-                      let filters = queryFilterObject2String({
-                        ...selectedFilters,
-                        ...updatedFilters,
-                      });
-                      updateRoute({
-                        from: defaultQuery.selectedPage,
-                        filters,
-                      });
-                    }}
-                  ></Filter>
-                );
-              })}
+              >
+                (Clear All)
+              </Button>
+            </Flex>
+            <Accordion bg={'white'} allowMultiple defaultIndex={[0]}>
+              {facets &&
+                Object.entries(facets).map(([filterKey, filterValue]) => {
+                  return (
+                    <Filter
+                      key={filterKey}
+                      name={filterKey}
+                      terms={filterValue.terms}
+                      selectedFilters={selectedFilters[filterKey]}
+                      handleSelectedFilters={updatedFilters => {
+                        let filters = queryFilterObject2String({
+                          ...selectedFilters,
+                          ...updatedFilters,
+                        });
+                        updateRoute({
+                          from: defaultQuery.selectedPage,
+                          filters,
+                        });
+                      }}
+                    ></Filter>
+                  );
+                })}
+            </Accordion>
           </Box>
-          <Box flex={1} p={6}>
+          <Box flex={1} px={6}>
             <UnorderedList>
               {data?.results &&
                 data.results.map(result => {
                   return (
                     <ListItem key={result.id} my={4}>
-                      <Card {...result}></Card>
+                      <Skeleton isLoaded={!isLoading}>
+                        <Card {...result}></Card>
+                      </Skeleton>
                     </ListItem>
                   );
                 })}
@@ -246,35 +276,6 @@ const Search: NextPage = () => {
           </Box>
         </Flex>
       </Box>
-
-      {/* {data?.hits.length === 0 ? (
-        <Empty message='Search yielded no results.' />
-      ) : (
-        <List isLoading={isLoading} error={error}>
-          <ul>
-            {data?.hits.map(result => {
-              // Card
-              return (
-                <SearchResultCard
-                  key={result?._id}
-                  id={result?.identifier}
-                  title={result?.name}
-                  authorDetails={result?.creator}
-                  description={result?.description}
-                  accessType={'unrestricted'}
-                  keywords={result?.keywords || []}
-                  sourceDetails={{
-                    id: result?._id,
-                    imageUrl: result?.image,
-                    name: result?.curatedBy?.name,
-                    url: result?.url,
-                  }}
-                />
-              );
-            })}
-          </ul>
-        </List>
-      )} */}
     </PageContainer>
   );
 };

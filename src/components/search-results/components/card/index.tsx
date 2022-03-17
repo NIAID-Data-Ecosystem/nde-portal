@@ -155,7 +155,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = props => {
     getRepositoryImage(props.includedInDataCatalog.name);
   return (
     <Card variant={'colorful'} {...props}>
-      <CardHeader>
+      <CardHeader pt={4}>
         <CardTitle>{props.name}</CardTitle>
       </CardHeader>
       <Flex p={0} flexDirection={['column', 'row']}>
@@ -295,7 +295,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = props => {
           <Box>
             {imageURL && (
               <Image
-                boxSize={20}
+                w={20}
                 src={imageURL}
                 alt={'source repository logo'}
               ></Image>
