@@ -175,50 +175,27 @@ export default Overview;
 
 // Displays the attention score of the resource.
 const AltmetricBadge: React.FC<{doi?: string}> = ({doi}) => {
-  const {isLoading, error, data} = useQuery(
-    'altmetricScore',
-    async () => {
-      const {data} = await axios.get(
-        `https://api.altmetric.com/v1/doi/10.1038/480426a`,
-      );
-      return data;
-    },
-    {retry: 0},
-  );
-
-  if (isLoading) {
-    return (
-      <Box m={4} minW={200}>
-        <SkeletonCircle size='20' />
-      </Box>
-    );
-  }
-  if (error) {
-    return <></>;
-  }
   return (
-    data?.images?.medium && (
-      <Flex m={4} flexDirection='column' alignItems='center' minW={200}>
-        <div
-          data-badge-popover='right'
-          data-badge-type='donut'
-          data-doi={doi}
-          className='altmetric-embed'
-        ></div>
-        <Box pt={2}>
-          <Text fontSize='xs' color='gray.800'>
-            <Link
-              href={
-                'https://help.altmetric.com/support/solutions/articles/6000233311-how-is-the-altmetric-attention-score-calculated'
-              }
-              target='_blank'
-              isExternal
-            >
-              Altmetric rating
-            </Link>
-          </Text>
-        </Box>
-      </Flex>
-    )
+    <Flex m={4} flexDirection='column' alignItems='center' minW={200}>
+      <div
+        data-badge-popover='right'
+        data-badge-type='donut'
+        data-doi={doi}
+        className='altmetric-embed'
+      ></div>
+      <Box pt={2}>
+        <Text fontSize='xs' color='gray.800'>
+          <Link
+            href={
+              'https://help.altmetric.com/support/solutions/articles/6000233311-how-is-the-altmetric-attention-score-calculated'
+            }
+            target='_blank'
+            isExternal
+          >
+            Altmetric rating
+          </Link>
+        </Text>
+      </Box>
+    </Flex>
   );
 };

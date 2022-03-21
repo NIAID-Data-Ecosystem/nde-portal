@@ -100,19 +100,13 @@ const ResourceAuthors = ({authors}: {authors: FormattedResource['author']}) => {
                     color='gray.700'
                     fontWeight='semibold'
                   >
-                    {formatAuthorsList2String(authors)}
+                    {formatAuthorsList2String(authors, ',', 10)}
                   </Heading>
                 </Box>
                 <Flex alignItems='end'>
                   <Flex alignItems='center'>
-                    <Text
-                      fontSize='xs'
-                      fontWeight='light'
-                      minW={['unset', 'unset', 150]}
-                    >
-                      {isExpanded
-                        ? 'hide author details'
-                        : 'show author details'}
+                    <Text fontSize='xs' fontWeight='light'>
+                      {isExpanded ? 'collapse' : 'expand'}
                     </Text>
                     <AccordionIcon />
                   </Flex>

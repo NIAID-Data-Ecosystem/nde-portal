@@ -8,7 +8,7 @@ export const getRepositoryImage = (repoName: string) => {
   }
   const {repositories} = sourceData;
   const sourceRepoIndex = repositories.findIndex(source => {
-    return source.name.toLowerCase().includes(repoName.toLowerCase());
+    return source.sourceName.toLowerCase().includes(repoName.toLowerCase());
   });
 
   const imageURL =
@@ -17,10 +17,22 @@ export const getRepositoryImage = (repoName: string) => {
   return imageURL;
 };
 
+export const getRepositoryName = (sourceName: string | null) => {
+  if (!sourceName) {
+    return null;
+  }
+  const {repositories} = sourceData;
+  const sourceRepoIndex = repositories.findIndex(source => {
+    return source.sourceName.toLowerCase().includes(sourceName.toLowerCase());
+  });
+  return sourceRepoIndex >= 0 ? repositories[sourceRepoIndex].name : sourceName;
+};
+
 // Format authors name string with a given separator
 export const formatAuthorsList2String = (
   authors: FormattedResource['author'],
   separator: string = ',',
+  maxLength?: number,
 ) => {
   if (!authors) {
     return '';
@@ -47,10 +59,14 @@ export const formatAuthorsList2String = (
 
     return formattedAuthorString;
   });
-
+  if (maxLength && author_list.length > maxLength) {
+    return author_list.slice(0, maxLength).join(' ') + ' et al.';
+  }
   return author_list.join(' ');
 };
 
+// Format citation string according to :
+// https://www.nlm.nih.gov/bsd/uniform_requirements.html
 export const formatCitationString = (citation: Citation) => {
   const authors = formatAuthorsList2String(citation.author);
 
@@ -62,5 +78,9 @@ export const formatCitationString = (citation: Citation) => {
 
   const pmid = citation.pmid ? `PubMed PMID: ${citation.pmid}` : '';
   return `${authors}. ${citation.name}. ${journal}. ${year}. ${pmid}`;
-  return 'hi';
+};
+
+// Format Date object to string with no weekday
+export const formatDate = (date: Date | string) => {
+  return new Date(date).toDateString().split(' ').slice(1).join(' ');
 };

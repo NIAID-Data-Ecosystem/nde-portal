@@ -34,6 +34,7 @@ import {useLocalStorage} from 'usehooks-ts';
 import Head from 'next/head';
 import Script from 'next/script';
 import {StyledBanner} from 'src/components/search-results/components/card';
+import {formatDate} from 'src/utils/helpers';
 
 /*
 To do:
@@ -136,12 +137,7 @@ const Dataset: NextPage = props => {
                       <Flex alignItems={'center'}>
                         <Icon as={FaRegClock} mr={2}></Icon>
                         <Text fontSize={'xs'} fontWeight={'semibold'}>
-                          Published on{' '}
-                          {new Date(data.datePublished)
-                            .toDateString()
-                            .split(' ')
-                            .splice(1)
-                            .join(' ')}
+                          Published on {formatDate(data.datePublished)}
                         </Text>
                       </Flex>
                     )}

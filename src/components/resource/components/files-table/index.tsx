@@ -15,6 +15,7 @@ import {
 
 import {FormattedResource} from 'src/utils/api/types';
 import {StyledSectionHead, StyledSectionHeading} from '../../styles';
+import {formatDate} from 'src/utils/helpers';
 
 interface FilesTable {
   isLoading: boolean;
@@ -88,11 +89,7 @@ const FilesTable: React.FC<FilesTable> = ({distribution}) => {
 
                     let value = fileValue;
                     if (prop.includes('date')) {
-                      value = new Date(value)
-                        .toDateString()
-                        .split(' ')
-                        .slice(1)
-                        .join(' ');
+                      value = formatDate(value);
                     }
                     return (
                       <Td

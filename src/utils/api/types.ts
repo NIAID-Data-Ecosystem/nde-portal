@@ -147,6 +147,7 @@ export interface FormattedResource {
   condition: string | null;
   conditionsOfAccess: AccessTypes | null;
   curatedBy: CuratedBy | null;
+  date: Date | string | null;
   dateCreated: Date | string | null;
   dateModified: Date | string | null;
   datePublished: Date | string | null;

@@ -2,12 +2,12 @@ import React, {useEffect, useRef, useState} from 'react';
 import {
   Box,
   Button,
+  Flex,
   Heading,
   SearchInput,
   UnorderedList,
   ListItem,
   Text,
-  Accordion,
   AccordionItem,
   AccordionButton,
   AccordionPanel,
@@ -26,6 +26,7 @@ interface FilterProps {
 
 const filterNameConfig = {
   'curatedBy.name': 'Source',
+  'includedInDataCatalog.name': 'Source',
   keywords: 'Keywords',
   measurementTechnique: 'Measurement Technique',
   variableMeasured: 'Variable Measured',
@@ -64,58 +65,72 @@ export const Filter: React.FC<FilterProps> = ({
     <AccordionItem>
       <h2>
         <AccordionButton
-          ml={0.25}
-          borderLeft={'5px solid'}
-          borderColor={'accent.bg'}
-          _expanded={{bg: '#75c3ac2e'}}
+          borderLeft='4px solid'
+          borderColor='gray.200'
+          py={4}
+          transition='all 0.2s linear'
+          _expanded={{
+            borderColor: 'accent.bg',
+            py: 2,
+            transition: 'all 0.2s linear',
+          }}
         >
           {/* Filter Name */}
           <Box flex='1' textAlign='left'>
-            <Heading size={'xs'} fontWeight={'medium'}>
+            <Heading size='sm' fontWeight='semibold'>
               {filterNameConfig[name]}
             </Heading>
           </Box>
           <AccordionIcon />
         </AccordionButton>
       </h2>
-      <AccordionPanel>
+      <AccordionPanel pb={2} borderLeft='4px solid' borderColor='accent.bg'>
+        {/* Search through the filters */}
         {items.length > 0 && (
           <SearchInput
             ariaLabel={`Search filter ${filterNameConfig[name]} terms`}
-            maxW={'unset'}
+            maxW='unset'
             my={2}
-            placeholder={'Search filter'}
+            size='md'
+            placeholder='Enter a keyword or phrase'
             value={searchTerm}
             handleChange={handleSearchChange}
+            colorScheme='primary'
           />
         )}
         <Box
           ref={ref}
-          w={'100%'}
-          maxH={'250px'}
-          overflowY={'auto'}
+          w='100%'
+          maxH='250px'
+          overflowY='auto'
           style={{scrollBehavior: 'smooth'}}
         >
           {/* Filters that can be applied on current search */}
-          <UnorderedList direction={'column'} ml={0}>
+          <UnorderedList direction='column' ml={0} my={2}>
             <CheckboxGroup
               defaultValue={selectedFilters}
+              value={selectedFilters}
               onChange={filterValues => {
                 handleSelectedFilters({[name]: filterValues});
               }}
             >
+              {items.length === 0 && (
+                <Text color='niaid.placeholder'>
+                  No filters available for this metric.
+                </Text>
+              )}
               {items.map((t, i) => {
                 return (
-                  <ListItem
-                    key={t.term}
-                    p={2}
-                    py={1}
-                    bg={i % 2 ? 'white' : 'blackAlpha.50'}
-                  >
-                    <Checkbox value={t.term} spacing={2}>
-                      <Text>
-                        <strong> {t.term}</strong> ({t.count})
-                      </Text>
+                  <ListItem key={t.term} p={2} py={1}>
+                    <Checkbox value={t.term} spacing={2} size='lg'>
+                      <Flex ml={1} fontSize='xs' lineHeight={1.5}>
+                        <Text fontWeight='light'>
+                          {t.term}
+                          <Text as='span' fontWeight='semibold' ml={1}>
+                            ({t.count})
+                          </Text>
+                        </Text>
+                      </Flex>
                     </Checkbox>
                   </ListItem>
                 );
@@ -123,19 +138,18 @@ export const Filter: React.FC<FilterProps> = ({
             </CheckboxGroup>
           </UnorderedList>
         </Box>
-        {items.length === 0 ? (
-          <Text color={'niaid.placeholder'}>Nothing to see here</Text>
-        ) : hasMore ? (
-          <Button
-            variant={'link'}
-            color={'link.color'}
-            isDisabled={!hasMore}
-            onClick={() => setNumItems(numItems + 5)}
-          >
-            (Show more...)
-          </Button>
-        ) : (
-          <></>
+        {hasMore && (
+          <ListItem justifyContent='center' borderColor='gray.200'>
+            <Button
+              variant='link'
+              color='link.color'
+              isDisabled={!hasMore}
+              size='sm'
+              onClick={() => setNumItems(numItems + 5)}
+            >
+              (show more...)
+            </Button>
+          </ListItem>
         )}
       </AccordionPanel>
     </AccordionItem>

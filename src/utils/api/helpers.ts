@@ -200,6 +200,7 @@ export const formatAPIResource = (data: any) => {
           identifier: data.curatedBy.identifier || null,
         }
       : null,
+    date: data.date || null,
     dateCreated: data.dateCreated || null,
     dateModified: data.dateModified || null,
     datePublished: data.datePublished || null,

@@ -5,11 +5,23 @@ import {
   ButtonProps,
   Flex,
   Heading,
+  Icon,
+  Pagination as StyledPagination,
+  PaginationButton,
+  PaginationButton as StyledPaginationButton,
+  PaginationButtonGroup as StyledPaginationButtonGroup,
+  Select,
   Skeleton,
   Text,
 } from 'nde-design-system';
-import {Select} from '@chakra-ui/react';
-import {FaChevronRight} from 'react-icons/fa';
+import {VisuallyHidden} from '@chakra-ui/react';
+import {
+  FaChevronDown,
+  FaAngleRight,
+  FaAngleLeft,
+  FaAngleDoubleRight,
+  FaAngleDoubleLeft,
+} from 'react-icons/fa';
 
 interface PageButtonProps extends ButtonProps {
   isActive?: boolean;
@@ -45,7 +57,7 @@ const Pagination: React.FC<PaginationProps> = ({
   handleSelectedPerPage,
   total,
 }) => {
-  const showPerPageOptions = [2, 10, 20, 30];
+  const showPerPageOptions = [10, 20, 30];
   const total_pages = Math.ceil(total / selectedPerPage);
 
   return (
@@ -59,31 +71,36 @@ const Pagination: React.FC<PaginationProps> = ({
           justifyContent={['space-between']}
           alignItems='end'
         >
-          <Heading
-            as={'h2'}
-            size={'h5'}
-            d={'flex'}
-            alignItems='baseline'
-            fontWeight={'semibold'}
-          >
-            {total}
-            <span style={{fontSize: '1rem', marginLeft: '0.25rem'}}>
-              Result{total > 0 ? 's' : ''}
-            </span>
-          </Heading>
+          {/* Total number of results */}
           <Box>
-            <label htmlFor='show-per-page-select' title='Show per page'>
-              <Text>Show per page </Text>
-            </label>
+            <Heading
+              as={'h2'}
+              size={'h6'}
+              d={'flex'}
+              alignItems='baseline'
+              fontWeight={'semibold'}
+            >
+              {total}
+              <span style={{fontSize: '1rem', marginLeft: '0.25rem'}}>
+                Result{total > 0 ? 's' : ''}
+              </span>
+            </Heading>
+          </Box>
+
+          {/* Show Per Page dropdown. */}
+          <Box>
+            <label htmlFor='show-per-page-select' title='Show per page'></label>
             <Select
               id='show-per-page-select'
               aria-label='Select show items per page'
               borderRadius={'semi'}
               bg={'white'}
               boxShadow={'low'}
-              icon={<FaChevronRight />}
+              icon={<FaChevronDown />}
               iconSize={'xs'}
               value={selectedPerPage}
+              cursor='pointer'
+              my={1}
               _hover={{boxShadow: 'md'}}
               onChange={e => handleSelectedPerPage(+e.target.value)}
             >
@@ -98,74 +115,58 @@ const Pagination: React.FC<PaginationProps> = ({
           </Box>
         </Flex>
       )}
-      <Flex bg={'white'} w={'100%'} justifyContent={'space-around'}>
-        {/* No previous page if selected is first page */}
-        <PageButton
-          isDisabled={selectedPage - 1 === 0}
-          onClick={() => handleSelectedPage(selectedPage - 1)}
-        >
-          Prev
-        </PageButton>
-        <Flex>
-          {Array(total_pages)
-            .fill(0)
-            .map((_, i) => {
-              const currentPage = i + 1;
-              const props = {
-                isActive: currentPage === selectedPage,
-                onClick: () => handleSelectedPage(currentPage),
-              };
 
-              // Always display first and last page buttons.
-              if (currentPage === 1 || currentPage === total_pages) {
+      {/* Pagination Tabs */}
+
+      <StyledPagination bg='white'>
+        <Flex w='100%' justifyContent='center'>
+          <StyledPaginationButton
+            isDisabled={selectedPage - 1 === 0}
+            onClick={() => handleSelectedPage(1)}
+          >
+            <VisuallyHidden>First Page</VisuallyHidden>
+            <Icon as={FaAngleDoubleLeft} />
+          </StyledPaginationButton>
+
+          <StyledPaginationButton
+            isDisabled={selectedPage - 1 === 0}
+            onClick={() => handleSelectedPage(selectedPage - 1)}
+          >
+            <VisuallyHidden>Previous page</VisuallyHidden>
+            <Icon as={FaAngleLeft} />
+          </StyledPaginationButton>
+          <StyledPaginationButtonGroup>
+            {Array(total_pages)
+              .fill('')
+              .map((_, i) => {
+                const currentPage = i + 1;
                 return (
-                  <PageButton
-                    key={
-                      currentPage === 1
-                        ? `first-${currentPage}`
-                        : `last-${currentPage}`
-                    }
-                    {...props}
+                  <PaginationButton
+                    key={i}
+                    isActive={currentPage === selectedPage}
+                    onClick={() => handleSelectedPage(currentPage)}
                   >
-                    {currentPage}
-                  </PageButton>
+                    {i + 1}
+                  </PaginationButton>
                 );
-              }
-
-              // If total pages are less than five we can just display them all.
-              if (total_pages < 5) {
-                return (
-                  <PageButton key={currentPage} {...props}>
-                    {currentPage}
-                  </PageButton>
-                );
-              }
-
-              // Display only three consecutive page buttons otherwise.
-
-              if (
-                currentPage === selectedPage - 1 ||
-                currentPage === selectedPage ||
-                currentPage === selectedPage + 1
-              ) {
-                return (
-                  <React.Fragment key={currentPage}>
-                    {currentPage === selectedPage - 1 && '...'}
-                    <PageButton {...props}>{currentPage}</PageButton>
-                    {currentPage === selectedPage + 1 && '...'}
-                  </React.Fragment>
-                );
-              }
-            })}
+              })}
+          </StyledPaginationButtonGroup>
+          <StyledPaginationButton
+            isDisabled={selectedPage === total_pages}
+            onClick={() => handleSelectedPage(selectedPage + 1)}
+          >
+            <VisuallyHidden>Next Page</VisuallyHidden>
+            <Icon as={FaAngleRight} />
+          </StyledPaginationButton>
+          <StyledPaginationButton
+            isDisabled={selectedPage === total_pages}
+            onClick={() => handleSelectedPage(total_pages)}
+          >
+            <VisuallyHidden>Last Page</VisuallyHidden>
+            <Icon as={FaAngleDoubleRight} />
+          </StyledPaginationButton>
         </Flex>
-        {/* No next page if selected is last page */}
-        <PageButton
-          isDisabled={selectedPage === total_pages}
-          onClick={() => handleSelectedPage(selectedPage + 1)}
-        >
-          Next
-        </PageButton>
-      </Flex>
+      </StyledPagination>
     </>
   );
 };

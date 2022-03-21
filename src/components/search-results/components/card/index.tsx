@@ -15,16 +15,18 @@ import {
   UnorderedList,
   Stat,
   StatLabel,
-  Image,
+  HStack,
+  Stack,
   Card,
   CardHeader,
   CardBody,
   CardFooter,
   CardTitle,
-  CardProps,
   ToggleContainer,
   Heading,
+  Image,
   Link,
+  Divider,
 } from 'nde-design-system';
 import {
   FaArrowAltCircleRight,
@@ -33,10 +35,17 @@ import {
   FaLock,
   FaMinus,
   FaPlus,
+  FaExternalLinkAlt,
+  FaChevronRight,
 } from 'react-icons/fa';
 import styled from '@emotion/styled';
 import {FormattedResource} from 'src/utils/api/types';
-import {getRepositoryImage} from 'src/utils/helpers';
+import {
+  formatAuthorsList2String,
+  formatDate,
+  getRepositoryImage,
+  getRepositoryName,
+} from 'src/utils/helpers';
 
 interface AccessBadgeProps {
   conditionsOfAccess?: 'restricted' | 'public' | 'controlled';
@@ -104,7 +113,7 @@ export const StyledBanner: React.FC<StyledBannerProps> = ({
   ...props
 }) => {
   return (
-    <Flex flexWrap={'wrap'} p={0} my={1} {...props}>
+    <Flex flexWrap={'wrap'} p={0} {...props}>
       <Flex
         bg={'status.info_lt'}
         py={0}
@@ -142,6 +151,7 @@ interface SearchResultCardProps {
   id?: FormattedResource['id'];
   name?: FormattedResource['name'];
   type?: FormattedResource['type'];
+  date?: FormattedResource['date'];
   datePublished?: FormattedResource['datePublished'];
   author?: FormattedResource['author'];
   description?: FormattedResource['description'];
@@ -159,26 +169,58 @@ const SearchResultCard: React.FC<SearchResultCardProps> = props => {
     getRepositoryImage(props.includedInDataCatalog.name);
   return (
     <Card variant={'colorful'} {...props}>
-      <CardHeader pt={4}>
-        <CardTitle>{props.name}</CardTitle>
+      {/* Card header where name of resource is a link to resource apge */}
+      <CardHeader position={'relative'} pt={4}>
+        <Link
+          h={'100%'}
+          href={`/resources/${props.id}`}
+          flexWrap='nowrap'
+          color='white'
+          _hover={{
+            color: 'white',
+            h2: {textDecoration: 'underline'},
+            svg: {
+              transform: 'translate(0px)',
+              opacity: 0.9,
+              transition: '0.2s ease-in-out',
+            },
+          }}
+          _visited={{color: 'white', svg: {color: 'white'}}}
+        >
+          <Flex alignItems='center'>
+            <CardTitle size={'h6'} lineHeight='short' fontWeight='semibold'>
+              {props.name}
+            </CardTitle>
+            <Icon
+              as={FaChevronRight}
+              boxSize={4}
+              ml={4}
+              opacity={0.6}
+              transform='translate(-10px)'
+              transition='0.2s ease-in-out'
+            ></Icon>
+          </Flex>
+        </Link>
       </CardHeader>
+
+      {/* Author toggle container */}
       <Flex p={0} flexDirection={['column', 'row']}>
-        {/* <ToggleContainer
-          variant={'border'}
-          ariaLabel={'Show all authors.'}
-          noOfLines={1}
-          justifyContent='start'
-          my={0}
-          flex={1}
-        > */}
-        <Flex px={4} py={2}>
-          <Heading size={'xs'} color={'text.body'}>
-            {props.author?.map(a => {
-              return a.name + '; ';
-            })}
-          </Heading>
-        </Flex>
-        {/* </ToggleContainer> */}
+        {props?.author && (
+          <ToggleContainer
+            variant={'border'}
+            ariaLabel={'Show all authors.'}
+            noOfLines={1}
+            justifyContent='start'
+            m={0}
+            py={2}
+            flex={1}
+            _focus={{outlineColor: 'transparent'}}
+          >
+            <Text fontSize={'xs'} color={'text.body'}>
+              {formatAuthorsList2String(props.author, ',', 10)}
+            </Text>
+          </ToggleContainer>
+        )}
         {props.conditionsOfAccess && (
           <Box
             d={['inline-flex', 'block']}
@@ -196,36 +238,68 @@ const SearchResultCard: React.FC<SearchResultCardProps> = props => {
           </Box>
         )}
       </Flex>
+      {/* Banner with resource type + date of publication */}
+
       <StyledBanner name={props.type}>
         {props.datePublished && (
           <Flex alignItems={'center'}>
             <Icon as={FaClock} mr={2}></Icon>
             <Text fontSize={'xs'} fontWeight={'semibold'}>
-              Published on {props.datePublished}
+              Published on {formatDate(props.datePublished)}
+            </Text>
+          </Flex>
+        )}
+        {!props.datePublished && props.date && (
+          <Flex alignItems={'center'}>
+            <Icon as={FaClock} mr={2}></Icon>
+            <Text fontSize={'xs'} fontWeight={'semibold'}>
+              Published on {formatDate(props.date)}
             </Text>
           </Flex>
         )}
       </StyledBanner>
       {props.description && (
-        <CardBody px={0}>
-          <ToggleContainer
-            ariaLabel={'show more description'}
-            noOfLines={[3, 10]}
-            borderColor={'transparent'}
-            m={1}
-          >
-            <Box
-              w='100%'
-              dangerouslySetInnerHTML={{
-                __html: props.description,
-              }}
-            ></Box>
-          </ToggleContainer>
-        </CardBody>
+        <>
+          <CardBody px={0}>
+            <ToggleContainer
+              ariaLabel={'show more description'}
+              noOfLines={[3, 10]}
+              my={0}
+              borderColor={'transparent'}
+              _focus={{outlineColor: 'transparent', bg: 'white'}}
+            >
+              <Box
+                w='100%'
+                fontSize={'sm'}
+                dangerouslySetInnerHTML={{
+                  __html: props.description,
+                }}
+              ></Box>
+            </ToggleContainer>
+          </CardBody>
+
+          {props.doi && (
+            <Flex py={1} flexDirection='column' alignItems='end'>
+              <Text
+                fontSize='xs'
+                color='niaid.placeholder'
+                my={0}
+                fontWeight='medium'
+                lineHeight={1}
+              >
+                Altmetric
+              </Text>
+              <div
+                data-badge-popover='left'
+                data-badge-type='bar'
+                data-doi={props.doi?.split('https://doi.org/')[1]}
+                className='altmetric-embed'
+              ></div>
+            </Flex>
+          )}
+        </>
       )}
-      {(props.license ||
-        props.measurementTechnique ||
-        props.variableMeasured) && (
+      {props.license || props.measurementTechnique || props.variableMeasured ? (
         <Accordion allowToggle p={0} pt={1}>
           <AccordionItem>
             {({isExpanded}) => (
@@ -289,50 +363,61 @@ const SearchResultCard: React.FC<SearchResultCardProps> = props => {
             )}
           </AccordionItem>
         </Accordion>
+      ) : (
+        <Divider p={0} />
       )}
+
       <CardFooter
         justifyContent={'space-between'}
-        alignItems={'flex-end'}
+        alignItems={'center'}
         flexWrap='wrap'
+        bg='white'
+        py={2}
       >
-        {props.includedInDataCatalog && (
-          <Box>
+        <HStack
+          alignItems={'center'}
+          justifyContent={'space-between'}
+          py={1}
+          w='100%'
+        >
+          <Flex flexDirection={['column', 'row']} alignItems='center'>
             {imageURL && (
               <Image
-                w={20}
+                h={'40px'}
+                mr={2}
                 src={imageURL}
-                alt={'source repository logo'}
+                alt={'source logo'}
               ></Image>
             )}
-            {props.includedInDataCatalog.url && (
+            {props.includedInDataCatalog && props.includedInDataCatalog.url && (
               <Button
-                href={props.includedInDataCatalog.url}
+                as='a'
                 isExternal
+                href={props.includedInDataCatalog.url}
                 variant={'outline'}
                 colorScheme={'primary'}
-                mt={[2, 2, 4]}
-                maxW={200}
-                height={'unset'}
+                px={3}
+                my={1}
+                flex={1}
                 whiteSpace='normal'
+                size='md'
               >
-                {props.includedInDataCatalog.name || 'Source'}
+                {props.includedInDataCatalog.name
+                  ? getRepositoryName(props.includedInDataCatalog.name)
+                  : 'Source'}
               </Button>
             )}
-          </Box>
-        )}
-        {props.id && (
-          <Button
-            href={`/resources/${props.id}`}
-            as={'a'}
-            variant={'solid'}
-            colorScheme={'primary'}
-            mt={[2, 2, 4]}
-            alignItems={'center'}
-            rightIcon={<FaArrowAltCircleRight />}
-          >
-            See more
-          </Button>
-        )}
+          </Flex>
+          <Flex flex={1} justifyContent='end'>
+            <Button
+              href={`/resources/${props.id}`}
+              size='md'
+              rightIcon={<FaArrowAltCircleRight />}
+            >
+              See more
+            </Button>
+          </Flex>
+        </HStack>
       </CardFooter>
     </Card>
   );
