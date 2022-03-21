@@ -12,6 +12,7 @@ import {
   ButtonProps,
   Card,
   Flex,
+  Icon,
   Skeleton,
   Tag,
   Text,
@@ -28,10 +29,11 @@ import {
   ResourceProvenance,
   Section,
 } from 'src/components/resource';
-import {FaChevronLeft} from 'react-icons/fa';
+import {FaRegClock, FaChevronLeft} from 'react-icons/fa';
 import {useLocalStorage} from 'usehooks-ts';
 import Head from 'next/head';
 import Script from 'next/script';
+import {StyledBanner} from 'src/components/search-results/components/card';
 
 /*
 To do:
@@ -61,6 +63,7 @@ const Dataset: NextPage = props => {
   if (error || !id) {
     return <div>something went wrong</div>;
   }
+  console.log(data);
 
   const SearchResultsButton: React.FC<ButtonProps> = props => {
     return (
@@ -104,21 +107,46 @@ const Dataset: NextPage = props => {
           </Card>
         ) : (
           <Flex w='100%' h='100%' flexDirection='column' minW={300}>
+            {/* Go back to search results button. */}
             <SearchResultsButton variant='link' alignSelf='start' />
+
             <Flex
               height='100%'
               p={2}
               flexDirection={['column', 'column', 'row']}
             >
-              <Card flex={3} p={0} width='100%'>
-                <Section id={'header'} borderBottom='1px solid gray'>
+              <Card flex={3} p={0} width='100%' sx={{'>*': {p: 0}}} minW={500}>
+                <Section id={'header'} p={0}>
                   <ResourceHeader
                     isLoading={isLoading}
                     conditionsOfAccess={data?.conditionsOfAccess}
                     author={data?.author}
                     datePublished={data?.datePublished}
+                    citation={data?.citation}
                     name={data?.name}
                   />
+                  {/* Banner showing data type and publish date. */}
+                  <StyledBanner
+                    overflowY='hidden'
+                    w='100%'
+                    name={data?.type}
+                    my={0}
+                  >
+                    {data?.datePublished && (
+                      <Flex alignItems={'center'}>
+                        <Icon as={FaRegClock} mr={2}></Icon>
+                        <Text fontSize={'xs'} fontWeight={'semibold'}>
+                          Published on{' '}
+                          {new Date(data.datePublished)
+                            .toDateString()
+                            .split(' ')
+                            .splice(1)
+                            .join(' ')}
+                        </Text>
+                      </Flex>
+                    )}
+                  </StyledBanner>
+
                   {isMobile && (
                     <ResourceLinks
                       isLoading={isLoading}
@@ -126,7 +154,7 @@ const Dataset: NextPage = props => {
                     />
                   )}
                 </Section>
-                {/* <Navigation resourceType={data?.type} /> */}
+                <Navigation resourceType={data?.type} />
                 <Section id='overview'>
                   <ResourceOverview
                     isLoading={isLoading}
@@ -160,7 +188,7 @@ const Dataset: NextPage = props => {
                     </Skeleton>
                   </Section>
                 )}
-
+                {/* Show metadata + description*/}
                 <Section id='description' name={'Description'}>
                   <ResourceTabs
                     isLoading={isLoading}
@@ -168,6 +196,8 @@ const Dataset: NextPage = props => {
                     metadata={data?.rawData}
                   />
                 </Section>
+
+                {/* Show all available downloads */}
                 <Section id='files' name={'Files'}>
                   <ResourceFilesTable
                     isLoading={true}
@@ -181,8 +211,19 @@ const Dataset: NextPage = props => {
                   />
                 </Section>
               </Card>
-              <Card flex={1} ml={[0, 0, 4]} my={[2, 2, 0]} p={0}>
-                <Box position={'sticky'} top={'80px'} w={'100%'} h={'60vh'}>
+              <Card
+                flex={1}
+                ml={[0, 0, 4]}
+                my={[2, 2, 0]}
+                p={0}
+                minW='300px'
+                sx={{'>*': {p: 0}}}
+                position={'sticky'}
+                top={'80px'}
+                w={'100%'}
+                h={'100%'}
+              >
+                <Box>
                   {/* Show external links in header when on mobile */}
                   {!isMobile && (
                     <ResourceLinks

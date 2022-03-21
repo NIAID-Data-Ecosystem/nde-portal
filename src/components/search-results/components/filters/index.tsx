@@ -3,7 +3,7 @@ import {
   Box,
   Button,
   Heading,
-  SearchBar,
+  SearchInput,
   UnorderedList,
   ListItem,
   Text,
@@ -80,15 +80,13 @@ export const Filter: React.FC<FilterProps> = ({
       </h2>
       <AccordionPanel>
         {items.length > 0 && (
-          <SearchBar
+          <SearchInput
+            ariaLabel={`Search filter ${filterNameConfig[name]} terms`}
             maxW={'unset'}
             my={2}
             placeholder={'Search filter'}
             value={searchTerm}
             handleChange={handleSearchChange}
-            handleClick={() => {
-              // required prop but nothing to input.
-            }}
           />
         )}
         <Box

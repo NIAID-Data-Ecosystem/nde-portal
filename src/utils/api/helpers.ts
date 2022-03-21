@@ -41,10 +41,11 @@ export const formatCreator = (
 interface APICitation {
   url?: string;
   name?: string;
-  author?: {name?: string};
+  author?: Creator[] | null;
   journalName?: string;
   identifier?: string;
   date?: string;
+  datePublished?: string;
   pmid?: string;
   doi?: string;
 }
@@ -53,18 +54,20 @@ interface APICitation {
 export const formatCitation = (
   citationData?: APICitation | APICitation[],
 ): Citation[] | null => {
+  if (!citationData) {
+    return null;
+  }
   const getCitationFields = (data?: APICitation) => {
     return {
-      id: data?.identifier || 'citationId',
-      url: data?.url || 'citationUrl',
-      name: data?.name || 'citationName',
-      author: data?.author?.name
-        ? {name: data?.author?.name}
-        : {name: 'citationAuthor'},
-      journalName: data?.journalName || 'citationJournalName',
-      date: data?.date || 'citationDatePublished',
-      pmid: data?.pmid || 'citationPMID',
-      doi: data?.doi || 'citationDOI',
+      id: data?.identifier || null,
+      author: data?.author || null,
+      datePublished: data?.datePublished || null,
+      date: data?.date || null,
+      journalName: data?.journalName || null,
+      name: data?.name || null,
+      pmid: data?.pmid || null,
+      url: data?.url || null,
+      doi: data?.doi || null,
     };
   };
 
@@ -183,7 +186,7 @@ export const formatAPIResource = (data: any) => {
     type: formatType(data['@type']),
     name: data.name || 'null',
     author: formatCreator(data.author) || formatCreator(data.creator),
-    citation: formatCitation(data.citations),
+    citation: formatCitation(data.citation),
     citedBy: data.citedBy || null,
     codeRepository: data.codeRepository || null,
     condition: data.condition || null,

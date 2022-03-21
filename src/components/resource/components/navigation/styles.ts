@@ -34,7 +34,6 @@ const StyledNavigationBar = styled(Flex)<FlexProps>`
 
   &:before {
     content: '';
-    background: white;
     display: block;
     height: 100%;
     left: 0;
@@ -46,7 +45,6 @@ const StyledNavigationBar = styled(Flex)<FlexProps>`
   }
 `;
 StyledNavigationBar.defaultProps = {
-  bg: 'white',
   borderTop: '1px',
   borderBottom: '1px',
   borderColor: 'gray.300',
@@ -62,8 +60,7 @@ StyledNavigationLinks.defaultProps = {
   left: 0,
   bottom: 0,
   transform: [`translate(0,100%)`, `translate(0,100%)`, `translate(0,0%)`],
-  bg: 'white',
-  boxShadow: ['base', 'base', 'none'],
+  boxShadow: 'sm',
   w: ['100%', '100%', '100%'],
   h: '100%',
 };
@@ -75,6 +72,7 @@ const StyledLink = styled(Link)<StyledLinkProps>`
   border-bottom: 4px solid !important;
   border-color: transparent !important;
   padding-top: 0.5rem !important;
+  padding-bottom: 0.25rem !important;
   &:hover {
     text-decoration: underline;
   }
@@ -95,7 +93,6 @@ StyledLink.defaultProps = {
   px: 4,
   height: '100%',
   alignItems: 'center',
-  bg: 'white',
   variant: 'unstyled',
 };
 
@@ -111,7 +108,7 @@ const StyledResourceType = styled(Flex)<FlexProps>`
   letter-spacing: 1.4px;
 
   &:before {
-    background-color: ${theme.colors.primary[500]};
+    background-color: ${theme.colors.status.info};
     box-shadow: 0 0px 0 5px #fff;
     content: '';
     display: block;

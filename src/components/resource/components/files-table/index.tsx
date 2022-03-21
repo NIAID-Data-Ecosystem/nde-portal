@@ -85,6 +85,15 @@ const FilesTable: React.FC<FilesTable> = ({distribution}) => {
                         </Td>
                       );
                     }
+
+                    let value = fileValue;
+                    if (prop.includes('date')) {
+                      value = new Date(value)
+                        .toDateString()
+                        .split(' ')
+                        .slice(1)
+                        .join(' ');
+                    }
                     return (
                       <Td
                         key={`${fileValue}-${i}-${j}`}
@@ -93,7 +102,7 @@ const FilesTable: React.FC<FilesTable> = ({distribution}) => {
                         borderRight={'1px solid'}
                         borderRightColor={'primary.100'}
                       >
-                        {fileValue}
+                        {value}
                       </Td>
                     );
                   })}

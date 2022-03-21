@@ -53,9 +53,10 @@ export interface Citation {
   id: string | null;
   url: string | null;
   name: string | null;
-  author: {name: string} | null;
+  author: Creator[] | null;
   journalName: string | null;
   date: string | null;
+  datePublished: string | null;
   pmid: string | null;
 }
 

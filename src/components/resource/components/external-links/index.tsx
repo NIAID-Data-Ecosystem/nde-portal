@@ -2,6 +2,7 @@ import React from 'react';
 import {
   Button,
   ButtonProps,
+  Flex,
   Icon,
   Image,
   Skeleton,
@@ -9,42 +10,9 @@ import {
   Text,
 } from 'nde-design-system';
 import {FormattedResource} from 'src/utils/api/types';
-import {FaDatabase, FaExternalLinkAlt} from 'react-icons/fa';
-import sourceData from 'configs/resource-sources.json';
-import {IconType} from 'react-icons';
+import {FaExternalLinkAlt} from 'react-icons/fa';
 import NextLink from 'next/link';
 import {getRepositoryImage} from 'src/utils/helpers';
-
-interface PanelButton extends ButtonProps {
-  href: string;
-  icon?: React.ReactNode;
-}
-const PanelButton: React.FC<PanelButton> = ({
-  href,
-  icon,
-  children,
-  ...rest
-}) => {
-  return (
-    <NextLink href={href} passHref>
-      <Button
-        as={'a'}
-        my={1}
-        w={['100%']}
-        h={['unset']}
-        whiteSpace={'normal'}
-        minW={250}
-        color={'white'}
-        // @ts-ignore
-        target={'_blank'}
-        {...rest}
-      >
-        <Text color='white'>{children}</Text>
-        <Icon as={FaExternalLinkAlt} boxSize={3} ml={2} />
-      </Button>
-    </NextLink>
-  );
-};
 
 interface ExternalLinks {
   isLoading: boolean;
@@ -62,47 +30,66 @@ const ExternalLinks: React.FC<ExternalLinks> = ({
     getRepositoryImage(includedInDataCatalog.name);
 
   return (
-    <Skeleton isLoaded={!isLoading} p={[0, 0, 4]}>
-      {imageURL && (
-        <Image w={'100px'} mb={2} src={imageURL} alt='Data source logo' />
-      )}
-      <Stack
-        w={'100%'}
-        direction={['column', 'row', 'column']}
-        shouldWrapChildren={true}
-        flexWrap='wrap'
-      >
-        {includedInDataCatalog?.url && (
-          <NextLink href={includedInDataCatalog.url} passHref>
-            <PanelButton
-              flex={1}
-              href={includedInDataCatalog.url}
-              colorScheme={'secondary'}
-              icon={<Icon m={1} boxSize='16px' as={FaDatabase} />}
+    <Skeleton isLoaded={!isLoading} p={[4]}>
+      <Flex direction={['column', 'row']} flexWrap='wrap'>
+        <Flex m={1} flex={1} minW={'210px'}>
+          {includedInDataCatalog?.url && (
+            <NextLink href={includedInDataCatalog.url} passHref>
+              <Button
+                colorScheme='primary'
+                variant='outline'
+                href={includedInDataCatalog.url}
+                h='unset'
+                pl={3}
+              >
+                <Flex alignItems='center' direction={['column', 'row']}>
+                  {imageURL && (
+                    <Image
+                      boxSize={'60px'}
+                      objectFit='contain'
+                      mr={4}
+                      src={imageURL}
+                      alt='Data source logo'
+                    />
+                  )}
+                  <Text color='inherit' whiteSpace='normal'>
+                    View data in source repository
+                  </Text>
+                  <Icon ml={1} as={FaExternalLinkAlt}></Icon>
+                </Flex>
+              </Button>
+            </NextLink>
+          )}
+        </Flex>
+        <Flex m={1} flex={1} minW={'210px'}>
+          {showWorkspaceLink && (
+            <Button
+              colorScheme='primary'
+              href='/workspace'
+              isExternal
+              whiteSpace='normal'
+              h='unset'
+              pl={3}
             >
-              View data in source repository
-            </PanelButton>
-          </NextLink>
-        )}
-
-        {showWorkspaceLink && (
-          <PanelButton
-            flex={1}
-            href={'/workspace'}
-            icon={
-              <Image
-                m={1}
-                boxSize='16px'
-                objectFit='contain'
-                src={'/assets/workspace-logo.png'}
-                alt={'Analysis workspace logo'}
-              />
-            }
-          >
-            Analyze in Workspace
-          </PanelButton>
-        )}
-      </Stack>
+              <Flex alignItems='center' direction={['column', 'row']}>
+                {imageURL && (
+                  <Image
+                    boxSize={'60px'}
+                    objectFit='contain'
+                    w={'60px'}
+                    p={4}
+                    src={'/assets/workspace-logo.png'}
+                    alt='Analysis workspace logo'
+                  />
+                )}
+                <Text color='inherit' whiteSpace='normal'>
+                  Explore dataset in workspace
+                </Text>
+              </Flex>
+            </Button>
+          )}
+        </Flex>
+      </Flex>
     </Skeleton>
   );
 };

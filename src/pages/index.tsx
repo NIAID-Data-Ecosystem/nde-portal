@@ -1,7 +1,7 @@
 import {useState} from 'react';
 import type {NextPage} from 'next';
 import Head from 'next/head';
-import {Flex, SearchBar} from 'nde-design-system';
+import {Box, Flex, SearchInput} from 'nde-design-system';
 import PageContainer from 'src/components/page-container';
 import {useRouter} from 'next/router';
 import {useLocalStorage} from 'usehooks-ts';
@@ -17,7 +17,6 @@ const Home: NextPage = () => {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>): void =>
     setSearchTerm(e.target.value);
-
   return (
     <>
       <Head>
@@ -27,18 +26,16 @@ const Home: NextPage = () => {
         hasNavigation
         metaDescription='Discovery Portal home page.'
       >
-        <Flex
-          w={'100%'}
-          justifyContent='center'
-          alignItems={'center'}
-          px={[0, 0, 8]}
-        >
-          <SearchBar
+        <Flex w='100%'>
+          <SearchInput
+            w='100%'
+            colorScheme={'primary'}
+            ariaLabel='Search for datasets or tools'
             value={searchTerm}
             handleChange={handleChange}
-            handleClick={e => {
+            handleSubmit={e => {
               e.preventDefault();
-              setLocalStorageSearchTerm(`&q=${searchTerm}`);
+              // setLocalStorageSearchTerm(JSON.stringify({q: searchTerm}));
               searchTerm && router.push(`/search?q=${searchTerm}`);
             }}
           />

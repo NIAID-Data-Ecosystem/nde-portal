@@ -94,13 +94,17 @@ StyledLabel.defaultProps = {
   p: 2,
 };
 
-interface StyledBannerProps {
+interface StyledBannerProps extends FlexProps {
   name?: FormattedResource['type'];
 }
 
-const StyledBanner: React.FC<StyledBannerProps> = ({name, children}) => {
+export const StyledBanner: React.FC<StyledBannerProps> = ({
+  name,
+  children,
+  ...props
+}) => {
   return (
-    <Flex flexWrap={'wrap'} p={0} my={1}>
+    <Flex flexWrap={'wrap'} p={0} my={1} {...props}>
       <Flex
         bg={'status.info_lt'}
         py={0}

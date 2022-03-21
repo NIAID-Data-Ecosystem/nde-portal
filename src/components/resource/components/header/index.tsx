@@ -5,6 +5,7 @@ import {
   AccordionButton,
   AccordionPanel,
   AccordionIcon,
+  Badge,
   Box,
   Flex,
   Heading,
@@ -12,50 +13,46 @@ import {
   Link,
   Skeleton,
   Text,
+  Tag,
 } from 'nde-design-system';
 import {FormattedResource, Creator} from 'src/utils/api/types';
 import {StyledBadge} from './styles';
 import {FaClock, FaLockOpen, FaLock} from 'react-icons/fa';
+import {formatAuthorsList2String} from 'src/utils/helpers';
 
-// Badge showing the access rights for the dataset
-const AccessBadge: React.FC<{
-  conditionsOfAccess?: FormattedResource['conditionsOfAccess'];
-}> = ({conditionsOfAccess}) => {
-  const getBadgeColor = (
-    accessType?: FormattedResource['conditionsOfAccess'],
-  ) => {
-    let props;
-    switch (accessType) {
-      case 'public':
-        props = {color: 'status.success'};
-        break;
-      case 'controlled':
-        props = {color: 'status.error'};
-        break;
-      case 'restricted':
-        props = {color: 'status.error'};
-        break;
-      default:
-        props = {color: 'status.info'};
-    }
-    return props;
-  };
+/**
+ * Access Badge
+ */
+interface AccessBadgeProps {
+  conditionsOfAccess?: 'restricted' | 'public' | 'controlled';
+  children: React.ReactNode;
+}
+
+export const AccessBadge = (args: AccessBadgeProps) => {
+  let colorScheme;
+  let iconType;
+
+  if (args.conditionsOfAccess === 'public') {
+    colorScheme = 'success';
+    iconType = FaLockOpen;
+  }
+
+  if (args.conditionsOfAccess === 'restricted') {
+    colorScheme = 'negative';
+    iconType = FaLock;
+  }
+
+  if (args.conditionsOfAccess === 'controlled') {
+    colorScheme = 'warning';
+    iconType = FaLock;
+  }
 
   return (
-    <Flex flex={1} justifyContent='end'>
-      <StyledBadge
-        border='2px solid'
-        boxShadow='none'
-        {...getBadgeColor(conditionsOfAccess)}
-      >
-        {conditionsOfAccess === 'public' ? (
-          <Icon as={FaLockOpen} h='100%' mr={2} />
-        ) : (
-          <Icon as={FaLock} boxSize={4} h='100%' mr={2} />
-        )}
-        {conditionsOfAccess}
-      </StyledBadge>
-    </Flex>
+    <Badge colorScheme={colorScheme} {...args}>
+      {iconType && <Icon mr={2} as={iconType} />}
+      {typeof args.children === 'string' &&
+        args.children.charAt(0).toUpperCase() + args.children.slice(1)}
+    </Badge>
   );
 };
 
@@ -90,7 +87,7 @@ const ResourceAuthors = ({authors}: {authors: FormattedResource['author']}) => {
       <AccordionItem>
         {({isExpanded}) => (
           <>
-            <AccordionButton px={1}>
+            <AccordionButton px={[4, 6]}>
               <Flex
                 w='100%'
                 direction={['column', 'column', 'row']}
@@ -103,9 +100,7 @@ const ResourceAuthors = ({authors}: {authors: FormattedResource['author']}) => {
                     color='gray.700'
                     fontWeight='semibold'
                   >
-                    {authors.map(author => {
-                      return formatAuthorNames(author);
-                    })}
+                    {formatAuthorsList2String(authors)}
                   </Heading>
                 </Box>
                 <Flex alignItems='end'>
@@ -124,7 +119,7 @@ const ResourceAuthors = ({authors}: {authors: FormattedResource['author']}) => {
                 </Flex>
               </Flex>
             </AccordionButton>
-            <AccordionPanel p={4} bg='page.alt'>
+            <AccordionPanel px={[1, 4, 6]} py={4} bg='page.alt'>
               {authors.map(author => {
                 return (
                   <Box key={author.name}>
@@ -152,6 +147,7 @@ interface HeaderProps {
   conditionsOfAccess?: FormattedResource['conditionsOfAccess'];
   author?: FormattedResource['author'];
   datePublished?: FormattedResource['datePublished'];
+  citation?: FormattedResource['citation'];
   name?: FormattedResource['name'];
 }
 
@@ -159,39 +155,51 @@ const Header: React.FC<HeaderProps> = ({
   isLoading,
   conditionsOfAccess,
   author,
+  citation,
   datePublished,
   name,
 }) => {
   return (
-    <Flex px={4} pb={4} flexDirection='column' w='100%'>
+    <Flex flexDirection='column' w='100%'>
       <Skeleton isLoaded={!isLoading} w='100%'>
         {conditionsOfAccess && (
-          <Flex w='100%'>
-            <AccessBadge conditionsOfAccess={conditionsOfAccess} />
+          <Flex w='100%' justifyContent='end'>
+            <AccessBadge conditionsOfAccess={conditionsOfAccess}>
+              {conditionsOfAccess}
+            </AccessBadge>
           </Flex>
         )}
       </Skeleton>
-      <Flex py={4}>
+      <Flex>
         <Skeleton isLoaded={!isLoading} w='100%'>
-          <Heading as='h1' size='lg' fontFamily='body' wordBreak='break-word'>
+          <Heading
+            as='h1'
+            size='lg'
+            fontFamily='body'
+            wordBreak='break-word'
+            m={[4, 6]}
+          >
             {name}
           </Heading>
           {author && <ResourceAuthors authors={author}></ResourceAuthors>}
-          {datePublished && (
-            <Heading
-              fontWeight='semibold'
-              fontFamily='body'
-              size='xs'
-              display='flex'
-              alignItems='center'
-            >
-              <Icon mr={2} as={FaClock}></Icon>
-              Published on{' '}
-              {datePublished instanceof Date
-                ? new Date(datePublished).toLocaleDateString()
-                : datePublished}
-            </Heading>
-          )}
+          <Box mx={[4, 6]}>
+            {citation?.map(c => {
+              if (!c.journalName) {
+                return <></>;
+              }
+              return (
+                <Text
+                  key={c.id}
+                  fontWeight={'light'}
+                  fontStyle='italic'
+                  color={'gray.900'}
+                  my={2}
+                >
+                  {c.journalName}
+                </Text>
+              );
+            })}
+          </Box>
         </Skeleton>
       </Flex>
     </Flex>

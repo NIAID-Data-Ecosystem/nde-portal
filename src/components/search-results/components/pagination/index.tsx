@@ -37,6 +37,7 @@ interface PaginationProps {
   total: number;
 }
 
+// [TO DO]: Extract this logic to UI lib
 const Pagination: React.FC<PaginationProps> = ({
   selectedPage,
   handleSelectedPage,
@@ -109,24 +110,24 @@ const Pagination: React.FC<PaginationProps> = ({
           {Array(total_pages)
             .fill(0)
             .map((_, i) => {
-              const page_number = i + 1;
+              const currentPage = i + 1;
               const props = {
-                isActive: page_number === selectedPage,
-                onClick: () => handleSelectedPage(page_number),
+                isActive: currentPage === selectedPage,
+                onClick: () => handleSelectedPage(currentPage),
               };
 
               // Always display first and last page buttons.
-              if (page_number === 1 || page_number === total_pages) {
+              if (currentPage === 1 || currentPage === total_pages) {
                 return (
                   <PageButton
                     key={
-                      page_number === 1
-                        ? `first-${page_number}`
-                        : `last-${page_number}`
+                      currentPage === 1
+                        ? `first-${currentPage}`
+                        : `last-${currentPage}`
                     }
                     {...props}
                   >
-                    {page_number}
+                    {currentPage}
                   </PageButton>
                 );
               }
@@ -134,8 +135,8 @@ const Pagination: React.FC<PaginationProps> = ({
               // If total pages are less than five we can just display them all.
               if (total_pages < 5) {
                 return (
-                  <PageButton key={page_number} {...props}>
-                    {page_number}
+                  <PageButton key={currentPage} {...props}>
+                    {currentPage}
                   </PageButton>
                 );
               }
@@ -143,15 +144,15 @@ const Pagination: React.FC<PaginationProps> = ({
               // Display only three consecutive page buttons otherwise.
 
               if (
-                page_number === selectedPage - 1 ||
-                page_number === selectedPage ||
-                page_number === selectedPage + 1
+                currentPage === selectedPage - 1 ||
+                currentPage === selectedPage ||
+                currentPage === selectedPage + 1
               ) {
                 return (
-                  <React.Fragment key={page_number}>
-                    {page_number === selectedPage - 1 && '...'}
-                    <PageButton {...props}>{page_number}</PageButton>
-                    {page_number === selectedPage + 1 && '...'}
+                  <React.Fragment key={currentPage}>
+                    {currentPage === selectedPage - 1 && '...'}
+                    <PageButton {...props}>{currentPage}</PageButton>
+                    {currentPage === selectedPage + 1 && '...'}
                   </React.Fragment>
                 );
               }

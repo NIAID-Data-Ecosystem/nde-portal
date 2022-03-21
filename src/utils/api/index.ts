@@ -11,7 +11,7 @@ export const getResourceById = async (id?: string | string[]) => {
   }
   try {
     const {data} = await axios.get(
-      `${process.env.NEXT_PUBLIC_API_URL}/query?&q=identifier:${id}`,
+      `${process.env.NEXT_PUBLIC_API_URL}/query?&q=_id:${id}`,
     );
 
     const formattedData = await formatAPIResource(data.hits[0]);
@@ -25,10 +25,10 @@ export const getResourceById = async (id?: string | string[]) => {
 // Get all resources where query term contains the search term.
 interface Params {
   q: string;
-  size: string;
-  from: string;
-  facet_size: number;
-  facets: string;
+  size?: string;
+  from?: string;
+  facet_size?: number;
+  facets?: string;
 }
 
 export const fetchSearchResults = async (params: Params) => {

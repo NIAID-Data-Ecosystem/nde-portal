@@ -18,6 +18,7 @@ import {
 import {useQuery} from 'react-query';
 import axios from 'axios';
 import {MetadataField} from '../section';
+import {formatCitationString} from 'src/utils/helpers';
 
 interface Overview {
   doi?: FormattedResource['doi'];
@@ -52,112 +53,121 @@ const Overview: React.FC<Overview> = ({
 }) => {
   let doi_number = doi?.split('https://doi.org/')[1];
   return (
-    <Flex flexWrap='wrap' flexDirection={['column', 'column', 'row']}>
-      <Box flex={1}>
-        <Flex w='100%' px={4} py={2} flexWrap='wrap'>
-          <Flex>{doi && <AltmetricBadge doi={doi_number} />}</Flex>
-          <Box>
-            <Flex flexDirection={['column', 'column', 'row']}>
-              {numberOfDownloads && (
-                <MetadataField
-                  isLoading={isLoading}
-                  label='downloads'
-                  icon={FaDownload}
-                  value={numberOfDownloads}
-                  m={2}
-                />
-              )}
-              {numberOfViews && (
-                <MetadataField
-                  isLoading={isLoading}
-                  label='views'
-                  icon={FaEye}
-                  value={numberOfViews}
-                  m={2}
-                />
-              )}
-            </Flex>
-            <Flex flexDirection={['column', 'column']}>
-              {doi && (
-                <MetadataField
-                  isLoading={isLoading}
-                  label='DOI'
-                  value={doi_number}
-                  m={2}
-                />
-              )}
-              {species && (
-                <MetadataField
-                  isLoading={isLoading}
-                  label='Measurement Technique'
-                  value={species}
-                  m={2}
-                />
-              )}
-
-              {variableMeasured && (
-                <MetadataField
-                  isLoading={isLoading}
-                  label='Variable Measured'
-                  value={variableMeasured}
-                  m={2}
-                />
-              )}
-
-              {measurementTechnique && (
-                <MetadataField
-                  isLoading={isLoading}
-                  label='Measurement Technique'
-                  value={measurementTechnique}
-                  m={2}
-                />
-              )}
-
-              {license && (
-                <MetadataField isLoading={isLoading} label='License' m={2}>
-                  <Link href={license} wordBreak='break-word' isExternal>
-                    {license}
-                  </Link>
-                </MetadataField>
-              )}
-            </Flex>
-          </Box>
-        </Flex>
-      </Box>
-
-      {(spatialCoverage || temporalCoverage || language) && (
-        <Skeleton flex={1} isLoaded={!isLoading}>
-          <Flex flex={1} flexDirection={['row', 'row', 'column']} pl={4}>
+    <>
+      <Flex flexWrap='wrap' flexDirection={['column', 'column', 'row']}>
+        <Box flex={1}>
+          <Flex w='100%' px={4} py={2} flexWrap='wrap'>
+            <Flex>{doi && <AltmetricBadge doi={doi_number} />}</Flex>
             <Box>
-              {spatialCoverage && (
+              <Flex flexDirection={['column', 'column', 'row']}>
+                {numberOfDownloads && (
+                  <MetadataField
+                    isLoading={isLoading}
+                    label='downloads'
+                    icon={FaDownload}
+                    value={numberOfDownloads}
+                    m={2}
+                  />
+                )}
+                {numberOfViews && (
+                  <MetadataField
+                    isLoading={isLoading}
+                    label='views'
+                    icon={FaEye}
+                    value={numberOfViews}
+                    m={2}
+                  />
+                )}
+              </Flex>
+              <Flex flexDirection={['column', 'column']}>
+                {doi && (
+                  <MetadataField
+                    isLoading={isLoading}
+                    label='DOI'
+                    value={doi_number}
+                    m={2}
+                  />
+                )}
+
+                {species && (
+                  <MetadataField
+                    isLoading={isLoading}
+                    label='Species'
+                    value={species}
+                    m={2}
+                  />
+                )}
+
                 <MetadataField
                   isLoading={isLoading}
-                  label='Geographic Location'
-                  value={spatialCoverage}
-                  icon={FaGlobeAmericas}
+                  label={'Variable Measured'}
+                  value={variableMeasured ? variableMeasured : '-'}
+                  m={2}
                 />
-              )}
-              {temporalCoverage && (
+
                 <MetadataField
                   isLoading={isLoading}
-                  label='Period'
-                  value={temporalCoverage}
-                  icon={FaCalendarAlt}
-                ></MetadataField>
-              )}
-              {language?.name && (
-                <MetadataField
-                  isLoading={isLoading}
-                  label='Language'
-                  value={language.name}
-                  icon={FaLanguage}
-                ></MetadataField>
-              )}
+                  label='Measurement Technique'
+                  value={measurementTechnique ? measurementTechnique : '-'}
+                  m={2}
+                />
+
+                <MetadataField isLoading={isLoading} label='License' m={2}>
+                  {license ? (
+                    <Link href={license} wordBreak='break-word' isExternal>
+                      {license}
+                    </Link>
+                  ) : (
+                    '-'
+                  )}
+                </MetadataField>
+
+                {citation && (
+                  <MetadataField isLoading={isLoading} label='Citation' m={2}>
+                    <Text fontSize='xs' fontWeight={'semibold'}>
+                      {citation.map(c => formatCitationString(c))}
+                    </Text>
+                  </MetadataField>
+                )}
+              </Flex>
             </Box>
           </Flex>
-        </Skeleton>
-      )}
-    </Flex>
+        </Box>
+
+        {(spatialCoverage || temporalCoverage || language) && (
+          <Skeleton flex={1} isLoaded={!isLoading}>
+            <Flex flex={1} flexDirection={['row', 'row', 'column']} pl={4}>
+              <Box>
+                {spatialCoverage && (
+                  <MetadataField
+                    isLoading={isLoading}
+                    label='Geographic Location'
+                    value={spatialCoverage}
+                    icon={FaGlobeAmericas}
+                  />
+                )}
+                {temporalCoverage && (
+                  <MetadataField
+                    isLoading={isLoading}
+                    label='Period'
+                    value={temporalCoverage}
+                    icon={FaCalendarAlt}
+                  ></MetadataField>
+                )}
+                {language?.name && (
+                  <MetadataField
+                    isLoading={isLoading}
+                    label='Language'
+                    value={language.name}
+                    icon={FaLanguage}
+                  ></MetadataField>
+                )}
+              </Box>
+            </Flex>
+          </Skeleton>
+        )}
+      </Flex>
+    </>
   );
 };
 
