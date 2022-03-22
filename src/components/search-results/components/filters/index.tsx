@@ -16,12 +16,14 @@ import {
 import {Checkbox, CheckboxGroup} from '@chakra-ui/react';
 import {FacetTerm} from 'src/utils/api/types';
 import {filterFilterList} from '../../helpers';
+import LoadingSpinner from 'src/components/loading';
 
 interface FilterProps {
   name: string;
   terms: FacetTerm[];
   selectedFilters: (string | number)[];
   handleSelectedFilters: (arg: any) => void;
+  isLoading: boolean;
 }
 
 const filterNameConfig = {
@@ -38,6 +40,7 @@ export const Filter: React.FC<FilterProps> = ({
   terms,
   selectedFilters,
   handleSelectedFilters,
+  isLoading,
 }) => {
   const ref = useRef<HTMLDivElement>(null);
 
@@ -86,59 +89,56 @@ export const Filter: React.FC<FilterProps> = ({
       </h2>
       <AccordionPanel pb={2} borderLeft='4px solid' borderColor='accent.bg'>
         {/* Search through the filters */}
-        {items.length > 0 && (
-          <SearchInput
-            ariaLabel={`Search filter ${filterNameConfig[name]} terms`}
-            maxW='unset'
-            my={2}
-            size='md'
-            placeholder='Enter a keyword or phrase'
-            value={searchTerm}
-            handleChange={handleSearchChange}
-            colorScheme='primary'
-          />
-        )}
-        <Box
-          ref={ref}
-          w='100%'
-          maxH='250px'
-          overflowY='auto'
-          style={{scrollBehavior: 'smooth'}}
-        >
-          {/* Filters that can be applied on current search */}
-          <UnorderedList direction='column' ml={0} my={2}>
-            <CheckboxGroup
-              defaultValue={selectedFilters}
-              value={selectedFilters}
-              onChange={filterValues => {
-                handleSelectedFilters({[name]: filterValues});
-              }}
-            >
-              {items.length === 0 && (
-                <Text color='niaid.placeholder'>
-                  No filters available for this metric.
-                </Text>
-              )}
-              {items.map((t, i) => {
-                return (
-                  <ListItem key={t.term} p={2} py={1}>
-                    <Checkbox value={t.term} spacing={2} size='lg'>
-                      <Flex ml={1} fontSize='xs' lineHeight={1.5}>
-                        <Text fontWeight='light'>
-                          {t.term}
-                          <Text as='span' fontWeight='semibold' ml={1}>
-                            ({t.count})
+        <SearchInput
+          ariaLabel={`Search filter ${filterNameConfig[name]} terms`}
+          maxW='unset'
+          size='md'
+          placeholder='Search through filters'
+          value={searchTerm}
+          handleChange={handleSearchChange}
+          colorScheme='primary'
+        />
+        <LoadingSpinner isLoading={isLoading}>
+          <Box
+            ref={ref}
+            w='100%'
+            maxH='250px'
+            overflowY='auto'
+            style={{scrollBehavior: 'smooth'}}
+          >
+            {/* Filters that can be applied on current search */}
+            <UnorderedList direction='column' ml={0} my={2}>
+              <CheckboxGroup
+                defaultValue={selectedFilters}
+                value={selectedFilters}
+                onChange={filterValues => {
+                  handleSelectedFilters({[name]: filterValues});
+                }}
+              >
+                {items.length === 0 && (
+                  <Text color='niaid.placeholder'>No filters available.</Text>
+                )}
+                {items.map((t, i) => {
+                  return (
+                    <ListItem key={t.term} p={2} py={1}>
+                      <Checkbox value={t.term} spacing={2} size='lg'>
+                        <Flex ml={1} fontSize='xs' lineHeight={1.5}>
+                          <Text fontWeight='light'>
+                            {t.term}
+                            <Text as='span' fontWeight='semibold' ml={1}>
+                              ({t.count})
+                            </Text>
                           </Text>
-                        </Text>
-                      </Flex>
-                    </Checkbox>
-                  </ListItem>
-                );
-              })}
-            </CheckboxGroup>
-          </UnorderedList>
-        </Box>
-        {hasMore && (
+                        </Flex>
+                      </Checkbox>
+                    </ListItem>
+                  );
+                })}
+              </CheckboxGroup>
+            </UnorderedList>
+          </Box>
+        </LoadingSpinner>
+        {hasMore && items.length !== 0 && (
           <ListItem justifyContent='center' borderColor='gray.200'>
             <Button
               variant='link'
