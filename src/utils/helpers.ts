@@ -84,3 +84,11 @@ export const formatCitationString = (citation: Citation) => {
 export const formatDate = (date: Date | string) => {
   return new Date(date).toDateString().split(' ').slice(1).join(' ');
 };
+
+// Format DOI if url is included in string.
+export const formatDOI = (doi: FormattedResource['doi']) => {
+  if (doi.includes('https://doi.org/')) {
+    return doi?.split('https://doi.org/')[1];
+  }
+  return doi;
+};

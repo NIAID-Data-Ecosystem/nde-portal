@@ -1,12 +1,5 @@
 import React from 'react';
-import {
-  Box,
-  Flex,
-  Link,
-  Skeleton,
-  SkeletonCircle,
-  Text,
-} from 'nde-design-system';
+import {Box, Flex, Link, Skeleton, Text} from 'nde-design-system';
 import {FormattedResource} from 'src/utils/api/types';
 import {
   FaCalendarAlt,
@@ -15,10 +8,9 @@ import {
   FaGlobeAmericas,
   FaLanguage,
 } from 'react-icons/fa';
-import {useQuery} from 'react-query';
-import axios from 'axios';
+
 import {MetadataField} from '../section';
-import {formatCitationString} from 'src/utils/helpers';
+import {formatCitationString, formatDOI} from 'src/utils/helpers';
 
 interface Overview {
   doi?: FormattedResource['doi'];
@@ -51,13 +43,12 @@ const Overview: React.FC<Overview> = ({
   temporalCoverage,
   variableMeasured,
 }) => {
-  let doi_number = doi?.split('https://doi.org/')[1];
   return (
     <>
       <Flex flexWrap='wrap' flexDirection={['column', 'column', 'row']}>
         <Box flex={1}>
           <Flex w='100%' px={4} py={2} flexWrap='wrap'>
-            <Flex>{doi && <AltmetricBadge doi={doi_number} />}</Flex>
+            <Flex>{doi && <AltmetricBadge doi={formatDOI(doi)} />}</Flex>
             <Box>
               <Flex flexDirection={['column', 'column', 'row']}>
                 {numberOfDownloads && (
@@ -84,7 +75,7 @@ const Overview: React.FC<Overview> = ({
                   <MetadataField
                     isLoading={isLoading}
                     label='DOI'
-                    value={doi_number}
+                    value={formatDOI(doi)}
                     m={2}
                   />
                 )}
@@ -182,6 +173,7 @@ const AltmetricBadge: React.FC<{doi?: string}> = ({doi}) => {
         data-badge-type='donut'
         data-doi={doi}
         className='altmetric-embed'
+        data-link-target='blank'
       ></div>
       <Box pt={2}>
         <Text fontSize='xs' color='gray.800'>
