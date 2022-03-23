@@ -1,5 +1,6 @@
 import axios from 'axios';
 import {formatAPIResource} from './helpers';
+import {FetchSearchResultsResponse} from './types';
 
 export const getResourceById = async (id?: string | string[]) => {
   if (!id) {
@@ -10,7 +11,7 @@ export const getResourceById = async (id?: string | string[]) => {
   }
   try {
     const {data} = await axios.get(
-      `${process.env.NEXT_PUBLIC_API_URL}/query?&q=identifier:${id}`,
+      `${process.env.NEXT_PUBLIC_API_URL}/query?&q=_id:${id}`,
     );
 
     const formattedData = await formatAPIResource(data.hits[0]);
@@ -22,20 +23,39 @@ export const getResourceById = async (id?: string | string[]) => {
 };
 
 // Get all resources where query term contains the search term.
-export const getSearchResults = async (searchTerm?: string | string[]) => {
-  if (typeof searchTerm !== 'string') {
+interface Params {
+  q: string;
+  size?: string;
+  from?: string;
+  facet_size?: number;
+  facets?: string;
+}
+
+export const fetchSearchResults = async (params: Params) => {
+  if (!params || !params.q) {
     return;
   }
 
   if (!process.env.NEXT_PUBLIC_API_URL) {
     throw new Error('API url undefined');
   }
+
   try {
     const {data} = await axios.get(
-      `${process.env.NEXT_PUBLIC_API_URL}/query?q=${searchTerm}`,
+      `${process.env.NEXT_PUBLIC_API_URL}/query?`,
+      {params},
     );
+    if (!data.hits) {
+      return {results: [], total: 0, facets: data.facets || null};
+    }
 
-    return data;
+    const results: FetchSearchResultsResponse['results'] = data.hits.map(
+      (d: any) => formatAPIResource(d),
+    );
+    const total: FetchSearchResultsResponse['total'] = data.total;
+    const facets: FetchSearchResultsResponse['facets'] = data.facets;
+
+    return {results, total, facets};
   } catch (err) {
     throw err;
   }

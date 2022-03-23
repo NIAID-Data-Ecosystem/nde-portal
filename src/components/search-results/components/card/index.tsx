@@ -1,279 +1,463 @@
 import React from 'react';
 import {
+  Box,
+  Text,
+  Flex,
+  FlexProps,
+  Button,
+  Icon,
+  Accordion,
+  AccordionItem,
+  AccordionPanel,
+  AccordionButton,
+  Badge,
+  ListItem,
+  UnorderedList,
+  Stat,
+  StatLabel,
+  HStack,
   Card,
   CardHeader,
+  CardBody,
+  CardFooter,
   CardTitle,
-  Badge,
-  Box,
-  Button,
-  Flex,
-  Divider,
+  ToggleContainer,
   Heading,
-  Icon,
   Image,
   Link,
-  Text,
-  useBreakpointValue,
-  useDisclosure,
+  Divider,
 } from 'nde-design-system';
-import {StyledTitle} from './styles';
-import {FaLockOpen, FaLock, FaExternalLinkAlt} from 'react-icons/fa';
-import {useRouter} from 'next/router';
-import NextLink from 'next/link';
-import {Creator} from 'src/utils/api/types';
-/**
- * [TO DO]
- * * [ ] Responsive badge with hover over icon
- * * [ ] Drawer for lengthy author names
- */
+import {Skeleton} from '@chakra-ui/react';
+import {
+  FaArrowAltCircleRight,
+  FaClock,
+  FaLockOpen,
+  FaLock,
+  FaMinus,
+  FaPlus,
+  FaChevronRight,
+} from 'react-icons/fa';
+import styled from '@emotion/styled';
+import {FormattedResource} from 'src/utils/api/types';
+import {
+  formatAuthorsList2String,
+  formatDate,
+  formatDOI,
+  getRepositoryImage,
+  getRepositoryName,
+} from 'src/utils/helpers';
+import {ExternalSourceButton} from 'src/components/external-buttons/index.';
 
-/**
- * Card Title
- */
-interface SearchResultCardTitleProps {
-  id: string;
-  title: string;
+interface AccessBadgeProps {
+  conditionsOfAccess?: 'restricted' | 'public' | 'controlled';
+  children: React.ReactNode;
 }
 
-const Title: React.FC<SearchResultCardTitleProps> = ({id, title}) => {
-  return (
-    <StyledTitle>
-      <Link size='sm' href={`resources/${id}`}>
-        {title}
-      </Link>
-      {/* ) : (
-        <Heading fontWeight='extrabold' size='sm'>
-          {title}
-        </Heading>
-      )} */}
-    </StyledTitle>
-  );
-};
+export const AccessBadge = (args: AccessBadgeProps) => {
+  let colorScheme;
+  let iconType;
 
-/**
- * Card Author
- */
-
-interface SearchResultCardAuthorProps {
-  authorDetails: Creator[];
-}
-
-const Author: React.FC<SearchResultCardAuthorProps> = ({authorDetails}) => {
-  return (
-    <Flex flex={1} flexWrap={'wrap'}>
-      {authorDetails &&
-        authorDetails.map((author, i) => (
-          <Text
-            key={i}
-            size={'xs'}
-            mr={2}
-            whiteSpace={'nowrap'}
-            color={'text.body'}
-          >
-            {author.name}
-            {i < authorDetails.length - 1 ? ',' : ''}
-          </Text>
-        ))}
-    </Flex>
-  );
-};
-
-/**
- * Data Access
- */
-// [NOTE]: Restrictions for accessing the data to be determined by API.
-type RestrictedTypes = 'restricted' | 'some restrictions' | 'unrestricted';
-
-interface SearchResultCardBadgeProps {
-  accessType?: RestrictedTypes;
-}
-
-const AccessBadge: React.FC<SearchResultCardBadgeProps> = ({accessType}) => {
-  if (!accessType) {
-    return <></>;
+  if (args.conditionsOfAccess === 'public') {
+    colorScheme = 'success';
+    iconType = FaLockOpen;
   }
+
+  if (args.conditionsOfAccess === 'restricted') {
+    colorScheme = 'negative';
+    iconType = FaLock;
+  }
+
+  if (args.conditionsOfAccess === 'controlled') {
+    colorScheme = 'warning';
+    iconType = FaLock;
+  }
+
   return (
-    <>
-      {accessType === 'restricted' ? (
-        <Badge colorScheme='red' p={2}>
-          <Flex justifyContent='center' alignItems='center'>
-            <Icon as={FaLock} boxSize={4} h='100%' mr={2} />
-            {accessType}
-          </Flex>
-        </Badge>
-      ) : (
-        <Badge
-          colorScheme={accessType === 'unrestricted' ? 'green' : 'yellow'}
-          p={2}
-        >
-          <Flex justifyContent='center' alignItems='center'>
-            <Icon as={FaLockOpen} boxSize={4} h='100%' mr={2} />
-            {accessType}
-          </Flex>
-        </Badge>
-      )}
-    </>
+    <Badge colorScheme={colorScheme} {...args}>
+      {iconType && <Icon mr={2} as={iconType} />}
+      {args.children}
+    </Badge>
   );
 };
 
-/**
- * Description
- */
-
-interface SearchResultCardDescription {
-  description: string;
-}
-
-const Description: React.FC<SearchResultCardDescription> = ({description}) => {
-  const {isOpen, onToggle} = useDisclosure();
-  // Words in a short description view.
-  const MIN_WORDS = useBreakpointValue({base: 30, md: 50});
-
-  // Maximum num of words in a long description view
-  const MAX_WORDS = 75;
-
-  const isDescriptionTooLong = description.split(' ').length > MAX_WORDS;
-
-  return (
-    <Flex flexDirection={'column'}>
-      <Box
-        dangerouslySetInnerHTML={{
-          __html:
-            description
-              .split(' ')
-              .splice(0, isOpen ? description.length : MIN_WORDS)
-              .join(' ') + (isDescriptionTooLong && !isOpen ? ' ... ' : ''),
-        }}
-      ></Box>
-      {isDescriptionTooLong && (
-        <Box>
-          <Button
-            variant={'outline'}
-            my={2}
-            onClick={onToggle}
-            colorScheme={'primary'}
-          >
-            {isOpen ? 'Show Less' : 'Show More'}
-          </Button>
-        </Box>
-      )}
-    </Flex>
-  );
+const StyledLabel = styled(Flex)<FlexProps>`
+  display: inline-flex;
+  line-height: 1.5;
+  position: relative;
+  z-index: 9;
+  &:before {
+    content: '';
+    background-color: ${(props: any) => props.theme.colors.status.info};
+    box-shadow: 0 0 0 5px #fff;
+    display: block;
+    height: 100%;
+    left: 0;
+    position: absolute;
+    top: 0;
+    transform: skew(-12deg);
+    width: 100%;
+    z-index: -4;
+  }
+`;
+StyledLabel.defaultProps = {
+  mx: 2,
+  p: 2,
 };
 
-/**
- * External Links for data source.
- */
-interface SourceProps {
-  id: string | null;
-  imageUrl?: string | null;
-  name?: string | null;
-  url?: string | null;
-}
-interface SearchResultCardExternalLinks {
-  sourceDetails: SourceProps;
+interface StyledBannerProps extends FlexProps {
+  name?: FormattedResource['type'];
 }
 
-const ExternalLinks: React.FC<SearchResultCardExternalLinks> = ({
-  sourceDetails,
+export const StyledBanner: React.FC<StyledBannerProps> = ({
+  name,
+  children,
+  pl,
+  ...props
 }) => {
   return (
-    <Flex
-      flexDirection={'column'}
-      bg='niaid.100'
-      flexWrap={'wrap'}
-      alignItems={['center', 'center', 'flex-start']}
-    >
-      <Button
-        as='a'
-        colorScheme={'primary'}
-        flexDirection={'column'}
-        w='100%'
-        display={'flex'}
-        alignItems={'center'}
-        whiteSpace={['normal', 'normal', 'nowrap']}
+    <Flex flexWrap={'wrap'} {...props}>
+      <Flex
+        bg={'status.info_lt'}
+        pl={pl}
+        py={0}
+        overflow={'hidden'}
+        w={['100%', 'unset']}
       >
-        <Text py={2} color={'inherit'}>
-          Open in the workspace
-          <Icon as={FaExternalLinkAlt} boxSize={3} ml={2} />
-        </Text>
-      </Button>
-      {sourceDetails.url && (
-        <NextLink href={sourceDetails.url} passHref>
-          <Button
-            as='a'
-            h={'unset'}
-            colorScheme={'gray'}
-            flexDirection={'column'}
-            w='100%'
-            display={'flex'}
-            alignItems={'center'}
-            whiteSpace={['normal', 'normal', 'nowrap']}
-          >
-            {sourceDetails.imageUrl && (
-              <Image
-                w={['50%', '50%', '100%']}
-                src={sourceDetails.imageUrl}
-                alt={'link to dataset in the source repo'}
-                whiteSpace={'normal'}
-              ></Image>
-            )}
-            {sourceDetails.name && (
-              <Text py={2}>
-                Open in {sourceDetails.name}
-                <Icon as={FaExternalLinkAlt} boxSize={3} ml={2} />
-              </Text>
-            )}
-          </Button>
-        </NextLink>
-      )}
+        {name && (
+          <StyledLabel>
+            <Text
+              fontSize={'xs'}
+              color={'white'}
+              px={2}
+              fontWeight={'semibold'}
+            >
+              {name.toUpperCase()}
+            </Text>
+          </StyledLabel>
+        )}
+      </Flex>
+      <Flex
+        bg={'status.info_lt'}
+        py={1}
+        overflow={'hidden'}
+        w={['100%', 'unset']}
+        flex={['unset', 1]}
+        px={4}
+      >
+        {children}
+      </Flex>
     </Flex>
   );
 };
-/**
- * Search Result List Card item
- */
 
-interface SearchResultCardProps
-  extends SearchResultCardTitleProps,
-    SearchResultCardAuthorProps,
-    SearchResultCardDescription,
-    SearchResultCardExternalLinks {
-  accessType?: RestrictedTypes | null;
-  keywords: string[];
+interface SearchResultCardProps {
+  id?: FormattedResource['id'];
+  name?: FormattedResource['name'];
+  type?: FormattedResource['type'];
+  date?: FormattedResource['date'];
+  datePublished?: FormattedResource['datePublished'];
+  author?: FormattedResource['author'];
+  description?: FormattedResource['description'];
+  license?: FormattedResource['license'];
+  conditionsOfAccess?: FormattedResource['conditionsOfAccess'];
+  measurementTechnique?: FormattedResource['measurementTechnique'];
+  variableMeasured?: FormattedResource['variableMeasured'];
+  doi?: FormattedResource['doi'];
+  includedInDataCatalog?: FormattedResource['includedInDataCatalog'];
+  isLoading?: boolean;
 }
 
-export const SearchResultCard: React.FC<SearchResultCardProps> = ({
+const SearchResultCard: React.FC<SearchResultCardProps> = ({
+  isLoading,
   id,
-  title,
-  authorDetails,
-  accessType,
+  name,
+  type,
+  date,
+  datePublished,
+  author,
   description,
-  keywords,
-  sourceDetails,
+  license,
+  conditionsOfAccess,
+  measurementTechnique,
+  variableMeasured,
+  doi,
+  includedInDataCatalog,
+  ...props
 }) => {
+  const imageURL =
+    includedInDataCatalog?.name &&
+    getRepositoryImage(includedInDataCatalog.name);
+  const paddingCard = [4, 6, 8, 10];
   return (
-    <Card w={'100%'} my={4}>
-      <CardHeader>
-        <CardTitle>{title && <Title id={id} title={title} />}</CardTitle>
+    <Card variant={'colorful'}>
+      {/* Card header where name of resource is a link to resource apge */}
+      <CardHeader position={'relative'} px={paddingCard} pt={4}>
+        {name && (
+          <Link
+            h={'100%'}
+            href={`/resources/${id}`}
+            flexWrap='nowrap'
+            color='white'
+            _hover={{
+              color: 'white',
+              h2: {textDecoration: 'underline'},
+              svg: {
+                transform: 'translate(0px)',
+                opacity: 0.9,
+                transition: '0.2s ease-in-out',
+              },
+            }}
+            _visited={{color: 'white', svg: {color: 'white'}}}
+          >
+            <Flex alignItems='center'>
+              <CardTitle size={'h6'} lineHeight='short' fontWeight='semibold'>
+                {name}
+              </CardTitle>
+              <Icon
+                as={FaChevronRight}
+                boxSize={4}
+                ml={4}
+                opacity={0.6}
+                transform='translate(-10px)'
+                transition='0.2s ease-in-out'
+              ></Icon>
+            </Flex>
+          </Link>
+        )}
       </CardHeader>
-      <Flex w={'100%'} alignItems={['flex-start', 'center']} py={0} pr={0}>
-        <Author authorDetails={authorDetails} />
-        {accessType && <AccessBadge accessType={accessType} />}
-      </Flex>
-      <Divider py={0} />
-      <Flex flexDirection={['column', 'column', 'row']} p={0}>
-        <Flex flexDirection={'column'} padding={[2, 4, 6]}>
-          {description && <Description description={description} />}
-          <Flex flexWrap={'wrap'}>
-            {keywords &&
-              keywords.map(keyword => {
-                return <div key={keyword}>{keyword}</div>;
-              })}
-          </Flex>
+
+      {/* Card Content */}
+      {/* Author toggle container */}
+      <Skeleton
+        isLoaded={!isLoading}
+        height={isLoading ? '150px' : 'unset'}
+        p={0}
+        m={isLoading ? 4 : 0}
+      >
+        <Flex flexDirection={['column', 'row']}>
+          {author && (
+            <ToggleContainer
+              variant={'border'}
+              // ariaLabel={'Show all authors.'}
+              noOfLines={1}
+              justifyContent='start'
+              m={0}
+              px={paddingCard}
+              py={2}
+              flex={1}
+              _focus={{outlineColor: 'transparent'}}
+            >
+              <Text fontSize={'xs'} color={'text.body'}>
+                {formatAuthorsList2String(author, ',', 10)}
+              </Text>
+            </ToggleContainer>
+          )}
+          {conditionsOfAccess && (
+            <Box
+              d={['inline-flex', 'block']}
+              justifyContent={['end']}
+              alignContent='center'
+              borderY={`1px solid`}
+              borderColor={['transparent', 'gray.200']}
+              m={1}
+            >
+              (
+              <AccessBadge conditionsOfAccess={conditionsOfAccess}>
+                Public
+              </AccessBadge>
+              )
+            </Box>
+          )}
         </Flex>
-        {sourceDetails && <ExternalLinks sourceDetails={sourceDetails} />}
-      </Flex>
+
+        {/* Banner with resource type + date of publication */}
+        <StyledBanner name={type} pl={[2, 4, 6]}>
+          {datePublished && (
+            <Flex alignItems={'center'}>
+              <Icon as={FaClock} mr={2}></Icon>
+              <Text fontSize={'xs'} fontWeight={'semibold'}>
+                Published on {formatDate(datePublished)}
+              </Text>
+            </Flex>
+          )}
+          {!datePublished && date && (
+            <Flex alignItems={'center'}>
+              <Icon as={FaClock} mr={2}></Icon>
+              <Text fontSize={'xs'} fontWeight={'semibold'}>
+                Published on {formatDate(date)}
+              </Text>
+            </Flex>
+          )}
+        </StyledBanner>
+        {description && (
+          <>
+            <CardBody>
+              <ToggleContainer
+                // ariaLabel={'show more description'}
+                noOfLines={[3, 10]}
+                px={paddingCard}
+                py={[2, 4, 6]}
+                my={0}
+                borderColor={'transparent'}
+                _focus={{outlineColor: 'transparent', bg: 'white'}}
+              >
+                <Box
+                  w='100%'
+                  fontSize={'sm'}
+                  dangerouslySetInnerHTML={{
+                    __html: description,
+                  }}
+                ></Box>
+              </ToggleContainer>
+
+              {doi && (
+                <Flex
+                  px={paddingCard}
+                  py={1}
+                  my={0}
+                  flexDirection='column'
+                  alignItems='end'
+                >
+                  <Text
+                    fontSize='xs'
+                    color='niaid.placeholder'
+                    my={0}
+                    fontWeight='medium'
+                    lineHeight={1}
+                  >
+                    Altmetric
+                  </Text>
+
+                  <div
+                    data-badge-popover='left'
+                    data-badge-type='bar'
+                    data-doi={formatDOI(doi)}
+                    className='altmetric-embed'
+                    data-link-target='blank'
+                  ></div>
+                </Flex>
+              )}
+            </CardBody>
+          </>
+        )}
+        {license || measurementTechnique || variableMeasured ? (
+          <Accordion allowToggle p={0} pt={1}>
+            <AccordionItem>
+              {({isExpanded}) => (
+                <>
+                  <h2>
+                    <AccordionButton
+                      px={paddingCard}
+                      bg={isExpanded ? 'blackAlpha.100' : 'white'}
+                    >
+                      <Box flex='1' textAlign='left'>
+                        <Heading fontSize={'h6'} fontWeight={'semibold'}>
+                          Details
+                        </Heading>
+                      </Box>
+                      {isExpanded ? (
+                        <Icon as={FaMinus} fontSize='12px' />
+                      ) : (
+                        <Icon as={FaPlus} fontSize='12px' />
+                      )}
+                    </AccordionButton>
+                  </h2>
+                  <AccordionPanel w='100%' px={paddingCard}>
+                    <UnorderedList ml={0}>
+                      {license && (
+                        <ListItem>
+                          <Stat my={2}>
+                            <StatLabel color={'gray.700'}>License</StatLabel>
+                            <Link href={license} isExternal>
+                              {license}
+                            </Link>
+                          </Stat>
+                        </ListItem>
+                      )}
+                      {measurementTechnique && (
+                        <ListItem>
+                          <Stat my={2}>
+                            <StatLabel color={'gray.700'}>
+                              Measurement Technique
+                            </StatLabel>
+                            <Text fontWeight='semibold'>
+                              {measurementTechnique}
+                            </Text>
+                          </Stat>
+                        </ListItem>
+                      )}
+                      {variableMeasured && (
+                        <ListItem>
+                          <Stat my={2}>
+                            <StatLabel color={'gray.700'}>
+                              Variable Measured
+                            </StatLabel>
+                            <Text fontWeight='semibold'>
+                              {variableMeasured}
+                            </Text>
+                          </Stat>
+                        </ListItem>
+                      )}
+                    </UnorderedList>
+                  </AccordionPanel>
+                </>
+              )}
+            </AccordionItem>
+          </Accordion>
+        ) : (
+          <Divider p={0} />
+        )}
+      </Skeleton>
+      <CardFooter
+        justifyContent={'space-between'}
+        alignItems={'center'}
+        flexWrap='wrap'
+        bg='white'
+        px={paddingCard}
+        py={2}
+      >
+        <HStack
+          alignItems={'end'}
+          justifyContent={'space-between'}
+          py={1}
+          w='100%'
+          flexDirection={'row'}
+        >
+          {includedInDataCatalog?.name && (
+            <Flex
+              flexDirection={['column', 'row']}
+              alignItems='center'
+              flexWrap={'wrap'}
+            >
+              <ExternalSourceButton
+                px={3}
+                minW={'150px'}
+                imageURL={imageURL || undefined}
+                alt='Data source name'
+                name={
+                  getRepositoryName(includedInDataCatalog.name) || undefined
+                }
+                href={includedInDataCatalog?.url || undefined}
+              ></ExternalSourceButton>
+            </Flex>
+          )}
+
+          {id && (
+            <Flex flex={1} justifyContent='end'>
+              <Button
+                my={1}
+                href={`/resources/${id}`}
+                size='md'
+                rightIcon={<FaArrowAltCircleRight />}
+              >
+                See more
+              </Button>
+            </Flex>
+          )}
+        </HStack>
+      </CardFooter>
     </Card>
   );
 };
+
+export default SearchResultCard;

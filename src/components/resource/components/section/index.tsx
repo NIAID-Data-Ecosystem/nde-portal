@@ -84,9 +84,9 @@ const Section: React.FC<SectionProps> = ({
   ...props
 }) => {
   return (
-    <section id={id}>
+    <section id={id} style={{padding: 0}}>
       {name && (
-        <StyledSectionHead color={color} bg={bg}>
+        <StyledSectionHead color={color} bg={bg} px={4}>
           <StyledSectionHeading>{name}</StyledSectionHeading>
         </StyledSectionHead>
       )}
