@@ -1,14 +1,18 @@
 {
   "repositories": [
     {
-      "name": "NCBI GEO from Metadataplus",
+      "sourceName": "NCBI GEO from Metadataplus",
+
+      "name": "NCBI GEO",
       "imageUrl": "/assets/resources/aquaria.svg"
     },
     {
-      "name": "ImmPort - Bioinformatics For the Future of Immunology",
+      "sourceName": "ImmPort - Bioinformatics For the Future of Immunology",
+      "name": "ImmPort",
       "imageUrl": "/assets/resources/immport.png"
     },
     {
+      "sourceName": "Zenodo",
       "name": "Zenodo",
       "imageUrl": "/assets/resources/zenodo.svg"
     }

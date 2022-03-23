@@ -1,3 +1,24 @@
+export interface FetchSearchResultsResponse {
+  results: FormattedResource[];
+  total: number;
+  facets: Facet;
+}
+
+interface Facet {
+  [key: string]: {
+    missing: number;
+    other: number;
+    terms: FacetTerm[];
+    total: number;
+    _type: string;
+  };
+}
+
+export interface FacetTerm {
+  count: number;
+  term: string;
+}
+
 export interface SearchResultsData {
   max_score: number;
   took: number;
@@ -32,9 +53,10 @@ export interface Citation {
   id: string | null;
   url: string | null;
   name: string | null;
-  author: {name: string} | null;
+  author: Creator[] | null;
   journalName: string | null;
   date: string | null;
+  datePublished: string | null;
   pmid: string | null;
 }
 
@@ -125,6 +147,7 @@ export interface FormattedResource {
   condition: string | null;
   conditionsOfAccess: AccessTypes | null;
   curatedBy: CuratedBy | null;
+  date: Date | string | null;
   dateCreated: Date | string | null;
   dateModified: Date | string | null;
   datePublished: Date | string | null;
