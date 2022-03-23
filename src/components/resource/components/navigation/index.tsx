@@ -156,45 +156,27 @@ const Navigation: React.FC<{resourceType?: string | null}> = ({
   };
 
   return (
-    <StyledNavigation
-      as='nav'
-      ref={ref}
-      top={`60px`}
-      boxShadow={'sm'}
-      overflowY='hidden'
-    >
-      <StyledNavigationContent>
-        <Flex pl={4} bg={'gray.100'} overflow='hidden'>
-          <StyledResourceType>
-            <Heading color='white' size='xs' fontFamily='body' m={1}>
-              {resourceType}
-            </Heading>
-          </StyledResourceType>
-          <StyledNavigationBar>
-            {/* Toggle open menu button - For mobile */}
-            {routes && (
-              <Button
-                onClick={onToggle}
-                color='black'
-                display={{base: 'flex', md: 'none'}}
-                _hover={{bg: 'blackAlpha.500'}}
-                variant='ghost'
-                aria-label='Toggle Navigation'
-              >
-                <Text mr={1}>Sections</Text>
-                <Flex w={5} h={5} alignItems='center' justifyContent='center'>
-                  {isOpen ? (
-                    <Icon as={IoClose} w={5} h={5} />
-                  ) : (
-                    <Icon as={FaChevronDown} w={3} h={3} />
-                  )}
-                </Flex>
-              </Button>
-            )}
-            <NavigationLinks isOpen={isOpen} />
-          </StyledNavigationBar>
-        </Flex>
-      </StyledNavigationContent>
+    <StyledNavigation as='nav' ref={ref} top={`60px`} position='sticky'>
+      <NavigationLinks isOpen={isOpen} />
+      {/* {routes && (
+          <Button
+            onClick={onToggle}
+            color='black'
+            display={{base: 'flex', md: 'none'}}
+            _hover={{bg: 'blackAlpha.500'}}
+            variant='ghost'
+            aria-label='Toggle Navigation'
+          >
+            <Text mr={1}>Sections</Text>
+            <Flex w={5} h={5} alignItems='center' justifyContent='center'>
+              {isOpen ? (
+                <Icon as={IoClose} w={5} h={5} />
+              ) : (
+                <Icon as={FaChevronDown} w={3} h={3} />
+              )}
+            </Flex>
+          </Button>
+        )} */}
     </StyledNavigation>
   );
 };

@@ -58,18 +58,18 @@ const ResourceTabs: React.FC<ResourceTabs> = ({
     return <Skeleton height='100px' />;
   }
   return (
-    <Tabs size='md' variant='unstyled' w='100%' p={4} isLazy>
-      <TabList boxShadow={'base'} borderRadius={'md'}>
+    <Tabs size='md' variant='unstyled' w='100%' isLazy>
+      <TabList boxShadow={'base'} borderRadius={'sm'}>
         {description && <Tab>Description</Tab>}
         {metadata && <Tab>Metadata</Tab>}
       </TabList>
-      <TabPanels>
+      <TabPanels mt={4}>
         {description && (
           <TabPanel w='100%'>
             <Box
-              height={500}
               overflow={'auto'}
               w='100%'
+              fontSize={'sm'}
               dangerouslySetInnerHTML={{
                 __html: description,
               }}
@@ -93,10 +93,17 @@ const ResourceTabs: React.FC<ResourceTabs> = ({
 export default ResourceTabs;
 
 interface TabProps extends ChakraTabProps {}
+
 const Tab: React.FC<TabProps> = ({children, ...props}) => {
   return (
-    <StyledTab _selected={{color: 'white', bg: 'blue.500'}} {...props}>
-      <Text color={'inherit'}>{children}</Text>
+    <StyledTab
+      _selected={{color: 'white', bg: 'status.info'}}
+      color='status.info'
+      {...props}
+    >
+      <Text fontWeight='medium' fontSize='sm' color={'inherit'}>
+        {children}
+      </Text>
     </StyledTab>
   );
 };

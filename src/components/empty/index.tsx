@@ -27,7 +27,7 @@ const Empty: React.FC<EmptyProps> = ({
         {imageUrl && (
           <Image
             boxSize='100px'
-            objectFit='cover'
+            objectFit='contain'
             src={imageUrl}
             alt={imageAlt}
           />

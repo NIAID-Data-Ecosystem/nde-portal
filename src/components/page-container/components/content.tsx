@@ -1,0 +1,15 @@
+import {Flex, FlexProps} from 'nde-design-system';
+
+export const PageContent: React.FC<FlexProps> = ({children, ...props}) => {
+  return (
+    <Flex
+      bg={props.bg || 'page.alt'}
+      minH={'80vh'}
+      px={{base: '4', sm: '6', lg: '5%', xl: '10%'}}
+      py={{base: '4', sm: '6', xl: '8'}}
+      {...props}
+    >
+      {children}
+    </Flex>
+  );
+};
