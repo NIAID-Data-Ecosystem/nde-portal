@@ -238,7 +238,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
           {author && (
             <ToggleContainer
               variant={'border'}
-              // ariaLabel={'Show all authors.'}
+              ariaLabel={'Show all authors.'}
               noOfLines={1}
               justifyContent='start'
               m={0}
@@ -293,7 +293,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
           <>
             <CardBody>
               <ToggleContainer
-                // ariaLabel={'show more description'}
+                ariaLabel={'show more description'}
                 noOfLines={[3, 10]}
                 px={paddingCard}
                 py={[2, 4, 6]}
