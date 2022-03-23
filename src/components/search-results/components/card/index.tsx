@@ -46,7 +46,7 @@ import {
   getRepositoryImage,
   getRepositoryName,
 } from 'src/utils/helpers';
-import Script from 'next/script';
+import {ExternalSourceButton} from 'src/components/external-buttons/index.';
 
 interface AccessBadgeProps {
   conditionsOfAccess?: 'restricted' | 'public' | 'controlled';
@@ -167,19 +167,35 @@ interface SearchResultCardProps {
   isLoading?: boolean;
 }
 
-const SearchResultCard: React.FC<SearchResultCardProps> = props => {
+const SearchResultCard: React.FC<SearchResultCardProps> = ({
+  isLoading,
+  id,
+  name,
+  type,
+  date,
+  datePublished,
+  author,
+  description,
+  license,
+  conditionsOfAccess,
+  measurementTechnique,
+  variableMeasured,
+  doi,
+  includedInDataCatalog,
+  ...props
+}) => {
   const imageURL =
-    props?.includedInDataCatalog?.name &&
-    getRepositoryImage(props.includedInDataCatalog.name);
+    includedInDataCatalog?.name &&
+    getRepositoryImage(includedInDataCatalog.name);
   const paddingCard = [4, 6, 8, 10];
   return (
-    <Card variant={'colorful'} {...props}>
+    <Card variant={'colorful'}>
       {/* Card header where name of resource is a link to resource apge */}
       <CardHeader position={'relative'} px={paddingCard} pt={4}>
-        {props.name && (
+        {name && (
           <Link
             h={'100%'}
-            href={`/resources/${props.id}`}
+            href={`/resources/${id}`}
             flexWrap='nowrap'
             color='white'
             _hover={{
@@ -195,7 +211,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = props => {
           >
             <Flex alignItems='center'>
               <CardTitle size={'h6'} lineHeight='short' fontWeight='semibold'>
-                {props.name}
+                {name}
               </CardTitle>
               <Icon
                 as={FaChevronRight}
@@ -213,16 +229,16 @@ const SearchResultCard: React.FC<SearchResultCardProps> = props => {
       {/* Card Content */}
       {/* Author toggle container */}
       <Skeleton
-        isLoaded={!props.isLoading}
-        height={props.isLoading ? '150px' : 'unset'}
+        isLoaded={!isLoading}
+        height={isLoading ? '150px' : 'unset'}
         p={0}
-        m={props.isLoading ? 4 : 0}
+        m={isLoading ? 4 : 0}
       >
         <Flex flexDirection={['column', 'row']}>
-          {props?.author && (
+          {author && (
             <ToggleContainer
               variant={'border'}
-              ariaLabel={'Show all authors.'}
+              // ariaLabel={'Show all authors.'}
               noOfLines={1}
               justifyContent='start'
               m={0}
@@ -232,11 +248,11 @@ const SearchResultCard: React.FC<SearchResultCardProps> = props => {
               _focus={{outlineColor: 'transparent'}}
             >
               <Text fontSize={'xs'} color={'text.body'}>
-                {formatAuthorsList2String(props.author, ',', 10)}
+                {formatAuthorsList2String(author, ',', 10)}
               </Text>
             </ToggleContainer>
           )}
-          {props.conditionsOfAccess && (
+          {conditionsOfAccess && (
             <Box
               d={['inline-flex', 'block']}
               justifyContent={['end']}
@@ -246,7 +262,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = props => {
               m={1}
             >
               (
-              <AccessBadge conditionsOfAccess={props.conditionsOfAccess}>
+              <AccessBadge conditionsOfAccess={conditionsOfAccess}>
                 Public
               </AccessBadge>
               )
@@ -255,29 +271,29 @@ const SearchResultCard: React.FC<SearchResultCardProps> = props => {
         </Flex>
 
         {/* Banner with resource type + date of publication */}
-        <StyledBanner name={props.type} pl={[2, 4, 6]}>
-          {props.datePublished && (
+        <StyledBanner name={type} pl={[2, 4, 6]}>
+          {datePublished && (
             <Flex alignItems={'center'}>
               <Icon as={FaClock} mr={2}></Icon>
               <Text fontSize={'xs'} fontWeight={'semibold'}>
-                Published on {formatDate(props.datePublished)}
+                Published on {formatDate(datePublished)}
               </Text>
             </Flex>
           )}
-          {!props.datePublished && props.date && (
+          {!datePublished && date && (
             <Flex alignItems={'center'}>
               <Icon as={FaClock} mr={2}></Icon>
               <Text fontSize={'xs'} fontWeight={'semibold'}>
-                Published on {formatDate(props.date)}
+                Published on {formatDate(date)}
               </Text>
             </Flex>
           )}
         </StyledBanner>
-        {props.description && (
+        {description && (
           <>
             <CardBody>
               <ToggleContainer
-                ariaLabel={'show more description'}
+                // ariaLabel={'show more description'}
                 noOfLines={[3, 10]}
                 px={paddingCard}
                 py={[2, 4, 6]}
@@ -289,12 +305,12 @@ const SearchResultCard: React.FC<SearchResultCardProps> = props => {
                   w='100%'
                   fontSize={'sm'}
                   dangerouslySetInnerHTML={{
-                    __html: props.description,
+                    __html: description,
                   }}
                 ></Box>
               </ToggleContainer>
 
-              {props.doi && (
+              {doi && (
                 <Flex
                   px={paddingCard}
                   py={1}
@@ -315,7 +331,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = props => {
                   <div
                     data-badge-popover='left'
                     data-badge-type='bar'
-                    data-doi={formatDOI(props.doi)}
+                    data-doi={formatDOI(doi)}
                     className='altmetric-embed'
                     data-link-target='blank'
                   ></div>
@@ -324,9 +340,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = props => {
             </CardBody>
           </>
         )}
-        {props.license ||
-        props.measurementTechnique ||
-        props.variableMeasured ? (
+        {license || measurementTechnique || variableMeasured ? (
           <Accordion allowToggle p={0} pt={1}>
             <AccordionItem>
               {({isExpanded}) => (
@@ -350,36 +364,36 @@ const SearchResultCard: React.FC<SearchResultCardProps> = props => {
                   </h2>
                   <AccordionPanel w='100%' px={paddingCard}>
                     <UnorderedList ml={0}>
-                      {props.license && (
+                      {license && (
                         <ListItem>
                           <Stat my={2}>
                             <StatLabel color={'gray.700'}>License</StatLabel>
-                            <Link href={props.license} isExternal>
-                              {props.license}
+                            <Link href={license} isExternal>
+                              {license}
                             </Link>
                           </Stat>
                         </ListItem>
                       )}
-                      {props.measurementTechnique && (
+                      {measurementTechnique && (
                         <ListItem>
                           <Stat my={2}>
                             <StatLabel color={'gray.700'}>
                               Measurement Technique
                             </StatLabel>
                             <Text fontWeight='semibold'>
-                              {props.measurementTechnique}
+                              {measurementTechnique}
                             </Text>
                           </Stat>
                         </ListItem>
                       )}
-                      {props.variableMeasured && (
+                      {variableMeasured && (
                         <ListItem>
                           <Stat my={2}>
                             <StatLabel color={'gray.700'}>
                               Variable Measured
                             </StatLabel>
                             <Text fontWeight='semibold'>
-                              {props.variableMeasured}
+                              {variableMeasured}
                             </Text>
                           </Stat>
                         </ListItem>
@@ -403,43 +417,36 @@ const SearchResultCard: React.FC<SearchResultCardProps> = props => {
         py={2}
       >
         <HStack
-          alignItems={'center'}
+          alignItems={'end'}
           justifyContent={'space-between'}
           py={1}
           w='100%'
+          flexDirection={'row'}
         >
-          <Flex flexDirection={['column', 'row']} alignItems='center'>
-            {imageURL && (
-              <Image
-                h={'40px'}
-                mr={2}
-                src={imageURL}
-                alt={'source logo'}
-              ></Image>
-            )}
-            {props.includedInDataCatalog && props.includedInDataCatalog.url && (
-              <Button
-                as='a'
-                isExternal
-                href={props.includedInDataCatalog.url}
-                variant={'outline'}
-                colorScheme={'primary'}
+          {includedInDataCatalog?.name && (
+            <Flex
+              flexDirection={['column', 'row']}
+              alignItems='center'
+              flexWrap={'wrap'}
+            >
+              <ExternalSourceButton
                 px={3}
-                my={1}
-                flex={1}
-                whiteSpace='normal'
-                size='md'
-              >
-                {props.includedInDataCatalog.name
-                  ? getRepositoryName(props.includedInDataCatalog.name)
-                  : 'Source'}
-              </Button>
-            )}
-          </Flex>
-          {props.id && (
+                minW={'150px'}
+                imageURL={imageURL || undefined}
+                alt='Data source name'
+                name={
+                  getRepositoryName(includedInDataCatalog.name) || undefined
+                }
+                href={includedInDataCatalog?.url || undefined}
+              ></ExternalSourceButton>
+            </Flex>
+          )}
+
+          {id && (
             <Flex flex={1} justifyContent='end'>
               <Button
-                href={`/resources/${props.id}`}
+                my={1}
+                href={`/resources/${id}`}
                 size='md'
                 rightIcon={<FaArrowAltCircleRight />}
               >

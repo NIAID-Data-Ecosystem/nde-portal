@@ -20,7 +20,6 @@ import {
 } from 'nde-design-system';
 import {
   Navigation,
-  RelatedDatasets,
   ResourceHeader,
   ResourceOverview,
   ResourceTabs,
@@ -154,7 +153,7 @@ const Dataset: NextPage = props => {
                       />
                     )}
                   </Section>
-                  <Navigation resourceType={data?.type} />
+                  {/* <Navigation resourceType={data?.type} /> */}
                   <Section id='overview'>
                     <ResourceOverview
                       isLoading={isLoading}
@@ -231,7 +230,7 @@ const Dataset: NextPage = props => {
                         includedInDataCatalog={data?.includedInDataCatalog}
                       />
                     )}
-                    <RelatedDatasets />
+                    {/* <RelatedDatasets /> */}
                   </Box>
                 </Card>
               </Flex>

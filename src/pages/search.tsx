@@ -11,7 +11,10 @@ import {
 import {Filter, Card} from 'src/components/search-results';
 import {fetchSearchResults} from 'src/utils/api';
 import {encodeString} from 'src/utils/querystring-helpers';
-import {FetchSearchResultsResponse} from 'src/utils/api/types';
+import {
+  FetchSearchResultsResponse,
+  FormattedResource,
+} from 'src/utils/api/types';
 import {
   Accordion,
   Box,
@@ -19,6 +22,7 @@ import {
   Collapse,
   Flex,
   Heading,
+  Link,
   ListItem,
   Stack,
   Tag,
@@ -225,7 +229,7 @@ const Search: NextPage = () => {
         <Box w={'100%'}>
           <SearchBar defaultValue={router.query.q || ''} />
 
-          <PageContent w='100%' flexDirection='column'>
+          <PageContent w='100%' flexDirection='column' minW={'740px'}>
             {error ? (
               // [ERROR STATE]: API response error
               <ErrorMessage message="It's possible that the server is experiencing some issues.">
@@ -352,10 +356,10 @@ const Search: NextPage = () => {
                       {isLoading ||
                       (data?.results && data?.results?.length > 0) ? (
                         new Array(selectedPerPage).fill(null).map((item, i) => {
-                          const result =
+                          const result: FormattedResource | null =
                             data?.results && data.results.length > 0
                               ? data.results[i]
-                              : {};
+                              : null;
 
                           // if waiting for results to load display placeholder loading cards until content is available
                           if (result || isLoading) {
@@ -377,7 +381,7 @@ const Search: NextPage = () => {
                           <Text>
                             Search yielded no results, please try again.
                           </Text>
-                          <Button as={'a'} href='/' mt={4}>
+                          <Button href='/' mt={4}>
                             Go to search page.
                           </Button>
                         </Empty>

@@ -2385,9 +2385,9 @@
     "brace-expansion" "^1.1.7"
 
 "minimist@^1.2.0":
-  "integrity" "sha512-FM9nNUYrRBAELZQT3xeZQ7fmMOBg6nWNmJKTcgsJeaLstP/UODVpGsr5OhXhhXg6f+qtJ8uiZ+PUxkDWcgIXLw=="
-  "resolved" "https://registry.npmjs.org/minimist/-/minimist-1.2.5.tgz"
-  "version" "1.2.5"
+  "integrity" "sha512-Jsjnk4bw3YJqYzbdyBiNsPWHPfO++UGG749Cxs6peCu5Xg4nrena6OVxOYxrQTqww0Jmwt+Ref8rggumkTLz9Q=="
+  "resolved" "https://registry.npmjs.org/minimist/-/minimist-1.2.6.tgz"
+  "version" "1.2.6"
 
 "ms@^2.1.1":
   "integrity" "sha512-6FlzubTLZG3J2a/NVCAleEhjzq5oxgHyaCU9yYXvcLsvoVaHJq/s5xXI6/XXP6tz7R9xAOtHnSO/tXtF3WRTlA=="
@@ -2421,10 +2421,10 @@
   "resolved" "https://registry.npmjs.org/natural-compare/-/natural-compare-1.4.0.tgz"
   "version" "1.4.0"
 
-"nde-design-system@^0.2.17":
-  "integrity" "sha512-GYnJl/7Pre8F+nh7vDh3hW8bzbJS8bAl0j5uK/ul+7+yM9TSWsrCKZVtGLqFuY4epYb+CFHhSa5Z7bunZJFw3w=="
-  "resolved" "https://registry.npmjs.org/nde-design-system/-/nde-design-system-0.2.17.tgz"
-  "version" "0.2.17"
+"nde-design-system@^0.2.19":
+  "integrity" "sha512-RJ+kBL1ACfdsTbrrMHzqQ9sd+xo+RVJ/Rq+AQrzhyHhI48mssFrx4hriRPaRefJQPLGlF4jmuC7XG5v87cAm7w=="
+  "resolved" "https://registry.npmjs.org/nde-design-system/-/nde-design-system-0.2.19.tgz"
+  "version" "0.2.19"
   dependencies:
     "@chakra-ui/icons" "^1.1.7"
     "@chakra-ui/react" "1.7.2"

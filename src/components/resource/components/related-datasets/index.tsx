@@ -6,7 +6,6 @@ import {fetchSearchResults} from 'src/utils/api';
 import {
   FetchSearchResultsResponse,
   FormattedResource,
-  SearchResultsData,
 } from 'src/utils/api/types';
 import {StyledSectionHeading, StyledSectionHead} from '../../styles';
 

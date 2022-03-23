@@ -1,5 +1,6 @@
 import React from 'react';
 import {
+  Box,
   Button,
   ButtonProps,
   Flex,
@@ -12,7 +13,8 @@ import {
 import {FormattedResource} from 'src/utils/api/types';
 import {FaExternalLinkAlt} from 'react-icons/fa';
 import NextLink from 'next/link';
-import {getRepositoryImage} from 'src/utils/helpers';
+import {getRepositoryImage, getRepositoryName} from 'src/utils/helpers';
+import {ExternalSourceButton} from 'src/components/external-buttons/index.';
 
 interface ExternalLinks {
   isLoading: boolean;
@@ -31,64 +33,55 @@ const ExternalLinks: React.FC<ExternalLinks> = ({
 
   return (
     <Skeleton isLoaded={!isLoading} p={[4]}>
-      <Flex direction={['column', 'row']} flexWrap='wrap'>
-        <Flex m={1} flex={1} minW={'210px'}>
-          {includedInDataCatalog?.url && (
-            <NextLink href={includedInDataCatalog.url} passHref>
-              <Button
-                colorScheme='primary'
-                variant='outline'
-                href={includedInDataCatalog.url}
-                h='unset'
-                pl={3}
-              >
-                <Flex alignItems='center' direction={['column', 'row']}>
-                  {imageURL && (
-                    <Image
-                      boxSize={'60px'}
-                      objectFit='contain'
-                      mr={4}
-                      src={imageURL}
-                      alt='Data source logo'
-                    />
-                  )}
-                  <Text color='inherit' whiteSpace='normal'>
-                    View data in source repository
-                  </Text>
-                  <Icon ml={1} as={FaExternalLinkAlt}></Icon>
-                </Flex>
-              </Button>
-            </NextLink>
-          )}
-        </Flex>
-        <Flex m={1} flex={1} minW={'210px'}>
-          {showWorkspaceLink && (
-            <Button
-              colorScheme='primary'
-              href='/workspace'
-              isExternal
-              whiteSpace='normal'
-              h='unset'
-              pl={3}
-            >
-              <Flex alignItems='center' direction={['column', 'row']}>
-                {imageURL && (
-                  <Image
-                    boxSize={'60px'}
-                    objectFit='contain'
-                    w={'60px'}
-                    p={4}
-                    src={'/assets/workspace-logo.png'}
-                    alt='Analysis workspace logo'
-                  />
-                )}
-                <Text color='inherit' whiteSpace='normal'>
-                  Explore dataset in workspace
-                </Text>
-              </Flex>
-            </Button>
-          )}
-        </Flex>
+      <Flex flexWrap='wrap'>
+        {includedInDataCatalog?.name && (
+          <Flex
+            flexDirection='column'
+            alignItems='start'
+            flexWrap='wrap'
+            minW='200px'
+            maxW='350px'
+            p={2}
+            flex={1}
+          >
+            <Text color='gray.800' fontWeight='semibold' w='100%'>
+              Provided by
+            </Text>
+            <ExternalSourceButton
+              w='100%'
+              alt='Data source name'
+              imageURL={imageURL || undefined}
+              imageProps={{my: 2}}
+              name={getRepositoryName(includedInDataCatalog.name) || undefined}
+              href={includedInDataCatalog?.url || undefined}
+            ></ExternalSourceButton>
+          </Flex>
+        )}
+        {/* {showWorkspaceLink && (
+          <Flex
+            flexDirection='column'
+            alignItems='start'
+            flexWrap='wrap'
+            minW='250px'
+            maxW='350px'
+            p={2}
+            flex={1}
+          >
+            <Text color='gray.800' fontWeight='semibold' w='100%'>
+              Dataset Available
+            </Text>
+            <ExternalSourceButton
+              w='100%'
+              alt='Data source name'
+              imageURL='/assets/workspace-gray.png'
+              imageProps={{p: 2, my: 2}}
+              name='Explore in workspace'
+              variant='solid'
+              href={includedInDataCatalog?.url || undefined}
+              whiteSpace='nowrap'
+            ></ExternalSourceButton>
+          </Flex>
+        )} */}
       </Flex>
     </Skeleton>
   );
