@@ -1,4 +1,4 @@
-name: Deploy NDE-PORTAL Webapp to S3
+name: Staging Deployment of NDE-PORTAL Webapp
 
 on:
   push:
@@ -9,7 +9,7 @@ jobs:
   build_and_deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: actions/setup-node@v2
         with:
           node-version: '14'
@@ -26,5 +26,5 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ${{ secrets.AWS_REGION }}
           SOURCE_DIR: './out'
-          DEST_DIR: 'production'
+          DEST_DIR: 'staging'
           NEXT_PUBLIC_API_URL: https://api.data.niaid.nih.gov/v1

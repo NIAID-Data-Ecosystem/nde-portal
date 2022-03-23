@@ -1,0 +1,32 @@
+name: Production Deployment of NDE-PORTAL Webapp
+
+on:
+  push:
+    branches:
+      - production
+
+jobs:
+  build_and_deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: production
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+      - run: npm install
+      - name: build website
+        run: npm run build
+      - name: sync s3
+        uses: jakejarvis/s3-sync-action@master
+        with:
+          args: --acl public-read --follow-symlinks --delete
+        env:
+          AWS_S3_BUCKET: ${{ secrets.NDE_PORTAL_S3_BUCKET }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          SOURCE_DIR: './out'
+          DEST_DIR: 'production'
+          NEXT_PUBLIC_API_URL: https://api.data.niaid.nih.gov/v1
