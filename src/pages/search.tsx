@@ -203,6 +203,23 @@ const Search: NextPage = () => {
     });
   };
 
+  // [FIX]: altmetric badges need this to render properly on data update.
+  useEffect(() => {
+    // @ts-ignore
+    if (window._altmetric_embed_init) {
+      // @ts-ignore
+      window._altmetric_embed_init();
+    } else {
+      /* import altmetric script for badge embeds */
+      let altmetricsScript = document.createElement('script');
+      altmetricsScript.setAttribute(
+        'src',
+        'https://d1bxh8uas1mnw7.cloudfront.net/assets/embed.js',
+      );
+      document.body.appendChild(altmetricsScript);
+    }
+  }, [data]);
+
   // if no router params.
   if (!router.query.q) {
     return <></>;
@@ -210,15 +227,6 @@ const Search: NextPage = () => {
 
   return (
     <>
-      {/* import altmetric script for badge embeds */}
-      <Script
-        type='text/javascript'
-        src='https://d1bxh8uas1mnw7.cloudfront.net/assets/embed.js'
-        strategy='beforeInteractive'
-        onError={e => {
-          console.error('Script failed to load', e);
-        }}
-      />
       <PageContainer
         hasNavigation
         title='Search results'

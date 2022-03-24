@@ -327,11 +327,10 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                   >
                     Altmetric
                   </Text>
-
                   <div
                     data-badge-popover='left'
                     data-badge-type='bar'
-                    data-doi={formatDOI(doi)}
+                    data-doi={`${formatDOI(doi)}`}
                     className='altmetric-embed'
                     data-link-target='blank'
                   ></div>
