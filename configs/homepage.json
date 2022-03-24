@@ -1,0 +1,45 @@
+{
+  "sections": [
+    {
+      "heading": "Discovery Portal",
+      "subtitle": "Accelerate your research.",
+      "body": "Find, access and understand datasets and tools across many repositories.",
+      "routes": [
+        {
+          "title": "Get started",
+          "path": "/getting-started"
+        },
+        {
+          "title": "Learn More",
+          "path": "/about"
+        }
+      ]
+    },
+    {
+      "heading": "A Data Ecosystem",
+      "body": "The NIAID Data Ecosystem provides a secure environment to find, access and analyze immune-mediated and infectious disease data to speed the development of diagnostics, therapeutics, and vaccines."
+    },
+    {
+      "heading": "Explore data from many repos",
+      "body": "Search simultaneously across millions of publicly available datasets to find immune-mediated and infectious disease data for reanalysis.",
+      "routes": [
+        {
+          "title": "Suggest a new source",
+          "path": "https://github.com/biothings/metadataplus/issues/new/choose",
+          "isExternal": true
+        }
+      ]
+    },
+    {
+      "heading": "Connect to the workspace.",
+      "body": "Connect to the Analysis Workspace to analyze datasets or to integrate computational tools in your own pipeline.",
+      "routes": [
+        {
+          "title": "Go to workspace",
+          "path": "#",
+          "isExternal": true
+        }
+      ]
+    }
+  ]
+}
