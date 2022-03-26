@@ -19,7 +19,6 @@ import {
   useBreakpointValue,
 } from 'nde-design-system';
 import {
-  Navigation,
   ResourceHeader,
   ResourceOverview,
   ResourceTabs,

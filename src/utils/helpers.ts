@@ -92,3 +92,10 @@ export const formatDOI = (doi: FormattedResource['doi']) => {
   }
   return doi;
 };
+
+// Format number with thousands separator
+export const formatNumber = (number: number, separator: string = ',') => {
+  return number
+    .toString()
+    .replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, separator);
+};

@@ -89,8 +89,7 @@ const Search: NextPage = () => {
   // Get query params from url params
   const router = useRouter();
 
-  // [TO DO ]: move to get serverside props?
-  const {isLoading, error, data, ...props} = useQuery<
+  const {isLoading, error, data} = useQuery<
     FetchSearchResultsResponse | undefined,
     Error
   >(

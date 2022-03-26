@@ -10,6 +10,11 @@
   "dependencies": {
     "@emotion/react": "^11",
     "@emotion/styled": "^11",
+    "@visx/group": "^2.1.0",
+    "@visx/legend": "^2.2.2",
+    "@visx/scale": "^2.2.2",
+    "@visx/shape": "^2.4.0",
+    "@visx/tooltip": "^2.8.0",
     "axios": "^0.24.0",
     "framer-motion": "^4",
     "lodash": "^4.17.21",
@@ -19,6 +24,7 @@
     "react-dom": "17.0.2",
     "react-icons": "^4.3.1",
     "react-query": "^3.34.7",
+    "react-spring": "^9.4.4",
     "styled-system": "^5.1.5",
     "usehooks-ts": "^2.4.1"
   },
