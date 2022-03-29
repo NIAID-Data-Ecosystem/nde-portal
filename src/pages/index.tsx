@@ -33,17 +33,27 @@ import {useQuery} from 'react-query';
 import {FetchSearchResultsResponse} from 'src/utils/api/types';
 import LoadingSpinner from 'src/components/loading';
 import {formatNumber} from 'src/utils/helpers';
-import PieChart from 'src/components/home/pie-chart';
-import {maxWidth} from 'styled-system';
-
+import PieChart from 'src/components/home/components/pie-chart';
+import {
+  fade,
+  StyledSection,
+  StyledSectionHeading,
+  StyledText,
+  StyledBody,
+  StyledSectionButtonGroup,
+} from 'src/components/home/styles';
 const sample_queries = [
   {
     title: 'E. coli',
-    searchTerms:
-      '"E. coli" "Escherichia coli" "Shiga Toxin-Producing E. coli" "STEC"',
+    searchTerms: [
+      'E. coli',
+      'Escherichia coli',
+      'Shiga Toxin-Producing E. coli',
+      'STEC',
+    ],
   },
-  {title: 'Tuberculosis', searchTerms: 'Tuberculosis TB'},
-  {title: 'Ebola', searchTerms: 'Ebola EBOV EVD'},
+  {title: 'Tuberculosis', searchTerms: ['Tuberculosis', 'TB']},
+  {title: 'Ebola', searchTerms: ['Ebola', 'EBOV', 'EVD']},
 ];
 interface QuickQueryLinkProps {
   title: string;
@@ -202,11 +212,10 @@ const Home: NextPage = () => {
           <StyledSection
             id='header'
             flexDirection={'column'}
+            alignItems={{base: 'start', xl: 'center'}}
             textAlign={{xl: 'center'}}
-
-            // flexDirection={['row', 'row', 'row', 'column']}
           >
-            <Box w='600px'>
+            <Box maxW='600px'>
               <Heading
                 as='h1'
                 size='h1'
@@ -231,6 +240,7 @@ const Home: NextPage = () => {
               <Text
                 color='white'
                 fontWeight='light'
+                fontSize={'lg'}
                 lineHeight={'short'}
                 mt={2}
                 maxWidth={{base: '400px', xl: 'unset'}}
@@ -240,7 +250,7 @@ const Home: NextPage = () => {
                 {homepageCopy.sections[0].body}
               </Text>
             </Box>
-            <Flex w='100%' mt={24} justifyContent='center'>
+            <Flex w='100%' mt={[15, 20, 24]} justifyContent='center'>
               <Flex
                 flexDirection='column'
                 maxW={{base: '600px', xl: '1000px'}}
@@ -268,7 +278,7 @@ const Home: NextPage = () => {
                       <QuickQueryLink
                         key={query.title}
                         title={query.title}
-                        queryString={query.searchTerms}
+                        queryString={query.searchTerms.join(' OR ')}
                       />
                     );
                   })}
@@ -277,6 +287,7 @@ const Home: NextPage = () => {
             </Flex>
           </StyledSection>
         </PageContent>
+
         {/* NIAID Data Ecosystem section */}
         <PageContent justifyContent='center' bg='white' minH='unset'>
           <StyledSection
@@ -289,15 +300,15 @@ const Home: NextPage = () => {
               {homepageCopy.sections[1].heading}
             </StyledSectionHeading>
 
-            <StyledTextWrapper
+            <StyledText
               textAlign={['start', 'center']}
               mt={4}
               fontSize={['lg', 'xl']}
               lineHeight='taller'
               maxW='unset'
             >
-              <Text>{homepageCopy.sections[1].body}</Text>
-            </StyledTextWrapper>
+              {homepageCopy.sections[1].body}
+            </StyledText>
             <StyledSectionButtonGroup variant='solid' justifyContent='center'>
               {homepageCopy.sections[1]?.routes &&
                 homepageCopy.sections[1].routes.map(route => {
@@ -316,6 +327,7 @@ const Home: NextPage = () => {
             </StyledSectionButtonGroup>
           </StyledSection>
         </PageContent>
+
         {/* Display stats about the Biothings API */}
         {!error && (
           <PageContent
@@ -391,19 +403,28 @@ const Home: NextPage = () => {
               <StyledSectionHeading mt={[4, 6]}>
                 {homepageCopy.sections[2].heading}
               </StyledSectionHeading>
-              <StyledTextWrapper>
-                <Text>{homepageCopy.sections[2].body}</Text>
-              </StyledTextWrapper>
+              <StyledText>{homepageCopy.sections[2].body}</StyledText>
               {homepageCopy.sections[2]?.routes &&
-                homepageCopy.sections[2].routes.map(route => {
-                  return (
-                    <StyledSectionButtonGroup key={route.title}>
-                      <Button href={route.path} w='100%' isExternal>
-                        {route.title}
-                      </Button>
-                    </StyledSectionButtonGroup>
-                  );
-                })}
+                homepageCopy.sections[2].routes.map(
+                  (route: {
+                    title: string;
+                    path: string;
+                    isExternal?: boolean;
+                  }) => {
+                    return (
+                      <StyledSectionButtonGroup key={route.title}>
+                        <Button
+                          href={route.path}
+                          w='100%'
+                          variant='outline'
+                          isExternal={route.isExternal || false}
+                        >
+                          {route.title}
+                        </Button>
+                      </StyledSectionButtonGroup>
+                    );
+                  },
+                )}
             </StyledBody>
           </StyledSection>
         </PageContent>
@@ -427,9 +448,7 @@ const Home: NextPage = () => {
               <StyledSectionHeading mt={[4, 6]}>
                 {homepageCopy.sections[3].heading}
               </StyledSectionHeading>
-              <StyledTextWrapper>
-                <Text>{homepageCopy.sections[3].body}</Text>
-              </StyledTextWrapper>
+              <StyledText>{homepageCopy.sections[3].body}</StyledText>
               {homepageCopy.sections[3]?.routes &&
                 homepageCopy.sections[3].routes.map(route => {
                   return (
@@ -449,69 +468,3 @@ const Home: NextPage = () => {
 };
 
 export default Home;
-
-// Styles
-const fade = keyframes`
-  0% {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0px);
-  }
-`;
-
-export const StyledSection = styled(Flex)<FlexProps>(props => ({}));
-
-StyledSection.defaultProps = {
-  as: 'section',
-  w: '100%',
-  px: [2, 4, 6],
-  py: [2, 4, 8],
-  flexWrap: ['wrap', 'wrap', 'nowrap'],
-  flexDirection: ['column', 'column', 'row'],
-  alignItems: ['start', 'center', 'center'],
-  justifyContent: ['center', 'center', 'center', 'space-between'],
-  maxWidth: ['100%', '100%', '1080px'],
-};
-
-export const StyledSectionHeading = styled(Heading)<HeadingProps>(
-  props => ({}),
-);
-
-StyledSectionHeading.defaultProps = {
-  as: 'h2',
-  color: 'text.body',
-  fontWeight: 'regular',
-};
-
-export const StyledTextWrapper = styled(Text)<TextProps>(props => ({}));
-
-StyledTextWrapper.defaultProps = {
-  mt: 4,
-  fontSize: ['lg'],
-  fontWeight: 'light',
-  lineHeight: 'short',
-};
-
-export const StyledBody = styled(Box)<BoxProps>(props => ({}));
-
-StyledBody.defaultProps = {
-  maxWidth: ['unset', 'unset', '410px'],
-  textAlign: ['start', 'center', 'start'],
-};
-
-export const StyledSectionButtonGroup = styled(ButtonGroup)<ButtonGroupProps>(
-  props => ({}),
-);
-
-StyledSectionButtonGroup.defaultProps = {
-  flexWrap: ['wrap', 'nowrap'],
-  my: [6, 6],
-  spacing: [0, 4],
-  w: '100%',
-  justifyContent: ['start', 'center', 'start'],
-  // max size for buttons in button group
-  sx: {a: {maxWidth: 300}},
-};

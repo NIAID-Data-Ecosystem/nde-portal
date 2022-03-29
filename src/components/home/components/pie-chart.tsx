@@ -109,8 +109,8 @@ export default function PieChart({
               pieValue={getCount}
               outerRadius={radius}
               innerRadius={radius - donutThickness}
-              cornerRadius={3}
-              padAngle={0.005}
+              // cornerRadius={3}
+              // padAngle={0.005}
             >
               {pie => {
                 return (
