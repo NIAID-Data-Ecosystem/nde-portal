@@ -1,21 +1,28 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {PageContent} from './content';
 import {SearchInput} from 'nde-design-system';
+import {useRouter} from 'next/router';
 
-export const SearchBar = ({...props}) => {
+export const SearchBar = ({value, ...props}: {value: string | string[]}) => {
+  const router = useRouter();
+
+  // Search term entered in search bar
+  const [searchTerm, setSearchTerm] = useState<string | string[]>(value || '');
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>): void =>
+    setSearchTerm(e.target.value);
+
   return (
     <PageContent bg='white' minH={'unset'}>
-      {/* Search bar */}
-      {/* [TO DO]:
-          [] handle change / handleSubmit
-      */}
       <SearchInput
         ariaLabel='Search for datasets'
         colorScheme='primary'
-        handleChange={() => {}}
-        handleSubmit={() => {}}
         w='100%'
-        defaultValue={''}
+        value={searchTerm}
+        handleChange={handleChange}
+        handleSubmit={e => {
+          e.preventDefault();
+          searchTerm && router.push(`/search?q=${searchTerm}`);
+        }}
         {...props}
       />
     </PageContent>

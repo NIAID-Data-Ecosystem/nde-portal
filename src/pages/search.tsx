@@ -22,7 +22,6 @@ import {
   Collapse,
   Flex,
   Heading,
-  Link,
   ListItem,
   Stack,
   Tag,
@@ -119,7 +118,6 @@ const Search: NextPage = () => {
         from: selectedPage,
         filters: selectedFilters,
         sortOrder,
-        // orderBy,
       },
     ],
     () => {
@@ -145,7 +143,6 @@ const Search: NextPage = () => {
   // Set initial state based on route params.
   useEffect(() => {
     const {q, size, filters, from, sort} = router.query;
-    console.log(router.query);
     setQueryString(prev =>
       q
         ? Array.isArray(q)
@@ -165,15 +162,6 @@ const Search: NextPage = () => {
     setSortOrder(prev =>
       sort ? (Array.isArray(sort) ? sort[0] : sort) : prev,
     );
-    // setOrderBy(prev => {
-    //   if (sort) {
-    //     let sort_term = Array.isArray(sort) ? sort[0] : sort;
-    //     // If sort term is preceeded by a minus the order is descending.
-    //     return sort_term.charAt(0) === '-' ? 'desc' : 'asc';
-    //   } else {
-    //     return prev;
-    //   }
-    // });
 
     setSelectedFilters(() => {
       // convert url string to query object
@@ -268,7 +256,7 @@ const Search: NextPage = () => {
         py={0}
       >
         <Box w={'100%'}>
-          <SearchBar defaultValue={router.query.q || ''} />
+          <SearchBar value={router.query.q || ''} />
 
           <PageContent w='100%' flexDirection='column' minW={'740px'}>
             {error ? (
