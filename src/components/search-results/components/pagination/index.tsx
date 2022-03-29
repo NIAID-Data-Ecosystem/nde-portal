@@ -9,8 +9,8 @@ import {
   PaginationButton as StyledPaginationButton,
   PaginationButtonGroup as StyledPaginationButtonGroup,
   Select,
+  VisuallyHidden,
 } from 'nde-design-system';
-import {VisuallyHidden} from '@chakra-ui/react';
 import {
   FaChevronDown,
   FaAngleRight,
@@ -18,8 +18,13 @@ import {
   FaAngleDoubleRight,
   FaAngleDoubleLeft,
 } from 'react-icons/fa';
+import {SortOptions} from 'src/pages/search';
 
-interface PaginationProps extends DisplayResultsProps {
+interface PaginationProps
+  extends Omit<
+    DisplayResultsProps,
+    'sortOptions' | 'sortOrder' | 'handleSortOrder'
+  > {
   selectedPage: number;
   handleSelectedPage: (pageNumber: number) => void;
 }
@@ -88,15 +93,23 @@ export const Pagination: React.FC<PaginationProps> = ({
 };
 
 interface DisplayResultsProps {
+  // handle items per page view.
   selectedPerPage: number;
   handleSelectedPerPage: (pageNumber: number) => void;
   total: number;
+  // handles sorting
+  sortOrder: string;
+  sortOptions: SortOptions[];
+  handleSortOrder: (sort: string) => void;
 }
 export const DisplayResults: React.FC<DisplayResultsProps> = ({
   children,
   selectedPerPage,
   handleSelectedPerPage,
   total,
+  sortOrder,
+  sortOptions,
+  handleSortOrder,
 }) => {
   const showPerPageOptions = [10, 20, 30];
   if (!total) {
@@ -128,32 +141,65 @@ export const DisplayResults: React.FC<DisplayResultsProps> = ({
           </Heading>
         </Box>
 
-        {/* Show Per Page dropdown. */}
-        <Box>
-          <label htmlFor='show-per-page-select' title='Show per page'></label>
-          <Select
-            id='show-per-page-select'
-            aria-label='Select show items per page'
-            borderRadius={'semi'}
-            bg={'white'}
-            boxShadow={'low'}
-            icon={<FaChevronDown />}
-            iconSize={'xs'}
-            value={selectedPerPage}
-            cursor='pointer'
-            my={1}
-            _hover={{boxShadow: 'md'}}
-            onChange={e => handleSelectedPerPage(+e.target.value)}
-          >
-            {showPerPageOptions.map(option => {
-              return (
-                <option key={option} value={option}>
-                  {option}
-                </option>
-              );
-            })}
-          </Select>
-        </Box>
+        {/* Sort/order dropdown */}
+        <Flex>
+          <Box mr={2}>
+            <label htmlFor='sorting-order-select' title='Sort order'></label>
+            <Select
+              id='sorting-order-select'
+              aria-label='Select sort order'
+              borderRadius={'semi'}
+              bg={'white'}
+              boxShadow={'low'}
+              icon={<FaChevronDown />}
+              iconSize={'xs'}
+              value={sortOrder}
+              cursor='pointer'
+              my={1}
+              _hover={{boxShadow: 'md'}}
+              onChange={e => handleSortOrder(e.target.value)}
+            >
+              {sortOptions.map(option => {
+                return (
+                  <option
+                    key={`${option.sortBy}-${option.orderBy}`}
+                    value={`${option.orderBy === 'desc' ? '-' : ''}${
+                      option.sortBy
+                    }`}
+                  >
+                    {option.name}
+                  </option>
+                );
+              })}
+            </Select>
+          </Box>
+          {/* Show Per Page dropdown. */}
+          <Box>
+            <label htmlFor='show-per-page-select' title='Show per page'></label>
+            <Select
+              id='show-per-page-select'
+              aria-label='Select show items per page'
+              borderRadius={'semi'}
+              bg={'white'}
+              boxShadow={'low'}
+              icon={<FaChevronDown />}
+              iconSize={'xs'}
+              value={selectedPerPage}
+              cursor='pointer'
+              my={1}
+              _hover={{boxShadow: 'md'}}
+              onChange={e => handleSelectedPerPage(+e.target.value)}
+            >
+              {showPerPageOptions.map(option => {
+                return (
+                  <option key={option} value={option}>
+                    {option}
+                  </option>
+                );
+              })}
+            </Select>
+          </Box>
+        </Flex>
       </Flex>
 
       {children}

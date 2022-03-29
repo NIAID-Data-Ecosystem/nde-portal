@@ -11,11 +11,10 @@ import {
   Text,
   TextProps,
 } from 'nde-design-system';
-
 import styled from '@emotion/styled';
 
 // Styles for the home page
-const fade = keyframes`
+export const fade = keyframes`
   0% {
     opacity: 0;
     transform: translateY(30px);

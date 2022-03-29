@@ -29,6 +29,7 @@ interface Params {
   from?: string;
   facet_size?: number;
   facets?: string;
+  sort?: string;
 }
 
 export const fetchSearchResults = async (params: Params) => {

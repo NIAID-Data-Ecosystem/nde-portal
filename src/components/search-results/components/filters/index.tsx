@@ -1,19 +1,20 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {
+  AccordionItem,
+  AccordionButton,
+  AccordionPanel,
+  AccordionIcon,
   Box,
   Button,
+  Checkbox,
+  CheckboxGroup,
   Flex,
   Heading,
   SearchInput,
   UnorderedList,
   ListItem,
   Text,
-  AccordionItem,
-  AccordionButton,
-  AccordionPanel,
-  AccordionIcon,
 } from 'nde-design-system';
-import {Checkbox, CheckboxGroup} from '@chakra-ui/react';
 import {FacetTerm} from 'src/utils/api/types';
 import {filterFilterList} from '../../helpers';
 import LoadingSpinner from 'src/components/loading';

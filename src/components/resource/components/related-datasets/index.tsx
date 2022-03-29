@@ -1,7 +1,6 @@
 import React from 'react';
 import {useQuery} from 'react-query';
-import {useLocalStorage} from 'usehooks-ts';
-import {Link, Skeleton, Text, UnorderedList, ListItem} from 'nde-design-system';
+import {Link, Skeleton, UnorderedList, ListItem} from 'nde-design-system';
 import {fetchSearchResults} from 'src/utils/api';
 import {
   FetchSearchResultsResponse,
@@ -12,8 +11,6 @@ import {StyledSectionHeading, StyledSectionHead} from '../../styles';
 interface RelatedDatasets {}
 
 const RelatedDatasets: React.FC<RelatedDatasets> = () => {
-  // Fetch search term from local storage
-  const [searchQuery] = useLocalStorage('nde-search-query', '');
   const {isLoading, error, data} = useQuery<
     FetchSearchResultsResponse | undefined,
     Error

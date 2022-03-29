@@ -28,18 +28,10 @@ import {
   Section,
 } from 'src/components/resource';
 import {FaRegClock} from 'react-icons/fa';
-import {useLocalStorage} from 'usehooks-ts';
 import Script from 'next/script';
 import {StyledBanner} from 'src/components/search-results/components/card';
 import {formatDate} from 'src/utils/helpers';
 import ErrorMessage from 'src/components/error';
-
-/*
-To do:
-[ ] Empty case
-[ ] Loading case
-[ ] Error case
-*/
 
 const Dataset: NextPage = props => {
   const router = useRouter();
@@ -47,9 +39,6 @@ const Dataset: NextPage = props => {
 
   // Check if mobile
   const isMobile = useBreakpointValue({base: true, md: false});
-
-  // Fetch search term from local storage
-  const [searchQuery] = useLocalStorage('nde-search-query', '');
 
   // Access query client
   const {isLoading, error, data} = useQuery<

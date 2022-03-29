@@ -44,6 +44,20 @@ import {
 } from 'src/components/search-results/components/pagination';
 import {ButtonGroup} from '@chakra-ui/button';
 
+// Sorting mechanism.
+export interface SortOptions {
+  name: string;
+  sortBy: string;
+  orderBy: 'asc' | 'desc';
+}
+const sort_options: SortOptions[] = [
+  {name: 'Best Match', sortBy: '_score', orderBy: 'asc'},
+  {name: 'Date: oldest to newest', sortBy: 'date', orderBy: 'asc'},
+  {name: 'Date: newest to oldest', sortBy: 'date', orderBy: 'desc'},
+  {name: 'A-Z', sortBy: 'name', orderBy: 'asc'},
+  {name: 'Z-A', sortBy: 'name', orderBy: 'desc'},
+];
+
 const Search: NextPage = () => {
   const defaultFilters: {
     [key: string]: (string | number)[];
@@ -62,6 +76,7 @@ const Search: NextPage = () => {
     selectedPerPage: 10,
     facets: Object.keys(defaultFilters),
     facetSize: 1000,
+    sortOrder: '_score', // defaults to score
   };
 
   // Currently selected filters.
@@ -72,6 +87,9 @@ const Search: NextPage = () => {
 
   // Currently selected page.
   const [selectedPage, setSelectedPage] = useState(defaultQuery.selectedPage);
+
+  const [sortOrder, setSortOrder] = useState(defaultQuery.sortOrder);
+  // const [orderBy, setOrderBy] = useState(defaultQuery.orderBy);
 
   //  Items per page to show
   const [selectedPerPage, setSelectedPerPage] = useState(
@@ -100,6 +118,8 @@ const Search: NextPage = () => {
         size: selectedPerPage,
         from: selectedPage,
         filters: selectedFilters,
+        sortOrder,
+        // orderBy,
       },
     ],
     () => {
@@ -115,6 +135,7 @@ const Search: NextPage = () => {
         from: `${(selectedPage - 1) * selectedPerPage}`,
         facet_size: defaultQuery.facetSize,
         facets: defaultQuery.facets.join(','),
+        sort: sortOrder,
       });
     },
     // Don't refresh everytime window is touched.
@@ -123,8 +144,8 @@ const Search: NextPage = () => {
 
   // Set initial state based on route params.
   useEffect(() => {
-    const {q, size, filters, from} = router.query;
-
+    const {q, size, filters, from, sort} = router.query;
+    console.log(router.query);
     setQueryString(prev =>
       q
         ? Array.isArray(q)
@@ -140,6 +161,19 @@ const Search: NextPage = () => {
     setSelectedPerPage(prev =>
       size ? (Array.isArray(size) ? +size[0] : +size) : prev,
     );
+
+    setSortOrder(prev =>
+      sort ? (Array.isArray(sort) ? sort[0] : sort) : prev,
+    );
+    // setOrderBy(prev => {
+    //   if (sort) {
+    //     let sort_term = Array.isArray(sort) ? sort[0] : sort;
+    //     // If sort term is preceeded by a minus the order is descending.
+    //     return sort_term.charAt(0) === '-' ? 'desc' : 'asc';
+    //   } else {
+    //     return prev;
+    //   }
+    // });
 
     setSelectedFilters(() => {
       // convert url string to query object
@@ -279,6 +313,13 @@ const Search: NextPage = () => {
                 </Heading>
 
                 <DisplayResults
+                  sortOptions={sort_options}
+                  sortOrder={sortOrder}
+                  handleSortOrder={sort =>
+                    updateRoute({
+                      sort,
+                    })
+                  }
                   selectedPerPage={selectedPerPage}
                   handleSelectedPerPage={v => updateRoute({from: 1, size: v})}
                   total={totalItems}

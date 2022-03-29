@@ -2,32 +2,23 @@ import {useState} from 'react';
 import type {NextPage} from 'next';
 import {
   Box,
-  BoxProps,
   Button,
   Flex,
-  FlexProps,
   Heading,
-  HeadingProps,
   Icon,
   Image,
   Link,
   SearchInput,
   SimpleGrid,
   Text,
-  TextProps,
   useBreakpointValue,
+  usePrefersReducedMotion,
 } from 'nde-design-system';
 import {PageContainer, PageContent} from 'src/components/page-container';
 import {useRouter} from 'next/router';
 import homepageCopy from 'configs/homepage.json';
 import {FaChevronRight} from 'react-icons/fa';
-import {
-  ButtonGroup,
-  ButtonGroupProps,
-  keyframes,
-  usePrefersReducedMotion,
-} from '@chakra-ui/react';
-import styled from '@emotion/styled';
+
 import {fetchSearchResults} from 'src/utils/api';
 import {useQuery} from 'react-query';
 import {FetchSearchResultsResponse} from 'src/utils/api/types';
