@@ -2965,10 +2965,10 @@
   dependencies:
     "stream-buffers" "2.2.x"
 
-"bplist-parser@0.3.0":
-  "integrity" "sha512-zgmaRvT6AN1JpPPV+S0a1/FAtoxSreYDccZGIqEMSvZl9DMe70mJ7MFzpxa1X+gHVdkToE2haRUHHMiW1OdejA=="
-  "resolved" "https://registry.npmjs.org/bplist-parser/-/bplist-parser-0.3.0.tgz"
-  "version" "0.3.0"
+"bplist-parser@0.3.1":
+  "integrity" "sha512-PyJxiNtA5T2PlLIeBot4lbp7rj4OadzjnMZD/G5zuBNt8ei/yCU7+wW0h2bag9vr8c+/WuRWmSxbqAl9hL1rBA=="
+  "resolved" "https://registry.npmjs.org/bplist-parser/-/bplist-parser-0.3.1.tgz"
+  "version" "0.3.1"
   dependencies:
     "big-integer" "1.6.x"
 
@@ -5658,10 +5658,10 @@
   "resolved" "https://registry.npmjs.org/natural-compare/-/natural-compare-1.4.0.tgz"
   "version" "1.4.0"
 
-"nde-design-system@^0.2.23":
-  "integrity" "sha512-s3zqHnEtDEBrN30uRHo6nqfNTKtA3YIlo9zq3cPIYAKbRQuGRGsGbh0HdT9JPd+2eRMEfy5J0WvqmbefK5Jfmg=="
-  "resolved" "https://registry.npmjs.org/nde-design-system/-/nde-design-system-0.2.23.tgz"
-  "version" "0.2.23"
+"nde-design-system@^0.2.24":
+  "integrity" "sha512-QbDbczCvhxNw9q2LIyir4MEZGlZp3W0M8jxPfF+LpcRZNhwqawV7C36QwnQgFIuqZWzOUZGq4moE0OX+KI2YJg=="
+  "resolved" "https://registry.npmjs.org/nde-design-system/-/nde-design-system-0.2.24.tgz"
+  "version" "0.2.24"
   dependencies:
     "@chakra-ui/icons" "^1.1.7"
     "@chakra-ui/react" "1.7.2"
@@ -6084,7 +6084,7 @@
   dependencies:
     "find-up" "^3.0.0"
 
-"plist@^3.0.2", "plist@^3.0.4":
+"plist@^3.0.2", "plist@^3.0.5":
   "integrity" "sha512-83vX4eYdQp3vP9SxuYgEM/G/pJQqLUz/V/xzPrzruLs7fz7jxGQ1msZ/mg1nwZxUSuOp4sb+/bEIbRrbzZRxDA=="
   "resolved" "https://registry.npmjs.org/plist/-/plist-3.0.5.tgz"
   "version" "3.0.5"
@@ -6867,13 +6867,13 @@
   "version" "3.0.7"
 
 "simple-plist@^1.0.0":
-  "integrity" "sha512-uYWpeGFtZtVt2NhG4AHgpwx323zxD85x42heMJBan1qAiqqozIlaGrwrEt6kRjXWRWIXsuV1VLCvVmZan2B5dg=="
-  "resolved" "https://registry.npmjs.org/simple-plist/-/simple-plist-1.3.0.tgz"
-  "version" "1.3.0"
+  "integrity" "sha512-iMSw5i0XseMnrhtIzRb7XpQEXepa9xhWxGUojHBL43SIpQuDQkh3Wpy67ZbDzZVr6EKxvwVChnVpdl8hEVLDiw=="
+  "resolved" "https://registry.npmjs.org/simple-plist/-/simple-plist-1.3.1.tgz"
+  "version" "1.3.1"
   dependencies:
     "bplist-creator" "0.1.0"
-    "bplist-parser" "0.3.0"
-    "plist" "^3.0.4"
+    "bplist-parser" "0.3.1"
+    "plist" "^3.0.5"
 
 "sisteransi@^1.0.5":
   "integrity" "sha512-bLGGlR1QxBcynn2d5YmDX4MGjlZvy2MRBDRNHLJ8VI6l6+9FUiyTFNJ0IveOSP0bcXgVDPRcfGqA0pjaqUpfVg=="

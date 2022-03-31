@@ -321,7 +321,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
               >
                 <Text
                   fontSize='xs'
-                  color='niaid.placeholder'
+                  // color='niaid.placeholder'
                   my={0}
                   fontWeight='medium'
                   lineHeight={1}
