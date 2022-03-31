@@ -8,6 +8,7 @@ import {
   PaginationButton,
   PaginationButton as StyledPaginationButton,
   PaginationButtonGroup as StyledPaginationButtonGroup,
+  ScaleFade,
   Select,
   VisuallyHidden,
 } from 'nde-design-system';
@@ -35,58 +36,62 @@ export const Pagination: React.FC<PaginationProps> = ({
   selectedPerPage,
   total,
 }) => {
-  const total_pages = Math.ceil(total / selectedPerPage);
-  if (!total) {
-    return null;
-  }
+  const total_pages = total && Math.ceil(total / selectedPerPage);
+
   return (
     <StyledPagination bg='white'>
       <Flex w='100%' justifyContent='center'>
-        <StyledPaginationButton
-          isDisabled={selectedPage - 1 === 0}
-          onClick={() => handleSelectedPage(1)}
-        >
-          <VisuallyHidden>First Page</VisuallyHidden>
-          <Icon as={FaAngleDoubleLeft} />
-        </StyledPaginationButton>
+        {/* Fade in transition */}
+        <ScaleFade in={!!total}>
+          <Flex>
+            <StyledPaginationButton
+              isDisabled={selectedPage - 1 === 0}
+              onClick={() => handleSelectedPage(1)}
+            >
+              <VisuallyHidden>First Page</VisuallyHidden>
+              <Icon as={FaAngleDoubleLeft} />
+            </StyledPaginationButton>
 
-        <StyledPaginationButton
-          isDisabled={selectedPage - 1 === 0}
-          onClick={() => handleSelectedPage(selectedPage - 1)}
-        >
-          <VisuallyHidden>Previous page</VisuallyHidden>
-          <Icon as={FaAngleLeft} />
-        </StyledPaginationButton>
-        <StyledPaginationButtonGroup>
-          {Array(total_pages)
-            .fill('')
-            .map((_, i) => {
-              const currentPage = i + 1;
-              return (
-                <PaginationButton
-                  key={i}
-                  isActive={currentPage === selectedPage}
-                  onClick={() => handleSelectedPage(currentPage)}
-                >
-                  {i + 1}
-                </PaginationButton>
-              );
-            })}
-        </StyledPaginationButtonGroup>
-        <StyledPaginationButton
-          isDisabled={selectedPage === total_pages}
-          onClick={() => handleSelectedPage(selectedPage + 1)}
-        >
-          <VisuallyHidden>Next Page</VisuallyHidden>
-          <Icon as={FaAngleRight} />
-        </StyledPaginationButton>
-        <StyledPaginationButton
-          isDisabled={selectedPage === total_pages}
-          onClick={() => handleSelectedPage(total_pages)}
-        >
-          <VisuallyHidden>Last Page</VisuallyHidden>
-          <Icon as={FaAngleDoubleRight} />
-        </StyledPaginationButton>
+            <StyledPaginationButton
+              isDisabled={selectedPage - 1 === 0}
+              onClick={() => handleSelectedPage(selectedPage - 1)}
+            >
+              <VisuallyHidden>Previous page</VisuallyHidden>
+              <Icon as={FaAngleLeft} />
+            </StyledPaginationButton>
+
+            <StyledPaginationButtonGroup>
+              {Array(total_pages)
+                .fill('')
+                .map((_, i) => {
+                  const currentPage = i + 1;
+                  return (
+                    <PaginationButton
+                      key={i}
+                      isActive={currentPage === selectedPage}
+                      onClick={() => handleSelectedPage(currentPage)}
+                    >
+                      {i + 1}
+                    </PaginationButton>
+                  );
+                })}
+            </StyledPaginationButtonGroup>
+            <StyledPaginationButton
+              isDisabled={selectedPage === total_pages}
+              onClick={() => handleSelectedPage(selectedPage + 1)}
+            >
+              <VisuallyHidden>Next Page</VisuallyHidden>
+              <Icon as={FaAngleRight} />
+            </StyledPaginationButton>
+            <StyledPaginationButton
+              isDisabled={selectedPage === total_pages}
+              onClick={() => handleSelectedPage(total_pages)}
+            >
+              <VisuallyHidden>Last Page</VisuallyHidden>
+              <Icon as={FaAngleDoubleRight} />
+            </StyledPaginationButton>
+          </Flex>
+        </ScaleFade>
       </Flex>
     </StyledPagination>
   );
@@ -112,32 +117,32 @@ export const DisplayResults: React.FC<DisplayResultsProps> = ({
   handleSortOrder,
 }) => {
   const showPerPageOptions = [10, 20, 30];
-  if (!total) {
-    return null;
-  }
   return (
     <>
       <Flex
-        w={'100%'}
-        boxShadow={'semi'}
-        borderBottom={'2px solid'}
-        borderColor={'gray.700'}
-        justifyContent={['space-between']}
+        w='100%'
+        boxShadow='semi'
+        borderBottom='2px solid'
+        borderColor='gray.700'
+        justifyContent='space-between'
         alignItems='end'
       >
         {/* Total number of results */}
         <Box>
           <Heading
-            as={'h2'}
-            size={'h6'}
-            d={'flex'}
+            as='h2'
+            size='h6'
+            d='flex'
             alignItems='baseline'
-            fontWeight={'semibold'}
+            fontWeight='semibold'
           >
-            {total}
-            <span style={{fontSize: '1rem', marginLeft: '0.25rem'}}>
-              Result{total > 0 ? 's' : ''}
-            </span>
+            {total ? (
+              <span style={{fontSize: '1rem', marginLeft: '0.25rem'}}>
+                {total} Result{total > 1 ? 's' : ''}
+              </span>
+            ) : (
+              ''
+            )}
           </Heading>
         </Box>
 
@@ -148,11 +153,11 @@ export const DisplayResults: React.FC<DisplayResultsProps> = ({
             <Select
               id='sorting-order-select'
               aria-label='Select sort order'
-              borderRadius={'semi'}
-              bg={'white'}
-              boxShadow={'low'}
+              borderRadius='semi'
+              bg='white'
+              boxShadow='low'
               icon={<FaChevronDown />}
-              iconSize={'xs'}
+              iconSize='xs'
               value={sortOrder}
               cursor='pointer'
               my={1}
@@ -179,11 +184,11 @@ export const DisplayResults: React.FC<DisplayResultsProps> = ({
             <Select
               id='show-per-page-select'
               aria-label='Select show items per page'
-              borderRadius={'semi'}
-              bg={'white'}
-              boxShadow={'low'}
+              borderRadius='semi'
+              bg='white'
+              boxShadow='low'
               icon={<FaChevronDown />}
-              iconSize={'xs'}
+              iconSize='xs'
               value={selectedPerPage}
               cursor='pointer'
               my={1}

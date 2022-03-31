@@ -164,6 +164,7 @@ interface SearchResultCardProps {
   doi?: FormattedResource['doi'];
   includedInDataCatalog?: FormattedResource['includedInDataCatalog'];
   isLoading?: boolean;
+  url?: FormattedResource['url'];
 }
 
 const SearchResultCard: React.FC<SearchResultCardProps> = ({
@@ -181,6 +182,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
   variableMeasured,
   doi,
   includedInDataCatalog,
+  url,
   ...props
 }) => {
   const imageURL =
@@ -188,41 +190,49 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
     getRepositoryImage(includedInDataCatalog.name);
   const paddingCard = [4, 6, 8, 10];
   return (
-    <Card variant={'colorful'}>
+    <Card variant='colorful'>
       {/* Card header where name of resource is a link to resource apge */}
       <CardHeader position={'relative'} px={paddingCard} pt={4}>
-        {name && (
-          <Link
-            h={'100%'}
-            href={`/resources/${id}`}
-            flexWrap='nowrap'
-            color='white'
-            _hover={{
-              color: 'white',
-              h2: {textDecoration: 'underline'},
-              svg: {
-                transform: 'translate(0px)',
-                opacity: 0.9,
-                transition: '0.2s ease-in-out',
-              },
-            }}
-            _visited={{color: 'white', svg: {color: 'white'}}}
-          >
-            <Flex alignItems='center'>
-              <CardTitle size={'h6'} lineHeight='short' fontWeight='semibold'>
-                {name}
-              </CardTitle>
-              <Icon
-                as={FaChevronRight}
-                boxSize={4}
-                ml={4}
-                opacity={0.6}
-                transform='translate(-10px)'
-                transition='0.2s ease-in-out'
-              ></Icon>
-            </Flex>
-          </Link>
-        )}
+        <Skeleton
+          isLoaded={!isLoading}
+          startColor='whiteAlpha.100'
+          endColor='whiteAlpha.500'
+          h={isLoading ? '20px' : 'unset'}
+          w='100%'
+        >
+          {name && (
+            <Link
+              h={'100%'}
+              href={`/resources/${id}`}
+              flexWrap='nowrap'
+              color='white'
+              _hover={{
+                color: 'white',
+                h2: {textDecoration: 'underline'},
+                svg: {
+                  transform: 'translate(0px)',
+                  opacity: 0.9,
+                  transition: '0.2s ease-in-out',
+                },
+              }}
+              _visited={{color: 'white', svg: {color: 'white'}}}
+            >
+              <Flex alignItems='center'>
+                <CardTitle size='h6' lineHeight='short' fontWeight='semibold'>
+                  {name}
+                </CardTitle>
+                <Icon
+                  as={FaChevronRight}
+                  boxSize={4}
+                  ml={4}
+                  opacity={0.6}
+                  transform='translate(-10px)'
+                  transition='0.2s ease-in-out'
+                ></Icon>
+              </Flex>
+            </Link>
+          )}
+        </Skeleton>
       </CardHeader>
 
       {/* Card Content */}
@@ -232,12 +242,14 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
         height={isLoading ? '150px' : 'unset'}
         p={0}
         m={isLoading ? 4 : 0}
+        startColor='primary.50'
+        endColor='primary.100'
       >
         <Flex flexDirection={['column', 'row']}>
           {author && (
             <ToggleContainer
-              variant={'border'}
-              ariaLabel={'Show all authors.'}
+              variant='border'
+              ariaLabel='Show all authors.'
               noOfLines={1}
               justifyContent='start'
               m={0}
@@ -246,7 +258,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
               flex={1}
               _focus={{outlineColor: 'transparent'}}
             >
-              <Text fontSize={'xs'} color={'text.body'}>
+              <Text fontSize='xs' color='text.body'>
                 {formatAuthorsList2String(author, ',', 10)}
               </Text>
             </ToggleContainer>
@@ -256,7 +268,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
               d={['inline-flex', 'block']}
               justifyContent={['end']}
               alignContent='center'
-              borderY={`1px solid`}
+              borderY='1px solid'
               borderColor={['transparent', 'gray.200']}
               m={1}
             >
@@ -271,73 +283,62 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
 
         {/* Banner with resource type + date of publication */}
         <StyledBanner name={type} pl={[2, 4, 6]}>
-          {datePublished && (
-            <Flex alignItems={'center'}>
-              <Icon as={FaClock} mr={2}></Icon>
-              <Text fontSize={'xs'} fontWeight={'semibold'}>
-                Published on {formatDate(datePublished)}
-              </Text>
-            </Flex>
-          )}
-          {!datePublished && date && (
-            <Flex alignItems={'center'}>
-              <Icon as={FaClock} mr={2}></Icon>
-              <Text fontSize={'xs'} fontWeight={'semibold'}>
-                Published on {formatDate(date)}
-              </Text>
-            </Flex>
-          )}
+          <Flex alignItems='center'>
+            <Icon as={FaClock} mr={2}></Icon>
+            <Text fontSize='xs' fontWeight='semibold'>
+              {datePublished && `Published on ${formatDate(datePublished)}`}
+              {!datePublished && date && ` Published on ${formatDate(date)}`}
+            </Text>
+          </Flex>
         </StyledBanner>
-        {description && (
-          <>
-            <CardBody>
-              <ToggleContainer
-                ariaLabel={'show more description'}
-                noOfLines={[3, 10]}
-                px={paddingCard}
-                py={[2, 4, 6]}
-                my={0}
-                borderColor={'transparent'}
-                _focus={{outlineColor: 'transparent', bg: 'white'}}
-              >
-                <Box
-                  w='100%'
-                  fontSize={'sm'}
-                  dangerouslySetInnerHTML={{
-                    __html: description,
-                  }}
-                ></Box>
-              </ToggleContainer>
+        <>
+          <CardBody>
+            <ToggleContainer
+              ariaLabel='show more description'
+              noOfLines={[3, 10]}
+              px={paddingCard}
+              py={[2, 4, 6]}
+              my={0}
+              borderColor='transparent'
+              _focus={{outlineColor: 'transparent', bg: 'white'}}
+            >
+              <Box
+                w='100%'
+                fontSize='sm'
+                dangerouslySetInnerHTML={{
+                  __html: description || '',
+                }}
+              ></Box>
+            </ToggleContainer>
 
-              {doi && (
-                <Flex
-                  px={paddingCard}
-                  py={1}
+            {doi && (
+              <Flex
+                px={paddingCard}
+                py={1}
+                my={0}
+                flexDirection='column'
+                alignItems='end'
+              >
+                <Text
+                  fontSize='xs'
+                  color='niaid.placeholder'
                   my={0}
-                  flexDirection='column'
-                  alignItems='end'
+                  fontWeight='medium'
+                  lineHeight={1}
                 >
-                  <Text
-                    fontSize='xs'
-                    color='niaid.placeholder'
-                    my={0}
-                    fontWeight='medium'
-                    lineHeight={1}
-                  >
-                    Altmetric
-                  </Text>
-                  <div
-                    data-badge-popover='left'
-                    data-badge-type='bar'
-                    data-doi={`${formatDOI(doi)}`}
-                    className='altmetric-embed'
-                    data-link-target='blank'
-                  ></div>
-                </Flex>
-              )}
-            </CardBody>
-          </>
-        )}
+                  Altmetric
+                </Text>
+                <div
+                  data-badge-popover='left'
+                  data-badge-type='bar'
+                  data-doi={`${formatDOI(doi)}`}
+                  className='altmetric-embed'
+                  data-link-target='blank'
+                ></div>
+              </Flex>
+            )}
+          </CardBody>
+        </>
         {license || measurementTechnique || variableMeasured ? (
           <Accordion allowToggle p={0} pt={1}>
             <AccordionItem>
@@ -349,7 +350,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                       bg={isExpanded ? 'blackAlpha.100' : 'white'}
                     >
                       <Box flex='1' textAlign='left'>
-                        <Heading fontSize={'h6'} fontWeight={'semibold'}>
+                        <Heading fontSize='h6' fontWeight={'semibold'}>
                           Details
                         </Heading>
                       </Box>
@@ -365,7 +366,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                       {license && (
                         <ListItem>
                           <Stat my={2}>
-                            <StatLabel color={'gray.700'}>License</StatLabel>
+                            <StatLabel color='gray.700'>License</StatLabel>
                             <Link href={license} isExternal>
                               {license}
                             </Link>
@@ -375,7 +376,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                       {measurementTechnique && (
                         <ListItem>
                           <Stat my={2}>
-                            <StatLabel color={'gray.700'}>
+                            <StatLabel color='gray.700'>
                               Measurement Technique
                             </StatLabel>
                             <Text fontWeight='semibold'>
@@ -387,7 +388,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                       {variableMeasured && (
                         <ListItem>
                           <Stat my={2}>
-                            <StatLabel color={'gray.700'}>
+                            <StatLabel color='gray.700'>
                               Variable Measured
                             </StatLabel>
                             <Text fontWeight='semibold'>
@@ -406,54 +407,63 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
           <Divider p={0} />
         )}
       </Skeleton>
-      <CardFooter
-        justifyContent={'space-between'}
-        alignItems={'center'}
-        flexWrap='wrap'
-        bg='white'
-        px={paddingCard}
-        py={2}
+      <Skeleton
+        isLoaded={!isLoading}
+        height={isLoading ? '50px' : 'unset'}
+        p={0}
+        m={isLoading ? 4 : 0}
+        startColor='primary.50'
+        endColor='primary.100'
       >
-        <HStack
-          alignItems={'end'}
-          justifyContent={'space-between'}
-          py={1}
-          w='100%'
-          flexDirection={'row'}
+        <CardFooter
+          justifyContent='space-between'
+          alignItems='center'
+          flexWrap='wrap'
+          bg='white'
+          px={paddingCard}
+          py={2}
         >
-          {includedInDataCatalog?.name && (
-            <Flex
-              flexDirection={['column', 'row']}
-              alignItems='center'
-              flexWrap={'wrap'}
-            >
-              <ExternalSourceButton
-                px={3}
-                minW={'150px'}
-                imageURL={imageURL || undefined}
-                alt='Data source name'
-                name={
-                  getRepositoryName(includedInDataCatalog.name) || undefined
-                }
-                href={includedInDataCatalog?.url || undefined}
-              ></ExternalSourceButton>
-            </Flex>
-          )}
-
-          {id && (
-            <Flex flex={1} justifyContent='end'>
-              <Button
-                my={1}
-                href={`/resources/${id}`}
-                size='md'
-                rightIcon={<FaArrowAltCircleRight />}
+          <HStack
+            alignItems='end'
+            justifyContent='space-between'
+            py={1}
+            w='100%'
+            flexDirection='row'
+          >
+            {includedInDataCatalog?.name && url && (
+              <Flex
+                flexDirection={['column', 'row']}
+                alignItems='center'
+                flexWrap='wrap'
               >
-                See more
-              </Button>
-            </Flex>
-          )}
-        </HStack>
-      </CardFooter>
+                <ExternalSourceButton
+                  px={3}
+                  minW='150px'
+                  imageURL={imageURL || undefined}
+                  alt='Data source name'
+                  name={
+                    getRepositoryName(includedInDataCatalog.name) || undefined
+                  }
+                  href={url || undefined}
+                ></ExternalSourceButton>
+              </Flex>
+            )}
+
+            {id && (
+              <Flex flex={1} justifyContent='end'>
+                <Button
+                  my={1}
+                  href={`/resources/${id}`}
+                  size='md'
+                  rightIcon={<FaArrowAltCircleRight />}
+                >
+                  See more
+                </Button>
+              </Flex>
+            )}
+          </HStack>
+        </CardFooter>
+      </Skeleton>
     </Card>
   );
 };

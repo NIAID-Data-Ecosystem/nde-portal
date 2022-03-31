@@ -37,14 +37,14 @@ const sample_queries = [
   {
     title: 'E. coli',
     searchTerms: [
-      'E. coli',
-      'Escherichia coli',
-      'Shiga Toxin-Producing E. coli',
-      'STEC',
+      '"E.coli"',
+      '"Escherichia coli"',
+      '"Shiga Toxin-Producing E.coli"',
+      '"STEC"',
     ],
   },
-  {title: 'Tuberculosis', searchTerms: ['Tuberculosis', 'TB']},
-  {title: 'Ebola', searchTerms: ['Ebola', 'EBOV', 'EVD']},
+  {title: 'Tuberculosis', searchTerms: ['"Tuberculosis"', '"TB"']},
+  {title: 'Ebola', searchTerms: ['"Ebola"', '"EBOV"', '"EVD"']},
 ];
 interface QuickQueryLinkProps {
   title: string;
@@ -231,8 +231,8 @@ const Home: NextPage = () => {
               <Text
                 color='white'
                 fontWeight='light'
-                fontSize={'lg'}
-                lineHeight={'short'}
+                fontSize='lg'
+                lineHeight='short'
                 mt={2}
                 maxWidth={{base: '400px', xl: 'unset'}}
                 animation={animation}
@@ -340,15 +340,15 @@ const Home: NextPage = () => {
                   <LoadingSpinner key={i} isLoading={isLoading}>
                     {stat?.term && (
                       <Flex
-                        alignItems={['center']}
+                        alignItems='center'
                         flexDirection='column'
                         textAlign='center'
                       >
                         <Image
                           src='/assets/home-icon.png'
                           alt={`Icon for ${stat.term}`}
-                          boxSize={'50px'}
-                          objectFit={'contain'}
+                          boxSize='50px'
+                          objectFit='contain'
                           mb={1}
                         />
                         <Heading size='md' fontWeight='bold' my={1}>

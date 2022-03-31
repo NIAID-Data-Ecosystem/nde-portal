@@ -42,6 +42,7 @@ import {
   DisplayResults,
 } from 'src/components/search-results/components/pagination';
 import {ButtonGroup} from '@chakra-ui/button';
+import {useHasMounted} from 'src/hooks/useHasMounted';
 
 // Sorting mechanism.
 export interface SortOptions {
@@ -58,6 +59,9 @@ const sort_options: SortOptions[] = [
 ];
 
 const Search: NextPage = () => {
+  const hasMounted = useHasMounted();
+  const router = useRouter();
+
   const defaultFilters: {
     [key: string]: (string | number)[];
   } = {
@@ -104,8 +108,6 @@ const Search: NextPage = () => {
   >(null);
 
   // Get query params from url params
-  const router = useRouter();
-
   const {isLoading, error, data} = useQuery<
     FetchSearchResultsResponse | undefined,
     Error
@@ -141,16 +143,16 @@ const Search: NextPage = () => {
   );
 
   // Set initial state based on route params.
+
   useEffect(() => {
     const {q, size, filters, from, sort} = router.query;
     setQueryString(prev =>
       q
         ? Array.isArray(q)
-          ? q.map(s => encodeString(s)).join('+')
-          : encodeString(q)
+          ? `(${q.map(s => encodeString(s)).join('+')})`
+          : `(${encodeString(q)})`
         : prev,
     );
-
     setSelectedPage(prev =>
       from ? (Array.isArray(from) ? +from[0] : +from) : prev,
     );
@@ -241,9 +243,8 @@ const Search: NextPage = () => {
     }
   }, [data]);
 
-  // if no router params.
-  if (!router.query.q) {
-    return <></>;
+  if (!hasMounted || !router.isReady) {
+    return null;
   }
 
   return (
@@ -257,7 +258,6 @@ const Search: NextPage = () => {
       >
         <Box w={'100%'}>
           <SearchBar value={router.query.q || ''} />
-
           <PageContent w='100%' flexDirection='column' minW={'740px'}>
             {error ? (
               // [ERROR STATE]: API response error
@@ -306,6 +306,7 @@ const Search: NextPage = () => {
                   handleSortOrder={sort =>
                     updateRoute({
                       sort,
+                      from: defaultQuery.selectedPage,
                     })
                   }
                   selectedPerPage={selectedPerPage}
@@ -321,14 +322,19 @@ const Search: NextPage = () => {
                   ></Pagination>
                 </DisplayResults>
 
-                <Stack direction='row' justifyContent={'space-between'}>
+                <Stack
+                  direction='row'
+                  justifyContent='space-between'
+                  flex={1}
+                  w={'100%'}
+                >
                   {/* Filters sidebar */}
                   {/* [TO DO]: Render version for mobile. */}
                   <Box
                     flex={1}
-                    minW={'240px'}
+                    minW='240px'
+                    h='auto'
                     position='sticky'
-                    h='100vh'
                     top='62px'
                     boxShadow='base'
                     background='white'
@@ -387,41 +393,43 @@ const Search: NextPage = () => {
                   </Box>
 
                   {/* Results Cards */}
+                  {/* Empty state if no results found */}
+                  {!isLoading && (!data || data.results.length === 0) && (
+                    <Empty
+                      message='No results found.'
+                      imageUrl='/assets/empty.png'
+                      imageAlt='Missing information icon.'
+                      alignSelf='center'
+                      h={'50vh'}
+                    >
+                      <Text>Search yielded no results, please try again.</Text>
+                      <Button href='/' mt={4}>
+                        Go to search page.
+                      </Button>
+                    </Empty>
+                  )}
                   <Box flex={3}>
                     <UnorderedList>
-                      {isLoading ||
-                      (data?.results && data?.results?.length > 0) ? (
-                        new Array(selectedPerPage).fill(null).map((item, i) => {
-                          const result: FormattedResource | null =
-                            data?.results && data.results.length > 0
-                              ? data.results[i]
-                              : null;
+                      {isLoading || (data && data.results?.length > 0)
+                        ? new Array(selectedPerPage).fill(null).map((_, i) => {
+                            const result: FormattedResource | null =
+                              data?.results && data.results.length > 0
+                                ? data.results[i]
+                                : null;
 
-                          // if waiting for results to load display placeholder loading cards until content is available
-                          if (result || isLoading) {
-                            return (
-                              <ListItem key={i} my={4}>
-                                <Card isLoading={isLoading} {...result}></Card>
-                              </ListItem>
-                            );
-                          }
-                        })
-                      ) : (
-                        <Empty
-                          message='No results found.'
-                          imageUrl='/assets/empty.png'
-                          imageAlt='Missing information icon.'
-                          alignSelf='center'
-                          h={'50vh'}
-                        >
-                          <Text>
-                            Search yielded no results, please try again.
-                          </Text>
-                          <Button href='/' mt={4}>
-                            Go to search page.
-                          </Button>
-                        </Empty>
-                      )}
+                            // if waiting for results to load display placeholder loading cards until content is available
+                            if (result || isLoading) {
+                              return (
+                                <ListItem key={i} my={4} mb={8}>
+                                  <Card
+                                    isLoading={isLoading}
+                                    {...result}
+                                  ></Card>
+                                </ListItem>
+                              );
+                            }
+                          })
+                        : null}
                     </UnorderedList>
                   </Box>
                 </Stack>

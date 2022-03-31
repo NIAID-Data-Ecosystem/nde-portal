@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {PageContent} from './content';
 import {SearchInput} from 'nde-design-system';
 import {useRouter} from 'next/router';
@@ -11,8 +11,11 @@ export const SearchBar = ({value, ...props}: {value: string | string[]}) => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>): void =>
     setSearchTerm(e.target.value);
 
+  // update value when changed
+  useEffect(() => setSearchTerm(value), [value]);
+
   return (
-    <PageContent bg='white' minH={'unset'}>
+    <PageContent bg='white' minH='unset'>
       <SearchInput
         ariaLabel='Search for datasets'
         colorScheme='primary'
