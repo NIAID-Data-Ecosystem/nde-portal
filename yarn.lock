@@ -5658,10 +5658,10 @@
   "resolved" "https://registry.npmjs.org/natural-compare/-/natural-compare-1.4.0.tgz"
   "version" "1.4.0"
 
-"nde-design-system@^0.2.24":
-  "integrity" "sha512-QbDbczCvhxNw9q2LIyir4MEZGlZp3W0M8jxPfF+LpcRZNhwqawV7C36QwnQgFIuqZWzOUZGq4moE0OX+KI2YJg=="
-  "resolved" "https://registry.npmjs.org/nde-design-system/-/nde-design-system-0.2.24.tgz"
-  "version" "0.2.24"
+"nde-design-system@^0.2.26":
+  "integrity" "sha512-K6SEsTkKS1hNERC1s6hU3w6BtmVgBj7g/JfTlub/K+HR2ZLOHuVVfJiEl74Fijx5A3r9Lz0YcCnySLto6pBdLQ=="
+  "resolved" "https://registry.npmjs.org/nde-design-system/-/nde-design-system-0.2.26.tgz"
+  "version" "0.2.26"
   dependencies:
     "@chakra-ui/icons" "^1.1.7"
     "@chakra-ui/react" "1.7.2"

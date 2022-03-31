@@ -246,6 +246,7 @@ const Search: NextPage = () => {
   if (!hasMounted || !router.isReady) {
     return null;
   }
+  console.log(data);
 
   return (
     <>
@@ -257,8 +258,11 @@ const Search: NextPage = () => {
         py={0}
       >
         <Box w='100%'>
-          <SearchBar value={router.query.q || ''} />
-          <PageContent w='100%' flexDirection='column' minW={'740px'}>
+          <SearchBar
+            value={router.query.q || ''}
+            ariaLabel='Search for datasets or tools'
+          />
+          <PageContent w='100%' flexDirection='column' minW='740px'>
             {error ? (
               // [ERROR STATE]: API response error
               <ErrorMessage message="It's possible that the server is experiencing some issues.">
@@ -319,6 +323,7 @@ const Search: NextPage = () => {
                     selectedPerPage={selectedPerPage}
                     handleSelectedPerPage={v => updateRoute({from: 1, size: v})}
                     total={totalItems}
+                    ariaLabel='paginate through resources top bar'
                   ></Pagination>
                 </DisplayResults>
 
@@ -439,6 +444,7 @@ const Search: NextPage = () => {
                   selectedPerPage={selectedPerPage}
                   handleSelectedPerPage={v => updateRoute({from: 1, size: v})}
                   total={totalItems}
+                  ariaLabel='paginate through resources bottom bar'
                 ></Pagination>
               </>
             )}

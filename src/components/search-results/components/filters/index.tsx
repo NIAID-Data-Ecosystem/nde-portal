@@ -117,7 +117,9 @@ export const Filter: React.FC<FilterProps> = ({
                 }}
               >
                 {items.length === 0 && (
-                  <Text color='niaid.placeholder'>No filters available.</Text>
+                  <ListItem p={2} py={1}>
+                    <Text>No filters available.</Text>
+                  </ListItem>
                 )}
                 {items.map((t, i) => {
                   return (

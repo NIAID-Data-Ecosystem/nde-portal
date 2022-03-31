@@ -3,7 +3,14 @@ import {PageContent} from './content';
 import {SearchInput} from 'nde-design-system';
 import {useRouter} from 'next/router';
 
-export const SearchBar = ({value, ...props}: {value: string | string[]}) => {
+export const SearchBar = ({
+  value,
+  ariaLabel,
+  ...props
+}: {
+  ariaLabel: string;
+  value: string | string[];
+}) => {
   const router = useRouter();
 
   // Search term entered in search bar
@@ -17,7 +24,7 @@ export const SearchBar = ({value, ...props}: {value: string | string[]}) => {
   return (
     <PageContent bg='white' minH='unset'>
       <SearchInput
-        ariaLabel='Search for datasets'
+        ariaLabel={ariaLabel}
         colorScheme='primary'
         w='100%'
         value={searchTerm}

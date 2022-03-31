@@ -28,6 +28,7 @@ interface PaginationProps
   > {
   selectedPage: number;
   handleSelectedPage: (pageNumber: number) => void;
+  ariaLabel: string;
 }
 
 export const Pagination: React.FC<PaginationProps> = ({
@@ -35,11 +36,12 @@ export const Pagination: React.FC<PaginationProps> = ({
   handleSelectedPage,
   selectedPerPage,
   total,
+  ariaLabel,
 }) => {
   const total_pages = total && Math.ceil(total / selectedPerPage);
 
   return (
-    <StyledPagination bg='white'>
+    <StyledPagination bg='white' role='navigation' aria-label={ariaLabel}>
       <Flex w='100%' justifyContent='center'>
         {/* Fade in transition */}
         <ScaleFade in={!!total}>

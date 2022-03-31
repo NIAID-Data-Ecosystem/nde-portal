@@ -26,6 +26,7 @@ import {
   Text,
   ToggleContainer,
   UnorderedList,
+  VisuallyHidden,
 } from 'nde-design-system';
 import {
   FaArrowAltCircleRight,
@@ -114,21 +115,22 @@ export const StyledBanner: React.FC<StyledBannerProps> = ({
   ...props
 }) => {
   return (
-    <Flex flexWrap={'wrap'} {...props}>
+    <Flex flexWrap='wrap' {...props}>
       <Flex
-        bg={'status.info_lt'}
+        bg='status.info_lt'
         pl={pl}
         py={0}
-        overflow={'hidden'}
+        overflow='hidden'
         w={['100%', 'unset']}
       >
         {name && (
           <StyledLabel>
             <Text
-              fontSize={'xs'}
-              color={'white'}
+              fontSize='xs'
+              color='white'
               px={2}
-              fontWeight={'semibold'}
+              fontWeight='semibold'
+              bg='status.info'
             >
               {name.toUpperCase()}
             </Text>
@@ -136,9 +138,9 @@ export const StyledBanner: React.FC<StyledBannerProps> = ({
         )}
       </Flex>
       <Flex
-        bg={'status.info_lt'}
+        bg='status.info_lt'
         py={1}
-        overflow={'hidden'}
+        overflow='hidden'
         w={['100%', 'unset']}
         flex={['unset', 1]}
         px={4}
@@ -192,7 +194,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
   return (
     <Card variant='colorful'>
       {/* Card header where name of resource is a link to resource apge */}
-      <CardHeader position={'relative'} px={paddingCard} pt={4}>
+      <CardHeader position='relative' px={paddingCard} pt={4}>
         <Skeleton
           isLoaded={!isLoading}
           startColor='whiteAlpha.100'
@@ -319,15 +321,13 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                 flexDirection='column'
                 alignItems='end'
               >
-                <Text
-                  fontSize='xs'
-                  // color='niaid.placeholder'
-                  my={0}
-                  fontWeight='medium'
-                  lineHeight={1}
-                >
+                <Text fontSize='xs' my={0} fontWeight='medium' lineHeight={1}>
                   Altmetric
                 </Text>
+                {/* Altmetric embed badges don't allow for adding aria-label so VisuallyHidden is a patch */}
+                <VisuallyHidden>
+                  See more information about resource on Altmetric
+                </VisuallyHidden>
                 <div
                   data-badge-popover='left'
                   data-badge-type='bar'
@@ -348,9 +348,10 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                     <AccordionButton
                       px={paddingCard}
                       bg={isExpanded ? 'blackAlpha.100' : 'white'}
+                      aria-label='show more details about dataset'
                     >
                       <Box flex='1' textAlign='left'>
-                        <Heading fontSize='h6' fontWeight={'semibold'}>
+                        <Heading fontSize='h6' fontWeight='semibold'>
                           Details
                         </Heading>
                       </Box>
@@ -367,9 +368,11 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                         <ListItem>
                           <Stat my={2}>
                             <StatLabel color='gray.700'>License</StatLabel>
-                            <Link href={license} isExternal>
-                              {license}
-                            </Link>
+                            <dd>
+                              <Link href={license} isExternal>
+                                {license}
+                              </Link>
+                            </dd>
                           </Stat>
                         </ListItem>
                       )}
@@ -379,9 +382,11 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                             <StatLabel color='gray.700'>
                               Measurement Technique
                             </StatLabel>
-                            <Text fontWeight='semibold'>
-                              {measurementTechnique}
-                            </Text>
+                            <dd>
+                              <Text fontWeight='semibold'>
+                                {measurementTechnique}
+                              </Text>
+                            </dd>
                           </Stat>
                         </ListItem>
                       )}
@@ -391,9 +396,11 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                             <StatLabel color='gray.700'>
                               Variable Measured
                             </StatLabel>
-                            <Text fontWeight='semibold'>
-                              {variableMeasured}
-                            </Text>
+                            <dd>
+                              <Text fontWeight='semibold'>
+                                {variableMeasured}
+                              </Text>
+                            </dd>
                           </Stat>
                         </ListItem>
                       )}
@@ -445,6 +452,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                     getRepositoryName(includedInDataCatalog.name) || undefined
                   }
                   href={url || undefined}
+                  aria-label={`View in source repository resource ${name}`}
                 ></ExternalSourceButton>
               </Flex>
             )}
@@ -456,8 +464,10 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                   href={`/resources/${id}`}
                   size='md'
                   rightIcon={<FaArrowAltCircleRight />}
+                  aria-label={`Go to details about resource ${name}`}
                 >
                   See more
+                  <VisuallyHidden> details about the dataset</VisuallyHidden>
                 </Button>
               </Flex>
             )}
