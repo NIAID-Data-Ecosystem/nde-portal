@@ -256,7 +256,7 @@ const Search: NextPage = () => {
         px={0}
         py={0}
       >
-        <Box w={'100%'}>
+        <Box w='100%'>
           <SearchBar value={router.query.q || ''} />
           <PageContent w='100%' flexDirection='column' minW={'740px'}>
             {error ? (
@@ -353,7 +353,7 @@ const Search: NextPage = () => {
                       </Heading>
 
                       <Button
-                        variant={'outline'}
+                        variant='outline'
                         size='sm'
                         onClick={removeAllFilters}
                         isDisabled={chips.length === 0}
