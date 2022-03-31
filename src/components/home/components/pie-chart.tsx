@@ -131,7 +131,7 @@ export default function PieChart({
       <Box m={4} minWidth={[200, 200, 300]}>
         {/* Total datasets */}
         <Heading as={'h3'} fontWeight='semibold' size={'h4'} color='gray.900'>
-          {formatNumber(total)} Datasets
+          {formatNumber(total)} Resources
         </Heading>
         {/* Legend */}
         <LegendOrdinal scale={colorScale} direction='column'>
