@@ -1,6 +1,7 @@
 import {
   Box,
   BoxProps,
+  css,
   Flex,
   FlexProps,
   Link,
@@ -8,7 +9,6 @@ import {
   theme,
 } from 'nde-design-system';
 import styled from '@emotion/styled';
-import {css} from '@emotion/react';
 
 const StyledNavigation = styled(Flex)<FlexProps>(() => ({}));
 StyledNavigation.defaultProps = {

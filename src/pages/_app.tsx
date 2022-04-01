@@ -1,6 +1,6 @@
 import type {AppProps} from 'next/app';
 import {QueryClient, QueryClientProvider} from 'react-query';
-import {extendTheme, theme as NDEtheme, ThemeProvider} from 'nde-design-system';
+import {ThemeProvider} from 'nde-design-system';
 import FontFace from 'src/theme/font-face';
 
 // Creates an instance of react-query for the app.
@@ -10,7 +10,7 @@ function App({Component, pageProps}: AppProps) {
   return (
     <>
       <QueryClientProvider client={queryClient}>
-        <ThemeProvider theme={NDEtheme}>
+        <ThemeProvider>
           <FontFace />
           <Component {...pageProps} />
         </ThemeProvider>
