@@ -8,7 +8,6 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@emotion/react": "^11",
     "@emotion/styled": "^11",
     "@fontsource/public-sans": "^4.5.5",
     "@visx/group": "^2.1.0",

@@ -176,17 +176,15 @@ const AltmetricBadge: React.FC<{doi?: string}> = ({doi}) => {
         data-link-target='blank'
       ></div>
       <Box pt={2}>
-        <Text fontSize='xs' color='gray.800'>
-          <Link
-            href={
-              'https://help.altmetric.com/support/solutions/articles/6000233311-how-is-the-altmetric-attention-score-calculated'
-            }
-            target='_blank'
-            isExternal
-          >
-            Altmetric rating
-          </Link>
-        </Text>
+        <Link
+          href={
+            'https://help.altmetric.com/support/solutions/articles/6000233311-how-is-the-altmetric-attention-score-calculated'
+          }
+          target='_blank'
+          isExternal
+        >
+          Altmetric rating
+        </Link>
       </Box>
     </Flex>
   );

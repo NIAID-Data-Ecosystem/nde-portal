@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import type {NextPage} from 'next';
 import {PageContainer, PageContent} from 'src/components/page-container';
 import {useRouter} from 'next/router';
@@ -45,18 +45,40 @@ const Dataset: NextPage = props => {
     FormattedResource | undefined,
     Error
   >(['search-result', {id}], () => getResourceById(id));
+
+  // embed metadata
+  useEffect(() => {
+    if (data && data.rawData) {
+      let script_tag = document.createElement('script');
+      let metadata = JSON.stringify(data.rawData, null, 2);
+      script_tag.setAttribute('type', 'application/ld+json');
+      script_tag.text = metadata;
+      document.head.appendChild(script_tag);
+    }
+  }, [data]);
+
+  // embed altmetric data. For more information: https://api.altmetric.com/embeds.html
+  useEffect(() => {
+    // @ts-ignore
+    if (window._altmetric_embed_init) {
+      // @ts-ignore
+      window._altmetric_embed_init();
+    } else {
+      /* import altmetric script for badge embeds */
+      let altmetricsScript = document.createElement('script');
+      altmetricsScript.setAttribute(
+        'src',
+        'https://d1bxh8uas1mnw7.cloudfront.net/assets/embed.js',
+      );
+      document.body.appendChild(altmetricsScript);
+    }
+  }, [data]);
+
   if (!id) {
     return <></>;
   }
-
   return (
     <>
-      {/* import altmetric script for badge embeds */}
-      <Script
-        type='text/javascript'
-        src='https://d1bxh8uas1mnw7.cloudfront.net/assets/embed.js'
-        strategy='afterInteractive'
-      />
       <PageContainer
         hasNavigation
         title='Dataset'

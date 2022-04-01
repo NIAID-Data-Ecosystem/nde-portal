@@ -226,7 +226,7 @@ const Search: NextPage = () => {
     });
   };
 
-  // [FIX]: altmetric badges need this to render properly on data update.
+  // embed altmetric data. For more information: https://api.altmetric.com/embeds.html
   useEffect(() => {
     // @ts-ignore
     if (window._altmetric_embed_init) {
@@ -246,7 +246,6 @@ const Search: NextPage = () => {
   if (!hasMounted || !router.isReady) {
     return null;
   }
-  console.log(data);
 
   return (
     <>
