@@ -10,6 +10,7 @@
   "dependencies": {
     "@emotion/react": "^11",
     "@emotion/styled": "^11",
+    "@fontsource/public-sans": "^4.5.5",
     "@visx/group": "^2.1.0",
     "@visx/legend": "^2.2.2",
     "@visx/scale": "^2.2.2",
@@ -18,7 +19,7 @@
     "axios": "^0.24.0",
     "framer-motion": "^4",
     "lodash": "^4.17.21",
-    "nde-design-system": "^0.2.26",
+    "nde-design-system": "^0.2.27",
     "next": "^12.1.0",
     "react": "17.0.2",
     "react-dom": "17.0.2",
