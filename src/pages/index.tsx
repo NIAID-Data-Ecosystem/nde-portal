@@ -345,7 +345,9 @@ const Home: NextPage = () => {
                         textAlign='center'
                       >
                         <Image
-                          src='/assets/home-icon.png'
+                          src={`/assets/${stat.term
+                            .toLowerCase()
+                            .replaceAll(' ', '-')}.svg`}
                           alt={`Icon for ${stat.term}`}
                           boxSize='50px'
                           objectFit='contain'
