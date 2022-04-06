@@ -10,12 +10,24 @@
       "hash": "description"
     },
     {
-      "title": "Files",
-      "hash": "files"
+      "title": "Metadata",
+      "hash": "metadata"
     },
     {
       "title": "Provenance",
       "hash": "provenance"
+    },
+    {
+      "title": "File Downloads",
+      "hash": "downloads"
+    },
+    {
+      "title": "Funding",
+      "hash": "funding"
+    },
+    {
+      "title": "Cited By",
+      "hash": "citedBy"
     }
   ]
 }

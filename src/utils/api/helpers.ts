@@ -5,6 +5,7 @@ import {
   FormattedResource,
   Funding,
   ResourceType,
+  Funder,
 } from './types';
 
 interface APICreator {
@@ -81,20 +82,11 @@ export const formatCitation = (
 // Format funding fields.
 interface APIFunding {
   '@type'?: string;
-  funder?: {
-    name?: string | null;
-    role?: string | null;
-    alternateName?: string | string[] | null;
-    description?: string | null;
-    parentOrganization?: string | null;
-    url?: string | null;
-  } | null;
+  funder?: Funder;
   identifier?: string | null;
 }
 
-export const formatFunding = (
-  fundingData?: APIFunding | APIFunding[],
-): Funding[] | null => {
+export const formatFunding = (fundingData?: APIFunding | APIFunding[]) => {
   if (!fundingData) {
     return null;
   }

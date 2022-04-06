@@ -35,6 +35,12 @@ import {VscJson} from 'react-icons/vsc';
 import {GrTextAlignFull} from 'react-icons/gr';
 import {FaDatabase, FaDownload, FaRegMoneyBillAlt} from 'react-icons/fa';
 import {BsBlockquoteLeft} from 'react-icons/bs';
+import LocalNavigation from 'src/components/local-navigation';
+
+/*
+TO DO:
+Update sections to use sections config 'configs/resource-navigation.json' for consistency
+*/
 
 // Error display is data fetching goes wrong.
 const ErrorState = ({retryFn}: {retryFn: () => void}) => {
@@ -312,19 +318,20 @@ const ResourcePage: NextPage = props => {
                     </Section>
                   )}
                 </Card>
-                <Card
+                <Box
                   flex={1}
-                  ml={[0, 0, 4]}
-                  my={[2, 2, 0]}
-                  p={0}
-                  minW='300px'
-                  sx={{'>*': {p: 0}}}
                   position={'sticky'}
                   top={'80px'}
                   w={'100%'}
                   h={'100%'}
+                  minW='300px'
                 >
-                  <Box>
+                  <Card
+                    flex={1}
+                    ml={[0, 0, 4]}
+                    my={[2, 2, 0]}
+                    sx={{'>*': {p: 0}}}
+                  >
                     {/* Show external links in header when on mobile */}
                     {!isMobile && (
                       <ResourceLinks
@@ -333,8 +340,19 @@ const ResourcePage: NextPage = props => {
                       />
                     )}
                     {/* <RelatedDatasets /> */}
-                  </Box>
-                </Card>
+                  </Card>
+
+                  {/* Navigation for page */}
+                  <Card
+                    display={{base: 'none', md: 'flex'}}
+                    flex={1}
+                    ml={[0, 0, 4]}
+                    my={2}
+                    sx={{'>*': {p: [2, 4, 4, 6]}}}
+                  >
+                    <LocalNavigation />
+                  </Card>
+                </Box>
               </Flex>
             </Flex>
           )}

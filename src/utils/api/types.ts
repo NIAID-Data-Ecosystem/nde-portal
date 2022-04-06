@@ -113,7 +113,7 @@ export interface Funder {
 }
 
 export interface Funding {
-  funder: Funder[] | null;
+  funder: Funder | null;
   identifier: string | null;
 }
 
