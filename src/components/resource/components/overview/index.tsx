@@ -1,5 +1,13 @@
 import React from 'react';
-import {Box, Flex, Link, Skeleton, Text} from 'nde-design-system';
+import {
+  Box,
+  Flex,
+  Image,
+  Link,
+  SimpleGrid,
+  Stack,
+  StackDivider,
+} from 'nde-design-system';
 import {FormattedResource} from 'src/utils/api/types';
 import {
   FaCalendarAlt,
@@ -8,9 +16,13 @@ import {
   FaGlobeAmericas,
   FaLanguage,
 } from 'react-icons/fa';
-
-import {MetadataField} from '../section';
-import {formatCitationString, formatDOI} from 'src/utils/helpers';
+import {
+  formatCitationString,
+  formatDOI,
+  formatLicense,
+} from 'src/utils/helpers';
+import MetadataConfig from 'configs/resource-metadata.json';
+import StatField from './components/stat-field';
 
 interface Overview {
   doi?: FormattedResource['doi'];
@@ -32,7 +44,6 @@ const Overview: React.FC<Overview> = ({
   citation,
   doi,
   isLoading,
-  keywords,
   language,
   license,
   measurementTechnique,
@@ -43,149 +54,190 @@ const Overview: React.FC<Overview> = ({
   temporalCoverage,
   variableMeasured,
 }) => {
+  const getStatInfo = (metadataProperty: string) => {
+    const metadataField = MetadataConfig.fields.find(
+      d => d.property === metadataProperty,
+    );
+
+    return metadataField
+      ? {...metadataField, label: metadataField.title}
+      : {label: metadataProperty, info: ''};
+  };
+
+  const licenseInfo = license ? formatLicense(license) : null;
   return (
-    <>
-      <Flex flexWrap='wrap' flexDirection={['column', 'column', 'row']}>
-        <Box flex={1}>
-          <Flex w='100%' px={4} py={2} flexWrap='wrap'>
-            <Flex>{doi && <AltmetricBadge doi={formatDOI(doi)} />}</Flex>
-            <Box>
-              <Flex flexDirection={['column', 'column', 'row']}>
-                {numberOfDownloads && (
-                  <MetadataField
-                    isLoading={isLoading}
-                    label='downloads'
-                    icon={FaDownload}
-                    value={numberOfDownloads}
-                    m={2}
-                  />
-                )}
-                {numberOfViews && (
-                  <MetadataField
-                    isLoading={isLoading}
-                    label='views'
-                    icon={FaEye}
-                    value={numberOfViews}
-                    m={2}
-                  />
-                )}
-              </Flex>
-              <Flex flexDirection={['column', 'column']}>
-                {doi && (
-                  <MetadataField
-                    isLoading={isLoading}
-                    label='DOI'
-                    value={formatDOI(doi)}
-                    m={2}
-                  />
-                )}
-
-                {species && (
-                  <MetadataField
-                    isLoading={isLoading}
-                    label='Species'
-                    value={species}
-                    m={2}
-                  />
-                )}
-
-                <MetadataField
-                  isLoading={isLoading}
-                  label={'Variable Measured'}
-                  value={variableMeasured ? variableMeasured : '-'}
-                  m={2}
-                />
-
-                <MetadataField
-                  isLoading={isLoading}
-                  label='Measurement Technique'
-                  value={measurementTechnique ? measurementTechnique : '-'}
-                  m={2}
-                />
-
-                <MetadataField isLoading={isLoading} label='License' m={2}>
-                  {license ? (
-                    <Link href={license} wordBreak='break-word' isExternal>
-                      {license}
-                    </Link>
-                  ) : (
-                    '-'
-                  )}
-                </MetadataField>
-
-                {citation && (
-                  <MetadataField isLoading={isLoading} label='Citation' m={2}>
-                    <Text fontSize='xs' fontWeight={'semibold'}>
-                      {citation.map(c => formatCitationString(c))}
-                    </Text>
-                  </MetadataField>
-                )}
-              </Flex>
-            </Box>
-          </Flex>
-        </Box>
-
-        {(spatialCoverage || temporalCoverage || language) && (
-          <Skeleton flex={1} isLoaded={!isLoading}>
-            <Flex flex={1} flexDirection={['row', 'row', 'column']} pl={4}>
+    <Flex p={4} w='100%' flexWrap='wrap'>
+      {(doi || numberOfDownloads || numberOfViews) && (
+        <Box w={{sm: '100%', lg: 'unset'}} mx={[0, 0, 4]} my={4}>
+          <SimpleGrid
+            minChildWidth='150px'
+            maxWidth={500}
+            spacingX={4}
+            spacingY={2}
+            p={4}
+            border='0.5px solid'
+            borderColor='gray.100'
+          >
+            {/* Altmetric Badge */}
+            {doi && (
+              <StatField
+                isLoading={false}
+                {...getStatInfo('Altmetric Rating')}
+                d='flex'
+                justifyContent='center'
+              >
+                <Flex alignItems='center' direction='column'>
+                  <div
+                    data-badge-popover='right'
+                    data-badge-type='donut'
+                    data-doi={formatDOI(doi)}
+                    className='altmetric-embed'
+                    data-link-target='blank'
+                  ></div>
+                  <Link
+                    fontSize={'xs'}
+                    href={
+                      'https://help.altmetric.com/support/solutions/articles/6000233311-how-is-the-altmetric-attention-score-calculated'
+                    }
+                    target='_blank'
+                    isExternal
+                  >
+                    Learn More
+                  </Link>
+                </Flex>
+              </StatField>
+            )}
+            {(numberOfDownloads || numberOfViews) && (
               <Box>
-                {spatialCoverage && (
-                  <MetadataField
+                {/* Number Of Downloads. Note: Info not available in current API */}
+                {numberOfDownloads && (
+                  <StatField
                     isLoading={isLoading}
-                    label='Geographic Location'
-                    value={spatialCoverage}
-                    icon={FaGlobeAmericas}
-                  />
+                    icon={FaDownload}
+                    {...getStatInfo('numberOfDownloads')}
+                  >
+                    {numberOfDownloads}
+                  </StatField>
                 )}
-                {temporalCoverage && (
-                  <MetadataField
+
+                {/* Number Of Views. Note: Info not available in current API */}
+                {numberOfViews && (
+                  <StatField
                     isLoading={isLoading}
-                    label='Period'
-                    value={temporalCoverage}
-                    icon={FaCalendarAlt}
-                  ></MetadataField>
-                )}
-                {language?.name && (
-                  <MetadataField
-                    isLoading={isLoading}
-                    label='Language'
-                    value={language.name}
-                    icon={FaLanguage}
-                  ></MetadataField>
+                    icon={FaEye}
+                    {...getStatInfo('numberOfViews')}
+                  >
+                    {numberOfViews}
+                  </StatField>
                 )}
               </Box>
-            </Flex>
-          </Skeleton>
+            )}
+          </SimpleGrid>
+        </Box>
+      )}
+
+      <Stack
+        flex={1}
+        p={[0, 0, 4]}
+        divider={<StackDivider borderColor='gray.100' />}
+        direction='column'
+        spacing={4}
+      >
+        {/* Copyright license agreement */}
+        {
+          <StatField isLoading={isLoading} {...getStatInfo('license')}>
+            {licenseInfo ? (
+              <>
+                {licenseInfo?.img && (
+                  <Image src={licenseInfo.img} alt={licenseInfo.type} />
+                )}
+                {licenseInfo?.url ? (
+                  <Link href={licenseInfo.url} isExternal>
+                    {licenseInfo.title}
+                  </Link>
+                ) : (
+                  licenseInfo?.title
+                )}
+              </>
+            ) : (
+              'N/A'
+            )}
+          </StatField>
+        }
+
+        {/* DOI */}
+        {doi && (
+          <StatField isLoading={isLoading} {...getStatInfo('doi')}>
+            {doi}
+          </StatField>
         )}
-      </Flex>
-    </>
+
+        {/* species covered in resource */}
+        {species && (
+          <StatField isLoading={isLoading} {...getStatInfo('species')}>
+            {species}
+          </StatField>
+        )}
+
+        {/* variable measured, used in conjunction with measurement technique */}
+        {variableMeasured && (
+          <StatField isLoading={isLoading} {...getStatInfo('variableMeasured')}>
+            {variableMeasured}
+          </StatField>
+        )}
+
+        {/* measurement technique */}
+        {measurementTechnique && (
+          <StatField
+            isLoading={isLoading}
+            {...getStatInfo('measurementTechnique')}
+          >
+            {measurementTechnique}
+          </StatField>
+        )}
+
+        {/* language */}
+        {language && (
+          <StatField
+            icon={FaLanguage}
+            isLoading={isLoading}
+            {...getStatInfo('language')}
+          >
+            {language.name}
+          </StatField>
+        )}
+
+        {/* geographic */}
+        {spatialCoverage && (
+          <StatField
+            icon={FaGlobeAmericas}
+            isLoading={isLoading}
+            {...getStatInfo('spatialCoverage')}
+          >
+            {spatialCoverage}
+          </StatField>
+        )}
+
+        {/* period covered */}
+        {temporalCoverage && (
+          <StatField
+            icon={FaCalendarAlt}
+            isLoading={isLoading}
+            {...getStatInfo('temporalCoverage')}
+          >
+            {temporalCoverage}
+          </StatField>
+        )}
+
+        {/* citation */}
+        {citation && (
+          <StatField isLoading={isLoading} {...getStatInfo('citation')}>
+            {citation.map(c => formatCitationString(c))}
+          </StatField>
+        )}
+      </Stack>
+    </Flex>
   );
 };
 
 export default Overview;
-
-// Displays the attention score of the resource.
-const AltmetricBadge: React.FC<{doi?: string}> = ({doi}) => {
-  return (
-    <Flex m={4} flexDirection='column' alignItems='center' minW={200}>
-      <div
-        data-badge-popover='right'
-        data-badge-type='donut'
-        data-doi={doi}
-        className='altmetric-embed'
-        data-link-target='blank'
-      ></div>
-      <Box pt={2}>
-        <Link
-          href={
-            'https://help.altmetric.com/support/solutions/articles/6000233311-how-is-the-altmetric-attention-score-calculated'
-          }
-          target='_blank'
-          isExternal
-        >
-          Altmetric rating
-        </Link>
-      </Box>
-    </Flex>
-  );
-};

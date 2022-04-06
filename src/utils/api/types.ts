@@ -74,7 +74,7 @@ export interface CitedBy {
 }
 
 export interface Creator {
-  id: string | null; // orcid id
+  identifier: string | null; // orcid id
   type: string | null;
   affiliation: {name: string} | null;
   name: string | null;
@@ -103,15 +103,17 @@ export interface Error {
   message: string;
 }
 
+export interface Funder {
+  name: string | null;
+  alternateName: string | string[] | null;
+  role: string | null;
+  description: string | null;
+  parentOrganization: string | null;
+  url: string | null;
+}
+
 export interface Funding {
-  funder: {
-    name: string | null;
-    alternateName: string | string[] | null;
-    role: string | null;
-    description: string | null;
-    parentOrganization: string | null;
-    url: string | null;
-  } | null;
+  funder: Funder[] | null;
   identifier: string | null;
 }
 
@@ -129,11 +131,20 @@ export interface inLanguage {
   alternateName: string;
 }
 
+export interface Publisher {
+  '@type': string;
+  name: string;
+}
+
 // Type of resouce.
 export type ResourceType = 'dataset' | 'computational tool' | 'other';
 
 // Conditions of access for dataset or tool.
-export type AccessTypes = 'restricted' | 'public' | 'controlled';
+export type AccessTypes =
+  | 'Open Access'
+  | 'Closed Access'
+  | 'Embargo'
+  | 'Restricted';
 
 // Formatting standardized resource fields
 export interface FormattedResource {
@@ -167,6 +178,7 @@ export interface FormattedResource {
   mainEntityOfPage: string | null;
   measurementTechnique: string[] | null;
   numberOfDownloads: number | null;
+  publisher: Publisher | null;
   rawData: any;
   sameAs: string | null;
   spatialCoverage: string | null;

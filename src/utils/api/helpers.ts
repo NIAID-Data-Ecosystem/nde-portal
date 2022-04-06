@@ -8,7 +8,7 @@ import {
 } from './types';
 
 interface APICreator {
-  '@id'?: string; // orcid id
+  identifier?: string; // orcid id
   '@type'?: string;
   affiliation?: {name: string};
   name?: string;
@@ -24,7 +24,7 @@ export const formatCreator = (
 
   const getCreatorFields = (data: APICreator) => {
     return {
-      id: data['@id'] || null,
+      identifier: data['identifier'] || null,
       type: data['@type'] || null,
       name: data['name'] || null,
       affiliation: data['affiliation'] || null,
@@ -241,6 +241,7 @@ export const formatAPIResource = (data: any) => {
       : null,
     numberOfDownloads: data.numberOfDownloads || null,
     numberOfViews: data.numberOfViews || null,
+    publisher: data.publisher || null,
     rawData: data,
     sameAs: data.sameAs || null,
     spatialCoverage:

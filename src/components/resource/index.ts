@@ -1,22 +1,23 @@
 import Navigation from './components/navigation';
-import {Section, MetadataField} from './components/section';
+import AccessBadge from './components/access-badge';
+import TypeBanner from './components/type-banner';
+import Section from './components/section';
 import RelatedDatasets from './components/related-datasets';
 import ResourceHeader from './components/header';
 import ResourceOverview from './components/overview';
-import ResourceTabs from './components/tabs';
 import ResourceFilesTable from './components/files-table';
 import ResourceProvenance from './components/provenance';
 import ResourceLinks from './components/external-links';
 
 export {
+  AccessBadge,
   Navigation,
   Section,
-  MetadataField,
   RelatedDatasets,
   ResourceOverview,
   ResourceFilesTable,
-  ResourceTabs,
   ResourceHeader,
   ResourceLinks,
   ResourceProvenance,
+  TypeBanner,
 };

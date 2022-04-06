@@ -1,6 +1,10 @@
 import React, {useEffect} from 'react';
 import type {NextPage} from 'next';
-import {PageContainer, PageContent} from 'src/components/page-container';
+import {
+  PageContainer,
+  PageContent,
+  SearchBar,
+} from 'src/components/page-container';
 import {useRouter} from 'next/router';
 import {useQuery} from 'react-query';
 import {getResourceById} from 'src/utils/api';
@@ -12,7 +16,6 @@ import {
   Button,
   Card,
   Flex,
-  Icon,
   Skeleton,
   Tag,
   Text,
@@ -21,19 +24,54 @@ import {
 import {
   ResourceHeader,
   ResourceOverview,
-  ResourceTabs,
   ResourceLinks,
   ResourceFilesTable,
   ResourceProvenance,
   Section,
+  TypeBanner,
 } from 'src/components/resource';
-import {FaRegClock} from 'react-icons/fa';
-import Script from 'next/script';
-import {StyledBanner} from 'src/components/search-results/components/card';
-import {formatDate} from 'src/utils/helpers';
 import ErrorMessage from 'src/components/error';
+import {VscJson} from 'react-icons/vsc';
+import {GrTextAlignFull} from 'react-icons/gr';
+import {FaDatabase, FaDownload, FaRegMoneyBillAlt} from 'react-icons/fa';
+import {BsBlockquoteLeft} from 'react-icons/bs';
 
-const Dataset: NextPage = props => {
+// Error display is data fetching goes wrong.
+const ErrorState = ({retryFn}: {retryFn: () => void}) => {
+  return (
+    <ErrorMessage message="It's possible that the server is experiencing some issues.">
+      <ButtonGroup>
+        <Button onClick={() => retryFn()} variant='outline'>
+          Retry
+        </Button>
+        <Button as='a' href='/'>
+          Back to Home
+        </Button>
+      </ButtonGroup>
+    </ErrorMessage>
+  );
+};
+
+// Displays empty message when no data exists.
+const EmptyState = () => {
+  return (
+    <Card w='100%'>
+      <Empty
+        message='No data available.'
+        imageUrl='/assets/empty.png'
+        imageAlt='Missing information icon.'
+        alignSelf='center'
+        h='50vh'
+      >
+        <Text>No information about this dataset is available.</Text>
+        <Button as={'a'} href='/' mt={4}>
+          Go to search.
+        </Button>
+      </Empty>
+    </Card>
+  );
+};
+const ResourcePage: NextPage = props => {
   const router = useRouter();
   const {id} = router.query;
 
@@ -44,7 +82,9 @@ const Dataset: NextPage = props => {
   const {isLoading, error, data} = useQuery<
     FormattedResource | undefined,
     Error
-  >(['search-result', {id}], () => getResourceById(id));
+  >(['search-result', {id}], () => getResourceById(id), {
+    refetchOnWindowFocus: false,
+  });
 
   // embed metadata
   useEffect(() => {
@@ -81,41 +121,20 @@ const Dataset: NextPage = props => {
     <>
       <PageContainer
         hasNavigation
-        title='Dataset'
+        title='Resource'
         metaDescription='Selected search result page.'
       >
+        <SearchBar
+          value={router.query.q || ''}
+          ariaLabel='Search for datasets or tools'
+        />
         <PageContent>
           {error ? (
             // [ERROR STATE]: API response error
-            <ErrorMessage message="It's possible that the server is experiencing some issues.">
-              <ButtonGroup>
-                <Button onClick={() => router.reload()} variant='outline'>
-                  Retry
-                </Button>
-                <Button as='a' href='/'>
-                  Back to Home
-                </Button>
-              </ButtonGroup>
-            </ErrorMessage>
+            <ErrorState retryFn={() => router.reload()} />
           ) : !isLoading && !data ? (
             // [EMPTY STATE]: No Results
-            <Card w='100%'>
-              <Empty
-                message='No data available.'
-                imageUrl='/assets/empty.png'
-                imageAlt='Missing information icon.'
-                alignSelf='center'
-                h={'50vh'}
-              >
-                <Text>
-                  No information about this dataset is available, please try
-                  again.
-                </Text>
-                <Button as={'a'} href='/' mt={4}>
-                  Go to home page.
-                </Button>
-              </Empty>
-            </Card>
+            <EmptyState />
           ) : (
             <Flex w='100%' h='100%' flexDirection='column' minW={300}>
               <Flex
@@ -135,33 +154,14 @@ const Dataset: NextPage = props => {
                       isLoading={isLoading}
                       conditionsOfAccess={data?.conditionsOfAccess}
                       author={data?.author}
-                      datePublished={data?.datePublished}
                       citation={data?.citation}
                       name={data?.name}
                     />
                     {/* Banner showing data type and publish date. */}
-                    <StyledBanner
-                      overflowY='hidden'
-                      w='100%'
-                      name={data?.type}
-                      my={0}
-                    >
-                      {data?.datePublished && (
-                        <Flex alignItems={'center'}>
-                          <Icon as={FaRegClock} mr={2}></Icon>
-                          <Text fontSize={'xs'} fontWeight={'semibold'}>
-                            Published on {formatDate(data.datePublished)}
-                          </Text>
-                        </Flex>
-                      )}
-                    </StyledBanner>
-
-                    {isMobile && (
-                      <ResourceLinks
-                        isLoading={isLoading}
-                        includedInDataCatalog={data?.includedInDataCatalog}
-                      />
-                    )}
+                    <TypeBanner
+                      type={data?.type}
+                      datePublished={data?.datePublished}
+                    />
                   </Section>
                   {/* <Navigation resourceType={data?.type} /> */}
                   <Section id='overview'>
@@ -180,6 +180,12 @@ const Dataset: NextPage = props => {
                       measurementTechnique={data?.measurementTechnique}
                       species={data?.species}
                     />
+                    {isMobile && (
+                      <ResourceLinks
+                        isLoading={isLoading}
+                        includedInDataCatalog={data?.includedInDataCatalog}
+                      />
+                    )}
                   </Section>
                   {data?.keywords && data?.keywords.length > 0 && (
                     <Section id={'keywords'} name={'Keywords'}>
@@ -197,28 +203,114 @@ const Dataset: NextPage = props => {
                       </Skeleton>
                     </Section>
                   )}
-                  {/* Show metadata + description*/}
-                  <Section id='description' name={'Description'}>
-                    <ResourceTabs
-                      isLoading={isLoading}
-                      description={data?.description}
-                      metadata={data?.rawData}
-                    />
+                  {/* Show description*/}
+                  <Section
+                    id='description'
+                    name={'Description'}
+                    isCollapsible
+                    icon={GrTextAlignFull}
+                    isLoading={isLoading}
+                  >
+                    {data?.description && (
+                      <Box
+                        overflow={'auto'}
+                        w='100%'
+                        fontSize={'sm'}
+                        dangerouslySetInnerHTML={{
+                          __html: data.description,
+                        }}
+                      ></Box>
+                    )}
                   </Section>
 
-                  {/* Show all available downloads */}
-                  <Section id='files' name={'Files'}>
-                    <ResourceFilesTable
-                      isLoading={true}
-                      distribution={data?.distribution}
-                    />
+                  {/* Show metadata*/}
+                  <Section
+                    id='metadata'
+                    name={'Metadata'}
+                    isCollapsible
+                    icon={VscJson}
+                    isLoading={isLoading}
+                  >
+                    {data?.rawData && (
+                      <Box maxHeight={500} overflow='auto' w='100%'>
+                        <pre
+                          style={{
+                            whiteSpace: 'pre-wrap',
+                            padding: '2rem',
+                          }}
+                        >
+                          <Text fontSize={'10px'}>
+                            {JSON.stringify(data.rawData, null, 2)}
+                          </Text>
+                        </pre>
+                      </Box>
+                    )}
                   </Section>
-                  <Section id='provenance' name={'Provenance'}>
+
+                  {/* Show where the data is retrieved from. */}
+                  <Section
+                    id='provenance'
+                    name={'Provenance'}
+                    isCollapsible
+                    icon={FaDatabase}
+                  >
                     <ResourceProvenance
                       isLoading={isLoading}
                       includedInDataCatalog={data?.includedInDataCatalog}
                     />
                   </Section>
+
+                  {/* Show all available downloads */}
+                  <Section
+                    id='downloads'
+                    name={'File Downloads'}
+                    isCollapsible
+                    icon={FaDownload}
+                  >
+                    <ResourceFilesTable
+                      isLoading={true}
+                      distribution={data?.distribution}
+                    />
+                  </Section>
+
+                  {/* Show where funding is from */}
+                  <Section
+                    id='funding'
+                    name={'Funding'}
+                    isCollapsible
+                    icon={FaRegMoneyBillAlt}
+                  >
+                    <ResourceFilesTable
+                      isLoading={true}
+                      // @ts-ignore
+                      // [TO DO ]: create genric table component.
+                      distribution={data?.funding?.map(f => f.funder)}
+                    />
+                  </Section>
+
+                  {/* Where has the resource been cited */}
+                  {data?.citedBy && (
+                    <Section
+                      id='citedBy'
+                      name={'Cited By'}
+                      isCollapsible
+                      icon={BsBlockquoteLeft}
+                    >
+                      <ResourceFilesTable
+                        isLoading={true}
+                        // @ts-ignore
+                        // [TO DO ]: create genric table component.
+                        distribution={data?.citedBy?.map(c => {
+                          return {
+                            doi: c.doi,
+                            name: c.name,
+                            pmid: c.pmid,
+                            url: c.url,
+                          };
+                        })}
+                      />
+                    </Section>
+                  )}
                 </Card>
                 <Card
                   flex={1}
@@ -252,4 +344,4 @@ const Dataset: NextPage = props => {
   );
 };
 
-export default Dataset;
+export default ResourcePage;

@@ -1,0 +1,52 @@
+{
+  "title": "Metadata",
+  "fields": [
+    {
+      "title": "Downloads",
+      "property": "numberOfDownloads"
+    },
+    {
+      "title": "Views",
+      "property": "numberOfViews",
+      "info": "Number of views on the NIAID Data Ecosystem."
+    },
+    {
+      "title": "License",
+      "property": "license",
+      "info": "License associated with data re-use."
+    },
+    {
+      "title": "DOI",
+      "property": "doi"
+    },
+    {
+      "title": "Species",
+      "property": "species"
+    },
+    {
+      "title": "Variable Measured",
+      "property": "variableMeasured"
+    },
+    {
+      "title": "Measurement Technique",
+      "property": "measurementTechnique",
+      "info": "Measurement technique used to collect the dataset."
+    },
+    {
+      "title": "Citation",
+      "property": "citation"
+    },
+    {
+      "title": "Language",
+      "property": "language"
+    },
+    {
+      "title": "Geographical Information",
+      "property": "spatialCoverage"
+    },
+    {
+      "title": "Period",
+      "property": "temporalCoverage"
+    }
+  ]
+}

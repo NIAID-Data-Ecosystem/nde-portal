@@ -4,7 +4,6 @@ import {
   AccordionItem,
   AccordionPanel,
   AccordionButton,
-  Badge,
   Box,
   Button,
   Card,
@@ -14,7 +13,6 @@ import {
   CardTitle,
   Divider,
   Flex,
-  FlexProps,
   HStack,
   Heading,
   Icon,
@@ -30,14 +28,10 @@ import {
 } from 'nde-design-system';
 import {
   FaArrowAltCircleRight,
-  FaClock,
-  FaLockOpen,
-  FaLock,
   FaMinus,
   FaPlus,
   FaChevronRight,
 } from 'react-icons/fa';
-import styled from '@emotion/styled';
 import {FormattedResource} from 'src/utils/api/types';
 import {
   formatAuthorsList2String,
@@ -47,109 +41,7 @@ import {
   getRepositoryName,
 } from 'src/utils/helpers';
 import {ExternalSourceButton} from 'src/components/external-buttons/index.';
-
-interface AccessBadgeProps {
-  conditionsOfAccess?: 'restricted' | 'public' | 'controlled';
-  children: React.ReactNode;
-}
-
-export const AccessBadge = (args: AccessBadgeProps) => {
-  let colorScheme;
-  let iconType;
-
-  if (args.conditionsOfAccess === 'public') {
-    colorScheme = 'success';
-    iconType = FaLockOpen;
-  }
-
-  if (args.conditionsOfAccess === 'restricted') {
-    colorScheme = 'negative';
-    iconType = FaLock;
-  }
-
-  if (args.conditionsOfAccess === 'controlled') {
-    colorScheme = 'warning';
-    iconType = FaLock;
-  }
-
-  return (
-    <Badge colorScheme={colorScheme} {...args}>
-      {iconType && <Icon mr={2} as={iconType} />}
-      {args.children}
-    </Badge>
-  );
-};
-
-const StyledLabel = styled(Flex)<FlexProps>`
-  display: inline-flex;
-  line-height: 1.5;
-  position: relative;
-  z-index: 9;
-  &:before {
-    content: '';
-    background-color: ${(props: any) => props.theme.colors.status.info};
-    box-shadow: 0 0 0 5px #fff;
-    display: block;
-    height: 100%;
-    left: 0;
-    position: absolute;
-    top: 0;
-    transform: skew(-12deg);
-    width: 100%;
-    z-index: -4;
-  }
-`;
-StyledLabel.defaultProps = {
-  mx: 2,
-  p: 2,
-};
-
-interface StyledBannerProps extends FlexProps {
-  name?: FormattedResource['type'];
-}
-
-export const StyledBanner: React.FC<StyledBannerProps> = ({
-  name,
-  children,
-  pl,
-  ...props
-}) => {
-  return (
-    <Flex flexWrap='wrap' {...props}>
-      <Flex
-        bg='status.info_lt'
-        pl={pl}
-        py={0}
-        overflow='hidden'
-        w={['100%', 'unset']}
-      >
-        {name && (
-          <StyledLabel>
-            <Text
-              fontSize='xs'
-              color='white'
-              px={2}
-              fontWeight='semibold'
-              bg='status.info'
-            >
-              {name.toUpperCase()}
-            </Text>
-          </StyledLabel>
-        )}
-      </Flex>
-      <Flex
-        bg='status.info_lt'
-        py={1}
-        overflow='hidden'
-        w={['100%', 'unset']}
-        flex={['unset', 1]}
-        px={4}
-      >
-        {children}
-      </Flex>
-    </Flex>
-  );
-};
+import {AccessBadge, TypeBanner} from 'src/components/resource';
 
 interface SearchResultCardProps {
   id?: FormattedResource['id'];
@@ -276,7 +168,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
             >
               (
               <AccessBadge conditionsOfAccess={conditionsOfAccess}>
-                Public
+                {conditionsOfAccess}
               </AccessBadge>
               )
             </Box>
@@ -284,15 +176,18 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
         </Flex>
 
         {/* Banner with resource type + date of publication */}
-        <StyledBanner name={type} pl={[2, 4, 6]}>
-          <Flex alignItems='center'>
-            <Icon as={FaClock} mr={2}></Icon>
-            <Text fontSize='xs' fontWeight='semibold'>
-              {datePublished && `Published on ${formatDate(datePublished)}`}
-              {!datePublished && date && ` Published on ${formatDate(date)}`}
-            </Text>
-          </Flex>
-        </StyledBanner>
+        <TypeBanner
+          type={type}
+          pl={[2, 4, 6]}
+          datePublished={(() => {
+            if (datePublished) {
+              return `Published on ${formatDate(datePublished)}`;
+            }
+            if (!datePublished && date) {
+              return ` Published on ${formatDate(date)}`;
+            }
+          })()}
+        />
         <>
           <CardBody>
             <ToggleContainer
@@ -355,11 +250,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                           Details
                         </Heading>
                       </Box>
-                      {isExpanded ? (
-                        <Icon as={FaMinus} fontSize='12px' />
-                      ) : (
-                        <Icon as={FaPlus} fontSize='12px' />
-                      )}
+                      <Icon as={isExpanded ? FaMinus : FaPlus} fontSize='xs' />
                     </AccordionButton>
                   </h2>
                   <AccordionPanel w='100%' px={paddingCard}>

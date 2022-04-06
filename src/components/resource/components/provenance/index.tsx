@@ -1,10 +1,17 @@
 import React from 'react';
-import {Box, Button, Flex, Image, Link, Stack, Text} from 'nde-design-system';
+import {
+  Button,
+  Flex,
+  Image,
+  Link,
+  Stack,
+  Stat,
+  StatLabel,
+  Text,
+} from 'nde-design-system';
 import {FormattedResource} from 'src/utils/api/types';
 import {Skeleton} from '@chakra-ui/skeleton';
-import {MetadataField} from '../section';
-import {ResourceLinks} from 'src/components/resource/';
-import {getRepositoryImage} from 'src/utils/helpers';
+import {formatDate, getRepositoryImage} from 'src/utils/helpers';
 
 interface Provenance {
   isLoading: boolean;
@@ -20,35 +27,41 @@ const Provenance: React.FC<Provenance> = ({
     getRepositoryImage(includedInDataCatalog.name);
 
   return (
-    <Skeleton isLoaded={!isLoading} p={4}>
-      <Stack spacing={4}>
-        {imageURL && (
-          <Image
-            w={'100px'}
-            objectFit='contain'
-            my={[2, 4]}
-            src={imageURL}
-            alt='Data source logo'
-          />
-        )}
+    <Skeleton isLoaded={!isLoading}>
+      <Stack spacing={4} alignItems='start'>
         {includedInDataCatalog?.name && (
-          <MetadataField isLoading={isLoading} label={`Organization's name`}>
-            {includedInDataCatalog.url ? (
-              <Link href={includedInDataCatalog.url} target='_blank' isExternal>
-                {includedInDataCatalog.name}
-              </Link>
-            ) : (
-              <Text>{includedInDataCatalog.name}</Text>
+          <Stat>
+            {imageURL && (
+              <Image
+                h='50px'
+                objectFit='contain'
+                my={[2, 4]}
+                src={imageURL}
+                alt='Data source logo'
+              />
             )}
-          </MetadataField>
+            <StatLabel>Source organization</StatLabel>
+            <dd>
+              {includedInDataCatalog.url ? (
+                <Link
+                  href={includedInDataCatalog.url}
+                  target='_blank'
+                  isExternal
+                >
+                  {includedInDataCatalog.name}
+                </Link>
+              ) : (
+                <Text>{includedInDataCatalog.name}</Text>
+              )}
+            </dd>
+          </Stat>
         )}
 
         {includedInDataCatalog?.versionDate && (
-          <MetadataField
-            isLoading={isLoading}
-            label='Version Date'
-            value={new Date(includedInDataCatalog.versionDate).toLocaleString()}
-          ></MetadataField>
+          <Stat>
+            <StatLabel>Version Date</StatLabel>
+            <dd>{formatDate(includedInDataCatalog.versionDate)} </dd>
+          </Stat>
         )}
         {includedInDataCatalog?.url && (
           <Button
