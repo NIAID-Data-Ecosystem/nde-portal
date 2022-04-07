@@ -4,8 +4,8 @@
       "label": "Discovery Portal",
       "routes": [
         {
-          "label": "Portal Page",
-          "href": "#"
+          "label": "Search",
+          "href": "/"
         }
       ]
     }

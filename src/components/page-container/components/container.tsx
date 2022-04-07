@@ -3,6 +3,7 @@ import {Box, Flex, Navigation, Footer, FlexProps} from 'nde-design-system';
 import navItems from 'configs/nav.json';
 import footerItems from 'configs/footer.json';
 import Head from 'next/head';
+import Notice from './notice';
 
 interface PageContainerProps extends FlexProps {
   hasNavigation?: boolean;
@@ -32,15 +33,17 @@ export const PageContainer: React.FC<PageContainerProps> = ({
         <link rel='icon' href='/favicon.png' />
       </Head>
 
-      <Flex as={'main'} w={'100%'} flexDirection={'column'}>
+      <Flex as={'main'} w={'100%'} flexDirection={'column'} minW={300}>
         {hasNavigation && (
           // Sticky Nav Bar.
-          <Box ref={ref} position='fixed' w='100%' zIndex={100}>
+          <Box ref={ref} position='fixed' w='100%' zIndex={100} minW={300}>
             <Navigation navItems={navItems.routes} />
           </Box>
         )}
+
         {/*Page content has margin-top to compensate for fixed nav bar. */}
-        <Box id={'pagebody'} mt={`${height}px` || 0}>
+        <Box id={'pagebody'} mt={`${height}px` || 0} position='relative'>
+          <Notice />
           {children}
           <Footer navigation={footerItems.routes} />
         </Box>
