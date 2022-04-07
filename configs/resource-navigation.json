@@ -3,31 +3,53 @@
   "routes": [
     {
       "title": "Overview",
-      "hash": "overview"
+      "hash": "overview",
+      "metadataProperty": [
+        "doi",
+        "keywords",
+        "language",
+        "license",
+        "numberOfDownloads",
+        "numberOfViews",
+        "spatialCoverage",
+        "temporalCoverage",
+        "citation",
+        "variableMeasured",
+        "measurementTechnique",
+        "species",
+        "topic",
+        "infectiousDisease"
+      ]
     },
     {
       "title": "Description",
-      "hash": "description"
+      "hash": "description",
+      "metadataProperty": ["description", "peach", "funding"]
     },
     {
       "title": "Metadata",
-      "hash": "metadata"
+      "hash": "metadata",
+      "metadataProperty": ["rawData"]
     },
     {
       "title": "Provenance",
-      "hash": "provenance"
+      "hash": "provenance",
+      "metadataProperty": ["includedInDataCatalog"]
     },
     {
       "title": "File Downloads",
-      "hash": "downloads"
+      "hash": "downloads",
+      "metadataProperty": ["distribution"]
     },
     {
       "title": "Funding",
-      "hash": "funding"
+      "hash": "funding",
+      "metadataProperty": ["funding"]
     },
     {
       "title": "Cited By",
-      "hash": "citedBy"
+      "hash": "citedBy",
+      "metadataProperty": ["citedBy"]
     }
   ]
 }

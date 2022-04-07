@@ -83,7 +83,6 @@ const ResourcePage: NextPage = props => {
 
   // Check if mobile
   const isMobile = useBreakpointValue({base: true, md: false});
-
   // Access query client
   const {isLoading, error, data} = useQuery<
     FormattedResource | undefined,
@@ -119,6 +118,7 @@ const ResourcePage: NextPage = props => {
       document.body.appendChild(altmetricsScript);
     }
   }, [data]);
+  console.log(data);
 
   if (!id) {
     return <></>;
@@ -351,7 +351,7 @@ const ResourcePage: NextPage = props => {
                     my={2}
                     sx={{'>*': {p: [2, 4, 4, 6]}}}
                   >
-                    <LocalNavigation />
+                    <LocalNavigation data={data} />
                   </Card>
                 </Box>
               </Flex>

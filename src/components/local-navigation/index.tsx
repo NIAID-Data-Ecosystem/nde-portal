@@ -14,6 +14,7 @@ import {
 } from 'nde-design-system';
 import navigationData from 'configs/resource-navigation.json';
 import {throttle} from 'lodash';
+import {FormattedResource} from 'src/utils/api/types';
 
 interface NavLinkProps {
   href: string;
@@ -25,11 +26,11 @@ const NavLink: React.FC<NavLinkProps> = ({isSelected, ...props}) => {
     <Link
       variant='ghost'
       borderLeft='2px solid'
-      borderLeftColor={isSelected ? 'primary.500' : 'transparent'}
+      borderLeftColor={isSelected ? 'accent.bg' : 'transparent'}
       pl={3}
       _visited={{
         color: 'link.color',
-        borderLeftColor: isSelected ? 'primary.500' : 'transparent',
+        borderLeftColor: isSelected ? 'accent.bg' : 'transparent',
       }}
       textDecoration={isSelected ? 'underline' : 'none'}
       _hover={{
@@ -48,13 +49,15 @@ const NavLink: React.FC<NavLinkProps> = ({isSelected, ...props}) => {
 
 interface navigationConfig {
   title: string;
-  routes: {title: string; hash: string}[];
+  routes: {title: string; hash: string; metadataProperty?: string[]}[];
 }
 
-const LocalNavigation = () => {
-  const isMobile = useBreakpointValue({base: true, sm: true, md: false});
+interface LocalNavigationProps {
+  data: FormattedResource;
+}
 
-  const {isOpen, onToggle} = useDisclosure();
+const LocalNavigation: React.FC<LocalNavigationProps> = ({data}) => {
+  const isMobile = useBreakpointValue({base: true, sm: true, md: false});
 
   // Navigation config
   const {routes} = navigationData as navigationConfig;
@@ -136,20 +139,36 @@ const LocalNavigation = () => {
 
       <UnorderedList ml={0} mt={4}>
         {routes &&
-          routes.map(route => (
-            <ListItem key={route.title} py={0.5} px={0.25}>
-              <NavLink
-                href={`#${route.hash}`}
-                isSelected={activeSection === route.hash}
-                onClick={() => {
-                  setItemClicked(true);
-                  setActiveSection(route.hash);
-                }}
-              >
-                {route.title}
-              </NavLink>
-            </ListItem>
-          ))}
+          routes.map(route => {
+            // Check if data has the metadata for a given section before displaying it in nav bar.
+            const navHasSection =
+              data &&
+              Object.keys(data).filter(d => {
+                return (
+                  route.metadataProperty?.includes(d) &&
+                  data[d as keyof FormattedResource] !== null
+                );
+              }).length > 0;
+
+            if (!navHasSection) {
+              return <></>;
+            }
+
+            return (
+              <ListItem key={route.title} py={0.5} px={0.25}>
+                <NavLink
+                  href={`#${route.hash}`}
+                  isSelected={activeSection === route.hash}
+                  onClick={() => {
+                    setItemClicked(true);
+                    setActiveSection(route.hash);
+                  }}
+                >
+                  {route.title}
+                </NavLink>
+              </ListItem>
+            );
+          })}
       </UnorderedList>
     </Box>
   );
