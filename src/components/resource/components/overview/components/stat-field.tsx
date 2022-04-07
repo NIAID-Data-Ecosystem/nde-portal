@@ -1,22 +1,16 @@
 import React from 'react';
 import {
-  Box,
   Flex,
   FlexProps,
-  Heading,
   Icon,
-  Skeleton,
   Stat,
   StatLabel,
   StatNumber,
-  StatHelpText,
-  StatArrow,
-  StatGroup,
-  Text,
   Tooltip,
 } from 'nde-design-system';
 import {IconType} from 'react-icons';
-import {FaInfoCircle} from 'react-icons/fa';
+
+import {FaInfo, FaInfoCircle} from 'react-icons/fa';
 import LoadingSpinner from 'src/components/loading';
 
 interface MetadataStatProps extends FlexProps {
@@ -59,9 +53,13 @@ const StatField: React.FC<MetadataStatProps> = ({
               >
                 <span>
                   <Icon
-                    as={FaInfoCircle}
-                    color='primary.600'
+                    as={FaInfo}
                     mx={2}
+                    color='accent.bg'
+                    border='0.5px solid'
+                    borderRadius='100%'
+                    p={1}
+                    boxSize={5}
                     cursor='pointer'
                   />
                 </span>

@@ -1,5 +1,5 @@
 import React from 'react';
-import {Box, Button, Card, Flex, Icon, Link, Text} from 'nde-design-system';
+import {Box, Button, Flex, Icon, Link, Text} from 'nde-design-system';
 import {IoIosWarning} from 'react-icons/io';
 import {useLocalStorage} from 'usehooks-ts';
 
@@ -31,16 +31,14 @@ const Notice = () => {
         py={2}
         flexWrap='wrap'
       >
-        <Flex
+        <Icon
+          as={IoIosWarning}
           bg='status.warning_lt'
           borderRadius='100%'
-          boxSize={8}
-          justifyContent='center'
-          alignItems='center'
+          boxSize={10}
+          p={1}
           mr={4}
-        >
-          <Icon as={IoIosWarning} boxSize={5} m={2} />
-        </Flex>
+        />
 
         <Text py={[4, 0]}>
           <strong>
@@ -64,8 +62,9 @@ const Notice = () => {
           <Text>
             This version is not production ready and is subject to changes.
           </Text>
-          For any questions, <Link href={niaid_help}>contact {niaid_help}</Link>
-          . +
+          <Link href={niaid_help}>
+            <Text>For any questions, contact {niaid_help}.</Text>
+          </Link>
           <br />
           <Button onClick={toggleWarningOpen} colorScheme='primary' mt={2}>
             Got it

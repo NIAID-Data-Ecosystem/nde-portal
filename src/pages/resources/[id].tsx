@@ -169,7 +169,6 @@ const ResourcePage: NextPage = props => {
                       datePublished={data?.datePublished}
                     />
                   </Section>
-                  {/* <Navigation resourceType={data?.type} /> */}
                   <Section id='overview'>
                     <ResourceOverview
                       isLoading={isLoading}
@@ -185,6 +184,8 @@ const ResourcePage: NextPage = props => {
                       variableMeasured={data?.variableMeasured}
                       measurementTechnique={data?.measurementTechnique}
                       species={data?.species}
+                      topic={data?.topic}
+                      infectiousDisease={data?.infectiousDisease}
                     />
                     {isMobile && (
                       <ResourceLinks

@@ -26,6 +26,7 @@ import StatField from './components/stat-field';
 
 interface Overview {
   doi?: FormattedResource['doi'];
+  infectiousDisease?: FormattedResource['infectiousDisease'];
   isLoading: boolean;
   keywords?: FormattedResource['keywords'];
   language?: FormattedResource['language'];
@@ -38,11 +39,13 @@ interface Overview {
   variableMeasured?: FormattedResource['variableMeasured'];
   measurementTechnique?: FormattedResource['measurementTechnique'];
   species?: FormattedResource['species'];
+  topic?: FormattedResource['topic'];
 }
 
 const Overview: React.FC<Overview> = ({
   citation,
   doi,
+  infectiousDisease,
   isLoading,
   language,
   license,
@@ -52,6 +55,7 @@ const Overview: React.FC<Overview> = ({
   spatialCoverage,
   species,
   temporalCoverage,
+  topic,
   variableMeasured,
 }) => {
   const getStatInfo = (metadataProperty: string) => {
@@ -175,7 +179,24 @@ const Overview: React.FC<Overview> = ({
         {/* species covered in resource */}
         {species && (
           <StatField isLoading={isLoading} {...getStatInfo('species')}>
-            {species}
+            {Array.isArray(species) ? species.join(', ') : species}
+          </StatField>
+        )}
+
+        {/* infectious disease covered */}
+        {infectiousDisease && (
+          <StatField
+            isLoading={isLoading}
+            {...getStatInfo('infectiousDisease')}
+          >
+            {infectiousDisease}
+          </StatField>
+        )}
+
+        {/* topics covered in resource*/}
+        {topic && (
+          <StatField isLoading={isLoading} {...getStatInfo('topic')}>
+            {Array.isArray(topic) ? topic.join(', ') : topic}
           </StatField>
         )}
 

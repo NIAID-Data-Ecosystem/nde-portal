@@ -242,10 +242,10 @@ export const formatAPIResource = (data: any) => {
     temporalCoverage:
       typeof data.temporalCoverage === 'string' ? data.spatialCoverage : null,
     // Maybe add species or organism field to topic
-    topic: data.topic
-      ? Array.isArray(data.topic)
-        ? data.topic
-        : [data.topic]
+    topic: data.topicCategory
+      ? Array.isArray(data.topicCategory)
+        ? data.topicCategory
+        : [data.topicCategory]
       : null,
     url: data.url || null,
     variableMeasured: data.variableMeasured

@@ -69,7 +69,6 @@ const Provenance: React.FC<Provenance> = ({
             variant='outline'
             href={includedInDataCatalog.url}
             h='unset'
-            pl={3}
             isExternal
           >
             <Flex alignItems='center' direction={['column', 'row']}>

@@ -168,6 +168,7 @@ export interface FormattedResource {
   doi: string;
   funding: Funding[] | null;
   includedInDataCatalog: includedInDataCatalog | null;
+  infectiousDisease: string | null;
   keywords: string[] | null;
   language: {
     alternateName: string | null;
