@@ -56,7 +56,7 @@ interface NavigationConfig {
 
 // Helper function determines whether to show section in nav.
 
-export const showSection = (data?: FormattedResource, section: Route) => {
+export const showSection = (section: Route, data?: FormattedResource) => {
   const isEmpty =
     data &&
     section.metadataProperties.filter(prop => data[prop] !== null).length === 0;
@@ -153,7 +153,7 @@ const LocalNavigation: React.FC<LocalNavigationProps> = ({data}) => {
         {routes &&
           routes.map(route => {
             // Check if data has the metadata for a given section before displaying it in nav bar.
-            const navHasSection = showSection(data, route);
+            const navHasSection = showSection(route, data);
 
             if (!navHasSection) {
               return null;

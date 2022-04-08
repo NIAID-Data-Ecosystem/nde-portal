@@ -293,7 +293,7 @@ const ResourcePage: NextPage = props => {
                     };
 
                     // Determine if should show section if no data is available.
-                    if (!showSection(data, section)) {
+                    if (!showSection(section, data)) {
                       return null;
                     }
                     return (
