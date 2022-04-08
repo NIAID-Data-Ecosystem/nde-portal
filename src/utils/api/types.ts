@@ -165,8 +165,9 @@ export interface FormattedResource {
   description: string | null;
   disease: string | null;
   distribution: Distribution[] | null;
-  doi: string;
+  doi: string | null;
   funding: Funding[] | null;
+  healthCondition: string | null;
   includedInDataCatalog: includedInDataCatalog | null;
   infectiousDisease: string | null;
   keywords: string[] | null;
@@ -178,6 +179,7 @@ export interface FormattedResource {
   license: string | null;
   mainEntityOfPage: string | null;
   measurementTechnique: string[] | null;
+  nctid: string | null;
   numberOfDownloads: number | null;
   publisher: Publisher | null;
   rawData: any;

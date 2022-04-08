@@ -88,7 +88,12 @@ export const Filter: React.FC<FilterProps> = ({
           <AccordionIcon />
         </AccordionButton>
       </h2>
-      <AccordionPanel pb={2} borderLeft='4px solid' borderColor='accent.bg'>
+      <AccordionPanel
+        px={2}
+        py={4}
+        borderLeft='4px solid'
+        borderColor='accent.bg'
+      >
         {/* Search through the filters */}
         <SearchInput
           ariaLabel={`Search filter ${filterNameConfig[name]} terms`}
@@ -106,6 +111,7 @@ export const Filter: React.FC<FilterProps> = ({
             maxH='250px'
             overflowY='auto'
             style={{scrollBehavior: 'smooth'}}
+            my={4}
           >
             {/* Filters that can be applied on current search */}
             <UnorderedList direction='column' ml={0} my={2}>
@@ -142,7 +148,7 @@ export const Filter: React.FC<FilterProps> = ({
           </Box>
         </LoadingSpinner>
         {hasMore && items.length !== 0 && (
-          <ListItem justifyContent='center' borderColor='gray.200'>
+          <ListItem d='flex' justifyContent='center' borderColor='gray.200'>
             <Button
               variant='link'
               color='link.color'

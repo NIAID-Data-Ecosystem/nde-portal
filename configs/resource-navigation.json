@@ -24,7 +24,7 @@
     {
       "title": "Description",
       "hash": "description",
-      "metadataProperty": ["description", "peach", "funding"]
+      "metadataProperty": ["description"]
     },
     {
       "title": "Metadata",
@@ -34,7 +34,8 @@
     {
       "title": "Provenance",
       "hash": "provenance",
-      "metadataProperty": ["includedInDataCatalog"]
+      "metadataProperty": ["includedInDataCatalog"],
+      "isMandatory": true
     },
     {
       "title": "File Downloads",
@@ -44,7 +45,8 @@
     {
       "title": "Funding",
       "hash": "funding",
-      "metadataProperty": ["funding"]
+      "metadataProperty": ["funding"],
+      "isMandatory": true
     },
     {
       "title": "Cited By",

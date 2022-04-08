@@ -46,7 +46,7 @@ const FilesTable: React.FC<FilesTable> = ({distribution}) => {
       {!distribution || distribution.length === 0 ? (
         <Text>No data available.</Text>
       ) : (
-        <Table variant='simple' border={'1px solid'} borderColor='gray.100'>
+        <Table variant='simple' border='1px solid' borderColor='gray.100'>
           <TableCaption
             fontSize='xs'
             fontFamily='body'
@@ -84,7 +84,7 @@ const FilesTable: React.FC<FilesTable> = ({distribution}) => {
           <Tbody>
             {distribution.map((d, i) => {
               return (
-                <Tr key={i}>
+                <Tr key={i} id={`${i}`}>
                   {tableColumns.map((c, j) => {
                     let column = c as keyof Distribution;
                     let cellValue = d[column];
@@ -97,6 +97,7 @@ const FilesTable: React.FC<FilesTable> = ({distribution}) => {
                         <Td
                           role='cell'
                           key={`${cellValue}-${i}-${j}`}
+                          id={`${cellValue}-${i}-${j}`}
                           borderLeft='1px solid'
                           borderLeftColor='primary.100'
                           borderRight='1px solid'
@@ -118,8 +119,8 @@ const FilesTable: React.FC<FilesTable> = ({distribution}) => {
 
                     return (
                       <Td
-                        id={`${column} ${cellValue}`}
                         key={`${cellValue}-${i}-${j}`}
+                        id={`${cellValue}-${i}-${j}`}
                         borderLeft='1px solid'
                         borderLeftColor='primary.100'
                         borderRight='1px solid'

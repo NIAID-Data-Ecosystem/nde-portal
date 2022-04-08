@@ -29,17 +29,19 @@ const Provenance: React.FC<Provenance> = ({
   return (
     <Skeleton isLoaded={!isLoading}>
       <Stack spacing={4} alignItems='start'>
-        {includedInDataCatalog?.name && (
+        {includedInDataCatalog?.name ? (
           <Stat>
-            {imageURL && (
-              <Image
-                h='50px'
-                objectFit='contain'
-                my={[2, 4]}
-                src={imageURL}
-                alt='Data source logo'
-              />
-            )}
+            <dd>
+              {imageURL && (
+                <Image
+                  h='50px'
+                  objectFit='contain'
+                  my={[2, 4]}
+                  src={imageURL}
+                  alt='Data source logo'
+                />
+              )}
+            </dd>
             <StatLabel>Source organization</StatLabel>
             <dd>
               {includedInDataCatalog.url ? (
@@ -55,6 +57,8 @@ const Provenance: React.FC<Provenance> = ({
               )}
             </dd>
           </Stat>
+        ) : (
+          <Text>No data available.</Text>
         )}
 
         {includedInDataCatalog?.versionDate && (

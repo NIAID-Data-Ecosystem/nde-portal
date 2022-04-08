@@ -4,19 +4,17 @@ import {
   AccordionButton,
   AccordionItem,
   AccordionPanel,
-  Box,
   BoxProps,
-  Flex,
-  FlexProps,
-  Heading,
   Icon,
   Skeleton,
-  Text,
 } from 'nde-design-system';
 import {StyledSectionHead, StyledSectionHeading} from './styles';
 import {IconType} from 'react-icons';
 import {FaMinus, FaPlus} from 'react-icons/fa';
-import {IconType} from 'react-icons';
+import {VscJson} from 'react-icons/vsc';
+import {GrTextAlignFull} from 'react-icons/gr';
+import {FaDatabase, FaDownload, FaRegMoneyBillAlt} from 'react-icons/fa';
+import {BsBlockquoteLeft} from 'react-icons/bs';
 
 interface SectionProps extends BoxProps {
   id: string;
@@ -25,12 +23,11 @@ interface SectionProps extends BoxProps {
   bg?: string;
   isCollapsible?: boolean;
   isDefaultOpen?: boolean;
-  icon?: IconType;
   isLoading?: boolean;
 }
+
 const Section: React.FC<SectionProps> = ({
   id,
-  icon,
   isLoading,
   name,
   children,
@@ -53,9 +50,34 @@ const Section: React.FC<SectionProps> = ({
     );
   };
 
-  if (!children && !isLoading) {
-    return null;
-  }
+  // Show an icon for the section if available
+  const SectionIcon = () => {
+    let icon;
+    if (id === 'description') {
+      icon = GrTextAlignFull;
+    }
+    if (id === 'metadata') {
+      icon = VscJson;
+    }
+    if (id === 'provenance') {
+      icon = FaDatabase;
+    }
+    if (id === 'downloads') {
+      icon = FaDownload;
+    }
+    if (id === 'funding') {
+      icon = FaRegMoneyBillAlt;
+    }
+    if (id === 'citedBy') {
+      icon = BsBlockquoteLeft;
+    }
+    return icon ? (
+      <Icon as={icon} boxSize={4} color='text.heading' mr={4} />
+    ) : (
+      <></>
+    );
+  };
+
   // if collapsible, the section is an accordion with the section name as the button.
   if (isCollapsible) {
     return (
@@ -79,15 +101,7 @@ const Section: React.FC<SectionProps> = ({
                         borderColor: 'page.alt',
                       }}
                     >
-                      {icon && (
-                        <Icon
-                          as={icon}
-                          boxSize={4}
-                          color='text.heading'
-                          mr={4}
-                        />
-                      )}
-
+                      <SectionIcon />
                       {name && (
                         <StyledSectionHeading flex={1} textAlign='left'>
                           {name}
@@ -113,7 +127,7 @@ const Section: React.FC<SectionProps> = ({
       {name && (
         <StyledSectionHead color={color} px={4}>
           <StyledSectionHeading>
-            {icon && <Icon as={icon} boxSize={4} color='text.heading' mr={4} />}
+            <SectionIcon />
             {name}
           </StyledSectionHeading>
         </StyledSectionHead>

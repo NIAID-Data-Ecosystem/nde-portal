@@ -201,6 +201,7 @@ export const formatAPIResource = (data: any) => {
     distribution: formatDistribution(data.distribution),
     doi: data['doi'] || data['@id'] || null,
     funding: formatFunding(data.funding),
+    healthCondition: data.healthCondition || null,
     includedInDataCatalog: data.includedInDataCatalog
       ? {
           name: data.includedInDataCatalog.name || null,
@@ -210,6 +211,7 @@ export const formatAPIResource = (data: any) => {
           identifier: data.includedInDataCatalog.identifier || null,
         }
       : null,
+    infectiousDisease: data.infectiousDisease || null,
     keywords: data.keywords
       ? Array.isArray(data.keywords)
         ? data.keywords
@@ -231,6 +233,8 @@ export const formatAPIResource = (data: any) => {
         ? data.measurementTechnique
         : [data.measurementTechnique]
       : null,
+    nctid: data['nctid'] || null,
+
     numberOfDownloads: data.numberOfDownloads || null,
     numberOfViews: data.numberOfViews || null,
     publisher: data.publisher || null,

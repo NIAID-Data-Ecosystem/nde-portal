@@ -1,66 +1,78 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {
-  Flex,
-  Heading,
-  Icon,
-  Text,
-  Button,
-  useBreakpointValue,
-  useDisclosure,
-  Collapse,
-  Stack,
   Box,
+  Heading,
+  Link,
+  ListItem,
+  Text,
+  UnorderedList,
+  useBreakpointValue,
 } from 'nde-design-system';
-import navigationData from 'configs/resource-navigation.json';
-import {FaChevronDown} from 'react-icons/fa';
-import {IoClose} from 'react-icons/io5';
-import {
-  StyledNavigation,
-  StyledNavigationContent,
-  StyledNavigationBar,
-  StyledNavigationLinks,
-  StyledLink,
-  StyledResourceType,
-} from './styles';
-import {useRouter} from 'next/router';
+import navigationData from 'configs/resource-sections.json';
 import {throttle} from 'lodash';
+import {FormattedResource} from 'src/utils/api/types';
 
 interface NavLinkProps {
-  key: string;
   href: string;
   isSelected: boolean;
   onClick: () => void;
 }
 const NavLink: React.FC<NavLinkProps> = ({isSelected, ...props}) => {
   return (
-    <StyledLink isSelected={isSelected} variant='unstyled' {...props}>
-      <Text
-        fontSize={'12px'}
-        fontWeight='semibold'
-        textTransform={'uppercase'}
-        color={isSelected ? 'primary.400' : 'text.heading'}
-      >
+    <Link
+      variant='ghost'
+      borderLeft='2px solid'
+      borderLeftColor={isSelected ? 'accent.bg' : 'transparent'}
+      pl={3}
+      _visited={{
+        color: 'link.color',
+        borderLeftColor: isSelected ? 'accent.bg' : 'transparent',
+      }}
+      textDecoration={isSelected ? 'underline' : 'none'}
+      _hover={{
+        textDecoration: 'underline!important',
+        borderBottom: 'none!important',
+        '*': {borderBottom: 'none!important'},
+      }}
+      {...props}
+    >
+      <Text fontSize='sm' color={isSelected ? 'primary.400' : 'text.heading'}>
         {props.children}
       </Text>
-    </StyledLink>
+    </Link>
   );
 };
 
-// Navigation with quicklinks to sections in the resource page.
-interface navigationConfig {
+interface Route {
   title: string;
-  routes: {title: string; hash: string}[];
+  hash: string;
+  metadataProperties: (keyof FormattedResource)[];
+  showEmpty?: boolean;
+}
+interface NavigationConfig {
+  title: string;
+  routes: Route[];
 }
 
-const Navigation: React.FC<{resourceType?: string | null}> = ({
-  resourceType,
-}) => {
-  const isMobile = useBreakpointValue({base: true, sm: true, md: false});
+// Helper function determines whether to show section in nav.
 
-  const {isOpen, onToggle} = useDisclosure();
+export const showSection = (data?: FormattedResource, section: Route) => {
+  const isEmpty =
+    data &&
+    section.metadataProperties.filter(prop => data[prop] !== null).length === 0;
+  return !isEmpty || (isEmpty && section.showEmpty);
+};
+
+interface LocalNavigationProps {
+  data?: FormattedResource;
+}
+
+const LocalNavigation: React.FC<LocalNavigationProps> = ({data}) => {
+  // [TO DO]: Mobile navigation.
+  // const isMobile = useBreakpointValue({base: true, sm: true, md: false});
 
   // Navigation config
-  const {routes} = navigationData as navigationConfig;
+  const {routes} = navigationData as NavigationConfig;
 
   // Set secondary nav bar underneath primary nav bar.
   const ref = useRef<HTMLDivElement>(null);
@@ -125,20 +137,31 @@ const Navigation: React.FC<{resourceType?: string | null}> = ({
     };
   }, [activeSection, routes, itemClicked]);
 
-  const NavigationLinks = ({isOpen}: {isOpen: boolean}) => {
-    return (
-      <StyledNavigationLinks>
-        <Collapse in={isOpen || !isMobile} animateOpacity endingHeight={'100%'}>
-          <Stack
-            alignItems={'end'}
-            w={'100%'}
-            h={'100%'}
-            direction={['column', 'column', 'row']}
-          >
-            {routes &&
-              routes.map(route => (
+  return (
+    <Box as='nav' w='100%'>
+      <Heading
+        as='h2'
+        size='sm'
+        fontWeight='semibold'
+        borderBottom='0.5px solid'
+        borderColor='niaid.placeholder'
+      >
+        On This Page
+      </Heading>
+
+      <UnorderedList ml={0} mt={4}>
+        {routes &&
+          routes.map(route => {
+            // Check if data has the metadata for a given section before displaying it in nav bar.
+            const navHasSection = showSection(data, route);
+
+            if (!navHasSection) {
+              return null;
+            }
+
+            return (
+              <ListItem key={route.title} py={0.5} px={0.25}>
                 <NavLink
-                  key={route.title}
                   href={`#${route.hash}`}
                   isSelected={activeSection === route.hash}
                   onClick={() => {
@@ -148,37 +171,12 @@ const Navigation: React.FC<{resourceType?: string | null}> = ({
                 >
                   {route.title}
                 </NavLink>
-              ))}
-          </Stack>
-        </Collapse>
-      </StyledNavigationLinks>
-    );
-  };
-
-  return (
-    <StyledNavigation as='nav' ref={ref} top={`60px`} position='sticky'>
-      <NavigationLinks isOpen={isOpen} />
-      {/* {routes && (
-          <Button
-            onClick={onToggle}
-            color='black'
-            display={{base: 'flex', md: 'none'}}
-            _hover={{bg: 'blackAlpha.500'}}
-            variant='ghost'
-            aria-label='Toggle Navigation'
-          >
-            <Text mr={1}>Sections</Text>
-            <Flex w={5} h={5} alignItems='center' justifyContent='center'>
-              {isOpen ? (
-                <Icon as={IoClose} w={5} h={5} />
-              ) : (
-                <Icon as={FaChevronDown} w={3} h={3} />
-              )}
-            </Flex>
-          </Button>
-        )} */}
-    </StyledNavigation>
+              </ListItem>
+            );
+          })}
+      </UnorderedList>
+    </Box>
   );
 };
 
-export default Navigation;
+export default LocalNavigation;

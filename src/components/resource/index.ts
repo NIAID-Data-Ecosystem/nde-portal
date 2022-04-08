@@ -1,4 +1,3 @@
-import Navigation from './components/navigation';
 import AccessBadge from './components/access-badge';
 import TypeBanner from './components/type-banner';
 import Section from './components/section';
@@ -11,7 +10,6 @@ import ResourceLinks from './components/external-links';
 
 export {
   AccessBadge,
-  Navigation,
   Section,
   RelatedDatasets,
   ResourceOverview,

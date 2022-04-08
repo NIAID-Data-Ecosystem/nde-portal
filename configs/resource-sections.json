@@ -1,0 +1,70 @@
+{
+  "title": "Sections",
+  "routes": [
+    {
+      "title": "Overview",
+      "hash": "overview",
+      "metadataProperties": [
+        "citation",
+        "doi",
+        "healthCondition",
+        "infectiousDisease",
+        "language",
+        "license",
+        "measurementTechnique",
+        "nctid",
+        "numberOfDownloads",
+        "numberOfViews",
+        "spatialCoverage",
+        "species",
+        "temporalCoverage",
+        "topic",
+        "variableMeasured"
+      ],
+      "showEmpty": true
+    },
+    {
+      "title": "Keywords",
+      "hash": "keywords",
+      "metadataProperties": ["keywords"]
+    },
+    {
+      "title": "Description",
+      "hash": "description",
+      "metadataProperties": ["description"],
+      "isCollapsible": true
+    },
+    {
+      "title": "Metadata",
+      "hash": "metadata",
+      "metadataProperties": ["rawData"],
+      "isCollapsible": true
+    },
+    {
+      "title": "Provenance",
+      "hash": "provenance",
+      "metadataProperties": ["includedInDataCatalog"],
+      "showEmpty": true,
+      "isCollapsible": true
+    },
+    {
+      "title": "File Downloads",
+      "hash": "downloads",
+      "metadataProperties": ["distribution"],
+      "isCollapsible": true
+    },
+    {
+      "title": "Funding",
+      "hash": "funding",
+      "metadataProperties": ["funding"],
+      "showEmpty": true,
+      "isCollapsible": true
+    },
+    {
+      "title": "Cited By",
+      "hash": "citedBy",
+      "metadataProperties": ["citedBy"],
+      "isCollapsible": true
+    }
+  ]
+}

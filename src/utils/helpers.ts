@@ -87,6 +87,9 @@ export const formatDate = (date: Date | string) => {
 
 // Format DOI if url is included in string.
 export const formatDOI = (doi: FormattedResource['doi']) => {
+  if (!doi) {
+    return null;
+  }
   if (doi.includes('https://doi.org/')) {
     return doi?.split('https://doi.org/')[1];
   }

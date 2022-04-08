@@ -24,32 +24,19 @@ import {
 import MetadataConfig from 'configs/resource-metadata.json';
 import StatField from './components/stat-field';
 
-interface Overview {
-  doi?: FormattedResource['doi'];
-  infectiousDisease?: FormattedResource['infectiousDisease'];
+interface Overview extends Partial<FormattedResource> {
   isLoading: boolean;
-  keywords?: FormattedResource['keywords'];
-  language?: FormattedResource['language'];
-  license?: FormattedResource['license'];
-  numberOfDownloads?: FormattedResource['numberOfDownloads'];
-  numberOfViews?: FormattedResource['numberOfViews'];
-  spatialCoverage?: FormattedResource['spatialCoverage'];
-  temporalCoverage?: FormattedResource['temporalCoverage'];
-  citation?: FormattedResource['citation'];
-  variableMeasured?: FormattedResource['variableMeasured'];
-  measurementTechnique?: FormattedResource['measurementTechnique'];
-  species?: FormattedResource['species'];
-  topic?: FormattedResource['topic'];
 }
 
 const Overview: React.FC<Overview> = ({
   citation,
   doi,
+  healthCondition,
   infectiousDisease,
-  isLoading,
   language,
   license,
   measurementTechnique,
+  nctid,
   numberOfDownloads,
   numberOfViews,
   spatialCoverage,
@@ -57,6 +44,7 @@ const Overview: React.FC<Overview> = ({
   temporalCoverage,
   topic,
   variableMeasured,
+  isLoading,
 }) => {
   const getStatInfo = (metadataProperty: string) => {
     const metadataField = MetadataConfig.fields.find(
@@ -71,7 +59,7 @@ const Overview: React.FC<Overview> = ({
   const licenseInfo = license ? formatLicense(license) : null;
   return (
     <Flex p={4} w='100%' flexWrap='wrap'>
-      {(doi || numberOfDownloads || numberOfViews) && (
+      {(doi || nctid || numberOfDownloads || numberOfViews) && (
         <Box w={{sm: '100%', lg: 'unset'}} mx={[0, 0, 4]} my={4}>
           <SimpleGrid
             minChildWidth='150px'
@@ -83,7 +71,7 @@ const Overview: React.FC<Overview> = ({
             borderColor='gray.100'
           >
             {/* Altmetric Badge */}
-            {doi && (
+            {(doi || nctid) && (
               <StatField
                 isLoading={false}
                 {...getStatInfo('Altmetric Rating')}
@@ -91,13 +79,24 @@ const Overview: React.FC<Overview> = ({
                 justifyContent='center'
               >
                 <Flex alignItems='center' direction='column'>
-                  <div
-                    data-badge-popover='right'
-                    data-badge-type='donut'
-                    data-doi={formatDOI(doi)}
-                    className='altmetric-embed'
-                    data-link-target='blank'
-                  ></div>
+                  {doi && (
+                    <div
+                      data-badge-popover='right'
+                      data-badge-type='donut'
+                      data-doi={formatDOI(doi)}
+                      className='altmetric-embed'
+                      data-link-target='blank'
+                    ></div>
+                  )}
+                  {!doi && nctid && (
+                    <div
+                      data-badge-popover='right'
+                      data-badge-type='donut'
+                      data-nct-id={nctid}
+                      className='altmetric-embed'
+                      data-link-target='blank'
+                    ></div>
+                  )}
                   <Link
                     fontSize={'xs'}
                     href={
@@ -164,7 +163,7 @@ const Overview: React.FC<Overview> = ({
                 )}
               </>
             ) : (
-              'N/A'
+              '-'
             )}
           </StatField>
         }
@@ -172,7 +171,13 @@ const Overview: React.FC<Overview> = ({
         {/* DOI */}
         {doi && (
           <StatField isLoading={isLoading} {...getStatInfo('doi')}>
-            {doi}
+            {doi.includes('http') ? (
+              <Link href={doi} isExternal>
+                {doi}
+              </Link>
+            ) : (
+              doi
+            )}
           </StatField>
         )}
 
@@ -180,6 +185,13 @@ const Overview: React.FC<Overview> = ({
         {species && (
           <StatField isLoading={isLoading} {...getStatInfo('species')}>
             {Array.isArray(species) ? species.join(', ') : species}
+          </StatField>
+        )}
+
+        {/* health condition covered */}
+        {healthCondition && (
+          <StatField isLoading={isLoading} {...getStatInfo('healthCondition')}>
+            {healthCondition}
           </StatField>
         )}
 

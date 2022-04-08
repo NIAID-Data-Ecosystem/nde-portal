@@ -33,6 +33,7 @@ export const SearchBar = ({
           e.preventDefault();
           searchTerm && router.push(`/search?q=${searchTerm}`);
         }}
+        placeholder='Search for datasets or tools'
         {...props}
       />
     </PageContent>

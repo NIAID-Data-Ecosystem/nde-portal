@@ -330,16 +330,16 @@ const Search: NextPage = () => {
                   direction='row'
                   justifyContent='space-between'
                   flex={1}
-                  w={'100%'}
+                  w='100%'
                 >
                   {/* Filters sidebar */}
                   {/* [TO DO]: Render version for mobile. */}
                   <Box
                     flex={1}
-                    minW='240px'
-                    h='auto'
+                    minW='270px'
+                    h='95vh'
                     position='sticky'
-                    top='62px'
+                    top='65px'
                     boxShadow='base'
                     background='white'
                     borderRadius='semi'
@@ -347,12 +347,12 @@ const Search: NextPage = () => {
                     overflowY='auto'
                   >
                     <Flex
-                      justifyContent={'space-between'}
+                      justifyContent='space-between'
                       px={4}
                       py={4}
                       alignItems='center'
                     >
-                      <Heading size={'sm'} fontWeight={'normal'}>
+                      <Heading size='sm' fontWeight='normal'>
                         Filters
                       </Heading>
 

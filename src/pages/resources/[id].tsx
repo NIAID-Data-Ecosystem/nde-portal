@@ -31,16 +31,11 @@ import {
   TypeBanner,
 } from 'src/components/resource';
 import ErrorMessage from 'src/components/error';
-import {VscJson} from 'react-icons/vsc';
-import {GrTextAlignFull} from 'react-icons/gr';
-import {FaDatabase, FaDownload, FaRegMoneyBillAlt} from 'react-icons/fa';
-import {BsBlockquoteLeft} from 'react-icons/bs';
-import LocalNavigation from 'src/components/local-navigation';
-
-/*
-TO DO:
-Update sections to use sections config 'configs/resource-navigation.json' for consistency
-*/
+import LocalNavigation, {
+  showSection,
+} from 'src/components/resource/components/local-navigation';
+import SectionsConfig from 'configs/resource-sections.json';
+import {route} from 'next/dist/server/router';
 
 // Error display is data fetching goes wrong.
 const ErrorState = ({retryFn}: {retryFn: () => void}) => {
@@ -77,6 +72,126 @@ const EmptyState = () => {
     </Card>
   );
 };
+
+// use config file to show content in sections.
+const SectionContent = ({
+  id,
+  isLoading,
+  data,
+  metadataProperties,
+}: {
+  id: string;
+  isLoading: boolean;
+  data?: FormattedResource;
+  metadataProperties: (keyof FormattedResource)[];
+}) => {
+  // [metadataProperties] represents the properties that are required in the section.
+  const sectionData = metadataProperties.reduce(
+    (r: Partial<FormattedResource>, v, i) => {
+      if (data) {
+        r[v] = data[v];
+      }
+      return r;
+    },
+    {},
+  );
+
+  if (id === 'overview') {
+    return <ResourceOverview isLoading={isLoading} {...sectionData} />;
+  }
+  if (id === 'keywords') {
+    return (
+      <Skeleton isLoaded={!isLoading}>
+        <Flex flexWrap='wrap'>
+          {data?.keywords &&
+            data.keywords.map(keyword => {
+              return (
+                <Tag key={keyword} m={2} colorScheme='primary'>
+                  {keyword}
+                </Tag>
+              );
+            })}
+        </Flex>
+      </Skeleton>
+    );
+  }
+  /* Show description*/
+  if (id === 'description') {
+    return data?.description ? (
+      <Box
+        overflow='auto'
+        w='100%'
+        fontSize='sm'
+        dangerouslySetInnerHTML={{
+          __html: data.description,
+        }}
+      ></Box>
+    ) : null;
+  }
+
+  /* Show metadata*/
+  if (id === 'metadata') {
+    return data?.rawData ? (
+      <Box maxHeight={500} overflow='auto' w='100%' tabIndex={0}>
+        <pre
+          style={{
+            whiteSpace: 'pre-wrap',
+            padding: '2rem',
+          }}
+        >
+          <Text fontSize={'10px'}>{JSON.stringify(data.rawData, null, 2)}</Text>
+        </pre>
+      </Box>
+    ) : null;
+  }
+
+  /* Show where the data is retrieved from. */
+  if (id === 'provenance') {
+    return <ResourceProvenance isLoading={isLoading} {...sectionData} />;
+  }
+
+  /* Show all available downloads */
+  if (id === 'downloads') {
+    return <ResourceFilesTable isLoading={isLoading} {...sectionData} />;
+  }
+
+  /* Show where funding for the resource came from. */
+  if (id === 'funding') {
+    return (
+      <ResourceFilesTable
+        isLoading={isLoading}
+        // @ts-ignore
+        // [TO DO ]: create generic table component.
+        distribution={data?.funding?.map(f => f.funder)}
+        {...sectionData}
+      />
+    );
+  }
+
+  {
+    /* Where has the resource been cited */
+  }
+  if (id === 'citedBy') {
+    return (
+      <ResourceFilesTable
+        isLoading={true}
+        // @ts-ignore
+        // [TO DO ]: create generic table component.
+        distribution={data?.citedBy?.map(c => {
+          return {
+            doi: c.doi,
+            name: c.name,
+            pmid: c.pmid,
+            url: c.url,
+          };
+        })}
+      />
+    );
+  }
+
+  return null;
+};
+
 const ResourcePage: NextPage = props => {
   const router = useRouter();
   const {id} = router.query;
@@ -119,7 +234,6 @@ const ResourcePage: NextPage = props => {
     }
   }, [data]);
   console.log(data);
-
   if (!id) {
     return <></>;
   }
@@ -169,162 +283,50 @@ const ResourcePage: NextPage = props => {
                       datePublished={data?.datePublished}
                     />
                   </Section>
-                  <Section id='overview'>
-                    <ResourceOverview
-                      isLoading={isLoading}
-                      doi={data?.doi}
-                      keywords={data?.keywords}
-                      language={data?.language}
-                      license={data?.license}
-                      numberOfDownloads={data?.numberOfDownloads}
-                      numberOfViews={data?.numberOfViews}
-                      spatialCoverage={data?.spatialCoverage}
-                      temporalCoverage={data?.temporalCoverage}
-                      citation={data?.citation}
-                      variableMeasured={data?.variableMeasured}
-                      measurementTechnique={data?.measurementTechnique}
-                      species={data?.species}
-                      topic={data?.topic}
-                      infectiousDisease={data?.infectiousDisease}
-                    />
-                    {isMobile && (
-                      <ResourceLinks
+                  {SectionsConfig.routes.map(route => {
+                    const section = route as {
+                      title: string;
+                      hash: string;
+                      metadataProperties: (keyof FormattedResource)[];
+                      showEmpty?: boolean;
+                      isCollapsible?: boolean;
+                    };
+
+                    // Determine if should show section if no data is available.
+                    if (!showSection(data, section)) {
+                      return null;
+                    }
+                    return (
+                      <Section
+                        id={section.hash}
+                        key={section.hash}
+                        name={section.title}
                         isLoading={isLoading}
-                        includedInDataCatalog={data?.includedInDataCatalog}
-                      />
-                    )}
-                  </Section>
-                  {data?.keywords && data?.keywords.length > 0 && (
-                    <Section id={'keywords'} name={'Keywords'}>
-                      <Skeleton isLoaded={!isLoading}>
-                        <Flex flexWrap='wrap'>
-                          {data.keywords &&
-                            data.keywords.map(keyword => {
-                              return (
-                                <Tag key={keyword} m={2} colorScheme='primary'>
-                                  {keyword}
-                                </Tag>
-                              );
-                            })}
-                        </Flex>
-                      </Skeleton>
-                    </Section>
-                  )}
-                  {/* Show description*/}
-                  <Section
-                    id='description'
-                    name={'Description'}
-                    isCollapsible
-                    icon={GrTextAlignFull}
-                    isLoading={isLoading}
-                  >
-                    {data?.description && (
-                      <Box
-                        overflow={'auto'}
-                        w='100%'
-                        fontSize={'sm'}
-                        dangerouslySetInnerHTML={{
-                          __html: data.description,
-                        }}
-                      ></Box>
-                    )}
-                  </Section>
-
-                  {/* Show metadata*/}
-                  <Section
-                    id='metadata'
-                    name={'Metadata'}
-                    isCollapsible
-                    icon={VscJson}
-                    isLoading={isLoading}
-                  >
-                    {data?.rawData && (
-                      <Box maxHeight={500} overflow='auto' w='100%'>
-                        <pre
-                          style={{
-                            whiteSpace: 'pre-wrap',
-                            padding: '2rem',
-                          }}
-                        >
-                          <Text fontSize={'10px'}>
-                            {JSON.stringify(data.rawData, null, 2)}
-                          </Text>
-                        </pre>
-                      </Box>
-                    )}
-                  </Section>
-
-                  {/* Show where the data is retrieved from. */}
-                  <Section
-                    id='provenance'
-                    name={'Provenance'}
-                    isCollapsible
-                    icon={FaDatabase}
-                  >
-                    <ResourceProvenance
-                      isLoading={isLoading}
-                      includedInDataCatalog={data?.includedInDataCatalog}
-                    />
-                  </Section>
-
-                  {/* Show all available downloads */}
-                  <Section
-                    id='downloads'
-                    name={'File Downloads'}
-                    isCollapsible
-                    icon={FaDownload}
-                  >
-                    <ResourceFilesTable
-                      isLoading={true}
-                      distribution={data?.distribution}
-                    />
-                  </Section>
-
-                  {/* Show where funding is from */}
-                  <Section
-                    id='funding'
-                    name={'Funding'}
-                    isCollapsible
-                    icon={FaRegMoneyBillAlt}
-                  >
-                    <ResourceFilesTable
-                      isLoading={true}
-                      // @ts-ignore
-                      // [TO DO ]: create genric table component.
-                      distribution={data?.funding?.map(f => f.funder)}
-                    />
-                  </Section>
-
-                  {/* Where has the resource been cited */}
-                  {data?.citedBy && (
-                    <Section
-                      id='citedBy'
-                      name={'Cited By'}
-                      isCollapsible
-                      icon={BsBlockquoteLeft}
-                    >
-                      <ResourceFilesTable
-                        isLoading={true}
-                        // @ts-ignore
-                        // [TO DO ]: create genric table component.
-                        distribution={data?.citedBy?.map(c => {
-                          return {
-                            doi: c.doi,
-                            name: c.name,
-                            pmid: c.pmid,
-                            url: c.url,
-                          };
-                        })}
-                      />
-                    </Section>
-                  )}
+                        isCollapsible={section.isCollapsible}
+                      >
+                        <SectionContent
+                          id={section.hash}
+                          isLoading={isLoading}
+                          data={data}
+                          metadataProperties={section.metadataProperties}
+                        />
+                        {/* Display external links under overview if in mobile view. */}
+                        {section.hash === 'overview' && isMobile && (
+                          <ResourceLinks
+                            isLoading={isLoading}
+                            includedInDataCatalog={data?.includedInDataCatalog}
+                          />
+                        )}
+                      </Section>
+                    );
+                  })}
                 </Card>
                 <Box
                   flex={1}
-                  position={'sticky'}
-                  top={'80px'}
-                  w={'100%'}
-                  h={'100%'}
+                  position='sticky'
+                  top='80px'
+                  w='100%'
+                  h='100%'
                   minW='300px'
                 >
                   <Card
@@ -333,11 +335,13 @@ const ResourcePage: NextPage = props => {
                     my={[2, 2, 0]}
                     sx={{'>*': {p: 0}}}
                   >
-                    {/* Show external links in header when on mobile */}
+                    {/* Show external links such as source url, in header when on mobile */}
                     {!isMobile && (
                       <ResourceLinks
                         isLoading={isLoading}
                         includedInDataCatalog={data?.includedInDataCatalog}
+                        mainEntityOfPage={data?.mainEntityOfPage}
+                        codeRepository={data?.codeRepository}
                       />
                     )}
                     {/* <RelatedDatasets /> */}

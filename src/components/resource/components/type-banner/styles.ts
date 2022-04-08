@@ -8,7 +8,8 @@ export const StyledLabel = styled(Flex)<FlexProps>`
   z-index: 9;
   &:before {
     content: '';
-    background-color: ${(props: any) => props.theme.colors.status.info};
+    background-color: ${(props: any) =>
+      props._before.bg || props.theme.colors.status.info};
     box-shadow: 0 0 0 5px #fff;
     display: block;
     height: 100%;

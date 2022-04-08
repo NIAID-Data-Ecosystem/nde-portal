@@ -27,13 +27,24 @@ const TypeBanner: React.FC<TypeBannerProps> = ({
         w={['100%', 'unset']}
       >
         {type && (
-          <StyledLabel>
+          <StyledLabel
+            _before={{
+              bg:
+                type.toLowerCase() === 'dataset'
+                  ? 'status.info'
+                  : 'secondary.500',
+            }}
+          >
             <Text
               fontSize='xs'
               color='white'
               px={2}
               fontWeight='semibold'
-              bg='status.info'
+              bg={
+                type.toLowerCase() === 'dataset'
+                  ? 'status.info'
+                  : 'secondary.500'
+              }
             >
               {type.toUpperCase()}
             </Text>
