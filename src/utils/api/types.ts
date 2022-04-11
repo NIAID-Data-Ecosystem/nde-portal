@@ -27,11 +27,10 @@ export interface SearchResultsData {
 }
 
 export interface SearchResultProps {
-  '@context': string;
-  '@id': string;
-  '@type': string;
+  "@context": string;
+  "@id": string;
+  "@type": string;
   creator: Creator[];
-  curatedBy: CuratedBy;
   datePublished: string;
   description: string;
   headline: string;
@@ -61,7 +60,7 @@ export interface Citation {
 }
 
 export interface CitedBy {
-  '@type': string | null;
+  "@type": string | null;
   abstract: string | null;
   citation: string | null;
   datePublished: string | null;
@@ -76,16 +75,8 @@ export interface CitedBy {
 export interface Creator {
   identifier: string | null; // orcid id
   type: string | null;
-  affiliation: {name: string} | null;
+  affiliation: { name: string } | null;
   name: string | null;
-}
-
-export interface CuratedBy {
-  name: string | null;
-  url: string | null; //source repo url
-  versionDate: string | null;
-  image: string | null;
-  identifier: string | null;
 }
 
 export interface Distribution {
@@ -126,25 +117,25 @@ export interface includedInDataCatalog {
 }
 
 export interface inLanguage {
-  '@type': string;
+  "@type": string;
   name: string;
   alternateName: string;
 }
 
 export interface Publisher {
-  '@type': string;
+  "@type": string;
   name: string;
 }
 
 // Type of resouce.
-export type ResourceType = 'dataset' | 'computational tool' | 'other';
+export type ResourceType = "dataset" | "computational tool" | "other";
 
 // Conditions of access for dataset or tool.
 export type AccessTypes =
-  | 'Open Access'
-  | 'Closed Access'
-  | 'Embargo'
-  | 'Restricted';
+  | "Open Access"
+  | "Closed Access"
+  | "Embargo"
+  | "Restricted";
 
 // Formatting standardized resource fields
 export interface FormattedResource {
@@ -157,7 +148,6 @@ export interface FormattedResource {
   codeRepository: string | null;
   condition: string | null;
   conditionsOfAccess: AccessTypes | null;
-  curatedBy: CuratedBy | null;
   date: Date | string | null;
   dateCreated: Date | string | null;
   dateModified: Date | string | null;
