@@ -1,16 +1,16 @@
-import React, {useEffect} from 'react';
-import type {NextPage} from 'next';
+import React, { useEffect } from "react";
+import type { NextPage } from "next";
 import {
   PageContainer,
   PageContent,
   SearchBar,
-} from 'src/components/page-container';
-import {useRouter} from 'next/router';
-import {useQuery} from 'react-query';
-import {getResourceById} from 'src/utils/api';
-import {FormattedResource} from 'src/utils/api/types';
-import Empty from 'src/components/empty';
-import {ButtonGroup} from '@chakra-ui/button';
+} from "src/components/page-container";
+import { useRouter } from "next/router";
+import { useQuery } from "react-query";
+import { getResourceById } from "src/utils/api";
+import { FormattedResource } from "src/utils/api/types";
+import Empty from "src/components/empty";
+import { ButtonGroup } from "@chakra-ui/button";
 import {
   Box,
   Button,
@@ -20,7 +20,7 @@ import {
   Tag,
   Text,
   useBreakpointValue,
-} from 'nde-design-system';
+} from "nde-design-system";
 import {
   ResourceHeader,
   ResourceOverview,
@@ -29,23 +29,23 @@ import {
   ResourceProvenance,
   Section,
   TypeBanner,
-} from 'src/components/resource';
-import ErrorMessage from 'src/components/error';
+} from "src/components/resource";
+import ErrorMessage from "src/components/error";
 import LocalNavigation, {
   showSection,
-} from 'src/components/resource/components/local-navigation';
-import SectionsConfig from 'configs/resource-sections.json';
-import {route} from 'next/dist/server/router';
+} from "src/components/resource/components/local-navigation";
+import SectionsConfig from "configs/resource-sections.json";
+import { route } from "next/dist/server/router";
 
 // Error display is data fetching goes wrong.
-const ErrorState = ({retryFn}: {retryFn: () => void}) => {
+const ErrorState = ({ retryFn }: { retryFn: () => void }) => {
   return (
     <ErrorMessage message="It's possible that the server is experiencing some issues.">
       <ButtonGroup>
-        <Button onClick={() => retryFn()} variant='outline'>
+        <Button onClick={() => retryFn()} variant="outline">
           Retry
         </Button>
-        <Button as='a' href='/'>
+        <Button as="a" href="/">
           Back to Home
         </Button>
       </ButtonGroup>
@@ -56,16 +56,16 @@ const ErrorState = ({retryFn}: {retryFn: () => void}) => {
 // Displays empty message when no data exists.
 const EmptyState = () => {
   return (
-    <Card w='100%'>
+    <Card w="100%">
       <Empty
-        message='No data available.'
-        imageUrl='/assets/empty.png'
-        imageAlt='Missing information icon.'
-        alignSelf='center'
-        h='50vh'
+        message="No data available."
+        imageUrl="/assets/empty.png"
+        imageAlt="Missing information icon."
+        alignSelf="center"
+        h="50vh"
       >
         <Text>No information about this dataset is available.</Text>
-        <Button as={'a'} href='/' mt={4}>
+        <Button as={"a"} href="/" mt={4}>
           Go to search.
         </Button>
       </Empty>
@@ -93,20 +93,20 @@ const SectionContent = ({
       }
       return r;
     },
-    {},
+    {}
   );
 
-  if (id === 'overview') {
+  if (id === "overview") {
     return <ResourceOverview isLoading={isLoading} {...sectionData} />;
   }
-  if (id === 'keywords') {
+  if (id === "keywords") {
     return (
       <Skeleton isLoaded={!isLoading}>
-        <Flex flexWrap='wrap'>
+        <Flex flexWrap="wrap">
           {data?.keywords &&
-            data.keywords.map(keyword => {
+            data.keywords.map((keyword) => {
               return (
-                <Tag key={keyword} m={2} colorScheme='primary'>
+                <Tag key={keyword} m={2} colorScheme="primary">
                   {keyword}
                 </Tag>
               );
@@ -116,12 +116,12 @@ const SectionContent = ({
     );
   }
   /* Show description*/
-  if (id === 'description') {
+  if (id === "description") {
     return data?.description ? (
       <Box
-        overflow='auto'
-        w='100%'
-        fontSize='sm'
+        overflow="auto"
+        w="100%"
+        fontSize="sm"
         dangerouslySetInnerHTML={{
           __html: data.description,
         }}
@@ -130,39 +130,39 @@ const SectionContent = ({
   }
 
   /* Show metadata*/
-  if (id === 'metadata') {
+  if (id === "metadata") {
     return data?.rawData ? (
-      <Box maxHeight={500} overflow='auto' w='100%' tabIndex={0}>
+      <Box maxHeight={500} overflow="auto" w="100%" tabIndex={0}>
         <pre
           style={{
-            whiteSpace: 'pre-wrap',
-            padding: '2rem',
+            whiteSpace: "pre-wrap",
+            padding: "2rem",
           }}
         >
-          <Text fontSize={'10px'}>{JSON.stringify(data.rawData, null, 2)}</Text>
+          <Text fontSize={"10px"}>{JSON.stringify(data.rawData, null, 2)}</Text>
         </pre>
       </Box>
     ) : null;
   }
 
   /* Show where the data is retrieved from. */
-  if (id === 'provenance') {
+  if (id === "provenance") {
     return <ResourceProvenance isLoading={isLoading} {...sectionData} />;
   }
 
   /* Show all available downloads */
-  if (id === 'downloads') {
+  if (id === "downloads") {
     return <ResourceFilesTable isLoading={isLoading} {...sectionData} />;
   }
 
   /* Show where funding for the resource came from. */
-  if (id === 'funding') {
+  if (id === "funding") {
     return (
       <ResourceFilesTable
         isLoading={isLoading}
         // @ts-ignore
         // [TO DO ]: create generic table component.
-        distribution={data?.funding?.map(f => f.funder)}
+        distribution={data?.funding?.map((f) => f.funder)}
         {...sectionData}
       />
     );
@@ -171,13 +171,13 @@ const SectionContent = ({
   {
     /* Where has the resource been cited */
   }
-  if (id === 'citedBy') {
+  if (id === "citedBy") {
     return (
       <ResourceFilesTable
         isLoading={true}
         // @ts-ignore
         // [TO DO ]: create generic table component.
-        distribution={data?.citedBy?.map(c => {
+        distribution={data?.citedBy?.map((c) => {
           return {
             doi: c.doi,
             name: c.name,
@@ -192,26 +192,26 @@ const SectionContent = ({
   return null;
 };
 
-const ResourcePage: NextPage = props => {
+const ResourcePage: NextPage = (props) => {
   const router = useRouter();
-  const {id} = router.query;
+  const { id } = router.query;
 
   // Check if mobile
-  const isMobile = useBreakpointValue({base: true, md: false});
+  const isMobile = useBreakpointValue({ base: true, md: false });
   // Access query client
-  const {isLoading, error, data} = useQuery<
+  const { isLoading, error, data } = useQuery<
     FormattedResource | undefined,
     Error
-  >(['search-result', {id}], () => getResourceById(id), {
+  >(["search-result", { id }], () => getResourceById(id), {
     refetchOnWindowFocus: false,
   });
 
   // embed metadata
   useEffect(() => {
     if (data && data.rawData) {
-      let script_tag = document.createElement('script');
+      let script_tag = document.createElement("script");
       let metadata = JSON.stringify(data.rawData, null, 2);
-      script_tag.setAttribute('type', 'application/ld+json');
+      script_tag.setAttribute("type", "application/ld+json");
       script_tag.text = metadata;
       document.head.appendChild(script_tag);
     }
@@ -225,15 +225,14 @@ const ResourcePage: NextPage = props => {
       window._altmetric_embed_init();
     } else {
       /* import altmetric script for badge embeds */
-      let altmetricsScript = document.createElement('script');
+      let altmetricsScript = document.createElement("script");
       altmetricsScript.setAttribute(
-        'src',
-        'https://d1bxh8uas1mnw7.cloudfront.net/assets/embed.js',
+        "src",
+        "https://d1bxh8uas1mnw7.cloudfront.net/assets/embed.js"
       );
       document.body.appendChild(altmetricsScript);
     }
   }, [data]);
-  console.log(data);
   if (!id) {
     return <></>;
   }
@@ -241,12 +240,12 @@ const ResourcePage: NextPage = props => {
     <>
       <PageContainer
         hasNavigation
-        title='Resource'
-        metaDescription='Selected search result page.'
+        title="Resource"
+        metaDescription="Selected search result page."
       >
         <SearchBar
-          value={router.query.q || ''}
-          ariaLabel='Search for datasets or tools'
+          value={router.query.q || ""}
+          ariaLabel="Search for datasets or tools"
         />
         <PageContent>
           {error ? (
@@ -256,20 +255,20 @@ const ResourcePage: NextPage = props => {
             // [EMPTY STATE]: No Results
             <EmptyState />
           ) : (
-            <Flex w='100%' h='100%' flexDirection='column' minW={300}>
+            <Flex w="100%" h="100%" flexDirection="column" minW={300}>
               <Flex
-                height='100%'
+                height="100%"
                 p={2}
-                flexDirection={['column', 'column', 'row']}
+                flexDirection={["column", "column", "row"]}
               >
                 <Card
                   flex={3}
                   p={0}
-                  width='100%'
-                  sx={{'>*': {p: 0}}}
+                  width="100%"
+                  sx={{ ">*": { p: 0 } }}
                   minW={500}
                 >
-                  <Section id={'header'} p={0}>
+                  <Section id={"header"} p={0}>
                     <ResourceHeader
                       isLoading={isLoading}
                       conditionsOfAccess={data?.conditionsOfAccess}
@@ -283,7 +282,7 @@ const ResourcePage: NextPage = props => {
                       datePublished={data?.datePublished}
                     />
                   </Section>
-                  {SectionsConfig.routes.map(route => {
+                  {SectionsConfig.routes.map((route) => {
                     const section = route as {
                       title: string;
                       hash: string;
@@ -311,7 +310,7 @@ const ResourcePage: NextPage = props => {
                           metadataProperties={section.metadataProperties}
                         />
                         {/* Display external links under overview if in mobile view. */}
-                        {section.hash === 'overview' && isMobile && (
+                        {section.hash === "overview" && isMobile && (
                           <ResourceLinks
                             isLoading={isLoading}
                             includedInDataCatalog={data?.includedInDataCatalog}
@@ -323,17 +322,17 @@ const ResourcePage: NextPage = props => {
                 </Card>
                 <Box
                   flex={1}
-                  position='sticky'
-                  top='80px'
-                  w='100%'
-                  h='100%'
-                  minW='300px'
+                  position="sticky"
+                  top="80px"
+                  w="100%"
+                  h="100%"
+                  minW="300px"
                 >
                   <Card
                     flex={1}
                     ml={[0, 0, 4]}
                     my={[2, 2, 0]}
-                    sx={{'>*': {p: 0}}}
+                    sx={{ ">*": { p: 0 } }}
                   >
                     {/* Show external links such as source url, in header when on mobile */}
                     {!isMobile && (
@@ -349,11 +348,11 @@ const ResourcePage: NextPage = props => {
 
                   {/* Navigation for page */}
                   <Card
-                    display={{base: 'none', md: 'flex'}}
+                    display={{ base: "none", md: "flex" }}
                     flex={1}
                     ml={[0, 0, 4]}
                     my={2}
-                    sx={{'>*': {p: [2, 4, 4, 6]}}}
+                    sx={{ ">*": { p: [2, 4, 4, 6] } }}
                   >
                     <LocalNavigation data={data} />
                   </Card>
