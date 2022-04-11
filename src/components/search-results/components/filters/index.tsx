@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, { useEffect, useRef, useState } from "react";
 import {
   AccordionItem,
   AccordionButton,
@@ -14,10 +14,10 @@ import {
   UnorderedList,
   ListItem,
   Text,
-} from 'nde-design-system';
-import {FacetTerm} from 'src/utils/api/types';
-import {filterFilterList} from '../../helpers';
-import LoadingSpinner from 'src/components/loading';
+} from "nde-design-system";
+import { FacetTerm } from "src/utils/api/types";
+import { filterFilterList } from "../../helpers";
+import LoadingSpinner from "src/components/loading";
 
 interface FilterProps {
   name: string;
@@ -28,12 +28,11 @@ interface FilterProps {
 }
 
 const filterNameConfig = {
-  'curatedBy.name': 'Source',
-  'includedInDataCatalog.name': 'Source',
-  keywords: 'Keywords',
-  measurementTechnique: 'Measurement Technique',
-  variableMeasured: 'Variable Measured',
-} as {[key: string]: string};
+  "includedInDataCatalog.name": "Source",
+  keywords: "Keywords",
+  measurementTechnique: "Measurement Technique",
+  variableMeasured: "Variable Measured",
+} as { [key: string]: string };
 
 // [TO DO]: Extract to hook.
 export const Filter: React.FC<FilterProps> = ({
@@ -49,10 +48,10 @@ export const Filter: React.FC<FilterProps> = ({
   const [numItems, setNumItems] = useState(5);
 
   // Term to filter the filters with.
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
 
   // Filters the terms list based on search box.
-  const {items, hasMore} = filterFilterList(terms, searchTerm, numItems);
+  const { items, hasMore } = filterFilterList(terms, searchTerm, numItems);
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>): void =>
     setSearchTerm(e.target.value);
@@ -69,19 +68,19 @@ export const Filter: React.FC<FilterProps> = ({
     <AccordionItem>
       <h2>
         <AccordionButton
-          borderLeft='4px solid'
-          borderColor='gray.200'
+          borderLeft="4px solid"
+          borderColor="gray.200"
           py={4}
-          transition='all 0.2s linear'
+          transition="all 0.2s linear"
           _expanded={{
-            borderColor: 'accent.bg',
+            borderColor: "accent.bg",
             py: 2,
-            transition: 'all 0.2s linear',
+            transition: "all 0.2s linear",
           }}
         >
           {/* Filter Name */}
-          <Box flex='1' textAlign='left'>
-            <Heading size='sm' fontWeight='semibold'>
+          <Box flex="1" textAlign="left">
+            <Heading size="sm" fontWeight="semibold">
               {filterNameConfig[name]}
             </Heading>
           </Box>
@@ -91,35 +90,35 @@ export const Filter: React.FC<FilterProps> = ({
       <AccordionPanel
         px={2}
         py={4}
-        borderLeft='4px solid'
-        borderColor='accent.bg'
+        borderLeft="4px solid"
+        borderColor="accent.bg"
       >
         {/* Search through the filters */}
         <SearchInput
           ariaLabel={`Search filter ${filterNameConfig[name]} terms`}
-          maxW='unset'
-          size='md'
-          placeholder='Search through filters'
+          maxW="unset"
+          size="md"
+          placeholder="Search through filters"
           value={searchTerm}
           handleChange={handleSearchChange}
-          colorScheme='primary'
+          colorScheme="primary"
         />
         <LoadingSpinner isLoading={isLoading}>
           <Box
             ref={ref}
-            w='100%'
-            maxH='250px'
-            overflowY='auto'
-            style={{scrollBehavior: 'smooth'}}
+            w="100%"
+            maxH="250px"
+            overflowY="auto"
+            style={{ scrollBehavior: "smooth" }}
             my={4}
           >
             {/* Filters that can be applied on current search */}
-            <UnorderedList direction='column' ml={0} my={2}>
+            <UnorderedList direction="column" ml={0} my={2}>
               <CheckboxGroup
                 defaultValue={selectedFilters}
                 value={selectedFilters}
-                onChange={filterValues => {
-                  handleSelectedFilters({[name]: filterValues});
+                onChange={(filterValues) => {
+                  handleSelectedFilters({ [name]: filterValues });
                 }}
               >
                 {items.length === 0 && (
@@ -130,11 +129,11 @@ export const Filter: React.FC<FilterProps> = ({
                 {items.map((t, i) => {
                   return (
                     <ListItem key={t.term} p={2} py={1}>
-                      <Checkbox value={t.term} spacing={2} size='lg'>
-                        <Flex ml={1} fontSize='xs' lineHeight={1.5}>
-                          <Text fontWeight='light'>
+                      <Checkbox value={t.term} spacing={2} size="lg">
+                        <Flex ml={1} fontSize="xs" lineHeight={1.5}>
+                          <Text fontWeight="light">
                             {t.term}
-                            <Text as='span' fontWeight='semibold' ml={1}>
+                            <Text as="span" fontWeight="semibold" ml={1}>
                               ({t.count})
                             </Text>
                           </Text>
@@ -148,12 +147,12 @@ export const Filter: React.FC<FilterProps> = ({
           </Box>
         </LoadingSpinner>
         {hasMore && items.length !== 0 && (
-          <ListItem d='flex' justifyContent='center' borderColor='gray.200'>
+          <ListItem d="flex" justifyContent="center" borderColor="gray.200">
             <Button
-              variant='link'
-              color='link.color'
+              variant="link"
+              color="link.color"
               isDisabled={!hasMore}
-              size='sm'
+              size="sm"
               onClick={() => setNumItems(numItems + 5)}
             >
               (show more...)
