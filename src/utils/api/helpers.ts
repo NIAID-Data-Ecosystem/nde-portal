@@ -165,7 +165,7 @@ export const formatType = (type: string | null): ResourceType | null => {
     return null;
   } else if (type.toLowerCase() === "dataset") {
     return "dataset";
-  } else if (type.toLowerCase() === "softwaresourcecode") {
+  } else if (type.toLowerCase() === "computationaltool") {
     return "computational tool";
   } else {
     return "other";
