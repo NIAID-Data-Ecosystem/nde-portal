@@ -140,7 +140,7 @@ export type AccessTypes =
 // Formatting standardized resource fields
 export interface FormattedResource {
   id: string;
-  type: string | null; // change to dataset |computational tool
+  type: string | null; // "Dataset" | "ComputationalTool"
   name: string;
   author: Creator[] | null;
   citation: Citation[] | null;
