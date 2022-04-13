@@ -199,7 +199,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                 w="100%"
                 fontSize="sm"
                 dangerouslySetInnerHTML={{
-                  __html: description || "",
+                  __html: description?.replace(/\u00a0/g, " ") || "",
                 }}
               ></Box>
             </ToggleContainer>
