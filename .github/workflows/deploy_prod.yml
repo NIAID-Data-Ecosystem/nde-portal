@@ -15,9 +15,9 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: '14'
-      - run: npm install
+      - run: yarn install
       - name: build website
-        run: npm run build
+        run: yarn run build
       - name: sync s3
         uses: jakejarvis/s3-sync-action@master
         with:
