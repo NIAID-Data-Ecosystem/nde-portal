@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 import {
   Accordion,
   AccordionItem,
@@ -25,40 +25,40 @@ import {
   ToggleContainer,
   UnorderedList,
   VisuallyHidden,
-} from "nde-design-system";
+} from 'nde-design-system';
 import {
   FaArrowAltCircleRight,
   FaMinus,
   FaPlus,
   FaChevronRight,
-} from "react-icons/fa";
-import { FormattedResource } from "src/utils/api/types";
+} from 'react-icons/fa';
+import {FormattedResource} from 'src/utils/api/types';
 import {
   formatAuthorsList2String,
   formatDate,
   formatDOI,
   getRepositoryImage,
   getRepositoryName,
-} from "src/utils/helpers";
-import { ExternalSourceButton } from "src/components/external-buttons/index.";
-import { AccessBadge, TypeBanner } from "src/components/resource";
+} from 'src/utils/helpers';
+import {ExternalSourceButton} from 'src/components/external-buttons/index.';
+import {AccessBadge, TypeBanner} from 'src/components/resource';
 
 interface SearchResultCardProps {
-  id?: FormattedResource["id"];
-  name?: FormattedResource["name"];
-  type?: FormattedResource["type"];
-  date?: FormattedResource["date"];
-  datePublished?: FormattedResource["datePublished"];
-  author?: FormattedResource["author"];
-  description?: FormattedResource["description"];
-  license?: FormattedResource["license"];
-  conditionsOfAccess?: FormattedResource["conditionsOfAccess"];
-  measurementTechnique?: FormattedResource["measurementTechnique"];
-  variableMeasured?: FormattedResource["variableMeasured"];
-  doi?: FormattedResource["doi"];
-  includedInDataCatalog?: FormattedResource["includedInDataCatalog"];
+  id?: FormattedResource['id'];
+  name?: FormattedResource['name'];
+  type?: FormattedResource['type'];
+  date?: FormattedResource['date'];
+  datePublished?: FormattedResource['datePublished'];
+  author?: FormattedResource['author'];
+  description?: FormattedResource['description'];
+  license?: FormattedResource['license'];
+  conditionsOfAccess?: FormattedResource['conditionsOfAccess'];
+  measurementTechnique?: FormattedResource['measurementTechnique'];
+  variableMeasured?: FormattedResource['variableMeasured'];
+  doi?: FormattedResource['doi'];
+  includedInDataCatalog?: FormattedResource['includedInDataCatalog'];
   isLoading?: boolean;
-  url?: FormattedResource["url"];
+  url?: FormattedResource['url'];
 }
 
 const SearchResultCard: React.FC<SearchResultCardProps> = ({
@@ -84,35 +84,35 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
     getRepositoryImage(includedInDataCatalog.name);
   const paddingCard = [4, 6, 8, 10];
   return (
-    <Card variant="colorful">
+    <Card variant='colorful'>
       {/* Card header where name of resource is a link to resource apge */}
-      <CardHeader position="relative" px={paddingCard} pt={4}>
+      <CardHeader position='relative' px={paddingCard} pt={4}>
         <Skeleton
           isLoaded={!isLoading}
-          startColor="whiteAlpha.100"
-          endColor="whiteAlpha.500"
-          h={isLoading ? "20px" : "unset"}
-          w="100%"
+          startColor='whiteAlpha.100'
+          endColor='whiteAlpha.500'
+          h={isLoading ? '20px' : 'unset'}
+          w='100%'
         >
           {name && (
             <Link
-              h={"100%"}
+              h={'100%'}
               href={`/resources/${id}`}
-              flexWrap="nowrap"
-              color="white"
+              flexWrap='nowrap'
+              color='white'
               _hover={{
-                color: "white",
-                h2: { textDecoration: "underline" },
+                color: 'white',
+                h2: {textDecoration: 'underline'},
                 svg: {
-                  transform: "translate(0px)",
+                  transform: 'translate(0px)',
                   opacity: 0.9,
-                  transition: "0.2s ease-in-out",
+                  transition: '0.2s ease-in-out',
                 },
               }}
-              _visited={{ color: "white", svg: { color: "white" } }}
+              _visited={{color: 'white', svg: {color: 'white'}}}
             >
-              <Flex alignItems="center">
-                <CardTitle size="h6" lineHeight="short" fontWeight="semibold">
+              <Flex alignItems='center'>
+                <CardTitle size='h6' lineHeight='short' fontWeight='semibold'>
                   {name}
                 </CardTitle>
                 <Icon
@@ -120,8 +120,8 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                   boxSize={4}
                   ml={4}
                   opacity={0.6}
-                  transform="translate(-10px)"
-                  transition="0.2s ease-in-out"
+                  transform='translate(-10px)'
+                  transition='0.2s ease-in-out'
                 ></Icon>
               </Flex>
             </Link>
@@ -133,35 +133,35 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
       {/* Author toggle container */}
       <Skeleton
         isLoaded={!isLoading}
-        height={isLoading ? "150px" : "unset"}
+        height={isLoading ? '150px' : 'unset'}
         p={0}
         m={isLoading ? 4 : 0}
-        startColor="primary.50"
-        endColor="primary.100"
+        startColor='primary.50'
+        endColor='primary.100'
       >
-        <Flex flexDirection={["column", "row"]}>
+        <Flex flexDirection={['column', 'row']}>
           {author && (
             <ToggleContainer
-              variant="border"
-              ariaLabel="Show all authors."
+              variant='border'
+              ariaLabel='Show all authors.'
               noOfLines={1}
-              justifyContent="start"
+              justifyContent='start'
               m={0}
               px={paddingCard}
               py={2}
               flex={1}
-              _focus={{ outlineColor: "transparent" }}
+              _focus={{outlineColor: 'transparent'}}
             >
-              <Text fontSize="xs" color="text.body">
-                {formatAuthorsList2String(author, ",", 10)}
+              <Text fontSize='xs' color='text.body'>
+                {formatAuthorsList2String(author, ',', 10)}
               </Text>
             </ToggleContainer>
           )}
           {conditionsOfAccess && (
             <Box
-              d={["inline-flex", "block"]}
-              justifyContent={["end"]}
-              alignContent="center"
+              d={['inline-flex', 'block']}
+              justifyContent={['end']}
+              alignContent='center'
               m={1}
             >
               <AccessBadge conditionsOfAccess={conditionsOfAccess}>
@@ -187,19 +187,21 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
         <>
           <CardBody>
             <ToggleContainer
-              ariaLabel="show more description"
+              ariaLabel='show more description'
               noOfLines={[3, 10]}
               px={paddingCard}
               py={[2, 4, 6]}
               my={0}
-              borderColor="transparent"
-              _focus={{ outlineColor: "transparent", bg: "white" }}
+              borderColor='transparent'
+              justifyContent='space-between'
+              _focus={{outlineColor: 'transparent', bg: 'white'}}
             >
               <Box
-                w="100%"
-                fontSize="sm"
+                w='100%'
+                fontSize='sm'
+                flex={1}
                 dangerouslySetInnerHTML={{
-                  __html: description?.replace(/\u00a0/g, " ") || "",
+                  __html: description?.replace(/\u00a0/g, ' ') || '',
                 }}
               ></Box>
             </ToggleContainer>
@@ -209,10 +211,10 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                 px={paddingCard}
                 py={1}
                 my={0}
-                flexDirection="column"
-                alignItems="end"
+                flexDirection='column'
+                alignItems='end'
               >
-                <Text fontSize="xs" my={0} fontWeight="medium" lineHeight={1}>
+                <Text fontSize='xs' my={0} fontWeight='medium' lineHeight={1}>
                   Altmetric
                 </Text>
                 {/* Altmetric embed badges don't allow for adding aria-label so VisuallyHidden is a patch */}
@@ -220,11 +222,11 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                   See more information about resource on Altmetric
                 </VisuallyHidden>
                 <div
-                  data-badge-popover="left"
-                  data-badge-type="bar"
+                  data-badge-popover='left'
+                  data-badge-type='bar'
                   data-doi={`${formatDOI(doi)}`}
-                  className="altmetric-embed"
-                  data-link-target="blank"
+                  className='altmetric-embed'
+                  data-link-target='blank'
                 ></div>
               </Flex>
             )}
@@ -233,28 +235,28 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
         {license || measurementTechnique || variableMeasured ? (
           <Accordion allowToggle p={0} pt={1}>
             <AccordionItem>
-              {({ isExpanded }) => (
+              {({isExpanded}) => (
                 <>
                   <h2>
                     <AccordionButton
                       px={paddingCard}
-                      bg={isExpanded ? "blackAlpha.100" : "white"}
-                      aria-label="show more details about dataset"
+                      bg={isExpanded ? 'blackAlpha.100' : 'white'}
+                      aria-label='show more details about dataset'
                     >
-                      <Box flex="1" textAlign="left">
-                        <Heading fontSize="h6" fontWeight="semibold">
+                      <Box flex='1' textAlign='left'>
+                        <Heading fontSize='h6' fontWeight='semibold'>
                           Details
                         </Heading>
                       </Box>
-                      <Icon as={isExpanded ? FaMinus : FaPlus} fontSize="xs" />
+                      <Icon as={isExpanded ? FaMinus : FaPlus} fontSize='xs' />
                     </AccordionButton>
                   </h2>
-                  <AccordionPanel w="100%" px={paddingCard}>
+                  <AccordionPanel w='100%' px={paddingCard}>
                     <UnorderedList ml={0}>
                       {license && (
                         <ListItem>
                           <Stat my={2}>
-                            <StatLabel color="gray.700">License</StatLabel>
+                            <StatLabel color='gray.700'>License</StatLabel>
                             <dd>
                               <Link href={license} isExternal>
                                 {license}
@@ -266,11 +268,11 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                       {measurementTechnique && (
                         <ListItem>
                           <Stat my={2}>
-                            <StatLabel color="gray.700">
+                            <StatLabel color='gray.700'>
                               Measurement Technique
                             </StatLabel>
                             <dd>
-                              <Text fontWeight="semibold">
+                              <Text fontWeight='semibold'>
                                 {measurementTechnique}
                               </Text>
                             </dd>
@@ -280,11 +282,11 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                       {variableMeasured && (
                         <ListItem>
                           <Stat my={2}>
-                            <StatLabel color="gray.700">
+                            <StatLabel color='gray.700'>
                               Variable Measured
                             </StatLabel>
                             <dd>
-                              <Text fontWeight="semibold">
+                              <Text fontWeight='semibold'>
                                 {variableMeasured}
                               </Text>
                             </dd>
@@ -303,38 +305,38 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
       </Skeleton>
       <Skeleton
         isLoaded={!isLoading}
-        height={isLoading ? "50px" : "unset"}
+        height={isLoading ? '50px' : 'unset'}
         p={0}
         m={isLoading ? 4 : 0}
-        startColor="primary.50"
-        endColor="primary.100"
+        startColor='primary.50'
+        endColor='primary.100'
       >
         <CardFooter
-          justifyContent="space-between"
-          alignItems="center"
-          flexWrap="wrap"
-          bg="white"
+          justifyContent='space-between'
+          alignItems='center'
+          flexWrap='wrap'
+          bg='white'
           px={paddingCard}
           py={2}
         >
           <HStack
-            alignItems="end"
-            justifyContent="space-between"
+            alignItems='end'
+            justifyContent='space-between'
             py={1}
-            w="100%"
-            flexDirection="row"
+            w='100%'
+            flexDirection='row'
           >
             {includedInDataCatalog?.name && url && (
               <Flex
-                flexDirection={["column", "row"]}
-                alignItems="center"
-                flexWrap="wrap"
+                flexDirection={['column', 'row']}
+                alignItems='center'
+                flexWrap='wrap'
               >
                 <ExternalSourceButton
                   px={3}
-                  minW="150px"
+                  minW='150px'
                   imageURL={imageURL || undefined}
-                  alt="Data source name"
+                  alt='Data source name'
                   name={
                     getRepositoryName(includedInDataCatalog.name) || undefined
                   }
@@ -345,11 +347,11 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
             )}
 
             {id && (
-              <Flex flex={1} justifyContent="end">
+              <Flex flex={1} justifyContent='end'>
                 <Button
                   my={1}
                   href={`/resources/${id}`}
-                  size="md"
+                  size='md'
                   rightIcon={<FaArrowAltCircleRight />}
                   aria-label={`Go to details about resource ${name}`}
                 >
