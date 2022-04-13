@@ -117,14 +117,14 @@ const Home: NextPage = () => {
 
   interface Stats {
     datasets: Stat | null;
-    software: Stat | null;
+    computationaltool: Stat | null;
     measurementTechnique: Stat | null;
     repositories: Stat | null;
   }
 
   const [stats, setStats] = useState<Stats>({
     datasets: null,
-    software: null,
+    computationaltool: null,
     measurementTechnique: null,
     repositories: null,
   });
@@ -140,15 +140,16 @@ const Home: NextPage = () => {
       if (data) {
         const {facets} = data;
 
-        // Data types - we're interested in software and datasets.
+        // Data types - we're interested in computationaltool and datasets.
         const types: {[key: string]: Stat} = facets['@type'].terms.reduce(
           (r: {[key: string]: Stat}, v: Stat) => {
             const key = v.term.toLowerCase();
-            if (key === 'dataset' || key === 'software') {
+            if (key === 'dataset' || key === 'computationaltool') {
               if (!r[`${key}`]) {
                 r[`${key}`] = {term: '', count: 0};
               }
-              r[`${key}`].term = key === 'software' ? 'Tools' : 'Datasets';
+              r[`${key}`].term =
+                key === 'computationaltool' ? 'Tools' : 'Datasets';
               r[`${key}`].count += v.count;
             }
             return r;
@@ -171,7 +172,7 @@ const Home: NextPage = () => {
         };
         stat = {
           datasets: types.dataset,
-          software: types.software,
+          computationaltool: types.computationaltool,
           measurementTechnique,
           repositories,
         };
