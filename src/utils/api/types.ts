@@ -27,9 +27,9 @@ export interface SearchResultsData {
 }
 
 export interface SearchResultProps {
-  "@context": string;
-  "@id": string;
-  "@type": string;
+  '@context': string;
+  '@id': string;
+  '@type': string;
   creator: Creator[];
   datePublished: string;
   description: string;
@@ -60,7 +60,7 @@ export interface Citation {
 }
 
 export interface CitedBy {
-  "@type": string | null;
+  '@type': string | null;
   abstract: string | null;
   citation: string | null;
   datePublished: string | null;
@@ -75,7 +75,7 @@ export interface CitedBy {
 export interface Creator {
   identifier: string | null; // orcid id
   type: string | null;
-  affiliation: { name: string } | null;
+  affiliation: {name: string} | null;
   name: string | null;
 }
 
@@ -117,25 +117,25 @@ export interface includedInDataCatalog {
 }
 
 export interface inLanguage {
-  "@type": string;
+  '@type': string;
   name: string;
   alternateName: string;
 }
 
 export interface Publisher {
-  "@type": string;
+  '@type': string;
   name: string;
 }
 
 // Type of resouce.
-export type ResourceType = "dataset" | "computational tool" | "other";
+export type ResourceType = 'dataset' | 'computational tool' | 'other';
 
 // Conditions of access for dataset or tool.
 export type AccessTypes =
-  | "Open Access"
-  | "Closed Access"
-  | "Embargo"
-  | "Restricted";
+  | 'Open Access'
+  | 'Closed Access'
+  | 'Embargo'
+  | 'Restricted';
 
 // Formatting standardized resource fields
 export interface FormattedResource {

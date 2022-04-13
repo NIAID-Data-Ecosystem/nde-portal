@@ -120,7 +120,7 @@ const ExternalLinks: React.FC<ExternalLinks> = ({
               imageProps={{p: 2, my: 2}}
               name='Explore in workspace'
               variant='solid'
-              href={includedInDataCatalog?.url || undefined}
+              href="#"
               whiteSpace='nowrap'
             ></ExternalSourceButton>
           </Flex>
