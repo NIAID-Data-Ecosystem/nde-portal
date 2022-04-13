@@ -12,6 +12,7 @@ function App({Component, pageProps}: AppProps) {
       <QueryClientProvider client={queryClient}>
         <ThemeProvider>
           <FontFace />
+          {/* @ts-ignore */}
           <Component {...pageProps} />
         </ThemeProvider>
       </QueryClientProvider>
