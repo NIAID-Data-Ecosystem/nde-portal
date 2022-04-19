@@ -82,6 +82,7 @@ export default function PieChart({
   // colors for pie chart
   const colorScale = scaleOrdinal({
     domain: data.map(d => d.term),
+    // @ts-ignore
     range: schemeCategory10,
   });
 
