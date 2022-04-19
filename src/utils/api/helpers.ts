@@ -176,7 +176,7 @@ export const formatAPIResource = (data: any) => {
   const formattedResource: FormattedResource = {
     id: data._id,
     type: formatType(data['@type']),
-    name: data.name || 'null',
+    name: data.name || null,
     author: formatCreator(data.author) || formatCreator(data.creator),
     citation: formatCitation(data.citation),
     citedBy: data.citedBy || null,

@@ -11,6 +11,7 @@ import {
   defaultStyles as defaultTooltipStyles,
   useTooltipInPortal,
 } from '@visx/tooltip';
+import {schemeCategory10} from 'd3-scale-chromatic';
 
 interface DataProps {
   term: string;
@@ -81,11 +82,7 @@ export default function PieChart({
   // colors for pie chart
   const colorScale = scaleOrdinal({
     domain: data.map(d => d.term),
-    range: [
-      theme.colors.accent.bg,
-      theme.colors.primary[500],
-      theme.colors.primary[800],
-    ],
+    range: schemeCategory10,
   });
 
   const innerWidth = width - margin.left - margin.right;

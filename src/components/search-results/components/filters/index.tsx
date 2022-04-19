@@ -18,6 +18,7 @@ import {
 import {FacetTerm} from 'src/utils/api/types';
 import {filterFilterList} from '../../helpers';
 import LoadingSpinner from 'src/components/loading';
+import {formatNumber} from 'src/utils/helpers';
 
 interface FilterProps {
   name: string;
@@ -134,7 +135,7 @@ export const Filter: React.FC<FilterProps> = ({
                           <Text fontWeight='light'>
                             {t.term}
                             <Text as='span' fontWeight='semibold' ml={1}>
-                              ({t.count})
+                              ({formatNumber(t.count)})
                             </Text>
                           </Text>
                         </Flex>
