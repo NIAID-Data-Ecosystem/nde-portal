@@ -38,6 +38,9 @@ export const formatAuthorsList2String = (
     return '';
   }
 
+  if (!Array.isArray(authors)) {
+    authors = [authors];
+  }
   let author_list = authors.map((author, i) => {
     if (!author.name) {
       return;
