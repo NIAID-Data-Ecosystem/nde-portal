@@ -20,6 +20,10 @@
       "property": "doi"
     },
     {
+      "title": "Infectious Agent",
+      "property": "infectiousAgent"
+    },
+    {
       "title": "Infectious Disease",
       "property": "infectiousDisease"
     },

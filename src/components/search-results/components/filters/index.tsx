@@ -32,7 +32,7 @@ const filterNameConfig = {
   '@type': 'Type',
   'includedInDataCatalog.name': 'Source',
   keywords: 'Keywords',
-  measurementTechnique: 'Measurement Technique',
+  'measurementTechnique.name': 'Measurement Technique',
   variableMeasured: 'Variable Measured',
 } as {[key: string]: string};
 

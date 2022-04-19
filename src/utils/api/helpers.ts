@@ -202,7 +202,16 @@ export const formatAPIResource = (data: any) => {
           identifier: data.includedInDataCatalog.identifier || null,
         }
       : null,
-    infectiousDisease: data.infectiousDisease || null,
+    infectiousAgent: data.infectiousAgent
+      ? Array.isArray(data.infectiousAgent)
+        ? data.infectiousAgent
+        : [data.infectiousAgent]
+      : null,
+    infectiousDisease: data.infectiousDisease
+      ? Array.isArray(data.infectiousDisease)
+        ? data.infectiousDisease
+        : [data.infectiousDisease]
+      : null,
     keywords: data.keywords
       ? Array.isArray(data.keywords)
         ? data.keywords
@@ -233,7 +242,11 @@ export const formatAPIResource = (data: any) => {
     sameAs: data.sameAs || null,
     spatialCoverage:
       typeof data.spatialCoverage === 'string' ? data.spatialCoverage : null,
-    species: data.species || null,
+    species: data.species
+      ? Array.isArray(data.species)
+        ? data.species
+        : [data.species]
+      : null,
     temporalCoverage:
       typeof data.temporalCoverage === 'string' ? data.spatialCoverage : null,
     // Maybe add species or organism field to topic

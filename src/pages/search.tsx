@@ -66,10 +66,10 @@ const Search: NextPage = () => {
     [key: string]: (string | number)[];
   } = {
     '@type': [],
-    keywords: [],
-    measurementTechnique: [],
-    variableMeasured: [],
     'includedInDataCatalog.name': [],
+    keywords: [],
+    'measurementTechnique.name': [],
+    variableMeasured: [],
   };
 
   // Default config for query.
@@ -174,7 +174,7 @@ const Search: NextPage = () => {
           '@type': [],
           keywords: [],
           variableMeasured: [],
-          measurementTechnique: [],
+          'measurementTechnique.name': [],
           'includedInDataCatalog.name': [],
         }
       );
@@ -368,29 +368,30 @@ const Search: NextPage = () => {
                     </Flex>
                     <Accordion bg={'white'} allowMultiple defaultIndex={[0]}>
                       {facets ? (
-                        Object.entries(facets).map(
-                          ([filterKey, filterValue]) => {
-                            return (
-                              <Filter
-                                isLoading={isLoading}
-                                key={filterKey}
-                                name={filterKey}
-                                terms={filterValue.terms}
-                                selectedFilters={selectedFilters[filterKey]}
-                                handleSelectedFilters={updatedFilters => {
-                                  let filters = queryFilterObject2String({
-                                    ...selectedFilters,
-                                    ...updatedFilters,
-                                  });
-                                  updateRoute({
-                                    from: defaultQuery.selectedPage,
-                                    filters,
-                                  });
-                                }}
-                              />
-                            );
-                          },
-                        )
+                        Object.keys(defaultFilters).map(filterKey => {
+                          if (!facets[filterKey]) {
+                            return null;
+                          }
+                          return (
+                            <Filter
+                              isLoading={isLoading}
+                              key={filterKey}
+                              name={filterKey}
+                              terms={facets[filterKey].terms}
+                              selectedFilters={selectedFilters[filterKey]}
+                              handleSelectedFilters={updatedFilters => {
+                                let filters = queryFilterObject2String({
+                                  ...selectedFilters,
+                                  ...updatedFilters,
+                                });
+                                updateRoute({
+                                  from: defaultQuery.selectedPage,
+                                  filters,
+                                });
+                              }}
+                            />
+                          );
+                        })
                       ) : (
                         <LoadingSpinner isLoading={isLoading}></LoadingSpinner>
                       )}
