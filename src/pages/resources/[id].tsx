@@ -233,6 +233,7 @@ const ResourcePage: NextPage = props => {
       document.body.appendChild(altmetricsScript);
     }
   }, [data]);
+
   if (!id) {
     return <></>;
   }
