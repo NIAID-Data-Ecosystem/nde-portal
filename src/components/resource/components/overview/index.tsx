@@ -4,9 +4,11 @@ import {
   Flex,
   Image,
   Link,
+  ListItem,
   SimpleGrid,
   Stack,
   StackDivider,
+  UnorderedList,
 } from 'nde-design-system';
 import {FormattedResource} from 'src/utils/api/types';
 import {
@@ -32,6 +34,7 @@ const Overview: React.FC<Overview> = ({
   citation,
   doi,
   healthCondition,
+  infectiousAgent,
   infectiousDisease,
   language,
   license,
@@ -46,6 +49,7 @@ const Overview: React.FC<Overview> = ({
   variableMeasured,
   isLoading,
 }) => {
+  // get copy label from config for a given property.
   const getStatInfo = (metadataProperty: string) => {
     const metadataField = MetadataConfig.fields.find(
       d => d.property === metadataProperty,
@@ -55,7 +59,6 @@ const Overview: React.FC<Overview> = ({
       ? {...metadataField, label: metadataField.title}
       : {label: metadataProperty, info: ''};
   };
-
   const licenseInfo = license ? formatLicense(license) : null;
   return (
     <Flex p={4} w='100%' flexWrap='wrap'>
@@ -184,7 +187,21 @@ const Overview: React.FC<Overview> = ({
         {/* species covered in resource */}
         {species && (
           <StatField isLoading={isLoading} {...getStatInfo('species')}>
-            {Array.isArray(species) ? species.join(', ') : species}
+            <UnorderedList ml={0}>
+              {species.map((m, i) => {
+                return (
+                  <ListItem key={`${m.name}-${i}`}>
+                    {m.url ? (
+                      <Link href={m.url} isExternal>
+                        {m.name}
+                      </Link>
+                    ) : (
+                      m.name
+                    )}
+                  </ListItem>
+                );
+              })}
+            </UnorderedList>
           </StatField>
         )}
 
@@ -195,13 +212,48 @@ const Overview: React.FC<Overview> = ({
           </StatField>
         )}
 
+        {/* infectious agent involved */}
+        {infectiousAgent && (
+          <StatField isLoading={isLoading} {...getStatInfo('infectiousAgent')}>
+            <UnorderedList ml={0}>
+              {infectiousAgent.map((m, i) => {
+                return (
+                  <ListItem key={`${m.name}-${i}`}>
+                    {m.url ? (
+                      <Link href={m.url} isExternal>
+                        {m.name}
+                      </Link>
+                    ) : (
+                      m.name
+                    )}
+                  </ListItem>
+                );
+              })}
+            </UnorderedList>
+          </StatField>
+        )}
+
         {/* infectious disease covered */}
         {infectiousDisease && (
           <StatField
             isLoading={isLoading}
             {...getStatInfo('infectiousDisease')}
           >
-            {infectiousDisease}
+            <UnorderedList ml={0}>
+              {infectiousDisease.map((m, i) => {
+                return (
+                  <ListItem key={`${m.name}-${i}`}>
+                    {m.url ? (
+                      <Link href={m.url} isExternal>
+                        {m.name}
+                      </Link>
+                    ) : (
+                      m.name
+                    )}
+                  </ListItem>
+                );
+              })}
+            </UnorderedList>
           </StatField>
         )}
 
@@ -225,7 +277,21 @@ const Overview: React.FC<Overview> = ({
             isLoading={isLoading}
             {...getStatInfo('measurementTechnique')}
           >
-            {measurementTechnique}
+            <UnorderedList ml={0}>
+              {measurementTechnique.map((m, i) => {
+                return (
+                  <ListItem key={`${m.name}-${i}`}>
+                    {m.url ? (
+                      <Link href={m.url} isExternal>
+                        {m.name}
+                      </Link>
+                    ) : (
+                      m.name
+                    )}
+                  </ListItem>
+                );
+              })}
+            </UnorderedList>
           </StatField>
         )}
 

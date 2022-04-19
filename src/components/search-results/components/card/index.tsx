@@ -16,6 +16,7 @@ import {
   HStack,
   Heading,
   Icon,
+  Image,
   Link,
   ListItem,
   Skeleton,
@@ -37,6 +38,7 @@ import {
   formatAuthorsList2String,
   formatDate,
   formatDOI,
+  formatLicense,
   getRepositoryImage,
 } from 'src/utils/helpers';
 import {ExternalSourceButton} from 'src/components/external-buttons/index.';
@@ -82,6 +84,8 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
     includedInDataCatalog?.name &&
     getRepositoryImage(includedInDataCatalog.name);
   const paddingCard = [4, 6, 8, 10];
+  const licenseInfo = license ? formatLicense(license) : null;
+
   return (
     <Card variant='colorful'>
       {/* Card header where name of resource is a link to resource apge */}
@@ -257,13 +261,28 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                           <Stat my={2}>
                             <StatLabel color='gray.700'>License</StatLabel>
                             <dd>
-                              <Link href={license} isExternal>
-                                {license}
-                              </Link>
+                              {licenseInfo && (
+                                <>
+                                  {licenseInfo?.img && (
+                                    <Image
+                                      src={licenseInfo.img}
+                                      alt={licenseInfo.type}
+                                    />
+                                  )}
+                                  {licenseInfo?.url ? (
+                                    <Link href={licenseInfo.url} isExternal>
+                                      {licenseInfo.title}
+                                    </Link>
+                                  ) : (
+                                    licenseInfo?.title
+                                  )}
+                                </>
+                              )}
                             </dd>
                           </Stat>
                         </ListItem>
                       )}
+                      {/* Measurement techniques*/}
                       {measurementTechnique && (
                         <ListItem>
                           <Stat my={2}>
@@ -271,9 +290,25 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                               Measurement Technique
                             </StatLabel>
                             <dd>
-                              <Text fontWeight='semibold'>
-                                {measurementTechnique}
-                              </Text>
+                              <UnorderedList ml={0}>
+                                {measurementTechnique.map((m, i) => {
+                                  const MeasurementTechniqueLabel = () => (
+                                    <Text fontWeight='semibold'>{m.name}</Text>
+                                  );
+
+                                  return (
+                                    <ListItem key={`${m.name}-${i}`}>
+                                      {m.url ? (
+                                        <Link href={m.url} isExternal>
+                                          <MeasurementTechniqueLabel />
+                                        </Link>
+                                      ) : (
+                                        <MeasurementTechniqueLabel />
+                                      )}
+                                    </ListItem>
+                                  );
+                                })}
+                              </UnorderedList>
                             </dd>
                           </Stat>
                         </ListItem>
@@ -325,7 +360,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
             w='100%'
             flexDirection='row'
           >
-            {includedInDataCatalog?.name && url && (
+            {includedInDataCatalog?.name && (
               <Flex
                 flexDirection={['column', 'row']}
                 alignItems='center'

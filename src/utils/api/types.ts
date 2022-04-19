@@ -127,6 +127,11 @@ export interface Publisher {
   name: string;
 }
 
+export interface PropertyNameWithURL {
+  name?: string;
+  url?: string;
+}
+
 // Type of resouce.
 export type ResourceType = 'dataset' | 'computational tool' | 'other';
 
@@ -159,7 +164,8 @@ export interface FormattedResource {
   funding: Funding[] | null;
   healthCondition: string | null;
   includedInDataCatalog: includedInDataCatalog | null;
-  infectiousDisease: string | null;
+  infectiousAgent: PropertyNameWithURL[] | null;
+  infectiousDisease: PropertyNameWithURL[] | null;
   keywords: string[] | null;
   language: {
     alternateName: string | null;
@@ -168,14 +174,14 @@ export interface FormattedResource {
 
   license: string | null;
   mainEntityOfPage: string | null;
-  measurementTechnique: string[] | null;
+  measurementTechnique: PropertyNameWithURL[] | null;
   nctid: string | null;
   numberOfDownloads: number | null;
   publisher: Publisher | null;
   rawData: any;
   sameAs: string | null;
   spatialCoverage: string | null;
-  species: string | null;
+  species: PropertyNameWithURL[] | null;
   temporalCoverage: string | null;
   topic: string[] | null;
   url: string | null; // link to dataset in the source repo.

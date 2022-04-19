@@ -87,7 +87,7 @@ const SectionContent = ({
 }) => {
   // [metadataProperties] represents the properties that are required in the section.
   const sectionData = metadataProperties.reduce(
-    (r: Partial<FormattedResource>, v, i) => {
+    (r: Partial<FormattedResource>, v) => {
       if (data) {
         r[v] = data[v];
       }
