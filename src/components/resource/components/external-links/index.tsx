@@ -1,7 +1,7 @@
 import React from 'react';
 import {Flex, Icon, Link, Skeleton, Text} from 'nde-design-system';
 import {FormattedResource} from 'src/utils/api/types';
-import {getRepositoryImage, getRepositoryName} from 'src/utils/helpers';
+import {getRepositoryImage} from 'src/utils/helpers';
 import {ExternalSourceButton} from 'src/components/external-buttons/index.';
 import {FaGithub} from 'react-icons/fa';
 
@@ -11,6 +11,7 @@ interface ExternalLinks {
   includedInDataCatalog?: FormattedResource['includedInDataCatalog'];
   mainEntityOfPage?: FormattedResource['mainEntityOfPage'];
   codeRepository?: FormattedResource['codeRepository'];
+  url?: FormattedResource['url'];
 }
 
 const ExternalLinks: React.FC<ExternalLinks> = ({
@@ -19,6 +20,7 @@ const ExternalLinks: React.FC<ExternalLinks> = ({
   mainEntityOfPage,
   codeRepository,
   showWorkspaceLink = true,
+  url,
 }) => {
   const imageURL =
     includedInDataCatalog?.name &&
@@ -54,9 +56,9 @@ const ExternalLinks: React.FC<ExternalLinks> = ({
               alt='Data source name'
               imageURL={imageURL || undefined}
               imageProps={{my: 2}}
-              name={getRepositoryName(includedInDataCatalog.name) || undefined}
-              href={includedInDataCatalog?.url || undefined}
-            ></ExternalSourceButton>
+              name={includedInDataCatalog.name || undefined}
+              href={url || undefined}
+            />
           </Flex>
         )}
         {mainEntityOfPage && (

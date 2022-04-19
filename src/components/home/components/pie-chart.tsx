@@ -3,9 +3,9 @@ import Pie, {ProvidedProps, PieArcDatum} from '@visx/shape/lib/shapes/Pie';
 import {scaleOrdinal} from '@visx/scale';
 import {Group} from '@visx/group';
 import {animated, useTransition, to} from 'react-spring';
-import {Box, Flex, Heading, Text, theme} from 'nde-design-system';
+import {Box, Flex, Heading, Text} from 'nde-design-system';
 import {LegendOrdinal, LegendItem} from '@visx/legend';
-import {formatNumber, getRepositoryName} from 'src/utils/helpers';
+import {formatNumber} from 'src/utils/helpers';
 import {
   useTooltip,
   defaultStyles as defaultTooltipStyles,
@@ -152,7 +152,7 @@ export default function PieChart({
                       />
                       <Box>
                         <Text lineHeight='short' fontWeight={'semibold'}>
-                          {getRepositoryName(label.text)}
+                          {label.text}
                         </Text>
                         <Text
                           lineHeight='shorter'
@@ -184,9 +184,7 @@ export default function PieChart({
             }}
           >
             <Box>
-              <Text fontWeight={'semibold'}>
-                {getRepositoryName(tooltipData.term)}
-              </Text>
+              <Text fontWeight={'semibold'}>{tooltipData.term}</Text>
               <br />
               <Text>{formatNumber(tooltipData.count)} records</Text>
             </Box>

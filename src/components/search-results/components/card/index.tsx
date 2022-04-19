@@ -38,7 +38,6 @@ import {
   formatDate,
   formatDOI,
   getRepositoryImage,
-  getRepositoryName,
 } from 'src/utils/helpers';
 import {ExternalSourceButton} from 'src/components/external-buttons/index.';
 import {AccessBadge, TypeBanner} from 'src/components/resource';
@@ -337,9 +336,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                   minW='150px'
                   imageURL={imageURL || undefined}
                   alt='Data source name'
-                  name={
-                    getRepositoryName(includedInDataCatalog.name) || undefined
-                  }
+                  name={includedInDataCatalog.name || undefined}
                   href={url || undefined}
                   aria-label={`View in source repository resource ${name}`}
                 ></ExternalSourceButton>
