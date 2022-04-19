@@ -16,11 +16,13 @@ import {formatDate, getRepositoryImage} from 'src/utils/helpers';
 interface Provenance {
   isLoading: boolean;
   includedInDataCatalog?: FormattedResource['includedInDataCatalog'];
+  url?: FormattedResource['url'];
 }
 
 const Provenance: React.FC<Provenance> = ({
   includedInDataCatalog,
   isLoading,
+  url,
 }) => {
   const imageURL =
     includedInDataCatalog?.name &&
@@ -67,11 +69,11 @@ const Provenance: React.FC<Provenance> = ({
             <dd>{formatDate(includedInDataCatalog.versionDate)} </dd>
           </Stat>
         )}
-        {includedInDataCatalog?.url && (
+        {url && (
           <Button
             colorScheme='primary'
             variant='outline'
-            href={includedInDataCatalog.url}
+            href={url}
             h='unset'
             isExternal
           >

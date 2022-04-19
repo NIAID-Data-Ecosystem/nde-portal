@@ -315,6 +315,7 @@ const ResourcePage: NextPage = props => {
                           <ResourceLinks
                             isLoading={isLoading}
                             includedInDataCatalog={data?.includedInDataCatalog}
+                            url={data?.url}
                           />
                         )}
                       </Section>
@@ -342,6 +343,7 @@ const ResourcePage: NextPage = props => {
                         includedInDataCatalog={data?.includedInDataCatalog}
                         mainEntityOfPage={data?.mainEntityOfPage}
                         codeRepository={data?.codeRepository}
+                        url={data?.url}
                       />
                     )}
                     {/* <RelatedDatasets /> */}

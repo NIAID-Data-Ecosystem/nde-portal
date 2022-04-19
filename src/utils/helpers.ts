@@ -17,17 +17,6 @@ export const getRepositoryImage = (repoName: string) => {
   return imageURL;
 };
 
-export const getRepositoryName = (sourceName: string | null) => {
-  if (!sourceName) {
-    return null;
-  }
-  const {repositories} = sourceData;
-  const sourceRepoIndex = repositories.findIndex(source => {
-    return source.sourceName.toLowerCase().includes(sourceName.toLowerCase());
-  });
-  return sourceRepoIndex >= 0 ? repositories[sourceRepoIndex].name : sourceName;
-};
-
 // Format authors name string with a given separator
 export const formatAuthorsList2String = (
   authors: FormattedResource['author'],
