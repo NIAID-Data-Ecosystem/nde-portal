@@ -20,6 +20,7 @@ import {
   FaAngleDoubleLeft,
 } from 'react-icons/fa';
 import {SortOptions} from 'src/pages/search';
+import {formatNumber} from 'src/utils/helpers';
 
 interface PaginationProps
   extends Omit<
@@ -140,7 +141,7 @@ export const DisplayResults: React.FC<DisplayResultsProps> = ({
           >
             {total ? (
               <span style={{fontSize: '1rem', marginLeft: '0.25rem'}}>
-                {total} Result{total > 1 ? 's' : ''}
+                {formatNumber(total)} Result{total > 1 ? 's' : ''}
               </span>
             ) : (
               ''
