@@ -19,17 +19,15 @@ export const getRepositoryImage = (repoName: string) => {
 
 // Format authors name string with a given separator
 export const formatAuthorsList2String = (
-  authors: FormattedResource['author'],
+  authorsData: FormattedResource['author'],
   separator: string = ',',
   maxLength?: number,
 ) => {
-  if (!authors) {
+  if (!authorsData) {
     return '';
   }
+  let authors = !Array.isArray(authorsData) ? [authorsData] : authorsData;
 
-  if (!Array.isArray(authors)) {
-    authors = [authors];
-  }
   let author_list = authors.map((author, i) => {
     if (!author.name) {
       return;
