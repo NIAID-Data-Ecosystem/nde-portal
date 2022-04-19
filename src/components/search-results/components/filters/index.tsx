@@ -29,6 +29,7 @@ interface FilterProps {
 }
 
 const filterNameConfig = {
+  '@type': 'Type',
   'includedInDataCatalog.name': 'Source',
   keywords: 'Keywords',
   measurementTechnique: 'Measurement Technique',

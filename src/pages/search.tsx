@@ -65,9 +65,10 @@ const Search: NextPage = () => {
   const defaultFilters: {
     [key: string]: (string | number)[];
   } = {
+    '@type': [],
     keywords: [],
-    variableMeasured: [],
     measurementTechnique: [],
+    variableMeasured: [],
     'includedInDataCatalog.name': [],
   };
 
@@ -126,6 +127,7 @@ const Search: NextPage = () => {
         return;
       }
       const filter_string = queryFilterObject2String(selectedFilters);
+
       return fetchSearchResults({
         q: filter_string
           ? `${queryString} AND ${filter_string}`
@@ -148,8 +150,8 @@ const Search: NextPage = () => {
     setQueryString(prev =>
       q
         ? Array.isArray(q)
-          ? `${q.map(s => encodeString(s)).join('+')}`
-          : `${encodeString(q)}`
+          ? `(${q.map(s => encodeString(s)).join('+')})`
+          : `(${encodeString(q)})`
         : prev,
     );
     setSelectedPage(prev =>
@@ -169,6 +171,7 @@ const Search: NextPage = () => {
       let queryObject = queryFilterString2Object(filters);
       return (
         queryObject || {
+          '@type': [],
           keywords: [],
           variableMeasured: [],
           measurementTechnique: [],
