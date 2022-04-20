@@ -103,7 +103,7 @@ const Home: NextPage = () => {
     size: 0,
     facets: [
       '@type',
-      'measurementTechnique',
+      'measurementTechnique.name',
       'includedInDataCatalog.name',
     ].join(','),
     facet_size: 20,
@@ -159,7 +159,7 @@ const Home: NextPage = () => {
         // Get number of measurement techniques
         const measurementTechnique = {
           term: 'Measurement techniques',
-          count: facets.measurementTechnique.total,
+          count: facets['measurementTechnique.name'].total,
         };
 
         const sources = [...facets['includedInDataCatalog.name'].terms];
