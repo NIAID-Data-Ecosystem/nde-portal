@@ -118,7 +118,6 @@ const ExternalLinks: React.FC<ExternalLinks> = ({
             <ExternalSourceButton
               w='100%'
               alt='Data source name'
-              imageURL='/assets/workspace-gray.png'
               imageProps={{p: 2, my: 2}}
               name='Explore in workspace'
               variant='solid'

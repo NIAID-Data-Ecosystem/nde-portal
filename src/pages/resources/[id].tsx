@@ -35,7 +35,7 @@ import LocalNavigation, {
   showSection,
 } from 'src/components/resource/components/local-navigation';
 import SectionsConfig from 'configs/resource-sections.json';
-import {route} from 'next/dist/server/router';
+import {assetPrefix} from 'next.config';
 
 // Error display is data fetching goes wrong.
 const ErrorState = ({retryFn}: {retryFn: () => void}) => {
@@ -59,7 +59,7 @@ const EmptyState = () => {
     <Card w='100%'>
       <Empty
         message='No data available.'
-        imageUrl='/assets/empty.png'
+        imageUrl={`${assetPrefix}/assets/empty.png`}
         imageAlt='Missing information icon.'
         alignSelf='center'
         h='50vh'

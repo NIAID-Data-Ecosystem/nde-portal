@@ -25,6 +25,7 @@ import {
 } from 'src/utils/helpers';
 import MetadataConfig from 'configs/resource-metadata.json';
 import StatField from './components/stat-field';
+import {assetPrefix} from 'next.config';
 
 interface Overview extends Partial<FormattedResource> {
   isLoading: boolean;
@@ -155,7 +156,10 @@ const Overview: React.FC<Overview> = ({
             {licenseInfo ? (
               <>
                 {licenseInfo?.img && (
-                  <Image src={licenseInfo.img} alt={licenseInfo.type} />
+                  <Image
+                    src={`${assetPrefix}${licenseInfo.img}`}
+                    alt={licenseInfo.type}
+                  />
                 )}
                 {licenseInfo?.url ? (
                   <Link href={licenseInfo.url} isExternal>

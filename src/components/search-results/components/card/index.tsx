@@ -43,6 +43,7 @@ import {
 } from 'src/utils/helpers';
 import {ExternalSourceButton} from 'src/components/external-buttons/index.';
 import {AccessBadge, TypeBanner} from 'src/components/resource';
+import {assetPrefix, basePath} from 'next.config';
 
 interface SearchResultCardProps {
   id?: FormattedResource['id'];
@@ -80,6 +81,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
   url,
   ...props
 }) => {
+  console.log(basePath);
   const imageURL =
     includedInDataCatalog?.name &&
     getRepositoryImage(includedInDataCatalog.name);
@@ -100,7 +102,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
           {name && (
             <Link
               h={'100%'}
-              href={`/resources/${id}`}
+              href={`${basePath}/resources/${id}`}
               flexWrap='nowrap'
               color='white'
               _hover={{
@@ -265,7 +267,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                                 <>
                                   {licenseInfo?.img && (
                                     <Image
-                                      src={licenseInfo.img}
+                                      src={`${assetPrefix}${licenseInfo.img}`}
                                       alt={licenseInfo.type}
                                     />
                                   )}
@@ -382,7 +384,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
               <Flex flex={1} justifyContent='end'>
                 <Button
                   my={1}
-                  href={`/resources/${id}`}
+                  href={`${basePath}/resources/${id}`}
                   size='md'
                   rightIcon={<FaArrowAltCircleRight />}
                   aria-label={`Go to details about resource ${name}`}

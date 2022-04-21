@@ -12,6 +12,7 @@ import {
 import {FormattedResource} from 'src/utils/api/types';
 import {Skeleton} from '@chakra-ui/skeleton';
 import {formatDate, getRepositoryImage} from 'src/utils/helpers';
+import {assetPrefix} from 'next.config';
 
 interface Provenance {
   isLoading: boolean;
@@ -39,7 +40,7 @@ const Provenance: React.FC<Provenance> = ({
                   h='50px'
                   objectFit='contain'
                   my={[2, 4]}
-                  src={imageURL}
+                  src={`${assetPrefix}${imageURL}`}
                   alt='Data source logo'
                 />
               )}

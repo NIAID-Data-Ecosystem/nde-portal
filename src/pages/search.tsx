@@ -34,7 +34,6 @@ import {
   queryFilterObject2String,
   queryFilterString2Object,
 } from 'src/components/search-results/helpers';
-import Script from 'next/script';
 import LoadingSpinner from 'src/components/loading';
 import ErrorMessage from 'src/components/error';
 import {
@@ -43,6 +42,7 @@ import {
 } from 'src/components/search-results/components/pagination';
 import {ButtonGroup} from '@chakra-ui/button';
 import {useHasMounted} from 'src/hooks/useHasMounted';
+import {assetPrefix, basePath} from 'next.config';
 
 // Sorting mechanism.
 export interface SortOptions {
@@ -194,7 +194,7 @@ const Search: NextPage = () => {
   const updateRoute = (update: {}) => {
     router.push(
       {
-        pathname: '/search',
+        pathname: `${basePath}/search`,
         query: {
           ...router.query,
           ...update,
@@ -403,7 +403,7 @@ const Search: NextPage = () => {
                   {!isLoading && (!data || data.results.length === 0) && (
                     <Empty
                       message='No results found.'
-                      imageUrl='/assets/empty.png'
+                      imageUrl={`${assetPrefix}/assets/empty.png`}
                       imageAlt='Missing information icon.'
                       alignSelf='center'
                       h={'50vh'}

@@ -7,7 +7,7 @@ import {
   Heading,
   Icon,
   Image,
-  Link,
+  Link as PortalLink,
   SearchInput,
   SimpleGrid,
   Text,
@@ -18,7 +18,6 @@ import {PageContainer, PageContent} from 'src/components/page-container';
 import {useRouter} from 'next/router';
 import homepageCopy from 'configs/homepage.json';
 import {FaChevronRight} from 'react-icons/fa';
-
 import {fetchSearchResults} from 'src/utils/api';
 import {useQuery} from 'react-query';
 import {FetchSearchResultsResponse} from 'src/utils/api/types';
@@ -33,6 +32,8 @@ import {
   StyledBody,
   StyledSectionButtonGroup,
 } from 'src/components/home/styles';
+import {assetPrefix, basePath} from 'next.config';
+
 const sample_queries = [
   {
     title: 'E. coli',
@@ -59,9 +60,9 @@ const QuickQueryLink: React.FC<QuickQueryLinkProps> = ({
     return null;
   }
   return (
-    <Link
+    <PortalLink
       mx={2}
-      href={`/search?q=${queryString}`}
+      href={`${basePath}/search?q=${queryString}`}
       color='whiteAlpha.800'
       _hover={{
         color: 'white',
@@ -78,11 +79,13 @@ const QuickQueryLink: React.FC<QuickQueryLinkProps> = ({
         transform='translateX(-5px)'
         transition='0.2s ease-in-out'
       ></Icon>
-    </Link>
+    </PortalLink>
   );
 };
 
 const Home: NextPage = () => {
+  console.log('base:', basePath);
+  console.log('asset:', assetPrefix);
   const router = useRouter();
   const size = useBreakpointValue({base: 200, sm: 200, lg: 200, xl: 200});
 
@@ -189,7 +192,7 @@ const Home: NextPage = () => {
         metaDescription='Discovery Portal home page.'
       >
         <PageContent
-          bgImg='/assets/home-bg.png'
+          bgImg={`${assetPrefix}/assets/home-bg.png`}
           backgroundSize='cover'
           flexWrap='wrap'
           minH='unset'
@@ -253,7 +256,8 @@ const Home: NextPage = () => {
                   handleChange={handleChange}
                   handleSubmit={e => {
                     e.preventDefault();
-                    searchTerm && router.push(`/search?q=${searchTerm}`);
+                    searchTerm &&
+                      router.push(`${basePath}/search?q=${searchTerm}`);
                   }}
                 />
                 <Flex mt={2} flexWrap={['wrap']}>
@@ -302,7 +306,7 @@ const Home: NextPage = () => {
                   return (
                     <Button
                       key={route.title}
-                      href={route.path}
+                      href={`${basePath}${route.path}`}
                       w='100%'
                       my={2}
                       target='_self'
@@ -341,7 +345,7 @@ const Home: NextPage = () => {
                         textAlign='center'
                       >
                         <Image
-                          src={`/assets/${stat.term
+                          src={`${assetPrefix}/assets/${stat.term
                             .toLowerCase()
                             .replaceAll(' ', '-')}.svg`}
                           alt={`Icon for ${stat.term}`}
@@ -430,7 +434,7 @@ const Home: NextPage = () => {
               w='100%'
               p={4}
               maxW={{base: 300, xl: 400}}
-              src={'/assets/home-analyze.png'}
+              src={`${assetPrefix}/assets/home-analyze.png`}
               alt={''}
             ></Image>
             <StyledBody>

@@ -7,6 +7,7 @@ import {
   FormattedResource,
 } from 'src/utils/api/types';
 import {StyledSectionHeading, StyledSectionHead} from '../../styles';
+import {basePath} from 'next.config';
 
 interface RelatedDatasets {}
 
@@ -26,7 +27,7 @@ const RelatedDatasets: React.FC<RelatedDatasets> = () => {
           return (
             <ListItem key={resource.name} py={3}>
               <Link
-                href={`/resources/${resource.id}`}
+                href={`${basePath}/resources/${resource.id}`}
                 my={2}
                 isExternal
                 border={'none'}

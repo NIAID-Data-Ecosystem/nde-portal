@@ -1,6 +1,7 @@
 import React from 'react';
 import {Button, ButtonProps, Image, Text} from 'nde-design-system';
 import {ImageProps} from '@chakra-ui/image';
+import {assetPrefix} from 'next.config';
 
 interface ExternalButtonProps extends ButtonProps {
   imageURL?: string | null;
@@ -20,7 +21,13 @@ export const ExternalSourceButton: React.FC<ExternalButtonProps> = ({
   return (
     <>
       {imageURL && (
-        <Image h='40px' mr={2} src={imageURL} alt={alt} {...imageProps}></Image>
+        <Image
+          h='40px'
+          mr={2}
+          src={`${assetPrefix}${imageURL}`}
+          alt={alt}
+          {...imageProps}
+        ></Image>
       )}
       {!href && (
         <Text color='gray.800' fontWeight='semibold' w='100%'>

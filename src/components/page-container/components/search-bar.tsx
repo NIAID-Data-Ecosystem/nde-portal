@@ -2,6 +2,7 @@ import React, {useEffect, useState} from 'react';
 import {PageContent} from './content';
 import {SearchInput} from 'nde-design-system';
 import {useRouter} from 'next/router';
+import {basePath} from 'next.config';
 
 export const SearchBar = ({
   value,
@@ -31,7 +32,7 @@ export const SearchBar = ({
         handleChange={handleChange}
         handleSubmit={e => {
           e.preventDefault();
-          searchTerm && router.push(`/search?q=${searchTerm}`);
+          searchTerm && router.push(`${basePath}/search?q=${searchTerm}`);
         }}
         placeholder='Search for datasets or tools'
         {...props}

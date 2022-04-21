@@ -45,3 +45,6 @@ yarn-error.log*
 
 # notes
 notes.txt
+
+# serve
+serve.json

@@ -62,7 +62,7 @@ const Notice = () => {
           <Text>
             This version is not production ready and is subject to changes.
           </Text>
-          <Link href={niaid_help}>
+          <Link href={`mailto:${niaid_help}`}>
             <Text>For any questions, contact {niaid_help}.</Text>
           </Link>
           <br />
