@@ -7,7 +7,7 @@ const Notice = () => {
   let niaid_help = 'help@data.niaid.nih.gov';
   const [isOpen, setOpen] = useLocalStorage('warningOpen', true);
 
-  const toggleWarningOpen = () => {
+  const toggleWarning = () => {
     setOpen(!isOpen);
   };
 
@@ -51,7 +51,7 @@ const Notice = () => {
           colorScheme='primary'
           _hover={{bg: 'status.warning_lt'}}
           size='sm'
-          onClick={toggleWarningOpen}
+          onClick={toggleWarning}
           w={['100%', 'unset']}
         >
           {!isOpen ? 'Read More' : 'Read Less'}
@@ -66,7 +66,7 @@ const Notice = () => {
             <Text>For any questions, contact {niaid_help}.</Text>
           </Link>
           <br />
-          <Button onClick={toggleWarningOpen} colorScheme='primary' mt={2}>
+          <Button onClick={toggleWarning} colorScheme='primary' mt={2}>
             Got it
           </Button>
         </Box>
