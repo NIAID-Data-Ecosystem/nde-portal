@@ -17,7 +17,7 @@ import {
   Heading,
   Icon,
   Image,
-  Link as NdeLink,
+  Link,
   ListItem,
   Skeleton,
   Stat,
@@ -44,8 +44,7 @@ import {
 import {ExternalSourceButton} from 'src/components/external-buttons/index.';
 import {AccessBadge, TypeBanner} from 'src/components/resource';
 import {assetPrefix, basePath} from 'next.config';
-import {useRouter} from 'next/router';
-import Link from 'next/link';
+import NextLink from 'next/link';
 
 interface SearchResultCardProps {
   id?: FormattedResource['id'];
@@ -83,7 +82,6 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
   url,
   ...props
 }) => {
-  const router = useRouter();
   const imageURL =
     includedInDataCatalog?.name &&
     getRepositoryImage(includedInDataCatalog.name);
@@ -102,14 +100,14 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
           w='100%'
         >
           {name && (
-            <Link
+            <NextLink
               href={{
-                pathname: `${basePath}/resources/`,
+                pathname: '/resources/',
                 query: {id},
               }}
               passHref
             >
-              <NdeLink
+              <Link
                 h={'100%'}
                 flexWrap='nowrap'
                 color='white'
@@ -137,8 +135,8 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                     transition='0.2s ease-in-out'
                   ></Icon>
                 </Flex>
-              </NdeLink>
-            </Link>
+              </Link>
+            </NextLink>
           )}
         </Skeleton>
       </CardHeader>
@@ -281,9 +279,9 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                                     />
                                   )}
                                   {licenseInfo?.url ? (
-                                    <NdeLink href={licenseInfo.url} isExternal>
+                                    <Link href={licenseInfo.url} isExternal>
                                       {licenseInfo.title}
-                                    </NdeLink>
+                                    </Link>
                                   ) : (
                                     licenseInfo?.title
                                   )}
@@ -310,9 +308,9 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                                   return (
                                     <ListItem key={`${m.name}-${i}`}>
                                       {m.url ? (
-                                        <NdeLink href={m.url} isExternal>
+                                        <Link href={m.url} isExternal>
                                           <MeasurementTechniqueLabel />
-                                        </NdeLink>
+                                        </Link>
                                       ) : (
                                         <MeasurementTechniqueLabel />
                                       )}
@@ -391,9 +389,9 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
 
             {id && (
               <Flex flex={1} justifyContent='end'>
-                <Link
+                <NextLink
                   href={{
-                    pathname: `${basePath}/resources/`,
+                    pathname: 'resources/',
                     query: {id},
                   }}
                   passHref
@@ -407,7 +405,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                     See more
                     <VisuallyHidden> details about the dataset</VisuallyHidden>
                   </Button>
-                </Link>
+                </NextLink>
               </Flex>
             )}
           </HStack>

@@ -1,4 +1,4 @@
-import {useState} from 'react';
+import {createRef, useState} from 'react';
 import type {NextPage} from 'next';
 import {
   Box,
@@ -7,7 +7,7 @@ import {
   Heading,
   Icon,
   Image,
-  Link as PortalLink,
+  Link,
   SearchInput,
   SimpleGrid,
   Text,
@@ -33,6 +33,7 @@ import {
   StyledSectionButtonGroup,
 } from 'src/components/home/styles';
 import {assetPrefix, basePath} from 'next.config';
+import NextLink from 'next/link';
 
 const sample_queries = [
   {
@@ -47,6 +48,7 @@ const sample_queries = [
   {title: 'Tuberculosis', searchTerms: ['"Tuberculosis"', '"TB"']},
   {title: 'Ebola', searchTerms: ['"Ebola"', '"EBOV"', '"EVD"']},
 ];
+
 interface QuickQueryLinkProps {
   title: string;
   queryString: string;
@@ -60,26 +62,27 @@ const QuickQueryLink: React.FC<QuickQueryLinkProps> = ({
     return null;
   }
   return (
-    <PortalLink
-      mx={2}
-      href={`${basePath}/search/?q=${queryString}`}
-      color='whiteAlpha.800'
-      _hover={{
-        color: 'white',
-        textDecoration: 'underline',
-        svg: {transform: 'translateX(0)', transition: '0.2s ease-in-out'},
-      }}
-      _visited={{color: 'white'}}
-    >
-      <Text>{title}</Text>
-      <Icon
-        as={FaChevronRight}
-        ml={2}
-        boxSize={3}
-        transform='translateX(-5px)'
-        transition='0.2s ease-in-out'
-      ></Icon>
-    </PortalLink>
+    <NextLink href={{pathname: '/search', query: {q: queryString}}} passHref>
+      <Link
+        mx={2}
+        color='whiteAlpha.800'
+        _hover={{
+          color: 'white',
+          textDecoration: 'underline',
+          svg: {transform: 'translateX(0)', transition: '0.2s ease-in-out'},
+        }}
+        _visited={{color: 'white'}}
+      >
+        <Text>{title}</Text>
+        <Icon
+          as={FaChevronRight}
+          ml={2}
+          boxSize={3}
+          transform='translateX(-5px)'
+          transition='0.2s ease-in-out'
+        ></Icon>
+      </Link>
+    </NextLink>
   );
 };
 

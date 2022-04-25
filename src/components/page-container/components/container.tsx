@@ -1,10 +1,10 @@
 import {useEffect, useRef, useState} from 'react';
-import {Box, Flex, Navigation, Footer, FlexProps} from 'nde-design-system';
+import {Box, Flex, Footer, FlexProps, Navigation} from 'nde-design-system';
 import navItems from 'configs/nav.json';
 import footerItems from 'configs/footer.json';
 import Head from 'next/head';
 import Notice from './notice';
-import {basePath} from 'next.config';
+import {assetPrefix, basePath} from 'next.config';
 
 interface PageContainerProps extends FlexProps {
   hasNavigation?: boolean;
@@ -41,7 +41,7 @@ export const PageContainer: React.FC<PageContainerProps> = ({
   const formatRoute: any = (routes: any[]) => {
     return routes.map(r => {
       if ('routes' in r) {
-        return formatRoute(r.routes);
+        return {...r, routes: formatRoute(r.routes)};
       }
       return {...r, href: `${basePath}${r['href']}`};
     });
