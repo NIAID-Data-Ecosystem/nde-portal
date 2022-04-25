@@ -62,7 +62,7 @@ const QuickQueryLink: React.FC<QuickQueryLinkProps> = ({
   return (
     <PortalLink
       mx={2}
-      href={`${basePath}/search?q=${queryString}`}
+      href={`${basePath}/search/?q=${queryString}`}
       color='whiteAlpha.800'
       _hover={{
         color: 'white',
@@ -257,7 +257,10 @@ const Home: NextPage = () => {
                   handleSubmit={e => {
                     e.preventDefault();
                     searchTerm &&
-                      router.push(`${basePath}/search?q=${searchTerm}`);
+                      router.push({
+                        pathname: `${basePath}/search`,
+                        query: {q: searchTerm},
+                      });
                   }}
                 />
                 <Flex mt={2} flexWrap={['wrap']}>

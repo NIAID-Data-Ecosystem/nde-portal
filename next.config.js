@@ -11,7 +11,7 @@ module.exports = {
     ? `http://nde-portal.s3-website-us-east-1.amazonaws.com/staging`
     : '',
   // Prefix hyperlinks with the base path.
-  basePath: isProd ? `/staging` : '',
+  basePath: isProd ? process.env.DEST_DIR : '',
   // [NOTE]:For public environment variables only.
   env: {
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,

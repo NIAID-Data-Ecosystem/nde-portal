@@ -1,4 +1,4 @@
-import {useLayoutEffect, useRef, useState} from 'react';
+import {useEffect, useRef, useState} from 'react';
 import {Box, Flex, Navigation, Footer, FlexProps} from 'nde-design-system';
 import navItems from 'configs/nav.json';
 import footerItems from 'configs/footer.json';
@@ -26,12 +26,16 @@ export const PageContainer: React.FC<PageContainerProps> = ({
 
   // Handle height margin top needed when screen + nav resize.
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     const handleResize = () => {
       setHeight(ref?.current?.clientHeight || 0);
     };
+    window.addEventListener('load', handleResize);
     window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('load', handleResize);
+      window.removeEventListener('resize', handleResize);
+    };
   }, []);
 
   const formatRoute: any = (routes: any[]) => {

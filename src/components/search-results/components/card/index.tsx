@@ -17,7 +17,7 @@ import {
   Heading,
   Icon,
   Image,
-  Link,
+  Link as NdeLink,
   ListItem,
   Skeleton,
   Stat,
@@ -44,6 +44,8 @@ import {
 import {ExternalSourceButton} from 'src/components/external-buttons/index.';
 import {AccessBadge, TypeBanner} from 'src/components/resource';
 import {assetPrefix, basePath} from 'next.config';
+import {useRouter} from 'next/router';
+import Link from 'next/link';
 
 interface SearchResultCardProps {
   id?: FormattedResource['id'];
@@ -81,7 +83,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
   url,
   ...props
 }) => {
-  console.log(basePath);
+  const router = useRouter();
   const imageURL =
     includedInDataCatalog?.name &&
     getRepositoryImage(includedInDataCatalog.name);
@@ -101,34 +103,41 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
         >
           {name && (
             <Link
-              h={'100%'}
-              href={`${basePath}/resources/${id}`}
-              flexWrap='nowrap'
-              color='white'
-              _hover={{
-                color: 'white',
-                h2: {textDecoration: 'underline'},
-                svg: {
-                  transform: 'translate(0px)',
-                  opacity: 0.9,
-                  transition: '0.2s ease-in-out',
-                },
+              href={{
+                pathname: `${basePath}/resources/`,
+                query: {id},
               }}
-              _visited={{color: 'white', svg: {color: 'white'}}}
+              passHref
             >
-              <Flex alignItems='center'>
-                <CardTitle size='h6' lineHeight='short' fontWeight='semibold'>
-                  {name}
-                </CardTitle>
-                <Icon
-                  as={FaChevronRight}
-                  boxSize={4}
-                  ml={4}
-                  opacity={0.6}
-                  transform='translate(-10px)'
-                  transition='0.2s ease-in-out'
-                ></Icon>
-              </Flex>
+              <NdeLink
+                h={'100%'}
+                flexWrap='nowrap'
+                color='white'
+                _hover={{
+                  color: 'white',
+                  h2: {textDecoration: 'underline'},
+                  svg: {
+                    transform: 'translate(0px)',
+                    opacity: 0.9,
+                    transition: '0.2s ease-in-out',
+                  },
+                }}
+                _visited={{color: 'white', svg: {color: 'white'}}}
+              >
+                <Flex alignItems='center'>
+                  <CardTitle size='h6' lineHeight='short' fontWeight='semibold'>
+                    {name}
+                  </CardTitle>
+                  <Icon
+                    as={FaChevronRight}
+                    boxSize={4}
+                    ml={4}
+                    opacity={0.6}
+                    transform='translate(-10px)'
+                    transition='0.2s ease-in-out'
+                  ></Icon>
+                </Flex>
+              </NdeLink>
             </Link>
           )}
         </Skeleton>
@@ -272,9 +281,9 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                                     />
                                   )}
                                   {licenseInfo?.url ? (
-                                    <Link href={licenseInfo.url} isExternal>
+                                    <NdeLink href={licenseInfo.url} isExternal>
                                       {licenseInfo.title}
-                                    </Link>
+                                    </NdeLink>
                                   ) : (
                                     licenseInfo?.title
                                   )}
@@ -301,9 +310,9 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                                   return (
                                     <ListItem key={`${m.name}-${i}`}>
                                       {m.url ? (
-                                        <Link href={m.url} isExternal>
+                                        <NdeLink href={m.url} isExternal>
                                           <MeasurementTechniqueLabel />
-                                        </Link>
+                                        </NdeLink>
                                       ) : (
                                         <MeasurementTechniqueLabel />
                                       )}
@@ -382,16 +391,23 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
 
             {id && (
               <Flex flex={1} justifyContent='end'>
-                <Button
-                  my={1}
-                  href={`${basePath}/resources/${id}`}
-                  size='md'
-                  rightIcon={<FaArrowAltCircleRight />}
-                  aria-label={`Go to details about resource ${name}`}
+                <Link
+                  href={{
+                    pathname: `${basePath}/resources/`,
+                    query: {id},
+                  }}
+                  passHref
                 >
-                  See more
-                  <VisuallyHidden> details about the dataset</VisuallyHidden>
-                </Button>
+                  <Button
+                    my={1}
+                    size='md'
+                    rightIcon={<FaArrowAltCircleRight />}
+                    aria-label={`Go to details about resource ${name}`}
+                  >
+                    See more
+                    <VisuallyHidden> details about the dataset</VisuallyHidden>
+                  </Button>
+                </Link>
               </Flex>
             )}
           </HStack>
