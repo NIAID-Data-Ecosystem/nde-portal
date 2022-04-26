@@ -12,5 +12,6 @@ module.exports = {
   // [NOTE]:For public environment variables only.
   env: {
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
+    ASSET_PREFIX: process.env.ASSET_PREFIX,
   },
 };
