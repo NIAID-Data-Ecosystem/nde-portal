@@ -4,6 +4,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build && next export",
+    "build:staging": "env-cmd -f .env.staging yarn build",
     "start": "next start",
     "lint": "next lint"
   },
@@ -19,6 +20,7 @@
     "@visx/tooltip": "^2.8.0",
     "axios": "^0.24.0",
     "d3-scale-chromatic": "^3.0.0",
+    "env-cmd": "^10.1.0",
     "framer-motion": "^4",
     "lodash": "^4.17.21",
     "nde-design-system": "^0.2.36",

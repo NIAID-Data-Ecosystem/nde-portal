@@ -8,6 +8,7 @@ import {
 } from 'src/utils/api/types';
 import {StyledSectionHeading, StyledSectionHead} from '../../styles';
 import {basePath} from 'next.config';
+import NextLink from 'next/link';
 
 interface RelatedDatasets {}
 
@@ -26,14 +27,17 @@ const RelatedDatasets: React.FC<RelatedDatasets> = () => {
         {data?.results.slice(0, 3).map((resource: FormattedResource) => {
           return (
             <ListItem key={resource.name} py={3}>
-              <Link
-                href={`${basePath}/resources/${resource.id}`}
-                my={2}
-                isExternal
-                border={'none'}
+              <NextLink
+                href={{
+                  pathname: '/resources/',
+                  query: {id: resource.id},
+                }}
+                passHref
               >
-                {resource.name}
-              </Link>
+                <Link my={2} isExternal border={'none'}>
+                  {resource.name}
+                </Link>
+              </NextLink>
             </ListItem>
           );
         })}

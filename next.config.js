@@ -6,11 +6,9 @@ module.exports = {
   reactStrictMode: true,
   distDir: 'dist',
   trailingSlash: true,
-  assetPrefix: isProd
-    ? `http://nde-portal.s3-website-us-east-1.amazonaws.com/staging`
-    : '',
+  assetPrefix: isProd ? `/${process.env.ASSET_PREFIX}` : '.',
   // Prefix hyperlinks with the base path.
-  basePath: isProd ? `/${process.env.DEST_DIR}` : '',
+  basePath: isProd ? `/${process.env.ASSET_PREFIX}` : '',
   // [NOTE]:For public environment variables only.
   env: {
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,

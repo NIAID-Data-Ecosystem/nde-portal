@@ -391,7 +391,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
               <Flex flex={1} justifyContent='end'>
                 <NextLink
                   href={{
-                    pathname: 'resources/',
+                    pathname: '/resources/',
                     query: {id},
                   }}
                   passHref

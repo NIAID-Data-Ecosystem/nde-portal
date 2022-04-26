@@ -29,4 +29,3 @@ jobs:
           AWS_REGION: ${{ secrets.AWS_REGION }}
           SOURCE_DIR: './out'
           DEST_DIR: 'production'
-          NEXT_PUBLIC_API_URL: https://api.data.niaid.nih.gov/v1
