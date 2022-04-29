@@ -19,7 +19,7 @@ import {
   FaAngleDoubleRight,
   FaAngleDoubleLeft,
 } from 'react-icons/fa';
-import {SortOptions} from 'src/pages/search';
+import {SortOptions} from 'src/components/search-results-page';
 import {formatNumber} from 'src/utils/helpers';
 
 interface PaginationProps
@@ -39,7 +39,7 @@ export const Pagination: React.FC<PaginationProps> = ({
   total,
   ariaLabel,
 }) => {
-  const total_pages = total && Math.ceil(total / selectedPerPage);
+  const total_pages = Math.ceil(total / selectedPerPage);
 
   return (
     <StyledPagination bg='white' role='navigation' aria-label={ariaLabel}>
@@ -129,6 +129,7 @@ export const DisplayResults: React.FC<DisplayResultsProps> = ({
         borderColor='gray.700'
         justifyContent='space-between'
         alignItems='end'
+        flexWrap='wrap'
       >
         {/* Total number of results */}
         <Box>
@@ -139,13 +140,9 @@ export const DisplayResults: React.FC<DisplayResultsProps> = ({
             alignItems='baseline'
             fontWeight='semibold'
           >
-            {total ? (
-              <span style={{fontSize: '1rem', marginLeft: '0.25rem'}}>
-                {formatNumber(total)} Result{total > 1 ? 's' : ''}
-              </span>
-            ) : (
-              ''
-            )}
+            <span style={{fontSize: '1rem', marginLeft: '0.25rem'}}>
+              {formatNumber(total)} Result{total !== 1 ? 's' : ''}
+            </span>
           </Heading>
         </Box>
 

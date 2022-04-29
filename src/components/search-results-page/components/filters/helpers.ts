@@ -1,15 +1,26 @@
 import {FacetTerm} from 'src/utils/api/types';
 
-// Filters all the filter terms that belong to a certain filter.
+// Filters + sorts all the filter terms that belong to a certain filter.
 export const filterFilterList = (
-  terms: FacetTerm[],
+  terms: {
+    count?: number;
+    term: string;
+  }[],
   filterText: string,
   size: number,
 ) => {
+  if (!terms) {
+    return {items: [], hasMore: false};
+  }
   let searchText = filterText.toLowerCase();
   let filteredTerms = terms
     .filter(t => t.term.toLowerCase().includes(searchText))
-    .slice(0, size);
+    .slice(0, size)
+    .sort((a, b) => {
+      let a_count = a?.count || 0;
+      let b_count = b?.count || 0;
+      return b_count - a_count;
+    });
 
   return {items: filteredTerms, hasMore: terms.length > size};
 };
@@ -17,14 +28,14 @@ export const filterFilterList = (
 // Convert filters object to string for url routing + api call.
 export const queryFilterObject2String = (selectedFilters: any) => {
   // create querystring for filters where values are provided.
-  let querystring = Object.keys(selectedFilters)
+  let filterString = Object.keys(selectedFilters)
     .filter(filterName => selectedFilters[filterName].length > 0)
     .map(filterName => {
       let values = `("${selectedFilters[filterName].join('" OR "')}")`;
       return `${filterName}:${values}`;
     })
     .join(' AND ');
-  return querystring ? querystring : null;
+  return filterString ? filterString : null;
 };
 
 // Convert filters url string to object for state management.

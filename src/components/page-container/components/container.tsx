@@ -1,5 +1,12 @@
 import {useEffect, useRef, useState} from 'react';
-import {Box, Flex, Footer, FlexProps, Navigation} from 'nde-design-system';
+import {
+  Box,
+  Flex,
+  Footer,
+  FlexProps,
+  Navigation,
+  useDimensions,
+} from 'nde-design-system';
 import navItems from 'configs/nav.json';
 import footerItems from 'configs/footer.json';
 import Head from 'next/head';
@@ -12,7 +19,7 @@ interface PageContainerProps extends FlexProps {
   metaDescription: string;
 }
 
-/* [TO DO] Update nav + footer to accept children components. */
+export const NAV_HEIGHT = {base: '105px', sm: '77px', md: '89px'};
 
 export const PageContainer: React.FC<PageContainerProps> = ({
   children,
@@ -21,22 +28,7 @@ export const PageContainer: React.FC<PageContainerProps> = ({
   metaDescription,
   ...rest
 }) => {
-  const [height, setHeight] = useState(90);
   const ref = useRef<HTMLDivElement>(null);
-
-  // Handle height margin top needed when screen + nav resize.
-
-  useEffect(() => {
-    const handleResize = () => {
-      setHeight(ref?.current?.clientHeight || 0);
-    };
-    window.addEventListener('load', handleResize);
-    window.addEventListener('resize', handleResize);
-    return () => {
-      window.removeEventListener('load', handleResize);
-      window.removeEventListener('resize', handleResize);
-    };
-  }, []);
 
   const formatRoute: any = (routes: any[]) => {
     return routes.map(r => {
@@ -57,13 +49,25 @@ export const PageContainer: React.FC<PageContainerProps> = ({
       <Flex as={'main'} w={'100%'} flexDirection={'column'} minW={300}>
         {hasNavigation && (
           // Sticky Nav Bar.
-          <Box ref={ref} position='fixed' w='100%' zIndex={100} minW={300}>
+          <Box
+            id='nav-wrapper'
+            ref={ref}
+            position='fixed'
+            w='100%'
+            zIndex={100}
+            minW={300}
+          >
             <Navigation navItems={formatRoute(navItems.routes)} />
           </Box>
         )}
 
         {/*Page content has margin-top to compensate for fixed nav bar. */}
-        <Box id={'pagebody'} mt={`${height}px` || 0} position='relative'>
+        <Box
+          id={'pagebody'}
+          // mt={`${dimensions?.borderBox.height || 0}px`}
+          mt={NAV_HEIGHT}
+          position='relative'
+        >
           <Notice />
           {children}
           <Footer navigation={formatRoute(footerItems.routes)} />

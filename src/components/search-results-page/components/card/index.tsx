@@ -372,7 +372,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
             {includedInDataCatalog?.name && (
               <Flex
                 flexDirection={['column', 'row']}
-                alignItems='center'
+                alignItems={['start', 'center']}
                 flexWrap='wrap'
               >
                 <ExternalSourceButton
