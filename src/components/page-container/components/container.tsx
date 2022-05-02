@@ -35,7 +35,12 @@ export const PageContainer: React.FC<PageContainerProps> = ({
       if ('routes' in r) {
         return {...r, routes: formatRoute(r.routes)};
       }
-      return {...r, href: `${basePath}${r['href']}`};
+      return {
+        ...r,
+        href: `${basePath}${r['href']}${
+          r['href'].slice(-1) === '/' ? '' : '/'
+        }`,
+      };
     });
   };
 
