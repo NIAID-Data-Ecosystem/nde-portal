@@ -66,7 +66,7 @@ const SearchResultsPage = () => {
 
   // Default config for query.
   const defaultQuery = {
-    queryString: '',
+    queryString: '__all__',
     selectedPage: 1,
     selectedPerPage: 10,
     facets: Object.keys(filtersConfig),
@@ -119,7 +119,9 @@ const SearchResultsPage = () => {
 
       return fetchSearchResults({
         q: filter_string
-          ? `${queryString} AND ${filter_string}`
+          ? `${
+              queryString === '__all__' ? '' : `${queryString} AND `
+            }${filter_string}`
           : `${queryString}`,
         size: `${selectedPerPage}`,
         from: `${(selectedPage - 1) * selectedPerPage}`,
@@ -136,13 +138,19 @@ const SearchResultsPage = () => {
 
   useEffect(() => {
     const {q, size, filters, from, sort} = router.query;
-    setQueryString(prev =>
-      q
-        ? Array.isArray(q)
-          ? `(${q.map(s => encodeString(s)).join('+')})`
-          : `(${encodeString(q)})`
-        : prev,
-    );
+    setQueryString(prev => {
+      let querystring = q;
+      if (querystring === undefined) {
+        return prev;
+      }
+      // if query string is empty we return all results
+      if (querystring === '') {
+        querystring = defaultQuery.queryString;
+      }
+      return Array.isArray(querystring)
+        ? `(${querystring.map(s => encodeString(s.trim())).join('+')})`
+        : `${encodeString(querystring.trim())}`;
+    });
     setSelectedPage(prev =>
       from ? (Array.isArray(from) ? +from[0] : +from) : prev,
     );
@@ -167,18 +175,7 @@ const SearchResultsPage = () => {
         ...queryObject,
       };
     });
-  }, [router]);
-
-  // To save on renders, only update the facets if the query has changed.
-  // const updateFacets = useCallback(facets => {
-  //   setFacets(prev => {
-  //     return facets || prev;
-  //   });
-  // }, []);
-
-  // useEffect(() => {
-  //   updateFacets(data?.facets);
-  // }, [data?.facets, updateFacets]);
+  }, [router, defaultQuery.queryString]);
 
   // Update the route to reflect changes on page without re-render.
   const updateRoute = (update: {}) => {
@@ -252,7 +249,9 @@ const SearchResultsPage = () => {
           {/* Filters sidebar */}
           <PageContent w='100%' flexDirection='column'>
             <Heading as='h1' size='md' mb={4}>
-              Search results for {queryString}
+              {queryString === '__all__'
+                ? 'Showing all results'
+                : `Showing search results for ${queryString}`}
             </Heading>
             {/* Chips with the names of the currently selected filters */}
             <FilterTags

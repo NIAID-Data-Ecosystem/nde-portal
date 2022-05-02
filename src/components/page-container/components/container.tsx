@@ -49,6 +49,10 @@ export const PageContainer: React.FC<PageContainerProps> = ({
       <Head>
         <title>NDE Portal {title && ` | ${title}`}</title>
         <meta name='description' content={metaDescription} />
+        <meta
+          name='viewport'
+          content='width=device-width, initial-scale=1.0'
+        ></meta>
       </Head>
 
       <Flex as={'main'} w={'100%'} flexDirection={'column'} minW={300}>

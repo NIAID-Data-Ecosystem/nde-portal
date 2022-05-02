@@ -257,11 +257,11 @@ const Home: NextPage = () => {
                   handleChange={handleChange}
                   handleSubmit={e => {
                     e.preventDefault();
-                    searchTerm &&
-                      router.push({
-                        pathname: `${basePath}/search`,
-                        query: {q: searchTerm},
-                      });
+
+                    router.push({
+                      pathname: `/search`,
+                      query: {q: searchTerm.trim()},
+                    });
                   }}
                 />
                 <Flex mt={2} flexWrap={['wrap']}>

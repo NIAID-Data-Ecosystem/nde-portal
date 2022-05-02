@@ -97,6 +97,7 @@ export const Filters: React.FC<Filters> = ({
       if (typeof searchTerm !== 'string' && !searchTerm) {
         return;
       }
+
       return fetchSearchResults({
         q: searchTerm,
         facet_size: FACET_SIZE,

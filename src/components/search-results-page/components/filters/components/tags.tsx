@@ -30,7 +30,7 @@ export const FilterTags: React.FC<FilterTags> = ({
   }
   return (
     <Collapse in={tags.length > 0}>
-      <Flex my={[4, 6, 8]} flexWrap='wrap'>
+      <Flex mb={[4, 6, 8]} flexWrap='wrap'>
         <Button
           m={1}
           variant='outline'

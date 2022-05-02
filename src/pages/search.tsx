@@ -32,9 +32,7 @@ const Search: NextPage = () => {
           value={router.query.q || ''}
           ariaLabel='Search for datasets or tools'
         />
-        {/* <PageContent w='100%' flexDirection='column' minW='740px'> */}
         <SearchResultsPage />
-        {/* </PageContent> */}
       </Box>
     </PageContainer>
   );

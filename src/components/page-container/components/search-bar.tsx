@@ -17,7 +17,7 @@ export const SearchBar = ({
   // Search term entered in search bar
   const [searchTerm, setSearchTerm] = useState<string | string[]>(value || '');
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>): void =>
-    setSearchTerm(e.target.value);
+    setSearchTerm(e.target.value.trim());
 
   // update value when changed
   useEffect(() => setSearchTerm(value), [value]);
@@ -32,7 +32,10 @@ export const SearchBar = ({
         handleChange={handleChange}
         handleSubmit={e => {
           e.preventDefault();
-          searchTerm && router.push(`${basePath}/search?q=${searchTerm}`);
+          router.push({
+            pathname: `/search`,
+            query: {q: searchTerm},
+          });
         }}
         placeholder='Search for datasets or tools'
         {...props}
