@@ -4,7 +4,7 @@ export interface FetchSearchResultsResponse {
   facets: Facet;
 }
 
-interface Facet {
+export interface Facet {
   [key: string]: {
     missing: number;
     other: number;

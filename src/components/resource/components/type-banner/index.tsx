@@ -32,7 +32,7 @@ const TypeBanner: React.FC<TypeBannerProps> = ({
               bg:
                 type.toLowerCase() === 'dataset'
                   ? 'status.info'
-                  : 'secondary.500',
+                  : 'primary.500',
             }}
           >
             <Text
@@ -41,9 +41,7 @@ const TypeBanner: React.FC<TypeBannerProps> = ({
               px={2}
               fontWeight='semibold'
               bg={
-                type.toLowerCase() === 'dataset'
-                  ? 'status.info'
-                  : 'secondary.500'
+                type.toLowerCase() === 'dataset' ? 'status.info' : 'primary.500'
               }
             >
               {type.toUpperCase()}

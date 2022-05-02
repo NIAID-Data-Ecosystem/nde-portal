@@ -14,7 +14,11 @@ const ErrorMessage: React.FC<ErrorMessageProps> = ({children, message}) => {
           Oh no! Something went wrong.
         </Heading>
         <Text>{message}</Text>
-        {children && <Flex mt={4}>{children}</Flex>}
+        {children && (
+          <Flex mt={4} flex={1} w='100%'>
+            {children}
+          </Flex>
+        )}
       </Flex>
     </PageContent>
   );

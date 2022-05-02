@@ -87,8 +87,6 @@ const QuickQueryLink: React.FC<QuickQueryLinkProps> = ({
 };
 
 const Home: NextPage = () => {
-  console.log('base:', basePath);
-  console.log('asset:', assetPrefix);
   const router = useRouter();
   const size = useBreakpointValue({base: 200, sm: 200, lg: 200, xl: 200});
 

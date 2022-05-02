@@ -3,8 +3,6 @@ import {PageContainer, PageContent} from 'src/components/page-container';
 import {assetPrefix, basePath} from 'next.config';
 
 const About: NextPage = () => {
-  console.log('base:', basePath);
-  console.log('asset:', assetPrefix);
   return (
     <>
       <PageContainer
