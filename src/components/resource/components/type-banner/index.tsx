@@ -1,5 +1,5 @@
 import React from 'react';
-import {Flex, FlexProps, Icon, Text} from 'nde-design-system';
+import {Box, Flex, FlexProps, Icon, Text} from 'nde-design-system';
 import {formatDate} from 'src/utils/helpers';
 import {FaRegClock} from 'react-icons/fa';
 import {FormattedResource} from 'src/utils/api/types';
@@ -18,15 +18,17 @@ const TypeBanner: React.FC<TypeBannerProps> = ({
   ...props
 }) => {
   return (
-    <Flex flexWrap='wrap' {...props}>
-      <Flex bg='status.info_lt' pl={pl} py={0} overflow='hidden' w='100%'>
+    <Flex flexWrap='wrap' w='100%' {...props} bg='status.info_lt'>
+      <Flex bg='status.info_lt' pl={pl} py={0} overflow='hidden'>
         {type && (
           <StyledLabel
             _before={{
               bg:
                 type.toLowerCase() === 'dataset'
                   ? 'status.info'
-                  : 'primary.500',
+                  : type.toLowerCase().includes('tool')
+                  ? 'primary.800'
+                  : 'niaid.color',
             }}
           >
             <Text
@@ -34,8 +36,13 @@ const TypeBanner: React.FC<TypeBannerProps> = ({
               color='white'
               px={2}
               fontWeight='semibold'
+              whiteSpace='nowrap'
               bg={
-                type.toLowerCase() === 'dataset' ? 'status.info' : 'primary.500'
+                type.toLowerCase() === 'dataset'
+                  ? 'status.info'
+                  : type.toLowerCase().includes('tool')
+                  ? 'primary.800'
+                  : 'niaid.color'
               }
             >
               {type.toUpperCase()}
@@ -43,26 +50,17 @@ const TypeBanner: React.FC<TypeBannerProps> = ({
           </StyledLabel>
         )}
       </Flex>
-      {(datePublished || children) && (
-        <Flex
-          bg='status.info_lt'
-          py={1}
-          overflow='hidden'
-          w={['100%', 'unset']}
-          flex={['unset', 1]}
-          px={4}
-        >
-          {datePublished && (
-            <Flex alignItems='center'>
-              <Icon as={FaRegClock} mr={2}></Icon>
-              <Text fontSize='xs' fontWeight='semibold'>
-                Published on {formatDate(datePublished)}
-              </Text>
-            </Flex>
-          )}
-          {children}
-        </Flex>
-      )}
+      <Flex bg='status.info_lt' overflow='hidden' flex={1} minW='250px'>
+        {datePublished && (
+          <Flex alignItems='center' px={{base: 2, lg: 4}} py={[2, 1]}>
+            <Icon as={FaRegClock} mr={2}></Icon>
+            <Text fontSize='xs' fontWeight='semibold' whiteSpace='nowrap'>
+              Published on {formatDate(datePublished)}
+            </Text>
+          </Flex>
+        )}
+        {children}
+      </Flex>
     </Flex>
   );
 };

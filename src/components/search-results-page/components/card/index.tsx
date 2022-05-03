@@ -13,7 +13,6 @@ import {
   CardTitle,
   Divider,
   Flex,
-  HStack,
   Heading,
   Icon,
   Image,
@@ -26,6 +25,7 @@ import {
   ToggleContainer,
   UnorderedList,
   VisuallyHidden,
+  BoxProps,
 } from 'nde-design-system';
 import {
   FaArrowAltCircleRight,
@@ -41,9 +41,8 @@ import {
   formatLicense,
   getRepositoryImage,
 } from 'src/utils/helpers';
-import {ExternalSourceButton} from 'src/components/external-buttons/index.';
 import {AccessBadge, TypeBanner} from 'src/components/resource';
-import {assetPrefix, basePath} from 'next.config';
+import {assetPrefix} from 'next.config';
 import NextLink from 'next/link';
 
 interface SearchResultCardProps {
@@ -88,6 +87,28 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
   const paddingCard = [4, 6, 8, 10];
   const licenseInfo = license ? formatLicense(license) : null;
 
+  const ConditionsOfAccess = (props: BoxProps) => {
+    if (!conditionsOfAccess) {
+      return null;
+    }
+    return (
+      <Flex
+        justifyContent={['end']}
+        alignItems='center'
+        w={['100%', 'unset']}
+        flex={[1, 'unset']}
+        p={[0.5, 2]}
+        {...props}
+      >
+        <AccessBadge
+          w={['100%', 'unset']}
+          conditionsOfAccess={conditionsOfAccess}
+        >
+          {conditionsOfAccess}
+        </AccessBadge>
+      </Flex>
+    );
+  };
   return (
     <Card variant='colorful'>
       {/* Card header where name of resource is a link to resource apge */}
@@ -151,10 +172,13 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
         startColor='primary.50'
         endColor='primary.100'
       >
-        <Flex flexDirection={['row']}>
+        <Flex
+          flexDirection={['column-reverse', 'row']}
+          flexWrap={['wrap-reverse', 'wrap']}
+          w='100%'
+        >
           {author && (
             <ToggleContainer
-              variant='border'
               ariaLabel='Show all authors.'
               noOfLines={1}
               justifyContent='start'
@@ -162,6 +186,8 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
               px={paddingCard}
               py={2}
               flex={1}
+              w='100%'
+              border='none'
               _focus={{outlineColor: 'transparent'}}
             >
               <Text fontSize='xs' color='text.body'>
@@ -169,24 +195,14 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
               </Text>
             </ToggleContainer>
           )}
-          {conditionsOfAccess && (
-            <Box
-              d={['inline-flex', 'block']}
-              justifyContent={['end']}
-              alignContent='center'
-              m={1}
-            >
-              <AccessBadge conditionsOfAccess={conditionsOfAccess}>
-                {conditionsOfAccess}
-              </AccessBadge>
-            </Box>
-          )}
+          <ConditionsOfAccess />
         </Flex>
 
         {/* Banner with resource type + date of publication */}
         <TypeBanner
           type={type}
           pl={[2, 4, 6]}
+          flexDirection={['column', 'row']}
           datePublished={(() => {
             if (datePublished) {
               return `Published on ${formatDate(datePublished)}`;
@@ -195,9 +211,11 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
               return ` Published on ${formatDate(date)}`;
             }
           })()}
-        />
+        ></TypeBanner>
+
         <>
           <CardBody>
+            {/* Description Text */}
             <ToggleContainer
               ariaLabel='show more description'
               noOfLines={[3, 10]}
@@ -219,25 +237,159 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
               ></Box>
             </ToggleContainer>
 
-            {doi && (
+            {/* Details expandable drawer */}
+            {license || measurementTechnique || variableMeasured ? (
+              <Accordion allowToggle p={0} pt={1}>
+                <AccordionItem>
+                  {({isExpanded}) => (
+                    <>
+                      <h2>
+                        <AccordionButton
+                          px={paddingCard}
+                          bg={isExpanded ? 'status.info_lt' : 'white'}
+                          _hover={{bg: 'status.info_lt'}}
+                          aria-label='show more details about dataset'
+                        >
+                          <Box flex='1' textAlign='left'>
+                            <Heading fontSize='h6' fontWeight='semibold'>
+                              Details
+                            </Heading>
+                          </Box>
+                          <Icon
+                            as={isExpanded ? FaMinus : FaPlus}
+                            fontSize='xs'
+                          />
+                        </AccordionButton>
+                      </h2>
+                      <AccordionPanel w='100%' px={paddingCard}>
+                        <UnorderedList ml={0}>
+                          {license && (
+                            <ListItem>
+                              <Stat my={2}>
+                                <StatLabel color='gray.700'>License</StatLabel>
+                                <dd>
+                                  {licenseInfo && (
+                                    <>
+                                      {licenseInfo?.img && (
+                                        <Image
+                                          src={`${assetPrefix}${licenseInfo.img}`}
+                                          alt={licenseInfo.type}
+                                        />
+                                      )}
+                                      {licenseInfo?.url ? (
+                                        <Link href={licenseInfo.url} isExternal>
+                                          {licenseInfo.title}
+                                        </Link>
+                                      ) : (
+                                        licenseInfo?.title
+                                      )}
+                                    </>
+                                  )}
+                                </dd>
+                              </Stat>
+                            </ListItem>
+                          )}
+                          {/* Measurement techniques*/}
+                          {measurementTechnique && (
+                            <ListItem>
+                              <Stat my={2}>
+                                <StatLabel color='gray.700'>
+                                  Measurement Technique
+                                </StatLabel>
+                                <dd>
+                                  <UnorderedList ml={0}>
+                                    {measurementTechnique.map((m, i) => {
+                                      const MeasurementTechniqueLabel = () => (
+                                        <Text fontWeight='semibold'>
+                                          {m.name}
+                                        </Text>
+                                      );
+
+                                      return (
+                                        <ListItem key={`${m.name}-${i}`}>
+                                          {m.url ? (
+                                            <Link href={m.url} isExternal>
+                                              <MeasurementTechniqueLabel />
+                                            </Link>
+                                          ) : (
+                                            <MeasurementTechniqueLabel />
+                                          )}
+                                        </ListItem>
+                                      );
+                                    })}
+                                  </UnorderedList>
+                                </dd>
+                              </Stat>
+                            </ListItem>
+                          )}
+                          {variableMeasured && (
+                            <ListItem>
+                              <Stat my={2}>
+                                <StatLabel color='gray.700'>
+                                  Variable Measured
+                                </StatLabel>
+                                <dd>
+                                  <Text fontWeight='semibold'>
+                                    {variableMeasured}
+                                  </Text>
+                                </dd>
+                              </Stat>
+                            </ListItem>
+                          )}
+                        </UnorderedList>
+                      </AccordionPanel>
+                    </>
+                  )}
+                </AccordionItem>
+              </Accordion>
+            ) : (
+              <Divider p={0} />
+            )}
+
+            {/* Source Repository Link + Altmetric badge */}
+
+            {(doi || includedInDataCatalog?.name) && (
               <Flex
                 px={paddingCard}
-                py={1}
+                py={{base: 2, md: 4}}
                 my={0}
-                flexDirection={['column', 'row']}
+                flexDirection='row'
+                flexWrap='wrap'
                 alignItems='end'
               >
-                {imageURL && (
-                  <Image
-                    h='40px'
-                    mr={2}
-                    mb={[2, 2, 0]}
-                    src={`${assetPrefix}${imageURL}`}
-                    alt='Data source name'
-                  ></Image>
+                {includedInDataCatalog?.name && (
+                  <Box minW={['250px']} mb={[2, 2, 0]}>
+                    {imageURL && (
+                      <Image
+                        h='40px'
+                        mr={2}
+                        src={`${assetPrefix}${imageURL}`}
+                        alt='Data source name'
+                      ></Image>
+                    )}
+                    {url || includedInDataCatalog.url ? (
+                      <Link
+                        href={url! || includedInDataCatalog.url!}
+                        isExternal
+                      >
+                        <Text fontSize={'xs'}>
+                          Provided by {includedInDataCatalog.name}
+                        </Text>
+                      </Link>
+                    ) : (
+                      <Text fontSize={'xs'}>
+                        Provided by {includedInDataCatalog.name}
+                      </Text>
+                    )}
+                  </Box>
                 )}
                 {doi && (
-                  <>
+                  <Flex
+                    flex={1}
+                    mt={[2, 2, 0]}
+                    flexDirection='column'
+                    alignItems={['start', 'end']}
+                  >
                     <Text
                       fontSize='xs'
                       my={0}
@@ -257,113 +409,12 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                       className='altmetric-embed'
                       data-link-target='blank'
                     ></div>
-                  </>
+                  </Flex>
                 )}
               </Flex>
             )}
           </CardBody>
         </>
-        {license || measurementTechnique || variableMeasured ? (
-          <Accordion allowToggle p={0} pt={1}>
-            <AccordionItem>
-              {({isExpanded}) => (
-                <>
-                  <h2>
-                    <AccordionButton
-                      px={paddingCard}
-                      bg={isExpanded ? 'blackAlpha.100' : 'white'}
-                      aria-label='show more details about dataset'
-                    >
-                      <Box flex='1' textAlign='left'>
-                        <Heading fontSize='h6' fontWeight='semibold'>
-                          Details
-                        </Heading>
-                      </Box>
-                      <Icon as={isExpanded ? FaMinus : FaPlus} fontSize='xs' />
-                    </AccordionButton>
-                  </h2>
-                  <AccordionPanel w='100%' px={paddingCard}>
-                    <UnorderedList ml={0}>
-                      {license && (
-                        <ListItem>
-                          <Stat my={2}>
-                            <StatLabel color='gray.700'>License</StatLabel>
-                            <dd>
-                              {licenseInfo && (
-                                <>
-                                  {licenseInfo?.img && (
-                                    <Image
-                                      src={`${assetPrefix}${licenseInfo.img}`}
-                                      alt={licenseInfo.type}
-                                    />
-                                  )}
-                                  {licenseInfo?.url ? (
-                                    <Link href={licenseInfo.url} isExternal>
-                                      {licenseInfo.title}
-                                    </Link>
-                                  ) : (
-                                    licenseInfo?.title
-                                  )}
-                                </>
-                              )}
-                            </dd>
-                          </Stat>
-                        </ListItem>
-                      )}
-                      {/* Measurement techniques*/}
-                      {measurementTechnique && (
-                        <ListItem>
-                          <Stat my={2}>
-                            <StatLabel color='gray.700'>
-                              Measurement Technique
-                            </StatLabel>
-                            <dd>
-                              <UnorderedList ml={0}>
-                                {measurementTechnique.map((m, i) => {
-                                  const MeasurementTechniqueLabel = () => (
-                                    <Text fontWeight='semibold'>{m.name}</Text>
-                                  );
-
-                                  return (
-                                    <ListItem key={`${m.name}-${i}`}>
-                                      {m.url ? (
-                                        <Link href={m.url} isExternal>
-                                          <MeasurementTechniqueLabel />
-                                        </Link>
-                                      ) : (
-                                        <MeasurementTechniqueLabel />
-                                      )}
-                                    </ListItem>
-                                  );
-                                })}
-                              </UnorderedList>
-                            </dd>
-                          </Stat>
-                        </ListItem>
-                      )}
-                      {variableMeasured && (
-                        <ListItem>
-                          <Stat my={2}>
-                            <StatLabel color='gray.700'>
-                              Variable Measured
-                            </StatLabel>
-                            <dd>
-                              <Text fontWeight='semibold'>
-                                {variableMeasured}
-                              </Text>
-                            </dd>
-                          </Stat>
-                        </ListItem>
-                      )}
-                    </UnorderedList>
-                  </AccordionPanel>
-                </>
-              )}
-            </AccordionItem>
-          </Accordion>
-        ) : (
-          <Divider p={0} />
-        )}
       </Skeleton>
       <Skeleton
         isLoaded={!isLoading}
@@ -377,70 +428,31 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
           justifyContent='space-between'
           alignItems='center'
           flexWrap='wrap'
-          bg='white'
+          bg='page.alt'
           px={paddingCard}
           py={2}
         >
-          <Flex
-            alignItems='end'
-            justifyContent='space-between'
-            py={1}
-            w='100%'
-            flexDirection={['column', 'row']}
-            flexWrap='wrap'
-            flex={1}
-          >
-            {includedInDataCatalog?.name && (
-              <Flex
-                flexDirection={['column', 'row']}
-                alignItems={['start', 'center']}
-                flexWrap='wrap'
-                flex={1}
-                w={['100%', 'unset']}
-                m={0.5}
+          {id && (
+            <Flex w='100%' justifyContent='end'>
+              <NextLink
+                href={{
+                  pathname: '/resources/',
+                  query: {id},
+                }}
+                passHref
               >
                 <Button
-                  w={['100%', 'unset']}
-                  // minW='250px'
-                  maxW={{xl: '400px'}}
-                  // imageURL={imageURL || undefined}
-                  // alt='Data source name'
-                  href={url || undefined}
-                  isExternal
-                  variant='outline'
-                  colorScheme='primary'
-                  aria-label={`View in source repository resource ${name}`}
-                  flex={1}
-                  whiteSpace='normal'
+                  maxW={{xl: '230px'}}
+                  w='100%'
+                  rightIcon={<FaArrowAltCircleRight />}
+                  aria-label={`Go to details about resource ${name}`}
                 >
-                  {includedInDataCatalog.name || undefined}
+                  See more
+                  <VisuallyHidden> details about the dataset</VisuallyHidden>
                 </Button>
-              </Flex>
-            )}
-
-            {id && (
-              <Flex flex={1} justifyContent='end' w={['100%', 'unset']} m={0.5}>
-                <NextLink
-                  href={{
-                    pathname: '/resources/',
-                    query: {id},
-                  }}
-                  passHref
-                >
-                  <Button
-                    w={['100%', 'unset']}
-                    maxW={{xl: '400px'}}
-                    flex={1}
-                    rightIcon={<FaArrowAltCircleRight />}
-                    aria-label={`Go to details about resource ${name}`}
-                  >
-                    See more
-                    <VisuallyHidden> details about the dataset</VisuallyHidden>
-                  </Button>
-                </NextLink>
-              </Flex>
-            )}
-          </Flex>
+              </NextLink>
+            </Flex>
+          )}
         </CardFooter>
       </Skeleton>
     </Card>

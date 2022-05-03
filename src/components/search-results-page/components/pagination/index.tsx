@@ -41,7 +41,6 @@ export const Pagination: React.FC<PaginationProps> = ({
 }) => {
   const total_pages = Math.ceil(total / selectedPerPage);
 
-  console.log('total', total_pages);
   if (!total_pages) {
     return null;
   }
@@ -117,6 +116,7 @@ export const Pagination: React.FC<PaginationProps> = ({
             onChange={e => handleSelectedPage(+e.target.value)}
             size='lg'
             cursor='pointer'
+            value={selectedPage}
           >
             {Array(total_pages)
               .fill('')

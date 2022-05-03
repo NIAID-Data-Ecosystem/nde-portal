@@ -127,7 +127,7 @@ export const Filters: React.FC<Filters> = ({
   const content = (
     <>
       <Flex justifyContent='space-between' px={4} py={4} alignItems='center'>
-        <Heading size='md' fontWeight='semibold' py={[4, 4, 0]}>
+        <Heading size='sm' fontWeight='semibold' py={[4, 4, 0]}>
           Filters
         </Heading>
 
@@ -137,9 +137,9 @@ export const Filters: React.FC<Filters> = ({
           variant='outline'
           size='sm'
           onClick={removeAllFilters}
-          isDisabled={!!removeAllFilters}
+          isDisabled={!removeAllFilters}
         >
-          clear all
+          Clear All
         </Button>
       </Flex>
       {error ? (

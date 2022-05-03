@@ -17,6 +17,7 @@ import {
 } from 'nde-design-system';
 import {filterFilterList} from '../helpers';
 import {formatNumber} from 'src/utils/helpers';
+import {FaMinus, FaPlus} from 'react-icons/fa';
 
 const FilterItem = ({
   term,
@@ -95,88 +96,98 @@ export const Filter: React.FC<FilterProps> = ({
   }, [numItems]);
 
   return (
-    <AccordionItem>
-      <h2>
-        <AccordionButton
-          borderLeft='4px solid'
-          borderColor='gray.200'
-          py={4}
-          transition='all 0.2s linear'
-          _expanded={{
-            borderColor: 'accent.bg',
-            py: 2,
-            transition: 'all 0.2s linear',
-          }}
-        >
-          {/* Filter Name */}
-          <Box flex='1' textAlign='left'>
-            <Heading size='sm' fontWeight='semibold'>
-              {name}
-            </Heading>
-          </Box>
-          <AccordionIcon />
-        </AccordionButton>
-      </h2>
-      <AccordionPanel
-        px={2}
-        py={4}
-        borderLeft='4px solid'
-        borderColor='accent.bg'
-      >
-        {/* Search through the filters */}
-        <SearchInput
-          ariaLabel={`Search filter ${name} terms`}
-          maxW='unset'
-          size='md'
-          placeholder={`Search ${name.toLowerCase()} filters`}
-          value={searchTerm}
-          handleChange={handleSearchChange}
-          colorScheme='primary'
-        />
-        <Box
-          ref={ref}
-          w='100%'
-          maxH='250px'
-          overflowY='auto'
-          style={{scrollBehavior: 'smooth'}}
-          my={4}
-        >
-          {/* List of filters available */}
-          <UnorderedList direction='column' ml={0} my={2}>
-            <CheckboxGroup
-              value={selectedFilters}
-              onChange={handleSelectedFilters}
+    <AccordionItem borderColor={'page.alt'} borderTopWidth='2px'>
+      {({isExpanded}) => (
+        <>
+          <h2>
+            <AccordionButton
+              borderLeft='4px solid'
+              borderColor='gray.200'
+              py={4}
+              transition='all 0.2s linear'
+              _expanded={{
+                borderColor: 'accent.bg',
+                py: 2,
+                transition: 'all 0.2s linear',
+              }}
             >
-              {items?.length === 0 && (
-                <ListItem p={2} py={1}>
-                  <Text>No filters available.</Text>
-                </ListItem>
+              {/* Filter Name */}
+              <Box flex='1' textAlign='left'>
+                <Heading size='sm' fontWeight='semibold'>
+                  {name}
+                </Heading>
+              </Box>
+              {isExpanded ? (
+                <FaMinus fontSize='12px' />
+              ) : (
+                <FaPlus fontSize='12px' />
               )}
-              {items?.map(({term, count}) => {
-                return (
-                  <ListItem key={term} p={2} py={1}>
-                    <FilterItem term={term} count={count} />
-                  </ListItem>
-                );
-              })}
-            </CheckboxGroup>
-          </UnorderedList>
-        </Box>
+              {/* <AccordionIcon /> */}
+            </AccordionButton>
+          </h2>
 
-        {hasMore && items.length !== 0 && (
-          <ListItem d='flex' justifyContent='center' borderColor='gray.200'>
-            <Button
-              variant='link'
-              color='link.color'
-              isDisabled={!hasMore}
-              size='sm'
-              onClick={() => setNumItems(numItems + 5)}
+          <AccordionPanel
+            px={2}
+            py={4}
+            borderLeft='4px solid'
+            borderColor='accent.bg'
+          >
+            {/* Search through the filters */}
+            <SearchInput
+              ariaLabel={`Search filter ${name} terms`}
+              maxW='unset'
+              size='md'
+              placeholder={`Search ${name.toLowerCase()} filters`}
+              value={searchTerm}
+              handleChange={handleSearchChange}
+              colorScheme='primary'
+            />
+            <Box
+              ref={ref}
+              w='100%'
+              maxH='250px'
+              overflowY='auto'
+              style={{scrollBehavior: 'smooth'}}
+              my={4}
             >
-              (show more...)
-            </Button>
-          </ListItem>
-        )}
-      </AccordionPanel>
+              {/* List of filters available */}
+              <UnorderedList direction='column' ml={0} my={2}>
+                <CheckboxGroup
+                  value={selectedFilters}
+                  onChange={handleSelectedFilters}
+                >
+                  {items?.length === 0 && (
+                    <ListItem p={2} py={1}>
+                      <Text>No filters available.</Text>
+                    </ListItem>
+                  )}
+                  {items?.map(({term, count}) => {
+                    return (
+                      <ListItem key={term} p={2} py={1}>
+                        <FilterItem term={term} count={count} />
+                      </ListItem>
+                    );
+                  })}
+                </CheckboxGroup>
+              </UnorderedList>
+            </Box>
+
+            {hasMore && items.length !== 0 && (
+              <ListItem d='flex' justifyContent='center' borderColor='gray.200'>
+                <Button
+                  variant='link'
+                  color='link.color'
+                  isDisabled={!hasMore}
+                  size='sm'
+                  onClick={() => setNumItems(numItems + 5)}
+                >
+                  (show more...)
+                </Button>
+              </ListItem>
+            )}
+          </AccordionPanel>
+        </>
+      )}
     </AccordionItem>
   );
 };

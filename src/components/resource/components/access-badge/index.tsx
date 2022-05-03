@@ -1,11 +1,11 @@
 import React from 'react';
-import {Badge, Icon} from 'nde-design-system';
+import {Badge, BoxProps, Icon} from 'nde-design-system';
 import {FormattedResource} from 'src/utils/api/types';
 import {FaLockOpen, FaLock} from 'react-icons/fa';
 
 // Component Info: Badge displaying the level of access from the dataset
 
-interface AccessBadgeProps {
+interface AccessBadgeProps extends BoxProps {
   conditionsOfAccess?: FormattedResource['conditionsOfAccess'];
   children: React.ReactNode;
 }

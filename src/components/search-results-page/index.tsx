@@ -278,7 +278,9 @@ const SearchResultsPage = () => {
                 facets={{isLoading: isLoading, data: data?.facets}}
                 selectedFilters={selectedFilters}
                 removeAllFilters={
-                  applied_filters.length === 0 ? removeAllFilters : undefined
+                  applied_filters.length > 0
+                    ? () => removeAllFilters()
+                    : undefined
                 }
                 handleSelectedFilters={(
                   updatedFilters: typeof selectedFilters,
@@ -339,30 +341,25 @@ const SearchResultsPage = () => {
                       </Button>
                     </Empty>
                   )}
-                  <Box flex={3}>
-                    <UnorderedList ml={0}>
-                      {isLoading || (data && data.results?.length > 0)
-                        ? new Array(selectedPerPage).fill(null).map((_, i) => {
-                            const result: FormattedResource | null =
-                              data?.results && data.results.length > 0
-                                ? data.results[i]
-                                : null;
+                  <UnorderedList ml={0} flex={3} w={'100%'}>
+                    {isLoading || (data && data.results?.length > 0)
+                      ? new Array(selectedPerPage).fill(null).map((_, i) => {
+                          const result: FormattedResource | null =
+                            data?.results && data.results.length > 0
+                              ? data.results[i]
+                              : null;
 
-                            // if waiting for results to load display placeholder loading cards until content is available
-                            if (result || isLoading) {
-                              return (
-                                <ListItem key={i} my={4} mb={8}>
-                                  <Card
-                                    isLoading={isLoading}
-                                    {...result}
-                                  ></Card>
-                                </ListItem>
-                              );
-                            }
-                          })
-                        : null}
-                    </UnorderedList>
-                  </Box>
+                          // if waiting for results to load display placeholder loading cards until content is available
+                          if (result || isLoading) {
+                            return (
+                              <ListItem key={i} my={4} mb={8}>
+                                <Card isLoading={isLoading} {...result}></Card>
+                              </ListItem>
+                            );
+                          }
+                        })
+                      : null}
+                  </UnorderedList>
                 </Stack>
                 <Pagination
                   selectedPage={selectedPage}
