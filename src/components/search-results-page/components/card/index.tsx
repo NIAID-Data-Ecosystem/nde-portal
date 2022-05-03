@@ -299,14 +299,18 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                                 <dd>
                                   <UnorderedList ml={0}>
                                     {measurementTechnique.map((m, i) => {
+                                      const name = Array.isArray(m.name)
+                                        ? m.name.join(', ')
+                                        : m.name;
+
                                       const MeasurementTechniqueLabel = () => (
                                         <Text fontWeight='semibold'>
-                                          {m.name}
+                                          {name}
                                         </Text>
                                       );
 
                                       return (
-                                        <ListItem key={`${m.name}-${i}`}>
+                                        <ListItem key={`${name}-${i}`}>
                                           {m.url ? (
                                             <Link href={m.url} isExternal>
                                               <MeasurementTechniqueLabel />

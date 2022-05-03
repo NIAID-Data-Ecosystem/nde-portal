@@ -130,7 +130,7 @@ export interface Publisher {
 }
 
 export interface PropertyNameWithURL {
-  name?: string;
+  name?: string | string[];
   url?: string;
 }
 

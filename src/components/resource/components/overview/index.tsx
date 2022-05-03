@@ -189,14 +189,16 @@ const Overview: React.FC<Overview> = ({
           <StatField isLoading={isLoading} {...getStatInfo('species')}>
             <UnorderedList ml={0}>
               {species.map((m, i) => {
+                const name = Array.isArray(m.name) ? m.name.join(', ') : m.name;
+
                 return (
-                  <ListItem key={`${m.name}-${i}`}>
+                  <ListItem key={`${name}-${i}`}>
                     {m.url ? (
                       <Link href={m.url} isExternal>
-                        {m.name}
+                        {name}
                       </Link>
                     ) : (
-                      m.name
+                      name
                     )}
                   </ListItem>
                 );
@@ -217,14 +219,16 @@ const Overview: React.FC<Overview> = ({
           <StatField isLoading={isLoading} {...getStatInfo('infectiousAgent')}>
             <UnorderedList ml={0}>
               {infectiousAgent.map((m, i) => {
+                const name = Array.isArray(m.name) ? m.name.join(', ') : m.name;
+
                 return (
-                  <ListItem key={`${m.name}-${i}`}>
+                  <ListItem key={`${name}-${i}`}>
                     {m.url ? (
                       <Link href={m.url} isExternal>
-                        {m.name}
+                        {name}
                       </Link>
                     ) : (
-                      m.name
+                      name
                     )}
                   </ListItem>
                 );
@@ -241,14 +245,16 @@ const Overview: React.FC<Overview> = ({
           >
             <UnorderedList ml={0}>
               {infectiousDisease.map((m, i) => {
+                const name = Array.isArray(m.name) ? m.name.join(', ') : m.name;
+
                 return (
-                  <ListItem key={`${m.name}-${i}`}>
+                  <ListItem key={`${name}-${i}`}>
                     {m.url ? (
                       <Link href={m.url} isExternal>
-                        {m.name}
+                        {name}
                       </Link>
                     ) : (
-                      m.name
+                      name
                     )}
                   </ListItem>
                 );
@@ -279,14 +285,15 @@ const Overview: React.FC<Overview> = ({
           >
             <UnorderedList ml={0}>
               {measurementTechnique.map((m, i) => {
+                const name = Array.isArray(m.name) ? m.name.join(', ') : m.name;
                 return (
-                  <ListItem key={`${m.name}-${i}`}>
+                  <ListItem key={`${name}-${i}`}>
                     {m.url ? (
                       <Link href={m.url} isExternal>
-                        {m.name}
+                        {name}
                       </Link>
                     ) : (
-                      m.name
+                      name
                     )}
                   </ListItem>
                 );
