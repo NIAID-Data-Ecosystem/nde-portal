@@ -36,12 +36,6 @@
       "isCollapsible": true
     },
     {
-      "title": "Metadata",
-      "hash": "metadata",
-      "metadataProperties": ["rawData"],
-      "isCollapsible": true
-    },
-    {
       "title": "Provenance",
       "hash": "provenance",
       "metadataProperties": ["includedInDataCatalog", "url"],
@@ -65,6 +59,12 @@
       "title": "Cited By",
       "hash": "citedBy",
       "metadataProperties": ["citedBy"],
+      "isCollapsible": true
+    },
+    {
+      "title": "Metadata",
+      "hash": "metadata",
+      "metadataProperties": ["rawData"],
       "isCollapsible": true
     }
   ]
