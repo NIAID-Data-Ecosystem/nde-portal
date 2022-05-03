@@ -133,9 +133,8 @@ const SearchResultsPage = () => {
     // Don't refresh everytime window is touched.
     {refetchOnWindowFocus: false},
   );
-  console.log(data);
-  // Set initial state based on route params.
 
+  // Set initial state based on route params.
   useEffect(() => {
     const {q, size, filters, from, sort} = router.query;
     setQueryString(prev => {

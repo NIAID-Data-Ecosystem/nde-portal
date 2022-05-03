@@ -7,12 +7,12 @@ import {StyledLabel} from './styles';
 
 interface TypeBannerProps extends FlexProps {
   type?: FormattedResource['type'];
-  datePublished?: FormattedResource['datePublished'];
+  date?: FormattedResource['date'];
 }
 
 const TypeBanner: React.FC<TypeBannerProps> = ({
   type,
-  datePublished,
+  date,
   children,
   pl,
   ...props
@@ -51,11 +51,11 @@ const TypeBanner: React.FC<TypeBannerProps> = ({
         )}
       </Flex>
       <Flex bg='status.info_lt' overflow='hidden' flex={1} minW='250px'>
-        {datePublished && (
+        {date && (
           <Flex alignItems='center' px={{base: 2, lg: 4}} py={[2, 1]}>
             <Icon as={FaRegClock} mr={2}></Icon>
             <Text fontSize='xs' fontWeight='semibold' whiteSpace='nowrap'>
-              Published on {formatDate(datePublished)}
+              {formatDate(date)}
             </Text>
           </Flex>
         )}

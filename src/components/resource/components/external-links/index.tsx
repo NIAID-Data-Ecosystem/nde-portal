@@ -36,7 +36,12 @@ const ExternalLinks: React.FC<ExternalLinks> = ({
     return null;
   }
   return (
-    <Skeleton isLoaded={!isLoading} p={[4]}>
+    <Skeleton
+      isLoaded={!isLoading}
+      p={[4]}
+      borderTopWidth={['2px', '2px', 0]}
+      borderColor='page.alt'
+    >
       <Flex direction='column'>
         {includedInDataCatalog?.name && (
           <Flex
@@ -48,15 +53,15 @@ const ExternalLinks: React.FC<ExternalLinks> = ({
             p={2}
             flex={1}
           >
-            <Text color='gray.800' fontWeight='semibold' w='100%'>
+            {/* <Text color='gray.800' fontWeight='semibold' w='100%'>
               Provided by
-            </Text>
+            </Text> */}
             <ExternalSourceButton
               w='100%'
               alt='Data source name'
               imageURL={imageURL || undefined}
-              imageProps={{my: 2}}
-              name={includedInDataCatalog.name || undefined}
+              imageProps={{mb: 4}}
+              name={`View in ${includedInDataCatalog.name}` || undefined}
               href={url || undefined}
             />
           </Flex>

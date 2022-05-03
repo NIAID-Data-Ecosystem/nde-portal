@@ -1,9 +1,9 @@
 import React from 'react';
-import {Button, ButtonProps, Image, Text} from 'nde-design-system';
+import {Button, LinkProps, Image, Link, Text} from 'nde-design-system';
 import {ImageProps} from '@chakra-ui/image';
 import {assetPrefix} from 'next.config';
 
-interface ExternalButtonProps extends ButtonProps {
+interface ExternalButtonProps extends LinkProps {
   imageURL?: string | null;
   alt: string;
   imageProps?: ImageProps;
@@ -37,20 +37,9 @@ export const ExternalSourceButton: React.FC<ExternalButtonProps> = ({
         </Text>
       )}
       {href && (
-        <Button
-          isExternal
-          href={href}
-          variant='outline'
-          colorScheme='primary'
-          // my={1}
-          flex={1}
-          whiteSpace='normal'
-          // size='md'
-          // aria-label={ariaLabel}
-          {...props}
-        >
+        <Link isExternal href={href} flex={1} whiteSpace='normal' {...props}>
           {name}
-        </Button>
+        </Link>
       )}
     </>
   );

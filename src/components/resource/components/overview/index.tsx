@@ -43,6 +43,7 @@ const Overview: React.FC<Overview> = ({
   nctid,
   numberOfDownloads,
   numberOfViews,
+  pmid,
   spatialCoverage,
   species,
   temporalCoverage,
@@ -75,32 +76,27 @@ const Overview: React.FC<Overview> = ({
             borderColor='gray.100'
           >
             {/* Altmetric Badge */}
-            {(doi || nctid) && (
+            {(doi || nctid || pmid) && (
               <StatField
                 isLoading={false}
                 {...getStatInfo('Altmetric Rating')}
                 d='flex'
                 justifyContent='center'
+                mr={2}
               >
                 <Flex alignItems='center' direction='column'>
-                  {doi && (
+                  {(doi || nctid || pmid) && (
                     <div
                       data-badge-popover='right'
                       data-badge-type='donut'
-                      data-doi={formatDOI(doi)}
-                      className='altmetric-embed'
-                      data-link-target='blank'
-                    ></div>
-                  )}
-                  {!doi && nctid && (
-                    <div
-                      data-badge-popover='right'
-                      data-badge-type='donut'
+                      data-doi={doi && formatDOI(doi)}
                       data-nct-id={nctid}
+                      data-pmid={pmid}
                       className='altmetric-embed'
                       data-link-target='blank'
                     ></div>
                   )}
+
                   <Link
                     fontSize={'xs'}
                     href={

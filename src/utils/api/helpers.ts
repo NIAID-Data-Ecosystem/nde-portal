@@ -84,6 +84,8 @@ interface APIFunding {
   '@type'?: string;
   funder?: Funder;
   identifier?: string | null;
+  description?: string | null;
+  url?: string | null;
 }
 
 export const formatFunding = (fundingData?: APIFunding | APIFunding[]) => {
@@ -104,6 +106,8 @@ export const formatFunding = (fundingData?: APIFunding | APIFunding[]) => {
           }
         : null,
       identifier: data.identifier || null,
+      description: data.description || null,
+      url: data.url || null,
     };
   };
 
@@ -174,6 +178,7 @@ export const formatType = (type: string | null): ResourceType | null => {
 
 export const formatAPIResource = (data: any) => {
   const formattedResource: FormattedResource = {
+    ...data,
     id: data._id,
     type: formatType(data['@type']),
     name: data.name || null,
@@ -234,9 +239,9 @@ export const formatAPIResource = (data: any) => {
         : [data.measurementTechnique]
       : null,
     nctid: data['nctid'] || null,
-
     numberOfDownloads: data.numberOfDownloads || null,
     numberOfViews: data.numberOfViews || null,
+    pmid: data['pmid'] || null,
     publisher: data.publisher || null,
     rawData: data,
     sameAs: data.sameAs || null,

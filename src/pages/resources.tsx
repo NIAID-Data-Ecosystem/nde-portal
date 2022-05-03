@@ -162,7 +162,12 @@ const SectionContent = ({
         isLoading={isLoading}
         // @ts-ignore
         // [TO DO ]: create generic table component.
-        distribution={data?.funding?.map(f => f.funder)}
+        distribution={data?.funding?.map(f => ({
+          id: f.identifier,
+          description: f.description,
+          url: f.url,
+          ...f.funder,
+        }))}
         {...sectionData}
       />
     );
@@ -233,7 +238,7 @@ const ResourcePage: NextPage = props => {
       document.body.appendChild(altmetricsScript);
     }
   }, [data]);
-
+  console.log('Data:', data);
   if (!id) {
     return <></>;
   }
@@ -256,7 +261,7 @@ const ResourcePage: NextPage = props => {
             // [EMPTY STATE]: No Results
             <EmptyState />
           ) : (
-            <Flex w='100%' h='100%' flexDirection='column' minW={300}>
+            <Flex w='100%' h='100%' flexDirection='column' minW={150}>
               <Flex
                 height='100%'
                 p={2}
@@ -267,7 +272,7 @@ const ResourcePage: NextPage = props => {
                   p={0}
                   width='100%'
                   sx={{'>*': {p: 0}}}
-                  minW={500}
+                  minW={150}
                 >
                   <Section id={'header'} p={0}>
                     <ResourceHeader
@@ -278,10 +283,7 @@ const ResourcePage: NextPage = props => {
                       name={data?.name}
                     />
                     {/* Banner showing data type and publish date. */}
-                    <TypeBanner
-                      type={data?.type}
-                      datePublished={data?.datePublished}
-                    />
+                    <TypeBanner type={data?.type} date={data?.date} />
                   </Section>
                   {SectionsConfig.routes.map(route => {
                     const section = route as {

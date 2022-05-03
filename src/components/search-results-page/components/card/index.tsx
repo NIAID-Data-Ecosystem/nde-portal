@@ -203,12 +203,12 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
           type={type}
           pl={[2, 4, 6]}
           flexDirection={['column', 'row']}
-          datePublished={(() => {
+          date={(() => {
             if (datePublished) {
               return `Published on ${formatDate(datePublished)}`;
             }
             if (!datePublished && date) {
-              return ` Published on ${formatDate(date)}`;
+              return `${formatDate(date)}`;
             }
           })()}
         ></TypeBanner>
