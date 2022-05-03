@@ -8,6 +8,7 @@ interface ExternalButtonProps extends ButtonProps {
   alt: string;
   imageProps?: ImageProps;
   ariaLabel?: string;
+  name?: string;
 }
 export const ExternalSourceButton: React.FC<ExternalButtonProps> = ({
   name,
@@ -41,11 +42,11 @@ export const ExternalSourceButton: React.FC<ExternalButtonProps> = ({
           href={href}
           variant='outline'
           colorScheme='primary'
-          my={1}
+          // my={1}
           flex={1}
           whiteSpace='normal'
-          size='md'
-          aria-label={ariaLabel}
+          // size='md'
+          // aria-label={ariaLabel}
           {...props}
         >
           {name}

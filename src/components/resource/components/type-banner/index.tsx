@@ -19,13 +19,7 @@ const TypeBanner: React.FC<TypeBannerProps> = ({
 }) => {
   return (
     <Flex flexWrap='wrap' {...props}>
-      <Flex
-        bg='status.info_lt'
-        pl={pl}
-        py={0}
-        overflow='hidden'
-        w={['100%', 'unset']}
-      >
+      <Flex bg='status.info_lt' pl={pl} py={0} overflow='hidden' w='100%'>
         {type && (
           <StyledLabel
             _before={{
@@ -49,24 +43,26 @@ const TypeBanner: React.FC<TypeBannerProps> = ({
           </StyledLabel>
         )}
       </Flex>
-      <Flex
-        bg='status.info_lt'
-        py={1}
-        overflow='hidden'
-        w={['100%', 'unset']}
-        flex={['unset', 1]}
-        px={4}
-      >
-        {datePublished && (
-          <Flex alignItems='center'>
-            <Icon as={FaRegClock} mr={2}></Icon>
-            <Text fontSize='xs' fontWeight='semibold'>
-              Published on {formatDate(datePublished)}
-            </Text>
-          </Flex>
-        )}
-        {children}
-      </Flex>
+      {(datePublished || children) && (
+        <Flex
+          bg='status.info_lt'
+          py={1}
+          overflow='hidden'
+          w={['100%', 'unset']}
+          flex={['unset', 1]}
+          px={4}
+        >
+          {datePublished && (
+            <Flex alignItems='center'>
+              <Icon as={FaRegClock} mr={2}></Icon>
+              <Text fontSize='xs' fontWeight='semibold'>
+                Published on {formatDate(datePublished)}
+              </Text>
+            </Flex>
+          )}
+          {children}
+        </Flex>
+      )}
     </Flex>
   );
 };

@@ -133,7 +133,7 @@ const SearchResultsPage = () => {
     // Don't refresh everytime window is touched.
     {refetchOnWindowFocus: false},
   );
-
+  console.log(data);
   // Set initial state based on route params.
 
   useEffect(() => {
@@ -272,7 +272,7 @@ const SearchResultsPage = () => {
                 });
               }}
             ></FilterTags>
-            <Flex>
+            <Flex w='100%'>
               <Filters
                 searchTerm={queryString}
                 facets={{isLoading: isLoading, data: data?.facets}}
@@ -293,7 +293,7 @@ const SearchResultsPage = () => {
                   });
                 }}
               />
-              <Flex flexDirection={'column'} mx={[0, 0, 4]} flex={1}>
+              <Flex w='100%' flexDirection={'column'} mx={[0, 0, 4]} flex={1}>
                 <DisplayResults
                   sortOptions={sort_options}
                   sortOrder={sortOrder}

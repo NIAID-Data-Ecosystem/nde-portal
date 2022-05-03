@@ -1,17 +1,10 @@
-import {useEffect, useRef, useState} from 'react';
-import {
-  Box,
-  Flex,
-  Footer,
-  FlexProps,
-  Navigation,
-  useDimensions,
-} from 'nde-design-system';
+import {useRef} from 'react';
+import {Box, Flex, Footer, FlexProps, Navigation} from 'nde-design-system';
 import navItems from 'configs/nav.json';
 import footerItems from 'configs/footer.json';
 import Head from 'next/head';
 import Notice from './notice';
-import {assetPrefix, basePath} from 'next.config';
+import {basePath} from 'next.config';
 
 interface PageContainerProps extends FlexProps {
   hasNavigation?: boolean;
@@ -49,10 +42,6 @@ export const PageContainer: React.FC<PageContainerProps> = ({
       <Head>
         <title>NDE Portal {title && ` | ${title}`}</title>
         <meta name='description' content={metaDescription} />
-        <meta
-          name='viewport'
-          content='width=device-width, initial-scale=1.0'
-        ></meta>
       </Head>
 
       <Flex as={'main'} w={'100%'} flexDirection={'column'} minW={300}>
@@ -61,7 +50,8 @@ export const PageContainer: React.FC<PageContainerProps> = ({
           <Box
             id='nav-wrapper'
             ref={ref}
-            position='fixed'
+            position='sticky'
+            top={0}
             w='100%'
             zIndex={100}
             minW={300}
@@ -71,12 +61,7 @@ export const PageContainer: React.FC<PageContainerProps> = ({
         )}
 
         {/*Page content has margin-top to compensate for fixed nav bar. */}
-        <Box
-          id={'pagebody'}
-          // mt={`${dimensions?.borderBox.height || 0}px`}
-          mt={NAV_HEIGHT}
-          position='relative'
-        >
+        <Box id={'pagebody'} position='relative'>
           <Notice />
           {children}
           <Footer navigation={formatRoute(footerItems.routes)} />

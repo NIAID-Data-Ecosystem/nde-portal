@@ -151,7 +151,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
         startColor='primary.50'
         endColor='primary.100'
       >
-        <Flex flexDirection={['column', 'row']}>
+        <Flex flexDirection={['row']}>
           {author && (
             <ToggleContainer
               variant='border'
@@ -207,6 +207,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
               borderColor='transparent'
               justifyContent='space-between'
               _focus={{outlineColor: 'transparent', bg: 'white'}}
+              alignIcon='center'
             >
               <Box
                 w='100%'
@@ -223,23 +224,41 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                 px={paddingCard}
                 py={1}
                 my={0}
-                flexDirection='column'
+                flexDirection={['column', 'row']}
                 alignItems='end'
               >
-                <Text fontSize='xs' my={0} fontWeight='medium' lineHeight={1}>
-                  Altmetric
-                </Text>
-                {/* Altmetric embed badges don't allow for adding aria-label so VisuallyHidden is a patch */}
-                <VisuallyHidden>
-                  See more information about resource on Altmetric
-                </VisuallyHidden>
-                <div
-                  data-badge-popover='left'
-                  data-badge-type='bar'
-                  data-doi={`${formatDOI(doi)}`}
-                  className='altmetric-embed'
-                  data-link-target='blank'
-                ></div>
+                {imageURL && (
+                  <Image
+                    h='40px'
+                    mr={2}
+                    mb={[2, 2, 0]}
+                    src={`${assetPrefix}${imageURL}`}
+                    alt='Data source name'
+                  ></Image>
+                )}
+                {doi && (
+                  <>
+                    <Text
+                      fontSize='xs'
+                      my={0}
+                      fontWeight='medium'
+                      lineHeight={1}
+                    >
+                      Altmetric
+                    </Text>
+                    {/* Altmetric embed badges don't allow for adding aria-label so VisuallyHidden is a patch */}
+                    <VisuallyHidden>
+                      See more information about resource on Altmetric
+                    </VisuallyHidden>
+                    <div
+                      data-badge-popover='left'
+                      data-badge-type='bar'
+                      data-doi={`${formatDOI(doi)}`}
+                      className='altmetric-embed'
+                      data-link-target='blank'
+                    ></div>
+                  </>
+                )}
               </Flex>
             )}
           </CardBody>
@@ -362,33 +381,45 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
           px={paddingCard}
           py={2}
         >
-          <HStack
+          <Flex
             alignItems='end'
             justifyContent='space-between'
             py={1}
             w='100%'
-            flexDirection='row'
+            flexDirection={['column', 'row']}
+            flexWrap='wrap'
+            flex={1}
           >
             {includedInDataCatalog?.name && (
               <Flex
                 flexDirection={['column', 'row']}
                 alignItems={['start', 'center']}
                 flexWrap='wrap'
+                flex={1}
+                w={['100%', 'unset']}
+                m={0.5}
               >
-                <ExternalSourceButton
-                  px={3}
-                  minW='150px'
-                  imageURL={imageURL || undefined}
-                  alt='Data source name'
-                  name={includedInDataCatalog.name || undefined}
+                <Button
+                  w={['100%', 'unset']}
+                  // minW='250px'
+                  maxW={{xl: '400px'}}
+                  // imageURL={imageURL || undefined}
+                  // alt='Data source name'
                   href={url || undefined}
+                  isExternal
+                  variant='outline'
+                  colorScheme='primary'
                   aria-label={`View in source repository resource ${name}`}
-                ></ExternalSourceButton>
+                  flex={1}
+                  whiteSpace='normal'
+                >
+                  {includedInDataCatalog.name || undefined}
+                </Button>
               </Flex>
             )}
 
             {id && (
-              <Flex flex={1} justifyContent='end'>
+              <Flex flex={1} justifyContent='end' w={['100%', 'unset']} m={0.5}>
                 <NextLink
                   href={{
                     pathname: '/resources/',
@@ -397,8 +428,9 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                   passHref
                 >
                   <Button
-                    my={1}
-                    size='md'
+                    w={['100%', 'unset']}
+                    maxW={{xl: '400px'}}
+                    flex={1}
                     rightIcon={<FaArrowAltCircleRight />}
                     aria-label={`Go to details about resource ${name}`}
                   >
@@ -408,7 +440,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                 </NextLink>
               </Flex>
             )}
-          </HStack>
+          </Flex>
         </CardFooter>
       </Skeleton>
     </Card>

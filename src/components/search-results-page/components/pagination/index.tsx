@@ -41,13 +41,26 @@ export const Pagination: React.FC<PaginationProps> = ({
 }) => {
   const total_pages = Math.ceil(total / selectedPerPage);
 
+  console.log('total', total_pages);
+  if (!total_pages) {
+    return null;
+  }
   return (
-    <StyledPagination bg='white' role='navigation' aria-label={ariaLabel}>
-      <Flex w='100%' justifyContent='center'>
+    <StyledPagination
+      id='pagination'
+      bg='white'
+      role='navigation'
+      aria-label={ariaLabel}
+      w='100%'
+      justifyContent='center'
+      p={[4, 0]}
+    >
+      <Flex w={['100%', 'unset']} justifyContent='center'>
         {/* Fade in transition */}
-        <ScaleFade in={!!total}>
-          <Flex>
+        <ScaleFade in={!!total} style={{width: '100%'}}>
+          <Flex w={['100%', 'unset']} alignItems={'center'}>
             <StyledPaginationButton
+              flex={1}
               isDisabled={selectedPage - 1 === 0}
               onClick={() => handleSelectedPage(1)}
             >
@@ -56,30 +69,33 @@ export const Pagination: React.FC<PaginationProps> = ({
             </StyledPaginationButton>
 
             <StyledPaginationButton
+              flex={1}
               isDisabled={selectedPage - 1 === 0}
               onClick={() => handleSelectedPage(selectedPage - 1)}
             >
               <VisuallyHidden>Previous page</VisuallyHidden>
               <Icon as={FaAngleLeft} />
             </StyledPaginationButton>
-
-            <StyledPaginationButtonGroup>
-              {Array(total_pages)
-                .fill('')
-                .map((_, i) => {
-                  const currentPage = i + 1;
-                  return (
-                    <PaginationButton
-                      key={i}
-                      isActive={currentPage === selectedPage}
-                      onClick={() => handleSelectedPage(currentPage)}
-                    >
-                      {i + 1}
-                    </PaginationButton>
-                  );
-                })}
-            </StyledPaginationButtonGroup>
+            <Box display={['none', 'block']}>
+              <StyledPaginationButtonGroup>
+                {Array(total_pages)
+                  .fill('')
+                  .map((_, i) => {
+                    const currentPage = i + 1;
+                    return (
+                      <PaginationButton
+                        key={i}
+                        isActive={currentPage === selectedPage}
+                        onClick={() => handleSelectedPage(currentPage)}
+                      >
+                        {i + 1}
+                      </PaginationButton>
+                    );
+                  })}
+              </StyledPaginationButtonGroup>
+            </Box>
             <StyledPaginationButton
+              flex={1}
               isDisabled={selectedPage === total_pages}
               onClick={() => handleSelectedPage(selectedPage + 1)}
             >
@@ -87,6 +103,7 @@ export const Pagination: React.FC<PaginationProps> = ({
               <Icon as={FaAngleRight} />
             </StyledPaginationButton>
             <StyledPaginationButton
+              flex={1}
               isDisabled={selectedPage === total_pages}
               onClick={() => handleSelectedPage(total_pages)}
             >
@@ -94,6 +111,24 @@ export const Pagination: React.FC<PaginationProps> = ({
               <Icon as={FaAngleDoubleRight} />
             </StyledPaginationButton>
           </Flex>
+          <Select
+            display={{sm: 'none'}}
+            p={1}
+            onChange={e => handleSelectedPage(+e.target.value)}
+            size='lg'
+            cursor='pointer'
+          >
+            {Array(total_pages)
+              .fill('')
+              .map((_, i) => {
+                const currentPage = i + 1;
+                return (
+                  <option key={i} value={currentPage}>
+                    {i + 1}
+                  </option>
+                );
+              })}
+          </Select>
         </ScaleFade>
       </Flex>
     </StyledPagination>
@@ -130,9 +165,10 @@ export const DisplayResults: React.FC<DisplayResultsProps> = ({
         justifyContent='space-between'
         alignItems='end'
         flexWrap='wrap'
+        flexDirection={['column', 'row']}
       >
         {/* Total number of results */}
-        <Box>
+        <Box w={['100%', 'unset']}>
           <Heading
             as='h2'
             size='h6'
@@ -147,8 +183,8 @@ export const DisplayResults: React.FC<DisplayResultsProps> = ({
         </Box>
 
         {/* Sort/order dropdown */}
-        <Flex>
-          <Box mr={2}>
+        <Flex flexDirection={['column', 'row']} w={['100%', 'unset']}>
+          <Box mr={[0, 2]}>
             <label htmlFor='sorting-order-select' title='Sort order'></label>
             <Select
               id='sorting-order-select'
@@ -156,13 +192,12 @@ export const DisplayResults: React.FC<DisplayResultsProps> = ({
               borderRadius='semi'
               bg='white'
               boxShadow='low'
-              icon={<FaChevronDown />}
-              iconSize='xs'
               value={sortOrder}
               cursor='pointer'
               my={1}
               _hover={{boxShadow: 'md'}}
               onChange={e => handleSortOrder(e.target.value)}
+              size={'lg'}
             >
               {sortOptions.map(option => {
                 return (
@@ -178,6 +213,7 @@ export const DisplayResults: React.FC<DisplayResultsProps> = ({
               })}
             </Select>
           </Box>
+
           {/* Show Per Page dropdown. */}
           <Box>
             <label htmlFor='show-per-page-select' title='Show per page'></label>
@@ -186,19 +222,18 @@ export const DisplayResults: React.FC<DisplayResultsProps> = ({
               aria-label='Select show items per page'
               borderRadius='semi'
               bg='white'
-              boxShadow='low'
-              icon={<FaChevronDown />}
-              iconSize='xs'
-              value={selectedPerPage}
               cursor='pointer'
+              boxShadow='low'
+              value={selectedPerPage}
               my={1}
+              size={'lg'}
               _hover={{boxShadow: 'md'}}
               onChange={e => handleSelectedPerPage(+e.target.value)}
             >
               {showPerPageOptions.map(option => {
                 return (
                   <option key={option} value={option}>
-                    {option}
+                    {option} results
                   </option>
                 );
               })}
