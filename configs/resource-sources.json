@@ -1,15 +1,24 @@
 {
   "repositories": [
     {
-      "sourceName": "NCBI GEO from Metadataplus",
-
-      "name": "NCBI GEO",
-      "imageUrl": "/assets/resources/aquaria.svg"
+      "sourceName": "Data Discovery Engine",
+      "name": "Data Discovery Engine",
+      "imageUrl": "/assets/resources/dde_full.svg"
     },
     {
-      "sourceName": "ImmPort - Bioinformatics For the Future of Immunology",
+      "sourceName": "ImmPort",
       "name": "ImmPort",
       "imageUrl": "/assets/resources/immport.png"
+    },
+    {
+      "sourceName": "NCBI GEO",
+      "name": "NCBI GEO",
+      "imageUrl": "/assets/resources/geo.gif"
+    },
+    {
+      "sourceName": "Omics Discovery Index (OmicsDI)",
+      "name": "Omics Discovery Index (OmicsDI)",
+      "imageUrl": "/assets/resources/omics.png"
     },
     {
       "sourceName": "Zenodo",
