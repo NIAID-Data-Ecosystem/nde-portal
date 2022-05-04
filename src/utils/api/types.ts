@@ -77,6 +77,11 @@ export interface Creator {
   type: string | null;
   affiliation: {name: string} | null;
   name: string | null;
+  familyName: string | null;
+  givenName: string | null;
+  role: string | null;
+  title: string | null;
+  url: string | null;
 }
 
 export interface Distribution {

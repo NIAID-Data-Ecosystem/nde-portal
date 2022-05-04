@@ -163,10 +163,10 @@ const SectionContent = ({
         // @ts-ignore
         // [TO DO ]: create generic table component.
         distribution={data?.funding?.map(f => ({
-          id: f.identifier,
-          description: f.description,
-          url: f.url,
+          identifier: f.identifier,
           ...f.funder,
+          description: f.description || f.funder?.description,
+          url: f.funder?.url || f.url,
         }))}
         {...sectionData}
       />
@@ -238,7 +238,7 @@ const ResourcePage: NextPage = props => {
       document.body.appendChild(altmetricsScript);
     }
   }, [data]);
-  console.log('Data:', data);
+
   if (!id) {
     return <></>;
   }

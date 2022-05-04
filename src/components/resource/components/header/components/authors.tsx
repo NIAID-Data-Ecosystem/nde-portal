@@ -34,7 +34,7 @@ const ResourceAuthors = ({authors}: {authors: FormattedResource['author']}) => {
 
     return (
       <Text>
-        <strong>{formattedAuthor}</strong>
+        <strong>{author.name}</strong>
         {author.affiliation?.name ? ', ' + author.affiliation.name : ''}
       </Text>
     );
@@ -79,21 +79,25 @@ const ResourceAuthors = ({authors}: {authors: FormattedResource['author']}) => {
                 flexWrap='wrap'
               >
                 {authors.map((author, i) => {
+                  let url = author?.url;
+
+                  if (!url && author.identifier?.includes('www.orcid')) {
+                    url = author.identifier;
+                  }
+
                   return (
                     <ListItem key={author.name || i} display='flex' mr={1}>
                       {/* Link to author's orcid if available */}
-                      {author.identifier ? (
-                        <Link
-                          href={author.identifier}
-                          isExternal
-                          target='_blank'
-                        >
+                      {url ? (
+                        <Link href={url} isExternal target='_blank'>
                           {formatAuthorString(author)}
                         </Link>
                       ) : (
-                        formatAuthorString(author)
+                        <>
+                          {formatAuthorString(author)}
+                          {i === authors.length - 1 ? '.' : ','}
+                        </>
                       )}
-                      {i === authors.length - 1 ? '.' : ','}
                     </ListItem>
                   );
                 })}

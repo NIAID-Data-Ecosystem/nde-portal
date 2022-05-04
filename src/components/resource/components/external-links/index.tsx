@@ -26,6 +26,8 @@ const ExternalLinks: React.FC<ExternalLinks> = ({
     includedInDataCatalog?.name &&
     getRepositoryImage(includedInDataCatalog.name);
 
+  const href = url || includedInDataCatalog?.url || undefined;
+
   if (
     !isLoading &&
     !includedInDataCatalog?.name &&
@@ -53,16 +55,18 @@ const ExternalLinks: React.FC<ExternalLinks> = ({
             p={2}
             flex={1}
           >
-            {/* <Text color='gray.800' fontWeight='semibold' w='100%'>
-              Provided by
-            </Text> */}
             <ExternalSourceButton
               w='100%'
               alt='Data source name'
-              imageURL={imageURL || undefined}
+              src={imageURL || undefined}
               imageProps={{mb: 4}}
-              name={`View in ${includedInDataCatalog.name}` || undefined}
               href={url || undefined}
+              sourceHref={includedInDataCatalog?.url}
+              name={
+                url
+                  ? `View in ${includedInDataCatalog.name}`
+                  : `Provided by ${includedInDataCatalog.name}` || undefined
+              }
             />
           </Flex>
         )}
@@ -107,30 +111,6 @@ const ExternalLinks: React.FC<ExternalLinks> = ({
             </Flex>
           </Flex>
         )}
-        {/* {showWorkspaceLink && (
-          <Flex
-            flexDirection='column'
-            alignItems='start'
-            flexWrap='wrap'
-            minW='250px'
-            maxW='350px'
-            p={2}
-            flex={1}
-          >
-            <Text color='gray.800' fontWeight='semibold' w='100%'>
-              Dataset Available
-            </Text>
-            <ExternalSourceButton
-              w='100%'
-              alt='Data source name'
-              imageProps={{p: 2, my: 2}}
-              name='Explore in workspace'
-              variant='solid'
-              href="#"
-              whiteSpace='nowrap'
-            ></ExternalSourceButton>
-          </Flex>
-        )} */}
       </Flex>
     </Skeleton>
   );

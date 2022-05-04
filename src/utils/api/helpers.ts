@@ -13,6 +13,11 @@ interface APICreator {
   '@type'?: string;
   affiliation?: {name: string};
   name?: string;
+  familyName?: string;
+  givenName?: string;
+  role?: string;
+  title?: string;
+  url?: string;
 }
 
 // Format the creator field
@@ -29,6 +34,11 @@ export const formatCreator = (
       type: data['@type'] || null,
       name: data['name'] || null,
       affiliation: data['affiliation'] || null,
+      familyName: data['familyName'] || null,
+      givenName: data['givenName'] || null,
+      role: data['role'] || null,
+      title: data['title'] || null,
+      url: data['url'] || null,
     };
   };
 

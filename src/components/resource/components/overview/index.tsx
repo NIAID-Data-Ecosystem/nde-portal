@@ -8,6 +8,7 @@ import {
   SimpleGrid,
   Stack,
   StackDivider,
+  Text,
   UnorderedList,
 } from 'nde-design-system';
 import {FormattedResource} from 'src/utils/api/types';
@@ -338,7 +339,20 @@ const Overview: React.FC<Overview> = ({
         {/* citation */}
         {citation && (
           <StatField isLoading={isLoading} {...getStatInfo('citation')}>
-            {citation.map(c => formatCitationString(c))}
+            {citation.map((c, i) => (
+              <Text key={i} my={2}>
+                {formatCitationString(c)}{' '}
+                {/* If the citation contains a url. */}
+                {c.url && (
+                  <>
+                    Available from:{' '}
+                    <Link href={c.url} isExternal>
+                      {c.url}
+                    </Link>
+                  </>
+                )}
+              </Text>
+            ))}
           </StatField>
         )}
       </Stack>

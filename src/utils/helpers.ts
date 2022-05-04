@@ -55,6 +55,17 @@ export const formatAuthorsList2String = (
   return author_list.join(' ');
 };
 
+// Add punctuation to end of string if needed.
+export const shouldAppendPunctuation = (
+  str: string | null,
+  symbol: string = '.',
+) => {
+  if (!str) {
+    return '';
+  }
+  return str.slice(-1) === symbol ? str : str + symbol;
+};
+
 // Format citation string according to :
 // https://www.nlm.nih.gov/bsd/uniform_requirements.html
 export const formatCitationString = (citation: Citation) => {
@@ -67,7 +78,12 @@ export const formatCitationString = (citation: Citation) => {
   const journal = citation.journalName ? `${citation.journalName}` : '';
 
   const pmid = citation.pmid ? `PubMed PMID: ${citation.pmid}` : '';
-  return `${authors}. ${citation.name}. ${journal}. ${year}. ${pmid}`;
+
+  return `${shouldAppendPunctuation(authors)} ${shouldAppendPunctuation(
+    citation.name,
+  )} ${shouldAppendPunctuation(journal)} ${shouldAppendPunctuation(
+    year,
+  )} ${shouldAppendPunctuation(pmid)}`;
 };
 
 // Format Date object to string with no weekday
