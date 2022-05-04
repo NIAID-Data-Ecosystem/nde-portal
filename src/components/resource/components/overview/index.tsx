@@ -141,6 +141,7 @@ const Overview: React.FC<Overview> = ({
       )}
 
       <Stack
+        w='100%'
         flex={1}
         p={[0, 0, 4]}
         divider={<StackDivider borderColor='gray.100' />}

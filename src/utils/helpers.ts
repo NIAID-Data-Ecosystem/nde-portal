@@ -29,29 +29,43 @@ export const formatAuthorsList2String = (
   let authors = !Array.isArray(authorsData) ? [authorsData] : authorsData;
 
   let author_list = authors.map((author, i) => {
-    if (!author.name) {
-      return;
-    }
+    // Not author name fields exist.
+    let author_name = '';
 
-    // remove all symbols from author name
-    const formattedAuthor = author.name.replace(/[^a-zA-Z- ]/g, '');
+    if (author.name) {
+      author_name = author.name;
+
+      // If name has comma format so that first name goes after last name.
+      // [NOTE]: might cause issues. Not sure this is the best way of handling.
+      if (author.name.includes(',')) {
+        let [familyName, givenName] = author.name.split(',');
+        author_name = `${givenName} ${familyName}`;
+      }
+    } else if (author.givenName || author.familyName) {
+      author_name = `${author.givenName ? `${author.givenName} ` : ''}${
+        author?.familyName || ''
+      }`;
+    }
 
     // if only one author.
     if (authors.length === 1) {
-      return formattedAuthor;
+      return shouldAppendPunctuation(author_name, separator);
     }
 
-    // remove all symbols from author name
+    // Add separator between names.
     const formattedAuthorString =
       i === authors.length - 1
-        ? `and ${formattedAuthor}`
-        : formattedAuthor + `${separator}`;
+        ? `and ${shouldAppendPunctuation(author_name, '.')}`
+        : shouldAppendPunctuation(author_name, separator);
 
     return formattedAuthorString;
   });
+
+  // If max length is provided, cut off author list string and add et al.
   if (maxLength && author_list.length > maxLength) {
     return author_list.slice(0, maxLength).join(' ') + ' et al.';
   }
+
   return author_list.join(' ');
 };
 

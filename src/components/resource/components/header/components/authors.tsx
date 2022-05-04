@@ -26,16 +26,15 @@ const ResourceAuthors = ({authors}: {authors: FormattedResource['author']}) => {
   const authorsHaveAffiliation =
     authors.filter(author => !!author.affiliation).length > 0;
 
-  const formatAuthorString = (author: Creator) => {
+  const formatAuthor = (author: Creator) => {
     if (!author.name) {
       return;
     }
-    const formattedAuthor = author.name.replace(/[^a-zA-Z- ]/g, '');
 
     return (
       <Text>
         <strong>{author.name}</strong>
-        {author.affiliation?.name ? ', ' + author.affiliation.name : ''}
+        {author?.affiliation?.name ? ` ${author.affiliation.name}` : ''}
       </Text>
     );
   };
@@ -58,7 +57,11 @@ const ResourceAuthors = ({authors}: {authors: FormattedResource['author']}) => {
                     color='gray.700'
                     fontWeight='semibold'
                   >
-                    {formatAuthorsList2String(authors, ',', 10)}
+                    {formatAuthorsList2String(
+                      authors,
+                      authors.length === 1 ? '.' : ',',
+                      10,
+                    )}
                   </Heading>
                 </Box>
                 <Flex alignItems='end'>
@@ -81,22 +84,31 @@ const ResourceAuthors = ({authors}: {authors: FormattedResource['author']}) => {
                 {authors.map((author, i) => {
                   let url = author?.url;
 
-                  if (!url && author.identifier?.includes('www.orcid')) {
+                  if (!url && author.identifier?.includes('orcid.org')) {
                     url = author.identifier;
                   }
+
+                  let authorEl = formatAuthor({
+                    ...author,
+                    name: formatAuthorsList2String(
+                      [author],
+                      author.affiliation
+                        ? ','
+                        : i === authors.length - 1
+                        ? '.'
+                        : ',',
+                    ),
+                  });
 
                   return (
                     <ListItem key={author.name || i} display='flex' mr={1}>
                       {/* Link to author's orcid if available */}
                       {url ? (
                         <Link href={url} isExternal target='_blank'>
-                          {formatAuthorString(author)}
+                          {authorEl}
                         </Link>
                       ) : (
-                        <>
-                          {formatAuthorString(author)}
-                          {i === authors.length - 1 ? '.' : ','}
-                        </>
+                        <>{authorEl}</>
                       )}
                     </ListItem>
                   );
