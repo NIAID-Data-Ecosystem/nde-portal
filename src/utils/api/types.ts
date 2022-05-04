@@ -54,9 +54,14 @@ export interface Citation {
   name: string | null;
   author: Creator[] | null;
   journalName: string | null;
+  journalNameAbbrev: string | null;
   date: string | null;
   datePublished: string | null;
   pmid: string | null;
+  doi: string | null;
+  issueNumber: string | null;
+  volumeNumber: string | null;
+  pagination: string | null;
 }
 
 export interface CitedBy {

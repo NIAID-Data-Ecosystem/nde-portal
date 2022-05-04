@@ -54,11 +54,15 @@ interface APICitation {
   name?: string;
   author?: Creator[] | null;
   journalName?: string;
+  journalNameAbbrev?: string;
   identifier?: string;
   date?: string;
   datePublished?: string;
   pmid?: string;
   doi?: string;
+  issueNumber?: string;
+  volumeNumber?: string;
+  pagination?: string;
 }
 
 // Format the citation field
@@ -71,14 +75,18 @@ export const formatCitation = (
   const getCitationFields = (data?: APICitation) => {
     return {
       id: data?.identifier || null,
-      author: data?.author || null,
-      datePublished: data?.datePublished || null,
-      date: data?.date || null,
-      journalName: data?.journalName || null,
-      name: data?.name || null,
-      pmid: data?.pmid || null,
       url: data?.url || null,
+      name: data?.name || null,
+      author: data?.author || null,
+      journalName: data?.journalName || null,
+      journalNameAbbrev: data?.journalNameAbbrev || null,
+      date: data?.date || null,
+      datePublished: data?.datePublished || null,
+      pmid: data?.pmid || null,
       doi: data?.doi || null,
+      issueNumber: data?.issueNumber || null,
+      volumeNumber: data?.volumeNumber || null,
+      pagination: data?.pagination || null,
     };
   };
 

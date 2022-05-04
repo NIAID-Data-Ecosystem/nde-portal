@@ -3,6 +3,7 @@ import {Box, Flex, Heading, Skeleton, Text} from 'nde-design-system';
 import {FormattedResource} from 'src/utils/api/types';
 import ResourceAuthors from './components/authors';
 import AccessBadge from '../access-badge';
+import {formatJournal} from 'src/utils/helpers';
 
 interface HeaderProps {
   isLoading: boolean;
@@ -59,7 +60,7 @@ const Header: React.FC<HeaderProps> = ({
                   color='gray.900'
                   my={2}
                 >
-                  {c.journalName}
+                  {formatJournal(c)}
                 </Text>
               );
             })}

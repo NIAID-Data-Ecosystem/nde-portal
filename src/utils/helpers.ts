@@ -184,3 +184,21 @@ export const formatLicense = (license: string) => {
   }
   return formattedLicense;
 };
+
+export const formatJournal = (citation: Citation) => {
+  let name = '';
+  if (citation.journalName) {
+    name = citation.journalName;
+  } else if (citation.journalNameAbbrev) {
+    name = citation.journalNameAbbrev;
+  }
+
+  const {volumeNumber, issueNumber} = citation;
+
+  // Remove commas, periods, spaces.
+  const formatStr = (str: string) => str.replace(/[ ,.]/g, '');
+
+  return `${formatStr(name)}${
+    volumeNumber ? `, volume ${formatStr(volumeNumber)}` : ''
+  }${issueNumber ? `, issue ${formatStr(issueNumber)}` : ''}`;
+};
