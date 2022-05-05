@@ -210,7 +210,7 @@ const SearchResultsPage = () => {
         ...queryObject,
       };
     });
-  }, [router]);
+  }, [defaultQuery.queryString, defaultQuery.selectedPage, router]);
 
   // Update the route to reflect changes on page without re-render.
   const updateRoute = (update: {}) => {
