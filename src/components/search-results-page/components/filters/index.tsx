@@ -12,7 +12,6 @@ import {
   Drawer,
   DrawerBody,
   DrawerFooter,
-  DrawerHeader,
   DrawerOverlay,
   DrawerContent,
   DrawerCloseButton,
@@ -135,7 +134,7 @@ export const Filters: React.FC<Filters> = ({
         <Button
           colorScheme='secondary'
           variant='outline'
-          size='sm'
+          size='md'
           onClick={removeAllFilters}
           isDisabled={!removeAllFilters}
         >
@@ -185,8 +184,9 @@ export const Filters: React.FC<Filters> = ({
       {/* Styles of floating button from niaid design specs: https://designsystem.niaid.nih.gov/components/atoms */}
       <Button
         ref={btnRef}
-        display='block'
+        variant='solid'
         bg='accent.bg'
+        borderColor='accent.bg'
         onClick={onOpen}
         position='fixed'
         zIndex={50}
@@ -197,12 +197,9 @@ export const Filters: React.FC<Filters> = ({
         p={0}
         transition='0.3s ease-in-out !important'
         overflow='hidden'
-        justifyContent={'start'}
+        justifyContent='start'
         _hover={{
-          display: 'inline-flex',
           width: '12rem',
-          overflow: 'visible',
-          transition: '0.3s ease-in-out !important',
         }}
       >
         <Flex
@@ -214,7 +211,7 @@ export const Filters: React.FC<Filters> = ({
         >
           <Icon as={FaFilter} boxSize={5} mx={2} />
         </Flex>
-        <Heading pl={3} size='h6' color='white' fontWeight='semibold'>
+        <Heading pl={2} as='h3' size='h6' color='white' fontWeight='normal'>
           Show filters
         </Heading>
       </Button>

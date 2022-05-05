@@ -14,7 +14,10 @@ import {
   ListItem,
 } from 'nde-design-system';
 import {FormattedResource, Creator} from 'src/utils/api/types';
-import {formatAuthorsList2String} from 'src/utils/helpers';
+import {
+  formatAuthorsList2String,
+  shouldAppendPunctuation,
+} from 'src/utils/helpers';
 import {FaMinus, FaPlus} from 'react-icons/fa';
 
 // An accordion containing author details such as name and affiliation + link to their profile pages if available.
@@ -34,7 +37,7 @@ const ResourceAuthors = ({authors}: {authors: FormattedResource['author']}) => {
     return (
       <Text>
         <strong>{author.name}</strong>
-        {author?.affiliation?.name ? ` ${author.affiliation.name}` : ''}
+        {author?.affiliation?.name ? ` ${author.affiliation.name}.` : ''}
       </Text>
     );
   };
@@ -57,11 +60,8 @@ const ResourceAuthors = ({authors}: {authors: FormattedResource['author']}) => {
                     color='gray.700'
                     fontWeight='semibold'
                   >
-                    {formatAuthorsList2String(
-                      authors,
-                      authors.length === 1 ? '.' : ',',
-                      10,
-                    )}
+                    {formatAuthorsList2String(authors, ',', 10)}
+                    {authors.length === 1 ? '' : '.'}
                   </Heading>
                 </Box>
                 <Flex alignItems='end'>
@@ -88,13 +88,13 @@ const ResourceAuthors = ({authors}: {authors: FormattedResource['author']}) => {
                     url = author.identifier;
                   }
 
+                  let author_strings =
+                    formatAuthorsList2String(authors).split(',');
                   let authorEl = formatAuthor({
                     ...author,
-                    name: formatAuthorsList2String(
-                      [author],
-                      author.affiliation
-                        ? ','
-                        : i === authors.length - 1
+                    name: shouldAppendPunctuation(
+                      author_strings[i],
+                      !author.affiliation && i === authors.length - 1
                         ? '.'
                         : ',',
                     ),

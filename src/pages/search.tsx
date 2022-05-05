@@ -1,10 +1,6 @@
 import type {NextPage} from 'next';
 import {useRouter} from 'next/router';
-import {
-  PageContainer,
-  PageContent,
-  SearchBar,
-} from 'src/components/page-container';
+import {PageContainer, SearchBar} from 'src/components/page-container';
 import {Box} from 'nde-design-system';
 import {useHasMounted} from 'src/hooks/useHasMounted';
 import SearchResultsPage from 'src/components/search-results-page';
@@ -29,7 +25,13 @@ const Search: NextPage = () => {
     >
       <Box w='100%'>
         <SearchBar
-          value={router.query.q || ''}
+          value={
+            router.query.q
+              ? Array.isArray(router.query.q)
+                ? router.query.q.join(' ')
+                : router.query.q
+              : ''
+          }
           ariaLabel='Search for datasets or tools'
         />
         <SearchResultsPage />

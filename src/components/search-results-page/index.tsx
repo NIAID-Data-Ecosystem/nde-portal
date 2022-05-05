@@ -12,9 +12,11 @@ import {
 import {
   Box,
   Button,
+  Collapse,
   Flex,
   Heading,
   ListItem,
+  Spinner,
   Stack,
   Text,
   UnorderedList,
@@ -23,12 +25,8 @@ import {
   queryFilterObject2String,
   queryFilterString2Object,
 } from 'src/components/search-results-page/components/filters/helpers';
-import LoadingSpinner from 'src/components/loading';
 import ErrorMessage from 'src/components/error';
-import {
-  Pagination,
-  DisplayResults,
-} from 'src/components/search-results-page/components/pagination';
+import {Pagination, MAX_PAGES} from './components/pagination';
 import {useHasMounted} from 'src/hooks/useHasMounted';
 import {assetPrefix} from 'next.config';
 import {FilterTags} from './components/filters/components/tags';
@@ -39,6 +37,10 @@ import {
   SelectedFilterType,
 } from './components/filters';
 import Card from './components/card';
+import Banner from '../banner';
+import {formatNumber} from 'src/utils/helpers';
+import {SortResults} from './components/sort';
+import ResultsCount from './components/count';
 
 /*
 [COMPONENT INFO]:
@@ -60,7 +62,23 @@ const sort_options: SortOptions[] = [
   {name: 'Z-A', sortBy: 'name', orderBy: 'desc'},
 ];
 
+const displayQueryString = (str: string) => {
+  if (!str) {
+    return;
+  }
+
+  if (str.charAt(0) === '(') {
+    str = str.replace('(', '');
+  }
+  if (str.slice(-1) === ')') {
+    str = str.replace(/.$/, '');
+  }
+  return str;
+};
+
 const SearchResultsPage = () => {
+  const [total, setTotal] = useState(0);
+
   const hasMounted = useHasMounted();
   const router = useRouter();
 
@@ -134,25 +152,43 @@ const SearchResultsPage = () => {
     {refetchOnWindowFocus: false},
   );
 
+  // Set total results value
+  useEffect(() => {
+    setTotal(prev => {
+      if (!data || data.total === undefined) {
+        return prev;
+      }
+      if (!isLoading && data?.total) {
+        return data.total;
+      }
+      return prev;
+    });
+  }, [data, isLoading]);
+
   // Set initial state based on route params.
   useEffect(() => {
     const {q, size, filters, from, sort} = router.query;
     setQueryString(prev => {
       let querystring = q;
-      if (querystring === undefined) {
+
+      if (querystring === undefined || querystring === prev) {
         return prev;
       }
       // if query string is empty we return all results
       if (querystring === '') {
-        querystring = defaultQuery.queryString;
+        return defaultQuery.queryString;
       }
+
       return Array.isArray(querystring)
         ? `(${querystring.map(s => encodeString(s.trim())).join('+')})`
-        : `${encodeString(querystring.trim())}`;
+        : `(${encodeString(querystring.trim())})`;
     });
-    setSelectedPage(prev =>
-      from ? (Array.isArray(from) ? +from[0] : +from) : prev,
-    );
+    setSelectedPage(() => {
+      if (!from) {
+        return defaultQuery.selectedPage;
+      }
+      return Array.isArray(from) ? +from[0] : +from;
+    });
 
     setSelectedPerPage(prev =>
       size ? (Array.isArray(size) ? +size[0] : +size) : prev,
@@ -174,7 +210,7 @@ const SearchResultsPage = () => {
         ...queryObject,
       };
     });
-  }, [router, defaultQuery.queryString]);
+  }, [router]);
 
   // Update the route to reflect changes on page without re-render.
   const updateRoute = (update: {}) => {
@@ -247,10 +283,20 @@ const SearchResultsPage = () => {
         <Flex w='100%'>
           {/* Filters sidebar */}
           <PageContent w='100%' flexDirection='column'>
-            <Heading as='h1' size='md' mb={4}>
+            <Heading
+              as='h1'
+              size='md'
+              color='text.body'
+              fontWeight={'semibold'}
+              mb={4}
+            >
               {queryString === '__all__'
-                ? 'Showing all results'
-                : `Showing search results for ${queryString}`}
+                ? `Showing all results`
+                : `Showing results for`}
+
+              <Heading as='span' ml={2} fontWeight={'bold'} size='md' w='100%'>
+                {displayQueryString(queryString)}
+              </Heading>
             </Heading>
             {/* Chips with the names of the currently selected filters */}
             <FilterTags
@@ -295,29 +341,67 @@ const SearchResultsPage = () => {
                 }}
               />
               <Flex w='100%' flexDirection={'column'} mx={[0, 0, 4]} flex={1}>
-                <DisplayResults
-                  sortOptions={sort_options}
-                  sortOrder={sortOrder}
-                  handleSortOrder={sort =>
-                    updateRoute({
-                      sort,
-                      from: defaultQuery.selectedPage,
-                    })
-                  }
-                  selectedPerPage={selectedPerPage}
-                  handleSelectedPerPage={v => updateRoute({from: 1, size: v})}
-                  total={data?.total || 0}
-                >
-                  <Pagination
-                    selectedPage={selectedPage}
-                    handleSelectedPage={v => updateRoute({from: v})}
-                    selectedPerPage={selectedPerPage}
-                    handleSelectedPerPage={v => updateRoute({from: 1, size: v})}
-                    total={data?.total || 0}
-                    ariaLabel='paginate through resources top bar'
-                  ></Pagination>
-                </DisplayResults>
+                <Flex w='100%' borderBottom='2px solid' borderColor='gray.700'>
+                  <ResultsCount total={total} isLoading={isLoading} />
+                </Flex>
 
+                <Pagination
+                  selectedPage={selectedPage}
+                  handleSelectedPage={from => {
+                    updateRoute({from});
+                  }}
+                  selectedPerPage={selectedPerPage}
+                  total={total}
+                  isLoading={isLoading}
+                  ariaLabel='paginate through resources top bar'
+                >
+                  <Flex
+                    flex={1}
+                    justifyContent='space-between'
+                    borderBottom='1px solid'
+                    borderColor={'page.alt'}
+                    pb={4}
+                    mb={4}
+                  >
+                    <Flex>
+                      {isLoading && (
+                        <Spinner
+                          thickness='6px'
+                          speed='0.65s'
+                          emptyColor='gray.200'
+                          color='primary.500'
+                          size='xl'
+                        />
+                      )}
+                    </Flex>
+                    <SortResults
+                      sortOptions={sort_options}
+                      sortOrder={sortOrder}
+                      handleSortOrder={sort =>
+                        updateRoute({
+                          sort,
+                          from: defaultQuery.selectedPage,
+                        })
+                      }
+                      selectedPerPage={selectedPerPage}
+                      handleSelectedPerPage={v =>
+                        updateRoute({from: 1, size: v})
+                      }
+                    />
+                  </Flex>
+                </Pagination>
+
+                {/* Display banner on last page if results exceed amount allotted by API */}
+                <Collapse
+                  in={selectedPage === Math.floor(MAX_PAGES / selectedPerPage)}
+                  animateOpacity
+                >
+                  <Banner status='info'>
+                    Only the first {formatNumber(10000)} results are displayed,
+                    please limit your query to get better results or use our API
+                    to download all results.
+                  </Banner>
+                </Collapse>
                 <Stack
                   direction='row'
                   justifyContent='space-between'
@@ -352,7 +436,7 @@ const SearchResultsPage = () => {
                           if (result || isLoading) {
                             return (
                               <ListItem key={i} my={4} mb={8}>
-                                <Card isLoading={isLoading} {...result}></Card>
+                                <Card isLoading={isLoading} data={result} />
                               </ListItem>
                             );
                           }
@@ -362,12 +446,14 @@ const SearchResultsPage = () => {
                 </Stack>
                 <Pagination
                   selectedPage={selectedPage}
-                  handleSelectedPage={v => updateRoute({from: v})}
+                  handleSelectedPage={from => {
+                    updateRoute({from});
+                  }}
                   selectedPerPage={selectedPerPage}
-                  handleSelectedPerPage={v => updateRoute({from: 1, size: v})}
-                  total={data?.total || 0}
-                  ariaLabel='paginate through resources bottom bar'
-                ></Pagination>
+                  total={total}
+                  isLoading={isLoading}
+                  ariaLabel='paginate through resources top bar'
+                />
               </Flex>
             </Flex>
           </PageContent>

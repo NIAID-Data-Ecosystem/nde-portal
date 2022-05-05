@@ -2,7 +2,6 @@ import React, {useEffect, useState} from 'react';
 import {PageContent} from './content';
 import {SearchInput} from 'nde-design-system';
 import {useRouter} from 'next/router';
-import {basePath} from 'next.config';
 
 export const SearchBar = ({
   value,
@@ -10,17 +9,19 @@ export const SearchBar = ({
   ...props
 }: {
   ariaLabel: string;
-  value: string | string[];
+  value: string;
 }) => {
   const router = useRouter();
-
   // Search term entered in search bar
-  const [searchTerm, setSearchTerm] = useState<string | string[]>(value || '');
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>): void =>
-    setSearchTerm(e.target.value.trim());
+  const [searchTerm, setSearchTerm] = useState<string>(value || '');
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
+    setSearchTerm(e.currentTarget.value);
+  };
 
   // update value when changed
-  useEffect(() => setSearchTerm(value), [value]);
+  useEffect(() => {
+    setSearchTerm(value);
+  }, [value]);
 
   return (
     <PageContent bg='white' minH='unset'>
@@ -34,7 +35,7 @@ export const SearchBar = ({
           e.preventDefault();
           router.push({
             pathname: `/search`,
-            query: {q: searchTerm},
+            query: {q: searchTerm.trim(), from: 1},
           });
         }}
         placeholder='Search for datasets or tools'

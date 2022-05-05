@@ -250,7 +250,13 @@ const ResourcePage: NextPage = props => {
         metaDescription='Selected search result page.'
       >
         <SearchBar
-          value={router.query.q || ''}
+          value={
+            router.query.q
+              ? Array.isArray(router.query.q)
+                ? router.query.q.join(' ')
+                : router.query.q
+              : ''
+          }
           ariaLabel='Search for datasets or tools'
         />
         <PageContent>

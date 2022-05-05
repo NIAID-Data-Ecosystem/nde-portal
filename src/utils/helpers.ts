@@ -49,13 +49,13 @@ export const formatAuthorsList2String = (
 
     // if only one author.
     if (authors.length === 1) {
-      return shouldAppendPunctuation(author_name, separator);
+      return author_name;
     }
 
     // Add separator between names.
     const formattedAuthorString =
       i === authors.length - 1
-        ? `and ${shouldAppendPunctuation(author_name, '.')}`
+        ? `and ${author_name}`
         : shouldAppendPunctuation(author_name, separator);
 
     return formattedAuthorString;
@@ -63,7 +63,7 @@ export const formatAuthorsList2String = (
 
   // If max length is provided, cut off author list string and add et al.
   if (maxLength && author_list.length > maxLength) {
-    return author_list.slice(0, maxLength).join(' ') + ' et al.';
+    return author_list.slice(0, maxLength).join(' ') + ' et al';
   }
 
   return author_list.join(' ');
@@ -195,8 +195,8 @@ export const formatJournal = (citation: Citation) => {
 
   const {volumeNumber, issueNumber} = citation;
 
-  // Remove commas, periods, spaces.
-  const formatStr = (str: string) => str.replace(/[ ,.]/g, '');
+  // Remove commas, periods.
+  const formatStr = (str: string) => str.replace(/[,.]/g, '');
 
   return `${formatStr(name)}${
     volumeNumber ? `, volume ${formatStr(volumeNumber)}` : ''

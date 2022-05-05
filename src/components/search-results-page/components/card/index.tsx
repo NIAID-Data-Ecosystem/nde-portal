@@ -46,41 +46,32 @@ import {assetPrefix} from 'next.config';
 import NextLink from 'next/link';
 
 interface SearchResultCardProps {
-  id?: FormattedResource['id'];
-  name?: FormattedResource['name'];
-  type?: FormattedResource['type'];
-  date?: FormattedResource['date'];
-  datePublished?: FormattedResource['datePublished'];
-  author?: FormattedResource['author'];
-  description?: FormattedResource['description'];
-  license?: FormattedResource['license'];
-  conditionsOfAccess?: FormattedResource['conditionsOfAccess'];
-  measurementTechnique?: FormattedResource['measurementTechnique'];
-  variableMeasured?: FormattedResource['variableMeasured'];
-  doi?: FormattedResource['doi'];
-  includedInDataCatalog?: FormattedResource['includedInDataCatalog'];
   isLoading?: boolean;
-  url?: FormattedResource['url'];
+  data?: FormattedResource | null;
 }
 
 const SearchResultCard: React.FC<SearchResultCardProps> = ({
   isLoading,
-  id,
-  name,
-  type,
-  date,
-  datePublished,
-  author,
-  description,
-  license,
-  conditionsOfAccess,
-  measurementTechnique,
-  variableMeasured,
-  doi,
-  includedInDataCatalog,
-  url,
+  data,
   ...props
 }) => {
+  const {
+    id,
+    name,
+    type,
+    date,
+    datePublished,
+    author,
+    description,
+    license,
+    conditionsOfAccess,
+    measurementTechnique,
+    variableMeasured,
+    doi,
+    includedInDataCatalog,
+    url,
+  } = data || {};
+
   const imageURL =
     includedInDataCatalog?.name &&
     getRepositoryImage(includedInDataCatalog.name);
@@ -109,6 +100,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
       </Flex>
     );
   };
+
   return (
     <Card variant='colorful'>
       {/* Card header where name of resource is a link to resource apge */}
@@ -169,8 +161,8 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
         height={isLoading ? '150px' : 'unset'}
         p={0}
         m={isLoading ? 4 : 0}
-        startColor='primary.50'
-        endColor='primary.100'
+        startColor='page.alt'
+        endColor='niaid.placeholder'
       >
         <Flex
           flexDirection={['column-reverse', 'row']}
@@ -191,7 +183,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
               _focus={{outlineColor: 'transparent'}}
             >
               <Text fontSize='xs' color='text.body'>
-                {formatAuthorsList2String(author, ',', 10)}
+                {formatAuthorsList2String(author, ',', 10)}.
               </Text>
             </ToggleContainer>
           )}
@@ -425,8 +417,8 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
         height={isLoading ? '50px' : 'unset'}
         p={0}
         m={isLoading ? 4 : 0}
-        startColor='primary.50'
-        endColor='primary.100'
+        startColor='page.alt'
+        endColor='niaid.placeholder'
       >
         <CardFooter
           justifyContent='space-between'
