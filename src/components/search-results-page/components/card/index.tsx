@@ -355,14 +355,24 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
               >
                 {includedInDataCatalog?.name && (
                   <Box minW={['250px']} mb={[2, 2, 0]}>
-                    {imageURL && (
-                      <Image
-                        h='40px'
-                        mr={2}
-                        src={`${assetPrefix}${imageURL}`}
-                        alt='Data source name'
-                      ></Image>
-                    )}
+                    {imageURL &&
+                      (includedInDataCatalog.url ? (
+                        <Link target='_blank' href={includedInDataCatalog.url}>
+                          <Image
+                            h='40px'
+                            mr={2}
+                            src={`${assetPrefix}${imageURL}`}
+                            alt='Data source name'
+                          ></Image>
+                        </Link>
+                      ) : (
+                        <Image
+                          h='40px'
+                          mr={2}
+                          src={`${assetPrefix}${imageURL}`}
+                          alt='Data source name'
+                        ></Image>
+                      ))}
                     {url || includedInDataCatalog.url ? (
                       <Link
                         href={url! || includedInDataCatalog.url!}
