@@ -1,5 +1,13 @@
 import React from 'react';
-import {Flex, Icon, Link, Skeleton, Text} from 'nde-design-system';
+import {
+  Flex,
+  Icon,
+  Link,
+  ListItem,
+  Skeleton,
+  Text,
+  UnorderedList,
+} from 'nde-design-system';
 import {FormattedResource} from 'src/utils/api/types';
 import {getRepositoryImage} from 'src/utils/helpers';
 import {ExternalSourceButton} from 'src/components/external-buttons/index.';
@@ -26,8 +34,6 @@ const ExternalLinks: React.FC<ExternalLinks> = ({
     includedInDataCatalog?.name &&
     getRepositoryImage(includedInDataCatalog.name);
 
-  const href = url || includedInDataCatalog?.url || undefined;
-
   if (
     !isLoading &&
     !includedInDataCatalog?.name &&
@@ -37,6 +43,7 @@ const ExternalLinks: React.FC<ExternalLinks> = ({
   ) {
     return null;
   }
+
   return (
     <Skeleton
       isLoaded={!isLoading}
@@ -103,12 +110,23 @@ const ExternalLinks: React.FC<ExternalLinks> = ({
               Source Code
             </Text>
 
-            <Flex alignItems='center'>
-              {codeRepository.includes('git') && <Icon as={FaGithub} mr={2} />}
-              <Link href={codeRepository} isExternal wordBreak='break-word'>
-                {codeRepository.includes('git') ? 'Github' : codeRepository}
-              </Link>
-            </Flex>
+            <UnorderedList alignItems='center' ml={0}>
+              {(Array.isArray(codeRepository)
+                ? codeRepository
+                : [codeRepository]
+              ).map((repo, i) => {
+                return (
+                  <ListItem key={i} my={2}>
+                    {repo.includes('git') && <Icon as={FaGithub} mr={2} />}
+                    <Link href={repo} isExternal wordBreak='break-word'>
+                      {repo.includes('git')
+                        ? 'View source code on Github'
+                        : repo}
+                    </Link>
+                  </ListItem>
+                );
+              })}
+            </UnorderedList>
           </Flex>
         )}
       </Flex>

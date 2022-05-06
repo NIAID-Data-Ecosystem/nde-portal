@@ -163,7 +163,7 @@ export interface FormattedResource {
   author: Creator[] | null;
   citation: Citation[] | null;
   citedBy: CitedBy[] | null;
-  codeRepository: string | null;
+  codeRepository: string[] | string | null;
   condition: string | null;
   conditionsOfAccess: AccessTypes | null;
   date: Date | string | null;

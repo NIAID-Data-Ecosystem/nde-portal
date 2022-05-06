@@ -194,7 +194,7 @@ const ResourcePage: NextPage = props => {
   const {id} = router.query;
 
   // Check if mobile
-  const isMobile = useBreakpointValue({base: true, md: false});
+  const isMobile = useBreakpointValue({base: true, lg: false});
   // Access query client
   const {isLoading, error, data} = useQuery<
     FormattedResource | undefined,
@@ -302,11 +302,17 @@ const ResourcePage: NextPage = props => {
                         />
                         {/* Display external links under overview if in mobile view. */}
                         {section.hash === 'overview' && isMobile && (
-                          <ResourceLinks
-                            isLoading={isLoading}
-                            includedInDataCatalog={data?.includedInDataCatalog}
-                            url={data?.url}
-                          />
+                          <>
+                            <ResourceLinks
+                              isLoading={isLoading}
+                              includedInDataCatalog={
+                                data?.includedInDataCatalog
+                              }
+                              url={data?.url}
+                              mainEntityOfPage={data?.mainEntityOfPage}
+                              codeRepository={data?.codeRepository}
+                            />
+                          </>
                         )}
                       </Section>
                     );
@@ -318,7 +324,8 @@ const ResourcePage: NextPage = props => {
                   top='80px'
                   w='100%'
                   h='100%'
-                  minW='300px'
+                  minW='350px'
+                  display={isMobile ? 'none' : 'block'}
                 >
                   <Card
                     flex={1}
@@ -341,7 +348,6 @@ const ResourcePage: NextPage = props => {
 
                   {/* Navigation for page */}
                   <Card
-                    display={{base: 'none', md: 'flex'}}
                     flex={1}
                     ml={[0, 0, 4]}
                     my={2}
