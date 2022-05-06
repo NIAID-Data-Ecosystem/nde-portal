@@ -1,32 +1,42 @@
 import React, {useEffect, useState} from 'react';
-import {PageContent} from './content';
 import {SearchInput} from 'nde-design-system';
 import {useRouter} from 'next/router';
+import {PageContent} from '../page-container';
 
 export const SearchBar = ({
   value,
   ariaLabel,
   ...props
 }: {
-  ariaLabel: string;
-  value: string;
+  ariaLabel?: string;
+  value?: string;
 }) => {
   const router = useRouter();
   // Search term entered in search bar
   const [searchTerm, setSearchTerm] = useState<string>(value || '');
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     setSearchTerm(e.currentTarget.value);
   };
 
   // update value when changed
   useEffect(() => {
-    setSearchTerm(value);
-  }, [value]);
+    setSearchTerm(prev => {
+      if (value) {
+        return value;
+      } else if (router.query.q) {
+        return Array.isArray(router.query.q)
+          ? router.query.q.join(' ')
+          : router.query.q;
+      } else {
+        return prev;
+      }
+    });
+  }, [value, router]);
 
   return (
-    <PageContent bg='white' minH='unset'>
+    <PageContent bg='#fff' minH='unset'>
       <SearchInput
-        ariaLabel={ariaLabel}
         colorScheme='primary'
         w='100%'
         value={searchTerm}
@@ -39,6 +49,7 @@ export const SearchBar = ({
           });
         }}
         placeholder='Search for datasets or tools'
+        ariaLabel={ariaLabel || 'Search for datasets or tools'}
         {...props}
       />
     </PageContent>

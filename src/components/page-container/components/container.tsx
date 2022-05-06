@@ -5,11 +5,13 @@ import footerItems from 'configs/footer.json';
 import Head from 'next/head';
 import Notice from './notice';
 import {basePath} from 'next.config';
+import {SearchBar} from 'src/components/search-bar';
 
 interface PageContainerProps extends FlexProps {
   hasNavigation?: boolean;
   title: string;
   metaDescription: string;
+  disableSearchBar?: boolean;
 }
 
 export const NAV_HEIGHT = {base: '105px', sm: '77px', md: '89px'};
@@ -19,6 +21,7 @@ export const PageContainer: React.FC<PageContainerProps> = ({
   hasNavigation,
   title,
   metaDescription,
+  disableSearchBar,
   ...rest
 }) => {
   const ref = useRef<HTMLDivElement>(null);
@@ -63,6 +66,7 @@ export const PageContainer: React.FC<PageContainerProps> = ({
         {/*Page content has margin-top to compensate for fixed nav bar. */}
         <Box id={'pagebody'} position='relative'>
           <Notice />
+          {!disableSearchBar && <SearchBar />}
           {children}
           <Footer navigation={formatRoute(footerItems.routes)} />
         </Box>

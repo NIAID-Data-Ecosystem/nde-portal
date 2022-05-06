@@ -1,16 +1,11 @@
 import React, {useEffect} from 'react';
 import type {NextPage} from 'next';
-import {
-  PageContainer,
-  PageContent,
-  SearchBar,
-} from 'src/components/page-container';
+import {PageContainer, PageContent} from 'src/components/page-container';
 import {useRouter} from 'next/router';
 import {useQuery} from 'react-query';
 import {getResourceById} from 'src/utils/api';
 import {FormattedResource} from 'src/utils/api/types';
 import Empty from 'src/components/empty';
-import {ButtonGroup} from '@chakra-ui/button';
 import {
   Box,
   Button,
@@ -246,16 +241,6 @@ const ResourcePage: NextPage = props => {
         title='Resource'
         metaDescription='Selected search result page.'
       >
-        <SearchBar
-          value={
-            router.query.q
-              ? Array.isArray(router.query.q)
-                ? router.query.q.join(' ')
-                : router.query.q
-              : ''
-          }
-          ariaLabel='Search for datasets or tools'
-        />
         <PageContent>
           {error ? (
             // [ERROR STATE]: API response error

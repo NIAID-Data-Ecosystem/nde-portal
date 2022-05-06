@@ -191,6 +191,7 @@ const Home: NextPage = () => {
         hasNavigation
         title='Search'
         metaDescription='Discovery Portal home page.'
+        disableSearchBar
       >
         <PageContent
           bgImg={`${assetPrefix}/assets/home-bg.png`}
