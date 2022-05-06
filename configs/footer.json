@@ -1,11 +1,49 @@
 {
   "routes": [
     {
-      "label": "Discovery Portal",
+      "label": "NIAID Data Ecosystem",
       "routes": [
         {
-          "label": "Search",
-          "href": "/"
+          "label": "Discovery Portal",
+          "routes": [
+            {"label": "Search", "href": "/"},
+
+            {"label": "About", "href": "/about"},
+
+            {"label": "Getting Started", "href": "/getting-started"},
+
+            {
+              "label": "Resources",
+              "routes": [
+                {
+                  "label": "Sources",
+                  "subLabel": "Latest information about our data sources",
+                  "href": "/sources"
+                },
+                {
+                  "label": "Schemas",
+                  "subLabel": "Dataset and Computational Tool schemas",
+                  "href": "/schema"
+                },
+                {
+                  "label": "Documentation",
+                  "subLabel": "Guides and documentation to help with NIAID Data Ecosystem.",
+                  "href": "https://niaid-data.readme.io/",
+                  "isExternal": true
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "label": "Analysis Workspace",
+          "routes": [
+            {
+              "label": "Go to workspace",
+              "href": "/#",
+              "isExternal": true
+            }
+          ]
         }
       ]
     }

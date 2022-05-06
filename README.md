@@ -2,7 +2,7 @@
 
 Discovery platform to find NIAID-related datasets and tools.
 
-## Storybook
+## Development
 
 To run locally, lone the repo and run:
 
