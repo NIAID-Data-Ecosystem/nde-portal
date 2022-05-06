@@ -12,7 +12,7 @@ export const StyledLabel = styled(Flex)<FlexProps>`
       props._before.bg || props.theme.colors.status.info};
     box-shadow: 0 0 0 5px #fff;
     display: block;
-    height: 100%;
+    height: 2.5rem;
     left: 0;
     position: absolute;
     top: 0;

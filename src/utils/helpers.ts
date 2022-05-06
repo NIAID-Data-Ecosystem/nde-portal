@@ -89,7 +89,7 @@ export const formatCitationString = (citation: Citation) => {
     ? `${new Date(citation.datePublished).getUTCFullYear()}`
     : '';
 
-  const journal = citation.journalName ? `${citation.journalName}` : '';
+  const journal = citation.journalName ? `${formatJournal(citation)}` : '';
 
   const pmid = citation.pmid ? `PubMed PMID: ${citation.pmid}` : '';
 

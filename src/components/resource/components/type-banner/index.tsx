@@ -1,5 +1,5 @@
 import React from 'react';
-import {Box, Flex, FlexProps, Icon, Text} from 'nde-design-system';
+import {Flex, FlexProps, Icon, Text} from 'nde-design-system';
 import {formatDate} from 'src/utils/helpers';
 import {FaRegClock} from 'react-icons/fa';
 import {FormattedResource} from 'src/utils/api/types';
@@ -18,8 +18,14 @@ const TypeBanner: React.FC<TypeBannerProps> = ({
   ...props
 }) => {
   return (
-    <Flex flexWrap='wrap' w='100%' {...props} bg='status.info_lt'>
-      <Flex bg='status.info_lt' pl={pl} py={0} overflow='hidden'>
+    <Flex flexWrap='wrap' w='100%' bg={props.bg || 'status.info_lt'} {...props}>
+      <Flex
+        bg={props.bg || 'status.info_lt'}
+        pl={pl}
+        py={0}
+        overflow='hidden'
+        minW={'150px'}
+      >
         {type && (
           <StyledLabel
             _before={{
@@ -37,20 +43,18 @@ const TypeBanner: React.FC<TypeBannerProps> = ({
               px={2}
               fontWeight='semibold'
               whiteSpace='nowrap'
-              bg={
-                type.toLowerCase() === 'dataset'
-                  ? 'status.info'
-                  : type.toLowerCase().includes('tool')
-                  ? 'primary.800'
-                  : 'niaid.color'
-              }
             >
               {type.toUpperCase()}
             </Text>
           </StyledLabel>
         )}
       </Flex>
-      <Flex bg='status.info_lt' overflow='hidden' flex={1} minW='250px'>
+      <Flex
+        bg={props.bg || 'status.info_lt'}
+        overflow='hidden'
+        flex={1}
+        minW='250px'
+      >
         {date && (
           <Flex alignItems='center' px={{base: 2, lg: 4}} py={[2, 1]}>
             <Icon as={FaRegClock} mr={2}></Icon>

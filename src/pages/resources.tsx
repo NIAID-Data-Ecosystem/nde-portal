@@ -23,7 +23,6 @@ import {
   ResourceFilesTable,
   ResourceProvenance,
   Section,
-  TypeBanner,
 } from 'src/components/resource';
 import {Error, ErrorCTA} from 'src/components/error';
 import LocalNavigation, {
@@ -31,6 +30,7 @@ import LocalNavigation, {
 } from 'src/components/resource/components/local-navigation';
 import SectionsConfig from 'configs/resource-sections.json';
 import {assetPrefix} from 'next.config';
+import {ResourceDates} from 'src/components/resource/components/dates';
 
 // Error display is data fetching goes wrong.
 const ErrorState = ({retryFn}: {retryFn: () => void}) => {
@@ -271,7 +271,7 @@ const ResourcePage: NextPage = props => {
                       name={data?.name}
                     />
                     {/* Banner showing data type and publish date. */}
-                    <TypeBanner type={data?.type} date={data?.date} />
+                    <ResourceDates data={data} />
                   </Section>
                   {SectionsConfig.routes.map(route => {
                     const section = route as {

@@ -60,7 +60,7 @@ const Header: React.FC<HeaderProps> = ({
                   color='gray.900'
                   my={2}
                 >
-                  {formatJournal(c)}
+                  {formatJournal(c)}.
                 </Text>
               );
             })}

@@ -156,6 +156,7 @@ export type AccessTypes =
 
 // Formatting standardized resource fields
 export interface FormattedResource {
+  [key: string]: any;
   id: string;
   type: string | null; // "Dataset" | "ComputationalTool"
   name: string;
