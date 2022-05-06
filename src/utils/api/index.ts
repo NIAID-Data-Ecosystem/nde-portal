@@ -11,7 +11,7 @@ export const getResourceById = async (id?: string | string[]) => {
   }
   try {
     const {data} = await axios.get(
-      `${process.env.NEXT_PUBLIC_API_URL}/query?q=_id:${id}`,
+      `${process.env.NEXT_PUBLIC_API_URL}/query?q=_id:"${id}"`,
     );
 
     const formattedData = await formatAPIResource(data.hits[0]);
