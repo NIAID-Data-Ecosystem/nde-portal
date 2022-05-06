@@ -25,7 +25,7 @@ import {
   queryFilterObject2String,
   queryFilterString2Object,
 } from 'src/components/search-results-page/components/filters/helpers';
-import ErrorMessage from 'src/components/error';
+import {Error, ErrorCTA} from 'src/components/error';
 import {Pagination, MAX_PAGES} from './components/pagination';
 import {useHasMounted} from 'src/hooks/useHasMounted';
 import {assetPrefix} from 'next.config';
@@ -265,20 +265,14 @@ const SearchResultsPage = () => {
     <>
       {error ? (
         // [ERROR STATE]: API response error
-        <ErrorMessage message="It's possible that the server is experiencing some issues.">
-          <Flex
-            flex={1}
-            flexDirection={['column', 'column', 'row']}
-            justifyContent='center'
-          >
-            <Button m={1} onClick={() => router.reload()} variant='outline'>
+
+        <Error message="It's possible that the server is experiencing some issues.">
+          <ErrorCTA>
+            <Button onClick={() => router.reload()} variant='outline'>
               Retry
             </Button>
-            <Button m={1} as='a' href='/'>
-              Back to Home
-            </Button>
-          </Flex>
-        </ErrorMessage>
+          </ErrorCTA>
+        </Error>
       ) : (
         <Flex w='100%'>
           {/* Filters sidebar */}

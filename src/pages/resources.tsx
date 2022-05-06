@@ -30,7 +30,7 @@ import {
   Section,
   TypeBanner,
 } from 'src/components/resource';
-import ErrorMessage from 'src/components/error';
+import {Error, ErrorCTA} from 'src/components/error';
 import LocalNavigation, {
   showSection,
 } from 'src/components/resource/components/local-navigation';
@@ -40,16 +40,13 @@ import {assetPrefix} from 'next.config';
 // Error display is data fetching goes wrong.
 const ErrorState = ({retryFn}: {retryFn: () => void}) => {
   return (
-    <ErrorMessage message="It's possible that the server is experiencing some issues.">
-      <ButtonGroup>
+    <Error message="It's possible that the server is experiencing some issues.">
+      <ErrorCTA>
         <Button onClick={() => retryFn()} variant='outline'>
           Retry
         </Button>
-        <Button as='a' href='/'>
-          Back to Home
-        </Button>
-      </ButtonGroup>
-    </ErrorMessage>
+      </ErrorCTA>
+    </Error>
   );
 };
 
