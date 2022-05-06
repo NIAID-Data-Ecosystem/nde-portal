@@ -10,9 +10,9 @@
       "label": "Resources",
       "routes": [
         {
-          "label": "F.A.Q",
-          "subLabel": "Frequently Asked Questions",
-          "href": "/faq"
+          "label": "Sources",
+          "subLabel": "Latest information about our data sources",
+          "href": "/sources"
         },
         {
           "label": "Schemas",
@@ -20,9 +20,10 @@
           "href": "/schema"
         },
         {
-          "label": "Latest",
-          "subLabel": "Changelog for additions/subtractions/feature launches",
-          "href": "/latest"
+          "label": "Documentation",
+          "subLabel": "Guides and documentation to help with NIAID Data Ecosystem.",
+          "href": "https://niaid-data.readme.io/",
+          "isExternal": true
         }
       ]
     }

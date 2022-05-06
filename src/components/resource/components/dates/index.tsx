@@ -12,7 +12,7 @@ import {formatDate} from 'src/utils/helpers';
 */
 
 interface ResourceDates {
-  data: FormattedResource;
+  data?: FormattedResource;
 }
 
 const date_fields = [

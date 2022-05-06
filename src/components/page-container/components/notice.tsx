@@ -14,7 +14,6 @@ const Notice = () => {
   return (
     <Box
       w='100%'
-      position={isOpen ? 'absolute' : 'unset'}
       bg='status.warning_lt'
       zIndex={5}
       __css={{
