@@ -101,8 +101,12 @@ export const formatCitationString = (citation: Citation) => {
 };
 
 // Format Date object to string with no weekday
-export const formatDate = (date: Date | string) => {
-  return new Date(date).toDateString().split(' ').slice(1).join(' ');
+export const formatDate = (date: Date | string, full?: boolean) => {
+  const date_str = new Date(date).toDateString();
+  if (full) {
+    return date_str;
+  }
+  return date_str.split(' ').slice(1).join(' ');
 };
 
 // Format DOI if url is included in string.

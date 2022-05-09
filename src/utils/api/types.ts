@@ -203,3 +203,31 @@ export interface FormattedResource {
   version: number | null;
   numberOfViews: number | null;
 }
+
+interface MetadataSource {
+  code: {
+    file: string;
+    repo: string;
+    commit: string;
+    branch: string;
+    url: string;
+  };
+  sourceInfo: {
+    name: string;
+    description: string;
+    schema: Object;
+    url: string;
+    identifier: string;
+  };
+  stats: {[key: string]: number};
+  version: Date;
+}
+
+export interface Metadata {
+  biothing_type: string;
+  build_date: Date;
+  build_version: string;
+  src: {
+    [key: string]: MetadataSource;
+  };
+}
