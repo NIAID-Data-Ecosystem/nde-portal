@@ -8,7 +8,6 @@ interface Sidebar {
 }
 
 const Sidebar: React.FC<Sidebar> = ({data}) => {
-  console.log(data);
   const sourceNames = [];
 
   for (const source in data.src) {
