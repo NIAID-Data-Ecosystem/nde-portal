@@ -35,7 +35,12 @@ export const SearchBar = ({
   }, [value, router]);
 
   return (
-    <PageContent bg='#fff' minH='unset'>
+    <PageContent
+      bg='#fff'
+      minH='unset'
+      borderBottom='1px solid'
+      borderColor='gray.100'
+    >
       <SearchInput
         colorScheme='primary'
         w='100%'

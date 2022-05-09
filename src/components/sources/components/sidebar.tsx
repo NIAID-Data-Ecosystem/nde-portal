@@ -1,54 +1,50 @@
 import React from 'react';
+import {Metadata} from 'src/utils/api/types';
+import {formatDate} from 'src/utils/helpers';
+import {Box, Heading, ListItem, Text} from 'nde-design-system';
 
-import { useCallback } from "react";
-import { scroller } from "react-scroll";
+interface Sidebar {
+  data: Metadata;
+}
 
-const Sidebar = ({ sourceData }) => {
-  const date = useCallback((data) => {
-    let dateString;
-    dateString = new Date(data);
-    return dateString.toDateString();
-  }, []);
+const Sidebar: React.FC<Sidebar> = ({data}) => {
+  console.log(data);
+  const sourceNames = [];
 
-  const sourceNames = []
-  for (const source in sourceData.src) {
-    sourceNames.push([sourceData.src[source].sourceInfo.name, source])
+  for (const source in data.src) {
+    sourceNames.push([data.src[source].sourceInfo.name, source]);
   }
-  sourceNames.sort((a, b) => a[0].localeCompare(b[0]))
 
-
-  function handleNav(version) {
-    scroller.scrollTo(`version${version}`, {
-      duration: 1000,
-      delay: 0,
-      smooth: "easeInOutQuart",
-      offset: -5,
-    })
-  };
+  sourceNames.sort((a, b) => a[0].localeCompare(b[0]));
 
   return (
     <>
-      {sourceNames
-        .map((name, index) => {
-          return (
-            <li key={index} className={"border-none m-2 ml-4 pb-4"}>
-              <a
-                className={"flex flex-col items-left h-14  cursor-pointer "}
-                onClick={() => handleNav(name[0])}
-              >
-                <div className="text-gray-900 text-xl font-bold  ">
-                  {name[0]} <br />
-                </div>
-                <div className="text-sm font-medium text-gray-500">
-                  Latest Release {date(sourceData.src[name[1]].version)}
-                </div>
-              </a>
-            </li>
-          );
-        })
-      }
+      {sourceNames.map((name, index) => {
+        return (
+          <ListItem
+            key={index}
+            px={[2, 4, 6]}
+            py={4}
+            _hover={{bg: 'gray.50'}}
+            cursor='pointer'
+          >
+            <Box
+              as='a'
+              href={`#${name[0]}`}
+              aria-label={`Go to ${name[0]} section`}
+            >
+              <Heading size='h6'>
+                {name[0]} <br />
+              </Heading>
+              <Text fontWeight='medium' fontSize='sm'>
+                Latest Release {formatDate(data.src[name[1]].version, true)}
+              </Text>
+            </Box>
+          </ListItem>
+        );
+      })}
     </>
-  )
+  );
 };
 
 export default Sidebar;

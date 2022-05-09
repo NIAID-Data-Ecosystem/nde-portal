@@ -1,151 +1,227 @@
-import React from 'react';
+import {
+  Box,
+  Button,
+  Collapse,
+  Flex,
+  Heading,
+  Text,
+  useDisclosure,
+} from 'nde-design-system';
+import React, {useState, useEffect} from 'react';
+import {Metadata} from 'src/utils/api/types';
+import {formatDate} from 'src/utils/helpers';
+import {setDateCreated} from '../utils';
 
-import { useCallback } from 'react';
-import { setDateCreated } from '../../utils/setFunctions';
-import { useState, useEffect } from 'react'
-import './sourcesmain.css'
+interface Main {
+  sourceData: Metadata;
+}
 
-const Main = ({ sourceData }) => {
+interface Source {
+  name: string;
+  description: string;
+  dateCreated: string;
+  dateModified: Date;
+  numberOfRecords: any;
+  schema: Object;
+}
 
-  const [sourcesArray, setSourcesArray] = useState([])
-  const [schemaId, setSchemaId] = useState([])
-  const [schemaText, setSchemaText] = useState([])
+const Main: React.FC<Main> = ({sourceData}) => {
+  const [sources, setSources] = useState<Source[]>([]);
+  const [schemaId, setSchemaId] = useState<string[]>([]);
+  const [schemaText, setSchemaText] = useState<string[]>([]);
 
-  function schemaIdFunc(e) {
-    if (schemaId.includes(e.target.id) || schemaText.includes(e.target.id)) {
-      setSchemaText(schemaText.filter(schemaText => schemaText !== e.target.id));
-      return setSchemaId(schemaId.filter(schemaId => schemaId !== e.target.id));
-    };
-    setSchemaText([...schemaText, e.target.id]);
-    return setSchemaId([...schemaId, e.target.id]);
+  function schemaIdFunc(sourceName: string) {
+    if (schemaId.includes(sourceName) || schemaText.includes(sourceName)) {
+      setSchemaText(schemaText.filter(schemaText => schemaText !== sourceName));
+      return setSchemaId(schemaId.filter(schemaId => schemaId !== sourceName));
+    }
+    setSchemaText([...schemaText, sourceName]);
+    return setSchemaId([...schemaId, sourceName]);
   }
 
   useEffect(() => {
     async function buildSourceDetails() {
-      const objArray = [];
+      const sourcesData = [];
+      if (!sourceData?.src) {
+        return;
+      }
       for (const source in sourceData.src) {
         const sourceDetails = {
-          "name": sourceData.src[source].sourceInfo.name,
-          "description": sourceData.src[source].sourceInfo.description,
-          "dateCreated": await setDateCreated(sourceData.src[source].code.file),
-          "dateModified": sourceData.src[source].version,
-          "numberOfRecords": sourceData.src[source].stats[source],
-          "schema": sourceData.src[source].sourceInfo.schema,
+          name: sourceData.src[source].sourceInfo.name,
+          description: sourceData.src[source].sourceInfo.description,
+          dateCreated: await setDateCreated(sourceData.src[source].code.file),
+          dateModified: sourceData.src[source].version,
+          numberOfRecords: sourceData.src[source].stats[source],
+          schema: sourceData.src[source].sourceInfo.schema,
         };
-        objArray.push(sourceDetails);
-      };
-      objArray.sort((a, b) => a.name.localeCompare(b.name));
-      setSourcesArray(objArray);
-    };
+        sourcesData.push(sourceDetails);
+      }
+      sourcesData.sort((a, b) => a.name.localeCompare(b.name));
+      setSources(sourcesData);
+    }
     buildSourceDetails();
-  }, []);
-
-  const date = useCallback((data) => {
-    let dateString;
-    dateString = new Date(data);
-    return dateString.toDateString();
-  }, []);
-
+  }, [sourceData?.src]);
 
   return (
-    <div className='mb-10'>
-
-      <div
-        className="tab-content tab-space md:w-5/6 divide-y divide-light-blue-400 border-b-2"
-        key={'key'}
-      >
-        <div
-          className={
-            `text-gray-900 text-2xl p-2 mt-14 w-50 my-4 md:ml-8 font-bold `
-          }
-        >
+    <Box id='sources-main' mb={10}>
+      <Box borderBottom='2px solid' borderColor='gray.100'>
+        <Heading as='h1' size='h5' p={2} my={4} ml={[0, 0, 4]}>
           Version 1.0.0 Data Sources
-        </div>
+        </Heading>
+      </Box>
 
-      </div>
-
-      {sourcesArray.map((sourceObj, index) => {
+      {sources.map((sourceObj, index) => {
         return (
-          <div key={index} className={"tab-content pb-5 rounded-md border-2 border-niaid-blue/20 shadow-gray-400 shadow-sm m-2 tab-space md:w-5/6 divide-y divide-light-blue-400"}>
-            <div>
-              <section
-                className="flex flex-col"
-                id={`version${sourceObj.name}`}
+          <Box
+            id={`${sourceObj.name}`}
+            as='section'
+            key={index}
+            pb={5}
+            boxShadow='low'
+            borderRadius='semi'
+            borderColor='gray.200'
+            m={2}
+            p={[4, 4, 2]}
+          >
+            <Box
+              bg='tertiary.700'
+              boxShadow='low'
+              my={3}
+              mt={[4, 6]}
+              mx={[0, 0, 5]}
+              borderRadius='semi'
+              display='inline-flex'
+            >
+              <Heading
+                as='h2'
+                size='h6'
+                color='white'
+                mx={4}
+                display='inline'
+                wordBreak='break-word'
               >
-                <div
-                  className={`bg-niaid-blue h-auto leading-8 ml-2 md:ml-5 text-left font-bold shadow-lg mt-10 mb-3 text-white w-96 mr-2 rounded-md`}
-                >
-                  <span className="ml-4">{sourceObj.name}</span>
-                </div>
-                <div className=" md:ml-14 font-bold text-gray-900">
-                  {sourceObj.numberOfRecords.toLocaleString()} Records Available
-                </div>
-                <div className='md:ml-20 md:mr-20 ml-2 mr-2'>
-                  <div
-                    className="text-left mt-4 text-justify text-gray-900"
-                    dangerouslySetInnerHTML={{
-                      __html: sourceObj.description,
-                    }}
-                  ></div>
+                {sourceObj.name}
+              </Heading>
+            </Box>
+            <Text ml={{base: 2, md: 14}} fontWeight='bold'>
+              {sourceObj.numberOfRecords.toLocaleString()} Records Available
+            </Text>
+            <Box mx={[2, 2, 20]}>
+              <Box
+                mt={4}
+                dangerouslySetInnerHTML={{
+                  __html: sourceObj.description,
+                }}
+              />
 
-                  <div className='mt-2 font-bold text-gray-900 hidden sm:block'>
-                    <p> Visualization of {sourceObj.name} properties transformed to the NIAID Data Ecosystem</p>
-                    {schemaText.includes(sourceObj.name) &&
-                      <button id={sourceObj.name} className='bg-niaid-green-500 transition duration-300 hover:bg-niaid-green-600 text-white font-bold py-0 px-4 rounded mt-1 w-36' onClick={(e) => schemaIdFunc(e)}>Hide Schema</button>
-                      ||
-                      <button id={sourceObj.name} className='bg-niaid-green-500 transition duration-300 hover:bg-niaid-green-600 text-white font-bold py-0 px-4 rounded mt-1 w-36' onClick={(e) => schemaIdFunc(e)}>Show Schema</button>
-                    }
-                    {schemaId.includes(sourceObj.name) &&
-                      <div className='mt-4 transition-fade max-w-2xl relative overflow-x-auto shadow-md sm:rounded-lg'>
-                        <table className='w-full text-sm text-left text-gray-500 dark:text-gray-400'>
-                          <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-                            <tr>
-                              <th scope="col" className="px-6 py-3">
-                                {sourceObj.name} Property
-                              </th>
-                              <th scope="col" className="px-6 py-3">
-                                NIAID Data Ecosystem Property
-                              </th>
-                            </tr>
-                          </thead>
+              <Box mt={4} fontWeight='bold' display={['none', 'block']}>
+                <Heading as='h3' size='xs'>
+                  Visualization of {sourceObj.name} properties transformed to
+                  the NIAID Data Ecosystem
+                </Heading>
+                {(schemaText.includes(sourceObj.name) && (
+                  <Button
+                    id={`${sourceObj.name}-hide-button`}
+                    my={2}
+                    onClick={() => schemaIdFunc(sourceObj.name)}
+                  >
+                    Hide Schema
+                  </Button>
+                )) || (
+                  <Button
+                    id={`${sourceObj.name}-show-button`}
+                    onClick={() => schemaIdFunc(sourceObj.name)}
+                    my={2}
+                  >
+                    Show Schema
+                  </Button>
+                )}
+                <Collapse in={schemaId.includes(sourceObj.name)}>
+                  {schemaId.includes(sourceObj.name) && (
+                    <Box
+                      mt={4}
+                      position='relative'
+                      overflowX='auto'
+                      boxShadow='low'
+                      borderRadius={'semi'}
+                    >
+                      <Box
+                        as='table'
+                        w='100%'
+                        bg='#374151'
+                        color='whiteAlpha.800'
+                        textAlign='left'
+                        fontSize='sm'
+                      >
+                        <Box as='thead' textTransform={'uppercase'}>
+                          <tr>
+                            <Box as='th' scope='col' px={6} py={3}>
+                              {sourceObj.name} Property
+                            </Box>
+                            <Box as='th' scope='col' px={6} py={3}>
+                              NIAID Data Ecosystem Property
+                            </Box>
+                          </tr>
+                        </Box>
 
-                          <tbody className='bg-white border-b dark:bg-gray-800 dark:border-gray-700'>
-                            {Object.entries(sourceObj.schema).map((item) => {
-                              return (
-                                <tr key={item} className='bg-white border-b dark:bg-gray-800 dark:border-gray-700'>
-                                  {Object.entries(item).map((field) => {
-                                    return <td
-                                      key={field} className='px-6 py-2 font-medium text-gray-900 dark:text-white whitespace-nowrap'>{field[1]}</td>
-                                  })}
-                                </tr>
-                              );
-                            })}
-                          </tbody>
-                        </table>
-                      </div>
-                    }
-                  </div>
-                  <div className='mt-4 '>
-                    <div className="  font-bold text-gray-900">
-                      Latest Release {date(sourceObj.dateModified)}
-                    </div>
-                    <div className="  font-bold text-gray-900">
-                      First Released {date(sourceObj.dateCreated)}
-                    </div>
-                  </div>
-                </div>
-                <div className='text-center mt-2 mb-1  outline-none bg-transprent  text-white uppercase focus:outline-none cursor-pointer px-4 py-2 font-bold text-xs rounded-md shadow-sm ring-1 ring-slate-900/5 bg-niaid-green-500  dark:border-niaid-green-500  hover:bg-niaid-green-600 hover:text-white  transition duration-300 ml-20 mr-20 md:ml-20 md:mr-20 lg:w-2/5' >
-                  <a href='/?' target='_blank' className=' '>Search {sourceObj.name} records</a>
-                </div>
-              </section>
-            </div>
-          </div>
+                        <Box as='tbody' bg='#1F2937' border='gray.100'>
+                          {Object.entries(sourceObj.schema).map((item, i) => {
+                            return (
+                              <Box
+                                as='tr'
+                                key={item[0]}
+                                borderBottom='1px solid'
+                                borderColor='gray.700'
+                              >
+                                {Object.entries(item).map(field => {
+                                  return (
+                                    <Box
+                                      as='td'
+                                      key={`${field[0]}-${field[1]}`}
+                                      px={6}
+                                      py={2}
+                                      fontWeight='medium'
+                                      color='#fff'
+                                      whiteSpace='nowrap'
+                                    >
+                                      {field[1]}
+                                    </Box>
+                                  );
+                                })}
+                              </Box>
+                            );
+                          })}
+                        </Box>
+                      </Box>
+                    </Box>
+                  )}
+                </Collapse>
+              </Box>
+              <Box mt={4}>
+                <Heading as='h3' size='xs'>
+                  Latest Release {formatDate(sourceObj.dateModified, true)}
+                </Heading>
+                <Heading as='h3' size='xs'>
+                  First Released {formatDate(sourceObj.dateCreated, true)}
+                </Heading>
+              </Box>
+            </Box>
+            <Flex justifyContent='center' mt={4} mb={1}>
+              {/* [TO DO]: add repo source url */}
+              <Button
+                isExternal
+                href='/?'
+                wordBreak={'break-word'}
+                whiteSpace='normal'
+              >
+                Search {sourceObj.name} records
+              </Button>
+            </Flex>
+          </Box>
         );
       })}
-
-    </div >
-
-  )
+    </Box>
+  );
 };
 
 export default Main;

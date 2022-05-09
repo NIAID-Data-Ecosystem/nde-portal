@@ -1,6 +1,6 @@
 import axios from 'axios';
 import {formatAPIResource} from './helpers';
-import {FetchSearchResultsResponse} from './types';
+import {FetchSearchResultsResponse, Metadata} from './types';
 
 export const getResourceById = async (id?: string | string[]) => {
   if (!id) {
@@ -57,6 +57,23 @@ export const fetchSearchResults = async (params: Params) => {
     const facets: FetchSearchResultsResponse['facets'] = data.facets;
 
     return {results, total, facets};
+  } catch (err) {
+    throw err;
+  }
+};
+
+// get metadata
+export const fetchMetadata = async () => {
+  if (!process.env.NEXT_PUBLIC_API_URL) {
+    throw new Error('API url undefined');
+  }
+
+  try {
+    const {data} = (await axios.get(
+      `${process.env.NEXT_PUBLIC_API_URL}/metadata`,
+    )) as {data: Metadata};
+
+    return data;
   } catch (err) {
     throw err;
   }
