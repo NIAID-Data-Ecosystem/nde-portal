@@ -1,6 +1,6 @@
-import type {NextPage} from 'next';
-import {PageContainer, PageContent} from 'src/components/page-container';
-import {Main, Sidebar} from 'src/components/sources';
+import type { NextPage } from 'next';
+import { PageContainer, PageContent } from 'src/components/page-container';
+import SourcesUI, { Main, Sidebar } from 'src/components/sources';
 
 const Sources: NextPage = () => {
   return (
@@ -12,7 +12,7 @@ const Sources: NextPage = () => {
       py={0}
     >
       <PageContent w='100%' flexDirection='column' minW='740px'>
-        {/* Sources UI goes here. */}
+        <SourcesUI />
         <Main />
         <Sidebar />
       </PageContent>
