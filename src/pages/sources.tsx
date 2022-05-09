@@ -1,14 +1,22 @@
 import type {NextPage} from 'next';
 import React from 'react';
 import {useQuery} from 'react-query';
-import {Flex, UnorderedList} from 'nde-design-system';
+import {Button, Flex, UnorderedList} from 'nde-design-system';
 import {PageContainer, PageContent} from 'src/components/page-container';
 import {Main, Sidebar} from 'src/components/sources';
 import {fetchMetadata} from 'src/utils/api';
+import {Error, ErrorCTA} from 'src/components/error';
+import {useRouter} from 'next/router';
+import LoadingSpinner from 'src/components/loading';
 
 const Sources: NextPage = () => {
+  const router = useRouter();
   // Fetch metadata stats from API.
-  const {data: sourceData, isLoading} = useQuery(
+  const {
+    data: sourceData,
+    isLoading,
+    error,
+  } = useQuery(
     ['metadata'],
     fetchMetadata, // Don't refresh everytime window is touched.
     {refetchOnWindowFocus: false},
@@ -24,7 +32,16 @@ const Sources: NextPage = () => {
       py={0}
     >
       <Flex>
-        {sourceData && (
+        {error && (
+          <Error message="It's possible that the server is experiencing some issues.">
+            <ErrorCTA>
+              <Button onClick={() => router.reload()} variant='outline'>
+                Reload the page
+              </Button>
+            </ErrorCTA>
+          </Error>
+        )}
+        {!error && sourceData && (
           <>
             <Flex
               flexDirection='column'
@@ -48,11 +65,11 @@ const Sources: NextPage = () => {
             </Flex>
           </>
         )}
-        {sourceData && (
-          <PageContent w='100%' flexDirection='column' bg='#fff'>
-            <Main sourceData={sourceData} />
-          </PageContent>
-        )}
+
+        <PageContent w='100%' flexDirection='column' bg='#fff'>
+          {isLoading && <LoadingSpinner isLoading={true} />}
+          {!error && sourceData && <Main sourceData={sourceData} />}
+        </PageContent>
       </Flex>
     </PageContainer>
   );
