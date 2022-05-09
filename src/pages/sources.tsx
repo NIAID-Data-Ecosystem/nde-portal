@@ -67,11 +67,7 @@ const Sources: NextPage = () => {
         )}
 
         <PageContent w='100%' flexDirection='column' bg='#fff'>
-<<<<<<< HEAD
-          {isLoading && <LoadingSpinner isLoading={true} />}
-=======
           {isLoading && <LoadingSpinner isLoading={isLoading} />}
->>>>>>> f1a4df3fbab0bc6038a4ca4c2e00dcce740a382c
           {!error && sourceData && <Main sourceData={sourceData} />}
         </PageContent>
       </Flex>
