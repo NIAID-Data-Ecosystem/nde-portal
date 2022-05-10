@@ -297,7 +297,7 @@ const Home: NextPage = () => {
             </StyledSectionHeading>
 
             <StyledText
-              textAlign={['flex-start', 'center']}
+              textAlign={['start', 'center']}
               mt={4}
               fontSize={['lg', 'xl']}
               lineHeight='taller'
