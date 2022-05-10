@@ -62,7 +62,7 @@ export const StyledBody = styled(Box)<BoxProps>(props => ({}));
 
 StyledBody.defaultProps = {
   maxWidth: ['unset', 'unset', '410px'],
-  textAlign: ['flex-start', 'center', 'flex-start'],
+  textAlign: ['start', 'center', 'start'],
 };
 
 export const StyledSectionButtonGroup = styled(ButtonGroup)<ButtonGroupProps>(
