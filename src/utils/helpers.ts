@@ -122,9 +122,7 @@ export const formatDOI = (doi: FormattedResource['doi']) => {
 
 // Format number with thousands separator
 export const formatNumber = (number: number, separator: string = ',') => {
-  return number
-    .toString()
-    .replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, separator);
+  return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, separator);
 };
 
 // Retrieve img and name for license url.
