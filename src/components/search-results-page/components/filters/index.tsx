@@ -26,6 +26,7 @@ import {Filter} from './components/filter';
 import {fetchSearchResults} from 'src/utils/api';
 import {FaFilter} from 'react-icons/fa';
 import {NAV_HEIGHT} from 'src/components/page-container';
+import {formatType} from 'src/utils/api/helpers';
 
 /*
 [COMPONENT INFO]:
@@ -52,7 +53,7 @@ export const filtersConfig: {
 };
 
 export type SelectedFilterType = {
-  [key: string]: (string | number)[];
+  [key: string]: string[];
 };
 
 interface Filters {
@@ -109,17 +110,21 @@ export const Filters: React.FC<Filters> = ({
 
   // Fn for updating the filter items count when a filter checkbox is toggled.
   const updateFilterValues = (
+    prop: keyof Facet,
     items: FacetTerm[],
     facets: {data?: FacetTerm[]; isLoading?: boolean},
   ) => {
-    return items?.map(({term, count}) => {
+    return items.map(({term, count}) => {
       let updatedCount;
       if (!facets?.isLoading && facets?.data) {
         const updated = facets?.data.find(f => f.term === term);
         updatedCount = updated ? updated?.count || count : 0;
       }
 
-      return {count: updatedCount, term};
+      return {
+        count: updatedCount,
+        term: prop === '@type' ? formatType(term) : term,
+      };
     });
   };
 
@@ -160,10 +165,12 @@ export const Filters: React.FC<Filters> = ({
                 <Filter
                   key={prop}
                   name={filtersConfig[prop].name}
-                  values={updateFilterValues(data.facets[prop].terms, {
-                    isLoading: facetsData?.isLoading,
-                    data: facetsData?.data?.[prop].terms,
-                  })}
+                  values={
+                    updateFilterValues(prop, data.facets[prop].terms, {
+                      isLoading: facetsData?.isLoading,
+                      data: facetsData?.data?.[prop].terms,
+                    }) || []
+                  }
                   selectedFilters={selectedFilters[prop]}
                   handleSelectedFilters={v =>
                     handleSelectedFilters({[prop]: v})

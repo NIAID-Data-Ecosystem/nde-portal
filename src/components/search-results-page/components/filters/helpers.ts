@@ -1,4 +1,4 @@
-import {FacetTerm} from 'src/utils/api/types';
+import {formatType} from 'src/utils/api/helpers';
 
 // Filters + sorts all the filter terms that belong to a certain filter.
 export const filterFilterList = (
@@ -25,13 +25,29 @@ export const filterFilterList = (
   return {items: filteredTerms, hasMore: terms.length > size};
 };
 
+// Format the type of resource so that the query term is recognizable by the api.
+export const formatTypeForAPI = (types: string[]) => {
+  return types.map(type => {
+    let t = type.toLowerCase().replace(/ /g, '');
+    if (t === 'dataset') {
+      return 'Dataset';
+    } else if (t === 'computationaltool') {
+      return 'ComputationalTool';
+    } else {
+      return type;
+    }
+  });
+};
+
 // Convert filters object to string for url routing + api call.
 export const queryFilterObject2String = (selectedFilters: any) => {
   // create querystring for filters where values are provided.
   let filterString = Object.keys(selectedFilters)
     .filter(filterName => selectedFilters[filterName].length > 0)
     .map(filterName => {
-      let values = `("${selectedFilters[filterName].join('" OR "')}")`;
+      let values = `("${formatTypeForAPI(selectedFilters[filterName]).join(
+        '" OR "',
+      )}")`;
       return `${filterName}:${values}`;
     })
     .join(' AND ');
@@ -47,10 +63,16 @@ export const queryFilterString2Object = (str?: string | string[]) => {
   let queryObject = filters.reduce((r: any, filter) => {
     let filterKeyValue = filter.split(':');
     let name = filterKeyValue[0].replaceAll('("', '').replaceAll('")', '');
+
     let value = filterKeyValue[1]
       .replace('("', '')
       .replace('")', '')
       .split('" OR "');
+
+    if (name === '@type') {
+      value = value.map(v => formatType(v));
+    }
+
     r[name] = value;
     return r;
   }, {});

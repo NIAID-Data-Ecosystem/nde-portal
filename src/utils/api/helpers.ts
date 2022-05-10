@@ -3,7 +3,6 @@ import {
   Citation,
   Distribution,
   FormattedResource,
-  Funding,
   ResourceType,
   Funder,
 } from './types';
@@ -181,16 +180,14 @@ export const formatDistribution = (
   }
 };
 
-// Format the type of resource.
-export const formatType = (type: string | null): ResourceType | null => {
-  if (!type) {
-    return null;
-  } else if (type.toLowerCase() === 'dataset') {
-    return 'dataset';
+// Format the "type" of resource for display purposes.
+export const formatType = (type: string): ResourceType => {
+  if (type.toLowerCase() === 'dataset') {
+    return 'Dataset';
   } else if (type.toLowerCase() === 'computationaltool') {
-    return 'computational tool';
+    return 'Computational Tool';
   } else {
-    return 'other';
+    return 'Other';
   }
 };
 
@@ -198,7 +195,7 @@ export const formatAPIResource = (data: any) => {
   const formattedResource: FormattedResource = {
     ...data,
     id: data._id,
-    type: formatType(data['@type']),
+    type: data['@type'] ? formatType(data['@type']) : null,
     name: data.name || null,
     author: formatCreator(data.author) || formatCreator(data.creator),
     citation: formatCitation(data.citation),

@@ -145,7 +145,7 @@ export interface PropertyNameWithURL {
 }
 
 // Type of resouce.
-export type ResourceType = 'dataset' | 'computational tool' | 'other';
+export type ResourceType = 'Dataset' | 'Computational Tool' | 'Other';
 
 // Conditions of access for dataset or tool.
 export type AccessTypes =

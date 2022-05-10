@@ -158,7 +158,7 @@ const SearchResultsPage = () => {
       if (!data || data.total === undefined) {
         return prev;
       }
-      if (!isLoading && data?.total) {
+      if (!isLoading) {
         return data.total;
       }
       return prev;
@@ -310,7 +310,7 @@ const SearchResultsPage = () => {
                   filters,
                 });
               }}
-            ></FilterTags>
+            />
             <Flex w='100%'>
               <Filters
                 searchTerm={queryString}

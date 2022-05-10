@@ -73,6 +73,10 @@ export const Pagination: React.FC<PaginationProps> = ({
     });
   }, [total, isLoading, selectedPerPage]);
 
+  // If no results, don't display pagination options
+  if (!total) {
+    return null;
+  }
   return (
     <StyledPagination
       id='pagination'
