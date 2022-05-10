@@ -64,7 +64,7 @@ const ResourceAuthors = ({authors}: {authors: FormattedResource['author']}) => {
                     {authors.length === 1 ? '' : '.'}
                   </Heading>
                 </Box>
-                <Flex alignItems='end'>
+                <Flex alignItems='flex-end'>
                   <Flex alignItems='center'>
                     <Text fontSize='xs' fontWeight='light' mx={1}>
                       {isExpanded ? 'collapse' : 'expand'}

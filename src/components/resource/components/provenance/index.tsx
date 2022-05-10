@@ -31,7 +31,7 @@ const Provenance: React.FC<Provenance> = ({
 
   return (
     <Skeleton isLoaded={!isLoading}>
-      <Stack spacing={4} alignItems='start'>
+      <Stack spacing={4} alignItems='flex-start'>
         {includedInDataCatalog?.name ? (
           <Stat>
             <dd>

@@ -34,7 +34,7 @@ export const SortResults: React.FC<SortResultsProps> = ({
       flexDirection={['column', 'row']}
       w={['100%', 'unset']}
       bg='white'
-      justifyContent='end'
+      justifyContent='flex-end'
       p={1}
     >
       {/* Sort Order dropdown. */}

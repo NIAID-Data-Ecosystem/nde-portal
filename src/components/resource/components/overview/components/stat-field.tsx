@@ -71,7 +71,7 @@ const StatField: React.FC<MetadataStatProps> = ({
           <LoadingSpinner
             isLoading={isLoading}
             size='md'
-            justifyContent='start'
+            justifyContent='flex-start'
             px={0}
           />
         ) : (

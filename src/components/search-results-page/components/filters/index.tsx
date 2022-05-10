@@ -204,7 +204,7 @@ export const Filters: React.FC<Filters> = ({
         p={0}
         transition='0.3s ease-in-out !important'
         overflow='hidden'
-        justifyContent='start'
+        justifyContent='flex-start'
         _hover={{
           width: '12rem',
         }}

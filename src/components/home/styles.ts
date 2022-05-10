@@ -34,7 +34,7 @@ StyledSection.defaultProps = {
   py: [2, 4, 8],
   flexWrap: ['wrap', 'wrap', 'nowrap'],
   flexDirection: ['column', 'column', 'row'],
-  alignItems: ['start', 'center', 'center'],
+  alignItems: ['flex-start', 'center', 'center'],
   justifyContent: ['center', 'center', 'center', 'space-between'],
   maxWidth: ['100%', '100%', '1280px'],
 };
@@ -62,7 +62,7 @@ export const StyledBody = styled(Box)<BoxProps>(props => ({}));
 
 StyledBody.defaultProps = {
   maxWidth: ['unset', 'unset', '410px'],
-  textAlign: ['start', 'center', 'start'],
+  textAlign: ['flex-start', 'center', 'flex-start'],
 };
 
 export const StyledSectionButtonGroup = styled(ButtonGroup)<ButtonGroupProps>(
@@ -74,7 +74,7 @@ StyledSectionButtonGroup.defaultProps = {
   my: [6, 6],
   spacing: [0, 4],
   w: '100%',
-  justifyContent: ['start', 'center', 'start'],
+  justifyContent: ['flex-start', 'center', 'flex-start'],
   // max size for buttons in button group
   sx: {a: {maxWidth: 300}},
 };

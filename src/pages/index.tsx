@@ -204,7 +204,7 @@ const Home: NextPage = () => {
           <StyledSection
             id='header'
             flexDirection={'column'}
-            alignItems={{base: 'start', xl: 'center'}}
+            alignItems={{base: 'flex-start', xl: 'center'}}
             textAlign={{xl: 'center'}}
           >
             <Box maxW='600px'>
@@ -297,7 +297,7 @@ const Home: NextPage = () => {
             </StyledSectionHeading>
 
             <StyledText
-              textAlign={['start', 'center']}
+              textAlign={['flex-start', 'center']}
               mt={4}
               fontSize={['lg', 'xl']}
               lineHeight='taller'

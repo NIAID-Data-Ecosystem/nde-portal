@@ -95,7 +95,7 @@ export default function PieChart({
   return (
     <Flex
       alignItems={['center', 'center']}
-      justifyContent={['start', 'center', 'start']}
+      justifyContent={['flex-start', 'center', 'flex-start']}
       flexDirection={['row']}
       flexWrap={['wrap', 'wrap', 'wrap', 'nowrap']}
     >

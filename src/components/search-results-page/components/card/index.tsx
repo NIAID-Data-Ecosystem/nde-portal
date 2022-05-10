@@ -84,7 +84,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
     }
     return (
       <Flex
-        justifyContent={['end']}
+        justifyContent={['flex-end']}
         alignItems='center'
         w={['100%', 'unset']}
         flex={[1, 'unset']}
@@ -173,7 +173,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
             <ToggleContainer
               ariaLabel='Show all authors.'
               noOfLines={1}
-              justifyContent='start'
+              justifyContent='flex-start'
               m={0}
               px={paddingCard}
               py={2}
@@ -351,7 +351,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                 my={0}
                 flexDirection='row'
                 flexWrap='wrap'
-                alignItems='end'
+                alignItems='flex-end'
               >
                 {includedInDataCatalog?.name && (
                   <Box minW={['250px']} mb={[2, 2, 0]}>
@@ -394,7 +394,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                     flex={1}
                     mt={[2, 2, 0]}
                     flexDirection='column'
-                    alignItems={['start', 'end']}
+                    alignItems={['flex-start', 'flex-end']}
                   >
                     <Text
                       fontSize='xs'
@@ -439,7 +439,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
           py={2}
         >
           {id && (
-            <Flex w='100%' justifyContent='end'>
+            <Flex w='100%' justifyContent='flex-end'>
               <NextLink
                 href={{
                   pathname: '/resources/',

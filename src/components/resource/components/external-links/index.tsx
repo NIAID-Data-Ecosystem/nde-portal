@@ -55,7 +55,7 @@ const ExternalLinks: React.FC<ExternalLinks> = ({
         {includedInDataCatalog?.name && (
           <Flex
             flexDirection='column'
-            alignItems='start'
+            alignItems='flex-start'
             flexWrap='wrap'
             minW='200px'
             maxW='350px'
@@ -80,7 +80,7 @@ const ExternalLinks: React.FC<ExternalLinks> = ({
         {mainEntityOfPage && (
           <Flex
             flexDirection='column'
-            alignItems='start'
+            alignItems='flex-start'
             flexWrap='wrap'
             minW='200px'
             maxW='350px'
@@ -99,7 +99,7 @@ const ExternalLinks: React.FC<ExternalLinks> = ({
         {codeRepository && (
           <Flex
             flexDirection='column'
-            alignItems='start'
+            alignItems='flex-start'
             flexWrap='wrap'
             minW='200px'
             maxW='350px'

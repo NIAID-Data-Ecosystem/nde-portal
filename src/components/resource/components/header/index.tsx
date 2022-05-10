@@ -25,7 +25,7 @@ const Header: React.FC<HeaderProps> = ({
       <Skeleton isLoaded={!isLoading} w='100%' p={2}>
         {/* Level of access to resource from open to restricted*/}
         {conditionsOfAccess && (
-          <Flex w='100%' justifyContent='end'>
+          <Flex w='100%' justifyContent='flex-end'>
             <AccessBadge conditionsOfAccess={conditionsOfAccess}>
               {conditionsOfAccess}
             </AccessBadge>
