@@ -6,7 +6,7 @@ module.exports = {
   reactStrictMode: true,
   distDir: 'dist',
   trailingSlash: true,
-  assetPrefix: isProd ? `/${process.env.ASSET_PREFIX}` : '',
+  assetPrefix: isProd ? `${process.env.ASSET_PREFIX}` : '',
   // Prefix hyperlinks with the base path.
   basePath: isProd ? `/${process.env.BASE_PREFIX}` : '',
   // [NOTE]:For public environment variables only.
