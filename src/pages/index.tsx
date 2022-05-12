@@ -263,7 +263,7 @@ const Home: NextPage = () => {
                     e.preventDefault();
 
                     router.push({
-                      pathname: `/search`,
+                      pathname: `${env.BASE_URL}/search`,
                       query: {q: searchTerm.trim()},
                     });
                   }}

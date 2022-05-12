@@ -10,6 +10,6 @@ module.exports = {
 
   env: {
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
-    BASE_URL: '/portal',
+    BASE_URL: isProd ? process.env.BASE_URL : '',
   },
 };

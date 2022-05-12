@@ -41,6 +41,7 @@ import Banner from '../banner';
 import {formatNumber} from 'src/utils/helpers';
 import {SortResults} from './components/sort';
 import ResultsCount from './components/count';
+import {env} from 'next.config';
 
 /*
 [COMPONENT INFO]:
@@ -216,7 +217,7 @@ const SearchResultsPage = () => {
   const updateRoute = (update: {}) => {
     router.push(
       {
-        // pathname: `/search`,
+        pathname: `${env.BASE_URL}/search`,
         query: {
           ...router.query,
           ...update,
