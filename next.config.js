@@ -7,7 +7,9 @@ module.exports = {
   trailingSlash: true,
   assetPrefix: '',
   basePath: '',
+
   env: {
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
+    BASE_URL: '/portal',
   },
 };
