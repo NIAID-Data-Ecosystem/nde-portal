@@ -4,7 +4,7 @@ import navItems from 'configs/nav.json';
 import footerItems from 'configs/footer.json';
 import Head from 'next/head';
 import Notice from './notice';
-import {env} from 'next.config';
+import {basePath} from 'next.config';
 import {SearchBar} from 'src/components/search-bar';
 
 interface PageContainerProps extends FlexProps {
@@ -33,7 +33,7 @@ export const PageContainer: React.FC<PageContainerProps> = ({
       }
       return {
         ...r,
-        href: `${env.BASE_PREFIX}${r['href']}${
+        href: `${basePath}${r['href']}${
           r['href'].slice(-1) === '/' ? '' : '/'
         }`,
       };

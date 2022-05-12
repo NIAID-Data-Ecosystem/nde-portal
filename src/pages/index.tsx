@@ -32,7 +32,7 @@ import {
   StyledBody,
   StyledSectionButtonGroup,
 } from 'src/components/home/styles';
-import {assetPrefix, env} from 'next.config';
+import {assetPrefix, basePath} from 'next.config';
 import NextLink from 'next/link';
 
 const sample_queries = [
@@ -62,10 +62,7 @@ const QuickQueryLink: React.FC<QuickQueryLinkProps> = ({
     return null;
   }
   return (
-    <NextLink
-      href={{pathname: `${env.BASE_PREFIX}/search`, query: {q: queryString}}}
-      passHref
-    >
+    <NextLink href={{pathname: '/search', query: {q: queryString}}} passHref>
       <Link
         mx={2}
         color='whiteAlpha.800'
@@ -314,7 +311,7 @@ const Home: NextPage = () => {
                   return (
                     <Button
                       key={route.title}
-                      href={`${env.BASE_PREFIX}${route.path}`}
+                      href={`${basePath}${route.path}`}
                       w='100%'
                       my={2}
                       target='_self'
