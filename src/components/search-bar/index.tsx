@@ -2,7 +2,6 @@ import React, {useEffect, useState} from 'react';
 import {SearchInput} from 'nde-design-system';
 import {useRouter} from 'next/router';
 import {PageContent} from '../page-container';
-import {env} from 'next.config';
 
 export const SearchBar = ({
   value,
@@ -50,7 +49,7 @@ export const SearchBar = ({
         handleSubmit={e => {
           e.preventDefault();
           router.push({
-            pathname: `${env.BASE_URL}/search`,
+            pathname: `/search`,
             query: {q: searchTerm.trim(), from: 1},
           });
         }}

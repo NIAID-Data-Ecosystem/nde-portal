@@ -62,10 +62,7 @@ const QuickQueryLink: React.FC<QuickQueryLinkProps> = ({
     return null;
   }
   return (
-    <NextLink
-      href={{pathname: `${env.BASE_URL}/search`, query: {q: queryString}}}
-      passHref
-    >
+    <NextLink href={{pathname: `/search`, query: {q: queryString}}} passHref>
       <Link
         mx={2}
         color='whiteAlpha.800'
@@ -263,7 +260,7 @@ const Home: NextPage = () => {
                     e.preventDefault();
 
                     router.push({
-                      pathname: `${env.BASE_URL}/search`,
+                      pathname: `/search`,
                       query: {q: searchTerm.trim()},
                     });
                   }}
