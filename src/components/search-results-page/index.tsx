@@ -215,9 +215,10 @@ const SearchResultsPage = () => {
 
   // Update the route to reflect changes on page without re-render.
   const updateRoute = (update: {}) => {
+    console.log(router);
     router.push(
       {
-        pathname: `${env.BASE_URL}/search`,
+        // pathname: `${env.BASE_URL}/search`,
         query: {
           ...router.query,
           ...update,
