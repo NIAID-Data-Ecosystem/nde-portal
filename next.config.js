@@ -4,7 +4,7 @@ const isProd = process.env.NODE_ENV === 'production';
 
 module.exports = {
   reactStrictMode: true,
-  trailingSlash: true,
+  // trailingSlash: true,
   assetPrefix: '',
   basePath: '',
   env: {
