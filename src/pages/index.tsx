@@ -37,16 +37,48 @@ import NextLink from "next/link";
 
 const sample_queries = [
   {
-    title: "E. coli",
+    title: "Asthma",
+    searchTerms: ['"Asthma"'],
+  },
+  {
+    title: "Covid-19",
     searchTerms: [
-      '"E.coli"',
-      '"Escherichia coli"',
-      '"Shiga Toxin-Producing E.coli"',
-      '"STEC"',
+      '"SARS-CoV-2"',
+      ' "Covid-19"',
+      ' "Wuhan coronavirus"',
+      ' "Wuhan pneumonia"',
+      ' "2019-nCoV"',
+      ' "HCoV-19"',
     ],
   },
-  { title: "Tuberculosis", searchTerms: ['"Tuberculosis"', '"TB"'] },
-  { title: "Ebola", searchTerms: ['"Ebola"', '"EBOV"', '"EVD"'] },
+  {
+    title: "HIV/AIDS",
+    searchTerms: ['"HIV"', '"AIDS"'],
+  },
+  { title: "Influenza", searchTerms: ['"Influenza"', '"Flu"'] },
+  {
+    title: "Malaria",
+    searchTerms: [
+      '"Malaria"',
+      '"Plasmodium falciparum"',
+      '"Plasmodium malariae"',
+      '"Plasmodium ovale curtisi"',
+      '"Plasmodium ovale wallikeri"',
+      '"Plasmodium vivax"',
+      '"Plasmodium knowlesi"',
+    ],
+  },
+  {
+    title: "Tuberculosis",
+    searchTerms: [
+      '"Tuberculosis"',
+      '"Mycobacterium bovis"',
+      '"Mycobacterium africanum"',
+      '"Mucobacterium canetti"',
+      '"Mycobacterium microti"',
+      '"Phthisis"',
+    ],
+  },
 ];
 
 interface QuickQueryLinkProps {
