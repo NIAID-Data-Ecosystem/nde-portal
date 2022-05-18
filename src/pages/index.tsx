@@ -8,6 +8,7 @@ import {
   Icon,
   Image,
   Link,
+  LinkProps,
   SearchInput,
   SimpleGrid,
   Text,
@@ -81,7 +82,7 @@ const sample_queries = [
   },
 ];
 
-interface QuickQueryLinkProps {
+interface QuickQueryLinkProps extends LinkProps {
   title: string;
   queryString: string;
 }
@@ -89,6 +90,7 @@ interface QuickQueryLinkProps {
 const QuickQueryLink: React.FC<QuickQueryLinkProps> = ({
   title,
   queryString,
+  ...props
 }) => {
   if (!title || !queryString) {
     return null;
@@ -107,6 +109,7 @@ const QuickQueryLink: React.FC<QuickQueryLinkProps> = ({
           svg: { transform: "translateX(0)", transition: "0.2s ease-in-out" },
         }}
         _visited={{ color: "white" }}
+        {...props}
       >
         <Text>{title}</Text>
         <Icon
@@ -123,7 +126,7 @@ const QuickQueryLink: React.FC<QuickQueryLinkProps> = ({
 
 const Home: NextPage = () => {
   const router = useRouter();
-  const size = useBreakpointValue({ base: 200, sm: 200, lg: 200, xl: 200 });
+  const size = useBreakpointValue({ base: 200, sm: 200, lg: 250, xl: 300 });
 
   // Search term entered in search bar
   const [searchTerm, setSearchTerm] = useState("");
@@ -304,12 +307,13 @@ const Home: NextPage = () => {
                   <Text color="whiteAlpha.800" mr={2}>
                     Try:
                   </Text>
-                  {sample_queries.map((query) => {
+                  {sample_queries.map((query, i) => {
                     return (
                       <QuickQueryLink
                         key={query.title}
                         title={query.title}
                         queryString={query.searchTerms.join(" OR ")}
+                        display={[i > 2 ? "none" : "block", "block"]}
                       />
                     );
                   })}
@@ -428,7 +432,7 @@ const Home: NextPage = () => {
                   width={size || 200}
                   height={size || 200}
                   data={stats.repositories.stats.sort(
-                    (a, b) => a.count - b.count
+                    (a, b) => b.count - a.count
                   )}
                 ></PieChart>
               )}
