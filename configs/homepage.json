@@ -11,11 +11,12 @@
       "routes": [
         {
           "title": "Get started",
-          "path": "/getting-started"
+          "path": "https://niaid-data.readme.io/",
+          "isExternal": true
         },
         {
           "title": "Learn More",
-          "path": "/about"
+          "path": "https://data-staging.niaid.nih.gov/about"
         }
       ]
     },
@@ -25,7 +26,7 @@
       "routes": [
         {
           "title": "Suggest a new source",
-          "path": "https://github.com/biothings/metadataplus/issues/new/choose",
+          "path": "https://github.com/NIAID-Data-Ecosystem/nde-crawlers",
           "isExternal": true
         }
       ]
@@ -36,7 +37,7 @@
       "routes": [
         {
           "title": "Go to workspace",
-          "path": "http://workspace.niaiddata.org/",
+          "path": "https://accounts.niaiddata.org/auth/login",
           "isExternal": true
         }
       ]

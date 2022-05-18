@@ -6,11 +6,12 @@
         {
           "label": "Discovery Portal",
           "routes": [
-            {"label": "Search", "href": "/"},
+            { "label": "Search", "href": "/" },
 
-            {"label": "About", "href": "/about"},
-
-            {"label": "Getting Started", "href": "/getting-started"},
+            {
+              "label": "About",
+              "href": "https://data-staging.niaid.nih.gov/about"
+            },
 
             {
               "label": "Resources",
@@ -23,7 +24,7 @@
                 {
                   "label": "Schemas",
                   "subLabel": "Dataset and Computational Tool schemas",
-                  "href": "/schema"
+                  "href": "https://discovery.biothings.io/portal/niaid"
                 },
                 {
                   "label": "Documentation",
@@ -40,7 +41,7 @@
           "routes": [
             {
               "label": "Go to workspace",
-              "href": "/#",
+              "href": "https://accounts.niaiddata.org/auth/login",
               "isExternal": true
             }
           ]
