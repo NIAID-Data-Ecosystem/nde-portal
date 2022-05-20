@@ -3,7 +3,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build && next export",
+    "build": "next build",
     "build:staging": "env-cmd -f .env.staging yarn build",
     "start": "next start",
     "lint": "next lint"
@@ -23,7 +23,7 @@
     "env-cmd": "^10.1.0",
     "framer-motion": "^4",
     "lodash": "^4.17.21",
-    "nde-design-system": "^0.2.46",
+    "nde-design-system": "^0.2.51",
     "next": "^12.1.0",
     "react": "17.0.2",
     "react-dom": "17.0.2",

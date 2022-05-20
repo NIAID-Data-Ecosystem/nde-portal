@@ -1,13 +1,13 @@
-import sourceData from 'configs/resource-sources.json';
-import {Citation, FormattedResource} from './api/types';
+import sourceData from "configs/resource-sources.json";
+import { Citation, FormattedResource } from "./api/types";
 
 // Get image for repo based on config.
 export const getRepositoryImage = (repoName: string) => {
   if (!repoName) {
     return null;
   }
-  const {repositories} = sourceData;
-  const sourceRepoIndex = repositories.findIndex(source => {
+  const { repositories } = sourceData;
+  const sourceRepoIndex = repositories.findIndex((source) => {
     return source.sourceName.toLowerCase().includes(repoName.toLowerCase());
   });
 
@@ -19,31 +19,31 @@ export const getRepositoryImage = (repoName: string) => {
 
 // Format authors name string with a given separator
 export const formatAuthorsList2String = (
-  authorsData: FormattedResource['author'],
-  separator: string = ',',
-  maxLength?: number,
+  authorsData: FormattedResource["author"],
+  separator: string = ",",
+  maxLength?: number
 ) => {
   if (!authorsData) {
-    return '';
+    return "";
   }
   let authors = !Array.isArray(authorsData) ? [authorsData] : authorsData;
 
   let author_list = authors.map((author, i) => {
     // Not author name fields exist.
-    let author_name = '';
+    let author_name = "";
 
     if (author.name) {
       author_name = author.name;
 
       // If name has comma format so that first name goes after last name.
       // [NOTE]: might cause issues. Not sure this is the best way of handling.
-      if (author.name.includes(',')) {
-        let [familyName, givenName] = author.name.split(',');
+      if (author.name.includes(",")) {
+        let [familyName, givenName] = author.name.split(",");
         author_name = `${givenName} ${familyName}`;
       }
     } else if (author.givenName || author.familyName) {
-      author_name = `${author.givenName ? `${author.givenName} ` : ''}${
-        author?.familyName || ''
+      author_name = `${author.givenName ? `${author.givenName} ` : ""}${
+        author?.familyName || ""
       }`;
     }
 
@@ -63,19 +63,19 @@ export const formatAuthorsList2String = (
 
   // If max length is provided, cut off author list string and add et al.
   if (maxLength && author_list.length > maxLength) {
-    return author_list.slice(0, maxLength).join(' ') + ' et al';
+    return author_list.slice(0, maxLength).join(" ") + " et al";
   }
 
-  return author_list.join(' ');
+  return author_list.join(" ");
 };
 
 // Add punctuation to end of string if needed.
 export const shouldAppendPunctuation = (
   str: string | null,
-  symbol: string = '.',
+  symbol: string = "."
 ) => {
   if (!str) {
-    return '';
+    return "";
   }
   return str.slice(-1) === symbol ? str : str + symbol;
 };
@@ -87,16 +87,16 @@ export const formatCitationString = (citation: Citation) => {
 
   const year = citation.datePublished
     ? `${new Date(citation.datePublished).getUTCFullYear()}`
-    : '';
+    : "";
 
-  const journal = citation.journalName ? `${formatJournal(citation)}` : '';
+  const journal = citation.journalName ? `${formatJournal(citation)}` : "";
 
-  const pmid = citation.pmid ? `PubMed PMID: ${citation.pmid}` : '';
+  const pmid = citation.pmid ? `PubMed PMID: ${citation.pmid}` : "";
 
   return `${shouldAppendPunctuation(authors)} ${shouldAppendPunctuation(
-    citation.name,
+    citation.name
   )} ${shouldAppendPunctuation(journal)} ${shouldAppendPunctuation(
-    year,
+    year
   )} ${shouldAppendPunctuation(pmid)}`;
 };
 
@@ -106,75 +106,78 @@ export const formatDate = (date: Date | string, full?: boolean) => {
   if (full) {
     return date_str;
   }
-  return date_str.split(' ').slice(1).join(' ');
+  return date_str.split(" ").slice(1).join(" ");
 };
 
 // Format DOI if url is included in string.
-export const formatDOI = (doi: FormattedResource['doi']) => {
+export const formatDOI = (doi: FormattedResource["doi"]) => {
   if (!doi) {
     return null;
   }
-  if (doi.includes('https://doi.org/')) {
-    return doi?.split('https://doi.org/')[1];
+  if (doi.includes("https://doi.org/")) {
+    return doi?.split("https://doi.org/")[1];
   }
   return doi;
 };
 
 // Format number with thousands separator
-export const formatNumber = (number: number, separator: string = ',') => {
+export const formatNumber = (number: number, separator: string = ",") => {
   return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, separator);
 };
 
 // Retrieve img and name for license url.
 export const formatLicense = (license: string) => {
   const formattedLicense = {
-    type: '',
-    title: '',
-    img: '',
-    url: '',
+    type: "",
+    title: "",
+    img: "",
+    url: "",
   };
 
-  if (license.includes('http')) {
+  if (license.includes("http")) {
     formattedLicense.url = license;
-    if (license.includes('by/4.0/')) {
-      formattedLicense.type = 'Attribution';
-      formattedLicense.title = 'Attribution 4.0 International (CC BY 4.0)';
-      formattedLicense.img = '/assets/copyright/by.png';
-    } else if (license.includes('by-sa/4.0/')) {
-      formattedLicense.type = 'Attribution-ShareAlike';
+    if (license.includes("by/4.0/")) {
+      formattedLicense.type = "Attribution";
+      formattedLicense.title = "Attribution 4.0 International (CC BY 4.0)";
+      formattedLicense.img = "/assets/copyright/by.png";
+    } else if (license.includes("by-sa/4.0/")) {
+      formattedLicense.type = "Attribution-ShareAlike";
       formattedLicense.title =
-        'Attribution-ShareAlike 4.0 International (CC BY-SA 4.0)';
-      formattedLicense.img = '/assets/copyright/by-sa.png';
-    } else if (license.includes('by-nd/4.0/')) {
-      formattedLicense.type = 'Attribution-NoDerivs';
+        "Attribution-ShareAlike 4.0 International (CC BY-SA 4.0)";
+      formattedLicense.img = "/assets/copyright/by-sa.png";
+    } else if (license.includes("by-nd/4.0/")) {
+      formattedLicense.type = "Attribution-NoDerivs";
       formattedLicense.title =
-        'Attribution-NoDerivatives 4.0 International (CC BY-ND 4.0)';
-      formattedLicense.img = '/assets/copyright/by-nd.png';
-    } else if (license.includes('by-nc/4.0/')) {
-      formattedLicense.type = 'Attribution-NonCommercial';
+        "Attribution-NoDerivatives 4.0 International (CC BY-ND 4.0)";
+      formattedLicense.img = "/assets/copyright/by-nd.png";
+    } else if (license.includes("by-nc/4.0/")) {
+      formattedLicense.type = "Attribution-NonCommercial";
       formattedLicense.title =
-        'Attribution-NonCommercial 4.0 International (CC BY-NC 4.0)';
-      formattedLicense.img = '/assets/copyright/by-nc.png';
-    } else if (license.includes('by-nc-sa/4.0/')) {
-      formattedLicense.type = 'Attribution-NonCommercial-ShareAlike';
+        "Attribution-NonCommercial 4.0 International (CC BY-NC 4.0)";
+      formattedLicense.img = "/assets/copyright/by-nc.png";
+    } else if (license.includes("by-nc-sa/4.0/")) {
+      formattedLicense.type = "Attribution-NonCommercial-ShareAlike";
       formattedLicense.title =
-        'Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)';
-      formattedLicense.img = '/assets/copyright/by-nc-sa.png';
-    } else if (license.includes('by-nc-nd/4.0/')) {
-      formattedLicense.type = 'Attribution-NonCommercial-NoDerivs';
+        "Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)";
+      formattedLicense.img = "/assets/copyright/by-nc-sa.png";
+    } else if (license.includes("by-nc-nd/4.0/")) {
+      formattedLicense.type = "Attribution-NonCommercial-NoDerivs";
       formattedLicense.title =
-        'Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)';
-      formattedLicense.img = '/assets/copyright/by-nc-nd.png';
-    } else if (license.includes('zero/1.0/')) {
-      formattedLicense.type = 'Public Domain';
+        "Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)";
+      formattedLicense.img = "/assets/copyright/by-nc-nd.png";
+    } else if (
+      license.includes("zero/1.0/") ||
+      license.includes("/public-domain/cc0/")
+    ) {
+      formattedLicense.type = "Public Domain";
       formattedLicense.title =
-        'CC0 1.0 Universal (CC0 1.0) Public Domain Dedication';
-      formattedLicense.img = '/assets/copyright/by-p.png';
-    } else if (license.includes('immport')) {
-      formattedLicense.type = 'Immport';
+        "CC0 1.0 Universal (CC0 1.0) Public Domain Dedication";
+      formattedLicense.img = "/assets/copyright/by-p.png";
+    } else if (license.includes("immport")) {
+      formattedLicense.type = "Immport";
       formattedLicense.title =
-        'User Agreement for the NIAID Immunology Database and Analysis Portal (ImmPort)';
-      formattedLicense.img = '/assets/resources/immport.png';
+        "User Agreement for the NIAID Immunology Database and Analysis Portal (ImmPort)";
+      formattedLicense.img = "/assets/resources/immport.png";
     } else {
       formattedLicense.title = license;
       formattedLicense.url = license;
@@ -188,19 +191,19 @@ export const formatLicense = (license: string) => {
 };
 
 export const formatJournal = (citation: Citation) => {
-  let name = '';
+  let name = "";
   if (citation.journalName) {
     name = citation.journalName;
   } else if (citation.journalNameAbbrev) {
     name = citation.journalNameAbbrev;
   }
 
-  const {volumeNumber, issueNumber} = citation;
+  const { volumeNumber, issueNumber } = citation;
 
   // Remove commas, periods.
-  const formatStr = (str: string) => str.replace(/[,.]/g, '');
+  const formatStr = (str: string) => str.replace(/[,.]/g, "");
 
   return `${formatStr(name)}${
-    volumeNumber ? `, volume ${formatStr(volumeNumber)}` : ''
-  }${issueNumber ? `, issue ${formatStr(issueNumber)}` : ''}`;
+    volumeNumber ? `, volume ${formatStr(volumeNumber)}` : ""
+  }${issueNumber ? `, issue ${formatStr(issueNumber)}` : ""}`;
 };
