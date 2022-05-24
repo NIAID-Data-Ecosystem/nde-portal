@@ -258,7 +258,6 @@ const SearchResultsPage = () => {
     }
   }, [data]);
 
-  console.log(data);
   if (!hasMounted || !router.isReady) {
     return null;
   }

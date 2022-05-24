@@ -11,6 +11,8 @@ import {
   CardBody,
   CardFooter,
   CardTitle,
+  Center,
+  Divider,
   Flex,
   Heading,
   Icon,
@@ -25,6 +27,7 @@ import {
   UnorderedList,
   VisuallyHidden,
   BoxProps,
+  SimpleGrid,
 } from 'nde-design-system';
 import {
   FaArrowAltCircleRight,
@@ -46,6 +49,7 @@ import {
 } from 'src/components/resource-sections/components';
 import { assetPrefix } from 'next.config';
 import NextLink from 'next/link';
+import Glyph from 'src/components/glyph';
 
 interface SearchResultCardProps {
   isLoading?: boolean;
@@ -55,7 +59,6 @@ interface SearchResultCardProps {
 const SearchResultCard: React.FC<SearchResultCardProps> = ({
   isLoading,
   data,
-  ...props
 }) => {
   const {
     id,
@@ -69,6 +72,11 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
     conditionsOfAccess,
     measurementTechnique,
     variableMeasured,
+    species,
+    infectiousAgent,
+    infectiousDisease,
+    healthCondition,
+    topic,
     doi,
     includedInDataCatalog,
     url,
@@ -100,6 +108,68 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
           {conditionsOfAccess}
         </AccessBadge>
       </Flex>
+    );
+  };
+
+  interface StyledStatProps extends BoxProps {
+    label: string;
+  }
+  const StyledStat: React.FC<StyledStatProps> = ({
+    label,
+    children,
+    ...props
+  }) => {
+    return (
+      <Stat
+        p={0}
+        border='0.625px solid'
+        borderRadius={'semi'}
+        borderColor={!children ? 'gray.100' : 'gray.200'}
+        {...props}
+      >
+        <Flex
+          alignItems='center'
+          pb={0}
+          bg={!children ? 'gray.100' : 'secondary.50'}
+        >
+          <Icon
+            viewBox='0 0 200 200'
+            color='gray.200'
+            m={2}
+            opacity={children ? 1 : 0.6}
+          >
+            <Glyph stroke='currentColor' fill='currentColor' />
+          </Icon>
+          <StatLabel
+            color={'text.body'}
+            fontSize='sm'
+            pl={1}
+            fontWeight='medium'
+            opacity={children ? 1 : 0.8}
+          >
+            {label} :
+          </StatLabel>
+        </Flex>
+
+        <Box
+          as='dd'
+          m={2}
+          mt={0}
+          p={2}
+          borderTop='0.625px solid'
+          borderColor='gray.100'
+          opacity={children ? 1 : 0.4}
+          color={'text.heading'}
+          fontSize='md'
+        >
+          {children || (
+            <Box w='100%' h='1rem'>
+              --
+              <VisuallyHidden>No data available.</VisuallyHidden>
+            </Box>
+          )}
+        </Box>
+      </Stat>
     );
   };
 
@@ -218,6 +288,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
               my={0}
               borderColor='transparent'
               justifyContent='space-between'
+              _hover={{ bg: 'page.alt' }}
               _focus={{ outlineColor: 'transparent', bg: 'white' }}
               alignIcon='center'
             >
@@ -230,6 +301,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                 }}
               ></Box>
             </ToggleContainer>
+
             {/* Details expandable drawer */}
             <Accordion allowToggle p={0} pt={1}>
               <AccordionItem>
@@ -238,8 +310,8 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                     <h2>
                       <AccordionButton
                         px={paddingCard}
-                        bg={isExpanded ? 'status.info_lt' : 'white'}
-                        _hover={{ bg: 'status.info_lt' }}
+                        bg={isExpanded ? 'page.alt' : 'white'}
+                        _hover={{ bg: 'page.alt' }}
                         aria-label='show more details about dataset'
                       >
                         <Box flex='1' textAlign='left'>
@@ -254,83 +326,149 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                       </AccordionButton>
                     </h2>
                     <AccordionPanel w='100%' px={paddingCard}>
-                      <UnorderedList ml={0}>
-                        <ListItem>
-                          <Stat my={2}>
-                            <StatLabel color='gray.700'>License</StatLabel>
-                            <dd>
-                              {licenseInfo ? (
-                                <>
-                                  {licenseInfo?.img && (
-                                    <Image
-                                      src={`${assetPrefix}${licenseInfo.img}`}
-                                      alt={licenseInfo.type}
-                                    />
-                                  )}
-                                  {licenseInfo?.url ? (
-                                    <Link href={licenseInfo.url} isExternal>
-                                      {licenseInfo.title}
-                                    </Link>
-                                  ) : (
-                                    licenseInfo?.title
-                                  )}
-                                </>
-                              ) : (
-                                '-'
+                      <SimpleGrid minChildWidth={'300px'} spacing='10px'>
+                        {/* License*/}
+                        <StyledStat label='License'>
+                          {licenseInfo && (
+                            <>
+                              {licenseInfo?.img && (
+                                <Image
+                                  src={`${assetPrefix}${licenseInfo.img}`}
+                                  alt={licenseInfo.type}
+                                  mb={1}
+                                />
                               )}
-                            </dd>
-                          </Stat>
-                        </ListItem>
+                              {licenseInfo?.url ? (
+                                <Link href={licenseInfo.url} isExternal>
+                                  {licenseInfo.title}
+                                </Link>
+                              ) : (
+                                licenseInfo?.title
+                              )}
+                            </>
+                          )}
+                        </StyledStat>
+                        {/* Topic */}
+                        <StyledStat label='Topics'>
+                          {Array.isArray(topic) ? topic.join(', ') : topic}
+                        </StyledStat>
+
                         {/* Measurement techniques*/}
-                        <ListItem>
-                          <Stat my={2}>
-                            <StatLabel color='gray.700'>
-                              Measurement Technique
-                            </StatLabel>
-                            <dd>
-                              {measurementTechnique ? (
-                                <UnorderedList ml={0}>
-                                  {measurementTechnique.map((m, i) => {
-                                    const name = Array.isArray(m.name)
-                                      ? m.name.join(', ')
-                                      : m.name;
+                        <StyledStat label='Measurement Technique'>
+                          {measurementTechnique && (
+                            <UnorderedList ml={0}>
+                              {measurementTechnique.map((m, i) => {
+                                const name = Array.isArray(m.name)
+                                  ? m.name.join(', ')
+                                  : m.name;
 
-                                    const MeasurementTechniqueLabel = () => (
-                                      <Text fontWeight='semibold'>{name}</Text>
-                                    );
+                                const MeasurementTechniqueLabel = () => (
+                                  <Text color='inherit'>{name}</Text>
+                                );
 
-                                    return (
-                                      <ListItem key={`${name}-${i}`}>
-                                        {m.url ? (
-                                          <Link href={m.url} isExternal>
-                                            <MeasurementTechniqueLabel />
-                                          </Link>
-                                        ) : (
-                                          <MeasurementTechniqueLabel />
-                                        )}
-                                      </ListItem>
-                                    );
-                                  })}
-                                </UnorderedList>
-                              ) : (
-                                '-'
-                              )}
-                            </dd>
-                          </Stat>
-                        </ListItem>
-                        <ListItem>
-                          <Stat my={2}>
-                            <StatLabel color='gray.700'>
-                              Variable Measured
-                            </StatLabel>
-                            <dd>
-                              <Text fontWeight='semibold'>
-                                {variableMeasured ? variableMeasured : '-'}
-                              </Text>
-                            </dd>
-                          </Stat>
-                        </ListItem>
-                      </UnorderedList>
+                                return (
+                                  <ListItem key={`${name}-${i}`}>
+                                    {m.url ? (
+                                      <Link href={m.url} isExternal>
+                                        <MeasurementTechniqueLabel />
+                                      </Link>
+                                    ) : (
+                                      <MeasurementTechniqueLabel />
+                                    )}
+                                  </ListItem>
+                                );
+                              })}
+                            </UnorderedList>
+                          )}
+                        </StyledStat>
+
+                        {/* Variable Measured */}
+                        <StyledStat label='Variable Measured'>
+                          {variableMeasured && (
+                            <Text color='inherit'>variableMeasured</Text>
+                          )}
+                        </StyledStat>
+
+                        {/* Infectious Agent*/}
+                        <StyledStat label='Infectious Agent'>
+                          {infectiousAgent && (
+                            <UnorderedList ml={0}>
+                              {infectiousAgent.map((m, i) => {
+                                const name = Array.isArray(m.name)
+                                  ? m.name.join(', ')
+                                  : m.name;
+
+                                return (
+                                  <ListItem key={`${name}-${i}`}>
+                                    {m.url ? (
+                                      <Link href={m.url} isExternal>
+                                        {name}
+                                      </Link>
+                                    ) : (
+                                      name
+                                    )}
+                                  </ListItem>
+                                );
+                              })}
+                            </UnorderedList>
+                          )}
+                        </StyledStat>
+
+                        {/* Infectious Disease*/}
+                        <StyledStat label='Infectious Disease'>
+                          {infectiousDisease && (
+                            <UnorderedList ml={0}>
+                              {infectiousDisease.map((m, i) => {
+                                const name = Array.isArray(m.name)
+                                  ? m.name.join(', ')
+                                  : m.name;
+
+                                return (
+                                  <ListItem key={`${name}-${i}`}>
+                                    {m.url ? (
+                                      <Link href={m.url} isExternal>
+                                        {name}
+                                      </Link>
+                                    ) : (
+                                      name
+                                    )}
+                                  </ListItem>
+                                );
+                              })}
+                            </UnorderedList>
+                          )}
+                        </StyledStat>
+
+                        {/* Species*/}
+                        <StyledStat label='Species'>
+                          {species && (
+                            <Text color='inherit'>
+                              {species.map((m, i) => {
+                                const name = Array.isArray(m.name)
+                                  ? m.name.join(', ')
+                                  : m.name;
+
+                                return (
+                                  <React.Fragment key={`${name}-${i}`}>
+                                    {m.url ? (
+                                      <Link href={m.url} isExternal>
+                                        {name}
+                                      </Link>
+                                    ) : (
+                                      name
+                                    )}
+                                  </React.Fragment>
+                                );
+                              })}
+                            </Text>
+                          )}
+                        </StyledStat>
+
+                        {/* Health condition */}
+                        <StyledStat label='Health Condition'>
+                          {healthCondition}
+                        </StyledStat>
+                      </SimpleGrid>
                     </AccordionPanel>
                   </>
                 )}

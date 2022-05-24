@@ -9,7 +9,6 @@ import {
   Tooltip,
 } from 'nde-design-system';
 import { IconType } from 'react-icons';
-
 import { FaInfo } from 'react-icons/fa';
 import LoadingSpinner from 'src/components/loading';
 
