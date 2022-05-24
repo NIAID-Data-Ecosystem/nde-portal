@@ -1,9 +1,9 @@
 import React from 'react';
-import {Box, Flex, Heading, Skeleton, Text} from 'nde-design-system';
-import {FormattedResource} from 'src/utils/api/types';
+import { Box, Flex, Heading, Skeleton, Text } from 'nde-design-system';
+import { FormattedResource } from 'src/utils/api/types';
 import ResourceAuthors from './components/authors';
 import AccessBadge from '../access-badge';
-import {formatJournal} from 'src/utils/helpers';
+import { formatJournal } from 'src/utils/helpers';
 
 interface HeaderProps {
   isLoading: boolean;

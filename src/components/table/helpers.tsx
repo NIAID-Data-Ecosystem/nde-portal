@@ -1,4 +1,4 @@
-import { Link, LinkProps } from "nde-design-system";
+import { Link, LinkProps } from 'nde-design-system';
 import {
   FaFileAlt,
   FaFilePdf,
@@ -9,8 +9,8 @@ import {
   FaFilePowerpoint,
   FaFileWord,
   FaFileCsv,
-} from "react-icons/fa";
-import { Column } from ".";
+} from 'react-icons/fa';
+import { Column } from '.';
 
 // Checks if string is a valid url.
 export const isValidUrl = (str: string) => {
@@ -25,60 +25,60 @@ export const getFileIcon = (value: string) => {
   }
 
   let icon = null;
-  let color = "inherit";
+  let color = 'inherit';
 
   // Add icon for different file formats
   if (
-    value.toLowerCase().includes("xml") ||
-    value.toLowerCase().includes("html")
+    value.toLowerCase().includes('xml') ||
+    value.toLowerCase().includes('html')
   ) {
     // Code file extensions
     icon = FaFileCode;
   } else if (
-    value.toLowerCase().includes(".tar") ||
-    value.toLowerCase().includes(".7z") ||
-    value.toLowerCase().includes(".gzip")
+    value.toLowerCase().includes('.tar') ||
+    value.toLowerCase().includes('.7z') ||
+    value.toLowerCase().includes('.gzip')
   ) {
     // Archived file extensions
     icon = FaFileArchive;
   } else if (
-    value.toLowerCase().includes(".png") ||
-    value.toLowerCase().includes(".jpeg") ||
-    value.toLowerCase().includes(".svg")
+    value.toLowerCase().includes('.png') ||
+    value.toLowerCase().includes('.jpeg') ||
+    value.toLowerCase().includes('.svg')
   ) {
     // Image file extensions
     icon = FaFileImage;
   } else if (
     // Excel file extensions
-    value.toLowerCase().includes(".xls") ||
-    value.toLowerCase().includes(".xlsx")
+    value.toLowerCase().includes('.xls') ||
+    value.toLowerCase().includes('.xlsx')
   ) {
     icon = FaFileExcel;
-    color = "green.500";
+    color = 'green.500';
   } else if (
-    value.toLowerCase().includes(".csv") ||
-    value.toLowerCase().includes("text/csv")
+    value.toLowerCase().includes('.csv') ||
+    value.toLowerCase().includes('text/csv')
   ) {
     icon = FaFileCsv;
-    color = "green.600";
+    color = 'green.600';
   } else if (
-    value.toLowerCase().includes(".doc") ||
-    value.toLowerCase().includes(".docx")
+    value.toLowerCase().includes('.doc') ||
+    value.toLowerCase().includes('.docx')
   ) {
     icon = FaFileWord;
-    color = "blue.500";
+    color = 'blue.500';
   } else if (
-    value.toLowerCase().includes(".ppt") ||
-    value.toLowerCase().includes(".pptx")
+    value.toLowerCase().includes('.ppt') ||
+    value.toLowerCase().includes('.pptx')
   ) {
     icon = FaFilePowerpoint;
-    color = "orange.500";
-  } else if (value.toLowerCase().includes(".pdf")) {
+    color = 'orange.500';
+  } else if (value.toLowerCase().includes('.pdf')) {
     icon = FaFilePdf;
-    color = "red.500";
-  } else if (value.toLowerCase().includes(".txt")) {
+    color = 'red.500';
+  } else if (value.toLowerCase().includes('.txt')) {
     icon = FaFileAlt;
-    color = "gray.800";
+    color = 'gray.800';
   }
   return { icon, color };
 };
@@ -95,7 +95,7 @@ export const FormatLinkCell = ({ value, ...props }: CellProps) => {
       </Link>
     );
   } else {
-    return <>{Array.isArray(value) ? value.join(",") : value || "-"}</>;
+    return <>{Array.isArray(value) ? value.join(',') : value || '-'}</>;
   }
 };
 
@@ -103,7 +103,7 @@ export const FormatLinkCell = ({ value, ...props }: CellProps) => {
 export const getTableColumns = (
   data: { [key: string]: any }[],
   config: { [key: string]: string },
-  showEmptyColumns: boolean = true
+  showEmptyColumns: boolean = true,
 ): Column[] => {
   return Object.values(
     data.reduce((r, d, i) => {
@@ -119,6 +119,6 @@ export const getTableColumns = (
         }
       });
       return r;
-    }, {} as { [key: string]: Column })
+    }, {} as { [key: string]: Column }),
   );
 };

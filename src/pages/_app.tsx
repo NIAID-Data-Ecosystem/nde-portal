@@ -1,12 +1,12 @@
-import { useEffect } from "react";
-import type { AppProps } from "next/app";
-import { useRouter } from "next/router";
-import Head from "next/head";
-import Script from "next/script";
-import { QueryClient, QueryClientProvider } from "react-query";
-import { ThemeProvider } from "nde-design-system";
-import FontFace from "src/theme/font-face";
-import { gtmVirtualPageView } from "lib/ga";
+import { useEffect } from 'react';
+import type { AppProps } from 'next/app';
+import { useRouter } from 'next/router';
+import Head from 'next/head';
+import Script from 'next/script';
+import { QueryClient, QueryClientProvider } from 'react-query';
+import { ThemeProvider } from 'nde-design-system';
+import FontFace from 'src/theme/font-face';
+import { gtmVirtualPageView } from 'lib/ga';
 
 // Creates an instance of react-query for the app.
 const queryClient = new QueryClient();
@@ -28,15 +28,15 @@ function App({ Component, pageProps }: AppProps) {
     <>
       <Head>
         <meta
-          name="viewport"
-          content="width=device-width, initial-scale=1.0"
+          name='viewport'
+          content='width=device-width, initial-scale=1.0'
         ></meta>
       </Head>
 
       {/* <!-- Google Tag Manager --> */}
       <Script
-        id="google-tag-manager"
-        strategy="afterInteractive"
+        id='google-tag-manager'
+        strategy='afterInteractive'
         dangerouslySetInnerHTML={{
           __html: `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
               new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],

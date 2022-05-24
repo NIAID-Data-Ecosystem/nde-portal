@@ -1,5 +1,5 @@
-import type {NextPage} from 'next';
-import {PageContainer, PageContent} from 'src/components/page-container';
+import type { NextPage } from 'next';
+import { PageContainer, PageContent } from 'src/components/page-container';
 
 const About: NextPage = () => {
   return (

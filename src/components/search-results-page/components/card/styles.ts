@@ -1,4 +1,4 @@
-import {Box, BoxProps} from 'nde-design-system';
+import { Box, BoxProps } from 'nde-design-system';
 import styled from '@emotion/styled';
 
 export const StyledTitle = styled(Box)<BoxProps>(() => ({}));

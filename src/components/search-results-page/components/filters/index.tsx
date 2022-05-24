@@ -1,5 +1,5 @@
 import React from 'react';
-import {useQuery} from 'react-query';
+import { useQuery } from 'react-query';
 import {
   Facet,
   FacetTerm,
@@ -22,11 +22,11 @@ import {
   Icon,
 } from 'nde-design-system';
 import LoadingSpinner from 'src/components/loading';
-import {Filter} from './components/filter';
-import {fetchSearchResults} from 'src/utils/api';
-import {FaFilter} from 'react-icons/fa';
-import {NAV_HEIGHT} from 'src/components/page-container';
-import {formatType} from 'src/utils/api/helpers';
+import { Filter } from './components/filter';
+import { fetchSearchResults } from 'src/utils/api';
+import { FaFilter } from 'react-icons/fa';
+import { NAV_HEIGHT } from 'src/components/page-container';
+import { formatType } from 'src/utils/api/helpers';
 
 /*
 [COMPONENT INFO]:
@@ -43,13 +43,13 @@ export const filtersConfig: {
     name: string;
   };
 } = {
-  '@type': {name: 'Type'},
-  'includedInDataCatalog.name': {name: 'Source'},
-  keywords: {name: 'Keywords'},
+  '@type': { name: 'Type' },
+  'includedInDataCatalog.name': { name: 'Source' },
+  keywords: { name: 'Keywords' },
   'measurementTechnique.name': {
     name: 'Measurement Technique',
   },
-  variableMeasured: {name: 'Variable Measured'},
+  variableMeasured: { name: 'Variable Measured' },
 };
 
 export type SelectedFilterType = {
@@ -60,7 +60,7 @@ interface Filters {
   // Search query term
   searchTerm: string;
   // Facets that update as the filters are selected
-  facets?: {isLoading: boolean; data?: Facet};
+  facets?: { isLoading: boolean; data?: Facet };
   // Currently selected filters
   selectedFilters: SelectedFilterType;
   // fn to remove all selected filters
@@ -77,7 +77,7 @@ export const Filters: React.FC<Filters> = ({
   handleSelectedFilters,
 }) => {
   // In mobile view, the filters are in a drawer.
-  const {isOpen, onOpen, onClose} = useDisclosure();
+  const { isOpen, onOpen, onClose } = useDisclosure();
   const btnRef = React.useRef(null);
   const screenSize = useBreakpointValue({
     base: 'mobile',
@@ -88,11 +88,11 @@ export const Filters: React.FC<Filters> = ({
   /*
     Filters are created based on the query string and only the counts update only when different filters are selected.
   */
-  const {isLoading, data, error} = useQuery<
+  const { isLoading, data, error } = useQuery<
     FetchSearchResultsResponse | undefined,
     Error
   >(
-    ['search-filters', {q: searchTerm}],
+    ['search-filters', { q: searchTerm }],
     () => {
       if (typeof searchTerm !== 'string' && !searchTerm) {
         return;
@@ -105,16 +105,16 @@ export const Filters: React.FC<Filters> = ({
       });
     },
     // Don't refresh everytime window is touched.
-    {refetchOnWindowFocus: false},
+    { refetchOnWindowFocus: false },
   );
 
   // Fn for updating the filter items count when a filter checkbox is toggled.
   const updateFilterValues = (
     prop: keyof Facet,
     items: FacetTerm[],
-    facets: {data?: FacetTerm[]; isLoading?: boolean},
+    facets: { data?: FacetTerm[]; isLoading?: boolean },
   ) => {
-    return items.map(({term, count}) => {
+    return items.map(({ term, count }) => {
       let updatedCount;
       if (!facets?.isLoading && facets?.data) {
         const updated = facets?.data.find(f => f.term === term);
@@ -173,7 +173,7 @@ export const Filters: React.FC<Filters> = ({
                   }
                   selectedFilters={selectedFilters[prop]}
                   handleSelectedFilters={v =>
-                    handleSelectedFilters({[prop]: v})
+                    handleSelectedFilters({ [prop]: v })
                   }
                 />
               );

@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Box,
   Flex,
@@ -93,7 +93,7 @@ export const Pagination: React.FC<PaginationProps> = ({
 
       <Flex w={['100%', 'unset']} justifyContent='center'>
         {/* Fade in transition */}
-        <ScaleFade in={!!totalPages} style={{width: '100%'}}>
+        <ScaleFade in={!!totalPages} style={{ width: '100%' }}>
           <Flex w={['100%', 'unset']} alignItems={'center'}>
             <StyledPaginationButton
               flex={1}
@@ -152,7 +152,7 @@ export const Pagination: React.FC<PaginationProps> = ({
             </StyledPaginationButton>
           </Flex>
           <Select
-            display={{sm: 'none'}}
+            display={{ sm: 'none' }}
             p={1}
             onChange={e => handleSelectedPage(+e.target.value)}
             size='lg'

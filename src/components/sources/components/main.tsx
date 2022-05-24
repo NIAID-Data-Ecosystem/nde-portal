@@ -7,10 +7,10 @@ import {
   Text,
   useDisclosure,
 } from 'nde-design-system';
-import React, {useState, useEffect} from 'react';
-import {Metadata} from 'src/utils/api/types';
-import {formatDate} from 'src/utils/helpers';
-import {setDateCreated} from '../utils';
+import React, { useState, useEffect } from 'react';
+import { Metadata } from 'src/utils/api/types';
+import { formatDate } from 'src/utils/helpers';
+import { setDateCreated } from '../utils';
 
 interface Main {
   sourceData: Metadata;
@@ -25,7 +25,7 @@ interface Source {
   schema: Object;
 }
 
-const Main: React.FC<Main> = ({sourceData}) => {
+const Main: React.FC<Main> = ({ sourceData }) => {
   const [sources, setSources] = useState<Source[]>([]);
   const [schemaId, setSchemaId] = useState<string[]>([]);
   const [schemaText, setSchemaText] = useState<string[]>([]);
@@ -103,7 +103,7 @@ const Main: React.FC<Main> = ({sourceData}) => {
                 {sourceObj.name}
               </Heading>
             </Box>
-            <Text ml={{base: 2, md: 14}} fontWeight='bold'>
+            <Text ml={{ base: 2, md: 14 }} fontWeight='bold'>
               {sourceObj.numberOfRecords.toLocaleString()} Records Available
             </Text>
             <Box mx={[2, 2, 20]}>

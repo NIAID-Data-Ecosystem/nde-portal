@@ -1,8 +1,8 @@
-import {Button, Flex, Heading, Image, Text} from 'nde-design-system';
-import {NextPage} from 'next';
+import { Button, Flex, Heading, Image, Text } from 'nde-design-system';
+import { NextPage } from 'next';
 import React from 'react';
-import {PageContainer, PageContent} from 'src/components/page-container';
-import {assetPrefix} from 'next.config';
+import { PageContainer, PageContent } from 'src/components/page-container';
+import { assetPrefix } from 'next.config';
 
 const NotFoundPage: NextPage = () => {
   return (

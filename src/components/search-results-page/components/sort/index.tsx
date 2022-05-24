@@ -1,6 +1,6 @@
 import React from 'react';
-import {Box, Flex, Select} from 'nde-design-system';
-import {SortOptions} from 'src/components/search-results-page';
+import { Box, Flex, Select } from 'nde-design-system';
+import { SortOptions } from 'src/components/search-results-page';
 
 /*
  [COMPONENT INFO]: SortResults
@@ -48,7 +48,7 @@ export const SortResults: React.FC<SortResultsProps> = ({
           value={sortOrder}
           cursor='pointer'
           my={1}
-          _hover={{boxShadow: 'low'}}
+          _hover={{ boxShadow: 'low' }}
           onChange={e => handleSortOrder(e.target.value)}
           size={'lg'}
         >
@@ -79,7 +79,7 @@ export const SortResults: React.FC<SortResultsProps> = ({
           value={selectedPerPage}
           my={1}
           size={'lg'}
-          _hover={{boxShadow: 'low'}}
+          _hover={{ boxShadow: 'low' }}
           onChange={e => handleSelectedPerPage(+e.target.value)}
         >
           {showPerPageOptions.map(option => {

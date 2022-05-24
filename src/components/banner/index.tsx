@@ -1,4 +1,4 @@
-import {Flex, Icon} from 'nde-design-system';
+import { Flex, Icon } from 'nde-design-system';
 import React from 'react';
 import {
   FaCheck,
@@ -12,7 +12,7 @@ interface BannerProps {
 }
 
 // [COMPONENT INFO]: Banner Element to notice user. NIAID design specs: https://designsystem.niaid.nih.gov/components/molecules
-const Banner: React.FC<BannerProps> = ({children, status}) => {
+const Banner: React.FC<BannerProps> = ({ children, status }) => {
   let bg = 'status.info_lt';
   let icon_bg = 'status.info';
 

@@ -1,9 +1,9 @@
-import React, { useEffect, useRef, useState } from "react";
-import { Box, Card, Heading, ListItem, UnorderedList } from "nde-design-system";
-import { throttle } from "lodash";
-import { FormattedResource } from "src/utils/api/types";
-import { NavLink } from "./components/nav-link";
-import { Route } from "../../helpers";
+import React, { useEffect, useRef, useState } from 'react';
+import { Box, Card, Heading, ListItem, UnorderedList } from 'nde-design-system';
+import { throttle } from 'lodash';
+import { FormattedResource } from 'src/utils/api/types';
+import { NavLink } from './components/nav-link';
+import { Route } from '../../helpers';
 
 interface LocalNavigationProps {
   data?: FormattedResource;
@@ -17,24 +17,24 @@ const LocalNavigation: React.FC<LocalNavigationProps> = ({ routes }) => {
   const [itemClicked, setItemClicked] = useState(false);
 
   useEffect(() => {
-    let nodes = routes.map((route) => document.getElementById(route.hash));
+    let nodes = routes.map(route => document.getElementById(route.hash));
     sectionNodesRefs.current = nodes;
     let observer = new IntersectionObserver(
       (entries: IntersectionObserverEntry[]) => {
         entries.map((e: IntersectionObserverEntry) => {
-          setActiveSection((prev) =>
+          setActiveSection(prev =>
             // update active section if element enters screen (unless the user clicks to a particular section)
-            e.isIntersecting && !itemClicked ? e.target.id : prev
+            e.isIntersecting && !itemClicked ? e.target.id : prev,
           );
         });
       },
       {
         threshold: 0,
-        rootMargin: "0px 0px -100%",
-      }
+        rootMargin: '0px 0px -100%',
+      },
     );
 
-    nodes.forEach((node) => node && observer.observe(node));
+    nodes.forEach(node => node && observer.observe(node));
     return () => observer.disconnect();
   }, [routes, activeSection, itemClicked]);
 
@@ -61,34 +61,34 @@ const LocalNavigation: React.FC<LocalNavigationProps> = ({ routes }) => {
       }
     }, 500);
 
-    itemClicked && window.addEventListener("scroll", updateActiveSection);
+    itemClicked && window.addEventListener('scroll', updateActiveSection);
     return () => {
-      window.removeEventListener("scroll", updateActiveSection);
+      window.removeEventListener('scroll', updateActiveSection);
     };
   }, [activeSection, routes, itemClicked]);
 
   return (
     <Card
-      as="nav"
+      as='nav'
       flex={1}
       ml={[0, 0, 4]}
       my={2}
-      sx={{ ">*": { p: [2, 4, 4, 6] } }}
+      sx={{ '>*': { p: [2, 4, 4, 6] } }}
     >
-      <Box w="100%">
+      <Box w='100%'>
         <Heading
-          as="h2"
-          size="sm"
-          fontWeight="semibold"
-          borderBottom="0.5px solid"
-          borderColor="niaid.placeholder"
+          as='h2'
+          size='sm'
+          fontWeight='semibold'
+          borderBottom='0.5px solid'
+          borderColor='niaid.placeholder'
         >
           On This Page
         </Heading>
 
         <UnorderedList ml={0} mt={4}>
           {routes &&
-            routes.map((route) => {
+            routes.map(route => {
               return (
                 <ListItem key={route.title} py={0.5} px={0.25}>
                   <NavLink

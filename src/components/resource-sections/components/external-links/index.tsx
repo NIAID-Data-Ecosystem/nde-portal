@@ -8,10 +8,10 @@ import {
   Text,
   UnorderedList,
 } from 'nde-design-system';
-import {FormattedResource} from 'src/utils/api/types';
-import {getRepositoryImage} from 'src/utils/helpers';
-import {ExternalSourceButton} from 'src/components/external-buttons/index.';
-import {FaGithub} from 'react-icons/fa';
+import { FormattedResource } from 'src/utils/api/types';
+import { getRepositoryImage } from 'src/utils/helpers';
+import { ExternalSourceButton } from 'src/components/external-buttons/index.';
+import { FaGithub } from 'react-icons/fa';
 
 interface ExternalLinks {
   isLoading: boolean;
@@ -66,7 +66,7 @@ const ExternalLinks: React.FC<ExternalLinks> = ({
               w='100%'
               alt='Data source name'
               src={imageURL || undefined}
-              imageProps={{mb: 4}}
+              imageProps={{ mb: 4 }}
               href={url || undefined}
               sourceHref={includedInDataCatalog?.url}
               name={

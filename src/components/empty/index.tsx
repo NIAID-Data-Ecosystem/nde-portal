@@ -1,6 +1,6 @@
 import React from 'react';
-import {Flex, FlexProps, Heading, Image} from 'nde-design-system';
-import {assetPrefix} from 'next.config';
+import { Flex, FlexProps, Heading, Image } from 'nde-design-system';
+import { assetPrefix } from 'next.config';
 
 interface EmptyProps extends FlexProps {
   imageUrl?: string;

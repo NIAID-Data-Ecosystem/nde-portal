@@ -1,4 +1,4 @@
-import {Box, BoxProps, Heading, HeadingProps} from 'nde-design-system';
+import { Box, BoxProps, Heading, HeadingProps } from 'nde-design-system';
 import styled from '@emotion/styled';
 
 export const StyledSectionHead = styled(Box)<BoxProps>(props => ({}));

@@ -1,28 +1,28 @@
-import React, { useEffect } from "react";
-import type { NextPage } from "next";
-import { PageContainer, PageContent } from "src/components/page-container";
-import { useRouter } from "next/router";
-import { useQuery } from "react-query";
-import { getResourceById } from "src/utils/api";
-import { FormattedResource } from "src/utils/api/types";
-import Empty from "src/components/empty";
-import { Box, Button, Card, Flex, Text } from "nde-design-system";
+import React, { useEffect } from 'react';
+import type { NextPage } from 'next';
+import { PageContainer, PageContent } from 'src/components/page-container';
+import { useRouter } from 'next/router';
+import { useQuery } from 'react-query';
+import { getResourceById } from 'src/utils/api';
+import { FormattedResource } from 'src/utils/api/types';
+import Empty from 'src/components/empty';
+import { Box, Button, Card, Flex, Text } from 'nde-design-system';
 import {
   Navigation,
   ResourceLinks,
-} from "src/components/resource-sections/components";
-import { Error, ErrorCTA } from "src/components/error";
-import { assetPrefix } from "next.config";
-import Sections, { section_metadata } from "src/components/resource-sections";
-import navigationData from "configs/resource-sections.json";
-import { Route, showSection } from "src/components/resource-sections/helpers";
+} from 'src/components/resource-sections/components';
+import { Error, ErrorCTA } from 'src/components/error';
+import { assetPrefix } from 'next.config';
+import Sections, { section_metadata } from 'src/components/resource-sections';
+import navigationData from 'configs/resource-sections.json';
+import { Route, showSection } from 'src/components/resource-sections/helpers';
 
 // Error display is data fetching goes wrong.
 const ErrorState = ({ retryFn }: { retryFn: () => void }) => {
   return (
     <Error message="It's possible that the server is experiencing some issues.">
       <ErrorCTA>
-        <Button onClick={() => retryFn()} variant="outline">
+        <Button onClick={() => retryFn()} variant='outline'>
           Retry
         </Button>
       </ErrorCTA>
@@ -33,16 +33,16 @@ const ErrorState = ({ retryFn }: { retryFn: () => void }) => {
 // Displays empty message when no data exists.
 const EmptyState = () => {
   return (
-    <Card w="100%">
+    <Card w='100%'>
       <Empty
-        message="No data available."
+        message='No data available.'
         imageUrl={`${assetPrefix}/assets/empty.png`}
-        imageAlt="Missing information icon."
-        alignSelf="center"
-        h="50vh"
+        imageAlt='Missing information icon.'
+        alignSelf='center'
+        h='50vh'
       >
         <Text>No information about this dataset is available.</Text>
-        <Button as={"a"} href="/" mt={4}>
+        <Button as={'a'} href='/' mt={4}>
           Go to search.
         </Button>
       </Empty>
@@ -50,7 +50,7 @@ const EmptyState = () => {
   );
 };
 
-const ResourcePage: NextPage = (props) => {
+const ResourcePage: NextPage = props => {
   const router = useRouter();
   const { id } = router.query;
 
@@ -58,16 +58,16 @@ const ResourcePage: NextPage = (props) => {
   const { isLoading, error, data } = useQuery<
     FormattedResource | undefined,
     Error
-  >(["search-result", { id }], () => getResourceById(id), {
+  >(['search-result', { id }], () => getResourceById(id), {
     refetchOnWindowFocus: false,
   });
 
   // embed metadata
   useEffect(() => {
     if (data && data.rawData) {
-      let script_tag = document.createElement("script");
+      let script_tag = document.createElement('script');
       let metadata = JSON.stringify(data.rawData, null, 2);
-      script_tag.setAttribute("type", "application/ld+json");
+      script_tag.setAttribute('type', 'application/ld+json');
       script_tag.text = metadata;
       document.head.appendChild(script_tag);
     }
@@ -81,10 +81,10 @@ const ResourcePage: NextPage = (props) => {
       window._altmetric_embed_init();
     } else {
       /* import altmetric script for badge embeds */
-      let altmetricsScript = document.createElement("script");
+      let altmetricsScript = document.createElement('script');
       altmetricsScript.setAttribute(
-        "src",
-        "https://d1bxh8uas1mnw7.cloudfront.net/assets/embed.js"
+        'src',
+        'https://d1bxh8uas1mnw7.cloudfront.net/assets/embed.js',
       );
       document.body.appendChild(altmetricsScript);
     }
@@ -100,19 +100,19 @@ const ResourcePage: NextPage = (props) => {
   };
 
   // Check if the metadata is available for a given section before displaying it in navbar or page.
-  const sections = routes.filter((route) =>
+  const sections = routes.filter(route =>
     showSection(
       { ...route, metadataProperties: section_metadata[route.hash] },
-      data
-    )
+      data,
+    ),
   );
 
   return (
     <>
       <PageContainer
         hasNavigation
-        title="Resource"
-        metaDescription="Selected search result page."
+        title='Resource'
+        metaDescription='Selected search result page.'
       >
         <PageContent>
           {error ? (
@@ -122,17 +122,17 @@ const ResourcePage: NextPage = (props) => {
             // [EMPTY STATE]: No Results
             <EmptyState />
           ) : (
-            <Flex w="100%" h="100%" flexDirection="column" minW={150}>
+            <Flex w='100%' h='100%' flexDirection='column' minW={150}>
               <Flex
-                height="100%"
+                height='100%'
                 p={2}
-                flexDirection={["column", "column", "row"]}
+                flexDirection={['column', 'column', 'row']}
               >
                 <Card
                   flex={3}
                   p={0}
-                  width="100%"
-                  sx={{ ">*": { p: 0 } }}
+                  width='100%'
+                  sx={{ '>*': { p: 0 } }}
                   minW={150}
                 >
                   <Sections
@@ -143,18 +143,18 @@ const ResourcePage: NextPage = (props) => {
                 </Card>
                 <Box
                   flex={1}
-                  position="sticky"
-                  top="80px"
-                  w="100%"
-                  h="100%"
-                  minW="350px"
-                  display={{ base: "none", lg: "block" }}
+                  position='sticky'
+                  top='80px'
+                  w='100%'
+                  h='100%'
+                  minW='350px'
+                  display={{ base: 'none', lg: 'block' }}
                 >
                   <Card
                     flex={1}
                     ml={[0, 0, 4]}
                     my={[2, 2, 0]}
-                    sx={{ ">*": { p: 0 } }}
+                    sx={{ '>*': { p: 0 } }}
                   >
                     {/* Show external links such as source url, in header when on mobile */}
                     <ResourceLinks

@@ -1,7 +1,7 @@
-import React, {useEffect, useState} from 'react';
-import {SearchInput} from 'nde-design-system';
-import {useRouter} from 'next/router';
-import {PageContent} from '../page-container';
+import React, { useEffect, useState } from 'react';
+import { SearchInput } from 'nde-design-system';
+import { useRouter } from 'next/router';
+import { PageContent } from '../page-container';
 
 export const SearchBar = ({
   value,
@@ -50,7 +50,7 @@ export const SearchBar = ({
           e.preventDefault();
           router.push({
             pathname: `/search`,
-            query: {q: searchTerm.trim(), from: 1},
+            query: { q: searchTerm.trim(), from: 1 },
           });
         }}
         placeholder='Search for datasets or tools'

@@ -13,15 +13,19 @@ import {
   UnorderedList,
   ListItem,
 } from 'nde-design-system';
-import {FormattedResource, Creator} from 'src/utils/api/types';
+import { FormattedResource, Creator } from 'src/utils/api/types';
 import {
   formatAuthorsList2String,
   shouldAppendPunctuation,
 } from 'src/utils/helpers';
-import {FaMinus, FaPlus} from 'react-icons/fa';
+import { FaMinus, FaPlus } from 'react-icons/fa';
 
 // An accordion containing author details such as name and affiliation + link to their profile pages if available.
-const ResourceAuthors = ({authors}: {authors: FormattedResource['author']}) => {
+const ResourceAuthors = ({
+  authors,
+}: {
+  authors: FormattedResource['author'];
+}) => {
   if (!authors) {
     return null;
   }
@@ -45,9 +49,9 @@ const ResourceAuthors = ({authors}: {authors: FormattedResource['author']}) => {
   return (
     <Accordion allowToggle borderColor='gray.100'>
       <AccordionItem>
-        {({isExpanded}) => (
+        {({ isExpanded }) => (
           <>
-            <AccordionButton px={[4, 6]} _hover={{bg: 'page.alt'}}>
+            <AccordionButton px={[4, 6]} _hover={{ bg: 'page.alt' }}>
               <Flex
                 w='100%'
                 direction={['column', 'column', 'row']}

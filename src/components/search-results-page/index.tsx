@@ -1,10 +1,10 @@
-import {useEffect, useState} from 'react';
-import {useRouter} from 'next/router';
-import {useQuery} from 'react-query';
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/router';
+import { useQuery } from 'react-query';
 import Empty from 'src/components/empty';
-import {PageContent} from 'src/components/page-container';
-import {fetchSearchResults} from 'src/utils/api';
-import {encodeString} from 'src/utils/querystring-helpers';
+import { PageContent } from 'src/components/page-container';
+import { fetchSearchResults } from 'src/utils/api';
+import { encodeString } from 'src/utils/querystring-helpers';
 import {
   FetchSearchResultsResponse,
   FormattedResource,
@@ -25,11 +25,11 @@ import {
   queryFilterObject2String,
   queryFilterString2Object,
 } from 'src/components/search-results-page/components/filters/helpers';
-import {Error, ErrorCTA} from 'src/components/error';
-import {Pagination, MAX_PAGES} from './components/pagination';
-import {useHasMounted} from 'src/hooks/useHasMounted';
-import {assetPrefix} from 'next.config';
-import {FilterTags} from './components/filters/components/tags';
+import { Error, ErrorCTA } from 'src/components/error';
+import { Pagination, MAX_PAGES } from './components/pagination';
+import { useHasMounted } from 'src/hooks/useHasMounted';
+import { assetPrefix } from 'next.config';
+import { FilterTags } from './components/filters/components/tags';
 import {
   FACET_SIZE,
   Filters,
@@ -38,10 +38,10 @@ import {
 } from './components/filters';
 import Card from './components/card';
 import Banner from '../banner';
-import {formatNumber} from 'src/utils/helpers';
-import {SortResults} from './components/sort';
+import { formatNumber } from 'src/utils/helpers';
+import { SortResults } from './components/sort';
 import ResultsCount from './components/count';
-import {env} from 'next.config';
+import { env } from 'next.config';
 
 /*
 [COMPONENT INFO]:
@@ -56,11 +56,11 @@ export interface SortOptions {
   orderBy: 'asc' | 'desc';
 }
 const sort_options: SortOptions[] = [
-  {name: 'Best Match', sortBy: '_score', orderBy: 'asc'},
-  {name: 'Date: oldest to newest', sortBy: 'date', orderBy: 'asc'},
-  {name: 'Date: newest to oldest', sortBy: 'date', orderBy: 'desc'},
-  {name: 'A-Z', sortBy: 'name', orderBy: 'asc'},
-  {name: 'Z-A', sortBy: 'name', orderBy: 'desc'},
+  { name: 'Best Match', sortBy: '_score', orderBy: 'asc' },
+  { name: 'Date: oldest to newest', sortBy: 'date', orderBy: 'asc' },
+  { name: 'Date: newest to oldest', sortBy: 'date', orderBy: 'desc' },
+  { name: 'A-Z', sortBy: 'name', orderBy: 'asc' },
+  { name: 'Z-A', sortBy: 'name', orderBy: 'desc' },
 ];
 
 const displayQueryString = (str: string) => {
@@ -95,7 +95,7 @@ const SearchResultsPage = () => {
 
   // Currently selected filters.
   const defaultFilters = Object.keys(filtersConfig).reduce(
-    (r, k) => ({...r, [k]: []}),
+    (r, k) => ({ ...r, [k]: [] }),
     {},
   );
 
@@ -116,7 +116,7 @@ const SearchResultsPage = () => {
   );
 
   // Get query params from url params
-  const {isLoading, error, data} = useQuery<
+  const { isLoading, error, data } = useQuery<
     FetchSearchResultsResponse | undefined,
     Error
   >(
@@ -150,7 +150,7 @@ const SearchResultsPage = () => {
       });
     },
     // Don't refresh everytime window is touched.
-    {refetchOnWindowFocus: false},
+    { refetchOnWindowFocus: false },
   );
 
   // Set total results value
@@ -168,7 +168,7 @@ const SearchResultsPage = () => {
 
   // Set initial state based on route params.
   useEffect(() => {
-    const {q, size, filters, from, sort} = router.query;
+    const { q, size, filters, from, sort } = router.query;
     setQueryString(prev => {
       let querystring = q;
 
@@ -258,6 +258,7 @@ const SearchResultsPage = () => {
     }
   }, [data]);
 
+  console.log(data);
   if (!hasMounted || !router.isReady) {
     return null;
   }
@@ -314,7 +315,7 @@ const SearchResultsPage = () => {
             <Flex w='100%'>
               <Filters
                 searchTerm={queryString}
-                facets={{isLoading: isLoading, data: data?.facets}}
+                facets={{ isLoading: isLoading, data: data?.facets }}
                 selectedFilters={selectedFilters}
                 removeAllFilters={
                   applied_filters.length > 0
@@ -342,7 +343,7 @@ const SearchResultsPage = () => {
                 <Pagination
                   selectedPage={selectedPage}
                   handleSelectedPage={from => {
-                    updateRoute({from});
+                    updateRoute({ from });
                   }}
                   selectedPerPage={selectedPerPage}
                   total={total}
@@ -379,7 +380,7 @@ const SearchResultsPage = () => {
                       }
                       selectedPerPage={selectedPerPage}
                       handleSelectedPerPage={v =>
-                        updateRoute({from: 1, size: v})
+                        updateRoute({ from: 1, size: v })
                       }
                     />
                   </Flex>
@@ -441,7 +442,7 @@ const SearchResultsPage = () => {
                 <Pagination
                   selectedPage={selectedPage}
                   handleSelectedPage={from => {
-                    updateRoute({from});
+                    updateRoute({ from });
                   }}
                   selectedPerPage={selectedPerPage}
                   total={total}

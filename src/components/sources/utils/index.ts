@@ -3,7 +3,7 @@ export const setDateCreated = async (sourcePath: string) => {
   const response = await fetch(url);
   const jsonData = await response.json();
   const dates: string[] = [];
-  jsonData.forEach((jsonObj: {commit: {author: {date: string}}}) => {
+  jsonData.forEach((jsonObj: { commit: { author: { date: string } } }) => {
     dates.push(jsonObj.commit.author.date);
   });
   return dates[dates.length - 1];

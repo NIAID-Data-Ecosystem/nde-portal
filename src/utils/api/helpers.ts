@@ -5,11 +5,11 @@ import {
   FormattedResource,
   ResourceType,
   Funder,
-} from "./types";
+} from './types';
 
 interface APICreator {
   identifier?: string; // orcid id
-  "@type"?: string;
+  '@type'?: string;
   affiliation?: { name: string };
   name?: string;
   familyName?: string;
@@ -21,7 +21,7 @@ interface APICreator {
 
 // Format the creator field
 export const formatCreator = (
-  creatorData?: APICreator | APICreator[]
+  creatorData?: APICreator | APICreator[],
 ): Creator[] | null => {
   if (!creatorData) {
     return null;
@@ -29,20 +29,20 @@ export const formatCreator = (
 
   const getCreatorFields = (data: APICreator) => {
     return {
-      identifier: data["identifier"] || null,
-      type: data["@type"] || null,
-      name: data["name"] || null,
-      affiliation: data["affiliation"] || null,
-      familyName: data["familyName"] || null,
-      givenName: data["givenName"] || null,
-      role: data["role"] || null,
-      title: data["title"] || null,
-      url: data["url"] || null,
+      identifier: data['identifier'] || null,
+      type: data['@type'] || null,
+      name: data['name'] || null,
+      affiliation: data['affiliation'] || null,
+      familyName: data['familyName'] || null,
+      givenName: data['givenName'] || null,
+      role: data['role'] || null,
+      title: data['title'] || null,
+      url: data['url'] || null,
     };
   };
 
   if (Array.isArray(creatorData)) {
-    return creatorData.map((data) => getCreatorFields(data));
+    return creatorData.map(data => getCreatorFields(data));
   } else {
     return [getCreatorFields(creatorData)];
   }
@@ -66,7 +66,7 @@ interface APICitation {
 
 // Format the citation field
 export const formatCitation = (
-  citationData?: APICitation | APICitation[]
+  citationData?: APICitation | APICitation[],
 ): Citation[] | null => {
   if (!citationData) {
     return null;
@@ -90,7 +90,7 @@ export const formatCitation = (
   };
 
   if (Array.isArray(citationData)) {
-    return citationData.map((data) => getCitationFields(data));
+    return citationData.map(data => getCitationFields(data));
   } else {
     return [getCitationFields(citationData)];
   }
@@ -98,7 +98,7 @@ export const formatCitation = (
 
 // Format funding fields.
 interface APIFunding {
-  "@type"?: string;
+  '@type'?: string;
   funder?: Funder;
   identifier?: string | null;
   description?: string | null;
@@ -129,7 +129,7 @@ export const formatFunding = (fundingData?: APIFunding | APIFunding[]) => {
   };
 
   if (Array.isArray(fundingData)) {
-    return fundingData.map((data) => getFundingFields(data));
+    return fundingData.map(data => getFundingFields(data));
   } else {
     return [getFundingFields(fundingData)];
   }
@@ -137,8 +137,8 @@ export const formatFunding = (fundingData?: APIFunding | APIFunding[]) => {
 
 // Format distribution fields.
 interface APIDistribution {
-  "@id"?: string | null;
-  "@type"?: string;
+  '@id'?: string | null;
+  '@type'?: string;
   encodingFormat?: string | null;
   contentUrl?: string | null;
   dateCreated?: Date | string | null;
@@ -149,7 +149,7 @@ interface APIDistribution {
 }
 
 export const formatDistribution = (
-  distributionData?: APIDistribution | APIDistribution[]
+  distributionData?: APIDistribution | APIDistribution[],
 ): Distribution[] | null => {
   if (!distributionData) {
     return null;
@@ -164,18 +164,18 @@ export const formatDistribution = (
       datePublished: data.datePublished || null,
       description: data.description || null,
       name: data.name || null,
-      "@id": data["@id"] || null,
+      '@id': data['@id'] || null,
     };
   };
 
-  if (typeof distributionData === "string") {
+  if (typeof distributionData === 'string') {
     return [
       getDistributionFields({
         contentUrl: distributionData,
       }),
     ];
   } else if (Array.isArray(distributionData)) {
-    return distributionData.map((data) => getDistributionFields(data));
+    return distributionData.map(data => getDistributionFields(data));
   } else {
     return [getDistributionFields(distributionData)];
   }
@@ -183,12 +183,12 @@ export const formatDistribution = (
 
 // Format the "type" of resource for display purposes.
 export const formatType = (type: string): ResourceType => {
-  if (type.toLowerCase() === "dataset") {
-    return "Dataset";
-  } else if (type.toLowerCase() === "computationaltool") {
-    return "Computational Tool";
+  if (type.toLowerCase() === 'dataset') {
+    return 'Dataset';
+  } else if (type.toLowerCase() === 'computationaltool') {
+    return 'Computational Tool';
   } else {
-    return "Other";
+    return 'Other';
   }
 };
 
@@ -196,7 +196,7 @@ export const formatAPIResource = (data: any) => {
   const formattedResource: FormattedResource = {
     ...data,
     id: data._id,
-    type: data["@type"] ? formatType(data["@type"]) : null,
+    type: data['@type'] ? formatType(data['@type']) : null,
     name: data.name || null,
     author: formatCreator(data.author) || formatCreator(data.creator),
     citation: formatCitation(data.citation),
@@ -211,7 +211,7 @@ export const formatAPIResource = (data: any) => {
     description: data.description || null,
     disease: data.disease || null,
     distribution: formatDistribution(data.distribution),
-    doi: data["doi"] || data["@id"] || null,
+    doi: data['doi'] || data['@id'] || null,
     funding: formatFunding(data.funding),
     healthCondition: data.healthCondition || null,
     includedInDataCatalog: data.includedInDataCatalog
@@ -242,7 +242,7 @@ export const formatAPIResource = (data: any) => {
       ? {
           alternateName: data.inLanguage.alternateName || null,
           name:
-            typeof data.inLanguage === "string"
+            typeof data.inLanguage === 'string'
               ? data.inLanguage
               : data.inLanguage.name,
         }
@@ -254,22 +254,22 @@ export const formatAPIResource = (data: any) => {
         ? data.measurementTechnique
         : [data.measurementTechnique]
       : null,
-    nctid: data["nctid"] || null,
+    nctid: data['nctid'] || null,
     numberOfDownloads: data.numberOfDownloads || null,
     numberOfViews: data.numberOfViews || null,
-    pmid: data["pmid"] || null,
+    pmid: data['pmid'] || null,
     publisher: data.publisher || null,
     rawData: data,
     sameAs: data.sameAs || null,
     spatialCoverage:
-      typeof data.spatialCoverage === "string" ? data.spatialCoverage : null,
+      typeof data.spatialCoverage === 'string' ? data.spatialCoverage : null,
     species: data.species
       ? Array.isArray(data.species)
         ? data.species
         : [data.species]
       : null,
     temporalCoverage:
-      typeof data.temporalCoverage === "string" ? data.spatialCoverage : null,
+      typeof data.temporalCoverage === 'string' ? data.spatialCoverage : null,
     // Maybe add species or organism field to topic
     topic: data.topicCategory
       ? Array.isArray(data.topicCategory)
@@ -277,11 +277,12 @@ export const formatAPIResource = (data: any) => {
         : [data.topicCategory]
       : null,
     url: data.url || null,
-    variableMeasured: data.variableMeasured
-      ? Array.isArray(data.variableMeasured)
-        ? data.variableMeasured
-        : [data.variableMeasured]
-      : null,
+    variableMeasured:
+      data.variableMeasured && data.variableMeasured.toLowerCase() !== 'unknown'
+        ? Array.isArray(data.variableMeasured)
+          ? data.variableMeasured
+          : [data.variableMeasured]
+        : null,
     version: data.version || null,
   };
   return formattedResource;

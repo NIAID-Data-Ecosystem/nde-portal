@@ -1,13 +1,13 @@
 import React from 'react';
-import {Button, ButtonGroup, Flex, Heading, Text} from 'nde-design-system';
-import {PageContent} from 'src/components/page-container';
+import { Button, ButtonGroup, Flex, Heading, Text } from 'nde-design-system';
+import { PageContent } from 'src/components/page-container';
 
 interface Error {
   message: string;
 }
 
 // Default error container.
-export const Error: React.FC<Error> = ({children, message}) => {
+export const Error: React.FC<Error> = ({ children, message }) => {
   return (
     <PageContent alignItems='center' justifyContent='center' flex={1}>
       <Flex flexDirection='column' alignItems='center'>
@@ -26,7 +26,7 @@ export const Error: React.FC<Error> = ({children, message}) => {
 };
 
 // Error call to action to redirect user. Has default "Back to home page" button.
-export const ErrorCTA: React.FC = ({children}) => {
+export const ErrorCTA: React.FC = ({ children }) => {
   return (
     <Flex
       flex={1}

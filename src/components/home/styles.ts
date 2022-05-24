@@ -76,5 +76,5 @@ StyledSectionButtonGroup.defaultProps = {
   w: '100%',
   justifyContent: ['flex-start', 'center', 'flex-start'],
   // max size for buttons in button group
-  sx: {a: {maxWidth: 300}},
+  sx: { a: { maxWidth: 300 } },
 };

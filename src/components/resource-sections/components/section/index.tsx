@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 import {
   Accordion,
   AccordionButton,
@@ -7,10 +7,10 @@ import {
   BoxProps,
   Icon,
   Skeleton,
-} from "nde-design-system";
-import { StyledSectionHead, StyledSectionHeading } from "./styles";
-import { FaMinus, FaPlus } from "react-icons/fa";
-import { getSectionIcon } from "../../helpers";
+} from 'nde-design-system';
+import { StyledSectionHead, StyledSectionHeading } from './styles';
+import { FaMinus, FaPlus } from 'react-icons/fa';
+import { getSectionIcon } from '../../helpers';
 
 interface SectionProps extends BoxProps {
   id: string;
@@ -37,7 +37,7 @@ const Section: React.FC<SectionProps> = ({
     return (
       <Skeleton
         isLoaded={!isLoading}
-        height={isLoading ? "200px" : "unset"}
+        height={isLoading ? '200px' : 'unset'}
         p={4}
         {...props}
       >
@@ -50,7 +50,7 @@ const Section: React.FC<SectionProps> = ({
   const SectionIcon = () => {
     let icon = getSectionIcon(id);
     return icon ? (
-      <Icon as={icon} boxSize={4} color="text.heading" mr={4} />
+      <Icon as={icon} boxSize={4} color='text.heading' mr={4} />
     ) : (
       <></>
     );
@@ -61,31 +61,31 @@ const Section: React.FC<SectionProps> = ({
     return (
       <section id={id} style={{ padding: 0 }}>
         <Accordion allowToggle defaultIndex={isDefaultOpen ? 0 : undefined}>
-          <AccordionItem borderColor="transparent" border={"none"}>
+          <AccordionItem borderColor='transparent' border={'none'}>
             {({ isExpanded }) => (
               <>
                 {name && (
                   <h2>
                     <AccordionButton
                       aria-label={`show more details about ${name}`}
-                      bg={bg || isExpanded ? "page.alt" : "white"}
+                      bg={bg || isExpanded ? 'page.alt' : 'white'}
                       color={color}
-                      borderY="0.5px solid"
-                      borderColor="gray.100"
-                      borderLeft="3px solid"
-                      borderLeftColor="accent.bg"
-                      _hover={{ bg: props?._hover?.bg || "page.alt" }}
+                      borderY='0.5px solid'
+                      borderColor='gray.100'
+                      borderLeft='3px solid'
+                      borderLeftColor='accent.bg'
+                      _hover={{ bg: props?._hover?.bg || 'page.alt' }}
                       _expanded={{
-                        borderColor: "page.alt",
+                        borderColor: 'page.alt',
                       }}
                     >
                       <SectionIcon />
                       {name && (
-                        <StyledSectionHeading flex={1} textAlign="left">
+                        <StyledSectionHeading flex={1} textAlign='left'>
                           {name}
                         </StyledSectionHeading>
                       )}
-                      <Icon as={isExpanded ? FaMinus : FaPlus} fontSize="xs" />
+                      <Icon as={isExpanded ? FaMinus : FaPlus} fontSize='xs' />
                     </AccordionButton>
                   </h2>
                 )}

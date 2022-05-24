@@ -1,7 +1,7 @@
 import React from 'react';
-import {Box, Button, Flex, Icon, Link, Text} from 'nde-design-system';
-import {IoIosWarning} from 'react-icons/io';
-import {useLocalStorage} from 'usehooks-ts';
+import { Box, Button, Flex, Icon, Link, Text } from 'nde-design-system';
+import { IoIosWarning } from 'react-icons/io';
+import { useLocalStorage } from 'usehooks-ts';
 
 const Notice = () => {
   let niaid_help = 'help@data.niaid.nih.gov';
@@ -48,7 +48,7 @@ const Notice = () => {
         <Button
           variant='ghost'
           colorScheme='primary'
-          _hover={{bg: 'status.warning_lt'}}
+          _hover={{ bg: 'status.warning_lt' }}
           size='sm'
           onClick={toggleWarning}
           w={['100%', 'unset']}

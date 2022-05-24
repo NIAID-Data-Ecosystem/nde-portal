@@ -1,6 +1,6 @@
 import axios from 'axios';
-import {formatAPIResource} from './helpers';
-import {FetchSearchResultsResponse, Metadata} from './types';
+import { formatAPIResource } from './helpers';
+import { FetchSearchResultsResponse, Metadata } from './types';
 
 export const getResourceById = async (id?: string | string[]) => {
   if (!id) {
@@ -10,7 +10,7 @@ export const getResourceById = async (id?: string | string[]) => {
     throw new Error('API url undefined');
   }
   try {
-    const {data} = await axios.get(
+    const { data } = await axios.get(
       `${process.env.NEXT_PUBLIC_API_URL}/query?q=_id:"${id}"`,
     );
 
@@ -42,12 +42,12 @@ export const fetchSearchResults = async (params: Params) => {
   }
 
   try {
-    const {data} = await axios.get(
+    const { data } = await axios.get(
       `${process.env.NEXT_PUBLIC_API_URL}/query?`,
-      {params},
+      { params },
     );
     if (!data.hits) {
-      return {results: [], total: 0, facets: data.facets || null};
+      return { results: [], total: 0, facets: data.facets || null };
     }
 
     const results: FetchSearchResultsResponse['results'] = data.hits.map(
@@ -56,7 +56,7 @@ export const fetchSearchResults = async (params: Params) => {
     const total: FetchSearchResultsResponse['total'] = data.total;
     const facets: FetchSearchResultsResponse['facets'] = data.facets;
 
-    return {results, total, facets};
+    return { results, total, facets };
   } catch (err) {
     throw err;
   }
@@ -69,9 +69,9 @@ export const fetchMetadata = async () => {
   }
 
   try {
-    const {data} = (await axios.get(
+    const { data } = (await axios.get(
       `${process.env.NEXT_PUBLIC_API_URL}/metadata`,
-    )) as {data: Metadata};
+    )) as { data: Metadata };
 
     return data;
   } catch (err) {

@@ -1,8 +1,8 @@
-import React, { useCallback } from "react";
-import Pie, { ProvidedProps, PieArcDatum } from "@visx/shape/lib/shapes/Pie";
-import { scaleOrdinal } from "@visx/scale";
-import { Group } from "@visx/group";
-import { animated, useTransition, to, a } from "react-spring";
+import React, { useCallback } from 'react';
+import Pie, { ProvidedProps, PieArcDatum } from '@visx/shape/lib/shapes/Pie';
+import { scaleOrdinal } from '@visx/scale';
+import { Group } from '@visx/group';
+import { animated, useTransition, to, a } from 'react-spring';
 import {
   Box,
   Flex,
@@ -10,15 +10,15 @@ import {
   ListItem,
   Text,
   UnorderedList,
-} from "nde-design-system";
-import { LegendOrdinal, LegendItem } from "@visx/legend";
-import { formatNumber } from "src/utils/helpers";
+} from 'nde-design-system';
+import { LegendOrdinal, LegendItem } from '@visx/legend';
+import { formatNumber } from 'src/utils/helpers';
 import {
   useTooltip,
   defaultStyles as defaultTooltipStyles,
   useTooltipInPortal,
-} from "@visx/tooltip";
-import { schemeTableau10 } from "d3-scale-chromatic";
+} from '@visx/tooltip';
+import { schemeTableau10 } from 'd3-scale-chromatic';
 
 interface RawDataProps {
   term: string;
@@ -47,11 +47,11 @@ const formatPieChartData = (data: RawDataProps[]) => {
   const formatted = data.reduce((r, d, i) => {
     // if the data has records that are less than the minimum count (MIN_COUNT) we group them together to make a larger slice of pie
     if (d.count < MIN_COUNT) {
-      if (!r["Other"]) {
-        r["Other"] = { count: 0, term: "Other", data: [] };
+      if (!r['Other']) {
+        r['Other'] = { count: 0, term: 'Other', data: [] };
       }
-      r["Other"].count += d.count;
-      r["Other"].data?.push(d);
+      r['Other'].count += d.count;
+      r['Other'].data?.push(d);
     } else {
       r[d.term] = d;
     }
@@ -91,7 +91,7 @@ export default function PieChart({
     {
       scroll: true,
       detectBounds: true,
-    }
+    },
   );
 
   // Handles tooltip hover
@@ -99,16 +99,16 @@ export default function PieChart({
     (event: React.MouseEvent<HTMLDivElement>, datum: DataProps) => {
       // coordinates should be relative to the container in which Tooltip is rendered
       const containerX =
-        ("clientX" in event ? event.clientX : 0) - containerBounds.left;
+        ('clientX' in event ? event.clientX : 0) - containerBounds.left;
       const containerY =
-        ("clientY" in event ? event.clientY : 0) - containerBounds.top;
+        ('clientY' in event ? event.clientY : 0) - containerBounds.top;
       showTooltip({
         tooltipLeft: containerX,
         tooltipTop: containerY,
         tooltipData: datum,
       });
     },
-    [showTooltip, containerBounds]
+    [showTooltip, containerBounds],
   );
 
   // format data so that smaller values form their own section.
@@ -120,7 +120,7 @@ export default function PieChart({
 
   // colors for pie chart
   const colorScale = scaleOrdinal({
-    domain: data.map((d) => d.term),
+    domain: data.map(d => d.term),
     // @ts-ignore
     range: schemeTableau10,
   });
@@ -133,10 +133,10 @@ export default function PieChart({
 
   return (
     <Flex
-      alignItems={["center", "start"]}
-      justifyContent={["flex-start", "center", "flex-start"]}
-      flexDirection={["row"]}
-      flexWrap={["wrap", "wrap", "wrap", "nowrap"]}
+      alignItems={['center', 'start']}
+      justifyContent={['flex-start', 'center', 'flex-start']}
+      flexDirection={['row']}
+      flexWrap={['wrap', 'wrap', 'wrap', 'nowrap']}
     >
       <Box width={width} height={height} m={[4]}>
         <svg width={width} height={height} ref={containerRef}>
@@ -149,13 +149,13 @@ export default function PieChart({
               // cornerRadius={3}
               // padAngle={0.005}
             >
-              {(pie) => {
+              {pie => {
                 return (
                   <AnimatedPie
                     {...pie}
                     animate={animate}
-                    getKey={(arc) => arc.data.term}
-                    getColor={(arc) => colorScale(arc.data.term)}
+                    getKey={arc => arc.data.term}
+                    getColor={arc => colorScale(arc.data.term)}
                     onMouseOver={(e, datum) => handleMouseOver(e, datum)}
                     onMouseLeave={hideTooltip}
                   />
@@ -167,18 +167,18 @@ export default function PieChart({
       </Box>
       <Box my={4} mx={[4, 4, 8]} minWidth={[200, 200, 300]}>
         {/* Total datasets */}
-        <Heading as={"h3"} fontWeight="semibold" size={"h4"} color="gray.900">
+        <Heading as={'h3'} fontWeight='semibold' size={'h4'} color='gray.900'>
           {formatNumber(total)} Resources
         </Heading>
         {/* Legend */}
-        <LegendOrdinal scale={colorScale} direction="column">
-          {(labels) => (
+        <LegendOrdinal scale={colorScale} direction='column'>
+          {labels => (
             <>
               {labels.map((label, i) => {
                 if (!label) {
                   return;
                 }
-                const datum = data.filter((d) => d.term === label.text)[0];
+                const datum = data.filter(d => d.term === label.text)[0];
 
                 const Label = ({
                   text,
@@ -189,13 +189,13 @@ export default function PieChart({
                 }) => {
                   return (
                     <>
-                      <Text lineHeight="short" fontWeight={"semibold"}>
+                      <Text lineHeight='short' fontWeight={'semibold'}>
                         {text}
                       </Text>
                       <Text
-                        lineHeight="shorter"
-                        fontSize="sm"
-                        fontWeight={"regular"}
+                        lineHeight='shorter'
+                        fontSize='sm'
+                        fontWeight={'regular'}
                       >
                         {formatNumber(count)} records
                       </Text>
@@ -204,12 +204,12 @@ export default function PieChart({
                 };
 
                 return (
-                  <Flex key={i} maxWidth={"300px"} my={4}>
+                  <Flex key={i} maxWidth={'300px'} my={4}>
                     <LegendItem
-                      alignItems="start"
-                      onMouseOver={(e) => handleMouseOver(e, datum)}
+                      alignItems='start'
+                      onMouseOver={e => handleMouseOver(e, datum)}
                       onMouseLeave={hideTooltip}
-                      style={{ cursor: "pointer" }}
+                      style={{ cursor: 'pointer' }}
                     >
                       <Box
                         width={5}
@@ -225,8 +225,8 @@ export default function PieChart({
                       <Label text={label.text} count={datum.count} />
                       {datum.data && (
                         <UnorderedList
-                          borderLeft={"1px solid"}
-                          borderColor="gray.200"
+                          borderLeft={'1px solid'}
+                          borderColor='gray.200'
                           pl={3}
                           ml={1}
                           mt={4}
@@ -254,13 +254,13 @@ export default function PieChart({
             top={tooltipTop}
             style={{
               ...defaultTooltipStyles,
-              borderTop: "4px solid",
+              borderTop: '4px solid',
               borderColor: colorScale(tooltipData.term),
-              padding: "1rem",
+              padding: '1rem',
             }}
           >
             <Box>
-              <Text fontWeight={"semibold"}>{tooltipData.term}</Text>
+              <Text fontWeight={'semibold'}>{tooltipData.term}</Text>
               <br />
               <Text>{formatNumber(tooltipData.count)} records</Text>
               {tooltipData.data && (
@@ -268,12 +268,12 @@ export default function PieChart({
                   ml={0}
                   my={4}
                   py={4}
-                  borderTop="1px solid"
-                  borderColor="gray.100"
+                  borderTop='1px solid'
+                  borderColor='gray.100'
                 >
                   {tooltipData.data.map((d, i) => (
                     <ListItem key={i}>
-                      <Text fontWeight={"semibold"}>{d.term}</Text>
+                      <Text fontWeight={'semibold'}>{d.term}</Text>
                       <Text>{formatNumber(d.count)} records</Text>
                       <br />
                     </ListItem>
@@ -333,17 +333,17 @@ function AnimatedPie<Datum>({
     return (
       <g key={key}>
         <animated.path
-          style={{ cursor: "pointer" }}
+          style={{ cursor: 'pointer' }}
           // compute interpolated path d attribute from intermediate angle values
           d={to([props.startAngle, props.endAngle], (startAngle, endAngle) =>
             path({
               ...arc,
               startAngle,
               endAngle,
-            })
+            }),
           )}
           fill={getColor(arc)}
-          onMouseOver={(e) => onMouseOver(e, arc.data)}
+          onMouseOver={e => onMouseOver(e, arc.data)}
           onMouseLeave={() => onMouseLeave()}
         />
       </g>

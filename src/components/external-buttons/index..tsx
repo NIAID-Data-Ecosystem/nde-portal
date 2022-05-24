@@ -1,7 +1,7 @@
 import React from 'react';
-import {LinkProps, Image, Link, Text} from 'nde-design-system';
-import {ImageProps} from '@chakra-ui/image';
-import {assetPrefix} from 'next.config';
+import { LinkProps, Image, Link, Text } from 'nde-design-system';
+import { ImageProps } from '@chakra-ui/image';
+import { assetPrefix } from 'next.config';
 
 interface ExternalButtonProps extends LinkProps {
   src?: string | null;

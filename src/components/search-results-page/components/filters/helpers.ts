@@ -1,4 +1,4 @@
-import {formatType} from 'src/utils/api/helpers';
+import { formatType } from 'src/utils/api/helpers';
 
 // Filters + sorts all the filter terms that belong to a certain filter.
 export const filterFilterList = (
@@ -10,7 +10,7 @@ export const filterFilterList = (
   size: number,
 ) => {
   if (!terms) {
-    return {items: [], hasMore: false};
+    return { items: [], hasMore: false };
   }
   let searchText = filterText.toLowerCase();
   let filteredTerms = terms
@@ -22,7 +22,7 @@ export const filterFilterList = (
       return b_count - a_count;
     });
 
-  return {items: filteredTerms, hasMore: terms.length > size};
+  return { items: filteredTerms, hasMore: terms.length > size };
 };
 
 // Format the type of resource so that the query term is recognizable by the api.

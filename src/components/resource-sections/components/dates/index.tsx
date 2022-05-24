@@ -1,9 +1,9 @@
-import { Flex, Icon, Text } from "nde-design-system";
-import React from "react";
-import { FaRegClock } from "react-icons/fa";
-import TypeBanner from "../type-banner";
-import { FormattedResource } from "src/utils/api/types";
-import { formatDate } from "src/utils/helpers";
+import { Flex, Icon, Text } from 'nde-design-system';
+import React from 'react';
+import { FaRegClock } from 'react-icons/fa';
+import TypeBanner from '../type-banner';
+import { FormattedResource } from 'src/utils/api/types';
+import { formatDate } from 'src/utils/helpers';
 
 /*
 [COMPONENT INFO]:
@@ -16,10 +16,10 @@ interface ResourceDates {
 }
 
 const date_fields = [
-  { property: "date", name: "" },
-  { property: "datePublished", name: "Published" },
-  { property: "dateCreated", name: "Created" },
-  { property: "dateModified", name: "Modified" },
+  { property: 'date', name: '' },
+  { property: 'datePublished', name: 'Published' },
+  { property: 'dateCreated', name: 'Created' },
+  { property: 'dateModified', name: 'Modified' },
 ];
 
 const ResourceDates: React.FC<ResourceDates> = ({ data }) => {
@@ -34,10 +34,10 @@ const ResourceDates: React.FC<ResourceDates> = ({ data }) => {
       value: data?.[property],
     }))
     .filter(({ property, value }) => {
-      if (property === "date") {
+      if (property === 'date') {
         // Check if date string is unique or is already included as datePublished, dateModified, dateCreated.
         const is_unique =
-          Object.values(data).filter((date) => date === value).length === 1;
+          Object.values(data).filter(date => date === value).length === 1;
         return is_unique;
       }
       // Filter data for date properties where a values exists.
@@ -46,22 +46,22 @@ const ResourceDates: React.FC<ResourceDates> = ({ data }) => {
 
   return (
     <TypeBanner type={data?.type}>
-      <Flex flexWrap={"wrap"} ml={[0, 0, 4]}>
+      <Flex flexWrap={'wrap'} ml={[0, 0, 4]}>
         {date_data.map((date, i) => {
           return (
             <Flex
               key={i}
               px={2}
               m={1}
-              alignItems="center"
-              bg={"secondary.50"}
-              w={["100%", "100%", "unset"]}
+              alignItems='center'
+              bg={'secondary.50'}
+              w={['100%', '100%', 'unset']}
               flex={1}
-              whiteSpace="nowrap"
-              borderRadius="semi"
+              whiteSpace='nowrap'
+              borderRadius='semi'
             >
               <Icon as={FaRegClock} mr={2} />
-              <Text fontSize="xs">
+              <Text fontSize='xs'>
                 <strong>{date.name}</strong> {formatDate(date.value)}
               </Text>
             </Flex>

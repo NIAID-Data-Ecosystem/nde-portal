@@ -1,4 +1,4 @@
-import {Badge, Box, BoxProps} from 'nde-design-system';
+import { Badge, Box, BoxProps } from 'nde-design-system';
 import styled from '@emotion/styled';
 
 export const StyledBadge = styled(Badge)<BoxProps>(props => ({}));

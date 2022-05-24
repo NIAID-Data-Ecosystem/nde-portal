@@ -9,10 +9,10 @@ import {
   StatLabel,
   Text,
 } from 'nde-design-system';
-import {FormattedResource} from 'src/utils/api/types';
-import {Skeleton} from '@chakra-ui/skeleton';
-import {formatDate, getRepositoryImage} from 'src/utils/helpers';
-import {assetPrefix} from 'next.config';
+import { FormattedResource } from 'src/utils/api/types';
+import { Skeleton } from '@chakra-ui/skeleton';
+import { formatDate, getRepositoryImage } from 'src/utils/helpers';
+import { assetPrefix } from 'next.config';
 
 interface Provenance {
   isLoading: boolean;

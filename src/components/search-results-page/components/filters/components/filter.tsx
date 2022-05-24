@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   AccordionItem,
   AccordionButton,
@@ -15,9 +15,9 @@ import {
   ListItem,
   Text,
 } from 'nde-design-system';
-import {filterFilterList} from '../helpers';
-import {formatNumber} from 'src/utils/helpers';
-import {FaMinus, FaPlus} from 'react-icons/fa';
+import { filterFilterList } from '../helpers';
+import { formatNumber } from 'src/utils/helpers';
+import { FaMinus, FaPlus } from 'react-icons/fa';
 
 const FilterItem = ({
   term,
@@ -80,7 +80,7 @@ export const Filter: React.FC<FilterProps> = ({
   // Sorts and filter the filter terms list based on search box.
   const NUM_ITEMS = 5;
   const [numItems, setNumItems] = useState(NUM_ITEMS);
-  const {items, hasMore}: {items: filterValue[]; hasMore: boolean} =
+  const { items, hasMore }: { items: filterValue[]; hasMore: boolean } =
     filterFilterList(values, searchTerm, numItems);
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>): void =>
@@ -97,7 +97,7 @@ export const Filter: React.FC<FilterProps> = ({
 
   return (
     <AccordionItem borderColor={'page.alt'} borderTopWidth='2px'>
-      {({isExpanded}) => (
+      {({ isExpanded }) => (
         <>
           <h2>
             <AccordionButton
@@ -147,7 +147,7 @@ export const Filter: React.FC<FilterProps> = ({
               w='100%'
               maxH='250px'
               overflowY='auto'
-              style={{scrollBehavior: 'smooth'}}
+              style={{ scrollBehavior: 'smooth' }}
               my={4}
             >
               {/* List of filters available */}
@@ -161,7 +161,7 @@ export const Filter: React.FC<FilterProps> = ({
                       <Text>No filters available.</Text>
                     </ListItem>
                   )}
-                  {items?.map(({term, count}) => {
+                  {items?.map(({ term, count }) => {
                     return (
                       <ListItem key={term} p={2} py={1}>
                         <FilterItem term={term} count={count} />

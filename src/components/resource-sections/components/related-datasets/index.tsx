@@ -1,22 +1,22 @@
 import React from 'react';
-import {useQuery} from 'react-query';
-import {Link, Skeleton, UnorderedList, ListItem} from 'nde-design-system';
-import {fetchSearchResults} from 'src/utils/api';
+import { useQuery } from 'react-query';
+import { Link, Skeleton, UnorderedList, ListItem } from 'nde-design-system';
+import { fetchSearchResults } from 'src/utils/api';
 import {
   FetchSearchResultsResponse,
   FormattedResource,
 } from 'src/utils/api/types';
-import {StyledSectionHeading, StyledSectionHead} from '../../styles';
-import {basePath} from 'next.config';
+import { StyledSectionHeading, StyledSectionHead } from '../../styles';
+import { basePath } from 'next.config';
 import NextLink from 'next/link';
 
 interface RelatedDatasets {}
 
 const RelatedDatasets: React.FC<RelatedDatasets> = () => {
-  const {isLoading, error, data} = useQuery<
+  const { isLoading, error, data } = useQuery<
     FetchSearchResultsResponse | undefined,
     Error
-  >(['search-results', {}], () => fetchSearchResults({q: 'cancer'}));
+  >(['search-results', {}], () => fetchSearchResults({ q: 'cancer' }));
 
   return (
     <Skeleton isLoaded={!isLoading} py={[0, 0, 4]}>
@@ -30,7 +30,7 @@ const RelatedDatasets: React.FC<RelatedDatasets> = () => {
               <NextLink
                 href={{
                   pathname: '/resources/',
-                  query: {id: resource.id},
+                  query: { id: resource.id },
                 }}
                 passHref
               >

@@ -1,12 +1,12 @@
-import type {NextPage} from 'next';
+import type { NextPage } from 'next';
 import React from 'react';
-import {useQuery} from 'react-query';
-import {Button, Flex, UnorderedList} from 'nde-design-system';
-import {PageContainer, PageContent} from 'src/components/page-container';
-import {Main, Sidebar} from 'src/components/sources';
-import {fetchMetadata} from 'src/utils/api';
-import {Error, ErrorCTA} from 'src/components/error';
-import {useRouter} from 'next/router';
+import { useQuery } from 'react-query';
+import { Button, Flex, UnorderedList } from 'nde-design-system';
+import { PageContainer, PageContent } from 'src/components/page-container';
+import { Main, Sidebar } from 'src/components/sources';
+import { fetchMetadata } from 'src/utils/api';
+import { Error, ErrorCTA } from 'src/components/error';
+import { useRouter } from 'next/router';
 import LoadingSpinner from 'src/components/loading';
 
 const Sources: NextPage = () => {
@@ -19,7 +19,7 @@ const Sources: NextPage = () => {
   } = useQuery(
     ['metadata'],
     fetchMetadata, // Don't refresh everytime window is touched.
-    {refetchOnWindowFocus: false},
+    { refetchOnWindowFocus: false },
   );
 
   return (

@@ -1,8 +1,8 @@
-import type {NextPage} from 'next';
-import {useRouter} from 'next/router';
-import {PageContainer} from 'src/components/page-container';
-import {Box} from 'nde-design-system';
-import {useHasMounted} from 'src/hooks/useHasMounted';
+import type { NextPage } from 'next';
+import { useRouter } from 'next/router';
+import { PageContainer } from 'src/components/page-container';
+import { Box } from 'nde-design-system';
+import { useHasMounted } from 'src/hooks/useHasMounted';
 import SearchResultsPage from 'src/components/search-results-page';
 
 //  This page renders the search results from the search bar.

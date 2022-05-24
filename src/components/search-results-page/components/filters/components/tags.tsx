@@ -6,7 +6,7 @@ import {
   TagCloseButton,
   TagLabel,
 } from 'nde-design-system';
-import {filtersConfig} from 'src/components/search-results-page/components/filters';
+import { filtersConfig } from 'src/components/search-results-page/components/filters';
 
 /*
 [COMPONENT INFO]:

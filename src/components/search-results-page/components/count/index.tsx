@@ -1,6 +1,6 @@
-import {Box, Heading, HeadingProps, SkeletonText} from 'nde-design-system';
+import { Box, Heading, HeadingProps, SkeletonText } from 'nde-design-system';
 import React from 'react';
-import {formatNumber} from 'src/utils/helpers';
+import { formatNumber } from 'src/utils/helpers';
 
 // [COMPONENT INFO]: Displays total results count
 
@@ -11,7 +11,11 @@ interface ResultsCount extends HeadingProps {
   isLoading: boolean;
 }
 
-const ResultsCount: React.FC<ResultsCount> = ({isLoading, total, ...props}) => {
+const ResultsCount: React.FC<ResultsCount> = ({
+  isLoading,
+  total,
+  ...props
+}) => {
   return (
     <Box w={['100%', 'unset']}>
       <Heading
@@ -24,7 +28,11 @@ const ResultsCount: React.FC<ResultsCount> = ({isLoading, total, ...props}) => {
         {...props}
       >
         <span
-          style={{display: 'flex', alignItems: 'baseline', fontSize: '1.5rem'}}
+          style={{
+            display: 'flex',
+            alignItems: 'baseline',
+            fontSize: '1.5rem',
+          }}
         >
           {isLoading ? (
             <SkeletonText
@@ -37,7 +45,7 @@ const ResultsCount: React.FC<ResultsCount> = ({isLoading, total, ...props}) => {
           ) : (
             formatNumber(total)
           )}{' '}
-          <span style={{fontSize: '1rem', marginLeft: '0.5rem'}}>
+          <span style={{ fontSize: '1rem', marginLeft: '0.5rem' }}>
             Result{total !== 1 ? 's' : ''}
           </span>
         </span>

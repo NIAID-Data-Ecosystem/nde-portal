@@ -1,6 +1,6 @@
-import React from "react";
-import { FormattedResource } from "src/utils/api/types";
-import { Box, Flex, Skeleton, Tag, Text } from "nde-design-system";
+import React from 'react';
+import { FormattedResource } from 'src/utils/api/types';
+import { Box, Flex, Skeleton, Tag, Text } from 'nde-design-system';
 import {
   ResourceDates,
   ResourceHeader,
@@ -8,41 +8,41 @@ import {
   ResourceLinks,
   ResourceProvenance,
   Section,
-} from "./components";
+} from './components';
 
-import { Route } from "./helpers";
-import FilesTable from "./components/files-table";
-import FundingTable from "./components/funding-table";
-import CitedByTable from "./components/cited-by-table";
+import { Route } from './helpers';
+import FilesTable from './components/files-table';
+import FundingTable from './components/funding-table';
+import CitedByTable from './components/cited-by-table';
 
 // Metadata displayed in each section
 export const section_metadata: { [key: string]: (keyof FormattedResource)[] } =
   {
     overview: [
-      "citation",
-      "doi",
-      "healthCondition",
-      "infectiousAgent",
-      "infectiousDisease",
-      "language",
-      "license",
-      "measurementTechnique",
-      "nctid",
-      "numberOfDownloads",
-      "numberOfViews",
-      "spatialCoverage",
-      "species",
-      "temporalCoverage",
-      "topic",
-      "variableMeasured",
+      'citation',
+      'doi',
+      'healthCondition',
+      'infectiousAgent',
+      'infectiousDisease',
+      'language',
+      'license',
+      'measurementTechnique',
+      'nctid',
+      'numberOfDownloads',
+      'numberOfViews',
+      'spatialCoverage',
+      'species',
+      'temporalCoverage',
+      'topic',
+      'variableMeasured',
     ],
-    keywords: ["keywords"],
-    description: ["description"],
-    provenance: ["includedInDataCatalog", "url"],
-    downloads: ["distribution"],
-    funding: ["funding"],
-    citedBy: ["citedBy"],
-    metadata: ["rawData"],
+    keywords: ['keywords'],
+    description: ['description'],
+    provenance: ['includedInDataCatalog', 'url'],
+    downloads: ['distribution'],
+    funding: ['funding'],
+    citedBy: ['citedBy'],
+    metadata: ['rawData'],
   };
 
 // use config file to show content in sections.
@@ -57,7 +57,7 @@ const Sections = ({
 }) => {
   return (
     <>
-      <Section id={"header"} p={0}>
+      <Section id={'header'} p={0}>
         <ResourceHeader
           isLoading={isLoading}
           conditionsOfAccess={data?.conditionsOfAccess}
@@ -69,7 +69,7 @@ const Sections = ({
         <ResourceDates data={data} />
       </Section>
 
-      {sections.map((section) => {
+      {sections.map(section => {
         return (
           <Section
             id={section.hash}
@@ -78,11 +78,11 @@ const Sections = ({
             isLoading={isLoading}
             isCollapsible={section.isCollapsible}
           >
-            {section.hash === "overview" && (
+            {section.hash === 'overview' && (
               <ResourceOverview isLoading={isLoading} {...data} />
             )}
-            {section.hash === "overview" && (
-              <Box display={{ base: "block", lg: "none" }}>
+            {section.hash === 'overview' && (
+              <Box display={{ base: 'block', lg: 'none' }}>
                 <ResourceLinks
                   isLoading={isLoading}
                   includedInDataCatalog={data?.includedInDataCatalog}
@@ -93,13 +93,13 @@ const Sections = ({
               </Box>
             )}
             {/* Show keywords */}
-            {section.hash === "keywords" && (
+            {section.hash === 'keywords' && (
               <Skeleton isLoaded={!isLoading}>
-                <Flex flexWrap="wrap">
+                <Flex flexWrap='wrap'>
                   {data?.keywords &&
-                    data.keywords.map((keyword) => {
+                    data.keywords.map(keyword => {
                       return (
-                        <Tag key={keyword} m={2} colorScheme="primary">
+                        <Tag key={keyword} m={2} colorScheme='primary'>
                           {keyword}
                         </Tag>
                       );
@@ -108,45 +108,45 @@ const Sections = ({
               </Skeleton>
             )}
             {/* Show description */}
-            {section.hash === "description" && data?.description && (
+            {section.hash === 'description' && data?.description && (
               <Box
-                overflow="auto"
-                w="100%"
-                fontSize="sm"
+                overflow='auto'
+                w='100%'
+                fontSize='sm'
                 dangerouslySetInnerHTML={{
                   __html: data.description,
                 }}
               ></Box>
             )}
             {/* Show provenance */}
-            {section.hash === "provenance" && (
+            {section.hash === 'provenance' && (
               <ResourceProvenance isLoading={isLoading} {...data} />
             )}
             {/* Show downloads */}
-            {section.hash === "downloads" && (
+            {section.hash === 'downloads' && (
               <FilesTable isLoading={isLoading} {...data} />
             )}
 
             {/* Show funding */}
-            {section.hash === "funding" && (
+            {section.hash === 'funding' && (
               <FundingTable isLoading={isLoading} {...data} />
             )}
 
             {/* Show citedBy */}
-            {section.hash === "citedBy" && (
+            {section.hash === 'citedBy' && (
               <CitedByTable isLoading={isLoading} {...data} />
             )}
 
             {/* Show raw metadata */}
-            {section.hash === "metadata" && data?.rawData && (
-              <Box maxHeight={500} overflow="auto" w="100%" tabIndex={0}>
+            {section.hash === 'metadata' && data?.rawData && (
+              <Box maxHeight={500} overflow='auto' w='100%' tabIndex={0}>
                 <pre
                   style={{
-                    whiteSpace: "pre-wrap",
-                    padding: "2rem",
+                    whiteSpace: 'pre-wrap',
+                    padding: '2rem',
                   }}
                 >
-                  <Text fontSize={"10px"}>
+                  <Text fontSize={'10px'}>
                     {JSON.stringify(data.rawData, null, 2)}
                   </Text>
                 </pre>

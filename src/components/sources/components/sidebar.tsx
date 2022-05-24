@@ -1,13 +1,13 @@
 import React from 'react';
-import {Metadata} from 'src/utils/api/types';
-import {formatDate} from 'src/utils/helpers';
-import {Box, Heading, ListItem, Text} from 'nde-design-system';
+import { Metadata } from 'src/utils/api/types';
+import { formatDate } from 'src/utils/helpers';
+import { Box, Heading, ListItem, Text } from 'nde-design-system';
 
 interface Sidebar {
   data: Metadata;
 }
 
-const Sidebar: React.FC<Sidebar> = ({data}) => {
+const Sidebar: React.FC<Sidebar> = ({ data }) => {
   const sourceNames = [];
 
   for (const source in data.src) {
@@ -24,7 +24,7 @@ const Sidebar: React.FC<Sidebar> = ({data}) => {
             key={index}
             px={[2, 4, 6]}
             py={4}
-            _hover={{bg: 'gray.50'}}
+            _hover={{ bg: 'gray.50' }}
             cursor='pointer'
           >
             <Box
