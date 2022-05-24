@@ -1,7 +1,6 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { Box, Flex, Icon, Text } from "nde-design-system";
 import { Distribution, FormattedResource } from "src/utils/api/types";
-import { formatDate } from "src/utils/helpers";
 import Table, { Row } from "src/components/table";
 import LoadingSpinner from "src/components/loading";
 import {
@@ -16,6 +15,8 @@ interface FilesTable {
 }
 
 const FilesTable: React.FC<FilesTable> = ({ isLoading, distribution }) => {
+  const accessorFn = useCallback((v) => v.sortValue, []);
+
   if (isLoading) {
     return <LoadingSpinner isLoading={isLoading} />;
   }
@@ -50,38 +51,29 @@ const FilesTable: React.FC<FilesTable> = ({ isLoading, distribution }) => {
       let value = v;
       let { icon, color } = getFileIcon(v);
 
-      // Format date values.
-      if (k.toLowerCase().includes("date")) {
-        value = formatDate(v);
-      }
-
       if (k === "encodingFormat" && icon && color) {
         value = (
           <Flex alignItems="baseline">
-            <Icon as={icon} color={color} boxSize={6} aria-label={v} />
-            <Text pt={2} ml={1} fontSize="sm" fontWeight="semibold">
+            <Text pt={2} ml={1} fontSize="sm">
               <FormatLinkCell value={v} />
             </Text>
+            <Icon as={icon} color={color} boxSize={6} aria-label={v} m={1} />
           </Flex>
         );
       }
       if (k.toLowerCase() === "contenturl" && icon && color) {
         value = (
-          <Text>
-            <FormatLinkCell value={v} isExternal={false} target="_blank" />
-            <Icon
-              as={icon}
-              color={color}
-              boxSize={8}
-              aria-label={v}
-              pt={2}
-              ml={1}
-            />
-          </Text>
+          <>
+            <Text>
+              <FormatLinkCell value={v} />
+            </Text>
+            <Icon as={icon} color={color} boxSize={6} aria-label={v} mt={1} />
+          </>
         );
       }
       obj[k] = {
         value,
+        sortValue: typeof v === "string" || typeof v === "number" ? v : "",
       };
     });
     return obj;
@@ -92,6 +84,7 @@ const FilesTable: React.FC<FilesTable> = ({ isLoading, distribution }) => {
       columns={columns}
       rowData={rows}
       caption={"Files available for download."}
+      accessor={accessorFn}
     />
   );
 };

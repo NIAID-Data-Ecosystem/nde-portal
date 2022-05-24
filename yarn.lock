@@ -2748,10 +2748,10 @@ natural-compare@^1.4.0:
   resolved "https://registry.npmjs.org/natural-compare/-/natural-compare-1.4.0.tgz"
   integrity sha1-Sr6/7tdUHywnrPspvbvRXI1bpPc=
 
-nde-design-system@^0.2.51:
-  version "0.2.51"
-  resolved "https://registry.yarnpkg.com/nde-design-system/-/nde-design-system-0.2.51.tgz#2e1a8040004f00ce9ed04113a9f6096e24e91093"
-  integrity sha512-H5uQxz5bbyM35LzAu13emHiIXA8rS2n8Ct53RwuoivWYdW8gS/UpSGg5SRlx1TR+YKK/DD+z1rPws9iFusRnLw==
+nde-design-system@^0.2.57:
+  version "0.2.57"
+  resolved "https://registry.yarnpkg.com/nde-design-system/-/nde-design-system-0.2.57.tgz#d33ed3edc70aa51eb279d6773eefc96a3268f05f"
+  integrity sha512-5yVJAa+/q5JqiCUwO7SmZxUMMXMwBWI8ryk/UKyU6Iz5mgTUDLEg4B7QXV5aojg+FDnI1HJ8ebBcz4V/TkoIwQ==
   dependencies:
     "@chakra-ui/icons" "^1.1.7"
     "@chakra-ui/react" "1.7.2"

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { Box, Text } from "nde-design-system";
 import { FormattedResource } from "src/utils/api/types";
 import Table, { Row } from "src/components/table";
@@ -11,6 +11,8 @@ interface FundingTable {
 }
 
 const FundingTable: React.FC<FundingTable> = ({ isLoading, funding }) => {
+  const accessorFn = useCallback((v) => v.sortValue, []);
+
   if (isLoading) {
     return <LoadingSpinner isLoading={isLoading} />;
   }
@@ -53,16 +55,23 @@ const FundingTable: React.FC<FundingTable> = ({ isLoading, funding }) => {
         props = { minW: "200px" };
       }
 
-      obj[k] = { value, props };
+      obj[k] = {
+        value,
+        props,
+        sortValue:
+          typeof value === "string" || typeof value === "number" ? value : "",
+      };
     });
 
     return obj;
   });
+  console.log(rows);
 
   return (
     <Table
       columns={columns}
       rowData={rows}
+      accessor={accessorFn}
       caption={"Grant and funding information."}
     />
   );

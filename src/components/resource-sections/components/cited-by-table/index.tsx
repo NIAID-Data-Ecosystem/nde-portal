@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { Box, Text } from "nde-design-system";
 import { CitedBy, FormattedResource } from "src/utils/api/types";
 import Table, { Row } from "src/components/table";
@@ -19,6 +19,8 @@ const formatType = (type: string) => {
 };
 
 const CitedByTable: React.FC<CitedByTable> = ({ isLoading, citedBy }) => {
+  const accessorFn = useCallback((v) => v.sortValue, []);
+
   if (isLoading) {
     return <LoadingSpinner isLoading={isLoading} />;
   }
@@ -52,6 +54,11 @@ const CitedByTable: React.FC<CitedByTable> = ({ isLoading, citedBy }) => {
     let obj = {} as Row;
     Object.entries(d).map(([k, v]) => {
       let value = v;
+      let props: { [key: string]: any } = {};
+
+      if (k.toLowerCase().includes("name")) {
+        props.minWidth = "400px";
+      }
       // Format date values.
       if (k.toLowerCase().includes("date")) {
         value = formatDate(v);
@@ -63,13 +70,20 @@ const CitedByTable: React.FC<CitedByTable> = ({ isLoading, citedBy }) => {
 
       obj[k] = {
         value,
+        sortValue: typeof v === "string" || typeof v === "number" ? v : "",
+        props,
       };
     });
     return obj;
   });
 
   return (
-    <Table columns={columns} rowData={rows} caption={"Cited by information."} />
+    <Table
+      columns={columns}
+      rowData={rows}
+      accessor={accessorFn}
+      caption={"Cited by information."}
+    />
   );
 };
 

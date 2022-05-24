@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback, useState, useEffect, useMemo } from "react";
 import {
   Box,
   Table as StyledTable,
@@ -11,10 +11,17 @@ import {
   TableContainer,
   TablePagination,
   TableWrapper,
-  usePagination,
   Tfoot,
+  Flex,
+  IconButton,
+  Button,
+  Icon,
+  usePagination,
+  useTableSort,
+  TableSortToggle,
 } from "nde-design-system";
 import { FormatLinkCell } from "./helpers";
+import { FaCaretUp, FaCaretDown, FaCaretSquareDown } from "react-icons/fa";
 
 export interface Column {
   key: string;
@@ -22,7 +29,11 @@ export interface Column {
 }
 
 export interface Row {
-  [key: Column["key"]]: { value: any; props?: Object };
+  [key: Column["key"]]: {
+    value: any;
+    props?: Object;
+    sortValue: string | number;
+  };
 }
 
 interface TableProps {
@@ -31,23 +42,23 @@ interface TableProps {
   caption?: string;
   ROW_SIZE?: number;
   hasFooter?: boolean;
+  accessor?: (...args: string[]) => void;
 }
 
 const Table: React.FC<TableProps> = ({
   caption,
   columns,
   rowData,
-  ROW_SIZE = 10,
+  ROW_SIZE = 5,
   hasFooter = false,
+  accessor,
 }) => {
-  // Max number of rows to display
-  const [rows, updateRows, currentPage] = usePagination(
-    rowData || [],
-    ROW_SIZE
+  const [{ data: tableData, orderBy, sortBy }, updateSort] = useTableSort(
+    rowData,
+    accessor
   );
 
-  // For paginating table.
-  const NUM_PAGES = Math.ceil(rowData.length / ROW_SIZE);
+  const [rows, setRows] = useState(tableData || []);
 
   return (
     <Box overflow="auto">
@@ -61,6 +72,14 @@ const Table: React.FC<TableProps> = ({
                   return (
                     <Th key={column.key} role="columnheader" scope="col">
                       {column.title}
+                      <TableSortToggle
+                        isSelected={column.key === orderBy}
+                        sortBy={sortBy}
+                        handleToggle={(sortByAsc: boolean) => {
+                          console.log(column.key, sortByAsc);
+                          updateSort(column.key, sortByAsc);
+                        }}
+                      />
                     </Th>
                   );
                 })}
@@ -107,9 +126,10 @@ const Table: React.FC<TableProps> = ({
           </StyledTable>
         </TableContainer>
         <TablePagination
-          value={currentPage}
-          numPages={NUM_PAGES}
-          handleChange={(num) => updateRows(num)}
+          data={tableData}
+          pageSize={ROW_SIZE}
+          setRows={(v) => setRows(v)}
+          pageSizeOptionsIncrement={5}
           colorScheme="gray"
         ></TablePagination>
       </TableWrapper>

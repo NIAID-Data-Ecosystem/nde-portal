@@ -1,37 +1,16 @@
-import React, { useEffect } from "react";
-import type { NextPage } from "next";
-import { PageContainer, PageContent } from "src/components/page-container";
-import { useRouter } from "next/router";
-import { useQuery } from "react-query";
-import { getResourceById } from "src/utils/api";
+import React from "react";
 import { FormattedResource } from "src/utils/api/types";
-import Empty from "src/components/empty";
+import { Box, Flex, Skeleton, Tag, Text } from "nde-design-system";
 import {
-  Box,
-  Button,
-  Card,
-  Flex,
-  Skeleton,
-  Tag,
-  Text,
-} from "nde-design-system";
-import {
-  Navigation,
   ResourceDates,
   ResourceHeader,
   ResourceOverview,
   ResourceLinks,
-  ResourceFilesTable,
   ResourceProvenance,
   Section,
 } from "./components";
-// import LocalNavigation, {
-//   showSection,
-// } from "src/components/resource/components/local-navigation";
-import SectionsConfig from "configs/resource-sections.json";
-import { assetPrefix } from "next.config";
-import Table from "src/components/table";
-import { Route, showSection } from "./helpers";
+
+import { Route } from "./helpers";
 import FilesTable from "./components/files-table";
 import FundingTable from "./components/funding-table";
 import CitedByTable from "./components/cited-by-table";
