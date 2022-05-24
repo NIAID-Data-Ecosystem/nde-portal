@@ -12,6 +12,7 @@ import {
   SearchInput,
   SimpleGrid,
   Text,
+  theme,
   useBreakpointValue,
   usePrefersReducedMotion,
 } from "nde-design-system";
@@ -232,6 +233,7 @@ const Home: NextPage = () => {
         disableSearchBar
       >
         <PageContent
+          bg={`linear-gradient(180deg, ${theme.colors.primary[500]}, ${theme.colors.tertiary[700]})`}
           bgImg={`${assetPrefix}/assets/home-bg.png`}
           backgroundSize="cover"
           flexWrap="wrap"

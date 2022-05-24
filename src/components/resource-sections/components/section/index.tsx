@@ -61,7 +61,7 @@ const Section: React.FC<SectionProps> = ({
     return (
       <section id={id} style={{ padding: 0 }}>
         <Accordion allowToggle defaultIndex={isDefaultOpen ? 0 : undefined}>
-          <AccordionItem borderColor="transparent">
+          <AccordionItem borderColor="transparent" border={"none"}>
             {({ isExpanded }) => (
               <>
                 {name && (

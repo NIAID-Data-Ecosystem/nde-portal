@@ -76,7 +76,6 @@ const Table: React.FC<TableProps> = ({
                         isSelected={column.key === orderBy}
                         sortBy={sortBy}
                         handleToggle={(sortByAsc: boolean) => {
-                          console.log(column.key, sortByAsc);
                           updateSort(column.key, sortByAsc);
                         }}
                       />

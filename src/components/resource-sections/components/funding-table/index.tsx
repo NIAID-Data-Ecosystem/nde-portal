@@ -65,7 +65,6 @@ const FundingTable: React.FC<FundingTable> = ({ isLoading, funding }) => {
 
     return obj;
   });
-  console.log(rows);
 
   return (
     <Table
