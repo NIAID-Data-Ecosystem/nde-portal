@@ -11,8 +11,6 @@ import {
   CardBody,
   CardFooter,
   CardTitle,
-  Center,
-  Divider,
   Flex,
   Heading,
   Icon,
@@ -113,10 +111,12 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
 
   interface StyledStatProps extends BoxProps {
     label: string;
+    glyph?: string;
   }
   const StyledStat: React.FC<StyledStatProps> = ({
     label,
     children,
+    glyph,
     ...props
   }) => {
     return (
@@ -134,16 +134,17 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
         >
           <Icon
             viewBox='0 0 200 200'
-            color='gray.200'
+            color='page.alt'
+            fill={!children ? 'gray.400' : 'gray.800'}
             m={2}
             opacity={children ? 1 : 0.6}
+            boxSize={8}
           >
-            <Glyph stroke='currentColor' fill='currentColor' />
+            <Glyph glyph={glyph} stroke='currentColor' />
           </Icon>
           <StatLabel
             color={'text.body'}
             fontSize='sm'
-            pl={1}
             fontWeight='medium'
             opacity={children ? 1 : 0.8}
           >
@@ -328,7 +329,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                     <AccordionPanel w='100%' px={paddingCard}>
                       <SimpleGrid minChildWidth={'300px'} spacing='10px'>
                         {/* License*/}
-                        <StyledStat label='License'>
+                        <StyledStat label='License' glyph='license'>
                           {licenseInfo && (
                             <>
                               {licenseInfo?.img && (
@@ -349,12 +350,15 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                           )}
                         </StyledStat>
                         {/* Topic */}
-                        <StyledStat label='Topics'>
+                        <StyledStat label='Topics' glyph='topics'>
                           {Array.isArray(topic) ? topic.join(', ') : topic}
                         </StyledStat>
 
                         {/* Measurement techniques*/}
-                        <StyledStat label='Measurement Technique'>
+                        <StyledStat
+                          label='Measurement Technique'
+                          glyph='measurement-technique'
+                        >
                           {measurementTechnique && (
                             <UnorderedList ml={0}>
                               {measurementTechnique.map((m, i) => {
@@ -383,14 +387,17 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                         </StyledStat>
 
                         {/* Variable Measured */}
-                        <StyledStat label='Variable Measured'>
+                        <StyledStat
+                          label='Variable Measured'
+                          glyph='variable-measured'
+                        >
                           {variableMeasured && (
                             <Text color='inherit'>variableMeasured</Text>
                           )}
                         </StyledStat>
 
                         {/* Infectious Agent*/}
-                        <StyledStat label='Infectious Agent'>
+                        <StyledStat label='Infectious Agent' glyph='infection'>
                           {infectiousAgent && (
                             <UnorderedList ml={0}>
                               {infectiousAgent.map((m, i) => {
@@ -415,7 +422,10 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                         </StyledStat>
 
                         {/* Infectious Disease*/}
-                        <StyledStat label='Infectious Disease'>
+                        <StyledStat
+                          label='Infectious Disease'
+                          glyph='infection'
+                        >
                           {infectiousDisease && (
                             <UnorderedList ml={0}>
                               {infectiousDisease.map((m, i) => {
@@ -440,7 +450,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                         </StyledStat>
 
                         {/* Species*/}
-                        <StyledStat label='Species'>
+                        <StyledStat label='Species' glyph='species'>
                           {species && (
                             <Text color='inherit'>
                               {species.map((m, i) => {
@@ -465,7 +475,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                         </StyledStat>
 
                         {/* Health condition */}
-                        <StyledStat label='Health Condition'>
+                        <StyledStat label='Health Condition' glyph='health'>
                           {healthCondition}
                         </StyledStat>
                       </SimpleGrid>
