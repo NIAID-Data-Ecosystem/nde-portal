@@ -11,7 +11,7 @@ const Glyph: React.FC<GlyphProps> = ({ glyph, stroke, fill }) => {
   switch (glyph) {
     case 'infection':
       return (
-        <g id='infection'>
+        <g>
           <g>
             <path
               fill={stroke}
@@ -243,7 +243,7 @@ const Glyph: React.FC<GlyphProps> = ({ glyph, stroke, fill }) => {
       );
     case 'infection_2':
       return (
-        <g id='infection_2'>
+        <g>
           <circle fill={fill} cx='100.5' cy='101.5' r='62.5' />
           <circle fill='#FFFFFF' cx='103' cy='101' r='56' />
           <g>
@@ -1065,7 +1065,7 @@ const Glyph: React.FC<GlyphProps> = ({ glyph, stroke, fill }) => {
 
     case 'measurement-technique':
       return (
-        <g id='measurement-technique'>
+        <g>
           <path
             fill={stroke}
             d='M5.15,39.05V194H175.6L5.15,39.05z M37.82,113.17l47.35,43.04H37.82V113.17z'
@@ -1372,7 +1372,7 @@ const Glyph: React.FC<GlyphProps> = ({ glyph, stroke, fill }) => {
 
     default:
       return (
-        <g id='wireframe'>
+        <g>
           <path
             fill={fill}
             stroke={stroke}

@@ -18,8 +18,6 @@ import {
   Link,
   ListItem,
   Skeleton,
-  Stat,
-  StatLabel,
   Text,
   ToggleContainer,
   UnorderedList,
@@ -77,6 +75,8 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
     healthCondition,
     topic,
     doi,
+    pmid,
+    nctid,
     includedInDataCatalog,
     url,
   } = data || {};
@@ -124,14 +124,15 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
       <Box
         p={0}
         border='0.625px solid'
-        borderRadius={'semi'}
-        borderColor={!children ? 'gray.100' : 'gray.200'}
+        borderRadius='semi'
+        overflow='hidden'
+        borderColor={!children ? 'gray.100' : 'secondary.500'}
         {...props}
       >
         <Flex
           alignItems='center'
           pb={0}
-          bg={!children ? 'gray.100' : 'secondary.50'}
+          bg={!children ? 'gray.50' : 'secondary.50'}
         >
           <Icon
             viewBox='0 0 200 200'
@@ -139,15 +140,15 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
             fill={!children ? 'gray.400' : 'gray.800'}
             m={2}
             opacity={children ? 1 : 0.6}
-            boxSize={8}
+            // boxSize={8}
           >
             <Glyph glyph={glyph} stroke='currentColor' />
           </Icon>
           <Text
-            color={'text.body'}
+            color='text.body'
             fontSize='sm'
             fontWeight='medium'
-            opacity={children ? 1 : 0.8}
+            opacity={children ? 1 : 0.9}
           >
             {label} :
           </Text>
@@ -205,6 +206,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                 <Link
                   h={'100%'}
                   flexWrap='nowrap'
+                  display={'inline-block'}
                   sx={{ h2: { textDecoration: 'underline' } }}
                   _hover={{
                     h2: { textDecoration: 'none' },
@@ -313,6 +315,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                   w='100%'
                   fontSize='sm'
                   flex={1}
+                  sx={{ pre: { display: 'none' } }}
                   dangerouslySetInnerHTML={{
                     __html: description?.replace(/\u00a0/g, ' ') || '',
                   }}
@@ -320,7 +323,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
               </ToggleContainer>
 
               {/* Details expandable drawer */}
-              <Accordion allowToggle p={0} pt={1}>
+              <Accordion allowToggle p={0} pt={1} my={0}>
                 <AccordionItem>
                   {({ isExpanded }) => (
                     <>
@@ -329,7 +332,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                           px={paddingCard}
                           // bg={isExpanded ? 'page.alt' : 'white'}
                           _hover={{ bg: 'page.alt' }}
-                          aria-label='show more details about dataset'
+                          aria-label={`show more details about dataset id ${id}`}
                         >
                           <Box flex='1' textAlign='left'>
                             <Heading fontSize='h6' fontWeight='semibold'>
@@ -342,7 +345,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                           />
                         </AccordionButton>
                       </h2>
-                      <AccordionPanel w='100%' px={paddingCard}>
+                      <AccordionPanel w='100%' px={paddingCard} my={2}>
                         <SimpleGrid minChildWidth={'300px'} spacing='10px'>
                           {/* License*/}
                           <StyledStat label='License'>
@@ -502,7 +505,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                   alignItems='flex-end'
                 >
                   {includedInDataCatalog?.name && (
-                    <Box minW={['250px']} mb={[2, 2, 0]}>
+                    <Flex minW={['250px']} alignItems='flex-end'>
                       {imageURL &&
                         (includedInDataCatalog.url ? (
                           <Link
@@ -511,7 +514,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                           >
                             <Image
                               h='40px'
-                              mr={2}
+                              mr={4}
                               src={`${assetPrefix}${imageURL}`}
                               alt='Data source name'
                             ></Image>
@@ -519,7 +522,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                         ) : (
                           <Image
                             h='40px'
-                            mr={2}
+                            mr={4}
                             src={`${assetPrefix}${imageURL}`}
                             alt='Data source name'
                           ></Image>
@@ -538,7 +541,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                           Provided by {includedInDataCatalog.name}
                         </Text>
                       )}
-                    </Box>
+                    </Flex>
                   )}
                   {doi && (
                     <Flex
@@ -560,9 +563,13 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                         See more information about resource on Altmetric
                       </VisuallyHidden>
                       <div
+                        role='link'
+                        aria-label={`altmetric badge for doi ${doi}`}
                         data-badge-popover='left'
                         data-badge-type='bar'
-                        data-doi={`${formatDOI(doi)}`}
+                        data-doi={formatDOI(doi)}
+                        data-nct-id={nctid}
+                        data-pmid={pmid}
                         className='altmetric-embed'
                         data-link-target='blank'
                       ></div>

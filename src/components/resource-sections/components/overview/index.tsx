@@ -88,6 +88,10 @@ const Overview: React.FC<OverviewProps> = ({
                 <Flex alignItems='center' direction='column'>
                   {(doi || nctid || pmid) && (
                     <div
+                      role='link'
+                      aria-label={`altmetric badge for id ${
+                        doi || nctid || pmid
+                      }`}
                       data-badge-popover='right'
                       data-badge-type='donut'
                       data-doi={doi && formatDOI(doi)}

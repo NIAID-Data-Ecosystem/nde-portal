@@ -24,6 +24,8 @@ import {
 */
 
 interface PaginationProps {
+  // id for main element
+  id: string;
   //  aria-label for nav element.
   ariaLabel: string;
   // Status of data loading.
@@ -81,9 +83,9 @@ export const Pagination: React.FC<PaginationProps> = ({
   return (
     <StyledPagination
       id={id}
-      bg='white'
-      role='navigation'
       aria-label={ariaLabel}
+      role={'navigation'}
+      bg='white'
       w='100%'
       justifyContent='center'
       p={4}
