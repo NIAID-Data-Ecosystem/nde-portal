@@ -24,6 +24,8 @@ import {
 */
 
 interface PaginationProps {
+  // id for main element
+  id: string;
   //  aria-label for nav element.
   ariaLabel: string;
   // Status of data loading.
@@ -42,6 +44,7 @@ interface PaginationProps {
 export const MAX_PAGES = 10000;
 
 export const Pagination: React.FC<PaginationProps> = ({
+  id,
   ariaLabel,
   isLoading,
   selectedPage,
@@ -79,10 +82,10 @@ export const Pagination: React.FC<PaginationProps> = ({
   }
   return (
     <StyledPagination
-      id='pagination'
-      bg='white'
-      role='navigation'
+      id={id}
       aria-label={ariaLabel}
+      role={'navigation'}
+      bg='white'
       w='100%'
       justifyContent='center'
       p={4}

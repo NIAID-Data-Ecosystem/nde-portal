@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Flex,
   FlexProps,
@@ -7,6 +7,7 @@ import {
   StatLabel,
   StatNumber,
   Tooltip,
+  useBreakpointValue,
 } from 'nde-design-system';
 import { IconType } from 'react-icons';
 import { FaInfo } from 'react-icons/fa';
@@ -29,16 +30,20 @@ const StatField: React.FC<MetadataStatProps> = ({
   info,
   ...rest
 }) => {
+  const isMobile = useBreakpointValue({ base: true, sm: false });
+  // on mobile and for assistive devices we want to allow
+  const [isTooltipOpen, setTooltipOpen] = useState(false);
   const StatText = () => {
     if (typeof children === 'number') {
       return <StatNumber>{children}</StatNumber>;
     }
     return <dd>{children || '-'}</dd>;
   };
+
   return (
     <Stat {...rest}>
       <Flex flexDirection='column'>
-        <StatLabel>
+        <StatLabel onClick={() => isMobile && setTooltipOpen(!isTooltipOpen)}>
           <span style={{ display: 'flex', alignItems: 'center' }}>
             {label}
             {icon && <Icon as={icon} color='gray.500' mx={1} />}
@@ -49,8 +54,11 @@ const StatField: React.FC<MetadataStatProps> = ({
                 label={info}
                 hasArrow
                 placement='top'
+                isOpen={isMobile ? isTooltipOpen : undefined}
+                closeDelay={300}
               >
-                <span>
+                {/* button used here to allow user to focus on tooltip*/}
+                <button>
                   <Icon
                     as={FaInfo}
                     mx={2}
@@ -61,7 +69,7 @@ const StatField: React.FC<MetadataStatProps> = ({
                     boxSize={4}
                     cursor='pointer'
                   />
-                </span>
+                </button>
               </Tooltip>
             )}
           </span>
