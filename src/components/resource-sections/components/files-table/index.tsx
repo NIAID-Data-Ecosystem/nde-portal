@@ -61,16 +61,7 @@ const FilesTable: React.FC<FilesTable> = ({ isLoading, distribution }) => {
           </Flex>
         );
       }
-      if (k.toLowerCase() === 'contenturl' && icon && color) {
-        value = (
-          <>
-            <Text>
-              <FormatLinkCell value={v} />
-            </Text>
-            <Icon as={icon} color={color} boxSize={6} aria-label={v} mt={1} />
-          </>
-        );
-      }
+
       obj[k] = {
         value,
         sortValue: typeof v === 'string' || typeof v === 'number' ? v : '',
