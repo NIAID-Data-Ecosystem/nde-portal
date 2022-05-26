@@ -51,7 +51,6 @@ import {
 import { assetPrefix } from 'next.config';
 import NextLink from 'next/link';
 import Glyph from 'src/components/glyph';
-import { DateTag } from 'src/components/resource-sections/components/dates';
 
 interface SearchResultCardProps {
   isLoading?: boolean;
@@ -184,14 +183,6 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
           p={0}
           pl={[2, 4, 6]}
           flexDirection={['column', 'row']}
-          // date={(() => {
-          //   if (datePublished) {
-          //     return `Published on ${formatDate(datePublished)}`;
-          //   }
-          //   if (!datePublished && date) {
-          //     return `${formatDate(date)}`;
-          //   }
-          // })()}
           bg='niaid.color'
         ></TypeBanner>
         {/* Card header where name of resource is a link to resource apge */}
@@ -442,26 +433,31 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
 
                           {/* Infectious Disease*/}
                           <StyledStat label='Infectious Disease'>
-                            {infectiousDisease && (
-                              <UnorderedList ml={0}>
-                                {infectiousDisease.map((m, i) => {
-                                  const name = Array.isArray(m.name)
-                                    ? m.name.join(', ')
-                                    : m.name;
+                            {(infectiousDisease || healthCondition) && (
+                              <>
+                                <UnorderedList ml={0}>
+                                  {healthCondition && (
+                                    <ListItem>{healthCondition}</ListItem>
+                                  )}
+                                  {infectiousDisease?.map((m, i) => {
+                                    const name = Array.isArray(m.name)
+                                      ? m.name.join(', ')
+                                      : m.name;
 
-                                  return (
-                                    <ListItem key={`${name}-${i}`}>
-                                      {m.url ? (
-                                        <Link href={m.url} isExternal>
-                                          {name}
-                                        </Link>
-                                      ) : (
-                                        name
-                                      )}
-                                    </ListItem>
-                                  );
-                                })}
-                              </UnorderedList>
+                                    return (
+                                      <ListItem key={`${name}-${i}`}>
+                                        {m.url ? (
+                                          <Link href={m.url} isExternal>
+                                            {name}
+                                          </Link>
+                                        ) : (
+                                          name
+                                        )}
+                                      </ListItem>
+                                    );
+                                  })}
+                                </UnorderedList>
+                              </>
                             )}
                           </StyledStat>
 
