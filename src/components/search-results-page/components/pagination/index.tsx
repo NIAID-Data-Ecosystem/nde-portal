@@ -42,6 +42,7 @@ interface PaginationProps {
 export const MAX_PAGES = 10000;
 
 export const Pagination: React.FC<PaginationProps> = ({
+  id,
   ariaLabel,
   isLoading,
   selectedPage,
@@ -79,7 +80,7 @@ export const Pagination: React.FC<PaginationProps> = ({
   }
   return (
     <StyledPagination
-      id='pagination'
+      id={id}
       bg='white'
       role='navigation'
       aria-label={ariaLabel}

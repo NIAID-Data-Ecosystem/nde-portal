@@ -17,6 +17,7 @@ import {
   DrawerCloseButton,
   Flex,
   Heading,
+  Text,
   useDisclosure,
   useBreakpointValue,
   Icon,
@@ -192,11 +193,11 @@ export const Filters: React.FC<Filters> = ({
       <Button
         ref={btnRef}
         variant='solid'
-        bg='accent.bg'
-        borderColor='accent.bg'
+        bg={'accent.bg'}
         onClick={onOpen}
         position='fixed'
         zIndex={50}
+        left={4}
         bottom={50}
         boxShadow='high'
         w='3.5rem'
@@ -216,11 +217,11 @@ export const Filters: React.FC<Filters> = ({
           alignItems='center'
           justifyContent='center'
         >
-          <Icon as={FaFilter} boxSize={5} mx={2} />
+          <Icon as={FaFilter} boxSize={5} ml={1} mr={2} />
         </Flex>
-        <Heading pl={2} as='h3' size='h6' color='white' fontWeight='normal'>
-          Show filters
-        </Heading>
+        <Text pl={2} color='white' fontWeight='semibold' fontSize='lg'>
+          Filters
+        </Text>
       </Button>
       <Drawer
         isOpen={isOpen}
