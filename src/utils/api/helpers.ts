@@ -192,6 +192,24 @@ export const formatType = (type: string): ResourceType => {
   }
 };
 
+// Format Date object to string  YYYY-MM-DD
+export const formatDate = (date?: string | Date) => {
+  if (!date) {
+    return null;
+  }
+
+  return new Date(date.replace(/-/g, '/').replace(/T.+/, ''))
+    .toISOString()
+    .split('T')[0];
+
+  // If the desired format is: Aug 03 2020. Change to:
+  // return new Date(date.replace(/-/g, '/').replace(/T.+/, ''))
+  //   .toDateString()
+  //   .split(' ')
+  //   .slice(1)
+  //   .join(' ');
+};
+
 export const formatAPIResource = (data: any) => {
   const formattedResource: FormattedResource = {
     ...data,
@@ -204,10 +222,10 @@ export const formatAPIResource = (data: any) => {
     codeRepository: data.codeRepository || null,
     condition: data.condition || null,
     conditionsOfAccess: data.conditionsOfAccess || null,
-    date: data.date || null,
-    dateCreated: data.dateCreated || null,
-    dateModified: data.dateModified || null,
-    datePublished: data.datePublished || null,
+    date: formatDate(data.date) || null,
+    dateCreated: formatDate(data.dateCreated) || null,
+    dateModified: formatDate(data.dateModified) || null,
+    datePublished: formatDate(data.datePublished) || null,
     description: data.description || null,
     disease: data.disease || null,
     distribution: formatDistribution(data.distribution),

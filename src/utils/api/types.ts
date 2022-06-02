@@ -167,10 +167,10 @@ export interface FormattedResource {
   codeRepository: string[] | string | null;
   condition: string | null;
   conditionsOfAccess: AccessTypes | null;
-  date: Date | string | null;
-  dateCreated: Date | string | null;
-  dateModified: Date | string | null;
-  datePublished: Date | string | null;
+  date: string | null;
+  dateCreated: string | null;
+  dateModified: string | null;
+  datePublished: string | null;
   description: string | null;
   disease: string | null;
   distribution: Distribution[] | null;

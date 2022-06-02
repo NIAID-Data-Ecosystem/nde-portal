@@ -35,7 +35,6 @@ import {
 import { FormattedResource } from 'src/utils/api/types';
 import {
   formatAuthorsList2String,
-  formatDate,
   formatDOI,
   formatLicense,
   getRepositoryImage,
@@ -174,6 +173,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
     );
   };
 
+  console.log('D', data);
   return (
     <>
       {/* Banner with resource type + date of publication */}
@@ -294,7 +294,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                 >
                   <Flex whiteSpace='nowrap' alignItems='center'>
                     <Icon as={FaRegClock} mr={2} />
-                    <Text fontSize='xs'>{formatDate(date)}</Text>
+                    <Text fontSize='xs'>{date}</Text>
                   </Flex>
                 </Flex>
               )}
@@ -316,6 +316,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                   fontSize='sm'
                   flex={1}
                   sx={{ pre: { display: 'none' } }}
+                  style={{ whiteSpace: 'pre-wrap' }}
                   dangerouslySetInnerHTML={{
                     __html: description?.replace(/\u00a0/g, ' ') || '',
                   }}

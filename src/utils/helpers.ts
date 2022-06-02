@@ -1,4 +1,5 @@
 import sourceData from 'configs/resource-sources.json';
+import { StringChain } from 'lodash';
 import { Citation, FormattedResource } from './api/types';
 
 // Get image for repo based on config.
@@ -98,15 +99,6 @@ export const formatCitationString = (citation: Citation) => {
   )} ${shouldAppendPunctuation(journal)} ${shouldAppendPunctuation(
     year,
   )} ${shouldAppendPunctuation(pmid)}`;
-};
-
-// Format Date object to string with no weekday
-export const formatDate = (date: Date | string, full?: boolean) => {
-  const date_str = new Date(date).toDateString();
-  if (full) {
-    return date_str;
-  }
-  return date_str.split(' ').slice(1).join(' ');
 };
 
 // Format DOI if url is included in string.
