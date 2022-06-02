@@ -15,6 +15,7 @@ export const filterFilterList = (
   let searchText = filterText.toLowerCase();
   let filteredTerms = terms
     .filter(t => t.term.toLowerCase().includes(searchText))
+    .filter(t => !t.term.toLowerCase().includes('unknown')) // filter where item has "unknown" value
     .slice(0, size)
     .sort((a, b) => {
       let a_count = a?.count || 0;
@@ -61,7 +62,8 @@ export const queryFilterString2Object = (str?: string | string[]) => {
   }
   let filters = str.includes(' AND ') ? str.split(' AND ') : [str];
   let queryObject = filters.reduce((r: any, filter) => {
-    let filterKeyValue = filter.split(':');
+    // split on first occurence of ":" to retrieve [key, value] pair
+    let filterKeyValue = filter.split(/:(.*)/s);
     let name = filterKeyValue[0].replaceAll('("', '').replaceAll('")', '');
 
     let value = filterKeyValue[1]

@@ -3,7 +3,6 @@ import {
   AccordionItem,
   AccordionButton,
   AccordionPanel,
-  AccordionIcon,
   Box,
   Button,
   Checkbox,
@@ -41,8 +40,8 @@ const FilterItem = ({
   return (
     <Checkbox spacing={2} size='lg' value={term}>
       <Flex ml={1} fontSize='xs' lineHeight={1.5}>
-        <Text fontWeight='light'>
-          {term}
+        <Text fontWeight='light' wordBreak='break-word'>
+          {term.charAt(0).toUpperCase() + term.slice(1)}
           <Text as='span' fontWeight='semibold' ml={1}>
             {count ? `(${formatNumber(count)})` : '-'}
           </Text>
@@ -122,13 +121,13 @@ export const Filter: React.FC<FilterProps> = ({
               ) : (
                 <FaPlus fontSize='12px' />
               )}
-              {/* <AccordionIcon /> */}
             </AccordionButton>
           </h2>
 
           <AccordionPanel
             px={2}
             py={4}
+            pb={0}
             borderLeft='4px solid'
             borderColor='accent.bg'
           >
@@ -148,10 +147,16 @@ export const Filter: React.FC<FilterProps> = ({
               maxH='250px'
               overflowY='auto'
               style={{ scrollBehavior: 'smooth' }}
-              my={4}
+              mt={4}
             >
               {/* List of filters available */}
-              <UnorderedList direction='column' ml={0} my={2}>
+              <UnorderedList
+                direction='column'
+                ml={0}
+                my={2}
+                borderLeft='1px solid'
+                borderColor='gray.200'
+              >
                 <CheckboxGroup
                   value={selectedFilters}
                   onChange={handleSelectedFilters}
@@ -161,9 +166,17 @@ export const Filter: React.FC<FilterProps> = ({
                       <Text>No filters available.</Text>
                     </ListItem>
                   )}
-                  {items?.map(({ term, count }) => {
+                  {items?.map(({ term, count }, i) => {
                     return (
-                      <ListItem key={term} p={2} py={1}>
+                      <ListItem
+                        key={term}
+                        p={2}
+                        py={2}
+                        my={1}
+                        bg={i % 2 ? 'blackAlpha.50' : 'white'}
+                        d='flex'
+                        alignItems='center'
+                      >
                         <FilterItem term={term} count={count} />
                       </ListItem>
                     );
@@ -180,6 +193,8 @@ export const Filter: React.FC<FilterProps> = ({
                   isDisabled={!hasMore}
                   size='sm'
                   onClick={() => setNumItems(numItems + 5)}
+                  w='100%'
+                  p={4}
                 >
                   (show more...)
                 </Button>

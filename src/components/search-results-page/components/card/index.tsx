@@ -173,7 +173,6 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
     );
   };
 
-  console.log('D', data);
   return (
     <>
       {/* Banner with resource type + date of publication */}

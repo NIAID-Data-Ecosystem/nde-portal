@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/router';
 import { useQuery } from 'react-query';
 import Empty from 'src/components/empty';
@@ -41,7 +41,6 @@ import Banner from '../banner';
 import { formatNumber } from 'src/utils/helpers';
 import { SortResults } from './components/sort';
 import ResultsCount from './components/count';
-import { env } from 'next.config';
 
 /*
 [COMPONENT INFO]:
@@ -94,9 +93,9 @@ const SearchResultsPage = () => {
   };
 
   // Currently selected filters.
-  const defaultFilters = Object.keys(filtersConfig).reduce(
-    (r, k) => ({ ...r, [k]: [] }),
-    {},
+  const defaultFilters = useMemo(
+    () => Object.keys(filtersConfig).reduce((r, k) => ({ ...r, [k]: [] }), {}),
+    [],
   );
 
   const [selectedFilters, setSelectedFilters] =
@@ -203,15 +202,16 @@ const SearchResultsPage = () => {
       // convert url string to query object
       let queryObject = queryFilterString2Object(filters);
       return {
-        '@type': [],
-        keywords: [],
-        variableMeasured: [],
-        'measurementTechnique.name': [],
-        'includedInDataCatalog.name': [],
+        ...defaultFilters,
         ...queryObject,
       };
     });
-  }, [defaultQuery.queryString, defaultQuery.selectedPage, router]);
+  }, [
+    defaultFilters,
+    defaultQuery.queryString,
+    defaultQuery.selectedPage,
+    router,
+  ]);
 
   // Update the route to reflect changes on page without re-render.
   const updateRoute = (update: {}) => {
@@ -328,6 +328,7 @@ const SearchResultsPage = () => {
                     ...selectedFilters,
                     ...updatedFilters,
                   });
+
                   updateRoute({
                     from: defaultQuery.selectedPage,
                     filters: updatedFilterString,

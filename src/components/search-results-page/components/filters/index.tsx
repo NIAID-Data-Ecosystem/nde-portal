@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { useQuery } from 'react-query';
 import {
   Facet,
@@ -51,6 +51,10 @@ export const filtersConfig: {
     name: 'Measurement Technique',
   },
   variableMeasured: { name: 'Variable Measured' },
+  'funding.funder.name': { name: 'Funding' },
+  'infectiousDisease.name': { name: 'Infectious Disease' },
+  'infectiousAgent.name': { name: 'Pathogen' },
+  'species.name': { name: 'Species' },
 };
 
 export type SelectedFilterType = {
@@ -129,6 +133,14 @@ export const Filters: React.FC<Filters> = ({
     });
   };
 
+  // on mount open the accordion where the selected filter resides
+  const openAccordionIndex = useMemo(() => {
+    let selectedKeys = Object.entries(selectedFilters)
+      .filter(([_, v]) => v.length > 0)
+      .map(o => Object.keys(filtersConfig).indexOf(o[0]));
+    return selectedKeys.length > 0 ? selectedKeys : [0];
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   const content = (
     <>
       <Flex justifyContent='space-between' px={4} py={4} alignItems='center'>
@@ -156,7 +168,7 @@ export const Filters: React.FC<Filters> = ({
           </Heading>
         </Flex>
       ) : (
-        <Accordion bg={'white'} allowMultiple defaultIndex={[0]}>
+        <Accordion bg={'white'} allowMultiple defaultIndex={openAccordionIndex}>
           {data?.facets ? (
             Object.keys(filtersConfig).map(prop => {
               if (!data.facets[prop]) {
@@ -173,9 +185,9 @@ export const Filters: React.FC<Filters> = ({
                     }) || []
                   }
                   selectedFilters={selectedFilters[prop]}
-                  handleSelectedFilters={v =>
-                    handleSelectedFilters({ [prop]: v })
-                  }
+                  handleSelectedFilters={v => {
+                    handleSelectedFilters({ [prop]: v });
+                  }}
                 />
               );
             })
