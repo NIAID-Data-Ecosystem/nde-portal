@@ -155,6 +155,12 @@ export type AccessTypes =
   | 'Embargo'
   | 'Restricted';
 
+export interface SdPublisher {
+  identifier: string;
+  name: string;
+  url: string;
+}
+
 // Formatting standardized resource fields
 export interface FormattedResource {
   [key: string]: any;
@@ -195,6 +201,7 @@ export interface FormattedResource {
   publisher: Publisher | null;
   rawData: any;
   sameAs: string | null;
+  sdPublisher: SdPublisher | null;
   spatialCoverage: string | null;
   species: PropertyNameWithURL[] | null;
   temporalCoverage: string | null;

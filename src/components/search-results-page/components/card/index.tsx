@@ -61,7 +61,6 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
     name,
     type,
     date,
-    datePublished,
     author,
     description,
     license,
@@ -78,6 +77,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
     nctid,
     includedInDataCatalog,
     url,
+    sdPublisher,
   } = data || {};
 
   const imageURL =
@@ -139,7 +139,6 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
             fill={!children ? 'gray.400' : 'gray.800'}
             m={2}
             opacity={children ? 1 : 0.6}
-            // boxSize={8}
           >
             <Glyph glyph={glyph} stroke='currentColor' />
           </Icon>
@@ -501,19 +500,21 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                   py={{ base: 2, md: 4 }}
                   my={0}
                   flexDirection='row'
-                  flexWrap='wrap'
+                  flexWrap={['wrap', 'wrap', 'nowrap']}
                   alignItems='flex-end'
                 >
-                  {includedInDataCatalog?.name && (
-                    <Flex minW={['250px']} alignItems='flex-end'>
-                      {imageURL &&
-                        (includedInDataCatalog.url ? (
+                  {/* Source repository */}
+                  {(includedInDataCatalog?.name || sdPublisher?.name) && (
+                    <Flex minW={['250px']} alignItems='center' flexWrap='wrap'>
+                      {imageURL ? (
+                        includedInDataCatalog.url ? (
                           <Link
                             target='_blank'
                             href={includedInDataCatalog.url}
                           >
                             <Image
                               h='40px'
+                              w='100px'
                               mr={4}
                               src={`${assetPrefix}${imageURL}`}
                               alt='Data source name'
@@ -521,32 +522,59 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                           </Link>
                         ) : (
                           <Image
-                            h='40px'
+                            maxHeight='40px'
+                            maxWidth='200px'
                             mr={4}
                             src={`${assetPrefix}${imageURL}`}
                             alt='Data source name'
                           ></Image>
-                        ))}
-                      {url || includedInDataCatalog.url ? (
-                        <Link
-                          href={url! || includedInDataCatalog.url!}
-                          isExternal
-                        >
-                          <Text fontSize={'xs'}>
-                            Provided by {includedInDataCatalog.name}
-                          </Text>
-                        </Link>
+                        )
                       ) : (
-                        <Text fontSize={'xs'}>
-                          Provided by {includedInDataCatalog.name}
-                        </Text>
+                        <></>
                       )}
+                      <Flex flexDirection='column'>
+                        {includedInDataCatalog?.name && (
+                          <>
+                            {url || includedInDataCatalog.url ? (
+                              <Link
+                                href={url! || includedInDataCatalog.url!}
+                                isExternal
+                              >
+                                <Text fontSize={'xs'}>
+                                  Provided by {includedInDataCatalog.name}
+                                </Text>
+                              </Link>
+                            ) : (
+                              <Text fontSize={'xs'}>
+                                Provided by {includedInDataCatalog.name}
+                              </Text>
+                            )}
+                          </>
+                        )}
+
+                        {/* original source */}
+                        {sdPublisher?.url ? (
+                          <Link href={sdPublisher.url} isExternal>
+                            <Text fontSize={'xs'}>
+                              Original source {sdPublisher.name}
+                            </Text>
+                          </Link>
+                        ) : sdPublisher?.name ? (
+                          <Text fontSize={'xs'}>
+                            Original source {sdPublisher.name}
+                          </Text>
+                        ) : (
+                          <></>
+                        )}
+                      </Flex>
                     </Flex>
                   )}
+
                   {doi && (
                     <Flex
                       flex={1}
                       mt={[2, 2, 0]}
+                      minW='200px'
                       flexDirection='column'
                       alignItems={['flex-start', 'flex-end']}
                     >

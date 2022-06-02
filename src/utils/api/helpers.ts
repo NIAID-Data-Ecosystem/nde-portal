@@ -279,6 +279,7 @@ export const formatAPIResource = (data: any) => {
     publisher: data.publisher || null,
     rawData: data,
     sameAs: data.sameAs || null,
+    sdPublisher: data.sdPublisher || null,
     spatialCoverage:
       typeof data.spatialCoverage === 'string' ? data.spatialCoverage : null,
     species: data.species

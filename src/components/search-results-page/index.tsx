@@ -107,7 +107,6 @@ const SearchResultsPage = () => {
   const [selectedPage, setSelectedPage] = useState(defaultQuery.selectedPage);
 
   const [sortOrder, setSortOrder] = useState(defaultQuery.sortOrder);
-  // const [orderBy, setOrderBy] = useState(defaultQuery.orderBy);
 
   //  Items per page to show
   const [selectedPerPage, setSelectedPerPage] = useState(
