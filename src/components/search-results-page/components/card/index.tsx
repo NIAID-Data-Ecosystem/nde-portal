@@ -1,9 +1,5 @@
 import React from 'react';
 import {
-  Accordion,
-  AccordionItem,
-  AccordionPanel,
-  AccordionButton,
   Box,
   Button,
   Card,
@@ -12,23 +8,17 @@ import {
   CardFooter,
   CardTitle,
   Flex,
-  Heading,
   Icon,
   Image,
   Link,
-  ListItem,
   Skeleton,
   Text,
   ToggleContainer,
-  UnorderedList,
   VisuallyHidden,
   BoxProps,
-  SimpleGrid,
 } from 'nde-design-system';
 import {
   FaArrowAltCircleRight,
-  FaMinus,
-  FaPlus,
   FaChevronRight,
   FaRegClock,
 } from 'react-icons/fa';
@@ -45,7 +35,7 @@ import {
 } from 'src/components/resource-sections/components';
 import { assetPrefix } from 'next.config';
 import NextLink from 'next/link';
-import Glyph from 'src/components/glyph';
+import CardDetails from './details';
 
 interface SearchResultCardProps {
   isLoading?: boolean;
@@ -63,6 +53,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
     date,
     author,
     description,
+    funding,
     license,
     conditionsOfAccess,
     measurementTechnique,
@@ -71,7 +62,6 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
     infectiousAgent,
     infectiousDisease,
     healthCondition,
-    topic,
     doi,
     pmid,
     nctid,
@@ -85,6 +75,10 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
     getRepositoryImage(includedInDataCatalog.name);
   const paddingCard = [4, 6, 8, 10];
   const licenseInfo = license ? formatLicense(license) : null;
+
+  const fundingInfo = funding?.filter(f => {
+    return f.identifier || f?.funder?.name;
+  });
 
   const ConditionsOfAccess = (props: BoxProps) => {
     if (!conditionsOfAccess) {
@@ -106,69 +100,6 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
           {conditionsOfAccess}
         </AccessBadge>
       </Flex>
-    );
-  };
-
-  interface StyledStatProps extends BoxProps {
-    label: string;
-    glyph?: string;
-  }
-  const StyledStat: React.FC<StyledStatProps> = ({
-    label,
-    children,
-    glyph,
-    ...props
-  }) => {
-    return (
-      <Box
-        p={0}
-        border='0.625px solid'
-        borderRadius='semi'
-        overflow='hidden'
-        borderColor={!children ? 'gray.100' : 'secondary.500'}
-        {...props}
-      >
-        <Flex
-          alignItems='center'
-          pb={0}
-          bg={!children ? 'gray.50' : 'secondary.50'}
-        >
-          <Icon
-            viewBox='0 0 200 200'
-            color='page.alt'
-            fill={!children ? 'gray.400' : 'gray.800'}
-            m={2}
-            opacity={children ? 1 : 0.6}
-          >
-            <Glyph glyph={glyph} stroke='currentColor' />
-          </Icon>
-          <Text
-            color='text.body'
-            fontSize='sm'
-            fontWeight='medium'
-            opacity={children ? 1 : 0.9}
-          >
-            {label} :
-          </Text>
-        </Flex>
-        <Box
-          m={2}
-          mt={0}
-          p={2}
-          borderTop='0.625px solid'
-          borderColor='gray.100'
-          opacity={children ? 1 : 0.4}
-          color={'text.heading'}
-          fontSize='md'
-        >
-          {children || (
-            <Box w='100%' h='1rem'>
-              --
-              <VisuallyHidden>No data available.</VisuallyHidden>
-            </Box>
-          )}
-        </Box>
-      </Box>
     );
   };
 
@@ -321,178 +252,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                 ></Box>
               </ToggleContainer>
 
-              {/* Details expandable drawer */}
-              <Accordion allowToggle p={0} pt={1} my={0}>
-                <AccordionItem>
-                  {({ isExpanded }) => (
-                    <>
-                      <h2>
-                        <AccordionButton
-                          px={paddingCard}
-                          // bg={isExpanded ? 'page.alt' : 'white'}
-                          _hover={{ bg: 'page.alt' }}
-                          aria-label={`show more details about dataset id ${id}`}
-                        >
-                          <Box flex='1' textAlign='left'>
-                            <Heading fontSize='h6' fontWeight='semibold'>
-                              Details
-                            </Heading>
-                          </Box>
-                          <Icon
-                            as={isExpanded ? FaMinus : FaPlus}
-                            fontSize='xs'
-                          />
-                        </AccordionButton>
-                      </h2>
-                      <AccordionPanel w='100%' px={paddingCard} my={2}>
-                        <SimpleGrid minChildWidth={'300px'} spacing='10px'>
-                          {/* License*/}
-                          <StyledStat label='License'>
-                            {licenseInfo && (
-                              <>
-                                {licenseInfo?.img && (
-                                  <Image
-                                    src={`${assetPrefix}${licenseInfo.img}`}
-                                    alt={licenseInfo.type}
-                                    mb={1}
-                                  />
-                                )}
-                                {licenseInfo?.url ? (
-                                  <Link href={licenseInfo.url} isExternal>
-                                    {licenseInfo.title}
-                                  </Link>
-                                ) : (
-                                  licenseInfo?.title
-                                )}
-                              </>
-                            )}
-                          </StyledStat>
-                          {/* Topic */}
-                          <StyledStat label='Topics'>
-                            {Array.isArray(topic) ? topic.join(', ') : topic}
-                          </StyledStat>
-
-                          {/* Measurement techniques*/}
-                          <StyledStat label='Measurement Technique'>
-                            {measurementTechnique && (
-                              <UnorderedList ml={0}>
-                                {measurementTechnique.map((m, i) => {
-                                  const name = Array.isArray(m.name)
-                                    ? m.name.join(', ')
-                                    : m.name;
-
-                                  const MeasurementTechniqueLabel = () => (
-                                    <Text color='inherit'>{name}</Text>
-                                  );
-
-                                  return (
-                                    <ListItem key={`${name}-${i}`}>
-                                      {m.url ? (
-                                        <Link href={m.url} isExternal>
-                                          <MeasurementTechniqueLabel />
-                                        </Link>
-                                      ) : (
-                                        <MeasurementTechniqueLabel />
-                                      )}
-                                    </ListItem>
-                                  );
-                                })}
-                              </UnorderedList>
-                            )}
-                          </StyledStat>
-
-                          {/* Variable Measured */}
-                          <StyledStat label='Variable Measured'>
-                            {variableMeasured && (
-                              <Text color='inherit'>variableMeasured</Text>
-                            )}
-                          </StyledStat>
-
-                          {/* Infectious Agent*/}
-                          <StyledStat label='Infectious Agent'>
-                            {infectiousAgent && (
-                              <UnorderedList ml={0}>
-                                {infectiousAgent.map((m, i) => {
-                                  const name = Array.isArray(m.name)
-                                    ? m.name.join(', ')
-                                    : m.name;
-
-                                  return (
-                                    <ListItem key={`${name}-${i}`}>
-                                      {m.url ? (
-                                        <Link href={m.url} isExternal>
-                                          {name}
-                                        </Link>
-                                      ) : (
-                                        name
-                                      )}
-                                    </ListItem>
-                                  );
-                                })}
-                              </UnorderedList>
-                            )}
-                          </StyledStat>
-
-                          {/* Infectious Disease*/}
-                          <StyledStat label='Infectious Disease'>
-                            {(infectiousDisease || healthCondition) && (
-                              <>
-                                <UnorderedList ml={0}>
-                                  {healthCondition && (
-                                    <ListItem>{healthCondition}</ListItem>
-                                  )}
-                                  {infectiousDisease?.map((m, i) => {
-                                    const name = Array.isArray(m.name)
-                                      ? m.name.join(', ')
-                                      : m.name;
-
-                                    return (
-                                      <ListItem key={`${name}-${i}`}>
-                                        {m.url ? (
-                                          <Link href={m.url} isExternal>
-                                            {name}
-                                          </Link>
-                                        ) : (
-                                          name
-                                        )}
-                                      </ListItem>
-                                    );
-                                  })}
-                                </UnorderedList>
-                              </>
-                            )}
-                          </StyledStat>
-
-                          {/* Species*/}
-                          <StyledStat label='Species'>
-                            {species && (
-                              <Text color='inherit'>
-                                {species.map((m, i) => {
-                                  const name = Array.isArray(m.name)
-                                    ? m.name.join(', ')
-                                    : m.name;
-
-                                  return (
-                                    <React.Fragment key={`${name}-${i}`}>
-                                      {m.url ? (
-                                        <Link href={m.url} isExternal>
-                                          {name}
-                                        </Link>
-                                      ) : (
-                                        name
-                                      )}
-                                    </React.Fragment>
-                                  );
-                                })}
-                              </Text>
-                            )}
-                          </StyledStat>
-                        </SimpleGrid>
-                      </AccordionPanel>
-                    </>
-                  )}
-                </AccordionItem>
-              </Accordion>
+              <CardDetails data={data} />
               {/* Source Repository Link + Altmetric badge */}
               {(doi || includedInDataCatalog?.name) && (
                 <Flex

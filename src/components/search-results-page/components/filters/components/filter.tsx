@@ -17,6 +17,8 @@ import {
 import { filterFilterList } from '../helpers';
 import { formatNumber } from 'src/utils/helpers';
 import { FaMinus, FaPlus } from 'react-icons/fa';
+import { MetadataBadge, MetadataIcon } from 'src/components/icon';
+import { getMetadataColor } from 'src/components/icon/helpers';
 
 const FilterItem = ({
   term,
@@ -59,6 +61,8 @@ type filterValue = {
 export interface FilterProps {
   // Formatted name of filter.
   name: string;
+  // Icon for filter.
+  icon?: string;
   // Facets terms and associated counts.
   values: filterValue[];
   // Currently selected filters
@@ -69,6 +73,7 @@ export interface FilterProps {
 
 export const Filter: React.FC<FilterProps> = ({
   name,
+  icon,
   values,
   selectedFilters,
   handleSelectedFilters,
@@ -112,9 +117,22 @@ export const Filter: React.FC<FilterProps> = ({
             >
               {/* Filter Name */}
               <Box flex='1' textAlign='left'>
-                <Heading size='sm' fontWeight='semibold'>
-                  {name}
-                </Heading>
+                <Flex alignItems='center' justifyContent='space-between'>
+                  <Heading size='sm' fontWeight='semibold'>
+                    {name}
+                  </Heading>
+                  {icon && (
+                    <Flex mx={2}>
+                      <MetadataBadge property={icon}>
+                        <MetadataIcon
+                          label={name}
+                          glyph={icon}
+                          // fill={getMetadataColor(icon)}
+                        ></MetadataIcon>
+                      </MetadataBadge>
+                    </Flex>
+                  )}
+                </Flex>
               </Box>
               {isExpanded ? (
                 <FaMinus fontSize='12px' />

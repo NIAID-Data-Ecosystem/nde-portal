@@ -42,6 +42,7 @@ export const FACET_SIZE = 1000;
 export const filtersConfig: {
   [key: string]: {
     name: string;
+    glyph?: string;
   };
 } = {
   '@type': { name: 'Type' },
@@ -49,12 +50,16 @@ export const filtersConfig: {
   keywords: { name: 'Keywords' },
   'measurementTechnique.name': {
     name: 'Measurement Technique',
+    glyph: 'measurementTechnique',
   },
-  variableMeasured: { name: 'Variable Measured' },
-  'funding.funder.name': { name: 'Funding' },
-  'infectiousDisease.name': { name: 'Infectious Disease' },
-  'infectiousAgent.name': { name: 'Pathogen' },
-  'species.name': { name: 'Species' },
+  variableMeasured: { name: 'Variable Measured', glyph: 'variableMeasured' },
+  'funding.funder.name': { name: 'Funding', glyph: 'funding' },
+  'infectiousDisease.name': {
+    name: 'Infectious Disease',
+    glyph: 'infectiousDisease',
+  },
+  'infectiousAgent.name': { name: 'Pathogen', glyph: 'infectiousAgent' },
+  'species.name': { name: 'Species', glyph: 'species' },
 };
 
 export type SelectedFilterType = {
@@ -178,6 +183,7 @@ export const Filters: React.FC<Filters> = ({
                 <Filter
                   key={prop}
                   name={filtersConfig[prop].name}
+                  icon={filtersConfig[prop].glyph}
                   values={
                     updateFilterValues(prop, data.facets[prop].terms, {
                       isLoading: facetsData?.isLoading,

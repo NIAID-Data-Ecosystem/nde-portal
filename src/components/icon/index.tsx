@@ -1,0 +1,78 @@
+import { IconProps as ChakraIconProps } from '@chakra-ui/icon';
+import { BoxProps, Flex, Icon, Square, Tooltip } from 'nde-design-system';
+import { FaFlask, FaSearchDollar } from 'react-icons/fa';
+import Glyph from './components/glyph';
+import { getMetadataColor, getMetadataLabel } from './helpers';
+
+// Badge encircling metadata property icon
+interface MetadataBadgeProps extends BoxProps {
+  property: string;
+}
+
+export const MetadataBadge: React.FC<MetadataBadgeProps> = ({
+  property,
+  children,
+  ...props
+}) => {
+  if (!getMetadataLabel(property)) {
+    return <></>;
+  }
+  return (
+    <Square bg={getMetadataColor(property)} p={2} borderRadius='4px' {...props}>
+      {children}
+    </Square>
+  );
+};
+
+// Metadata icon svg.
+export interface IconProps extends ChakraIconProps {
+  glyph?: string;
+  label: string; // label for icon for accessibility
+}
+
+export const MetadataIcon = ({ glyph, label, ...props }: IconProps) => {
+  if (!glyph) {
+    return <></>;
+  }
+
+  let FaIcon = null;
+  if (glyph?.toLowerCase() === 'funding') {
+    FaIcon = FaSearchDollar;
+  } else if (glyph?.toLowerCase() === 'variablemeasured') {
+    FaIcon = FaFlask;
+  } else {
+    FaIcon = null;
+  }
+
+  if (FaIcon) {
+    return (
+      <Tooltip label={label || getMetadataLabel(glyph)}>
+        <Flex cursor='pointer'>
+          <Icon
+            viewBox='0 0 200 200'
+            boxSize={5}
+            as={FaIcon}
+            color='white'
+            fill='white'
+            {...props}
+          />
+        </Flex>
+      </Tooltip>
+    );
+  }
+
+  return (
+    <Tooltip label={getMetadataLabel(glyph)}>
+      <Icon
+        cursor='pointer'
+        viewBox='0 0 200 200'
+        color='white'
+        fill='white'
+        boxSize={5}
+        {...props}
+      >
+        <Glyph glyph={glyph} stroke='currentColor' />
+      </Icon>
+    </Tooltip>
+  );
+};
