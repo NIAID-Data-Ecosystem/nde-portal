@@ -500,12 +500,18 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                   py={{ base: 2, md: 4 }}
                   my={0}
                   flexDirection='row'
-                  flexWrap={['wrap', 'wrap', 'nowrap']}
+                  flexWrap={['wrap', 'nowrap', 'nowrap']}
                   alignItems='flex-end'
                 >
                   {/* Source repository */}
                   {(includedInDataCatalog?.name || sdPublisher?.name) && (
-                    <Flex minW={['250px']} alignItems='center' flexWrap='wrap'>
+                    <Flex
+                      minW={['250px']}
+                      maxW={['unset', '50%', 'unset']}
+                      alignItems='center'
+                      flexWrap='wrap'
+                      my={[4, 4, 0]}
+                    >
                       {imageURL ? (
                         includedInDataCatalog.url ? (
                           <Link
@@ -513,8 +519,9 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                             href={includedInDataCatalog.url}
                           >
                             <Image
-                              h='40px'
-                              w='100px'
+                              minH='40px'
+                              maxH='40px'
+                              maxW='200px'
                               mr={4}
                               src={`${assetPrefix}${imageURL}`}
                               alt='Data source name'
@@ -522,8 +529,9 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                           </Link>
                         ) : (
                           <Image
-                            maxHeight='40px'
-                            maxWidth='200px'
+                            minH='20px'
+                            maxH='40px'
+                            maxW='200px'
                             mr={4}
                             src={`${assetPrefix}${imageURL}`}
                             alt='Data source name'
@@ -573,8 +581,8 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                   {doi && (
                     <Flex
                       flex={1}
-                      mt={[2, 2, 0]}
-                      minW='200px'
+                      mt={[4, 4, 0]}
+                      // minW='200px'
                       flexDirection='column'
                       alignItems={['flex-start', 'flex-end']}
                     >
