@@ -18,7 +18,7 @@ export const MetadataBadge: React.FC<MetadataBadgeProps> = ({
     return <></>;
   }
   return (
-    <Square bg={getMetadataColor(property)} p={2} borderRadius='4px' {...props}>
+    <Square bg={getMetadataColor(property)} p={1} borderRadius='4px' {...props}>
       {children}
     </Square>
   );
@@ -27,7 +27,7 @@ export const MetadataBadge: React.FC<MetadataBadgeProps> = ({
 // Metadata icon svg.
 export interface IconProps extends ChakraIconProps {
   glyph?: string;
-  label: string; // label for icon for accessibility
+  label?: string; // label for icon for accessibility
 }
 
 export const MetadataIcon = ({ glyph, label, ...props }: IconProps) => {

@@ -13,6 +13,8 @@ import {
   Text,
   UnorderedList,
   SimpleGrid,
+  BoxProps,
+  Divider,
 } from 'nde-design-system';
 import { FaMinus, FaPlus } from 'react-icons/fa';
 import { FormattedResource } from 'src/utils/api/types';
@@ -20,6 +22,8 @@ import { formatLicense } from 'src/utils/helpers';
 import { assetPrefix } from 'next.config';
 import { MetadataProperty } from './components/Property';
 import { MetadataBadge, MetadataIcon } from 'src/components/icon';
+import { getMetadataColor } from 'src/components/icon/helpers';
+import { gray } from 'd3-color';
 
 interface CardDetailsProps {
   data?: FormattedResource | null;
@@ -46,30 +50,57 @@ const CardDetails: React.FC<CardDetailsProps> = ({ data }) => {
       return f.identifier || f?.funder?.name;
     }) || null;
 
-  const Badge = ({ property, glyph }: { property: string; glyph: string }) => (
-    <MetadataBadge property={property} ml={1}>
-      <MetadataIcon label={property} glyph={glyph} fill='white'></MetadataIcon>
-    </MetadataBadge>
+  const Badge = ({
+    property,
+    glyph,
+    fill,
+    value,
+    ...props
+  }: {
+    property: string;
+    glyph: string;
+    fill?: string;
+    value: any;
+  }) => (
+    // <MetadataBadge property={property} ml={1}>
+    <>
+      <MetadataIcon
+        glyph={glyph}
+        mx={1}
+        // fill='white'
+        fill={value ? getMetadataColor(glyph) : 'gray.400'}
+        {...props}
+      />
+    </>
+    // </MetadataBadge>
   );
 
   const MetadataIndicator = () => {
     return (
       <Flex mx={[0, 2]} my={1}>
-        {licenseInfo && <Badge property='license' glyph='license' />}
-        {fundingInfo && <Badge property='funding' glyph='funding' />}
-        {measurementTechnique && (
-          <Badge property='measurementTechnique' glyph='measurementTechnique' />
-        )}
-        {variableMeasured && (
-          <Badge property='variableMeasured' glyph='variableMeasured' />
-        )}
-        {infectiousAgent && (
-          <Badge property='infectiousAgent' glyph='infectiousAgent' />
-        )}
-        {infectiousDisease && (
-          <Badge property='infectiousDisease' glyph='infectiousDisease' />
-        )}
-        {species && <Badge property='species' glyph='species' />}
+        <Badge property='license' glyph='license' value={licenseInfo} />
+        <Badge property='funding' glyph='funding' value={fundingInfo} />
+        <Badge
+          property='measurementTechnique'
+          glyph='measurementTechnique'
+          value={measurementTechnique}
+        />
+        <Badge
+          property='variableMeasured'
+          glyph='variableMeasured'
+          value={variableMeasured}
+        />
+        <Badge
+          property='infectiousAgent'
+          glyph='infectiousAgent'
+          value={infectiousAgent}
+        />
+        <Badge
+          property='infectiousDisease'
+          glyph='infectiousDisease'
+          value={infectiousDisease}
+        />
+        <Badge property='species' glyph='species' value={species} />
       </Flex>
     );
   };

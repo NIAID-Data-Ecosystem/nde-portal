@@ -123,13 +123,13 @@ export const Filter: React.FC<FilterProps> = ({
                   </Heading>
                   {icon && (
                     <Flex mx={2}>
-                      <MetadataBadge property={icon}>
-                        <MetadataIcon
-                          label={name}
-                          glyph={icon}
-                          // fill={getMetadataColor(icon)}
-                        ></MetadataIcon>
-                      </MetadataBadge>
+                      {/* <MetadataBadge property={icon}> */}
+                      <MetadataIcon
+                        label={name}
+                        glyph={icon}
+                        fill={getMetadataColor(icon)}
+                      ></MetadataIcon>
+                      {/* </MetadataBadge> */}
                     </Flex>
                   )}
                 </Flex>
