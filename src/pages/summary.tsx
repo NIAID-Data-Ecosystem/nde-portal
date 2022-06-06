@@ -21,6 +21,7 @@ import { Error, ErrorCTA } from 'src/components/error';
 import { queryFilterObject2String } from 'src/components/search-results-page/components/filters/helpers';
 import { assetPrefix } from 'next.config';
 import { useRouter } from 'next/router';
+import { SummaryTable } from 'src/components/summary-page';
 
 const sample_queries = [
   {
@@ -73,20 +74,22 @@ const SummaryPage: NextPage = () => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>): void =>
     setSearchTerm(e.target.value);
 
-  const results = useQueries(
-    sample_queries.map(query => {
-      let querystring =
-        query['funding.identifier'] &&
-        queryFilterObject2String({
-          'funding.identifier': query['funding.identifier'],
-        });
+  // const [queryString, setQueryString] = useRouterQuery
 
-      return {
-        queryKey: ['funding', querystring],
-        queryFn: () => querystring && fetchSearchResults({ q: querystring }),
-      };
-    }),
-  );
+  // const results = useQueries(
+  //   sample_queries.map(query => {
+  //     let querystring =
+  //       query['funding.identifier'] &&
+  //       queryFilterObject2String({
+  //         'funding.identifier': query['funding.identifier'],
+  //       });
+
+  //     return {
+  //       queryKey: ['funding', querystring],
+  //       queryFn: () => querystring && fetchSearchResults({ q: querystring }),
+  //     };
+  //   }),
+  // );
 
   return (
     <>
@@ -96,80 +99,114 @@ const SummaryPage: NextPage = () => {
         metaDescription='Visual summary of queries.'
         disableSearchBar
       >
-        <PageHeader
-          title={'Visual Summary'}
-          subtitle={'Search for datasets and gather insights.'}
-          bgImg={`${assetPrefix}/assets/summary-bg-01.png`}
-        >
-          <>
-            <SearchInput
-              w='100%'
-              isResponsive={false}
-              colorScheme='secondary'
-              ariaLabel='Search for grants, datasets or tools.'
-              placeholder='Visualize your search'
-              value={searchTerm}
-              handleChange={handleChange}
-              handleSubmit={e => {
-                e.preventDefault();
+        {/* Header + search bar */}
+        <section id='search-header'>
+          <PageHeader
+            title={'Visual Summary'}
+            subtitle={'Search for datasets and gather insights.'}
+            bgImg={`${assetPrefix}/assets/summary-bg-01.png`}
+          >
+            <>
+              <SearchInput
+                w='100%'
+                isResponsive={false}
+                colorScheme='secondary'
+                ariaLabel='Search for grants, datasets or tools.'
+                placeholder='Visualize your search'
+                value={searchTerm}
+                handleChange={handleChange}
+                handleSubmit={e => {
+                  e.preventDefault();
 
-                router.push({
-                  pathname: `/summary`,
-                  query: { q: searchTerm.trim(), from: 1 },
-                });
-              }}
-            />
-            <Flex mt={2} flexWrap={['wrap']}>
-              <Text color='whiteAlpha.800' mr={2}>
-                Try:
-              </Text>
-              {sample_queries.map((query, i) => {
-                return (
-                  <SearchQueryLink
-                    key={query.title}
-                    title={query.title}
-                    href={{
-                      pathname: `/summary`,
-                      query: { q: query['funding.identifier'].join(' OR ') },
-                    }}
-                  />
-                );
-              })}
-            </Flex>
-          </>
-        </PageHeader>
+                  router.push({
+                    pathname: `/summary`,
+                    query: { q: searchTerm.trim(), from: 1 },
+                  });
+                }}
+              />
+              <Flex mt={2} flexWrap={['wrap']}>
+                <Text color='whiteAlpha.800' mr={2}>
+                  Try:
+                </Text>
+                {sample_queries.map((query, i) => {
+                  return (
+                    <SearchQueryLink
+                      key={query.title}
+                      title={query.title}
+                      href={{
+                        pathname: `/summary`,
+                        query: { q: query['funding.identifier'].join(' OR ') },
+                      }}
+                    />
+                  );
+                })}
+              </Flex>
+            </>
+          </PageHeader>
+        </section>
 
-        {/* <PageContent>
-          <Box w='100%'>
-            <Heading as='h1' mb={4}>
-              Summary Page
-            </Heading>
-            {results.map((result, i) => {
-              const {isLoading, data, error} = result;
-
-              return (
-                <Flex key={i} p={4}>
-                  {error ? (
-                    // [ERROR STATE]: API response error
-                    <Error message="It's possible that the server is experiencing some issues.">
-                      <ErrorCTA />
-                    </Error>
-                  ) : !isLoading && !data ? (
-                    // [EMPTY STATE]: No Results
-                    <div>No results</div>
-                  ) : (
-                    <Box w='100%' bg='white' p={4}>
-                      <Heading size='h6'>{sample_queries[i].title}</Heading>
-                      <Skeleton isLoaded={!isLoading} p={4} w='100%'>
-                        <Flex>Summary Page</Flex>
-                      </Skeleton>
-                    </Box>
-                  )}
+        {/* Visualizations */}
+        {/* <Box w='100%' p={6}>
+              <Flex>
+                {isLoading ? (
+                  <LoadingSpinner isLoading={isLoading}></LoadingSpinner>
+                ) : (
+                  data?.results && (
+                    <PieChart
+                      data={data?.results}
+                      filterByType={type => {
+                        setFilters(prev => {
+                          if (type && filters['@type'].includes(type)) {
+                            return {
+                              ...prev,
+                              '@type': filters['@type'].filter(t => t !== type),
+                            };
+                          }
+                          return {
+                            ...prev,
+                            '@type': type ? [type] : [],
+                          };
+                        });
+                      }}
+                    />
+                  )
+                )}
+                <Flex
+                  color='white'
+                  flex={1}
+                  justifyContent='center'
+                  alignItems='center'
+                >
+                  [TO DO] : datasets by date histogram - Dropdowns for:
+                  measurement technique, grant
                 </Flex>
-              );
-            })}
-          </Box>
-        </PageContent> */}
+              </Flex>
+            </Box>
+            <Center my={6}>
+              <Divider w='90%' />
+            </Center>
+            {/* Zoomable Packing Circle */}
+        {/* <Box w={'100%'} h={1600} mb={10}>
+              {data?.results && <CirclePacking data={data.results} />}
+            </Box> */}
+
+        {/* Clustered Network graph */}
+        {/* <Box w={'100%'} h={980}>
+              {data?.results && <Network data={data.results} />}
+            </Box> */}
+        {/* Clustered Network no labels */}
+        {/* <Box w={'100%'} h={980}>
+              {data?.results && <NetworkNoLabels data={data.results} />}
+            </Box> */}
+
+        {/* Original Network graph */}
+        {/* <Box w={'100%'} h={980} border='2px solid' borderColor='gray.200'>
+              {data?.results && <NetworkGraph data={data.results} />}
+            </Box>
+          </Box> */}
+
+        {/* SummaryTable */}
+        <SummaryTable sample_query={sample_queries[0]} />
       </PageContainer>
     </>
   );
