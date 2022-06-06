@@ -1,25 +1,23 @@
 import { useState } from 'react';
 import type { NextPage } from 'next';
 import {
-  Box,
   Button,
   Flex,
   Heading,
-  Icon,
   Image,
-  Link,
-  LinkProps,
   SearchInput,
   SimpleGrid,
   Text,
-  theme,
   useBreakpointValue,
-  usePrefersReducedMotion,
 } from 'nde-design-system';
-import { PageContainer, PageContent } from 'src/components/page-container';
+import {
+  PageHeader,
+  PageContainer,
+  PageContent,
+  SearchQueryLink,
+} from 'src/components/page-container';
 import { useRouter } from 'next/router';
 import homepageCopy from 'configs/homepage.json';
-import { FaChevronRight } from 'react-icons/fa';
 import { fetchSearchResults } from 'src/utils/api';
 import { useQuery } from 'react-query';
 import { FetchSearchResultsResponse } from 'src/utils/api/types';
@@ -27,15 +25,13 @@ import LoadingSpinner from 'src/components/loading';
 import { formatNumber } from 'src/utils/helpers';
 import PieChart from 'src/components/home/components/pie-chart';
 import {
-  fade,
   StyledSection,
   StyledSectionHeading,
   StyledText,
   StyledBody,
   StyledSectionButtonGroup,
 } from 'src/components/home/styles';
-import { assetPrefix, env } from 'next.config';
-import NextLink from 'next/link';
+import { assetPrefix } from 'next.config';
 
 const sample_queries = [
   {
@@ -83,48 +79,6 @@ const sample_queries = [
   },
 ];
 
-interface QuickQueryLinkProps extends LinkProps {
-  title: string;
-  queryString: string;
-}
-// Text under search bar with quick queries for users to get started with.
-const QuickQueryLink: React.FC<QuickQueryLinkProps> = ({
-  title,
-  queryString,
-  ...props
-}) => {
-  if (!title || !queryString) {
-    return null;
-  }
-  return (
-    <NextLink
-      href={{ pathname: `/search`, query: { q: queryString } }}
-      passHref
-    >
-      <Link
-        mx={2}
-        color='whiteAlpha.800'
-        _hover={{
-          color: 'white',
-          textDecoration: 'underline',
-          svg: { transform: 'translateX(0)', transition: '0.2s ease-in-out' },
-        }}
-        _visited={{ color: 'white' }}
-        {...props}
-      >
-        <Text>{title}</Text>
-        <Icon
-          as={FaChevronRight}
-          ml={2}
-          boxSize={3}
-          transform='translateX(-5px)'
-          transition='0.2s ease-in-out'
-        ></Icon>
-      </Link>
-    </NextLink>
-  );
-};
-
 const Home: NextPage = () => {
   const router = useRouter();
   const size = useBreakpointValue({ base: 200, sm: 200, lg: 250, xl: 300 });
@@ -133,12 +87,6 @@ const Home: NextPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>): void =>
     setSearchTerm(e.target.value);
-
-  // Don't animate based on users preference (uses window.matchMedia).
-  const prefersReducedMotion = usePrefersReducedMotion();
-  const animation = prefersReducedMotion
-    ? undefined
-    : `${fade} 1.2s ease-in-out both`;
 
   // Fetch stats about number of resources
   const params = {
@@ -232,98 +180,49 @@ const Home: NextPage = () => {
         metaDescription='Discovery Portal home page.'
         disableSearchBar
       >
-        <PageContent
-          bg={`linear-gradient(180deg, ${theme.colors.primary[500]}, ${theme.colors.tertiary[700]})`}
-          bgImg={`${assetPrefix}/assets/home-bg.png`}
-          backgroundSize='cover'
-          flexWrap='wrap'
-          minH='unset'
-          justifyContent={{ xl: 'center' }}
+        <PageHeader
+          title={homepageCopy.sections[0].heading}
+          subtitle={homepageCopy.sections[0].subtitle}
+          body={[homepageCopy.sections[0].body]}
         >
-          {/* Header section */}
-          <StyledSection
-            id='header'
-            flexDirection={'column'}
-            alignItems={{ base: 'flex-start', xl: 'center' }}
-            textAlign={{ xl: 'center' }}
-          >
-            <Box maxW='600px'>
-              <Heading
-                as='h1'
-                size='h1'
-                color='white'
-                fontWeight='bold'
-                letterSpacing={1}
-                lineHeight='shorter'
-                animation={animation}
-              >
-                {homepageCopy.sections[0].heading}
-              </Heading>
-              <Text
-                color='white'
-                fontSize='xl'
-                fontWeight='semibold'
-                mt={4}
-                animation={animation}
-                sx={{ animationDelay: '1s' }}
-              >
-                {homepageCopy.sections[0].subtitle}
-              </Text>
-              <Text
-                color='white'
-                fontWeight='light'
-                fontSize='lg'
-                lineHeight='short'
-                mt={2}
-                maxWidth={{ base: '400px', xl: 'unset' }}
-                animation={animation}
-                sx={{ animationDelay: '1.5s' }}
-              >
-                {homepageCopy.sections[0].body}
-              </Text>
-            </Box>
-            <Flex w='100%' mt={[15, 20, 24]} justifyContent='center'>
-              <Flex
-                flexDirection='column'
-                maxW={{ base: '600px', xl: '1000px' }}
-                w='100%'
-              >
-                <SearchInput
-                  w='100%'
-                  isResponsive={false}
-                  colorScheme='primary'
-                  ariaLabel='Search for datasets or tools'
-                  placeholder='Search for datasets or tools'
-                  value={searchTerm}
-                  handleChange={handleChange}
-                  handleSubmit={e => {
-                    e.preventDefault();
+          <>
+            <SearchInput
+              w='100%'
+              isResponsive={false}
+              colorScheme='primary'
+              ariaLabel='Search for datasets or tools'
+              placeholder='Search for datasets or tools'
+              value={searchTerm}
+              handleChange={handleChange}
+              handleSubmit={e => {
+                e.preventDefault();
 
-                    router.push({
+                router.push({
+                  pathname: `/search`,
+                  query: { q: searchTerm.trim() },
+                });
+              }}
+            />
+            <Flex mt={2} flexWrap={['wrap']}>
+              <Text color='whiteAlpha.800' mr={2}>
+                Try:
+              </Text>
+              {sample_queries.map((query, i) => {
+                return (
+                  <SearchQueryLink
+                    key={query.title}
+                    title={query.title}
+                    href={{
                       pathname: `/search`,
-                      query: { q: searchTerm.trim() },
-                    });
-                  }}
-                />
-                <Flex mt={2} flexWrap={['wrap']}>
-                  <Text color='whiteAlpha.800' mr={2}>
-                    Try:
-                  </Text>
-                  {sample_queries.map((query, i) => {
-                    return (
-                      <QuickQueryLink
-                        key={query.title}
-                        title={query.title}
-                        queryString={query.searchTerms.join(' OR ')}
-                        display={[i > 2 ? 'none' : 'block', 'block']}
-                      />
-                    );
-                  })}
-                </Flex>
-              </Flex>
+                      query: { q: query.searchTerms.join(' OR ') },
+                    }}
+                    display={[i > 2 ? 'none' : 'block', 'block']}
+                  />
+                );
+              })}
             </Flex>
-          </StyledSection>
-        </PageContent>
+          </>
+        </PageHeader>
 
         {/* NIAID Data Ecosystem section */}
         <PageContent justifyContent='center' bg='white' minH='unset'>
