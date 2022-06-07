@@ -1,37 +1,33 @@
 import React, { useEffect, useState } from 'react';
 import type { NextPage } from 'next';
+import { useRouter } from 'next/router';
 import {
   PageContainer,
-  PageContent,
   PageHeader,
   SearchQueryLink,
 } from 'src/components/page-container';
 import { assetPrefix } from 'next.config';
+import { Flex, SearchInput, Text } from 'nde-design-system';
 import {
+  SummaryTable,
+  Filters,
   displayQueryString,
   useFilterString,
   useQueryString,
-} from 'src/components/summary-page/useRouterQuery';
-import { Flex, SearchInput, Text } from 'nde-design-system';
-import { SummaryTable } from 'src/components/summary-page';
+} from 'src/components/summary-page';
 import { useHasMounted } from 'src/hooks/useHasMounted';
-import { useRouter } from 'next/router';
-import { queryFilterObject2String } from 'src/components/search-results-page/components/filters/helpers';
-import { useQuery } from 'react-query';
-import { FetchSearchResultsResponse } from 'src/utils/api/types';
-import { fetchSearchResults } from 'src/utils/api';
+import { queryFilterObject2String } from 'src/components/filter';
 
-// const results = useRouterQuery({
-//   queryString: '__all__',
-//   selectedPage: 1,
-//   selectedPerPage: 10,
-//   facets: Object.keys(filtersConfig),
-//   facetSize: FACET_SIZE,
-//   sortOrder: '_score',
-// });
+/*
+ [COMPONENT INFO]:
+ Summary Page displays data using visualizations so that the user can gather some insights.
+
+ All vis share the same query string and filtering mechanism so that they update together. The table also updates accordingly.
+*/
 
 const SummaryPage: NextPage = () => {
-  const sample_queries = [
+  // Grant queries of interest.
+  const suggestedQueries = [
     {
       title: 'SysBio',
       'funding.identifier': [
@@ -85,73 +81,43 @@ const SummaryPage: NextPage = () => {
     };
   } = {
     'includedInDataCatalog.name': { name: 'Source' },
-    // 'funding.identifier': {
-    //   name: 'Funding ID',
-    // },
+    'funding.funder.name': { name: 'Funding' },
+    'infectiousAgent.name': { name: 'Pathogen' },
     'measurementTechnique.name': {
       name: 'Measurement Technique',
     },
-    variableMeasured: { name: 'Variable Measured' },
   };
 
-  // Check if component has mounted
-  const hasMounted = useHasMounted();
-  const router = useRouter();
-
-  // Returns a [queryString] formatted for querying the api and a handler function to update the route.
+  /*
+  This hook updates the url when a query string is changed. Note that when a query string is changed, we also update pagination and filters to their default state.
+  */
   const [queryString, setQueryString] = useQueryString('__all__');
 
-  // Default facet size
-  const FACET_SIZE = 1000;
-  const [filters] = useFilterString(filtersConfig);
-  // [formatted_query] for display purposes.
+  /*
+  This hook updates the url to reflect the currently selected filters and keeps track of filters state.
+  */
+  const [filters, updateFilters] = useFilterString(filtersConfig);
+
+  // [queryString] formatted for display purposes.
   const formatted_query = displayQueryString(queryString) || '';
 
-  // Search term + handler for string entered in search bar
+  // Handle state for search input using url query string as default.
   const [searchTerm, setSearchTerm] = useState(formatted_query || '');
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>): void =>
     setSearchTerm(e.target.value);
 
+  // Update search term to reflect url term.
   useEffect(() => {
-    // Update search term with router term
     setSearchTerm(formatted_query);
   }, [formatted_query]);
 
-  // Get facets for loading filters.
-  const { isLoading, error, data } = useQuery<
-    FetchSearchResultsResponse | undefined,
-    Error
-  >(
-    [
-      'search-results',
-      {
-        q: queryString,
-        filters: filters,
-      },
-    ],
-    () => {
-      if (typeof queryString !== 'string' && !queryString) {
-        return;
-      }
-      const filter_string = queryFilterObject2String(filters);
-
-      return fetchSearchResults({
-        q: filter_string
-          ? `${
-              queryString === '__all__' ? '' : `${queryString} AND `
-            }${filter_string}`
-          : `${queryString}`,
-        facet_size: FACET_SIZE,
-        facets: Object.keys(filtersConfig).join(','),
-      });
-    },
-    // Don't refresh everytime window is touched.
-    { refetchOnWindowFocus: false },
-  );
-
+  // Check if component has mounted and router has needed info.
+  const hasMounted = useHasMounted();
+  const router = useRouter();
   if (!hasMounted || !router.isReady) {
     return null;
   }
+
   return (
     <>
       <PageContainer
@@ -185,7 +151,7 @@ const SummaryPage: NextPage = () => {
                 <Text color='whiteAlpha.800' mr={2}>
                   Try:
                 </Text>
-                {sample_queries.map((query, i) => {
+                {suggestedQueries.map((query, i) => {
                   return (
                     <SearchQueryLink
                       key={query.title}
@@ -194,7 +160,9 @@ const SummaryPage: NextPage = () => {
                         const str = queryFilterObject2String({
                           'funding.identifier': query['funding.identifier'],
                         });
-                        str && setQueryString(str);
+                        if (str) {
+                          setQueryString(str);
+                        }
                       }}
                     />
                   );
@@ -205,10 +173,12 @@ const SummaryPage: NextPage = () => {
         </section>
 
         <section id='search-overview'>
-          <PageContent minH='unset'>
-            You searched for {formatted_query}.
-          </PageContent>
-          <Flex></Flex>
+          <Filters
+            queryString={queryString}
+            filters={filters}
+            facets={Object.keys(filtersConfig).join(',')}
+            handleSelectedFilters={updateFilters}
+          />
         </section>
 
         {/* Visualizations */}
@@ -269,7 +239,7 @@ const SummaryPage: NextPage = () => {
             </Box>
           </Box> */}
         {/* SummaryTable */}
-        {/* <SummaryTable queryString={queryString} filters={filters} /> */}
+        <SummaryTable queryString={queryString} filters={filters} />
       </PageContainer>
     </>
   );

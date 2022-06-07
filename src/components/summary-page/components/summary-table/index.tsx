@@ -1,56 +1,31 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import type { NextPage } from 'next';
-import { PageContainer, PageContent } from 'src/components/page-container';
-import { useQueries, useQuery } from 'react-query';
+import React from 'react';
+import { PageContent } from 'src/components/page-container';
+import { useQuery } from 'react-query';
 import { fetchSearchResults } from 'src/utils/api';
-import {
-  Box,
-  Center,
-  Divider,
-  Flex,
-  Heading,
-  Skeleton,
-  Spinner,
-} from 'nde-design-system';
-import { Error, ErrorCTA } from 'src/components/error';
-import { queryFilterObject2String } from 'src/components/search-results-page/components/filters/helpers';
-import {
-  FetchSearchResultsResponse,
-  PropertyNameWithURL,
-} from 'src/utils/api/types';
-import LoadingSpinner from 'src/components/loading';
-import { useRouter } from 'next/router';
+import { queryFilterObject2String } from 'src/components/filter/helpers';
+import { FetchSearchResultsResponse } from 'src/utils/api/types';
 import TableData from './table-data';
+import { SelectedFilterType } from '../hooks';
 
-export const SummaryTable = ({ queryString, filters }) => {
-  const sample_query = {
-    title: 'CREID',
-    'funding.identifier': [
-      'U01AI151810',
-      'U01AI151812',
-      'U01AI151788',
-      'U01AI151698',
-      'U01AI151698',
-      'U01AI151807',
-      'U01AI151797',
-      'U01AI151801',
-      'U01AI151758',
-      'U01AI151799',
-      'U01AI151814',
-    ],
-  };
+interface SummaryTableProps {
+  // Stringified query.
+  queryString: string;
+  // Filters object
+  filters: SelectedFilterType;
+}
 
-  // // const router = useRouter();
-  // // // EXAMPLE  query for trying
-  // let queryString =
-  //   sample_query['funding.identifier'] &&
-  //   queryFilterObject2String({
-  //     'funding.identifier': sample_query['funding.identifier'],
-  //   });
-  // console.log(queryString);
+/*
+ [TO DO] :
+ - fix pagination, sort + order
+ - Merge components with Table data + cleanup
+*/
 
+export const SummaryTable: React.FC<SummaryTableProps> = ({
+  queryString,
+  filters,
+}) => {
   const DEFAULT_SIZE = 10;
-  const { data, isLoading, error } = useQuery<
+  const { data, isLoading } = useQuery<
     FetchSearchResultsResponse | undefined,
     Error
   >(
@@ -81,8 +56,6 @@ export const SummaryTable = ({ queryString, filters }) => {
     },
     { refetchOnWindowFocus: false },
   );
-
-  console.log(data, isLoading, error);
 
   return (
     <PageContent>

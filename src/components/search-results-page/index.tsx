@@ -24,7 +24,7 @@ import {
 import {
   queryFilterObject2String,
   queryFilterString2Object,
-} from 'src/components/search-results-page/components/filters/helpers';
+} from 'src/components/filter/helpers';
 import { Error, ErrorCTA } from 'src/components/error';
 import { Pagination, MAX_PAGES } from './components/pagination';
 import { useHasMounted } from 'src/hooks/useHasMounted';
@@ -41,7 +41,6 @@ import Banner from '../banner';
 import { formatNumber } from 'src/utils/helpers';
 import { SortResults } from './components/sort';
 import ResultsCount from './components/count';
-import { env } from 'next.config';
 
 /*
 [COMPONENT INFO]:

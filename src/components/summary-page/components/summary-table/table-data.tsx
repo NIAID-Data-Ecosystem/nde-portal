@@ -1,30 +1,7 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import type { NextPage } from 'next';
-import { PageContainer, PageContent } from 'src/components/page-container';
-import { useQueries, useQuery } from 'react-query';
-import { fetchSearchResults } from 'src/utils/api';
-import {
-  Box,
-  Button,
-  Center,
-  Divider,
-  Flex,
-  Heading,
-  Link,
-  Skeleton,
-  Spinner,
-  Tag,
-  Text,
-} from 'nde-design-system';
-import { Error, ErrorCTA } from 'src/components/error';
-import { queryFilterObject2String } from 'src/components/search-results-page/components/filters/helpers';
-import {
-  FetchSearchResultsResponse,
-  FormattedResource,
-  PropertyNameWithURL,
-} from 'src/utils/api/types';
+import React, { useCallback } from 'react';
+import { Button, Link, Tag, Text } from 'nde-design-system';
+import { FormattedResource } from 'src/utils/api/types';
 import LoadingSpinner from 'src/components/loading';
-import { useRouter } from 'next/router';
 import Empty from 'src/components/empty';
 import { assetPrefix } from 'next.config';
 import { getTableColumns } from 'src/components/table/helpers';

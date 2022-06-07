@@ -7,6 +7,9 @@ import {
 } from 'src/utils/api/types';
 import {
   Accordion,
+  AccordionItem,
+  AccordionButton,
+  AccordionPanel,
   Box,
   Button,
   Drawer,
@@ -22,11 +25,12 @@ import {
   Icon,
 } from 'nde-design-system';
 import LoadingSpinner from 'src/components/loading';
-import { Filter } from './components/filter';
+import { Filter } from 'src/components/filter';
 import { fetchSearchResults } from 'src/utils/api';
 import { FaFilter } from 'react-icons/fa';
 import { NAV_HEIGHT } from 'src/components/page-container';
 import { formatType } from 'src/utils/api/helpers';
+import { FaMinus, FaPlus } from 'react-icons/fa';
 
 /*
 [COMPONENT INFO]:
@@ -162,20 +166,63 @@ export const Filters: React.FC<Filters> = ({
                 return null;
               }
               return (
-                <Filter
+                <AccordionItem
                   key={prop}
-                  name={filtersConfig[prop].name}
-                  values={
-                    updateFilterValues(prop, data.facets[prop].terms, {
-                      isLoading: facetsData?.isLoading,
-                      data: facetsData?.data?.[prop].terms,
-                    }) || []
-                  }
-                  selectedFilters={selectedFilters[prop]}
-                  handleSelectedFilters={v =>
-                    handleSelectedFilters({ [prop]: v })
-                  }
-                />
+                  borderColor={'page.alt'}
+                  borderTopWidth='2px'
+                >
+                  {({ isExpanded }) => (
+                    <>
+                      <h2>
+                        <AccordionButton
+                          borderLeft='4px solid'
+                          borderColor='gray.200'
+                          py={4}
+                          transition='all 0.2s linear'
+                          _expanded={{
+                            borderColor: 'accent.bg',
+                            py: 2,
+                            transition: 'all 0.2s linear',
+                          }}
+                        >
+                          {/* Filter Name */}
+                          <Box flex='1' textAlign='left'>
+                            <Heading size='sm' fontWeight='semibold'>
+                              {filtersConfig[prop].name}
+                            </Heading>
+                          </Box>
+                          {isExpanded ? (
+                            <FaMinus fontSize='12px' />
+                          ) : (
+                            <FaPlus fontSize='12px' />
+                          )}
+                        </AccordionButton>
+                      </h2>
+
+                      <AccordionPanel
+                        px={2}
+                        py={4}
+                        borderLeft='4px solid'
+                        borderColor='accent.bg'
+                      >
+                        <Filter
+                          key={prop}
+                          name={filtersConfig[prop].name}
+                          values={
+                            updateFilterValues(prop, data.facets[prop].terms, {
+                              isLoading: facetsData?.isLoading,
+                              data: facetsData?.data?.[prop].terms,
+                            }) || []
+                          }
+                          selectedFilters={selectedFilters[prop]}
+                          handleSelectedFilters={v =>
+                            handleSelectedFilters({ [prop]: v })
+                          }
+                        />
+                      </AccordionPanel>
+                    </>
+                  )}
+                </AccordionItem>
               );
             })
           ) : (
