@@ -32,6 +32,7 @@ import {
   StyledSectionButtonGroup,
 } from 'src/components/home/styles';
 import { assetPrefix } from 'next.config';
+import NextLink, { LinkProps } from 'next/link';
 
 const sample_queries = [
   {
@@ -42,11 +43,11 @@ const sample_queries = [
     title: 'Covid-19',
     searchTerms: [
       '"SARS-CoV-2"',
-      ' "Covid-19"',
-      ' "Wuhan coronavirus"',
-      ' "Wuhan pneumonia"',
-      ' "2019-nCoV"',
-      ' "HCoV-19"',
+      '"Covid-19"',
+      '"Wuhan coronavirus"',
+      '"Wuhan pneumonia"',
+      '"2019-nCoV"',
+      '"HCoV-19"',
     ],
   },
   {
@@ -209,15 +210,19 @@ const Home: NextPage = () => {
               </Text>
               {sample_queries.map((query, i) => {
                 return (
-                  <SearchQueryLink
+                  <NextLink
                     key={query.title}
-                    title={query.title}
                     href={{
                       pathname: `/search`,
                       query: { q: query.searchTerms.join(' OR ') },
                     }}
-                    display={[i > 2 ? 'none' : 'block', 'block']}
-                  />
+                    passHref
+                  >
+                    <SearchQueryLink
+                      title={query.title}
+                      display={[i > 2 ? 'none' : 'block', 'block']}
+                    />
+                  </NextLink>
                 );
               })}
             </Flex>

@@ -164,7 +164,7 @@ const TableData: React.FC<TableProps> = ({ isLoading, data }) => {
         value = citations ? (
           <>
             {citations.map((citation, i) => {
-              let citation_string = formatCitationString(citation);
+              let citation_string = formatCitationString(citation).trim();
               sortValue = citation_string;
               return (
                 <React.Fragment key={`${citation.id}-${i}`}>
@@ -175,7 +175,7 @@ const TableData: React.FC<TableProps> = ({ isLoading, data }) => {
                         Available from: {citation.url}
                       </Link>
                     ) : (
-                      ''
+                      '-'
                     )}
                   </Text>
 

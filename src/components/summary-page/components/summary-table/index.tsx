@@ -22,30 +22,34 @@ import LoadingSpinner from 'src/components/loading';
 import { useRouter } from 'next/router';
 import TableData from './table-data';
 
-export const SummaryTable = ({ sample_query }) => {
-  const [filters, setFilters] = useState<{
-    '@type': string[];
-    'funding.identifier': string[];
-    'measurementTechnique.name': string[];
-    'includedInDataCatalog.name': string[];
-    'infectiousDisease.name': string[];
-  }>({
-    '@type': [],
-    'funding.identifier': [],
-    'measurementTechnique.name': [],
-    'includedInDataCatalog.name': [],
-    'infectiousDisease.name': [],
-  });
+export const SummaryTable = ({ queryString, filters }) => {
+  const sample_query = {
+    title: 'CREID',
+    'funding.identifier': [
+      'U01AI151810',
+      'U01AI151812',
+      'U01AI151788',
+      'U01AI151698',
+      'U01AI151698',
+      'U01AI151807',
+      'U01AI151797',
+      'U01AI151801',
+      'U01AI151758',
+      'U01AI151799',
+      'U01AI151814',
+    ],
+  };
 
-  const router = useRouter();
-  // EXAMPLE  query for trying
-  let queryString =
-    sample_query['funding.identifier'] &&
-    queryFilterObject2String({
-      'funding.identifier': sample_query['funding.identifier'],
-    });
+  // // const router = useRouter();
+  // // // EXAMPLE  query for trying
+  // let queryString =
+  //   sample_query['funding.identifier'] &&
+  //   queryFilterObject2String({
+  //     'funding.identifier': sample_query['funding.identifier'],
+  //   });
+  // console.log(queryString);
 
-  const DEFAULT_SIZE = 1000;
+  const DEFAULT_SIZE = 10;
   const { data, isLoading, error } = useQuery<
     FetchSearchResultsResponse | undefined,
     Error
@@ -70,13 +74,15 @@ export const SummaryTable = ({ sample_query }) => {
           ? `${
               queryString === '__all__' ? '' : `${queryString} AND `
             }${filter_string}`
-          : `${queryString}`,
+          : `(${queryString})`,
         size: `${DEFAULT_SIZE}`,
         from: `0`,
       });
     },
     { refetchOnWindowFocus: false },
   );
+
+  console.log(data, isLoading, error);
 
   return (
     <PageContent>

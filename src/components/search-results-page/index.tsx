@@ -418,6 +418,7 @@ const SearchResultsPage = () => {
                       </Button>
                     </Empty>
                   )}
+
                   <UnorderedList ml={0} flex={3} w={'100%'}>
                     {isLoading || (data && data.results?.length > 0)
                       ? new Array(selectedPerPage).fill(null).map((_, i) => {
