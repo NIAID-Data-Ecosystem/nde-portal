@@ -1,6 +1,5 @@
 import React from 'react';
 import { Flex, FlexProps, Icon, Text } from 'nde-design-system';
-import { formatDate } from 'src/utils/helpers';
 import { FaRegClock } from 'react-icons/fa';
 import { FormattedResource } from 'src/utils/api/types';
 import { StyledLabel } from './styles';
@@ -65,7 +64,7 @@ const TypeBanner: React.FC<TypeBannerProps> = ({
           <Flex alignItems='center' px={{ base: 2, lg: 4 }} py={[2, 1]}>
             <Icon as={FaRegClock} mr={2}></Icon>
             <Text fontSize='xs' fontWeight='semibold' whiteSpace='nowrap'>
-              {formatDate(date)}
+              {date}
             </Text>
           </Flex>
         )}

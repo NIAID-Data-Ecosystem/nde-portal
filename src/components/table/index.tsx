@@ -67,7 +67,9 @@ const Table: React.FC<TableProps> = ({
       <TableWrapper>
         <TableContainer>
           <StyledTable variant='striped' colorScheme={colorScheme}>
-            {caption && <TableCaption>{caption}</TableCaption>}
+            {caption && (
+              <TableCaption color='text.body'>{caption}</TableCaption>
+            )}
             <Thead>
               <Tr>
                 {columns.map(column => {

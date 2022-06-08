@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/router';
 import { useQuery } from 'react-query';
 import Empty from 'src/components/empty';
@@ -93,9 +93,9 @@ const SearchResultsPage = () => {
   };
 
   // Currently selected filters.
-  const defaultFilters = Object.keys(filtersConfig).reduce(
-    (r, k) => ({ ...r, [k]: [] }),
-    {},
+  const defaultFilters = useMemo(
+    () => Object.keys(filtersConfig).reduce((r, k) => ({ ...r, [k]: [] }), {}),
+    [],
   );
 
   const [selectedFilters, setSelectedFilters] =
@@ -107,7 +107,6 @@ const SearchResultsPage = () => {
   const [selectedPage, setSelectedPage] = useState(defaultQuery.selectedPage);
 
   const [sortOrder, setSortOrder] = useState(defaultQuery.sortOrder);
-  // const [orderBy, setOrderBy] = useState(defaultQuery.orderBy);
 
   //  Items per page to show
   const [selectedPerPage, setSelectedPerPage] = useState(
@@ -202,15 +201,16 @@ const SearchResultsPage = () => {
       // convert url string to query object
       let queryObject = queryFilterString2Object(filters);
       return {
-        '@type': [],
-        keywords: [],
-        variableMeasured: [],
-        'measurementTechnique.name': [],
-        'includedInDataCatalog.name': [],
+        ...defaultFilters,
         ...queryObject,
       };
     });
-  }, [defaultQuery.queryString, defaultQuery.selectedPage, router]);
+  }, [
+    defaultFilters,
+    defaultQuery.queryString,
+    defaultQuery.selectedPage,
+    router,
+  ]);
 
   // Update the route to reflect changes on page without re-render.
   const updateRoute = (update: {}) => {
@@ -327,18 +327,25 @@ const SearchResultsPage = () => {
                     ...selectedFilters,
                     ...updatedFilters,
                   });
+
                   updateRoute({
                     from: defaultQuery.selectedPage,
                     filters: updatedFilterString,
                   });
                 }}
               />
-              <Flex w='100%' flexDirection={'column'} mx={[0, 0, 4]} flex={1}>
+              <Flex
+                w='100%'
+                flexDirection={'column'}
+                mx={[0, 0, 4]}
+                flex={[1, 2]}
+              >
                 <Flex w='100%' borderBottom='2px solid' borderColor='gray.700'>
                   <ResultsCount total={total} isLoading={isLoading} />
                 </Flex>
 
                 <Pagination
+                  id={'pagination-top'}
                   selectedPage={selectedPage}
                   handleSelectedPage={from => {
                     updateRoute({ from });
@@ -439,6 +446,7 @@ const SearchResultsPage = () => {
                   </UnorderedList>
                 </Stack>
                 <Pagination
+                  id={'pagination-bottom'}
                   selectedPage={selectedPage}
                   handleSelectedPage={from => {
                     updateRoute({ from });
@@ -446,7 +454,7 @@ const SearchResultsPage = () => {
                   selectedPerPage={selectedPerPage}
                   total={total}
                   isLoading={isLoading}
-                  ariaLabel='paginate through resources top bar'
+                  ariaLabel='paginate through resources bottom bar'
                 />
               </Flex>
             </Flex>

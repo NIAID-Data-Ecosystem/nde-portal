@@ -1,7 +1,7 @@
 import React from 'react';
 import { Metadata } from 'src/utils/api/types';
-import { formatDate } from 'src/utils/helpers';
 import { Box, Heading, ListItem, Text } from 'nde-design-system';
+import { formatDate } from 'src/utils/api/helpers';
 
 interface Sidebar {
   data: Metadata;
@@ -36,7 +36,7 @@ const Sidebar: React.FC<Sidebar> = ({ data }) => {
                 {name[0]} <br />
               </Heading>
               <Text fontWeight='medium' fontSize='sm'>
-                Latest Release {formatDate(data.src[name[1]].version, true)}
+                Latest Release {formatDate(data.src[name[1]].version)}
               </Text>
             </Box>
           </ListItem>

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { useQuery } from 'react-query';
 import {
   Facet,
@@ -20,6 +20,7 @@ import {
   DrawerCloseButton,
   Flex,
   Heading,
+  Text,
   useDisclosure,
   useBreakpointValue,
   Icon,
@@ -54,6 +55,10 @@ export const filtersConfig: {
     name: 'Measurement Technique',
   },
   variableMeasured: { name: 'Variable Measured' },
+  'funding.funder.name': { name: 'Funding' },
+  'infectiousDisease.name': { name: 'Infectious Disease' },
+  'infectiousAgent.name': { name: 'Pathogen' },
+  'species.name': { name: 'Species' },
 };
 
 export type SelectedFilterType = {
@@ -132,6 +137,14 @@ export const Filters: React.FC<Filters> = ({
     });
   };
 
+  // on mount open the accordion where the selected filter resides
+  const openAccordionIndex = useMemo(() => {
+    let selectedKeys = Object.entries(selectedFilters)
+      .filter(([_, v]) => v.length > 0)
+      .map(o => Object.keys(filtersConfig).indexOf(o[0]));
+    return selectedKeys.length > 0 ? selectedKeys : [0];
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   const content = (
     <>
       <Flex justifyContent='space-between' px={4} py={4} alignItems='center'>
@@ -159,7 +172,7 @@ export const Filters: React.FC<Filters> = ({
           </Heading>
         </Flex>
       ) : (
-        <Accordion bg={'white'} allowMultiple defaultIndex={[0]}>
+        <Accordion bg={'white'} allowMultiple defaultIndex={openAccordionIndex}>
           {data?.facets ? (
             Object.keys(filtersConfig).map(prop => {
               if (!data.facets[prop]) {
@@ -239,11 +252,11 @@ export const Filters: React.FC<Filters> = ({
       <Button
         ref={btnRef}
         variant='solid'
-        bg='accent.bg'
-        borderColor='accent.bg'
+        bg={'accent.bg'}
         onClick={onOpen}
         position='fixed'
         zIndex={50}
+        left={4}
         bottom={50}
         boxShadow='high'
         w='3.5rem'
@@ -263,11 +276,11 @@ export const Filters: React.FC<Filters> = ({
           alignItems='center'
           justifyContent='center'
         >
-          <Icon as={FaFilter} boxSize={5} mx={2} />
+          <Icon as={FaFilter} boxSize={5} ml={1} mr={2} />
         </Flex>
-        <Heading pl={2} as='h3' size='h6' color='white' fontWeight='normal'>
-          Show filters
-        </Heading>
+        <Text pl={2} color='white' fontWeight='semibold' fontSize='lg'>
+          Filters
+        </Text>
       </Button>
       <Drawer
         isOpen={isOpen}

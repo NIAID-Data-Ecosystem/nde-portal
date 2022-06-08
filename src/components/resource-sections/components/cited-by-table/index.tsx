@@ -4,7 +4,7 @@ import { CitedBy, FormattedResource } from 'src/utils/api/types';
 import Table, { Row } from 'src/components/table';
 import LoadingSpinner from 'src/components/loading';
 import { getTableColumns } from 'src/components/table/helpers';
-import { formatDate } from 'src/utils/helpers';
+import { formatDate } from 'src/utils/api/helpers';
 
 interface CitedByTable {
   isLoading: boolean;

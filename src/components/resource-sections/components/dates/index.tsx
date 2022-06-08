@@ -1,15 +1,40 @@
-import { Flex, Icon, Text } from 'nde-design-system';
 import React from 'react';
+import { Flex, FlexProps, Icon, Text } from 'nde-design-system';
 import { FaRegClock } from 'react-icons/fa';
 import TypeBanner from '../type-banner';
 import { FormattedResource } from 'src/utils/api/types';
-import { formatDate } from 'src/utils/helpers';
 
 /*
 [COMPONENT INFO]:
   Display (publishes, created, modified) dates if available for a given resource.
   The ["date"] field in the api is general. It represents either the latest value between published, created and modified dates OR is a unique field provided from the source repo. Therefore, if the date field is the same as one of the other fields we can remove it.
 */
+
+interface DateTagProps extends FlexProps {
+  type?: string;
+  date: string | Date;
+}
+
+export const DateTag: React.FC<DateTagProps> = ({ type, date, ...props }) => {
+  return (
+    <Flex
+      px={2}
+      m={1}
+      alignItems='center'
+      bg='secondary.50'
+      w={['100%', '100%', 'unset']}
+      flex={1}
+      whiteSpace='nowrap'
+      borderRadius='semi'
+      {...props}
+    >
+      <Icon as={FaRegClock} mr={2} />
+      <Text fontSize='xs'>
+        {type && <strong>{type}</strong>} {date}
+      </Text>
+    </Flex>
+  );
+};
 
 interface ResourceDates {
   data?: FormattedResource;
@@ -48,24 +73,7 @@ const ResourceDates: React.FC<ResourceDates> = ({ data }) => {
     <TypeBanner type={data?.type}>
       <Flex flexWrap={'wrap'} ml={[0, 0, 4]}>
         {date_data.map((date, i) => {
-          return (
-            <Flex
-              key={i}
-              px={2}
-              m={1}
-              alignItems='center'
-              bg={'secondary.50'}
-              w={['100%', '100%', 'unset']}
-              flex={1}
-              whiteSpace='nowrap'
-              borderRadius='semi'
-            >
-              <Icon as={FaRegClock} mr={2} />
-              <Text fontSize='xs'>
-                <strong>{date.name}</strong> {formatDate(date.value)}
-              </Text>
-            </Flex>
-          );
+          return <DateTag key={i} type={date.name} date={date.value} />;
         })}
       </Flex>
     </TypeBanner>
