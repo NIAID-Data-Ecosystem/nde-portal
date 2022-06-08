@@ -1,17 +1,15 @@
 // @ts-nocheck
 // [TO DO]: type d3 to get it to work with typescript
 
-import React, { useEffect, useRef, useState } from 'react';
+import React from 'react';
 import * as d3 from 'd3';
 import {
   Box,
   Button,
-  Flex,
   Heading,
   ListItem,
   Select,
   Text,
-  theme,
   UnorderedList,
 } from 'nde-design-system';
 import { SelectedFilterType } from 'src/components/summary-page';
@@ -20,9 +18,7 @@ import { useQuery } from 'react-query';
 import { queryFilterObject2String } from 'src/components/filter';
 import { fetchSearchResults } from 'src/utils/api';
 import LoadingSpinner from 'src/components/loading';
-import Empty from 'src/components/empty';
 import { Error } from 'src/components/error';
-import { formatNumber } from 'src/utils/helpers';
 import { useRouter } from 'next/router';
 
 interface ChartTemplateProps {
@@ -43,8 +39,6 @@ export const ChartTemplate: React.FC<ChartTemplateProps> = ({
   State for all grant names. Note: We want don't want this state to update with the filters so that the dropdown is always complete with all the options.
   */
   const router = useRouter();
-
-  // const [grantNames, setGrantNames] = useState([]);
 
   // All the facets that you need.
   const facets = [
@@ -211,7 +205,7 @@ export const ChartTemplate: React.FC<ChartTemplateProps> = ({
                 Measurement Techniques (
                 {responseData['measurementTechnique.name'].length})
               </Heading>
-              {responseData['infectiousAgent.name'].length > 0 ? (
+              {responseData['measurementTechnique.name'].length > 0 ? (
                 <UnorderedList
                   ml={0}
                   maxH={'300px'}
