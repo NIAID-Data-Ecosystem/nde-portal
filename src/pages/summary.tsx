@@ -3,11 +3,19 @@ import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import {
   PageContainer,
+  PageContent,
   PageHeader,
   SearchQueryLink,
 } from 'src/components/page-container';
 import { assetPrefix } from 'next.config';
-import { Box, Flex, SearchInput, Text } from 'nde-design-system';
+import {
+  Box,
+  Center,
+  Divider,
+  Flex,
+  SearchInput,
+  Text,
+} from 'nde-design-system';
 import {
   SummaryTable,
   Filters,
@@ -15,6 +23,7 @@ import {
   useFilterString,
   useQueryString,
   PieChart,
+  Network,
 } from 'src/components/summary-page';
 import { useHasMounted } from 'src/hooks/useHasMounted';
 import { queryFilterObject2String } from 'src/components/filter';
@@ -180,6 +189,7 @@ const SummaryPage: NextPage = () => {
               <Flex
                 p={6}
                 minW='400px'
+                minH='400px'
                 justifyContent='center'
                 alignItems='center'
                 flex={1}
@@ -195,23 +205,23 @@ const SummaryPage: NextPage = () => {
                 justifyContent='center'
                 alignItems='center'
               >
-                [TO DO] : datasets by date histogram - Dropdowns for:
-                measurement technique, grant
+                [TO DO] : datasets by date histogram.
               </Flex>
             </Flex>
-          </Box>
-          {/* <Center my={6}>
+            <Center my={6}>
               <Divider w='90%' />
-            </Center> */}
+            </Center>
+            {/* Clustered Network graph */}
+            <Box w={'100%'} h={980}>
+              <Network queryString={queryString} filters={filters} />
+              {/* <BarChart /> */}
+            </Box>
+          </Box>
           {/* Zoomable Packing Circle */}
           {/* <Box w={'100%'} h={1600} mb={10}>
               {data?.results && <CirclePacking data={data.results} />}
             </Box> */}
 
-          {/* Clustered Network graph */}
-          {/* <Box w={'100%'} h={980}>
-              {data?.results && <Network data={data.results} />}
-            </Box> */}
           {/* Clustered Network no labels */}
           {/* <Box w={'100%'} h={980}>
               {data?.results && <NetworkNoLabels data={data.results} />}
@@ -224,12 +234,14 @@ const SummaryPage: NextPage = () => {
           {/* </Box> */}
         </section>
         <section id='search-filters'>
-          <Filters
-            queryString={queryString}
-            filters={filters}
-            facets={Object.keys(filtersConfig).join(',')}
-            handleSelectedFilters={updateFilters}
-          />
+          <PageContent minH='unset' bg='white'>
+            <Filters
+              queryString={queryString}
+              filters={filters}
+              facets={Object.keys(filtersConfig).join(',')}
+              handleSelectedFilters={updateFilters}
+            />
+          </PageContent>
         </section>
 
         {/* SummaryTable */}

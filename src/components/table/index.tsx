@@ -64,7 +64,7 @@ const Table: React.FC<TableProps> = ({
 
   return (
     <Box overflow='auto'>
-      <TableWrapper>
+      <TableWrapper colorScheme={colorScheme}>
         <TableContainer>
           <StyledTable variant='striped' colorScheme={colorScheme}>
             {caption && (

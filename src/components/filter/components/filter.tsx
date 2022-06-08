@@ -9,6 +9,7 @@ import {
   UnorderedList,
   ListItem,
   Text,
+  BoxProps,
 } from 'nde-design-system';
 import { filterFilterList } from '../helpers';
 import { formatNumber } from 'src/utils/helpers';
@@ -35,10 +36,10 @@ const FilterItem = ({
   return (
     <Checkbox spacing={2} size='lg' value={term}>
       <Flex ml={1} fontSize='xs' lineHeight={1.5}>
-        <Text fontWeight='light'>
+        <Text fontWeight='light' color='inherit'>
           {term}
           {count !== undefined && (
-            <Text as='span' fontWeight='semibold' ml={1}>
+            <Text as='span' fontWeight='semibold' ml={1} color='inherit'>
               {count ? `(${formatNumber(count)})` : '-'}
             </Text>
           )}
@@ -53,7 +54,7 @@ type filterValue = {
   term: string;
 };
 
-export interface FilterProps {
+export interface FilterProps extends BoxProps {
   // Formatted name of filter.
   name: string;
   // Facets terms and associated counts.
@@ -69,6 +70,7 @@ export const Filter: React.FC<FilterProps> = ({
   values,
   selectedFilters,
   handleSelectedFilters,
+  ...props
 }) => {
   // Term to filter the filters with.
   const [searchTerm, setSearchTerm] = useState('');
@@ -110,6 +112,7 @@ export const Filter: React.FC<FilterProps> = ({
         overflowY='auto'
         style={{ scrollBehavior: 'smooth' }}
         my={4}
+        {...props}
       >
         {/* List of filters available */}
         <UnorderedList direction='column' ml={0} my={2}>

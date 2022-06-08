@@ -11,7 +11,7 @@ import { queryFilterObject2String } from 'src/components/filter';
 import { fetchSearchResults } from 'src/utils/api';
 import LoadingSpinner from 'src/components/loading';
 import Empty from 'src/components/empty';
-import { Error, ErrorCTA } from 'src/components/error';
+import { Error } from 'src/components/error';
 import { formatNumber } from 'src/utils/helpers';
 import { useRouter } from 'next/router';
 
@@ -94,7 +94,6 @@ export const PieChart: React.FC<PieChartProps> = ({ queryString, filters }) => {
   /****
    * Pie
    */
-
   const innerRadius = Math.min(width, height) / 3; // inner radius of pie, in pixels (non-zero for donut)
   const outerRadius = Math.min(width, height) / 2.5; // outer radius of pie, in pixels
   const padAngle = 1 / outerRadius;
