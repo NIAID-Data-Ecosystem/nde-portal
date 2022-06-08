@@ -32,6 +32,7 @@ export const Filters: React.FC<FiltersProps> = ({
   facets,
   handleSelectedFilters,
 }) => {
+  console.log(facets);
   // List of needed filters/naming convention.
   const filtersConfig: {
     [key: string]: {

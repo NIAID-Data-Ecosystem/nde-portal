@@ -7,13 +7,14 @@ import {
   SearchQueryLink,
 } from 'src/components/page-container';
 import { assetPrefix } from 'next.config';
-import { Flex, SearchInput, Text } from 'nde-design-system';
+import { Box, Flex, SearchInput, Text } from 'nde-design-system';
 import {
   SummaryTable,
   Filters,
   displayQueryString,
   useFilterString,
   useQueryString,
+  PieChart,
 } from 'src/components/summary-page';
 import { useHasMounted } from 'src/hooks/useHasMounted';
 import { queryFilterObject2String } from 'src/components/filter';
@@ -172,7 +173,57 @@ const SummaryPage: NextPage = () => {
           </PageHeader>
         </section>
 
-        <section id='search-overview'>
+        {/* Visualizations */}
+        <section id='data-visualizations'>
+          <Box w='100%' p={6} bg='tertiary.900'>
+            <Flex flexWrap={'wrap'}>
+              <Flex
+                p={6}
+                minW='400px'
+                justifyContent='center'
+                alignItems='center'
+                flex={1}
+                bg='tertiary.800'
+              >
+                <PieChart queryString={queryString} filters={filters} />
+              </Flex>
+              <Flex
+                color='white'
+                flex={1}
+                p={6}
+                minW='400px'
+                justifyContent='center'
+                alignItems='center'
+              >
+                [TO DO] : datasets by date histogram - Dropdowns for:
+                measurement technique, grant
+              </Flex>
+            </Flex>
+          </Box>
+          {/* <Center my={6}>
+              <Divider w='90%' />
+            </Center> */}
+          {/* Zoomable Packing Circle */}
+          {/* <Box w={'100%'} h={1600} mb={10}>
+              {data?.results && <CirclePacking data={data.results} />}
+            </Box> */}
+
+          {/* Clustered Network graph */}
+          {/* <Box w={'100%'} h={980}>
+              {data?.results && <Network data={data.results} />}
+            </Box> */}
+          {/* Clustered Network no labels */}
+          {/* <Box w={'100%'} h={980}>
+              {data?.results && <NetworkNoLabels data={data.results} />}
+            </Box> */}
+
+          {/* Original Network graph */}
+          {/* <Box w={'100%'} h={980} border='2px solid' borderColor='gray.200'>
+              {data?.results && <NetworkGraph data={data.results} />}
+            </Box> */}
+          {/* </Box> */}
+        </section>
+        <section id='search-filters'>
           <Filters
             queryString={queryString}
             filters={filters}
@@ -181,65 +232,10 @@ const SummaryPage: NextPage = () => {
           />
         </section>
 
-        {/* Visualizations */}
-        {/* <Box w='100%' p={6}>
-              <Flex>
-                {isLoading ? (
-                  <LoadingSpinner isLoading={isLoading}></LoadingSpinner>
-                ) : (
-                  data?.results && (
-                    <PieChart
-                      data={data?.results}
-                      filterByType={type => {
-                        setFilters(prev => {
-                          if (type && filters['@type'].includes(type)) {
-                            return {
-                              ...prev,
-                              '@type': filters['@type'].filter(t => t !== type),
-                            };
-                          }
-                          return {
-                            ...prev,
-                            '@type': type ? [type] : [],
-                          };
-                        });
-                      }}
-                    />
-                  )
-                )}
-                <Flex
-                  color='white'
-                  flex={1}
-                  justifyContent='center'
-                  alignItems='center'
-                >
-                  [TO DO] : datasets by date histogram - Dropdowns for:
-                  measurement technique, grant
-                </Flex>
-              </Flex>
-            </Box>
-            <Center my={6}>
-              <Divider w='90%' />
-            </Center>
-            {/* Zoomable Packing Circle */}
-        {/* <Box w={'100%'} h={1600} mb={10}>
-              {data?.results && <CirclePacking data={data.results} />}
-            </Box> */}
-        {/* Clustered Network graph */}
-        {/* <Box w={'100%'} h={980}>
-              {data?.results && <Network data={data.results} />}
-            </Box> */}
-        {/* Clustered Network no labels */}
-        {/* <Box w={'100%'} h={980}>
-              {data?.results && <NetworkNoLabels data={data.results} />}
-            </Box> */}
-        {/* Original Network graph */}
-        {/* <Box w={'100%'} h={980} border='2px solid' borderColor='gray.200'>
-              {data?.results && <NetworkGraph data={data.results} />}
-            </Box>
-          </Box> */}
         {/* SummaryTable */}
-        <SummaryTable queryString={queryString} filters={filters} />
+        <section id='datasets-table'>
+          <SummaryTable queryString={queryString} filters={filters} />
+        </section>
       </PageContainer>
     </>
   );

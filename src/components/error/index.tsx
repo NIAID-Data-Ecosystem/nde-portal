@@ -1,20 +1,25 @@
 import React from 'react';
-import { Button, ButtonGroup, Flex, Heading, Text } from 'nde-design-system';
+import { Button, Flex, FlexProps, Heading, Text } from 'nde-design-system';
 import { PageContent } from 'src/components/page-container';
 
-interface Error {
+interface Error extends FlexProps {
   message: string;
 }
 
 // Default error container.
-export const Error: React.FC<Error> = ({ children, message }) => {
+export const Error: React.FC<Error> = ({ children, message, ...props }) => {
   return (
-    <PageContent alignItems='center' justifyContent='center' flex={1}>
+    <PageContent
+      alignItems='center'
+      justifyContent='center'
+      flex={1}
+      {...props}
+    >
       <Flex flexDirection='column' alignItems='center'>
-        <Heading as='h1' my={4}>
+        <Heading as='h1' my={4} color='inherit'>
           Oh no! Something went wrong.
         </Heading>
-        <Text>{message}</Text>
+        <Text color='inherit'>{message}</Text>
         {children && (
           <Flex mt={4} flex={1} w='100%'>
             {children}
