@@ -147,7 +147,6 @@ export const Network: React.FC<NetworkProps> = ({ queryString, filters }) => {
     }, {} as { [key: string]: { group: string; id: string; ia: string; name: string; numDatasets: number; radius: number } }),
   );
 
-  console.log(results, nodes);
   const links = Object.values(
     results.reduce((r, d, i) => {
       if (d.infectiousAgent) {

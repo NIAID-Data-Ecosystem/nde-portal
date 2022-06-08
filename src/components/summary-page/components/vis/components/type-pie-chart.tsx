@@ -150,6 +150,8 @@ export const PieChart: React.FC<PieChartProps> = ({ queryString, filters }) => {
         bg='transparent'
         color='white'
         minH='unset'
+        width={width}
+        height={height}
       >
         <Button flex={1} onClick={() => router.reload()} variant='solid'>
           Retry
@@ -165,6 +167,8 @@ export const PieChart: React.FC<PieChartProps> = ({ queryString, filters }) => {
         imageAlt='Missing information icon.'
         alignSelf='center'
         color='white'
+        width={width}
+        height={height}
       >
         <Text color='whiteAlpha.800'>
           Search yielded no results, please try again.

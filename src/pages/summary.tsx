@@ -27,6 +27,7 @@ import {
 } from 'src/components/summary-page';
 import { useHasMounted } from 'src/hooks/useHasMounted';
 import { queryFilterObject2String } from 'src/components/filter';
+import { ChartTemplate } from 'src/components/summary-page/components/vis/components/chart-template';
 
 /*
  [COMPONENT INFO]:
@@ -181,11 +182,22 @@ const SummaryPage: NextPage = () => {
             </>
           </PageHeader>
         </section>
+        <section id='search-filters'>
+          <PageContent minH='unset' bg='white'>
+            <Filters
+              queryString={queryString}
+              filters={filters}
+              facets={Object.keys(filtersConfig).join(',')}
+              handleSelectedFilters={updateFilters}
+            />
+          </PageContent>
+        </section>
 
         {/* Visualizations */}
         <section id='data-visualizations'>
           <Box w='100%' p={6} bg='tertiary.900'>
             <Flex flexWrap={'wrap'}>
+              {/* Pie Chart */}
               <Flex
                 p={6}
                 minW='400px'
@@ -197,15 +209,20 @@ const SummaryPage: NextPage = () => {
               >
                 <PieChart queryString={queryString} filters={filters} />
               </Flex>
+              {/* Template Chart */}
               <Flex
-                color='white'
-                flex={1}
                 p={6}
                 minW='400px'
+                minH='400px'
                 justifyContent='center'
-                alignItems='center'
+                flex={1}
+                bg='tertiary.800'
               >
-                [TO DO] : datasets by date histogram.
+                <ChartTemplate
+                  queryString={queryString}
+                  filters={filters}
+                  updateFilters={updateFilters}
+                />
               </Flex>
             </Flex>
             <Center my={6}>
@@ -232,16 +249,6 @@ const SummaryPage: NextPage = () => {
               {data?.results && <NetworkGraph data={data.results} />}
             </Box> */}
           {/* </Box> */}
-        </section>
-        <section id='search-filters'>
-          <PageContent minH='unset' bg='white'>
-            <Filters
-              queryString={queryString}
-              filters={filters}
-              facets={Object.keys(filtersConfig).join(',')}
-              handleSelectedFilters={updateFilters}
-            />
-          </PageContent>
         </section>
 
         {/* SummaryTable */}
