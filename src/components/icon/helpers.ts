@@ -5,11 +5,11 @@ export const getMetadataColor = (property?: string) => {
   } else if (property?.toLowerCase() === 'variablemeasured') {
     return 'cyan.700';
   } else if (property?.toLowerCase() === 'measurementtechnique') {
-    return 'purple.700';
+    return 'purple.600';
   } else if (property?.toLowerCase() === 'infectiousagent') {
-    return 'pink.500';
+    return 'pink.600';
   } else if (property?.toLowerCase() === 'infectiousdisease') {
-    return 'red.600';
+    return 'red.500';
   } else if (property?.toLowerCase() === 'funding') {
     return 'tomato';
   } else if (property?.toLowerCase() === 'species') {

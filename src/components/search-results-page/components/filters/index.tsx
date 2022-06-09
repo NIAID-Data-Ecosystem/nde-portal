@@ -32,6 +32,8 @@ import { FaFilter } from 'react-icons/fa';
 import { NAV_HEIGHT } from 'src/components/page-container';
 import { formatType } from 'src/utils/api/helpers';
 import { FaMinus, FaPlus } from 'react-icons/fa';
+import { MetadataIcon } from 'src/components/icon';
+import { getMetadataColor } from 'src/components/icon/helpers';
 
 /*
 [COMPONENT INFO]:
@@ -204,11 +206,22 @@ export const Filters: React.FC<Filters> = ({
                           }}
                         >
                           {/* Filter Name */}
-                          <Box flex='1' textAlign='left'>
+                          <Flex
+                            flex='1'
+                            textAlign='left'
+                            justifyContent='space-between'
+                            alignItems='center'
+                          >
                             <Heading size='sm' fontWeight='semibold'>
                               {filtersConfig[prop].name}
                             </Heading>
-                          </Box>
+                            <MetadataIcon
+                              mx={2}
+                              glyph={filtersConfig[prop].glyph}
+                              fill={getMetadataColor(filtersConfig[prop].glyph)}
+                              boxSize={6}
+                            ></MetadataIcon>
+                          </Flex>
                           {isExpanded ? (
                             <FaMinus fontSize='12px' />
                           ) : (
@@ -226,7 +239,6 @@ export const Filters: React.FC<Filters> = ({
                         <Filter
                           key={prop}
                           name={filtersConfig[prop].name}
-                          icon={filtersConfig[prop].glyph}
                           values={
                             updateFilterValues(prop, data.facets[prop].terms, {
                               isLoading: facetsData?.isLoading,

@@ -1,6 +1,6 @@
 import { IconProps as ChakraIconProps } from '@chakra-ui/icon';
 import { BoxProps, Flex, Icon, Square, Tooltip } from 'nde-design-system';
-import { FaFlask, FaSearchDollar } from 'react-icons/fa';
+import { FaFlask, FaSearchDollar, FaRulerCombined } from 'react-icons/fa';
 import Glyph from './components/glyph';
 import { getMetadataColor, getMetadataLabel } from './helpers';
 
@@ -52,8 +52,8 @@ export const MetadataIcon = ({ glyph, label, ...props }: IconProps) => {
             viewBox='0 0 200 200'
             boxSize={5}
             as={FaIcon}
-            color='white'
-            fill='white'
+            color='#000'
+            fill='#000'
             {...props}
           />
         </Flex>
@@ -66,8 +66,8 @@ export const MetadataIcon = ({ glyph, label, ...props }: IconProps) => {
       <Icon
         cursor='pointer'
         viewBox='0 0 200 200'
-        color='white'
-        fill='white'
+        color='#000'
+        fill='#000'
         boxSize={5}
         {...props}
       >
