@@ -8,8 +8,8 @@ import {
   useDisclosure,
 } from 'nde-design-system';
 import React, { useState, useEffect } from 'react';
+import { formatDate } from 'src/utils/api/helpers';
 import { Metadata } from 'src/utils/api/types';
-import { formatDate } from 'src/utils/helpers';
 import { setDateCreated } from '../utils';
 
 interface Main {
@@ -112,6 +112,7 @@ const Main: React.FC<Main> = ({ sourceData }) => {
                 dangerouslySetInnerHTML={{
                   __html: sourceObj.description,
                 }}
+                style={{ whiteSpace: 'pre-wrap' }}
               />
 
               <Box mt={4} fontWeight='bold' display={['none', 'block']}>
@@ -199,10 +200,12 @@ const Main: React.FC<Main> = ({ sourceData }) => {
               </Box>
               <Box mt={4}>
                 <Heading as='h3' size='xs'>
-                  Latest Release {formatDate(sourceObj.dateModified, true)}
+                  Latest Release{' '}
+                  {new Date(sourceObj.dateModified).toDateString()}
                 </Heading>
                 <Heading as='h3' size='xs'>
-                  First Released {formatDate(sourceObj.dateCreated, true)}
+                  First Released{' '}
+                  {new Date(sourceObj.dateCreated).toDateString()}
                 </Heading>
               </Box>
             </Box>

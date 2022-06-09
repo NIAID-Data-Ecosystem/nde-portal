@@ -113,6 +113,7 @@ const Sections = ({
                 overflow='auto'
                 w='100%'
                 fontSize='sm'
+                style={{ whiteSpace: 'pre-wrap' }}
                 dangerouslySetInnerHTML={{
                   __html: data.description,
                 }}

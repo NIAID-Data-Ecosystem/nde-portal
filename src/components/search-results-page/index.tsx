@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/router';
 import { useQuery } from 'react-query';
 import Empty from 'src/components/empty';
@@ -24,7 +24,7 @@ import {
 import {
   queryFilterObject2String,
   queryFilterString2Object,
-} from 'src/components/search-results-page/components/filters/helpers';
+} from 'src/components/filter/helpers';
 import { Error, ErrorCTA } from 'src/components/error';
 import { Pagination, MAX_PAGES } from './components/pagination';
 import { useHasMounted } from 'src/hooks/useHasMounted';
@@ -41,7 +41,6 @@ import Banner from '../banner';
 import { formatNumber } from 'src/utils/helpers';
 import { SortResults } from './components/sort';
 import ResultsCount from './components/count';
-import { env } from 'next.config';
 
 /*
 [COMPONENT INFO]:
@@ -94,9 +93,9 @@ const SearchResultsPage = () => {
   };
 
   // Currently selected filters.
-  const defaultFilters = Object.keys(filtersConfig).reduce(
-    (r, k) => ({ ...r, [k]: [] }),
-    {},
+  const defaultFilters = useMemo(
+    () => Object.keys(filtersConfig).reduce((r, k) => ({ ...r, [k]: [] }), {}),
+    [],
   );
 
   const [selectedFilters, setSelectedFilters] =
@@ -108,7 +107,6 @@ const SearchResultsPage = () => {
   const [selectedPage, setSelectedPage] = useState(defaultQuery.selectedPage);
 
   const [sortOrder, setSortOrder] = useState(defaultQuery.sortOrder);
-  // const [orderBy, setOrderBy] = useState(defaultQuery.orderBy);
 
   //  Items per page to show
   const [selectedPerPage, setSelectedPerPage] = useState(
@@ -203,15 +201,16 @@ const SearchResultsPage = () => {
       // convert url string to query object
       let queryObject = queryFilterString2Object(filters);
       return {
-        '@type': [],
-        keywords: [],
-        variableMeasured: [],
-        'measurementTechnique.name': [],
-        'includedInDataCatalog.name': [],
+        ...defaultFilters,
         ...queryObject,
       };
     });
-  }, [defaultQuery.queryString, defaultQuery.selectedPage, router]);
+  }, [
+    defaultFilters,
+    defaultQuery.queryString,
+    defaultQuery.selectedPage,
+    router,
+  ]);
 
   // Update the route to reflect changes on page without re-render.
   const updateRoute = (update: {}) => {
@@ -328,6 +327,7 @@ const SearchResultsPage = () => {
                     ...selectedFilters,
                     ...updatedFilters,
                   });
+
                   updateRoute({
                     from: defaultQuery.selectedPage,
                     filters: updatedFilterString,
@@ -424,6 +424,7 @@ const SearchResultsPage = () => {
                       </Button>
                     </Empty>
                   )}
+
                   <UnorderedList ml={0} flex={3} w={'100%'}>
                     {isLoading || (data && data.results?.length > 0)
                       ? new Array(selectedPerPage).fill(null).map((_, i) => {

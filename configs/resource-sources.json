@@ -21,6 +21,11 @@
       "imageUrl": "/assets/resources/omics.png"
     },
     {
+      "sourceName": "PublicApps@SevenBridges",
+      "name": "Seven Bridges",
+      "imageUrl": "/assets/resources/sb.png"
+    },
+    {
       "sourceName": "Zenodo",
       "name": "Zenodo",
       "imageUrl": "/assets/resources/zenodo.svg"

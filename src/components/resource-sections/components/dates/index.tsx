@@ -3,7 +3,6 @@ import { Flex, FlexProps, Icon, Text } from 'nde-design-system';
 import { FaRegClock } from 'react-icons/fa';
 import TypeBanner from '../type-banner';
 import { FormattedResource } from 'src/utils/api/types';
-import { formatDate } from 'src/utils/helpers';
 
 /*
 [COMPONENT INFO]:
@@ -31,7 +30,7 @@ export const DateTag: React.FC<DateTagProps> = ({ type, date, ...props }) => {
     >
       <Icon as={FaRegClock} mr={2} />
       <Text fontSize='xs'>
-        {type && <strong>{type}</strong>} {formatDate(date)}
+        {type && <strong>{type}</strong>} {date}
       </Text>
     </Flex>
   );

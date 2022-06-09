@@ -40,7 +40,7 @@ yarn-error.log*
 
 # prettier
 .prettierignore
-.prettierrc
+# .prettierrc
 
 
 # notes

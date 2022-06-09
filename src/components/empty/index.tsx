@@ -33,7 +33,7 @@ const Empty: React.FC<EmptyProps> = ({
             alt={imageAlt}
           />
         )}
-        <Heading as={'h2'} fontFamily='body' mt={4}>
+        <Heading as={'h2'} fontFamily='body' mt={4} color='inherit'>
           {message}
         </Heading>
         {children}

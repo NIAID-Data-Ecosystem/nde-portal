@@ -1,6 +1,5 @@
 import React from 'react';
 import { Flex, FlexProps, Icon, Text } from 'nde-design-system';
-import { formatDate } from 'src/utils/helpers';
 import { FaRegClock } from 'react-icons/fa';
 import { FormattedResource } from 'src/utils/api/types';
 import { StyledLabel } from './styles';
@@ -9,6 +8,17 @@ interface TypeBannerProps extends FlexProps {
   type?: FormattedResource['type'];
   date?: FormattedResource['date'];
 }
+
+export const getTypeColor = (type: FormattedResource['type']) => {
+  if (!type) {
+    return;
+  } else if (type.toLowerCase() === 'dataset') {
+    return 'status.info';
+  } else if (type.toLowerCase().includes('tool')) {
+    return 'primary.800';
+  }
+  return 'niaid.color';
+};
 
 const TypeBanner: React.FC<TypeBannerProps> = ({
   type,
@@ -29,12 +39,7 @@ const TypeBanner: React.FC<TypeBannerProps> = ({
         {type && (
           <StyledLabel
             _before={{
-              bg:
-                type.toLowerCase() === 'dataset'
-                  ? 'status.info'
-                  : type.toLowerCase().includes('tool')
-                  ? 'primary.800'
-                  : 'niaid.color',
+              bg: getTypeColor(type),
             }}
           >
             <Text
@@ -59,7 +64,7 @@ const TypeBanner: React.FC<TypeBannerProps> = ({
           <Flex alignItems='center' px={{ base: 2, lg: 4 }} py={[2, 1]}>
             <Icon as={FaRegClock} mr={2}></Icon>
             <Text fontSize='xs' fontWeight='semibold' whiteSpace='nowrap'>
-              {formatDate(date)}
+              {date}
             </Text>
           </Flex>
         )}

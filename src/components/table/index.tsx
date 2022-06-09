@@ -43,10 +43,12 @@ interface TableProps {
   ROW_SIZE?: number;
   hasFooter?: boolean;
   accessor?: (...args: string[]) => void;
+  colorScheme?: string;
 }
 
 const Table: React.FC<TableProps> = ({
   caption,
+  colorScheme,
   columns,
   rowData,
   ROW_SIZE = 5,
@@ -64,7 +66,7 @@ const Table: React.FC<TableProps> = ({
     <Box overflow='auto'>
       <TableWrapper>
         <TableContainer>
-          <StyledTable variant='striped'>
+          <StyledTable variant='striped' colorScheme={colorScheme}>
             {caption && (
               <TableCaption color='text.body'>{caption}</TableCaption>
             )}

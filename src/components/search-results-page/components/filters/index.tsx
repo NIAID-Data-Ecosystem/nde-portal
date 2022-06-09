@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { useQuery } from 'react-query';
 import {
   Facet,
@@ -7,6 +7,9 @@ import {
 } from 'src/utils/api/types';
 import {
   Accordion,
+  AccordionItem,
+  AccordionButton,
+  AccordionPanel,
   Box,
   Button,
   Drawer,
@@ -23,11 +26,14 @@ import {
   Icon,
 } from 'nde-design-system';
 import LoadingSpinner from 'src/components/loading';
-import { Filter } from './components/filter';
+import { Filter } from 'src/components/filter';
 import { fetchSearchResults } from 'src/utils/api';
 import { FaFilter } from 'react-icons/fa';
 import { NAV_HEIGHT } from 'src/components/page-container';
 import { formatType } from 'src/utils/api/helpers';
+import { FaMinus, FaPlus } from 'react-icons/fa';
+import { MetadataIcon } from 'src/components/icon';
+import { getMetadataColor } from 'src/components/icon/helpers';
 
 /*
 [COMPONENT INFO]:
@@ -42,6 +48,7 @@ export const FACET_SIZE = 1000;
 export const filtersConfig: {
   [key: string]: {
     name: string;
+    glyph?: string;
   };
 } = {
   '@type': { name: 'Type' },
@@ -49,8 +56,16 @@ export const filtersConfig: {
   keywords: { name: 'Keywords' },
   'measurementTechnique.name': {
     name: 'Measurement Technique',
+    glyph: 'measurementTechnique',
   },
-  variableMeasured: { name: 'Variable Measured' },
+  variableMeasured: { name: 'Variable Measured', glyph: 'variableMeasured' },
+  'funding.funder.name': { name: 'Funding', glyph: 'funding' },
+  'infectiousDisease.name': {
+    name: 'Infectious Disease',
+    glyph: 'infectiousDisease',
+  },
+  'infectiousAgent.name': { name: 'Pathogen', glyph: 'infectiousAgent' },
+  'species.name': { name: 'Species', glyph: 'species' },
 };
 
 export type SelectedFilterType = {
@@ -129,6 +144,14 @@ export const Filters: React.FC<Filters> = ({
     });
   };
 
+  // on mount open the accordion where the selected filter resides
+  const openAccordionIndex = useMemo(() => {
+    let selectedKeys = Object.entries(selectedFilters)
+      .filter(([_, v]) => v.length > 0)
+      .map(o => Object.keys(filtersConfig).indexOf(o[0]));
+    return selectedKeys.length > 0 ? selectedKeys : [0];
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   const content = (
     <>
       <Flex justifyContent='space-between' px={4} py={4} alignItems='center'>
@@ -156,27 +179,81 @@ export const Filters: React.FC<Filters> = ({
           </Heading>
         </Flex>
       ) : (
-        <Accordion bg={'white'} allowMultiple defaultIndex={[0]}>
+        <Accordion bg={'white'} allowMultiple defaultIndex={openAccordionIndex}>
           {data?.facets ? (
             Object.keys(filtersConfig).map(prop => {
               if (!data.facets[prop]) {
                 return null;
               }
               return (
-                <Filter
+                <AccordionItem
                   key={prop}
-                  name={filtersConfig[prop].name}
-                  values={
-                    updateFilterValues(prop, data.facets[prop].terms, {
-                      isLoading: facetsData?.isLoading,
-                      data: facetsData?.data?.[prop].terms,
-                    }) || []
-                  }
-                  selectedFilters={selectedFilters[prop]}
-                  handleSelectedFilters={v =>
-                    handleSelectedFilters({ [prop]: v })
-                  }
-                />
+                  borderColor={'page.alt'}
+                  borderTopWidth='2px'
+                >
+                  {({ isExpanded }) => (
+                    <>
+                      <h2>
+                        <AccordionButton
+                          borderLeft='4px solid'
+                          borderColor='gray.200'
+                          py={4}
+                          transition='all 0.2s linear'
+                          _expanded={{
+                            borderColor: 'accent.bg',
+                            py: 2,
+                            transition: 'all 0.2s linear',
+                          }}
+                        >
+                          {/* Filter Name */}
+                          <Flex
+                            flex='1'
+                            textAlign='left'
+                            justifyContent='space-between'
+                            alignItems='center'
+                          >
+                            <Heading size='sm' fontWeight='semibold'>
+                              {filtersConfig[prop].name}
+                            </Heading>
+                            <MetadataIcon
+                              mx={2}
+                              glyph={filtersConfig[prop].glyph}
+                              fill={getMetadataColor(filtersConfig[prop].glyph)}
+                              boxSize={6}
+                            ></MetadataIcon>
+                          </Flex>
+                          {isExpanded ? (
+                            <FaMinus fontSize='12px' />
+                          ) : (
+                            <FaPlus fontSize='12px' />
+                          )}
+                        </AccordionButton>
+                      </h2>
+
+                      <AccordionPanel
+                        px={2}
+                        py={4}
+                        borderLeft='4px solid'
+                        borderColor='accent.bg'
+                      >
+                        <Filter
+                          key={prop}
+                          name={filtersConfig[prop].name}
+                          values={
+                            updateFilterValues(prop, data.facets[prop].terms, {
+                              isLoading: facetsData?.isLoading,
+                              data: facetsData?.data?.[prop].terms,
+                            }) || []
+                          }
+                          selectedFilters={selectedFilters[prop]}
+                          handleSelectedFilters={v =>
+                            handleSelectedFilters({ [prop]: v })
+                          }
+                        />
+                      </AccordionPanel>
+                    </>
+                  )}
+                </AccordionItem>
               );
             })
           ) : (

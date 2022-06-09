@@ -155,6 +155,12 @@ export type AccessTypes =
   | 'Embargo'
   | 'Restricted';
 
+export interface SdPublisher {
+  identifier: string;
+  name: string;
+  url: string;
+}
+
 // Formatting standardized resource fields
 export interface FormattedResource {
   [key: string]: any;
@@ -167,10 +173,10 @@ export interface FormattedResource {
   codeRepository: string[] | string | null;
   condition: string | null;
   conditionsOfAccess: AccessTypes | null;
-  date: Date | string | null;
-  dateCreated: Date | string | null;
-  dateModified: Date | string | null;
-  datePublished: Date | string | null;
+  date: string | null;
+  dateCreated: string | null;
+  dateModified: string | null;
+  datePublished: string | null;
   description: string | null;
   disease: string | null;
   distribution: Distribution[] | null;
@@ -195,6 +201,7 @@ export interface FormattedResource {
   publisher: Publisher | null;
   rawData: any;
   sameAs: string | null;
+  sdPublisher: SdPublisher | null;
   spatialCoverage: string | null;
   species: PropertyNameWithURL[] | null;
   temporalCoverage: string | null;
