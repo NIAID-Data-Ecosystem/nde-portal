@@ -26,7 +26,7 @@
       "routes": [
         {
           "title": "Suggest a new source",
-          "path": "https://github.com/NIAID-Data-Ecosystem/nde-crawlers",
+          "path": "https://github.com/NIAID-Data-Ecosystem/nde-crawlers/issues/new?assignees=&labels=&template=suggest-a-new-resource.md&title=%5BSOURCE%5D",
           "isExternal": true
         }
       ]
