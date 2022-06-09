@@ -84,7 +84,7 @@ export const shouldAppendPunctuation = (
 // Format citation string according to :
 // https://www.nlm.nih.gov/bsd/uniform_requirements.html
 export const formatCitationString = (citation: Citation) => {
-  const authors = formatAuthorsList2String(citation.author);
+  const authors = formatAuthorsList2String(citation.author, ',', 3);
 
   const year = citation.datePublished
     ? `${new Date(citation.datePublished).getUTCFullYear()}`

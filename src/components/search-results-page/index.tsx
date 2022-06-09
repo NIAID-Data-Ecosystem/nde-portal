@@ -24,7 +24,7 @@ import {
 import {
   queryFilterObject2String,
   queryFilterString2Object,
-} from 'src/components/search-results-page/components/filters/helpers';
+} from 'src/components/filter/helpers';
 import { Error, ErrorCTA } from 'src/components/error';
 import { Pagination, MAX_PAGES } from './components/pagination';
 import { useHasMounted } from 'src/hooks/useHasMounted';
@@ -424,6 +424,7 @@ const SearchResultsPage = () => {
                       </Button>
                     </Empty>
                   )}
+
                   <UnorderedList ml={0} flex={3} w={'100%'}>
                     {isLoading || (data && data.results?.length > 0)
                       ? new Array(selectedPerPage).fill(null).map((_, i) => {

@@ -3,7 +3,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "next build && next export",
     "build:staging": "env-cmd -f .env.staging yarn build",
     "start": "next start",
     "lint": "next lint"
@@ -12,6 +12,7 @@
     "@emotion/react": "^11",
     "@emotion/styled": "^11",
     "@fontsource/public-sans": "^4.5.5",
+    "@types/d3": "^7.4.0",
     "@types/d3-scale-chromatic": "^3.0.0",
     "@visx/group": "^2.1.0",
     "@visx/legend": "^2.2.2",
@@ -19,6 +20,7 @@
     "@visx/shape": "^2.4.0",
     "@visx/tooltip": "^2.8.0",
     "axios": "^0.24.0",
+    "d3": "^7.4.4",
     "d3-scale-chromatic": "^3.0.0",
     "env-cmd": "^10.1.0",
     "framer-motion": "^4",

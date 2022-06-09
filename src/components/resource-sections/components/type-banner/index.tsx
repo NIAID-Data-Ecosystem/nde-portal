@@ -9,6 +9,17 @@ interface TypeBannerProps extends FlexProps {
   date?: FormattedResource['date'];
 }
 
+export const getTypeColor = (type: FormattedResource['type']) => {
+  if (!type) {
+    return;
+  } else if (type.toLowerCase() === 'dataset') {
+    return 'status.info';
+  } else if (type.toLowerCase().includes('tool')) {
+    return 'primary.800';
+  }
+  return 'niaid.color';
+};
+
 const TypeBanner: React.FC<TypeBannerProps> = ({
   type,
   date,
@@ -28,12 +39,7 @@ const TypeBanner: React.FC<TypeBannerProps> = ({
         {type && (
           <StyledLabel
             _before={{
-              bg:
-                type.toLowerCase() === 'dataset'
-                  ? 'status.info'
-                  : type.toLowerCase().includes('tool')
-                  ? 'primary.800'
-                  : 'niaid.color',
+              bg: getTypeColor(type),
             }}
           >
             <Text
