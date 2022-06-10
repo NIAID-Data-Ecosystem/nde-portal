@@ -27,7 +27,7 @@ export const MetadataProperty: React.FC<MetadataPropertyProps> = ({
     >
       <Flex alignItems='center' pb={0} position='relative'>
         <MetadataIcon
-          id={`icon-${label}-${id}`}
+          id={id}
           viewBox='0 0 200 200'
           fill={!children ? 'gray.400' : getMetadataColor(glyph)}
           opacity={children ? 1 : 0.6}

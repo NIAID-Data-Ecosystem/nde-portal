@@ -61,7 +61,7 @@ const CardDetails: React.FC<CardDetailsProps> = ({ data }) => {
   }) => (
     <>
       <MetadataIcon
-        id={`${glyph}-${id}`}
+        id={`indicator-${glyph}-${id}`}
         glyph={glyph}
         mx={1}
         fill={value ? getMetadataColor(glyph) : 'gray.400'}
@@ -132,7 +132,7 @@ const CardDetails: React.FC<CardDetailsProps> = ({ data }) => {
                 <SimpleGrid minChildWidth={'300px'} spacing='10px'>
                   {/* License*/}
                   <MetadataProperty
-                    id={`${id}`}
+                    id={`license-${id}`}
                     label='License'
                     glyph={'license'}
                   >
@@ -155,10 +155,9 @@ const CardDetails: React.FC<CardDetailsProps> = ({ data }) => {
                       </>
                     )}
                   </MetadataProperty>
-
                   {/* Funding */}
                   <MetadataProperty
-                    id={`${id}`}
+                    id={`funding-${id}`}
                     label='Funding'
                     glyph={'funding'}
                   >
@@ -186,10 +185,9 @@ const CardDetails: React.FC<CardDetailsProps> = ({ data }) => {
                       </UnorderedList>
                     )}
                   </MetadataProperty>
-
                   {/* Measurement techniques*/}
                   <MetadataProperty
-                    id={`${id}`}
+                    id={`mt-${id}`}
                     label='Measurement Technique'
                     glyph='measurementTechnique'
                   >
@@ -219,10 +217,9 @@ const CardDetails: React.FC<CardDetailsProps> = ({ data }) => {
                       </UnorderedList>
                     )}
                   </MetadataProperty>
-
                   {/* Variable Measured */}
                   <MetadataProperty
-                    id={`${id}`}
+                    id={`vm-${id}`}
                     label='Variable Measured'
                     glyph={'variableMeasured'}
                   >
@@ -230,10 +227,9 @@ const CardDetails: React.FC<CardDetailsProps> = ({ data }) => {
                       <Text color='inherit'>variableMeasured</Text>
                     )}
                   </MetadataProperty>
-
                   {/* Infectious Agent*/}
                   <MetadataProperty
-                    id={`${id}`}
+                    id={`ia-${id}`}
                     label='Infectious Agent'
                     glyph='infectiousAgent'
                   >
@@ -259,10 +255,9 @@ const CardDetails: React.FC<CardDetailsProps> = ({ data }) => {
                       </UnorderedList>
                     )}
                   </MetadataProperty>
-
                   {/* Infectious Disease*/}
                   <MetadataProperty
-                    id={`${id}`}
+                    id={`disease-${id}`}
                     label='Infectious Disease'
                     glyph='infectiousDisease'
                   >
@@ -293,10 +288,9 @@ const CardDetails: React.FC<CardDetailsProps> = ({ data }) => {
                       </>
                     )}
                   </MetadataProperty>
-
                   {/* Species*/}
                   <MetadataProperty
-                    id={`${id}`}
+                    id={`species-${id}`}
                     label='Species'
                     glyph='species'
                   >

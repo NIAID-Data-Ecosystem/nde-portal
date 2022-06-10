@@ -1,7 +1,7 @@
 import { FormattedResource } from 'src/utils/api/types';
 import { VscJson } from 'react-icons/vsc';
 import { GrTextAlignFull } from 'react-icons/gr';
-import { FaDatabase, FaDownload, FaRegMoneyBillAlt } from 'react-icons/fa';
+import { FaDatabase, FaDownload, FaSearchDollar } from 'react-icons/fa';
 import { BsBlockquoteLeft } from 'react-icons/bs';
 
 export interface Route {
@@ -40,7 +40,7 @@ export const getSectionIcon = (sectionId: string) => {
     icon = FaDownload;
   }
   if (sectionId === 'funding') {
-    icon = FaRegMoneyBillAlt;
+    icon = FaSearchDollar;
   }
   if (sectionId === 'citedBy') {
     icon = BsBlockquoteLeft;

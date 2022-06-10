@@ -27,6 +27,8 @@ import {
 import MetadataConfig from 'configs/resource-metadata.json';
 import StatField from './components/stat-field';
 import { assetPrefix } from 'next.config';
+import { IconProps, MetadataIcon } from 'src/components/icon';
+import { getMetadataColor } from 'src/components/icon/helpers';
 
 export interface OverviewProps extends Partial<FormattedResource> {
   isLoading: boolean;
@@ -52,6 +54,17 @@ const Overview: React.FC<OverviewProps> = ({
   variableMeasured,
   isLoading,
 }) => {
+  const StatIcon = ({ glyph, ...props }: IconProps) => (
+    <MetadataIcon
+      boxSize={4}
+      mr={2}
+      glyph={glyph}
+      stroke='currentColor'
+      fill={getMetadataColor(glyph)}
+      {...props}
+    />
+  );
+
   // get copy label from config for a given property.
   const getStatInfo = (metadataProperty: string) => {
     const metadataField = MetadataConfig.fields.find(
@@ -154,7 +167,11 @@ const Overview: React.FC<OverviewProps> = ({
       >
         {/* Copyright license agreement */}
         {
-          <StatField isLoading={isLoading} {...getStatInfo('license')}>
+          <StatField
+            isLoading={isLoading}
+            icon={() => <StatIcon id='license' glyph={'license'} />}
+            {...getStatInfo('license')}
+          >
             {licenseInfo ? (
               <>
                 {licenseInfo?.img && (
@@ -176,7 +193,6 @@ const Overview: React.FC<OverviewProps> = ({
             )}
           </StatField>
         }
-
         {/* DOI */}
         {doi && (
           <StatField isLoading={isLoading} {...getStatInfo('doi')}>
@@ -189,10 +205,13 @@ const Overview: React.FC<OverviewProps> = ({
             )}
           </StatField>
         )}
-
         {/* species covered in resource */}
         {species && (
-          <StatField isLoading={isLoading} {...getStatInfo('species')}>
+          <StatField
+            isLoading={isLoading}
+            icon={() => <StatIcon id='species' glyph='species' />}
+            {...getStatInfo('species')}
+          >
             <UnorderedList ml={0}>
               {species.map((m, i) => {
                 const name = Array.isArray(m.name) ? m.name.join(', ') : m.name;
@@ -212,17 +231,19 @@ const Overview: React.FC<OverviewProps> = ({
             </UnorderedList>
           </StatField>
         )}
-
         {/* health condition covered */}
         {healthCondition && (
           <StatField isLoading={isLoading} {...getStatInfo('healthCondition')}>
             {healthCondition}
           </StatField>
         )}
-
         {/* infectious agent involved */}
         {infectiousAgent && (
-          <StatField isLoading={isLoading} {...getStatInfo('infectiousAgent')}>
+          <StatField
+            isLoading={isLoading}
+            icon={() => <StatIcon id='pathogen' glyph='infectiousAgent' />}
+            {...getStatInfo('infectiousAgent')}
+          >
             <UnorderedList ml={0}>
               {infectiousAgent.map((m, i) => {
                 const name = Array.isArray(m.name) ? m.name.join(', ') : m.name;
@@ -242,11 +263,13 @@ const Overview: React.FC<OverviewProps> = ({
             </UnorderedList>
           </StatField>
         )}
-
         {/* infectious disease covered */}
         {infectiousDisease && (
           <StatField
             isLoading={isLoading}
+            icon={() => (
+              <StatIcon id='infectiousDisease' glyph='infectiousDisease' />
+            )}
             {...getStatInfo('infectiousDisease')}
           >
             <UnorderedList ml={0}>
@@ -268,25 +291,34 @@ const Overview: React.FC<OverviewProps> = ({
             </UnorderedList>
           </StatField>
         )}
-
         {/* topics covered in resource*/}
         {topic && (
           <StatField isLoading={isLoading} {...getStatInfo('topic')}>
             {Array.isArray(topic) ? topic.join(', ') : topic}
           </StatField>
         )}
-
         {/* variable measured, used in conjunction with measurement technique */}
         {variableMeasured && (
-          <StatField isLoading={isLoading} {...getStatInfo('variableMeasured')}>
+          <StatField
+            isLoading={isLoading}
+            icon={() => (
+              <StatIcon id='variableMeasured' glyph='variableMeasured' />
+            )}
+            {...getStatInfo('variableMeasured')}
+          >
             {variableMeasured}
           </StatField>
         )}
-
         {/* measurement technique */}
         {measurementTechnique && (
           <StatField
             isLoading={isLoading}
+            icon={() => (
+              <StatIcon
+                id='measurementTechnique'
+                glyph='measurementTechnique'
+              />
+            )}
             {...getStatInfo('measurementTechnique')}
           >
             <UnorderedList ml={0}>
@@ -307,7 +339,6 @@ const Overview: React.FC<OverviewProps> = ({
             </UnorderedList>
           </StatField>
         )}
-
         {/* language */}
         {language && (
           <StatField
@@ -318,7 +349,6 @@ const Overview: React.FC<OverviewProps> = ({
             {language.name}
           </StatField>
         )}
-
         {/* geographic */}
         {spatialCoverage && (
           <StatField
@@ -329,7 +359,6 @@ const Overview: React.FC<OverviewProps> = ({
             {spatialCoverage}
           </StatField>
         )}
-
         {/* period covered */}
         {temporalCoverage && (
           <StatField
@@ -340,7 +369,6 @@ const Overview: React.FC<OverviewProps> = ({
             {temporalCoverage}
           </StatField>
         )}
-
         {/* citation */}
         {citation && (
           <StatField isLoading={isLoading} {...getStatInfo('citation')}>
