@@ -1,10 +1,49 @@
-export const setDateCreated = async (sourcePath: string) => {
-  const url = `https://api.github.com/repos/NIAID-Data-Ecosystem/nde-crawlers/commits?path=${sourcePath}`;
-  const response = await fetch(url);
-  const jsonData = await response.json();
-  const dates: string[] = [];
-  jsonData.forEach((jsonObj: { commit: { author: { date: string } } }) => {
-    dates.push(jsonObj.commit.author.date);
-  });
-  return dates[dates.length - 1];
+import axios from 'axios';
+import { MetadataSource } from 'src/utils/api/types';
+
+interface fetchSourcesArgs {
+  sourcePath: string;
+  name: MetadataSource['sourceInfo']['name'];
+  description: MetadataSource['sourceInfo']['description'];
+  dateModified: MetadataSource['version'];
+  numberOfRecords: number;
+  schema: MetadataSource['sourceInfo']['schema'];
+}
+
+export interface SourceResponse {
+  dateCreated: string;
+  name: MetadataSource['sourceInfo']['name'];
+  description: MetadataSource['sourceInfo']['description'];
+  dateModified: MetadataSource['version'];
+  numberOfRecords: number;
+  schema: MetadataSource['sourceInfo']['schema'];
+}
+
+export const fetchSources = async ({
+  sourcePath,
+  ...props
+}: fetchSourcesArgs) => {
+  if (!sourcePath) {
+    return null;
+  }
+
+  try {
+    const url = `https://api.github.com/repos/NIAID-Data-Ecosystem/nde-crawlers/commits`;
+
+    const data = await axios
+      .get(`${url}?path=${sourcePath}`, {
+        validateStatus: function (status) {
+          return status < 500 && status !== 403;
+        },
+      })
+      .then(res => res.data);
+
+    const dates: string[] = [];
+    data.forEach((jsonObj: { commit: { author: { date: string } } }) => {
+      dates.push(jsonObj.commit.author.date);
+    });
+    return { ...props, dateCreated: dates[dates.length - 1] };
+  } catch (err) {
+    throw err;
+  }
 };
