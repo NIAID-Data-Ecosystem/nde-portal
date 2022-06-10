@@ -161,12 +161,7 @@ export const PieChart: React.FC<PieChartProps> = ({ queryString, filters }) => {
 
   if (!pie_data || pie_data.length === 0) {
     return (
-      <Empty
-        message='No results found.'
-        imageAlt='Missing information icon.'
-        alignSelf='center'
-        color='white'
-      >
+      <Empty message='No results found.' alignSelf='center' color='white'>
         <Text color='whiteAlpha.800'>
           Search yielded no results, please try again.
         </Text>

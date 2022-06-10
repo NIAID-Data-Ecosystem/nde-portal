@@ -47,7 +47,7 @@ const FilesTable: React.FC<FilesTable> = ({ isLoading, distribution }) => {
   const rows = distribution.map(d => {
     let obj = {} as Row;
 
-    Object.entries(d).map(([k, v]) => {
+    Object.entries(d).map(([k, v], i) => {
       let value = v;
       let { icon, color } = getFileIcon(v);
 
@@ -57,7 +57,14 @@ const FilesTable: React.FC<FilesTable> = ({ isLoading, distribution }) => {
             <Text pt={2} ml={1} fontSize='sm'>
               <FormatLinkCell value={v} />
             </Text>
-            <Icon as={icon} color={color} boxSize={6} aria-label={v} m={1} />
+            <Icon
+              id={`${k}-${i}`}
+              as={icon}
+              color={color}
+              boxSize={6}
+              aria-label={v}
+              m={1}
+            />
           </Flex>
         );
       }

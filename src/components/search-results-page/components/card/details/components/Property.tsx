@@ -4,6 +4,7 @@ import { MetadataIcon } from 'src/components/icon';
 import { getMetadataColor } from 'src/components/icon/helpers';
 
 interface MetadataPropertyProps extends BoxProps {
+  id: string;
   label: string;
   glyph?: string;
 }
@@ -11,6 +12,7 @@ interface MetadataPropertyProps extends BoxProps {
 export const MetadataProperty: React.FC<MetadataPropertyProps> = ({
   label,
   glyph,
+  id,
   children,
   ...props
 }) => {
@@ -25,6 +27,7 @@ export const MetadataProperty: React.FC<MetadataPropertyProps> = ({
     >
       <Flex alignItems='center' pb={0} position='relative'>
         <MetadataIcon
+          id={id}
           viewBox='0 0 200 200'
           fill={!children ? 'gray.400' : getMetadataColor(glyph)}
           opacity={children ? 1 : 0.6}

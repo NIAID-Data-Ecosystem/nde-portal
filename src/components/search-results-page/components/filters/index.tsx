@@ -181,7 +181,7 @@ export const Filters: React.FC<Filters> = ({
       ) : (
         <Accordion bg={'white'} allowMultiple defaultIndex={openAccordionIndex}>
           {data?.facets ? (
-            Object.keys(filtersConfig).map(prop => {
+            Object.keys(filtersConfig).map((prop, i) => {
               if (!data.facets[prop]) {
                 return null;
               }
@@ -216,6 +216,7 @@ export const Filters: React.FC<Filters> = ({
                               {filtersConfig[prop].name}
                             </Heading>
                             <MetadataIcon
+                              id={`filter-${filtersConfig[prop].glyph}-${i}`}
                               mx={2}
                               glyph={filtersConfig[prop].glyph}
                               fill={getMetadataColor(filtersConfig[prop].glyph)}

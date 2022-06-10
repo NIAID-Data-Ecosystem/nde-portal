@@ -34,13 +34,7 @@ const ErrorState = ({ retryFn }: { retryFn: () => void }) => {
 const EmptyState = () => {
   return (
     <Card w='100%'>
-      <Empty
-        message='No data available.'
-        imageUrl={`${assetPrefix}/assets/empty.png`}
-        imageAlt='Missing information icon.'
-        alignSelf='center'
-        h='50vh'
-      >
+      <Empty message='No data available.' alignSelf='center' h='50vh'>
         <Text>No information about this dataset is available.</Text>
         <Button as={'a'} href='/' mt={4}>
           Go to search.

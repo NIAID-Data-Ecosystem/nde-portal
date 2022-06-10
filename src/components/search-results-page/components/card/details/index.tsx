@@ -13,17 +13,14 @@ import {
   Text,
   UnorderedList,
   SimpleGrid,
-  BoxProps,
-  Divider,
 } from 'nde-design-system';
 import { FaMinus, FaPlus } from 'react-icons/fa';
 import { FormattedResource } from 'src/utils/api/types';
 import { formatLicense } from 'src/utils/helpers';
 import { assetPrefix } from 'next.config';
 import { MetadataProperty } from './components/Property';
-import { MetadataBadge, MetadataIcon } from 'src/components/icon';
+import { MetadataIcon } from 'src/components/icon';
 import { getMetadataColor } from 'src/components/icon/helpers';
-import { gray } from 'd3-color';
 
 interface CardDetailsProps {
   data?: FormattedResource | null;
@@ -62,17 +59,15 @@ const CardDetails: React.FC<CardDetailsProps> = ({ data }) => {
     fill?: string;
     value: any;
   }) => (
-    // <MetadataBadge property={property} ml={1}>
     <>
       <MetadataIcon
+        id={`indicator-${glyph}-${id}`}
         glyph={glyph}
         mx={1}
-        // fill='white'
         fill={value ? getMetadataColor(glyph) : 'gray.400'}
         {...props}
       />
     </>
-    // </MetadataBadge>
   );
 
   const MetadataIndicator = () => {
@@ -136,7 +131,11 @@ const CardDetails: React.FC<CardDetailsProps> = ({ data }) => {
               <AccordionPanel w='100%' px={paddingCard} my={2}>
                 <SimpleGrid minChildWidth={'300px'} spacing='10px'>
                   {/* License*/}
-                  <MetadataProperty label='License' glyph={'license'}>
+                  <MetadataProperty
+                    id={`license-${id}`}
+                    label='License'
+                    glyph={'license'}
+                  >
                     {licenseInfo && (
                       <>
                         {licenseInfo?.img && (
@@ -156,9 +155,12 @@ const CardDetails: React.FC<CardDetailsProps> = ({ data }) => {
                       </>
                     )}
                   </MetadataProperty>
-
                   {/* Funding */}
-                  <MetadataProperty label='Funding' glyph={'funding'}>
+                  <MetadataProperty
+                    id={`funding-${id}`}
+                    label='Funding'
+                    glyph={'funding'}
+                  >
                     {fundingInfo && fundingInfo.length > 0 && (
                       <UnorderedList ml={4}>
                         {fundingInfo.map((f, i) => {
@@ -183,9 +185,9 @@ const CardDetails: React.FC<CardDetailsProps> = ({ data }) => {
                       </UnorderedList>
                     )}
                   </MetadataProperty>
-
                   {/* Measurement techniques*/}
                   <MetadataProperty
+                    id={`mt-${id}`}
                     label='Measurement Technique'
                     glyph='measurementTechnique'
                   >
@@ -215,9 +217,9 @@ const CardDetails: React.FC<CardDetailsProps> = ({ data }) => {
                       </UnorderedList>
                     )}
                   </MetadataProperty>
-
                   {/* Variable Measured */}
                   <MetadataProperty
+                    id={`vm-${id}`}
                     label='Variable Measured'
                     glyph={'variableMeasured'}
                   >
@@ -225,9 +227,9 @@ const CardDetails: React.FC<CardDetailsProps> = ({ data }) => {
                       <Text color='inherit'>variableMeasured</Text>
                     )}
                   </MetadataProperty>
-
                   {/* Infectious Agent*/}
                   <MetadataProperty
+                    id={`ia-${id}`}
                     label='Infectious Agent'
                     glyph='infectiousAgent'
                   >
@@ -253,9 +255,9 @@ const CardDetails: React.FC<CardDetailsProps> = ({ data }) => {
                       </UnorderedList>
                     )}
                   </MetadataProperty>
-
                   {/* Infectious Disease*/}
                   <MetadataProperty
+                    id={`disease-${id}`}
                     label='Infectious Disease'
                     glyph='infectiousDisease'
                   >
@@ -286,9 +288,12 @@ const CardDetails: React.FC<CardDetailsProps> = ({ data }) => {
                       </>
                     )}
                   </MetadataProperty>
-
                   {/* Species*/}
-                  <MetadataProperty label='Species' glyph='species'>
+                  <MetadataProperty
+                    id={`species-${id}`}
+                    label='Species'
+                    glyph='species'
+                  >
                     {species && (
                       <Text color='inherit'>
                         {species.map((m, i) => {

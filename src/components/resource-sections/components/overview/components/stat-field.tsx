@@ -12,11 +12,12 @@ import {
 import { IconType } from 'react-icons';
 import { FaInfo } from 'react-icons/fa';
 import LoadingSpinner from 'src/components/loading';
+import { IconProps } from 'src/components/icon';
 
 interface MetadataStatProps extends FlexProps {
   label: string;
   value?: string[] | string | number | null;
-  icon?: IconType;
+  icon?: IconType | ((args: IconProps) => React.ReactElement);
   isLoading: boolean;
   info?: string;
 }
@@ -45,8 +46,8 @@ const StatField: React.FC<MetadataStatProps> = ({
       <Flex flexDirection='column'>
         <StatLabel onClick={() => isMobile && setTooltipOpen(!isTooltipOpen)}>
           <span style={{ display: 'flex', alignItems: 'center' }}>
-            {label}
             {icon && <Icon as={icon} color='gray.500' mx={1} />}
+            {label}
 
             {info && (
               <Tooltip
@@ -58,7 +59,7 @@ const StatField: React.FC<MetadataStatProps> = ({
                 closeDelay={300}
               >
                 {/* button used here to allow user to focus on tooltip*/}
-                <button>
+                <button aria-label={label}>
                   <Icon
                     as={FaInfo}
                     mx={2}
