@@ -13,7 +13,6 @@ import {
 } from 'react-icons/fa';
 import { Column } from '.';
 import { MetadataIcon } from '../icon';
-import Glyph from '../icon/components/glyph';
 
 // Checks if string is a valid url.
 export const isValidUrl = (str: string) => {
@@ -39,13 +38,13 @@ export const getFileIcon = (value: string) => {
     icon = FaFileCode;
   } else if (value.toLowerCase().includes('bam')) {
     // Archived file extensions
-    icon = (props: IconProps) => (
-      <MetadataIcon glyph='bam' stroke='currentColor' {...props} />
+    icon = ({ id, ...props }: IconProps) => (
+      <MetadataIcon id={id!} glyph='bam' stroke='currentColor' {...props} />
     );
   } else if (value.toLowerCase().includes('fasta')) {
     // Archived file extensions
-    icon = (props: IconProps) => (
-      <MetadataIcon glyph='fasta' stroke='currentColor' {...props} />
+    icon = ({ id, ...props }: IconProps) => (
+      <MetadataIcon id={id!} glyph='fasta' stroke='currentColor' {...props} />
     );
   } else if (
     value.toLowerCase().includes('.tar') ||

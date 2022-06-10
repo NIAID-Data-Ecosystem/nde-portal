@@ -13,17 +13,14 @@ import {
   Text,
   UnorderedList,
   SimpleGrid,
-  BoxProps,
-  Divider,
 } from 'nde-design-system';
 import { FaMinus, FaPlus } from 'react-icons/fa';
 import { FormattedResource } from 'src/utils/api/types';
 import { formatLicense } from 'src/utils/helpers';
 import { assetPrefix } from 'next.config';
 import { MetadataProperty } from './components/Property';
-import { MetadataBadge, MetadataIcon } from 'src/components/icon';
+import { MetadataIcon } from 'src/components/icon';
 import { getMetadataColor } from 'src/components/icon/helpers';
-import { gray } from 'd3-color';
 
 interface CardDetailsProps {
   data?: FormattedResource | null;
@@ -62,17 +59,15 @@ const CardDetails: React.FC<CardDetailsProps> = ({ data }) => {
     fill?: string;
     value: any;
   }) => (
-    // <MetadataBadge property={property} ml={1}>
     <>
       <MetadataIcon
+        id={`${glyph}-${id}`}
         glyph={glyph}
         mx={1}
-        // fill='white'
         fill={value ? getMetadataColor(glyph) : 'gray.400'}
         {...props}
       />
     </>
-    // </MetadataBadge>
   );
 
   const MetadataIndicator = () => {
@@ -136,7 +131,11 @@ const CardDetails: React.FC<CardDetailsProps> = ({ data }) => {
               <AccordionPanel w='100%' px={paddingCard} my={2}>
                 <SimpleGrid minChildWidth={'300px'} spacing='10px'>
                   {/* License*/}
-                  <MetadataProperty label='License' glyph={'license'}>
+                  <MetadataProperty
+                    id={`${id}`}
+                    label='License'
+                    glyph={'license'}
+                  >
                     {licenseInfo && (
                       <>
                         {licenseInfo?.img && (
@@ -158,7 +157,11 @@ const CardDetails: React.FC<CardDetailsProps> = ({ data }) => {
                   </MetadataProperty>
 
                   {/* Funding */}
-                  <MetadataProperty label='Funding' glyph={'funding'}>
+                  <MetadataProperty
+                    id={`${id}`}
+                    label='Funding'
+                    glyph={'funding'}
+                  >
                     {fundingInfo && fundingInfo.length > 0 && (
                       <UnorderedList ml={4}>
                         {fundingInfo.map((f, i) => {
@@ -186,6 +189,7 @@ const CardDetails: React.FC<CardDetailsProps> = ({ data }) => {
 
                   {/* Measurement techniques*/}
                   <MetadataProperty
+                    id={`${id}`}
                     label='Measurement Technique'
                     glyph='measurementTechnique'
                   >
@@ -218,6 +222,7 @@ const CardDetails: React.FC<CardDetailsProps> = ({ data }) => {
 
                   {/* Variable Measured */}
                   <MetadataProperty
+                    id={`${id}`}
                     label='Variable Measured'
                     glyph={'variableMeasured'}
                   >
@@ -228,6 +233,7 @@ const CardDetails: React.FC<CardDetailsProps> = ({ data }) => {
 
                   {/* Infectious Agent*/}
                   <MetadataProperty
+                    id={`${id}`}
                     label='Infectious Agent'
                     glyph='infectiousAgent'
                   >
@@ -256,6 +262,7 @@ const CardDetails: React.FC<CardDetailsProps> = ({ data }) => {
 
                   {/* Infectious Disease*/}
                   <MetadataProperty
+                    id={`${id}`}
                     label='Infectious Disease'
                     glyph='infectiousDisease'
                   >
@@ -288,7 +295,11 @@ const CardDetails: React.FC<CardDetailsProps> = ({ data }) => {
                   </MetadataProperty>
 
                   {/* Species*/}
-                  <MetadataProperty label='Species' glyph='species'>
+                  <MetadataProperty
+                    id={`${id}`}
+                    label='Species'
+                    glyph='species'
+                  >
                     {species && (
                       <Text color='inherit'>
                         {species.map((m, i) => {

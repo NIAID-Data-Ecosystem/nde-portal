@@ -26,11 +26,19 @@ export const MetadataBadge: React.FC<MetadataBadgeProps> = ({
 
 // Metadata icon svg.
 export interface IconProps extends ChakraIconProps {
+  id: string; // id for aria-labelledby for icon for accessibility
   glyph?: string;
   label?: string; // label for icon for accessibility
+  title?: string; // title for svg (accessibility)
 }
 
-export const MetadataIcon = ({ glyph, label, ...props }: IconProps) => {
+export const MetadataIcon = ({
+  id,
+  glyph,
+  label,
+  title,
+  ...props
+}: IconProps) => {
   if (!glyph) {
     return <></>;
   }
@@ -69,9 +77,11 @@ export const MetadataIcon = ({ glyph, label, ...props }: IconProps) => {
         color='#000'
         fill='#000'
         boxSize={5}
+        aria-labelledby={id}
+        role='img'
         {...props}
       >
-        <Glyph glyph={glyph} stroke='currentColor' />
+        <Glyph id={id} glyph={glyph} stroke='currentColor' title={title} />
       </Icon>
     </Tooltip>
   );

@@ -1,18 +1,16 @@
 import React from 'react';
-import { Flex, FlexProps, Heading, Image } from 'nde-design-system';
-import { assetPrefix } from 'next.config';
+import { Flex, FlexProps, Heading, Icon } from 'nde-design-system';
+import Glyph from '../icon/components/glyph';
 
 interface EmptyProps extends FlexProps {
-  imageUrl?: string;
-  imageAlt?: string;
+  icon?: string;
   message?: string;
 }
 
 // Empty state display component.
 const Empty: React.FC<EmptyProps> = ({
   children,
-  imageAlt,
-  imageUrl,
+  icon = 'empty',
   message,
   ...rest
 }) => {
@@ -25,14 +23,23 @@ const Empty: React.FC<EmptyProps> = ({
       {...rest}
     >
       <Flex direction='column' alignItems='center'>
-        {imageUrl && (
-          <Image
-            boxSize='100px'
-            objectFit='contain'
-            src={`${imageUrl}`}
-            alt={imageAlt}
-          />
+        {icon && (
+          <Icon
+            viewBox='0 0 200 200'
+            boxSize={100}
+            fill='currentColor'
+            aria-labelledby='empty'
+            role='img'
+          >
+            <Glyph
+              id='empty'
+              glyph='empty'
+              stroke='currentColor'
+              title='Empty, no data available.'
+            />
+          </Icon>
         )}
+
         <Heading as={'h2'} fontFamily='body' mt={4} color='inherit'>
           {message}
         </Heading>

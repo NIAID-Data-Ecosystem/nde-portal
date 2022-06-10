@@ -413,8 +413,6 @@ const SearchResultsPage = () => {
                   {!isLoading && (!data || data.results.length === 0) && (
                     <Empty
                       message='No results found.'
-                      imageUrl={`${assetPrefix}/assets/empty.png`}
-                      imageAlt='Missing information icon.'
                       alignSelf='center'
                       h={'50vh'}
                     >
