@@ -14,6 +14,7 @@ import { Route } from './helpers';
 import FilesTable from './components/files-table';
 import FundingTable from './components/funding-table';
 import CitedByTable from './components/cited-by-table';
+import { DisplayHTMLContent } from '../html-content';
 
 // Metadata displayed in each section
 export const section_metadata: { [key: string]: (keyof FormattedResource)[] } =
@@ -109,15 +110,7 @@ const Sections = ({
             )}
             {/* Show description */}
             {section.hash === 'description' && data?.description && (
-              <Box
-                overflow='auto'
-                w='100%'
-                fontSize='sm'
-                style={{ whiteSpace: 'pre-wrap' }}
-                dangerouslySetInnerHTML={{
-                  __html: data.description,
-                }}
-              ></Box>
+              <DisplayHTMLContent content={data.description} overflow='auto' />
             )}
             {/* Show provenance */}
             {section.hash === 'provenance' && (

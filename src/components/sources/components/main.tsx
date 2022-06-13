@@ -7,18 +7,12 @@ import { Error } from 'src/components/error';
 import LoadingSpinner from 'src/components/loading';
 import { useRouter } from 'next/router';
 import Empty from 'src/components/empty';
+import { DisplayHTMLContent } from 'src/components/html-content';
+import NextLink from 'next/link';
+import ResourceConfig from 'configs/resource-sources.json';
 
 interface Main {
   sourceData: Metadata;
-}
-
-interface Source {
-  name: string;
-  description: string;
-  dateCreated: string;
-  dateModified: Date;
-  numberOfRecords: any;
-  schema: Object;
 }
 
 const Main: React.FC<Main> = ({ sourceData }) => {
@@ -35,7 +29,6 @@ const Main: React.FC<Main> = ({ sourceData }) => {
     setSchemaText([...schemaText, sourceName]);
     return setSchemaId([...schemaId, sourceName]);
   }
-
   // Fetch source information from github
   const { data, error, isLoading } = useQuery<any | undefined, Error>(
     ['sources', {}],
@@ -91,6 +84,13 @@ const Main: React.FC<Main> = ({ sourceData }) => {
         </Empty>
       ) : (
         sources.map((sourceObj: SourceResponse, i: number) => {
+          const { sourceName: includedInDataCatalogName } =
+            ResourceConfig.repositories.find(source => {
+              return source.name
+                .toLowerCase()
+                .includes(sourceObj.name.toLowerCase());
+            }) || { sourceName: sourceObj.name };
+
           return (
             <Box
               id={`${sourceObj.name}`}
@@ -127,13 +127,7 @@ const Main: React.FC<Main> = ({ sourceData }) => {
                 {sourceObj.numberOfRecords.toLocaleString()} Records Available
               </Text>
               <Box mx={[2, 2, 20]}>
-                <Box
-                  mt={4}
-                  dangerouslySetInnerHTML={{
-                    __html: sourceObj.description,
-                  }}
-                  style={{ whiteSpace: 'pre-wrap' }}
-                />
+                <DisplayHTMLContent content={sourceObj.description} mt={4} />
 
                 <Box mt={4} fontWeight='bold' display={['none', 'block']}>
                   <Heading as='h3' size='xs'>
@@ -153,6 +147,7 @@ const Main: React.FC<Main> = ({ sourceData }) => {
                       id={`${sourceObj.name}-show-button`}
                       onClick={() => schemaIdFunc(sourceObj.name)}
                       my={2}
+                      variant='outline'
                     >
                       Show Schema
                     </Button>
@@ -229,17 +224,29 @@ const Main: React.FC<Main> = ({ sourceData }) => {
                   </Heading>
                 </Box>
               </Box>
-              <Flex justifyContent='center' mt={4} mb={1}>
-                {/* [TO DO]: add repo source url */}
-                <Button
-                  isExternal
-                  href='/?'
-                  wordBreak={'break-word'}
-                  whiteSpace='normal'
-                >
-                  Search {sourceObj.name} records
-                </Button>
-              </Flex>
+              {includedInDataCatalogName && (
+                <Flex justifyContent='center' my={4}>
+                  {/* [TO DO]: add repo source url */}
+                  <NextLink
+                    href={{
+                      pathname: `/search`,
+                      query: {
+                        q: `(includedInDataCatalog.name:"${includedInDataCatalogName}")`,
+                      },
+                    }}
+                    passHref
+                  >
+                    <Button
+                      wordBreak='break-word'
+                      whiteSpace='normal'
+                      lineHeight='base'
+                      m={4}
+                    >
+                      Search {sourceObj.name} records
+                    </Button>
+                  </NextLink>
+                </Flex>
+              )}
             </Box>
           );
         })

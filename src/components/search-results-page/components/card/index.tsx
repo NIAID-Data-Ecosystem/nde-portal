@@ -36,6 +36,7 @@ import {
 import { assetPrefix } from 'next.config';
 import NextLink from 'next/link';
 import CardDetails from './details';
+import { DisplayHTMLContent } from 'src/components/html-content';
 
 interface SearchResultCardProps {
   isLoading?: boolean;
@@ -240,16 +241,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                 _focus={{ outlineColor: 'transparent', bg: 'white' }}
                 alignIcon='center'
               >
-                <Box
-                  w='100%'
-                  fontSize='sm'
-                  flex={1}
-                  sx={{ pre: { display: 'none' } }}
-                  style={{ whiteSpace: 'pre-wrap' }}
-                  dangerouslySetInnerHTML={{
-                    __html: description?.replace(/\u00a0/g, ' ') || '',
-                  }}
-                ></Box>
+                <DisplayHTMLContent content={description || ''} />
               </ToggleContainer>
 
               <CardDetails data={data} />
@@ -277,6 +269,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                           <Link
                             target='_blank'
                             href={includedInDataCatalog.url}
+                            mb={[2, 2, 0]}
                           >
                             <Image
                               minH='40px'
@@ -293,6 +286,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                             maxH='40px'
                             maxW='200px'
                             mr={4}
+                            mb={[2, 2, 0]}
                             src={`${assetPrefix}${imageURL}`}
                             alt='Data source name'
                           ></Image>
@@ -308,12 +302,12 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                                 href={url! || includedInDataCatalog.url!}
                                 isExternal
                               >
-                                <Text fontSize={'xs'}>
+                                <Text fontSize='xs'>
                                   Provided by {includedInDataCatalog.name}
                                 </Text>
                               </Link>
                             ) : (
-                              <Text fontSize={'xs'}>
+                              <Text fontSize='xs'>
                                 Provided by {includedInDataCatalog.name}
                               </Text>
                             )}

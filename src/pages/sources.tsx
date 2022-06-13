@@ -67,6 +67,15 @@ const Sources: NextPage = () => {
         )}
 
         <PageContent w='100%' flexDirection='column' bg='#fff'>
+          <Flex justifyContent='end'>
+            <Button
+              href='https://github.com/NIAID-Data-Ecosystem/nde-crawlers/issues/new?assignees=&labels=&template=suggest-a-new-resource.md&title=%5BSOURCE%5D'
+              isExternal
+              colorScheme='secondary'
+            >
+              Suggest a new Source
+            </Button>
+          </Flex>
           {isLoading && <LoadingSpinner isLoading={isLoading} />}
           {!error && sourceData && <Main sourceData={sourceData} />}
         </PageContent>
