@@ -269,6 +269,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                           <Link
                             target='_blank'
                             href={includedInDataCatalog.url}
+                            mb={[2, 2, 0]}
                           >
                             <Image
                               minH='40px'
@@ -285,6 +286,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                             maxH='40px'
                             maxW='200px'
                             mr={4}
+                            mb={[2, 2, 0]}
                             src={`${assetPrefix}${imageURL}`}
                             alt='Data source name'
                           ></Image>
@@ -300,12 +302,12 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                                 href={url! || includedInDataCatalog.url!}
                                 isExternal
                               >
-                                <Text fontSize={'xs'}>
+                                <Text fontSize='xs'>
                                   Provided by {includedInDataCatalog.name}
                                 </Text>
                               </Link>
                             ) : (
-                              <Text fontSize={'xs'}>
+                              <Text fontSize='xs'>
                                 Provided by {includedInDataCatalog.name}
                               </Text>
                             )}

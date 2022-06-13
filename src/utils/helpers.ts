@@ -1,5 +1,4 @@
 import sourceData from 'configs/resource-sources.json';
-import { StringChain } from 'lodash';
 import { Citation, FormattedResource } from './api/types';
 
 // Get image for repo based on config.
