@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useEffect, useMemo } from 'react';
+import React, { useState } from 'react';
 import {
   Box,
   Table as StyledTable,
@@ -9,19 +9,13 @@ import {
   Td,
   TableCaption,
   TableContainer,
-  TablePagination,
   TableWrapper,
   Tfoot,
-  Flex,
-  IconButton,
-  Button,
-  Icon,
-  usePagination,
   useTableSort,
   TableSortToggle,
+  TablePagination,
 } from 'nde-design-system';
 import { FormatLinkCell } from './helpers';
-import { FaCaretUp, FaCaretDown, FaCaretSquareDown } from 'react-icons/fa';
 
 export interface Column {
   key: string;
@@ -55,12 +49,18 @@ const Table: React.FC<TableProps> = ({
   hasFooter = false,
   accessor,
 }) => {
+  // num of rows per page
+  const [size, setSize] = useState(ROW_SIZE);
+
+  // current page
+  const [from, setFrom] = useState(0);
+
   const [{ data: tableData, orderBy, sortBy }, updateSort] = useTableSort(
     rowData,
     accessor,
   );
 
-  const [rows, setRows] = useState(tableData || []);
+  const rows = tableData || [];
 
   return (
     <Box overflow='auto'>
@@ -90,28 +90,30 @@ const Table: React.FC<TableProps> = ({
             </Thead>
 
             <Tbody>
-              {(rows as Row[]).map((row, i) => {
-                return (
-                  <Tr key={i} id={`${i}`}>
-                    {columns.map((col, j) => {
-                      let cell = row[col.key];
-                      return (
-                        <Td
-                          role='cell'
-                          key={`${cell.value}-${i}-${j}`}
-                          id={`${cell.value}-${i}-${j}`}
-                          whiteSpace='break-spaces'
-                          minW='50px'
-                          isNumeric={typeof cell.value === 'number'}
-                          {...cell.props}
-                        >
-                          <FormatLinkCell value={cell.value} />
-                        </Td>
-                      );
-                    })}
-                  </Tr>
-                );
-              })}
+              {(rows as Row[])
+                .slice(from * size, from * size + size)
+                .map((row, i) => {
+                  return (
+                    <Tr key={i} id={`${i}`}>
+                      {columns.map((col, j) => {
+                        let cell = row[col.key];
+                        return (
+                          <Td
+                            role='cell'
+                            key={`${cell.value}-${i}-${j}`}
+                            id={`${cell.value}-${i}-${j}`}
+                            whiteSpace='break-spaces'
+                            minW='50px'
+                            isNumeric={typeof cell.value === 'number'}
+                            {...cell.props}
+                          >
+                            <FormatLinkCell value={cell.value} />
+                          </Td>
+                        );
+                      })}
+                    </Tr>
+                  );
+                })}
             </Tbody>
             {hasFooter && (
               <Tfoot>
@@ -129,10 +131,11 @@ const Table: React.FC<TableProps> = ({
           </StyledTable>
         </TableContainer>
         <TablePagination
-          data={tableData}
-          pageSize={ROW_SIZE}
-          setRows={v => setRows(v)}
-          pageSizeOptionsIncrement={5}
+          total={rowData.length}
+          size={size}
+          setSize={setSize}
+          from={from}
+          setFrom={setFrom}
           colorScheme='gray'
         ></TablePagination>
       </TableWrapper>
