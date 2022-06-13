@@ -36,6 +36,7 @@ import {
 import { assetPrefix } from 'next.config';
 import NextLink from 'next/link';
 import CardDetails from './details';
+import { DisplayHTMLContent } from 'src/components/html-content';
 
 interface SearchResultCardProps {
   isLoading?: boolean;
@@ -240,16 +241,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                 _focus={{ outlineColor: 'transparent', bg: 'white' }}
                 alignIcon='center'
               >
-                <Box
-                  w='100%'
-                  fontSize='sm'
-                  flex={1}
-                  sx={{ pre: { display: 'none' } }}
-                  style={{ whiteSpace: 'pre-wrap' }}
-                  dangerouslySetInnerHTML={{
-                    __html: description?.replace(/\u00a0/g, ' ') || '',
-                  }}
-                ></Box>
+                <DisplayHTMLContent content={description || ''} />
               </ToggleContainer>
 
               <CardDetails data={data} />

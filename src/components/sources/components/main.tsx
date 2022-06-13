@@ -7,6 +7,7 @@ import { Error } from 'src/components/error';
 import LoadingSpinner from 'src/components/loading';
 import { useRouter } from 'next/router';
 import Empty from 'src/components/empty';
+import { DisplayHTMLContent } from 'src/components/html-content';
 
 interface Main {
   sourceData: Metadata;
@@ -127,13 +128,7 @@ const Main: React.FC<Main> = ({ sourceData }) => {
                 {sourceObj.numberOfRecords.toLocaleString()} Records Available
               </Text>
               <Box mx={[2, 2, 20]}>
-                <Box
-                  mt={4}
-                  dangerouslySetInnerHTML={{
-                    __html: sourceObj.description,
-                  }}
-                  style={{ whiteSpace: 'pre-wrap' }}
-                />
+                <DisplayHTMLContent content={sourceObj.description} mt={4} />
 
                 <Box mt={4} fontWeight='bold' display={['none', 'block']}>
                   <Heading as='h3' size='xs'>
