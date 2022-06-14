@@ -14,7 +14,7 @@ import {
 import { fade, StyledSection } from './styles';
 import { assetPrefix } from 'next.config';
 import { FaChevronRight } from 'react-icons/fa';
-import NextLink, { LinkProps } from 'next/link';
+import NextLink, { LinkProps as NextLinkProps } from 'next/link';
 
 interface PageHeaderProps {
   title: string;

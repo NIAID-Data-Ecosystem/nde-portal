@@ -1,3 +1,4 @@
+import { IconProps } from '@chakra-ui/icon';
 import { Link, LinkProps } from 'nde-design-system';
 import {
   FaFileAlt,
@@ -11,6 +12,7 @@ import {
   FaFileCsv,
 } from 'react-icons/fa';
 import { Column } from '.';
+import { MetadataIcon } from '../icon';
 
 // Checks if string is a valid url.
 export const isValidUrl = (str: string) => {
@@ -34,6 +36,16 @@ export const getFileIcon = (value: string) => {
   ) {
     // Code file extensions
     icon = FaFileCode;
+  } else if (value.toLowerCase().includes('bam')) {
+    // Archived file extensions
+    icon = ({ id, ...props }: IconProps) => (
+      <MetadataIcon id={id!} glyph='bam' stroke='currentColor' {...props} />
+    );
+  } else if (value.toLowerCase().includes('fasta')) {
+    // Archived file extensions
+    icon = ({ id, ...props }: IconProps) => (
+      <MetadataIcon id={id!} glyph='fasta' stroke='currentColor' {...props} />
+    );
   } else if (
     value.toLowerCase().includes('.tar') ||
     value.toLowerCase().includes('.7z') ||

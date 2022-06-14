@@ -197,7 +197,7 @@ export const formatDate = (date?: string | Date) => {
   if (!date) {
     return null;
   }
-
+  // @ts-ignore
   return new Date(date.replace(/-/g, '/').replace(/T.+/, ''))
     .toISOString()
     .split('T')[0];

@@ -7,6 +7,7 @@ import {
   Box,
   Flex,
   Heading,
+  Link,
   ListItem,
   Text,
   UnorderedList,
@@ -19,6 +20,7 @@ import {
   useTooltipInPortal,
 } from '@visx/tooltip';
 import { schemeTableau10 } from 'd3-scale-chromatic';
+import NextLink from 'next/link';
 
 interface RawDataProps {
   term: string;
@@ -245,7 +247,16 @@ export default function PieChart({
             </>
           )}
         </LegendOrdinal>
-
+        <Box my={4}>
+          <NextLink
+            href={{
+              pathname: '/sources/',
+            }}
+            passHref
+          >
+            <Link>Learn more about our sources</Link>
+          </NextLink>
+        </Box>
         {/* Hover tooltip */}
         {tooltipOpen && tooltipData && (
           <TooltipInPortal

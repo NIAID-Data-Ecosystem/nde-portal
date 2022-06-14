@@ -1,18 +1,23 @@
 {
   "repositories": [
     {
+      "sourceName": "AccessClinicalData@NIAID",
+      "name": "AccessClinicalData@NIAID",
+      "imageUrl": "/assets/resources/access-clinical.png"
+    },
+    {
       "sourceName": "Data Discovery Engine",
       "name": "Data Discovery Engine",
       "imageUrl": "/assets/resources/dde_full.svg"
     },
     {
       "sourceName": "ImmPort",
-      "name": "ImmPort",
+      "name": "Immunology Database and Analysis Portal",
       "imageUrl": "/assets/resources/immport.png"
     },
     {
       "sourceName": "NCBI GEO",
-      "name": "NCBI GEO",
+      "name": "NCBI Gene Expression Omnibus",
       "imageUrl": "/assets/resources/geo.gif"
     },
     {
@@ -22,7 +27,7 @@
     },
     {
       "sourceName": "PublicApps@SevenBridges",
-      "name": "Seven Bridges",
+      "name": "Seven Bridges Public Apps Gallery",
       "imageUrl": "/assets/resources/sb.png"
     },
     {

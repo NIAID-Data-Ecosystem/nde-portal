@@ -32,7 +32,7 @@ import {
   StyledSectionButtonGroup,
 } from 'src/components/home/styles';
 import { assetPrefix } from 'next.config';
-import NextLink, { LinkProps } from 'next/link';
+import NextLink from 'next/link';
 
 const sample_queries = [
   {
@@ -219,6 +219,7 @@ const Home: NextPage = () => {
                     passHref
                   >
                     <SearchQueryLink
+                      key={query.title}
                       title={query.title}
                       display={[i > 2 ? 'none' : 'block', 'block']}
                     />

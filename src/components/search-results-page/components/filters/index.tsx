@@ -32,6 +32,8 @@ import { FaFilter } from 'react-icons/fa';
 import { NAV_HEIGHT } from 'src/components/page-container';
 import { formatType } from 'src/utils/api/helpers';
 import { FaMinus, FaPlus } from 'react-icons/fa';
+import { MetadataIcon } from 'src/components/icon';
+import { getMetadataColor } from 'src/components/icon/helpers';
 
 /*
 [COMPONENT INFO]:
@@ -46,6 +48,7 @@ export const FACET_SIZE = 1000;
 export const filtersConfig: {
   [key: string]: {
     name: string;
+    glyph?: string;
   };
 } = {
   '@type': { name: 'Type' },
@@ -53,12 +56,16 @@ export const filtersConfig: {
   keywords: { name: 'Keywords' },
   'measurementTechnique.name': {
     name: 'Measurement Technique',
+    glyph: 'measurementTechnique',
   },
-  variableMeasured: { name: 'Variable Measured' },
-  'funding.funder.name': { name: 'Funding' },
-  'infectiousDisease.name': { name: 'Infectious Disease' },
-  'infectiousAgent.name': { name: 'Pathogen' },
-  'species.name': { name: 'Species' },
+  variableMeasured: { name: 'Variable Measured', glyph: 'variableMeasured' },
+  'funding.funder.name': { name: 'Funding', glyph: 'funding' },
+  'infectiousDisease.name': {
+    name: 'Infectious Disease',
+    glyph: 'infectiousDisease',
+  },
+  'infectiousAgent.name': { name: 'Pathogen', glyph: 'infectiousAgent' },
+  'species.name': { name: 'Species', glyph: 'species' },
 };
 
 export type SelectedFilterType = {
@@ -174,7 +181,7 @@ export const Filters: React.FC<Filters> = ({
       ) : (
         <Accordion bg={'white'} allowMultiple defaultIndex={openAccordionIndex}>
           {data?.facets ? (
-            Object.keys(filtersConfig).map(prop => {
+            Object.keys(filtersConfig).map((prop, i) => {
               if (!data.facets[prop]) {
                 return null;
               }
@@ -199,11 +206,23 @@ export const Filters: React.FC<Filters> = ({
                           }}
                         >
                           {/* Filter Name */}
-                          <Box flex='1' textAlign='left'>
+                          <Flex
+                            flex='1'
+                            textAlign='left'
+                            justifyContent='space-between'
+                            alignItems='center'
+                          >
                             <Heading size='sm' fontWeight='semibold'>
                               {filtersConfig[prop].name}
                             </Heading>
-                          </Box>
+                            <MetadataIcon
+                              id={`filter-${filtersConfig[prop].glyph}-${i}`}
+                              mx={2}
+                              glyph={filtersConfig[prop].glyph}
+                              fill={getMetadataColor(filtersConfig[prop].glyph)}
+                              boxSize={6}
+                            ></MetadataIcon>
+                          </Flex>
                           {isExpanded ? (
                             <FaMinus fontSize='12px' />
                           ) : (

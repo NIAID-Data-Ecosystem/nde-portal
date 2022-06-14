@@ -212,7 +212,7 @@ export interface FormattedResource {
   numberOfViews: number | null;
 }
 
-interface MetadataSource {
+export interface MetadataSource {
   code: {
     file: string;
     repo: string;

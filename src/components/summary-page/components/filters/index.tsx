@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React from 'react';
 import { useQuery } from 'react-query';
 import { FacetTerm, FetchSearchResultsResponse } from 'src/utils/api/types';

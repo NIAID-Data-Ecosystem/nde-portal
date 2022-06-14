@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useCallback } from 'react';
 import { Button, Link, Tag, Text } from 'nde-design-system';
 import { FormattedResource } from 'src/utils/api/types';
@@ -29,12 +30,7 @@ const TableData: React.FC<TableProps> = ({ isLoading, data }) => {
   // Empty State.
   if (!data || data.length === 0) {
     return (
-      <Empty
-        message='No results found.'
-        imageUrl={`${assetPrefix}/assets/empty.png`}
-        imageAlt='Missing information icon.'
-        alignSelf='center'
-      >
+      <Empty message='No results found.' alignSelf='center'>
         <Text>Search yielded no results, please try again.</Text>
         <Button href='#search-header' mt={4}>
           Search Again.

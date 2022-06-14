@@ -41,6 +41,9 @@ export const FilterTags: React.FC<FilterTags> = ({
         </Button>
         {tags.map(([filterName, filterValues]) => {
           return filterValues.map(v => {
+            if (!filtersConfig[filterName]) {
+              return null;
+            }
             return (
               <Tag key={`${v}`} colorScheme='secondary' size='lg' m={1}>
                 <TagLabel whiteSpace='break-spaces'>
