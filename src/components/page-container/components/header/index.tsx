@@ -138,7 +138,7 @@ export const SearchQueryLink: React.FC<SearchQueryLinkProps> = ({
   return (
     <NextLink href={href} passHref>
       <Link
-        mx={2}
+        px={2}
         color='whiteAlpha.800'
         _hover={{
           color: 'white',
