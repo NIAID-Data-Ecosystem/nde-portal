@@ -28,7 +28,6 @@ import {
 import { Error, ErrorCTA } from 'src/components/error';
 import { Pagination, MAX_PAGES } from './components/pagination';
 import { useHasMounted } from 'src/hooks/useHasMounted';
-import { assetPrefix } from 'next.config';
 import { FilterTags } from './components/filters/components/tags';
 import {
   FACET_SIZE,
@@ -41,6 +40,7 @@ import Banner from '../banner';
 import { formatNumber } from 'src/utils/helpers';
 import { SortResults } from './components/sort';
 import ResultsCount from './components/count';
+import { DownloadMetadata } from '../download-metadata';
 
 /*
 [COMPONENT INFO]:
@@ -374,20 +374,33 @@ const SearchResultsPage = () => {
                         />
                       )}
                     </Flex>
-                    <SortResults
-                      sortOptions={sort_options}
-                      sortOrder={sortOrder}
-                      handleSortOrder={sort =>
-                        updateRoute({
-                          sort,
-                          from: defaultQuery.selectedPage,
-                        })
-                      }
-                      selectedPerPage={selectedPerPage}
-                      handleSelectedPerPage={v =>
-                        updateRoute({ from: 1, size: v })
-                      }
-                    />
+                    <Box>
+                      <Flex w='100%' justifyContent='flex-end' pb={4}>
+                        <DownloadMetadata
+                          exportName={'nde-results'}
+                          metadata={data?.results.map(d => d.rawData) || []}
+                          colorScheme='primary'
+                          variant='outline'
+                          isLoading={isLoading}
+                        >
+                          Download Metadata
+                        </DownloadMetadata>
+                      </Flex>
+                      <SortResults
+                        sortOptions={sort_options}
+                        sortOrder={sortOrder}
+                        handleSortOrder={sort =>
+                          updateRoute({
+                            sort,
+                            from: defaultQuery.selectedPage,
+                          })
+                        }
+                        selectedPerPage={selectedPerPage}
+                        handleSelectedPerPage={v =>
+                          updateRoute({ from: 1, size: v })
+                        }
+                      />
+                    </Box>
                   </Flex>
                 </Pagination>
 

@@ -20,17 +20,14 @@ const Sidebar: React.FC<Sidebar> = ({ data }) => {
     <>
       {sourceNames.map((name, index) => {
         return (
-          <ListItem
-            key={index}
-            px={[2, 4, 6]}
-            py={4}
-            _hover={{ bg: 'gray.50' }}
-            cursor='pointer'
-          >
+          <ListItem key={index} _hover={{ bg: 'gray.50' }} cursor='pointer'>
             <Box
               as='a'
+              d='block'
               href={`#${name[0]}`}
               aria-label={`Go to ${name[0]} section`}
+              px={[2, 4, 6]}
+              py={4}
             >
               <Heading size='h6'>
                 {name[0]} <br />
