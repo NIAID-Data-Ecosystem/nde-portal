@@ -35,17 +35,19 @@ const Main: React.FC<Main> = ({ sourceData }) => {
     async () => {
       const data = await Promise.all(
         Object.entries(repos).map(([k, source]) => {
-          return fetchSources({
-            sourcePath: source.code.file,
-            name: source.sourceInfo.name,
-            description: source.sourceInfo.description,
-            dateModified: source.version,
-            numberOfRecords: source.stats[k] || 0,
-            schema: source.sourceInfo.schema,
-          });
+          if (source.sourceInfo) {
+            return fetchSources({
+              sourcePath: source.code.file,
+              name: source.sourceInfo.name,
+              description: source.sourceInfo.description,
+              dateModified: source.version,
+              numberOfRecords: source.stats[k] || 0,
+              schema: source.sourceInfo.schema,
+            });
+          }
         }),
       );
-      return data;
+      return data.filter(x => x !== undefined);
     },
     { refetchOnWindowFocus: false },
   );
@@ -143,15 +145,15 @@ const Main: React.FC<Main> = ({ sourceData }) => {
                       Hide Schema
                     </Button>
                   )) || (
-                    <Button
-                      id={`${sourceObj.name}-show-button`}
-                      onClick={() => schemaIdFunc(sourceObj.name)}
-                      my={2}
-                      variant='outline'
-                    >
-                      Show Schema
-                    </Button>
-                  )}
+                      <Button
+                        id={`${sourceObj.name}-show-button`}
+                        onClick={() => schemaIdFunc(sourceObj.name)}
+                        my={2}
+                        variant='outline'
+                      >
+                        Show Schema
+                      </Button>
+                    )}
                   <Collapse in={schemaId.includes(sourceObj.name)}>
                     {schemaId.includes(sourceObj.name) && (
                       <Box
