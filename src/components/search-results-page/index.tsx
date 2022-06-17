@@ -150,7 +150,7 @@ const SearchResultsPage = () => {
     // Don't refresh everytime window is touched.
     { refetchOnWindowFocus: false },
   );
-
+  console.log(data);
   // Set total results value
   useEffect(() => {
     setTotal(prev => {

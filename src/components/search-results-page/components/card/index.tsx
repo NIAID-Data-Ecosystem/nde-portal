@@ -317,12 +317,12 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                         {/* original source */}
                         {sdPublisher?.url ? (
                           <Link href={sdPublisher.url} isExternal>
-                            <Text fontSize={'xs'}>
+                            <Text fontSize='xs' as='i'>
                               Original source {sdPublisher.name}
                             </Text>
                           </Link>
                         ) : sdPublisher?.name ? (
-                          <Text fontSize={'xs'}>
+                          <Text fontSize='xs' as='i'>
                             Original source {sdPublisher.name}
                           </Text>
                         ) : (
