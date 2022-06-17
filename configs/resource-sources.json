@@ -16,10 +16,16 @@
       "imageUrl": "/assets/resources/immport.png"
     },
     {
+      "sourceName": "Mendeley",
+      "name": "Mendeley",
+      "imageUrl": "/assets/resources/mendeley.svg"
+    },
+    {
       "sourceName": "NCBI GEO",
       "name": "NCBI Gene Expression Omnibus",
       "imageUrl": "/assets/resources/geo.gif"
     },
+
     {
       "sourceName": "Omics Discovery Index (OmicsDI)",
       "name": "Omics Discovery Index (OmicsDI)",
@@ -29,6 +35,11 @@
       "sourceName": "PublicApps@SevenBridges",
       "name": "Seven Bridges Public Apps Gallery",
       "imageUrl": "/assets/resources/sb.png"
+    },
+    {
+      "sourceName": "ReframeDB",
+      "name": "ReframeDB",
+      "imageUrl": "/assets/resources/reframedb.png"
     },
     {
       "sourceName": "Zenodo",
