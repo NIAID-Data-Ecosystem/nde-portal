@@ -15,6 +15,7 @@ import FilesTable from './components/files-table';
 import FundingTable from './components/funding-table';
 import CitedByTable from './components/cited-by-table';
 import { DisplayHTMLContent } from '../html-content';
+import { DownloadMetadata } from '../download-metadata';
 
 // Metadata displayed in each section
 export const section_metadata: { [key: string]: (keyof FormattedResource)[] } =
@@ -133,18 +134,36 @@ const Sections = ({
 
             {/* Show raw metadata */}
             {section.hash === 'metadata' && data?.rawData && (
-              <Box maxHeight={500} overflow='auto' w='100%' tabIndex={0}>
-                <pre
-                  style={{
-                    whiteSpace: 'pre-wrap',
-                    padding: '2rem',
-                  }}
+              <>
+                <Flex w='100%' justifyContent='flex-end' pb={4}>
+                  <DownloadMetadata
+                    metadata={data.rawData}
+                    colorScheme='secondary'
+                    exportName={data.rawData['_id']}
+                  >
+                    Download Metadata
+                  </DownloadMetadata>
+                </Flex>
+                <Box
+                  maxHeight={500}
+                  overflow='auto'
+                  w='100%'
+                  tabIndex={0}
+                  borderY='2px solid'
+                  borderColor='page.alt'
                 >
-                  <Text fontSize={'10px'}>
-                    {JSON.stringify(data.rawData, null, 2)}
-                  </Text>
-                </pre>
-              </Box>
+                  <pre
+                    style={{
+                      whiteSpace: 'pre-wrap',
+                      padding: '2rem',
+                    }}
+                  >
+                    <Text fontSize='10px'>
+                      {JSON.stringify(data.rawData, null, 2)}
+                    </Text>
+                  </pre>
+                </Box>
+              </>
             )}
           </Section>
         );

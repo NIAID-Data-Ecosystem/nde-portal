@@ -120,12 +120,14 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
 };
 
 // Display for pre-written queries.
-interface SearchQueryLinkProps extends ChakraLinkProps {
+interface SearchQueryLinkProps extends Omit<ChakraLinkProps, 'href'> {
   title: string;
+  href: NextLinkProps['href'];
 }
 
 export const SearchQueryLink: React.FC<SearchQueryLinkProps> = ({
   title,
+  href,
   _hover,
   _visited,
   ...props
@@ -134,26 +136,28 @@ export const SearchQueryLink: React.FC<SearchQueryLinkProps> = ({
     return null;
   }
   return (
-    <Link
-      mx={2}
-      color='whiteAlpha.800'
-      _hover={{
-        color: 'white',
-        textDecoration: 'underline',
-        svg: { transform: 'translateX(0)', transition: '0.2s ease-in-out' },
-        ..._hover,
-      }}
-      _visited={{ color: 'white', ..._visited }}
-      {...props}
-    >
-      <Text>{title}</Text>
-      <Icon
-        as={FaChevronRight}
-        ml={2}
-        boxSize={3}
-        transform='translateX(-5px)'
-        transition='0.2s ease-in-out'
-      ></Icon>
-    </Link>
+    <NextLink href={href} passHref>
+      <Link
+        px={2}
+        color='whiteAlpha.800'
+        _hover={{
+          color: 'white',
+          textDecoration: 'underline',
+          svg: { transform: 'translateX(0)', transition: '0.2s ease-in-out' },
+          ..._hover,
+        }}
+        _visited={{ color: 'white', ..._visited }}
+        {...props}
+      >
+        <Text>{title}</Text>
+        <Icon
+          as={FaChevronRight}
+          ml={2}
+          boxSize={3}
+          transform='translateX(-5px)'
+          transition='0.2s ease-in-out'
+        ></Icon>
+      </Link>
+    </NextLink>
   );
 };
