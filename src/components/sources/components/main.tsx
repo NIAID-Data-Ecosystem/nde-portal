@@ -46,15 +46,17 @@ const Main: React.FC<Main> = ({ sourceData }) => {
         return;
       }
       for (const source in sourceData.src) {
-        const sourceDetails = {
-          name: sourceData.src[source].sourceInfo.name,
-          description: sourceData.src[source].sourceInfo.description,
-          dateCreated: await setDateCreated(sourceData.src[source].code.file),
-          dateModified: sourceData.src[source].version,
-          numberOfRecords: sourceData.src[source].stats[source],
-          schema: sourceData.src[source].sourceInfo.schema,
-        };
-        sourcesData.push(sourceDetails);
+        if (sourceData.src[source].sourceInfo) {
+          const sourceDetails = {
+            name: sourceData.src[source].sourceInfo.name,
+            description: sourceData.src[source].sourceInfo.description,
+            dateCreated: await setDateCreated(sourceData.src[source].code.file),
+            dateModified: sourceData.src[source].version,
+            numberOfRecords: sourceData.src[source].stats[source],
+            schema: sourceData.src[source].sourceInfo.schema,
+          };
+          sourcesData.push(sourceDetails);
+        }
       }
       sourcesData.sort((a, b) => a.name.localeCompare(b.name));
       setSources(sourcesData);
@@ -129,14 +131,14 @@ const Main: React.FC<Main> = ({ sourceData }) => {
                     Hide Schema
                   </Button>
                 )) || (
-                  <Button
-                    id={`${sourceObj.name}-show-button`}
-                    onClick={() => schemaIdFunc(sourceObj.name)}
-                    my={2}
-                  >
-                    Show Schema
-                  </Button>
-                )}
+                    <Button
+                      id={`${sourceObj.name}-show-button`}
+                      onClick={() => schemaIdFunc(sourceObj.name)}
+                      my={2}
+                    >
+                      Show Schema
+                    </Button>
+                  )}
                 <Collapse in={schemaId.includes(sourceObj.name)}>
                   {schemaId.includes(sourceObj.name) && (
                     <Box

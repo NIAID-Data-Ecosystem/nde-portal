@@ -28,6 +28,7 @@ import {
 import { useHasMounted } from 'src/hooks/useHasMounted';
 import { queryFilterObject2String } from 'src/components/filter';
 import { ChartTemplate } from 'src/components/summary-page/components/vis/components/chart-template';
+import DylanVis from 'src/components/summary-page/components/vis/components/dylan-vis';
 
 /*
  [COMPONENT INFO]:
@@ -195,22 +196,24 @@ const SummaryPage: NextPage = () => {
 
         {/* Visualizations */}
         <section id='data-visualizations'>
-          <Box w='100%' p={6} bg='tertiary.900'>
-            <Flex flexWrap={'wrap'}>
-              {/* Pie Chart */}
-              <Flex
+          <Box w='100%' p={6} bg='tertiary.900' >
+            {/* <Flex flexWrap={'wrap'} grow={1}
+            > */}
+            {/* Pie Chart */}
+            {/* <Flex
                 p={6}
                 minW='400px'
                 minH='400px'
+                // maxW='615'
                 justifyContent='center'
                 alignItems='center'
                 flex={1}
                 bg='tertiary.800'
-              >
-                <PieChart queryString={queryString} filters={filters} />
-              </Flex>
-              {/* Template Chart */}
-              <Flex
+              > */}
+            <DylanVis queryString={queryString} filters={filters} updateFilters={updateFilters} />
+            {/* </Flex> */}
+            {/* Template Chart */}
+            {/* <Flex
                 p={6}
                 minW='400px'
                 minH='400px'
@@ -223,8 +226,8 @@ const SummaryPage: NextPage = () => {
                   filters={filters}
                   updateFilters={updateFilters}
                 />
-              </Flex>
-            </Flex>
+              </Flex> */}
+            {/* </Flex> */}
             <Center my={6}>
               <Divider w='90%' />
             </Center>

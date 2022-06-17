@@ -106,11 +106,11 @@ export const CirclePacking = ({ data }) => {
       .size([width, height])
       .padding(3)
       .radius(d => d.value * 0.5)(
-      d3
-        .hierarchy(datas)
-        .sum(d => d.value)
-        .sort((a, b) => b.value - a.value),
-    );
+        d3
+          .hierarchy(datas)
+          .sum(d => d.value)
+          .sort((a, b) => b.value - a.value),
+      );
   const format = d3.format(',d');
   const color = d3.scaleOrdinal().domain([0, 3]).range(colors);
 

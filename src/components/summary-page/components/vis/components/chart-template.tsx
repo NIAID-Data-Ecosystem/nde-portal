@@ -6,6 +6,7 @@ import * as d3 from 'd3';
 import {
   Box,
   Button,
+  Flex,
   Heading,
   ListItem,
   Select,
@@ -20,6 +21,8 @@ import { fetchSearchResults } from 'src/utils/api';
 import LoadingSpinner from 'src/components/loading';
 import { Error } from 'src/components/error';
 import { useRouter } from 'next/router';
+import { createDataCatalogDataset, getInfectiousAgent, getMeasurementTechnique } from 'src/components/summary-page/components/vis/components/dylan-helpers';
+import BarChart from './dylan-vis';
 
 interface ChartTemplateProps {
   // Stringified query.
@@ -52,6 +55,7 @@ export const ChartTemplate: React.FC<ChartTemplateProps> = ({
     'funding.funder.name',
   ];
 
+
   // This query function is interchangeable for both queries we have below.
   const queryFn = (queryString: string, filters?: {}) => {
     if (typeof queryString !== 'string' && !queryString) {
@@ -61,14 +65,15 @@ export const ChartTemplate: React.FC<ChartTemplateProps> = ({
 
     return fetchSearchResults({
       q: filter_string
-        ? `${
-            queryString === '__all__' ? '' : `${queryString} AND `
-          }${filter_string}`
+        ? `${queryString === '__all__' ? '' : `${queryString} AND `
+        }${filter_string}`
         : `${queryString}`,
       facet_size: 1000,
       facets: facets.join(','),
     });
   };
+
+
 
   /*
   Get Grant names. We might extract this query to "pages/summary.tsx" and just get all the facets we need that are unchanging in one spot. I use a similar query for Filters and will probably need the same for my viz.
@@ -139,7 +144,6 @@ export const ChartTemplate: React.FC<ChartTemplateProps> = ({
       },
     },
   );
-
   // Error state
   if (responseDataError || grantNamesError) {
     return (
@@ -158,12 +162,12 @@ export const ChartTemplate: React.FC<ChartTemplateProps> = ({
   }
 
   return (
-    <div id='chart-template'>
+    <Flex id='chart-template' flexDirection={'column'} justifyContent={'space-around'} alignItems={'center'}>
       {grantNamesIsLoading && (
         <LoadingSpinner isLoading={grantNamesIsLoading}></LoadingSpinner>
       )}
       {grantNames && (
-        <Box color='#fff'>
+        < Box color='#fff'>
           Grants
           <Select
             bg='#fff'
@@ -188,7 +192,8 @@ export const ChartTemplate: React.FC<ChartTemplateProps> = ({
             })}
           </Select>
         </Box>
-      )}
+      )
+      }
 
       <Box w='100%' m={4}>
         {responseDataIsLoading && (
@@ -197,15 +202,14 @@ export const ChartTemplate: React.FC<ChartTemplateProps> = ({
         {responseData && (
           <>
             {/* Total Resources */}
-            <Text color='#fff'>{responseData.total} items</Text>
+            {/* <Text color='#fff'>{responseData.total} items</Text> */}
 
             {/* Measurement techniques */}
             <Box my={2}>
-              <Heading as='h2' size='h6' color='#fff'>
-                Measurement Techniques (
-                {responseData['measurementTechnique.name'].length})
+              <Heading as='h2' size='h6' color='#fff' textAlign={'center'}>
+                Most Popular Measurement Techniques
               </Heading>
-              {responseData['measurementTechnique.name'].length > 0 ? (
+              {getMeasurementTechnique(responseData).length > 0 ? (
                 <UnorderedList
                   ml={0}
                   maxH={'300px'}
@@ -213,7 +217,7 @@ export const ChartTemplate: React.FC<ChartTemplateProps> = ({
                   color='#fff'
                   border='2px solid'
                 >
-                  {responseData['measurementTechnique.name'].map(
+                  {getMeasurementTechnique(responseData).map(
                     (measurementTechnique, i) => (
                       <ListItem
                         key={measurementTechnique.term}
@@ -226,19 +230,29 @@ export const ChartTemplate: React.FC<ChartTemplateProps> = ({
                   )}
                 </UnorderedList>
               ) : (
-                <Text color='white'>
+                <Text color='white' textAlign={'center'}>
                   No measurement techniques available for selection.
                 </Text>
               )}
             </Box>
+          </>
+        )}
+      </Box>
+      <Box w='100%' m={4}>
+        {responseDataIsLoading && (
+          <LoadingSpinner isLoading={responseDataIsLoading}></LoadingSpinner>
+        )}
+        {responseData && (
+          <>
+            {/* Total Resources */}
+            {/* <Text color='#fff'>{responseData.total} items</Text> */}
 
             {/* Infectious Agent */}
             <Box my={2}>
-              <Heading as='h2' size='h6' color='#fff'>
-                Infectious Agent/ Pathogen (
-                {responseData['infectiousAgent.name'].length})
+              <Heading as='h2' size='h6' color='#fff' textAlign={'center'}>
+                Most Popular Infectious Agents/ Pathogens
               </Heading>
-              {responseData['infectiousAgent.name'].length > 0 ? (
+              {getInfectiousAgent(responseData).length > 0 ? (
                 <UnorderedList
                   ml={0}
                   maxH={'300px'}
@@ -246,7 +260,7 @@ export const ChartTemplate: React.FC<ChartTemplateProps> = ({
                   color='#fff'
                   border='2px solid'
                 >
-                  {responseData['infectiousAgent.name'].map(
+                  {getInfectiousAgent(responseData).map(
                     (infectiousAgent, i) => (
                       <ListItem
                         key={infectiousAgent.term}
@@ -259,7 +273,7 @@ export const ChartTemplate: React.FC<ChartTemplateProps> = ({
                   )}
                 </UnorderedList>
               ) : (
-                <Text color='white'>
+                <Text color='white' textAlign={'center'}>
                   No infectious agents available for selection.
                 </Text>
               )}
@@ -267,6 +281,7 @@ export const ChartTemplate: React.FC<ChartTemplateProps> = ({
           </>
         )}
       </Box>
-    </div>
+
+    </Flex >
   );
 };
