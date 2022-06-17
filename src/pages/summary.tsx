@@ -29,6 +29,7 @@ import {
 import { useHasMounted } from 'src/hooks/useHasMounted';
 import { queryFilterObject2String } from 'src/components/filter';
 import { ChartTemplate } from 'src/components/summary-page/components/vis/components/chart-template';
+import NextLink, { LinkProps } from 'next/link';
 
 /*
  [COMPONENT INFO]:
@@ -166,7 +167,6 @@ const SummaryPage: NextPage = () => {
                 {suggestedQueries.map((query, i) => {
                   return (
                     <SearchQueryLink
-                      key={query.title}
                       title={query.title}
                       onClick={() => {
                         const str = queryFilterObject2String({

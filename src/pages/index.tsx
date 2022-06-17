@@ -210,15 +210,19 @@ const Home: NextPage = () => {
               </Text>
               {sample_queries.map((query, i) => {
                 return (
-                  <SearchQueryLink
+                  <NextLink
                     key={query.title}
-                    title={query.title}
                     href={{
                       pathname: `/search`,
                       query: { q: query.searchTerms.join(' OR ') },
                     }}
-                    display={[i > 2 ? 'none' : 'block', 'block']}
-                  />
+                    passHref
+                  >
+                    <SearchQueryLink
+                      title={query.title}
+                      display={[i > 2 ? 'none' : 'block', 'block']}
+                    />
+                  </NextLink>
                 );
               })}
             </Flex>
