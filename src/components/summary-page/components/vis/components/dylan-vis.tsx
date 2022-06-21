@@ -147,17 +147,19 @@ const DylanVis = ({ queryString, filters, updateFilters }) => {
                     autoSkip: true,
                     color: 'white',
                     font: {
-                        size: 14
+                        size: 16
                     }
                 }
             },
             x: {
                 ticks: {
                     autoSkip: true,
+                    // autoSkip: true,
+                    maxTicksLimit: 10,
                     color: 'white',
                     font: {
-                        size: 14
-                    }
+                        size: 16
+                    },
                 },
             }
         },
@@ -166,7 +168,7 @@ const DylanVis = ({ queryString, filters, updateFilters }) => {
                 labels: {
                     color: 'white',
                     font: {
-                        size: 18
+                        size: 20
                     },
                 },
                 onClick: (e) => e
@@ -181,8 +183,9 @@ const DylanVis = ({ queryString, filters, updateFilters }) => {
                 anchor: "end",
                 align: "end",
                 font: {
-                    size: 14
-                }
+                    size: 16
+                },
+                padding: 2
             }
         },
         layout: {
@@ -208,15 +211,18 @@ const DylanVis = ({ queryString, filters, updateFilters }) => {
                     }
                 },
                 time: {
-                    tooltipFormat: 'MM.DD.YYYY',
+                    tooltipFormat: '[Q]Q - YYYY',
                     unit: 'quarter',
                     round: 'quarter'
                 },
                 ticks: {
                     color: 'white',
                     font: {
-                        size: 14
+                        size: 16
                     },
+                    autoSkip: true,
+                    // maxTicksLimit: 18,
+
                 },
             },
             y: {
@@ -226,7 +232,7 @@ const DylanVis = ({ queryString, filters, updateFilters }) => {
                 ticks: {
                     color: 'white',
                     font: {
-                        size: 14
+                        size: 16
                     }
                 },
             },
@@ -236,7 +242,7 @@ const DylanVis = ({ queryString, filters, updateFilters }) => {
                 labels: {
                     color: 'white',
                     font: {
-                        size: 18
+                        size: 20
                     }
                 },
                 onClick: (e) => e
@@ -259,12 +265,15 @@ const DylanVis = ({ queryString, filters, updateFilters }) => {
                     alignItems={'center'}
                     bg='tertiary.800'
                     overflow={'hidden'}
+                    minW={536}
+                    minH={500}
                 >
                     <Box
                         width={'100%'}
                         minH={0}
-                        height={{ xl: '25vh', base: '20vh' }}
-                        minW={0}
+                        // height={{ xl: '30vh', base: '20vh' }}
+                        height={450}
+                        minW={547}
                         order={{ xl: 1, base: 2 }}
                     >
                         <DylanBarChart
@@ -274,9 +283,11 @@ const DylanVis = ({ queryString, filters, updateFilters }) => {
                     </Box>
                     <Box
                         width={'100%'}
-                        minW={0}
+                        minW={359}
                         minH={0}
-                        height={{ xl: '35vh', base: '30vh' }}
+                        height={450}
+
+                        // height={{ xl: '35vh', base: '30vh' }}
                         order={{ xl: 2, base: 1 }}
                     >
                         <DylanDoughnutChart
@@ -288,7 +299,9 @@ const DylanVis = ({ queryString, filters, updateFilters }) => {
                         width={'100%'}
                         minW={0}
                         minH={0}
-                        height={{ xl: '25vh', base: '20vh' }}
+                        height={450}
+
+                        // height={{ xl: '30vh', base: '20vh' }}
                         order={{ xl: 3, base: 2 }}
                     >
                         <DylanBarChart

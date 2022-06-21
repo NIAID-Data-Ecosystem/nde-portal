@@ -11,12 +11,33 @@ function getDataCatalog(responseData) {
                 // if (catalogObj[obj['term']]) {
                 //     catalogObj[obj['term']] += obj['count']
                 // } else {
-                catalogObj[obj['term']] = obj['count']
+                if (obj['term'] === 'Omics Discovery Index (OmicsDI)') {
+                    catalogObj['Omics Discovery Index'] = obj['count']
+                } else {
+                    catalogObj[obj['term']] = obj['count']
+                }
                 // }
             });
         }
     }
+    // this
+
+    // const sorted = Object.fromEntries(Object.entries(catalogObj).sort((a, b) => b[1] - a[1]))
+    // const topResults = Object.fromEntries(
+    //     Object.entries(sorted).slice(0, 6)
+    // )
+    // const other = Object.fromEntries(
+    //     Object.entries(sorted).slice(6))
+    // let otherTotal = 0
+    // Object.entries(other).forEach(key => {
+    //     otherTotal += key[1]
+    // });
+    // topResults['Other'] = otherTotal
+    // return topResults
+
+    // or
     return Object.fromEntries(Object.entries(catalogObj).sort((a, b) => b[1] - a[1]))
+
 }
 
 export function createDataCatalogDataset(responseData) {
@@ -75,7 +96,11 @@ function getType(responseData) {
                 //     console.log(obj)
                 //     catalogObj[obj['term']] = obj['count']
                 // }
-                catalogObj[obj['term']] = obj['count']
+                if (obj['term'] === 'ComputationalTool') {
+                    catalogObj["Computational Tool"] = obj['count']
+                } else {
+                    catalogObj[obj['term']] = obj['count']
+                }
             });
         }
     }
@@ -117,6 +142,7 @@ export function createTypeDataset(responseData) {
                 'rgb(5,255,0)',
             ],
             borderWidth: 1,
+
         }],
         // funder: funder
     };
@@ -132,22 +158,24 @@ function getDate(responseData) {
             // if (catalogObj[obj['term']]) {
             //     catalogObj[obj['term']] += obj['count']
             // } else {
-            // if (!moment(obj['term']).isAfter()) {
-            const rounded = moment(obj['term']).toDate()
-            console.log(rounded)
-            catalogObj[obj['term']] ? catalogObj[obj['term']] += obj['count'] : catalogObj[obj['term']] = obj['count']
-            // }
+            if (!moment(obj['term']).isAfter()) {
+                const rounded = moment(obj['term']).startOf('quarter').toISOString()
+                catalogObj[rounded] ? catalogObj[rounded] += obj['count'] : catalogObj[rounded] = obj['count']
+                // catalogObj[rounded] = obj['count']
+
+            }
             // }
         });
     }
     return Object.fromEntries(Object.entries(catalogObj).sort((a, b) => a[0].localeCompare(b[0])))
+    return catalogObj
 }
 
 export function createDateDataset(responseData) {
     const date = {
         labels: Object.keys(getDate(responseData)).map(key => key.substring(0, 10)),
         datasets: [{
-            barThickness: 6,
+            // barThickness: 6,
             label: 'Catalog Release Date',
             data: Object.entries(getDate(responseData)).map(x => x[1]),
             // radius: Object.entries(getDate()).map(x => x[1] < 3 ? 4 : x[1] * 2),
@@ -180,7 +208,7 @@ export function createDateDataset(responseData) {
                 // 'rgb(5,255,0)',
             ],
             borderWidth: 1,
-            maxBarThickness: 40,
+            maxBarThickness: 30,
         }],
 
         // funder: funder

@@ -37,7 +37,7 @@ const DylanDoughnutChart = ({ data }) => {
                 labels: {
                     color: 'white',
                     font: {
-                        size: 18
+                        size: 20
                     }
                 },
                 onClick: (e) => e
@@ -74,19 +74,25 @@ const DylanDoughnutChart = ({ data }) => {
         // height={{ xl: '40vh', md: '20vh' }}
         >
             {data['datasets'][0]['data'][0] &&
-                <Center
+                <Flex
                     position="absolute"
                     zIndex={1}
                     mt={5}
                     color={'white'}
-                    fontSize={{ xl: 24, md: 20 }}
+                    fontSize={{ xl: '32', sm: '30' }}
+                    flexDir={'column'}
                 >
-                    <CountUp
-                        separator=","
-                        end={data['datasets'][0]['data'].reduce((a, b) => a + b, 0)}
-                        suffix={' Total Records'}
-                    />
-                </Center>
+                    <Center>
+                        <CountUp
+                            duration={1.6}
+                            separator=","
+                            end={data['datasets'][0]['data'].reduce((a, b) => a + b, 0)}
+                        />
+                    </Center>
+                    <Center>
+                        Total Records
+                    </Center>
+                </Flex>
             }
             <Center
                 width={'100%'}
