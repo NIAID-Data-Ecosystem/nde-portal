@@ -43,6 +43,7 @@ const Main: React.FC<Main> = ({ sourceData }) => {
               dateModified: source.version,
               numberOfRecords: source.stats[k] || 0,
               schema: source.sourceInfo.schema,
+              url: source.sourceInfo.url
             });
           }
         }),
@@ -227,8 +228,7 @@ const Main: React.FC<Main> = ({ sourceData }) => {
                 </Box>
               </Box>
               {includedInDataCatalogName && (
-                <Flex justifyContent='center' my={4}>
-                  {/* [TO DO]: add repo source url */}
+                <Flex justifyContent='center' my={4} flexDir={{ sm: 'column', lg: 'row' }}>
                   <NextLink
                     href={{
                       pathname: `/search`,
@@ -242,11 +242,29 @@ const Main: React.FC<Main> = ({ sourceData }) => {
                       wordBreak='break-word'
                       whiteSpace='normal'
                       lineHeight='base'
+                      textAlign='center'
                       m={4}
                     >
                       Search {sourceObj.name} records
                     </Button>
                   </NextLink>
+                  <NextLink
+                    href={{
+                      pathname: `${sourceObj.url}`,
+                    }}
+                    passHref
+                  >
+                    <Button
+                      wordBreak='break-word'
+                      whiteSpace='normal'
+                      lineHeight='base'
+                      m={4}
+                      textAlign='center'
+                    >
+                      View {sourceObj.name} Site
+                    </Button>
+                  </NextLink>
+
                 </Flex>
               )}
             </Box>
