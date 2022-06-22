@@ -37,13 +37,14 @@ const Main: React.FC<Main> = ({ sourceData }) => {
         Object.entries(repos).map(([k, source]) => {
           if (source.sourceInfo) {
             return fetchSources({
+              id: source.sourceInfo.identifier,
               sourcePath: source.code.file,
               name: source.sourceInfo.name,
               description: source.sourceInfo.description,
               dateModified: source.version,
               numberOfRecords: source.stats[k] || 0,
               schema: source.sourceInfo.schema,
-              url: source.sourceInfo.url
+              url: source.sourceInfo.url,
             });
           }
         }),
@@ -52,7 +53,6 @@ const Main: React.FC<Main> = ({ sourceData }) => {
     },
     { refetchOnWindowFocus: false },
   );
-
   if (error) {
     return (
       <Error
@@ -146,15 +146,15 @@ const Main: React.FC<Main> = ({ sourceData }) => {
                       Hide Schema
                     </Button>
                   )) || (
-                      <Button
-                        id={`${sourceObj.name}-show-button`}
-                        onClick={() => schemaIdFunc(sourceObj.name)}
-                        my={2}
-                        variant='outline'
-                      >
-                        Show Schema
-                      </Button>
-                    )}
+                    <Button
+                      id={`${sourceObj.name}-show-button`}
+                      onClick={() => schemaIdFunc(sourceObj.name)}
+                      my={2}
+                      variant={'outline'}
+                    >
+                      Show Schema
+                    </Button>
+                  )}
                   <Collapse in={schemaId.includes(sourceObj.name)}>
                     {schemaId.includes(sourceObj.name) && (
                       <Box
@@ -226,28 +226,15 @@ const Main: React.FC<Main> = ({ sourceData }) => {
                     {new Date(sourceObj.dateCreated).toDateString()}
                   </Heading>
                 </Box>
-              </Box>
-              {includedInDataCatalogName && (
-                <Flex justifyContent='center' my={4} flexDir={{ sm: 'column', lg: 'row' }}>
-                  <NextLink
-                    href={{
-                      pathname: `/search`,
-                      query: {
-                        q: `(includedInDataCatalog.name:"${includedInDataCatalogName}")`,
-                      },
-                    }}
-                    passHref
-                  >
-                    <Button
-                      wordBreak='break-word'
-                      whiteSpace='normal'
-                      lineHeight='base'
-                      textAlign='center'
-                      m={4}
-                    >
-                      Search {sourceObj.name} records
-                    </Button>
-                  </NextLink>
+                <Flex
+                  justifyContent='center'
+                  margin='0 auto'
+                  my={4}
+                  flexDirection={{ base: 'column', sm: 'row', lg: 'row' }}
+                  alignItems='center'
+                  flexWrap='wrap'
+                  maxW={600}
+                >
                   <NextLink
                     href={{
                       pathname: `${sourceObj.url}`,
@@ -257,16 +244,40 @@ const Main: React.FC<Main> = ({ sourceData }) => {
                     <Button
                       wordBreak='break-word'
                       whiteSpace='normal'
-                      lineHeight='base'
-                      m={4}
+                      m={[0, 2]}
+                      mt={4}
                       textAlign='center'
+                      isExternal
+                      flex={1}
+                      minW={['unset', 400]}
+                      variant='outline'
                     >
                       View {sourceObj.name} Site
                     </Button>
                   </NextLink>
-
+                  <NextLink
+                    href={{
+                      pathname: `/search`,
+                      query: {
+                        q: `(includedInDataCatalog.name:"${sourceObj.id}")`,
+                      },
+                    }}
+                    passHref
+                  >
+                    <Button
+                      wordBreak='break-word'
+                      whiteSpace='normal'
+                      textAlign='center'
+                      m={[0, 2]}
+                      mt={4}
+                      flex={1}
+                      minW={['unset', 400]}
+                    >
+                      Search {sourceObj.name} records
+                    </Button>
+                  </NextLink>
                 </Flex>
-              )}
+              </Box>
             </Box>
           );
         })
