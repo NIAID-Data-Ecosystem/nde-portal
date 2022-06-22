@@ -261,12 +261,12 @@ const CardDetails: React.FC<CardDetailsProps> = ({ data }) => {
                     label='Infectious Disease'
                     glyph='infectiousDisease'
                   >
-                    {(infectiousDisease || healthCondition) && (
+                    {infectiousDisease && (
                       <>
                         <UnorderedList ml={0}>
-                          {healthCondition && (
+                          {/* {healthCondition && (
                             <ListItem>{healthCondition}</ListItem>
-                          )}
+                          )} */}
                           {infectiousDisease?.map((m, i) => {
                             const name = Array.isArray(m.name)
                               ? m.name.join(', ')

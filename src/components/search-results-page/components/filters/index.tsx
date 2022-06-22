@@ -130,18 +130,22 @@ export const Filters: React.FC<Filters> = ({
     items: FacetTerm[],
     facets: { data?: FacetTerm[]; isLoading?: boolean },
   ) => {
-    return items.map(({ term, count }) => {
-      let updatedCount;
-      if (!facets?.isLoading && facets?.data) {
-        const updated = facets?.data.find(f => f.term === term);
-        updatedCount = updated ? updated?.count || count : 0;
-      }
+    return items
+      .map(({ term, count }) => {
+        let updatedCount;
+        if (!facets?.isLoading && facets?.data) {
+          const updated = facets?.data.find(f => f.term === term);
+          updatedCount = updated ? updated?.count : 0;
+        }
 
-      return {
-        count: updatedCount,
-        term: prop === '@type' ? formatType(term) : term,
-      };
-    });
+        return {
+          count: updatedCount,
+          term: prop === '@type' ? formatType(term) : term,
+        };
+      })
+      .sort((a, b) => {
+        return (b?.count || 0) - (a?.count || 0);
+      });
   };
 
   // on mount open the accordion where the selected filter resides

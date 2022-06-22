@@ -11,7 +11,9 @@ const Sidebar: React.FC<Sidebar> = ({ data }) => {
   const sourceNames = [];
 
   for (const source in data.src) {
-    sourceNames.push([data.src[source].sourceInfo.name, source]);
+    if (data.src[source].sourceInfo) {
+      sourceNames.push([data.src[source].sourceInfo.name, source]);
+    }
   }
 
   sourceNames.sort((a, b) => a[0].localeCompare(b[0]));

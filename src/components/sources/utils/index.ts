@@ -8,6 +8,7 @@ interface fetchSourcesArgs {
   dateModified: MetadataSource['version'];
   numberOfRecords: number;
   schema: MetadataSource['sourceInfo']['schema'];
+  url: MetadataSource['sourceInfo']['url'];
 }
 
 export interface SourceResponse {
@@ -17,6 +18,7 @@ export interface SourceResponse {
   dateModified: MetadataSource['version'];
   numberOfRecords: number;
   schema: MetadataSource['sourceInfo']['schema'];
+  url: MetadataSource['sourceInfo']['url'];
 }
 
 export const fetchSources = async ({

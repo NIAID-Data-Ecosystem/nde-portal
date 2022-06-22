@@ -35,17 +35,20 @@ const Main: React.FC<Main> = ({ sourceData }) => {
     async () => {
       const data = await Promise.all(
         Object.entries(repos).map(([k, source]) => {
-          return fetchSources({
-            sourcePath: source.code.file,
-            name: source.sourceInfo.name,
-            description: source.sourceInfo.description,
-            dateModified: source.version,
-            numberOfRecords: source.stats[k] || 0,
-            schema: source.sourceInfo.schema,
-          });
+          if (source.sourceInfo) {
+            return fetchSources({
+              sourcePath: source.code.file,
+              name: source.sourceInfo.name,
+              description: source.sourceInfo.description,
+              dateModified: source.version,
+              numberOfRecords: source.stats[k] || 0,
+              schema: source.sourceInfo.schema,
+              url: source.sourceInfo.url
+            });
+          }
         }),
       );
-      return data;
+      return data.filter(x => x !== undefined);
     },
     { refetchOnWindowFocus: false },
   );
@@ -143,15 +146,15 @@ const Main: React.FC<Main> = ({ sourceData }) => {
                       Hide Schema
                     </Button>
                   )) || (
-                    <Button
-                      id={`${sourceObj.name}-show-button`}
-                      onClick={() => schemaIdFunc(sourceObj.name)}
-                      my={2}
-                      variant='outline'
-                    >
-                      Show Schema
-                    </Button>
-                  )}
+                      <Button
+                        id={`${sourceObj.name}-show-button`}
+                        onClick={() => schemaIdFunc(sourceObj.name)}
+                        my={2}
+                        variant='outline'
+                      >
+                        Show Schema
+                      </Button>
+                    )}
                   <Collapse in={schemaId.includes(sourceObj.name)}>
                     {schemaId.includes(sourceObj.name) && (
                       <Box
@@ -225,8 +228,7 @@ const Main: React.FC<Main> = ({ sourceData }) => {
                 </Box>
               </Box>
               {includedInDataCatalogName && (
-                <Flex justifyContent='center' my={4}>
-                  {/* [TO DO]: add repo source url */}
+                <Flex justifyContent='center' my={4} flexDir={{ sm: 'column', lg: 'row' }}>
                   <NextLink
                     href={{
                       pathname: `/search`,
@@ -240,11 +242,29 @@ const Main: React.FC<Main> = ({ sourceData }) => {
                       wordBreak='break-word'
                       whiteSpace='normal'
                       lineHeight='base'
+                      textAlign='center'
                       m={4}
                     >
                       Search {sourceObj.name} records
                     </Button>
                   </NextLink>
+                  <NextLink
+                    href={{
+                      pathname: `${sourceObj.url}`,
+                    }}
+                    passHref
+                  >
+                    <Button
+                      wordBreak='break-word'
+                      whiteSpace='normal'
+                      lineHeight='base'
+                      m={4}
+                      textAlign='center'
+                    >
+                      View {sourceObj.name} Site
+                    </Button>
+                  </NextLink>
+
                 </Flex>
               )}
             </Box>
