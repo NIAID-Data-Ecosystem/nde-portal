@@ -3,7 +3,7 @@ import { useRouter } from 'next/router';
 import { useQuery } from 'react-query';
 import Empty from 'src/components/empty';
 import { PageContent } from 'src/components/page-container';
-import { fetchSearchResults } from 'src/utils/api';
+import { fetchAllSearchResults, fetchSearchResults } from 'src/utils/api';
 import { encodeString } from 'src/utils/querystring-helpers';
 import {
   FetchSearchResultsResponse,
@@ -114,6 +114,7 @@ const SearchResultsPage = () => {
   );
 
   // Get query params from url params
+
   const { isLoading, error, data } = useQuery<
     FetchSearchResultsResponse | undefined,
     Error
@@ -148,9 +149,43 @@ const SearchResultsPage = () => {
       });
     },
     // Don't refresh everytime window is touched.
-    { refetchOnWindowFocus: false },
+    { refetchOnWindowFocus: false, enabled: true },
   );
 
+  // Get all data for download
+  const {
+    isLoading: metadataIsLoading,
+    error: metadataError,
+    data: metadataData,
+    refetch,
+    isRefetching,
+    isFetching,
+  } = useQuery<any | undefined, Error>(
+    [
+      'all-search-results',
+      {
+        q: queryString,
+        filters: selectedFilters,
+      },
+    ],
+    () => {
+      if (typeof queryString !== 'string' && !queryString) {
+        return;
+      }
+      const filter_string = queryFilterObject2String(selectedFilters);
+
+      return fetchAllSearchResults({
+        q: filter_string
+          ? `${
+              queryString === '__all__' ? '' : `${queryString} AND `
+            }${filter_string}`
+          : `${queryString}`,
+      });
+    },
+    // Don't refresh everytime window is touched.
+    { refetchOnWindowFocus: false, enabled: false },
+  );
+  console.log('DATA', metadataData, isFetching);
   // Set total results value
   useEffect(() => {
     setTotal(prev => {
@@ -291,6 +326,13 @@ const SearchResultsPage = () => {
                 {displayQueryString(queryString)}
               </Heading>
             </Heading>
+            {metadataError && (
+              <Box my={2}>
+                <Banner status='error'>
+                  Something went with the download. Try again.
+                </Banner>
+              </Box>
+            )}
             {/* Chips with the names of the currently selected filters */}
             <FilterTags
               tags={applied_filters}
@@ -378,14 +420,23 @@ const SearchResultsPage = () => {
                       <Flex w='100%' justifyContent='flex-end' pb={4}>
                         <DownloadMetadata
                           exportName={'nde-results'}
-                          metadata={data?.results.map(d => d.rawData) || []}
+                          loadMetadata={() =>
+                            refetch().then(response => response.data?.results)
+                          }
                           colorScheme='primary'
                           variant='outline'
-                          isLoading={isLoading}
+                          isLoading={isFetching}
                         >
                           Download Metadata
                         </DownloadMetadata>
+                        {isFetching && <Text></Text>}
                       </Flex>
+                      <Collapse in={isFetching}>
+                        <Text fontSize='xs' fontStyle='italic'>
+                          Note: Large sets of metadata may take along time to
+                          download.
+                        </Text>
+                      </Collapse>
                       <SortResults
                         sortOptions={sort_options}
                         sortOrder={sortOrder}
