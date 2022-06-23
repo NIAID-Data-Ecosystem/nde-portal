@@ -30,6 +30,7 @@ interface Params {
   facet_size?: number;
   facets?: string;
   sort?: string;
+  scroll_id?: string;
 }
 
 export const fetchSearchResults = async (params: Params) => {
@@ -60,6 +61,50 @@ export const fetchSearchResults = async (params: Params) => {
   } catch (err) {
     throw err;
   }
+};
+
+// Fetches all search results for a given query
+export const fetchAllSearchResults = async (queryParams: Params) => {
+  let total = 0;
+  let allResults: any[] = [];
+
+  const fetchSinglePageSearchResults: any = async (
+    queryParams: Params,
+    page: number = 0,
+    scroll_id?: string | null,
+  ) => {
+    if (!process.env.NEXT_PUBLIC_API_URL) {
+      throw new Error('API url undefined');
+    }
+
+    try {
+      let url = `${process.env.NEXT_PUBLIC_API_URL}/query?`;
+      let params = { ...queryParams, fetch_all: true, page };
+
+      // scroll id for fetching the next page of data
+      if (scroll_id) {
+        params.scroll_id = scroll_id;
+      }
+
+      const { data } = await axios.get(url, { params });
+
+      // if there are no more results to return, return all the results.
+      if (!data.hits || !data._scroll_id || data?.success === false) {
+        return { results: allResults, total };
+      }
+      if (!total) {
+        total = data.total;
+      }
+      allResults = [...allResults, ...data.hits];
+
+      // fetch again until no more results.
+      return fetchSinglePageSearchResults(params, page + 1, data._scroll_id);
+    } catch (err) {
+      throw err;
+    }
+  };
+
+  return await fetchSinglePageSearchResults(queryParams);
 };
 
 // get metadata

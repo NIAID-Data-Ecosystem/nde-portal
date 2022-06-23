@@ -3,6 +3,7 @@ import { MetadataSource } from 'src/utils/api/types';
 
 interface fetchSourcesArgs {
   sourcePath: string;
+  id: MetadataSource['sourceInfo']['identifier'];
   name: MetadataSource['sourceInfo']['name'];
   description: MetadataSource['sourceInfo']['description'];
   dateModified: MetadataSource['version'];
@@ -13,6 +14,7 @@ interface fetchSourcesArgs {
 
 export interface SourceResponse {
   dateCreated: string;
+  id: MetadataSource['sourceInfo']['identifier'];
   name: MetadataSource['sourceInfo']['name'];
   description: MetadataSource['sourceInfo']['description'];
   dateModified: MetadataSource['version'];

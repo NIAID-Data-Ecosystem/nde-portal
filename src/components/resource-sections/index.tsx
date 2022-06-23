@@ -137,7 +137,7 @@ const Sections = ({
               <>
                 <Flex w='100%' justifyContent='flex-end' pb={4}>
                   <DownloadMetadata
-                    metadata={data.rawData}
+                    loadMetadata={async () => await data.rawData}
                     colorScheme='secondary'
                     exportName={data.rawData['_id']}
                   >
