@@ -8,7 +8,7 @@ import {
   SearchQueryLink,
 } from 'src/components/page-container';
 import { assetPrefix } from 'next.config';
-import { Flex, SearchInput, Text } from 'nde-design-system';
+import { Box, Flex, SearchInput, Text } from 'nde-design-system';
 import {
   SummaryTable,
   Filters,
@@ -19,6 +19,7 @@ import {
 } from 'src/components/summary-page';
 import { useHasMounted } from 'src/hooks/useHasMounted';
 import { queryFilterObject2String } from 'src/components/filter';
+import { FilterTags } from 'src/components/search-results-page/components/filters/components/tags';
 
 /*
  [COMPONENT INFO]:
@@ -104,7 +105,8 @@ const SummaryPage: NextPage = () => {
   /*
   This hook updates the url to reflect the currently selected filters and keeps track of filters state.
   */
-  const [filters, updateFilters] = useFilterString(filtersConfig);
+  const [filters, updateFilters, removeAllFilters] =
+    useFilterString(filtersConfig);
 
   // [queryString] formatted for display purposes.
   const formatted_query = displayQueryString(queryString) || '';
@@ -181,12 +183,32 @@ const SummaryPage: NextPage = () => {
         </section>
         <section id='search-filters'>
           <PageContent minH='unset' bg='white'>
-            <Filters
-              queryString={queryString}
-              filters={filters}
-              facets={Object.keys(filtersConfig).join(',')}
-              handleSelectedFilters={updateFilters}
-            />
+            {/* Filters */}
+            <Box w='100%'>
+              <Flex>
+                {Object.values(filters).flat().length > 0 && (
+                  <FilterTags
+                    tags={Object.entries(filters)}
+                    removeAllFilters={() => removeAllFilters()}
+                    removeSelectedFilter={(
+                      name: string,
+                      value: string | number,
+                    ) => {
+                      const updatedFilter = {
+                        [name]: filters[name].filter(v => v !== value),
+                      };
+                      updateFilters(updatedFilter);
+                    }}
+                  />
+                )}
+              </Flex>
+              <Filters
+                queryString={queryString}
+                filters={filters}
+                facets={Object.keys(filtersConfig).join(',')}
+                handleSelectedFilters={updateFilters}
+              />
+            </Box>
           </PageContent>
         </section>
 
