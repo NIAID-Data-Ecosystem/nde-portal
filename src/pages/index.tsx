@@ -32,7 +32,7 @@ import {
   StyledSectionButtonGroup,
 } from 'src/components/home/styles';
 import { assetPrefix } from 'next.config';
-import NextLink, { LinkProps } from 'next/link';
+import NextLink from 'next/link';
 
 const sample_queries = [
   {

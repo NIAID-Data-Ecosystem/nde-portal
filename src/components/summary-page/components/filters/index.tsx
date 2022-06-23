@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React from 'react';
 import { useQuery } from 'react-query';
 import { FacetTerm, FetchSearchResultsResponse } from 'src/utils/api/types';
@@ -128,7 +129,12 @@ export const Filters: React.FC<FiltersProps> = ({
   };
 
   return (
-    <Accordion allowMultiple w='100%' bg='#fff' px={[0, 0, 6]}>
+    <Accordion
+      allowMultiple
+      w='100%'
+      bg='#fff'
+      d={{ base: 'block', xl: 'flex' }}
+    >
       {facets.split(',').map(prop => {
         return (
           <AccordionItem
@@ -137,14 +143,18 @@ export const Filters: React.FC<FiltersProps> = ({
             borderColor='page.alt'
             borderTopWidth='2px'
             flex={1}
+            bg='page.alt'
           >
             {({ isExpanded }) => (
               <>
                 <h2>
                   <AccordionButton
                     borderLeft='4px solid'
-                    borderColor='gray.200'
+                    borderBottom='1px solid'
+                    borderBottomColor='page.alt'
+                    borderLeftColor='gray.200'
                     py={4}
+                    bg='white'
                     transition='all 0.2s linear'
                     _expanded={{
                       borderLeftColor: 'accent.bg',
@@ -177,6 +187,7 @@ export const Filters: React.FC<FiltersProps> = ({
                 <AccordionPanel
                   px={2}
                   py={4}
+                  bg='#fff'
                   borderLeft='4px solid'
                   borderLeftColor='accent.bg'
                 >

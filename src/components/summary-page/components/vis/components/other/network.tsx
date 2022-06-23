@@ -1,7 +1,15 @@
+// @ts-nocheck
 import React, { useEffect, useRef } from 'react';
 import * as d3 from 'd3';
-import { FormattedResource } from 'src/utils/api/types';
+import {
+  FetchSearchResultsResponse,
+  FormattedResource,
+} from 'src/utils/api/types';
 import { Box, Divider, Flex, Heading, Text, theme } from 'nde-design-system';
+import { SelectedFilterType } from 'src/components/summary-page';
+import { useQuery } from 'react-query';
+import { queryFilterObject2String } from 'src/components/filter';
+import { fetchSearchResults } from 'src/utils/api';
 
 /*
  [TO DO]:
@@ -29,11 +37,13 @@ const PARAMETERS = {
 };
 
 interface NetworkProps {
-  data: FormattedResource[];
-  // filterByType: (type: string) => void;
+  // Stringified query.
+  queryString: string;
+  // Filters object
+  filters: SelectedFilterType;
 }
 
-export const Network: React.FC<NetworkProps> = ({ data }) => {
+export const Network: React.FC<NetworkProps> = ({ queryString, filters }) => {
   const svgRef = useRef(null);
   const {
     width,
@@ -48,13 +58,47 @@ export const Network: React.FC<NetworkProps> = ({ data }) => {
   } = PARAMETERS;
 
   /****
-   * Process Data
+   * Query Data
    *
    */
+
+  const { data, isLoading, error } = useQuery<
+    FetchSearchResultsResponse | undefined,
+    Error
+  >(
+    [
+      'search-results',
+      {
+        q: queryString,
+        filters,
+      },
+    ],
+    () => {
+      if (typeof queryString !== 'string' && !queryString) {
+        return;
+      }
+      const filter_string = queryFilterObject2String(filters);
+      return fetchSearchResults({
+        q: filter_string
+          ? `${
+              queryString === '__all__' ? '' : `${queryString} AND `
+            }${filter_string}`
+          : `${queryString}`,
+        size: 1000,
+        from: '0',
+      });
+    },
+    { refetchOnWindowFocus: false },
+  );
+
+  /****
+   * Process Data
+   */
+  const { results } = data || { results: [] };
   const infectiousAgentsList: string[] = [];
 
   const nodes = Object.values(
-    data.reduce((r, d, i) => {
+    results.reduce((r, d, i) => {
       if (d.infectiousAgent) {
         d.infectiousAgent.map(t => {
           const infectious_agents = Array.isArray(t.name) ? t.name : [t.name];
@@ -102,8 +146,9 @@ export const Network: React.FC<NetworkProps> = ({ data }) => {
       return r;
     }, {} as { [key: string]: { group: string; id: string; ia: string; name: string; numDatasets: number; radius: number } }),
   );
+
   const links = Object.values(
-    data.reduce((r, d, i) => {
+    results.reduce((r, d, i) => {
       if (d.infectiousAgent) {
         d.infectiousAgent.map(t => {
           const infectious_agents = Array.isArray(t.name) ? t.name : [t.name];
@@ -135,7 +180,7 @@ export const Network: React.FC<NetworkProps> = ({ data }) => {
   );
 
   /****
-   * Network
+   * D3
    */
   const colorScale = d3
     .scaleOrdinal()

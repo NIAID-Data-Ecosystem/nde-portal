@@ -1,7 +1,7 @@
+// @ts-nocheck
 import * as d3 from 'd3';
 import { theme } from 'nde-design-system';
 import React, { useRef, useEffect, useCallback, createRef } from 'react';
-// @ts-nocheck
 
 const PARAMETERS = {
   width: 1205,

@@ -3,22 +3,22 @@ import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import {
   PageContainer,
+  PageContent,
   PageHeader,
   SearchQueryLink,
 } from 'src/components/page-container';
 import { assetPrefix } from 'next.config';
-import { Box, Flex, SearchInput, Text } from 'nde-design-system';
+import { Flex, SearchInput, Text } from 'nde-design-system';
 import {
   SummaryTable,
   Filters,
   displayQueryString,
   useFilterString,
   useQueryString,
-  PieChart,
+  DylanVis,
 } from 'src/components/summary-page';
 import { useHasMounted } from 'src/hooks/useHasMounted';
 import { queryFilterObject2String } from 'src/components/filter';
-import NextLink, { LinkProps } from 'next/link';
 
 /*
  [COMPONENT INFO]:
@@ -53,6 +53,12 @@ const SummaryPage: NextPage = () => {
         'AI135995',
         'U19AI135964',
         'AI135964',
+        'U01 AI124319',
+        'U01AI111598',
+        'U19 AI106761',
+        'U19AI106754',
+        'U19AI106772',
+        'HHSN272201200031C',
       ],
     },
     {
@@ -156,6 +162,7 @@ const SummaryPage: NextPage = () => {
                 {suggestedQueries.map((query, i) => {
                   return (
                     <SearchQueryLink
+                      key={i}
                       title={query.title}
                       onClick={() => {
                         const str = queryFilterObject2String({
@@ -172,64 +179,26 @@ const SummaryPage: NextPage = () => {
             </>
           </PageHeader>
         </section>
+        <section id='search-filters'>
+          <PageContent minH='unset' bg='white'>
+            <Filters
+              queryString={queryString}
+              filters={filters}
+              facets={Object.keys(filtersConfig).join(',')}
+              handleSelectedFilters={updateFilters}
+            />
+          </PageContent>
+        </section>
 
         {/* Visualizations */}
         <section id='data-visualizations'>
-          <Box w='100%' p={6} bg='tertiary.900'>
-            <Flex flexWrap={'wrap'}>
-              <Flex
-                p={6}
-                minW='400px'
-                justifyContent='center'
-                alignItems='center'
-                flex={1}
-                bg='tertiary.800'
-              >
-                <PieChart queryString={queryString} filters={filters} />
-              </Flex>
-              <Flex
-                color='white'
-                flex={1}
-                p={6}
-                minW='400px'
-                justifyContent='center'
-                alignItems='center'
-              >
-                [TO DO] : datasets by date histogram - Dropdowns for:
-                measurement technique, grant
-              </Flex>
-            </Flex>
-          </Box>
-          {/* <Center my={6}>
-              <Divider w='90%' />
-            </Center> */}
-          {/* Zoomable Packing Circle */}
-          {/* <Box w={'100%'} h={1600} mb={10}>
-              {data?.results && <CirclePacking data={data.results} />}
-            </Box> */}
-
-          {/* Clustered Network graph */}
-          {/* <Box w={'100%'} h={980}>
-              {data?.results && <Network data={data.results} />}
-            </Box> */}
-          {/* Clustered Network no labels */}
-          {/* <Box w={'100%'} h={980}>
-              {data?.results && <NetworkNoLabels data={data.results} />}
-            </Box> */}
-
-          {/* Original Network graph */}
-          {/* <Box w={'100%'} h={980} border='2px solid' borderColor='gray.200'>
-              {data?.results && <NetworkGraph data={data.results} />}
-            </Box> */}
-          {/* </Box> */}
-        </section>
-        <section id='search-filters'>
-          <Filters
-            queryString={queryString}
-            filters={filters}
-            facets={Object.keys(filtersConfig).join(',')}
-            handleSelectedFilters={updateFilters}
-          />
+          <PageContent w='100%' p={6} bg='tertiary.900' minH={0}>
+            <DylanVis
+              queryString={queryString}
+              filters={filters}
+              updateFilters={updateFilters}
+            />
+          </PageContent>
         </section>
 
         {/* SummaryTable */}

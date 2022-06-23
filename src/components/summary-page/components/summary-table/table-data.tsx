@@ -4,7 +4,6 @@ import { Button, Link, Tag, Text } from 'nde-design-system';
 import { FormattedResource } from 'src/utils/api/types';
 import LoadingSpinner from 'src/components/loading';
 import Empty from 'src/components/empty';
-import { assetPrefix } from 'next.config';
 import { getTableColumns } from 'src/components/table/helpers';
 import Table, { Row } from 'src/components/table';
 import {
@@ -116,9 +115,7 @@ const TableData: React.FC<TableProps> = ({ isLoading, data }) => {
             }}
             passHref
           >
-            <Link mr={1} isExternal>
-              {v}
-            </Link>
+            <Link mr={1}>{v}</Link>
           </NextLink>
         );
       }
@@ -171,6 +168,81 @@ const TableData: React.FC<TableProps> = ({ isLoading, data }) => {
     return obj;
   });
 
+  //   <TableWrapper colorScheme={colorScheme}>
+  //   <TableContainer>
+  //     <StyledTable variant='striped' colorScheme={colorScheme}>
+  //       {caption && (
+  //         <TableCaption color='text.body'>{caption}</TableCaption>
+  //       )}
+  //       <Thead>
+  //         <Tr>
+  //           {columns.map(column => {
+  //             return (
+  //               <Th key={column.key} role='columnheader' scope='col'>
+  //                 {column.title}
+  //                 <TableSortToggle
+  //                   isSelected={column.key === orderBy}
+  //                   sortBy={sortBy}
+  //                   handleToggle={(sortByAsc: boolean) => {
+  //                     updateSort(column.key, sortByAsc);
+  //                   }}
+  //                 />
+  //               </Th>
+  //             );
+  //           })}
+  //         </Tr>
+  //       </Thead>
+
+  //       <Tbody>
+  //         {(rows as Row[])
+  //           .slice(from * size, from * size + size)
+  //           .map((row, i) => {
+  //             return (
+  //               <Tr key={i} id={`${i}`}>
+  //                 {columns.map((col, j) => {
+  //                   let cell = row[col.key];
+  //                   return (
+  //                     <Td
+  //                       role='cell'
+  //                       key={`${cell.value}-${i}-${j}`}
+  //                       id={`${cell.value}-${i}-${j}`}
+  //                       whiteSpace='break-spaces'
+  //                       minW='50px'
+  //                       isNumeric={typeof cell.value === 'number'}
+  //                       {...cell.props}
+  //                     >
+  //                       <FormatLinkCell value={cell.value} />
+  //                     </Td>
+  //                   );
+  //                 })}
+  //               </Tr>
+  //             );
+  //           })}
+  //       </Tbody>
+  //       {hasFooter && (
+  //         <Tfoot>
+  //           <Tr>
+  //             {columns.map((column, i) => {
+  //               return (
+  //                 <Th key={column.key} role='columnfooter' scope='col'>
+  //                   {column.title}
+  //                 </Th>
+  //               );
+  //             })}
+  //           </Tr>
+  //         </Tfoot>
+  //       )}
+  //     </StyledTable>
+  //   </TableContainer>
+  //   <TablePagination
+  //     total={rowData.length}
+  //     size={size}
+  //     setSize={setSize}
+  //     from={from}
+  //     setFrom={setFrom}
+  //     colorScheme='gray'
+  //   ></TablePagination>
+  // </TableWrapper>
   return (
     <Table
       colorScheme='secondary'

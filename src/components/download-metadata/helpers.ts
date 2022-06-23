@@ -1,6 +1,11 @@
+export interface DownloadArgs {
+  dataObject: { [key: string]: any } | { [key: string]: any }[];
+  downloadName: string;
+}
+
 export const downloadAsCsv = (
-  dataObject: { [key: string]: any },
-  downloadName: string,
+  dataObject: DownloadArgs['dataObject'],
+  downloadName: DownloadArgs['downloadName'],
 ) => {
   // if no data return an empty object
   if (!dataObject || typeof dataObject !== 'object') {
@@ -9,7 +14,7 @@ export const downloadAsCsv = (
   const data = Array.isArray(dataObject) ? dataObject : [dataObject];
 
   // Get all unique table headers in data
-  const headers: string[] = data.reduce((r, d) => {
+  const headers: string[] = data.reduce((r: string[], d) => {
     Object.keys(d).map(k => {
       if (!r.includes(k)) {
         r.push(k);
@@ -46,13 +51,15 @@ export const downloadAsCsv = (
   ].join('\r\n');
 
   let href = 'data:text/csv;charset=utf-8,%EF%BB%BF' + encodeURIComponent(csv);
-
+  if (!href || !downloadName) {
+    return null;
+  }
   return { href, download: `${downloadName}.csv` };
 };
 
 export const downloadAsJson = (
-  dataObject: { [key: string]: any },
-  downloadName: string,
+  dataObject: DownloadArgs['dataObject'],
+  downloadName: DownloadArgs['downloadName'],
 ) => {
   // if no data return an empty object
   if (!dataObject || typeof dataObject !== 'object') {
@@ -62,5 +69,8 @@ export const downloadAsJson = (
   let href =
     'data:text/json;charset=utf-8,' +
     encodeURIComponent(JSON.stringify(dataObject, null, 2));
+  if (!href || !downloadName) {
+    return null;
+  }
   return { href, download: `${downloadName}.json` };
 };

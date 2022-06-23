@@ -10,32 +10,62 @@ import {
 } from 'nde-design-system';
 import React from 'react';
 import { FaDownload } from 'react-icons/fa';
-import { downloadAsCsv, downloadAsJson } from './helpers';
+import { DownloadArgs, downloadAsCsv, downloadAsJson } from './helpers';
 
 interface DownloadMetadataProps extends ButtonProps {
-  metadata: { [key: string]: any };
   exportName: string;
+  loadMetadata: () => Promise<any>;
 }
 
 export const DownloadMetadata: React.FC<DownloadMetadataProps> = ({
   exportName,
-  metadata,
+  loadMetadata,
   children,
   colorScheme = 'primary',
   variant = 'solid',
   isLoading,
 }) => {
   const { isOpen, onToggle, onClose } = useDisclosure();
+
   const options = [
     {
       name: 'JSON Format',
-      props: downloadAsJson(metadata, exportName), // add id
+      fn: (
+        data: DownloadArgs['dataObject'],
+        exportName: DownloadArgs['downloadName'],
+      ) => downloadAsJson(data, exportName),
     },
     {
       name: 'CSV Format',
-      props: downloadAsCsv(metadata, exportName), // add id
+      fn: (
+        data: DownloadArgs['dataObject'],
+        exportName: DownloadArgs['downloadName'],
+      ) => downloadAsCsv(data, exportName),
     },
   ];
+
+  const retrieveMetadata = async (callbackFn: any) => {
+    await loadMetadata().then(res => {
+      const { href, download } = callbackFn(res, exportName);
+      return downloadMetadata({ href, download });
+    });
+  };
+
+  const downloadMetadata = ({
+    href,
+    download,
+  }: {
+    href: string;
+    download: string;
+  }) => {
+    const link = document.createElement('a');
+    link.href = href;
+    link.setAttribute('download', download);
+    document.body.appendChild(link);
+    link.click();
+    link?.parentNode?.removeChild(link);
+  };
+
   return (
     <Box position='relative'>
       <Button
@@ -44,6 +74,7 @@ export const DownloadMetadata: React.FC<DownloadMetadataProps> = ({
         onClick={onToggle}
         variant={variant}
         isLoading={isLoading}
+        loadingText='Downloading'
       >
         {children}
       </Button>
@@ -70,9 +101,12 @@ export const DownloadMetadata: React.FC<DownloadMetadataProps> = ({
                     d='block'
                     px={4}
                     py={2}
+                    cursor='pointer'
                     _hover={{ bg: `${colorScheme}.50` }}
-                    onClick={onClose}
-                    {...option.props}
+                    onClick={async () => {
+                      onClose();
+                      retrieveMetadata(option.fn);
+                    }}
                   >
                     <Text fontWeight='semibold'>{option.name}</Text>
                   </Box>

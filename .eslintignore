@@ -2,5 +2,4 @@ dist
 node_modules
 .next
 build
-src/components/summary-page
-src/pages/summary.tsx
+src/components/summary-page/components/vis/components/other
