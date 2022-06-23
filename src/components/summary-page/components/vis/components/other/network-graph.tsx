@@ -1,6 +1,6 @@
+// @ts-nocheck
 import * as d3 from 'd3';
 import React, { useRef, useEffect, useCallback, createRef } from 'react';
-// @ts-nocheck
 
 const parameters = {
   nodeId: d => d.id, // given d in nodes, returns a unique identifier (string)

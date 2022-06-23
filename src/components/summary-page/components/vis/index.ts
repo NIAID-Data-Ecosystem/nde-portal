@@ -1,4 +1,4 @@
-export { PieChart } from './components/type-pie-chart';
-export { Network } from './components/network';
-export { CirclePacking } from './components/circle-packing';
-export * from './components/network-graph';
+export { DylanVis } from './components/dylan-vis';
+export { Network } from './components/other/network';
+export { CirclePacking } from './components/other/circle-packing';
+export * from './components/other/network-graph';

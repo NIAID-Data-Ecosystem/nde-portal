@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { useEffect, useState } from 'react';
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
@@ -9,28 +8,17 @@ import {
   SearchQueryLink,
 } from 'src/components/page-container';
 import { assetPrefix } from 'next.config';
-import {
-  Box,
-  Center,
-  Divider,
-  Flex,
-  SearchInput,
-  Text,
-} from 'nde-design-system';
+import { Flex, SearchInput, Text } from 'nde-design-system';
 import {
   SummaryTable,
   Filters,
   displayQueryString,
   useFilterString,
   useQueryString,
-  PieChart,
-  Network,
+  DylanVis,
 } from 'src/components/summary-page';
 import { useHasMounted } from 'src/hooks/useHasMounted';
 import { queryFilterObject2String } from 'src/components/filter';
-import { ChartTemplate } from 'src/components/summary-page/components/vis/components/chart-template';
-import NextLink, { LinkProps } from 'next/link';
-import DylanVis from 'src/components/summary-page/components/vis/components/dylan-vis';
 
 /*
  [COMPONENT INFO]:
@@ -70,7 +58,7 @@ const SummaryPage: NextPage = () => {
         'U19 AI106761',
         'U19AI106754',
         'U19AI106772',
-        'HHSN272201200031C'
+        'HHSN272201200031C',
       ],
     },
     {
@@ -174,6 +162,7 @@ const SummaryPage: NextPage = () => {
                 {suggestedQueries.map((query, i) => {
                   return (
                     <SearchQueryLink
+                      key={i}
                       title={query.title}
                       onClick={() => {
                         const str = queryFilterObject2String({
@@ -203,62 +192,13 @@ const SummaryPage: NextPage = () => {
 
         {/* Visualizations */}
         <section id='data-visualizations'>
-          <Box w='100%' p={6} bg='tertiary.900' >
-            {/* <Flex flexWrap={'wrap'} grow={1}
-            > */}
-            {/* Pie Chart */}
-            {/* <Flex
-                p={6}
-                minW='400px'
-                minH='400px'
-                // maxW='615'
-                justifyContent='center'
-                alignItems='center'
-                flex={1}
-                bg='tertiary.800'
-              > */}
-            <DylanVis queryString={queryString} filters={filters} updateFilters={updateFilters} />
-            {/* </Flex> */}
-            {/* Template Chart */}
-            {/* <Flex
-                p={6}
-                minW='400px'
-                minH='400px'
-                justifyContent='center'
-                flex={1}
-                bg='tertiary.800'
-              >
-                <ChartTemplate
-                  queryString={queryString}
-                  filters={filters}
-                  updateFilters={updateFilters}
-                />
-              </Flex> */}
-            {/* </Flex> */}
-            <Center my={6}>
-              <Divider w='90%' />
-            </Center>
-            {/* Clustered Network graph */}
-            <Box w={'100%'} h={980}>
-              <Network queryString={queryString} filters={filters} />
-              {/* <BarChart /> */}
-            </Box>
-          </Box>
-          {/* Zoomable Packing Circle */}
-          {/* <Box w={'100%'} h={1600} mb={10}>
-              {data?.results && <CirclePacking data={data.results} />}
-            </Box> */}
-
-          {/* Clustered Network no labels */}
-          {/* <Box w={'100%'} h={980}>
-              {data?.results && <NetworkNoLabels data={data.results} />}
-            </Box> */}
-
-          {/* Original Network graph */}
-          {/* <Box w={'100%'} h={980} border='2px solid' borderColor='gray.200'>
-              {data?.results && <NetworkGraph data={data.results} />}
-            </Box> */}
-          {/* </Box> */}
+          <PageContent w='100%' p={6} bg='tertiary.900' minH={0}>
+            <DylanVis
+              queryString={queryString}
+              filters={filters}
+              updateFilters={updateFilters}
+            />
+          </PageContent>
         </section>
 
         {/* SummaryTable */}
