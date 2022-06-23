@@ -220,7 +220,7 @@ const DylanVis = ({ queryString, filters, updateFilters }) => {
                 },
                 font: {
                     size: 18,
-                    weight: 'bold',
+                    // weight:  'bold',
                 },
                 padding: 2
             },
