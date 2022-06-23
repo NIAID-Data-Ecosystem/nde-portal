@@ -18,6 +18,7 @@ import { enUS } from 'date-fns/locale';
 import 'chartjs-adapter-moment';
 import { Box, Center, Flex } from 'nde-design-system';
 import { ChartTemplate } from './chart-template';
+import moment from 'moment';
 
 
 
@@ -97,7 +98,7 @@ const DylanVis = ({ queryString, filters, updateFilters }) => {
     /*
     Get all the data you wanted.
     */
-    const {
+    let {
         data: responseData,
         isLoading: responseDataIsLoading,
         error: responseDataError,
@@ -136,6 +137,33 @@ const DylanVis = ({ queryString, filters, updateFilters }) => {
     );
 
     const options = {
+        onClick: (evt, second, myChart) => {
+            const points = myChart.getElementsAtEventForMode(evt, 'nearest', { intersect: true }, true);
+            if (points.length) {
+                const firstPoint = points[0];
+                const label = myChart.data.labels[firstPoint.index];
+                if (label === 'Other') {
+                    updateFilters({
+                        'includedInDataCatalog.name': myChart['data']['datasets'][0]['otherNames'],
+                    });
+                } else if (label === 'Omics Discovery Index') {
+                    updateFilters({
+                        'includedInDataCatalog.name': ["Omics Discovery Index (OmicsDI)"],
+                    });
+                } else {
+                    updateFilters({
+                        'includedInDataCatalog.name': [label],
+                    });
+                }
+            }
+        },
+        onHover: (event, activeElements) => {
+            if (activeElements?.length > 0) {
+                event.native.target.style.cursor = 'pointer';
+            } else {
+                event.native.target.style.cursor = 'auto';
+            }
+        },
         responsive: true,
         maintainAspectRatio: false,
         indexAxis: 'y',
@@ -165,7 +193,9 @@ const DylanVis = ({ queryString, filters, updateFilters }) => {
         },
         plugins: {
             legend: {
+                maxHeight: 200,
                 labels: {
+                    // padding: 20,
                     color: 'white',
                     font: {
                         size: 20
@@ -177,29 +207,90 @@ const DylanVis = ({ queryString, filters, updateFilters }) => {
             datalabels: {
                 display: true,
                 color: "white",
-                formatter: function (value) {
-                    return value.toLocaleString("en-US")
+                formatter: function (value, chart) {
+                    return value?.toLocaleString("en-US")
                 },
                 anchor: "end",
-                align: "end",
+                align: function (chart) {
+                    if (chart['dataIndex'] > 0) {
+                        return 'end'
+                    } else {
+                        return 'start'
+                    }
+                },
                 font: {
-                    size: 16
+                    size: 18,
+                    weight: 'bold',
                 },
                 padding: 2
+            },
+            tooltip: {
+                displayColors: function (chart) {
+                    if (chart['tooltip']['title'][0] === 'Other') {
+                        return false
+                    } else {
+                        return true
+                    }
+                },
+                titleFont: {
+                    size: 20
+                },
+                bodyFont: {
+                    size: 20
+                },
+                footerFont: {
+                    size: 20 // there is no footer by default
+                },
+                callbacks: {
+                    label: function (chart) {
+                        if (chart['label'] === 'Other') {
+                            return chart['dataset']['otherNames']
+                        } else {
+                            return chart['formattedValue']
+                        }
+                    }
+                }
             }
         },
         layout: {
             padding: {
-                left: 0,
-                right: 50,
+                // left: 60,
+                // right: 60,
                 top: 0,
                 bottom: 0
             }
-        }
+        },
+
 
     }
 
     const dateOptions = {
+        onClick: (evt, second, myChart) => {
+            const points = myChart.getElementsAtEventForMode(evt, 'nearest', { intersect: true }, true);
+            if (points.length) {
+                const firstPoint = points[0];
+                const label = myChart.data.labels[firstPoint.index];
+                let fromDate = moment(label)
+                let toDate = moment(label).add(1, 'quarters');
+                let diff = toDate.diff(fromDate, 'day')
+                let range = []
+                for (let i = 1; i < diff; i++) {
+                    range.push(moment(label).add(i, 'day').format("YYYY-MM-DD"))
+                }
+                updateFilters({
+                    // 'date': ['["2022-04-27" TO "2022-04-27"]'],
+                    'date': range
+                });
+            }
+        },
+        onHover: (event, activeElements) => {
+            if (activeElements?.length > 0) {
+                event.native.target.style.cursor = 'pointer';
+            } else {
+                event.native.target.style.cursor = 'auto';
+            }
+        },
+
         responsive: true,
         maintainAspectRatio: false,
         scales: {
@@ -221,8 +312,7 @@ const DylanVis = ({ queryString, filters, updateFilters }) => {
                         size: 16
                     },
                     autoSkip: true,
-                    // maxTicksLimit: 18,
-
+                    maxRotation: 25,
                 },
             },
             y: {
@@ -250,9 +340,22 @@ const DylanVis = ({ queryString, filters, updateFilters }) => {
             },
             datalabels: {
                 display: false,
+            },
+            tooltip: {
+                titleFont: {
+                    size: 20
+                },
+                bodyFont: {
+                    size: 20
+                },
+                footerFont: {
+                    size: 20 // there is no footer by default
+                },
             }
+
         },
     }
+
 
     return (
         <Box>
@@ -261,20 +364,23 @@ const DylanVis = ({ queryString, filters, updateFilters }) => {
                     // maxH={{ xl: 550, md: 'fit-content' }}
                     // h={{ xl: 550, md: 'fit-content' }}
                     direction={{ xl: 'row', base: 'column' }}
+                    justifyContent={'space-between'}
                     p={6}
                     alignItems={'center'}
                     bg='tertiary.800'
                     overflow={'hidden'}
                     minW={536}
-                    minH={500}
+                    minH={200}
+                // maxH={525}
                 >
                     <Box
                         width={'100%'}
                         minH={0}
                         // height={{ xl: '30vh', base: '20vh' }}
-                        height={450}
-                        minW={547}
+                        height={300}
+                        minW={0}
                         order={{ xl: 1, base: 2 }}
+                        my={10}
                     >
                         <DylanBarChart
                             data={createDataCatalogDataset(responseData)}
@@ -283,15 +389,18 @@ const DylanVis = ({ queryString, filters, updateFilters }) => {
                     </Box>
                     <Box
                         width={'100%'}
-                        minW={359}
+                        // m={6}
+                        minW={0}
                         minH={0}
-                        height={450}
+                        height={400}
 
                         // height={{ xl: '35vh', base: '30vh' }}
                         order={{ xl: 2, base: 1 }}
+                        my={{ xl: 0, base: 5 }}
                     >
                         <DylanDoughnutChart
                             data={createTypeDataset(responseData)}
+                            updateFilters={updateFilters}
                         />
 
                     </Box>
@@ -299,10 +408,11 @@ const DylanVis = ({ queryString, filters, updateFilters }) => {
                         width={'100%'}
                         minW={0}
                         minH={0}
-                        height={450}
+                        height={300}
 
                         // height={{ xl: '30vh', base: '20vh' }}
                         order={{ xl: 3, base: 2 }}
+                        my={10}
                     >
                         <DylanBarChart
                             data={createDateDataset(responseData)}

@@ -31,6 +31,17 @@ const plugins = [
             }
         },
     },
+    // {
+    //     afterFit: (chart, options) => {
+    //         if (chart.legend.margins) {
+    //             // Put some padding around the legend/labels
+    //             chart.legend.options.labels.padding = 52229;
+    //             // Because you added 20px of padding around the whole legend,
+    //             // you will need to increase the height of the chart to fit it
+    //             chart.height += 222;
+    //         }
+    //     }
+    // }
 ];
 
 const DylanBarChart = ({ data, options }) => {

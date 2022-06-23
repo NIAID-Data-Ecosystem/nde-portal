@@ -23,9 +23,23 @@ ChartJS.register(
 
 
 
-const DylanDoughnutChart = ({ data }) => {
+const DylanDoughnutChart = ({ data, updateFilters }) => {
 
-    const options = {
+    const doughnutOptions = {
+        onClick: (evt, second, myChart) => {
+            const points = myChart.getElementsAtEventForMode(evt, 'nearest', { intersect: true }, true);
+            if (points.length) {
+                const firstPoint = points[0];
+                const label = myChart.data.labels[firstPoint.index];
+                updateFilters({
+                    '@type': [label],
+                });
+            }
+        },
+        onHover: (event, chartElement) => {
+            const target = event.native ? event.native.target : event.target;
+            target.style.cursor = chartElement[0] ? 'pointer' : 'default';
+        },
         responsive: true,
         maintainAspectRatio: false,
         cutout: '70%',
@@ -38,15 +52,41 @@ const DylanDoughnutChart = ({ data }) => {
                     color: 'white',
                     font: {
                         size: 20
-                    }
+                    },
+
                 },
-                onClick: (e) => e
+                onClick: (e, legend,) => {
+                    updateFilters({
+                        '@type': [legend['text']],
+                    });
+                },
+                onHover: function (e) {
+                    e.native.target.style.cursor = 'pointer';
+                },
+                onLeave: function (e) {
+                    e.native.target.style.cursor = 'default';
+                }
             },
             datalabels: {
                 display: false,
+            },
+            tooltip: {
+                // padding: 10,
+                titleFont: {
+                    size: 20
+                },
+                bodyFont: {
+                    size: 20
+                },
+                footerFont: {
+                    size: 20 // there is no footer by default
+                },
             }
+
         }
     }
+
+
     const plugins = [
         {
             afterDraw: function (chart) {
@@ -79,7 +119,7 @@ const DylanDoughnutChart = ({ data }) => {
                     zIndex={1}
                     mt={5}
                     color={'white'}
-                    fontSize={{ xl: '32', sm: '30' }}
+                    fontSize={{ xl: '28', sm: '28' }}
                     flexDir={'column'}
                 >
                     <Center>
@@ -101,7 +141,7 @@ const DylanDoughnutChart = ({ data }) => {
                 <Doughnut
                     data={data}
                     // height={'40vw'}
-                    options={options}
+                    options={doughnutOptions}
                     plugins={plugins}
                 />
             </Center>

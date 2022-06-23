@@ -175,6 +175,7 @@ export const ChartTemplate: React.FC<ChartTemplateProps> = ({
             placeholder='Filter by Grant'
             /*
             The user could select many grants so Select isn't the best but just to give an example. */
+            // TODO
             value={filters['funding.funder.name'][0]}
             onChange={e => {
               e.currentTarget.value &&
