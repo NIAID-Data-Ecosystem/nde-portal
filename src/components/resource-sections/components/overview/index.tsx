@@ -39,7 +39,6 @@ const Overview: React.FC<OverviewProps> = ({
   doi,
   healthCondition,
   infectiousAgent,
-  infectiousDisease,
   language,
   license,
   measurementTechnique,
@@ -231,12 +230,7 @@ const Overview: React.FC<OverviewProps> = ({
             </UnorderedList>
           </StatField>
         )}
-        {/* health condition covered */}
-        {healthCondition && (
-          <StatField isLoading={isLoading} {...getStatInfo('healthCondition')}>
-            {healthCondition}
-          </StatField>
-        )}
+
         {/* infectious agent involved */}
         {infectiousAgent && (
           <StatField
@@ -263,17 +257,18 @@ const Overview: React.FC<OverviewProps> = ({
             </UnorderedList>
           </StatField>
         )}
-        {/* infectious disease covered */}
-        {infectiousDisease && (
+
+        {/* health condition covered */}
+        {healthCondition && (
           <StatField
             isLoading={isLoading}
             icon={() => (
-              <StatIcon id='infectiousDisease' glyph='infectiousDisease' />
+              <StatIcon id='healthCondition' glyph='healthCondition' />
             )}
-            {...getStatInfo('infectiousDisease')}
+            {...getStatInfo('healthCondition')}
           >
             <UnorderedList ml={0}>
-              {infectiousDisease.map((m, i) => {
+              {healthCondition.map((m, i) => {
                 const name = Array.isArray(m.name) ? m.name.join(', ') : m.name;
 
                 return (

@@ -57,12 +57,6 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
     funding,
     license,
     conditionsOfAccess,
-    measurementTechnique,
-    variableMeasured,
-    species,
-    infectiousAgent,
-    infectiousDisease,
-    healthCondition,
     doi,
     pmid,
     nctid,
@@ -331,7 +325,6 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                       </Flex>
                     </Flex>
                   )}
-
                   {doi && (
                     <Flex
                       flex={1}
