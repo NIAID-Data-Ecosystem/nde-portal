@@ -182,10 +182,9 @@ export interface FormattedResource {
   distribution: Distribution[] | null;
   doi: string | null;
   funding: Funding[] | null;
-  healthCondition: string | null;
+  healthCondition: PropertyNameWithURL[] | null;
   includedInDataCatalog: includedInDataCatalog | null;
   infectiousAgent: PropertyNameWithURL[] | null;
-  infectiousDisease: PropertyNameWithURL[] | null;
   keywords: string[] | null;
   language: {
     alternateName: string | null;

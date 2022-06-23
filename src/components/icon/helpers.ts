@@ -8,7 +8,7 @@ export const getMetadataColor = (property?: string) => {
     return 'purple.600';
   } else if (property?.toLowerCase() === 'infectiousagent') {
     return 'pink.600';
-  } else if (property?.toLowerCase() === 'infectiousdisease') {
+  } else if (property?.toLowerCase() === 'healthcondition') {
     return 'red.500';
   } else if (property?.toLowerCase() === 'funding') {
     return 'tomato';
@@ -31,10 +31,8 @@ export const getMetadataLabel = (property: string) => {
     return 'Measurement Technique';
   } else if (property.toLowerCase().replace(/\s/g, '') === 'infectiousagent') {
     return 'Pathogen';
-  } else if (
-    property.toLowerCase().replace(/\s/g, '') === 'infectiousdisease'
-  ) {
-    return 'Infectious Disease';
+  } else if (property.toLowerCase().replace(/\s/g, '') === 'healthcondition') {
+    return 'Health Condition';
   } else if (property.toLowerCase().replace(/\s/g, '') === 'funding') {
     return 'Funding';
   } else if (property.toLowerCase().replace(/\s/g, '') === 'species') {

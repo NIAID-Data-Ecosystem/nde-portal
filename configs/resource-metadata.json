@@ -31,11 +31,6 @@
       "info": "Infectious agent / pathogen associated with the record."
     },
     {
-      "title": "Infectious Disease",
-      "property": "infectiousDisease",
-      "info": "Health condition associated with the record, such as an infectious disease or chronic condition."
-    },
-    {
       "title": "Species",
       "property": "species",
       "info": "Host species associated with record."

@@ -35,7 +35,6 @@ const CardDetails: React.FC<CardDetailsProps> = ({ data }) => {
     variableMeasured,
     species,
     infectiousAgent,
-    infectiousDisease,
     healthCondition,
   } = data || {};
 
@@ -91,9 +90,9 @@ const CardDetails: React.FC<CardDetailsProps> = ({ data }) => {
           value={infectiousAgent}
         />
         <Badge
-          property='infectiousDisease'
-          glyph='infectiousDisease'
-          value={infectiousDisease}
+          property='healthCondition'
+          glyph='healthCondition'
+          value={healthCondition}
         />
         <Badge property='species' glyph='species' value={species} />
       </Flex>
@@ -255,19 +254,16 @@ const CardDetails: React.FC<CardDetailsProps> = ({ data }) => {
                       </UnorderedList>
                     )}
                   </MetadataProperty>
-                  {/* Infectious Disease*/}
+                  {/* Health Condition */}
                   <MetadataProperty
-                    id={`disease-${id}`}
-                    label='Infectious Disease'
-                    glyph='infectiousDisease'
+                    id={`condition-${id}`}
+                    label='Health Condition'
+                    glyph='healthCondition'
                   >
-                    {infectiousDisease && (
+                    {healthCondition && (
                       <>
                         <UnorderedList ml={0}>
-                          {/* {healthCondition && (
-                            <ListItem>{healthCondition}</ListItem>
-                          )} */}
-                          {infectiousDisease?.map((m, i) => {
+                          {healthCondition?.map((m, i) => {
                             const name = Array.isArray(m.name)
                               ? m.name.join(', ')
                               : m.name;

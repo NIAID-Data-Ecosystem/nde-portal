@@ -60,9 +60,10 @@ export const filtersConfig: {
   },
   variableMeasured: { name: 'Variable Measured', glyph: 'variableMeasured' },
   'funding.funder.name': { name: 'Funding', glyph: 'funding' },
+  //  [TO DO]: change to 'healthCondition.name'
   'infectiousDisease.name': {
-    name: 'Infectious Disease',
-    glyph: 'infectiousDisease',
+    name: 'Health Condition',
+    glyph: 'healthCondition',
   },
   'infectiousAgent.name': { name: 'Pathogen', glyph: 'infectiousAgent' },
   'species.name': { name: 'Species', glyph: 'species' },
@@ -135,7 +136,7 @@ export const Filters: React.FC<Filters> = ({
         let updatedCount;
         if (!facets?.isLoading && facets?.data) {
           const updated = facets?.data.find(f => f.term === term);
-          updatedCount = updated ? updated?.count : 0;
+          updatedCount = updated ? updated?.count || count : 0;
         }
 
         return {
