@@ -53,7 +53,7 @@ const Table: React.FC<TableProps> = ({
   const [size, setSize] = useState(ROW_SIZE);
 
   // current page
-  const [from, setFrom] = useState(1);
+  const [from, setFrom] = useState(0);
 
   const [{ data: tableData, orderBy, sortBy }, updateSort] = useTableSort(
     rowData,
@@ -61,7 +61,7 @@ const Table: React.FC<TableProps> = ({
   );
 
   const rows = tableData || [];
-
+  console.log(rows, rowData);
   return (
     <Box overflow='auto'>
       <TableWrapper colorScheme={colorScheme}>
@@ -136,11 +136,7 @@ const Table: React.FC<TableProps> = ({
           setSize={setSize}
           from={from}
           setFrom={setFrom}
-          pageSizeOptions={Array.from(
-            Array(Math.ceil(rowData.length / ROW_SIZE)),
-          )
-            .map((_: any, i) => (i + 1) * ROW_SIZE)
-            .slice(0, 10)}
+          pageSizeOptions={[5, 10, 50, 100]}
           colorScheme='gray'
         ></TablePagination>
       </TableWrapper>
