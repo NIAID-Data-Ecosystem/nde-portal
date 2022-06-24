@@ -210,6 +210,11 @@ export const formatDate = (date?: string | Date) => {
   //   .join(' ');
 };
 
+// Standardizes value to be an array.
+const convertToArray = (property: any) => {
+  return property ? (Array.isArray(property) ? property : [property]) : null;
+};
+
 export const formatAPIResource = (data: any) => {
   const formattedResource: FormattedResource = {
     ...data,
@@ -231,7 +236,9 @@ export const formatAPIResource = (data: any) => {
     distribution: formatDistribution(data.distribution),
     doi: data['doi'] || data['@id'] || null,
     funding: formatFunding(data.funding),
-    healthCondition: data.healthCondition || null,
+    healthCondition:
+      convertToArray(data.healthCondition) ||
+      convertToArray(data.infectiousDisease), // [TO DO]: can remove once api remove infectious disease property
     includedInDataCatalog: data.includedInDataCatalog
       ? {
           name: data.includedInDataCatalog.name || null,
@@ -241,21 +248,8 @@ export const formatAPIResource = (data: any) => {
           identifier: data.includedInDataCatalog.identifier || null,
         }
       : null,
-    infectiousAgent: data.infectiousAgent
-      ? Array.isArray(data.infectiousAgent)
-        ? data.infectiousAgent
-        : [data.infectiousAgent]
-      : null,
-    infectiousDisease: data.infectiousDisease
-      ? Array.isArray(data.infectiousDisease)
-        ? data.infectiousDisease
-        : [data.infectiousDisease]
-      : null,
-    keywords: data.keywords
-      ? Array.isArray(data.keywords)
-        ? data.keywords
-        : [data.keywords]
-      : null,
+    infectiousAgent: convertToArray(data.infectiousAgent),
+    keywords: convertToArray(data.keywords),
     language: data.inLanguage
       ? {
           alternateName: data.inLanguage.alternateName || null,
@@ -267,11 +261,7 @@ export const formatAPIResource = (data: any) => {
       : null,
     license: data.license || null,
     mainEntityOfPage: data.mainEntityOfPage || null,
-    measurementTechnique: data.measurementTechnique
-      ? Array.isArray(data.measurementTechnique)
-        ? data.measurementTechnique
-        : [data.measurementTechnique]
-      : null,
+    measurementTechnique: convertToArray(data.measurementTechnique),
     nctid: data['nctid'] || null,
     numberOfDownloads: data.numberOfDownloads || null,
     numberOfViews: data.numberOfViews || null,
@@ -282,25 +272,15 @@ export const formatAPIResource = (data: any) => {
     sdPublisher: data.sdPublisher || null,
     spatialCoverage:
       typeof data.spatialCoverage === 'string' ? data.spatialCoverage : null,
-    species: data.species
-      ? Array.isArray(data.species)
-        ? data.species
-        : [data.species]
-      : null,
+    species: convertToArray(data.species),
     temporalCoverage:
       typeof data.temporalCoverage === 'string' ? data.spatialCoverage : null,
     // Maybe add species or organism field to topic
-    topic: data.topicCategory
-      ? Array.isArray(data.topicCategory)
-        ? data.topicCategory
-        : [data.topicCategory]
-      : null,
+    topic: convertToArray(data.topicCategory),
     url: data.url || null,
     variableMeasured:
       data.variableMeasured && data.variableMeasured.toLowerCase() !== 'unknown'
-        ? Array.isArray(data.variableMeasured)
-          ? data.variableMeasured
-          : [data.variableMeasured]
+        ? convertToArray(data.variableMeasured)
         : null,
     version: data.version || null,
   };

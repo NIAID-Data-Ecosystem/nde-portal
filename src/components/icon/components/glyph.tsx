@@ -129,10 +129,12 @@ const Glyph: React.FC<GlyphProps> = ({ id, glyph, stroke, fill, title }) => {
           </g>
         </>
       );
-    case 'infectiousDisease':
+    case 'healthCondition':
       return (
         <>
-          <title id={id}>{title || 'Icon for infectious disease.'}</title>
+          <title id={id}>
+            {title || 'Icon for health condition/infectious disease.'}
+          </title>
           <g>
             <g>
               <path
