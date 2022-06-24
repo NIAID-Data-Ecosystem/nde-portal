@@ -2,7 +2,6 @@ import moment from 'moment';
 import { schemeTableau10 } from 'd3-scale-chromatic';
 import { theme } from 'nde-design-system';
 import { ResponseDataProps } from './dylan-vis';
-import { request } from 'http';
 
 function getDataCatalog(responseData: ResponseDataProps) {
 
