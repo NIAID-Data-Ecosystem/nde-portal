@@ -41,7 +41,8 @@ import { formatNumber } from 'src/utils/helpers';
 import { SortResults } from './components/sort';
 import ResultsCount from './components/count';
 import { DownloadMetadata } from '../download-metadata';
-
+import NextLink from 'next/link';
+import { FaChartBar } from 'react-icons/fa';
 /*
 [COMPONENT INFO]:
  Search results pages displays the list of records returned by a search.
@@ -154,11 +155,8 @@ const SearchResultsPage = () => {
 
   // Get all data for download
   const {
-    isLoading: metadataIsLoading,
     error: metadataError,
-    data: metadataData,
     refetch,
-    isRefetching,
     isFetching,
   } = useQuery<any | undefined, Error>(
     [
@@ -249,7 +247,6 @@ const SearchResultsPage = () => {
 
   // Update the route to reflect changes on page without re-render.
   const updateRoute = (update: {}) => {
-    console.log(update);
     router.push(
       {
         query: {
@@ -339,7 +336,7 @@ const SearchResultsPage = () => {
             {metadataError && (
               <Box my={2}>
                 <Banner status='error'>
-                  Something went with the download. Try again.
+                  Something went wrong with the metadata download. Try again.
                 </Banner>
               </Box>
             )}
@@ -392,8 +389,27 @@ const SearchResultsPage = () => {
                 mx={[0, 0, 4]}
                 flex={[1, 2]}
               >
-                <Flex w='100%' borderBottom='2px solid' borderColor='gray.700'>
+                <Flex
+                  w='100%'
+                  borderBottom='2px solid'
+                  borderColor='gray.700'
+                  flexWrap='wrap'
+                  justifyContent='space-between'
+                  alignItems='center'
+                >
                   <ResultsCount total={total} isLoading={isLoading} />
+                  <NextLink
+                    href={router.asPath.replace('search', 'summary')}
+                    passHref
+                  >
+                    <Button
+                      leftIcon={<FaChartBar />}
+                      my={2}
+                      whiteSpace='normal'
+                    >
+                      View visual summary of results
+                    </Button>
+                  </NextLink>
                 </Flex>
 
                 <Pagination
@@ -411,7 +427,7 @@ const SearchResultsPage = () => {
                     flex={1}
                     justifyContent='space-between'
                     borderBottom='1px solid'
-                    borderColor={'page.alt'}
+                    borderColor='page.alt'
                     pb={4}
                     mb={4}
                   >
@@ -439,7 +455,6 @@ const SearchResultsPage = () => {
                         >
                           Download Metadata
                         </DownloadMetadata>
-                        {isFetching && <Text></Text>}
                       </Flex>
                       <Collapse in={isFetching}>
                         <Text fontSize='xs' fontStyle='italic'>
@@ -450,12 +465,12 @@ const SearchResultsPage = () => {
                       <SortResults
                         sortOptions={sort_options}
                         sortOrder={sortOrder}
-                        handleSortOrder={sort =>
+                        handleSortOrder={sort => {
                           updateRoute({
                             sort,
                             from: defaultQuery.selectedPage,
-                          })
-                        }
+                          });
+                        }}
                         selectedPerPage={selectedPerPage}
                         handleSelectedPerPage={v =>
                           updateRoute({ from: 1, size: v })

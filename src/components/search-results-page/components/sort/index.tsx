@@ -28,7 +28,7 @@ export const SortResults: React.FC<SortResultsProps> = ({
   sortOptions,
   handleSortOrder,
 }) => {
-  const showPerPageOptions = [10, 20, 30];
+  const showPerPageOptions = [10, 50, 100];
   return (
     <Flex
       flexDirection={['column', 'row']}

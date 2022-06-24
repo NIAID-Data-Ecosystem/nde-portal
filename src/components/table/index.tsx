@@ -53,7 +53,7 @@ const Table: React.FC<TableProps> = ({
   const [size, setSize] = useState(ROW_SIZE);
 
   // current page
-  const [from, setFrom] = useState(0);
+  const [from, setFrom] = useState(1);
 
   const [{ data: tableData, orderBy, sortBy }, updateSort] = useTableSort(
     rowData,
