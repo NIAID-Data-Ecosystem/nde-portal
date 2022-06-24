@@ -60,8 +60,7 @@ export const filtersConfig: {
   },
   variableMeasured: { name: 'Variable Measured', glyph: 'variableMeasured' },
   'funding.funder.name': { name: 'Funding', glyph: 'funding' },
-  //  [TO DO]: change to 'healthCondition.name'
-  'infectiousDisease.name': {
+  'healthCondition.name': {
     name: 'Health Condition',
     glyph: 'healthCondition',
   },

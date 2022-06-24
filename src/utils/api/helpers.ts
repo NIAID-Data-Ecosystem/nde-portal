@@ -236,9 +236,7 @@ export const formatAPIResource = (data: any) => {
     distribution: formatDistribution(data.distribution),
     doi: data['doi'] || data['@id'] || null,
     funding: formatFunding(data.funding),
-    healthCondition:
-      convertToArray(data.healthCondition) ||
-      convertToArray(data.infectiousDisease), // [TO DO]: can remove once api remove infectious disease property
+    healthCondition: convertToArray(data.healthCondition),
     includedInDataCatalog: data.includedInDataCatalog
       ? {
           name: data.includedInDataCatalog.name || null,
