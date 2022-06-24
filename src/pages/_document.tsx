@@ -22,7 +22,6 @@ class Document extends NextDocument {
         // put padding for scroll to sections that equals the nav height
         sx={{
           scrollPaddingTop: Object.values(NAV_HEIGHT),
-          scrollBehavior: 'smooth',
         }}
       >
         <Head>

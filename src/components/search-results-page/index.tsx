@@ -259,6 +259,7 @@ const SearchResultsPage = () => {
       undefined,
       {
         shallow: true,
+        scroll: true,
       },
     );
   };
