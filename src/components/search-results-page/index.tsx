@@ -260,6 +260,7 @@ const SearchResultsPage = () => {
       undefined,
       {
         shallow: true,
+        scroll: true,
       },
     );
   };
@@ -316,16 +317,24 @@ const SearchResultsPage = () => {
               as='h1'
               size='md'
               color='text.body'
-              fontWeight={'semibold'}
+              fontWeight='semibold'
               mb={4}
             >
               {queryString === '__all__'
                 ? `Showing all results`
                 : `Showing results for`}
 
-              <Heading as='span' ml={2} fontWeight={'bold'} size='md' w='100%'>
-                {displayQueryString(queryString)}
-              </Heading>
+              {queryString !== '__all__' && (
+                <Heading
+                  as='span'
+                  ml={2}
+                  fontWeight={'bold'}
+                  size='md'
+                  w='100%'
+                >
+                  {displayQueryString(queryString)}
+                </Heading>
+              )}
             </Heading>
             {metadataError && (
               <Box my={2}>

@@ -73,7 +73,7 @@ const sample_queries = [
       '"Tuberculosis"',
       '"Mycobacterium bovis"',
       '"Mycobacterium africanum"',
-      '"Mucobacterium canetti"',
+      '"Mycobacterium canetti"',
       '"Mycobacterium microti"',
       '"Phthisis"',
     ],
