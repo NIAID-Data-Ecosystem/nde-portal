@@ -1,7 +1,16 @@
 import { useRef } from 'react';
-import { Box, Flex, Footer, FlexProps, Navigation } from 'nde-design-system';
-import navItems from 'configs/nav.json';
-import footerItems from 'configs/footer.json';
+import {
+  Box,
+  Flex,
+  Footer,
+  FlexProps,
+  Navigation,
+  FooterItem,
+  FooterProps,
+  NavigationProps,
+} from 'nde-design-system';
+import navConfig from 'configs/nav.json';
+import footerConfig from 'configs/footer.json';
 import Head from 'next/head';
 import Notice from './notice';
 import { env } from 'next.config';
@@ -24,14 +33,19 @@ export const PageContainer: React.FC<PageContainerProps> = ({
   disableSearchBar,
   ...rest
 }) => {
+  const topNavigation = navConfig as NavigationProps['navigation'];
+  const footerNavigation = footerConfig as FooterProps['navigation'];
+
   const ref = useRef<HTMLDivElement>(null);
 
-  const formatRoute: any = (routes: any[]) => {
+  const prefixPortalRoutes = (routes: FooterItem[]): FooterItem[] => {
     return routes.map(r => {
-      if ('routes' in r) {
-        return { ...r, routes: formatRoute(r.routes) };
+      if (r?.routes) {
+        return { ...r, routes: prefixPortalRoutes(r.routes) };
       }
-
+      if (!r['href']) {
+        return r;
+      }
       // if relative link, prefix with backslash
       if (r['href'].charAt(0) === '/') {
         return {
@@ -57,7 +71,7 @@ export const PageContainer: React.FC<PageContainerProps> = ({
       </Head>
 
       <Flex as={'main'} w={'100%'} flexDirection={'column'} minW={300}>
-        {hasNavigation && (
+        {topNavigation && hasNavigation && (
           // Sticky Nav Bar.
           <Box
             id='nav-wrapper'
@@ -68,7 +82,12 @@ export const PageContainer: React.FC<PageContainerProps> = ({
             zIndex={100}
             minW={300}
           >
-            <Navigation navItems={formatRoute(navItems.routes)} />
+            <Navigation
+              navigation={{
+                ...topNavigation,
+                routes: [...prefixPortalRoutes(topNavigation.routes)],
+              }}
+            />
           </Box>
         )}
 
@@ -77,7 +96,12 @@ export const PageContainer: React.FC<PageContainerProps> = ({
           <Notice />
           {!disableSearchBar && <SearchBar />}
           {children}
-          <Footer navigation={formatRoute(footerItems.routes)} />
+          <Footer
+            navigation={{
+              ...footerNavigation,
+              routes: [...prefixPortalRoutes(footerConfig.routes)],
+            }}
+          />
         </Box>
       </Flex>
     </>
