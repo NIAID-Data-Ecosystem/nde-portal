@@ -214,13 +214,11 @@ const SummaryPage: NextPage = () => {
 
         {/* Visualizations */}
         <section id='data-visualizations'>
-          <PageContent w='100%' p={6} bg='tertiary.900' minH={0}>
-            <DylanVis
-              queryString={queryString}
-              filters={filters}
-              updateFilters={updateFilters}
-            />
-          </PageContent>
+          <DylanVis
+            queryString={queryString}
+            filters={filters}
+            updateFilters={updateFilters}
+          />
         </section>
 
         {/* SummaryTable */}

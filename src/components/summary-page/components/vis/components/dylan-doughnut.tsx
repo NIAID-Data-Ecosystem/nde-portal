@@ -135,6 +135,7 @@ const DylanDoughnutChart = ({ data, updateFilters }) => {
                 </Flex>
             }
             <Center
+                zIndex={1}
                 width={'100%'}
                 height={'100%'}
             >
