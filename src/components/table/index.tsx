@@ -136,6 +136,11 @@ const Table: React.FC<TableProps> = ({
           setSize={setSize}
           from={from}
           setFrom={setFrom}
+          pageSizeOptions={Array.from(
+            Array(Math.ceil(rowData.length / ROW_SIZE)),
+          )
+            .map((_: any, i) => (i + 1) * ROW_SIZE)
+            .slice(0, 10)}
           colorScheme='gray'
         ></TablePagination>
       </TableWrapper>

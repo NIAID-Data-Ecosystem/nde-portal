@@ -181,6 +181,10 @@ const SummaryPage: NextPage = () => {
             </>
           </PageHeader>
         </section>
+        {/* SummaryTable */}
+        <section id='datasets-table'>
+          <SummaryTable queryString={queryString} filters={filters} />
+        </section>
         <section id='search-filters'>
           <PageContent minH='unset' bg='white'>
             {/* Filters */}
@@ -221,11 +225,6 @@ const SummaryPage: NextPage = () => {
               updateFilters={updateFilters}
             />
           </PageContent>
-        </section>
-
-        {/* SummaryTable */}
-        <section id='datasets-table'>
-          <SummaryTable queryString={queryString} filters={filters} />
         </section>
       </PageContainer>
     </>

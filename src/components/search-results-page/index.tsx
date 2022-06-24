@@ -249,6 +249,7 @@ const SearchResultsPage = () => {
 
   // Update the route to reflect changes on page without re-render.
   const updateRoute = (update: {}) => {
+    console.log(update);
     router.push(
       {
         query: {
