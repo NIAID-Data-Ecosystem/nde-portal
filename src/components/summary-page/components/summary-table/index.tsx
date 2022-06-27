@@ -169,7 +169,7 @@ export const SummaryTable: React.FC<SummaryTableProps> = ({
       <TablePagination
         isLoading={isLoading}
         total={data?.total || 0}
-        numPages={Math.ceil(size < MAX_RESULTS ? total : MAX_RESULTS) / size}
+        numPages={Math.ceil((size < MAX_RESULTS ? total : MAX_RESULTS) / size)}
         size={size}
         setSize={s => updateRouter('size', s)}
         from={page - 1}
