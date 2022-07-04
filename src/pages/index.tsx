@@ -40,7 +40,7 @@ const sample_queries = [
     searchTerms: ['"Asthma"'],
   },
   {
-    title: 'Covid-19',
+    title: 'COVID-19',
     searchTerms: [
       '"SARS-CoV-2"',
       '"Covid-19"',
