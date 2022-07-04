@@ -61,7 +61,6 @@ const Table: React.FC<TableProps> = ({
   );
 
   const rows = tableData || [];
-  console.log(rows, rowData);
   return (
     <Box overflow='auto'>
       <TableWrapper colorScheme={colorScheme}>

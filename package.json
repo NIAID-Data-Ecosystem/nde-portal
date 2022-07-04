@@ -39,8 +39,11 @@
     "react-countup": "^6.2.0",
     "react-dom": "17.0.2",
     "react-icons": "^4.3.1",
+    "react-markdown": "^8.0.3",
     "react-query": "^3.34.7",
     "react-spring": "^9.4.4",
+    "rehype-raw": "^6.1.1",
+    "remark-gfm": "^3.0.1",
     "styled-system": "^5.1.5",
     "usehooks-ts": "^2.4.1"
   },

@@ -335,13 +335,9 @@ const Overview: React.FC<OverviewProps> = ({
           </StatField>
         )}
         {/* language */}
-        {language && (
-          <StatField
-            icon={FaLanguage}
-            isLoading={isLoading}
-            {...getStatInfo('language')}
-          >
-            {language.name}
+        {language && language.name && (
+          <StatField isLoading={isLoading} {...getStatInfo('language')}>
+            {language.name.toUpperCase()}
           </StatField>
         )}
         {/* geographic */}

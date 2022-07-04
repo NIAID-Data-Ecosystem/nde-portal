@@ -1,8 +1,9 @@
 import { Box, BoxProps } from 'nde-design-system';
-
+import ReactMarkdown from 'react-markdown';
+import rehypeRaw from 'rehype-raw';
+import remarkGfm from 'remark-gfm';
 /**
  * Displays + formats HTML block content.
- *
  */
 
 interface DisplayHTMLContentProps extends BoxProps {
@@ -21,11 +22,6 @@ export const DisplayHTMLContent: React.FC<DisplayHTMLContentProps> = ({
     // replace no break space with breaking space.
     let formattedContent = contentString.replace(/\u00a0/g, ' ');
 
-    // Links should be external.
-    formattedContent = formattedContent.replaceAll(
-      '<a ',
-      "<a target='_blank' ",
-    );
     return formattedContent;
   };
   return (
@@ -33,6 +29,7 @@ export const DisplayHTMLContent: React.FC<DisplayHTMLContentProps> = ({
       w='100%'
       fontSize='sm'
       flex={1}
+      style={{ whiteSpace: 'pre-wrap' }}
       sx={{
         pre: { display: 'none' },
         // Display nested links with nde link format.
@@ -42,11 +39,11 @@ export const DisplayHTMLContent: React.FC<DisplayHTMLContentProps> = ({
           _hover: { textDecoration: 'none' },
         },
       }}
-      style={{ whiteSpace: 'pre-wrap' }}
-      dangerouslySetInnerHTML={{
-        __html: formatContent(content) || '',
-      }}
       {...props}
-    ></Box>
+    >
+      <ReactMarkdown rehypePlugins={[rehypeRaw, remarkGfm]} linkTarget='_blank'>
+        {formatContent(content)}
+      </ReactMarkdown>
+    </Box>
   );
 };
