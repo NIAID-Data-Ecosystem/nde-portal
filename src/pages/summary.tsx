@@ -127,6 +127,13 @@ const SummaryPage: NextPage = () => {
   if (!hasMounted || !router.isReady) {
     return null;
   }
+  const filter_tags = Object.entries({
+    ...filters,
+    date:
+      filters.date && filters.date.length > 0
+        ? [`${filters.date[0]} to ${filters.date[filters.date.length - 1]}`]
+        : [],
+  });
 
   return (
     <>
@@ -188,15 +195,19 @@ const SummaryPage: NextPage = () => {
               <Flex>
                 {Object.values(filters).flat().length > 0 && (
                   <FilterTags
-                    tags={Object.entries(filters)}
+                    tags={filter_tags}
                     removeAllFilters={() => removeAllFilters()}
                     removeSelectedFilter={(
                       name: string,
                       value: string | number,
                     ) => {
-                      const updatedFilter = {
+                      let updatedFilter = {
                         [name]: filters[name].filter(v => v !== value),
                       };
+                      // If date is removed we set the value to an empty array.
+                      if (name === 'date') {
+                        updatedFilter = { [name]: [] };
+                      }
                       updateFilters(updatedFilter);
                     }}
                   />

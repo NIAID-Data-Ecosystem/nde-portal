@@ -53,6 +53,7 @@ export const filtersConfig: {
 } = {
   '@type': { name: 'Type' },
   'includedInDataCatalog.name': { name: 'Source' },
+  date: { name: 'Date ' },
   keywords: { name: 'Keywords' },
   'measurementTechnique.name': {
     name: 'Measurement Technique',

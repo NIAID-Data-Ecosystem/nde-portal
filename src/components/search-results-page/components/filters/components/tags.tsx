@@ -44,10 +44,12 @@ export const FilterTags: React.FC<FilterTags> = ({
             if (!filtersConfig[filterName]) {
               return null;
             }
+
             return (
               <Tag key={`${v}`} colorScheme='secondary' size='lg' m={1}>
                 <TagLabel whiteSpace='break-spaces'>
-                  {filtersConfig[filterName].name} : {v}
+                  {filtersConfig[filterName].name}
+                  {v ? `: ${v}` : ''}
                 </TagLabel>
                 <TagCloseButton
                   onClick={() => removeSelectedFilter(filterName, v)}
