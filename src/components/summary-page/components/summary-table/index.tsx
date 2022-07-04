@@ -210,8 +210,8 @@ export const SummaryTable: React.FC<SummaryTableProps> = ({
           <StyledTable variant='striped' colorScheme={'secondary'}>
             {data?.total && (
               <TableCaption color='text.body'>
-                Showing ({(page - 1) * size}-{Math.min(page * size, total)}) of{' '}
-                {formatNumber(data?.total) || '-'} resources.
+                Showing ({(page - 1) * size + 1}-{Math.min(page * size, total)})
+                of {formatNumber(data?.total) || '-'} resources.
               </TableCaption>
             )}
             {columns && (
