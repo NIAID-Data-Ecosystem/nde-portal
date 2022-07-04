@@ -70,17 +70,22 @@
       "routes": [
         {
           "label": "Accessibility",
-          "href": "https://data-staging.niaid.nih.gov/accessibility",
+          "href": "https://www.niaid.nih.gov/global/web-accessibility",
+          "isExternal": true
+        },
+        {
+          "label": "Copyright",
+          "href": "https://www.niaid.nih.gov/global/copyright-and-reuse",
           "isExternal": true
         },
         {
           "label": "Disclaimer",
-          "href": "https://data-staging.niaid.nih.gov/disclaimer",
+          "href": "https://www.niaid.nih.gov/global/disclaimers",
           "isExternal": true
         },
         {
           "label": "Privacy Policy",
-          "href": "https://data-staging.niaid.nih.gov/privacy",
+          "href": "https://www.niaid.nih.gov/global/privacy-policy",
           "isExternal": true
         },
         {
