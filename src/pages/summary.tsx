@@ -20,6 +20,9 @@ import {
 import { useHasMounted } from 'src/hooks/useHasMounted';
 import { queryFilterObject2String } from 'src/components/filter';
 import { FilterTags } from 'src/components/search-results-page/components/filters/components/tags';
+import { useQuery } from 'react-query';
+import { FacetTerm, FetchSearchResultsResponse } from 'src/utils/api/types';
+import { fetchSearchResults } from 'src/utils/api';
 
 /*
  [COMPONENT INFO]:
@@ -27,7 +30,10 @@ import { FilterTags } from 'src/components/search-results-page/components/filter
 
  All vis share the same query string and filtering mechanism so that they update together. The table also updates accordingly.
 */
-
+export interface SummaryQueryResponse {
+  total: number;
+  facets: { [key: string]: FacetTerm[] };
+}
 const SummaryPage: NextPage = () => {
   // Grant queries of interest.
   const suggestedQueries = [
@@ -124,6 +130,77 @@ const SummaryPage: NextPage = () => {
   // Check if component has mounted and router has needed info.
   const hasMounted = useHasMounted();
   const router = useRouter();
+
+  // All the facets that you need.
+  const facets = [
+    'includedInDataCatalog.name',
+    'infectiousAgent.name',
+    '@type',
+    'dateModified',
+    'infectiousDisease.name',
+    'measurementTechnique.name',
+    'date',
+    'funding.funder.name',
+  ];
+
+  // This query function is interchangeable for both queries we have below.
+  const queryFn = (queryString: string, filters?: {}) => {
+    if (typeof queryString !== 'string' && !queryString) {
+      return;
+    }
+    const filter_string = filters ? queryFilterObject2String(filters) : null;
+
+    return fetchSearchResults({
+      q: filter_string
+        ? `${
+            queryString === '__all__' ? '' : `${queryString} AND `
+          }${filter_string}`
+        : `${queryString}`,
+      facet_size: 1000,
+      facets: facets.join(','),
+    });
+  };
+
+  /*
+  Get Grant names. We might extract this query to "pages/summary.tsx" and just get all the facets we need that are unchanging in one spot. I use a similar query for Filters and will probably need the same for my viz.
+  */
+
+  const { data, isLoading, error } = useQuery<
+    FetchSearchResultsResponse | undefined,
+    Error,
+    SummaryQueryResponse | null
+  >(
+    [
+      'search-results',
+      {
+        q: queryString,
+        facets,
+      },
+    ],
+    () => queryFn(queryString),
+    {
+      refetchOnWindowFocus: false,
+      select: d => {
+        if (!d || !d.facets) {
+          return null;
+        }
+        return {
+          total: d.total,
+          facets: {
+            type: d.facets['@type'].terms || [],
+            date: d.facets['date'].terms || [],
+            dateModified: d.facets['dateModified'].terms || [],
+            funder: d.facets['funding.funder.name'].terms || [],
+            source: d.facets['includedInDataCatalog.name'].terms || [],
+            infectiousAgent: d.facets['infectiousAgent.name'].terms || [],
+            infectiousDisease: d.facets['infectiousDisease.name'].terms || [],
+            measurementTechnique:
+              d.facets['measurementTechnique.name'].terms || [],
+          },
+        };
+      },
+    },
+  );
   if (!hasMounted || !router.isReady) {
     return null;
   }
@@ -231,6 +308,35 @@ const SummaryPage: NextPage = () => {
             updateFilters={updateFilters}
           />
         </section>
+
+        {/* Zoomable network */}
+        {/* <Box w='100%' p={6} bg='tertiary.900'>
+          <ZoomNetwork
+            updateFilters={updateFilters}
+            queryString={queryString}
+            filters={filters}
+          />
+        </Box> */}
+        {/* Original network */}
+        {/* <PageContent w='100%' p={6} bg='tertiary.900' minH={0}>
+          <Network queryString={queryString} filters={filters} />
+        </PageContent> */}
+        {/* Bar Charts */}
+        {/* {data && (
+          <MeasurementPathogenViz
+            queryString={queryString}
+            filters={filters}
+            updateFilters={updateFilters}
+            data={data}
+          />
+        )} */}
+
+        {/* Circle packing graph */}
+        {/* <Box w={'100%'} h={1600} mb={10}>
+          {data && (
+            <CirclePacking queryString={queryString} filters={filters} />
+          )}
+        </Box> */}
 
         {/* SummaryTable */}
         <section id='datasets-table'>
