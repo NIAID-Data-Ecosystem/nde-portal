@@ -216,7 +216,6 @@ const convertToArray = (property: any) => {
 };
 
 export const formatAPIResource = (data: any) => {
-  console.log(data);
   const formattedResource: FormattedResource = {
     ...data,
     id: data._id,
