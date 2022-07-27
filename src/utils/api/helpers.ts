@@ -277,9 +277,10 @@ export const formatAPIResource = (data: any) => {
     topic: convertToArray(data.topicCategory),
     url: data.url || null,
     variableMeasured:
-      data.variableMeasured && data.variableMeasured.toLowerCase() !== 'unknown'
-        ? convertToArray(data.variableMeasured)
-        : null,
+      typeof data.variableMeasured === 'string' &&
+      data.variableMeasured.toLowerCase() === 'unknown'
+        ? null
+        : convertToArray(data.variableMeasured),
     version: data.version || null,
   };
   return formattedResource;
