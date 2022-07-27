@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import * as d3 from 'd3';
 import { useRouter } from 'next/router';
-import { Box, Button, Flex, Heading } from 'nde-design-system';
+import { Box, Button, Flex, Heading, Text } from 'nde-design-system';
 import { SelectedFilterType } from 'src/components/summary-page';
 import { useHasMounted } from 'src/hooks/useHasMounted';
 import { queryFilterObject2String } from 'src/components/filter';
@@ -71,10 +71,24 @@ export const MeasurementPathogenViz: React.FC<MeasurementPathogenViz> = ({
     [data, secondaryKey],
   );
 
+  if (
+    !primaryData.length &&
+    !secondaryData.length &&
+    primaryKey &&
+    secondaryKey
+  ) {
+    return (
+      <Text color='white'>
+        No data for grouping {options[secondaryKey].name} by{' '}
+        {options[primaryKey].name} <br />
+        [TO DO]: group values that have no "grouped by" into n/a or Other?
+      </Text>
+    );
+  }
   return (
     <>
       {/* Primary bar graph */}
-      {primaryData && (
+      {primaryData.length > 0 && primaryKey && (
         <Box my={8}>
           <Heading as='h2' size='sm' color='#fff'>
             {options[primaryKey]['name']}
@@ -89,7 +103,7 @@ export const MeasurementPathogenViz: React.FC<MeasurementPathogenViz> = ({
 
       {/* Secondary bar graph */}
 
-      {secondaryData && (
+      {secondaryData.length > 0 && secondaryKey && (
         <Box my={8}>
           <Heading as='h2' size='sm' color='#fff'>
             {options[secondaryKey]['name']}
