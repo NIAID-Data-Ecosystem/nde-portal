@@ -14,9 +14,21 @@ export interface Facet {
   };
 }
 
+type NestedFacet =
+  | {
+      missing: number;
+      other: number;
+      terms: FacetTerm[];
+      total: number;
+      _type: string;
+    }
+  | number
+  | string;
+
 export interface FacetTerm {
   count: number;
   term: string;
+  [key: string]: NestedFacet;
 }
 
 export interface SearchResultsData {

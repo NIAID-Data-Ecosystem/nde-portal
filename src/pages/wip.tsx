@@ -16,6 +16,7 @@ import {
   useFilterString,
   useQueryString,
   DylanVis,
+  Network,
 } from 'src/components/summary-page';
 import { useHasMounted } from 'src/hooks/useHasMounted';
 import { queryFilterObject2String } from 'src/components/filter';
@@ -301,42 +302,23 @@ const SummaryPage: NextPage = () => {
         </section>
 
         {/* Visualizations */}
-        <section id='data-visualizations'>
+        {/* <section id='data-visualizations'>
           <DylanVis
             queryString={queryString}
             filters={filters}
             updateFilters={updateFilters}
           />
-        </section>
+        </section> */}
 
         {/* Zoomable network */}
-        {/* <Box w='100%' p={6} bg='tertiary.900'>
-          <ZoomNetwork
-            updateFilters={updateFilters}
-            queryString={queryString}
-            filters={filters}
-          />
-        </Box> */}
-        {/* Original network */}
-        {/* <PageContent w='100%' p={6} bg='tertiary.900' minH={0}>
-          <Network queryString={queryString} filters={filters} />
-        </PageContent> */}
-        {/* Bar Charts */}
-        {/* {data && (
-          <MeasurementPathogenViz
+        <Box w='100%' bg='tertiary.900'>
+          <Network
             queryString={queryString}
             filters={filters}
             updateFilters={updateFilters}
-            data={data}
+            removeAllFilters={() => removeAllFilters()}
           />
-        )} */}
-
-        {/* Circle packing graph */}
-        {/* <Box w={'100%'} h={1600} mb={10}>
-          {data && (
-            <CirclePacking queryString={queryString} filters={filters} />
-          )}
-        </Box> */}
+        </Box>
 
         {/* SummaryTable */}
         <section id='datasets-table'>
