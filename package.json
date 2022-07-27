@@ -45,6 +45,7 @@
     "rehype-raw": "^6.1.1",
     "remark-gfm": "^3.0.1",
     "styled-system": "^5.1.5",
+    "textures": "^1.2.3",
     "usehooks-ts": "^2.4.1"
   },
   "devDependencies": {
