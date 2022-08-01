@@ -29,22 +29,24 @@ const Main: React.FC<Main> = ({ sourceData }) => {
     setSchemaText([...schemaText, sourceName]);
     return setSchemaId([...schemaId, sourceName]);
   }
-  // Fetch source information from github
+
   const { data, error, isLoading } = useQuery<any | undefined, Error>(
     ['sources', {}],
     async () => {
       const data = await Promise.all(
         Object.entries(repos).map(([k, source]) => {
-          if (source.sourceInfo) {
+          if (source.code.file) {
+            // Fetch source information from github
             return fetchSources({
-              id: source.sourceInfo.identifier,
+              id: (source.sourceInfo && source.sourceInfo.identifier) || k,
               sourcePath: source.code.file,
-              name: source.sourceInfo.name,
-              description: source.sourceInfo.description,
-              dateModified: source.version,
+              name: (source.sourceInfo && source.sourceInfo.name) || k,
+              description:
+                (source.sourceInfo && source.sourceInfo.description) || '',
+              dateModified: source.version || '',
               numberOfRecords: source.stats[k] || 0,
-              schema: source.sourceInfo.schema,
-              url: source.sourceInfo.url,
+              schema: (source.sourceInfo && source.sourceInfo.schema) || null,
+              url: (source.sourceInfo && source.sourceInfo.url) || '',
             });
           }
         }),
@@ -56,7 +58,7 @@ const Main: React.FC<Main> = ({ sourceData }) => {
   if (error) {
     return (
       <Error
-        message="It's that the data is unavailable at this time."
+        message='The data is unavailable at this time.'
         bg='transparent'
         color='text.body'
         minH='unset'
@@ -87,13 +89,6 @@ const Main: React.FC<Main> = ({ sourceData }) => {
         </Empty>
       ) : (
         sources.map((sourceObj: SourceResponse, i: number) => {
-          const { sourceName: includedInDataCatalogName } =
-            ResourceConfig.repositories.find(source => {
-              return source.name
-                .toLowerCase()
-                .includes(sourceObj.name.toLowerCase());
-            }) || { sourceName: sourceObj.name };
-
           return (
             <Box
               id={`${sourceObj.name}`}
@@ -132,90 +127,94 @@ const Main: React.FC<Main> = ({ sourceData }) => {
               <Box mx={[2, 2, 20]}>
                 <DisplayHTMLContent content={sourceObj.description} mt={4} />
 
-                <Box mt={4} fontWeight='bold' display={['none', 'block']}>
-                  <Heading as='h3' size='xs'>
-                    Visualization of {sourceObj.name} properties transformed to
-                    the NIAID Data Ecosystem
-                  </Heading>
-                  {(schemaText.includes(sourceObj.name) && (
-                    <Button
-                      id={`${sourceObj.name}-hide-button`}
-                      my={2}
-                      onClick={() => schemaIdFunc(sourceObj.name)}
-                    >
-                      Hide Schema
-                    </Button>
-                  )) || (
-                    <Button
-                      id={`${sourceObj.name}-show-button`}
-                      onClick={() => schemaIdFunc(sourceObj.name)}
-                      my={2}
-                      variant={'outline'}
-                    >
-                      Show Schema
-                    </Button>
-                  )}
-                  <Collapse in={schemaId.includes(sourceObj.name)}>
-                    {schemaId.includes(sourceObj.name) && (
-                      <Box
-                        mt={4}
-                        position='relative'
-                        overflowX='auto'
-                        boxShadow='low'
-                        borderRadius={'semi'}
+                {sourceObj?.schema && (
+                  <Box mt={4} fontWeight='bold' display={['none', 'block']}>
+                    <Heading as='h3' size='xs'>
+                      Visualization of {sourceObj.name} properties transformed
+                      to the NIAID Data Ecosystem
+                    </Heading>
+                    {(schemaText.includes(sourceObj.name) && (
+                      <Button
+                        id={`${sourceObj.name}-hide-button`}
+                        my={2}
+                        onClick={() => schemaIdFunc(sourceObj.name)}
                       >
+                        Hide Schema
+                      </Button>
+                    )) || (
+                      <Button
+                        id={`${sourceObj.name}-show-button`}
+                        onClick={() => schemaIdFunc(sourceObj.name)}
+                        my={2}
+                        variant={'outline'}
+                      >
+                        Show Schema
+                      </Button>
+                    )}
+                    <Collapse in={schemaId.includes(sourceObj.name)}>
+                      {schemaId.includes(sourceObj.name) && (
                         <Box
-                          as='table'
-                          w='100%'
-                          bg='#374151'
-                          color='whiteAlpha.800'
-                          textAlign='left'
-                          fontSize='sm'
+                          mt={4}
+                          position='relative'
+                          overflowX='auto'
+                          boxShadow='low'
+                          borderRadius={'semi'}
                         >
-                          <Box as='thead' textTransform={'uppercase'}>
-                            <tr>
-                              <Box as='th' scope='col' px={6} py={3}>
-                                {sourceObj.name} Property
-                              </Box>
-                              <Box as='th' scope='col' px={6} py={3}>
-                                NIAID Data Ecosystem Property
-                              </Box>
-                            </tr>
-                          </Box>
-
-                          <Box as='tbody' bg='#1F2937' border='gray.100'>
-                            {Object.entries(sourceObj.schema).map((item, i) => {
-                              return (
-                                <Box
-                                  as='tr'
-                                  key={item[0]}
-                                  borderBottom='1px solid'
-                                  borderColor='gray.700'
-                                >
-                                  {Object.entries(item).map(field => {
-                                    return (
-                                      <Box
-                                        as='td'
-                                        key={`${field[0]}-${field[1]}`}
-                                        px={6}
-                                        py={2}
-                                        fontWeight='medium'
-                                        color='#fff'
-                                        whiteSpace='nowrap'
-                                      >
-                                        {field[1]}
-                                      </Box>
-                                    );
-                                  })}
+                          <Box
+                            as='table'
+                            w='100%'
+                            bg='#374151'
+                            color='whiteAlpha.800'
+                            textAlign='left'
+                            fontSize='sm'
+                          >
+                            <Box as='thead' textTransform={'uppercase'}>
+                              <tr>
+                                <Box as='th' scope='col' px={6} py={3}>
+                                  {sourceObj.name} Property
                                 </Box>
-                              );
-                            })}
+                                <Box as='th' scope='col' px={6} py={3}>
+                                  NIAID Data Ecosystem Property
+                                </Box>
+                              </tr>
+                            </Box>
+
+                            <Box as='tbody' bg='#1F2937' border='gray.100'>
+                              {Object.entries(sourceObj.schema).map(
+                                (item, i) => {
+                                  return (
+                                    <Box
+                                      as='tr'
+                                      key={item[0]}
+                                      borderBottom='1px solid'
+                                      borderColor='gray.700'
+                                    >
+                                      {Object.entries(item).map(field => {
+                                        return (
+                                          <Box
+                                            as='td'
+                                            key={`${field[0]}-${field[1]}`}
+                                            px={6}
+                                            py={2}
+                                            fontWeight='medium'
+                                            color='#fff'
+                                            whiteSpace='nowrap'
+                                          >
+                                            {field[1]}
+                                          </Box>
+                                        );
+                                      })}
+                                    </Box>
+                                  );
+                                },
+                              )}
+                            </Box>
                           </Box>
                         </Box>
-                      </Box>
-                    )}
-                  </Collapse>
-                </Box>
+                      )}
+                    </Collapse>
+                  </Box>
+                )}
                 <Box mt={4}>
                   <Heading as='h3' size='xs'>
                     Latest Release{' '}
@@ -235,26 +234,28 @@ const Main: React.FC<Main> = ({ sourceData }) => {
                   flexWrap='wrap'
                   maxW={600}
                 >
-                  <NextLink
-                    href={{
-                      pathname: `${sourceObj.url}`,
-                    }}
-                    passHref
-                  >
-                    <Button
-                      wordBreak='break-word'
-                      whiteSpace='normal'
-                      m={[0, 2]}
-                      mt={4}
-                      textAlign='center'
-                      isExternal
-                      flex={1}
-                      minW={['unset', 400]}
-                      variant='outline'
+                  {sourceObj.url && (
+                    <NextLink
+                      href={{
+                        pathname: `${sourceObj.url}`,
+                      }}
+                      passHref
                     >
-                      View {sourceObj.name} Site
-                    </Button>
-                  </NextLink>
+                      <Button
+                        wordBreak='break-word'
+                        whiteSpace='normal'
+                        m={[0, 2]}
+                        mt={4}
+                        textAlign='center'
+                        isExternal
+                        flex={1}
+                        minW={['unset', 400]}
+                        variant='outline'
+                      >
+                        View {sourceObj.name} Site
+                      </Button>
+                    </NextLink>
+                  )}
                   <NextLink
                     href={{
                       pathname: `/search`,

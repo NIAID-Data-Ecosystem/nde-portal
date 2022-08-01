@@ -11,8 +11,8 @@ const Sidebar: React.FC<Sidebar> = ({ data }) => {
   const sourceNames = [];
 
   for (const source in data.src) {
-    if (data.src[source].sourceInfo) {
-      sourceNames.push([data.src[source].sourceInfo.name, source]);
+    if (data.src[source]) {
+      sourceNames.push([data.src[source]?.sourceInfo?.name || source, source]);
     }
   }
 
@@ -20,22 +20,22 @@ const Sidebar: React.FC<Sidebar> = ({ data }) => {
 
   return (
     <>
-      {sourceNames.map((name, index) => {
+      {sourceNames.map(([name, id], index) => {
         return (
           <ListItem key={index} _hover={{ bg: 'gray.50' }} cursor='pointer'>
             <Box
               as='a'
               d='block'
-              href={`#${name[0]}`}
-              aria-label={`Go to ${name[0]} section`}
+              href={`#${name}`}
+              aria-label={`Go to ${name} section`}
               px={[2, 4, 6]}
               py={4}
             >
               <Heading size='h6'>
-                {name[0]} <br />
+                {name} <br />
               </Heading>
               <Text fontWeight='medium' fontSize='sm'>
-                Latest Release {formatDate(data.src[name[1]].version)}
+                Latest Release {formatDate(data.src[id].version)}
               </Text>
             </Box>
           </ListItem>

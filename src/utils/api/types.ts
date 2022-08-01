@@ -234,7 +234,7 @@ export interface MetadataSource {
   sourceInfo: {
     name: string;
     description: string;
-    schema: Object;
+    schema: Object | null;
     url: string;
     identifier: string;
   };
