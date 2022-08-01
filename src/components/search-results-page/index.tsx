@@ -135,7 +135,6 @@ const SearchResultsPage = () => {
         return;
       }
       const filter_string = queryFilterObject2String(selectedFilters);
-
       return fetchSearchResults({
         q: filter_string
           ? `${
@@ -212,8 +211,8 @@ const SearchResultsPage = () => {
       }
 
       return Array.isArray(querystring)
-        ? `(${querystring.map(s => encodeString(s.trim())).join('+')})`
-        : `(${encodeString(querystring.trim())})`;
+        ? `${querystring.map(s => encodeString(s.trim())).join('+')}`
+        : `${encodeString(querystring.trim())}`;
     });
     setSelectedPage(() => {
       if (!from) {
