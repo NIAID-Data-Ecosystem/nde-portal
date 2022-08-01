@@ -5,6 +5,7 @@ import {
   FormattedResource,
   ResourceType,
   Funder,
+  AccessTypes,
 } from './types';
 
 interface APICreator {
@@ -215,6 +216,28 @@ const convertToArray = (property: any) => {
   return property ? (Array.isArray(property) ? property : [property]) : null;
 };
 
+/*
+ Stardized conditions of access value. Feedback provided by NIAID proposes "controlled" access instead of "closed" or "restricted".
+ See issue #59 for more information.
+*/
+type APIAccessTypes = 'Open' | 'Closed' | 'Embargoed' | 'Restricted';
+
+const formatConditionsOfAccess = (
+  access: APIAccessTypes,
+): AccessTypes | null => {
+  if (!access || access === undefined) {
+    return null;
+  } else if (
+    access === 'Closed' ||
+    access.toLowerCase().includes('closed') ||
+    access.toLowerCase().includes('restricted')
+  ) {
+    return 'Controlled';
+  } else {
+    return access;
+  }
+};
+
 export const formatAPIResource = (data: any) => {
   const formattedResource: FormattedResource = {
     ...data,
@@ -226,7 +249,8 @@ export const formatAPIResource = (data: any) => {
     citedBy: data.citedBy || null,
     codeRepository: data.codeRepository || null,
     condition: data.condition || null,
-    conditionsOfAccess: data.conditionsOfAccess || null,
+    conditionsOfAccess:
+      formatConditionsOfAccess(data.conditionsOfAccess) || null,
     date: formatDate(data.date) || null,
     dateCreated: formatDate(data.dateCreated) || null,
     dateModified: formatDate(data.dateModified) || null,
