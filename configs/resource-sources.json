@@ -42,6 +42,16 @@
       "imageUrl": "/assets/resources/reframedb.png"
     },
     {
+      "sourceName": "VEuPathDB",
+      "name": "VEuPathDB",
+      "imageUrl": "/assets/resources/VEuPathDB.png"
+    },
+    {
+      "sourceName": "Vivli",
+      "name": "Vivli",
+      "imageUrl": "/assets/resources/vivli.png"
+    },
+    {
       "sourceName": "Zenodo",
       "name": "Zenodo",
       "imageUrl": "/assets/resources/zenodo.svg"
