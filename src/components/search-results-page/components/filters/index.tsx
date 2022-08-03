@@ -30,7 +30,7 @@ import { Filter } from 'src/components/filter';
 import { fetchSearchResults } from 'src/utils/api';
 import { FaFilter } from 'react-icons/fa';
 import { NAV_HEIGHT } from 'src/components/page-container';
-import { formatType } from 'src/utils/api/helpers';
+import { formatDate, formatType } from 'src/utils/api/helpers';
 import { FaMinus, FaPlus } from 'react-icons/fa';
 import { MetadataIcon } from 'src/components/icon';
 import { getMetadataColor } from 'src/components/icon/helpers';
@@ -125,6 +125,15 @@ export const Filters: React.FC<Filters> = ({
     { refetchOnWindowFocus: false },
   );
 
+  // Format term for display purposes
+  const formatTerm = (prop: keyof Facet, term: string) => {
+    if (prop === '@type') {
+      return formatType(term);
+    } else if (prop === 'date') {
+      return formatDate(term);
+    }
+    return term;
+  };
   // Fn for updating the filter items count when a filter checkbox is toggled.
   const updateFilterValues = (
     prop: keyof Facet,
@@ -141,7 +150,7 @@ export const Filters: React.FC<Filters> = ({
 
         return {
           count: updatedCount,
-          term: prop === '@type' ? formatType(term) : term,
+          term: formatTerm(prop, term),
         };
       })
       .sort((a, b) => {
