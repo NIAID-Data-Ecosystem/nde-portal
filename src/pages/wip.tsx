@@ -145,63 +145,63 @@ const SummaryPage: NextPage = () => {
   ];
 
   // This query function is interchangeable for both queries we have below.
-  const queryFn = (queryString: string, filters?: {}) => {
-    if (typeof queryString !== 'string' && !queryString) {
-      return;
-    }
-    const filter_string = filters ? queryFilterObject2String(filters) : null;
+  // const queryFn = (queryString: string, filters?: {}) => {
+  //   if (typeof queryString !== 'string' && !queryString) {
+  //     return;
+  //   }
+  //   const filter_string = filters ? queryFilterObject2String(filters) : null;
 
-    return fetchSearchResults({
-      q: filter_string
-        ? `${
-            queryString === '__all__' ? '' : `${queryString} AND `
-          }${filter_string}`
-        : `${queryString}`,
-      facet_size: 1000,
-      facets: facets.join(','),
-    });
-  };
+  //   return fetchSearchResults({
+  //     q: filter_string
+  //       ? `${
+  //           queryString === '__all__' ? '' : `${queryString} AND `
+  //         }${filter_string}`
+  //       : `${queryString}`,
+  //     facet_size: 1000,
+  //     facets: facets.join(','),
+  //   });
+  // };
 
   /*
   Get Grant names. We might extract this query to "pages/summary.tsx" and just get all the facets we need that are unchanging in one spot. I use a similar query for Filters and will probably need the same for my viz.
   */
 
-  const { data, isLoading, error } = useQuery<
-    FetchSearchResultsResponse | undefined,
-    Error,
-    SummaryQueryResponse | null
-  >(
-    [
-      'search-results',
-      {
-        q: queryString,
-        facets,
-      },
-    ],
-    () => queryFn(queryString),
-    {
-      refetchOnWindowFocus: false,
-      select: d => {
-        if (!d || !d.facets) {
-          return null;
-        }
-        return {
-          total: d.total,
-          facets: {
-            type: d.facets['@type'].terms || [],
-            date: d.facets['date'].terms || [],
-            dateModified: d.facets['dateModified'].terms || [],
-            funder: d.facets['funding.funder.name'].terms || [],
-            source: d.facets['includedInDataCatalog.name'].terms || [],
-            infectiousAgent: d.facets['infectiousAgent.name'].terms || [],
-            infectiousDisease: d.facets['infectiousDisease.name'].terms || [],
-            measurementTechnique:
-              d.facets['measurementTechnique.name'].terms || [],
-          },
-        };
-      },
-    },
-  );
+  // const { data, isLoading, error } = useQuery<
+  //   FetchSearchResultsResponse | undefined,
+  //   Error,
+  //   SummaryQueryResponse | null
+  // >(
+  //   [
+  //     'search-results',
+  //     {
+  //       q: queryString,
+  //       facets,
+  //     },
+  //   ],
+  //   () => queryFn(queryString),
+  //   {
+  //     refetchOnWindowFocus: false,
+  //     select: d => {
+  //       if (!d || !d.facets) {
+  //         return null;
+  //       }
+  //       return {
+  //         total: d.total,
+  //         facets: {
+  //           type: d.facets['@type'].terms || [],
+  //           date: d.facets['date'].terms || [],
+  //           dateModified: d.facets['dateModified'].terms || [],
+  //           funder: d.facets['funding.funder.name'].terms || [],
+  //           source: d.facets['includedInDataCatalog.name'].terms || [],
+  //           infectiousAgent: d.facets['infectiousAgent.name'].terms || [],
+  //           infectiousDisease: d.facets['infectiousDisease.name'].terms || [],
+  //           measurementTechnique:
+  //             d.facets['measurementTechnique.name'].terms || [],
+  //         },
+  //       };
+  //     },
+  //   },
+  // );
   if (!hasMounted || !router.isReady) {
     return null;
   }

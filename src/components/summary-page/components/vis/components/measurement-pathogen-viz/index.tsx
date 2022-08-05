@@ -1,26 +1,20 @@
-import React, { useMemo } from 'react';
-import * as d3 from 'd3';
-import { useRouter } from 'next/router';
-import { Box, Button, Flex, Heading, Text } from 'nde-design-system';
+import React from 'react';
+import { Box, Heading, Text } from 'nde-design-system';
 import { SelectedFilterType } from 'src/components/summary-page';
-import { useHasMounted } from 'src/hooks/useHasMounted';
-import { queryFilterObject2String } from 'src/components/filter';
-import { fetchSearchResults } from 'src/utils/api';
-import { FetchSearchResultsResponse, FacetTerm } from 'src/utils/api/types';
-import { useQuery } from 'react-query';
-import { Error } from 'src/components/error';
 import { BarChart } from './components/bar-chart';
-import { SummaryQueryResponse } from 'src/pages/summary';
-import { FilterTags } from 'src/components/search-results-page/components/filters/components/tags';
-import { Data, Datum, parameters } from '../network/components/chart';
+import {
+  Data,
+  Datum,
+  parameters as chartParameters,
+} from '../network/components/chart';
 import { options } from '../network';
-import { a } from 'react-spring';
+import { FetchSearchResultsResponse } from 'src/utils/api/types';
 
 interface MeasurementPathogenViz {
   //[primary, secondary] group keys
   keys: string[];
   // Unfiltered data
-  data: Data[];
+  data: FetchSearchResultsResponse;
   // Filters object
   filters: SelectedFilterType;
   // HandlerFn for updating filters
@@ -36,40 +30,9 @@ export const MeasurementPathogenViz: React.FC<MeasurementPathogenViz> = ({
   setHovered,
 }) => {
   const [primaryKey, secondaryKey] = keys;
-  const primaryData = useMemo(
-    () =>
-      data
-        .map(d => d3.group(d.children, d => d.type).get(primaryKey) || [])
-        .flat(),
-    [data, primaryKey],
-  );
 
-  const secondaryData = useMemo(
-    () =>
-      Object.values(
-        data
-          .map(d => d3.group(d.children, d => d.type).get(secondaryKey) || [])
-          .flat()
-          .reduce((r, d, i) => {
-            if (!r[d.name]) {
-              r[d.name] = {
-                id: d.name,
-                name: d.name,
-                count: d.count,
-                fill: parameters.secondary.fill,
-                primary: null,
-                type: d.type,
-              };
-            } else {
-              r[d.name]['count'] += d.count;
-            }
-            return r;
-          }, {} as { [key: string]: any }),
-      ).sort((a, b) => {
-        return b.count - a.count;
-      }),
-    [data, secondaryKey],
-  );
+  const primaryData = data?.facets[primaryKey].terms;
+  const secondaryData = data?.facets[secondaryKey].terms;
 
   if (
     !primaryData.length &&
@@ -81,7 +44,8 @@ export const MeasurementPathogenViz: React.FC<MeasurementPathogenViz> = ({
       <Text color='white'>
         No data for grouping {options[secondaryKey].name} by{' '}
         {options[primaryKey].name} <br />
-        [TO DO]: group values that have no "grouped by" into n/a or Other?
+        [TO DO]: group values that have no &quot;grouped by&quot; into n/a or
+        Other?
       </Text>
     );
   }
@@ -94,7 +58,12 @@ export const MeasurementPathogenViz: React.FC<MeasurementPathogenViz> = ({
             {options[primaryKey]['name']}
           </Heading>
           <BarChart
-            data={primaryData}
+            data={primaryData.map((d, i) => ({
+              ...d,
+              fill:
+                chartParameters.primary.getColor(i) ||
+                chartParameters.primary.fill,
+            }))}
             updateFilters={updateFilters}
             setHovered={setHovered}
           />
@@ -109,7 +78,10 @@ export const MeasurementPathogenViz: React.FC<MeasurementPathogenViz> = ({
             {options[secondaryKey]['name']}
           </Heading>
           <BarChart
-            data={secondaryData}
+            data={secondaryData.map((d, i) => ({
+              ...d,
+              fill: chartParameters.secondary.fill,
+            }))}
             updateFilters={updateFilters}
             setHovered={setHovered}
           />
