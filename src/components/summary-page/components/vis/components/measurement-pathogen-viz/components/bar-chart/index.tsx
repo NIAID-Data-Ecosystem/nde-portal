@@ -3,11 +3,11 @@ import * as d3 from 'd3';
 import { Box, Flex, Text } from 'nde-design-system';
 import { Datum } from '../../../network/components/chart';
 import { SelectedFilterType } from 'src/components/summary-page/components/hooks';
-import { height } from 'styled-system';
+import { FacetTerm } from 'src/utils/api/types';
 
 interface BarChartProps {
   // Bar chart data
-  data?: Datum[];
+  data?: FacetTerm[];
   updateFilters: (updatedFilters: SelectedFilterType) => void;
   setHovered: (node: Datum | null) => void;
 }
@@ -72,7 +72,7 @@ export const BarChart: React.FC<BarChartProps> = ({
     () =>
       d3
         .scaleOrdinal<string, number>()
-        .domain(data.map(d => d.name))
+        .domain(data.map(d => d.term))
         .range(range),
     [data, range],
   );
@@ -90,11 +90,11 @@ export const BarChart: React.FC<BarChartProps> = ({
         .join('rect')
         .attr('fill', (d: Datum) => d.fill)
         .attr('x', () => scaleX(0))
-        .attr('y', (d: Datum) => scaleY(d.name) + parameters.bars.padding / 2)
+        .attr('y', (d: Datum) => scaleY(d.term) + parameters.bars.padding / 2)
         .attr('height', parameters.bars.height - parameters.bars.padding / 2)
         .style('cursor', 'pointer')
         .on('click', (_: any, d: Datum) =>
-          updateFilters({ [d.type]: [d.name] }),
+          updateFilters({ [d.type]: [d.term] }),
         )
         .on('mouseover', (_: any, node: Datum) => {
           setHovered(node);
@@ -145,9 +145,9 @@ export const BarChart: React.FC<BarChartProps> = ({
           return (
             <Box
               width={parameters.width}
-              key={d.name}
+              key={d.term}
               position='absolute'
-              top={`${scaleY(d.name) + parameters.margin.top}px`}
+              top={`${scaleY(d.term) + parameters.margin.top}px`}
               left={`${parameters.margin.left}px`}
               transform={`translate(0, 50%)`}
             >
@@ -156,7 +156,7 @@ export const BarChart: React.FC<BarChartProps> = ({
                 fontSize={parameters.text.fontSize}
                 noOfLines={1}
               >
-                {d.name}
+                {d.term}
               </Text>
             </Box>
           );
