@@ -102,9 +102,6 @@ export const Filters: React.FC<Filters> = ({
     md: 'desktop',
   });
 
-  /*
-    Filters are created based on the query string and only the counts update only when different filters are selected.
-  */
   const { isLoading, data, error } = useQuery<
     FetchSearchResultsResponse | undefined,
     Error
@@ -150,7 +147,7 @@ export const Filters: React.FC<Filters> = ({
 
         return {
           count: updatedCount,
-          term: formatTerm(prop, term),
+          term: formatTerm(prop, term) || '',
         };
       })
       .sort((a, b) => {

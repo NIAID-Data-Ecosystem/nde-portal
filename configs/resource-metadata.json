@@ -1,73 +1,119 @@
-{
-  "title": "Metadata",
-  "fields": [
-    {
-      "title": "Downloads",
-      "property": "numberOfDownloads"
-    },
-    {
-      "title": "Views",
-      "property": "numberOfViews",
-      "info": "Number of views on the NIAID Data Ecosystem."
-    },
-    {
-      "title": "License",
-      "property": "license",
-      "info": "License associated with data re-use."
-    },
-    {
-      "title": "DOI",
-      "property": "doi",
-      "info": "Digital Object Identifier (DOI) associated with the record."
-    },
-    {
-      "title": "Health Condition",
-      "property": "healthCondition",
-      "info": "Health condition associated with the record, such as an infectious disease or chronic condition."
-    },
-    {
-      "title": "Infectious Agent",
-      "property": "infectiousAgent",
-      "info": "Infectious agent / pathogen associated with the record."
-    },
-    {
-      "title": "Species",
-      "property": "species",
-      "info": "Host species associated with record."
-    },
-    {
-      "title": "Topic",
-      "property": "topic"
-    },
-    {
-      "title": "Variable Measured",
-      "property": "variableMeasured",
-      "info": "The variables that are measured by the dataset."
-    },
-    {
-      "title": "Measurement Technique",
-      "property": "measurementTechnique",
-      "info": "The experimental or analytical technique(s) that were used to generate the dataset, or what techniques are the focus of the computational tool."
-    },
-    {
-      "title": "Citation",
-      "property": "citation",
-      "info": "Publication associated with the record."
-    },
-    {
-      "title": "Language",
-      "property": "language",
-      "info": "Language used in dataset."
-    },
-    {
-      "title": "Geographical Information",
-      "property": "spatialCoverage",
-      "info": "Geographic location covered by dataset."
-    },
-    {
-      "title": "Period",
-      "property": "temporalCoverage",
-      "info": "Period covered by dataset."
-    }
-  ]
-}
+[
+  { "title": "Downloads", "property": "numberOfDownloads" },
+  {
+    "title": "Views",
+    "property": "numberOfViews",
+    "description": "Number of views on the NIAID Data Ecosystem."
+  },
+  {
+    "title": "License",
+    "property": "license",
+    "description": "License associated with data re-use."
+  },
+  {
+    "title": "DOI",
+    "property": "doi",
+    "description": "Digital Object Identifier (DOI) associated with the record."
+  },
+  {
+    "title": "Health Condition",
+    "property": "healthCondition",
+    "description": "The infectious disease(s) / health condition(s) which are the focus of the dataset or computational tool (e.g. COVID-19, coronavirus)"
+  },
+  {
+    "title": "Infectious Agent",
+    "property": "infectiousAgent",
+    "description": "Infectious agent(s) / pathogen(s) which are the focus of the dataset or tool (e.g. SARS-CoV-2)"
+  },
+  {
+    "title": "Species",
+    "property": "species",
+    "description": "Species(es) from which dataset has been collected or for which the tool was designed or applied."
+  },
+  { "title": "Topic", "property": "topic" },
+  {
+    "title": "Variable Measured",
+    "property": "variableMeasured",
+    "description": "The variableMeasured property can indicate (repeated as necessary) the  variables that are measured in some dataset, either described as text or as pairs of identifier and description using PropertyValue."
+  },
+  {
+    "title": "Measurement Technique",
+    "property": "measurementTechnique",
+    "description": "A technique or technology used in a dataset,\ncorresponding to the method used for measuring the corresponding variable(s) (described using variableMeasured). For example, if variableMeasured is: molecule concentration, measurementTechnique could be: \"mass spectrometry\" or \"nmr spectroscopy\" or \"colorimetry\" or \"immunofluorescence\"."
+  },
+  {
+    "title": "Citation",
+    "property": "citation",
+    "description": "Publication associated with the record."
+  },
+  {
+    "title": "Language",
+    "property": "language",
+    "description": "Language used in dataset."
+  },
+  {
+    "title": "Geographical Information",
+    "property": "spatialCoverage",
+    "description": "Geographic location covered by dataset."
+  },
+  {
+    "title": "Period",
+    "property": "temporalCoverage",
+    "description": "Period covered by dataset."
+  },
+  {
+    "title": "Source",
+    "property": "includedDataCatalog",
+    "description": "A data catalog which contains this dataset (this property was previously 'catalog', preferred name is now 'includedInDataCatalog')."
+  },
+  {
+    "property": "variablesMeasured",
+    "description": "Originally named [[variablesMeasured]], The [[variableMeasured]] property can indicate (repeated as necessary) the  variables that are measured in some dataset, either described as text or as pairs of identifier and description using PropertyValue."
+  },
+  {
+    "title": "Date",
+    "property": "datasetTimeInterval",
+    "description": "The range of temporal applicability of a dataset, e.g. for a 2011 census dataset, the year 2011 (in ISO 8601 time interval format)."
+  },
+  {
+    "property": "catalog",
+    "description": "A data catalog which contains this dataset."
+  },
+  {
+    "property": "distribution",
+    "description": "A downloadable form of this dataset, at a specific location, in a specific format."
+  },
+  {
+    "title": "Source",
+    "property": "includedInDataCatalog",
+    "description": "A data catalog which contains this dataset."
+  },
+  {
+    "property": "issn",
+    "description": "The International Standard Serial Number (ISSN) that identifies this serial publication. You can repeat this property to identify different formats of, or the linking ISSN (ISSN-L) for, this serial publication."
+  },
+  {
+    "title": "Computational Tool",
+    "property": "ComputationalTool",
+    "description": "A schema describing a minimal ComputationalTool for the National Institute of Allergy and Infectious Disease (NIAID). A ComputationalTool is a software used for the collection, processing, distribution, analysis, visualization, interpretation, etc. of data. Additional schema.org and/or custom properties could be added."
+  },
+  {
+    "title": "Funding",
+    "property": "funding",
+    "description": "Funding that supports (sponsors) the collection of this dataset or computational tool through some kind of financial contribution"
+  },
+  {
+    "title": "Code Repository",
+    "property": "codeRepository",
+    "description": "Link to the source code repository of the tool."
+  },
+  {
+    "title": "Dataset",
+    "property": "dataset",
+    "description": "A schema describing a minimal Dataset for the National Institute of Allergy and Infectious Disease (NIAID). A dataset is a collection of data of a particular experimental type. Additional schema.org and/or custom properties could be added."
+  },
+  {
+    "property": "programmingLanguage",
+    "description": "The main programming language(s) used to build or execute the tool. Please use terms from the ‘Programming language’ table in the Bio.Tools documentation"
+  }
+]

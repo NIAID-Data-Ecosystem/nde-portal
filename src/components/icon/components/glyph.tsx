@@ -132,9 +132,9 @@ const Glyph: React.FC<GlyphProps> = ({ id, glyph, stroke, fill, title }) => {
     case 'healthCondition':
       return (
         <>
-          <title id={id}>
+          {/* <title id={id}>
             {title || 'Icon for health condition/infectious disease.'}
-          </title>
+          </title> */}
           <g>
             <g>
               <path
@@ -165,7 +165,7 @@ const Glyph: React.FC<GlyphProps> = ({ id, glyph, stroke, fill, title }) => {
     case 'infectiousAgent':
       return (
         <>
-          <title id={id}>{title || 'Icon for pathogen.'}</title>
+          {/* <title id={id}>{title || 'Icon for pathogen.'}</title> */}
           <g>
             <g>
               <path
@@ -319,7 +319,7 @@ const Glyph: React.FC<GlyphProps> = ({ id, glyph, stroke, fill, title }) => {
     case 'license':
       return (
         <>
-          <title id={id}>{title || 'Icon for license.'}</title>
+          {/* <title id={id}>{title || 'Icon for license.'}</title> */}
           <g>
             <g>
               <path
@@ -373,7 +373,7 @@ const Glyph: React.FC<GlyphProps> = ({ id, glyph, stroke, fill, title }) => {
     case 'measurementTechnique':
       return (
         <>
-          <title id={id}>{title || 'Icon for measurement technique.'}</title>
+          {/* <title id={id}>{title || 'Icon for measurement technique.'}</title> */}
 
           <g>
             <g>
@@ -527,7 +527,7 @@ const Glyph: React.FC<GlyphProps> = ({ id, glyph, stroke, fill, title }) => {
     case 'species':
       return (
         <>
-          <title id={id}>{title || 'Icon for species.'}</title>
+          {/* <title id={id}>{title || 'Icon for species.'}</title> */}
           <g>
             <rect x='86.8' y='37.9' width='23' height='141.8' />
             <path stroke='#000000' strokeMiterlimit='10' d='M47.2,192.9' />

@@ -19,7 +19,7 @@ interface MetadataStatProps extends FlexProps {
   value?: string[] | string | number | null;
   icon?: IconType | ((args: IconProps) => React.ReactElement);
   isLoading: boolean;
-  info?: string;
+  description?: string;
 }
 
 const StatField: React.FC<MetadataStatProps> = ({
@@ -28,7 +28,7 @@ const StatField: React.FC<MetadataStatProps> = ({
   isLoading,
   label,
   value,
-  info,
+  description,
   ...rest
 }) => {
   const isMobile = useBreakpointValue({ base: true, sm: false });
@@ -44,37 +44,44 @@ const StatField: React.FC<MetadataStatProps> = ({
   return (
     <Stat {...rest}>
       <Flex flexDirection='column'>
-        <StatLabel onClick={() => isMobile && setTooltipOpen(!isTooltipOpen)}>
-          <span style={{ display: 'flex', alignItems: 'center' }}>
-            {icon && <Icon as={icon} color='gray.500' mx={1} />}
-            {label}
-
-            {info && (
+        <Flex>
+          <StatLabel onClick={() => isMobile && setTooltipOpen(!isTooltipOpen)}>
+            {description && (
               <Tooltip
                 aria-label={`Tooltip for ${label}`}
-                label={info}
+                label={description}
                 hasArrow
                 placement='top'
                 isOpen={isMobile ? isTooltipOpen : undefined}
                 closeDelay={300}
               >
-                {/* button used here to allow user to focus on tooltip*/}
-                <button aria-label={label}>
-                  <Icon
-                    as={FaInfo}
-                    mx={2}
-                    color='gray.700'
-                    border='0.625px solid'
-                    borderRadius='100%'
-                    p={0.5}
-                    boxSize={4}
-                    cursor='pointer'
-                  />
-                </button>
+                <span
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    cursor: 'pointer',
+                  }}
+                >
+                  {icon && <Icon as={icon} color='gray.500' mx={1} />}
+                  {label}
+
+                  {/* button used here to allow user to focus on tooltip*/}
+                  <button aria-label={label}>
+                    <Icon
+                      as={FaInfo}
+                      mx={2}
+                      color='gray.700'
+                      border='0.625px solid'
+                      borderRadius='100%'
+                      p={0.5}
+                      boxSize={4}
+                    />
+                  </button>
+                </span>
               </Tooltip>
             )}
-          </span>
-        </StatLabel>
+          </StatLabel>
+        </Flex>
         {isLoading ? (
           <LoadingSpinner
             isLoading={isLoading}
