@@ -161,11 +161,7 @@ export interface PropertyNameWithURL {
 export type ResourceType = 'Dataset' | 'Computational Tool' | 'Other';
 
 // Conditions of access for dataset or tool.
-export type AccessTypes =
-  | 'Open Access'
-  | 'Closed Access'
-  | 'Embargo'
-  | 'Restricted';
+export type AccessTypes = 'Open' | 'Controlled' | 'Embargoed' | 'Restricted';
 
 export interface SdPublisher {
   identifier: string;
@@ -234,7 +230,7 @@ export interface MetadataSource {
   sourceInfo: {
     name: string;
     description: string;
-    schema: Object;
+    schema: Object | null;
     url: string;
     identifier: string;
   };

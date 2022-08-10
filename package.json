@@ -3,10 +3,11 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build && next export",
+    "build": "yarn run schema-definitions && next build && next export",
     "build:staging": "env-cmd -f .env.staging yarn build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "schema-definitions": "node src/utils/schema-definitions/index.js"
   },
   "dependencies": {
     "@chakra-ui/react": "^2.2.1",

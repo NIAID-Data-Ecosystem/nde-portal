@@ -29,8 +29,8 @@ export const useQueryString = (
       }
 
       return Array.isArray(querystring)
-        ? `(${querystring.map(s => encodeString(s.trim())).join('+')})`
-        : `(${encodeString(querystring.trim())})`;
+        ? `${querystring.map(s => encodeString(s.trim())).join('+')}`
+        : `${encodeString(querystring.trim())}`;
     });
   }, [router, defaultQueryString]);
 

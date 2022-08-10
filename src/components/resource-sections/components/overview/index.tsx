@@ -17,7 +17,6 @@ import {
   FaDownload,
   FaEye,
   FaGlobeAmericas,
-  FaLanguage,
 } from 'react-icons/fa';
 import {
   formatCitationString,
@@ -66,12 +65,12 @@ const Overview: React.FC<OverviewProps> = ({
 
   // get copy label from config for a given property.
   const getStatInfo = (metadataProperty: string) => {
-    const metadataField = MetadataConfig.fields.find(
+    const metadataField = MetadataConfig.find(
       d => d.property === metadataProperty,
     );
 
     return metadataField
-      ? { ...metadataField, label: metadataField.title }
+      ? { ...metadataField, label: metadataField.title || '' }
       : { label: metadataProperty, info: '' };
   };
   const licenseInfo = license ? formatLicense(license) : null;

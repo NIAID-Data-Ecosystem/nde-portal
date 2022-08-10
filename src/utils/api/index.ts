@@ -33,6 +33,7 @@ interface Params {
   scroll_id?: string;
 }
 
+// Fetch all search results from API.
 export const fetchSearchResults = async (params: Params) => {
   if (!params || !params.q) {
     return;
