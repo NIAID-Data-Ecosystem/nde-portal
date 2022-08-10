@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { useRouter } from 'next/router';
 import {
   Flex,
@@ -64,7 +64,7 @@ export const Network: React.FC<NetworkProps> = ({
   /****
    * Fetch Data
    */
-  const queryFn = (queryString: string) => {
+  const queryFn = (queryString: string, facets: string) => {
     if (typeof queryString !== 'string' && !queryString) {
       return;
     }
@@ -85,7 +85,7 @@ export const Network: React.FC<NetworkProps> = ({
       /*
        Aggregate the data using the second group grouped by the first (ex: measurementTechnique(secondary selection) grouped by pathogen(primary selection)).
       */
-      facets: `${primaryGroup}(${secondaryGroup})`,
+      facets,
       size: 0,
     });
   };
@@ -97,14 +97,18 @@ export const Network: React.FC<NetworkProps> = ({
     error,
   } = useQuery<FetchSearchResultsResponse | undefined, Error>(
     [
-      'search-results',
+      'search-results-aggregate',
       {
         q: queryString,
         filters,
-        facets: `${primaryGroup}(${secondaryGroup})`,
+        facets: `${primaryGroup}(${secondaryGroup}), ${secondaryGroup}`,
       },
     ],
-    () => queryFn(queryString),
+    () =>
+      queryFn(
+        queryString,
+        `${primaryGroup}(${secondaryGroup}), ${secondaryGroup}`,
+      ),
     {
       refetchOnWindowFocus: false,
     },
@@ -123,8 +127,8 @@ export const Network: React.FC<NetworkProps> = ({
           name: facet.term,
           count: facet.count, //number of datasets for group term.
           type: primaryGroup,
-          fill: i < 10 ? d3.schemeTableau10[i] : parameters.primary.fill,
-          stroke: i < 10 ? d3.schemeTableau10[i] : parameters.primary.stroke,
+          fill: parameters.primary.getColor(i) || parameters.primary.fill,
+          stroke: parameters.primary.getColor(i) || parameters.primary.stroke,
           [secondaryGroup]: [],
         };
 
@@ -186,7 +190,6 @@ export const Network: React.FC<NetworkProps> = ({
       </Error>
     );
   }
-
   const appliedFilters = Object.values(filters).flat();
 
   const Info = ({ node }: { node: any }) => {
@@ -410,7 +413,7 @@ export const Network: React.FC<NetworkProps> = ({
               <Box borderLeft='2px solid' flex={1} p={4}>
                 <MeasurementPathogenViz
                   keys={[primaryGroup, secondaryGroup]}
-                  data={formatted_data}
+                  data={APIdata}
                   filters={filters}
                   updateFilters={handleFilterUpdate}
                   setHovered={setHovered}

@@ -54,8 +54,9 @@ export const parameters = {
     none: 0,
   },
   primary: {
-    fill: theme.colors.white,
     fillOpacity: 0.4,
+    fill: theme.colors.white,
+    getColor: (i: number) => (i < 10 ? d3.schemeTableau10[i] : null),
     stroke: theme.colors.white,
     strokeWidth: 2,
   },
