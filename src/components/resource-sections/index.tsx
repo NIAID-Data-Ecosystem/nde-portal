@@ -1,6 +1,6 @@
 import React from 'react';
 import { FormattedResource } from 'src/utils/api/types';
-import { Box, Flex, Skeleton, Tag, Text } from 'nde-design-system';
+import { Box, Divider, Flex, Skeleton, Tag, Text } from 'nde-design-system';
 import {
   ResourceDates,
   ResourceHeader,
@@ -65,6 +65,7 @@ const Sections = ({
           author={data?.author}
           citation={data?.citation}
           name={data?.name}
+          alternateName={data?.alternateName}
         />
         {/* Banner showing data type and publish date. */}
         <ResourceDates data={data} />
@@ -109,9 +110,30 @@ const Sections = ({
               </Skeleton>
             )}
             {/* Show description */}
-            {section.hash === 'description' && data?.description && (
-              <DisplayHTMLContent content={data.description} overflow='auto' />
-            )}
+            {section.hash === 'description' &&
+              (data?.description || data?.abstract) && (
+                <>
+                  {/* Abstract text */}
+                  {data.abstract && (
+                    <>
+                      <DisplayHTMLContent
+                        content={`**Abstract:** ${data.abstract}` || ''}
+                        overflow='auto'
+                      />
+                      <Divider my={2} />
+                    </>
+                  )}
+
+                  {/* Description text */}
+                  {data.description && (
+                    <DisplayHTMLContent
+                      content={`${data.description}` || ''}
+                      overflow='auto'
+                    />
+                  )}
+                </>
+              )}
+
             {/* Show provenance */}
             {section.hash === 'provenance' && (
               <ResourceProvenance isLoading={isLoading} {...data} />

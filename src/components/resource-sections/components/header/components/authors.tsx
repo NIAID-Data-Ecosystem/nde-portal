@@ -12,8 +12,9 @@ import {
   Text,
   UnorderedList,
   ListItem,
+  Image,
 } from 'nde-design-system';
-import { FormattedResource, Creator } from 'src/utils/api/types';
+import { FormattedResource } from 'src/utils/api/types';
 import {
   formatAuthorsList2String,
   shouldAppendPunctuation,
@@ -32,19 +33,6 @@ const ResourceAuthors = ({
   // Check if there's affiliation information in the author list. This will decide if we display the authors in list form in the expand drawer.
   const authorsHaveAffiliation =
     authors.filter(author => !!author.affiliation).length > 0;
-
-  const formatAuthor = (author: Creator) => {
-    if (!author.name) {
-      return;
-    }
-
-    return (
-      <Text>
-        <strong>{author.name}</strong>
-        {author?.affiliation?.name ? ` ${author.affiliation.name}.` : ''}
-      </Text>
-    );
-  };
 
   return (
     <Accordion allowToggle borderColor='gray.100'>
@@ -94,26 +82,48 @@ const ResourceAuthors = ({
 
                   let author_strings =
                     formatAuthorsList2String(authors).split(',');
-                  let authorEl = formatAuthor({
-                    ...author,
-                    name: shouldAppendPunctuation(
-                      author_strings[i],
-                      !author.affiliation && i === authors.length - 1
-                        ? '.'
-                        : ',',
-                    ),
-                  });
 
                   return (
-                    <ListItem key={author.name || i} display='flex' mr={1}>
-                      {/* Link to author's orcid if available */}
-                      {url ? (
-                        <Link href={url} isExternal target='_blank'>
-                          {authorEl}
-                        </Link>
-                      ) : (
-                        <>{authorEl}</>
-                      )}
+                    <ListItem key={`${i}-${author.name}`} display='flex' mr={1}>
+                      {/* Author name. */}
+                      <Text>
+                        <strong>
+                          {shouldAppendPunctuation(
+                            author_strings[i],
+                            !author.affiliation && i === authors.length - 1
+                              ? '.'
+                              : ',',
+                          )}
+                        </strong>
+                        {author?.affiliation?.name
+                          ? ` ${author.affiliation.name}.`
+                          : ''}
+
+                        {/* Author website or orcid link. */}
+                        {url &&
+                          (url?.includes('orcid') ? (
+                            <Link href={url} target='_blank' p={1}>
+                              {/* If there's an orcid identifier, we link to orcid */}
+                              <Image
+                                display='inline'
+                                boxSize='1rem'
+                                objectFit='contain'
+                                src='https://info.orcid.org/wp-content/uploads/2019/11/orcid_16x16.png'
+                                alt='ORCID logo'
+                              />
+                            </Link>
+                          ) : (
+                            <Link
+                              href={url}
+                              target='_blank'
+                              isExternal
+                              fontSize='sm'
+                              ml={1}
+                            >
+                              Website
+                            </Link>
+                          ))}
+                      </Text>
                     </ListItem>
                   );
                 })}

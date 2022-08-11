@@ -31,40 +31,11 @@ export interface FacetTerm {
   [key: string]: NestedFacet;
 }
 
-export interface SearchResultsData {
-  max_score: number;
-  took: number;
-  total: number;
-  hits: SearchResultProps[];
-}
-
-export interface SearchResultProps {
-  '@context': string;
-  '@id': string;
-  '@type': string;
-  creator: Creator[];
-  datePublished: string;
-  description: string;
-  headline: string;
-  identifier: string;
-  image: string;
-  keywords: string[];
-  license: string;
-  name: string;
-  url: string;
-  temporalCoverage?: string[] | string;
-  spatialCoverage?: string[] | string;
-  inLanguage?: inLanguage | string;
-  _id: string;
-  _ignored: string[];
-  _score: number;
-}
-
 export interface Citation {
   id: string | null;
   url: string | null;
   name: string | null;
-  author: Creator[] | null;
+  author: Author[] | null;
   journalName: string | null;
   journalNameAbbrev: string | null;
   date: string | null;
@@ -89,7 +60,7 @@ export interface CitedBy {
   url: string | null;
 }
 
-export interface Creator {
+export interface Author {
   identifier: string | null; // orcid id
   type: string | null;
   affiliation: { name: string } | null;
@@ -175,7 +146,12 @@ export interface FormattedResource {
   id: string;
   type: string | null; // "Dataset" | "ComputationalTool"
   name: string;
-  author: Creator[] | null;
+  abstract: string | null;
+  alternateName: string | null;
+  applicationCategory: string[] | null;
+  applicationSubCategory: string[] | null;
+  applicationSuite: string[] | null;
+  author: Author[] | null;
   citation: Citation[] | null;
   citedBy: CitedBy[] | null;
   codeRepository: string[] | string | null;

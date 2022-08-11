@@ -1,5 +1,5 @@
 import {
-  Creator,
+  Author,
   Citation,
   Distribution,
   FormattedResource,
@@ -8,7 +8,7 @@ import {
   AccessTypes,
 } from './types';
 
-interface APICreator {
+interface APIAuthor {
   identifier?: string; // orcid id
   '@type'?: string;
   affiliation?: { name: string };
@@ -20,15 +20,15 @@ interface APICreator {
   url?: string;
 }
 
-// Format the creator field
-export const formatCreator = (
-  creatorData?: APICreator | APICreator[],
-): Creator[] | null => {
-  if (!creatorData) {
+// Format the author field
+export const formatAuthor = (
+  authorData?: APIAuthor | APIAuthor[],
+): Author[] | null => {
+  if (!authorData) {
     return null;
   }
 
-  const getCreatorFields = (data: APICreator) => {
+  const getAuthorFields = (data: APIAuthor) => {
     return {
       identifier: data['identifier'] || null,
       type: data['@type'] || null,
@@ -42,17 +42,17 @@ export const formatCreator = (
     };
   };
 
-  if (Array.isArray(creatorData)) {
-    return creatorData.map(data => getCreatorFields(data));
+  if (Array.isArray(authorData)) {
+    return authorData.map(data => getAuthorFields(data));
   } else {
-    return [getCreatorFields(creatorData)];
+    return [getAuthorFields(authorData)];
   }
 };
 
 interface APICitation {
   url?: string;
   name?: string;
-  author?: Creator[] | null;
+  author?: Author[] | null;
   journalName?: string;
   journalNameAbbrev?: string;
   identifier?: string;
@@ -244,7 +244,10 @@ export const formatAPIResource = (data: any) => {
     id: data._id,
     type: data['@type'] ? formatType(data['@type']) : null,
     name: data.name || null,
-    author: formatCreator(data.author) || formatCreator(data.creator),
+    applicationCategory: convertToArray(data.applicationCategory),
+    applicationSubCategory: convertToArray(data.applicationSubCategory),
+    applicationSuite: convertToArray(data.applicationSuite),
+    author: formatAuthor(data.author),
     citation: formatCitation(data.citation),
     citedBy: data.citedBy || null,
     codeRepository: data.codeRepository || null,

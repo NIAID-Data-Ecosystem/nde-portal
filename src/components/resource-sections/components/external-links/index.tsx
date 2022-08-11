@@ -87,7 +87,7 @@ const ExternalLinks: React.FC<ExternalLinks> = ({
             p={2}
             flex={1}
           >
-            <Text color='gray.800' fontWeight='semibold' w='100%'>
+            <Text color='gray.800' fontWeight='semibold' w='100%' fontSize='xs'>
               Reference
             </Text>
             <Link href={mainEntityOfPage} isExternal wordBreak='break-word'>
@@ -106,7 +106,7 @@ const ExternalLinks: React.FC<ExternalLinks> = ({
             p={2}
             flex={1}
           >
-            <Text color='gray.800' fontWeight='semibold' w='100%'>
+            <Text color='gray.800' fontWeight='semibold' w='100%' fontSize='xs'>
               Source Code
             </Text>
 
@@ -118,7 +118,12 @@ const ExternalLinks: React.FC<ExternalLinks> = ({
                 return (
                   <ListItem key={i} my={2}>
                     {repo.includes('git') && <Icon as={FaGithub} mr={2} />}
-                    <Link href={repo} isExternal wordBreak='break-word'>
+                    <Link
+                      href={repo}
+                      isExternal
+                      wordBreak='break-word'
+                      fontSize='xs'
+                    >
                       {repo.includes('git')
                         ? 'View source code on Github'
                         : repo}
