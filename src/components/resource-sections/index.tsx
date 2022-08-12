@@ -63,7 +63,6 @@ const Sections = ({
           isLoading={isLoading}
           conditionsOfAccess={data?.conditionsOfAccess}
           author={data?.author}
-          citation={data?.citation}
           name={data?.name}
           alternateName={data?.alternateName}
         />

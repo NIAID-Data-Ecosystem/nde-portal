@@ -2,14 +2,10 @@ import React from 'react';
 import {
   Box,
   Flex,
-  Grid,
   Image,
   Link,
   ListItem,
   SimpleGrid,
-  Stack,
-  StackDivider,
-  Text,
   UnorderedList,
 } from 'nde-design-system';
 import { FormattedResource } from 'src/utils/api/types';
@@ -20,12 +16,9 @@ import {
   FaGlobeAmericas,
 } from 'react-icons/fa';
 import {
-  formatAuthorsList2String,
   formatCitationString,
   formatDOI,
-  formatJournal,
   formatLicense,
-  shouldAppendPunctuation,
 } from 'src/utils/helpers';
 import MetadataConfig from 'configs/resource-metadata.json';
 import StatField from './components/stat-field';

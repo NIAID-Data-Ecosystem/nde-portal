@@ -263,6 +263,7 @@ export const formatAPIResource = (data: any) => {
     distribution: formatDistribution(data.distribution),
     doi: data['doi'] || data['@id'] || null,
     funding: formatFunding(data.funding),
+    hasPart: convertToArray(data.hasPart),
     healthCondition: convertToArray(data.healthCondition),
     includedInDataCatalog: data.includedInDataCatalog
       ? {

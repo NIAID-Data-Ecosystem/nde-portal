@@ -156,6 +156,7 @@ const ResourcePage: NextPage = props => {
                       includedInDataCatalog={data?.includedInDataCatalog}
                       mainEntityOfPage={data?.mainEntityOfPage}
                       codeRepository={data?.codeRepository}
+                      hasPart={data?.hasPart}
                       url={data?.url}
                     />
                     {/* <RelatedDatasets /> */}

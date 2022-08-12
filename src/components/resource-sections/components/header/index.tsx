@@ -3,13 +3,11 @@ import { Box, Flex, Heading, Skeleton, Text } from 'nde-design-system';
 import { FormattedResource } from 'src/utils/api/types';
 import ResourceAuthors from './components/authors';
 import AccessBadge from '../access-badge';
-import { formatJournal } from 'src/utils/helpers';
 
 interface HeaderProps {
   isLoading: boolean;
   conditionsOfAccess?: FormattedResource['conditionsOfAccess'];
   author?: FormattedResource['author'];
-  citation?: FormattedResource['citation'];
   name?: FormattedResource['name'];
   alternateName?: FormattedResource['alternateName'];
 }
@@ -18,7 +16,6 @@ const Header: React.FC<HeaderProps> = ({
   isLoading,
   conditionsOfAccess,
   author,
-  citation,
   name,
   alternateName,
 }) => {

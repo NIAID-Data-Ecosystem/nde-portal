@@ -140,6 +140,13 @@ export interface SdPublisher {
   url: string;
 }
 
+export interface HasPart {
+  '@type': string;
+  encodingFormat: string;
+  name: string;
+  url: string;
+}
+
 // Formatting standardized resource fields
 export interface FormattedResource {
   [key: string]: any;
@@ -166,6 +173,7 @@ export interface FormattedResource {
   distribution: Distribution[] | null;
   doi: string | null;
   funding: Funding[] | null;
+  hasPart: HasPart[] | null;
   healthCondition: PropertyNameWithURL[] | null;
   includedInDataCatalog: includedInDataCatalog | null;
   infectiousAgent: PropertyNameWithURL[] | null;
