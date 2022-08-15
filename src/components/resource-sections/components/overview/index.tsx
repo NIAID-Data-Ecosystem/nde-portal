@@ -14,7 +14,6 @@ import {
   FaDownload,
   FaEye,
   FaGlobeAmericas,
-  FaLanguage,
 } from 'react-icons/fa';
 import {
   formatCitationString,
@@ -36,6 +35,7 @@ const Overview: React.FC<OverviewProps> = ({
   citation,
   doi,
   healthCondition,
+  identifier,
   infectiousAgent,
   inLanguage,
   license,
@@ -43,7 +43,6 @@ const Overview: React.FC<OverviewProps> = ({
   nctid,
   numberOfDownloads,
   numberOfViews,
-  pmid,
   spatialCoverage,
   species,
   temporalCoverage,
@@ -71,7 +70,7 @@ const Overview: React.FC<OverviewProps> = ({
 
     return metadataField
       ? { ...metadataField, label: metadataField.title || '' }
-      : { label: metadataProperty, info: '' };
+      : { label: metadataProperty, description: '' };
   };
 
   const licenseInfo = license ? formatLicense(license) : null;
@@ -84,7 +83,7 @@ const Overview: React.FC<OverviewProps> = ({
     content,
   }: {
     url?: string | null;
-    content?: string | null;
+    content?: string | React.ReactNode | null;
   }) => {
     if (url) {
       return (
@@ -111,7 +110,7 @@ const Overview: React.FC<OverviewProps> = ({
             borderColor='gray.100'
           >
             {/* Altmetric Badge */}
-            {(doi || nctid || pmid) && (
+            {(doi || nctid || citation?.[0]['pmid']) && (
               <StatField
                 isLoading={false}
                 {...getStatInfo('Altmetric Rating')}
@@ -120,17 +119,15 @@ const Overview: React.FC<OverviewProps> = ({
                 mr={2}
               >
                 <Flex alignItems='center' direction='column'>
-                  {(doi || nctid || pmid) && (
+                  {(doi || nctid || citation?.[0]['pmid']) && (
                     <div
                       role='link'
-                      aria-label={`altmetric badge for id ${
-                        doi || nctid || pmid
-                      }`}
+                      aria-label={`altmetric badge for id ${doi || nctid}`}
                       data-badge-popover='right'
                       data-badge-type='donut'
                       data-doi={doi && formatDOI(doi)}
                       data-nct-id={nctid}
-                      data-pmid={pmid}
+                      data-pmid={citation?.[0]['pmid']}
                       className='altmetric-embed'
                       data-link-target='blank'
                     ></div>
@@ -389,9 +386,66 @@ const Overview: React.FC<OverviewProps> = ({
               </Box>
             )}
 
-          {/* DOI */}
-          <StatField isLoading={isLoading} {...getStatInfo('doi')}>
-            <StatContent url={doi?.includes('http') ? doi : ''} content={doi} />
+          {/* Related Ids */}
+          <StatField
+            isLoading={isLoading}
+            label='Related Identifiers'
+            description={
+              <p>
+                <strong>DOI: </strong>
+                {getStatInfo('doi').description}
+                <br />
+                <strong>PMID: </strong>
+                {getStatInfo('pmid').description}
+                <br />
+                <strong>NCTID: </strong>
+                {getStatInfo('nctid').description}
+              </p>
+            }
+          >
+            {/* if no identifiers show a dash */}
+            {!doi && !nctid && !citation && '-'}
+
+            {/* DOI */}
+            {doi && (
+              <>
+                <strong>DOI: </strong>
+                <StatContent
+                  url={doi?.includes('http') ? doi : ''}
+                  content={doi}
+                />
+              </>
+            )}
+
+            {/* NCT ID */}
+            {nctid && (
+              <>
+                <strong>NCTID: </strong>
+                <StatContent
+                  url={nctid?.includes('http') ? nctid : ''}
+                  content={nctid}
+                />
+              </>
+            )}
+
+            {/* PUBMED ID*/}
+            {citation?.map((c, i) => {
+              if (!nctid && !doi && !c.pmid) {
+                return <>-</>;
+              }
+              if (!c.pmid) {
+                return <></>;
+              }
+              if (c.pmid) {
+                return (
+                  <>
+                    <strong>PMID: </strong>
+
+                    <StatContent key={i} content={c.pmid} />
+                  </>
+                );
+              }
+            })}
           </StatField>
 
           {/* Citation */}

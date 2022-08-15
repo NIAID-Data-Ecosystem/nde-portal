@@ -203,7 +203,6 @@ export interface FormattedResource {
   measurementTechnique: PropertyNameWithURL[] | null;
   nctid: string | null;
   numberOfDownloads: number | null;
-  pmid: string | null;
   publisher: Publisher | null;
   rawData: any;
   sameAs: string | null;

@@ -95,20 +95,23 @@ export const formatCitationString = (
   const journal = citation.journalName ? `*${formatJournal(citation)}*` : '';
 
   const pmid = citation.pmid ? `PubMed PMID: ${citation.pmid}` : '';
+  const doi = citation.doi ? `DOI: ${citation.doi}` : '';
 
   // Return the string as markdown
+
+  const citation_strings = [
+    shouldAppendPunctuation(authors),
+    shouldAppendPunctuation(citation.name),
+    shouldAppendPunctuation(journal),
+    shouldAppendPunctuation(year),
+    shouldAppendPunctuation(pmid),
+    shouldAppendPunctuation(doi),
+  ].filter(str => !!str);
+
   if (asMarkdown) {
-    return `${shouldAppendPunctuation(authors)} ${shouldAppendPunctuation(
-      citation.name,
-    )} ${shouldAppendPunctuation(journal)} ${shouldAppendPunctuation(
-      year,
-    )} ${shouldAppendPunctuation(pmid)}`;
+    return citation_strings.join(' ');
   }
-  return `${shouldAppendPunctuation(authors)} ${shouldAppendPunctuation(
-    citation.name,
-  )} ${shouldAppendPunctuation(journal)} ${shouldAppendPunctuation(
-    year,
-  )} ${shouldAppendPunctuation(pmid)}`;
+  return citation_strings.join(' ');
 };
 
 // Format DOI if url is included in string.

@@ -291,7 +291,6 @@ export const formatAPIResource = (data: any) => {
     nctid: data['nctid'] || null,
     numberOfDownloads: data.numberOfDownloads || null,
     numberOfViews: data.numberOfViews || null,
-    pmid: data['pmid'] || null,
     publisher: data.publisher || null,
     rawData: data,
     sameAs: data.sameAs || null,

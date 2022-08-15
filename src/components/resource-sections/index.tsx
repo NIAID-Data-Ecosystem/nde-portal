@@ -1,4 +1,5 @@
 import React from 'react';
+import { useRouter } from 'next/router';
 import { FormattedResource } from 'src/utils/api/types';
 import { Box, Divider, Flex, Skeleton, Tag, Text } from 'nde-design-system';
 import {
@@ -58,6 +59,8 @@ const Sections = ({
   data?: FormattedResource;
   sections: Route[];
 }) => {
+  const router = useRouter();
+
   return (
     <>
       <Section id={'header'} p={0}>
@@ -106,7 +109,20 @@ const Sections = ({
                   {data?.keywords &&
                     data.keywords.map(keyword => {
                       return (
-                        <Tag key={keyword} m={2} colorScheme='primary'>
+                        <Tag
+                          as='a'
+                          key={keyword}
+                          m={2}
+                          colorScheme='primary'
+                          cursor='pointer'
+                          onClick={e => {
+                            e.preventDefault();
+                            router.push({
+                              pathname: `/search`,
+                              query: { q: keyword.trim() },
+                            });
+                          }}
+                        >
                           {keyword}
                         </Tag>
                       );

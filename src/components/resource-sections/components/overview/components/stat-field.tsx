@@ -18,10 +18,9 @@ import Tooltip from 'src/components/tooltip';
 
 interface MetadataStatProps extends FlexProps {
   label: string;
-  value?: string[] | string | number | null;
   icon?: IconType | ((args: IconProps) => React.ReactElement);
   isLoading: boolean;
-  description?: string;
+  description?: string | React.ReactNode;
 }
 
 const StatField: React.FC<MetadataStatProps> = ({
@@ -29,7 +28,6 @@ const StatField: React.FC<MetadataStatProps> = ({
   icon,
   isLoading,
   label,
-  value,
   description,
   ...rest
 }) => {
@@ -62,7 +60,7 @@ const StatField: React.FC<MetadataStatProps> = ({
           >
             <Tooltip
               aria-label={`Tooltip for ${label}`}
-              label={description || ''}
+              label={description}
               hasArrow
               placement='top'
               isOpen={isMobile ? isTooltipOpen : undefined}
