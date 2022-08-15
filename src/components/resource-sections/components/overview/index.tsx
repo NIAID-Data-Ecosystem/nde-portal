@@ -14,6 +14,7 @@ import {
   FaDownload,
   FaEye,
   FaGlobeAmericas,
+  FaLanguage,
 } from 'react-icons/fa';
 import {
   formatCitationString,
@@ -36,7 +37,7 @@ const Overview: React.FC<OverviewProps> = ({
   doi,
   healthCondition,
   infectiousAgent,
-  language,
+  inLanguage,
   license,
   measurementTechnique,
   nctid,
@@ -74,6 +75,9 @@ const Overview: React.FC<OverviewProps> = ({
   };
 
   const licenseInfo = license ? formatLicense(license) : null;
+  const languageName = new Intl.DisplayNames(['en'], {
+    type: 'language',
+  });
 
   const StatContent = ({
     url,
@@ -331,9 +335,9 @@ const Overview: React.FC<OverviewProps> = ({
           </StatField>
 
           {/* language */}
-          {language && language.name && (
-            <StatField isLoading={isLoading} {...getStatInfo('language')}>
-              {language.name.toUpperCase()}
+          {inLanguage && inLanguage.name && (
+            <StatField isLoading={isLoading} {...getStatInfo('inLanguage')}>
+              {languageName.of(inLanguage.name)}
             </StatField>
           )}
 

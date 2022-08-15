@@ -19,7 +19,7 @@ import { FormattedResource } from 'src/utils/api/types';
 import { formatLicense } from 'src/utils/helpers';
 import { assetPrefix } from 'next.config';
 import { MetadataProperty } from './components/Property';
-import { MetadataIcon } from 'src/components/icon';
+import { MetadataToolTip, MetadataIcon } from 'src/components/icon';
 import { getMetadataColor } from 'src/components/icon/helpers';
 
 interface CardDetailsProps {
@@ -58,7 +58,7 @@ const CardDetails: React.FC<CardDetailsProps> = ({ data }) => {
     fill?: string;
     value: any;
   }) => (
-    <>
+    <MetadataToolTip property={glyph}>
       <MetadataIcon
         id={`indicator-${glyph}-${id}`}
         glyph={glyph}
@@ -66,7 +66,7 @@ const CardDetails: React.FC<CardDetailsProps> = ({ data }) => {
         fill={value ? getMetadataColor(glyph) : 'gray.400'}
         {...props}
       />
-    </>
+    </MetadataToolTip>
   );
 
   const MetadataIndicator = () => {

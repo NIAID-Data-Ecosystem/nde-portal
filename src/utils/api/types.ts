@@ -178,7 +178,7 @@ export interface FormattedResource {
   includedInDataCatalog: includedInDataCatalog | null;
   infectiousAgent: PropertyNameWithURL[] | null;
   keywords: string[] | null;
-  language: {
+  inLanguage: {
     alternateName: string | null;
     name: string | null;
   } | null;

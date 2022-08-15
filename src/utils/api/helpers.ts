@@ -276,7 +276,7 @@ export const formatAPIResource = (data: any) => {
       : null,
     infectiousAgent: convertToArray(data.infectiousAgent),
     keywords: convertToArray(data.keywords),
-    language: data.inLanguage
+    inLanguage: data.inLanguage
       ? {
           alternateName: data.inLanguage.alternateName || null,
           name:

@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { useQuery } from 'react-query';
 import {
   Facet,
@@ -32,7 +32,7 @@ import { FaFilter } from 'react-icons/fa';
 import { NAV_HEIGHT } from 'src/components/page-container';
 import { formatDate, formatType } from 'src/utils/api/helpers';
 import { FaMinus, FaPlus } from 'react-icons/fa';
-import { MetadataIcon } from 'src/components/icon';
+import { MetadataIcon, MetadataToolTip } from 'src/components/icon';
 import { getMetadataColor } from 'src/components/icon/helpers';
 
 /*
@@ -226,13 +226,19 @@ export const Filters: React.FC<Filters> = ({
                             <Heading size='sm' fontWeight='semibold'>
                               {filtersConfig[prop].name}
                             </Heading>
-                            <MetadataIcon
-                              id={`filter-${filtersConfig[prop].glyph}-${i}`}
-                              mx={2}
-                              glyph={filtersConfig[prop].glyph}
-                              fill={getMetadataColor(filtersConfig[prop].glyph)}
-                              boxSize={6}
-                            ></MetadataIcon>
+                            <MetadataToolTip
+                              property={filtersConfig[prop].glyph}
+                            >
+                              <MetadataIcon
+                                id={`filter-${filtersConfig[prop].glyph}-${i}`}
+                                mx={2}
+                                glyph={filtersConfig[prop].glyph}
+                                fill={getMetadataColor(
+                                  filtersConfig[prop].glyph,
+                                )}
+                                boxSize={6}
+                              ></MetadataIcon>
+                            </MetadataToolTip>
                           </Flex>
                           {isExpanded ? (
                             <FaMinus fontSize='12px' />

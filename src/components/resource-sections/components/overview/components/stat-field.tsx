@@ -7,7 +7,6 @@ import {
   StatLabel,
   StatNumber,
   Text,
-  Tooltip,
   useBreakpointValue,
 } from 'nde-design-system';
 import { IconType } from 'react-icons';
@@ -15,6 +14,7 @@ import { FaInfo } from 'react-icons/fa';
 import LoadingSpinner from 'src/components/loading';
 import { IconProps } from 'src/components/icon';
 import { formatNumber } from 'src/utils/helpers';
+import Tooltip from 'src/components/tooltip';
 
 interface MetadataStatProps extends FlexProps {
   label: string;
@@ -62,7 +62,7 @@ const StatField: React.FC<MetadataStatProps> = ({
           >
             <Tooltip
               aria-label={`Tooltip for ${label}`}
-              label={description}
+              label={description || ''}
               hasArrow
               placement='top'
               isOpen={isMobile ? isTooltipOpen : undefined}
@@ -75,10 +75,8 @@ const StatField: React.FC<MetadataStatProps> = ({
                   cursor: description ? 'pointer' : 'default',
                 }}
               >
-                {/* <Flex alignItems='center'> */}
                 {icon && <Icon as={icon} color='gray.500' mx={1} />}
                 {label}
-                {/* </Flex> */}
                 {/* button used here to allow user to focus on tooltip*/}
                 {description && (
                   <button aria-label={label}>

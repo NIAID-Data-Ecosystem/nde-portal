@@ -48,7 +48,7 @@
   },
   {
     "title": "Language",
-    "property": "language",
+    "property": "inLanguage",
     "description": "Language used in dataset."
   },
   {

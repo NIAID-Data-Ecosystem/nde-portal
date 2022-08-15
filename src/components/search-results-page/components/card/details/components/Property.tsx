@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box, Flex, Text, VisuallyHidden, BoxProps } from 'nde-design-system';
-import { MetadataIcon } from 'src/components/icon';
+import { MetadataToolTip, MetadataIcon } from 'src/components/icon';
 import { getMetadataColor } from 'src/components/icon/helpers';
 
 interface MetadataPropertyProps extends BoxProps {
@@ -26,17 +26,18 @@ export const MetadataProperty: React.FC<MetadataPropertyProps> = ({
       {...props}
     >
       <Flex alignItems='center' pb={0} position='relative'>
-        <MetadataIcon
-          id={id}
-          viewBox='0 0 200 200'
-          fill={!children ? 'gray.400' : getMetadataColor(glyph)}
-          opacity={children ? 1 : 0.6}
-          boxSize={6}
-          glyph={glyph}
-          m={2}
-          label={label}
-        />
-
+        <MetadataToolTip property={glyph}>
+          <MetadataIcon
+            id={id}
+            viewBox='0 0 200 200'
+            fill={!children ? 'gray.400' : getMetadataColor(glyph)}
+            opacity={children ? 1 : 0.6}
+            boxSize={6}
+            glyph={glyph}
+            m={2}
+            label={label}
+          />
+        </MetadataToolTip>
         <Text
           color='text.body'
           fontSize='sm'

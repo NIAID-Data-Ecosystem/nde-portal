@@ -25,7 +25,7 @@ export const section_metadata: { [key: string]: (keyof FormattedResource)[] } =
       'doi',
       'healthCondition',
       'infectiousAgent',
-      'language',
+      'inLanguage',
       'license',
       'measurementTechnique',
       'nctid',
