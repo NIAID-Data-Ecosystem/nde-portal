@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Flex, Heading, Skeleton, Text } from 'nde-design-system';
+import { Badge, Box, Flex, Heading, Skeleton, Text } from 'nde-design-system';
 import { FormattedResource } from 'src/utils/api/types';
 import ResourceAuthors from './components/authors';
 import AccessBadge from '../access-badge';
@@ -7,6 +7,7 @@ import AccessBadge from '../access-badge';
 interface HeaderProps {
   isLoading: boolean;
   conditionsOfAccess?: FormattedResource['conditionsOfAccess'];
+  isAvailableForFree?: FormattedResource['isAvailableForFree'];
   author?: FormattedResource['author'];
   name?: FormattedResource['name'];
   alternateName?: FormattedResource['alternateName'];
@@ -18,16 +19,27 @@ const Header: React.FC<HeaderProps> = ({
   author,
   name,
   alternateName,
+  isAvailableForFree,
 }) => {
   return (
     <Flex flexDirection='column' w='100%'>
       <Skeleton isLoaded={!isLoading} w='100%' p={2}>
         {/* Level of access to resource from open to restricted*/}
-        {conditionsOfAccess && (
+        {(conditionsOfAccess || isAvailableForFree) && (
           <Flex w='100%' justifyContent='flex-end'>
-            <AccessBadge conditionsOfAccess={conditionsOfAccess}>
-              {conditionsOfAccess}
-            </AccessBadge>
+            {isAvailableForFree && (
+              <Badge
+                mx={1}
+                colorScheme={isAvailableForFree ? 'success' : 'gray'}
+              >
+                Free Access
+              </Badge>
+            )}
+            {conditionsOfAccess && (
+              <AccessBadge conditionsOfAccess={conditionsOfAccess}>
+                {conditionsOfAccess}
+              </AccessBadge>
+            )}
           </Flex>
         )}
       </Skeleton>

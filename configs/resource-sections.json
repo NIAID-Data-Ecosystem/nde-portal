@@ -34,6 +34,11 @@
       "isCollapsible": true
     },
     {
+      "title": "Based On",
+      "hash": "isBasedOn",
+      "isCollapsible": true
+    },
+    {
       "title": "Cited By",
       "hash": "citedBy",
       "isCollapsible": true

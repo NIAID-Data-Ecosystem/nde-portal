@@ -21,7 +21,7 @@
     "description": "The infectious disease(s) / health condition(s) which are the focus of the dataset or computational tool (e.g. COVID-19, coronavirus)"
   },
   {
-    "title": "Infectious Agent",
+    "title": "Pathogen",
     "property": "infectiousAgent",
     "description": "Infectious agent(s) / pathogen(s) which are the focus of the dataset or tool (e.g. SARS-CoV-2)"
   },

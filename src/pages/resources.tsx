@@ -12,7 +12,6 @@ import {
   ResourceLinks,
 } from 'src/components/resource-sections/components';
 import { Error, ErrorCTA } from 'src/components/error';
-import { assetPrefix } from 'next.config';
 import Sections, { section_metadata } from 'src/components/resource-sections';
 import navigationData from 'configs/resource-sections.json';
 import { Route, showSection } from 'src/components/resource-sections/helpers';

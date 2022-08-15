@@ -1,6 +1,5 @@
 import React from 'react';
 import {
-  Box,
   Button,
   Card,
   CardHeader,
@@ -16,6 +15,7 @@ import {
   ToggleContainer,
   VisuallyHidden,
   BoxProps,
+  Badge,
 } from 'nde-design-system';
 import {
   FaArrowAltCircleRight,
@@ -26,7 +26,6 @@ import { FormattedResource } from 'src/utils/api/types';
 import {
   formatAuthorsList2String,
   formatDOI,
-  formatLicense,
   getRepositoryImage,
 } from 'src/utils/helpers';
 import {
@@ -54,13 +53,12 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
     date,
     author,
     description,
-    funding,
-    license,
     conditionsOfAccess,
     doi,
     pmid,
     nctid,
     includedInDataCatalog,
+    isAvailableForFree,
     url,
     sdPublisher,
   } = data || {};
@@ -69,14 +67,9 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
     includedInDataCatalog?.name &&
     getRepositoryImage(includedInDataCatalog.name);
   const paddingCard = [4, 6, 8, 10];
-  const licenseInfo = license ? formatLicense(license) : null;
-
-  const fundingInfo = funding?.filter(f => {
-    return f.identifier || f?.funder?.name;
-  });
 
   const ConditionsOfAccess = (props: BoxProps) => {
-    if (!conditionsOfAccess) {
+    if (!conditionsOfAccess && !isAvailableForFree) {
       return null;
     }
     return (
@@ -88,12 +81,19 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
         p={[0.5, 2]}
         {...props}
       >
-        <AccessBadge
-          w={['100%', 'unset']}
-          conditionsOfAccess={conditionsOfAccess}
-        >
-          {conditionsOfAccess}
-        </AccessBadge>
+        {isAvailableForFree && (
+          <Badge mr={2} colorScheme={isAvailableForFree ? 'success' : 'gray'}>
+            Free Access
+          </Badge>
+        )}
+        {conditionsOfAccess && (
+          <AccessBadge
+            w={['100%', 'unset']}
+            conditionsOfAccess={conditionsOfAccess}
+          >
+            {conditionsOfAccess}
+          </AccessBadge>
+        )}
       </Flex>
     );
   };

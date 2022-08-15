@@ -16,6 +16,7 @@ import FundingTable from './components/funding-table';
 import CitedByTable from './components/cited-by-table';
 import { DisplayHTMLContent } from '../html-content';
 import { DownloadMetadata } from '../download-metadata';
+import BasedOn from './components/based-on';
 
 // Metadata displayed in each section
 export const section_metadata: { [key: string]: (keyof FormattedResource)[] } =
@@ -42,6 +43,7 @@ export const section_metadata: { [key: string]: (keyof FormattedResource)[] } =
     provenance: ['includedInDataCatalog', 'url'],
     downloads: ['distribution'],
     funding: ['funding'],
+    isBasedOn: ['isBasedOn'],
     citedBy: ['citedBy'],
     metadata: ['rawData'],
   };
@@ -65,12 +67,16 @@ const Sections = ({
           author={data?.author}
           name={data?.name}
           alternateName={data?.alternateName}
+          isAvailableForFree={data?.isAvailableForFree}
         />
         {/* Banner showing data type and publish date. */}
         <ResourceDates data={data} />
       </Section>
 
       {sections.map(section => {
+        if (section.hash === 'isBasedOn' && !data?.isBasedOn) {
+          return <></>;
+        }
         return (
           <Section
             id={section.hash}
@@ -137,10 +143,14 @@ const Sections = ({
             {section.hash === 'provenance' && (
               <ResourceProvenance isLoading={isLoading} {...data} />
             )}
+
             {/* Show downloads */}
             {section.hash === 'downloads' && (
               <FilesTable isLoading={isLoading} {...data} />
             )}
+
+            {/* Based On */}
+            {section.hash === 'isBasedOn' && <BasedOn isLoading={isLoading} />}
 
             {/* Show funding */}
             {section.hash === 'funding' && (

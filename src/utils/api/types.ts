@@ -147,6 +147,20 @@ export interface HasPart {
   url: string;
 }
 
+export interface IsBasedOn {
+  '@type'?: string;
+  abstract?: string;
+  citation?: string;
+  datePublished?: string;
+  description?: string;
+  doi?: string;
+  identifier?: string;
+  name?: string;
+  pmid?: string;
+  type?: string;
+  url?: string;
+}
+
 // Formatting standardized resource fields
 export interface FormattedResource {
   [key: string]: any;
@@ -182,7 +196,8 @@ export interface FormattedResource {
     alternateName: string | null;
     name: string | null;
   } | null;
-
+  isAvailableForFree: boolean | null;
+  isBasedOn: IsBasedOn[] | null;
   license: string | null;
   mainEntityOfPage: string | null;
   measurementTechnique: PropertyNameWithURL[] | null;
