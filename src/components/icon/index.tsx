@@ -1,7 +1,13 @@
 import React from 'react';
 import { IconProps as ChakraIconProps } from '@chakra-ui/icon';
 import { Flex, Icon } from 'nde-design-system';
-import { FaFlask, FaSearchDollar, FaFileSignature } from 'react-icons/fa';
+import {
+  FaFlask,
+  FaFingerprint,
+  FaSearchDollar,
+  FaFileSignature,
+  FaQuoteLeft,
+} from 'react-icons/fa';
 import Glyph from './components/glyph';
 import MetadataConfig from 'configs/resource-metadata.json';
 import { IconType } from 'react-icons';
@@ -28,6 +34,10 @@ export const MetadataIcon = React.forwardRef<HTMLDivElement, IconProps>(
       FaIcon = FaFlask;
     } else if (glyph?.toLowerCase() === 'usageinfo') {
       FaIcon = FaFileSignature;
+    } else if (glyph?.toLowerCase() === 'citation') {
+      FaIcon = FaQuoteLeft;
+    } else if (glyph?.toLowerCase() === 'identifier') {
+      FaIcon = FaFingerprint;
     } else {
       FaIcon = null;
     }

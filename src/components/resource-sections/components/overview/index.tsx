@@ -429,6 +429,7 @@ const Overview: React.FC<OverviewProps> = ({
           <StatField
             isLoading={isLoading}
             label='Related Identifiers'
+            icon={() => <StatIcon id='identifier' glyph='identifier' />}
             description={
               <p>
                 <strong>DOI: </strong>
@@ -489,7 +490,11 @@ const Overview: React.FC<OverviewProps> = ({
           {/* Citation */}
           {citation && (
             <Box>
-              <StatField isLoading={isLoading} {...getStatInfo('citation')}>
+              <StatField
+                isLoading={isLoading}
+                icon={() => <StatIcon id='citation' glyph='citation' />}
+                {...getStatInfo('citation')}
+              >
                 {citation.map((c, i) => {
                   return (
                     <Box key={i}>
