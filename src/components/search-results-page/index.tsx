@@ -4,7 +4,6 @@ import { useQuery } from 'react-query';
 import Empty from 'src/components/empty';
 import { PageContent } from 'src/components/page-container';
 import { fetchAllSearchResults, fetchSearchResults } from 'src/utils/api';
-import { encodeString } from 'src/utils/querystring-helpers';
 import {
   FetchSearchResultsResponse,
   FormattedResource,
@@ -209,10 +208,9 @@ const SearchResultsPage = () => {
       if (querystring === '') {
         return defaultQuery.queryString;
       }
-
       return Array.isArray(querystring)
-        ? `${querystring.map(s => encodeString(s.trim())).join('+')}`
-        : `${encodeString(querystring.trim())}`;
+        ? `${querystring.map(s => s.trim()).join('+')}`
+        : `${querystring.trim()}`;
     });
     setSelectedPage(() => {
       if (!from) {

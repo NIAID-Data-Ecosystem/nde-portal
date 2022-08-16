@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { encodeString } from '../querystring-helpers';
 import { formatAPIResource } from './helpers';
 import { FetchSearchResultsResponse, Metadata } from './types';
 
@@ -46,7 +47,12 @@ export const fetchSearchResults = async (params: Params) => {
   try {
     const { data } = await axios.get(
       `${process.env.NEXT_PUBLIC_API_URL}/query?`,
-      { params },
+      {
+        params: {
+          ...params,
+          q: encodeString(params.q),
+        },
+      },
     );
     if (!data.hits) {
       return { results: [], total: 0, facets: data.facets || null };
@@ -80,7 +86,12 @@ export const fetchAllSearchResults = async (queryParams: Params) => {
 
     try {
       let url = `${process.env.NEXT_PUBLIC_API_URL}/query?`;
-      let params = { ...queryParams, fetch_all: true, page };
+      let params = {
+        ...queryParams,
+        q: encodeString(queryParams.q),
+        fetch_all: true,
+        page,
+      };
 
       // scroll id for fetching the next page of data
       if (scroll_id) {

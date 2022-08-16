@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
-import { encodeString } from 'src/utils/querystring-helpers';
 import { updateRoute } from './helpers';
 
 /*
@@ -29,8 +28,8 @@ export const useQueryString = (
       }
 
       return Array.isArray(querystring)
-        ? `${querystring.map(s => encodeString(s.trim())).join('+')}`
-        : `${encodeString(querystring.trim())}`;
+        ? `${querystring.map(s => s.trim()).join('+')}`
+        : `${querystring.trim()}`;
     });
   }, [router, defaultQueryString]);
 
