@@ -113,6 +113,7 @@
     "description": "A schema describing a minimal Dataset for the National Institute of Allergy and Infectious Disease (NIAID). A dataset is a collection of data of a particular experimental type. Additional schema.org and/or custom properties could be added."
   },
   {
+    "title": "Programming Language",
     "property": "programmingLanguage",
     "description": "The main programming language(s) used to build or execute the tool. Please use terms from the ‘Programming language’ table in the Bio.Tools documentation"
   },
@@ -123,5 +124,14 @@
   {
     "property": "pmid",
     "description": "PubMed reference number associated with the record."
+  },
+  {
+    "title": "Software Version",
+    "property": "softwareVersion"
+  },
+  {
+    "title": "Data Usage Agreement",
+    "property": "usageInfo",
+    "description": "Data use agreements impose limitations on users including: privacy and confidentiality standards, conditions for research use, criteria for data access, and conditions on the transfer of data, etc."
   }
 ]

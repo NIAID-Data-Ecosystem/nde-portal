@@ -55,12 +55,12 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
     description,
     conditionsOfAccess,
     doi,
-    pmid,
     nctid,
     includedInDataCatalog,
     isAvailableForFree,
     url,
     sdPublisher,
+    citation,
   } = data || {};
 
   const imageURL =
@@ -250,7 +250,8 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                   alignItems='flex-end'
                 >
                   {/* Source repository */}
-                  {(includedInDataCatalog?.name || sdPublisher?.name) && (
+                  {(includedInDataCatalog?.name ||
+                    (sdPublisher && sdPublisher.length > 0)) && (
                     <Flex
                       minW={['250px']}
                       maxW={['unset', '50%', 'unset']}
@@ -309,19 +310,21 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                         )}
 
                         {/* original source */}
-                        {sdPublisher?.url ? (
-                          <Link href={sdPublisher.url} isExternal>
+                        {sdPublisher?.map(publisher => {
+                          return publisher?.url ? (
+                            <Link href={publisher.url} isExternal>
+                              <Text fontSize='xs' as='i'>
+                                Original source {publisher.name}
+                              </Text>
+                            </Link>
+                          ) : publisher?.name ? (
                             <Text fontSize='xs' as='i'>
-                              Original source {sdPublisher.name}
+                              Original source {publisher.name}
                             </Text>
-                          </Link>
-                        ) : sdPublisher?.name ? (
-                          <Text fontSize='xs' as='i'>
-                            Original source {sdPublisher.name}
-                          </Text>
-                        ) : (
-                          <></>
-                        )}
+                          ) : (
+                            <></>
+                          );
+                        })}
                       </Flex>
                     </Flex>
                   )}
@@ -352,7 +355,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                         data-badge-type='bar'
                         data-doi={formatDOI(doi)}
                         data-nct-id={nctid}
-                        data-pmid={pmid}
+                        data-pmid={citation?.[0].pmid}
                         className='altmetric-embed'
                         data-link-target='blank'
                       ></div>

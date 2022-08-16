@@ -223,7 +223,7 @@ const CardDetails: React.FC<CardDetailsProps> = ({ data }) => {
                     glyph={'variableMeasured'}
                   >
                     {variableMeasured && (
-                      <Text color='inherit'>variableMeasured</Text>
+                      <Text color='inherit'>{variableMeasured.join(', ')}</Text>
                     )}
                   </MetadataProperty>
                   {/* Infectious Agent*/}

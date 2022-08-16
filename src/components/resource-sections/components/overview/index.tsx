@@ -6,15 +6,11 @@ import {
   Link,
   ListItem,
   SimpleGrid,
+  Text,
   UnorderedList,
 } from 'nde-design-system';
 import { FormattedResource } from 'src/utils/api/types';
-import {
-  FaCalendarAlt,
-  FaDownload,
-  FaEye,
-  FaGlobeAmericas,
-} from 'react-icons/fa';
+import { FaCalendarAlt, FaGlobeAmericas } from 'react-icons/fa';
 import {
   formatCitationString,
   formatDOI,
@@ -41,12 +37,13 @@ const Overview: React.FC<OverviewProps> = ({
   license,
   measurementTechnique,
   nctid,
-  numberOfDownloads,
-  numberOfViews,
+  programmingLanguage,
+  softwareVersion,
   spatialCoverage,
   species,
   temporalCoverage,
   topic,
+  usageInfo,
   variableMeasured,
   isLoading,
   ...data
@@ -78,16 +75,20 @@ const Overview: React.FC<OverviewProps> = ({
     type: 'language',
   });
 
+  const locationNames = spatialCoverage?.filter(s => s.name).map(s => s.name);
+
   const StatContent = ({
     url,
     content,
+    isExternal,
   }: {
     url?: string | null;
     content?: string | React.ReactNode | null;
+    isExternal?: boolean;
   }) => {
     if (url) {
       return (
-        <Link href={url} isExternal>
+        <Link href={url} isExternal={isExternal}>
           {content}
         </Link>
       );
@@ -97,7 +98,7 @@ const Overview: React.FC<OverviewProps> = ({
 
   return (
     <Flex p={[0, 4]} w='100%' flexWrap='wrap' flexDirection={['column', 'row']}>
-      {(doi || nctid || numberOfDownloads || numberOfViews) && (
+      {(doi || nctid) && (
         <Box w={{ sm: '100%', lg: 'unset' }} my={4}>
           <SimpleGrid
             minChildWidth='150px'
@@ -145,32 +146,6 @@ const Overview: React.FC<OverviewProps> = ({
                   </Link>
                 </Flex>
               </StatField>
-            )}
-
-            {(numberOfDownloads || numberOfViews) && (
-              <Box>
-                {/* Number Of Downloads. Note: Info not available in current API */}
-                {numberOfDownloads && (
-                  <StatField
-                    isLoading={isLoading}
-                    icon={FaDownload}
-                    {...getStatInfo('numberOfDownloads')}
-                  >
-                    {numberOfDownloads}
-                  </StatField>
-                )}
-
-                {/* Number Of Views. Note: Info not available in current API */}
-                {numberOfViews && (
-                  <StatField
-                    isLoading={isLoading}
-                    icon={FaEye}
-                    {...getStatInfo('numberOfViews')}
-                  >
-                    {numberOfViews}
-                  </StatField>
-                )}
-              </Box>
             )}
           </SimpleGrid>
         </Box>
@@ -222,7 +197,7 @@ const Overview: React.FC<OverviewProps> = ({
 
                   return (
                     <ListItem key={`${name}-${i}`}>
-                      <StatContent url={m.url} content={name} />
+                      <StatContent url={m.url} content={name} isExternal />
                     </ListItem>
                   );
                 })}
@@ -247,7 +222,7 @@ const Overview: React.FC<OverviewProps> = ({
 
                   return (
                     <ListItem key={`${name}-${i}`}>
-                      <StatContent url={m.url} content={name} />
+                      <StatContent url={m.url} content={name} isExternal />
                     </ListItem>
                   );
                 })}
@@ -274,7 +249,7 @@ const Overview: React.FC<OverviewProps> = ({
 
                   return (
                     <ListItem key={`${name}-${i}`}>
-                      <StatContent url={m.url} content={name} />
+                      <StatContent url={m.url} content={name} isExternal />
                     </ListItem>
                   );
                 })}
@@ -287,7 +262,7 @@ const Overview: React.FC<OverviewProps> = ({
           {/* topics covered in resource*/}
           {topic && (
             <StatField isLoading={isLoading} {...getStatInfo('topic')}>
-              {Array.isArray(topic) ? topic.join(', ') : topic}
+              {topic.join(', ')}
             </StatField>
           )}
 
@@ -299,7 +274,7 @@ const Overview: React.FC<OverviewProps> = ({
             )}
             {...getStatInfo('variableMeasured')}
           >
-            {variableMeasured}
+            {variableMeasured?.join(', ')}
           </StatField>
 
           {/* measurement technique */}
@@ -321,7 +296,7 @@ const Overview: React.FC<OverviewProps> = ({
                     : m.name;
                   return (
                     <ListItem key={`${name}-${i}`}>
-                      <StatContent url={m.url} content={name} />
+                      <StatContent url={m.url} content={name} isExternal />
                     </ListItem>
                   );
                 })}
@@ -331,6 +306,49 @@ const Overview: React.FC<OverviewProps> = ({
             )}
           </StatField>
 
+          {/* Data Usage Agreement */}
+          {usageInfo && (
+            <Box>
+              <StatField isLoading={isLoading} {...getStatInfo('usageInfo')}>
+                <Box>
+                  <StatContent
+                    url={usageInfo.url}
+                    content={usageInfo.name || usageInfo.url}
+                  />
+                  <br />
+                  {usageInfo.description}
+                </Box>
+              </StatField>
+            </Box>
+          )}
+
+          {/* programming language */}
+          {programmingLanguage && (
+            <StatField
+              isLoading={isLoading}
+              {...getStatInfo('programmingLanguage')}
+            >
+              <UnorderedList ml={0}>
+                {programmingLanguage?.map((language, i) => {
+                  return (
+                    <ListItem key={`${language}-${i}`}>
+                      <StatContent content={language} />
+                    </ListItem>
+                  );
+                })}
+              </UnorderedList>
+            </StatField>
+          )}
+
+          {softwareVersion && (
+            <StatField
+              isLoading={isLoading}
+              {...getStatInfo('softwareVersion')}
+            >
+              {softwareVersion.join(',')}
+            </StatField>
+          )}
+
           {/* language */}
           {inLanguage && inLanguage.name && (
             <StatField isLoading={isLoading} {...getStatInfo('inLanguage')}>
@@ -339,23 +357,40 @@ const Overview: React.FC<OverviewProps> = ({
           )}
 
           {/* geographic */}
-          {spatialCoverage && (
+          {locationNames && locationNames.length > 0 && (
             <StatField
               icon={FaGlobeAmericas}
               isLoading={isLoading}
               {...getStatInfo('spatialCoverage')}
             >
-              {spatialCoverage}
+              {locationNames.join(', ')}
             </StatField>
           )}
+
           {/* period covered */}
-          {temporalCoverage && (
+          {temporalCoverage?.temporalInterval && (
             <StatField
               icon={FaCalendarAlt}
               isLoading={isLoading}
               {...getStatInfo('temporalCoverage')}
             >
-              {temporalCoverage}
+              {temporalCoverage?.temporalInterval?.name && (
+                <StatContent content={temporalCoverage.temporalInterval.name} />
+              )}
+
+              {temporalCoverage?.temporalInterval?.startDate && (
+                <>
+                  <strong>Start Date: </strong>
+                  {temporalCoverage?.temporalInterval?.startDate}
+                </>
+              )}
+              <br />
+              {temporalCoverage?.temporalInterval?.endDate && (
+                <>
+                  <strong>End Date: </strong>
+                  {temporalCoverage?.temporalInterval?.endDate}
+                </>
+              )}
             </StatField>
           )}
 

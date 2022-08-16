@@ -289,20 +289,19 @@ export const formatAPIResource = (data: any) => {
     mainEntityOfPage: data.mainEntityOfPage || null,
     measurementTechnique: convertToArray(data.measurementTechnique),
     nctid: data['nctid'] || null,
-    numberOfDownloads: data.numberOfDownloads || null,
-    numberOfViews: data.numberOfViews || null,
+    programmingLanguage: convertToArray(data.programmingLanguage),
     publisher: data.publisher || null,
     rawData: data,
     sameAs: data.sameAs || null,
-    sdPublisher: data.sdPublisher || null,
-    spatialCoverage:
-      typeof data.spatialCoverage === 'string' ? data.spatialCoverage : null,
+    sdPublisher: convertToArray(data.sdPublisher),
+    softwareVersion: convertToArray(data.softwareVersion),
+    spatialCoverage: convertToArray(data.spatialCoverage),
     species: convertToArray(data.species),
-    temporalCoverage:
-      typeof data.temporalCoverage === 'string' ? data.spatialCoverage : null,
+    temporalCoverage: data.temporalCoverage || null,
     // Maybe add species or organism field to topic
     topic: convertToArray(data.topicCategory),
     url: data.url || null,
+    usageInfo: data.usageInfo || null,
     variableMeasured:
       typeof data.variableMeasured === 'string' &&
       data.variableMeasured.toLowerCase() === 'unknown'

@@ -135,16 +135,16 @@ export type ResourceType = 'Dataset' | 'Computational Tool' | 'Other';
 export type AccessTypes = 'Open' | 'Controlled' | 'Embargoed' | 'Restricted';
 
 export interface SdPublisher {
-  identifier: string;
-  name: string;
-  url: string;
+  identifier?: string;
+  name?: string;
+  url?: string;
 }
 
 export interface HasPart {
-  '@type': string;
-  encodingFormat: string;
-  name: string;
-  url: string;
+  '@type'?: string;
+  encodingFormat?: string;
+  name?: string;
+  url?: string;
 }
 
 export interface IsBasedOn {
@@ -159,6 +159,24 @@ export interface IsBasedOn {
   pmid?: string;
   type?: string;
   url?: string;
+}
+
+interface SpatialCoverage {
+  identifier?: string;
+  geo?: {
+    latitude?: number;
+    longitude?: number;
+  };
+  name?: string;
+}
+
+interface TemporalCoverage {
+  temporalInterval: {
+    duration?: string[];
+    endDate?: string;
+    name?: string;
+    startDate?: string;
+  };
 }
 
 // Formatting standardized resource fields
@@ -202,19 +220,24 @@ export interface FormattedResource {
   mainEntityOfPage: string | null;
   measurementTechnique: PropertyNameWithURL[] | null;
   nctid: string | null;
-  numberOfDownloads: number | null;
+  programmingLanguage: string[] | null;
   publisher: Publisher | null;
   rawData: any;
   sameAs: string | null;
-  sdPublisher: SdPublisher | null;
-  spatialCoverage: string | null;
+  softwareVersion: string[] | null;
+  sdPublisher: SdPublisher[] | null;
+  spatialCoverage: SpatialCoverage[] | null;
   species: PropertyNameWithURL[] | null;
-  temporalCoverage: string | null;
+  temporalCoverage: TemporalCoverage | null;
   topic: string[] | null;
   url: string | null; // link to dataset in the source repo.
+  usageInfo: {
+    name?: string | null;
+    url?: string | null;
+    description?: string | null;
+  };
   variableMeasured: string[] | null;
   version: number | null;
-  numberOfViews: number | null;
 }
 
 export interface MetadataSource {
