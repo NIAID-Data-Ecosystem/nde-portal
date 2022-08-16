@@ -21,7 +21,7 @@
     "description": "The infectious disease(s) / health condition(s) which are the focus of the dataset or computational tool (e.g. COVID-19, coronavirus)"
   },
   {
-    "title": "Infectious Agent",
+    "title": "Pathogen",
     "property": "infectiousAgent",
     "description": "Infectious agent(s) / pathogen(s) which are the focus of the dataset or tool (e.g. SARS-CoV-2)"
   },
@@ -48,7 +48,7 @@
   },
   {
     "title": "Language",
-    "property": "language",
+    "property": "inLanguage",
     "description": "Language used in dataset."
   },
   {
@@ -113,7 +113,25 @@
     "description": "A schema describing a minimal Dataset for the National Institute of Allergy and Infectious Disease (NIAID). A dataset is a collection of data of a particular experimental type. Additional schema.org and/or custom properties could be added."
   },
   {
+    "title": "Programming Language",
     "property": "programmingLanguage",
     "description": "The main programming language(s) used to build or execute the tool. Please use terms from the ‘Programming language’ table in the Bio.Tools documentation"
+  },
+  {
+    "property": "nctid",
+    "description": "National Clinical Trial (NCT) number associated with the record."
+  },
+  {
+    "property": "pmid",
+    "description": "PubMed reference number associated with the record."
+  },
+  {
+    "title": "Software Version",
+    "property": "softwareVersion"
+  },
+  {
+    "title": "Data Usage Agreement",
+    "property": "usageInfo",
+    "description": "Data use agreements impose limitations on users including: privacy and confidentiality standards, conditions for research use, criteria for data access, and conditions on the transfer of data, etc."
   }
 ]

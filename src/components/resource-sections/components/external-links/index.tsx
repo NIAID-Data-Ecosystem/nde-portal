@@ -18,6 +18,7 @@ interface ExternalLinks {
   showWorkspaceLink?: boolean;
   includedInDataCatalog?: FormattedResource['includedInDataCatalog'];
   mainEntityOfPage?: FormattedResource['mainEntityOfPage'];
+  hasPart?: FormattedResource['hasPart'];
   codeRepository?: FormattedResource['codeRepository'];
   url?: FormattedResource['url'];
 }
@@ -27,6 +28,7 @@ const ExternalLinks: React.FC<ExternalLinks> = ({
   includedInDataCatalog,
   mainEntityOfPage,
   codeRepository,
+  hasPart,
   showWorkspaceLink = true,
   url,
 }) => {
@@ -77,7 +79,7 @@ const ExternalLinks: React.FC<ExternalLinks> = ({
             />
           </Flex>
         )}
-        {mainEntityOfPage && (
+        {(mainEntityOfPage || hasPart) && (
           <Flex
             flexDirection='column'
             alignItems='flex-start'
@@ -87,12 +89,40 @@ const ExternalLinks: React.FC<ExternalLinks> = ({
             p={2}
             flex={1}
           >
-            <Text color='gray.800' fontWeight='semibold' w='100%'>
+            <Text color='gray.800' fontWeight='semibold' w='100%' fontSize='xs'>
               Reference
             </Text>
-            <Link href={mainEntityOfPage} isExternal wordBreak='break-word'>
-              {mainEntityOfPage}
-            </Link>
+
+            {/* mainEntityOfPage refers to a website for the resource. */}
+            {mainEntityOfPage && (
+              <Link
+                href={mainEntityOfPage}
+                isExternal
+                wordBreak='break-word'
+                fontSize='xs'
+              >
+                {mainEntityOfPage}
+              </Link>
+            )}
+
+            {/* hasPart refers to documentation that is related to the dataset, such as data dictionaries. */}
+            {hasPart &&
+              hasPart.map(part => {
+                return part.url ? (
+                  <Link
+                    href={part.url}
+                    isExternal
+                    wordBreak='break-word'
+                    fontSize='xs'
+                  >
+                    {part.name || part.url}
+                  </Link>
+                ) : (
+                  <Text wordBreak='break-word' fontSize='xs'>
+                    {part.name}
+                  </Text>
+                );
+              })}
           </Flex>
         )}
 
@@ -106,7 +136,7 @@ const ExternalLinks: React.FC<ExternalLinks> = ({
             p={2}
             flex={1}
           >
-            <Text color='gray.800' fontWeight='semibold' w='100%'>
+            <Text color='gray.800' fontWeight='semibold' w='100%' fontSize='xs'>
               Source Code
             </Text>
 
@@ -118,7 +148,12 @@ const ExternalLinks: React.FC<ExternalLinks> = ({
                 return (
                   <ListItem key={i} my={2}>
                     {repo.includes('git') && <Icon as={FaGithub} mr={2} />}
-                    <Link href={repo} isExternal wordBreak='break-word'>
+                    <Link
+                      href={repo}
+                      isExternal
+                      wordBreak='break-word'
+                      fontSize='xs'
+                    >
                       {repo.includes('git')
                         ? 'View source code on Github'
                         : repo}

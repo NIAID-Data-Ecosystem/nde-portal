@@ -1,6 +1,7 @@
 import React from 'react';
+import { useRouter } from 'next/router';
 import { FormattedResource } from 'src/utils/api/types';
-import { Box, Flex, Skeleton, Tag, Text } from 'nde-design-system';
+import { Box, Divider, Flex, Skeleton, Tag, Text } from 'nde-design-system';
 import {
   ResourceDates,
   ResourceHeader,
@@ -16,6 +17,7 @@ import FundingTable from './components/funding-table';
 import CitedByTable from './components/cited-by-table';
 import { DisplayHTMLContent } from '../html-content';
 import { DownloadMetadata } from '../download-metadata';
+import BasedOn from './components/based-on';
 
 // Metadata displayed in each section
 export const section_metadata: { [key: string]: (keyof FormattedResource)[] } =
@@ -25,12 +27,10 @@ export const section_metadata: { [key: string]: (keyof FormattedResource)[] } =
       'doi',
       'healthCondition',
       'infectiousAgent',
-      'language',
+      'inLanguage',
       'license',
       'measurementTechnique',
       'nctid',
-      'numberOfDownloads',
-      'numberOfViews',
       'spatialCoverage',
       'species',
       'temporalCoverage',
@@ -39,9 +39,10 @@ export const section_metadata: { [key: string]: (keyof FormattedResource)[] } =
     ],
     keywords: ['keywords'],
     description: ['description'],
-    provenance: ['includedInDataCatalog', 'url'],
+    provenance: ['includedInDataCatalog', 'url', 'sdPublisher'],
     downloads: ['distribution'],
     funding: ['funding'],
+    isBasedOn: ['isBasedOn'],
     citedBy: ['citedBy'],
     metadata: ['rawData'],
   };
@@ -56,6 +57,8 @@ const Sections = ({
   data?: FormattedResource;
   sections: Route[];
 }) => {
+  const router = useRouter();
+
   return (
     <>
       <Section id={'header'} p={0}>
@@ -63,14 +66,18 @@ const Sections = ({
           isLoading={isLoading}
           conditionsOfAccess={data?.conditionsOfAccess}
           author={data?.author}
-          citation={data?.citation}
           name={data?.name}
+          alternateName={data?.alternateName}
+          isAvailableForFree={data?.isAvailableForFree}
         />
         {/* Banner showing data type and publish date. */}
         <ResourceDates data={data} />
       </Section>
 
       {sections.map(section => {
+        if (section.hash === 'isBasedOn' && !data?.isBasedOn) {
+          return <></>;
+        }
         return (
           <Section
             id={section.hash}
@@ -100,7 +107,20 @@ const Sections = ({
                   {data?.keywords &&
                     data.keywords.map(keyword => {
                       return (
-                        <Tag key={keyword} m={2} colorScheme='primary'>
+                        <Tag
+                          as='a'
+                          key={keyword}
+                          m={2}
+                          colorScheme='primary'
+                          cursor='pointer'
+                          onClick={e => {
+                            e.preventDefault();
+                            router.push({
+                              pathname: `/search`,
+                              query: { q: keyword.trim() },
+                            });
+                          }}
+                        >
                           {keyword}
                         </Tag>
                       );
@@ -109,17 +129,42 @@ const Sections = ({
               </Skeleton>
             )}
             {/* Show description */}
-            {section.hash === 'description' && data?.description && (
-              <DisplayHTMLContent content={data.description} overflow='auto' />
-            )}
+            {section.hash === 'description' &&
+              (data?.description || data?.abstract) && (
+                <>
+                  {/* Abstract text */}
+                  {data.abstract && (
+                    <>
+                      <DisplayHTMLContent
+                        content={`**Abstract:** ${data.abstract}` || ''}
+                        overflow='auto'
+                      />
+                      <Divider my={2} />
+                    </>
+                  )}
+
+                  {/* Description text */}
+                  {data.description && (
+                    <DisplayHTMLContent
+                      content={`${data.description}` || ''}
+                      overflow='auto'
+                    />
+                  )}
+                </>
+              )}
+
             {/* Show provenance */}
             {section.hash === 'provenance' && (
               <ResourceProvenance isLoading={isLoading} {...data} />
             )}
+
             {/* Show downloads */}
             {section.hash === 'downloads' && (
               <FilesTable isLoading={isLoading} {...data} />
             )}
+
+            {/* Based On */}
+            {section.hash === 'isBasedOn' && <BasedOn isLoading={isLoading} />}
 
             {/* Show funding */}
             {section.hash === 'funding' && (

@@ -6,20 +6,21 @@ import {
   Stat,
   StatLabel,
   StatNumber,
-  Tooltip,
+  Text,
   useBreakpointValue,
 } from 'nde-design-system';
 import { IconType } from 'react-icons';
 import { FaInfo } from 'react-icons/fa';
 import LoadingSpinner from 'src/components/loading';
 import { IconProps } from 'src/components/icon';
+import { formatNumber } from 'src/utils/helpers';
+import Tooltip from 'src/components/tooltip';
 
 interface MetadataStatProps extends FlexProps {
   label: string;
-  value?: string[] | string | number | null;
   icon?: IconType | ((args: IconProps) => React.ReactElement);
   isLoading: boolean;
-  description?: string;
+  description?: string | React.ReactNode;
 }
 
 const StatField: React.FC<MetadataStatProps> = ({
@@ -27,7 +28,6 @@ const StatField: React.FC<MetadataStatProps> = ({
   icon,
   isLoading,
   label,
-  value,
   description,
   ...rest
 }) => {
@@ -36,36 +36,47 @@ const StatField: React.FC<MetadataStatProps> = ({
   const [isTooltipOpen, setTooltipOpen] = useState(false);
   const StatText = () => {
     if (typeof children === 'number') {
-      return <StatNumber>{children}</StatNumber>;
+      return <StatNumber fontSize='xs'>{formatNumber(children)}</StatNumber>;
     }
-    return <dd>{children || '-'}</dd>;
+    return (
+      <Text as='dd' fontSize='sm' lineHeight='short' mt={1}>
+        {children || '-'}
+      </Text>
+    );
   };
 
   return (
-    <Stat {...rest}>
+    <Stat p={2} w='100%' m={0.5} {...rest}>
       <Flex flexDirection='column'>
         <Flex>
-          <StatLabel onClick={() => isMobile && setTooltipOpen(!isTooltipOpen)}>
-            {description && (
-              <Tooltip
-                aria-label={`Tooltip for ${label}`}
-                label={description}
-                hasArrow
-                placement='top'
-                isOpen={isMobile ? isTooltipOpen : undefined}
-                closeDelay={300}
+          <StatLabel
+            color='gray.600'
+            fontSize='xs'
+            lineHeight='shorter'
+            fontWeight='medium'
+            whiteSpace='nowrap'
+            mb={1}
+            onClick={() => isMobile && setTooltipOpen(!isTooltipOpen)}
+          >
+            <Tooltip
+              aria-label={`Tooltip for ${label}`}
+              label={description}
+              hasArrow
+              placement='top'
+              isOpen={isMobile ? isTooltipOpen : undefined}
+              closeDelay={300}
+            >
+              <span
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  cursor: description ? 'pointer' : 'default',
+                }}
               >
-                <span
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    cursor: 'pointer',
-                  }}
-                >
-                  {icon && <Icon as={icon} color='gray.500' mx={1} />}
-                  {label}
-
-                  {/* button used here to allow user to focus on tooltip*/}
+                {icon && <Icon as={icon} color='gray.500' mx={1} />}
+                {label}
+                {/* button used here to allow user to focus on tooltip*/}
+                {description && (
                   <button aria-label={label}>
                     <Icon
                       as={FaInfo}
@@ -74,12 +85,12 @@ const StatField: React.FC<MetadataStatProps> = ({
                       border='0.625px solid'
                       borderRadius='100%'
                       p={0.5}
-                      boxSize={4}
+                      boxSize='0.85rem'
                     />
                   </button>
-                </span>
-              </Tooltip>
-            )}
+                )}
+              </span>
+            </Tooltip>
           </StatLabel>
         </Flex>
         {isLoading ? (

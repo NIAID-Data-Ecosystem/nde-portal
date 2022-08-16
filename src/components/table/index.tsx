@@ -104,6 +104,7 @@ const Table: React.FC<TableProps> = ({
                             whiteSpace='break-spaces'
                             minW='50px'
                             isNumeric={typeof cell.value === 'number'}
+                            fontSize='xs'
                             {...cell.props}
                           >
                             <FormatLinkCell value={cell.value} />

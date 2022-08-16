@@ -31,40 +31,11 @@ export interface FacetTerm {
   [key: string]: NestedFacet;
 }
 
-export interface SearchResultsData {
-  max_score: number;
-  took: number;
-  total: number;
-  hits: SearchResultProps[];
-}
-
-export interface SearchResultProps {
-  '@context': string;
-  '@id': string;
-  '@type': string;
-  creator: Creator[];
-  datePublished: string;
-  description: string;
-  headline: string;
-  identifier: string;
-  image: string;
-  keywords: string[];
-  license: string;
-  name: string;
-  url: string;
-  temporalCoverage?: string[] | string;
-  spatialCoverage?: string[] | string;
-  inLanguage?: inLanguage | string;
-  _id: string;
-  _ignored: string[];
-  _score: number;
-}
-
 export interface Citation {
   id: string | null;
   url: string | null;
   name: string | null;
-  author: Creator[] | null;
+  author: Author[] | null;
   journalName: string | null;
   journalNameAbbrev: string | null;
   date: string | null;
@@ -89,7 +60,7 @@ export interface CitedBy {
   url: string | null;
 }
 
-export interface Creator {
+export interface Author {
   identifier: string | null; // orcid id
   type: string | null;
   affiliation: { name: string } | null;
@@ -164,9 +135,48 @@ export type ResourceType = 'Dataset' | 'Computational Tool' | 'Other';
 export type AccessTypes = 'Open' | 'Controlled' | 'Embargoed' | 'Restricted';
 
 export interface SdPublisher {
-  identifier: string;
-  name: string;
-  url: string;
+  identifier?: string;
+  name?: string;
+  url?: string;
+}
+
+export interface HasPart {
+  '@type'?: string;
+  encodingFormat?: string;
+  name?: string;
+  url?: string;
+}
+
+export interface IsBasedOn {
+  '@type'?: string;
+  abstract?: string;
+  citation?: string;
+  datePublished?: string;
+  description?: string;
+  doi?: string;
+  identifier?: string;
+  name?: string;
+  pmid?: string;
+  type?: string;
+  url?: string;
+}
+
+interface SpatialCoverage {
+  identifier?: string;
+  geo?: {
+    latitude?: number;
+    longitude?: number;
+  };
+  name?: string;
+}
+
+interface TemporalCoverage {
+  temporalInterval: {
+    duration?: string[];
+    endDate?: string;
+    name?: string;
+    startDate?: string;
+  };
 }
 
 // Formatting standardized resource fields
@@ -175,7 +185,12 @@ export interface FormattedResource {
   id: string;
   type: string | null; // "Dataset" | "ComputationalTool"
   name: string;
-  author: Creator[] | null;
+  abstract: string | null;
+  alternateName: string | null;
+  applicationCategory: string[] | null;
+  applicationSubCategory: string[] | null;
+  applicationSuite: string[] | null;
+  author: Author[] | null;
   citation: Citation[] | null;
   citedBy: CitedBy[] | null;
   codeRepository: string[] | string | null;
@@ -190,33 +205,39 @@ export interface FormattedResource {
   distribution: Distribution[] | null;
   doi: string | null;
   funding: Funding[] | null;
+  hasPart: HasPart[] | null;
   healthCondition: PropertyNameWithURL[] | null;
   includedInDataCatalog: includedInDataCatalog | null;
   infectiousAgent: PropertyNameWithURL[] | null;
   keywords: string[] | null;
-  language: {
+  inLanguage: {
     alternateName: string | null;
     name: string | null;
   } | null;
-
+  isAvailableForFree: boolean | null;
+  isBasedOn: IsBasedOn[] | null;
   license: string | null;
   mainEntityOfPage: string | null;
   measurementTechnique: PropertyNameWithURL[] | null;
   nctid: string | null;
-  numberOfDownloads: number | null;
-  pmid: string | null;
+  programmingLanguage: string[] | null;
   publisher: Publisher | null;
   rawData: any;
   sameAs: string | null;
-  sdPublisher: SdPublisher | null;
-  spatialCoverage: string | null;
+  softwareVersion: string[] | null;
+  sdPublisher: SdPublisher[] | null;
+  spatialCoverage: SpatialCoverage[] | null;
   species: PropertyNameWithURL[] | null;
-  temporalCoverage: string | null;
+  temporalCoverage: TemporalCoverage | null;
   topic: string[] | null;
   url: string | null; // link to dataset in the source repo.
+  usageInfo: {
+    name?: string | null;
+    url?: string | null;
+    description?: string | null;
+  };
   variableMeasured: string[] | null;
   version: number | null;
-  numberOfViews: number | null;
 }
 
 export interface MetadataSource {

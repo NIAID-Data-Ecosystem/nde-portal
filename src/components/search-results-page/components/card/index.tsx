@@ -1,6 +1,5 @@
 import React from 'react';
 import {
-  Box,
   Button,
   Card,
   CardHeader,
@@ -16,6 +15,7 @@ import {
   ToggleContainer,
   VisuallyHidden,
   BoxProps,
+  Badge,
 } from 'nde-design-system';
 import {
   FaArrowAltCircleRight,
@@ -26,7 +26,6 @@ import { FormattedResource } from 'src/utils/api/types';
 import {
   formatAuthorsList2String,
   formatDOI,
-  formatLicense,
   getRepositoryImage,
 } from 'src/utils/helpers';
 import {
@@ -54,29 +53,23 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
     date,
     author,
     description,
-    funding,
-    license,
     conditionsOfAccess,
     doi,
-    pmid,
     nctid,
     includedInDataCatalog,
+    isAvailableForFree,
     url,
     sdPublisher,
+    citation,
   } = data || {};
 
   const imageURL =
     includedInDataCatalog?.name &&
     getRepositoryImage(includedInDataCatalog.name);
   const paddingCard = [4, 6, 8, 10];
-  const licenseInfo = license ? formatLicense(license) : null;
-
-  const fundingInfo = funding?.filter(f => {
-    return f.identifier || f?.funder?.name;
-  });
 
   const ConditionsOfAccess = (props: BoxProps) => {
-    if (!conditionsOfAccess) {
+    if (!conditionsOfAccess && !isAvailableForFree) {
       return null;
     }
     return (
@@ -88,12 +81,19 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
         p={[0.5, 2]}
         {...props}
       >
-        <AccessBadge
-          w={['100%', 'unset']}
-          conditionsOfAccess={conditionsOfAccess}
-        >
-          {conditionsOfAccess}
-        </AccessBadge>
+        {isAvailableForFree && (
+          <Badge mr={2} colorScheme={isAvailableForFree ? 'success' : 'gray'}>
+            Free Access
+          </Badge>
+        )}
+        {conditionsOfAccess && (
+          <AccessBadge
+            w={['100%', 'unset']}
+            conditionsOfAccess={conditionsOfAccess}
+          >
+            {conditionsOfAccess}
+          </AccessBadge>
+        )}
       </Flex>
     );
   };
@@ -250,7 +250,8 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                   alignItems='flex-end'
                 >
                   {/* Source repository */}
-                  {(includedInDataCatalog?.name || sdPublisher?.name) && (
+                  {(includedInDataCatalog?.name ||
+                    (sdPublisher && sdPublisher.length > 0)) && (
                     <Flex
                       minW={['250px']}
                       maxW={['unset', '50%', 'unset']}
@@ -309,19 +310,21 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                         )}
 
                         {/* original source */}
-                        {sdPublisher?.url ? (
-                          <Link href={sdPublisher.url} isExternal>
+                        {sdPublisher?.map(publisher => {
+                          return publisher?.url ? (
+                            <Link href={publisher.url} isExternal>
+                              <Text fontSize='xs' as='i'>
+                                Original source {publisher.name}
+                              </Text>
+                            </Link>
+                          ) : publisher?.name ? (
                             <Text fontSize='xs' as='i'>
-                              Original source {sdPublisher.name}
+                              Original source {publisher.name}
                             </Text>
-                          </Link>
-                        ) : sdPublisher?.name ? (
-                          <Text fontSize='xs' as='i'>
-                            Original source {sdPublisher.name}
-                          </Text>
-                        ) : (
-                          <></>
-                        )}
+                          ) : (
+                            <></>
+                          );
+                        })}
                       </Flex>
                     </Flex>
                   )}
@@ -352,7 +355,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                         data-badge-type='bar'
                         data-doi={formatDOI(doi)}
                         data-nct-id={nctid}
-                        data-pmid={pmid}
+                        data-pmid={citation?.[0].pmid}
                         className='altmetric-embed'
                         data-link-target='blank'
                       ></div>

@@ -82,22 +82,36 @@ export const shouldAppendPunctuation = (
 
 // Format citation string according to :
 // https://www.nlm.nih.gov/bsd/uniform_requirements.html
-export const formatCitationString = (citation: Citation) => {
+export const formatCitationString = (
+  citation: Citation,
+  asMarkdown?: boolean,
+) => {
   const authors = formatAuthorsList2String(citation.author, ',', 3);
 
   const year = citation.datePublished
     ? `${new Date(citation.datePublished).getUTCFullYear()}`
     : '';
 
-  const journal = citation.journalName ? `${formatJournal(citation)}` : '';
+  const journal = citation.journalName ? `*${formatJournal(citation)}*` : '';
 
   const pmid = citation.pmid ? `PubMed PMID: ${citation.pmid}` : '';
+  const doi = citation.doi ? `DOI: ${citation.doi}` : '';
 
-  return `${shouldAppendPunctuation(authors)} ${shouldAppendPunctuation(
-    citation.name,
-  )} ${shouldAppendPunctuation(journal)} ${shouldAppendPunctuation(
-    year,
-  )} ${shouldAppendPunctuation(pmid)}`;
+  // Return the string as markdown
+
+  const citation_strings = [
+    shouldAppendPunctuation(authors),
+    shouldAppendPunctuation(citation.name),
+    shouldAppendPunctuation(journal),
+    shouldAppendPunctuation(year),
+    shouldAppendPunctuation(pmid),
+    shouldAppendPunctuation(doi),
+  ].filter(str => !!str);
+
+  if (asMarkdown) {
+    return citation_strings.join(' ');
+  }
+  return citation_strings.join(' ');
 };
 
 // Format DOI if url is included in string.
@@ -189,12 +203,14 @@ export const formatJournal = (citation: Citation) => {
     name = citation.journalNameAbbrev;
   }
 
-  const { volumeNumber, issueNumber } = citation;
+  const { volumeNumber, issueNumber, pagination } = citation;
 
   // Remove commas, periods.
   const formatStr = (str: string) => str.replace(/[,.]/g, '');
 
   return `${formatStr(name)}${
-    volumeNumber ? `, volume ${formatStr(volumeNumber)}` : ''
-  }${issueNumber ? `, issue ${formatStr(issueNumber)}` : ''}`;
+    volumeNumber ? `, ${formatStr(volumeNumber)}` : ''
+  }${issueNumber ? `(${formatStr(issueNumber)})` : ''}${
+    pagination ? `: ${pagination}` : ''
+  }`;
 };

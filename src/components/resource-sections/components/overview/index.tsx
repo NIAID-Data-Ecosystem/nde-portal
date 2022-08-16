@@ -6,18 +6,11 @@ import {
   Link,
   ListItem,
   SimpleGrid,
-  Stack,
-  StackDivider,
   Text,
   UnorderedList,
 } from 'nde-design-system';
 import { FormattedResource } from 'src/utils/api/types';
-import {
-  FaCalendarAlt,
-  FaDownload,
-  FaEye,
-  FaGlobeAmericas,
-} from 'react-icons/fa';
+import { FaCalendarAlt, FaGlobeAmericas } from 'react-icons/fa';
 import {
   formatCitationString,
   formatDOI,
@@ -28,6 +21,7 @@ import StatField from './components/stat-field';
 import { assetPrefix } from 'next.config';
 import { IconProps, MetadataIcon } from 'src/components/icon';
 import { getMetadataColor } from 'src/components/icon/helpers';
+import { DisplayHTMLContent } from 'src/components/html-content';
 
 export interface OverviewProps extends Partial<FormattedResource> {
   isLoading: boolean;
@@ -37,20 +31,22 @@ const Overview: React.FC<OverviewProps> = ({
   citation,
   doi,
   healthCondition,
+  identifier,
   infectiousAgent,
-  language,
+  inLanguage,
   license,
   measurementTechnique,
   nctid,
-  numberOfDownloads,
-  numberOfViews,
-  pmid,
+  programmingLanguage,
+  softwareVersion,
   spatialCoverage,
   species,
   temporalCoverage,
   topic,
+  usageInfo,
   variableMeasured,
   isLoading,
+  ...data
 }) => {
   const StatIcon = ({ glyph, ...props }: IconProps) => (
     <MetadataIcon
@@ -71,13 +67,39 @@ const Overview: React.FC<OverviewProps> = ({
 
     return metadataField
       ? { ...metadataField, label: metadataField.title || '' }
-      : { label: metadataProperty, info: '' };
+      : { label: metadataProperty, description: '' };
   };
+
   const licenseInfo = license ? formatLicense(license) : null;
+  const languageName = new Intl.DisplayNames(['en'], {
+    type: 'language',
+  });
+
+  const locationNames = spatialCoverage?.filter(s => s.name).map(s => s.name);
+
+  const StatContent = ({
+    url,
+    content,
+    isExternal,
+  }: {
+    url?: string | null;
+    content?: string | React.ReactNode | null;
+    isExternal?: boolean;
+  }) => {
+    if (url) {
+      return (
+        <Link href={url} isExternal={isExternal}>
+          {content}
+        </Link>
+      );
+    }
+    return <>{content || '-'}</>;
+  };
+
   return (
-    <Flex p={4} w='100%' flexWrap='wrap'>
-      {(doi || nctid || numberOfDownloads || numberOfViews) && (
-        <Box w={{ sm: '100%', lg: 'unset' }} mx={[0, 0, 4]} my={4}>
+    <Flex p={[0, 4]} w='100%' flexWrap='wrap' flexDirection={['column', 'row']}>
+      {(doi || nctid) && (
+        <Box w={{ sm: '100%', lg: 'unset' }} my={4}>
           <SimpleGrid
             minChildWidth='150px'
             maxWidth={500}
@@ -85,10 +107,11 @@ const Overview: React.FC<OverviewProps> = ({
             spacingY={2}
             p={4}
             border='0.5px solid'
+            borderRadius='semi'
             borderColor='gray.100'
           >
             {/* Altmetric Badge */}
-            {(doi || nctid || pmid) && (
+            {(doi || nctid || citation?.[0]['pmid']) && (
               <StatField
                 isLoading={false}
                 {...getStatInfo('Altmetric Rating')}
@@ -97,24 +120,22 @@ const Overview: React.FC<OverviewProps> = ({
                 mr={2}
               >
                 <Flex alignItems='center' direction='column'>
-                  {(doi || nctid || pmid) && (
+                  {(doi || nctid || citation?.[0]['pmid']) && (
                     <div
                       role='link'
-                      aria-label={`altmetric badge for id ${
-                        doi || nctid || pmid
-                      }`}
+                      aria-label={`altmetric badge for id ${doi || nctid}`}
                       data-badge-popover='right'
                       data-badge-type='donut'
                       data-doi={doi && formatDOI(doi)}
                       data-nct-id={nctid}
-                      data-pmid={pmid}
+                      data-pmid={citation?.[0]['pmid']}
                       className='altmetric-embed'
                       data-link-target='blank'
                     ></div>
                   )}
 
                   <Link
-                    fontSize={'xs'}
+                    fontSize='xs'
                     href={
                       'https://help.altmetric.com/support/solutions/articles/6000233311-how-is-the-altmetric-attention-score-calculated'
                     }
@@ -126,51 +147,26 @@ const Overview: React.FC<OverviewProps> = ({
                 </Flex>
               </StatField>
             )}
-            {(numberOfDownloads || numberOfViews) && (
-              <Box>
-                {/* Number Of Downloads. Note: Info not available in current API */}
-                {numberOfDownloads && (
-                  <StatField
-                    isLoading={isLoading}
-                    icon={FaDownload}
-                    {...getStatInfo('numberOfDownloads')}
-                  >
-                    {numberOfDownloads}
-                  </StatField>
-                )}
-
-                {/* Number Of Views. Note: Info not available in current API */}
-                {numberOfViews && (
-                  <StatField
-                    isLoading={isLoading}
-                    icon={FaEye}
-                    {...getStatInfo('numberOfViews')}
-                  >
-                    {numberOfViews}
-                  </StatField>
-                )}
-              </Box>
-            )}
           </SimpleGrid>
         </Box>
       )}
 
-      <Stack
-        w='100%'
-        flex={1}
-        p={[0, 0, 4]}
-        divider={<StackDivider borderColor='gray.100' />}
-        direction='column'
-        spacing={4}
-      >
-        {/* Copyright license agreement */}
-        {
-          <StatField
-            isLoading={isLoading}
-            icon={() => <StatIcon id='license' glyph={'license'} />}
-            {...getStatInfo('license')}
-          >
-            {licenseInfo ? (
+      <Flex alignItems='center' w='100%'>
+        <SimpleGrid
+          columns={[1, 1, 2, 2, 3]}
+          border='1px solid'
+          borderColor='gray.100'
+          borderRadius='semi'
+          p={2}
+          w='100%'
+        >
+          {/* Copyright license agreement */}
+          {
+            <StatField
+              isLoading={isLoading}
+              icon={() => <StatIcon id='license' glyph={'license'} />}
+              {...getStatInfo('license')}
+            >
               <>
                 {licenseInfo?.img && (
                   <Image
@@ -178,87 +174,65 @@ const Overview: React.FC<OverviewProps> = ({
                     alt={licenseInfo.type}
                   />
                 )}
-                {licenseInfo?.url ? (
-                  <Link href={licenseInfo.url} isExternal>
-                    {licenseInfo.title}
-                  </Link>
-                ) : (
-                  licenseInfo?.title
-                )}
+                <StatContent
+                  url={licenseInfo?.url}
+                  content={licenseInfo?.title}
+                />
               </>
-            ) : (
-              '-'
-            )}
-          </StatField>
-        }
-        {/* DOI */}
-        {doi && (
-          <StatField isLoading={isLoading} {...getStatInfo('doi')}>
-            {doi.includes('http') ? (
-              <Link href={doi} isExternal>
-                {doi}
-              </Link>
-            ) : (
-              doi
-            )}
-          </StatField>
-        )}
-        {/* species covered in resource */}
-        {species && (
+            </StatField>
+          }
+
+          {/* species covered in resource */}
           <StatField
             isLoading={isLoading}
             icon={() => <StatIcon id='species' glyph='species' />}
             {...getStatInfo('species')}
           >
-            <UnorderedList ml={0}>
-              {species.map((m, i) => {
-                const name = Array.isArray(m.name) ? m.name.join(', ') : m.name;
+            {species ? (
+              <UnorderedList ml={0}>
+                {species.map((m, i) => {
+                  const name = Array.isArray(m.name)
+                    ? m.name.join(', ')
+                    : m.name;
 
-                return (
-                  <ListItem key={`${name}-${i}`}>
-                    {m.url ? (
-                      <Link href={m.url} isExternal>
-                        {name}
-                      </Link>
-                    ) : (
-                      name
-                    )}
-                  </ListItem>
-                );
-              })}
-            </UnorderedList>
+                  return (
+                    <ListItem key={`${name}-${i}`}>
+                      <StatContent url={m.url} content={name} isExternal />
+                    </ListItem>
+                  );
+                })}
+              </UnorderedList>
+            ) : (
+              '-'
+            )}
           </StatField>
-        )}
 
-        {/* infectious agent involved */}
-        {infectiousAgent && (
+          {/* infectious agent involved */}
           <StatField
             isLoading={isLoading}
             icon={() => <StatIcon id='pathogen' glyph='infectiousAgent' />}
             {...getStatInfo('infectiousAgent')}
           >
-            <UnorderedList ml={0}>
-              {infectiousAgent.map((m, i) => {
-                const name = Array.isArray(m.name) ? m.name.join(', ') : m.name;
+            {infectiousAgent ? (
+              <UnorderedList ml={0}>
+                {infectiousAgent.map((m, i) => {
+                  const name = Array.isArray(m.name)
+                    ? m.name.join(', ')
+                    : m.name;
 
-                return (
-                  <ListItem key={`${name}-${i}`}>
-                    {m.url ? (
-                      <Link href={m.url} isExternal>
-                        {name}
-                      </Link>
-                    ) : (
-                      name
-                    )}
-                  </ListItem>
-                );
-              })}
-            </UnorderedList>
+                  return (
+                    <ListItem key={`${name}-${i}`}>
+                      <StatContent url={m.url} content={name} isExternal />
+                    </ListItem>
+                  );
+                })}
+              </UnorderedList>
+            ) : (
+              '-'
+            )}
           </StatField>
-        )}
 
-        {/* health condition covered */}
-        {healthCondition && (
+          {/* health condition covered */}
           <StatField
             isLoading={isLoading}
             icon={() => (
@@ -266,33 +240,33 @@ const Overview: React.FC<OverviewProps> = ({
             )}
             {...getStatInfo('healthCondition')}
           >
-            <UnorderedList ml={0}>
-              {healthCondition.map((m, i) => {
-                const name = Array.isArray(m.name) ? m.name.join(', ') : m.name;
+            {healthCondition ? (
+              <UnorderedList ml={0}>
+                {healthCondition.map((m, i) => {
+                  const name = Array.isArray(m.name)
+                    ? m.name.join(', ')
+                    : m.name;
 
-                return (
-                  <ListItem key={`${name}-${i}`}>
-                    {m.url ? (
-                      <Link href={m.url} isExternal>
-                        {name}
-                      </Link>
-                    ) : (
-                      name
-                    )}
-                  </ListItem>
-                );
-              })}
-            </UnorderedList>
+                  return (
+                    <ListItem key={`${name}-${i}`}>
+                      <StatContent url={m.url} content={name} isExternal />
+                    </ListItem>
+                  );
+                })}
+              </UnorderedList>
+            ) : (
+              '-'
+            )}
           </StatField>
-        )}
-        {/* topics covered in resource*/}
-        {topic && (
-          <StatField isLoading={isLoading} {...getStatInfo('topic')}>
-            {Array.isArray(topic) ? topic.join(', ') : topic}
-          </StatField>
-        )}
-        {/* variable measured, used in conjunction with measurement technique */}
-        {variableMeasured && (
+
+          {/* topics covered in resource*/}
+          {topic && (
+            <StatField isLoading={isLoading} {...getStatInfo('topic')}>
+              {topic.join(', ')}
+            </StatField>
+          )}
+
+          {/* variable measured, used in conjunction with measurement technique */}
           <StatField
             isLoading={isLoading}
             icon={() => (
@@ -300,11 +274,10 @@ const Overview: React.FC<OverviewProps> = ({
             )}
             {...getStatInfo('variableMeasured')}
           >
-            {variableMeasured}
+            {variableMeasured?.join(', ')}
           </StatField>
-        )}
-        {/* measurement technique */}
-        {measurementTechnique && (
+
+          {/* measurement technique */}
           <StatField
             isLoading={isLoading}
             icon={() => (
@@ -315,70 +288,229 @@ const Overview: React.FC<OverviewProps> = ({
             )}
             {...getStatInfo('measurementTechnique')}
           >
-            <UnorderedList ml={0}>
-              {measurementTechnique.map((m, i) => {
-                const name = Array.isArray(m.name) ? m.name.join(', ') : m.name;
+            {measurementTechnique ? (
+              <UnorderedList ml={0}>
+                {measurementTechnique.map((m, i) => {
+                  const name = Array.isArray(m.name)
+                    ? m.name.join(', ')
+                    : m.name;
+                  return (
+                    <ListItem key={`${name}-${i}`}>
+                      <StatContent url={m.url} content={name} isExternal />
+                    </ListItem>
+                  );
+                })}
+              </UnorderedList>
+            ) : (
+              '-'
+            )}
+          </StatField>
+
+          {/* Data Usage Agreement */}
+          {usageInfo && (
+            <Box>
+              <StatField isLoading={isLoading} {...getStatInfo('usageInfo')}>
+                <Box>
+                  <StatContent
+                    url={usageInfo.url}
+                    content={usageInfo.name || usageInfo.url}
+                  />
+                  <br />
+                  {usageInfo.description}
+                </Box>
+              </StatField>
+            </Box>
+          )}
+
+          {/* programming language */}
+          {programmingLanguage && (
+            <StatField
+              isLoading={isLoading}
+              {...getStatInfo('programmingLanguage')}
+            >
+              <UnorderedList ml={0}>
+                {programmingLanguage?.map((language, i) => {
+                  return (
+                    <ListItem key={`${language}-${i}`}>
+                      <StatContent content={language} />
+                    </ListItem>
+                  );
+                })}
+              </UnorderedList>
+            </StatField>
+          )}
+
+          {softwareVersion && (
+            <StatField
+              isLoading={isLoading}
+              {...getStatInfo('softwareVersion')}
+            >
+              {softwareVersion.join(',')}
+            </StatField>
+          )}
+
+          {/* language */}
+          {inLanguage && inLanguage.name && (
+            <StatField isLoading={isLoading} {...getStatInfo('inLanguage')}>
+              {languageName.of(inLanguage.name)}
+            </StatField>
+          )}
+
+          {/* geographic */}
+          {locationNames && locationNames.length > 0 && (
+            <StatField
+              icon={FaGlobeAmericas}
+              isLoading={isLoading}
+              {...getStatInfo('spatialCoverage')}
+            >
+              {locationNames.join(', ')}
+            </StatField>
+          )}
+
+          {/* period covered */}
+          {temporalCoverage?.temporalInterval && (
+            <StatField
+              icon={FaCalendarAlt}
+              isLoading={isLoading}
+              {...getStatInfo('temporalCoverage')}
+            >
+              {temporalCoverage?.temporalInterval?.name && (
+                <StatContent content={temporalCoverage.temporalInterval.name} />
+              )}
+
+              {temporalCoverage?.temporalInterval?.startDate && (
+                <>
+                  <strong>Start Date: </strong>
+                  {temporalCoverage?.temporalInterval?.startDate}
+                </>
+              )}
+              <br />
+              {temporalCoverage?.temporalInterval?.endDate && (
+                <>
+                  <strong>End Date: </strong>
+                  {temporalCoverage?.temporalInterval?.endDate}
+                </>
+              )}
+            </StatField>
+          )}
+
+          {/* Type of Computational Tool */}
+          {data['@type'] === 'ComputationalTool' &&
+            (data['applicationCategory'] || data['applicationSubCategory']) && (
+              <Box>
+                <StatField isLoading={isLoading} label='Tool'>
+                  <StatField isLoading={isLoading} label='Category' py={1}>
+                    <StatContent
+                      content={data.applicationCategory?.join(', ')}
+                    />
+                  </StatField>
+
+                  {data.applicationSubCategory && (
+                    <StatField isLoading={isLoading} label='Subcategory' py={1}>
+                      <StatContent
+                        content={data.applicationSubCategory.join(', ')}
+                      />
+                    </StatField>
+                  )}
+                  {data.applicationSuite && (
+                    <StatField isLoading={isLoading} label='Suite' py={1}>
+                      <StatContent content={data.applicationSuite.join(', ')} />
+                    </StatField>
+                  )}
+                </StatField>
+              </Box>
+            )}
+
+          {/* Related Ids */}
+          <StatField
+            isLoading={isLoading}
+            label='Related Identifiers'
+            description={
+              <p>
+                <strong>DOI: </strong>
+                {getStatInfo('doi').description}
+                <br />
+                <strong>PMID: </strong>
+                {getStatInfo('pmid').description}
+                <br />
+                <strong>NCTID: </strong>
+                {getStatInfo('nctid').description}
+              </p>
+            }
+          >
+            {/* if no identifiers show a dash */}
+            {!doi && !nctid && !citation && '-'}
+
+            {/* DOI */}
+            {doi && (
+              <>
+                <strong>DOI: </strong>
+                <StatContent
+                  url={doi?.includes('http') ? doi : ''}
+                  content={doi}
+                />
+              </>
+            )}
+
+            {/* NCT ID */}
+            {nctid && (
+              <>
+                <strong>NCTID: </strong>
+                <StatContent
+                  url={nctid?.includes('http') ? nctid : ''}
+                  content={nctid}
+                />
+              </>
+            )}
+
+            {/* PUBMED ID*/}
+            {citation?.map((c, i) => {
+              if (!nctid && !doi && !c.pmid) {
+                return <>-</>;
+              }
+              if (!c.pmid) {
+                return <></>;
+              }
+              if (c.pmid) {
                 return (
-                  <ListItem key={`${name}-${i}`}>
-                    {m.url ? (
-                      <Link href={m.url} isExternal>
-                        {name}
-                      </Link>
-                    ) : (
-                      name
-                    )}
-                  </ListItem>
-                );
-              })}
-            </UnorderedList>
-          </StatField>
-        )}
-        {/* language */}
-        {language && language.name && (
-          <StatField isLoading={isLoading} {...getStatInfo('language')}>
-            {language.name.toUpperCase()}
-          </StatField>
-        )}
-        {/* geographic */}
-        {spatialCoverage && (
-          <StatField
-            icon={FaGlobeAmericas}
-            isLoading={isLoading}
-            {...getStatInfo('spatialCoverage')}
-          >
-            {spatialCoverage}
-          </StatField>
-        )}
-        {/* period covered */}
-        {temporalCoverage && (
-          <StatField
-            icon={FaCalendarAlt}
-            isLoading={isLoading}
-            {...getStatInfo('temporalCoverage')}
-          >
-            {temporalCoverage}
-          </StatField>
-        )}
-        {/* citation */}
-        {citation && (
-          <StatField isLoading={isLoading} {...getStatInfo('citation')}>
-            {citation.map((c, i) => (
-              <Text key={i} my={2}>
-                {formatCitationString(c)}{' '}
-                {/* If the citation contains a url. */}
-                {c.url && (
                   <>
-                    Available from:{' '}
-                    <Link href={c.url} isExternal>
-                      {c.url}
-                    </Link>
+                    <strong>PMID: </strong>
+
+                    <StatContent key={i} content={c.pmid} />
                   </>
-                )}
-              </Text>
-            ))}
+                );
+              }
+            })}
           </StatField>
-        )}
-      </Stack>
+
+          {/* Citation */}
+          {citation && (
+            <Box>
+              <StatField isLoading={isLoading} {...getStatInfo('citation')}>
+                {citation.map((c, i) => {
+                  return (
+                    <Box key={i}>
+                      <DisplayHTMLContent
+                        key={i}
+                        content={`${formatCitationString(c, true)}` || ''}
+                        overflow='auto'
+                      />
+                      {c.url && (
+                        <>
+                          Available from:{' '}
+                          <Link href={c.url} isExternal>
+                            {c.url}
+                          </Link>
+                        </>
+                      )}
+                    </Box>
+                  );
+                })}
+              </StatField>
+            </Box>
+          )}
+        </SimpleGrid>
+      </Flex>
     </Flex>
   );
 };

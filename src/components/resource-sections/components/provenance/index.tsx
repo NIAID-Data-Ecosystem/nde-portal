@@ -19,12 +19,14 @@ interface Provenance {
   isLoading: boolean;
   includedInDataCatalog?: FormattedResource['includedInDataCatalog'];
   url?: FormattedResource['url'];
+  sdPublisher?: FormattedResource['sdPublisher'];
 }
 
 const Provenance: React.FC<Provenance> = ({
   includedInDataCatalog,
   isLoading,
   url,
+  sdPublisher,
 }) => {
   const imageURL =
     includedInDataCatalog?.name &&
@@ -33,6 +35,7 @@ const Provenance: React.FC<Provenance> = ({
   return (
     <Skeleton isLoaded={!isLoading}>
       <Stack spacing={4} alignItems='flex-start'>
+        {/* Source where data is retrieved from */}
         {includedInDataCatalog?.name ? (
           <Stat>
             <dd>
@@ -46,7 +49,7 @@ const Provenance: React.FC<Provenance> = ({
                 />
               )}
             </dd>
-            <StatLabel>Source organization</StatLabel>
+            <StatLabel>Provided By</StatLabel>
             <dd>
               {includedInDataCatalog.url ? (
                 <Link
@@ -65,12 +68,41 @@ const Provenance: React.FC<Provenance> = ({
           <Text>No data available.</Text>
         )}
 
+        {/* Original publisher of data */}
+        {sdPublisher && sdPublisher.length > 0 ? (
+          sdPublisher?.map((publisher, i) => {
+            if (
+              (!publisher.name && !publisher.url) ||
+              (publisher.name === 'N/A' && !publisher.url)
+            ) {
+              return <></>;
+            }
+            return (
+              <Stat key={i}>
+                <StatLabel>Original Source</StatLabel>
+                <dd>
+                  {publisher.url ? (
+                    <Link href={publisher.url} target='_blank' isExternal>
+                      {publisher.name || publisher.url}
+                    </Link>
+                  ) : (
+                    <Text>{publisher.name || publisher.url}</Text>
+                  )}
+                </dd>
+              </Stat>
+            );
+          })
+        ) : (
+          <></>
+        )}
+
         {includedInDataCatalog?.versionDate && (
           <Stat>
             <StatLabel>Version Date</StatLabel>
             <dd>{formatDate(includedInDataCatalog.versionDate)} </dd>
           </Stat>
         )}
+
         {url && (
           <Button
             colorScheme='primary'

@@ -1,8 +1,9 @@
 import React, { useRef } from 'react';
-import { Badge, Box, BoxProps, Icon, Tooltip } from 'nde-design-system';
+import { Badge, Box, BoxProps, Icon } from 'nde-design-system';
 import { FormattedResource } from 'src/utils/api/types';
 import { FaLockOpen, FaLock } from 'react-icons/fa';
 import AccessConfig from './access.json';
+import Tooltip from 'src/components/tooltip';
 
 // Component Info: Badge displaying the level of access from the dataset
 
@@ -38,7 +39,7 @@ const AccessBadge: React.FC<AccessBadgeProps> = ({
 
   return (
     <Tooltip label={tooltip}>
-      <Box ref={ref}>
+      <Box ref={ref} cursor='default'>
         <Badge colorScheme={colorScheme} {...props}>
           {iconType && <Icon mr={2} as={iconType} />}
           {typeof children === 'string' &&
