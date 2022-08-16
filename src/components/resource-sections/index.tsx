@@ -76,7 +76,7 @@ const Sections = ({
 
       {sections.map(section => {
         if (section.hash === 'isBasedOn' && !data?.isBasedOn) {
-          return <></>;
+          return <React.Fragment key={section.hash}></React.Fragment>;
         }
         return (
           <Section

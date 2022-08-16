@@ -466,18 +466,17 @@ const Overview: React.FC<OverviewProps> = ({
             {/* PUBMED ID*/}
             {citation?.map((c, i) => {
               if (!nctid && !doi && !c.pmid) {
-                return <>-</>;
+                return <React.Fragment key={i}>-</React.Fragment>;
               }
               if (!c.pmid) {
-                return <></>;
+                return null;
               }
               if (c.pmid) {
                 return (
-                  <>
+                  <React.Fragment key={i}>
                     <strong>PMID: </strong>
-
-                    <StatContent key={i} content={c.pmid} />
-                  </>
+                    <StatContent content={c.pmid} />
+                  </React.Fragment>
                 );
               }
             })}
