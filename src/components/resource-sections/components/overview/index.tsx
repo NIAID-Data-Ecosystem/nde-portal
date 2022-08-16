@@ -309,7 +309,11 @@ const Overview: React.FC<OverviewProps> = ({
           {/* Data Usage Agreement */}
           {usageInfo && (
             <Box>
-              <StatField isLoading={isLoading} {...getStatInfo('usageInfo')}>
+              <StatField
+                isLoading={isLoading}
+                icon={() => <StatIcon id='usageInfo' glyph='usageInfo' />}
+                {...getStatInfo('usageInfo')}
+              >
                 <Box>
                   <StatContent
                     url={usageInfo.url}

@@ -1,32 +1,11 @@
 import React from 'react';
 import { IconProps as ChakraIconProps } from '@chakra-ui/icon';
-import { BoxProps, Flex, Icon, Square } from 'nde-design-system';
-import { FaFlask, FaSearchDollar } from 'react-icons/fa';
+import { Flex, Icon } from 'nde-design-system';
+import { FaFlask, FaSearchDollar, FaFileSignature } from 'react-icons/fa';
 import Glyph from './components/glyph';
-import { getMetadataColor, getMetadataLabel } from './helpers';
 import MetadataConfig from 'configs/resource-metadata.json';
 import { IconType } from 'react-icons';
 import Tooltip from 'src/components/tooltip';
-
-// Badge encircling metadata property icon
-interface MetadataBadgeProps extends BoxProps {
-  property: string;
-}
-
-export const MetadataBadge: React.FC<MetadataBadgeProps> = ({
-  property,
-  children,
-  ...props
-}) => {
-  if (!getMetadataLabel(property)) {
-    return <></>;
-  }
-  return (
-    <Square bg={getMetadataColor(property)} p={1} borderRadius='4px' {...props}>
-      {children}
-    </Square>
-  );
-};
 
 // Metadata icon svg.
 export interface IconProps extends ChakraIconProps {
@@ -47,6 +26,8 @@ export const MetadataIcon = React.forwardRef<HTMLDivElement, IconProps>(
       FaIcon = FaSearchDollar;
     } else if (glyph?.toLowerCase() === 'variablemeasured') {
       FaIcon = FaFlask;
+    } else if (glyph?.toLowerCase() === 'usageinfo') {
+      FaIcon = FaFileSignature;
     } else {
       FaIcon = null;
     }
@@ -93,11 +74,11 @@ export const MetadataToolTip: React.FC<MetadataToolTipProps> = ({
     return <></>;
   }
   // Description of metadata property
-  const description = MetadataConfig.find(d => d.property === property);
+  const metadataProperty = MetadataConfig.find(d => d.property === property);
   return (
     <Tooltip
-      label={`${label || (property && getMetadataLabel(property))} ${
-        description && `: ${description.description}`
+      label={`${label || metadataProperty?.title} ${
+        metadataProperty && `: ${metadataProperty.description}`
       }`}
     >
       {children}

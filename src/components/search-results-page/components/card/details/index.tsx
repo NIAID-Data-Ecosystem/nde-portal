@@ -36,6 +36,7 @@ const CardDetails: React.FC<CardDetailsProps> = ({ data }) => {
     species,
     infectiousAgent,
     healthCondition,
+    usageInfo,
   } = data || {};
 
   const paddingCard = [4, 6, 8, 10];
@@ -73,6 +74,7 @@ const CardDetails: React.FC<CardDetailsProps> = ({ data }) => {
     return (
       <Flex mx={[0, 2]} my={1}>
         <Badge property='license' glyph='license' value={licenseInfo} />
+        <Badge property='usageInfo' glyph='usageInfo' value={usageInfo?.name} />
         <Badge property='funding' glyph='funding' value={fundingInfo} />
         <Badge
           property='measurementTechnique'
@@ -154,6 +156,27 @@ const CardDetails: React.FC<CardDetailsProps> = ({ data }) => {
                       </>
                     )}
                   </MetadataProperty>
+
+                  {/* Data Usage Information*/}
+                  <MetadataProperty
+                    id={`dua-${id}`}
+                    label='Data Usage Agreement'
+                    glyph='usageInfo'
+                  >
+                    {usageInfo && (
+                      <>
+                        {usageInfo?.url ? (
+                          <Link href={usageInfo.url} isExternal>
+                            {usageInfo.name}
+                          </Link>
+                        ) : (
+                          usageInfo?.name
+                        )}
+                        {usageInfo?.description && ` ${usageInfo.description}`}
+                      </>
+                    )}
+                  </MetadataProperty>
+
                   {/* Funding */}
                   <MetadataProperty
                     id={`funding-${id}`}

@@ -35,6 +35,7 @@ export const MetadataProperty: React.FC<MetadataPropertyProps> = ({
             boxSize={6}
             glyph={glyph}
             m={2}
+            mr={0}
             label={label}
           />
         </MetadataToolTip>
@@ -43,6 +44,7 @@ export const MetadataProperty: React.FC<MetadataPropertyProps> = ({
           fontSize='sm'
           fontWeight='medium'
           opacity={children ? 1 : 0.9}
+          ml={2}
         >
           {label} :
         </Text>
@@ -54,7 +56,7 @@ export const MetadataProperty: React.FC<MetadataPropertyProps> = ({
         borderTop='0.625px solid'
         borderColor='gray.100'
         opacity={children ? 1 : 0.4}
-        color={'text.heading'}
+        color='text.heading'
         fontSize='sm'
       >
         {children || (
