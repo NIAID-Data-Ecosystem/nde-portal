@@ -61,9 +61,7 @@ export const DownloadMetadata: React.FC<DownloadMetadataProps> = ({
   const { error, refetch, isFetching } = useQuery<any | undefined, Error>(
     [
       'all-search-results',
-      {
-        ...params,
-      },
+      { ...params, dotfield: downloadFormat?.format === 'csv' || false },
     ],
     () => {
       return fetchAllSearchResults({

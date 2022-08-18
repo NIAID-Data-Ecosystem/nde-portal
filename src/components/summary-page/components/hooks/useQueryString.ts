@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { updateRoute } from './helpers';
+import { encodeString } from 'src/utils/querystring-helpers';
 
 /*
   This hook takes a default query string.
@@ -26,10 +27,9 @@ export const useQueryString = (
       if (querystring === '') {
         return defaultQueryString;
       }
-
       return Array.isArray(querystring)
-        ? `${querystring.map(s => s.trim()).join('+')}`
-        : `${querystring.trim()}`;
+        ? `${encodeString(querystring.map(s => s.trim()).join('+'))}`
+        : `${encodeString(querystring.trim())}`;
     });
   }, [router, defaultQueryString]);
 

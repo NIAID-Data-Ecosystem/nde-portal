@@ -1,5 +1,4 @@
 import axios from 'axios';
-import { encodeString } from '../querystring-helpers';
 import { formatAPIResource } from './helpers';
 import { FetchSearchResultsResponse, Metadata } from './types';
 
@@ -48,10 +47,7 @@ export const fetchSearchResults = async (params: Params) => {
     const { data } = await axios.get(
       `${process.env.NEXT_PUBLIC_API_URL}/query?`,
       {
-        params: {
-          ...params,
-          q: encodeString(params.q),
-        },
+        params,
       },
     );
     if (!data.hits) {
@@ -88,7 +84,6 @@ export const fetchAllSearchResults = async (queryParams: Params) => {
       let url = `${process.env.NEXT_PUBLIC_API_URL}/query?`;
       let params = {
         ...queryParams,
-        q: encodeString(queryParams.q),
         fetch_all: true,
         page,
       };

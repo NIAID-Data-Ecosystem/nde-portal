@@ -42,6 +42,7 @@ import ResultsCount from './components/count';
 import { DownloadMetadata } from '../download-metadata';
 import NextLink from 'next/link';
 import { FaChartBar } from 'react-icons/fa';
+import { encodeString } from 'src/utils/querystring-helpers';
 
 /*
 [COMPONENT INFO]:
@@ -120,9 +121,9 @@ const SearchResultsPage = () => {
   const params = {
     q: filter_string
       ? `${
-          queryString === '__all__' ? '' : `${queryString} AND `
+          queryString === '__all__' ? '' : `${encodeString(queryString)} AND `
         }${filter_string}`
-      : `${queryString}`,
+      : `${encodeString(queryString)}`,
   };
 
   const { isLoading, error, data } = useQuery<
@@ -327,7 +328,7 @@ const SearchResultsPage = () => {
             />
             <Flex w='100%'>
               <Filters
-                searchTerm={queryString}
+                searchTerm={params.q}
                 facets={{ isLoading: isLoading, data: data?.facets }}
                 selectedFilters={selectedFilters}
                 removeAllFilters={

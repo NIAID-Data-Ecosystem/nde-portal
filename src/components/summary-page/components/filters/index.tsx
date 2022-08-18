@@ -15,6 +15,7 @@ import { fetchSearchResults } from 'src/utils/api';
 import { Filter, queryFilterObject2String } from 'src/components/filter';
 import { FaMinus, FaPlus } from 'react-icons/fa';
 import { SelectedFilterType } from '../hooks';
+import { encodeString } from 'src/utils/querystring-helpers';
 
 interface FiltersProps {
   // Stringified query.
@@ -94,12 +95,12 @@ export const Filters: React.FC<FiltersProps> = ({
     [
       'search-results-with-filters',
       {
-        q: queryString,
+        q: encodeString(queryString),
         filters,
         facets,
       },
     ],
-    () => queryFn(queryString, filters),
+    () => queryFn(encodeString(queryString), filters),
 
     // Don't refresh everytime window is touched.
     {
