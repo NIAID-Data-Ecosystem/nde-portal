@@ -188,6 +188,8 @@ export const formatType = (type: string): ResourceType => {
     return 'Dataset';
   } else if (type.toLowerCase() === 'computationaltool') {
     return 'Computational Tool';
+  } else if (type.toLowerCase() === 'scholarlyarticle') {
+    return 'Scholarly Article';
   } else {
     return 'Other';
   }
@@ -239,9 +241,12 @@ const formatConditionsOfAccess = (
 };
 
 export const formatAPIResource = (data: any) => {
+  if (!data) {
+    return undefined;
+  }
   const formattedResource: FormattedResource = {
     ...data,
-    id: data._id,
+    id: data._id || null,
     type: data['@type'] ? formatType(data['@type']) : null,
     name: data.name || null,
     applicationCategory: convertToArray(data.applicationCategory),
@@ -275,6 +280,9 @@ export const formatAPIResource = (data: any) => {
         }
       : null,
     infectiousAgent: convertToArray(data.infectiousAgent),
+    isBasedOn: convertToArray(data.isBasedOn),
+    isPartOf: convertToArray(data.isPartOf),
+    isRelatedTo: convertToArray(data.isRelatedTo),
     keywords: convertToArray(data.keywords),
     inLanguage: data.inLanguage
       ? {

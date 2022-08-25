@@ -31,6 +31,28 @@ export interface FacetTerm {
   [key: string]: NestedFacet;
 }
 
+// Type of resource.
+export type ResourceType =
+  | 'Dataset'
+  | 'Computational Tool'
+  | 'Scholarly Article'
+  | 'Other';
+
+// Conditions of access for dataset or tool.
+export type AccessTypes = 'Open' | 'Controlled' | 'Embargoed' | 'Restricted';
+
+export interface Author {
+  identifier: string | null; // orcid id
+  type: string | null;
+  affiliation: { name: string } | null;
+  name: string | null;
+  familyName: string | null;
+  givenName: string | null;
+  role: string | null;
+  title: string | null;
+  url: string | null;
+}
+
 export interface Citation {
   id: string | null;
   url: string | null;
@@ -57,18 +79,6 @@ export interface CitedBy {
   identifier: string | null;
   name: string | null;
   pmid: string | null;
-  url: string | null;
-}
-
-export interface Author {
-  identifier: string | null; // orcid id
-  type: string | null;
-  affiliation: { name: string } | null;
-  name: string | null;
-  familyName: string | null;
-  givenName: string | null;
-  role: string | null;
-  title: string | null;
   url: string | null;
 }
 
@@ -104,47 +114,22 @@ export interface Funding {
   description: string | null;
 }
 
-export interface includedInDataCatalog {
-  name?: string | null;
-  url?: string | null; //source repo url
-  versionDate?: string | null;
-  image?: string | null;
-  identifier?: string | null;
-}
-
-export interface inLanguage {
-  '@type': string;
-  name: string;
-  alternateName: string;
-}
-
-export interface Publisher {
-  '@type': string;
-  name: string;
-}
-
-export interface PropertyNameWithURL {
-  name?: string | string[];
-  url?: string;
-}
-
-// Type of resouce.
-export type ResourceType = 'Dataset' | 'Computational Tool' | 'Other';
-
-// Conditions of access for dataset or tool.
-export type AccessTypes = 'Open' | 'Controlled' | 'Embargoed' | 'Restricted';
-
-export interface SdPublisher {
+export interface HasPart {
+  '@id'?: string;
+  '@type'?: string;
+  encodingFormat?: string;
   identifier?: string;
   name?: string;
   url?: string;
 }
 
-export interface HasPart {
-  '@type'?: string;
-  encodingFormat?: string;
-  name?: string;
-  url?: string;
+export interface IncludedInDataCatalog {
+  '@type'?: string | null;
+  name?: string | null;
+  url?: string | null; //source repo url
+  versionDate?: string | null;
+  image?: string | null;
+  identifier?: string | null;
 }
 
 export interface IsBasedOn {
@@ -158,6 +143,39 @@ export interface IsBasedOn {
   name?: string;
   pmid?: string;
   type?: string;
+  url?: string;
+}
+
+export interface IsPartOf {
+  id?: string;
+  '@type'?: string;
+  name?: string;
+  identifier?: string;
+  url?: string;
+}
+
+export interface IsRelatedTo {
+  '@type'?: string;
+  hasPart: HasPart;
+  identifier?: string;
+  includedInDataCatalog?: IncludedInDataCatalog;
+  name?: string;
+  relationship?: string;
+}
+
+export interface PropertyNameWithURL {
+  name?: string | string[];
+  url?: string;
+}
+
+export interface Publisher {
+  '@type': string;
+  name: string;
+}
+
+export interface SdPublisher {
+  identifier?: string;
+  name?: string;
   url?: string;
 }
 
@@ -207,7 +225,7 @@ export interface FormattedResource {
   funding: Funding[] | null;
   hasPart: HasPart[] | null;
   healthCondition: PropertyNameWithURL[] | null;
-  includedInDataCatalog: includedInDataCatalog | null;
+  includedInDataCatalog: IncludedInDataCatalog | null;
   infectiousAgent: PropertyNameWithURL[] | null;
   keywords: string[] | null;
   inLanguage: {
@@ -216,6 +234,8 @@ export interface FormattedResource {
   } | null;
   isAvailableForFree: boolean | null;
   isBasedOn: IsBasedOn[] | null;
+  isPartOf: IsPartOf[] | null;
+  isRelatedTo: IsRelatedTo[] | null;
   license: string | null;
   mainEntityOfPage: string | null;
   measurementTechnique: PropertyNameWithURL[] | null;

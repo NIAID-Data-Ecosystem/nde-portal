@@ -4,19 +4,12 @@ import { CitedBy, FormattedResource } from 'src/utils/api/types';
 import Table, { Row } from 'src/components/table';
 import LoadingSpinner from 'src/components/loading';
 import { getTableColumns } from 'src/components/table/helpers';
-import { formatDate } from 'src/utils/api/helpers';
+import { formatDate, formatType } from 'src/utils/api/helpers';
 
 interface CitedByTable {
   isLoading: boolean;
   citedBy?: FormattedResource['citedBy'];
 }
-
-const formatType = (type: string) => {
-  if (type.toLowerCase() === 'scholarlyarticle') {
-    return 'Scholarly Article';
-  }
-  return type;
-};
 
 const CitedByTable: React.FC<CitedByTable> = ({ isLoading, citedBy }) => {
   const accessorFn = useCallback(v => v.sortValue, []);
