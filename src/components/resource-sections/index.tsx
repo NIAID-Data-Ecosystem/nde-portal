@@ -76,7 +76,7 @@ const Sections = ({
 
       {sections.map(section => {
         if (section.hash === 'isBasedOn' && !data?.isBasedOn) {
-          return <></>;
+          return <React.Fragment key={section.hash}></React.Fragment>;
         }
         return (
           <Section
@@ -181,9 +181,9 @@ const Sections = ({
               <>
                 <Flex w='100%' justifyContent='flex-end' pb={4}>
                   <DownloadMetadata
-                    loadMetadata={async () => await data.rawData}
                     colorScheme='secondary'
                     exportName={data.rawData['_id']}
+                    params={{ q: `_id:"${data.rawData['_id']}"` }}
                   >
                     Download Metadata
                   </DownloadMetadata>

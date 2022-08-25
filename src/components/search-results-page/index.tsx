@@ -3,8 +3,7 @@ import { useRouter } from 'next/router';
 import { useQuery } from 'react-query';
 import Empty from 'src/components/empty';
 import { PageContent } from 'src/components/page-container';
-import { fetchAllSearchResults, fetchSearchResults } from 'src/utils/api';
-import { encodeString } from 'src/utils/querystring-helpers';
+import { fetchSearchResults } from 'src/utils/api';
 import {
   FetchSearchResultsResponse,
   FormattedResource,
@@ -43,6 +42,8 @@ import ResultsCount from './components/count';
 import { DownloadMetadata } from '../download-metadata';
 import NextLink from 'next/link';
 import { FaChartBar } from 'react-icons/fa';
+import { encodeString } from 'src/utils/querystring-helpers';
+
 /*
 [COMPONENT INFO]:
  Search results pages displays the list of records returned by a search.
@@ -114,7 +115,16 @@ const SearchResultsPage = () => {
     defaultQuery.selectedPerPage,
   );
 
-  // Get query params from url params
+  // Query Parameters
+  const filter_string = queryFilterObject2String(selectedFilters);
+
+  const params = {
+    q: filter_string
+      ? `${
+          queryString === '__all__' ? '' : `${encodeString(queryString)} AND `
+        }${filter_string}`
+      : `${encodeString(queryString)}`,
+  };
 
   const { isLoading, error, data } = useQuery<
     FetchSearchResultsResponse | undefined,
@@ -123,10 +133,10 @@ const SearchResultsPage = () => {
     [
       'search-results',
       {
-        q: queryString,
+        q: params.q,
+        filters: selectedFilters,
         size: selectedPerPage,
         from: selectedPage,
-        filters: selectedFilters,
         sortOrder,
       },
     ],
@@ -134,13 +144,9 @@ const SearchResultsPage = () => {
       if (typeof queryString !== 'string' && !queryString) {
         return;
       }
-      const filter_string = queryFilterObject2String(selectedFilters);
+
       return fetchSearchResults({
-        q: filter_string
-          ? `${
-              queryString === '__all__' ? '' : `${queryString} AND `
-            }${filter_string}`
-          : `${queryString}`,
+        q: params.q,
         size: `${selectedPerPage}`,
         from: `${(selectedPage - 1) * selectedPerPage}`,
         facet_size: defaultQuery.facetSize,
@@ -150,37 +156,6 @@ const SearchResultsPage = () => {
     },
     // Don't refresh everytime window is touched.
     { refetchOnWindowFocus: false, enabled: true },
-  );
-
-  // Get all data for download
-  const {
-    error: metadataError,
-    refetch,
-    isFetching,
-  } = useQuery<any | undefined, Error>(
-    [
-      'all-search-results',
-      {
-        q: queryString,
-        filters: selectedFilters,
-      },
-    ],
-    () => {
-      if (typeof queryString !== 'string' && !queryString) {
-        return;
-      }
-      const filter_string = queryFilterObject2String(selectedFilters);
-
-      return fetchAllSearchResults({
-        q: filter_string
-          ? `${
-              queryString === '__all__' ? '' : `${queryString} AND `
-            }${filter_string}`
-          : `${queryString}`,
-      });
-    },
-    // Don't refresh everytime window is touched.
-    { refetchOnWindowFocus: false, enabled: false },
   );
 
   // Set total results value
@@ -209,10 +184,9 @@ const SearchResultsPage = () => {
       if (querystring === '') {
         return defaultQuery.queryString;
       }
-
       return Array.isArray(querystring)
-        ? `${querystring.map(s => encodeString(s.trim())).join('+')}`
-        : `${encodeString(querystring.trim())}`;
+        ? `${querystring.map(s => s.trim()).join('+')}`
+        : `${querystring.trim()}`;
     });
     setSelectedPage(() => {
       if (!from) {
@@ -332,13 +306,7 @@ const SearchResultsPage = () => {
                 </Heading>
               )}
             </Heading>
-            {metadataError && (
-              <Box my={2}>
-                <Banner status='error'>
-                  Something went wrong with the metadata download. Try again.
-                </Banner>
-              </Box>
-            )}
+
             {/* Chips with the names of the currently selected filters */}
             <FilterTags
               tags={applied_filters}
@@ -360,7 +328,7 @@ const SearchResultsPage = () => {
             />
             <Flex w='100%'>
               <Filters
-                searchTerm={queryString}
+                searchTerm={params.q}
                 facets={{ isLoading: isLoading, data: data?.facets }}
                 selectedFilters={selectedFilters}
                 removeAllFilters={
@@ -444,23 +412,14 @@ const SearchResultsPage = () => {
                     <Box>
                       <Flex w='100%' justifyContent='flex-end' pb={4}>
                         <DownloadMetadata
-                          exportName={'nde-results'}
-                          loadMetadata={() =>
-                            refetch().then(response => response.data?.results)
-                          }
-                          colorScheme='primary'
+                          exportName='nde-results'
                           variant='outline'
-                          isLoading={isFetching}
+                          params={params}
                         >
                           Download Metadata
                         </DownloadMetadata>
                       </Flex>
-                      <Collapse in={isFetching}>
-                        <Text fontSize='xs' fontStyle='italic'>
-                          Note: Large sets of metadata may take along time to
-                          download.
-                        </Text>
-                      </Collapse>
+
                       <SortResults
                         sortOptions={sort_options}
                         sortOrder={sortOrder}
@@ -502,7 +461,7 @@ const SearchResultsPage = () => {
                     <Empty
                       message='No results found.'
                       alignSelf='center'
-                      h={'50vh'}
+                      h='50vh'
                     >
                       <Text>Search yielded no results, please try again.</Text>
                       <Button href='/' mt={4}>

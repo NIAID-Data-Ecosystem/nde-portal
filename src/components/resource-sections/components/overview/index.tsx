@@ -309,7 +309,11 @@ const Overview: React.FC<OverviewProps> = ({
           {/* Data Usage Agreement */}
           {usageInfo && (
             <Box>
-              <StatField isLoading={isLoading} {...getStatInfo('usageInfo')}>
+              <StatField
+                isLoading={isLoading}
+                icon={() => <StatIcon id='usageInfo' glyph='usageInfo' />}
+                {...getStatInfo('usageInfo')}
+              >
                 <Box>
                   <StatContent
                     url={usageInfo.url}
@@ -425,6 +429,7 @@ const Overview: React.FC<OverviewProps> = ({
           <StatField
             isLoading={isLoading}
             label='Related Identifiers'
+            icon={() => <StatIcon id='identifier' glyph='identifier' />}
             description={
               <p>
                 <strong>DOI: </strong>
@@ -466,18 +471,17 @@ const Overview: React.FC<OverviewProps> = ({
             {/* PUBMED ID*/}
             {citation?.map((c, i) => {
               if (!nctid && !doi && !c.pmid) {
-                return <>-</>;
+                return <React.Fragment key={i}>-</React.Fragment>;
               }
               if (!c.pmid) {
-                return <></>;
+                return null;
               }
               if (c.pmid) {
                 return (
-                  <>
+                  <React.Fragment key={i}>
                     <strong>PMID: </strong>
-
-                    <StatContent key={i} content={c.pmid} />
-                  </>
+                    <StatContent content={c.pmid} />
+                  </React.Fragment>
                 );
               }
             })}
@@ -486,7 +490,11 @@ const Overview: React.FC<OverviewProps> = ({
           {/* Citation */}
           {citation && (
             <Box>
-              <StatField isLoading={isLoading} {...getStatInfo('citation')}>
+              <StatField
+                isLoading={isLoading}
+                icon={() => <StatIcon id='citation' glyph='citation' />}
+                {...getStatInfo('citation')}
+              >
                 {citation.map((c, i) => {
                   return (
                     <Box key={i}>
