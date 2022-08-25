@@ -443,48 +443,55 @@ const Overview: React.FC<OverviewProps> = ({
               </p>
             }
           >
-            {/* if no identifiers show a dash */}
-            {!doi && !nctid && !citation && '-'}
+            <UnorderedList>
+              {/* if no identifiers show a dash */}
+              <ListItem> {!doi && !nctid && !citation && '-'}</ListItem>
 
-            {/* DOI */}
-            {doi && (
-              <>
-                <strong>DOI: </strong>
-                <StatContent
-                  url={doi?.includes('http') ? doi : ''}
-                  content={doi}
-                />
-              </>
-            )}
+              {/* DOI */}
+              {doi && (
+                <ListItem>
+                  <strong>DOI: </strong>
+                  <StatContent
+                    url={doi?.includes('http') ? doi : ''}
+                    content={doi}
+                  />
+                </ListItem>
+              )}
 
-            {/* NCT ID */}
-            {nctid && (
-              <>
-                <strong>NCTID: </strong>
-                <StatContent
-                  url={nctid?.includes('http') ? nctid : ''}
-                  content={nctid}
-                />
-              </>
-            )}
+              {/* NCT ID */}
+              {nctid && (
+                <ListItem>
+                  <strong>NCTID: </strong>
+                  <StatContent
+                    url={nctid?.includes('http') ? nctid : ''}
+                    content={nctid}
+                  />
+                </ListItem>
+              )}
 
-            {/* PUBMED ID*/}
-            {citation?.map((c, i) => {
-              if (!nctid && !doi && !c.pmid) {
-                return <React.Fragment key={i}>-</React.Fragment>;
-              }
-              if (!c.pmid) {
-                return null;
-              }
-              if (c.pmid) {
-                return (
-                  <React.Fragment key={i}>
-                    <strong>PMID: </strong>
-                    <StatContent content={c.pmid} />
-                  </React.Fragment>
-                );
-              }
-            })}
+              {/* PUBMED ID*/}
+              {citation && (
+                <ListItem>
+                  {citation?.map((c, i) => {
+                    if (!nctid && !doi && !c.pmid) {
+                      return <ListItem key={i}>-</ListItem>;
+                    }
+                    if (!c.pmid) {
+                      return null;
+                    }
+
+                    if (c.pmid) {
+                      return (
+                        <ListItem key={i}>
+                          <strong>PMID: </strong>
+                          <StatContent content={c.pmid} />
+                        </ListItem>
+                      );
+                    }
+                  })}
+                </ListItem>
+              )}
+            </UnorderedList>
           </StatField>
 
           {/* Citation */}

@@ -7,12 +7,6 @@
         "label": "Help",
         "href": "mailto:NIAIDDataEcosystem@mail.nih.gov",
         "type": "email"
-      },
-      {
-        "label": "Contact Us",
-        "href": "https://www.niaid.nih.gov/global/contact-us",
-        "isExternal": true,
-        "type": "contact"
       }
     ]
   },
