@@ -1,6 +1,7 @@
 import React from 'react';
 import {
   Flex,
+  Heading,
   Icon,
   Link,
   ListItem,
@@ -89,13 +90,21 @@ const ExternalLinks: React.FC<ExternalLinks> = ({
             p={2}
             flex={1}
           >
-            <Text color='gray.800' fontWeight='semibold' w='100%' fontSize='xs'>
+            <Heading
+              as='h2'
+              w='100%'
+              size='sm'
+              fontWeight='semibold'
+              borderBottom='0.5px solid'
+              borderColor='niaid.placeholder'
+            >
               Reference
-            </Text>
+            </Heading>
 
             {/* mainEntityOfPage refers to a website for the resource. */}
             {mainEntityOfPage && (
               <Link
+                mt={2}
                 href={mainEntityOfPage}
                 isExternal
                 wordBreak='break-word'
@@ -110,6 +119,7 @@ const ExternalLinks: React.FC<ExternalLinks> = ({
               hasPart.map(part => {
                 return part.url ? (
                   <Link
+                    mt={2}
                     href={part.url}
                     isExternal
                     wordBreak='break-word'

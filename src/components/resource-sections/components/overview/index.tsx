@@ -34,6 +34,7 @@ const Overview: React.FC<OverviewProps> = ({
   identifier,
   infectiousAgent,
   inLanguage,
+  isPartOf,
   license,
   measurementTechnique,
   nctid,
@@ -523,6 +524,21 @@ const Overview: React.FC<OverviewProps> = ({
                 })}
               </StatField>
             </Box>
+          )}
+
+          {/* Studies that this dataset is partOf*/}
+          {isPartOf && (
+            <StatField isLoading={isLoading} {...getStatInfo('isPartOf')}>
+              <UnorderedList ml={0}>
+                {isPartOf.map(({ name, identifier, url }, i) => {
+                  return (
+                    <ListItem key={`${identifier || i}}`}>
+                      <StatContent url={url} content={name} isExternal />
+                    </ListItem>
+                  );
+                })}
+              </UnorderedList>
+            </StatField>
           )}
         </SimpleGrid>
       </Flex>

@@ -9,6 +9,7 @@ import Empty from 'src/components/empty';
 import { Box, Button, Card, Flex, Text } from 'nde-design-system';
 import {
   Navigation,
+  RelatedDatasets,
   ResourceLinks,
 } from 'src/components/resource-sections/components';
 import { Error, ErrorCTA } from 'src/components/error';
@@ -158,11 +159,16 @@ const ResourcePage: NextPage = props => {
                       hasPart={data?.hasPart}
                       url={data?.url}
                     />
-                    {/* <RelatedDatasets /> */}
                   </Card>
 
                   {/* Local navigation for page */}
                   {sections.length > 0 && <Navigation routes={sections} />}
+
+                  {/* Associated Resources with current page */}
+                  <RelatedDatasets
+                    isLoading={isLoading}
+                    isRelatedTo={data?.isRelatedTo || null}
+                  />
                 </Box>
               </Flex>
             </Flex>
