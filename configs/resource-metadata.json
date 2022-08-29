@@ -125,17 +125,11 @@
     "property": "pmid",
     "description": "PubMed reference number associated with the record."
   },
-  {
-    "title": "Software Version",
-    "property": "softwareVersion"
-  },
+  { "title": "Software Version", "property": "softwareVersion" },
   {
     "title": "Data Usage Agreement",
     "property": "usageInfo",
     "description": "Data use agreements impose limitations on users including: privacy and confidentiality standards, conditions for research use, criteria for data access, and conditions on the transfer of data, etc."
   },
-  {
-    "title": "Associated Studies",
-    "property": "isPartOf"
-  }
+  { "title": "Associated Studies", "property": "isPartOf" }
 ]

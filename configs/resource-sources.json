@@ -11,6 +11,11 @@
       "imageUrl": "/assets/resources/dde_full.svg"
     },
     {
+      "sourceName": "Dryad Digital Repository",
+      "name": "Dryad Digital Repository",
+      "imageUrl": "/assets/resources/dryad.png"
+    },
+    {
       "sourceName": "ImmPort",
       "name": "Immunology Database and Analysis Portal",
       "imageUrl": "/assets/resources/immport.png"

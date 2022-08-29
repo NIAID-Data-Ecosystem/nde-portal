@@ -98,7 +98,7 @@ const ExternalLinks: React.FC<ExternalLinks> = ({
               borderBottom='0.5px solid'
               borderColor='niaid.placeholder'
             >
-              Reference
+              Reference Documents
             </Heading>
 
             {/* mainEntityOfPage refers to a website for the resource. */}
