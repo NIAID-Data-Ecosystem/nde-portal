@@ -183,6 +183,25 @@ const Overview: React.FC<OverviewProps> = ({
             </StatField>
           }
 
+          {/* Data Usage Agreement */}
+          {usageInfo && (
+            <Box>
+              <StatField
+                isLoading={isLoading}
+                icon={() => <StatIcon id='usageInfo' glyph='usageInfo' />}
+                {...getStatInfo('usageInfo')}
+              >
+                <Box>
+                  <StatContent
+                    url={usageInfo.url}
+                    content={usageInfo.name || usageInfo.url}
+                  />
+                  <br />
+                  {usageInfo.description}
+                </Box>
+              </StatField>
+            </Box>
+          )}
           {/* species covered in resource */}
           <StatField
             isLoading={isLoading}
@@ -306,26 +325,6 @@ const Overview: React.FC<OverviewProps> = ({
               '-'
             )}
           </StatField>
-
-          {/* Data Usage Agreement */}
-          {usageInfo && (
-            <Box>
-              <StatField
-                isLoading={isLoading}
-                icon={() => <StatIcon id='usageInfo' glyph='usageInfo' />}
-                {...getStatInfo('usageInfo')}
-              >
-                <Box>
-                  <StatContent
-                    url={usageInfo.url}
-                    content={usageInfo.name || usageInfo.url}
-                  />
-                  <br />
-                  {usageInfo.description}
-                </Box>
-              </StatField>
-            </Box>
-          )}
 
           {/* programming language */}
           {programmingLanguage && (
