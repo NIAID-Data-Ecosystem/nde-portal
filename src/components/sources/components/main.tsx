@@ -260,7 +260,8 @@ const Main: React.FC<Main> = ({ sourceData }) => {
                     href={{
                       pathname: `/search`,
                       query: {
-                        q: `(includedInDataCatalog.name:"${sourceObj.id}")`,
+                        q: '',
+                        filters: `includedInDataCatalog.name:${sourceObj.id}`,
                       },
                     }}
                     passHref

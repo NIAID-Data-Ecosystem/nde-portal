@@ -14,14 +14,13 @@ export const DisplayHTMLContent: React.FC<DisplayHTMLContentProps> = ({
   content,
   ...props
 }) => {
-  if (!content) {
+  if (!content || typeof content !== 'string') {
     return <></>;
   }
 
   const formatContent = (contentString: DisplayHTMLContentProps['content']) => {
     // replace no break space with breaking space.
     let formattedContent = contentString.replace(/\u00a0/g, ' ');
-
     return formattedContent;
   };
   return (

@@ -269,7 +269,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                             <Image
                               minH='40px'
                               maxH='40px'
-                              maxW='200px'
+                              maxW='250px'
                               mr={4}
                               src={`${assetPrefix}${imageURL}`}
                               alt='Data source name'

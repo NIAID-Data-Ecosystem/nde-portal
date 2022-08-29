@@ -387,11 +387,19 @@ const Overview: React.FC<OverviewProps> = ({
                 <>
                   <strong>Start Date: </strong>
                   {temporalCoverage?.temporalInterval?.startDate}
+                  <br />
                 </>
               )}
-              <br />
               {temporalCoverage?.temporalInterval?.endDate && (
                 <>
+                  {!temporalCoverage?.temporalInterval?.startDate && (
+                    <>
+                      <strong>Start Date: </strong>
+                      Unknown
+                      <br />
+                    </>
+                  )}
+
                   <strong>End Date: </strong>
                   {temporalCoverage?.temporalInterval?.endDate}
                 </>

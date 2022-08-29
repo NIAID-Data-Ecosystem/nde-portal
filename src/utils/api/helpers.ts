@@ -263,7 +263,9 @@ export const formatAPIResource = (data: any) => {
     dateCreated: formatDate(data.dateCreated) || null,
     dateModified: formatDate(data.dateModified) || null,
     datePublished: formatDate(data.datePublished) || null,
-    description: data.description || null,
+    description: Array.isArray(data.description)
+      ? data.description.join(' ')
+      : data.description || null,
     disease: data.disease || null,
     distribution: formatDistribution(data.distribution),
     doi: data['doi'] || data['@id'] || null,
