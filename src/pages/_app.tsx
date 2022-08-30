@@ -14,38 +14,35 @@ const queryClient = new QueryClient();
 function App({ Component, pageProps }: AppProps) {
   const router = useRouter();
 
-  useEffect(() => {
-    const mainDataLayer = {
-      pageTypeName: pageProps.page || null,
-      url: router.pathname,
-      query: router.query,
-      search_term: router.query.q,
-    };
-
-    ga.gtmVirtualPageView(mainDataLayer);
-  }, [pageProps, router]);
-
   // useEffect(() => {
-  //   console.log(process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS);
-  //   const handleRouteChange = url => {
-  //     ga.pageview(url);
+  //   const mainDataLayer = {
+  //     pageTypeName: pageProps.page || null,
+  //     url: router.pathname,
+  //     query: router.query,
+  //     search_term: router.query.q,
   //   };
-  //   //When the component is mounted, subscribe to router changes
-  //   //and log those page views
-  //   router.events.on('routeChangeComplete', handleRouteChange);
 
-  //   // If the component is unmounted, unsubscribe
-  //   // from the event with the `off` method
-  //   return () => {
-  //     router.events.off('routeChangeComplete', handleRouteChange);
-  //   };
-  // }, [router.events]);
+  //   ga.gtmVirtualPageView(mainDataLayer);
+  // }, [pageProps, router]);
+
+  useEffect(() => {
+    const handleRouteChange = (url: string) => {
+      ga.pageview(url);
+    };
+    //When the component is mounted, subscribe to router changes
+    //and log those page views
+    router.events.on('routeChangeComplete', handleRouteChange);
+
+    // If the component is unmounted, unsubscribe
+    // from the event with the `off` method
+    return () => {
+      router.events.off('routeChangeComplete', handleRouteChange);
+    };
+  }, [router.events]);
 
   useEffect(() => {
     if (router.query && router.query.q) {
-      console.log('QUERY', router.query.q);
       ga.event({
-        // action: 'search_results_query',
         action: 'search',
         params: { search_term: router.query.q },
       });
