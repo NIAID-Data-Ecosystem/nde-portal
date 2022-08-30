@@ -27,15 +27,25 @@ class Document extends NextDocument {
         <Head>
           <style data-href='https://fonts.googleapis.com/css2?family=Public+Sans:wght@100;200;300;400;500;600;700;800;900'></style>
           <link rel='icon' href={`${assetPrefix}/favicon.png`} />
-        </Head>
-        <body>
-          {/* <!-- Google Tag Manager (noscript) --> */}
-          <noscript
+
+          <script
+            async
+            src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS}`}
+          />
+          <script
             dangerouslySetInnerHTML={{
-              __html: `<iframe src="https://www.googletagmanager.com/ns.html?id=GTM-K8WGDTD" height="0" width="0" style="display: none; visibility: hidden;" />`,
+              __html: `
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', '${process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS}', {
+              page_path: window.location.pathname,
+            });
+          `,
             }}
           />
-          {/* <!-- End Google Tag Manager (noscript) --> */}
+        </Head>
+        <body>
           <Main />
           <NextScript />
         </body>
