@@ -7,6 +7,12 @@
         "label": "Help",
         "href": "mailto:NIAIDDataEcosystem@mail.nih.gov",
         "type": "email"
+      },
+      {
+        "label": "Submit an issue",
+        "href": "https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/new",
+        "type": "github",
+        "isExternal": true
       }
     ]
   },

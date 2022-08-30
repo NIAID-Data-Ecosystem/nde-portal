@@ -6,7 +6,7 @@ import Script from 'next/script';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { ThemeProvider } from 'nde-design-system';
 import FontFace from 'src/theme/font-face';
-import { gtmVirtualPageView } from 'lib/ga';
+import * as ga from 'lib/ga';
 
 // Creates an instance of react-query for the app.
 const queryClient = new QueryClient();
@@ -19,10 +19,38 @@ function App({ Component, pageProps }: AppProps) {
       pageTypeName: pageProps.page || null,
       url: router.pathname,
       query: router.query,
+      search_term: router.query.q,
     };
 
-    gtmVirtualPageView(mainDataLayer);
+    ga.gtmVirtualPageView(mainDataLayer);
   }, [pageProps, router]);
+
+  // useEffect(() => {
+  //   console.log(process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS);
+  //   const handleRouteChange = url => {
+  //     ga.pageview(url);
+  //   };
+  //   //When the component is mounted, subscribe to router changes
+  //   //and log those page views
+  //   router.events.on('routeChangeComplete', handleRouteChange);
+
+  //   // If the component is unmounted, unsubscribe
+  //   // from the event with the `off` method
+  //   return () => {
+  //     router.events.off('routeChangeComplete', handleRouteChange);
+  //   };
+  // }, [router.events]);
+
+  useEffect(() => {
+    if (router.query && router.query.q) {
+      console.log('QUERY', router.query.q);
+      ga.event({
+        // action: 'search_results_query',
+        action: 'search',
+        params: { search_term: router.query.q },
+      });
+    }
+  }, [router, pageProps]);
 
   return (
     <>
@@ -32,20 +60,6 @@ function App({ Component, pageProps }: AppProps) {
           content='width=device-width, initial-scale=1.0'
         ></meta>
       </Head>
-
-      {/* <!-- Google Tag Manager --> */}
-      <Script
-        id='google-tag-manager'
-        strategy='afterInteractive'
-        dangerouslySetInnerHTML={{
-          __html: `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-              new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-              j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-              'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-              })(window,document,'script','dataLayer','GTM-K8WGDTD')`,
-        }}
-      ></Script>
-      {/* <!-- End Google Tag Manager --> */}
 
       <QueryClientProvider client={queryClient}>
         <ThemeProvider>
