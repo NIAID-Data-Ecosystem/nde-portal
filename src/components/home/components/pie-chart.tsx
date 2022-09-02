@@ -44,7 +44,7 @@ export type PieProps = {
 const defaultMargin = { top: 10, right: 10, bottom: 10, left: 10 };
 
 const formatPieChartData = (data: RawDataProps[]) => {
-  const MIN_COUNT = 50000;
+  const MIN_COUNT = 10000;
 
   const formatted = data.reduce((r, d, i) => {
     // if the data has records that are less than the minimum count (MIN_COUNT) we group them together to make a larger slice of pie
