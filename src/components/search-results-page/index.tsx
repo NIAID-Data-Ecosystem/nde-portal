@@ -119,11 +119,8 @@ const SearchResultsPage = () => {
   const filter_string = queryFilterObject2String(selectedFilters);
 
   const params = {
-    q: filter_string
-      ? `${
-          queryString === '__all__' ? '' : `${encodeString(queryString)} AND `
-        }${filter_string}`
-      : `${encodeString(queryString)}`,
+    q: encodeString(queryString),
+    extra_filter: filter_string || '', // extra filter updates aggregate fields
   };
 
   const { isLoading, error, data } = useQuery<
@@ -147,6 +144,7 @@ const SearchResultsPage = () => {
 
       return fetchSearchResults({
         q: params.q,
+        extra_filter: params.extra_filter,
         size: `${selectedPerPage}`,
         from: `${(selectedPage - 1) * selectedPerPage}`,
         facet_size: defaultQuery.facetSize,
@@ -295,37 +293,36 @@ const SearchResultsPage = () => {
                 : `Showing results for`}
 
               {queryString !== '__all__' && (
-                <Heading
-                  as='span'
-                  ml={2}
-                  fontWeight={'bold'}
-                  size='md'
-                  w='100%'
-                >
+                <Heading as='span' ml={2} fontWeight='bold' size='md' w='100%'>
                   {displayQueryString(queryString)}
                 </Heading>
               )}
             </Heading>
 
             {/* Chips with the names of the currently selected filters */}
-            <FilterTags
-              tags={applied_filters}
-              removeAllFilters={removeAllFilters}
-              removeSelectedFilter={(name: string, value: string | number) => {
-                const updatedFilter = {
-                  [name]: selectedFilters[name].filter(v => v !== value),
-                };
+            <Collapse in={applied_filters.length > 0}>
+              <FilterTags
+                tags={applied_filters}
+                removeAllFilters={removeAllFilters}
+                removeSelectedFilter={(
+                  name: string,
+                  value: string | number,
+                ) => {
+                  const updatedFilter = {
+                    [name]: selectedFilters[name].filter(v => v !== value),
+                  };
 
-                let filters = queryFilterObject2String({
-                  ...selectedFilters,
-                  ...updatedFilter,
-                });
-                updateRoute({
-                  from: defaultQuery.selectedPage,
-                  filters,
-                });
-              }}
-            />
+                  let filters = queryFilterObject2String({
+                    ...selectedFilters,
+                    ...updatedFilter,
+                  });
+                  updateRoute({
+                    from: defaultQuery.selectedPage,
+                    filters,
+                  });
+                }}
+              />
+            </Collapse>
             <Flex w='100%'>
               <Filters
                 searchTerm={params.q}
@@ -352,7 +349,7 @@ const SearchResultsPage = () => {
               />
               <Flex
                 w='100%'
-                flexDirection={'column'}
+                flexDirection='column'
                 mx={[0, 0, 4]}
                 flex={[1, 2]}
               >
@@ -380,7 +377,7 @@ const SearchResultsPage = () => {
                 </Flex>
 
                 <Pagination
-                  id={'pagination-top'}
+                  id='pagination-top'
                   selectedPage={selectedPage}
                   handleSelectedPage={from => {
                     updateRoute({ from });
@@ -470,7 +467,7 @@ const SearchResultsPage = () => {
                     </Empty>
                   )}
 
-                  <UnorderedList ml={0} flex={3} w={'100%'}>
+                  <UnorderedList ml={0} flex={3} w='100%'>
                     {isLoading || (data && data.results?.length > 0)
                       ? new Array(selectedPerPage).fill(null).map((_, i) => {
                           const result: FormattedResource | null =
@@ -491,7 +488,7 @@ const SearchResultsPage = () => {
                   </UnorderedList>
                 </Stack>
                 <Pagination
-                  id={'pagination-bottom'}
+                  id='pagination-bottom'
                   selectedPage={selectedPage}
                   handleSelectedPage={from => {
                     updateRoute({ from });

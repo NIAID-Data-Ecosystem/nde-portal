@@ -89,11 +89,8 @@ export const SummaryTable: React.FC<SummaryTableProps> = ({
 
       const filter_string = queryFilterObject2String(filters);
       return fetchSearchResults({
-        q: filter_string
-          ? `${
-              queryString === '__all__' ? '' : `${queryString} AND `
-            }${filter_string}`
-          : `${queryString}`,
+        q: queryString,
+        extra_filter: filter_string || '', // extra filter updates aggregate fields
         size: `${size}`,
         from: `${(page - 1) * size}`,
         sort: sortOrder,
@@ -204,10 +201,10 @@ export const SummaryTable: React.FC<SummaryTableProps> = ({
         </Collapse>
       </Box>
       {/* Table*/}
-      <TableWrapper colorScheme={'secondary'} w='100%'>
+      <TableWrapper colorScheme='secondary' w='100%'>
         <Pagination />
         <TableContainer>
-          <StyledTable variant='striped' colorScheme={'secondary'}>
+          <StyledTable variant='striped' colorScheme='secondary'>
             {data?.total && (
               <TableCaption color='text.body'>
                 Showing ({(page - 1) * size + 1}-{Math.min(page * size, total)})

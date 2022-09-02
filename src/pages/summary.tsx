@@ -12,6 +12,7 @@ import { Box, Flex, SearchInput, Text } from 'nde-design-system';
 import {
   SummaryTable,
   Filters,
+  FilterTags,
   displayQueryString,
   useFilterString,
   useQueryString,
@@ -19,7 +20,6 @@ import {
 } from 'src/components/summary-page';
 import { useHasMounted } from 'src/hooks/useHasMounted';
 import { queryFilterObject2String } from 'src/components/filter';
-import { FilterTags } from 'src/components/search-results-page/components/filters/components/tags';
 import { useQuery } from 'react-query';
 import { FacetTerm, FetchSearchResultsResponse } from 'src/utils/api/types';
 import { fetchSearchResults } from 'src/utils/api';
@@ -204,13 +204,6 @@ const SummaryPage: NextPage = () => {
   if (!hasMounted || !router.isReady) {
     return null;
   }
-  const filter_tags = Object.entries({
-    ...filters,
-    date:
-      filters.date && filters.date.length > 0
-        ? [`${filters.date[0]} to ${filters.date[filters.date.length - 1]}`]
-        : [],
-  });
 
   return (
     <>
@@ -223,8 +216,8 @@ const SummaryPage: NextPage = () => {
         {/* Header + search bar */}
         <section id='search-header'>
           <PageHeader
-            title={'Visual Summary'}
-            subtitle={'Search for datasets and gather insights.'}
+            title='Visual Summary'
+            subtitle='Search for datasets and gather insights.'
             bgImg={`${assetPrefix}/assets/summary-bg-01.png`}
           >
             <>
@@ -251,12 +244,9 @@ const SummaryPage: NextPage = () => {
                       key={i}
                       title={query.title}
                       onClick={() => {
-                        const str = queryFilterObject2String({
+                        updateFilters({
                           'funding.identifier': query['funding.identifier'],
                         });
-                        if (str) {
-                          setQueryString(str);
-                        }
                       }}
                     />
                   );
@@ -269,27 +259,11 @@ const SummaryPage: NextPage = () => {
           <PageContent minH='unset' bg='white'>
             {/* Filters */}
             <Box w='100%'>
-              <Flex>
-                {Object.values(filters).flat().length > 0 && (
-                  <FilterTags
-                    tags={filter_tags}
-                    removeAllFilters={() => removeAllFilters()}
-                    removeSelectedFilter={(
-                      name: string,
-                      value: string | number,
-                    ) => {
-                      let updatedFilter = {
-                        [name]: filters[name].filter(v => v !== value),
-                      };
-                      // If date is removed we set the value to an empty array.
-                      if (name === 'date') {
-                        updatedFilter = { [name]: [] };
-                      }
-                      updateFilters(updatedFilter);
-                    }}
-                  />
-                )}
-              </Flex>
+              <FilterTags
+                filters={filters}
+                updateFilters={updateFilters}
+                removeAllFilters={removeAllFilters}
+              ></FilterTags>
               <Filters
                 queryString={queryString}
                 filters={filters}
