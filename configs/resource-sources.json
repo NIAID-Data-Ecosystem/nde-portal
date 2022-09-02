@@ -6,6 +6,11 @@
       "imageUrl": "/assets/resources/access-clinical.png"
     },
     {
+      "sourceName": "Bioconductor",
+      "name": "Bioconductor",
+      "imageUrl": "/assets/resources/bioconductor.svg"
+    },
+    {
       "sourceName": "Data Discovery Engine",
       "name": "Data Discovery Engine",
       "imageUrl": "/assets/resources/dde_full.svg"

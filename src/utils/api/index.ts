@@ -31,6 +31,7 @@ interface Params {
   facets?: string;
   sort?: string;
   scroll_id?: string;
+  extra_filter?: string;
 }
 
 // Fetch all search results from API.

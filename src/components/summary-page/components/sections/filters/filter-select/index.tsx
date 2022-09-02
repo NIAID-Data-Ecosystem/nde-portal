@@ -14,7 +14,7 @@ import LoadingSpinner from 'src/components/loading';
 import { fetchSearchResults } from 'src/utils/api';
 import { Filter, queryFilterObject2String } from 'src/components/filter';
 import { FaMinus, FaPlus } from 'react-icons/fa';
-import { SelectedFilterType } from '../hooks';
+import { SelectedFilterType } from '../../../hooks';
 import { encodeString } from 'src/utils/querystring-helpers';
 
 interface FiltersProps {
@@ -49,18 +49,15 @@ export const Filters: React.FC<FiltersProps> = ({
     variableMeasured: { name: 'Variable Measured' },
   };
 
-  const queryFn = (queryString: string, filters?: {}) => {
+  const fetchData = (queryString: string, filters?: {}) => {
     if (typeof queryString !== 'string' && !queryString) {
       return;
     }
     const filter_string = filters ? queryFilterObject2String(filters) : null;
 
     return fetchSearchResults({
-      q: filter_string
-        ? `${
-            queryString === '__all__' ? '' : `${queryString} AND `
-          }${filter_string}`
-        : `${queryString}`,
+      q: queryString,
+      extra_filter: filter_string || '', // extra filter updates aggregate fields
       facet_size: 1000,
       facets,
     });
@@ -81,7 +78,7 @@ export const Filters: React.FC<FiltersProps> = ({
         facets,
       },
     ],
-    () => queryFn(queryString),
+    () => fetchData(queryString),
     {
       refetchOnWindowFocus: false,
     },
@@ -100,7 +97,7 @@ export const Filters: React.FC<FiltersProps> = ({
         facets,
       },
     ],
-    () => queryFn(encodeString(queryString), filters),
+    () => fetchData(encodeString(queryString), filters),
 
     // Don't refresh everytime window is touched.
     {

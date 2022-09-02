@@ -24,6 +24,7 @@ import MeasurementPathogenViz from '../measurement-pathogen-viz/index';
 import { queryFilterObject2String } from 'src/components/filter';
 import { FaCheckCircle, FaRegCircle } from 'react-icons/fa';
 import { formatNumber } from 'src/utils/helpers';
+import { encodeString } from 'src/utils/querystring-helpers';
 
 interface NetworkProps {
   // Stringified query.
@@ -75,12 +76,8 @@ export const Network: React.FC<NetworkProps> = ({
     const filter_string = filters ? queryFilterObject2String(filters) : null;
 
     return fetchSearchResults({
-      q: filter_string
-        ? `${
-            queryString === '__all__' ? '' : `${queryString} AND `
-          }${filter_string}`
-        : `${queryString}`,
-
+      q: encodeString(queryString),
+      extra_filter: filter_string || '', // extra filter updates aggregate fields
       facet_size: 1000,
       /*
        Aggregate the data using the second group grouped by the first (ex: measurementTechnique(secondary selection) grouped by pathogen(primary selection)).
