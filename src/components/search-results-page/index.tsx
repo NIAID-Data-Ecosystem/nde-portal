@@ -325,27 +325,27 @@ const SearchResultsPage = () => {
             </Collapse>
             <Flex w='100%'>
               <Filters
-                searchTerm={params.q}
-                facets={{ isLoading: isLoading, data: data?.facets }}
-                selectedFilters={selectedFilters}
-                removeAllFilters={
-                  applied_filters.length > 0
-                    ? () => removeAllFilters()
-                    : undefined
-                }
-                handleSelectedFilters={(
-                  updatedFilters: typeof selectedFilters,
-                ) => {
-                  let updatedFilterString = queryFilterObject2String({
-                    ...selectedFilters,
-                    ...updatedFilters,
-                  });
+              // searchTerm={params.q}
+              // facets={{ isLoading: isLoading, data: data?.facets }}
+              // selectedFilters={selectedFilters}
+              // removeAllFilters={
+              //   applied_filters.length > 0
+              //     ? () => removeAllFilters()
+              //     : undefined
+              // }
+              // handleSelectedFilters={(
+              //   updatedFilters: typeof selectedFilters,
+              // ) => {
+              //   let updatedFilterString = queryFilterObject2String({
+              //     ...selectedFilters,
+              //     ...updatedFilters,
+              //   });
 
-                  updateRoute({
-                    from: defaultQuery.selectedPage,
-                    filters: updatedFilterString,
-                  });
-                }}
+              //   updateRoute({
+              //     from: defaultQuery.selectedPage,
+              //     filters: updatedFilterString,
+              //   });
+              // }}
               />
               <Flex
                 w='100%'
