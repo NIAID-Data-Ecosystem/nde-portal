@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useQuery } from 'react-query';
 import { fetchSearchResults, Params } from 'src/utils/api';
 import {
@@ -17,45 +17,48 @@ export const useFacetsData = ({
   queryParams,
   facets,
 }: UseFilterDataProps): [
-  { data: FacetTerms; error: Error | null; isLoading: boolean },
+  {
+    data: FacetTerms;
+    error: Error | null;
+    isLoading: boolean;
+    isUpdating: boolean;
+  },
 ] => {
   const [facetTerms, setFacetTerms] = useState<FacetTerms>({});
 
   // Retrieve all data and updated counts.
-  const fetchFilters = async (queryParams: Params) => {
-    if (!queryParams.q || typeof queryParams.q !== 'string') {
+  const fetchFilters = async (params: Params) => {
+    if (!params.q || typeof params.q !== 'string') {
       return;
     }
-
     const data = await fetchSearchResults({
-      ...queryParams,
+      ...params,
       facets: facets.join(','),
     });
-
     // get counts on unavailable terms. (aka. n/a value in filter)
-    // await Promise.all(
-    //   facets.map(facet => {
-    //     /* Fetch facets using query params. Note that we also get the facets count where data is non-existent to be used as an "N/A" attribute. */
-    //     return fetchSearchResults({
-    //       ...queryParams,
-    //       extra_filter: queryParams?.extra_filter
-    //         ? `${queryParams.extra_filter}+AND+-_exists_:${facet}`
-    //         : `-_exists_:${facet}`,
-    //       facet_size: 0,
-    //       facets: facets.join(','),
-    //     }).then(d => {
-    //       if (!data || !d?.total) return;
-    //       // add facet term for "empty" property
-    //       data.facets[facet].terms.push({
-    //         count: d?.total,
-    //         term: 'N/A',
-    //         name: 'N/A',
-    //         filterTerm: `${facet}`,
-    //         filterKey: '-_exists_',
-    //       });
-    //     });
-    //   }),
-    // );
+    await Promise.all(
+      facets.map(facet => {
+        /* Fetch facets using query params. Note that we also get the facets count where data is non-existent to be used as an "N/A" attribute. */
+        return fetchSearchResults({
+          ...params,
+          extra_filter: params?.extra_filter
+            ? `${params.extra_filter}+AND+-_exists_:${facet}`
+            : `-_exists_:${facet}`,
+          facet_size: 0,
+          facets: facets.join(','),
+        }).then(d => {
+          if (!data || !d?.total) return;
+          // add facet term for "empty" property
+          data.facets[facet].terms.push({
+            count: d?.total,
+            term: 'N/A',
+            name: 'N/A',
+            filterTerm: `${facet}`,
+            filterKey: '-_exists_',
+          });
+        });
+      }),
+    );
 
     return data?.facets;
   };
@@ -79,17 +82,20 @@ export const useFacetsData = ({
       name?: string;
     }[];
   }
-  // 1. Show all filters for a given search. (omit extra_filters)
-  const { isLoading, error: allFiltersError } = useQuery<
+  // 1. Show all filters for a given search. (omit extra_filters). Runs on load/new querystring.
+  const {
+    isLoading,
+    error: allFiltersError,
+    data: initialData,
+  } = useQuery<
     FetchSearchResultsResponse['facets'] | undefined,
     Error,
     FiltersResponse
   >(
     [
-      'search-results-filters',
+      'search-results',
       {
         q: queryParams.q,
-        extra_filter: queryParams.extra_filter,
         facets,
       },
     ],
@@ -115,18 +121,19 @@ export const useFacetsData = ({
       },
     },
   );
-  // 2. Update counts on facet when filters are applied to searchquery from 1.
+
+  // 2. Update counts on facet when filters are applied to searchquery from 1. Runs on load/new querystring and when filters are changed.
   const {
     isLoading: isUpdating,
     error: updatedFiltersError,
     data: updatedFilters,
   } = useQuery<FetchSearchResultsResponse | undefined, Error, Facet>(
     [
-      'search-results-filters',
+      'search-results',
       {
-        ...queryParams,
+        q: queryParams.q,
         extra_filter: queryParams.extra_filter,
-        facets,
+        initialData,
       },
     ],
     () => {
@@ -134,37 +141,39 @@ export const useFacetsData = ({
     },
     {
       refetchOnWindowFocus: false,
-      // Only run if there is data to update and a filter is applied.
-      enabled:
-        !!queryParams?.extra_filter &&
-        facetTerms &&
-        Object.values(facetTerms).length > 0,
+      // Only run if there is data to update.
+      enabled: !!(initialData && Object.values(initialData).length > 0),
 
       onSuccess(data) {
         /*
         Note that the enabled parameter prevent the query from running but if cached data is available, onSuccess will use that data so we need to check again and return if the same requirements for enabled are false.
         See here: https://tanstack.com/query/v4/docs/guides/disabling-queries
         */
-        if (facetTerms && Object.values(facetTerms).length > 0) {
+
+        if (!!(initialData && Object.values(initialData).length > 0)) {
           // Check if updated facets have changed count..
           setFacetTerms(() => {
             const facetTermsData = { ...facetTerms };
 
             Object.keys(facetTermsData).map(facet => {
-              return facetTermsData[facet].map(facetTerm => {
+              const updatedTerms = facetTermsData[facet].map(facetTerm => {
+                const updateFacetTerm = { ...facetTerm };
                 // Check if element is in updated data.
                 const updatedItem = data[facet].terms.find(
                   el => el.term === facetTerm.term,
                 );
                 // if item count has changed, update state with new count.
                 if (updatedItem) {
-                  facetTerm.count = updatedItem.count;
+                  updateFacetTerm.count = updatedItem.count;
                 } else {
                   // if term is not in updated list then we set the count to zero.
-                  facetTerm.count = 0;
+                  updateFacetTerm.count = 0;
                 }
-                return facetTerm;
+                return updateFacetTerm;
               });
+              facetTermsData[facet] = updatedTerms.sort(
+                (a, b) => b.count - a.count,
+              );
             });
 
             return facetTermsData;
@@ -174,6 +183,6 @@ export const useFacetsData = ({
     },
   );
 
-  const error = allFiltersError;
-  return [{ data: facetTerms, error, isLoading }];
+  const error = allFiltersError || updatedFiltersError;
+  return [{ data: facetTerms, error, isLoading: isLoading, isUpdating }];
 };
