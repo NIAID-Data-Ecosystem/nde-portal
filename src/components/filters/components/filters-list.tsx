@@ -34,8 +34,6 @@ export const FiltersList: React.FC<FiltersList> = ({
   filterOptions,
   handleSelectedFilters,
 }) => {
-  console.log('FilterList');
-
   /****** Limit List Items ******/
   // Toggle number of items to show from reduced view to "all" view.
   const NUM_ITEMS_MIN = 5;

@@ -33,29 +33,29 @@ export const useFacetsData = ({
     });
 
     // get counts on unavailable terms. (aka. n/a value in filter)
-    await Promise.all(
-      facets.map(facet => {
-        /* Fetch facets using query params. Note that we also get the facets count where data is non-existent to be used as an "N/A" attribute. */
-        return fetchSearchResults({
-          ...queryParams,
-          extra_filter: queryParams?.extra_filter
-            ? `${queryParams.extra_filter}+AND+-_exists_:${facet}`
-            : `-_exists_:${facet}`,
-          facet_size: 0,
-          facets: facets.join(','),
-        }).then(d => {
-          if (!data || !d?.total) return;
-          // add facet term for "empty" property
-          data.facets[facet].terms.push({
-            count: d?.total,
-            term: 'N/A',
-            name: 'N/A',
-            filterTerm: `${facet}`,
-            filterKey: '-_exists_',
-          });
-        });
-      }),
-    );
+    // await Promise.all(
+    //   facets.map(facet => {
+    //     /* Fetch facets using query params. Note that we also get the facets count where data is non-existent to be used as an "N/A" attribute. */
+    //     return fetchSearchResults({
+    //       ...queryParams,
+    //       extra_filter: queryParams?.extra_filter
+    //         ? `${queryParams.extra_filter}+AND+-_exists_:${facet}`
+    //         : `-_exists_:${facet}`,
+    //       facet_size: 0,
+    //       facets: facets.join(','),
+    //     }).then(d => {
+    //       if (!data || !d?.total) return;
+    //       // add facet term for "empty" property
+    //       data.facets[facet].terms.push({
+    //         count: d?.total,
+    //         term: 'N/A',
+    //         name: 'N/A',
+    //         filterTerm: `${facet}`,
+    //         filterKey: '-_exists_',
+    //       });
+    //     });
+    //   }),
+    // );
 
     return data?.facets;
   };
@@ -88,12 +88,13 @@ export const useFacetsData = ({
     [
       'search-results-filters',
       {
-        ...queryParams,
+        q: queryParams.q,
+        extra_filter: queryParams.extra_filter,
         facets,
       },
     ],
     () => {
-      return fetchFilters({ ...queryParams, extra_filter: '' });
+      return fetchFilters({ q: queryParams.q });
     },
     {
       refetchOnWindowFocus: false,
@@ -135,7 +136,7 @@ export const useFacetsData = ({
       refetchOnWindowFocus: false,
       // Only run if there is data to update and a filter is applied.
       enabled:
-        !!queryParams.extra_filter &&
+        !!queryParams?.extra_filter &&
         facetTerms &&
         Object.values(facetTerms).length > 0,
 
@@ -144,12 +145,7 @@ export const useFacetsData = ({
         Note that the enabled parameter prevent the query from running but if cached data is available, onSuccess will use that data so we need to check again and return if the same requirements for enabled are false.
         See here: https://tanstack.com/query/v4/docs/guides/disabling-queries
         */
-        if (
-          !!queryParams.extra_filter &&
-          facetTerms &&
-          Object.values(facetTerms).length > 0
-        ) {
-          console.log('F', facetTerms);
+        if (facetTerms && Object.values(facetTerms).length > 0) {
           // Check if updated facets have changed count..
           setFacetTerms(() => {
             const facetTermsData = { ...facetTerms };
@@ -167,8 +163,10 @@ export const useFacetsData = ({
                   // if term is not in updated list then we set the count to zero.
                   facetTerm.count = 0;
                 }
+                return facetTerm;
               });
             });
+
             return facetTermsData;
           });
         }

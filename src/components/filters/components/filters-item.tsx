@@ -9,7 +9,6 @@ export interface FilterItemProps extends CheckboxProps {
 
 export const FilterItem: React.FC<FilterItemProps> = React.memo(
   ({ term, count }) => {
-    console.log('FilterItem');
     return (
       <Checkbox spacing={2} size='lg' w='100%' my={2} value={term}>
         <Flex ml={1} fontSize='xs' lineHeight={1.5}>
