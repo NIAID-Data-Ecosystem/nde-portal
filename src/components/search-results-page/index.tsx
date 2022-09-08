@@ -28,12 +28,7 @@ import { Error, ErrorCTA } from 'src/components/error';
 import { Pagination, MAX_PAGES } from './components/pagination';
 import { useHasMounted } from 'src/hooks/useHasMounted';
 import { FilterTags } from './components/filters/components/tags';
-import {
-  FACET_SIZE,
-  Filters,
-  filtersConfig,
-  SelectedFilterType,
-} from './components/filters';
+import { FACET_SIZE, Filters, filtersConfig } from './components/filters';
 import Card from './components/card';
 import Banner from '../banner';
 import { formatNumber } from 'src/utils/helpers';
@@ -43,6 +38,7 @@ import { DownloadMetadata } from '../download-metadata';
 import NextLink from 'next/link';
 import { FaChartBar } from 'react-icons/fa';
 import { encodeString } from 'src/utils/querystring-helpers';
+import { SelectedFilterType } from '../filters/types';
 
 /*
 [COMPONENT INFO]:
@@ -328,11 +324,12 @@ const SearchResultsPage = () => {
                 queryParams={params}
                 selectedFilters={selectedFilters}
                 // facets={{ isLoading: isLoading, data: data?.facets }}
-                // removeAllFilters={
-                //   applied_filters.length > 0
-                //     ? () => removeAllFilters()
-                //     : undefined
-                // }
+                removeAllFilters={
+                  applied_filters.length > 0
+                    ? () => removeAllFilters()
+                    : undefined
+                }
+                handleSelectedFilters={() => {}}
                 // handleSelectedFilters={(
                 //   updatedFilters: typeof selectedFilters,
                 // ) => {

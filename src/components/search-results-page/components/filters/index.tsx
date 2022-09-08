@@ -1,42 +1,12 @@
-import React, { useEffect, useMemo } from 'react';
-import { useQuery } from 'react-query';
-import {
-  Facet,
-  FacetTerm,
-  FetchSearchResultsResponse,
-} from 'src/utils/api/types';
-import {
-  Accordion,
-  AccordionItem,
-  AccordionButton,
-  AccordionPanel,
-  Box,
-  Button,
-  Drawer,
-  DrawerBody,
-  DrawerFooter,
-  DrawerOverlay,
-  DrawerContent,
-  DrawerCloseButton,
-  Flex,
-  Heading,
-  Text,
-  useDisclosure,
-  useBreakpointValue,
-  Icon,
-} from 'nde-design-system';
-import LoadingSpinner from 'src/components/loading';
-import { Filter } from 'src/components/filter';
+import React from 'react';
 import { fetchSearchResults, Params } from 'src/utils/api';
-import { FaFilter } from 'react-icons/fa';
-import { NAV_HEIGHT } from 'src/components/page-container';
-import { formatDate, formatType } from 'src/utils/api/helpers';
-import { FaMinus, FaPlus } from 'react-icons/fa';
-import { MetadataIcon, MetadataToolTip } from 'src/components/icon';
-import { getMetadataColor } from 'src/components/icon/helpers';
 import { useFacetsData } from 'src/components/filters/hooks/useFacetsData';
-import { FiltersContainer } from 'src/components/filters';
-import { FiltersSection } from 'src/components/filters/components/filters-section';
+import {
+  FiltersContainer,
+  FiltersList,
+  FiltersSection,
+} from 'src/components/filters';
+import { SelectedFilterType } from 'src/components/filters/types';
 
 /*
 [COMPONENT INFO]:
@@ -47,20 +17,12 @@ import { FiltersSection } from 'src/components/filters/components/filters-sectio
 // Default facet size
 export const FACET_SIZE = 1000;
 
-export type SelectedFilterType = {
-  [key: string]: string[];
-};
-
-interface FiltersConfigProps {
-  [key: string]: { name: string; glyph?: string };
-}
-
 /*
 Config for the naming/text of a filter.
 [NOTE]: Order matters here as the filters will be rendered in the order of the keys.
 */
 
-export const filtersConfig: FiltersConfigProps = {
+export const filtersConfig: Record<string, { name: string; glyph?: string }> = {
   '@type': { name: 'Type' },
   'includedInDataCatalog.name': { name: 'Source' },
   date: { name: 'Date ' },
@@ -80,43 +42,47 @@ export const filtersConfig: FiltersConfigProps = {
 };
 
 interface FiltersProps {
-  // Search query term
-  searchTerm: string;
-  // Facets that update as the filters are selected
-  facets?: { isLoading: boolean; data?: Facet };
+  // Params used in query.
+  queryParams: Params;
   // Currently selected filters
   selectedFilters: SelectedFilterType;
   // fn to remove all selected filters
   removeAllFilters?: () => void;
   // fn to update filter selection
   handleSelectedFilters: (arg: SelectedFilterType) => void;
-  queryParams: Params;
 }
 
 export const Filters: React.FC<FiltersProps> = ({
   queryParams,
   selectedFilters,
   removeAllFilters,
+  handleSelectedFilters,
 }) => {
+  const facets = Object.keys(filtersConfig);
   const [{ data, error, isLoading }] = useFacetsData({
     queryParams,
-    facets: Object.keys(filtersConfig),
+    facets,
   });
 
   return (
     <FiltersContainer
       title='Filters'
       error={error}
+      filtersConfig={filtersConfig}
       selectedFilters={selectedFilters}
       removeAllFilters={removeAllFilters}
     >
-      {Object.keys(filtersConfig).map(facet => {
+      {facets.map(facet => {
+        const { name, glyph } = filtersConfig[facet];
         return (
-          <FiltersSection
-            key={facet}
-            name={filtersConfig[facet].name}
-            icon={filtersConfig[facet].glyph}
-          ></FiltersSection>
+          <FiltersSection key={facet} name={name} icon={glyph}>
+            <FiltersList
+              searchPlaceholder={`Search ${name.toLowerCase()} filters`}
+              filterOptions={data[facet]}
+              selectedFilters={selectedFilters[facet]}
+              handleSelectedFilters={handleSelectedFilters}
+            ></FiltersList>
+          </FiltersSection>
         );
       })}
     </FiltersContainer>

@@ -1,16 +1,12 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useQuery } from 'react-query';
 import { fetchSearchResults, Params } from 'src/utils/api';
 import {
   Facet,
-  FacetTerm,
   FetchSearchResultsResponse,
   FormattedResource,
 } from 'src/utils/api/types';
-
-export type FacetTerms = {
-  [key: string]: FacetTerm[];
-};
+import { FacetTerms } from '../types';
 
 interface UseFilterDataProps {
   queryParams: Params;

@@ -18,10 +18,7 @@ import {
 } from 'nde-design-system';
 import { FaFilter } from 'react-icons/fa';
 import { NAV_HEIGHT } from 'src/components/page-container';
-import {
-  filtersConfig,
-  SelectedFilterType,
-} from 'src/components/search-results-page/components/filters';
+import { FiltersConfigProps, SelectedFilterType } from '../types';
 
 /*
 [COMPONENT INFO]:
@@ -37,6 +34,8 @@ interface FiltersContainerProps {
   removeAllFilters?: () => void;
   // status of filters data
   error: Error | null;
+  // configuration for filters display.
+  filtersConfig: FiltersConfigProps;
 }
 
 export const FiltersContainer: React.FC<FiltersContainerProps> = ({
@@ -44,6 +43,7 @@ export const FiltersContainer: React.FC<FiltersContainerProps> = ({
   error,
   children,
   selectedFilters,
+  filtersConfig,
   removeAllFilters,
 }) => {
   // Handle toggle open status of mobile filter
@@ -55,13 +55,13 @@ export const FiltersContainer: React.FC<FiltersContainerProps> = ({
     md: 'desktop',
   });
 
-  // on mount open the accordion section where the selected filter resides
-  const openAccordionIndex = useMemo(() => {
+  // on mount open the accordion section where the currently selected filters exist.
+  const openSectionsList = useMemo(() => {
     let selectedKeys = Object.entries(selectedFilters)
       .filter(([_, v]) => v.length > 0)
       .map(o => Object.keys(filtersConfig).indexOf(o[0]));
-    return selectedKeys.length > 0 ? selectedKeys : [1];
-  }, [selectedFilters]);
+    return selectedKeys.length > 0 ? selectedKeys : [0];
+  }, [selectedFilters, filtersConfig]);
 
   const content = (
     <>
@@ -91,7 +91,7 @@ export const FiltersContainer: React.FC<FiltersContainerProps> = ({
           </Heading>
         </Flex>
       ) : (
-        <Accordion bg='white' allowMultiple defaultIndex={openAccordionIndex}>
+        <Accordion bg='white' allowMultiple defaultIndex={openSectionsList}>
           {children}
         </Accordion>
       )}
