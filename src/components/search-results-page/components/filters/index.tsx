@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { fetchSearchResults, Params } from 'src/utils/api';
 import { useFacetsData } from 'src/components/filters/hooks/useFacetsData';
 import {
@@ -7,6 +7,8 @@ import {
   FiltersSection,
 } from 'src/components/filters';
 import { SelectedFilterType } from 'src/components/filters/types';
+import { ListItem } from 'nde-design-system';
+import { FilterItem } from 'src/components/filters/components/filters-item';
 
 /*
 [COMPONENT INFO]:
@@ -80,7 +82,9 @@ export const Filters: React.FC<FiltersProps> = ({
               searchPlaceholder={`Search ${name.toLowerCase()} filters`}
               filterOptions={data[facet]}
               selectedFilters={selectedFilters[facet]}
-              handleSelectedFilters={handleSelectedFilters}
+              handleSelectedFilters={updatedFilterSelection =>
+                handleSelectedFilters({ [facet]: updatedFilterSelection })
+              }
             ></FiltersList>
           </FiltersSection>
         );

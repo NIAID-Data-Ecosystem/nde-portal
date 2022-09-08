@@ -93,7 +93,7 @@ export const useFacetsData = ({
       },
     ],
     () => {
-      return fetchFilters(queryParams);
+      return fetchFilters({ ...queryParams, extra_filter: '' });
     },
     {
       refetchOnWindowFocus: false,
@@ -149,6 +149,7 @@ export const useFacetsData = ({
           facetTerms &&
           Object.values(facetTerms).length > 0
         ) {
+          console.log('F', facetTerms);
           // Check if updated facets have changed count..
           setFacetTerms(() => {
             const facetTermsData = { ...facetTerms };

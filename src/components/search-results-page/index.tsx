@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/router';
 import { useQuery } from 'react-query';
 import Empty from 'src/components/empty';
@@ -213,21 +213,24 @@ const SearchResultsPage = () => {
   ]);
 
   // Update the route to reflect changes on page without re-render.
-  const updateRoute = (update: {}) => {
-    router.push(
-      {
-        query: {
-          ...router.query,
-          ...update,
+  const updateRoute = useCallback(
+    (update: {}) => {
+      router.push(
+        {
+          query: {
+            ...router.query,
+            ...update,
+          },
         },
-      },
-      undefined,
-      {
-        shallow: true,
-        scroll: true,
-      },
-    );
-  };
+        undefined,
+        {
+          shallow: true,
+          scroll: true,
+        },
+      );
+    },
+    [router],
+  );
 
   // Currently applied filters
   const applied_filters = Object.entries(selectedFilters).filter(
@@ -329,20 +332,17 @@ const SearchResultsPage = () => {
                     ? () => removeAllFilters()
                     : undefined
                 }
-                handleSelectedFilters={() => {}}
-                // handleSelectedFilters={(
-                //   updatedFilters: typeof selectedFilters,
-                // ) => {
-                //   let updatedFilterString = queryFilterObject2String({
-                //     ...selectedFilters,
-                //     ...updatedFilters,
-                //   });
+                handleSelectedFilters={updatedFilters => {
+                  let updatedFilterString = queryFilterObject2String({
+                    ...selectedFilters,
+                    ...updatedFilters,
+                  });
 
-                //   updateRoute({
-                //     from: defaultQuery.selectedPage,
-                //     filters: updatedFilterString,
-                //   });
-                // }}
+                  updateRoute({
+                    from: defaultQuery.selectedPage,
+                    filters: updatedFilterString,
+                  });
+                }}
               />
               <Flex
                 w='100%'

@@ -6,8 +6,9 @@ import {
   SearchInput,
   UnorderedList,
   ListItem,
+  CheckboxGroup,
 } from 'nde-design-system';
-import { FilterTerm, SelectedFilterType } from '../types';
+import { FilterTerm } from '../types';
 import { FilterItem } from './filters-item';
 
 /*
@@ -24,7 +25,7 @@ interface FiltersList {
   // Currently selected filters
   selectedFilters: string[];
   // fn to update filter selection
-  handleSelectedFilters: (arg: SelectedFilterType) => void;
+  handleSelectedFilters: (arg: string[]) => void;
 }
 
 export const FiltersList: React.FC<FiltersList> = ({
@@ -33,6 +34,13 @@ export const FiltersList: React.FC<FiltersList> = ({
   filterOptions,
   handleSelectedFilters,
 }) => {
+  console.log('FilterList');
+
+  /****** Limit List Items ******/
+  // Toggle number of items to show from reduced view to "all" view.
+  const NUM_ITEMS_MIN = 5;
+  const [showFullList, setShowFullList] = useState(false);
+
   /****** Search handling ******/
   // Term to filter the filters with.
   const [searchTerm, setSearchTerm] = useState('');
@@ -43,25 +51,6 @@ export const FiltersList: React.FC<FiltersList> = ({
     filterOptions?.length > 0
       ? filterOptions.filter(t => t.term.toLowerCase().includes(searchTerm))
       : [];
-
-  /****** Limit List Items ******/
-  // Toggle number of items to show from reduced view to "all" view.
-  const NUM_ITEMS_MIN = 5;
-  const [showFullList, setShowFullList] = useState(false);
-
-  const handleChange = () => {};
-  // const handleChange = useCallback((e, item) => {
-  //   let updatedFilters = [...selectedFilters];
-  //   if (e.target.checked) {
-  //     updatedFilters.push(item.term);
-  //   } else {
-  //     updatedFilters = updatedFilters.filter(
-  //       (selectedTerm: string) => selectedTerm !== item.term,
-  //     );
-  //   }
-
-  //   return handleSelectedFilters(updatedFilters);
-  // }, []);
 
   return (
     <>
@@ -77,39 +66,22 @@ export const FiltersList: React.FC<FiltersList> = ({
       />
       <Box w='100%' maxH='250px' overflowY='auto' my={4}>
         <UnorderedList direction='column' ml={0} my={2}>
-          {/* List of filters available narrowed based on search and expansion toggle */}
-          {items.slice(0, showFullList ? items.length : 5).map(item => {
-            return (
-              <ListItem key={item.term} p={2} py={1}>
-                <FilterItem
-                  term={item.term}
-                  count={item.count}
-                  isChecked={selectedFilters.includes(item.term)}
-                  onChange={e => handleChange(e, item)}
-                />
-              </ListItem>
-            );
-          })}
-
-          {/* <UnorderedList direction='column' ml={0} my={2}>
           <CheckboxGroup
             value={selectedFilters}
             onChange={handleSelectedFilters}
           >
-            {items?.length === 0 && (
-              <ListItem p={2} py={1}>
-                <Text>No filters available.</Text>
-              </ListItem>
-            )}
-            {items?.map(({ term, count }) => {
-              return (
-                <ListItem key={term} p={2} py={1}>
-                  <FilterItem term={term} count={count} />
-                </ListItem>
-              );
-            })}
+            {/* List of filters available narrowed based on search and expansion toggle */}
+            {items
+              .slice(0, showFullList ? items.length : 5)
+              .sort((a, b) => b.count - a.count)
+              .map(item => {
+                return (
+                  <ListItem key={item.term} p={2} py={1}>
+                    <FilterItem term={item.term} count={item.count} />
+                  </ListItem>
+                );
+              })}
           </CheckboxGroup>
-        </UnorderedList> */}
         </UnorderedList>
       </Box>
       {/* Show more expansion button. */}
