@@ -61,6 +61,7 @@ export const FiltersList: React.FC<FiltersList> = ({
         value={searchTerm}
         handleChange={handleSearchChange}
         colorScheme='primary'
+        pr={4}
       />
       <Box w='100%' my={4}>
         <UnorderedList direction='column' ml={0} my={2}>
