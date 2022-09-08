@@ -18,9 +18,10 @@ import {
 } from 'nde-design-system';
 import { FaFilter } from 'react-icons/fa';
 import { NAV_HEIGHT } from 'src/components/page-container';
-import { filtersConfig, SelectedFilterType } from '..';
-import { useQueryParams } from '../hooks/useQueryParams';
-import { defaultQuery } from 'src/components/search-results-page';
+import {
+  filtersConfig,
+  SelectedFilterType,
+} from 'src/components/search-results-page/components/filters';
 
 /*
 [COMPONENT INFO]:
@@ -34,9 +35,7 @@ interface FiltersContainerProps {
   selectedFilters: SelectedFilterType;
   // fn to remove all selected filters
   removeAllFilters?: () => void;
-
   // status of filters data
-  isLoading: boolean;
   error: Error | null;
 }
 
@@ -76,7 +75,7 @@ export const FiltersContainer: React.FC<FiltersContainerProps> = ({
         <Button
           colorScheme='secondary'
           variant='outline'
-          size='md'
+          size='sm'
           onClick={removeAllFilters}
           isDisabled={!removeAllFilters}
         >

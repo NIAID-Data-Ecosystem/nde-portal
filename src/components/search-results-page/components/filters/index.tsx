@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { useQuery } from 'react-query';
 import {
   Facet,
@@ -27,13 +27,15 @@ import {
 } from 'nde-design-system';
 import LoadingSpinner from 'src/components/loading';
 import { Filter } from 'src/components/filter';
-import { fetchSearchResults } from 'src/utils/api';
+import { fetchSearchResults, Params } from 'src/utils/api';
 import { FaFilter } from 'react-icons/fa';
 import { NAV_HEIGHT } from 'src/components/page-container';
 import { formatDate, formatType } from 'src/utils/api/helpers';
 import { FaMinus, FaPlus } from 'react-icons/fa';
 import { MetadataIcon, MetadataToolTip } from 'src/components/icon';
 import { getMetadataColor } from 'src/components/icon/helpers';
+import { useFacetsData } from 'src/components/filters/hooks/useFacetsData';
+import { FiltersContainer } from 'src/components/filters';
 
 /*
 [COMPONENT INFO]:
@@ -44,13 +46,16 @@ import { getMetadataColor } from 'src/components/icon/helpers';
 // Default facet size
 export const FACET_SIZE = 1000;
 
+export type SelectedFilterType = {
+  [key: string]: string[];
+};
+
+interface FiltersConfigProps {
+  [key: string]: { name: string; glyph?: string };
+}
+
 // Config for the naming/text of a filter.
-export const filtersConfig: {
-  [key: string]: {
-    name: string;
-    glyph?: string;
-  };
-} = {
+export const filtersConfig: FiltersConfigProps = {
   '@type': { name: 'Type' },
   'includedInDataCatalog.name': { name: 'Source' },
   date: { name: 'Date ' },
@@ -69,11 +74,7 @@ export const filtersConfig: {
   'species.name': { name: 'Species', glyph: 'species' },
 };
 
-export type SelectedFilterType = {
-  [key: string]: string[];
-};
-
-interface Filters {
+interface FiltersProps {
   // Search query term
   searchTerm: string;
   // Facets that update as the filters are selected
@@ -84,14 +85,25 @@ interface Filters {
   removeAllFilters?: () => void;
   // fn to update filter selection
   handleSelectedFilters: (arg: SelectedFilterType) => void;
+  queryParams: Params;
 }
 
-export const Filters: React.FC<Filters> = ({
-  searchTerm,
-  removeAllFilters,
-  facets: facetsData,
+export const Filters: React.FC<FiltersProps> = ({
+  queryParams,
   selectedFilters,
-  handleSelectedFilters,
+  removeAllFilters,
 }) => {
-  return <>hi</>;
+  const [{ data, error, isLoading }] = useFacetsData({
+    queryParams,
+    facets: Object.keys(filtersConfig),
+  });
+
+  return (
+    <FiltersContainer
+      title='Filters'
+      error={error}
+      selectedFilters={selectedFilters}
+      removeAllFilters={removeAllFilters}
+    ></FiltersContainer>
+  );
 };

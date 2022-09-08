@@ -23,7 +23,7 @@ export const getResourceById = async (id?: string | string[]) => {
 };
 
 // Get all resources where query term contains the search term.
-interface Params {
+export interface Params {
   q: string;
   size?: string | number;
   from?: string;

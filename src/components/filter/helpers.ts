@@ -71,9 +71,9 @@ export const queryFilterString2Object = (str?: string | string[]) => {
       .replace('")', '')
       .split('" OR "');
 
-    if (name === '@type') {
-      value = value.map(v => formatType(v));
-    }
+    // if (name === '@type') {
+    //   value = value.map(v => formatType(v));
+    // }
 
     r[name] = value;
     return r;

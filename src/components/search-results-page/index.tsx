@@ -117,10 +117,10 @@ const SearchResultsPage = () => {
 
   // Query Parameters
   const filter_string = queryFilterObject2String(selectedFilters);
-
   const params = {
     q: encodeString(queryString),
     extra_filter: filter_string || '', // extra filter updates aggregate fields
+    facet_size: defaultQuery.facetSize,
   };
 
   const { isLoading, error, data } = useQuery<
@@ -130,7 +130,7 @@ const SearchResultsPage = () => {
     [
       'search-results',
       {
-        q: params.q,
+        ...params,
         filters: selectedFilters,
         size: selectedPerPage,
         from: selectedPage,
@@ -145,9 +145,9 @@ const SearchResultsPage = () => {
       return fetchSearchResults({
         q: params.q,
         extra_filter: params.extra_filter,
+        facet_size: params.facet_size,
         size: `${selectedPerPage}`,
         from: `${(selectedPage - 1) * selectedPerPage}`,
-        facet_size: defaultQuery.facetSize,
         facets: defaultQuery.facets.join(','),
         sort: sortOrder,
       });
@@ -325,27 +325,27 @@ const SearchResultsPage = () => {
             </Collapse>
             <Flex w='100%'>
               <Filters
-              // searchTerm={params.q}
-              // facets={{ isLoading: isLoading, data: data?.facets }}
-              // selectedFilters={selectedFilters}
-              // removeAllFilters={
-              //   applied_filters.length > 0
-              //     ? () => removeAllFilters()
-              //     : undefined
-              // }
-              // handleSelectedFilters={(
-              //   updatedFilters: typeof selectedFilters,
-              // ) => {
-              //   let updatedFilterString = queryFilterObject2String({
-              //     ...selectedFilters,
-              //     ...updatedFilters,
-              //   });
+                queryParams={params}
+                selectedFilters={selectedFilters}
+                // facets={{ isLoading: isLoading, data: data?.facets }}
+                // removeAllFilters={
+                //   applied_filters.length > 0
+                //     ? () => removeAllFilters()
+                //     : undefined
+                // }
+                // handleSelectedFilters={(
+                //   updatedFilters: typeof selectedFilters,
+                // ) => {
+                //   let updatedFilterString = queryFilterObject2String({
+                //     ...selectedFilters,
+                //     ...updatedFilters,
+                //   });
 
-              //   updateRoute({
-              //     from: defaultQuery.selectedPage,
-              //     filters: updatedFilterString,
-              //   });
-              // }}
+                //   updateRoute({
+                //     from: defaultQuery.selectedPage,
+                //     filters: updatedFilterString,
+                //   });
+                // }}
               />
               <Flex
                 w='100%'
