@@ -62,7 +62,7 @@ export const FiltersList: React.FC<FiltersList> = ({
         handleChange={handleSearchChange}
         colorScheme='primary'
       />
-      <Box w='100%' maxH='250px' overflowY='auto' my={4}>
+      <Box w='100%' my={4}>
         <UnorderedList direction='column' ml={0} my={2}>
           <CheckboxGroup
             value={selectedFilters}
@@ -92,7 +92,7 @@ export const FiltersList: React.FC<FiltersList> = ({
             padding={2}
             onClick={() => setShowFullList(!showFullList)}
           >
-            {showFullList ? 'Show Less' : 'Show More'}
+            {showFullList ? 'Show Less' : 'Show All'}
           </Button>
         </Flex>
       )}
