@@ -36,6 +36,7 @@ import { MetadataIcon, MetadataToolTip } from 'src/components/icon';
 import { getMetadataColor } from 'src/components/icon/helpers';
 import { useFacetsData } from 'src/components/filters/hooks/useFacetsData';
 import { FiltersContainer } from 'src/components/filters';
+import { FiltersSection } from 'src/components/filters/components/filters-section';
 
 /*
 [COMPONENT INFO]:
@@ -54,7 +55,11 @@ interface FiltersConfigProps {
   [key: string]: { name: string; glyph?: string };
 }
 
-// Config for the naming/text of a filter.
+/*
+Config for the naming/text of a filter.
+[NOTE]: Order matters here as the filters will be rendered in the order of the keys.
+*/
+
 export const filtersConfig: FiltersConfigProps = {
   '@type': { name: 'Type' },
   'includedInDataCatalog.name': { name: 'Source' },
@@ -104,6 +109,16 @@ export const Filters: React.FC<FiltersProps> = ({
       error={error}
       selectedFilters={selectedFilters}
       removeAllFilters={removeAllFilters}
-    ></FiltersContainer>
+    >
+      {Object.keys(filtersConfig).map(facet => {
+        return (
+          <FiltersSection
+            key={facet}
+            name={filtersConfig[facet].name}
+            icon={filtersConfig[facet].glyph}
+          ></FiltersSection>
+        );
+      })}
+    </FiltersContainer>
   );
 };
