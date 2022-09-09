@@ -19,20 +19,22 @@ Filter list handles the searching of filter items.
 
 interface FiltersList {
   // list of filter terms to display.
-  filterOptions: FilterTerm[];
+  terms: FilterTerm[];
   // Search input placeholder text -- also used for aris-label.
   searchPlaceholder: string;
   // Currently selected filters
   selectedFilters: string[];
   // fn to update filter selection
   handleSelectedFilters: (arg: string[]) => void;
+  isLoading: boolean;
 }
 
 export const FiltersList: React.FC<FiltersList> = ({
   searchPlaceholder,
   selectedFilters,
-  filterOptions,
+  terms,
   handleSelectedFilters,
+  isLoading,
 }) => {
   /****** Limit List Items ******/
   // Toggle number of items to show from reduced view to "all" view.
@@ -46,8 +48,10 @@ export const FiltersList: React.FC<FiltersList> = ({
     setSearchTerm(e.target.value);
 
   const items: FilterTerm[] =
-    filterOptions?.length > 0
-      ? filterOptions.filter(t => t.term.toLowerCase().includes(searchTerm))
+    terms?.length > 0
+      ? terms.filter(t => t.term.toLowerCase().includes(searchTerm))
+      : isLoading
+      ? Array(NUM_ITEMS_MIN).fill('') // for loading skeleton purposes
       : [];
 
   return (
@@ -76,7 +80,11 @@ export const FiltersList: React.FC<FiltersList> = ({
               .map(item => {
                 return (
                   <ListItem key={item.term} p={2} py={1}>
-                    <FilterItem term={item.term} count={item.count} />
+                    <FilterItem
+                      term={item.term}
+                      count={item.count}
+                      isLoading={isLoading}
+                    />
                   </ListItem>
                 );
               })}
