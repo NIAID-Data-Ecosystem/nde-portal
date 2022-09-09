@@ -17,7 +17,7 @@ export interface FilterItemProps extends CheckboxProps {
 export const FilterItem: React.FC<FilterItemProps> = React.memo(
   ({ term, count, isLoading }) => {
     return (
-      <Checkbox spacing={2} size='lg' my={2} value={term}>
+      <Checkbox spacing={1} size='lg' value={term} my={2}>
         <Skeleton
           width='200px'
           h={isLoading ? 4 : 'unset'}

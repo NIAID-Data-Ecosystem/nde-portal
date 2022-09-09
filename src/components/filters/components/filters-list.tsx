@@ -78,9 +78,8 @@ export const FiltersList: React.FC<FiltersList> = ({
               .slice(0, showFullList ? items.length : 5)
               .sort((a, b) => b.count - a.count)
               .map((item, i) => {
-                console.log(item);
                 return (
-                  <ListItem key={i} p={2} py={1}>
+                  <ListItem key={i} p={2} py={0} my={0}>
                     <FilterItem
                       term={item.term}
                       count={item.count}

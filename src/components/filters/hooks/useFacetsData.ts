@@ -52,10 +52,10 @@ export const useFacetsData = ({
           // add facet term for "empty" property
           data.facets[facet].terms.push({
             count: d?.total,
-            term: 'N/A',
+            term: `${facet}`,
             name: 'N/A',
             filterTerm: `${facet}`,
-            filterKey: '-_exists_',
+            facet: '-_exists_',
           });
         });
       }),
@@ -97,11 +97,15 @@ export const useFacetsData = ({
       'search-results',
       {
         q: queryParams.q,
+        facet_size: queryParams.facet_size,
         facets,
       },
     ],
     () => {
-      return fetchFilters({ q: queryParams.q });
+      return fetchFilters({
+        q: queryParams.q,
+        facet_size: queryParams.facet_size,
+      });
     },
     {
       refetchOnWindowFocus: false,
@@ -132,7 +136,7 @@ export const useFacetsData = ({
     [
       'search-results',
       {
-        q: queryParams.q,
+        ...queryParams,
         extra_filter: queryParams.extra_filter,
         initialData,
       },

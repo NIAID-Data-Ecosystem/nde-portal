@@ -83,8 +83,13 @@ export const Filters: React.FC<FiltersProps> = ({
               terms={data[facet]}
               selectedFilters={selectedFilters[facet]}
               handleSelectedFilters={updatedFilterSelection => {
-                console.log('updatedFilterSelection', updatedFilterSelection);
-                handleSelectedFilters({ [facet]: updatedFilterSelection });
+                console.log('handleFilters');
+                // console.log('updatedFilterSelection', updatedFilterSelection);
+                // if (updatedFilterSelection.includes('N/A')) {
+                //   handleSelectedFilters({ [facet]: updatedFilterSelection });
+                // } else {
+                //   handleSelectedFilters({ [facet]: updatedFilterSelection });
+                // }
               }}
               isLoading={isLoading}
             ></FiltersList>

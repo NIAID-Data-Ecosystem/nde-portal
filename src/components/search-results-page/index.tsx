@@ -344,6 +344,7 @@ const SearchResultsPage = () => {
                   });
                 }}
               />
+
               <Flex
                 w='100%'
                 flexDirection='column'
