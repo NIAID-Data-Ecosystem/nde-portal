@@ -53,7 +53,6 @@ export const FiltersList: React.FC<FiltersList> = ({
       : isLoading
       ? Array(NUM_ITEMS_MIN).fill('') // for loading skeleton purposes
       : [];
-
   return (
     <>
       {/* Search through filter terms */}
@@ -68,15 +67,21 @@ export const FiltersList: React.FC<FiltersList> = ({
         pr={4}
       />
       <Box w='100%' my={4}>
-        <UnorderedList direction='column' ml={0} my={2}>
+        <UnorderedList
+          direction='column'
+          ml={0}
+          my={2}
+          maxH={400}
+          overflowY='auto'
+        >
           <CheckboxGroup
             value={selectedFilters}
             onChange={handleSelectedFilters}
           >
             {/* List of filters available narrowed based on search and expansion toggle */}
             {items
-              .slice(0, showFullList ? items.length : 5)
               .sort((a, b) => b.count - a.count)
+              .slice(0, showFullList ? items.length : 5)
               .map((item, i) => {
                 return (
                   <ListItem key={i} p={2} py={0} my={0}>

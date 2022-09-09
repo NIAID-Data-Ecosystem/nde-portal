@@ -65,7 +65,6 @@ export const Filters: React.FC<FiltersProps> = ({
     queryParams,
     facets,
   });
-
   return (
     <FiltersContainer
       title='Filters'
@@ -76,21 +75,14 @@ export const Filters: React.FC<FiltersProps> = ({
     >
       {facets.map(facet => {
         const { name, glyph } = filtersConfig[facet];
+
         return (
           <FiltersSection key={facet} name={name} icon={glyph}>
             <FiltersList
               searchPlaceholder={`Search ${name.toLowerCase()} filters`}
               terms={data[facet]}
               selectedFilters={selectedFilters[facet]}
-              handleSelectedFilters={updatedFilterSelection => {
-                console.log('handleFilters');
-                // console.log('updatedFilterSelection', updatedFilterSelection);
-                // if (updatedFilterSelection.includes('N/A')) {
-                //   handleSelectedFilters({ [facet]: updatedFilterSelection });
-                // } else {
-                //   handleSelectedFilters({ [facet]: updatedFilterSelection });
-                // }
-              }}
+              handleSelectedFilters={() => {}}
               isLoading={isLoading}
             ></FiltersList>
           </FiltersSection>
