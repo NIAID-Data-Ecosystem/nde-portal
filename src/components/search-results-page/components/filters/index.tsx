@@ -82,9 +82,10 @@ export const Filters: React.FC<FiltersProps> = ({
               searchPlaceholder={`Search ${name.toLowerCase()} filters`}
               terms={data[facet]}
               selectedFilters={selectedFilters[facet]}
-              handleSelectedFilters={updatedFilterSelection =>
-                handleSelectedFilters({ [facet]: updatedFilterSelection })
-              }
+              handleSelectedFilters={updatedFilterSelection => {
+                console.log('updatedFilterSelection', updatedFilterSelection);
+                handleSelectedFilters({ [facet]: updatedFilterSelection });
+              }}
               isLoading={isLoading}
             ></FiltersList>
           </FiltersSection>

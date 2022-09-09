@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useQuery } from 'react-query';
+import { queryFilterObject2String } from 'src/components/filter/helpers';
 import { fetchSearchResults, Params } from 'src/utils/api';
 import {
   Facet,
@@ -42,10 +43,10 @@ export const useFacetsData = ({
         return fetchSearchResults({
           ...params,
           extra_filter: params?.extra_filter
-            ? `${params.extra_filter}+AND+-_exists_:${facet}`
+            ? `${params.extra_filter} AND -_exists_:${facet}`
             : `-_exists_:${facet}`,
           facet_size: 0,
-          facets: facets.join(','),
+          facets: facet,
         }).then(d => {
           if (!data || !d?.total) return;
           // add facet term for "empty" property
@@ -182,7 +183,6 @@ export const useFacetsData = ({
       },
     },
   );
-
   const error = allFiltersError || updatedFiltersError;
   return [{ data: facetTerms, error, isLoading: isLoading, isUpdating }];
 };
