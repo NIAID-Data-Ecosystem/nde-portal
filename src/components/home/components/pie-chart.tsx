@@ -21,6 +21,7 @@ import {
 } from '@visx/tooltip';
 import { schemeTableau10 } from 'd3-scale-chromatic';
 import NextLink from 'next/link';
+import { queryFilterObject2String } from 'src/components/filter';
 
 interface RawDataProps {
   term: string;
@@ -169,7 +170,7 @@ export default function PieChart({
       </Box>
       <Box my={4} mx={[4, 4, 8]} minWidth={[200, 200, 300]}>
         {/* Total datasets */}
-        <Heading as={'h3'} fontWeight='semibold' size={'h4'} color='gray.900'>
+        <Heading as='h3' fontWeight='semibold' size='h4' color='gray.900'>
           {formatNumber(total)} Resources
         </Heading>
         {/* Legend */}
@@ -185,19 +186,50 @@ export default function PieChart({
                 const Label = ({
                   text,
                   count,
+                  source,
                 }: {
                   text: string;
+                  source: string;
                   count: number;
                 }) => {
                   return (
                     <>
-                      <Text lineHeight='short' fontWeight={'semibold'}>
-                        {text}
-                      </Text>
+                      {source ? (
+                        <NextLink
+                          href={{
+                            pathname: `/search`,
+                            query: {
+                              q: '',
+                              filters: queryFilterObject2String({
+                                'includedInDataCatalog.name': [source],
+                              }),
+                            },
+                          }}
+                          passHref
+                        >
+                          <Link
+                            color='text.body'
+                            _hover={{ color: 'text.body' }}
+                            _visited={{ color: 'text.body' }}
+                          >
+                            <Text
+                              lineHeight='short'
+                              fontWeight='semibold'
+                              cursor='pointer'
+                            >
+                              {text}
+                            </Text>
+                          </Link>
+                        </NextLink>
+                      ) : (
+                        <Text lineHeight='short' fontWeight='semibold'>
+                          {text}
+                        </Text>
+                      )}
                       <Text
                         lineHeight='shorter'
                         fontSize='sm'
-                        fontWeight={'regular'}
+                        fontWeight='regular'
                       >
                         {formatNumber(count)} records
                       </Text>
@@ -206,12 +238,11 @@ export default function PieChart({
                 };
 
                 return (
-                  <Flex key={i} maxWidth={'300px'} my={4}>
+                  <Flex key={i} maxWidth='300px' my={4}>
                     <LegendItem
                       alignItems='start'
                       onMouseOver={e => handleMouseOver(e, datum)}
                       onMouseLeave={hideTooltip}
-                      style={{ cursor: 'pointer' }}
                     >
                       <Box
                         width={5}
@@ -219,15 +250,20 @@ export default function PieChart({
                         minWidth={5}
                         minHeight={5}
                         bg={label.value}
+                        m={2}
                         mr={4}
                       />
                     </LegendItem>
 
                     <Box>
-                      <Label text={label.text} count={datum.count} />
+                      <Label
+                        text={label.text}
+                        count={datum.count}
+                        source={!datum.data && datum.term}
+                      />
                       {datum.data && (
                         <UnorderedList
-                          borderLeft={'1px solid'}
+                          borderLeft='1px solid'
                           borderColor='gray.200'
                           pl={3}
                           ml={1}
@@ -235,7 +271,11 @@ export default function PieChart({
                         >
                           {datum.data.map((d, i) => (
                             <ListItem key={i} py={2}>
-                              <Label text={d.term} count={d.count} />
+                              <Label
+                                text={d.term}
+                                count={d.count}
+                                source={d.term}
+                              />
                             </ListItem>
                           ))}
                         </UnorderedList>
@@ -271,7 +311,7 @@ export default function PieChart({
             }}
           >
             <Box>
-              <Text fontWeight={'semibold'}>{tooltipData.term}</Text>
+              <Text fontWeight='semibold'>{tooltipData.term}</Text>
               <br />
               <Text>{formatNumber(tooltipData.count)} records</Text>
               {tooltipData.data && (
@@ -284,7 +324,7 @@ export default function PieChart({
                 >
                   {tooltipData.data.map((d, i) => (
                     <ListItem key={i}>
-                      <Text fontWeight={'semibold'}>{d.term}</Text>
+                      <Text fontWeight='semibold'>{d.term}</Text>
                       <Text>{formatNumber(d.count)} records</Text>
                       <br />
                     </ListItem>
@@ -341,22 +381,41 @@ function AnimatedPie<Datum>({
     keys: getKey,
   });
   return transitions((props, arc, { key }) => {
+    const source = arc.data as DataProps;
+
     return (
       <g key={key}>
-        <animated.path
-          style={{ cursor: 'pointer' }}
-          // compute interpolated path d attribute from intermediate angle values
-          d={to([props.startAngle, props.endAngle], (startAngle, endAngle) =>
-            path({
-              ...arc,
-              startAngle,
-              endAngle,
-            }),
-          )}
-          fill={getColor(arc)}
-          onMouseOver={e => onMouseOver(e, arc.data)}
-          onMouseLeave={() => onMouseLeave()}
-        />
+        <NextLink
+          href={{
+            pathname: `/search`,
+            query: {
+              q: '',
+              filters: queryFilterObject2String({
+                'includedInDataCatalog.name': source?.data
+                  ? source.data.map(({ term }) => {
+                      return term;
+                    })
+                  : [source.term],
+              }),
+            },
+          }}
+          passHref
+        >
+          <animated.path
+            style={{ cursor: 'pointer' }}
+            // compute interpolated path d attribute from intermediate angle values
+            d={to([props.startAngle, props.endAngle], (startAngle, endAngle) =>
+              path({
+                ...arc,
+                startAngle,
+                endAngle,
+              }),
+            )}
+            fill={getColor(arc)}
+            onMouseOver={e => onMouseOver(e, arc.data)}
+            onMouseLeave={() => onMouseLeave()}
+          />
+        </NextLink>
       </g>
     );
   });
