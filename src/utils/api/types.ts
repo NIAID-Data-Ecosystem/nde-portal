@@ -142,7 +142,6 @@ export interface IsBasedOn {
   identifier?: string;
   name?: string;
   pmid?: string;
-  type?: string;
   url?: string;
 }
 
@@ -219,31 +218,38 @@ export interface FormattedResource {
   dateModified: string | null;
   datePublished: string | null;
   description: string | null;
+  discussionUrl: string[] | null;
   disease: string | null;
   distribution: Distribution[] | null;
   doi: string | null;
+  downloadUrl: { name: string }[] | null;
   funding: Funding[] | null;
   hasPart: HasPart[] | null;
   healthCondition: PropertyNameWithURL[] | null;
   includedInDataCatalog: IncludedInDataCatalog | null;
   infectiousAgent: PropertyNameWithURL[] | null;
-  keywords: string[] | null;
   inLanguage: {
     alternateName: string | null;
     name: string | null;
   } | null;
   isAvailableForFree: boolean | null;
   isBasedOn: IsBasedOn[] | null;
+  isBasisFor: { identifier: string }[] | null;
   isPartOf: IsPartOf[] | null;
   isRelatedTo: IsRelatedTo[] | null;
+  keywords: string[] | null;
   license: string | null;
   mainEntityOfPage: string | null;
   measurementTechnique: PropertyNameWithURL[] | null;
   nctid: string | null;
+  processorRequirements: string[] | null;
   programmingLanguage: string[] | null;
   publisher: Publisher | null;
   rawData: any;
   sameAs: string | null;
+  softwareAddOn: { identifier: string }[] | null;
+  softwareHelp: { name?: string; url: string }[] | null;
+  softwareRequirements: string[] | null;
   softwareVersion: string[] | null;
   sdPublisher: SdPublisher[] | null;
   spatialCoverage: SpatialCoverage[] | null;

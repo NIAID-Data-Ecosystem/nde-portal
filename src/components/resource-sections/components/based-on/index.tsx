@@ -23,7 +23,7 @@ const BasedOn: React.FC<BasedOn> = ({ isLoading, isBasedOn }) => {
     );
   }
   return (
-    <UnorderedList>
+    <UnorderedList ml={2}>
       {isBasedOn.map((basedOn, i) => {
         const {
           abstract,
@@ -34,17 +34,22 @@ const BasedOn: React.FC<BasedOn> = ({ isLoading, isBasedOn }) => {
           identifier,
           name,
           pmid,
-          type,
           url,
         } = basedOn;
         return (
           <ListItem key={i} my={2}>
-            <Text fontSize='xs' lineHeight='short'>
-              <strong>Name:</strong> {name || '-'}
-            </Text>
-            <Text fontSize='xs' lineHeight='short'>
-              <strong>Type:</strong> {type || '-'}
-            </Text>
+            {(identifier || name) && (
+              <Text fontSize='xs' lineHeight='short'>
+                <strong>{name || identifier}</strong>
+              </Text>
+            )}
+
+            {basedOn['@type'] && (
+              <Text fontSize='xs' lineHeight='short'>
+                <strong>Type:</strong> {basedOn['@type'] || '-'}
+              </Text>
+            )}
+
             {(pmid || doi) && (
               <Text fontSize='xs' lineHeight='short'>
                 <strong>PMID/DOI:</strong> {pmid || '-'}/{doi || '-'}
