@@ -50,19 +50,20 @@ import { encodeString } from 'src/utils/querystring-helpers';
  Contains filters, filter tags, search results cards.
 */
 
-// Sorting mechanism.
-export interface SortOptions {
-  name: string;
-  sortBy: string;
-  orderBy: 'asc' | 'desc';
-}
-const sort_options: SortOptions[] = [
+// Sorting configuration.
+export const sortOptions = [
   { name: 'Best Match', sortBy: '_score', orderBy: 'asc' },
   { name: 'Date: oldest to newest', sortBy: 'date', orderBy: 'asc' },
   { name: 'Date: newest to oldest', sortBy: 'date', orderBy: 'desc' },
   { name: 'A-Z', sortBy: 'name', orderBy: 'asc' },
   { name: 'Z-A', sortBy: 'name', orderBy: 'desc' },
-];
+] as const;
+
+export interface SortOptionsInterface {
+  name: typeof sortOptions[number]['name'];
+  sortBy: typeof sortOptions[number]['sortBy'];
+  orderBy: typeof sortOptions[number]['orderBy'];
+}
 
 const displayQueryString = (str: string) => {
   if (!str) {
@@ -418,7 +419,7 @@ const SearchResultsPage = () => {
                       </Flex>
 
                       <SortResults
-                        sortOptions={sort_options}
+                        sortOptions={sortOptions}
                         sortOrder={sortOrder}
                         handleSortOrder={sort => {
                           updateRoute({

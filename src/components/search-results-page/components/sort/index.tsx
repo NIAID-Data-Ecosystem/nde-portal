@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box, Flex, Select } from 'nde-design-system';
-import { SortOptions } from 'src/components/search-results-page';
+import { SortOptionsInterface } from 'src/components/search-results-page';
 
 /*
  [COMPONENT INFO]: SortResults
@@ -12,7 +12,7 @@ interface SortResultsProps {
   // Number of items to display in a page
   selectedPerPage: number;
   // Sort by options
-  sortOptions: SortOptions[];
+  sortOptions: readonly SortOptionsInterface[];
   // Sort order of results
   sortOrder: string;
   // Handler fn for items per page.
@@ -29,6 +29,20 @@ export const SortResults: React.FC<SortResultsProps> = ({
   handleSortOrder,
 }) => {
   const showPerPageOptions = [10, 50, 100];
+  /*
+  Tooltip describing the sort by option as requested:
+  https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/90
+  */
+  const getTooltip = (sortBy: SortOptionsInterface['sortBy']) => {
+    if (sortBy === '_score') {
+      return 'Sort by relevancy.';
+    } else if (sortBy === 'date') {
+      return 'Sort by most recent activity (created, published or modified).';
+    } else if (sortBy === 'name') {
+      return 'Sort alphabetically by title.';
+    }
+    return '';
+  };
   return (
     <Flex
       flexDirection={['column', 'row']}
@@ -55,6 +69,7 @@ export const SortResults: React.FC<SortResultsProps> = ({
           {sortOptions.map(option => {
             return (
               <option
+                title={getTooltip(option.sortBy)}
                 key={`${option.sortBy}-${option.orderBy}`}
                 value={`${option.orderBy === 'desc' ? '-' : ''}${
                   option.sortBy
