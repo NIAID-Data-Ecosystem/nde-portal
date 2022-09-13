@@ -1,9 +1,7 @@
-import React, { useCallback } from 'react';
+import React from 'react';
 import { Box, Link, ListItem, Text, UnorderedList } from 'nde-design-system';
 import { FormattedResource } from 'src/utils/api/types';
-import Table, { Row } from 'src/components/table';
 import LoadingSpinner from 'src/components/loading';
-import { FormatLinkCell, getTableColumns } from 'src/components/table/helpers';
 
 interface BasedOn {
   isLoading: boolean;
