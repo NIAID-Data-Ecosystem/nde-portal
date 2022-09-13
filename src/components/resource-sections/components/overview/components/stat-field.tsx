@@ -35,8 +35,11 @@ const StatField: React.FC<MetadataStatProps> = ({
   // on mobile and for assistive devices we want to allow
   const [isTooltipOpen, setTooltipOpen] = useState(false);
   const StatText = () => {
+    if (React.Children.count(children) > 1) {
+      return <>{children}</>;
+    }
     if (typeof children === 'number') {
-      return <StatNumber fontSize='xs'>{formatNumber(children)}</StatNumber>;
+      return <StatNumber>{formatNumber(children)}</StatNumber>;
     }
     return (
       <Text as='dd' fontSize='sm' lineHeight='short' mt={1}>

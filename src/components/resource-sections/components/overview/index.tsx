@@ -6,7 +6,10 @@ import {
   Link,
   ListItem,
   SimpleGrid,
-  Text,
+  Stack,
+  StackDivider,
+  StatHelpText,
+  StatNumber,
   UnorderedList,
 } from 'nde-design-system';
 import { FormattedResource } from 'src/utils/api/types';
@@ -28,12 +31,15 @@ export interface OverviewProps extends Partial<FormattedResource> {
 }
 
 const Overview: React.FC<OverviewProps> = ({
+  aggregateRating,
   citation,
   doi,
   healthCondition,
   identifier,
+  includedInDataCatalog,
   infectiousAgent,
   inLanguage,
+  isLoading,
   isPartOf,
   license,
   measurementTechnique,
@@ -46,7 +52,6 @@ const Overview: React.FC<OverviewProps> = ({
   topic,
   usageInfo,
   variableMeasured,
-  isLoading,
   ...data
 }) => {
   const StatIcon = ({ glyph, ...props }: IconProps) => (
@@ -101,15 +106,14 @@ const Overview: React.FC<OverviewProps> = ({
     <Flex p={[0, 4]} w='100%' flexWrap='wrap' flexDirection={['column', 'row']}>
       {(doi || nctid) && (
         <Box w={{ sm: '100%', lg: 'unset' }} my={4}>
-          <SimpleGrid
-            minChildWidth='150px'
-            maxWidth={500}
-            spacingX={4}
-            spacingY={2}
+          <Stack
+            direction={['column', 'column', 'row']}
+            spacing={4}
             p={4}
             border='0.5px solid'
             borderRadius='semi'
             borderColor='gray.100'
+            divider={<StackDivider borderColor='gray.200' />}
           >
             {/* Altmetric Badge */}
             {(doi || nctid || citation?.[0]['pmid']) && (
@@ -119,6 +123,7 @@ const Overview: React.FC<OverviewProps> = ({
                 d='flex'
                 justifyContent='center'
                 mr={2}
+                minWidth='200px'
               >
                 <Flex alignItems='center' direction='column'>
                   {(doi || nctid || citation?.[0]['pmid']) && (
@@ -148,7 +153,28 @@ const Overview: React.FC<OverviewProps> = ({
                 </Flex>
               </StatField>
             )}
-          </SimpleGrid>
+
+            {aggregateRating &&
+              (aggregateRating.ratingValue || aggregateRating.ratingCount) &&
+              includedInDataCatalog?.name && (
+                <StatField
+                  isLoading={false}
+                  d='flex'
+                  {...getStatInfo(`${includedInDataCatalog.name} Metrics`)}
+                  justifyContent='center'
+                  mr={2}
+                  flex={1}
+                  minWidth='200px'
+                >
+                  <StatNumber>
+                    {aggregateRating.ratingValue || aggregateRating.ratingCount}
+                  </StatNumber>
+                  {aggregateRating.reviewAspect && (
+                    <StatHelpText>{aggregateRating.reviewAspect}</StatHelpText>
+                  )}
+                </StatField>
+              )}
+          </Stack>
         </Box>
       )}
 

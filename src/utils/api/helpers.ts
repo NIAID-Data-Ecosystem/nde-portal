@@ -249,6 +249,7 @@ export const formatAPIResource = (data: any) => {
     id: data._id || null,
     type: data['@type'] ? formatType(data['@type']) : null,
     name: data.name || null,
+    aggregateRating: data.aggregateRating || null,
     applicationCategory: convertToArray(data.applicationCategory),
     applicationSubCategory: convertToArray(data.applicationSubCategory),
     applicationSuite: convertToArray(data.applicationSuite),

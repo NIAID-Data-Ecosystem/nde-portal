@@ -196,6 +196,13 @@ interface TemporalCoverage {
   };
 }
 
+interface AggregateRating {
+  '@type'?: string;
+  ratingCount?: number;
+  ratingValue?: number;
+  reviewAspect?: string;
+}
+
 // Formatting standardized resource fields
 export interface FormattedResource {
   [key: string]: any;
@@ -203,6 +210,7 @@ export interface FormattedResource {
   type: string | null; // "Dataset" | "ComputationalTool"
   name: string;
   abstract: string | null;
+  aggregateRating: AggregateRating | null;
   alternateName: string | null;
   applicationCategory: string[] | null;
   applicationSubCategory: string[] | null;
