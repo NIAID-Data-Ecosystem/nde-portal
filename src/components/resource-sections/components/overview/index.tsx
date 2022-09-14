@@ -89,7 +89,6 @@ const Overview: React.FC<OverviewProps> = ({
     }
 
     return {
-      property: property.property,
       description,
       label,
     };
