@@ -222,7 +222,7 @@ function AnimatedPie<Datum>({
     keys: getKey,
   });
   return transitions((props, arc, { key }) => {
-    const source = arc.data as DataProps;
+    const source = arc.data as unknown as DataProps;
 
     return (
       <g key={key}>
