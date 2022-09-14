@@ -1,11 +1,12 @@
 const fs = require('fs');
 const axios = require('axios');
-const fields = require('../../../configs/resource-metadata.json');
+const { getPropertyTitle } = require('./helpers.js');
 
 // Fetch schema information from biothings API
 const fetchSchema = async () => {
   try {
     /*
+    Fetch schema property definitions
     This has: includedInDataCatalog, variableMeasured, measurementTechnique
     https://discovery.biothings.io/api/registry/schema/schema:Dataset
 
@@ -20,33 +21,48 @@ const fetchSchema = async () => {
   */
     const schemaData = await axios
       .get(`https://discovery.biothings.io/api/registry/schema/schema:Dataset`)
-      .then(d => d.data.properties);
+      .then(response => {
+        return [
+          { label: response.data.label, properties: response.data.properties },
+        ];
+      });
 
     const niaidData = await axios
       .get(`https://discovery.biothings.io/api/registry/niaid`)
-      .then(d => {
+      .then(response => {
         // Filter data with needed types.
-        return d.data.hits.filter(
-          h => h.label === 'ComputationalTool' || h.label === 'Dataset',
-        );
+        return response.data.hits.filter(datum => {
+          if (
+            datum.label === 'ComputationalTool' ||
+            datum.label === 'Dataset'
+          ) {
+            return datum.properties;
+          }
+        });
       });
-
+    // Format data.
     const data = [...schemaData, ...niaidData].reduce((r, d) => {
-      const addProp = data => {
+      const type = d.label;
+      const addProperty = data => {
         if (!r[data.label]) {
           r[data.label] = {
-            title: '',
-            property: '',
-            description: '',
+            title: getPropertyTitle(data.label),
+            property: data.label,
+            description: {},
           };
         }
-        r[data.label] = { property: data.label, description: data.description };
+        r[data.label]['description'][type.toLowerCase()] = data.description;
       };
 
-      addProp(d);
+      addProperty(d);
       if (d.properties) {
         d.properties.map(property => {
-          addProp(property);
+          addProperty(property);
+        });
+      }
+      if (d?.validation?.properties) {
+        Object.entries(d.validation.properties).map(([label, obj]) => {
+          addProperty({ ...obj, label });
         });
       }
       return r;
@@ -59,26 +75,38 @@ const fetchSchema = async () => {
 };
 
 fetchSchema().then(data => {
-  // Update current metadata json with fetched fields if new.
-  const updatedFields = [...fields];
+  let rawdata = fs.readFileSync('configs/resource-metadata.json');
+  let properties = [];
+  try {
+    let prevData = JSON.parse(rawdata);
+    properties = prevData;
+  } catch (err) {
+    // JSON file is empty.
+    if (err) {
+      properties = [];
+    }
+  }
+
+  // Update current metadata json with fetched properties if new.
+  const updatedProperties = [...properties];
   data.map(d => {
-    const matchIndex = fields.findIndex(
+    const matchIndex = properties.findIndex(
       field => field.property.toLowerCase() === d.property.toLowerCase(),
     );
 
     if (matchIndex >= 0) {
-      if (!updatedFields[matchIndex].description) {
-        updatedFields[matchIndex].description = d.description;
+      if (!updatedProperties[matchIndex].description) {
+        updatedProperties[matchIndex].description = d.description;
       }
     } else {
-      updatedFields.push(d);
+      updatedProperties.push(d);
     }
   });
 
   // Write update to json
   fs.writeFile(
     './configs/resource-metadata.json',
-    JSON.stringify(updatedFields),
+    JSON.stringify(updatedProperties),
     err => {
       if (err) {
         console.error('error writing to file.');

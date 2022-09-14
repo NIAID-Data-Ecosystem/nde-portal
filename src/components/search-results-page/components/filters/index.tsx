@@ -183,14 +183,14 @@ export const Filters: React.FC<Filters> = ({
       </Flex>
       {error ? (
         // Error message.
-        <Flex p={4} bg={'status.error'}>
-          <Heading size={'sm'} color='white' fontWeight='semibold'>
+        <Flex p={4} bg='status.error'>
+          <Heading size='sm' color='white' fontWeight='semibold'>
             Something went wrong, unable to load filters. <br />
             Try reloading the page.
           </Heading>
         </Flex>
       ) : (
-        <Accordion bg={'white'} allowMultiple defaultIndex={openAccordionIndex}>
+        <Accordion bg='white' allowMultiple defaultIndex={openAccordionIndex}>
           {data?.facets ? (
             Object.keys(filtersConfig).map((prop, i) => {
               if (!data.facets[prop]) {
@@ -199,7 +199,7 @@ export const Filters: React.FC<Filters> = ({
               return (
                 <AccordionItem
                   key={prop}
-                  borderColor={'page.alt'}
+                  borderColor='page.alt'
                   borderTopWidth='2px'
                 >
                   {({ isExpanded }) => (
@@ -227,7 +227,8 @@ export const Filters: React.FC<Filters> = ({
                               {filtersConfig[prop].name}
                             </Heading>
                             <MetadataToolTip
-                              property={filtersConfig[prop].glyph}
+                              propertyName={filtersConfig[prop].glyph}
+                              recordType='Dataset' // [NOTE]: Choosing dataset for general definition.
                             >
                               <MetadataIcon
                                 id={`filter-${filtersConfig[prop].glyph}-${i}`}
@@ -288,7 +289,7 @@ export const Filters: React.FC<Filters> = ({
       <Button
         ref={btnRef}
         variant='solid'
-        bg={'accent.bg'}
+        bg='accent.bg'
         onClick={onOpen}
         position='fixed'
         zIndex={50}

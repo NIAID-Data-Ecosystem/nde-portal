@@ -1,135 +1,282 @@
 [
-  { "title": "Downloads", "property": "numberOfDownloads" },
   {
-    "title": "Views",
-    "property": "numberOfViews",
-    "description": "Number of views on the NIAID Data Ecosystem."
+    "title": "Dataset",
+    "property": "Dataset",
+    "description": {
+      "dataset": "A schema describing a minimal Dataset for the National Institute of Allergy and Infectious Disease (NIAID). A dataset is a collection of data of a particular experimental type. Additional schema.org and/or custom properties could be added."
+    }
   },
   {
-    "title": "License",
-    "property": "license",
-    "description": "License associated with data re-use."
+    "title": "Included Data Catalog",
+    "property": "includedDataCatalog",
+    "description": {
+      "dataset": "A data catalog which contains this dataset (this property was previously 'catalog', preferred name is now 'includedInDataCatalog')."
+    }
   },
   {
-    "title": "DOI",
-    "property": "doi",
-    "description": "Digital Object Identifier (DOI) associated with the record."
+    "title": "Variables Measured",
+    "property": "variablesMeasured",
+    "description": {
+      "dataset": "Originally named [[variablesMeasured]], The [[variableMeasured]] property can indicate (repeated as necessary) the  variables that are measured in some dataset, either described as text or as pairs of identifier and description using PropertyValue."
+    }
   },
   {
-    "title": "Health Condition",
-    "property": "healthCondition",
-    "description": "The infectious disease(s) / health condition(s) which are the focus of the dataset or computational tool (e.g. COVID-19, coronavirus)"
-  },
-  {
-    "title": "Pathogen",
-    "property": "infectiousAgent",
-    "description": "Infectious agent(s) / pathogen(s) which are the focus of the dataset or tool (e.g. SARS-CoV-2)"
-  },
-  {
-    "title": "Species",
-    "property": "species",
-    "description": "Species(es) from which dataset has been collected or for which the tool was designed or applied."
-  },
-  { "title": "Topic", "property": "topic" },
-  {
-    "title": "Variable Measured",
-    "property": "variableMeasured",
-    "description": "The variableMeasured property can indicate (repeated as necessary) the  variables that are measured in some dataset, either described as text or as pairs of identifier and description using PropertyValue."
+    "title": "Dataset Time Interval",
+    "property": "datasetTimeInterval",
+    "description": {
+      "dataset": "The range of temporal applicability of a dataset, e.g. for a 2011 census dataset, the year 2011 (in ISO 8601 time interval format)."
+    }
   },
   {
     "title": "Measurement Technique",
     "property": "measurementTechnique",
-    "description": "A technique or technology used in a dataset,\ncorresponding to the method used for measuring the corresponding variable(s) (described using variableMeasured). For example, if variableMeasured is: molecule concentration, measurementTechnique could be: \"mass spectrometry\" or \"nmr spectroscopy\" or \"colorimetry\" or \"immunofluorescence\"."
+    "description": {
+      "dataset": "A technique or technology used in a Dataset, corresponding to the method used for measuring the corresponding variable(s)."
+    }
   },
   {
-    "title": "Citation",
-    "property": "citation",
-    "description": "Publication associated with the record."
-  },
-  {
-    "title": "Language",
-    "property": "inLanguage",
-    "description": "Language used in dataset."
-  },
-  {
-    "title": "Geographical Information",
-    "property": "spatialCoverage",
-    "description": "Geographic location covered by dataset."
-  },
-  {
-    "title": "Period",
-    "property": "temporalCoverage",
-    "description": "Period covered by dataset."
-  },
-  {
-    "title": "Source",
-    "property": "includedDataCatalog",
-    "description": "A data catalog which contains this dataset (this property was previously 'catalog', preferred name is now 'includedInDataCatalog')."
-  },
-  {
-    "property": "variablesMeasured",
-    "description": "Originally named [[variablesMeasured]], The [[variableMeasured]] property can indicate (repeated as necessary) the  variables that are measured in some dataset, either described as text or as pairs of identifier and description using PropertyValue."
-  },
-  {
-    "title": "Date",
-    "property": "datasetTimeInterval",
-    "description": "The range of temporal applicability of a dataset, e.g. for a 2011 census dataset, the year 2011 (in ISO 8601 time interval format)."
-  },
-  {
+    "title": "Catalog",
     "property": "catalog",
-    "description": "A data catalog which contains this dataset."
+    "description": { "dataset": "A data catalog which contains this dataset." }
   },
   {
+    "title": "Distribution",
     "property": "distribution",
-    "description": "A downloadable form of this dataset, at a specific location, in a specific format."
+    "description": {
+      "dataset": "DataDownload objects, which contain the URL link to download the raw, analyzed, and summary data associated with the dataset as well as associated metadata for the file."
+    }
   },
   {
     "title": "Source",
     "property": "includedInDataCatalog",
-    "description": "A data catalog which contains this dataset."
+    "description": { "dataset": "A data catalog which contains this dataset." }
   },
   {
+    "title": "ISSN",
     "property": "issn",
-    "description": "The International Standard Serial Number (ISSN) that identifies this serial publication. You can repeat this property to identify different formats of, or the linking ISSN (ISSN-L) for, this serial publication."
+    "description": {
+      "dataset": "The International Standard Serial Number (ISSN) that identifies this serial publication. You can repeat this property to identify different formats of, or the linking ISSN (ISSN-L) for, this serial publication."
+    }
+  },
+  {
+    "title": "Variable Measured",
+    "property": "variableMeasured",
+    "description": {
+      "dataset": "The variableMeasured property can indicate (repeated as necessary) the  variables that are measured in some dataset, either described as text or as pairs of identifier and description using PropertyValue."
+    }
   },
   {
     "title": "Computational Tool",
     "property": "ComputationalTool",
-    "description": "A schema describing a minimal ComputationalTool for the National Institute of Allergy and Infectious Disease (NIAID). A ComputationalTool is a software used for the collection, processing, distribution, analysis, visualization, interpretation, etc. of data. Additional schema.org and/or custom properties could be added."
+    "description": {
+      "computationaltool": "A schema describing a minimal ComputationalTool for the National Institute of Allergy and Infectious Disease (NIAID). A ComputationalTool is a software used for the collection, processing, distribution, analysis, visualization, interpretation, etc. of data. Additional schema.org and/or custom properties could be added."
+    }
+  },
+  {
+    "title": "Pathogen",
+    "property": "infectiousAgent",
+    "description": {
+      "computationaltool": "Infectious agent(s) / pathogen(s) which are the focus of the computational tool (e.g. SARS-CoV-2)",
+      "dataset": "Infectious agent(s) / pathogen(s) which are the focus of the dataset (e.g. SARS-CoV-2)"
+    }
+  },
+  {
+    "title": "Health Condition",
+    "property": "healthCondition",
+    "description": {
+      "computationaltool": "The infectious disease(s) or health condition(s) which are the focus of the computational tool (e.g. COVID-19, pneumonia, etc.)",
+      "dataset": "The Infectious disease(s) / health condition(s) which are the focus of the dataset (e.g. COVID-19, pneumonia, etc.)"
+    }
   },
   {
     "title": "Funding",
     "property": "funding",
-    "description": "Funding that supports (sponsors) the collection of this dataset or computational tool through some kind of financial contribution"
+    "description": {
+      "computationaltool": "Funding that supports (sponsors) the collection of this computational tool through some kind of financial contribution",
+      "dataset": "Funding that supports (sponsors) the collection of this dataset through some kind of financial contribution"
+    }
+  },
+  {
+    "title": "Species",
+    "property": "species",
+    "description": {
+      "computationaltool": "Species(es) from which the computation tool is based",
+      "dataset": "Species(es) from which dataset has been collected"
+    }
   },
   {
     "title": "Code Repository",
     "property": "codeRepository",
-    "description": "Link to the source code repository of the tool."
-  },
-  {
-    "title": "Dataset",
-    "property": "dataset",
-    "description": "A schema describing a minimal Dataset for the National Institute of Allergy and Infectious Disease (NIAID). A dataset is a collection of data of a particular experimental type. Additional schema.org and/or custom properties could be added."
+    "description": {
+      "computationaltool": "Link to the source code repository of the tool."
+    }
   },
   {
     "title": "Programming Language",
     "property": "programmingLanguage",
-    "description": "The main programming language(s) used to build or execute the tool. Please use terms from the ‘Programming language’ table in the Bio.Tools documentation"
+    "description": {
+      "computationaltool": "The main programming language(s) used to build or execute the tool. Please use terms from the ‘Programming language’ table in the Bio.Tools documentation"
+    }
+  },
+  {
+    "title": "Application Category",
+    "property": "applicationCategory",
+    "description": {
+      "computationaltool": "Type of software application, e.g. 'Game, Multimedia'. Please use terms from the 'Tool type' table in the biotools documentation."
+    }
+  },
+  {
+    "title": "Identifier",
+    "property": "identifier",
+    "description": {
+      "computationaltool": "Identifiers for the computational tool (ideally less than 15 characters)",
+      "dataset": "Identifiers for the dataset (ideally less than 15 characters)"
+    }
+  },
+  {
+    "title": "Creator",
+    "property": "creator",
+    "description": {
+      "computationaltool": "Name of the author or organization that created the computational tool.  Note: schema.org/creator and schema.org/organization have additional fields that can provide more information about the author/organization, if desired.",
+      "dataset": "Name of the author or organization that created the dataset.  Note: schema.org/creator and schema.org/organization have additional fields that can provide more information about the author/organization, if desired."
+    }
+  },
+  {
+    "title": "Citation",
+    "property": "citation",
+    "description": {
+      "computationaltool": "Journal article or other publication associated with the computational tool (stored as an object, not a string)",
+      "dataset": "Journal article or other publication associated with the dataset (stored as an object, not a string)"
+    }
+  },
+  {
+    "title": "Description",
+    "property": "description",
+    "description": {
+      "computationaltool": "Longer description of what is contained in the computational tool",
+      "dataset": "Longer description of what is contained in the dataset"
+    }
+  },
+  {
+    "title": "Date Modified",
+    "property": "dateModified",
+    "description": {
+      "computationaltool": "date when the computational tool has been modified"
+    }
+  },
+  {
+    "title": "URL",
+    "property": "url",
+    "description": { "computationaltool": "software/code location." }
+  },
+  {
+    "title": "Application Sub Category",
+    "property": "applicationSubCategory",
+    "description": {
+      "computationaltool": "Subcategory of the application, e.g. 'Arcade Game'. Use an EDAM:Topic to describe the category of application"
+    }
+  },
+  {
+    "title": "Source publisher",
+    "property": "sdPublisher",
+    "description": {
+      "computationaltool": "Original publisher of the ComputationalTool metadata (like GitHub). Indicates the party responsible for generating and publishing the current structured data markup, typically in cases where the structured data is derived automatically from existing published content but published on a different site. For example, student projects and open data initiatives often re-publish existing content with more explicitly structured metadata. The sdPublisher property helps make such practices more explicit.",
+      "dataset": "Original publisher of the Dataset metadata (like GenBank, ImmPort, etc.). Indicates the party responsible for generating and publishing the current structured data markup, typically in cases where the structured data is derived automatically from existing published content but published on a different site. For example, student projects and open data initiatives often re-publish existing content with more explicitly structured metadata. The sdPublisher property helps make such practices more explicit."
+    }
+  },
+  {
+    "title": "Feature List",
+    "property": "featureList",
+    "description": {
+      "computationaltool": "Features or modules provided by this application (and possibly required by other applications). Functionality provided by the tool. This is similar to measurementTechnique in Dataset."
+    }
+  },
+  {
+    "title": "License",
+    "property": "license",
+    "description": {
+      "computationaltool": "A license document that applies to this content, typically indicated by URL.",
+      "dataset": "A license document that applies to this content, typically indicated by URL."
+    }
+  },
+  {
+    "title": "Software Help",
+    "property": "softwareHelp",
+    "description": { "computationaltool": "A documentation of the tool." }
+  },
+  {
+    "title": "Name",
+    "property": "name",
+    "description": {
+      "computationaltool": "Descriptive name of the computational tool",
+      "dataset": "Descriptive name of the dataset"
+    }
+  },
+  {
+    "title": "Software Version",
+    "property": "softwareVersion",
+    "description": {
+      "computationaltool": "Version(s) of the tool, which this information is valid for. Can also be a comma-delimited list and include hyphen-separated ranges of versions."
+    }
+  },
+  {
+    "title": "Spatial Coverage",
+    "property": "spatialCoverage",
+    "description": { "dataset": "spatial information related to the dataset" }
+  },
+  {
+    "title": "Temporal Coverage",
+    "property": "temporalCoverage",
+    "description": {
+      "dataset": "temporal information related to the dataset. For dates pertaining to the dataset record, use datePublished, dateCreated, dateModified, etc."
+    }
+  },
+  { "title": "Downloads", "property": "numberOfDownloads" },
+  {
+    "title": "Views",
+    "property": "aggregateRating",
+    "description": {
+      "dataset": "Number of views on the NIAID Data Ecosystem.",
+      "computationaltool": "Number of views on the NIAID Data Ecosystem."
+    }
+  },
+  {
+    "title": "DOI",
+    "property": "doi",
+    "description": {
+      "dataset": "Digital Object Identifier (DOI) associated with the record.",
+      "computationaltool": "Digital Object Identifier (DOI) associated with the record."
+    }
+  },
+  {
+    "title": "Language",
+    "property": "inLanguage",
+    "description": {
+      "dataset": "Language used in dataset.",
+      "computationaltool": "Language used in dataset."
+    }
   },
   {
     "property": "nctid",
-    "description": "National Clinical Trial (NCT) number associated with the record."
+    "description": {
+      "dataset": "National Clinical Trial (NCT) number associated with the record.",
+      "computationaltool": "National Clinical Trial (NCT) number associated with the record."
+    }
   },
   {
     "property": "pmid",
-    "description": "PubMed reference number associated with the record."
+    "description": {
+      "dataset": "PubMed reference number associated with the record.",
+      "computationaltool": "PubMed reference number associated with the record."
+    }
   },
-  { "title": "Software Version", "property": "softwareVersion" },
   {
     "title": "Data Usage Agreement",
     "property": "usageInfo",
-    "description": "Data use agreements impose limitations on users including: privacy and confidentiality standards, conditions for research use, criteria for data access, and conditions on the transfer of data, etc."
+    "description": {
+      "dataset": "Data use agreements impose limitations on users including: privacy and confidentiality standards, conditions for research use, criteria for data access, and conditions on the transfer of data, etc.",
+      "computationaltool": "Data use agreements impose limitations on users including: privacy and confidentiality standards, conditions for research use, criteria for data access, and conditions on the transfer of data, etc."
+    }
   },
   { "title": "Associated Studies", "property": "isPartOf" }
 ]

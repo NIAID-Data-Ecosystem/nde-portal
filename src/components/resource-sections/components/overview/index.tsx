@@ -25,6 +25,7 @@ import { assetPrefix } from 'next.config';
 import { IconProps, MetadataIcon } from 'src/components/icon';
 import { getMetadataColor } from 'src/components/icon/helpers';
 import { DisplayHTMLContent } from 'src/components/html-content';
+import { ResourceMetadata } from 'src/utils/schema-definitions/types';
 
 export interface OverviewProps extends Partial<FormattedResource> {
   isLoading: boolean;
@@ -67,13 +68,31 @@ const Overview: React.FC<OverviewProps> = ({
 
   // get copy label from config for a given property.
   const getStatInfo = (metadataProperty: string) => {
-    const metadataField = MetadataConfig.find(
+    const property = MetadataConfig.find(
       d => d.property === metadataProperty,
-    );
+    ) as ResourceMetadata;
 
-    return metadataField
-      ? { ...metadataField, label: metadataField.title || '' }
-      : { label: metadataProperty, description: '' };
+    let label = property?.title || metadataProperty;
+    let description = '';
+
+    if (property && property?.description) {
+      let type = data?.['@type']?.toLowerCase();
+
+      if (type && property.description?.[type]) {
+        // if record type exists use it to get a more specific definition if available.
+        description = property.description?.[type];
+      } else {
+        // get more general definition if specific one does not exist.
+        let descriptions = Object.values(property.description);
+        description = descriptions.length === 0 ? '' : descriptions[0];
+      }
+    }
+
+    return {
+      property: property.property,
+      description,
+      label,
+    };
   };
 
   const licenseInfo = license ? formatLicense(license) : null;
@@ -191,7 +210,7 @@ const Overview: React.FC<OverviewProps> = ({
           {
             <StatField
               isLoading={isLoading}
-              icon={() => <StatIcon id='license' glyph={'license'} />}
+              icon={() => <StatIcon id='license' glyph='license' />}
               {...getStatInfo('license')}
             >
               <>

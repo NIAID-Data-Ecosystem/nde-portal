@@ -12,6 +12,7 @@ import Glyph from './components/glyph';
 import MetadataConfig from 'configs/resource-metadata.json';
 import { IconType } from 'react-icons';
 import Tooltip from 'src/components/tooltip';
+import { ResourceMetadata } from 'src/utils/schema-definitions/types';
 
 // Metadata icon svg.
 export interface IconProps extends ChakraIconProps {
@@ -72,23 +73,44 @@ export const MetadataIcon = React.forwardRef<HTMLDivElement, IconProps>(
 
 interface MetadataToolTipProps {
   label?: string; // label for icon for accessibility
-  property?: string;
+  propertyName?: string;
+  recordType?: string;
 }
 
 export const MetadataToolTip: React.FC<MetadataToolTipProps> = ({
   label,
-  property,
+  propertyName,
+  recordType,
   children,
 }) => {
-  if (!property && !label) {
+  if (!propertyName && !label) {
     return <></>;
   }
+
+  const property = MetadataConfig.find(
+    d => d.property === propertyName,
+  ) as ResourceMetadata;
+
+  let tooltip_label = label || property?.title || '';
+  let tooltip_description = '';
+
   // Description of metadata property
-  const metadataProperty = MetadataConfig.find(d => d.property === property);
+  if (property && property?.description) {
+    let type = recordType?.toLowerCase();
+
+    if (type && property.description?.[type]) {
+      // if record type exists use it to get a more specific definition if available.
+      tooltip_description = property.description[type];
+    } else {
+      // get more general definition if specific one does not exist.
+      let descriptions = Object.values(property.description);
+      tooltip_description = descriptions.length === 0 ? '' : descriptions[0];
+    }
+  }
   return (
     <Tooltip
-      label={`${label || metadataProperty?.title} ${
-        metadataProperty && `: ${metadataProperty.description}`
+      label={`${tooltip_label} ${
+        tooltip_description && `: ${tooltip_description}`
       }`}
     >
       {children}
