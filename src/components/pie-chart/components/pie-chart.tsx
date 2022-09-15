@@ -60,6 +60,7 @@ export const PieChart = ({
     {
       scroll: true,
       detectBounds: true,
+      zIndex: 1000,
     },
   );
 
@@ -142,32 +143,44 @@ export const PieChart = ({
           top={tooltipTop}
           style={{
             ...defaultTooltipStyles,
-            borderTop: '4px solid',
-            borderColor: colorScale(data)(tooltipData.term),
-            padding: '1rem',
+            position: 'absolute',
+            boxShadow: 'none',
+            background: 'none',
+            minWidth: '200px',
           }}
         >
-          <Box>
-            <Text fontWeight='semibold'>{tooltipData.term}</Text>
+          <Box
+            position='absolute'
+            borderTop='4px solid'
+            padding='1rem'
+            borderColor={colorScale(data)(tooltipData.term)}
+            boxShadow='low'
+            zIndex={1000}
+            bg='white'
+          >
+            <Text fontWeight='semibold' whiteSpace='nowrap'>
+              {tooltipData.term}
+            </Text>
             <br />
             <Text>{formatNumber(tooltipData.count)} records</Text>
             {tooltipData.data && (
               <UnorderedList
                 ml={0}
-                my={4}
-                py={4}
+                mt={4}
+                py={0}
                 borderTop='1px solid'
                 borderColor='gray.100'
               >
                 {tooltipData.data.map((d, i) => (
-                  <ListItem key={i}>
+                  <ListItem key={i} my={4}>
                     <Text fontWeight='semibold'>{d.term}</Text>
                     <Text>{formatNumber(d.count)} records</Text>
-                    <br />
                   </ListItem>
                 ))}
               </UnorderedList>
             )}
+            <br />
+            <Text fontStyle='italic'>Click on pie slice to view records.</Text>
           </Box>
         </TooltipInPortal>
       )}

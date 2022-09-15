@@ -48,8 +48,6 @@ export const section_metadata: { [key: string]: (keyof FormattedResource)[] } =
       'topic',
       'variableMeasured',
     ],
-    keywords: ['keywords'],
-    description: ['description'],
     softwareInformation: [
       'discussionUrl',
       'isBasedOn',
@@ -61,6 +59,8 @@ export const section_metadata: { [key: string]: (keyof FormattedResource)[] } =
       'softwareRequirements',
       'softwareVersion',
     ],
+    keywords: ['keywords'],
+    description: ['description'],
     provenance: ['includedInDataCatalog', 'url', 'sdPublisher'],
     downloads: ['distribution', 'downloadUrl'],
     funding: ['funding'],

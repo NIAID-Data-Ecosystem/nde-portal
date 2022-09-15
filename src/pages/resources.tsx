@@ -168,6 +168,7 @@ const ResourcePage: NextPage = props => {
                   <RelatedDatasets
                     isLoading={isLoading}
                     isRelatedTo={data?.isRelatedTo || null}
+                    includedInDataCatalog={data?.includedInDataCatalog}
                   />
                 </Box>
               </Flex>

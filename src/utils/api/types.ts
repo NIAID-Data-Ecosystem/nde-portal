@@ -134,6 +134,7 @@ export interface IncludedInDataCatalog {
 
 export interface IsBasedOn {
   '@type'?: string;
+  _id?: string;
   abstract?: string;
   citation?: string;
   datePublished?: string;
@@ -145,6 +146,8 @@ export interface IsBasedOn {
   url?: string;
 }
 
+export interface IsBasisFor extends IsBasedOn {}
+
 export interface IsPartOf {
   id?: string;
   '@type'?: string;
@@ -154,6 +157,7 @@ export interface IsPartOf {
 }
 
 export interface IsRelatedTo {
+  _id?: string;
   '@type'?: string;
   hasPart: HasPart;
   identifier?: string;
@@ -242,7 +246,7 @@ export interface FormattedResource {
   } | null;
   isAvailableForFree: boolean | null;
   isBasedOn: IsBasedOn[] | null;
-  isBasisFor: { identifier: string }[] | null;
+  isBasisFor: IsBasisFor[] | null;
   isPartOf: IsPartOf[] | null;
   isRelatedTo: IsRelatedTo[] | null;
   keywords: string[] | null;
