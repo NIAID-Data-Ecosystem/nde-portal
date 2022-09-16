@@ -80,6 +80,7 @@ const Sections = ({
   sections: Route[];
 }) => {
   const router = useRouter();
+
   return (
     <>
       <Section id='header' p={0}>
@@ -89,7 +90,7 @@ const Sections = ({
           author={data?.author}
           name={data?.name}
           alternateName={data?.alternateName}
-          isAvailableForFree={data?.isAvailableForFree}
+          isAccessibleForFree={data?.isAccessibleForFree}
         />
         {/* Banner showing data type and publish date. */}
         <ResourceDates data={data} />

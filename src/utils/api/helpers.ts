@@ -11,7 +11,8 @@ import {
 interface APIAuthor {
   identifier?: string; // orcid id
   '@type'?: string;
-  affiliation?: { name: string };
+  affiliation?: { name: string; sameAs?: string };
+  email?: string;
   name?: string;
   familyName?: string;
   givenName?: string;
@@ -39,6 +40,7 @@ export const formatAuthor = (
       role: data['role'] || null,
       title: data['title'] || null,
       url: data['url'] || null,
+      email: data['email'] || null,
     };
   };
 
@@ -234,6 +236,10 @@ const formatConditionsOfAccess = (
     access.toLowerCase().includes('closed') ||
     access.toLowerCase().includes('restricted')
   ) {
+    /*
+     Group "closed" and "restricted" access types as "controlled".
+     https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/59
+    */
     return 'Controlled';
   } else {
     return access;
@@ -285,6 +291,7 @@ export const formatAPIResource = (data: any) => {
         }
       : null,
     infectiousAgent: convertToArray(data.infectiousAgent),
+    isAccessibleForFree: data.isAccessibleForFree,
     isBasedOn: convertToArray(data.isBasedOn),
     isBasisFor: convertToArray(data.isBasisFor),
     isPartOf: convertToArray(data.isPartOf),
@@ -316,7 +323,6 @@ export const formatAPIResource = (data: any) => {
     spatialCoverage: convertToArray(data.spatialCoverage),
     species: convertToArray(data.species),
     temporalCoverage: data.temporalCoverage || null,
-    // Maybe add species or organism field to topic
     topic: convertToArray(data.topicCategory),
     url: data.url || null,
     usageInfo: data.usageInfo || null,

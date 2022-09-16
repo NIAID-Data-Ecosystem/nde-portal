@@ -15,11 +15,11 @@ import {
   ToggleContainer,
   VisuallyHidden,
   BoxProps,
-  Badge,
 } from 'nde-design-system';
 import {
   FaArrowAltCircleRight,
   FaChevronRight,
+  FaDollarSign,
   FaRegClock,
 } from 'react-icons/fa';
 import { FormattedResource } from 'src/utils/api/types';
@@ -28,14 +28,16 @@ import {
   formatDOI,
   getRepositoryImage,
 } from 'src/utils/helpers';
-import {
-  AccessBadge,
-  TypeBanner,
-} from 'src/components/resource-sections/components';
+import { TypeBanner } from 'src/components/resource-sections/components';
 import { assetPrefix } from 'next.config';
 import NextLink from 'next/link';
 import CardDetails from './details';
 import { DisplayHTMLContent } from 'src/components/html-content';
+import {
+  badgesConfig,
+  BadgeWithTooltip,
+  getBadgeIcon,
+} from 'src/components/badge-with-tooltip';
 
 interface SearchResultCardProps {
   isLoading?: boolean;
@@ -57,7 +59,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
     doi,
     nctid,
     includedInDataCatalog,
-    isAvailableForFree,
+    isAccessibleForFree,
     url,
     sdPublisher,
     citation,
@@ -69,7 +71,11 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
   const paddingCard = [4, 6, 8, 10];
 
   const ConditionsOfAccess = (props: BoxProps) => {
-    if (!conditionsOfAccess && !isAvailableForFree) {
+    if (
+      !conditionsOfAccess &&
+      (isAccessibleForFree === null ||
+        typeof isAccessibleForFree === 'undefined')
+    ) {
       return null;
     }
     return (
@@ -81,18 +87,27 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
         p={[0.5, 2]}
         {...props}
       >
-        {isAvailableForFree && (
-          <Badge mr={2} colorScheme={isAvailableForFree ? 'success' : 'gray'}>
-            Free Access
-          </Badge>
-        )}
+        {isAccessibleForFree !== null &&
+          typeof isAccessibleForFree !== 'undefined' && (
+            <BadgeWithTooltip
+              mx={0.5}
+              icon={FaDollarSign}
+              {...badgesConfig['isAccessibleForFree'][`${isAccessibleForFree}`]}
+            >
+              {isAccessibleForFree ? 'Free Access' : 'Paid Access'}
+            </BadgeWithTooltip>
+          )}
+
         {conditionsOfAccess && (
-          <AccessBadge
-            w={['100%', 'unset']}
-            conditionsOfAccess={conditionsOfAccess}
+          <BadgeWithTooltip
+            mx={0.5}
+            icon={getBadgeIcon({
+              conditionsOfAccess,
+            })}
+            {...badgesConfig['conditionsOfAccess'][conditionsOfAccess]}
           >
             {conditionsOfAccess}
-          </AccessBadge>
+          </BadgeWithTooltip>
         )}
       </Flex>
     );
@@ -128,9 +143,9 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                 passHref
               >
                 <Link
-                  h={'100%'}
+                  h='100%'
                   flexWrap='nowrap'
-                  display={'inline-block'}
+                  display='inline-block'
                   sx={{ h2: { textDecoration: 'underline' } }}
                   _hover={{
                     h2: { textDecoration: 'none' },
@@ -214,7 +229,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                   flex={1}
                   borderRadius='semi'
                   bg='secondary.50'
-                  fontWeight={'semibold'}
+                  fontWeight='semibold'
                 >
                   <Flex whiteSpace='nowrap' alignItems='center'>
                     <Icon as={FaRegClock} mr={2} />

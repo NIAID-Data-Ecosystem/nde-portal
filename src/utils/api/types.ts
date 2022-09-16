@@ -44,8 +44,9 @@ export type AccessTypes = 'Open' | 'Controlled' | 'Embargoed' | 'Restricted';
 export interface Author {
   identifier: string | null; // orcid id
   type: string | null;
-  affiliation: { name: string } | null;
+  affiliation: { name: string; sameAs?: string } | null;
   name: string | null;
+  email: string | null;
   familyName: string | null;
   givenName: string | null;
   role: string | null;
@@ -244,7 +245,7 @@ export interface FormattedResource {
     alternateName: string | null;
     name: string | null;
   } | null;
-  isAvailableForFree: boolean | null;
+  isAccessibleForFree: boolean | null;
   isBasedOn: IsBasedOn[] | null;
   isBasisFor: IsBasisFor[] | null;
   isPartOf: IsPartOf[] | null;

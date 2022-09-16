@@ -1,13 +1,18 @@
 import React from 'react';
-import { Badge, Box, Flex, Heading, Skeleton, Text } from 'nde-design-system';
+import { Box, Flex, Heading, Skeleton } from 'nde-design-system';
 import { FormattedResource } from 'src/utils/api/types';
 import ResourceAuthors from './components/authors';
-import AccessBadge from '../access-badge';
+import {
+  BadgeWithTooltip,
+  badgesConfig,
+  getBadgeIcon,
+} from 'src/components/badge-with-tooltip';
+import { FaDollarSign } from 'react-icons/fa';
 
 interface HeaderProps {
   isLoading: boolean;
   conditionsOfAccess?: FormattedResource['conditionsOfAccess'];
-  isAvailableForFree?: FormattedResource['isAvailableForFree'];
+  isAccessibleForFree?: FormattedResource['isAccessibleForFree'];
   author?: FormattedResource['author'];
   name?: FormattedResource['name'];
   alternateName?: FormattedResource['alternateName'];
@@ -19,26 +24,36 @@ const Header: React.FC<HeaderProps> = ({
   author,
   name,
   alternateName,
-  isAvailableForFree,
+  isAccessibleForFree,
 }) => {
   return (
     <Flex flexDirection='column' w='100%'>
       <Skeleton isLoaded={!isLoading} w='100%' p={2}>
         {/* Level of access to resource from open to restricted*/}
-        {(conditionsOfAccess || isAvailableForFree) && (
+        {(conditionsOfAccess || isAccessibleForFree) && (
           <Flex w='100%' justifyContent='flex-end'>
-            {isAvailableForFree && (
-              <Badge
-                mx={1}
-                colorScheme={isAvailableForFree ? 'success' : 'gray'}
-              >
-                Free Access
-              </Badge>
-            )}
+            {isAccessibleForFree !== null &&
+              typeof isAccessibleForFree !== 'undefined' && (
+                <BadgeWithTooltip
+                  mx={1}
+                  icon={FaDollarSign}
+                  {...badgesConfig['isAccessibleForFree'][
+                    `${isAccessibleForFree}`
+                  ]}
+                >
+                  {isAccessibleForFree ? 'Free Access' : 'Paid Access'}
+                </BadgeWithTooltip>
+              )}
+
             {conditionsOfAccess && (
-              <AccessBadge conditionsOfAccess={conditionsOfAccess}>
+              <BadgeWithTooltip
+                icon={getBadgeIcon({
+                  conditionsOfAccess,
+                })}
+                {...badgesConfig['conditionsOfAccess'][conditionsOfAccess]}
+              >
                 {conditionsOfAccess}
-              </AccessBadge>
+              </BadgeWithTooltip>
             )}
           </Flex>
         )}

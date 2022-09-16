@@ -64,83 +64,83 @@ const BasedOn: React.FC<BasedOn> = ({ isLoading, isBasedOn, icon }) => {
                 Object.keys(basedOn).length > 4 ? 4 : 1
               }
               display='flex'
-              alignItems='center'
             >
-              {icon && <ListIcon as={icon} color='primary.400' />}
+              {icon && <ListIcon as={icon} color='primary.400' m={1} ml={0} />}
+              <Box ml={1}>
+                {(identifier || name) && (
+                  <>
+                    {_id ? (
+                      <NextLink
+                        href={{
+                          pathname: '/resources/',
+                          query: { _id },
+                        }}
+                        passHref
+                      >
+                        <Link>
+                          <Text fontSize='sm' lineHeight='short'>
+                            {name || identifier}
+                          </Text>
+                        </Link>
+                      </NextLink>
+                    ) : (
+                      <Text fontSize='sm' lineHeight='short'>
+                        {name || identifier}
+                      </Text>
+                    )}
+                  </>
+                )}
 
-              {(identifier || name) && (
-                <>
-                  {_id ? (
-                    <NextLink
-                      href={{
-                        pathname: '/resources/',
-                        query: { _id },
-                      }}
-                      passHref
-                    >
-                      <Link>
-                        <Text fontSize='sm' lineHeight='short'>
-                          {name || identifier}
-                        </Text>
-                      </Link>
-                    </NextLink>
-                  ) : (
-                    <Text fontSize='sm' lineHeight='short'>
-                      {name || identifier}
-                    </Text>
-                  )}
-                </>
-              )}
+                {(pmid || doi) && (
+                  <Flex>
+                    {pmid && (
+                      <Text fontSize='sm' lineHeight='short' mr={2}>
+                        <strong>PMID:</strong> {pmid || '-'}
+                      </Text>
+                    )}
+                    {doi && (
+                      <Text fontSize='sm' lineHeight='short'>
+                        <strong>DOI:</strong> {doi || '-'}
+                      </Text>
+                    )}
+                  </Flex>
+                )}
 
-              {basedOn['@type'] && (
-                <Text fontSize='sm' lineHeight='short'>
-                  <strong>Type:</strong> {basedOn['@type'] || '-'}
-                </Text>
-              )}
+                {basedOn['@type'] && (
+                  <Text fontSize='sm' lineHeight='short'>
+                    <strong>Type:</strong> {basedOn['@type'] || '-'}
+                  </Text>
+                )}
 
-              {(pmid || doi) && (
-                <Flex>
-                  {pmid && (
-                    <Text fontSize='sm' lineHeight='short' mr={2}>
-                      <strong>PMID:</strong> {pmid || '-'}
-                    </Text>
-                  )}
-                  {doi && (
-                    <Text fontSize='sm' lineHeight='short'>
-                      <strong>DOI:</strong> {doi || '-'}
-                    </Text>
-                  )}
-                </Flex>
-              )}
-
-              {datePublished && (
-                <Text fontSize='sm' lineHeight='short'>
-                  <strong>Date Published:</strong> {datePublished || '-'}
-                </Text>
-              )}
-              {abstract && (
-                <Text fontSize='sm' lineHeight='short'>
-                  <strong>Abstract:</strong> {abstract || '-'}
-                </Text>
-              )}
-              {description && (
-                <Text fontSize='sm' lineHeight='short'>
-                  <strong>Description:</strong> {description || '-'}
-                </Text>
-              )}
-              {citation && (
-                <Text fontSize='sm' lineHeight='short'>
-                  <strong>Citation:</strong> {citation || '-'}
-                </Text>
-              )}
-              {url && (
-                <Text fontSize='sm' lineHeight='short'>
-                  <strong>URL:</strong>{' '}
-                  <Link href={url} isExternal>
-                    {url || '-'}
-                  </Link>
-                </Text>
-              )}
+                {datePublished && (
+                  <Text fontSize='sm' lineHeight='short'>
+                    <strong>Date Published:</strong> {datePublished || '-'}
+                  </Text>
+                )}
+                {abstract && (
+                  <Text fontSize='sm' lineHeight='short'>
+                    <strong>Abstract:</strong> {abstract || '-'}
+                  </Text>
+                )}
+                {description && (
+                  <Text fontSize='sm' lineHeight='short'>
+                    <strong>Description:</strong> {description || '-'}
+                  </Text>
+                )}
+                {citation && (
+                  <Text fontSize='sm' lineHeight='short'>
+                    <strong>Citation:</strong> {citation || '-'}
+                  </Text>
+                )}
+                {url && (
+                  <Text fontSize='sm' lineHeight='short'>
+                    <strong>URL:</strong>{' '}
+                    <Link href={url} isExternal>
+                      {url || '-'}
+                    </Link>
+                  </Text>
+                )}
+              </Box>
             </ListItem>
           );
         })}
