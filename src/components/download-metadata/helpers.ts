@@ -3,6 +3,25 @@ export interface DownloadArgs {
   downloadName: string;
 }
 
+// Retrieve column headers from data.
+export const getColumnHeaders = (data: DownloadArgs['dataObject']) => {
+  const headers: string[] = data.reduce(
+    (r: string[], d: { [key: string]: any }) => {
+      Object.keys(d).map(k => {
+        // Remove ElasticSearch columns
+        if (k !== '_id' && k.charAt(0) === '_') return;
+
+        if (!r.includes(k)) {
+          r.push(k);
+        }
+      });
+      return r;
+    },
+    [],
+  );
+  return headers;
+};
+
 export const downloadAsCsv = (
   dataObject: DownloadArgs['dataObject'],
   downloadName: DownloadArgs['downloadName'],
@@ -12,25 +31,16 @@ export const downloadAsCsv = (
     return {};
   }
   const data = Array.isArray(dataObject) ? dataObject : [dataObject];
-
-  // Get all unique table headers in data
-  const headers: string[] = data.reduce((r: string[], d) => {
-    Object.keys(d).map(k => {
-      if (!r.includes(k)) {
-        r.push(k);
-      }
-    });
-    return r;
-  }, []);
+  const headers = getColumnHeaders(data);
 
   // replacer value for null/empty properties
   const replacer = (_: string, value: any) => (value === null ? '' : value); // specify how you want to handle null values here
 
   const csv = [
-    headers.join(','), // header row first
+    headers.join(','), // header row firstq
     ...data.map(row =>
       headers
-        .map((fieldName, i) => {
+        .map(fieldName => {
           let v = row[fieldName];
           let fieldValue = JSON.stringify(v, replacer);
 
@@ -65,6 +75,17 @@ export const downloadAsJson = (
   if (!dataObject || typeof dataObject !== 'object') {
     return {};
   }
+
+  // remove unwanted properties from object.
+  const headers = getColumnHeaders(dataObject);
+  dataObject.map((datum: { [key: string]: any }) => {
+    Object.keys(datum).map(k => {
+      if (!headers.includes(k)) {
+        delete datum[k];
+      }
+    });
+  });
+
   // add for array.
   let href =
     'data:text/json;charset=utf-8,' +

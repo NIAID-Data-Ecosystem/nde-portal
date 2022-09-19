@@ -7,10 +7,12 @@ import {
   FaSearchDollar,
   FaFileSignature,
   FaQuoteLeft,
+  FaInfo,
+  FaRegCalendarAlt,
 } from 'react-icons/fa';
+import { IconType } from 'react-icons';
 import Glyph from './components/glyph';
 import MetadataConfig from 'configs/resource-metadata.json';
-import { IconType } from 'react-icons';
 import Tooltip from 'src/components/tooltip';
 import { ResourceMetadata } from 'src/utils/schema-definitions/types';
 
@@ -39,6 +41,22 @@ export const MetadataIcon = React.forwardRef<HTMLDivElement, IconProps>(
       FaIcon = FaQuoteLeft;
     } else if (glyph?.toLowerCase() === 'identifier') {
       FaIcon = FaFingerprint;
+    } else if (glyph?.toLowerCase() === 'date') {
+      FaIcon = FaRegCalendarAlt;
+    } else if (glyph?.toLowerCase() === 'info') {
+      FaIcon = () => (
+        <Icon
+          as={FaInfo}
+          color='gray.700'
+          mx={3}
+          border='0.625px solid'
+          borderRadius='100%'
+          p={0.5}
+          boxSize={4}
+          viewBox='0 0 200 200'
+          {...props}
+        />
+      );
     } else {
       FaIcon = null;
     }

@@ -17,6 +17,6 @@ export const getMetadataColor = (property?: string) => {
   } else if (property?.toLowerCase() === 'species') {
     return 'green.500';
   } else {
-    return 'gray.700';
+    return 'gray.600';
   }
 };

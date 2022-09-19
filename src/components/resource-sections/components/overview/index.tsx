@@ -10,6 +10,7 @@ import {
   StackDivider,
   StatHelpText,
   StatNumber,
+  Text,
   UnorderedList,
 } from 'nde-design-system';
 import { FormattedResource } from 'src/utils/api/types';
@@ -427,14 +428,14 @@ const Overview: React.FC<OverviewProps> = ({
               )}
 
               {temporalCoverage?.temporalInterval?.startDate && (
-                <>
+                <Text fontSize='sm'>
                   <strong>Start Date: </strong>
                   {temporalCoverage?.temporalInterval?.startDate}
                   <br />
-                </>
+                </Text>
               )}
               {temporalCoverage?.temporalInterval?.endDate && (
-                <>
+                <Text fontSize='sm'>
                   {!temporalCoverage?.temporalInterval?.startDate && (
                     <>
                       <strong>Start Date: </strong>
@@ -445,7 +446,7 @@ const Overview: React.FC<OverviewProps> = ({
 
                   <strong>End Date: </strong>
                   {temporalCoverage?.temporalInterval?.endDate}
-                </>
+                </Text>
               )}
             </StatField>
           )}

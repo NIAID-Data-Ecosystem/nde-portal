@@ -278,5 +278,13 @@
       "computationaltool": "Data use agreements impose limitations on users including: privacy and confidentiality standards, conditions for research use, criteria for data access, and conditions on the transfer of data, etc."
     }
   },
-  { "title": "Associated Studies", "property": "isPartOf" }
+  { "title": "Associated Studies", "property": "isPartOf" },
+  {
+    "title": "Date",
+    "property": "date",
+    "description": {
+      "dataset": "Date corresponding to most recent activity (created, published or modified).",
+      "computationaltool": "Date corresponding to most recent activity (created, published or modified)."
+    }
+  }
 ]
