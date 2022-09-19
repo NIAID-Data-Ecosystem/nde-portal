@@ -10,6 +10,23 @@ interface DisplayHTMLContentProps extends BoxProps {
   content: string;
 }
 
+export const DisplayHTMLString: React.FC = ({ children }) => {
+  if (!children || typeof children !== 'string') {
+    return <></>;
+  }
+
+  const formatContent = (contentString: DisplayHTMLContentProps['content']) => {
+    // replace no break space with breaking space.
+    let formattedContent = contentString.replace(/\u00a0/g, ' ');
+    return formattedContent;
+  };
+  return (
+    <ReactMarkdown rehypePlugins={[rehypeRaw, remarkGfm]} linkTarget='_blank'>
+      {formatContent(children)}
+    </ReactMarkdown>
+  );
+};
+
 export const DisplayHTMLContent: React.FC<DisplayHTMLContentProps> = ({
   content,
   ...props

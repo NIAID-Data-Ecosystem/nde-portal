@@ -161,13 +161,13 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                   }}
                 >
                   <Flex alignItems='center'>
+                    {/* <DisplayHTMLString> */}
                     <CardTitle
                       size='h6'
                       lineHeight='short'
                       fontWeight='semibold'
-                    >
-                      {name}
-                    </CardTitle>
+                      dangerouslySetInnerHTML={{ __html: name || '' }}
+                    ></CardTitle>
                     <Icon
                       as={FaChevronRight}
                       boxSize={4}

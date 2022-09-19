@@ -8,6 +8,7 @@ import {
   getBadgeIcon,
 } from 'src/components/badge-with-tooltip';
 import { FaDollarSign } from 'react-icons/fa';
+import { DisplayHTMLString } from 'src/components/html-content';
 
 interface HeaderProps {
   isLoading: boolean;
@@ -63,7 +64,7 @@ const Header: React.FC<HeaderProps> = ({
           <Box m={[4, 6]}>
             {/* Title of resource */}
             <Heading as='h1' size='lg' fontFamily='body' wordBreak='break-word'>
-              {name}
+              <DisplayHTMLString>{name}</DisplayHTMLString>
             </Heading>
             {/* Alternate name of resource if it exists */}
             {alternateName && (
