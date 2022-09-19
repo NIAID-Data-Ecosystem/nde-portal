@@ -1,4 +1,3 @@
-import AccessBadge from './access-badge';
 import TypeBanner from './type-banner';
 import Navigation from './navigation';
 import Section from './section';
@@ -11,7 +10,6 @@ import ResourceProvenance from './provenance';
 import ResourceLinks from './external-links';
 
 export {
-  AccessBadge,
   Navigation,
   Section,
   RelatedDatasets,

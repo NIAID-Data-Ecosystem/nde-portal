@@ -7,6 +7,7 @@ import {
   Link,
   SkeletonText,
   Tag,
+  Text,
 } from 'nde-design-system';
 import { FormattedResource } from 'src/utils/api/types';
 import NextLink from 'next/link';
@@ -15,6 +16,7 @@ import { formatType } from 'src/utils/api/helpers';
 
 interface RelatedDatasetsProps {
   isRelatedTo: FormattedResource['isRelatedTo'];
+  includedInDataCatalog?: FormattedResource['includedInDataCatalog'];
   isLoading: boolean;
 }
 
@@ -44,6 +46,7 @@ const CardContainer: React.FC<CardContainerProps> = ({ children, heading }) => {
 };
 
 const RelatedDatasets: React.FC<RelatedDatasetsProps> = ({
+  includedInDataCatalog,
   isLoading,
   isRelatedTo,
 }) => {
@@ -56,7 +59,6 @@ const RelatedDatasets: React.FC<RelatedDatasetsProps> = ({
         <CardContainer heading='Related Datasets'>
           {new Array(isRelatedTo?.length || 3).fill('').map((_, i) => {
             const data = isRelatedTo?.[i] || null;
-
             return (
               <SkeletonText
                 key={i}
@@ -72,17 +74,46 @@ const RelatedDatasets: React.FC<RelatedDatasetsProps> = ({
                         {formatType(data['@type'])}
                       </Tag>
                     )}
-                    <NextLink
-                      href={{
-                        pathname: '/resources/',
-                        query: { id: data.identifier },
-                      }}
-                      passHref
-                    >
-                      <Link isExternal wordBreak='break-word' fontSize='xs'>
-                        {data.name || data.identifier}
-                      </Link>
-                    </NextLink>
+                    {data._id ? (
+                      <NextLink
+                        href={{
+                          pathname: '/resources/',
+                          query: { id: data._id },
+                        }}
+                        passHref
+                      >
+                        <Link isExternal wordBreak='break-word' fontSize='xs'>
+                          {data.name || data.identifier}
+                        </Link>
+                      </NextLink>
+                    ) : (
+                      <>
+                        {/* use identifier to find portal url. */}
+                        {data.identifier && includedInDataCatalog?.name ? (
+                          <NextLink
+                            href={{
+                              pathname: '/resources/',
+                              query: {
+                                id: `${includedInDataCatalog.name}_${data.identifier}`,
+                              },
+                            }}
+                            passHref
+                          >
+                            <Link
+                              isExternal
+                              wordBreak='break-word'
+                              fontSize='xs'
+                            >
+                              {data.name || data.identifier}
+                            </Link>
+                          </NextLink>
+                        ) : (
+                          <Text wordBreak='break-word' fontSize='xs'>
+                            {data.name || data.identifier}
+                          </Text>
+                        )}
+                      </>
+                    )}
                   </Box>
                 )}
               </SkeletonText>
