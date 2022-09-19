@@ -4,4 +4,10 @@ export interface ResourceMetadata {
   description?: {
     [key: string]: string;
   };
+  abstract?: {
+    [key: string]: string;
+  };
+  items?: {
+    [key: string]: { description: string };
+  };
 }

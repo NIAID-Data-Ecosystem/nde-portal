@@ -244,6 +244,7 @@ export const Filters: React.FC<Filters> = ({
                             <MetadataToolTip
                               propertyName={filtersConfig[prop].property}
                               recordType='Dataset' // [NOTE]: Choosing dataset for general definition.
+                              showAbstract
                             >
                               <MetadataIcon
                                 id={`filter-${filtersConfig[prop].glyph}-${i}`}

@@ -56,7 +56,7 @@ const SoftwareInformation: React.FC<SoftwareInformation> = ({
 
   return (
     <Skeleton isLoaded={!isLoading}>
-      <Stack alignItems='flex-start' minChildWidth={200}>
+      <Stack alignItems='flex-start'>
         <SimpleGrid
           spacing={6}
           w='100%'

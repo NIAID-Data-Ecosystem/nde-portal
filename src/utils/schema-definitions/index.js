@@ -28,7 +28,7 @@ const fetchSchema = async () => {
       });
 
     const niaidData = await axios
-      .get(`https://discovery.biothings.io/api/registry/niaid`)
+      .get(`https://discovery.biothings.io/api/registry/nde`)
       .then(response => {
         // Filter data with needed types.
         return response.data.hits.filter(datum => {
@@ -48,10 +48,38 @@ const fetchSchema = async () => {
           r[data.label] = {
             title: getPropertyTitle(data.label),
             property: data.label,
-            description: {},
           };
         }
-        r[data.label]['description'][type.toLowerCase()] = data.description;
+        // Metadata description.
+        if (data.description) {
+          if (!r[data.label]['description']) {
+            r[data.label].description = {};
+          }
+          r[data.label]['description'][type.toLowerCase()] = data.description;
+        }
+        // Metadata short description.
+        if (data.abstract) {
+          if (!r[data.label]['abstract']) {
+            r[data.label].abstract = {};
+          }
+          r[data.label]['abstract'][type.toLowerCase()] = data.abstract;
+        }
+        // Metadata sub properties descriptions.
+        if (data.oneOf) {
+          data.oneOf.map(o => {
+            if (!o.items || !o.items.properties) return;
+            Object.entries(o.items.properties).map(([property, item]) => {
+              if (!r[data.label]['items']) {
+                r[data.label]['items'] = {};
+              }
+              if (!r[data.label]['items'][property]) {
+                r[data.label]['items'][property] = {
+                  description: item.description,
+                };
+              }
+            });
+          });
+        }
       };
 
       addProperty(d);

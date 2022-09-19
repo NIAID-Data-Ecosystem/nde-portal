@@ -68,12 +68,15 @@ const Overview: React.FC<OverviewProps> = ({
   );
 
   // get copy label from config for a given property.
-  const getStatInfo = (metadataProperty: string) => {
-    const property = MetadataConfig.find(
-      d => d.property === metadataProperty,
+  const getStatInfo = (metadataProperty: string, accessor?: () => {}) => {
+    const property = (
+      accessor
+        ? MetadataConfig.find(accessor)
+        : MetadataConfig.find(d => d.property === metadataProperty)
     ) as ResourceMetadata;
 
     let label = property?.title || metadataProperty;
+    let items = property?.items || null;
     let description = '';
 
     if (property && property?.description) {
@@ -92,6 +95,7 @@ const Overview: React.FC<OverviewProps> = ({
     return {
       description,
       label,
+      items,
     };
   };
 
@@ -489,7 +493,7 @@ const Overview: React.FC<OverviewProps> = ({
                 {getStatInfo('doi').description}
                 <br />
                 <strong>PMID: </strong>
-                {getStatInfo('pmid').description}
+                {getStatInfo('citation').items?.pmid.description}
                 <br />
                 <strong>NCTID: </strong>
                 {getStatInfo('nctid').description}

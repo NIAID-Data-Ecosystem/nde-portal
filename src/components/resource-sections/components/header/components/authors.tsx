@@ -191,7 +191,7 @@ const ResourceAuthors = ({
 
                       {/* Author Affiliation. */}
                       {author.affiliation?.name ? (
-                        <Text>
+                        <>
                           {', '}
                           {author.affiliation.sameAs ? (
                             <>
@@ -201,6 +201,7 @@ const ResourceAuthors = ({
                                 sx={{
                                   svg: { marginLeft: '0.25rem !important' },
                                 }}
+                                ml={1}
                               >
                                 {name
                                   ? `${author.affiliation.name}`
@@ -208,13 +209,13 @@ const ResourceAuthors = ({
                               </Link>
                             </>
                           ) : (
-                            <>
+                            <Text>
                               {name
                                 ? `${author.affiliation.name}`
                                 : author.affiliation.name}
-                            </>
+                            </Text>
                           )}{' '}
-                        </Text>
+                        </>
                       ) : (
                         ''
                       )}

@@ -90,15 +90,19 @@ export const MetadataIcon = React.forwardRef<HTMLDivElement, IconProps>(
 );
 
 interface MetadataToolTipProps {
-  label?: string; // label for icon for accessibility
+  label?: string;
+  description?: string;
   propertyName?: string;
   recordType?: string;
+  showAbstract?: boolean; // if true, show shortened definition if available.
 }
 
 export const MetadataToolTip: React.FC<MetadataToolTipProps> = ({
   label,
+  description,
   propertyName,
   recordType,
+  showAbstract,
   children,
 }) => {
   if (!propertyName && !label) {
@@ -110,25 +114,40 @@ export const MetadataToolTip: React.FC<MetadataToolTipProps> = ({
   ) as ResourceMetadata;
 
   let tooltip_label = label || property?.title || '';
-  let tooltip_description = '';
+  let tooltip_description = description || '';
 
   // Description of metadata property
-  if (property && property?.description) {
+  if (!tooltip_description) {
     let type = recordType?.toLowerCase();
-
-    if (type && property.description?.[type]) {
-      // if record type exists use it to get a more specific definition if available.
-      tooltip_description = property.description[type];
-    } else {
-      // get more general definition if specific one does not exist.
-      let descriptions = Object.values(property.description);
-      tooltip_description = descriptions.length === 0 ? '' : descriptions[0];
+    // if showAbstract is true we show a brief description where available.
+    if (showAbstract && property.abstract) {
+      if (type && property.abstract?.[type]) {
+        // if record type exists use it to get a more specific definition if available.
+        tooltip_description = property.abstract[type];
+      } else {
+        // get more general definition if specific one does not exist.
+        let descriptions = Object.values(property.abstract);
+        tooltip_description = descriptions.length === 0 ? '' : descriptions[0];
+      }
+    } else if (property && property?.description) {
+      if (type && property.description?.[type]) {
+        // if record type exists use it to get a more specific definition if available.
+        tooltip_description = property.description[type];
+      } else {
+        // get more general definition if specific one does not exist.
+        let descriptions = Object.values(property.description);
+        tooltip_description = descriptions.length === 0 ? '' : descriptions[0];
+      }
     }
   }
   return (
     <Tooltip
       label={`${tooltip_label} ${
-        tooltip_description && `: ${tooltip_description}`
+        tooltip_description &&
+        `: ${
+          tooltip_description.charAt(0).toLocaleUpperCase() +
+          tooltip_description.slice(1)
+        }`
       }`}
     >
       {children}
