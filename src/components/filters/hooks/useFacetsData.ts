@@ -1,9 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useQuery } from 'react-query';
-import { queryFilterObject2String } from 'src/components/filter/helpers';
 import { fetchSearchResults, Params } from 'src/utils/api';
 import {
   Facet,
+  FacetTerm,
   FetchSearchResultsResponse,
   FormattedResource,
 } from 'src/utils/api/types';
@@ -35,9 +35,24 @@ export const useFacetsData = ({
     const data = await fetchSearchResults({
       ...params,
       facets: facets.join(','),
+    }).then(response => {
+      const facetsData = {} as { [key: string]: { terms: FacetTerm[] } };
+      if (response?.facets) {
+        Object.keys(response.facets).map(facet => {
+          facetsData[facet] = {
+            terms: response.facets[facet].terms.map((term: FacetTerm) => ({
+              ...term,
+              facet,
+            })),
+          };
+        });
+      }
+
+      return facetsData;
     });
-    // get counts on unavailable terms. (aka. n/a value in filter)
-    await Promise.all(
+
+    // Data for missing datasets with no faet term. (aka. n/a value in filter).
+    const noExists = await Promise.all(
       facets.map(facet => {
         /* Fetch facets using query params. Note that we also get the facets count where data is non-existent to be used as an "N/A" attribute. */
         return fetchSearchResults({
@@ -49,19 +64,25 @@ export const useFacetsData = ({
           facets: facet,
         }).then(d => {
           if (!data || !d?.total) return;
+
           // add facet term for "empty" property
-          data.facets[facet].terms.push({
+          return {
             count: d?.total,
             term: `${facet}`,
-            name: 'N/A',
-            filterTerm: `${facet}`,
             facet: '-_exists_',
-          });
+            // name: 'N/A',
+            // filterTerm: `${facet}`,
+            // facet: '-_exists_',
+          };
         });
       }),
-    );
+    ).then(data => {
+      return {
+        '-_exists_': { terms: data.filter(d => d) },
+      };
+    });
 
-    return data?.facets;
+    return { ...noExists, ...data };
   };
 
   // Gorup together similar "empty" terms for consistency
@@ -128,11 +149,11 @@ export const useFacetsData = ({
   );
 
   // 2. Update counts on facet when filters are applied to searchquery from 1. Runs on load/new querystring and when filters are changed.
-  const {
-    isLoading: isUpdating,
-    error: updatedFiltersError,
-    data: updatedFilters,
-  } = useQuery<FetchSearchResultsResponse | undefined, Error, Facet>(
+  const { isLoading: isUpdating, error: updatedFiltersError } = useQuery<
+    FetchSearchResultsResponse | undefined,
+    Error,
+    Facet
+  >(
     [
       'search-results',
       {
@@ -154,7 +175,6 @@ export const useFacetsData = ({
         Note that the enabled parameter prevent the query from running but if cached data is available, onSuccess will use that data so we need to check again and return if the same requirements for enabled are false.
         See here: https://tanstack.com/query/v4/docs/guides/disabling-queries
         */
-
         if (!!(initialData && Object.values(initialData).length > 0)) {
           // Check if updated facets have changed count..
           setFacetTerms(() => {

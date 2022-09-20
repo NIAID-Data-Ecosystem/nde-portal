@@ -28,6 +28,7 @@ export const FiltersSection: React.FC<FiltersSectionProps> = React.memo(
           return (
             <>
               <h2>
+                {/* Toggle expand panel open. */}
                 <AccordionButton
                   borderLeft='4px solid'
                   borderColor='gray.200'
@@ -49,6 +50,8 @@ export const FiltersSection: React.FC<FiltersSectionProps> = React.memo(
                     <Heading size='sm' fontWeight='semibold'>
                       {name}
                     </Heading>
+
+                    {/* Icon tooltip with property definition. */}
                     {icon && (
                       <MetadataToolTip property={icon}>
                         <MetadataIcon

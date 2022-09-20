@@ -36,6 +36,7 @@ export const FiltersList: React.FC<FiltersList> = ({
   handleSelectedFilters,
   isLoading,
 }) => {
+  const [checkedItems, setCheckedItems] = useState([]);
   /****** Limit List Items ******/
   // Toggle number of items to show from reduced view to "all" view.
   const NUM_ITEMS_MIN = 5;

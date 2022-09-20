@@ -333,6 +333,7 @@ const SearchResultsPage = () => {
                     : undefined
                 }
                 handleSelectedFilters={updatedFilters => {
+                  console.log('handleSelectedFilters', updatedFilters);
                   let updatedFilterString = queryFilterObject2String({
                     ...selectedFilters,
                     ...updatedFilters,
