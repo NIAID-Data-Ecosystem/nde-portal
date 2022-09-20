@@ -8,6 +8,11 @@
       "showEmpty": true
     },
     {
+      "title": "Software Information",
+      "hash": "softwareInformation",
+      "isCollapsible": true
+    },
+    {
       "title": "Keywords",
       "hash": "keywords"
     },
@@ -31,11 +36,6 @@
       "title": "Funding",
       "hash": "funding",
       "showEmpty": true,
-      "isCollapsible": true
-    },
-    {
-      "title": "Based On",
-      "hash": "isBasedOn",
       "isCollapsible": true
     },
     {

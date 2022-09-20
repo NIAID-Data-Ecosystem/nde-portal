@@ -1,7 +1,17 @@
 import React from 'react';
 import { useRouter } from 'next/router';
 import { FormattedResource } from 'src/utils/api/types';
-import { Box, Divider, Flex, Skeleton, Tag, Text } from 'nde-design-system';
+import {
+  Box,
+  Divider,
+  Flex,
+  Link,
+  ListItem,
+  Skeleton,
+  Tag,
+  Text,
+  UnorderedList,
+} from 'nde-design-system';
 import {
   ResourceDates,
   ResourceHeader,
@@ -10,14 +20,13 @@ import {
   ResourceProvenance,
   Section,
 } from './components';
-
 import { Route } from './helpers';
 import FilesTable from './components/files-table';
 import FundingTable from './components/funding-table';
 import CitedByTable from './components/cited-by-table';
 import { DisplayHTMLContent } from '../html-content';
 import { DownloadMetadata } from '../download-metadata';
-import BasedOn from './components/based-on';
+import SoftwareInformation from './components/software-information';
 
 // Metadata displayed in each section
 export const section_metadata: { [key: string]: (keyof FormattedResource)[] } =
@@ -31,16 +40,29 @@ export const section_metadata: { [key: string]: (keyof FormattedResource)[] } =
       'license',
       'measurementTechnique',
       'nctid',
+      'programmingLanguage',
+      'softwareVersion',
       'spatialCoverage',
       'species',
       'temporalCoverage',
       'topic',
       'variableMeasured',
     ],
+    softwareInformation: [
+      'discussionUrl',
+      'isBasedOn',
+      'isBasisFor',
+      'processorRequirements',
+      'programmingLanguage',
+      'softwareAddOn',
+      'softwareHelp',
+      'softwareRequirements',
+      'softwareVersion',
+    ],
     keywords: ['keywords'],
     description: ['description'],
     provenance: ['includedInDataCatalog', 'url', 'sdPublisher'],
-    downloads: ['distribution'],
+    downloads: ['distribution', 'downloadUrl'],
     funding: ['funding'],
     isBasedOn: ['isBasedOn'],
     citedBy: ['citedBy'],
@@ -61,23 +83,20 @@ const Sections = ({
 
   return (
     <>
-      <Section id={'header'} p={0}>
+      <Section id='header' p={0}>
         <ResourceHeader
           isLoading={isLoading}
           conditionsOfAccess={data?.conditionsOfAccess}
           author={data?.author}
           name={data?.name}
           alternateName={data?.alternateName}
-          isAvailableForFree={data?.isAvailableForFree}
+          isAccessibleForFree={data?.isAccessibleForFree}
         />
         {/* Banner showing data type and publish date. */}
         <ResourceDates data={data} />
       </Section>
 
       {sections.map(section => {
-        if (section.hash === 'isBasedOn' && !data?.isBasedOn) {
-          return <React.Fragment key={section.hash}></React.Fragment>;
-        }
         return (
           <Section
             id={section.hash}
@@ -128,6 +147,11 @@ const Sections = ({
                 </Flex>
               </Skeleton>
             )}
+
+            {section.hash === 'softwareInformation' && (
+              <SoftwareInformation isLoading={isLoading} {...data} />
+            )}
+
             {/* Show description */}
             {section.hash === 'description' &&
               (data?.description || data?.abstract) && (
@@ -160,11 +184,30 @@ const Sections = ({
 
             {/* Show downloads */}
             {section.hash === 'downloads' && (
-              <FilesTable isLoading={isLoading} {...data} />
+              <>
+                {/* Downloads for computational tools is a list of links. */}
+                {data?.downloadUrl && (
+                  <UnorderedList>
+                    {data.downloadUrl.map(({ name }) => {
+                      return (
+                        <ListItem key={name}>
+                          <Link href={name} isExternal>
+                            {name}
+                          </Link>
+                        </ListItem>
+                      );
+                    })}
+                  </UnorderedList>
+                )}
+                {/* Downloads for datasets is a table with multiple properties. */}
+                {data?.distribution && (
+                  <FilesTable
+                    isLoading={isLoading}
+                    distribution={data.distribution}
+                  />
+                )}
+              </>
             )}
-
-            {/* Based On */}
-            {section.hash === 'isBasedOn' && <BasedOn isLoading={isLoading} />}
 
             {/* Show funding */}
             {section.hash === 'funding' && (

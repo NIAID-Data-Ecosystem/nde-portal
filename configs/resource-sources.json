@@ -10,10 +10,26 @@
       "name": "Bioconductor",
       "imageUrl": "/assets/resources/bioconductor.svg"
     },
+
+    {
+      "sourceName": "biotools",
+      "name": "bio.tools",
+      "imageUrl": "/assets/resources/biotools.png"
+    },
+    {
+      "sourceName": "ClinEpiDB",
+      "name": "ClinEpiDB",
+      "imageUrl": "/assets/resources/clinepi.jpeg"
+    },
     {
       "sourceName": "Data Discovery Engine",
       "name": "Data Discovery Engine",
       "imageUrl": "/assets/resources/dde_full.svg"
+    },
+    {
+      "sourceName": "Dockstore",
+      "name": "Dockstore",
+      "imageUrl": "/assets/resources/dockstore.png"
     },
     {
       "sourceName": "Dryad Digital Repository",

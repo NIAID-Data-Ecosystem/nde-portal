@@ -59,7 +59,7 @@ const CardDetails: React.FC<CardDetailsProps> = ({ data }) => {
     fill?: string;
     value: any;
   }) => (
-    <MetadataToolTip property={glyph}>
+    <MetadataToolTip propertyName={glyph} recordType={data?.['@type']}>
       <MetadataIcon
         id={`indicator-${glyph}-${id}`}
         glyph={glyph}
@@ -130,12 +130,13 @@ const CardDetails: React.FC<CardDetailsProps> = ({ data }) => {
                 </AccordionButton>
               </h2>
               <AccordionPanel w='100%' px={paddingCard} my={2}>
-                <SimpleGrid minChildWidth={'300px'} spacing='10px'>
+                <SimpleGrid minChildWidth='300px' spacing='10px'>
                   {/* License*/}
                   <MetadataProperty
                     id={`license-${id}`}
                     label='License'
-                    glyph={'license'}
+                    glyph='license'
+                    type={data?.['@type']}
                   >
                     {licenseInfo && (
                       <>
@@ -162,6 +163,7 @@ const CardDetails: React.FC<CardDetailsProps> = ({ data }) => {
                     id={`dua-${id}`}
                     label='Data Usage Agreement'
                     glyph='usageInfo'
+                    type={data?.['@type']}
                   >
                     {usageInfo && (
                       <>
@@ -181,7 +183,8 @@ const CardDetails: React.FC<CardDetailsProps> = ({ data }) => {
                   <MetadataProperty
                     id={`funding-${id}`}
                     label='Funding'
-                    glyph={'funding'}
+                    glyph='funding'
+                    type={data?.['@type']}
                   >
                     {fundingInfo && fundingInfo.length > 0 && (
                       <UnorderedList ml={4}>
@@ -212,6 +215,7 @@ const CardDetails: React.FC<CardDetailsProps> = ({ data }) => {
                     id={`mt-${id}`}
                     label='Measurement Technique'
                     glyph='measurementTechnique'
+                    type={data?.['@type']}
                   >
                     {measurementTechnique && (
                       <UnorderedList ml={0}>
@@ -243,7 +247,8 @@ const CardDetails: React.FC<CardDetailsProps> = ({ data }) => {
                   <MetadataProperty
                     id={`vm-${id}`}
                     label='Variable Measured'
-                    glyph={'variableMeasured'}
+                    glyph='variableMeasured'
+                    type={data?.['@type']}
                   >
                     {variableMeasured && (
                       <Text color='inherit'>{variableMeasured.join(', ')}</Text>
@@ -254,6 +259,7 @@ const CardDetails: React.FC<CardDetailsProps> = ({ data }) => {
                     id={`ia-${id}`}
                     label='Infectious Agent'
                     glyph='infectiousAgent'
+                    type={data?.['@type']}
                   >
                     {infectiousAgent && (
                       <UnorderedList ml={0}>
@@ -282,6 +288,7 @@ const CardDetails: React.FC<CardDetailsProps> = ({ data }) => {
                     id={`condition-${id}`}
                     label='Health Condition'
                     glyph='healthCondition'
+                    type={data?.['@type']}
                   >
                     {healthCondition && (
                       <>
@@ -312,6 +319,7 @@ const CardDetails: React.FC<CardDetailsProps> = ({ data }) => {
                     id={`species-${id}`}
                     label='Species'
                     glyph='species'
+                    type={data?.['@type']}
                   >
                     {species && (
                       <Text color='inherit'>

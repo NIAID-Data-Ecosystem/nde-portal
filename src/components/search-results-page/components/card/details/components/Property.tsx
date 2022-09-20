@@ -7,6 +7,7 @@ interface MetadataPropertyProps extends BoxProps {
   id: string;
   label: string;
   glyph?: string;
+  type?: string;
 }
 
 export const MetadataProperty: React.FC<MetadataPropertyProps> = ({
@@ -14,6 +15,7 @@ export const MetadataProperty: React.FC<MetadataPropertyProps> = ({
   glyph,
   id,
   children,
+  type,
   ...props
 }) => {
   return (
@@ -26,7 +28,7 @@ export const MetadataProperty: React.FC<MetadataPropertyProps> = ({
       {...props}
     >
       <Flex alignItems='center' pb={0} position='relative'>
-        <MetadataToolTip property={glyph}>
+        <MetadataToolTip propertyName={glyph} recordType={type}>
           <MetadataIcon
             id={id}
             viewBox='0 0 200 200'

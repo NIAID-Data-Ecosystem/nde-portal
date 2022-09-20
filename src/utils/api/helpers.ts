@@ -11,7 +11,8 @@ import {
 interface APIAuthor {
   identifier?: string; // orcid id
   '@type'?: string;
-  affiliation?: { name: string };
+  affiliation?: { name: string; sameAs?: string };
+  email?: string;
   name?: string;
   familyName?: string;
   givenName?: string;
@@ -39,6 +40,7 @@ export const formatAuthor = (
       role: data['role'] || null,
       title: data['title'] || null,
       url: data['url'] || null,
+      email: data['email'] || null,
     };
   };
 
@@ -234,6 +236,10 @@ const formatConditionsOfAccess = (
     access.toLowerCase().includes('closed') ||
     access.toLowerCase().includes('restricted')
   ) {
+    /*
+     Group "closed" and "restricted" access types as "controlled".
+     https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/59
+    */
     return 'Controlled';
   } else {
     return access;
@@ -249,6 +255,7 @@ export const formatAPIResource = (data: any) => {
     id: data._id || null,
     type: data['@type'] ? formatType(data['@type']) : null,
     name: data.name || null,
+    aggregateRating: data.aggregateRating || null,
     applicationCategory: convertToArray(data.applicationCategory),
     applicationSubCategory: convertToArray(data.applicationSubCategory),
     applicationSuite: convertToArray(data.applicationSuite),
@@ -266,9 +273,11 @@ export const formatAPIResource = (data: any) => {
     description: Array.isArray(data.description)
       ? data.description.join(' ')
       : data.description || null,
+    discussionUrl: convertToArray(data.discussionUrl),
     disease: data.disease || null,
     distribution: formatDistribution(data.distribution),
     doi: data['doi'] || data['@id'] || null,
+    downloadUrl: convertToArray(data.downloadUrl),
     funding: formatFunding(data.funding),
     hasPart: convertToArray(data.hasPart),
     healthCondition: convertToArray(data.healthCondition),
@@ -282,7 +291,9 @@ export const formatAPIResource = (data: any) => {
         }
       : null,
     infectiousAgent: convertToArray(data.infectiousAgent),
+    isAccessibleForFree: data.isAccessibleForFree,
     isBasedOn: convertToArray(data.isBasedOn),
+    isBasisFor: convertToArray(data.isBasisFor),
     isPartOf: convertToArray(data.isPartOf),
     isRelatedTo: convertToArray(data.isRelatedTo),
     keywords: convertToArray(data.keywords),
@@ -299,16 +310,19 @@ export const formatAPIResource = (data: any) => {
     mainEntityOfPage: data.mainEntityOfPage || null,
     measurementTechnique: convertToArray(data.measurementTechnique),
     nctid: data['nctid'] || null,
+    processorRequirements: convertToArray(data.processorRequirements),
     programmingLanguage: convertToArray(data.programmingLanguage),
     publisher: data.publisher || null,
     rawData: data,
     sameAs: data.sameAs || null,
     sdPublisher: convertToArray(data.sdPublisher),
+    softwareAddOn: convertToArray(data.softwareAddOn),
+    softwareHelp: convertToArray(data.softwareHelp),
+    softwareRequirements: convertToArray(data.softwareRequirements),
     softwareVersion: convertToArray(data.softwareVersion),
     spatialCoverage: convertToArray(data.spatialCoverage),
     species: convertToArray(data.species),
     temporalCoverage: data.temporalCoverage || null,
-    // Maybe add species or organism field to topic
     topic: convertToArray(data.topicCategory),
     url: data.url || null,
     usageInfo: data.usageInfo || null,

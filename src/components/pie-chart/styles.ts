@@ -46,7 +46,7 @@ export const StyledSectionHeading = styled(Heading)<HeadingProps>(
 StyledSectionHeading.defaultProps = {
   as: 'h2',
   color: 'text.body',
-  fontWeight: 'regular',
+  fontWeight: 'normal',
 };
 
 export const StyledText = styled(Text)<TextProps>(props => ({}));

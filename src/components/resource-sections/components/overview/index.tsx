@@ -6,6 +6,10 @@ import {
   Link,
   ListItem,
   SimpleGrid,
+  Stack,
+  StackDivider,
+  StatHelpText,
+  StatNumber,
   Text,
   UnorderedList,
 } from 'nde-design-system';
@@ -22,18 +26,22 @@ import { assetPrefix } from 'next.config';
 import { IconProps, MetadataIcon } from 'src/components/icon';
 import { getMetadataColor } from 'src/components/icon/helpers';
 import { DisplayHTMLContent } from 'src/components/html-content';
+import { ResourceMetadata } from 'src/utils/schema-definitions/types';
 
 export interface OverviewProps extends Partial<FormattedResource> {
   isLoading: boolean;
 }
 
 const Overview: React.FC<OverviewProps> = ({
+  aggregateRating,
   citation,
   doi,
   healthCondition,
   identifier,
+  includedInDataCatalog,
   infectiousAgent,
   inLanguage,
+  isLoading,
   isPartOf,
   license,
   measurementTechnique,
@@ -46,7 +54,6 @@ const Overview: React.FC<OverviewProps> = ({
   topic,
   usageInfo,
   variableMeasured,
-  isLoading,
   ...data
 }) => {
   const StatIcon = ({ glyph, ...props }: IconProps) => (
@@ -61,14 +68,35 @@ const Overview: React.FC<OverviewProps> = ({
   );
 
   // get copy label from config for a given property.
-  const getStatInfo = (metadataProperty: string) => {
-    const metadataField = MetadataConfig.find(
-      d => d.property === metadataProperty,
-    );
+  const getStatInfo = (metadataProperty: string, accessor?: () => {}) => {
+    const property = (
+      accessor
+        ? MetadataConfig.find(accessor)
+        : MetadataConfig.find(d => d.property === metadataProperty)
+    ) as ResourceMetadata;
 
-    return metadataField
-      ? { ...metadataField, label: metadataField.title || '' }
-      : { label: metadataProperty, description: '' };
+    let label = property?.title || metadataProperty;
+    let items = property?.items || null;
+    let description = '';
+
+    if (property && property?.description) {
+      let type = data?.['@type']?.toLowerCase();
+
+      if (type && property.description?.[type]) {
+        // if record type exists use it to get a more specific definition if available.
+        description = property.description?.[type];
+      } else {
+        // get more general definition if specific one does not exist.
+        let descriptions = Object.values(property.description);
+        description = descriptions.length === 0 ? '' : descriptions[0];
+      }
+    }
+
+    return {
+      description,
+      label,
+      items,
+    };
   };
 
   const licenseInfo = license ? formatLicense(license) : null;
@@ -101,15 +129,14 @@ const Overview: React.FC<OverviewProps> = ({
     <Flex p={[0, 4]} w='100%' flexWrap='wrap' flexDirection={['column', 'row']}>
       {(doi || nctid) && (
         <Box w={{ sm: '100%', lg: 'unset' }} my={4}>
-          <SimpleGrid
-            minChildWidth='150px'
-            maxWidth={500}
-            spacingX={4}
-            spacingY={2}
+          <Stack
+            direction={['column', 'column', 'row']}
+            spacing={4}
             p={4}
             border='0.5px solid'
             borderRadius='semi'
             borderColor='gray.100'
+            divider={<StackDivider borderColor='gray.200' />}
           >
             {/* Altmetric Badge */}
             {(doi || nctid || citation?.[0]['pmid']) && (
@@ -119,6 +146,7 @@ const Overview: React.FC<OverviewProps> = ({
                 d='flex'
                 justifyContent='center'
                 mr={2}
+                minWidth='200px'
               >
                 <Flex alignItems='center' direction='column'>
                   {(doi || nctid || citation?.[0]['pmid']) && (
@@ -148,7 +176,28 @@ const Overview: React.FC<OverviewProps> = ({
                 </Flex>
               </StatField>
             )}
-          </SimpleGrid>
+
+            {aggregateRating &&
+              (aggregateRating.ratingValue || aggregateRating.ratingCount) &&
+              includedInDataCatalog?.name && (
+                <StatField
+                  isLoading={false}
+                  d='flex'
+                  {...getStatInfo(`${includedInDataCatalog.name} Metrics`)}
+                  justifyContent='center'
+                  mr={2}
+                  flex={1}
+                  minWidth='200px'
+                >
+                  <StatNumber>
+                    {aggregateRating.ratingValue || aggregateRating.ratingCount}
+                  </StatNumber>
+                  {aggregateRating.reviewAspect && (
+                    <StatHelpText>{aggregateRating.reviewAspect}</StatHelpText>
+                  )}
+                </StatField>
+              )}
+          </Stack>
         </Box>
       )}
 
@@ -165,7 +214,7 @@ const Overview: React.FC<OverviewProps> = ({
           {
             <StatField
               isLoading={isLoading}
-              icon={() => <StatIcon id='license' glyph={'license'} />}
+              icon={() => <StatIcon id='license' glyph='license' />}
               {...getStatInfo('license')}
             >
               <>
@@ -383,14 +432,14 @@ const Overview: React.FC<OverviewProps> = ({
               )}
 
               {temporalCoverage?.temporalInterval?.startDate && (
-                <>
+                <Text fontSize='sm'>
                   <strong>Start Date: </strong>
                   {temporalCoverage?.temporalInterval?.startDate}
                   <br />
-                </>
+                </Text>
               )}
               {temporalCoverage?.temporalInterval?.endDate && (
-                <>
+                <Text fontSize='sm'>
                   {!temporalCoverage?.temporalInterval?.startDate && (
                     <>
                       <strong>Start Date: </strong>
@@ -401,7 +450,7 @@ const Overview: React.FC<OverviewProps> = ({
 
                   <strong>End Date: </strong>
                   {temporalCoverage?.temporalInterval?.endDate}
-                </>
+                </Text>
               )}
             </StatField>
           )}
@@ -444,7 +493,7 @@ const Overview: React.FC<OverviewProps> = ({
                 {getStatInfo('doi').description}
                 <br />
                 <strong>PMID: </strong>
-                {getStatInfo('pmid').description}
+                {getStatInfo('citation').items?.pmid.description}
                 <br />
                 <strong>NCTID: </strong>
                 {getStatInfo('nctid').description}

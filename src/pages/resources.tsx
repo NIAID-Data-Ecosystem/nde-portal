@@ -73,15 +73,14 @@ const ResourcePage: NextPage = props => {
     if (window._altmetric_embed_init) {
       // @ts-ignore
       window._altmetric_embed_init();
-    } else {
-      /* import altmetric script for badge embeds */
-      let altmetricsScript = document.createElement('script');
-      altmetricsScript.setAttribute(
-        'src',
-        'https://d1bxh8uas1mnw7.cloudfront.net/assets/embed.js',
-      );
-      document.body.appendChild(altmetricsScript);
     }
+    /* import altmetric script for badge embeds */
+    let altmetricsScript = document.createElement('script');
+    altmetricsScript.setAttribute(
+      'src',
+      'https://d1bxh8uas1mnw7.cloudfront.net/assets/embed.js',
+    );
+    document.body.appendChild(altmetricsScript);
   }, [data]);
 
   if (!id) {
@@ -168,6 +167,7 @@ const ResourcePage: NextPage = props => {
                   <RelatedDatasets
                     isLoading={isLoading}
                     isRelatedTo={data?.isRelatedTo || null}
+                    includedInDataCatalog={data?.includedInDataCatalog}
                   />
                 </Box>
               </Flex>

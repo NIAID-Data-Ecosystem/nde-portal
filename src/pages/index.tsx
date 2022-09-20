@@ -23,14 +23,15 @@ import { useQuery } from 'react-query';
 import { FetchSearchResultsResponse } from 'src/utils/api/types';
 import LoadingSpinner from 'src/components/loading';
 import { formatNumber } from 'src/utils/helpers';
-import PieChart from 'src/components/home/components/pie-chart';
 import {
   StyledSection,
   StyledSectionHeading,
   StyledText,
   StyledBody,
   StyledSectionButtonGroup,
-} from 'src/components/home/styles';
+  PieChart,
+  Legend,
+} from 'src/components/pie-chart';
 import { assetPrefix } from 'next.config';
 import NextLink from 'next/link';
 
@@ -82,7 +83,7 @@ const sample_queries = [
 
 const Home: NextPage = () => {
   const router = useRouter();
-  const size = useBreakpointValue({ base: 200, sm: 200, lg: 250, xl: 300 });
+  const size = useBreakpointValue({ base: 300, lg: 350 });
 
   // Search term entered in search bar
   const [searchTerm, setSearchTerm] = useState('');
@@ -330,46 +331,97 @@ const Home: NextPage = () => {
           flexDirection='column'
           alignItems='center'
         >
-          <StyledSection id='explore-date'>
-            <LoadingSpinner isLoading={isLoading}>
-              {/* Pie chart with number repositories and associated resources*/}
+          <StyledSection
+            id='explore-date'
+            flexDirection={{ base: 'column', lg: 'column' }}
+          >
+            <Flex
+              width='100%'
+              flexDirection={{ base: 'column', lg: 'row' }}
+              justifyContent={{ lg: 'space-between' }}
+              alignItems='center'
+              flex={1}
+            >
+              <LoadingSpinner isLoading={isLoading}>
+                {/* Pie chart with number repositories and associated resources*/}
+                {stats?.repositories?.stats && (
+                  <PieChart
+                    width={size || 200}
+                    height={size || 200}
+                    data={stats.repositories.stats.sort(
+                      (a, b) => b.count - a.count,
+                    )}
+                  ></PieChart>
+                )}
+              </LoadingSpinner>
+              {/* Legend display for smaller screen size */}
+              <Flex
+                display={{ base: 'flex', lg: 'none' }}
+                w='100%'
+                justifyContent='center'
+              >
+                {stats?.repositories?.stats && (
+                  <Legend
+                    data={stats.repositories.stats.sort(
+                      (a, b) => b.count - a.count,
+                    )}
+                  ></Legend>
+                )}
+              </Flex>
+              <StyledBody
+                maxWidth={['unset', 'unset', '700px', '410px']}
+                textAlign={['start', 'start', 'center', 'start']}
+              >
+                <StyledSectionHeading mt={[4, 6]}>
+                  {homepageCopy.sections[2].heading}
+                </StyledSectionHeading>
+                <StyledText>{homepageCopy.sections[2].body}</StyledText>
+                {homepageCopy.sections[2]?.routes &&
+                  homepageCopy.sections[2].routes.map(
+                    (route: {
+                      title: string;
+                      path: string;
+                      isExternal?: boolean;
+                    }) => {
+                      return (
+                        <StyledSectionButtonGroup
+                          key={route.title}
+                          justifyContent={[
+                            'flex-start',
+                            'flex-start',
+                            'center',
+                            'flex-start',
+                          ]}
+                        >
+                          <Button
+                            href={route.path}
+                            w='100%'
+                            variant='outline'
+                            isExternal={route.isExternal || false}
+                          >
+                            {route.title}
+                          </Button>
+                        </StyledSectionButtonGroup>
+                      );
+                    },
+                  )}
+              </StyledBody>
+            </Flex>
+
+            {/* Legend display for larger screen size */}
+            <Flex
+              display={{ base: 'none', lg: 'flex' }}
+              w='100%'
+              justifyContent='center'
+            >
               {stats?.repositories?.stats && (
-                <PieChart
-                  width={size || 200}
-                  height={size || 200}
+                <Legend
                   data={stats.repositories.stats.sort(
                     (a, b) => b.count - a.count,
                   )}
-                ></PieChart>
+                ></Legend>
               )}
-            </LoadingSpinner>
-            <StyledBody>
-              <StyledSectionHeading mt={[4, 6]}>
-                {homepageCopy.sections[2].heading}
-              </StyledSectionHeading>
-              <StyledText>{homepageCopy.sections[2].body}</StyledText>
-              {homepageCopy.sections[2]?.routes &&
-                homepageCopy.sections[2].routes.map(
-                  (route: {
-                    title: string;
-                    path: string;
-                    isExternal?: boolean;
-                  }) => {
-                    return (
-                      <StyledSectionButtonGroup key={route.title}>
-                        <Button
-                          href={route.path}
-                          w='100%'
-                          variant='outline'
-                          isExternal={route.isExternal || false}
-                        >
-                          {route.title}
-                        </Button>
-                      </StyledSectionButtonGroup>
-                    );
-                  },
-                )}
-            </StyledBody>
+            </Flex>
           </StyledSection>
         </PageContent>
 

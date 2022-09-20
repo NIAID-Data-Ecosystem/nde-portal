@@ -24,23 +24,40 @@ Config for the naming/text of a filter.
 [NOTE]: Order matters here as the filters will be rendered in the order of the keys.
 */
 
-export const filtersConfig: Record<string, { name: string; glyph?: string }> = {
+export const filtersConfig: Record<
+  string,
+  { name: string; glyph?: string; property?: string }
+> = {
   '@type': { name: 'Type' },
   'includedInDataCatalog.name': { name: 'Source' },
-  date: { name: 'Date ' },
+  date: { name: 'Date ', glyph: 'date', property: 'date' },
   keywords: { name: 'Keywords' },
   'measurementTechnique.name': {
     name: 'Measurement Technique',
     glyph: 'measurementTechnique',
+    property: 'measurementTechnique',
   },
-  variableMeasured: { name: 'Variable Measured', glyph: 'variableMeasured' },
-  'funding.funder.name': { name: 'Funding', glyph: 'funding' },
+  variableMeasured: {
+    name: 'Variable Measured',
+    glyph: 'variableMeasured',
+    property: 'variableMeasured',
+  },
+  'funding.funder.name': {
+    name: 'Funding',
+    glyph: 'funding',
+    property: 'funding',
+  },
   'healthCondition.name': {
     name: 'Health Condition',
     glyph: 'healthCondition',
+    property: 'healthCondition',
   },
-  'infectiousAgent.name': { name: 'Pathogen', glyph: 'infectiousAgent' },
-  'species.name': { name: 'Species', glyph: 'species' },
+  'infectiousAgent.name': {
+    name: 'Pathogen',
+    glyph: 'infectiousAgent',
+    property: 'infectiousAgent',
+  },
+  'species.name': { name: 'Species', glyph: 'species', property: 'species' },
 };
 
 interface FiltersProps {

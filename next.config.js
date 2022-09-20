@@ -10,6 +10,7 @@ module.exports = {
 
   env: {
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
+    NEXT_PUBLIC_GOOGLE_ANALYTICS: process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS,
     BASE_URL: isProd ? process.env.BASE_URL : '',
   },
 };
