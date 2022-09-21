@@ -1,5 +1,5 @@
-import React, { useCallback, useEffect } from 'react';
-import { fetchSearchResults, Params } from 'src/utils/api';
+import React from 'react';
+import { Params } from 'src/utils/api';
 import { useFacetsData } from 'src/components/filters/hooks/useFacetsData';
 import {
   FiltersContainer,
@@ -7,8 +7,6 @@ import {
   FiltersSection,
 } from 'src/components/filters';
 import { SelectedFilterType } from 'src/components/filters/types';
-import { ListItem } from 'nde-design-system';
-import { FilterItem } from 'src/components/filters/components/filters-item';
 
 /*
 [COMPONENT INFO]:
@@ -83,7 +81,6 @@ export const Filters: React.FC<FiltersProps> = ({
     facets,
   });
 
-  console.log('data:', data);
   return (
     <FiltersContainer
       title='Filters'
@@ -100,11 +97,23 @@ export const Filters: React.FC<FiltersProps> = ({
             <FiltersList
               searchPlaceholder={`Search ${name.toLowerCase()} filters`}
               terms={data[facet]}
-              selectedFilters={selectedFilters[facet]}
+              selectedFilters={selectedFilters[facet].map(filter => {
+                if (typeof filter === 'object') {
+                  return Object.keys(filter)[0];
+                } else {
+                  return filter;
+                }
+              })}
               handleSelectedFilters={values => {
-                let updated = { [facet]: values };
-                console.log('updated', updated);
-                handleSelectedFilters(updated);
+                const updatedValues = values.map(value => {
+                  // return object with inverted facet + key for exists values
+                  if (value === '-_exists_') {
+                    return { [value]: [facet] };
+                  }
+                  return value;
+                });
+
+                handleSelectedFilters({ [facet]: updatedValues });
               }}
               isLoading={isLoading}
             ></FiltersList>

@@ -53,7 +53,7 @@ export const FiltersSection: React.FC<FiltersSectionProps> = React.memo(
 
                     {/* Icon tooltip with property definition. */}
                     {icon && (
-                      <MetadataToolTip property={icon}>
+                      <MetadataToolTip propertyName={icon}>
                         <MetadataIcon
                           id={`filter-${icon}`}
                           mx={2}

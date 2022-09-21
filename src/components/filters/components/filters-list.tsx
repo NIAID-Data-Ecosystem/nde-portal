@@ -36,7 +36,6 @@ export const FiltersList: React.FC<FiltersList> = ({
   handleSelectedFilters,
   isLoading,
 }) => {
-  const [checkedItems, setCheckedItems] = useState([]);
   /****** Limit List Items ******/
   // Toggle number of items to show from reduced view to "all" view.
   const NUM_ITEMS_MIN = 5;
@@ -50,10 +49,11 @@ export const FiltersList: React.FC<FiltersList> = ({
 
   const items: FilterTerm[] =
     terms?.length > 0
-      ? terms.filter(t => t.term.toLowerCase().includes(searchTerm))
+      ? terms.filter(t => t.displayAs.toLowerCase().includes(searchTerm))
       : isLoading
       ? Array(NUM_ITEMS_MIN).fill('') // for loading skeleton purposes
       : [];
+
   return (
     <>
       {/* Search through filter terms */}
@@ -87,7 +87,8 @@ export const FiltersList: React.FC<FiltersList> = ({
                 return (
                   <ListItem key={i} p={2} py={0} my={0}>
                     <FilterItem
-                      term={item.term}
+                      value={item.term}
+                      displayTerm={item.displayAs}
                       count={item.count}
                       isLoading={isLoading}
                     />

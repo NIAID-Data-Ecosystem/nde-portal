@@ -9,15 +9,16 @@ import {
 import { formatNumber } from 'src/utils/helpers';
 
 export interface FilterItemProps extends CheckboxProps {
-  term: string;
+  displayTerm: string; // term used for display
+  value: string; // unique checkbox value.
   count?: number;
   isLoading: boolean;
 }
 
 export const FilterItem: React.FC<FilterItemProps> = React.memo(
-  ({ term, count, isLoading }) => {
+  ({ displayTerm, count, value, isLoading }) => {
     return (
-      <Checkbox spacing={1} size='lg' value={term} my={2}>
+      <Checkbox spacing={1} size='lg' value={value} my={2}>
         <Skeleton
           width='200px'
           h={isLoading ? 4 : 'unset'}
@@ -26,7 +27,7 @@ export const FilterItem: React.FC<FilterItemProps> = React.memo(
         >
           <Flex width='100%' ml={1}>
             <Text fontWeight='light' w='100%' fontSize='xs' lineHeight={1.5}>
-              {term}
+              {displayTerm}
               {typeof count !== 'undefined' && (
                 <Text as='span' fontWeight='semibold' ml={1}>
                   {count ? `(${formatNumber(count)})` : '-'}

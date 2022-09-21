@@ -7,6 +7,7 @@ import {
   FetchSearchResultsResponse,
   FormattedResource,
 } from 'src/utils/api/types';
+import { formatFacetTerm } from '../helpers';
 import { FacetTerms } from '../types';
 
 interface UseFilterDataProps {
@@ -42,6 +43,7 @@ export const useFacetsData = ({
           facetsData[facet] = {
             terms: response.facets[facet].terms.map((term: FacetTerm) => ({
               ...term,
+              displayAs: formatFacetTerm(term.term, facet),
               facet,
             })),
           };
@@ -51,7 +53,7 @@ export const useFacetsData = ({
       return facetsData;
     });
 
-    // Data for missing datasets with no faet term. (aka. n/a value in filter).
+    // Data for missing datasets with no facet term. (aka. n/a value in filter).
     const noExists = await Promise.all(
       facets.map(facet => {
         /* Fetch facets using query params. Note that we also get the facets count where data is non-existent to be used as an "N/A" attribute. */
@@ -64,36 +66,20 @@ export const useFacetsData = ({
           facets: facet,
         }).then(d => {
           if (!data || !d?.total) return;
-
-          // add facet term for "empty" property
-          return {
+          const empty = {
             count: d?.total,
-            term: `${facet}`,
-            facet: '-_exists_',
-            // name: 'N/A',
-            // filterTerm: `${facet}`,
-            // facet: '-_exists_',
+            term: '-_exists_',
+            displayAs: 'None',
+            facet,
           };
+          data[facet].terms.unshift(empty);
+          // add facet term for "empty" property
+          return empty;
         });
       }),
-    ).then(data => {
-      return {
-        '-_exists_': { terms: data.filter(d => d) },
-      };
-    });
-
-    return { ...noExists, ...data };
+    );
+    return data;
   };
-
-  // Gorup together similar "empty" terms for consistency
-  // const EMPTY_TERMS = ['n/a', 'none', 'null', 'unknown'];
-
-  // const formatTerm = (term: string) => {
-  //   if (EMPTY_TERMS.includes(term)) {
-  //     return 'N/A';
-  //   }
-  //   return term;
-  // };
 
   // We need 2 queries:
   interface FiltersResponse {

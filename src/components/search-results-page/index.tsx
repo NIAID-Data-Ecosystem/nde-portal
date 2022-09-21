@@ -327,14 +327,12 @@ const SearchResultsPage = () => {
               <Filters
                 queryParams={params}
                 selectedFilters={selectedFilters}
-                // facets={{ isLoading: isLoading, data: data?.facets }}
                 removeAllFilters={
                   applied_filters.length > 0
                     ? () => removeAllFilters()
                     : undefined
                 }
                 handleSelectedFilters={updatedFilters => {
-                  console.log('handleSelectedFilters', updatedFilters);
                   let updatedFilterString = queryFilterObject2String({
                     ...selectedFilters,
                     ...updatedFilters,

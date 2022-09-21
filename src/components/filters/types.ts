@@ -5,7 +5,7 @@ export type FacetTerms = {
 };
 
 export type SelectedFilterType = {
-  [key: string]: string[];
+  [key: string]: (string | { [key: string]: string[] })[];
 };
 
 export interface FiltersConfigProps {
