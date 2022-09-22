@@ -134,6 +134,12 @@ export interface IncludedInDataCatalog {
   identifier?: string | null;
 }
 
+export interface InteractionStatistics {
+  '@type'?: string | null;
+  userInteractionCount: number | null;
+  interactionType: string | null;
+}
+
 export interface IsBasedOn {
   '@type'?: string;
   _id?: string;
@@ -246,6 +252,7 @@ export interface FormattedResource {
     alternateName: string | null;
     name: string | null;
   } | null;
+  interactionStatistics: InteractionStatistics | null;
   isAccessibleForFree: boolean | null;
   isBasedOn: IsBasedOn[] | null;
   isBasisFor: IsBasisFor[] | null;

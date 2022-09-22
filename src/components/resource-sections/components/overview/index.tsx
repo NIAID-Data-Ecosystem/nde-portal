@@ -19,6 +19,7 @@ import {
   formatCitationString,
   formatDOI,
   formatLicense,
+  formatNumber,
 } from 'src/utils/helpers';
 import MetadataConfig from 'configs/resource-metadata.json';
 import StatField from './components/stat-field';
@@ -41,6 +42,7 @@ const Overview: React.FC<OverviewProps> = ({
   includedInDataCatalog,
   infectiousAgent,
   inLanguage,
+  interactionStatistics,
   isLoading,
   isPartOf,
   license,
@@ -190,10 +192,38 @@ const Overview: React.FC<OverviewProps> = ({
                   minWidth='200px'
                 >
                   <StatNumber>
-                    {aggregateRating.ratingValue || aggregateRating.ratingCount}
+                    {aggregateRating?.ratingValue &&
+                      formatNumber(aggregateRating?.ratingValue)}
+                    {aggregateRating?.ratingCount &&
+                      formatNumber(aggregateRating?.ratingCount)}
                   </StatNumber>
                   {aggregateRating.reviewAspect && (
                     <StatHelpText>{aggregateRating.reviewAspect}</StatHelpText>
+                  )}
+                </StatField>
+              )}
+
+            {interactionStatistics &&
+              interactionStatistics.userInteractionCount &&
+              includedInDataCatalog?.name && (
+                <StatField
+                  isLoading={false}
+                  d='flex'
+                  {...getStatInfo(
+                    `${includedInDataCatalog.name} User Interaction Metrics`,
+                  )}
+                  justifyContent='center'
+                  mr={2}
+                  flex={1}
+                  minWidth='200px'
+                >
+                  <StatNumber>
+                    {formatNumber(interactionStatistics.userInteractionCount)}
+                  </StatNumber>
+                  {interactionStatistics.interactionType && (
+                    <StatHelpText>
+                      {interactionStatistics.interactionType}
+                    </StatHelpText>
                   )}
                 </StatField>
               )}

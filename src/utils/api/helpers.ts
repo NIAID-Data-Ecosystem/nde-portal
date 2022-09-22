@@ -291,6 +291,7 @@ export const formatAPIResource = (data: any) => {
         }
       : null,
     infectiousAgent: convertToArray(data.infectiousAgent),
+    interactionStatistics: data.interactionStatistics || null,
     isAccessibleForFree: data.isAccessibleForFree,
     isBasedOn: convertToArray(data.isBasedOn),
     isBasisFor: convertToArray(data.isBasisFor),
