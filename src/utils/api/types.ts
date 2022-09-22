@@ -28,6 +28,7 @@ type NestedFacet =
 export interface FacetTerm {
   count: number;
   term: string;
+  displayAs: string;
   [key: string]: NestedFacet;
 }
 
@@ -131,6 +132,12 @@ export interface IncludedInDataCatalog {
   versionDate?: string | null;
   image?: string | null;
   identifier?: string | null;
+}
+
+export interface InteractionStatistics {
+  '@type'?: string | null;
+  userInteractionCount: number | null;
+  interactionType: string | null;
 }
 
 export interface IsBasedOn {
@@ -245,6 +252,7 @@ export interface FormattedResource {
     alternateName: string | null;
     name: string | null;
   } | null;
+  interactionStatistics: InteractionStatistics | null;
   isAccessibleForFree: boolean | null;
   isBasedOn: IsBasedOn[] | null;
   isBasisFor: IsBasisFor[] | null;
