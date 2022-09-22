@@ -17,11 +17,12 @@ Filter drawer corresponding to a filter facet.
 
 interface FiltersSectionProps {
   name: string;
+  property: string;
   icon?: string;
 }
 
 export const FiltersSection: React.FC<FiltersSectionProps> = React.memo(
-  ({ name, icon, children }) => {
+  ({ name, icon, property, children }) => {
     return (
       <AccordionItem borderColor='page.alt' borderTopWidth='2px'>
         {({ isExpanded }) => {
@@ -53,13 +54,16 @@ export const FiltersSection: React.FC<FiltersSectionProps> = React.memo(
 
                     {/* Icon tooltip with property definition. */}
                     {icon && (
-                      <MetadataToolTip propertyName={icon}>
+                      <MetadataToolTip
+                        propertyName={property}
+                        recordType='Dataset' // [NOTE]: Choosing dataset for general definition.
+                        showAbstract
+                      >
                         <MetadataIcon
-                          id={`filter-${icon}`}
+                          id={`filter-${property}`}
                           mx={2}
                           glyph={icon}
                           fill={getMetadataColor(icon)}
-                          boxSize={6}
                         ></MetadataIcon>
                       </MetadataToolTip>
                     )}

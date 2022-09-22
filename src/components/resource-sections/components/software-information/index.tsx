@@ -21,6 +21,7 @@ import {
 
 interface SoftwareInformation {
   isLoading: boolean;
+  applicationCategory?: FormattedResource['applicationCategory'];
   discussionUrl?: FormattedResource['discussionUrl'];
   isBasedOn?: FormattedResource['isBasedOn'];
   isBasisFor?: FormattedResource['isBasisFor'];
@@ -35,6 +36,7 @@ interface SoftwareInformation {
 
 const SoftwareInformation: React.FC<SoftwareInformation> = ({
   isLoading,
+  applicationCategory,
   discussionUrl,
   isBasedOn,
   isBasisFor,
@@ -71,6 +73,15 @@ const SoftwareInformation: React.FC<SoftwareInformation> = ({
               <StatLabel>Programming Language</StatLabel>
               <dd>
                 <StatText>{programmingLanguage.join(', ')}</StatText>
+              </dd>
+            </Stat>
+          )}
+
+          {applicationCategory && (
+            <Stat>
+              <StatLabel>Software Category</StatLabel>
+              <dd>
+                <StatText>{applicationCategory.join(', ')}</StatText>
               </dd>
             </Stat>
           )}

@@ -24,8 +24,9 @@ export const FilterItem: React.FC<FilterItemProps> = React.memo(
           h={isLoading ? 4 : 'unset'}
           isLoaded={!isLoading}
           flex={1}
+          ml={1}
         >
-          <Flex width='100%' ml={1}>
+          <Flex width='100%'>
             <Text fontWeight='light' w='100%' fontSize='xs' lineHeight={1.5}>
               {displayTerm}
               {typeof count !== 'undefined' && (

@@ -37,6 +37,8 @@ const CardDetails: React.FC<CardDetailsProps> = ({ data }) => {
     infectiousAgent,
     healthCondition,
     usageInfo,
+    applicationCategory,
+    programmingLanguage,
   } = data || {};
 
   const paddingCard = [4, 6, 8, 10];
@@ -97,6 +99,16 @@ const CardDetails: React.FC<CardDetailsProps> = ({ data }) => {
           value={healthCondition}
         />
         <Badge property='species' glyph='species' value={species} />
+        <Badge
+          property='applicationCategory'
+          glyph='applicationCategory'
+          value={applicationCategory}
+        />{' '}
+        <Badge
+          property='programmingLanguage'
+          glyph='programmingLanguage'
+          value={programmingLanguage}
+        />
       </Flex>
     );
   };
@@ -341,6 +353,46 @@ const CardDetails: React.FC<CardDetailsProps> = ({ data }) => {
                           );
                         })}
                       </Text>
+                    )}
+                  </MetadataProperty>
+
+                  {/* Application Category */}
+                  <MetadataProperty
+                    id={`applicationCategory-${id}`}
+                    label='Software Category'
+                    glyph='applicationCategory'
+                    type={data?.['@type']}
+                  >
+                    {applicationCategory && (
+                      <UnorderedList ml={0}>
+                        {applicationCategory.map((category, i) => {
+                          return (
+                            <ListItem key={`${category}-${i}`}>
+                              {category}
+                            </ListItem>
+                          );
+                        })}
+                      </UnorderedList>
+                    )}
+                  </MetadataProperty>
+
+                  {/* Programming Language */}
+                  <MetadataProperty
+                    id={`programmingLanguage-${id}`}
+                    label='Programming Language'
+                    glyph='programmingLanguage'
+                    type={data?.['@type']}
+                  >
+                    {programmingLanguage && (
+                      <UnorderedList ml={0}>
+                        {programmingLanguage.map((language, i) => {
+                          return (
+                            <ListItem key={`${language}-${i}`}>
+                              {language}
+                            </ListItem>
+                          );
+                        })}
+                      </UnorderedList>
                     )}
                   </MetadataProperty>
                 </SimpleGrid>

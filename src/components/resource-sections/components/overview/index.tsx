@@ -251,6 +251,7 @@ const Overview: React.FC<OverviewProps> = ({
               </StatField>
             </Box>
           )}
+
           {/* species covered in resource */}
           <StatField
             isLoading={isLoading}
@@ -375,33 +376,6 @@ const Overview: React.FC<OverviewProps> = ({
             )}
           </StatField>
 
-          {/* programming language */}
-          {programmingLanguage && (
-            <StatField
-              isLoading={isLoading}
-              {...getStatInfo('programmingLanguage')}
-            >
-              <UnorderedList ml={0}>
-                {programmingLanguage?.map((language, i) => {
-                  return (
-                    <ListItem key={`${language}-${i}`}>
-                      <StatContent content={language} />
-                    </ListItem>
-                  );
-                })}
-              </UnorderedList>
-            </StatField>
-          )}
-
-          {softwareVersion && (
-            <StatField
-              isLoading={isLoading}
-              {...getStatInfo('softwareVersion')}
-            >
-              {softwareVersion.join(',')}
-            </StatField>
-          )}
-
           {/* language */}
           {inLanguage && inLanguage.name && (
             <StatField isLoading={isLoading} {...getStatInfo('inLanguage')}>
@@ -455,32 +429,91 @@ const Overview: React.FC<OverviewProps> = ({
             </StatField>
           )}
 
-          {/* Type of Computational Tool */}
-          {data['@type'] === 'ComputationalTool' &&
-            (data['applicationCategory'] || data['applicationSubCategory']) && (
-              <Box>
-                <StatField isLoading={isLoading} label='Tool'>
-                  <StatField isLoading={isLoading} label='Category' py={1}>
-                    <StatContent
-                      content={data.applicationCategory?.join(', ')}
-                    />
-                  </StatField>
+          {/* programming language */}
+          {data['@type'] === 'ComputationalTool' && (
+            <StatField
+              isLoading={isLoading}
+              icon={() => (
+                <StatIcon
+                  id='programmingLanguage'
+                  glyph='programmingLanguage'
+                />
+              )}
+              {...getStatInfo('programmingLanguage')}
+            >
+              {programmingLanguage ? (
+                <UnorderedList ml={0}>
+                  {programmingLanguage?.map((language, i) => {
+                    return (
+                      <ListItem key={`${language}-${i}`}>
+                        <StatContent content={language} />
+                      </ListItem>
+                    );
+                  })}
+                </UnorderedList>
+              ) : (
+                '-'
+              )}
+            </StatField>
+          )}
 
-                  {data.applicationSubCategory && (
-                    <StatField isLoading={isLoading} label='Subcategory' py={1}>
+          {softwareVersion && (
+            <StatField
+              isLoading={isLoading}
+              {...getStatInfo('softwareVersion')}
+            >
+              {softwareVersion.join(',')}
+            </StatField>
+          )}
+
+          {/* Type of Computational Tool */}
+          {data['@type'] === 'ComputationalTool' && (
+            <Box>
+              <StatField
+                isLoading={isLoading}
+                label='Software Information'
+                icon={() => (
+                  <StatIcon
+                    id='applicationCategory'
+                    glyph='applicationCategory'
+                  />
+                )}
+              >
+                {!data.applicationCategory &&
+                !data.applicationSubCategory &&
+                !data.applicationSuite ? (
+                  '-'
+                ) : (
+                  <>
+                    <StatField isLoading={isLoading} label='Category' py={1}>
                       <StatContent
-                        content={data.applicationSubCategory.join(', ')}
+                        content={data.applicationCategory?.join(', ')}
                       />
                     </StatField>
-                  )}
-                  {data.applicationSuite && (
-                    <StatField isLoading={isLoading} label='Suite' py={1}>
-                      <StatContent content={data.applicationSuite.join(', ')} />
-                    </StatField>
-                  )}
-                </StatField>
-              </Box>
-            )}
+
+                    {data.applicationSubCategory && (
+                      <StatField
+                        isLoading={isLoading}
+                        label='Subcategory'
+                        py={1}
+                      >
+                        <StatContent
+                          content={data.applicationSubCategory.join(', ')}
+                        />
+                      </StatField>
+                    )}
+                    {data.applicationSuite && (
+                      <StatField isLoading={isLoading} label='Suite' py={1}>
+                        <StatContent
+                          content={data.applicationSuite.join(', ')}
+                        />
+                      </StatField>
+                    )}
+                  </>
+                )}
+              </StatField>
+            </Box>
+          )}
 
           {/* Related Ids */}
           <StatField

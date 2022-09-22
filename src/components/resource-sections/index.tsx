@@ -49,6 +49,7 @@ export const section_metadata: { [key: string]: (keyof FormattedResource)[] } =
       'variableMeasured',
     ],
     softwareInformation: [
+      'applicationCategory',
       'discussionUrl',
       'isBasedOn',
       'isBasisFor',

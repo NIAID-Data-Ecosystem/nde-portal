@@ -9,6 +9,8 @@ import {
   FaQuoteLeft,
   FaInfo,
   FaRegCalendarAlt,
+  FaLaptopCode,
+  FaCode,
 } from 'react-icons/fa';
 import { IconType } from 'react-icons';
 import Glyph from './components/glyph';
@@ -41,19 +43,22 @@ export const MetadataIcon = React.forwardRef<HTMLDivElement, IconProps>(
       FaIcon = FaQuoteLeft;
     } else if (glyph?.toLowerCase() === 'identifier') {
       FaIcon = FaFingerprint;
+    } else if (glyph?.toLowerCase() === 'applicationcategory') {
+      FaIcon = FaLaptopCode;
+    } else if (glyph?.toLowerCase() === 'programminglanguage') {
+      FaIcon = FaCode;
     } else if (glyph?.toLowerCase() === 'date') {
       FaIcon = FaRegCalendarAlt;
     } else if (glyph?.toLowerCase() === 'info') {
       FaIcon = () => (
         <Icon
           as={FaInfo}
+          boxSize='1.15rem'
           color='gray.700'
-          mx={3}
+          fill='#000'
           border='0.625px solid'
           borderRadius='100%'
-          p={0.5}
-          boxSize={4}
-          viewBox='0 0 200 200'
+          p='0.2rem'
           {...props}
         />
       );
@@ -64,11 +69,11 @@ export const MetadataIcon = React.forwardRef<HTMLDivElement, IconProps>(
       <Flex ref={ref}>
         {FaIcon ? (
           <Icon
-            viewBox='0 0 200 200'
-            boxSize={5}
             as={FaIcon}
+            viewBox='0 0 200 200'
             color='#000'
             fill='#000'
+            boxSize={5}
             {...props}
           />
         ) : (

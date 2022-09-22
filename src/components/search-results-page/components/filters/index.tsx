@@ -21,15 +21,18 @@ export const FACET_SIZE = 1000;
 Config for the naming/text of a filter.
 [NOTE]: Order matters here as the filters will be rendered in the order of the keys.
 */
-
 export const filtersConfig: Record<
   string,
   { name: string; glyph?: string; property?: string }
 > = {
   '@type': { name: 'Type' },
-  'includedInDataCatalog.name': { name: 'Source' },
+  'includedInDataCatalog.name': {
+    name: 'Source',
+    glyph: 'info',
+    property: 'includedInDataCatalog',
+  },
+  keywords: { name: 'Keywords', glyph: 'info', property: 'keywords' },
   date: { name: 'Date ', glyph: 'date', property: 'date' },
-  keywords: { name: 'Keywords' },
   'measurementTechnique.name': {
     name: 'Measurement Technique',
     glyph: 'measurementTechnique',
@@ -56,6 +59,17 @@ export const filtersConfig: Record<
     property: 'infectiousAgent',
   },
   'species.name': { name: 'Species', glyph: 'species', property: 'species' },
+  // [TO DO]: Add computational tool filters when schema is updated.
+  // applicationCategory: {
+  //   name: 'Software Category',
+  //   glyph: '',
+  //   property: 'applicationCategory',
+  // },
+  // programmingLanguage: {
+  //   name: 'Programming Language',
+  //   glyph: '',
+  //   property: 'programmingLanguage',
+  // },
 };
 
 interface FiltersProps {
@@ -90,10 +104,15 @@ export const Filters: React.FC<FiltersProps> = ({
       removeAllFilters={removeAllFilters}
     >
       {facets.map(facet => {
-        const { name, glyph } = filtersConfig[facet];
+        const { name, glyph, property } = filtersConfig[facet];
 
         return (
-          <FiltersSection key={facet} name={name} icon={glyph}>
+          <FiltersSection
+            key={facet}
+            name={name}
+            icon={glyph}
+            property={property || ''}
+          >
             <FiltersList
               searchPlaceholder={`Search ${name.toLowerCase()} filters`}
               terms={data[facet]}
