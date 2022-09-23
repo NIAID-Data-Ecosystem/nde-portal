@@ -51,7 +51,11 @@
       "name": "NCBI Gene Expression Omnibus",
       "imageUrl": "/assets/resources/geo.gif"
     },
-
+    {
+      "sourceName": "NCBI SRA",
+      "name": "NCBI Sequence Read Archive",
+      "imageUrl": "/assets/resources/ncbi-sra.png"
+    },
     {
       "sourceName": "Omics Discovery Index (OmicsDI)",
       "name": "Omics Discovery Index (OmicsDI)",
