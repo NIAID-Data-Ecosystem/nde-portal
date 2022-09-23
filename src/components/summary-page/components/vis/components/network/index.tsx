@@ -17,7 +17,7 @@ import { fetchSearchResults } from 'src/utils/api';
 import { FetchSearchResultsResponse } from 'src/utils/api/types';
 import { Error } from 'src/components/error';
 import LoadingSpinner from 'src/components/loading';
-import { SelectedFilterType } from '../../../hooks';
+import { SelectedFilterType } from 'src/components/filters/types';
 import { Chart as NetworkNodes, Datum, parameters } from './components/chart';
 import * as d3 from 'd3';
 import MeasurementPathogenViz from '../measurement-pathogen-viz/index';

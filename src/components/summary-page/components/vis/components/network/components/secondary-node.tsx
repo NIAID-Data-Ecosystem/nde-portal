@@ -3,7 +3,7 @@ import { useEffect, useRef, useMemo } from 'react';
 import { Datum, parameters } from './chart';
 import { theme } from 'nde-design-system';
 import { formatClassName, highlightNodes } from '../helpers';
-import { SelectedFilterType } from 'src/components/search-results-page/components/filters';
+import { SelectedFilterType } from 'src/components/filters/types';
 
 interface SecondaryDatum extends Datum {
   primary: Datum;

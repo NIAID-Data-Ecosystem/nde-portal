@@ -4,3 +4,4 @@ export * from './components/filters-list';
 export * from './components/filters-item';
 export * from './components/filters-tag';
 export * from './helpers';
+export * from './hooks/useFacetsData';

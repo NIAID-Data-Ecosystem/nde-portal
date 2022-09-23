@@ -5,10 +5,7 @@ import {
   queryFilterString2Object,
 } from 'src/components/filters/';
 import { updateRoute } from './helpers';
-
-export type SelectedFilterType = {
-  [key: string]: string[];
-};
+import { SelectedFilterType } from 'src/components/filters/types';
 
 /*
   This hook takes a filters object and transforms it into a string to use in the route.

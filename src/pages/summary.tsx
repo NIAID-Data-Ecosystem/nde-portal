@@ -17,6 +17,7 @@ import {
   useFilterString,
   useQueryString,
   DylanVis,
+  filtersConfig,
 } from 'src/components/summary-page';
 import { useHasMounted } from 'src/hooks/useHasMounted';
 import { queryFilterObject2String } from 'src/components/filters';
@@ -88,20 +89,6 @@ const SummaryPage: NextPage = () => {
       ],
     },
   ];
-
-  // List of needed filters/naming convention.
-  const filtersConfig: {
-    [key: string]: {
-      name: string;
-    };
-  } = {
-    'includedInDataCatalog.name': { name: 'Source' },
-    'funding.funder.name': { name: 'Funding' },
-    'infectiousAgent.name': { name: 'Pathogen' },
-    'measurementTechnique.name': {
-      name: 'Measurement Technique',
-    },
-  };
 
   /*
   This hook updates the url when a query string is changed. Note that when a query string is changed, we also update pagination and filters to their default state.
@@ -255,9 +242,10 @@ const SummaryPage: NextPage = () => {
             </>
           </PageHeader>
         </section>
+
+        {/* Filter Handling */}
         <section id='search-filters'>
           <PageContent minH='unset' bg='white'>
-            {/* Filters */}
             <Box w='100%'>
               <FilterTags
                 filters={filters}
@@ -267,7 +255,6 @@ const SummaryPage: NextPage = () => {
               <Filters
                 queryString={queryString}
                 filters={filters}
-                facets={Object.keys(filtersConfig).join(',')}
                 handleSelectedFilters={updateFilters}
               />
             </Box>

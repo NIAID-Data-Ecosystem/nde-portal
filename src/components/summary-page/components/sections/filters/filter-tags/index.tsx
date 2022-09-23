@@ -11,10 +11,13 @@ import {
   FaChevronUp,
   FaExclamationCircle,
 } from 'react-icons/fa';
-import { SelectedFilterType } from '../../../hooks';
 // [TO DO]: export to global components.
 import { FilterTags as Tags } from 'src/components/filters';
 import { useEffect, useRef, useState } from 'react';
+import {
+  SelectedFilterType,
+  SelectedFilterTypeValue,
+} from 'src/components/filters/types';
 
 interface FilterTagsProps {
   // Filters applied to data.
@@ -71,7 +74,10 @@ export const FilterTags: React.FC<FilterTagsProps> = ({
           <Tags
             tags={filter_tags}
             removeAllFilters={() => removeAllFilters()}
-            removeSelectedFilter={(name: string, value: string | number) => {
+            removeSelectedFilter={(
+              name: keyof SelectedFilterType,
+              value: SelectedFilterTypeValue,
+            ) => {
               let updatedFilter = {
                 [name]: filters[name].filter(v => v !== value),
               };

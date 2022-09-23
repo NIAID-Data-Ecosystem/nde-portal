@@ -21,7 +21,7 @@ import DylanDoughnutChart from './dylan-doughnut';
 import { enUS } from 'date-fns/locale';
 import 'chartjs-adapter-moment';
 import { Box, Flex } from 'nde-design-system';
-import { SelectedFilterType } from '../../hooks';
+import { SelectedFilterType } from 'src/components/filters/types';
 import LoadingSpinner from 'src/components/loading';
 import { PageContent } from 'src/components/page-container';
 

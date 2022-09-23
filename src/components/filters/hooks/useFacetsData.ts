@@ -1,12 +1,8 @@
 import { useState } from 'react';
 import { useQuery } from 'react-query';
 import { fetchSearchResults, Params } from 'src/utils/api';
-import {
-  Facet,
-  FacetTerm,
-  FetchSearchResultsResponse,
-  FormattedResource,
-} from 'src/utils/api/types';
+import { Facet, FacetTerm, FormattedResource } from 'src/utils/api/types';
+import { encodeString } from 'src/utils/querystring-helpers';
 import { formatFacetTerm } from '../helpers';
 import { FacetTerms } from '../types';
 
@@ -35,6 +31,7 @@ export const useFacetsData = ({
     }
     const data = await fetchSearchResults({
       ...params,
+      q: encodeString(params.q),
       facets: facets.join(','),
     }).then(response => {
       const facetsData = {} as { [key: string]: { terms: FacetTerm[] } };
@@ -59,6 +56,7 @@ export const useFacetsData = ({
         /* Fetch facets using query params. Note that we also get the facets count where data is non-existent to be used as an "N/A" attribute. */
         return fetchSearchResults({
           ...params,
+          q: encodeString(params.q),
           extra_filter: params?.extra_filter
             ? `${params.extra_filter} AND -_exists_:${facet}`
             : `-_exists_:${facet}`,

@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import * as d3 from 'd3';
 import { Box, Flex, Text } from 'nde-design-system';
 import { Datum } from '../../../network/components/chart';
-import { SelectedFilterType } from 'src/components/summary-page/components/hooks';
+import { SelectedFilterType } from 'src/components/filters/types';
 import { FacetTerm } from 'src/utils/api/types';
 
 interface BarChartProps {

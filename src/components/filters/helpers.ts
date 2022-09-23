@@ -1,32 +1,4 @@
-export const formatFacetTerm = (term: string, facet: string) => {
-  if (facet === '@type') {
-    return formatType(term);
-  }
-  return term;
-};
-
-export const formatType = (term: string) => {
-  if (term.toLowerCase() === 'computationaltool') {
-    return 'Computational Tool';
-  } else if (term.toLowerCase() === 'dataset') {
-    return 'Dataset';
-  }
-  return term;
-};
-
-// Format the type of resource so that the query term is recognizable by the api.
-export const formatTypeForAPI = (types: string[]) => {
-  return types.map(type => {
-    let t = type.toLowerCase().replace(/ /g, '');
-    if (t === 'dataset') {
-      return 'Dataset';
-    } else if (t === 'computationaltool') {
-      return 'ComputationalTool';
-    } else {
-      return type;
-    }
-  });
-};
+import { formatDate, formatType } from 'src/utils/api/helpers';
 
 // Convert filters object to string for url routing + api call.
 export const queryFilterObject2String = (selectedFilters: any) => {
@@ -104,4 +76,31 @@ export const queryFilterString2Object = (str?: string | string[]) => {
     return r;
   }, {});
   return queryObject;
+};
+
+/////////////////////////////////////////////////////
+/////// Format Terms (for display purposes) /////////
+/////////////////////////////////////////////////////
+
+export const formatFacetTerm = (term: string, facet: string) => {
+  if (facet === '@type') {
+    return formatType(term);
+  } else if (facet === 'date') {
+    return formatDate(term);
+  }
+  return term;
+};
+
+// Format the dataset type(if changed for display) to the @type accepted in the API.
+export const formatTypeForAPI = (types: string[]) => {
+  return types.map(type => {
+    let t = type.toLowerCase().replace(/ /g, '');
+    if (t === 'dataset') {
+      return 'Dataset';
+    } else if (t === 'computationaltool') {
+      return 'ComputationalTool';
+    } else {
+      return type;
+    }
+  });
 };
