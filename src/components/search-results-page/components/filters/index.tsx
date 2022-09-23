@@ -59,17 +59,16 @@ export const filtersConfig: Record<
     property: 'infectiousAgent',
   },
   'species.name': { name: 'Species', glyph: 'species', property: 'species' },
-  // [TO DO]: Add computational tool filters when schema is updated.
-  // applicationCategory: {
-  //   name: 'Software Category',
-  //   glyph: '',
-  //   property: 'applicationCategory',
-  // },
-  // programmingLanguage: {
-  //   name: 'Programming Language',
-  //   glyph: '',
-  //   property: 'programmingLanguage',
-  // },
+  applicationCategory: {
+    name: 'Software Category',
+    glyph: 'applicationCategory',
+    property: 'applicationCategory',
+  },
+  programmingLanguage: {
+    name: 'Programming Language',
+    glyph: 'programmingLanguage',
+    property: 'programmingLanguage',
+  },
 };
 
 interface FiltersProps {
