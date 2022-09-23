@@ -23,11 +23,10 @@ import {
 import {
   queryFilterObject2String,
   queryFilterString2Object,
-} from 'src/components/filter/helpers';
+} from 'src/components/filters';
 import { Error, ErrorCTA } from 'src/components/error';
 import { Pagination, MAX_PAGES } from './components/pagination';
 import { useHasMounted } from 'src/hooks/useHasMounted';
-import { FilterTags } from './components/filters/components/tags';
 import { FACET_SIZE, Filters, filtersConfig } from './components/filters';
 import Card from './components/card';
 import Banner from '../banner';
@@ -38,7 +37,8 @@ import { DownloadMetadata } from '../download-metadata';
 import NextLink from 'next/link';
 import { FaChartBar } from 'react-icons/fa';
 import { encodeString } from 'src/utils/querystring-helpers';
-import { SelectedFilterType } from '../filters/types';
+import { SelectedFilterType, SelectedFilterTypeValue } from '../filters/types';
+import { FilterTags } from 'src/components/filters/';
 
 /*
 [COMPONENT INFO]:
@@ -305,11 +305,16 @@ const SearchResultsPage = () => {
                 tags={applied_filters}
                 removeAllFilters={removeAllFilters}
                 removeSelectedFilter={(
-                  name: string,
-                  value: string | number,
+                  name: keyof SelectedFilterType,
+                  value: SelectedFilterTypeValue,
                 ) => {
                   const updatedFilter = {
-                    [name]: selectedFilters[name].filter(v => v !== value),
+                    [name]: selectedFilters[name].filter(v => {
+                      if (typeof value === 'object' || v === 'object') {
+                        return JSON.stringify(v) !== JSON.stringify(value);
+                      }
+                      return v !== value;
+                    }),
                   };
 
                   let filters = queryFilterObject2String({

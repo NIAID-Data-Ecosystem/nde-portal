@@ -20,7 +20,7 @@ import {
 } from 'nde-design-system';
 import { useQuery } from 'react-query';
 import { fetchSearchResults } from 'src/utils/api';
-import { queryFilterObject2String } from 'src/components/filter/helpers';
+import { queryFilterObject2String } from 'src/components/filters';
 import {
   FetchSearchResultsResponse,
   FormattedResource,

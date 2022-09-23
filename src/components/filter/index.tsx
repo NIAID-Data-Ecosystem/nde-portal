@@ -10,7 +10,6 @@ import {
   ListItem,
   Text,
 } from 'nde-design-system';
-import { filterFilterList } from './helpers';
 import { formatNumber } from 'src/utils/helpers';
 
 const FilterItem = ({
@@ -76,8 +75,10 @@ export const Filter: React.FC<FilterProps> = ({
   // Sorts and filter the filter terms list based on search box.
   const NUM_ITEMS = 5;
   const [numItems, setNumItems] = useState(NUM_ITEMS);
-  const { items, hasMore }: { items: filterValue[]; hasMore: boolean } =
-    filterFilterList(values, searchTerm, numItems);
+  const { items, hasMore }: { items: filterValue[]; hasMore: boolean } = {
+    items: values,
+    hasMore: true,
+  };
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>): void =>
     setSearchTerm(e.target.value);
@@ -149,5 +150,3 @@ export const Filter: React.FC<FilterProps> = ({
     </>
   );
 };
-
-export * from './helpers';

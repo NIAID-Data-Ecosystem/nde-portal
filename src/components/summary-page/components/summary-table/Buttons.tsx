@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box, Button, Flex } from 'nde-design-system';
-import { queryFilterObject2String } from 'src/components/filter/helpers';
+import { queryFilterObject2String } from 'src/components/filters';
 import { SelectedFilterType } from '../hooks';
 import { DownloadMetadata } from 'src/components/download-metadata';
 import { useRouter } from 'next/router';

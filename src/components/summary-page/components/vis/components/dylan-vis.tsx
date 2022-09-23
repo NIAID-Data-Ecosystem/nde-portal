@@ -9,7 +9,7 @@ import {
 } from 'chart.js';
 import { FacetTerm, FetchSearchResultsResponse } from 'src/utils/api/types';
 import { useQuery } from 'react-query';
-import { queryFilterObject2String } from 'src/components/filter';
+import { queryFilterObject2String } from 'src/components/filters';
 import { fetchSearchResults } from 'src/utils/api';
 import {
   createDataCatalogDataset,

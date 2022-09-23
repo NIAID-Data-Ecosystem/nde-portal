@@ -13,7 +13,7 @@ import {
 } from 'react-icons/fa';
 import { SelectedFilterType } from '../../../hooks';
 // [TO DO]: export to global components.
-import { FilterTags as Tags } from 'src/components/search-results-page/components/filters/components/tags';
+import { FilterTags as Tags } from 'src/components/filters';
 import { useEffect, useRef, useState } from 'react';
 
 interface FilterTagsProps {

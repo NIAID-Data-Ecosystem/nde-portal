@@ -51,8 +51,9 @@ export const fetchSearchResults = async (params: Params) => {
         params,
       },
     );
+
     if (!data.hits) {
-      return { results: [], total: 0, facets: data.facets || null };
+      return { results: [], total: data.total, facets: data.facets || null };
     }
 
     const results: FetchSearchResultsResponse['results'] = data.hits.map(

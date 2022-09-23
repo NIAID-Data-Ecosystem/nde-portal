@@ -64,16 +64,17 @@ export const useFacetsData = ({
             : `-_exists_:${facet}`,
           facet_size: 0,
           facets: facet,
-        }).then(d => {
-          if (!data || !d?.total) return;
+        }).then(response => {
+          if (!data || !response?.total) return;
+
           const empty = {
-            count: d?.total,
+            count: response?.total || 0,
             term: '-_exists_',
             displayAs: 'None',
             facet,
           };
-          data[facet].terms.unshift(empty);
           // add facet term for "empty" property
+          data[facet].terms.unshift(empty);
           return empty;
         });
       }),
@@ -88,6 +89,7 @@ export const useFacetsData = ({
       count: number;
       updatedCount?: number;
       name?: string;
+      displayAs: string;
     }[];
   }
   // 1. Show all filters for a given search. (omit extra_filters). Runs on load/new querystring.
@@ -96,7 +98,7 @@ export const useFacetsData = ({
     error: allFiltersError,
     data: initialData,
   } = useQuery<
-    FetchSearchResultsResponse['facets'] | undefined,
+    { [key: string]: { terms: FacetTerm[] } } | undefined,
     Error,
     FiltersResponse
   >(
@@ -136,7 +138,7 @@ export const useFacetsData = ({
 
   // 2. Update counts on facet when filters are applied to searchquery from 1. Runs on load/new querystring and when filters are changed.
   const { isLoading: isUpdating, error: updatedFiltersError } = useQuery<
-    FetchSearchResultsResponse | undefined,
+    { [key: string]: { terms: FacetTerm[] } } | undefined,
     Error,
     Facet
   >(

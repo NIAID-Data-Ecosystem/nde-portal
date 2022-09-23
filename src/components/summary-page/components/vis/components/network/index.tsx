@@ -21,7 +21,7 @@ import { SelectedFilterType } from '../../../hooks';
 import { Chart as NetworkNodes, Datum, parameters } from './components/chart';
 import * as d3 from 'd3';
 import MeasurementPathogenViz from '../measurement-pathogen-viz/index';
-import { queryFilterObject2String } from 'src/components/filter';
+import { queryFilterObject2String } from 'src/components/filters';
 import { FaCheckCircle, FaRegCircle } from 'react-icons/fa';
 import { formatNumber } from 'src/utils/helpers';
 import { encodeString } from 'src/utils/querystring-helpers';

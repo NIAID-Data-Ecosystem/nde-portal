@@ -19,8 +19,8 @@ import {
   Network,
 } from 'src/components/summary-page';
 import { useHasMounted } from 'src/hooks/useHasMounted';
-import { queryFilterObject2String } from 'src/components/filter';
-import { FilterTags } from 'src/components/search-results-page/components/filters/components/tags';
+import { queryFilterObject2String } from 'src/components/filters';
+import { FilterTags } from 'src/components/filters';
 import { useQuery } from 'react-query';
 import { FacetTerm, FetchSearchResultsResponse } from 'src/utils/api/types';
 import { fetchSearchResults } from 'src/utils/api';

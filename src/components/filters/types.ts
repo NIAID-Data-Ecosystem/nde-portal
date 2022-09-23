@@ -4,12 +4,17 @@ export type FacetTerms = {
   [key: string]: FacetTerm[];
 };
 
-export type SelectedFilterType = {
-  [key: string]: (string | { [key: string]: string[] })[];
-};
+export type SelectedFilterTypeValue = string | { [key: string]: string[] };
+
+export interface SelectedFilterType {
+  [key: string]: SelectedFilterTypeValue[];
+}
 
 export interface FiltersConfigProps {
   [key: string]: { name: string; glyph?: string };
 }
 
 export interface FilterTerm extends FacetTerm {}
+
+// union of all values from given Object type T.
+export type ValueOf<T> = T[keyof T];

@@ -7,17 +7,22 @@ import {
   TagLabel,
 } from 'nde-design-system';
 import { filtersConfig } from 'src/components/search-results-page/components/filters';
+import { SelectedFilterType, SelectedFilterTypeValue, ValueOf } from '../types';
 
 /*
 [COMPONENT INFO]:
   When filters are applied to the data, we display tags/tags for each filter.
   Tags contain close option which when closed, toggle the filter off.
 */
+// tags: [string, (string | number | { [key: string]: string | string[] })[]][];
 
 interface FilterTags extends FlexProps {
-  tags: [string, (string | number)[]][];
+  tags: [keyof SelectedFilterType, ValueOf<SelectedFilterType>][];
   removeAllFilters: () => void;
-  removeSelectedFilter: (name: string, value: string | number) => void;
+  removeSelectedFilter: (
+    name: keyof SelectedFilterType,
+    value: SelectedFilterTypeValue,
+  ) => void;
 }
 
 export const FilterTags: React.FC<FilterTags> = ({
@@ -42,12 +47,16 @@ export const FilterTags: React.FC<FilterTags> = ({
       {tags.map(([key, values]) => {
         return values.map(v => {
           const name = filtersConfig[key]?.name || `${key}`;
+          let value = v || '';
+          if (typeof v === 'object' && Object.keys(v)[0].includes('exists')) {
+            value = 'None';
+          }
 
           return (
             <Tag key={`${v}`} colorScheme='secondary' size='lg' m={1}>
               <TagLabel whiteSpace='break-spaces'>
                 {name}
-                {v ? `: ${v}` : ''}
+                {value ? `: ${value}` : ''}
               </TagLabel>
               <TagCloseButton onClick={() => removeSelectedFilter(key, v)} />
             </Tag>

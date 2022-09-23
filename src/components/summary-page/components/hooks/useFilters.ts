@@ -3,7 +3,7 @@ import { useRouter } from 'next/router';
 import {
   queryFilterObject2String,
   queryFilterString2Object,
-} from 'src/components/filter/helpers';
+} from 'src/components/filters/';
 import { updateRoute } from './helpers';
 
 export type SelectedFilterType = {
