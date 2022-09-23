@@ -49,7 +49,7 @@ const ResourceAuthors = ({
 
   // Check if ORCID url is in the identifier. Prepend it if missing.
   const formatOrcid = (id: string) => {
-    if (id.includes('http://orcid.org/')) {
+    if (id.includes('http://orcid.org/') || id.includes('https://orcid.org/')) {
       return id;
     } else {
       return `http://orcid.org/${id.replace(/^\//g, '')}`;
@@ -192,7 +192,7 @@ const ResourceAuthors = ({
                       {/* Author Affiliation. */}
                       {author.affiliation?.name ? (
                         <>
-                          {', '}
+                          {','}&nbsp;
                           {author.affiliation.sameAs ? (
                             <>
                               <Link
