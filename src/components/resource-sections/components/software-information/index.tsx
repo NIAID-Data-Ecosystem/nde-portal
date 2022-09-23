@@ -32,22 +32,27 @@ interface SoftwareInformation {
   softwareRequirements?: FormattedResource['softwareRequirements'];
   softwareVersion?: FormattedResource['softwareVersion'];
   type?: FormattedResource['type'];
+  [key: string]: any;
 }
 
 const SoftwareInformation: React.FC<SoftwareInformation> = ({
   isLoading,
-  applicationCategory,
-  discussionUrl,
-  isBasedOn,
-  isBasisFor,
-  processorRequirements,
-  programmingLanguage,
-  softwareAddOn,
-  softwareHelp,
-  softwareRequirements,
-  softwareVersion,
-  type,
+  ...props
 }) => {
+  const {
+    applicationCategory,
+    discussionUrl,
+    isBasedOn,
+    isBasisFor,
+    processorRequirements,
+    programmingLanguage,
+    softwareAddOn,
+    softwareHelp,
+    softwareRequirements,
+    softwareVersion,
+    type,
+  } = props || {};
+
   const StatText: React.FC = ({ children }) => {
     return (
       <Text fontSize='sm' lineHeight='short'>
@@ -55,6 +60,17 @@ const SoftwareInformation: React.FC<SoftwareInformation> = ({
       </Text>
     );
   };
+  const isLongList =
+    props &&
+    Object.keys(props)
+      .map(propertyKey => {
+        const value = props[propertyKey];
+        if (Array.isArray(value) && value.length > 5) {
+          return true;
+        }
+        return false;
+      })
+      .findIndex(d => d === true) >= 0;
 
   return (
     <Skeleton isLoaded={!isLoading}>
@@ -64,7 +80,9 @@ const SoftwareInformation: React.FC<SoftwareInformation> = ({
           w='100%'
           gridTemplateColumns={{
             base: 'repeat(1, minmax(0, 1fr))',
-            sm: 'repeat(auto-fit, minmax(min(100%/2, max(250px, 100%/4)),1fr))',
+            sm: `repeat(auto-fill, minmax(min(100%/2, max(${
+              isLongList ? '100%' : '250px'
+            }, 100%/4)),1fr))`,
           }}
         >
           {/* Language the code is written in */}
@@ -180,7 +198,7 @@ const SoftwareInformation: React.FC<SoftwareInformation> = ({
 
           {/* Libraries that the tool imports. */}
           {isBasedOn && type !== 'Dataset' && (
-            <Stat>
+            <Stat w='100%'>
               <StatLabel>Imports</StatLabel>
               <dd>
                 <BasedOn

@@ -324,7 +324,7 @@ export const formatAPIResource = (data: any) => {
     spatialCoverage: convertToArray(data.spatialCoverage),
     species: convertToArray(data.species),
     temporalCoverage: data.temporalCoverage || null,
-    topic: convertToArray(data.topicCategory),
+    topicCategory: convertToArray(data.topicCategory),
     url: data.url || null,
     usageInfo: data.usageInfo || null,
     variableMeasured:

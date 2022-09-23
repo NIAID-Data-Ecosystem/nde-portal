@@ -45,7 +45,6 @@ export const section_metadata: { [key: string]: (keyof FormattedResource)[] } =
       'spatialCoverage',
       'species',
       'temporalCoverage',
-      'topic',
       'variableMeasured',
     ],
     softwareInformation: [

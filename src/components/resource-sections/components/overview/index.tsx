@@ -53,7 +53,6 @@ const Overview: React.FC<OverviewProps> = ({
   spatialCoverage,
   species,
   temporalCoverage,
-  topic,
   usageInfo,
   variableMeasured,
   ...data
@@ -358,13 +357,6 @@ const Overview: React.FC<OverviewProps> = ({
               '-'
             )}
           </StatField>
-
-          {/* topics covered in resource*/}
-          {topic && (
-            <StatField isLoading={isLoading} {...getStatInfo('topic')}>
-              {topic.join(', ')}
-            </StatField>
-          )}
 
           {/* variable measured, used in conjunction with measurement technique */}
           <StatField

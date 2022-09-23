@@ -42,6 +42,13 @@ export type ResourceType =
 // Conditions of access for dataset or tool.
 export type AccessTypes = 'Open' | 'Controlled' | 'Embargoed' | 'Restricted';
 
+interface AggregateRating {
+  '@type'?: string;
+  ratingCount?: number;
+  ratingValue?: number;
+  reviewAspect?: string;
+}
+
 export interface Author {
   identifier: string | null; // orcid id
   type: string | null;
@@ -208,11 +215,14 @@ interface TemporalCoverage {
   };
 }
 
-interface AggregateRating {
-  '@type'?: string;
-  ratingCount?: number;
-  ratingValue?: number;
-  reviewAspect?: string;
+interface TopicCategory {
+  description?: string;
+  name?: string;
+  url?: string;
+  curatedBy?: {
+    name?: string;
+    url?: string;
+  };
 }
 
 // Formatting standardized resource fields
@@ -276,7 +286,7 @@ export interface FormattedResource {
   spatialCoverage: SpatialCoverage[] | null;
   species: PropertyNameWithURL[] | null;
   temporalCoverage: TemporalCoverage | null;
-  topic: string[] | null;
+  topicCategory: TopicCategory[] | null;
   url: string | null; // link to dataset in the source repo.
   usageInfo: {
     name?: string | null;

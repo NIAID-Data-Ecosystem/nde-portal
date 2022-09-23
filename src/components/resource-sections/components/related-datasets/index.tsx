@@ -57,68 +57,71 @@ const RelatedDatasets: React.FC<RelatedDatasetsProps> = ({
     <>
       <Collapse in={!isEmpty}>
         <CardContainer heading='Related Datasets'>
-          {new Array(isRelatedTo?.length || 3).fill('').map((_, i) => {
-            const data = isRelatedTo?.[i] || null;
-            return (
-              <SkeletonText
-                key={i}
-                isLoaded={!isLoading}
-                color='white'
-                fadeDuration={1}
-                mt={6}
-              >
-                {data && (
-                  <Box lineHeight='short'>
-                    {data['@type'] && (
-                      <Tag bg={getTypeColor(data['@type'])} size='sm' mr={2}>
-                        {formatType(data['@type'])}
-                      </Tag>
-                    )}
-                    {data._id ? (
-                      <NextLink
-                        href={{
-                          pathname: '/resources/',
-                          query: { id: data._id },
-                        }}
-                        passHref
-                      >
-                        <Link isExternal wordBreak='break-word' fontSize='xs'>
-                          {data.name || data.identifier}
-                        </Link>
-                      </NextLink>
-                    ) : (
-                      <>
-                        {/* use identifier to find portal url. */}
-                        {data.identifier && includedInDataCatalog?.name ? (
-                          <NextLink
-                            href={{
-                              pathname: '/resources/',
-                              query: {
-                                id: `${includedInDataCatalog.name}_${data.identifier}`,
-                              },
-                            }}
-                            passHref
-                          >
-                            <Link
-                              isExternal
-                              wordBreak='break-word'
-                              fontSize='xs'
-                            >
-                              {data.name || data.identifier}
-                            </Link>
-                          </NextLink>
-                        ) : (
-                          <Text wordBreak='break-word' fontSize='xs'>
+          <Box h='400px' overflow='auto'>
+            {new Array(isRelatedTo?.length || 3).fill('').map((_, i) => {
+              const data = isRelatedTo?.[i] || null;
+              console.log('HI', data);
+              return (
+                <SkeletonText
+                  key={i}
+                  isLoaded={!isLoading}
+                  color='white'
+                  fadeDuration={1}
+                  mt={6}
+                >
+                  {data && (
+                    <Box lineHeight='short'>
+                      {data['@type'] && (
+                        <Tag bg={getTypeColor(data['@type'])} size='sm' mr={2}>
+                          {formatType(data['@type'])}
+                        </Tag>
+                      )}
+                      {data._id ? (
+                        <NextLink
+                          href={{
+                            pathname: '/resources/',
+                            query: { id: data._id },
+                          }}
+                          passHref
+                        >
+                          <Link isExternal wordBreak='break-word' fontSize='xs'>
                             {data.name || data.identifier}
-                          </Text>
-                        )}
-                      </>
-                    )}
-                  </Box>
-                )}
-              </SkeletonText>
-            );
-          })}
+                          </Link>
+                        </NextLink>
+                      ) : (
+                        <>
+                          {/* use identifier to find portal url. */}
+                          {data.identifier && includedInDataCatalog?.name ? (
+                            <NextLink
+                              href={{
+                                pathname: '/resources/',
+                                query: {
+                                  id: `${includedInDataCatalog.name}_${data.identifier}`,
+                                },
+                              }}
+                              passHref
+                            >
+                              <Link
+                                isExternal
+                                wordBreak='break-word'
+                                fontSize='xs'
+                              >
+                                {data.name || data.identifier}
+                              </Link>
+                            </NextLink>
+                          ) : (
+                            <Text wordBreak='break-word' fontSize='xs'>
+                              {data.name || data.identifier}
+                            </Text>
+                          )}
+                        </>
+                      )}
+                    </Box>
+                  )}
+                </SkeletonText>
+              );
+            })}
+          </Box>
         </CardContainer>
       </Collapse>
     </>

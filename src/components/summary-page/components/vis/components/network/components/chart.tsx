@@ -75,7 +75,6 @@ export const Chart: React.FC<NetworkProps> = ({
   updateFilters,
   setHovered,
 }) => {
-  console.log(updateFilters);
   // User toggles checkbox to show a more detailed view(i.e. show all secondary nodes).
   const [isClusterOpen, setIsClusterOpen] = useState(false);
 
