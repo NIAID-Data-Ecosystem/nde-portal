@@ -225,7 +225,7 @@ export interface FormattedResource {
   aggregateRating: AggregateRating | null;
   alternateName: string | null;
   applicationCategory: string[] | null;
-  applicationSubCategory: string[] | null;
+  applicationSubCategory: { name: string }[] | null;
   applicationSuite: string[] | null;
   author: Author[] | null;
   citation: Citation[] | null;

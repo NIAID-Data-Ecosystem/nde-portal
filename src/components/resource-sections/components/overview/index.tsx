@@ -528,7 +528,11 @@ const Overview: React.FC<OverviewProps> = ({
                         py={1}
                       >
                         <StatContent
-                          content={data.applicationSubCategory.join(', ')}
+                          content={data.applicationSubCategory
+                            .map(category => {
+                              return category.name;
+                            })
+                            .join(', ')}
                         />
                       </StatField>
                     )}
