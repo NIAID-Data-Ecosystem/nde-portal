@@ -105,7 +105,7 @@ const ResourcePage: NextPage = props => {
       <PageContainer
         hasNavigation
         title='Resource'
-        metaDescription='Selected search result page.'
+        metaDescription='NDE Discovery Portal - Detailed resource information.'
       >
         <PageContent>
           {error ? (
