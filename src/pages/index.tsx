@@ -34,6 +34,7 @@ import {
 } from 'src/components/pie-chart';
 import { assetPrefix } from 'next.config';
 import NextLink from 'next/link';
+import { AdvancedSearch } from 'src/components/advanced-search';
 
 const sample_queries = [
   {
@@ -188,6 +189,9 @@ const Home: NextPage = () => {
           body={[homepageCopy.sections[0].body]}
         >
           <>
+            <Flex w='100%' justifyContent='flex-end'>
+              <AdvancedSearch />
+            </Flex>
             <SearchInput
               w='100%'
               isResponsive={false}
