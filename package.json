@@ -59,6 +59,5 @@
     "eslint-config-next": "12.0.3",
     "eslint-config-prettier": "^8.5.0",
     "typescript": "^4.6.3"
-  },
-  "version": "0.0.0"
+  }
 }
