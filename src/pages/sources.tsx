@@ -27,7 +27,7 @@ const Sources: NextPage = () => {
       id='sources-page'
       hasNavigation
       title='Sources'
-      metaDescription='Sources page displays content related to the NIAID data Ecosystem API data sources.'
+      metaDescription='NDE Discovery Portal - API data sources.'
       px={0}
       py={0}
     >

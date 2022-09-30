@@ -19,7 +19,7 @@ const Search: NextPage = () => {
     <PageContainer
       hasNavigation
       title='Search results'
-      metaDescription='Search results page.'
+      metaDescription='NDE Discovery Portal - Search results list based on query.'
       px={0}
       py={0}
     >

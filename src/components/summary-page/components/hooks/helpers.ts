@@ -19,7 +19,7 @@ export const displayQueryString = (str: string) => {
 
 // Update the route to reflect changes on page without re-render.
 export const updateRoute = (update: {}, router: NextRouter) => {
-  router.push(
+  return router.push(
     {
       query: {
         ...router.query,

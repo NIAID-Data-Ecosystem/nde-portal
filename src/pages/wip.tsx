@@ -146,7 +146,7 @@ const SummaryPage: NextPage = () => {
       <PageContainer
         hasNavigation
         title='Visual Summary'
-        metaDescription='Visual summary of queries.'
+        metaDescription='NDE Discovery Portal - Visual summary of query results.'
         disableSearchBar
       >
         {/* Header + search bar */}

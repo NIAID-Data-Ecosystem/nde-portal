@@ -23,7 +23,10 @@ interface FiltersProps {
   // Filters object
   filters: SelectedFilterType;
   // HandlerFn for updating filters
-  handleSelectedFilters: (updatedFilters: SelectedFilterType) => void;
+  handleSelectedFilters: (
+    updatedFilters: SelectedFilterType,
+    queryString?: string,
+  ) => void;
 }
 
 // List of needed filters/naming convention.
