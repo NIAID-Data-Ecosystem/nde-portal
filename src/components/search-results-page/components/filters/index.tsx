@@ -59,16 +59,16 @@ export const filtersConfig: Record<
     property: 'infectiousAgent',
   },
   'species.name': { name: 'Species', glyph: 'species', property: 'species' },
-  applicationCategory: {
-    name: 'Software Category',
-    glyph: 'applicationCategory',
-    property: 'applicationCategory',
-  },
-  programmingLanguage: {
-    name: 'Programming Language',
-    glyph: 'programmingLanguage',
-    property: 'programmingLanguage',
-  },
+  // applicationCategory: {
+  //   name: 'Software Category',
+  //   glyph: 'applicationCategory',
+  //   property: 'applicationCategory',
+  // },
+  // programmingLanguage: {
+  //   name: 'Programming Language',
+  //   glyph: 'programmingLanguage',
+  //   property: 'programmingLanguage',
+  // },
 };
 
 interface FiltersProps {

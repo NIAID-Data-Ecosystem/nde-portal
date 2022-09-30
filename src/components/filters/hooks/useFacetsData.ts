@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useQuery } from 'react-query';
+import { useHasMounted } from 'src/hooks/useHasMounted';
 import { fetchSearchResults, Params } from 'src/utils/api';
 import { Facet, FacetTerm, FormattedResource } from 'src/utils/api/types';
 import { encodeString } from 'src/utils/querystring-helpers';
@@ -23,6 +24,7 @@ export const useFacetsData = ({
   },
 ] => {
   const [facetTerms, setFacetTerms] = useState<FacetTerms>({});
+  const hasMounted = useHasMounted();
 
   // Retrieve all data and updated counts.
   const fetchFilters = async (params: Params) => {
@@ -55,13 +57,12 @@ export const useFacetsData = ({
       facets.map(facet => {
         /* Fetch facets using query params. Note that we also get the facets count where data is non-existent to be used as an "N/A" attribute. */
         return fetchSearchResults({
-          ...params,
           q: encodeString(params.q),
           extra_filter: params?.extra_filter
             ? `${params.extra_filter} AND -_exists_:${facet}`
             : `-_exists_:${facet}`,
-          facet_size: 0,
-          facets: facet,
+          facet_size: 0, // just need the total
+          size: 0,
         }).then(response => {
           if (!data || !response?.total) return;
 
@@ -90,7 +91,7 @@ export const useFacetsData = ({
       displayAs: string;
     }[];
   }
-  // 1. Show all filters for a given search. (omit extra_filters). Runs on load/new querystring.
+  // 1. Shows all filters for a given search. (omit extra_filters). Runs on load/new querystring.
   const {
     isLoading,
     error: allFiltersError,
@@ -111,10 +112,12 @@ export const useFacetsData = ({
     () => {
       return fetchFilters({
         q: queryParams.q,
+        extra_filter: '',
         facet_size: queryParams.facet_size,
       });
     },
     {
+      enabled: !!hasMounted,
       refetchOnWindowFocus: false,
       select: data => {
         const obj: FiltersResponse = {};
@@ -143,18 +146,28 @@ export const useFacetsData = ({
     [
       'search-results',
       {
-        ...queryParams,
+        q: queryParams.q,
         extra_filter: queryParams.extra_filter,
+        facet_size: queryParams.facet_size,
+        facets,
         initialData,
       },
     ],
     () => {
-      return fetchFilters(queryParams);
+      return fetchFilters({
+        q: queryParams.q,
+        facet_size: queryParams.facet_size,
+        extra_filter: queryParams.extra_filter,
+      });
     },
     {
       refetchOnWindowFocus: false,
       // Only run if there is data to update.
-      enabled: !!(initialData && Object.values(initialData).length > 0),
+      enabled: !!(
+        hasMounted &&
+        initialData &&
+        Object.values(initialData).length > 0
+      ),
 
       onSuccess(data) {
         /*
@@ -194,5 +207,12 @@ export const useFacetsData = ({
     },
   );
   const error = allFiltersError || updatedFiltersError;
-  return [{ data: facetTerms, error, isLoading: isLoading, isUpdating }];
+  return [
+    {
+      data: facetTerms,
+      error,
+      isLoading: isLoading,
+      isUpdating,
+    },
+  ];
 };

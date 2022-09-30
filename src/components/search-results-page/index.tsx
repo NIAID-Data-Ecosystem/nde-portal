@@ -118,6 +118,9 @@ const SearchResultsPage = () => {
     q: encodeString(queryString),
     extra_filter: filter_string || '', // extra filter updates aggregate fields
     facet_size: defaultQuery.facetSize,
+    size: `${selectedPerPage}`,
+    from: `${(selectedPage - 1) * selectedPerPage}`,
+    sort: sortOrder,
   };
 
   const { isLoading, error, data } = useQuery<
@@ -142,15 +145,13 @@ const SearchResultsPage = () => {
       return fetchSearchResults({
         q: params.q,
         extra_filter: params.extra_filter,
-        facet_size: params.facet_size,
-        size: `${selectedPerPage}`,
-        from: `${(selectedPage - 1) * selectedPerPage}`,
-        facets: defaultQuery.facets.join(','),
-        sort: sortOrder,
+        size: params.size,
+        from: params.from,
+        sort: params.sort,
       });
     },
     // Don't refresh everytime window is touched.
-    { refetchOnWindowFocus: false, enabled: true },
+    { refetchOnWindowFocus: false, enabled: !!hasMounted },
   );
 
   // Set total results value
