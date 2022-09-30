@@ -22,7 +22,7 @@ export const useFilterString = (facets: {
   };
 }): [
   SelectedFilterType,
-  (updatedFilters: SelectedFilterType) => void,
+  (updatedFilters: SelectedFilterType, queryString?: string) => void,
   () => void,
 ] => {
   const router = useRouter();
@@ -51,20 +51,17 @@ export const useFilterString = (facets: {
   }, [router]);
 
   // Update route with new filter preferences. Note: resets pagination.
-  const updateFilters = (updatedFilters: typeof selectedFilters) => {
+  const updateFilters = (
+    updatedFilters: typeof selectedFilters,
+    q?: string,
+  ) => {
     let filtersObject = {
       ...selectedFilters,
       ...updatedFilters,
     };
     let updatedFilterString = queryFilterObject2String(filtersObject);
 
-    updateRoute(
-      {
-        from: 1,
-        filters: updatedFilterString,
-      },
-      router,
-    );
+    updateRoute({ q, from: 1, filters: updatedFilterString }, router);
   };
 
   // Restore filter preferences to default. Note: resets pagination.
