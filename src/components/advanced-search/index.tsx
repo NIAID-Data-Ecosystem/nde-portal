@@ -54,6 +54,7 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
         // return flattened version of data.
         dotfield: true,
         fields: ['name', '@type', searchField].join(','),
+        sort: '_score',
       });
     },
 
