@@ -4,6 +4,7 @@ import {
   ButtonProps,
   Collapse,
   Flex,
+  FlexProps,
   Icon,
   ListItem,
   Text,
@@ -20,9 +21,11 @@ import { DownloadArgs, downloadAsCsv, downloadAsJson } from './helpers';
  [COMPONENT INFO]: Download data button that gives JSON or CSV download options.
 */
 
-interface DownloadMetadataProps extends ButtonProps {
+interface DownloadMetadataProps extends FlexProps {
   exportName: string;
   params: any;
+  colorScheme?: ButtonProps['colorScheme'];
+  variant?: ButtonProps['variant'];
 }
 
 export const DownloadMetadata: React.FC<DownloadMetadataProps> = ({
@@ -31,6 +34,7 @@ export const DownloadMetadata: React.FC<DownloadMetadataProps> = ({
   children,
   colorScheme = 'primary',
   variant = 'solid',
+  ...props
 }) => {
   const [downloadFormat, setDownloadFormat] = useState<any | null>(null);
 
@@ -111,7 +115,7 @@ export const DownloadMetadata: React.FC<DownloadMetadataProps> = ({
   }, [downloadFormat, exportName, refetch]);
 
   return (
-    <Flex alignItems='flex-end' pb={4} flexDirection='column'>
+    <Flex alignItems='flex-end' flexDirection='column' {...props}>
       <Collapse in={isFetching}>
         <Text fontSize='xs' fontStyle='italic'>
           Note: Large sets of metadata may take along time to download.
@@ -123,7 +127,7 @@ export const DownloadMetadata: React.FC<DownloadMetadataProps> = ({
           Something went wrong with the metadata download. Please try again.
         </Text>
       </Collapse>
-      <Box position='relative'>
+      <Box position='relative' w='100%'>
         {/* Simple button with */}
         <Button
           leftIcon={<FaDownload />}
@@ -132,6 +136,8 @@ export const DownloadMetadata: React.FC<DownloadMetadataProps> = ({
           variant={variant}
           isLoading={isFetching}
           loadingText='Downloading'
+          w='100%'
+          px={{ base: 4, md: 6 }}
         >
           {children}
         </Button>

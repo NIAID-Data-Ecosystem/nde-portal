@@ -84,22 +84,26 @@ export const Pagination: React.FC<PaginationProps> = ({
     <StyledPagination
       id={id}
       aria-label={ariaLabel}
-      role={'navigation'}
+      role='navigation'
       bg='white'
       w='100%'
-      justifyContent='center'
-      p={4}
+      p={2}
+      px={4}
       flexDirection='column'
+      justifyContent='center'
+      alignItems='center'
     >
       {/* Sort component */}
       {children}
 
       <Flex w={['100%', 'unset']} justifyContent='center'>
         {/* Fade in transition */}
-        <ScaleFade in={!!totalPages} style={{ width: '100%' }}>
-          <Flex w={['100%', 'unset']} alignItems={'center'}>
+        <ScaleFade
+          in={!!totalPages}
+          style={{ width: '100%', display: 'flex', justifyContent: 'center' }}
+        >
+          <Flex w={['100%', 'unset']} alignItems='center'>
             <StyledPaginationButton
-              flex={1}
               isDisabled={selectedPage - 1 === 0}
               onClick={() => handleSelectedPage(1)}
             >
@@ -108,7 +112,6 @@ export const Pagination: React.FC<PaginationProps> = ({
             </StyledPaginationButton>
 
             <StyledPaginationButton
-              flex={1}
               isDisabled={selectedPage - 1 === 0}
               onClick={() => handleSelectedPage(selectedPage - 1)}
             >
@@ -137,8 +140,26 @@ export const Pagination: React.FC<PaginationProps> = ({
                   })}
               </StyledPaginationButtonGroup>
             </Box>
+            <Select
+              display={{ sm: 'none' }}
+              p={1}
+              onChange={e => handleSelectedPage(+e.target.value)}
+              size='md'
+              cursor='pointer'
+              value={selectedPage}
+            >
+              {Array(totalPages)
+                .fill('')
+                .map((_, i) => {
+                  const currentPage = i + 1;
+                  return (
+                    <option key={i} value={currentPage}>
+                      {i + 1}
+                    </option>
+                  );
+                })}
+            </Select>
             <StyledPaginationButton
-              flex={1}
               isDisabled={selectedPage === totalPages}
               onClick={() => handleSelectedPage(selectedPage + 1)}
             >
@@ -146,7 +167,6 @@ export const Pagination: React.FC<PaginationProps> = ({
               <Icon as={FaAngleRight} />
             </StyledPaginationButton>
             <StyledPaginationButton
-              flex={1}
               isDisabled={selectedPage === totalPages}
               onClick={() => handleSelectedPage(totalPages)}
             >
@@ -154,25 +174,6 @@ export const Pagination: React.FC<PaginationProps> = ({
               <Icon as={FaAngleDoubleRight} />
             </StyledPaginationButton>
           </Flex>
-          <Select
-            display={{ sm: 'none' }}
-            p={1}
-            onChange={e => handleSelectedPage(+e.target.value)}
-            size='lg'
-            cursor='pointer'
-            value={selectedPage}
-          >
-            {Array(totalPages)
-              .fill('')
-              .map((_, i) => {
-                const currentPage = i + 1;
-                return (
-                  <option key={i} value={currentPage}>
-                    {i + 1}
-                  </option>
-                );
-              })}
-          </Select>
         </ScaleFade>
       </Flex>
     </StyledPagination>

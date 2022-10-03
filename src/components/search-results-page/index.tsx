@@ -15,7 +15,6 @@ import {
   Flex,
   Heading,
   ListItem,
-  Spinner,
   Stack,
   Text,
   UnorderedList,
@@ -366,18 +365,6 @@ const SearchResultsPage = () => {
                   alignItems='center'
                 >
                   <ResultsCount total={total} isLoading={isLoading} />
-                  <NextLink
-                    href={router.asPath.replace('search', 'summary')}
-                    passHref
-                  >
-                    <Button
-                      leftIcon={<FaChartBar />}
-                      my={2}
-                      whiteSpace='normal'
-                    >
-                      View visual summary of results
-                    </Button>
-                  </NextLink>
                 </Flex>
 
                 <Pagination
@@ -394,24 +381,36 @@ const SearchResultsPage = () => {
                   <Flex
                     flex={1}
                     justifyContent='space-between'
-                    borderBottom='1px solid'
-                    borderColor='page.alt'
-                    pb={4}
-                    mb={4}
+                    alignItems='center'
+                    flexWrap='wrap'
+                    flexDirection={{ md: 'row-reverse' }}
+                    pb={[4, 4, 2]}
+                    mb={[4, 4, 2]}
+                    borderBottom={{ base: '1px solid' }}
+                    borderColor={{ base: 'page.alt' }}
+                    w='100%'
+                    minW={{ md: 500 }}
                   >
-                    <Flex>
-                      {isLoading && (
-                        <Spinner
-                          thickness='6px'
-                          speed='0.65s'
-                          emptyColor='gray.200'
-                          color='primary.500'
-                          size='xl'
-                        />
-                      )}
-                    </Flex>
-                    <Box>
-                      <Flex w='100%' justifyContent='flex-end' pb={4}>
+                    <Flex
+                      alignItems='center'
+                      flex={1}
+                      justifyContent={{
+                        base: 'center',
+                        sm: 'flex-start',
+                        xl: 'flex-end',
+                      }}
+                      flexWrap={{ base: 'wrap', md: 'nowrap' }}
+                      flexDirection={['column', 'row']}
+                      mb={2}
+                      w='100%'
+                      mx={{ base: 0, xl: 2 }}
+                    >
+                      <Box
+                        flex={1}
+                        mr={[0, 2]}
+                        w='100%'
+                        maxW={{ base: 'unset', sm: '200px' }}
+                      >
                         <DownloadMetadata
                           exportName='nde-results'
                           variant='outline'
@@ -419,8 +418,29 @@ const SearchResultsPage = () => {
                         >
                           Download Metadata
                         </DownloadMetadata>
-                      </Flex>
-
+                      </Box>
+                      <NextLink
+                        href={router.asPath.replace('search', 'summary')}
+                        passHref
+                      >
+                        <Button
+                          leftIcon={<FaChartBar />}
+                          whiteSpace='nowrap'
+                          px={{ base: 4, md: 6 }}
+                          flex={1}
+                          w='100%'
+                          maxW={{ base: 'unset', sm: '200px' }}
+                        >
+                          Visual Summary
+                        </Button>
+                      </NextLink>
+                    </Flex>
+                    <Box
+                      w={['100%', '100%', 'unset']}
+                      flex={{ base: 'unset', md: 1 }}
+                      minW={{ base: 'unset', md: 300 }}
+                      mr={{ base: 'unset', md: 2 }}
+                    >
                       <SortResults
                         sortOptions={sortOptions}
                         sortOrder={sortOrder}
