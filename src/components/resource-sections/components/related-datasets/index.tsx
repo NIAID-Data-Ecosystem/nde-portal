@@ -60,7 +60,6 @@ const RelatedDatasets: React.FC<RelatedDatasetsProps> = ({
           <Box h='400px' overflow='auto'>
             {new Array(isRelatedTo?.length || 3).fill('').map((_, i) => {
               const data = isRelatedTo?.[i] || null;
-              console.log('HI', data);
               return (
                 <SkeletonText
                   key={i}

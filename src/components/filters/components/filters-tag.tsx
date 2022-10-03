@@ -35,7 +35,7 @@ export const FilterTags: React.FC<FilterTags> = ({
     return null;
   }
   return (
-    <Flex mb={[4, 6, 8]} flexWrap='wrap' {...props}>
+    <Flex mb={[4, 6]} flexWrap='wrap' {...props}>
       <Button
         m={1}
         variant='outline'

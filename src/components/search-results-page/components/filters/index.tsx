@@ -1,12 +1,15 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { Params } from 'src/utils/api';
 import { useFacetsData } from 'src/components/filters/hooks/useFacetsData';
 import {
   FiltersContainer,
   FiltersList,
   FiltersSection,
+  queryFilterObject2String,
+  updateRoute,
 } from 'src/components/filters';
 import { SelectedFilterType } from 'src/components/filters/types';
+import { useRouter } from 'next/router';
 
 /*
 [COMPONENT INFO]:
@@ -78,22 +81,25 @@ interface FiltersProps {
   selectedFilters: SelectedFilterType;
   // fn to remove all selected filters
   removeAllFilters?: () => void;
-  // fn to update filter selection
-  handleSelectedFilters: (arg: SelectedFilterType) => void;
 }
 
 export const Filters: React.FC<FiltersProps> = ({
   queryParams,
-  selectedFilters,
   removeAllFilters,
-  handleSelectedFilters,
+  selectedFilters,
 }) => {
   const facets = Object.keys(filtersConfig);
-  const [{ data, error, isLoading }] = useFacetsData({
+  const router = useRouter();
+
+  const [{ data, error, isLoading, isUpdating }] = useFacetsData({
     queryParams,
     facets,
   });
 
+  const handleUpdate = useCallback(
+    (update: {}) => updateRoute(update, router),
+    [router],
+  );
   return (
     <FiltersContainer
       title='Filters'
@@ -104,7 +110,13 @@ export const Filters: React.FC<FiltersProps> = ({
     >
       {facets.map(facet => {
         const { name, glyph, property } = filtersConfig[facet];
-
+        const selected = selectedFilters?.[facet]?.map(filter => {
+          if (typeof filter === 'object') {
+            return Object.keys(filter)[0];
+          } else {
+            return filter;
+          }
+        });
         return (
           <FiltersSection
             key={facet}
@@ -114,14 +126,8 @@ export const Filters: React.FC<FiltersProps> = ({
           >
             <FiltersList
               searchPlaceholder={`Search ${name.toLowerCase()} filters`}
-              terms={data[facet]}
-              selectedFilters={selectedFilters[facet].map(filter => {
-                if (typeof filter === 'object') {
-                  return Object.keys(filter)[0];
-                } else {
-                  return filter;
-                }
-              })}
+              terms={data[facet]?.sort((a, b) => b.count - a.count)}
+              selectedFilters={selected || []}
               handleSelectedFilters={values => {
                 const updatedValues = values.map(value => {
                   // return object with inverted facet + key for exists values
@@ -131,9 +137,18 @@ export const Filters: React.FC<FiltersProps> = ({
                   return value;
                 });
 
-                handleSelectedFilters({ [facet]: updatedValues });
+                let updatedFilterString = queryFilterObject2String({
+                  ...selectedFilters,
+                  ...{ [facet]: updatedValues },
+                });
+
+                handleUpdate({
+                  from: 1,
+                  filters: updatedFilterString,
+                });
               }}
               isLoading={isLoading}
+              isUpdating={isUpdating}
             ></FiltersList>
           </FiltersSection>
         );

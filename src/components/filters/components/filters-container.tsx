@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Accordion,
   Box,
@@ -46,6 +46,7 @@ export const FiltersContainer: React.FC<FiltersContainerProps> = ({
   filtersConfig,
   removeAllFilters,
 }) => {
+  const [openSections, setOpenSections] = useState([0]);
   // Handle toggle open status of mobile filter
   const btnRef = React.useRef(null);
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -56,12 +57,17 @@ export const FiltersContainer: React.FC<FiltersContainerProps> = ({
   });
 
   // on mount open the accordion section where the currently selected filters exist.
-  const openSectionsList = useMemo(() => {
-    let selectedKeys = Object.entries(selectedFilters)
-      .filter(([_, v]) => v.length > 0)
-      .map(o => Object.keys(filtersConfig).indexOf(o[0]));
-    return selectedKeys.length > 0 ? selectedKeys : [0];
-  }, [selectedFilters, filtersConfig]);
+  useEffect(() => {
+    setOpenSections(() => {
+      let selectedKeys =
+        selectedFilters &&
+        Object.entries(selectedFilters)
+          .filter(([_, v]) => v.length > 0)
+          .map(o => Object.keys(filtersConfig).indexOf(o[0]));
+      return selectedKeys?.length > 0 ? selectedKeys : [0];
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const content = (
     <>
@@ -91,7 +97,7 @@ export const FiltersContainer: React.FC<FiltersContainerProps> = ({
           </Heading>
         </Flex>
       ) : (
-        <Accordion bg='white' allowMultiple defaultIndex={openSectionsList}>
+        <Accordion bg='white' allowMultiple defaultIndex={openSections}>
           {children}
         </Accordion>
       )}

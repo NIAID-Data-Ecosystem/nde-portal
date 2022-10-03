@@ -13,28 +13,48 @@ export interface FilterItemProps extends CheckboxProps {
   value: string; // unique checkbox value.
   count?: number;
   isLoading: boolean;
+  isCountUpdating?: boolean;
 }
 
 export const FilterItem: React.FC<FilterItemProps> = React.memo(
-  ({ displayTerm, count, value, isLoading }) => {
+  ({ displayTerm, count, value, isLoading, isCountUpdating }) => {
     return (
-      <Checkbox spacing={1} size='lg' value={value} my={2}>
+      <Checkbox
+        w='100%'
+        spacing={1}
+        size='lg'
+        value={value}
+        my={2}
+        sx={{ '.chakra-checkbox__label': { width: '100%' } }}
+      >
         <Skeleton
-          width='200px'
+          width={isLoading ? '200px' : '100%'}
           h={isLoading ? 4 : 'unset'}
           isLoaded={!isLoading}
           flex={1}
           ml={1}
         >
-          <Flex width='100%'>
-            <Text fontWeight='light' w='100%' fontSize='xs' lineHeight={1.5}>
+          <Flex width='100%' alignItems='center'>
+            <Text fontWeight='light' fontSize='xs' lineHeight={1.5}>
               {displayTerm}
+            </Text>
+            <Skeleton
+              width={isCountUpdating ? '2em' : 'unset'}
+              h={isCountUpdating ? 4 : 'unset'}
+              isLoaded={!isCountUpdating}
+              ml={1}
+            >
               {typeof count !== 'undefined' && (
-                <Text as='span' fontWeight='semibold' ml={1}>
+                <Text
+                  fontSize='xs'
+                  lineHeight={1.5}
+                  fontWeight='semibold'
+                  ml={1}
+                >
                   {count ? `(${formatNumber(count)})` : '-'}
                 </Text>
               )}
-            </Text>
+            </Skeleton>
           </Flex>
         </Skeleton>
       </Checkbox>

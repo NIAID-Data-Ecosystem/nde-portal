@@ -1,4 +1,21 @@
+import { NextRouter } from 'next/router';
 import { formatDate, formatType } from 'src/utils/api/helpers';
+
+export const updateRoute = (update: {}, router: NextRouter) => {
+  return router.push(
+    {
+      query: {
+        ...router.query,
+        ...update,
+      },
+    },
+    undefined,
+    {
+      shallow: true,
+      scroll: true,
+    },
+  );
+};
 
 // Convert filters object to string for url routing + api call.
 export const queryFilterObject2String = (selectedFilters: any) => {

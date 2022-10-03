@@ -57,8 +57,11 @@ export const useFilterString = (facets: {
       ...updatedFilters,
     };
     let updatedFilterString = queryFilterObject2String(filtersObject);
-
-    updateRoute({ q, from: 1, filters: updatedFilterString }, router);
+    if (typeof q !== 'undefined') {
+      updateRoute({ q, from: 1, filters: updatedFilterString }, router);
+    } else {
+      updateRoute({ from: 1, filters: updatedFilterString }, router);
+    }
   };
 
   // Restore filter preferences to default. Note: resets pagination.
