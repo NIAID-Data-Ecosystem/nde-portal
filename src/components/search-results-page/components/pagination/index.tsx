@@ -92,6 +92,7 @@ export const Pagination: React.FC<PaginationProps> = ({
       flexDirection='column'
       justifyContent='center'
       alignItems='center'
+      overflow='unset'
     >
       {/* Sort component */}
       {children}

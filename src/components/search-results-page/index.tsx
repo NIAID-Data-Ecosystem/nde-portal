@@ -283,12 +283,7 @@ const SearchResultsPage = () => {
                     w='100%'
                     mx={{ base: 0, xl: 2 }}
                   >
-                    <Box
-                      flex={1}
-                      mr={[0, 2]}
-                      w='100%'
-                      maxW={{ base: 'unset', sm: '200px' }}
-                    >
+                    <Box mr={[0, 2]} w={['100%', 'unset']} m={[1]} ml={0}>
                       <DownloadMetadata
                         exportName='nde-results'
                         variant='outline'
@@ -307,6 +302,7 @@ const SearchResultsPage = () => {
                         px={{ base: 4, md: 6 }}
                         flex={1}
                         w='100%'
+                        m={[1]}
                         maxW={{ base: 'unset', sm: '200px' }}
                       >
                         Visual Summary
