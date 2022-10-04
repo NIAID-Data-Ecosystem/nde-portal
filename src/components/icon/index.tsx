@@ -59,7 +59,7 @@ export const MetadataIcon = React.forwardRef<HTMLDivElement, IconProps>(
           border='0.625px solid'
           borderRadius='100%'
           p='0.2rem'
-          {...props}
+          // {...props}
         />
       );
     } else {
@@ -74,7 +74,7 @@ export const MetadataIcon = React.forwardRef<HTMLDivElement, IconProps>(
             color='#000'
             fill='#000'
             boxSize={5}
-            {...props}
+            // {...props}
           />
         ) : (
           <Icon
@@ -84,7 +84,7 @@ export const MetadataIcon = React.forwardRef<HTMLDivElement, IconProps>(
             boxSize={5}
             aria-labelledby={id}
             role='img'
-            {...props}
+            // {...props}
           >
             <Glyph id={id} glyph={glyph} stroke='currentColor' title={title} />
           </Icon>
