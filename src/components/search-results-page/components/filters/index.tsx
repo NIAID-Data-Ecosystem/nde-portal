@@ -128,6 +128,7 @@ export const Filters: React.FC<FiltersProps> = ({
               searchPlaceholder={`Search ${name.toLowerCase()} filters`}
               terms={data[facet]?.sort((a, b) => b.count - a.count)}
               selectedFilters={selected || []}
+              facet={facet}
               handleSelectedFilters={values => {
                 const updatedValues = values.map(value => {
                   // return object with inverted facet + key for exists values

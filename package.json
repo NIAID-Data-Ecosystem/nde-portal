@@ -10,7 +10,7 @@
     "schema-definitions": "node src/utils/schema-definitions/index.js"
   },
   "dependencies": {
-    "@chakra-ui/react": "^2.2.1",
+    "@chakra-ui/react": "^1.8.8",
     "@emotion/react": "^11",
     "@emotion/styled": "^11",
     "@fontsource/public-sans": "^4.5.5",

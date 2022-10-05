@@ -1,6 +1,7 @@
 import { NextRouter } from 'next/router';
 import { formatDate, formatType } from 'src/utils/api/helpers';
 
+// Given a query object, update the route to reflect the change.
 export const updateRoute = (update: {}, router: NextRouter) => {
   return router.push(
     {
@@ -32,11 +33,19 @@ export const queryFilterObject2String = (selectedFilters: any) => {
         (v: any) => typeof v === 'object',
       );
 
-      // check if filter string exists and format the @type value if needed.
-      let values =
-        filter_strings.length > 0
-          ? `("${formatTypeForAPI(filter_strings).join('" OR "')}")`
-          : '';
+      let values = '';
+      if (filter_strings.length > 0 && filterName === '@type') {
+        // check if filter string exists and format the @type value if needed.
+        values = `("${formatTypeForAPI(filter_strings).join('" OR "')}")`;
+      } else if (filter_strings.length > 0 && filterName === 'date') {
+        // if type is date we join with "TO"
+        values = `["${filter_strings.join('" TO "')}"]`;
+      } else if (filter_strings.length > 0) {
+        values = `("${filter_strings.join('" OR "')}")`;
+      } else {
+        values = '';
+      }
+
       // handle case where filters is an object such as when {-_exists_: keywords}
       if (filter_objects.length > 0) {
         filter_objects.map((obj: Record<string, any>) => {
@@ -76,7 +85,9 @@ export const queryFilterString2Object = (str?: string | string[]) => {
     let value = filterKeyValue[1]
       .replace('("', '')
       .replace('")', '')
-      .split(/(?:" OR ")| OR /)
+      .replace('["', '')
+      .replace('"]', '')
+      .split(/(?:" OR ")| OR |(?:" TO ")| TO /)
       .map(v => {
         // Handle exists filter
         if (v.includes('-_exists_')) {

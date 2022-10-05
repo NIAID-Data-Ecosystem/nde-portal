@@ -34,6 +34,7 @@ export const FilterTags: React.FC<FilterTags> = ({
   if (!tags) {
     return null;
   }
+
   return (
     <Flex mb={[4, 6]} flexWrap='wrap' {...props}>
       <Button
@@ -45,8 +46,25 @@ export const FilterTags: React.FC<FilterTags> = ({
         Clear All
       </Button>
       {tags.map(([key, values]) => {
+        const name = filtersConfig[key]?.name || `${key}`;
+
+        if (key === 'date') {
+          return (
+            <Tag
+              key={`${values.join('-')}`}
+              colorScheme='secondary'
+              size='lg'
+              m={1}
+            >
+              <TagLabel whiteSpace='break-spaces'>
+                {name}: {values.join(' to ')}
+              </TagLabel>
+              <TagCloseButton onClick={() => removeSelectedFilter(key, '')} />
+            </Tag>
+          );
+        }
+
         return values.map(v => {
-          const name = filtersConfig[key]?.name || `${key}`;
           let value = v || '';
           if (typeof v === 'object' && Object.keys(v)[0].includes('exists')) {
             value = 'None';

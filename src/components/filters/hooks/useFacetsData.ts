@@ -121,11 +121,11 @@ export const useFacetsData = ({
       refetchOnWindowFocus: false,
       select: data => {
         const obj: FiltersResponse = {};
-
         if (data) {
           Object.keys(data).map(facet => {
-            // order facet terms according to size
+            // order facet terms according to number of resources.
             obj[facet] = data[facet].terms.sort((a, b) => b.count - a.count);
+
             return;
           });
         }

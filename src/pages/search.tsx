@@ -137,14 +137,20 @@ const Search: NextPage = () => {
                   name: keyof SelectedFilterType,
                   value: SelectedFilterTypeValue,
                 ) => {
-                  const updatedFilter = {
-                    [name]: selectedFilters[name].filter(v => {
-                      if (typeof value === 'object' || v === 'object') {
-                        return JSON.stringify(v) !== JSON.stringify(value);
-                      }
-                      return v !== value;
-                    }),
-                  };
+                  let updatedFilter = {};
+                  if (name === 'date') {
+                    updatedFilter = { date: [] };
+                  } else {
+                    updatedFilter = {
+                      [name]: selectedFilters[name].filter(v => {
+                        if (typeof value === 'object' || v === 'object') {
+                          return JSON.stringify(v) !== JSON.stringify(value);
+                        }
+                        return v !== value;
+                      }),
+                    };
+                  }
+
                   let filters = queryFilterObject2String({
                     ...selectedFilters,
                     ...updatedFilter,

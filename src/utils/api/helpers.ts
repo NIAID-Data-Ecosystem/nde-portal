@@ -197,6 +197,11 @@ export const formatType = (type: string): ResourceType => {
   }
 };
 
+// Convert ISO date to format YYYY-MM-DD
+export const formatISOString = (date: string) => {
+  return date.substring(0, 10);
+};
+
 // Format Date object to string  YYYY-MM-DD
 export const formatDate = (date?: string | Date) => {
   if (!date) {

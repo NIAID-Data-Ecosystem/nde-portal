@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { formatAPIResource } from './helpers';
+import { formatAPIResource, formatISOString } from './helpers';
 import { FetchSearchResultsResponse, Metadata } from './types';
 
 export const getResourceById = async (id?: string | string[]) => {
@@ -61,6 +61,14 @@ export const fetchSearchResults = async (params: Params) => {
     );
     const total: FetchSearchResultsResponse['total'] = data.total;
     const facets: FetchSearchResultsResponse['facets'] = data.facets;
+
+    if (facets && facets['date']) {
+      // format ISO string
+      facets['date'].terms = facets?.['date'].terms.map(d => ({
+        ...d,
+        term: formatISOString(d.term),
+      }));
+    }
 
     return { results, total, facets };
   } catch (err) {

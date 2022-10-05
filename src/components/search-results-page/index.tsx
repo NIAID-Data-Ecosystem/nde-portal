@@ -222,7 +222,6 @@ const SearchResultsPage = () => {
     <>
       {error ? (
         // [ERROR STATE]: API response error
-
         <Error message="It's possible that the server is experiencing some issues.">
           <ErrorCTA>
             <Button onClick={() => router.reload()} variant='outline'>
