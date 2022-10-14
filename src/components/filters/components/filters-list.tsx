@@ -7,11 +7,9 @@ import {
   UnorderedList,
   ListItem,
   CheckboxGroup,
-  Skeleton,
 } from 'nde-design-system';
 import { FilterTerm } from '../types';
-import { FilterItem } from './filters-item';
-import { FiltersRangeSlider } from './filters-range-slider';
+import { FiltersCheckbox } from './filters-checkbox';
 
 /*
 [COMPONENT INFO]:
@@ -22,8 +20,6 @@ Filter list handles the searching of filter items.
 interface FiltersList {
   // list of filter terms to display.
   terms: FilterTerm[];
-  // name of facet
-  facet: string;
   // Search input placeholder text -- also used for aris-label.
   searchPlaceholder: string;
   // Currently selected filters
@@ -40,7 +36,6 @@ export const FiltersList: React.FC<FiltersList> = React.memo(
     searchPlaceholder,
     selectedFilters,
     terms,
-    facet,
     handleSelectedFilters,
     isLoading,
     isUpdating,
@@ -63,38 +58,6 @@ export const FiltersList: React.FC<FiltersList> = React.memo(
         ? Array(NUM_ITEMS_MIN).fill('') // for loading skeleton purposes
         : [];
 
-    const facet_type = facet === 'date' ? 'date' : 'text';
-
-    // If facet is of date type we use a range slider instead.
-    if (facet_type === 'date') {
-      return (
-        <>
-          {/* Search through filter terms */}
-          <SearchInput
-            ariaLabel={`Search filter ${searchPlaceholder} terms`}
-            placeholder={`Search ${searchPlaceholder.toLowerCase()} filters`}
-            maxW='unset'
-            size='md'
-            value={searchTerm}
-            handleChange={handleSearchChange}
-            colorScheme='primary'
-            pr={4}
-          />
-
-          <Flex w='100%' my={4} p={4} py={6} pr={10}>
-            <Skeleton isLoaded={!isLoading} w='100%' h={'4rem'}>
-              {terms && (
-                <FiltersRangeSlider
-                  selectedValues={selectedFilters}
-                  data={terms.filter(d => d.term !== '-_exists_') || []}
-                  handleUpdate={handleSelectedFilters}
-                />
-              )}
-            </Skeleton>
-          </Flex>
-        </>
-      );
-    }
     return (
       <>
         {/* Search through filter terms */}
@@ -106,7 +69,6 @@ export const FiltersList: React.FC<FiltersList> = React.memo(
           value={searchTerm}
           handleChange={handleSearchChange}
           colorScheme='primary'
-          pr={4}
         />
         <Box w='100%' my={4}>
           <UnorderedList
@@ -128,7 +90,7 @@ export const FiltersList: React.FC<FiltersList> = React.memo(
                 .map((item, i) => {
                   return (
                     <ListItem key={i} p={2} py={0} my={0}>
-                      <FilterItem
+                      <FiltersCheckbox
                         value={item.term}
                         displayTerm={item.displayAs}
                         count={item.count}

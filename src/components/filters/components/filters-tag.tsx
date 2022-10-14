@@ -49,19 +49,20 @@ export const FilterTags: React.FC<FilterTags> = ({
         const name = filtersConfig[key]?.name || `${key}`;
 
         if (key === 'date') {
-          return (
-            <Tag
-              key={`${values.join('-')}`}
-              colorScheme='secondary'
-              size='lg'
-              m={1}
-            >
-              <TagLabel whiteSpace='break-spaces'>
-                {name}: {values.join(' to ')}
-              </TagLabel>
-              <TagCloseButton onClick={() => removeSelectedFilter(key, '')} />
-            </Tag>
-          );
+          return <></>;
+          // return (
+          //   <Tag
+          //     key={`${values.join('-')}`}
+          //     colorScheme='secondary'
+          //     size='lg'
+          //     m={1}
+          //   >
+          //     <TagLabel whiteSpace='break-spaces'>
+          //       {name}: {values.join(' to ')}
+          //     </TagLabel>
+          //     <TagCloseButton onClick={() => removeSelectedFilter(key, '')} />
+          //   </Tag>
+          // );
         }
 
         return values.map(v => {

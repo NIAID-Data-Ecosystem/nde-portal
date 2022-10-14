@@ -40,9 +40,12 @@ const Search: NextPage = () => {
   const queryParams = {
     ...defaultParams,
     ...router.query,
+    q: Array.isArray(router.query.q)
+      ? router.query.q.join('')
+      : router.query.q || defaultParams.q,
     extra_filter: Array.isArray(router.query.filters)
       ? router.query.filters.join('')
-      : router.query.filters,
+      : router.query.filters || '',
   };
 
   const queryString = Array.isArray(router.query.q)
@@ -58,12 +61,6 @@ const Search: NextPage = () => {
       return;
     }
 
-    if (str.charAt(0) === '(') {
-      str = str.replace('(', '');
-    }
-    if (str.slice(-1) === ')') {
-      str = str.replace(/.$/, '');
-    }
     return str;
   };
 
@@ -71,6 +68,8 @@ const Search: NextPage = () => {
   const applied_filters = Object.entries(selectedFilters).filter(
     ([_, filters]) => filters.length > 0,
   );
+
+  const tags = applied_filters.filter(t => t[0] !== 'date');
 
   // Default filters list.
   const defaultFilters = useMemo(
@@ -129,27 +128,22 @@ const Search: NextPage = () => {
             </Heading>
 
             {/* Tags with the names of the currently selected filters */}
-            <Collapse in={applied_filters.length > 0}>
+            <Collapse in={tags.length > 0}>
               <FilterTags
-                tags={applied_filters}
+                tags={tags}
                 removeAllFilters={removeAllFilters}
                 removeSelectedFilter={(
                   name: keyof SelectedFilterType,
                   value: SelectedFilterTypeValue,
                 ) => {
-                  let updatedFilter = {};
-                  if (name === 'date') {
-                    updatedFilter = { date: [] };
-                  } else {
-                    updatedFilter = {
-                      [name]: selectedFilters[name].filter(v => {
-                        if (typeof value === 'object' || v === 'object') {
-                          return JSON.stringify(v) !== JSON.stringify(value);
-                        }
-                        return v !== value;
-                      }),
-                    };
-                  }
+                  let updatedFilter = {
+                    [name]: selectedFilters[name].filter(v => {
+                      if (typeof value === 'object' || v === 'object') {
+                        return JSON.stringify(v) !== JSON.stringify(value);
+                      }
+                      return v !== value;
+                    }),
+                  };
 
                   let filters = queryFilterObject2String({
                     ...selectedFilters,

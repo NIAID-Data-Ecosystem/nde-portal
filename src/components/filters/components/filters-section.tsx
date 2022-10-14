@@ -76,8 +76,7 @@ export const FiltersSection: React.FC<FiltersSectionProps> = React.memo(
                 </AccordionButton>
               </h2>
               <AccordionPanel
-                px={2}
-                py={4}
+                p={4}
                 borderLeft='4px solid'
                 borderColor='accent.bg'
               >

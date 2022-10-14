@@ -8,8 +8,12 @@ import {
   queryFilterObject2String,
   updateRoute,
 } from 'src/components/filters';
-import { SelectedFilterType } from 'src/components/filters/types';
+import {
+  FiltersConfigProps,
+  SelectedFilterType,
+} from 'src/components/filters/types';
 import { useRouter } from 'next/router';
+import { FiltersDateSlider } from 'src/components/filters/components/filters-date-slider/';
 
 /*
 [COMPONENT INFO]:
@@ -24,18 +28,19 @@ export const FACET_SIZE = 1000;
 Config for the naming/text of a filter.
 [NOTE]: Order matters here as the filters will be rendered in the order of the keys.
 */
-export const filtersConfig: Record<
-  string,
-  { name: string; glyph?: string; property?: string }
-> = {
-  '@type': { name: 'Type' },
+export const filtersConfig: FiltersConfigProps = {
+  date: { name: 'Date ', glyph: 'date', property: 'date', isDefaultOpen: true },
+  '@type': { name: 'Type', isDefaultOpen: true },
   'includedInDataCatalog.name': {
     name: 'Source',
     glyph: 'info',
     property: 'includedInDataCatalog',
   },
-  keywords: { name: 'Keywords', glyph: 'info', property: 'keywords' },
-  date: { name: 'Date ', glyph: 'date', property: 'date' },
+  keywords: {
+    name: 'Keywords',
+    glyph: 'info',
+    property: 'keywords',
+  },
   'measurementTechnique.name': {
     name: 'Measurement Technique',
     glyph: 'measurementTechnique',
@@ -100,6 +105,27 @@ export const Filters: React.FC<FiltersProps> = ({
     (update: {}) => updateRoute(update, router),
     [router],
   );
+
+  const handleSelectedFilters = (values: string[], facet: string) => {
+    const updatedValues = values.map(value => {
+      // return object with inverted facet + key for exists values
+      if (value === '-_exists_') {
+        return { [value]: [facet] };
+      }
+      return value;
+    });
+
+    let updatedFilterString = queryFilterObject2String({
+      ...selectedFilters,
+      ...{ [facet]: updatedValues },
+    });
+
+    handleUpdate({
+      from: 1,
+      filters: updatedFilterString,
+    });
+  };
+
   return (
     <FiltersContainer
       title='Filters'
@@ -110,6 +136,7 @@ export const Filters: React.FC<FiltersProps> = ({
     >
       {facets.map(facet => {
         const { name, glyph, property } = filtersConfig[facet];
+        const facetTerms = data[facet]?.sort((a, b) => b.count - a.count);
         const selected = selectedFilters?.[facet]?.map(filter => {
           if (typeof filter === 'object') {
             return Object.keys(filter)[0];
@@ -117,6 +144,29 @@ export const Filters: React.FC<FiltersProps> = ({
             return filter;
           }
         });
+
+        if (facet === 'date') {
+          return (
+            <FiltersSection
+              key={facet}
+              name={name}
+              icon={glyph}
+              property={property || ''}
+            >
+              <FiltersDateSlider
+                queryParams={queryParams}
+                filters={selectedFilters}
+                selectedData={data?.date || []}
+                selectedDates={selected || []}
+                handleSelectedFilter={values =>
+                  handleSelectedFilters(values, facet)
+                }
+                resetFilter={() => handleSelectedFilters([], facet)}
+              ></FiltersDateSlider>
+            </FiltersSection>
+          );
+        }
+
         return (
           <FiltersSection
             key={facet}
@@ -126,28 +176,11 @@ export const Filters: React.FC<FiltersProps> = ({
           >
             <FiltersList
               searchPlaceholder={`Search ${name.toLowerCase()} filters`}
-              terms={data[facet]?.sort((a, b) => b.count - a.count)}
+              terms={facetTerms}
               selectedFilters={selected || []}
-              facet={facet}
-              handleSelectedFilters={values => {
-                const updatedValues = values.map(value => {
-                  // return object with inverted facet + key for exists values
-                  if (value === '-_exists_') {
-                    return { [value]: [facet] };
-                  }
-                  return value;
-                });
-
-                let updatedFilterString = queryFilterObject2String({
-                  ...selectedFilters,
-                  ...{ [facet]: updatedValues },
-                });
-
-                handleUpdate({
-                  from: 1,
-                  filters: updatedFilterString,
-                });
-              }}
+              handleSelectedFilters={values =>
+                handleSelectedFilters(values, facet)
+              }
               isLoading={isLoading}
               isUpdating={isUpdating}
             ></FiltersList>

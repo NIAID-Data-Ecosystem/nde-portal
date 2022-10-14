@@ -11,7 +11,12 @@ export interface SelectedFilterType {
 }
 
 export interface FiltersConfigProps {
-  [key: string]: { name: string; glyph?: string };
+  [key: string]: {
+    name: string;
+    glyph?: string;
+    property?: string;
+    isDefaultOpen?: boolean;
+  };
 }
 
 export interface FilterTerm extends FacetTerm {}

@@ -56,16 +56,25 @@ export const FiltersContainer: React.FC<FiltersContainerProps> = ({
     md: 'desktop',
   });
 
-  // on mount open the accordion section where the currently selected filters exist.
   useEffect(() => {
     setOpenSections(() => {
+      // 2 reasons a filter section is open by default.
+      // 1. If filter is selected, default to an open accordion panel.
       let selectedKeys =
         selectedFilters &&
         Object.entries(selectedFilters)
           .filter(([_, v]) => v.length > 0)
           .map(o => Object.keys(filtersConfig).indexOf(o[0]));
-      return selectedKeys?.length > 0 ? selectedKeys : [0];
+      // 2. The filter config specifies that this filter should be open by default.
+      Object.values(filtersConfig).forEach((v, i) => {
+        if (v.isDefaultOpen && !selectedKeys.includes(i)) {
+          selectedKeys.push(i);
+        }
+      });
+
+      return selectedKeys;
     });
+    // Only run on mount.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
