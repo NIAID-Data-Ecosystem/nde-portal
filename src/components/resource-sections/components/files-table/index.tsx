@@ -81,7 +81,7 @@ const FilesTable: React.FC<FilesTable> = ({ isLoading, distribution }) => {
     <Table
       columns={columns}
       rowData={rows}
-      caption={'Files available for download.'}
+      caption='Files available for download.'
       accessor={accessorFn}
     />
   );

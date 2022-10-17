@@ -28,7 +28,7 @@ export interface IconProps extends ChakraIconProps {
 
 // Icon displaying symbol
 export const MetadataIcon = React.forwardRef<HTMLDivElement, IconProps>(
-  ({ id, glyph, label, title, ...props }: IconProps, ref) => {
+  ({ id, glyph, title, color, fill, boxSize, viewBox }: IconProps, ref) => {
     if (!glyph) {
       return <></>;
     }
@@ -53,13 +53,12 @@ export const MetadataIcon = React.forwardRef<HTMLDivElement, IconProps>(
       FaIcon = () => (
         <Icon
           as={FaInfo}
-          boxSize='1.15rem'
-          color='gray.700'
-          fill='#000'
+          color={color || 'gray.700'}
+          fill={fill || '#000'}
+          boxSize={boxSize || '1.15rem'}
           border='0.625px solid'
           borderRadius='100%'
           p='0.2rem'
-          {...props}
         />
       );
     } else {
@@ -70,21 +69,19 @@ export const MetadataIcon = React.forwardRef<HTMLDivElement, IconProps>(
         {FaIcon ? (
           <Icon
             as={FaIcon}
-            viewBox='0 0 200 200'
-            color='#000'
-            fill='#000'
-            boxSize={5}
-            {...props}
+            viewBox={viewBox || '0 0 200 200'}
+            color={color || '#000'}
+            fill={fill || '#000'}
+            boxSize={boxSize || 5}
           />
         ) : (
           <Icon
-            viewBox='0 0 200 200'
-            color='#000'
-            fill='#000'
-            boxSize={5}
+            viewBox={viewBox || '0 0 200 200'}
+            color={color || '#000'}
+            fill={fill || '#000'}
+            boxSize={boxSize || 5}
             aria-labelledby={id}
             role='img'
-            {...props}
           >
             <Glyph id={id} glyph={glyph} stroke='currentColor' title={title} />
           </Icon>

@@ -13,6 +13,7 @@ import {
   Text,
   UnorderedList,
   SimpleGrid,
+  Box,
 } from 'nde-design-system';
 import { FaMinus, FaPlus } from 'react-icons/fa';
 import { FormattedResource } from 'src/utils/api/types';
@@ -50,65 +51,38 @@ const CardDetails: React.FC<CardDetailsProps> = ({ data }) => {
     }) || null;
 
   const Badge = ({
-    property,
     glyph,
     fill,
     value,
-    ...props
   }: {
-    property: string;
     glyph: string;
     fill?: string;
     value: any;
   }) => (
     <MetadataToolTip propertyName={glyph} recordType={data?.['@type']}>
-      <MetadataIcon
-        id={`indicator-${glyph}-${id}`}
-        glyph={glyph}
-        mx={1}
-        fill={value ? getMetadataColor(glyph) : 'gray.400'}
-        {...props}
-      />
+      <Box mx={1}>
+        <MetadataIcon
+          id={`indicator-${glyph}-${id}`}
+          glyph={glyph}
+          fill={value ? getMetadataColor(glyph) : 'gray.400'}
+        />
+      </Box>
     </MetadataToolTip>
   );
 
   const MetadataIndicator = () => {
     return (
       <Flex mx={[0, 2]} my={1}>
-        <Badge property='license' glyph='license' value={licenseInfo} />
-        <Badge property='usageInfo' glyph='usageInfo' value={usageInfo?.name} />
-        <Badge property='funding' glyph='funding' value={fundingInfo} />
-        <Badge
-          property='measurementTechnique'
-          glyph='measurementTechnique'
-          value={measurementTechnique}
-        />
-        <Badge
-          property='variableMeasured'
-          glyph='variableMeasured'
-          value={variableMeasured}
-        />
-        <Badge
-          property='infectiousAgent'
-          glyph='infectiousAgent'
-          value={infectiousAgent}
-        />
-        <Badge
-          property='healthCondition'
-          glyph='healthCondition'
-          value={healthCondition}
-        />
-        <Badge property='species' glyph='species' value={species} />
-        <Badge
-          property='applicationCategory'
-          glyph='applicationCategory'
-          value={applicationCategory}
-        />{' '}
-        <Badge
-          property='programmingLanguage'
-          glyph='programmingLanguage'
-          value={programmingLanguage}
-        />
+        <Badge glyph='license' value={licenseInfo} />
+        <Badge glyph='usageInfo' value={usageInfo?.name} />
+        <Badge glyph='funding' value={fundingInfo} />
+        <Badge glyph='measurementTechnique' value={measurementTechnique} />
+        <Badge glyph='variableMeasured' value={variableMeasured} />
+        <Badge glyph='infectiousAgent' value={infectiousAgent} />
+        <Badge glyph='healthCondition' value={healthCondition} />
+        <Badge glyph='species' value={species} />
+        <Badge glyph='applicationCategory' value={applicationCategory} />{' '}
+        <Badge glyph='programmingLanguage' value={programmingLanguage} />
       </Flex>
     );
   };

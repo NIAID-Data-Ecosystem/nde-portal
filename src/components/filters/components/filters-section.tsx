@@ -5,6 +5,7 @@ import {
   AccordionPanel,
   Flex,
   Heading,
+  Box,
 } from 'nde-design-system';
 import { FaMinus, FaPlus } from 'react-icons/fa';
 import { MetadataIcon, MetadataToolTip } from 'src/components/icon';
@@ -59,12 +60,13 @@ export const FiltersSection: React.FC<FiltersSectionProps> = React.memo(
                         recordType='Dataset' // [NOTE]: Choosing dataset for general definition.
                         showAbstract
                       >
-                        <MetadataIcon
-                          id={`filter-${property}`}
-                          mx={2}
-                          glyph={icon}
-                          fill={getMetadataColor(icon)}
-                        ></MetadataIcon>
+                        <Box mx={2}>
+                          <MetadataIcon
+                            id={`filter-${property}`}
+                            glyph={icon}
+                            fill={getMetadataColor(icon)}
+                          ></MetadataIcon>
+                        </Box>
                       </MetadataToolTip>
                     )}
                   </Flex>

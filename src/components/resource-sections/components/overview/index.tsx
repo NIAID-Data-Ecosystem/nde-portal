@@ -57,15 +57,16 @@ const Overview: React.FC<OverviewProps> = ({
   variableMeasured,
   ...data
 }) => {
-  const StatIcon = ({ glyph, ...props }: IconProps) => (
-    <MetadataIcon
-      boxSize={4}
-      mr={2}
-      glyph={glyph}
-      stroke='currentColor'
-      fill={getMetadataColor(glyph)}
-      {...props}
-    />
+  const StatIcon = ({ id, glyph }: IconProps) => (
+    <Box mr={2}>
+      <MetadataIcon
+        id={id}
+        boxSize={4}
+        glyph={glyph}
+        stroke='currentColor'
+        fill={getMetadataColor(glyph)}
+      />
+    </Box>
   );
 
   // get copy label from config for a given property.
