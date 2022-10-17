@@ -65,20 +65,6 @@ export interface SortOptionsInterface {
   orderBy: typeof sortOptions[number]['orderBy'];
 }
 
-const displayQueryString = (str: string) => {
-  if (!str) {
-    return;
-  }
-
-  if (str.charAt(0) === '(') {
-    str = str.replace('(', '');
-  }
-  if (str.slice(-1) === ')') {
-    str = str.replace(/.$/, '');
-  }
-  return str;
-};
-
 const SearchResultsPage = () => {
   const [total, setTotal] = useState(0);
 
@@ -295,7 +281,7 @@ const SearchResultsPage = () => {
 
               {queryString !== '__all__' && (
                 <Heading as='span' ml={2} fontWeight='bold' size='md' w='100%'>
-                  {displayQueryString(queryString)}
+                  {queryString}
                 </Heading>
               )}
             </Heading>

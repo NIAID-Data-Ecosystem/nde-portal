@@ -8,12 +8,6 @@ export const displayQueryString = (str: string) => {
   if (str === '__all__') {
     str = '';
   }
-  if (str.charAt(0) === '(') {
-    str = str.replace('(', '');
-  }
-  if (str.slice(-1) === ')') {
-    str = str.replace(/.$/, '');
-  }
   return str;
 };
 
