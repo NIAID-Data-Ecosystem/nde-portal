@@ -5,7 +5,6 @@ import {
   Flex,
   Heading,
   Image,
-  SearchInput,
   SimpleGrid,
   Text,
   useBreakpointValue,
@@ -35,6 +34,8 @@ import {
 import { assetPrefix } from 'next.config';
 import NextLink from 'next/link';
 import { AdvancedSearch } from 'src/components/advanced-search';
+import { SearchWithPredictiveText } from 'src/components/search-with-predictive-text';
+import { usePredictiveSearch } from 'src/components/advanced-search/usePredictiveSearch';
 
 const sample_queries = [
   {
@@ -85,11 +86,16 @@ const sample_queries = [
 const Home: NextPage = () => {
   const router = useRouter();
   const size = useBreakpointValue({ base: 300, lg: 350 });
+  const [userSubmit, setUserSubmit] = useState(false);
 
   // Search term entered in search bar
-  const [searchTerm, setSearchTerm] = useState('');
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>): void =>
-    setSearchTerm(e.target.value);
+  const {
+    isLoading: loadingSuggestions,
+    results,
+    searchField,
+    searchTerm,
+    setSearchTerm,
+  } = usePredictiveSearch();
 
   // Fetch stats about number of resources
   const params = {
@@ -122,6 +128,7 @@ const Home: NextPage = () => {
     measurementTechnique: null,
     repositories: null,
   });
+
   const { isLoading, error } = useQuery<
     FetchSearchResultsResponse | undefined,
     Error
@@ -189,26 +196,28 @@ const Home: NextPage = () => {
           body={[homepageCopy.sections[0].body]}
         >
           <>
-            <Flex w='100%' justifyContent='flex-end'>
+            {/* [TO DO]: Implement Advanced Query */}
+            {/* <Flex w='100%' justifyContent='flex-end'>
               <AdvancedSearch />
-            </Flex>
-            <SearchInput
-              w='100%'
-              isResponsive={false}
-              colorScheme='primary'
+            </Flex> */}
+            <SearchWithPredictiveText
+              queryFn={(term: string) => setSearchTerm(term)}
+              results={results}
+              selectedField={searchField}
               ariaLabel='Search for datasets or tools'
               placeholder='Search for datasets or tools'
-              value={searchTerm}
-              handleChange={handleChange}
-              handleSubmit={e => {
-                e.preventDefault();
-
+              searchTerm={searchTerm}
+              isLoading={loadingSuggestions || userSubmit}
+              size='md'
+              handleSubmit={val => {
+                setUserSubmit(true);
                 router.push({
                   pathname: `/search`,
-                  query: { q: searchTerm.trim() },
+                  query: { q: `"${val.trim()}"` },
                 });
               }}
             />
+
             <Flex mt={2} flexWrap={['wrap']}>
               <Text color='whiteAlpha.800' mr={2}>
                 Try:

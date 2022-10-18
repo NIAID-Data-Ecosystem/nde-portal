@@ -5,6 +5,7 @@ import { ListItemProps as ChakraListItemProps } from '@chakra-ui/react';
 import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
 import remarkGfm from 'remark-gfm';
+
 interface SearchWithPredictiveTextProps {
   isOpen: boolean;
 }
@@ -24,7 +25,8 @@ export const List: React.FC<SearchWithPredictiveTextProps> = ({
   );
 };
 
-interface ListItemProps extends ChakraListItemProps {
+interface ListItemProps
+  extends Omit<ChakraListItemProps, 'textUnderlineOffset'> {
   value: FormattedResource['name'];
   isSelected: boolean;
   searchTerm: string;
@@ -37,6 +39,8 @@ export const ListItem: React.FC<ListItemProps> = ({
   searchTerm,
   isSelected,
   onMouseOver,
+  onClick,
+  ...props
 }) => {
   // Bold and underline the searched term in the result string.
   const boldSubstring = (str: string, substr: string) => {
@@ -54,8 +58,10 @@ export const ListItem: React.FC<ListItemProps> = ({
       my={1}
       bg={isSelected ? 'primary.100' : 'primary.50'}
       color={isSelected ? 'text.heading' : 'text.body'}
-      onMouseOver={onMouseOver}
       cursor='pointer'
+      onMouseOver={onMouseOver}
+      onClick={onClick}
+      {...props}
     >
       <Text
         fontSize='12px'

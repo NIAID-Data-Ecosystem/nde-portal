@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { fetchSearchResults } from 'src/utils/api';
 import {
   FetchSearchResultsResponse,
@@ -14,7 +14,7 @@ export const usePredictiveSearch = (term = '', field = '') => {
   const [searchField, setSearchField] = useState(field);
 
   // Run query every time search term changes.
-  const { isLoading, error } = useQuery<
+  const { isLoading, error, isFetching } = useQuery<
     FetchSearchResultsResponse | undefined,
     Error
   >(
@@ -51,8 +51,13 @@ export const usePredictiveSearch = (term = '', field = '') => {
     },
   );
 
+  useEffect(() => {
+    // reset results if no search term is provided.
+    if (!searchTerm) setResults([]);
+  }, [searchTerm]);
+
   return {
-    isLoading,
+    isLoading: isLoading || isFetching,
     error,
     results,
     searchField,
