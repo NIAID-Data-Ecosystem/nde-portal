@@ -1,6 +1,5 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
-  Box,
   Flex,
   Select,
   Skeleton,
@@ -10,18 +9,10 @@ import {
 import { AdvancedSearchButton } from './components/Button';
 import { AdvancedSearchModal } from './components/Modal';
 import { SearchWithPredictiveText } from '../search-with-predictive-text';
-import {
-  fetchFields,
-  FetchFieldsResponse,
-  fetchSearchResults,
-} from 'src/utils/api';
-import {
-  FetchSearchResultsResponse,
-  FormattedResource,
-} from 'src/utils/api/types';
+import { fetchFields, FetchFieldsResponse } from 'src/utils/api';
 import { useQuery } from 'react-query';
-import { encodeString } from 'src/utils/querystring-helpers';
 import { ModalProps } from '@chakra-ui/react';
+import { usePredictiveSearch } from './usePredictiveSearch';
 
 interface AdvancedSearchProps {
   buttonProps?: TextProps;
@@ -32,51 +23,17 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
   buttonProps,
   modalProps,
 }) => {
-  const [results, setResults] = useState<FormattedResource[]>([]);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [searchField, setSearchField] = useState('');
+  const { results, searchField, setSearchTerm, setSearchField } =
+    usePredictiveSearch();
 
   // Handles the opening of the modal.
   const { isOpen, onOpen, onClose } = useDisclosure();
 
-  // Run query every time search term changes.
-  const { isLoading: searchIsLoading, error: searchError } = useQuery<
-    FetchSearchResultsResponse | undefined,
+  // Retrieve fields for select dropdown.
+  const { isLoading, data: fields } = useQuery<
+    FetchFieldsResponse[] | undefined,
     Error
   >(
-    ['advanced-search', { term: searchTerm, facet: searchField }],
-    () => {
-      const queryString = encodeString(searchTerm);
-
-      return fetchSearchResults({
-        q: searchField ? `${searchField}:${queryString}` : `${queryString}`,
-        size: 10,
-        // return flattened version of data.
-        dotfield: true,
-        fields: ['name', '@type', searchField].join(','),
-        sort: '_score',
-      });
-    },
-
-    // Don't refresh everytime window is touched, only run query if there's is a search term
-    {
-      refetchOnWindowFocus: false,
-      enabled: searchTerm.length > 0,
-      onSuccess: data => {
-        // if results exist set state.
-        if (data?.results) {
-          setResults(data?.results);
-        }
-      },
-    },
-  );
-
-  // Retrieve fields for select dropdown.
-  const {
-    isLoading,
-    data: fields,
-    error,
-  } = useQuery<FetchFieldsResponse[] | undefined, Error>(
     ['metadata-fields'],
     () => {
       return fetchFields();

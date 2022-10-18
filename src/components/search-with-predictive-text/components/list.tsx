@@ -38,6 +38,7 @@ export const ListItem: React.FC<ListItemProps> = ({
   isSelected,
   onMouseOver,
 }) => {
+  // Bold and underline the searched term in the result string.
   const boldSubstring = (str: string, substr: string) => {
     if (!str) {
       return '';
@@ -61,6 +62,7 @@ export const ListItem: React.FC<ListItemProps> = ({
         color='primary.800'
         wordBreak='break-word'
         fontWeight='light'
+        textAlign='left'
       >
         {selectedField}
       </Text>
@@ -69,6 +71,7 @@ export const ListItem: React.FC<ListItemProps> = ({
         color='inherit'
         wordBreak='break-word'
         fontWeight='normal'
+        textAlign='left'
         sx={{
           '* > .search-term': {
             fontWeight: 'bold',
