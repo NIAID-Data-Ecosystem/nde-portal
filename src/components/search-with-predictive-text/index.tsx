@@ -66,8 +66,6 @@ export const SearchWithPredictiveText: React.FC<
   const fieldName = selectedField || 'name';
   const [cursor, setCursor] = useState(-1);
   const [inputValue, setInputValue] = useState(searchTerm);
-  // Wrapping debounce in useRef since its an expensive call, only run if fn changes.
-  const debouncedQuery = useRef(debounce(v => queryFn(v), 200));
 
   // List of suggestions to search query.
   const uniqueSuggestions = useMemo(
@@ -106,6 +104,28 @@ export const SearchWithPredictiveText: React.FC<
     [suggestionsGroupedByType],
   );
 
+  // Handles loading spinner
+  const [isLoading, setIsLoading] = useState(queryLoading);
+  useEffect(() => {
+    setIsLoading(queryLoading);
+  }, [queryLoading]);
+
+  // Wrapping debounce in useRef since its an expensive call, only run if fn changes.
+  const debouncedQuery = useRef(debounce(v => queryFn(v), 500));
+  const timerRef: { current: NodeJS.Timeout | null } = useRef(null);
+
+  // run query after timed interval.
+  const getSuggestions = (value: string) => {
+    timerRef.current = setTimeout(() => {
+      debouncedQuery.current(value);
+    }, 200);
+  };
+
+  useEffect(() => {
+    // Clear the interval when the component unmounts
+    return () => clearTimeout(timerRef.current || undefined);
+  }, []);
+
   /* Update the suggested list scroll position so that currently selected element is always in view.*/
   useEffect(() => {
     const el = document.getElementById(`li-${cursor}`);
@@ -113,12 +133,6 @@ export const SearchWithPredictiveText: React.FC<
       el?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
     }
   }, [cursor]);
-
-  const [isLoading, setIsLoading] = useState(queryLoading);
-  useEffect(() => {
-    setIsLoading(queryLoading);
-  }, [queryLoading]);
-
   return (
     <Box width='100%'>
       <Flex
@@ -158,9 +172,9 @@ export const SearchWithPredictiveText: React.FC<
             placeholder={placeholder || 'Search'}
             value={inputValue}
             onChange={e => {
-              setInputValue(e.currentTarget.value);
               e.currentTarget.value && setIsLoading(true);
-              debouncedQuery.current(e.currentTarget.value);
+              setInputValue(e.currentTarget.value);
+              getSuggestions(e.currentTarget.value);
             }}
             tabIndex={0}
             bg='white'
@@ -183,6 +197,7 @@ export const SearchWithPredictiveText: React.FC<
                     setInputValue(searchTerm);
                   }
                 }
+                // Move cursor to end of input
                 let input = e.currentTarget;
                 if (input) {
                   setTimeout(function () {
@@ -214,7 +229,8 @@ export const SearchWithPredictiveText: React.FC<
         <Box
           position='absolute'
           w='100%'
-          zIndex={1000}
+          zIndex={5}
+          boxShadow='lg'
           bg='white'
           borderRadius='base'
           overflow='hidden'

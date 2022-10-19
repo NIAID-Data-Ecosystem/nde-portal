@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react';
-import { SearchInput } from 'nde-design-system';
+import React from 'react';
 import { useRouter } from 'next/router';
 import { PageContent } from '../page-container';
+import { usePredictiveSearch } from '../advanced-search/usePredictiveSearch';
+import { SearchWithPredictiveText } from '../search-with-predictive-text';
 
 export const SearchBar = ({
   value,
@@ -13,26 +14,13 @@ export const SearchBar = ({
 }) => {
   const router = useRouter();
   // Search term entered in search bar
-  const [searchTerm, setSearchTerm] = useState<string>(value || '');
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
-    setSearchTerm(e.currentTarget.value);
-  };
-
-  // update value when changed
-  useEffect(() => {
-    setSearchTerm(prev => {
-      if (value) {
-        return value;
-      } else if (router.query.q) {
-        return Array.isArray(router.query.q)
-          ? router.query.q.join(' ')
-          : router.query.q;
-      } else {
-        return prev;
-      }
-    });
-  }, [value, router]);
+  const {
+    isLoading: loadingSuggestions,
+    results,
+    searchField,
+    searchTerm,
+    setSearchTerm,
+  } = usePredictiveSearch();
 
   return (
     <PageContent
@@ -41,21 +29,21 @@ export const SearchBar = ({
       borderBottom='1px solid'
       borderColor='gray.100'
     >
-      <SearchInput
-        colorScheme='primary'
-        w='100%'
-        value={searchTerm}
-        handleChange={handleChange}
-        handleSubmit={e => {
-          e.preventDefault();
+      <SearchWithPredictiveText
+        queryFn={(term: string) => setSearchTerm(term)}
+        results={results}
+        selectedField={searchField}
+        ariaLabel='Search for datasets or tools'
+        placeholder='Search for datasets or tools'
+        searchTerm={searchTerm}
+        isLoading={loadingSuggestions}
+        size='md'
+        handleSubmit={val => {
           router.push({
             pathname: `/search`,
-            query: { q: searchTerm.trim(), from: 1 },
+            query: { q: `"${val.trim()}"`, from: 1 },
           });
         }}
-        placeholder='Search for datasets or tools'
-        ariaLabel={ariaLabel || 'Search for datasets or tools'}
-        {...props}
       />
     </PageContent>
   );
