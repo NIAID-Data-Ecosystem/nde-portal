@@ -270,7 +270,7 @@ const SearchResultsPage = () => {
           <PageContent w='100%' flexDirection='column'>
             <Heading
               as='h1'
-              size='md'
+              size='sm'
               color='text.body'
               fontWeight='semibold'
               mb={4}
@@ -280,7 +280,7 @@ const SearchResultsPage = () => {
                 : `Showing results for`}
 
               {queryString !== '__all__' && (
-                <Heading as='span' ml={2} fontWeight='bold' size='md' w='100%'>
+                <Heading as='span' ml={2} fontWeight='bold' size='sm' w='100%'>
                   {queryString}
                 </Heading>
               )}

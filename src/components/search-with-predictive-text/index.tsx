@@ -29,6 +29,7 @@ interface SearchWithPredictiveTextProps {
   searchTerm: string;
   isLoading?: boolean;
   size?: InputProps['size'];
+  colorScheme?: InputProps['colorScheme'];
 }
 
 const SIZE_CONFIG: any = {
@@ -62,8 +63,10 @@ export const SearchWithPredictiveText: React.FC<
   ariaLabel,
   isLoading: queryLoading,
   size = 'sm',
+  colorScheme = 'primary',
 }) => {
   const fieldName = selectedField || 'name';
+  const [isOpen, setIsOpen] = useState(false);
   const [cursor, setCursor] = useState(-1);
   const [inputValue, setInputValue] = useState(searchTerm);
 
@@ -139,6 +142,7 @@ export const SearchWithPredictiveText: React.FC<
         as='form'
         onSubmit={e => {
           e.preventDefault();
+          setIsOpen(false);
           handleSubmit(inputValue, fieldName);
         }}
       >
@@ -167,12 +171,14 @@ export const SearchWithPredictiveText: React.FC<
           />
 
           <Input
+            colorScheme={colorScheme}
             pr={`${SIZE_CONFIG[size]['width']}rem`}
             type='search'
             placeholder={placeholder || 'Search'}
             value={inputValue}
             onChange={e => {
               e.currentTarget.value && setIsLoading(true);
+              setIsOpen(true);
               setInputValue(e.currentTarget.value);
               getSuggestions(e.currentTarget.value);
             }}
@@ -211,8 +217,7 @@ export const SearchWithPredictiveText: React.FC<
             <Button
               size={size === 'sm' ? 'xs' : size}
               w='100%'
-              colorScheme='primary'
-              isLoading={isLoading}
+              colorScheme={colorScheme}
               aria-label={ariaLabel}
               type='submit'
               d='flex'
@@ -236,7 +241,7 @@ export const SearchWithPredictiveText: React.FC<
           overflow='hidden'
           left={0}
         >
-          <List isOpen={inputValue.length > 0 && results.length > 0}>
+          <List isOpen={isOpen && inputValue.length > 0 && results.length > 0}>
             {/* Group results by type (dataset/computational tool) */}
             {suggestionsGroupedByType.map(([type, items]) => {
               return (
@@ -291,6 +296,7 @@ export const SearchWithPredictiveText: React.FC<
                           searchTerm={searchTerm}
                           onClick={e => {
                             e.preventDefault();
+                            setIsOpen(false);
                             setInputValue(result[fieldName]);
                             handleSubmit(result[fieldName], fieldName);
                           }}

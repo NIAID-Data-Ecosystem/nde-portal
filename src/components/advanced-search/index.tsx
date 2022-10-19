@@ -83,11 +83,11 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
             </Select>
           </Skeleton>
           {/* Input field with suggestions matching the search term. */}
-          <SearchWithPredictiveText
+          {/* <SearchWithPredictiveText
             queryFn={(term: string) => setSearchTerm(term)}
             results={results}
             selectedField={searchField}
-          />
+          /> */}
         </Flex>
       </AdvancedSearchModal>
     </>
