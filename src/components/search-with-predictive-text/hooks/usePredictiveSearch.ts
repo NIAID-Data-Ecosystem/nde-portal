@@ -1,10 +1,11 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { useQuery } from 'react-query';
+import { debounce } from 'lodash';
 import { fetchSearchResults } from 'src/utils/api';
 import {
   FetchSearchResultsResponse,
   FormattedResource,
 } from 'src/utils/api/types';
-import { useQuery } from 'react-query';
 import { encodeString } from 'src/utils/querystring-helpers';
 
 // Handles query formatting for predictive search
@@ -51,17 +52,30 @@ export const usePredictiveSearch = (term = '', field = '') => {
     },
   );
 
+  // reset results if no search term is provided.
   useEffect(() => {
-    // reset results if no search term is provided.
     if (!searchTerm) setResults([]);
   }, [searchTerm]);
+
+  /*
+  [Update query with a delay]
+  Wrapping debounce in useRef since its an expensive call, only run if fn changes.
+  */
+  const debouncedUpdate = useRef(
+    debounce((term: string) => setSearchTerm(term), 200),
+  );
+
+  const updateSearchTerm = (value: string) => {
+    debouncedUpdate.current(value);
+  };
 
   return {
     isLoading: isLoading || isFetching,
     error,
     results,
-    searchField,
     searchTerm,
+    searchField,
+    updateSearchTerm,
     setSearchTerm,
     setSearchField,
   };

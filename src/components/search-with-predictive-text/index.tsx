@@ -1,74 +1,61 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { debounce, groupBy, uniqBy } from 'lodash';
-import {
-  Box,
-  Button,
-  Flex,
-  Icon,
-  Input,
-  InputGroup,
-  InputLeftElement,
-  InputProps,
-  InputRightElement,
-  Spinner,
-  Text,
-  UnorderedList,
-  VisuallyHidden,
-} from 'nde-design-system';
-import { FaSearch } from 'react-icons/fa';
+import React, { useEffect, useMemo } from 'react';
+import { groupBy, uniqBy } from 'lodash';
+import { Box, Button, Flex, InputProps, Text } from 'nde-design-system';
 import { FormattedResource } from 'src/utils/api/types';
-import { List, ListItem } from './components/list';
+import { usePredictiveSearch } from './hooks/usePredictiveSearch';
+import {
+  InputWithDropdown,
+  DropdownInput,
+  DropdownList,
+  DropdownListItem,
+  DropdownContent,
+} from 'src/components/input-with-dropdown';
 
 interface SearchWithPredictiveTextProps {
-  queryFn: (term: string) => void; // query function that returns results given a string value
-  handleSubmit: (inputValue: string, field: string) => void; // triggered when suggestion item from list is clicked / press enters.
-  results: FormattedResource[];
-  selectedField: string;
   ariaLabel: string; // input label for accessibility
-  placeholder?: string;
-  searchTerm: string;
-  isLoading?: boolean;
+  placeholder: string; // input placeholder text
+  field?: string; //default field to search through,
+  term?: string; //default term to search with,
   size?: InputProps['size'];
+  isLoading?: boolean;
   colorScheme?: InputProps['colorScheme'];
+  // handleClick: (
+  //   e: React.MouseEvent<HTMLLIElement, MouseEvent>,
+  //   data: FormattedResource,
+  // ) => void; // triggered when suggestion item from list is clicked / press enters.
+  handleSubmit: (
+    inputValue: string,
+    field: string,
+    data?: FormattedResource,
+  ) => void; // triggered when suggestion item from list is clicked / press enters.
 }
 
-const SIZE_CONFIG: any = {
-  xs: {
-    width: 5,
-    h: 1.75,
-  },
-  sm: {
-    width: 5.5,
-    h: 2,
-  },
-  md: {
-    width: 5.5,
-    h: 2.5,
-  },
-  lg: {
-    width: 6.5,
-    h: 3,
-  },
-};
-
+// General search bar with predictive text. Groups results by type of resource.
 export const SearchWithPredictiveText: React.FC<
   SearchWithPredictiveTextProps
 > = ({
-  queryFn,
-  handleSubmit,
-  results,
-  placeholder,
-  selectedField,
-  searchTerm,
   ariaLabel,
-  isLoading: queryLoading,
+  placeholder,
   size = 'sm',
   colorScheme = 'primary',
+  field: defaultField = '',
+  term: defaultTerm = '',
+  isLoading: defaultLoading,
+  handleSubmit,
 }) => {
-  const fieldName = selectedField || 'name';
-  const [isOpen, setIsOpen] = useState(false);
-  const [cursor, setCursor] = useState(-1);
-  const [inputValue, setInputValue] = useState(searchTerm);
+  // Search term entered in search bar
+  const {
+    isLoading: queryLoading,
+    results,
+    searchField,
+    searchTerm,
+    updateSearchTerm,
+  } = usePredictiveSearch(defaultTerm, defaultField);
+
+  // Handles loading spinner
+  const isLoading = queryLoading || defaultLoading;
+
+  const fieldName = defaultField || 'name';
 
   // List of suggestions to search query.
   const uniqueSuggestions = useMemo(
@@ -81,7 +68,7 @@ export const SearchWithPredictiveText: React.FC<
             value = result[fieldName]
               .filter((r: string) => {
                 let name = r.toLowerCase();
-                let search = inputValue.toLowerCase();
+                let search = searchTerm.toLowerCase();
                 return name.includes(search);
               })
               .join(',');
@@ -93,7 +80,7 @@ export const SearchWithPredictiveText: React.FC<
         // filter out duplicate values
         v => v[fieldName],
       ),
-    [fieldName, inputValue, results],
+    [fieldName, searchTerm, results],
   );
 
   // Group suggestions by type.
@@ -101,215 +88,104 @@ export const SearchWithPredictiveText: React.FC<
     () => Object.entries(groupBy(uniqueSuggestions, d => d.type)),
     [uniqueSuggestions],
   );
+
   // Flat list of suggestions sorted by type.
   const suggestions = useMemo(
     () => suggestionsGroupedByType.map(d => d[1]).flat(),
     [suggestionsGroupedByType],
   );
 
-  // Handles loading spinner
-  const [isLoading, setIsLoading] = useState(queryLoading);
-  useEffect(() => {
-    setIsLoading(queryLoading);
-  }, [queryLoading]);
-
-  // Wrapping debounce in useRef since its an expensive call, only run if fn changes.
-  const debouncedQuery = useRef(debounce(v => queryFn(v), 500));
-  const timerRef: { current: NodeJS.Timeout | null } = useRef(null);
-
-  // run query after timed interval.
-  const getSuggestions = (value: string) => {
-    timerRef.current = setTimeout(() => {
-      debouncedQuery.current(value);
-    }, 200);
-  };
-
-  useEffect(() => {
-    // Clear the interval when the component unmounts
-    return () => clearTimeout(timerRef.current || undefined);
-  }, []);
-
-  /* Update the suggested list scroll position so that currently selected element is always in view.*/
-  useEffect(() => {
-    const el = document.getElementById(`li-${cursor}`);
-    if (el) {
-      el?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
-    }
-  }, [cursor]);
   return (
     <Box width='100%'>
-      <Flex
-        as='form'
-        onSubmit={e => {
-          e.preventDefault();
-          setIsOpen(false);
-          handleSubmit(inputValue, fieldName);
-        }}
+      {/* Keep dropdown agnostic from results. */}
+      <InputWithDropdown
+        inputValue={searchTerm}
+        colorScheme='primary'
+        cursorMax={suggestions.length}
       >
-        {/* Label for accessibility */}
-        <VisuallyHidden>
-          <label htmlFor={ariaLabel}>{ariaLabel}</label>
-        </VisuallyHidden>
-
-        {/* Search input */}
-        <InputGroup size={size}>
-          <InputLeftElement
-            pointerEvents='none'
-            // eslint-disable-next-line react/no-children-prop
-            children={
-              isLoading ? (
-                <Spinner
-                  color='primary.500'
-                  emptyColor='gray.200'
-                  label='loading'
-                  size='sm'
-                />
-              ) : (
-                <Icon as={FaSearch} color='gray.300' />
-              )
-            }
-          />
-
-          <Input
-            colorScheme={colorScheme}
-            pr={`${SIZE_CONFIG[size]['width']}rem`}
-            type='search'
-            placeholder={placeholder || 'Search'}
-            value={inputValue}
-            onChange={e => {
-              e.currentTarget.value && setIsLoading(true);
-              setIsOpen(true);
-              setInputValue(e.currentTarget.value);
-              getSuggestions(e.currentTarget.value);
-            }}
-            tabIndex={0}
-            bg='white'
-            onKeyDown={e => {
-              if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
-                let idx = cursor;
-                if (e.key === 'ArrowDown' && idx <= suggestions.length - 1) {
-                  idx = idx === suggestions.length - 1 ? -1 : idx + 1;
-                }
-                if (e.key === 'ArrowUp' && idx >= -1) {
-                  idx = idx === -1 ? suggestions.length - 1 : idx - 1;
-                }
-
-                // if the user presses the down arrow we update the current selection [cursor]
-                if (idx !== cursor) {
-                  setCursor(idx);
-                  if (idx >= 0 && suggestions[idx][fieldName]) {
-                    setInputValue(suggestions[idx][fieldName]);
-                  } else {
-                    setInputValue(searchTerm);
-                  }
-                }
-                // Move cursor to end of input
-                let input = e.currentTarget;
-                if (input) {
-                  setTimeout(function () {
-                    input.selectionStart = input.selectionEnd = 10000;
-                  }, 0);
-                }
-              }
-            }}
-          />
-          <InputRightElement p={1} w={`${SIZE_CONFIG[size]['width']}rem`}>
+        <DropdownInput
+          ariaLabel={ariaLabel}
+          placeholder={placeholder}
+          size={size}
+          isLoading={isLoading}
+          onChange={updateSearchTerm}
+          onSubmit={(value, idx) => {
+            handleSubmit(value, searchField, results[idx]);
+          }}
+          renderSubmitButton={props => (
             <Button
-              size={size === 'sm' ? 'xs' : size}
-              w='100%'
+              display='flex'
               colorScheme={colorScheme}
               aria-label={ariaLabel}
-              type='submit'
-              d='flex'
-              // set padding top and bottom for safari, do not remove.
-              py={0}
+              isDisabled={isLoading}
+              {...props}
             >
               Search
             </Button>
-          </InputRightElement>
-        </InputGroup>
-      </Flex>
-      {/* Dropdown prediction values */}
-      <Box position='relative'>
-        <Box
-          position='absolute'
-          w='100%'
-          zIndex={5}
-          boxShadow='lg'
-          bg='white'
-          borderRadius='base'
-          overflow='hidden'
-          left={0}
-        >
-          <List isOpen={isOpen && inputValue.length > 0 && results.length > 0}>
-            {/* Group results by type (dataset/computational tool) */}
-            {suggestionsGroupedByType.map(([type, items]) => {
-              return (
-                <UnorderedList
-                  key={type}
-                  id={`${type}-list`}
-                  display='flex'
-                  flexWrap='wrap'
-                  my={1}
-                >
-                  {/* column displaying the type of result. */}
-                  {fieldName === 'name' && (
-                    <Flex
-                      flex={1}
-                      justifyContent={['center', 'flex-end']}
-                      bg={
-                        type.toLowerCase() === 'dataset'
-                          ? 'status.info_lt'
-                          : 'blackAlpha.50'
-                      }
-                      mx={2}
-                      my={1}
-                      borderRadius='base'
-                      minW={150}
-                      maxW={{ base: 'unset', md: 180 }}
+          )}
+        />
+        <DropdownContent>
+          {/* Group results by type (dataset/computational tool) */}
+          {suggestionsGroupedByType.map(([type]) => {
+            return (
+              <Flex key={type} id={`${type}-list`} flexWrap='wrap' my={1}>
+                {/* column displaying the type of result. */}
+                {fieldName === 'name' && (
+                  <Flex
+                    flex={1}
+                    justifyContent={['center', 'flex-end']}
+                    bg={
+                      type.toLowerCase() === 'dataset'
+                        ? 'status.info_lt'
+                        : 'blackAlpha.50'
+                    }
+                    mx={2}
+                    my={1}
+                    borderRadius='base'
+                    minW={150}
+                    maxW={{ base: 'unset', md: 180 }}
+                  >
+                    <Text
+                      fontSize='xs'
+                      color='text.body'
+                      p={2}
+                      textAlign='right'
                     >
-                      <Text
-                        fontSize='xs'
-                        color='text.body'
-                        p={2}
-                        textAlign='right'
-                      >
-                        {type}
-                      </Text>
-                    </Flex>
-                  )}
+                      {type}
+                    </Text>
+                  </Flex>
+                )}
 
-                  {/* column displaying the fielded result */}
-                  <Box flex={3} minW={150} mx={2}>
-                    {suggestions.map((result, idx) => {
-                      if (result.type !== type || !result[fieldName]) {
-                        return <React.Fragment key={idx}></React.Fragment>;
-                      }
-                      return (
-                        <ListItem
-                          id={`li-${idx}`}
-                          key={result._id}
-                          selectedField={fieldName}
-                          value={result[fieldName]}
-                          isSelected={idx === cursor}
-                          onMouseOver={() => setCursor(idx)}
-                          searchTerm={searchTerm}
-                          onClick={e => {
-                            e.preventDefault();
-                            setIsOpen(false);
-                            setInputValue(result[fieldName]);
-                            handleSubmit(result[fieldName], fieldName);
-                          }}
-                        />
-                      );
-                    })}
-                  </Box>
-                </UnorderedList>
-              );
-            })}
-          </List>
-        </Box>
-      </Box>
+                {/* column displaying the fielded result */}
+
+                <DropdownList flex={3}>
+                  {suggestions.map((result, i) => {
+                    if (result.type !== type || !result[fieldName]) {
+                      return <React.Fragment key={i}></React.Fragment>;
+                    }
+                    return (
+                      <DropdownListItem
+                        key={result.id}
+                        index={i}
+                        searchTerm={searchTerm}
+                        value={result[fieldName]}
+                        name={fieldName}
+                        onClick={e => {
+                          handleSubmit(result[fieldName], searchField, result);
+                        }}
+                      >
+                        {result.id}
+                      </DropdownListItem>
+                    );
+                  })}
+                </DropdownList>
+              </Flex>
+            );
+          })}
+        </DropdownContent>
+      </InputWithDropdown>
     </Box>
   );
 };
+
+export * from './hooks/usePredictiveSearch';

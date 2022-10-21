@@ -82,8 +82,9 @@ const sample_queries = [
   },
 ];
 
-const Home: NextPage = () => {
+const Test: NextPage = () => {
   const router = useRouter();
+
   const size = useBreakpointValue({ base: 300, lg: 350 });
 
   // Fetch stats about number of resources
@@ -171,12 +172,13 @@ const Home: NextPage = () => {
       setStats(stat);
     },
   });
+
   return (
     <>
       <PageContainer
         hasNavigation
         title='Search'
-        metaDescription='NIAID Data Ecosystem Discovery Portal - Home.'
+        metaDescription='NIAID Data Ecosystem Discovery Portal - Test.'
         disableSearchBar
       >
         <PageHeader
@@ -466,4 +468,4 @@ const Home: NextPage = () => {
   );
 };
 
-export default Home;
+export default Test;
