@@ -94,7 +94,14 @@ export const QueryBuilderDragArea: React.FC<QueryBuilderDragAreaProps> = ({
   // : undefined;
 
   return (
-    <Flex w='100%' bg='gray.100' p={1} flexWrap='wrap' position='relative'>
+    <Flex
+      w='100%'
+      bg='gray.100'
+      p={1}
+      flexWrap='wrap'
+      position='relative'
+      zIndex='modal'
+    >
       <DndContext
         sensors={sensors}
         collisionDetection={collisionDetection}

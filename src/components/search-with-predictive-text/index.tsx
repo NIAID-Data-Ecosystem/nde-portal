@@ -1,4 +1,4 @@
-import React, { ReactElement, useEffect, useMemo } from 'react';
+import React, { ReactElement, useMemo } from 'react';
 import { groupBy, uniqBy } from 'lodash';
 import { Box, Button, Flex, InputProps, Text } from 'nde-design-system';
 import { FormattedResource } from 'src/utils/api/types';
@@ -28,7 +28,7 @@ interface SearchWithPredictiveTextProps {
     field: string,
     data?: FormattedResource,
   ) => void; // triggered when suggestion item from list is clicked / press enters.
-  renderSubmitButton?: () => ReactElement; // an optional custom button rendered as the "submit" button.
+  renderSubmitButton?: (props: any) => ReactElement; // an optional custom button rendered as the "submit" button.
 }
 
 // General search bar with predictive text. Groups results by type of resource.
@@ -114,17 +114,29 @@ export const SearchWithPredictiveText: React.FC<
           onSubmit={(value, idx) => {
             handleSubmit(value, searchField, results[idx]);
           }}
-          renderSubmitButton={props => (
-            <Button
-              display='flex'
-              colorScheme={colorScheme}
-              aria-label={ariaLabel}
-              isDisabled={isLoading}
-              {...props}
-            >
-              Search
-            </Button>
-          )}
+          renderSubmitButton={props => {
+            if (renderSubmitButton) {
+              return renderSubmitButton({
+                colorScheme: colorScheme,
+                ariaLabel: ariaLabel,
+                isDisabled: isLoading || false,
+                size: size,
+                ...props,
+              });
+            }
+            return (
+              <Button
+                display='flex'
+                colorScheme={colorScheme}
+                aria-label={ariaLabel}
+                isDisabled={isLoading || false}
+                size={size}
+                {...props}
+              >
+                Search
+              </Button>
+            );
+          }}
         />
         <DropdownContent>
           {/* Group results by type (dataset/computational tool) */}

@@ -6,7 +6,7 @@ export interface AdvancedSearchButtonProps extends TextProps {
   onClick: (arg: React.MouseEvent<HTMLDivElement>) => void;
 }
 
-export const AdvancedSearchButton: React.FC<AdvancedSearchButtonProps> = ({
+export const OpenModal: React.FC<AdvancedSearchButtonProps> = ({
   ...props
 }) => {
   return (

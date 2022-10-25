@@ -59,6 +59,7 @@ export const Draggable: React.FC<DraggableProps> = ({
         value={value}
         isDragging={isDragging}
         isOverlay={!useDragOverlay}
+        // Handle needed for union button dropdown.
         // handle={handle}
         // renderItem={renderItem}
       />

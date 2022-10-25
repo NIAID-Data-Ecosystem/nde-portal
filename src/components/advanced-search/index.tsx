@@ -8,7 +8,6 @@ import {
 } from 'nde-design-system';
 import { useQuery } from 'react-query';
 import { ModalProps } from '@chakra-ui/react';
-import { AdvancedSearchButton } from './components/Button';
 import { AdvancedSearchModal } from './components/Modal';
 import { fetchFields, FetchFieldsResponse } from 'src/utils/api';
 import {
@@ -17,6 +16,7 @@ import {
 } from 'src/components/search-with-predictive-text';
 import { QueryBuilderDragArea } from './components/QueryBuilderDragArea';
 import { DragItem } from './components/DraggableItem';
+import { AddWithUnion, OpenModal, options } from './components/buttons';
 
 interface AdvancedSearchProps {
   buttonProps?: TextProps;
@@ -48,13 +48,10 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
       enabled: !!isOpen, // Run query when modal is open.
     },
   );
-
+  const [unionType, setUnionType] = useState<typeof options[number] | ''>('');
   return (
     <>
-      <AdvancedSearchButton
-        onClick={onOpen}
-        {...buttonProps}
-      ></AdvancedSearchButton>
+      <OpenModal onClick={onOpen} {...buttonProps}></OpenModal>
       <AdvancedSearchModal isOpen={isOpen} onClose={onClose} {...modalProps}>
         <QueryBuilderDragArea itemsList={items} updateItems={setItems} />
         <Flex
@@ -101,16 +98,47 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
             placeholder='Search for datasets or tools'
             size='md'
             field={searchField}
-            // renderSubmitButton={}
+            renderSubmitButton={props => {
+              return (
+                <AddWithUnion
+                  unionType={unionType}
+                  setUnionType={setUnionType}
+                  {...props}
+                ></AddWithUnion>
+              );
+            }}
             handleSubmit={(value, __, data) => {
+              // if no union type is selected, default to "AND"
+              const union = unionType || 'AND';
+              !unionType && setUnionType(union);
               setItems(prev => {
+                if (!value) return prev;
                 const newItems = [...prev];
                 const id = value.split(' ').join('-');
+
+                const unionObj = {
+                  id: `${union}-${items.length}`,
+                  field: 'union',
+                  value: union,
+                };
+
+                // Add the union type after an item is entered (aka only add the union when the second item is entered)
+                if (items.length) {
+                  newItems.push(unionObj);
+                }
+
                 newItems.push({
-                  id: `$${id}-${data?.id || items.length}`, // unique identifier
+                  id: `${id}-${data?.id || items.length}`, // unique identifier
                   value,
                   field: searchField,
                 });
+
+                // Append the union type on the first item in the query.
+                // Only do so when a second item is added though.
+                // if (items.length === 1) {
+                //   newItems.push(unionObj);
+                // }
+
                 return newItems;
               });
             }}

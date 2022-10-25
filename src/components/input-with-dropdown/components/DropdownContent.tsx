@@ -20,7 +20,7 @@ export const DropdownContent: React.FC<DropdownContentProps> = ({
       <Box
         position='absolute'
         w='100%'
-        zIndex={5}
+        zIndex='dropdown'
         boxShadow='lg'
         bg='white'
         borderRadius='base'

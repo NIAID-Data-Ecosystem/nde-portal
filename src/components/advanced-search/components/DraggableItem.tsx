@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { Box, Text } from 'nde-design-system';
 import { UniqueIdentifier } from '@dnd-kit/core';
+import { AddWithUnion } from './buttons';
 
 export interface DragItem {
   id: UniqueIdentifier;
@@ -41,6 +42,22 @@ export const DraggableItem: React.FC<DraggableItemProps> = ({
       document.body.style.cursor = '';
     };
   }, [isDragging]);
+
+  if (property === 'union') {
+    return (
+      <AddWithUnion
+        ariaLabel='Join two query terms'
+        size='sm'
+        type='button'
+        unionType={value}
+        setUnionType={value => {
+          // [TO DO] : update values
+          console.log('change', value);
+        }}
+        zIndex='popover'
+      ></AddWithUnion>
+    );
+  }
 
   return (
     <Box

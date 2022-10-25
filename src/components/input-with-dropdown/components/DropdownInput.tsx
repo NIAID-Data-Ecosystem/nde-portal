@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import {
   ButtonProps,
   Flex,
@@ -60,7 +60,7 @@ export const DropdownInput: React.FC<DropdownInputProps> = ({
 }) => {
   const { colorScheme, cursor, inputValue, getInputProps, setIsOpen } =
     useDropdownContext();
-
+  const inputRightRef = useRef<HTMLDivElement>(null);
   return (
     <Flex
       as='form'
@@ -99,14 +99,19 @@ export const DropdownInput: React.FC<DropdownInputProps> = ({
           {...getInputProps({
             placeholder: placeholder || 'Search',
             tabIndex: 0,
-            pr: renderSubmitButton ? `${SIZE_CONFIG[size]['width']}rem` : 4,
+            pr: inputRightRef?.current?.clientWidth || 4,
             onChange: (e: React.ChangeEvent<HTMLInputElement>) =>
               onChange ? onChange(e.currentTarget.value) : void 0,
           })}
         />
         {/* Optional submit button. */}
         {renderSubmitButton && (
-          <InputRightElement p={1} w={`${SIZE_CONFIG[size]['width']}rem`}>
+          <InputRightElement
+            ref={inputRightRef}
+            p={1}
+            w='unset'
+            zIndex='sticky'
+          >
             {renderSubmitButton({
               type: 'submit',
               w: '100%',
