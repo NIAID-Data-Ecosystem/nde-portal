@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Flex,
   Select,
@@ -11,7 +11,12 @@ import { ModalProps } from '@chakra-ui/react';
 import { AdvancedSearchButton } from './components/Button';
 import { AdvancedSearchModal } from './components/Modal';
 import { fetchFields, FetchFieldsResponse } from 'src/utils/api';
-import { usePredictiveSearch } from 'src/components/search-with-predictive-text';
+import {
+  SearchWithPredictiveText,
+  usePredictiveSearch,
+} from 'src/components/search-with-predictive-text';
+import { QueryBuilderDragArea } from './components/QueryBuilderDragArea';
+import { DragItem } from './components/DraggableItem';
 
 interface AdvancedSearchProps {
   buttonProps?: TextProps;
@@ -27,6 +32,7 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
   // Handles the opening of the modal.
   // [TO DO]: remove isOpen:true after dev mode.
   const { isOpen, onOpen, onClose } = useDisclosure({ isOpen: true });
+  const [items, setItems] = useState<DragItem[]>([]);
 
   // Retrieve fields for select dropdown.
   const { isLoading, data: fields } = useQuery<
@@ -50,6 +56,7 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
         {...buttonProps}
       ></AdvancedSearchButton>
       <AdvancedSearchModal isOpen={isOpen} onClose={onClose} {...modalProps}>
+        <QueryBuilderDragArea itemsList={items} updateItems={setItems} />
         <Flex
           flexDirection={{ base: 'column', md: 'row' }}
           alignItems={{ base: 'flex-start', md: 'center' }}
@@ -82,6 +89,32 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
             </Select>
           </Skeleton>
           {/* Input field with suggestions matching the search term. */}
+
+          {/*
+        [TO DO]:
+           [] Add union type submit.
+           [] Add view raw query.
+        */}
+
+          <SearchWithPredictiveText
+            ariaLabel='Search for datasets or tools'
+            placeholder='Search for datasets or tools'
+            size='md'
+            field={searchField}
+            // renderSubmitButton={}
+            handleSubmit={(value, __, data) => {
+              setItems(prev => {
+                const newItems = [...prev];
+                const id = value.split(' ').join('-');
+                newItems.push({
+                  id: `$${id}-${data?.id || items.length}`, // unique identifier
+                  value,
+                  field: searchField,
+                });
+                return newItems;
+              });
+            }}
+          />
         </Flex>
       </AdvancedSearchModal>
     </>

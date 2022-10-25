@@ -191,6 +191,9 @@ const Test: NextPage = () => {
             {/* <Flex w='100%' justifyContent='flex-end'>
               <AdvancedSearch />
             </Flex> */}
+            <Flex w='100%' justifyContent='flex-end'>
+              <AdvancedSearch />
+            </Flex>
             <SearchWithPredictiveText
               ariaLabel='Search for datasets or tools'
               placeholder='Search for datasets or tools'

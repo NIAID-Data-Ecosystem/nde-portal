@@ -52,6 +52,9 @@ export const usePredictiveSearch = (term = '', field = '') => {
     },
   );
 
+  useEffect(() => {
+    setSearchField(field);
+  }, [field]);
   // reset results if no search term is provided.
   useEffect(() => {
     if (!searchTerm) setResults([]);

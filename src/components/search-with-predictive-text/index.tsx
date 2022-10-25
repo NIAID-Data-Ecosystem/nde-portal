@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { ReactElement, useEffect, useMemo } from 'react';
 import { groupBy, uniqBy } from 'lodash';
 import { Box, Button, Flex, InputProps, Text } from 'nde-design-system';
 import { FormattedResource } from 'src/utils/api/types';
@@ -28,6 +28,7 @@ interface SearchWithPredictiveTextProps {
     field: string,
     data?: FormattedResource,
   ) => void; // triggered when suggestion item from list is clicked / press enters.
+  renderSubmitButton?: () => ReactElement; // an optional custom button rendered as the "submit" button.
 }
 
 // General search bar with predictive text. Groups results by type of resource.
@@ -42,6 +43,7 @@ export const SearchWithPredictiveText: React.FC<
   term: defaultTerm = '',
   isLoading: defaultLoading,
   handleSubmit,
+  renderSubmitButton,
 }) => {
   // Search term entered in search bar
   const {
