@@ -6,6 +6,7 @@ import {
   TextProps,
   useDisclosure,
 } from 'nde-design-system';
+import { useRouter } from 'next/router';
 import { useQuery } from 'react-query';
 import { ModalProps } from '@chakra-ui/react';
 import { AdvancedSearchModal } from './components/Modal';
@@ -17,6 +18,7 @@ import {
 import { QueryBuilderDragArea } from './components/QueryBuilderDragArea';
 import { DragItem } from './components/DraggableItem';
 import { AddWithUnion, OpenModal, options } from './components/buttons';
+import { transformQueryArray2Querystring } from './helpers';
 
 interface AdvancedSearchProps {
   buttonProps?: TextProps;
@@ -27,6 +29,7 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
   buttonProps,
   modalProps,
 }) => {
+  const router = useRouter();
   const { searchField, setSearchField } = usePredictiveSearch();
 
   // Handles the opening of the modal.
@@ -52,7 +55,18 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
   return (
     <>
       <OpenModal onClick={onOpen} {...buttonProps}></OpenModal>
-      <AdvancedSearchModal isOpen={isOpen} onClose={onClose} {...modalProps}>
+      <AdvancedSearchModal
+        isOpen={isOpen}
+        onClose={onClose}
+        onSubmit={e => {
+          const q = transformQueryArray2Querystring(items);
+          router.push({
+            pathname: `/search`,
+            query: { q, advancedSearch: true },
+          });
+        }}
+        {...modalProps}
+      >
         <QueryBuilderDragArea itemsList={items} updateItems={setItems} />
         <Flex
           flexDirection={{ base: 'column', md: 'row' }}

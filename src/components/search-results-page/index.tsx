@@ -104,9 +104,9 @@ const SearchResultsPage = () => {
 
   // Query Parameters
   const filter_string = queryFilterObject2String(selectedFilters);
-
   const params = {
-    q: encodeString(queryString),
+    // don't escape parenthesis or colons when its an advanced search
+    q: router.query.advancedSearch ? queryString : encodeString(queryString),
     extra_filter: filter_string || '', // extra filter updates aggregate fields
   };
 
