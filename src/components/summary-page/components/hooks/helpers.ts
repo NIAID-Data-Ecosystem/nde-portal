@@ -8,7 +8,6 @@ export const displayQueryString = (str: string) => {
   if (str === '__all__') {
     str = '';
   }
-
   return str;
 };
 

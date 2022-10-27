@@ -32,6 +32,8 @@ export interface Params {
   sort?: string;
   scroll_id?: string;
   extra_filter?: string;
+  fields?: string;
+  dotfield?: boolean;
 }
 
 // Fetch all search results from API.
@@ -135,6 +137,31 @@ export const fetchMetadata = async () => {
       `${process.env.NEXT_PUBLIC_API_URL}/metadata`,
     )) as { data: Metadata };
 
+    return data;
+  } catch (err) {
+    throw err;
+  }
+};
+
+// get metadata fields
+export interface FetchFieldsResponse {
+  property: string;
+  type: string;
+}
+
+export const fetchFields = async () => {
+  if (!process.env.NEXT_PUBLIC_API_URL) {
+    throw new Error('API url undefined');
+  }
+
+  try {
+    const data = await axios
+      .get(`${process.env.NEXT_PUBLIC_API_URL}/metadata/fields`)
+      .then(({ data }: { data: { [key: string]: { type: string } } }) => {
+        return Object.entries(data).map(([property, { type }]) => {
+          return { property, type };
+        });
+      });
     return data;
   } catch (err) {
     throw err;
