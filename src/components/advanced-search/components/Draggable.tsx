@@ -1,33 +1,33 @@
-import { Box } from 'nde-design-system';
+import { Flex } from 'nde-design-system';
 import { UniqueIdentifier } from '@dnd-kit/core';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { DraggableItem } from './DraggableItem';
+import { DraggableItem, DragItem } from './DraggableItem';
 
 export interface DraggableProps {
   id: UniqueIdentifier;
-  property?: string;
-  value: string; // change to type of items.value in parent state.
   handle?: boolean;
   disabled?: boolean; //If you'd like to temporarily disable a sortable item, set the disabled argument to true.
   useDragOverlay: boolean;
-  // [TO DO]: add below.
-  // removeItem
-  // updateItem
+  data: DragItem;
+  onUpdate?: (data: DragItem) => void;
+  onRemove?: (id: UniqueIdentifier) => void;
 }
 
 export const Draggable: React.FC<DraggableProps> = ({
   id,
-  property,
-  value,
   disabled,
   useDragOverlay,
-  children,
+  data,
+  handle,
+  onUpdate,
+  onRemove,
 }) => {
   const {
     attributes,
     listeners,
     setNodeRef,
+    setActivatorNodeRef,
     isDragging,
     transform,
     transition,
@@ -43,26 +43,37 @@ export const Draggable: React.FC<DraggableProps> = ({
     }),
     transition,
   };
-
   return (
-    <Box
+    <Flex
       id='drag-wrapper'
       ref={setNodeRef}
       style={style}
       // move this to handle if necessary
       {...attributes}
-      {...listeners}
+      {...(!handle ? listeners : undefined)}
     >
       <DraggableItem
-        id={id}
-        property={property}
-        value={value}
+        id={data.id}
+        property={data.field}
+        value={data.value}
         isDragging={isDragging}
         isOverlay={!useDragOverlay}
-        // Handle needed for union button dropdown.
-        // handle={handle}
+        handle={handle}
+        handleProps={
+          handle
+            ? {
+                ref: setActivatorNodeRef,
+              }
+            : undefined
+        }
+        onRemove={onRemove ? () => onRemove(id) : undefined}
+        onUpdate={
+          onUpdate ? update => onUpdate({ ...data, ...update }) : undefined
+        }
+        listeners={listeners}
+        attributes={attributes}
         // renderItem={renderItem}
       />
-    </Box>
+    </Flex>
   );
 };

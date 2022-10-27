@@ -23,8 +23,7 @@ import {
 } from '@dnd-kit/sortable';
 import { DraggableItem, DragItem } from './DraggableItem';
 
-// [TO DO]: Add accessbility voice over
-
+// [TO DO]: Add accessbility properties.
 interface QueryBuilderDragAreaProps {
   itemsList: DragItem[];
   updateItems: React.Dispatch<React.SetStateAction<DragItem[]>>;
@@ -88,10 +87,27 @@ export const QueryBuilderDragArea: React.FC<QueryBuilderDragAreaProps> = ({
     setItems(itemsList);
   }, [itemsList]);
 
-  // const handleRemove = removable
-  // ? (id: UniqueIdentifier) =>
-  //     setItems((items) => items.filter((item) => item !== id))
-  // : undefined;
+  const handleUpdate = (item: DragItem) => {
+    const idx = getIndex(item.id);
+    // [TO DO]: merge into 1
+    setItems(items => {
+      const newArr = [...items];
+      newArr[idx] = item;
+      return newArr;
+    });
+    updateItems(items => {
+      const newArr = [...items];
+      newArr[idx] = item;
+      return newArr;
+    });
+  };
+
+  const handleRemove = (id: UniqueIdentifier) => {
+    setItems(items => items.filter(item => item.id !== id));
+    updateItems(items => items.filter(item => item.id !== id));
+  };
+
+  const hasDragHandle = true;
 
   return (
     <Flex
@@ -132,20 +148,21 @@ export const QueryBuilderDragArea: React.FC<QueryBuilderDragAreaProps> = ({
               <Draggable
                 key={item.id}
                 id={item.id}
-                property={item.field}
-                value={item.value}
+                data={item}
                 useDragOverlay={useDragOverlay}
-                // handle={handle}
+                onUpdate={handleUpdate}
+                handle={hasDragHandle}
+                onRemove={handleRemove}
               ></Draggable>
             );
           })}
         </SortableContext>
+
         {/* 
         Reasons for using Drag Overlay.
         On DragOverlay: https://docs.dndkit.com/api-documentation/draggable/drag-overlay#when-should-i-use-a-drag-overlay 
         On Portals: https://docs.dndkit.com/api-documentation/draggable/drag-overlay#portals
         */}
-
         {useDragOverlay
           ? createPortal(
               <DragOverlay
@@ -159,7 +176,7 @@ export const QueryBuilderDragArea: React.FC<QueryBuilderDragAreaProps> = ({
                     id={items[activeIndex].id}
                     value={items[activeIndex].value}
                     property={items[activeIndex].field}
-                    // handle={handle}
+                    handle={hasDragHandle}
                     // renderItem={renderItem}
                     isDragging={true}
                     isOverlay={true}

@@ -6,19 +6,20 @@ import {
   ButtonGroup,
   ButtonGroupProps,
   ButtonProps,
+  Icon,
   IconButton,
   ListItem,
   UnorderedList,
 } from 'nde-design-system';
 
+export const options = ['AND', 'OR', 'NOT'] as const;
+
 export interface AddWithUnionProps extends ButtonGroupProps {
   ariaLabel: string;
   type: ButtonProps['type'];
   unionType: typeof options[number] | '';
-  setUnionType: React.Dispatch<React.SetStateAction<'' | 'AND' | 'OR' | 'NOT'>>;
+  setUnionType: (arg: AddWithUnionProps['unionType']) => void;
 }
-
-export const options = ['AND', 'OR', 'NOT'] as const;
 
 export const AddWithUnion: React.FC<AddWithUnionProps> = ({
   ariaLabel,
@@ -28,27 +29,32 @@ export const AddWithUnion: React.FC<AddWithUnionProps> = ({
   type,
   unionType,
   setUnionType,
+  height,
   ...props
 }) => {
   const [optionsOpen, setOptionsOpen] = useState(false);
   return (
-    <Box onMouseLeave={() => setOptionsOpen(false)}>
+    <Box onMouseLeave={() => setOptionsOpen(false)} height={height}>
       <ButtonGroup
         isAttached
         variant='solid'
         size={size}
         colorScheme={colorScheme}
         isDisabled={isDisabled}
+        height={height}
         {...props}
       >
-        <Button aria-label={ariaLabel} type={type}>
-          {unionType || 'submit'}
+        <Button aria-label={ariaLabel} type={type} height={height}>
+          {unionType || 'Add'}
         </Button>
         <IconButton
+          height={height}
           aria-label={ariaLabel}
-          icon={<FaChevronDown />}
+          alignItems='center'
+          icon={<Icon as={FaChevronDown} />}
           onClick={() => setOptionsOpen(!optionsOpen)}
           onMouseEnter={() => setOptionsOpen(true)}
+          padding={0}
         />
       </ButtonGroup>
       {/* Menu of options */}
