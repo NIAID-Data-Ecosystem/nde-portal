@@ -7,7 +7,7 @@ import { useTooltip, useTooltipInPortal } from '@visx/tooltip';
 import { formatNumber } from 'src/utils/helpers';
 import { PatternLines } from '@visx/pattern';
 import { scaleBand, scaleLinear } from '@visx/scale';
-import { aggregateDatesByYear } from '../helpers';
+import { addMissingYears } from '../helpers';
 
 /*
   SCALES FOR HISTOGRAM
@@ -40,6 +40,7 @@ interface HistogramProps {
 }
 
 const params = {
+  height: 150,
   fill: {
     active: theme.colors.primary[400],
     disabled: theme.colors.gray[200],
@@ -70,8 +71,12 @@ export const Histogram: React.FC<HistogramProps> = React.memo(
         scroll: true,
         zIndex: 1000,
       });
-    const width = containerBounds?.width || 0;
-    const height = (width || 0) / 3;
+
+    const width = useMemo(
+      () => containerBounds?.width || 0,
+      [containerBounds?.width],
+    );
+    const height = params.height;
 
     const handleMouseOver = useCallback(
       (
@@ -109,8 +114,14 @@ export const Histogram: React.FC<HistogramProps> = React.memo(
       [data, width],
     );
 
+    // Set svg width to the exact width of the barchart.
+    const svgWidth = useMemo(
+      () => (scaleDate(data.length - 1) || 0) + scaleDate.bandwidth(),
+      [data.length, scaleDate],
+    );
+
     const updatedCounts = useMemo(
-      () => aggregateDatesByYear(updatedData),
+      () => addMissingYears(updatedData),
       [updatedData],
     );
 
@@ -125,7 +136,13 @@ export const Histogram: React.FC<HistogramProps> = React.memo(
     );
 
     return (
-      <div id='date-histogram' style={{ position: 'relative', width: '100%' }}>
+      <div
+        id='date-histogram'
+        style={{
+          position: 'relative',
+          width: '100%',
+        }}
+      >
         {/* Show tooltip when hovering in any vertical space to bar. */}
         {tooltipOpen && (
           <TooltipInPortal
@@ -146,18 +163,14 @@ export const Histogram: React.FC<HistogramProps> = React.memo(
           </TooltipInPortal>
         )}
 
-        <Flex ref={containerRef} mb={10}>
+        <Flex ref={containerRef} mb={10} justifyContent='center'>
           {/* Bar representing resources with no dates. */}
           {data.length ? (
-            <Box w='100%'>
-              <Box
-                as='svg'
-                id='filters-histogram'
-                viewBox={`0 0 ${width} ${height}`}
-              >
+            <Box>
+              <Box as='svg' id='filters-histogram' width={svgWidth}>
                 <Group>
                   {data.map((d, i) => {
-                    const { term, count } = d;
+                    const { term, count, displayAs } = d;
                     const barWidth = scaleDate.bandwidth();
                     const barX = scaleDate(i);
 

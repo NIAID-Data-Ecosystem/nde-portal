@@ -5,7 +5,7 @@ import { useFacetsData } from '../../hooks/useFacetsData';
 import { SelectedFilterType } from '../../types';
 import { Params } from 'src/utils/api';
 import { queryFilterObject2String } from '../../helpers';
-import { aggregateDatesByYear } from './helpers';
+import { addMissingYears } from './helpers';
 import { Slider } from './components/slider';
 import { Histogram } from './components/histogram';
 import { FacetTerm } from 'src/utils/api/types';
@@ -49,7 +49,7 @@ export const FiltersDateSlider: React.FC<FiltersDateSliderProps> = ({
 
   // [resourcesWithNoDates]: Data used for N/A bar in histogram. Resources that do not have a date field.
   const resourcesWithNoDates = useMemo(
-    () => data?.date?.filter(d => d.term === '-_exists_') || [],
+    () => data?.date?.filter(d => d.term === '-_exists_' && d.count > 0) || [],
     [data?.date],
   );
 
@@ -63,12 +63,10 @@ export const FiltersDateSlider: React.FC<FiltersDateSliderProps> = ({
         ) || [],
     [data?.date],
   );
-
   // [resourcesGroupedByYear]: Grouped by year
   const resourcesGroupedByYear = useMemo(() => {
-    return aggregateDatesByYear(resourcesWithDates);
+    return addMissingYears(resourcesWithDates);
   }, [resourcesWithDates]);
-
   /*
   HANDLE SLIDER DATE RANGE
     [activeDateRange]: Range controlled by sliders. Indices of resourcesGroupedByYear.
@@ -92,31 +90,13 @@ export const FiltersDateSlider: React.FC<FiltersDateSliderProps> = ({
       borderRadius='base'
       border='1px solid'
       borderColor='primary.100'
-      p={4}
     >
       <Skeleton isLoaded={!isLoading} w='100%' h={isLoading ? '4rem' : 'unset'}>
         {!isLoading && data?.date?.length === 0 && (
           <Text>No available filters.</Text>
         )}
 
-        {/* Calendar Inputs */}
-        {resourcesGroupedByYear.length > 0 ? (
-          <Flex mb={4}>
-            <DatePicker
-              min={formatISOString(resourcesWithDates[0]?.term || '')}
-              max={formatISOString(
-                resourcesWithDates[resourcesWithDates.length - 1]?.term || '',
-              )}
-              selectedDates={selectedDates}
-              handleSelectedFilter={handleSelectedFilter}
-              resetFilter={resetFilter}
-            />
-          </Flex>
-        ) : (
-          <></>
-        )}
-
-        <Flex w='100%' flexDirection='column' alignItems='center'>
+        <Flex w='100%' flexDirection='column' alignItems='center' p={4}>
           {data?.date?.length > 0 ? (
             // Histogram for resources grouped by year
             <Histogram
@@ -130,19 +110,25 @@ export const FiltersDateSlider: React.FC<FiltersDateSliderProps> = ({
                 ...(activeDateRange !== undefined
                   ? resourcesGroupedByYear
                       .slice(activeDateRange[0], activeDateRange[1] + 1)
-                      .map(d => d.term.split('-')[0])
+                      .map(d => d.term)
                   : []),
               ]}
-              handleClick={year => {
-                if (year === '-_exists_') {
+              handleClick={term => {
+                if (term === '-_exists_') {
                   handleSelectedFilter(['-_exists_']);
                 } else {
+                  const year = term.split('-')[0];
                   handleSelectedFilter([`${year}-01-01`, `${year}-12-31`]);
                 }
               }}
             >
               {/* Date Range Slider */}
-              {resourcesGroupedByYear.length ? (
+              {/* activeDateRange?.[0] !== undefined ? (
+                <Text w='100%' textAlign='right'>
+                  {resourcesGroupedByYear[activeDateRange[0]].term}
+                </Text>
+              )  */}
+              {resourcesGroupedByYear.length > 0 ? (
                 <Box w='100%' mt={-2.5} flex={1}>
                   <Slider
                     rangeValues={activeDateRange}
@@ -153,8 +139,12 @@ export const FiltersDateSlider: React.FC<FiltersDateSliderProps> = ({
                       setActiveDateRange(values);
                       //   update api request
                       handleSelectedFilter([
-                        `${resourcesGroupedByYear[values[0]].term}-01-01`,
-                        `${resourcesGroupedByYear[values[1]].term}-12-31`,
+                        `${
+                          resourcesGroupedByYear[values[0]].term.split('-')[0]
+                        }-01-01`,
+                        `${
+                          resourcesGroupedByYear[values[1]].term.split('-')[0]
+                        }-12-31`,
                       ]);
                     }}
                   />
@@ -167,6 +157,24 @@ export const FiltersDateSlider: React.FC<FiltersDateSliderProps> = ({
             <></>
           )}
         </Flex>
+
+        {/* Calendar Inputs */}
+        {resourcesGroupedByYear.length > 0 ? (
+          <Flex>
+            <DatePicker
+              colorScheme='secondary'
+              min={formatISOString(resourcesWithDates[0]?.term || '')}
+              max={formatISOString(
+                resourcesWithDates[resourcesWithDates.length - 1]?.term || '',
+              )}
+              selectedDates={selectedDates}
+              handleSelectedFilter={handleSelectedFilter}
+              resetFilter={resetFilter}
+            />
+          </Flex>
+        ) : (
+          <></>
+        )}
       </Skeleton>
     </Box>
   );

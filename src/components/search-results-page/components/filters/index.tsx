@@ -147,23 +147,23 @@ export const Filters: React.FC<FiltersProps> = ({
 
         if (facet === 'date') {
           return (
-            <FiltersSection
-              key={facet}
-              name={name}
-              icon={glyph}
-              property={property || ''}
-            >
-              <FiltersDateSlider
-                queryParams={queryParams}
-                filters={selectedFilters}
-                selectedData={data?.date || []}
-                selectedDates={selected || []}
-                handleSelectedFilter={values =>
-                  handleSelectedFilters(values, facet)
-                }
-                resetFilter={() => handleSelectedFilters([], facet)}
-              ></FiltersDateSlider>
-            </FiltersSection>
+            // <FiltersSection
+            //   key={facet}
+            //   name={name}
+            //   icon={glyph}
+            //   property={property || ''}
+            // >
+            <FiltersDateSlider
+              queryParams={queryParams}
+              filters={selectedFilters}
+              selectedData={data?.date || []}
+              selectedDates={selected || []}
+              handleSelectedFilter={values =>
+                handleSelectedFilters(values, facet)
+              }
+              resetFilter={() => handleSelectedFilters([], facet)}
+            ></FiltersDateSlider>
+            // </FiltersSection>
           );
         }
 

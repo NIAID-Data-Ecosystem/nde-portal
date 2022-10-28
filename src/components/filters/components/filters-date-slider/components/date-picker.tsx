@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Button, Flex, Input, Text } from 'nde-design-system';
+import { Box, ButtonProps, Button, Flex, Input, Text } from 'nde-design-system';
 
 interface DatePickerProps {
+  colorScheme: ButtonProps['colorScheme'];
   min: string;
   max: string;
   selectedDates: string[];
@@ -10,6 +11,7 @@ interface DatePickerProps {
 }
 
 export const DatePicker: React.FC<DatePickerProps> = ({
+  colorScheme,
   min,
   max,
   selectedDates,
@@ -27,8 +29,8 @@ export const DatePicker: React.FC<DatePickerProps> = ({
       id='date-picker'
       as='form'
       w='100%'
-      bg='white'
-      mb={2}
+      bg='blackAlpha.50'
+      p={4}
       flexDirection='column'
       onSubmit={e => {
         e.preventDefault();
@@ -53,7 +55,7 @@ export const DatePicker: React.FC<DatePickerProps> = ({
           <Input
             id='start'
             type='date'
-            colorScheme='primary'
+            colorScheme={colorScheme}
             bg='white'
             min={min}
             max={max}
@@ -72,7 +74,7 @@ export const DatePicker: React.FC<DatePickerProps> = ({
           <Input
             id='end'
             type='date'
-            colorScheme='primary'
+            colorScheme={colorScheme}
             bg='white'
             min={min}
             max={max}
@@ -90,15 +92,15 @@ export const DatePicker: React.FC<DatePickerProps> = ({
           size='sm'
           variant='solid'
           type='submit'
-          colorScheme='primary'
-          mx={1}
+          colorScheme={colorScheme}
+          mr={1}
         >
           Submit
         </Button>
         <Button
           size='sm'
           variant='outline'
-          colorScheme='primary'
+          colorScheme={colorScheme}
           onClick={() => resetFilter()}
           isDisabled={!selectedDates.length}
           mx={1}

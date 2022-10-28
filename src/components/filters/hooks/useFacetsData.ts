@@ -2,10 +2,19 @@ import { useState } from 'react';
 import { useQuery } from 'react-query';
 import { useHasMounted } from 'src/hooks/useHasMounted';
 import { fetchSearchResults, Params } from 'src/utils/api';
+import { formatDate, formatISOString, formatType } from 'src/utils/api/helpers';
 import { Facet, FacetTerm, FormattedResource } from 'src/utils/api/types';
 import { encodeString } from 'src/utils/querystring-helpers';
-import { formatFacetTerm } from '../helpers';
 import { FacetTerms } from '../types';
+
+export const formatFacetTermDisplay = (term: string, facet: string) => {
+  if (facet === '@type') {
+    return formatType(term);
+  } else if (facet === 'date') {
+    return formatDate(term)?.split('-')[0];
+  }
+  return term;
+};
 
 interface UseFilterDataProps {
   queryParams: Params;
@@ -33,27 +42,38 @@ export const useFacetsData = ({
     }
     const data = await fetchSearchResults({
       ...params,
-      q: encodeString(params.q),
-      facets: facets.join(','),
+      q: params.q,
+      hist: 'date',
     }).then(response => {
       const facetsData = {} as { [key: string]: { terms: FacetTerm[] } };
       if (response?.facets) {
         Object.keys(response.facets).map(facet => {
-          facetsData[facet] = {
-            terms: response.facets[facet].terms.map((term: FacetTerm) => ({
-              ...term,
-              displayAs: formatFacetTerm(term.term, facet),
-              facet,
-            })),
+          if (facet === 'date') {
+            return;
+          }
+          let facetKey = facet === 'hist_dates' ? 'date' : facet;
+          facetsData[facetKey] = {
+            terms: response.facets[facet].terms.map((t: FacetTerm) => {
+              let term = t.term;
+              if (facet === 'hist_dates') {
+                term = formatISOString(t.term);
+              }
+
+              return {
+                ...t,
+                term,
+                displayAs: formatFacetTermDisplay(term, facetKey),
+                facet: facetKey,
+              };
+            }),
           };
         });
       }
-
       return facetsData;
     });
 
     // Data for missing datasets with no facet term. (aka. n/a value in filter).
-    const noExists = await Promise.all(
+    await Promise.all(
       facets.map(facet => {
         /* Fetch facets using query params. Note that we also get the facets count where data is non-existent to be used as an "N/A" attribute. */
         return fetchSearchResults({
@@ -114,10 +134,11 @@ export const useFacetsData = ({
         q: queryParams.q,
         extra_filter: '',
         facet_size: queryParams.facet_size,
+        facets: facets.filter(facet => facet !== 'date').join(','),
       });
     },
     {
-      enabled: !!hasMounted,
+      // enabled: !!hasMounted,
       refetchOnWindowFocus: false,
       select: data => {
         const obj: FiltersResponse = {};
@@ -136,7 +157,6 @@ export const useFacetsData = ({
       },
     },
   );
-
   // 2. Update counts on facet when filters are applied to searchquery from 1. Runs on load/new querystring and when filters are changed.
   const { isLoading: isUpdating, error: updatedFiltersError } = useQuery<
     { [key: string]: { terms: FacetTerm[] } } | undefined,
@@ -158,16 +178,13 @@ export const useFacetsData = ({
         q: queryParams.q,
         facet_size: queryParams.facet_size,
         extra_filter: queryParams.extra_filter,
+        facets: facets.join(','),
       });
     },
     {
       refetchOnWindowFocus: false,
       // Only run if there is data to update.
-      enabled: !!(
-        hasMounted &&
-        initialData &&
-        Object.values(initialData).length > 0
-      ),
+      enabled: !!(initialData && Object.values(initialData).length > 0),
 
       onSuccess(data) {
         /*
@@ -178,7 +195,6 @@ export const useFacetsData = ({
           // Check if updated facets have changed count..
           setFacetTerms(() => {
             const facetTermsData = { ...facetTerms };
-
             Object.keys(facetTermsData).map(facet => {
               const updatedTerms = facetTermsData[facet].map(facetTerm => {
                 const updateFacetTerm = { ...facetTerm };
@@ -186,6 +202,7 @@ export const useFacetsData = ({
                 const updatedItem = data[facet].terms.find(
                   el => el.term === facetTerm.term,
                 );
+
                 // if item count has changed, update state with new count.
                 if (updatedItem) {
                   updateFacetTerm.count = updatedItem.count;
@@ -199,7 +216,6 @@ export const useFacetsData = ({
                 (a, b) => b.count - a.count,
               );
             });
-
             return facetTermsData;
           });
         }
@@ -211,7 +227,7 @@ export const useFacetsData = ({
     {
       data: facetTerms,
       error,
-      isLoading: isLoading,
+      isLoading,
       isUpdating,
     },
   ];

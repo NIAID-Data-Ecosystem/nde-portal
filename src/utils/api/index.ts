@@ -34,6 +34,7 @@ export interface Params {
   extra_filter?: string;
   fields?: string;
   dotfield?: boolean;
+  hist?: string;
 }
 
 // Fetch all search results from API.

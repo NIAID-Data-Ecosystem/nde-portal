@@ -16,6 +16,8 @@ interface FiltersRangeSliderProps {
   onChangeEnd: (args: number[]) => void;
 }
 
+export const THUMB_SIZE = 14;
+
 export const Slider: React.FC<FiltersRangeSliderProps> = React.memo(
   ({ selectedDates, rangeValues, data, updateRangeValues, onChangeEnd }) => {
     // Show as disabled there is no range to the data (i.e. more than one step in range) or if non year data is selected.
@@ -36,12 +38,15 @@ export const Slider: React.FC<FiltersRangeSliderProps> = React.memo(
           // Otherwise, find the index value of the selection and update the state.
           const [start, end] = [
             data.findIndex(
-              datum => datum.term === selectedDates[0]?.split('-')[0],
+              datum =>
+                datum.term?.split('-')[0] === selectedDates[0]?.split('-')[0],
             ),
             data.findIndex(
-              datum => datum.term === selectedDates[1]?.split('-')[0],
+              datum =>
+                datum.term?.split('-')[0] === selectedDates[1]?.split('-')[0],
             ),
           ];
+
           if (start > -1 && arr[0] !== start) {
             arr[0] = start;
           }
@@ -73,20 +78,28 @@ export const Slider: React.FC<FiltersRangeSliderProps> = React.memo(
           </RangeSliderTrack>
 
           {/* Display a tooltip on hover with values for each slider thumb. */}
-          <RangeSliderThumb index={0} borderColor='primary.200'>
+          <RangeSliderThumb
+            index={0}
+            borderColor='primary.200'
+            w={`${THUMB_SIZE}px`}
+          >
             <Box position='absolute' top={4}>
               <Heading as='h5' fontSize='0.85rem' mt={2}>
                 {rangeValues?.[0] !== undefined
-                  ? data[rangeValues[0]]?.term
+                  ? data[rangeValues[0]]?.displayAs
                   : ''}
               </Heading>
             </Box>
           </RangeSliderThumb>
-          <RangeSliderThumb index={1} borderColor='primary.200'>
+          <RangeSliderThumb
+            index={1}
+            borderColor='primary.200'
+            w={`${THUMB_SIZE}px`}
+          >
             <Box position='absolute' top={4}>
               <Heading as='h5' fontSize='0.85rem' mt={2}>
                 {rangeValues?.[1] !== undefined
-                  ? data[rangeValues[1]]?.term
+                  ? data[rangeValues[1]]?.displayAs
                   : ''}
               </Heading>
             </Box>

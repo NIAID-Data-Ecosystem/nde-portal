@@ -110,15 +110,6 @@ export const queryFilterString2Object = (str?: string | string[]) => {
 /////// Format Terms (for display purposes) /////////
 /////////////////////////////////////////////////////
 
-export const formatFacetTerm = (term: string, facet: string) => {
-  if (facet === '@type') {
-    return formatType(term);
-  } else if (facet === 'date') {
-    return formatDate(term);
-  }
-  return term;
-};
-
 // Format the dataset type(if changed for display) to the @type accepted in the API.
 export const formatTypeForAPI = (types: string[]) => {
   return types.map(type => {
