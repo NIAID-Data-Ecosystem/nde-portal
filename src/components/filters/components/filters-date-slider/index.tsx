@@ -1,6 +1,14 @@
 import React, { useMemo, useState } from 'react';
 import { omit } from 'lodash';
-import { Box, Flex, Heading, Skeleton, Text } from 'nde-design-system';
+import {
+  Box,
+  ButtonProps,
+  Checkbox,
+  Flex,
+  Heading,
+  Skeleton,
+  Text,
+} from 'nde-design-system';
 import { useFacetsData } from '../../hooks/useFacetsData';
 import { SelectedFilterType } from '../../types';
 import { Params } from 'src/utils/api';
@@ -13,16 +21,17 @@ import { DatePicker } from './components/date-picker';
 import { formatISOString } from 'src/utils/api/helpers';
 
 interface FiltersDateSliderProps {
+  colorScheme: ButtonProps['colorScheme'];
   // Params used in query.
   queryParams: Params;
+  // Selected resourcesWithDate [min, max] from router.
+  selectedDates: string[];
+  filters: SelectedFilterType;
+  selectedData: FacetTerm[];
   // fn to update filter selection
   handleSelectedFilter: (arg: string[]) => void;
   // fn to reset filter selection
   resetFilter: () => void;
-  // Selected resourcesGroupedByYear [min, max] from router.
-  selectedDates: string[];
-  filters: SelectedFilterType;
-  selectedData: FacetTerm[];
 }
 
 export const FiltersDateSlider: React.FC<FiltersDateSliderProps> = ({
@@ -35,7 +44,7 @@ export const FiltersDateSlider: React.FC<FiltersDateSliderProps> = ({
 }) => {
   /*
   RETRIEVE DATES DATA
-    [resourcesGroupedByYear] The data for the date slider updates with filters and querystring changes but we omit the date filter from updating the data for the appearance of this filter.
+    [resourcesWithDate] The data for the date slider updates with filters and querystring changes but we omit the date filter from updating the data for the appearance of this filter.
   */
   const queryParams = {
     ...params,
@@ -47,29 +56,25 @@ export const FiltersDateSlider: React.FC<FiltersDateSliderProps> = ({
     facets: ['date'],
   });
 
-  // [resourcesWithNoDates]: Data used for N/A bar in histogram. Resources that do not have a date field.
-  const resourcesWithNoDates = useMemo(
+  // [resourcesWithNoDate]: Data used for N/A bar in histogram. Resources that do not have a date field.
+  const resourcesWithNoDate = useMemo(
     () => data?.date?.filter(d => d.term === '-_exists_' && d.count > 0) || [],
     [data?.date],
   );
 
   // [resourcesWithDates]: Resources that have a date field, sorted.
-  const resourcesWithDates = useMemo(
+  const resourcesWithDate = useMemo(
     () =>
-      data?.date
-        ?.filter(d => !(d.term === '-_exists_' || d.count === 0))
-        .sort(
-          (a, b) => new Date(a.term).valueOf() - new Date(b.term).valueOf(),
-        ) || [],
+      addMissingYears(
+        data?.date?.filter(d => !(d.term === '-_exists_' || d.count === 0)) ||
+          [],
+      ),
     [data?.date],
   );
-  // [resourcesGroupedByYear]: Grouped by year
-  const resourcesGroupedByYear = useMemo(() => {
-    return addMissingYears(resourcesWithDates);
-  }, [resourcesWithDates]);
+
   /*
   HANDLE SLIDER DATE RANGE
-    [activeDateRange]: Range controlled by sliders. Indices of resourcesGroupedByYear.
+    [activeDateRange]: Range controlled by sliders. Indices of resourcesWithDate.
   */
   const [activeDateRange, setActiveDateRange] = useState<number[]>([0, 0]);
 
@@ -100,7 +105,7 @@ export const FiltersDateSlider: React.FC<FiltersDateSliderProps> = ({
           {data?.date?.length > 0 ? (
             // Histogram for resources grouped by year
             <Histogram
-              data={[...resourcesWithNoDates, ...resourcesGroupedByYear]}
+              data={[...resourcesWithDate]}
               updatedData={selectedData}
               range={[
                 selectedDates.includes('-_exists_') ||
@@ -108,7 +113,7 @@ export const FiltersDateSlider: React.FC<FiltersDateSliderProps> = ({
                   ? '-_exists_'
                   : '',
                 ...(activeDateRange !== undefined
-                  ? resourcesGroupedByYear
+                  ? resourcesWithDate
                       .slice(activeDateRange[0], activeDateRange[1] + 1)
                       .map(d => d.term)
                   : []),
@@ -125,14 +130,14 @@ export const FiltersDateSlider: React.FC<FiltersDateSliderProps> = ({
               {/* Date Range Slider */}
               {/* activeDateRange?.[0] !== undefined ? (
                 <Text w='100%' textAlign='right'>
-                  {resourcesGroupedByYear[activeDateRange[0]].term}
+                  {resourcesWithDate[activeDateRange[0]].term}
                 </Text>
               )  */}
-              {resourcesGroupedByYear.length > 0 ? (
+              {resourcesWithDate.length > 0 ? (
                 <Box w='100%' mt={-2.5} flex={1}>
                   <Slider
                     rangeValues={activeDateRange}
-                    data={resourcesGroupedByYear}
+                    data={resourcesWithDate}
                     selectedDates={selectedDates}
                     updateRangeValues={setActiveDateRange}
                     onChangeEnd={values => {
@@ -140,10 +145,10 @@ export const FiltersDateSlider: React.FC<FiltersDateSliderProps> = ({
                       //   update api request
                       handleSelectedFilter([
                         `${
-                          resourcesGroupedByYear[values[0]].term.split('-')[0]
+                          resourcesWithDate[values[0]].term.split('-')[0]
                         }-01-01`,
                         `${
-                          resourcesGroupedByYear[values[1]].term.split('-')[0]
+                          resourcesWithDate[values[1]].term.split('-')[0]
                         }-12-31`,
                       ]);
                     }}
@@ -159,18 +164,49 @@ export const FiltersDateSlider: React.FC<FiltersDateSliderProps> = ({
         </Flex>
 
         {/* Calendar Inputs */}
-        {resourcesGroupedByYear.length > 0 ? (
-          <Flex>
+        {resourcesWithDate.length > 0 ? (
+          <Flex bg='blackAlpha.50' flexDirection='column' p={4}>
             <DatePicker
               colorScheme='secondary'
-              min={formatISOString(resourcesWithDates[0]?.term || '')}
+              min={formatISOString(resourcesWithDate[0]?.term || '')}
               max={formatISOString(
-                resourcesWithDates[resourcesWithDates.length - 1]?.term || '',
+                resourcesWithDate[resourcesWithDate.length - 1]?.term || '',
               )}
               selectedDates={selectedDates}
               handleSelectedFilter={handleSelectedFilter}
               resetFilter={resetFilter}
             />
+            {/* Checkbox to toggle items with/without dates. Default is to show all resources (including those without the date field). */}
+            <Checkbox
+              mt={4}
+              isChecked={
+                selectedDates.length === 0 ||
+                selectedDates.includes('-_exists_')
+              }
+              onChange={e => {
+                let updatedDates = [...selectedDates];
+                // if toggled when no selection is made, show resources with dates.
+                if (selectedDates.length === 0) {
+                  updatedDates.push('_exists_');
+                }
+                // if toggled when resources with dates is showing, remove this filter.
+                else if (selectedDates.includes('_exists_')) {
+                  updatedDates = selectedDates.filter(
+                    d => !d.includes('_exists_'),
+                  );
+                }
+                //user toggles this when dates are selected and they also want to show resources with no dates.
+                else {
+                  updatedDates.push('-_exists_');
+                }
+                handleSelectedFilter(updatedDates);
+              }}
+              isDisabled={!resourcesWithNoDate.length}
+            >
+              <Text fontSize='sm' fontWeight='medium' lineHeight='shorter'>
+                Include resources with no date information .
+              </Text>
+            </Checkbox>
           </Flex>
         ) : (
           <></>

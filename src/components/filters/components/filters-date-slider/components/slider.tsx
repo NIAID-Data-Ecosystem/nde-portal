@@ -16,22 +16,17 @@ interface FiltersRangeSliderProps {
   onChangeEnd: (args: number[]) => void;
 }
 
-export const THUMB_SIZE = 14;
-
 export const Slider: React.FC<FiltersRangeSliderProps> = React.memo(
   ({ selectedDates, rangeValues, data, updateRangeValues, onChangeEnd }) => {
     // Show as disabled there is no range to the data (i.e. more than one step in range) or if non year data is selected.
-    const isDisabled = selectedDates.includes('-_exists_') || data.length <= 1;
+    const isDisabled = data.length <= 1;
 
     useEffect(() => {
       // This logic is added to control the state when filter tags are updated / page is refreshed.
       updateRangeValues(prev => {
         let arr = prev ? [...prev] : [];
         // If there's no date selected made, default to span the entire date range.
-        if (
-          !selectedDates.length ||
-          selectedDates.filter(d => d !== '-_exists_').length === 0
-        ) {
+        if (!selectedDates.length || selectedDates.includes('_exists_')) {
           arr[0] = 0;
           arr[1] = data.length - 1;
         } else {
@@ -78,11 +73,7 @@ export const Slider: React.FC<FiltersRangeSliderProps> = React.memo(
           </RangeSliderTrack>
 
           {/* Display a tooltip on hover with values for each slider thumb. */}
-          <RangeSliderThumb
-            index={0}
-            borderColor='primary.200'
-            w={`${THUMB_SIZE}px`}
-          >
+          <RangeSliderThumb index={0} borderColor='primary.200' boxSize={5}>
             <Box position='absolute' top={4}>
               <Heading as='h5' fontSize='0.85rem' mt={2}>
                 {rangeValues?.[0] !== undefined
@@ -91,11 +82,7 @@ export const Slider: React.FC<FiltersRangeSliderProps> = React.memo(
               </Heading>
             </Box>
           </RangeSliderThumb>
-          <RangeSliderThumb
-            index={1}
-            borderColor='primary.200'
-            w={`${THUMB_SIZE}px`}
-          >
+          <RangeSliderThumb index={1} borderColor='primary.200' boxSize={5}>
             <Box position='absolute' top={4}>
               <Heading as='h5' fontSize='0.85rem' mt={2}>
                 {rangeValues?.[1] !== undefined

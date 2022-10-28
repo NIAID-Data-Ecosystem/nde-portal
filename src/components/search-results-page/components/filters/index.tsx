@@ -109,7 +109,7 @@ export const Filters: React.FC<FiltersProps> = ({
   const handleSelectedFilters = (values: string[], facet: string) => {
     const updatedValues = values.map(value => {
       // return object with inverted facet + key for exists values
-      if (value === '-_exists_') {
+      if (value === '-_exists_' || value === '_exists_') {
         return { [value]: [facet] };
       }
       return value;
@@ -154,6 +154,7 @@ export const Filters: React.FC<FiltersProps> = ({
             //   property={property || ''}
             // >
             <FiltersDateSlider
+              colorScheme='secondary'
               queryParams={queryParams}
               filters={selectedFilters}
               selectedData={data?.date || []}

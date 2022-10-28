@@ -90,7 +90,7 @@ export const queryFilterString2Object = (str?: string | string[]) => {
       .split(/(?:" OR ")| OR |(?:" TO ")| TO /)
       .map(v => {
         // Handle exists filter
-        if (v.includes('-_exists_')) {
+        if (v.includes('_exists_')) {
           return queryFilterString2Object(v);
         }
         return v;

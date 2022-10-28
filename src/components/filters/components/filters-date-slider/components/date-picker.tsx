@@ -29,8 +29,6 @@ export const DatePicker: React.FC<DatePickerProps> = ({
       id='date-picker'
       as='form'
       w='100%'
-      bg='blackAlpha.50'
-      p={4}
       flexDirection='column'
       onSubmit={e => {
         e.preventDefault();
@@ -46,7 +44,7 @@ export const DatePicker: React.FC<DatePickerProps> = ({
         handleSelectedFilter(dates);
       }}
     >
-      <Flex>
+      <Flex flexWrap='wrap'>
         <Box maxW='200px' mr={1}>
           <Text fontSize='xs'>
             <label htmlFor='start'>Start date:</label>

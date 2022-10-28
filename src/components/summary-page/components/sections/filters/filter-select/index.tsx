@@ -149,7 +149,7 @@ export const Filters: React.FC<FiltersProps> = ({
                     handleSelectedFilters={values => {
                       const updatedValues = values.map(value => {
                         // return object with inverted facet + key for exists values
-                        if (value === '-_exists_') {
+                        if (value === '-_exists_' || value === '_exists_') {
                           return { [value]: [prop] };
                         }
                         return value;

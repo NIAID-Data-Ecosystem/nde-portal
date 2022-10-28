@@ -3,9 +3,7 @@ import { FilterTerm } from '../../types';
 export const addMissingYears = (dates: FilterTerm[]) => {
   //  Add in missing years (with a count of 0)
   dates
-    .sort((a, b) => {
-      return a.term < b.term ? -1 : a.term > b.term ? 1 : 0;
-    })
+    .sort((a, b) => new Date(a.term).valueOf() - new Date(b.term).valueOf())
     .forEach(({ term }, i) => {
       if (term === '-_exists_' || dates[i + 1]?.term === '-_exists_') {
         return;
