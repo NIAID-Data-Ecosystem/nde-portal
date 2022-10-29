@@ -35,7 +35,7 @@ export const yScale = (height: number, data: FacetTerm[]) =>
 interface HistogramProps {
   data: FacetTerm[];
   updatedData: FacetTerm[];
-  range: string[];
+  range: number[];
   handleClick: (args: string) => void;
 }
 
@@ -45,11 +45,13 @@ const params = {
     active: theme.colors.primary[400],
     disabled: theme.colors.gray[200],
   },
-  hover: { fill: theme.colors.primary[600] },
+  hover: { fill: theme.colors.primary[600], disabled: theme.colors.gray[800] },
 };
 
 export const Histogram: React.FC<HistogramProps> = React.memo(
   ({ children, data, updatedData, range, handleClick }) => {
+    const range_min = useMemo(() => data[range[0]].term, [data, range]);
+    const range_max = useMemo(() => data[range[1]].term, [data, range]);
     ////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////     TOOLTIP      //////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////
@@ -126,10 +128,10 @@ export const Histogram: React.FC<HistogramProps> = React.memo(
     );
 
     const scaleCount = useMemo(() => yScale(height, data), [height, data]);
-    const resourcesWithNoDatesIndex = useMemo(
-      () => data.findIndex(d => d.term === '-_exists_'),
-      [data],
-    );
+    // const resourcesWithNoDatesIndex = useMemo(
+    //   () => data.findIndex(d => d.term === '-_exists_'),
+    //   [data],
+    // );
     const resourcesWithDatesIndex = useMemo(
       () => data.findIndex(d => d.term !== '-_exists_'),
       [data],
@@ -187,17 +189,18 @@ export const Histogram: React.FC<HistogramProps> = React.memo(
                       height - (scaleCount(updatedCount) ?? 0),
                     );
 
-                    let fill = range.includes(d.term)
-                      ? params.fill.active
-                      : params.fill.disabled;
+                    let fill =
+                      d.term >= range_min && d.term <= range_max
+                        ? params.fill.active
+                        : params.fill.disabled;
 
                     // If bar is hovered over, fill with a different color.
                     if (d.term === tooltipData?.term) {
                       fill = params.hover.fill;
-                    }
-                    // If no count, keep as grey even when hovered over.
-                    if (updatedCount === 0) {
-                      fill = params.fill.disabled;
+                      // if out of selected range hover fill is a darker disabled color
+                      if (d.term >= range_min && d.term <= range_max) {
+                        fill = params.hover.disabled;
+                      }
                     }
 
                     return (
@@ -207,11 +210,11 @@ export const Histogram: React.FC<HistogramProps> = React.memo(
                           id='texture'
                           height={6}
                           width={6}
-                          stroke={
-                            range.includes(d.term)
-                              ? params.fill.active
-                              : params.fill.disabled
-                          }
+                          // stroke={
+                          //   d.term >= range_min && d.term <= range_max
+                          //     ? params.fill.active
+                          //     : params.fill.disabled
+                          // }
                           strokeWidth={1}
                           orientation={['diagonal']}
                         />
@@ -225,11 +228,13 @@ export const Histogram: React.FC<HistogramProps> = React.memo(
                           fill={
                             d.term === '-_exists_'
                               ? `url(#texture)`
-                              : params.fill.disabled
+                              : updatedCount > 0
+                              ? params.fill.disabled
+                              : fill
                           }
                         />
 
-                        {/* Bars. Fill color based on selection. */}
+                        {/* Updated count bars. Fill color based on selection. */}
                         <Bar
                           x={barX}
                           y={height - updatedBarHeight}
@@ -263,7 +268,7 @@ export const Histogram: React.FC<HistogramProps> = React.memo(
 
               {/* Label for resources with no dates */}
               <Flex w='100%' position='relative'>
-                {resourcesWithNoDatesIndex > -1 && (
+                {/* {resourcesWithNoDatesIndex > -1 && (
                   <Box
                     position='absolute'
                     left={scaleDate(resourcesWithNoDatesIndex) || 0}
@@ -277,7 +282,7 @@ export const Histogram: React.FC<HistogramProps> = React.memo(
                       N/A
                     </Heading>
                   </Box>
-                )}
+                )} */}
 
                 {/* Position slider under bars */}
                 {resourcesWithDatesIndex > -1 && (
@@ -288,9 +293,7 @@ export const Histogram: React.FC<HistogramProps> = React.memo(
                       scaleDate.bandwidth() / 2
                     }px`}
                     w={
-                      (scaleDate(
-                        data.length - (resourcesWithNoDatesIndex > -1 ? 2 : 1),
-                      ) || 0) -
+                      (scaleDate(data.length - 1) || 0) -
                       scaleDate.bandwidth() / 2
                     }
                   >
@@ -307,40 +310,3 @@ export const Histogram: React.FC<HistogramProps> = React.memo(
     );
   },
 );
-
-// {aggregateDatesByYear(updatedData).map((d, i) => {
-//   const { term, count } = d;
-//   const barWidth = scaleDate.bandwidth();
-//   const barHeight = Math.ceil(height - (scaleCount(count) ?? 0));
-//   const barX = scaleDate(i);
-//   const barY = height - barHeight;
-//   let fill =
-//     range.includes(d.term) && d.count !== 0
-//       ? params.fill.active
-//       : 'transparent';
-
-//   return (
-//     <React.Fragment key={`bar-${term}-color`}>
-//       {/* Bars. Fill color based on selection. */}
-//       <Bar
-//         x={barX}
-//         y={barY}
-//         width={barWidth}
-//         height={barHeight}
-//         fill={fill}
-//       />
-//       {/* Transparent full height bar used for detecting mouse over tooltip. */}
-//       {/* <Bar
-//         x={barX}
-//         y={0}
-//         width={barWidth}
-//         height={height}
-//         fill='transparent'
-//         onMouseOver={e => handleMouseOver(e, d)}
-//         onMouseOut={hideTooltip}
-//         style={{ cursor: 'pointer' }}
-//         onClick={() => handleClick(d.term)}
-//       /> */}
-//     </React.Fragment>
-//   );
-// })}

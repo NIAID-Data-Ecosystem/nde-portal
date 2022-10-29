@@ -33,7 +33,6 @@ export const useFacetsData = ({
   },
 ] => {
   const [facetTerms, setFacetTerms] = useState<FacetTerms>({});
-  const hasMounted = useHasMounted();
 
   // Retrieve all data and updated counts.
   const fetchFilters = async (params: Params) => {
@@ -193,8 +192,8 @@ export const useFacetsData = ({
         */
         if (!!(initialData && Object.values(initialData).length > 0)) {
           // Check if updated facets have changed count..
-          setFacetTerms(() => {
-            const facetTermsData = { ...facetTerms };
+          setFacetTerms(prev => {
+            const facetTermsData = { ...prev };
             Object.keys(facetTermsData).map(facet => {
               const updatedTerms = facetTermsData[facet].map(facetTerm => {
                 const updateFacetTerm = { ...facetTerm };
@@ -202,7 +201,6 @@ export const useFacetsData = ({
                 const updatedItem = data[facet].terms.find(
                   el => el.term === facetTerm.term,
                 );
-
                 // if item count has changed, update state with new count.
                 if (updatedItem) {
                   updateFacetTerm.count = updatedItem.count;

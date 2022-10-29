@@ -6,6 +6,7 @@ interface DatePickerProps {
   min: string;
   max: string;
   selectedDates: string[];
+  isDisabled: boolean;
   handleSelectedFilter: (arg: string[]) => void;
   resetFilter: () => void;
 }
@@ -15,6 +16,7 @@ export const DatePicker: React.FC<DatePickerProps> = ({
   min,
   max,
   selectedDates,
+  isDisabled,
   handleSelectedFilter,
   resetFilter,
 }) => {
@@ -63,6 +65,7 @@ export const DatePicker: React.FC<DatePickerProps> = ({
               let newSelection = [e.target.value, selected[1] || max];
               setSelected(newSelection);
             }}
+            isDisabled={isDisabled}
           />
         </Box>
         <Box maxW='200px'>
@@ -82,6 +85,7 @@ export const DatePicker: React.FC<DatePickerProps> = ({
               let newSelection = [selected[0] || min, e.target.value];
               setSelected(newSelection);
             }}
+            isDisabled={isDisabled}
           />
         </Box>
       </Flex>
@@ -92,6 +96,7 @@ export const DatePicker: React.FC<DatePickerProps> = ({
           type='submit'
           colorScheme={colorScheme}
           mr={1}
+          isDisabled={isDisabled}
         >
           Submit
         </Button>
@@ -100,7 +105,7 @@ export const DatePicker: React.FC<DatePickerProps> = ({
           variant='outline'
           colorScheme={colorScheme}
           onClick={() => resetFilter()}
-          isDisabled={!selectedDates.length}
+          isDisabled={isDisabled || !selectedDates.length}
           mx={1}
         >
           Reset

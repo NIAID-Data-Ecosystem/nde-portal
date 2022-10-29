@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   RangeSlider,
   RangeSliderFilledTrack,
@@ -9,7 +9,6 @@ import { Box, Heading } from 'nde-design-system';
 import { FilterTerm } from '../../../types';
 
 interface FiltersRangeSliderProps {
-  rangeValues: number[];
   data: FilterTerm[];
   selectedDates: string[];
   updateRangeValues: React.Dispatch<React.SetStateAction<number[]>>;
@@ -17,13 +16,14 @@ interface FiltersRangeSliderProps {
 }
 
 export const Slider: React.FC<FiltersRangeSliderProps> = React.memo(
-  ({ selectedDates, rangeValues, data, updateRangeValues, onChangeEnd }) => {
+  ({ selectedDates, data, updateRangeValues, onChangeEnd }) => {
+    const [selectedRange, setSelectedRange] = useState([0, 0]);
     // Show as disabled there is no range to the data (i.e. more than one step in range) or if non year data is selected.
     const isDisabled = data.length <= 1;
 
     useEffect(() => {
       // This logic is added to control the state when filter tags are updated / page is refreshed.
-      updateRangeValues(prev => {
+      setSelectedRange(prev => {
         let arr = prev ? [...prev] : [];
         // If there's no date selected made, default to span the entire date range.
         if (!selectedDates.length || selectedDates.includes('_exists_')) {
@@ -51,7 +51,11 @@ export const Slider: React.FC<FiltersRangeSliderProps> = React.memo(
         }
         return arr;
       });
-    }, [selectedDates, data, updateRangeValues]);
+    }, [selectedDates, data]);
+
+    useEffect(() => {
+      updateRangeValues(selectedRange);
+    }, [selectedRange, updateRangeValues]);
 
     return (
       <>
@@ -61,12 +65,23 @@ export const Slider: React.FC<FiltersRangeSliderProps> = React.memo(
           isDisabled={isDisabled}
           // eslint-disable-next-line jsx-a11y/aria-proptypes
           aria-label={['date-min', 'date-max']}
-          value={rangeValues}
+          value={selectedRange}
           focusThumbOnChange={false}
           min={0}
           max={data.length - 1}
-          onChange={updateRangeValues}
-          onChangeEnd={onChangeEnd}
+          onChange={values => {
+            // only update if dates have changed
+            if (
+              values[0] !== selectedRange[0] ||
+              values[1] !== selectedRange[1]
+            ) {
+              setSelectedRange(values);
+            }
+          }}
+          onChangeEnd={values => {
+            setSelectedRange(values);
+            onChangeEnd(values);
+          }}
         >
           <RangeSliderTrack bg='primary.200' h={0.4}>
             <RangeSliderFilledTrack bg='primary.500'></RangeSliderFilledTrack>
@@ -76,8 +91,8 @@ export const Slider: React.FC<FiltersRangeSliderProps> = React.memo(
           <RangeSliderThumb index={0} borderColor='primary.200' boxSize={5}>
             <Box position='absolute' top={4}>
               <Heading as='h5' fontSize='0.85rem' mt={2}>
-                {rangeValues?.[0] !== undefined
-                  ? data[rangeValues[0]]?.displayAs
+                {selectedRange?.[0] !== undefined
+                  ? data[selectedRange[0]]?.displayAs
                   : ''}
               </Heading>
             </Box>
@@ -85,8 +100,8 @@ export const Slider: React.FC<FiltersRangeSliderProps> = React.memo(
           <RangeSliderThumb index={1} borderColor='primary.200' boxSize={5}>
             <Box position='absolute' top={4}>
               <Heading as='h5' fontSize='0.85rem' mt={2}>
-                {rangeValues?.[1] !== undefined
-                  ? data[rangeValues[1]]?.displayAs
+                {selectedRange?.[1] !== undefined
+                  ? data[selectedRange[1]]?.displayAs
                   : ''}
               </Heading>
             </Box>
