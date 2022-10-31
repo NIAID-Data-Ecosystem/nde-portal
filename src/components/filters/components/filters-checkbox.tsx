@@ -34,8 +34,15 @@ export const FiltersCheckbox: React.FC<FiltersCheckboxProps> = React.memo(
           flex={1}
         >
           <Flex width='100%' alignItems='center'>
-            <Text fontWeight='light' fontSize='xs' lineHeight={1.5}>
-              {displayTerm}{' '}
+            <Text
+              fontSize='xs'
+              lineHeight={1.5}
+              opacity={count ? 1 : 0.7}
+              display='flex'
+              w='100%'
+              justifyContent='space-between'
+            >
+              {displayTerm}
               {typeof count !== 'undefined' && (
                 <Skeleton
                   as='span'
@@ -43,13 +50,8 @@ export const FiltersCheckbox: React.FC<FiltersCheckboxProps> = React.memo(
                   isLoaded={!isCountUpdating}
                   ml={1}
                 >
-                  <Text
-                    as='span'
-                    fontSize='xs'
-                    lineHeight={1.5}
-                    fontWeight='semibold'
-                  >
-                    {count ? `(${formatNumber(count)})` : '-'}
+                  <Text as='span' fontWeight='semibold'>
+                    {count ? `${formatNumber(count)}` : '0 '}
                   </Text>
                 </Skeleton>
               )}
