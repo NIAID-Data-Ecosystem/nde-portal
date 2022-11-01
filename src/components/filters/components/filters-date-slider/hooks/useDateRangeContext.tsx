@@ -1,0 +1,121 @@
+import { ButtonProps } from 'nde-design-system';
+import React, { useEffect, useMemo, useState } from 'react';
+import { FacetTerms, FilterTerm } from 'src/components/filters/types';
+import { addMissingYears } from '../helpers';
+
+export interface ContextProps {
+  colorScheme: ButtonProps['colorScheme'];
+  data?: FilterTerm[];
+  dates: (string | null)[];
+  dateRange: number[];
+  setDateRange: React.Dispatch<React.SetStateAction<ContextProps['dateRange']>>;
+  isDragging: boolean;
+  setIsDragging: React.Dispatch<
+    React.SetStateAction<ContextProps['isDragging']>
+  >;
+}
+
+export const defaultContext: ContextProps = {
+  colorScheme: 'primary',
+  data: [],
+  dates: ['', ''],
+  dateRange: [],
+  setDateRange: () => {},
+  isDragging: false,
+  setIsDragging: () => {},
+};
+
+const DateRangeContext = React.createContext({
+  ...defaultContext,
+});
+DateRangeContext.displayName = 'DateRangeContext';
+
+// [Context Provider]: Input with a keyboardable dropdown list.
+export const DateRangeSlider: React.FC<{
+  data: FacetTerms;
+  selectedDates: string[];
+  colorScheme: ContextProps['colorScheme'];
+}> = ({
+  children,
+  data: initialData,
+  selectedDates = [],
+  colorScheme = 'primary',
+  // children, inputValue, colorScheme = 'primary', cursorMax
+}) => {
+  const [isDragging, setIsDragging] = useState(false);
+  const [dateRange, setDateRange] = useState<number[]>([]);
+
+  const data = useMemo(
+    () =>
+      addMissingYears(
+        initialData?.date?.filter(
+          d => !(d.term === '-_exists_' || d.count === 0),
+        ) || [],
+      ),
+    [initialData?.date],
+  );
+
+  useEffect(() => {
+    // This logic is added to control the state when filter tags are updated / page is refreshed.
+    setDateRange(prev => {
+      let arr = prev ? [...prev] : [];
+      // If there's no date selected made, default to span the entire date range.
+      if (!selectedDates.length || selectedDates.includes('_exists_')) {
+        arr[0] = 0;
+        arr[1] = data.length - 1;
+      } else {
+        // Otherwise, find the index value of the selection and update the state.
+        const [start, end] = [
+          data.findIndex(
+            datum =>
+              datum.term?.split('-')[0] === selectedDates[0]?.split('-')[0],
+          ),
+          data.findIndex(
+            datum =>
+              datum.term?.split('-')[0] === selectedDates[1]?.split('-')[0],
+          ),
+        ];
+
+        if (start > -1 && arr[0] !== start) {
+          arr[0] = start;
+        }
+        if (end > -1 && arr[1] !== end) {
+          arr[1] = end;
+        }
+      }
+      return arr;
+    });
+  }, [selectedDates, data]);
+
+  const dates = [
+    data[dateRange[0]]?.term || null,
+    data[dateRange[1]]?.term || null,
+  ];
+
+  const context = {
+    colorScheme,
+    data,
+    dates,
+    // index values of data.
+    dateRange,
+    setDateRange,
+    isDragging,
+    setIsDragging,
+  };
+
+  return (
+    <DateRangeContext.Provider value={context}>
+      {children}
+    </DateRangeContext.Provider>
+  );
+};
+
+export const useDateRangeContext = () => {
+  const context = React.useContext(DateRangeContext);
+  if (context === undefined) {
+    throw new Error(
+      'useDateRangeContext must be wrapped with <DateRangeSlider/>',
+    );
+  }
+  return context;
+};

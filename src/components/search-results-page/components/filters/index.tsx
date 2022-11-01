@@ -14,6 +14,7 @@ import {
 } from 'src/components/filters/types';
 import { useRouter } from 'next/router';
 import { FiltersDateSlider } from 'src/components/filters/components/filters-date-slider/';
+import { ButtonProps, theme } from 'nde-design-system';
 
 /*
 [COMPONENT INFO]:
@@ -80,6 +81,7 @@ export const filtersConfig: FiltersConfigProps = {
 };
 
 interface FiltersProps {
+  colorScheme?: keyof typeof theme.colors;
   // Params used in query.
   queryParams: Params;
   // Currently selected filters
@@ -89,13 +91,13 @@ interface FiltersProps {
 }
 
 export const Filters: React.FC<FiltersProps> = ({
+  colorScheme = 'primary',
   queryParams,
   removeAllFilters,
   selectedFilters,
 }) => {
   const facets = Object.keys(filtersConfig);
   const router = useRouter();
-
   const [{ data, error, isLoading, isUpdating }] = useFacetsData({
     queryParams,
     facets,
@@ -154,7 +156,8 @@ export const Filters: React.FC<FiltersProps> = ({
             //   property={property || ''}
             // >
             <FiltersDateSlider
-              colorScheme='secondary'
+              key={facet}
+              colorScheme={colorScheme}
               queryParams={queryParams}
               filters={selectedFilters}
               selectedData={data?.date || []}
@@ -176,6 +179,7 @@ export const Filters: React.FC<FiltersProps> = ({
             property={property || ''}
           >
             <FiltersList
+              colorScheme={colorScheme}
               searchPlaceholder={`Search ${name.toLowerCase()} filters`}
               terms={facetTerms}
               selectedFilters={selected || []}

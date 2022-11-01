@@ -53,6 +53,7 @@ export const DisplayHTMLContent: React.FC<DisplayHTMLContentProps> = ({
           color: 'link.color',
           textDecoration: 'underline',
           _hover: { textDecoration: 'none' },
+          wordBreak: 'break-word',
         },
       }}
       {...props}

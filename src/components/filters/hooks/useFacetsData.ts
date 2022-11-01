@@ -41,7 +41,7 @@ export const useFacetsData = ({
     }
     const data = await fetchSearchResults({
       ...params,
-      q: params.q,
+      q: encodeString(params.q),
       hist: 'date',
     }).then(response => {
       const facetsData = {} as { [key: string]: { terms: FacetTerm[] } };

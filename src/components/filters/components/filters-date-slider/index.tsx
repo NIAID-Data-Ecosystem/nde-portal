@@ -2,12 +2,12 @@ import React, { useMemo, useState } from 'react';
 import { omit } from 'lodash';
 import {
   Box,
-  ButtonProps,
   Checkbox,
   Flex,
   Heading,
   Skeleton,
   Text,
+  theme,
 } from 'nde-design-system';
 import { useFacetsData } from '../../hooks/useFacetsData';
 import { SelectedFilterType } from '../../types';
@@ -20,9 +20,10 @@ import { FacetTerm } from 'src/utils/api/types';
 import { DatePicker } from './components/date-picker';
 import { formatISOString } from 'src/utils/api/helpers';
 import { formatNumber } from 'src/utils/helpers';
+import { DateRangeSlider } from './hooks/useDateRangeContext';
 
 interface FiltersDateSliderProps {
-  colorScheme: ButtonProps['colorScheme'];
+  colorScheme: keyof typeof theme.colors;
   // Params used in query.
   queryParams: Params;
   // Selected resourcesWithDate [min, max] from router.
@@ -36,6 +37,7 @@ interface FiltersDateSliderProps {
 }
 
 export const FiltersDateSlider: React.FC<FiltersDateSliderProps> = ({
+  colorScheme,
   queryParams: params,
   filters,
   selectedDates,
@@ -51,13 +53,13 @@ export const FiltersDateSlider: React.FC<FiltersDateSliderProps> = ({
     ...params,
     extra_filter: queryFilterObject2String(omit(filters, ['date'])) ?? '',
   };
-  // Initial data. Not impacted by date selection, used for background bars in histogram.
+  // Initial data. Not impacted by date selection, used for default state of bars, input and slider.
   const [{ data, error, isLoading, isUpdating }] = useFacetsData({
     queryParams,
     facets: ['date'],
   });
 
-  // [resourcesWithNoDate]: Data used for N/A bar in histogram. Resources that do not have a date field.
+  // [resourcesWithNoDate]: Data used for resources that do not have a date field.
   const resourcesWithNoDate = useMemo(
     () => data?.date?.filter(d => d.term === '-_exists_' && d.count > 0) || [],
     [data?.date],
@@ -102,49 +104,21 @@ export const FiltersDateSlider: React.FC<FiltersDateSliderProps> = ({
           {!isLoading && data?.date?.length === 0 && (
             <Text>No available filters.</Text>
           )}
-          {!isLoading && data?.date?.length > 0 ? (
-            // Histogram for resources grouped by year
-            <Histogram
-              data={resourcesWithDate}
-              updatedData={selectedData}
-              range={activeDateRange}
-              handleClick={term => {
-                const year = term.split('-')[0];
-                handleSelectedFilter([`${year}-01-01`, `${year}-12-31`]);
-              }}
+          {!isLoading && !isUpdating && data?.date?.length > 0 ? (
+            <DateRangeSlider
+              data={data}
+              selectedDates={selectedDates}
+              colorScheme='secondary'
             >
-              {/* Date Range Slider */}
-
-              {resourcesWithDate.length > 0 ? (
-                <Box w='100%' mt={-2.5} flex={1}>
-                  <Slider
-                    // rangeValues={activeDateRange}
-                    data={resourcesWithDate}
-                    selectedDates={selectedDates}
-                    updateRangeValues={setActiveDateRange}
-                    onChangeEnd={values => {
-                      const startYear =
-                        resourcesWithDate[values[0]].term.split('-')[0];
-                      const endYear =
-                        resourcesWithDate[values[1]].term.split('-')[0];
-                      // only update if dates have changed
-                      if (
-                        selectedDates[0]?.split('-')[0] !== startYear ||
-                        selectedDates[1]?.split('-')[0] !== endYear
-                      ) {
-                        //   update api request
-                        handleSelectedFilter([
-                          `${startYear}-01-01`,
-                          `${endYear}-12-31`,
-                        ]);
-                      }
-                    }}
-                  />
-                </Box>
-              ) : (
-                <></>
-              )}
-            </Histogram>
+              {/*  Histogram for resources grouped by year */}
+              <Histogram
+                updatedData={selectedData}
+                handleClick={handleSelectedFilter}
+              >
+                {/* Slider for choosing the date range. */}
+                <Slider onChangeEnd={handleSelectedFilter} />
+              </Histogram>
+            </DateRangeSlider>
           ) : (
             <></>
           )}
@@ -153,7 +127,8 @@ export const FiltersDateSlider: React.FC<FiltersDateSliderProps> = ({
         {/* Calendar Inputs */}
         <Flex bg='blackAlpha.50' flexDirection='column' p={4}>
           <DatePicker
-            colorScheme='secondary'
+            colorScheme={colorScheme}
+            // round to year
             min={formatISOString(resourcesWithDate[0]?.term || '')}
             max={formatISOString(
               resourcesWithDate[resourcesWithDate.length - 1]?.term || '',
@@ -161,7 +136,6 @@ export const FiltersDateSlider: React.FC<FiltersDateSliderProps> = ({
             selectedDates={selectedDates}
             handleSelectedFilter={handleSelectedFilter}
             resetFilter={resetFilter}
-            isLoading={isLoading || isUpdating}
             isDisabled={!resourcesWithDate.length}
           />
           {/* Checkbox to toggle items with/without dates. Default is to show all resources (including those without the date field). */}

@@ -159,6 +159,7 @@ const Search: NextPage = () => {
             <Flex w='100%'>
               {/* Filters sidebar */}
               <Filters
+                colorScheme='secondary'
                 queryParams={queryParams}
                 selectedFilters={selectedFilters}
                 removeAllFilters={

@@ -18,6 +18,7 @@
     "@fontsource/public-sans": "^4.5.5",
     "@types/d3": "^7.4.0",
     "@types/d3-scale-chromatic": "^3.0.0",
+    "@visx/gradient": "^2.10.0",
     "@visx/group": "^2.1.0",
     "@visx/legend": "^2.2.2",
     "@visx/pattern": "^2.10.0",

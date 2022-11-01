@@ -7,6 +7,7 @@ import {
   UnorderedList,
   ListItem,
   CheckboxGroup,
+  ButtonProps,
 } from 'nde-design-system';
 import { FilterTerm } from '../types';
 import { FiltersCheckbox } from './filters-checkbox';
@@ -18,6 +19,7 @@ Filter list handles the searching of filter items.
 */
 
 interface FiltersList {
+  colorScheme: ButtonProps['colorScheme'];
   // list of filter terms to display.
   terms: FilterTerm[];
   // Search input placeholder text -- also used for aris-label.
@@ -33,6 +35,7 @@ interface FiltersList {
 
 export const FiltersList: React.FC<FiltersList> = React.memo(
   ({
+    colorScheme,
     searchPlaceholder,
     selectedFilters,
     terms,
@@ -68,7 +71,8 @@ export const FiltersList: React.FC<FiltersList> = React.memo(
           size='md'
           value={searchTerm}
           handleChange={handleSearchChange}
-          colorScheme='primary'
+          colorScheme={colorScheme}
+          pr='unset'
         />
         <Box w='100%' my={4}>
           <UnorderedList
@@ -78,7 +82,9 @@ export const FiltersList: React.FC<FiltersList> = React.memo(
             maxH={400}
             overflowY='auto'
           >
-            {!items.length && <ListItem p={2}>No available filters.</ListItem>}
+            {!isLoading && !isUpdating && !items.length && (
+              <ListItem p={2}>No available filters.</ListItem>
+            )}
             <CheckboxGroup
               value={selectedFilters}
               onChange={handleSelectedFilters}
@@ -89,7 +95,13 @@ export const FiltersList: React.FC<FiltersList> = React.memo(
                 .slice(0, showFullList ? items.length : 5)
                 .map((item, i) => {
                   return (
-                    <ListItem key={i} p={2} py={0} my={0}>
+                    <ListItem
+                      key={i}
+                      p={2}
+                      py={0}
+                      my={0}
+                      _hover={{ bg: `${colorScheme}.50` }}
+                    >
                       <FiltersCheckbox
                         value={item.term}
                         displayTerm={item.displayAs}
