@@ -66,7 +66,7 @@ export const FiltersList: React.FC<FiltersList> = React.memo(
         {/* Search through filter terms */}
         <SearchInput
           ariaLabel={`Search filter ${searchPlaceholder} terms`}
-          placeholder={`Search ${searchPlaceholder.toLowerCase()} filters`}
+          placeholder={searchPlaceholder}
           maxW='unset'
           size='md'
           value={searchTerm}

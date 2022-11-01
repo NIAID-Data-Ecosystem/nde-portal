@@ -47,7 +47,6 @@ export const Histogram: React.FC<HistogramProps> = ({
       height: 150,
       padding: 0.1,
       fill: {
-        active: `url(#gradient)`,
         inactive: theme.colors.blackAlpha[100],
         gray: theme.colors.gray[200],
       },
@@ -143,6 +142,26 @@ export const Histogram: React.FC<HistogramProps> = ({
     [data, height],
   );
 
+  // color scale using provided color scheme
+  const colorScale = useMemo(
+    () =>
+      scaleLinear({
+        domain: [0, Math.max(...data.map(d => d.count))],
+        range: [...Object.values(themeColorScheme).slice(1, 7).reverse()],
+      }),
+    [data, themeColorScheme],
+  );
+
+  // opacity scale as bar is longer, the less opacity.
+  const opacityScale = useMemo(
+    () =>
+      scaleLinear({
+        domain: [0, Math.max(...data.map(d => d.count))],
+        range: [1, 0],
+      }),
+    [data],
+  );
+
   // Set svg width to the exact width of the barchart.
   const svgWidth = useMemo(
     () => (xScale(data.length - 1) || 0) + xScale.bandwidth(),
@@ -193,21 +212,27 @@ export const Histogram: React.FC<HistogramProps> = ({
           <Box>
             <Box as='svg' id='filters-histogram' width={svgWidth}>
               {/* Gradient fill for bars. */}
-              <LinearGradient
+              {/* <LinearGradient
                 id='gradient'
                 from={theme.colors.accent.bg}
                 to={themeColorScheme[600 as keyof typeof themeColorScheme]}
-              />
+              /> */}
 
               {/* Gradient fill for bars on hover. */}
-              <LinearGradient
+              {/* <LinearGradient
                 id='gradient-hover'
                 from={theme.colors.accent.bg}
                 to={themeColorScheme[600 as keyof typeof themeColorScheme]}
                 fromOpacity={0.5}
                 toOpacity={0.5}
+              /> */}
+              <LinearGradient
+                id='gradient-hover'
+                from={'black'}
+                to={'black'}
+                fromOpacity={0.9}
+                toOpacity={0.9}
               />
-
               <Group>
                 {data.map((d, i) => {
                   const { term, count } = d;
@@ -235,8 +260,9 @@ export const Histogram: React.FC<HistogramProps> = ({
                     term >= range_min &&
                     term <= range_max;
                   if (range_min && range_max) {
-                    // fill = termInRange ? `url(#gradient)` : params.fill.gray;
-                    fill = termInRange ? params.fill.active : params.fill.gray;
+                    fill = termInRange
+                      ? `url(#gradient-${term})`
+                      : params.fill.gray;
 
                     // If bar is hovered over, fill with a different color.
                     // if count is zero we fill the bar with a lighter colors
@@ -245,21 +271,32 @@ export const Histogram: React.FC<HistogramProps> = ({
                         ? params.fill.inactive
                         : theme.colors.gray[200];
                     }
-                    if (hovered) {
-                      fill = termInRange
-                        ? params.hover.fill
-                        : params.hover.gray;
-                    }
+                    // if (hovered) {
+                    //   fill = termInRange
+                    //     ? params.hover.fill
+                    //     : params.hover.gray;
+                    // }
                   }
 
                   return (
                     <React.Fragment key={`bar-${term}`}>
+                      <LinearGradient
+                        id={`gradient-${term}`}
+                        from={colorScale(count)}
+                        to={colorScale(0)}
+                        fromOpacity={opacityScale(count)}
+                        toOpacity={opacityScale(0)}
+                      />
+
                       {/* Bars that depict the initial data (without date filtering). */}
                       <Bar
                         x={barX}
                         y={barY}
                         width={barWidth}
                         height={barHeight}
+                        opacity={
+                          hovered ? params.opacity.hover : params.opacity.active
+                        }
                         fill={
                           termInRange &&
                           updatedCount > 0 &&
@@ -275,7 +312,20 @@ export const Histogram: React.FC<HistogramProps> = ({
                         y={height - (isDragging ? barHeight : updatedBarHeight)}
                         width={barWidth}
                         height={isDragging ? barHeight : updatedBarHeight}
+                        fill={theme.colors.accent.bg}
+                        opacity={
+                          hovered ? params.opacity.hover : params.opacity.active
+                        }
+                      />
+                      <Bar
+                        x={barX}
+                        y={height - (isDragging ? barHeight : updatedBarHeight)}
+                        width={barWidth}
+                        height={isDragging ? barHeight : updatedBarHeight}
                         fill={fill}
+                        opacity={
+                          hovered ? params.opacity.hover : params.opacity.active
+                        }
                       />
 
                       {/* Transparent full height bar used for detecting mouse over tooltip. */}

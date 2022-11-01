@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import { omit } from 'lodash';
 import {
   Box,
@@ -18,7 +18,6 @@ import { Slider } from './components/slider';
 import { Histogram } from './components/histogram';
 import { FacetTerm } from 'src/utils/api/types';
 import { DatePicker } from './components/date-picker';
-import { formatISOString } from 'src/utils/api/helpers';
 import { formatNumber } from 'src/utils/helpers';
 import { DateRangeSlider } from './hooks/useDateRangeContext';
 
@@ -103,7 +102,13 @@ export const FiltersDateSlider: React.FC<FiltersDateSliderProps> = ({
             selectedDates={selectedDates}
             colorScheme='secondary'
           >
-            <Flex w='100%' flexDirection='column' alignItems='center' p={4}>
+            <Flex
+              w='100%'
+              flexDirection='column'
+              alignItems='center'
+              p={4}
+              px={8}
+            >
               {/*  Histogram for resources grouped by year */}
               <Histogram
                 updatedData={selectedData}

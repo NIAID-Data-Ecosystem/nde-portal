@@ -89,10 +89,10 @@ export const DateRangeSlider: React.FC<{
     });
   }, [selectedDates, data]);
 
-  const dates = [
-    data[dateRange[0]]?.term || null,
-    data[dateRange[1]]?.term || null,
-  ];
+  const dates = useMemo(
+    () => [data[dateRange[0]]?.term || null, data[dateRange[1]]?.term || null],
+    [data, dateRange],
+  );
 
   const context = {
     colorScheme,
