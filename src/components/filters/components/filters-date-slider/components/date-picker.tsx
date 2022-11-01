@@ -1,27 +1,29 @@
 import React, { useEffect, useState } from 'react';
 import { Box, ButtonProps, Button, Flex, Input, Text } from 'nde-design-system';
+import { useDateRangeContext } from '../hooks/useDateRangeContext';
+import { formatISOString } from 'src/utils/api/helpers';
 
 interface DatePickerProps {
   colorScheme: ButtonProps['colorScheme'];
-  min: string;
-  max: string;
   selectedDates: string[];
-  isDisabled: boolean;
   handleSelectedFilter: (arg: string[]) => void;
   resetFilter: () => void;
 }
 
 export const DatePicker: React.FC<DatePickerProps> = ({
   colorScheme,
-  min,
-  max,
   selectedDates,
-  isDisabled,
   handleSelectedFilter,
   resetFilter,
 }) => {
   const [selected, setSelected] = useState(selectedDates);
+  const { data } = useDateRangeContext();
+  const min = formatISOString((data && data[0]?.term) || '');
+  const max =
+    formatISOString((data && data[data.length - 1]?.term) || '').split('-')[0] +
+    '-12-31';
 
+  const isDisabled = !data || !data.length;
   useEffect(() => {
     setSelected(selectedDates);
   }, [selectedDates]);

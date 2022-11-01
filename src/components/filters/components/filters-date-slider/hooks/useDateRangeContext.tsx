@@ -30,7 +30,10 @@ const DateRangeContext = React.createContext({
 });
 DateRangeContext.displayName = 'DateRangeContext';
 
-// [Context Provider]: Input with a keyboardable dropdown list.
+/*
+  HANDLE SLIDER DATE RANGE
+    [activeDateRange]: Range controlled by sliders. Indices of resourcesWithDate.
+  */
 export const DateRangeSlider: React.FC<{
   data: FacetTerms;
   selectedDates: string[];
@@ -40,7 +43,6 @@ export const DateRangeSlider: React.FC<{
   data: initialData,
   selectedDates = [],
   colorScheme = 'primary',
-  // children, inputValue, colorScheme = 'primary', cursorMax
 }) => {
   const [isDragging, setIsDragging] = useState(false);
   const [dateRange, setDateRange] = useState<number[]>([]);

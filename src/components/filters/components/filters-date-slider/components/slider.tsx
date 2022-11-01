@@ -19,6 +19,10 @@ export const Slider: React.FC<FiltersRangeSliderProps> = React.memo(
 
     // Show as disabled there is no range to the data (i.e. more than one step in range) or if non year data is selected.
     const isDisabled = data && data.length <= 1;
+    // Thumbs share the same value.
+    const thumbsSameValue =
+      data && data[dateRange[0]]?.displayAs === data[dateRange[1]]?.displayAs;
+
     if (!data || dateRange?.length !== 2) {
       return <></>;
     }
@@ -78,8 +82,12 @@ export const Slider: React.FC<FiltersRangeSliderProps> = React.memo(
             borderColor={`${colorScheme}.200`}
             boxSize={5}
           >
-            <Box position='absolute' top={4}>
-              <Heading as='h5' fontSize='0.85rem' mt={2} bg='white' px={1}>
+            <Box
+              position='absolute'
+              top={4}
+              right={thumbsSameValue ? 'unset' : 0}
+            >
+              <Heading as='h5' fontSize='0.85rem' mt={2}>
                 {dateRange?.[0] !== undefined
                   ? data[dateRange[0]]?.displayAs
                   : ''}
@@ -91,8 +99,17 @@ export const Slider: React.FC<FiltersRangeSliderProps> = React.memo(
             borderColor={`${colorScheme}.200`}
             boxSize={5}
           >
-            <Box position='absolute' top={4}>
-              <Heading as='h5' fontSize='0.85rem' mt={2} bg='white' px={1}>
+            <Box
+              position='absolute'
+              top={4}
+              left={thumbsSameValue ? 'unset' : 0}
+            >
+              <Heading
+                as='h5'
+                fontSize='0.85rem'
+                mt={2}
+                opacity={thumbsSameValue ? 0 : 1}
+              >
                 {dateRange?.[1] !== undefined
                   ? data[dateRange[1]]?.displayAs
                   : ''}

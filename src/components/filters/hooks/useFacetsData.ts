@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { useQuery } from 'react-query';
-import { useHasMounted } from 'src/hooks/useHasMounted';
 import { fetchSearchResults, Params } from 'src/utils/api';
 import { formatDate, formatISOString, formatType } from 'src/utils/api/helpers';
 import { Facet, FacetTerm, FormattedResource } from 'src/utils/api/types';

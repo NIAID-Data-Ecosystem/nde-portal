@@ -9,6 +9,7 @@ import { scaleBand, scaleLinear } from '@visx/scale';
 import { addMissingYears } from '../helpers';
 import { useDateRangeContext } from '../hooks/useDateRangeContext';
 import { LinearGradient } from '@visx/gradient';
+
 interface HistogramProps {
   updatedData: FacetTerm[];
   handleClick: (args: string[]) => void;
@@ -136,8 +137,8 @@ export const Histogram: React.FC<HistogramProps> = ({
   const yScale = useMemo(
     () =>
       scaleLinear<number>({
-        range: [height - 1, 0],
         domain: [0, Math.max(...data.map(d => d.count))],
+        range: [height - 1, 0],
       }),
     [data, height],
   );
@@ -228,9 +229,12 @@ export const Histogram: React.FC<HistogramProps> = ({
                   const hovered = term === tooltipData?.term;
                   let fill = params.fill.gray;
 
+                  const termInRange =
+                    range_min &&
+                    range_max &&
+                    term >= range_min &&
+                    term <= range_max;
                   if (range_min && range_max) {
-                    const termInRange = term >= range_min && term <= range_max;
-
                     // fill = termInRange ? `url(#gradient)` : params.fill.gray;
                     fill = termInRange ? params.fill.active : params.fill.gray;
 
@@ -257,7 +261,9 @@ export const Histogram: React.FC<HistogramProps> = ({
                         width={barWidth}
                         height={barHeight}
                         fill={
-                          updatedCount >= 0 && !isDragging
+                          termInRange &&
+                          updatedCount > 0 &&
+                          updatedCount !== count
                             ? params.fill.gray
                             : fill
                         }
@@ -266,10 +272,10 @@ export const Histogram: React.FC<HistogramProps> = ({
                       {/* Updated count bars. Fill color based on selection. */}
                       <Bar
                         x={barX}
-                        y={height - updatedBarHeight}
+                        y={height - (isDragging ? barHeight : updatedBarHeight)}
                         width={barWidth}
-                        height={updatedBarHeight}
-                        fill={isDragging ? 'transparent' : fill}
+                        height={isDragging ? barHeight : updatedBarHeight}
+                        fill={fill}
                       />
 
                       {/* Transparent full height bar used for detecting mouse over tooltip. */}
