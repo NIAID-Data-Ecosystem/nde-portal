@@ -42,11 +42,22 @@ export type ResourceType =
 // Conditions of access for dataset or tool.
 export type AccessTypes = 'Open' | 'Controlled' | 'Embargoed' | 'Restricted';
 
+export interface AdditionalType {
+  name?: string;
+  url?: string;
+}
+
 interface AggregateRating {
   '@type'?: string;
   ratingCount?: number;
   ratingValue?: number;
   reviewAspect?: string;
+}
+
+interface ApplicationSubCategory {
+  identifier?: string;
+  name: string;
+  url?: string;
 }
 
 export interface Author {
@@ -89,6 +100,12 @@ export interface CitedBy {
   name: string | null;
   pmid: string | null;
   url: string | null;
+}
+
+interface CuratedBy {
+  name?: string;
+  url?: string;
+  versionDate?: string;
 }
 
 export interface Distribution {
@@ -151,6 +168,7 @@ export interface IsBasedOn {
   '@type'?: string;
   _id?: string;
   abstract?: string;
+  additionalType?: AdditionalType;
   citation?: string;
   datePublished?: string;
   description?: string;
@@ -161,7 +179,11 @@ export interface IsBasedOn {
   url?: string;
 }
 
-export interface IsBasisFor extends IsBasedOn {}
+export interface IsBasisFor {
+  identifier?: string;
+  name?: string;
+  url?: string;
+}
 
 export interface IsPartOf {
   id?: string;
@@ -206,6 +228,11 @@ interface SpatialCoverage {
   name?: string;
 }
 
+export interface Species extends PropertyNameWithURL {
+  additionalType?: AdditionalType;
+  identifier?: string;
+}
+
 interface TemporalCoverage {
   temporalInterval: {
     duration?: string[];
@@ -225,6 +252,18 @@ interface TopicCategory {
   };
 }
 
+interface InputProperties {
+  description?: string;
+  identifier?: string;
+  name?: string;
+  encodingFormat?: string;
+}
+
+interface OutputProperties {
+  identifier?: string;
+  name?: string;
+  encodingFormat?: string;
+}
 // Formatting standardized resource fields
 export interface FormattedResource {
   [key: string]: any;
@@ -235,14 +274,16 @@ export interface FormattedResource {
   aggregateRating: AggregateRating | null;
   alternateName: string | null;
   applicationCategory: string[] | null;
-  applicationSubCategory: { name: string }[] | null;
+  applicationSubCategory: ApplicationSubCategory[] | null;
   applicationSuite: string[] | null;
   author: Author[] | null;
+  availableOnDevice: string | null;
   citation: Citation[] | null;
   citedBy: CitedBy[] | null;
   codeRepository: string[] | string | null;
   condition: string | null;
   conditionsOfAccess: AccessTypes | null;
+  curatedBy: CuratedBy | null;
   date: string | null;
   dateCreated: string | null;
   dateModified: string | null;
@@ -262,6 +303,7 @@ export interface FormattedResource {
     alternateName: string | null;
     name: string | null;
   } | null;
+  input: InputProperties[] | null;
   interactionStatistics: InteractionStatistics | null;
   isAccessibleForFree: boolean | null;
   isBasedOn: IsBasedOn[] | null;
@@ -273,6 +315,7 @@ export interface FormattedResource {
   mainEntityOfPage: string | null;
   measurementTechnique: PropertyNameWithURL[] | null;
   nctid: string | null;
+  output: OutputProperties[] | null;
   processorRequirements: string[] | null;
   programmingLanguage: string[] | null;
   publisher: Publisher | null;
@@ -284,7 +327,7 @@ export interface FormattedResource {
   softwareVersion: string[] | null;
   sdPublisher: SdPublisher[] | null;
   spatialCoverage: SpatialCoverage[] | null;
-  species: PropertyNameWithURL[] | null;
+  species: Species[] | null;
   temporalCoverage: TemporalCoverage | null;
   topicCategory: TopicCategory[] | null;
   url: string | null; // link to dataset in the source repo.

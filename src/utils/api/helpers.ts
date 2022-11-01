@@ -264,6 +264,7 @@ export const formatAPIResource = (data: any) => {
     applicationCategory: convertToArray(data.applicationCategory),
     applicationSubCategory: convertToArray(data.applicationSubCategory),
     applicationSuite: convertToArray(data.applicationSuite),
+    availableOnDevice: data.availableOnDevice || null,
     author: formatAuthor(data.author),
     citation: formatCitation(data.citation),
     citedBy: data.citedBy || null,
@@ -271,6 +272,7 @@ export const formatAPIResource = (data: any) => {
     condition: data.condition || null,
     conditionsOfAccess:
       formatConditionsOfAccess(data.conditionsOfAccess) || null,
+    curatedBy: data.curatedBy || null,
     date: formatDate(data.date) || null,
     dateCreated: formatDate(data.dateCreated) || null,
     dateModified: formatDate(data.dateModified) || null,
@@ -296,6 +298,8 @@ export const formatAPIResource = (data: any) => {
         }
       : null,
     infectiousAgent: convertToArray(data.infectiousAgent),
+    input: convertToArray(data.input),
+
     interactionStatistics: data.interactionStatistics || null,
     isAccessibleForFree: data.isAccessibleForFree,
     isBasedOn: convertToArray(data.isBasedOn),
@@ -316,6 +320,7 @@ export const formatAPIResource = (data: any) => {
     mainEntityOfPage: data.mainEntityOfPage || null,
     measurementTechnique: convertToArray(data.measurementTechnique),
     nctid: data['nctid'] || null,
+    output: convertToArray(data.output),
     processorRequirements: convertToArray(data.processorRequirements),
     programmingLanguage: convertToArray(data.programmingLanguage),
     publisher: data.publisher || null,
