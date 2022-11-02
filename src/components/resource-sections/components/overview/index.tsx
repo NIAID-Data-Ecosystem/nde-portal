@@ -290,15 +290,27 @@ const Overview: React.FC<OverviewProps> = ({
           >
             {species ? (
               <UnorderedList ml={0}>
-                {species.map((m, i) => {
-                  const name = Array.isArray(m.name)
-                    ? m.name.join(', ')
-                    : m.name;
+                {species.map((s, i) => {
+                  const name = Array.isArray(s.name)
+                    ? s.name.join(', ')
+                    : s.name;
 
                   return (
-                    <ListItem key={`${name}-${i}`}>
-                      <StatContent url={m.url} content={name} isExternal />
-                    </ListItem>
+                    <React.Fragment key={`${name}-${i}`}>
+                      <ListItem>
+                        <StatContent url={s.url} content={name} isExternal />
+                      </ListItem>
+
+                      {s.additionalType && (
+                        <ListItem>
+                          <StatContent
+                            url={s.additionalType?.url}
+                            content={s.additionalType?.name}
+                            isExternal
+                          />
+                        </ListItem>
+                      )}
+                    </React.Fragment>
                   );
                 })}
               </UnorderedList>
@@ -520,13 +532,18 @@ const Overview: React.FC<OverviewProps> = ({
                         label='Subcategory'
                         py={1}
                       >
-                        <StatContent
-                          content={data.applicationSubCategory
-                            .map(category => {
-                              return category.name;
-                            })
-                            .join(', ')}
-                        />
+                        {data.applicationSubCategory.map(
+                          ({ name, identifier, url }, i) => {
+                            return (
+                              <StatContent
+                                key={`${identifier || i}}`}
+                                url={url}
+                                content={name || url}
+                                isExternal
+                              />
+                            );
+                          },
+                        )}
                       </StatField>
                     )}
                     {data.applicationSuite && (

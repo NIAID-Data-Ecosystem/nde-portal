@@ -50,6 +50,8 @@ export const section_metadata: { [key: string]: (keyof FormattedResource)[] } =
     softwareInformation: [
       'applicationCategory',
       'discussionUrl',
+      'input',
+      'output',
       'isBasedOn',
       'isBasisFor',
       'processorRequirements',
@@ -61,7 +63,7 @@ export const section_metadata: { [key: string]: (keyof FormattedResource)[] } =
     ],
     keywords: ['keywords'],
     description: ['description'],
-    provenance: ['includedInDataCatalog', 'url', 'sdPublisher'],
+    provenance: ['includedInDataCatalog', 'url', 'sdPublisher', 'curatedBy'],
     downloads: ['distribution', 'downloadUrl'],
     funding: ['funding'],
     isBasedOn: ['isBasedOn'],
@@ -149,7 +151,11 @@ const Sections = ({
             )}
 
             {section.hash === 'softwareInformation' && (
-              <SoftwareInformation isLoading={isLoading} {...data} />
+              <SoftwareInformation
+                keys={section_metadata[section.hash]}
+                isLoading={isLoading}
+                {...data}
+              />
             )}
 
             {/* Show description */}

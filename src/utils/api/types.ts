@@ -252,14 +252,14 @@ interface TopicCategory {
   };
 }
 
-interface InputProperties {
+export interface InputProperties {
   description?: string;
   identifier?: string;
   name?: string;
   encodingFormat?: string;
 }
 
-interface OutputProperties {
+export interface OutputProperties {
   identifier?: string;
   name?: string;
   encodingFormat?: string;

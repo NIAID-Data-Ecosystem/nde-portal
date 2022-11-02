@@ -1,5 +1,6 @@
 import React from 'react';
 import {
+  Flex,
   Link,
   ListItem,
   SimpleGrid,
@@ -15,16 +16,21 @@ import BasedOn from '../based-on';
 import {
   FaArrowAltCircleUp,
   FaCheckCircle,
+  FaFileExport,
   FaFileImport,
   FaSitemap,
 } from 'react-icons/fa';
+import InputOutput from './components/input-output';
 
 interface SoftwareInformation {
   isLoading: boolean;
+  keys?: (keyof FormattedResource)[];
   applicationCategory?: FormattedResource['applicationCategory'];
   discussionUrl?: FormattedResource['discussionUrl'];
+  input?: FormattedResource['input'];
   isBasedOn?: FormattedResource['isBasedOn'];
   isBasisFor?: FormattedResource['isBasisFor'];
+  output?: FormattedResource['output'];
   processorRequirements?: FormattedResource['processorRequirements'];
   programmingLanguage?: FormattedResource['programmingLanguage'];
   softwareAddOn?: FormattedResource['softwareAddOn'];
@@ -37,20 +43,22 @@ interface SoftwareInformation {
 
 const SoftwareInformation: React.FC<SoftwareInformation> = ({
   isLoading,
+  keys,
   ...props
 }) => {
   const {
     applicationCategory,
     discussionUrl,
+    input,
     isBasedOn,
     isBasisFor,
+    output,
     processorRequirements,
     programmingLanguage,
     softwareAddOn,
     softwareHelp,
     softwareRequirements,
     softwareVersion,
-    type,
   } = props || {};
 
   const StatText: React.FC = ({ children }) => {
@@ -60,6 +68,8 @@ const SoftwareInformation: React.FC<SoftwareInformation> = ({
       </Text>
     );
   };
+
+  // where [isLongList]=true if the length of the items within a category exceeds 5.
   const isLongList =
     props &&
     Object.keys(props)
@@ -71,7 +81,8 @@ const SoftwareInformation: React.FC<SoftwareInformation> = ({
         return false;
       })
       .findIndex(d => d === true) >= 0;
-
+  // Number of fields that have a value in this section. Used for layout.
+  const properties = keys?.filter(key => props[key] !== null) || [];
   return (
     <Skeleton isLoaded={!isLoading}>
       <Stack alignItems='flex-start'>
@@ -82,7 +93,7 @@ const SoftwareInformation: React.FC<SoftwareInformation> = ({
             base: 'repeat(1, minmax(0, 1fr))',
             sm: `repeat(auto-fill, minmax(min(100%/2, max(${
               isLongList ? '100%' : '250px'
-            }, 100%/4)),1fr))`,
+            }, 100%/${Math.min(properties.length, 4)})),1fr))`,
           }}
         >
           {/* Language the code is written in */}
@@ -197,7 +208,7 @@ const SoftwareInformation: React.FC<SoftwareInformation> = ({
           )}
 
           {/* Libraries that the tool imports. */}
-          {isBasedOn && type !== 'Dataset' && (
+          {isBasedOn && (
             <Stat w='100%'>
               <StatLabel>Imports</StatLabel>
               <dd>
@@ -223,6 +234,47 @@ const SoftwareInformation: React.FC<SoftwareInformation> = ({
               </dd>
             </Stat>
           )}
+
+          {/* Software input such as file or parameter. */}
+          <Stack direction={['column', 'row']}>
+            {input && (
+              <Stat>
+                <StatLabel>Tool inputs</StatLabel>
+                <Flex maxH='400px' overflowY='auto' w='100%' pr={4}>
+                  <dd>
+                    {input.map((data, i) => {
+                      return (
+                        <InputOutput
+                          key={i}
+                          icon={FaFileImport}
+                          {...data}
+                        ></InputOutput>
+                      );
+                    })}
+                  </dd>
+                </Flex>
+              </Stat>
+            )}
+            {/* Software output of a tool. */}
+            {output && (
+              <Stat>
+                <StatLabel>Tool outputs</StatLabel>
+                <Flex maxH='400px' overflowY='auto' w='100%' pr={4}>
+                  <dd>
+                    {output.map((data, i) => {
+                      return (
+                        <InputOutput
+                          key={i}
+                          icon={FaFileExport}
+                          {...data}
+                        ></InputOutput>
+                      );
+                    })}
+                  </dd>
+                </Flex>
+              </Stat>
+            )}
+          </Stack>
         </SimpleGrid>
       </Stack>
     </Skeleton>
