@@ -112,6 +112,12 @@ export const SearchWithPredictiveText: React.FC<
           onSubmit={(value, idx) => {
             handleSubmit(value, searchField, results[idx]);
           }}
+          getInputValue={(idx: number): string => {
+            if (suggestions && suggestions[idx]) {
+              return suggestions[idx][fieldName] || '';
+            }
+            return '';
+          }}
           renderSubmitButton={props => (
             <Button
               display='flex'

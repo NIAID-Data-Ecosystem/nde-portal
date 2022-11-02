@@ -40,26 +40,34 @@ const SIZE_CONFIG: any = {
 
 interface DropdownInputProps {
   ariaLabel: string; // input label for accessibility
-  onSubmit: (inputValue: string, id: number) => void; // triggered when suggestion item from list is clicked / press enters.
   colorScheme?: InputProps['colorScheme'];
   size?: InputProps['size'];
   placeholder?: string;
   isLoading?: boolean;
+  getInputValue: (arg: number) => string;
   renderSubmitButton?: (props: ButtonProps) => ReactElement;
   onChange?: (value: string) => void;
+  onSubmit: (inputValue: string, id: number) => void; // triggered when suggestion item from list is clicked / press enters.
 }
 
 export const DropdownInput: React.FC<DropdownInputProps> = ({
   ariaLabel,
-  size = 'sm',
   placeholder,
   isLoading,
+  size = 'sm',
   renderSubmitButton,
+  getInputValue,
   onChange,
   onSubmit,
 }) => {
-  const { colorScheme, cursor, inputValue, getInputProps, setIsOpen } =
-    useDropdownContext();
+  const {
+    colorScheme,
+    cursor,
+    inputValue,
+    setInputValue,
+    getInputProps,
+    setIsOpen,
+  } = useDropdownContext();
 
   return (
     <Flex
@@ -100,6 +108,15 @@ export const DropdownInput: React.FC<DropdownInputProps> = ({
             placeholder: placeholder || 'Search',
             tabIndex: 0,
             pr: renderSubmitButton ? `${SIZE_CONFIG[size]['width']}rem` : 4,
+            onKeyDown: (
+              _: React.KeyboardEvent<HTMLInputElement>,
+              index: number,
+            ) => {
+              if (index > -1) {
+                const updatedInputValue = getInputValue(index);
+                updatedInputValue && setInputValue(updatedInputValue);
+              }
+            },
             onChange: (e: React.ChangeEvent<HTMLInputElement>) =>
               onChange ? onChange(e.currentTarget.value) : void 0,
           })}

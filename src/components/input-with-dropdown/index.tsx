@@ -1,6 +1,5 @@
 import React from 'react';
 import { ListItemProps } from '@chakra-ui/react';
-import { InputProps } from 'nde-design-system';
 import { useDropdownInput } from './hooks/useDropdownInput';
 
 interface DropdownListItemProps extends ListItemProps {
@@ -18,7 +17,7 @@ export interface ContextProps {
   setCursor: React.Dispatch<React.SetStateAction<number>>;
   setInputValue: React.Dispatch<React.SetStateAction<string>>;
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  getInputProps: (props: InputProps) => InputProps;
+  getInputProps: (props: any) => any;
   getListItemProps: (
     props: DropdownListItemProps,
   ) => Omit<ListItemProps, 'textUnderlineOffset'>;
