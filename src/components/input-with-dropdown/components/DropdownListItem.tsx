@@ -20,11 +20,6 @@ export const DropdownListItem: React.FC<DropdownListItemProps> = React.memo(
 
     // If item is highlighted (mouseover or keydown), update the input string with the value of the list item.
     const isSelected = useMemo(() => cursor === index, [index, cursor]);
-    useEffect(() => {
-      if (isSelected) {
-        setInputValue(value);
-      }
-    }, [cursor, isSelected, setInputValue, value]);
 
     // Bold and underline the searched term in the result string.
     const boldSubstring = useCallback((str: string, substr: string) => {
@@ -37,6 +32,7 @@ export const DropdownListItem: React.FC<DropdownListItemProps> = React.memo(
         str => `<mark class="search-term">${str}</mark>`,
       );
     }, []);
+
     return (
       <NDEListItem
         borderRadius='base'

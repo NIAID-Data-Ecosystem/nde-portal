@@ -4,6 +4,10 @@ import { InputProps } from 'nde-design-system';
 import { callAllHandlers } from 'src/utils/functions';
 import { ContextProps } from '../index';
 
+interface DropdownInputProps extends Omit<InputProps, 'onKeyDown'> {
+  onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>, idx: number) => void;
+}
+
 interface DropdownListItemProps extends ListItemProps {
   index: number;
   value: string | number | readonly string[];
@@ -37,7 +41,10 @@ export const useDropdownInput = ({
   );
 
   const handleInputKeyDown = useCallback(
-    (e: React.KeyboardEvent<HTMLInputElement>) => {
+    (
+      e: React.KeyboardEvent<HTMLInputElement>,
+      onKeyDown: DropdownInputProps['onKeyDown'],
+    ) => {
       if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
         let idx = cursor;
         if (e.key === 'ArrowDown') idx++;
@@ -45,6 +52,9 @@ export const useDropdownInput = ({
 
         // if the user presses the down arrow we update the current selection [cursor]
         idx !== cursor && setCursor(idx);
+
+        // Call custom keydown function if exists.
+        onKeyDown && onKeyDown(e, idx);
 
         // Move cursor to end of input field.
         let input = e.currentTarget;
@@ -58,13 +68,17 @@ export const useDropdownInput = ({
     [cursor],
   );
 
-  const getInputProps = ({ onChange, onKeyDown, ...props }: InputProps) => ({
+  const getInputProps = ({
+    onChange,
+    onKeyDown,
+    ...props
+  }: DropdownInputProps) => ({
     colorScheme,
     bg: 'white',
     type: 'search',
     value: inputValue,
     onChange: callAllHandlers(handleInputChange, onChange),
-    onKeyDown: callAllHandlers(handleInputKeyDown, onKeyDown),
+    onKeyDown: callAllHandlers(e => handleInputKeyDown(e, onKeyDown)),
     ...props,
   });
 
