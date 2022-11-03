@@ -137,6 +137,12 @@ export const SearchWithPredictiveText: React.FC<
               </Button>
             );
           }}
+          getInputValue={(idx: number): string => {
+            if (suggestions && suggestions[idx]) {
+              return suggestions[idx][fieldName] || '';
+            }
+            return '';
+          }}
         />
         <DropdownContent>
           {/* Group results by type (dataset/computational tool) */}
