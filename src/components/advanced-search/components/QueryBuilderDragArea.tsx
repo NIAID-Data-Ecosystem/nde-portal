@@ -131,9 +131,6 @@ export const QueryBuilderDragArea: React.FC<QueryBuilderDragAreaProps> = ({
 
             if (activeIndex !== overIndex) {
               setItems(items => reorderItems(items, activeIndex, overIndex));
-              updateItems((items: DragItem[]) =>
-                reorderItems(items, activeIndex, overIndex),
-              );
             }
           }
         }}
