@@ -19,6 +19,7 @@ import { QueryBuilderDragArea } from './components/QueryBuilderDragArea';
 import { DragItem } from './components/DraggableItem';
 import { AddWithUnion, OpenModal, options } from './components/buttons';
 import { transformQueryArray2Querystring } from './helpers';
+import { uniqueId } from 'lodash';
 
 interface AdvancedSearchProps {
   buttonProps?: TextProps;
@@ -128,10 +129,9 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
               setItems(prev => {
                 if (!value) return prev;
                 const newItems = [...prev];
-                const id = value.split(' ').join('-');
-
+                const id = `${uniqueId(`${value}-${items.length}-`)}`;
                 const unionObj = {
-                  id: `${union}-${items.length}`,
+                  id: `${uniqueId(`${union}-${items.length}-`)}`,
                   field: 'union',
                   value: union,
                 };
@@ -142,16 +142,10 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
                 }
 
                 newItems.push({
-                  id: `${id}-${data?.id || items.length}`, // unique identifier
+                  id, // unique identifier
                   value,
                   field: searchField,
                 });
-
-                // Append the union type on the first item in the query.
-                // Only do so when a second item is added though.
-                // if (items.length === 1) {
-                //   newItems.push(unionObj);
-                // }
 
                 return newItems;
               });

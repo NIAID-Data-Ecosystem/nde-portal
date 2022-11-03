@@ -70,8 +70,7 @@ export const QueryBuilderDragArea: React.FC<QueryBuilderDragAreaProps> = ({
       activationConstraint,
     }),
     useSensor(KeyboardSensor, {
-      // Disable smooth scrolling in Cypress automated tests
-      scrollBehavior: 'Cypress' in window ? 'auto' : undefined,
+      scrollBehavior: undefined,
       coordinateGetter,
     }),
   );
@@ -89,13 +88,7 @@ export const QueryBuilderDragArea: React.FC<QueryBuilderDragAreaProps> = ({
 
   const handleUpdate = (item: DragItem) => {
     const idx = getIndex(item.id);
-    // [TO DO]: merge into 1
     setItems(items => {
-      const newArr = [...items];
-      newArr[idx] = item;
-      return newArr;
-    });
-    updateItems(items => {
       const newArr = [...items];
       newArr[idx] = item;
       return newArr;
@@ -104,8 +97,12 @@ export const QueryBuilderDragArea: React.FC<QueryBuilderDragAreaProps> = ({
 
   const handleRemove = (id: UniqueIdentifier) => {
     setItems(items => items.filter(item => item.id !== id));
-    updateItems(items => items.filter(item => item.id !== id));
   };
+
+  // update the main query items state when the items in this drag area are updated.
+  useEffect(() => {
+    updateItems(items);
+  }, [items, updateItems]);
 
   const hasDragHandle = true;
 

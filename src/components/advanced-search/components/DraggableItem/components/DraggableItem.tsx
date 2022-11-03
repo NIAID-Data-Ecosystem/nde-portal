@@ -76,6 +76,7 @@ export const DraggableItem: React.FC<DraggableItemProps> = props => {
     },
   };
 
+  // styles for union type tag.
   if (property === 'union') {
     styles.bg = 'primary.500';
     styles.borderColor = 'primary.500';
@@ -139,9 +140,13 @@ export const DraggableItem: React.FC<DraggableItemProps> = props => {
       ) : (
         <Flex flexDirection='column' justifyContent='center' px={2} pr={4}>
           {/* <Tag/> */}
-          <Text fontSize='12px'>{property || ' '}</Text>
+          <Text fontSize='12px' lineHeight='short'>
+            {property || ' '}
+          </Text>
           {/* eventually turn into input field/add handle? */}
-          <Text fontSize='md'>{value}</Text>
+          <Text fontSize='sm' lineHeight='short' fontWeight='medium'>
+            {value}
+          </Text>
         </Flex>
       )}
       {onRemove ? (
