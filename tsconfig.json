@@ -2,7 +2,8 @@
   "compilerOptions": {
     "baseUrl": ".",
     "removeComments": true,
-    "target": "es5",
+    "target": "es2015",
+    "downlevelIteration": true,
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
