@@ -78,11 +78,11 @@ export const DateRangeSlider: React.FC<{
           ),
         ];
 
-        if (start > -1 && arr[0] !== start) {
-          arr[0] = start;
+        if (arr[0] !== start) {
+          arr[0] = start === -1 ? 0 : start;
         }
-        if (end > -1 && arr[1] !== end) {
-          arr[1] = end;
+        if (arr[1] !== end) {
+          arr[1] = end === -1 ? data.length - 1 : end;
         }
       }
       return arr;

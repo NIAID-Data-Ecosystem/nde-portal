@@ -26,19 +26,7 @@ export const Slider: React.FC<FiltersRangeSliderProps> = React.memo(
     if (!data || dateRange?.length !== 2) {
       return <></>;
     }
-    if (data.length === 1) {
-      return (
-        <Heading
-          as='h5'
-          fontSize='0.85rem'
-          mt={2}
-          textAlign='center'
-          transform='translate(-50%, 0)'
-        >
-          {data[0].displayAs}
-        </Heading>
-      );
-    }
+
     return (
       <Box w='100%' mt={-1.5} flex={1}>
         <RangeSlider
@@ -78,12 +66,15 @@ export const Slider: React.FC<FiltersRangeSliderProps> = React.memo(
 
           {/* Display a tooltip on hover with values for each slider thumb. */}
           <RangeSliderThumb
+            id='thumb-slider-1'
             index={0}
             borderColor={`${colorScheme}.200`}
             boxSize={5}
+            left='-0.625rem' // center by displacing by half the size of the thumb.
           >
             <Box
               position='absolute'
+              width='unset'
               top={4}
               right={thumbsSameValue ? 'unset' : 0}
             >
@@ -95,9 +86,11 @@ export const Slider: React.FC<FiltersRangeSliderProps> = React.memo(
             </Box>
           </RangeSliderThumb>
           <RangeSliderThumb
+            id='thumb-slider-2'
             index={1}
             borderColor={`${colorScheme}.200`}
             boxSize={5}
+            left='-0.625rem' // center by displacing by half the size of the thumb.
           >
             <Box
               position='absolute'

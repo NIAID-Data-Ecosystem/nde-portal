@@ -51,7 +51,6 @@ export const Histogram: React.FC<HistogramProps> = ({
         gray: theme.colors.gray[200],
       },
       hover: {
-        fill: `url(#gradient-hover)`,
         gray: theme.colors.blackAlpha[200],
       },
       opacity: { hover: 0.5, active: 1 },
@@ -174,6 +173,10 @@ export const Histogram: React.FC<HistogramProps> = ({
     [updatedData],
   );
 
+  if (!data) {
+    return <></>;
+  }
+
   return (
     <div
       id='date-histogram'
@@ -226,13 +229,6 @@ export const Histogram: React.FC<HistogramProps> = ({
                 fromOpacity={0.5}
                 toOpacity={0.5}
               /> */}
-              <LinearGradient
-                id='gradient-hover'
-                from={'black'}
-                to={'black'}
-                fromOpacity={0.9}
-                toOpacity={0.9}
-              />
               <Group>
                 {data.map((d, i) => {
                   const { term, count } = d;
@@ -240,7 +236,7 @@ export const Histogram: React.FC<HistogramProps> = ({
                   const barWidth = xScale.bandwidth();
                   const barX = xScale(i);
 
-                  const barHeight = Math.ceil(height - (yScale(count) ?? 0));
+                  const barHeight = Math.ceil(height - yScale(count));
                   const barY = height - barHeight;
 
                   /* Updated counts when date has changed */
@@ -248,9 +244,8 @@ export const Histogram: React.FC<HistogramProps> = ({
                     updatedCounts.find(u => u.term === term)?.count || 0;
 
                   const updatedBarHeight = Math.ceil(
-                    height - (yScale(updatedCount) ?? 0),
+                    height - yScale(updatedCount),
                   );
-
                   const hovered = term === tooltipData?.term;
                   let fill = params.fill.gray;
 
@@ -259,6 +254,7 @@ export const Histogram: React.FC<HistogramProps> = ({
                     range_max &&
                     term >= range_min &&
                     term <= range_max;
+
                   if (range_min && range_max) {
                     fill = termInRange
                       ? `url(#gradient-${term})`
@@ -271,11 +267,6 @@ export const Histogram: React.FC<HistogramProps> = ({
                         ? params.fill.inactive
                         : theme.colors.gray[200];
                     }
-                    // if (hovered) {
-                    //   fill = termInRange
-                    //     ? params.hover.fill
-                    //     : params.hover.gray;
-                    // }
                   }
 
                   return (
@@ -290,6 +281,7 @@ export const Histogram: React.FC<HistogramProps> = ({
 
                       {/* Bars that depict the initial data (without date filtering). */}
                       <Bar
+                        className='default-bar'
                         x={barX}
                         y={barY}
                         width={barWidth}
@@ -308,6 +300,7 @@ export const Histogram: React.FC<HistogramProps> = ({
 
                       {/* Updated count bars. Fill color based on selection. */}
                       <Bar
+                        className='active-count-bg'
                         x={barX}
                         y={height - (isDragging ? barHeight : updatedBarHeight)}
                         width={barWidth}
@@ -318,6 +311,7 @@ export const Histogram: React.FC<HistogramProps> = ({
                         }
                       />
                       <Bar
+                        className='active-count-gradient'
                         x={barX}
                         y={height - (isDragging ? barHeight : updatedBarHeight)}
                         width={barWidth}
@@ -330,6 +324,7 @@ export const Histogram: React.FC<HistogramProps> = ({
 
                       {/* Transparent full height bar used for detecting mouse over tooltip. */}
                       <Bar
+                        className='hover-bar'
                         x={barX}
                         y={0}
                         width={barWidth}

@@ -13,7 +13,6 @@ import { useFacetsData } from '../../hooks/useFacetsData';
 import { SelectedFilterType } from '../../types';
 import { Params } from 'src/utils/api';
 import { queryFilterObject2String } from '../../helpers';
-import { addMissingYears } from './helpers';
 import { Slider } from './components/slider';
 import { Histogram } from './components/histogram';
 import { FacetTerm } from 'src/utils/api/types';
@@ -64,14 +63,9 @@ export const FiltersDateSlider: React.FC<FiltersDateSliderProps> = ({
     [data?.date],
   );
 
-  // [resourcesWithDates]: Resources that have a date field, sorted.
-  const resourcesWithDate = useMemo(
-    () =>
-      addMissingYears(
-        data?.date?.filter(d => !(d.term === '-_exists_' || d.count === 0)) ||
-          [],
-      ),
-    [data?.date],
+  // check if there is data with dates available to display the historgram.
+  const showHistogram = selectedData?.filter(
+    d => d.term !== '-_exists_' && d.count !== 0,
   );
 
   if (error) {
@@ -102,23 +96,24 @@ export const FiltersDateSlider: React.FC<FiltersDateSliderProps> = ({
             selectedDates={selectedDates}
             colorScheme='secondary'
           >
-            <Flex
-              w='100%'
-              flexDirection='column'
-              alignItems='center'
-              p={4}
-              px={8}
-            >
-              {/*  Histogram for resources grouped by year */}
-              <Histogram
-                updatedData={selectedData}
-                handleClick={handleSelectedFilter}
+            {showHistogram.length > 0 && (
+              <Flex
+                w='100%'
+                flexDirection='column'
+                alignItems='center'
+                p={4}
+                px={8}
               >
-                {/* Slider for choosing the date range. */}
-                <Slider onChangeEnd={handleSelectedFilter} />
-              </Histogram>
-            </Flex>
-
+                {/*  Histogram for resources grouped by year */}
+                <Histogram
+                  updatedData={selectedData}
+                  handleClick={handleSelectedFilter}
+                >
+                  {/* Slider for choosing the date range. */}
+                  <Slider onChangeEnd={handleSelectedFilter} />
+                </Histogram>
+              </Flex>
+            )}
             {/* Calendar Inputs */}
             <Flex bg='blackAlpha.50' flexDirection='column' p={4}>
               <DatePicker

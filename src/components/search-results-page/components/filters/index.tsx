@@ -14,7 +14,7 @@ import {
 } from 'src/components/filters/types';
 import { useRouter } from 'next/router';
 import { FiltersDateSlider } from 'src/components/filters/components/filters-date-slider/';
-import { ButtonProps, theme } from 'nde-design-system';
+import { theme } from 'nde-design-system';
 
 /*
 [COMPONENT INFO]:
