@@ -111,18 +111,18 @@ const Search: NextPage = () => {
           <PageContent w='100%' flexDirection='column'>
             <Heading
               as='h1'
-              size='md'
+              size='sm'
               color='text.body'
               fontWeight='semibold'
               mb={4}
             >
               {queryString === '__all__'
                 ? `Showing all results`
-                : `Showing results for:`}
+                : `Showing results for`}
 
               {queryString !== '__all__' && (
-                <Heading as='span' ml={2} fontWeight='bold' size='md' w='100%'>
-                  {displayQueryString(queryString)}
+                <Heading as='span' ml={2} fontWeight='bold' size='sm' w='100%'>
+                  {queryString}
                 </Heading>
               )}
             </Heading>
