@@ -12,6 +12,7 @@ import {
 } from 'src/components/search-results-page/components/filters';
 import {
   FilterTags,
+  FilterTagsWrapper,
   queryFilterObject2String,
   queryFilterString2Object,
   updateRoute,
@@ -129,32 +130,34 @@ const Search: NextPage = () => {
 
             {/* Tags with the names of the currently selected filters */}
             <Collapse in={tags.length > 0}>
-              <FilterTags
-                tags={tags}
-                removeAllFilters={removeAllFilters}
-                removeSelectedFilter={(
-                  name: keyof SelectedFilterType,
-                  value: SelectedFilterTypeValue,
-                ) => {
-                  let updatedFilter = {
-                    [name]: selectedFilters[name].filter(v => {
-                      if (typeof value === 'object' || v === 'object') {
-                        return JSON.stringify(v) !== JSON.stringify(value);
-                      }
-                      return v !== value;
-                    }),
-                  };
+              <FilterTagsWrapper filters={selectedFilters}>
+                <FilterTags
+                  tags={tags}
+                  removeAllFilters={removeAllFilters}
+                  removeSelectedFilter={(
+                    name: keyof SelectedFilterType,
+                    value: SelectedFilterTypeValue,
+                  ) => {
+                    let updatedFilter = {
+                      [name]: selectedFilters[name].filter(v => {
+                        if (typeof value === 'object' || v === 'object') {
+                          return JSON.stringify(v) !== JSON.stringify(value);
+                        }
+                        return v !== value;
+                      }),
+                    };
 
-                  let filters = queryFilterObject2String({
-                    ...selectedFilters,
-                    ...updatedFilter,
-                  });
-                  handleRouteUpdate({
-                    from: defaultQuery.selectedPage,
-                    filters,
-                  });
-                }}
-              />
+                    let filters = queryFilterObject2String({
+                      ...selectedFilters,
+                      ...updatedFilter,
+                    });
+                    handleRouteUpdate({
+                      from: defaultQuery.selectedPage,
+                      filters,
+                    });
+                  }}
+                />
+              </FilterTagsWrapper>
             </Collapse>
             <Flex w='100%'>
               {/* Filters sidebar */}
