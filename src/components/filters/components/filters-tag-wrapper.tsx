@@ -11,10 +11,12 @@ import {
   Icon,
   Text,
   useDisclosure,
+  theme,
 } from 'nde-design-system';
 import { SelectedFilterType } from '../types';
 
 interface FilterTagsWrapperProps {
+  colorScheme?: keyof typeof theme.colors;
   // Filters applied to data.
   filters: SelectedFilterType;
 }
@@ -25,6 +27,7 @@ interface FilterTagsWrapperProps {
 export const FilterTagsWrapper: React.FC<FilterTagsWrapperProps> = ({
   filters,
   children,
+  colorScheme = 'secondary',
 }) => {
   const COLLAPSE_CONTAINER_HEIGHT = 62; // starting height for tags collapse drawer.
   const tagsContainerRef = useRef<HTMLDivElement>(null); // reference element that contains filter tags.
@@ -45,7 +48,13 @@ export const FilterTagsWrapper: React.FC<FilterTagsWrapperProps> = ({
   }
 
   return (
-    <Box border='1px solid' borderColor='gray.200' borderRadius='semi' mb={1}>
+    <Box
+      border='1px solid'
+      borderColor='gray.200'
+      borderRadius='semi'
+      bg={`${colorScheme}.50`}
+      mb={2}
+    >
       <Collapse
         in={isOpen}
         animateOpacity
