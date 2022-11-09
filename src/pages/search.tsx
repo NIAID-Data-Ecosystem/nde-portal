@@ -129,7 +129,7 @@ const Search: NextPage = () => {
             </Heading>
 
             {/* Tags with the names of the currently selected filters */}
-            <Collapse in={tags.length > 0} w='100%'>
+            <Collapse in={tags.length > 0}>
               {/* <FilterTagsWrapper filters={selectedFilters}> */}
               <FilterTags
                 tags={tags}
