@@ -26,7 +26,7 @@ export const ExternalSourceButton: React.FC<ExternalButtonProps> = ({
       h='40px'
       mr={2}
       mb={[2, 2, 0]}
-      src={`${assetPrefix}${src}`}
+      src={`${assetPrefix || ''}${src}`}
       alt={alt}
       {...imageProps}
     />

@@ -302,7 +302,7 @@ const Test: NextPage = () => {
                         textAlign='center'
                       >
                         <Image
-                          src={`${assetPrefix}/assets/${stat.term
+                          src={`${assetPrefix || ''}/assets/${stat.term
                             .toLowerCase()
                             .replaceAll(' ', '-')}.svg`}
                           alt={`Icon for ${stat.term}`}
@@ -442,7 +442,7 @@ const Test: NextPage = () => {
               w='100%'
               p={4}
               maxW={{ base: 300, xl: 400 }}
-              src={`${assetPrefix}/assets/home-analyze.png`}
+              src={`${assetPrefix || ''}/assets/home-analyze.png`}
               alt={''}
             ></Image>
             <StyledBody>

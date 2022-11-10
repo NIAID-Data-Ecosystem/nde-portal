@@ -128,7 +128,7 @@ const CardDetails: React.FC<CardDetailsProps> = ({ data }) => {
                       <>
                         {licenseInfo?.img && (
                           <Image
-                            src={`${assetPrefix}${licenseInfo.img}`}
+                            src={`${assetPrefix || ''}${licenseInfo.img}`}
                             alt={licenseInfo.type}
                             mb={1}
                           />
