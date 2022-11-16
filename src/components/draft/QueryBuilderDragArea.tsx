@@ -76,6 +76,7 @@ export const QueryBuilderDragArea: React.FC<QueryBuilderDragAreaProps> = ({
   );
 
   const [items, setItems] = useState<DragItem[]>(itemsList || []);
+  console.log('items', items);
   const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null);
   const getIndex = (id: UniqueIdentifier) => {
     return items.findIndex(item => item.id === id);

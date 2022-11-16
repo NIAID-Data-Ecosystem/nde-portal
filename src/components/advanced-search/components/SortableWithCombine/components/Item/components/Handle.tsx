@@ -4,7 +4,7 @@ import { IconButton } from 'nde-design-system';
 export const Handle = forwardRef<HTMLButtonElement, any>((props, ref) => {
   return (
     <IconButton
-      colorScheme={props.colorScheme || 'primary'}
+      colorScheme={props.colorScheme || 'gray'}
       bg={props.bg}
       color={props.color || 'white'}
       pl={2}

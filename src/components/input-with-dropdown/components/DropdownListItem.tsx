@@ -67,6 +67,7 @@ export const DropdownListItem: React.FC<DropdownListItemProps> = React.memo(
         borderRadius='base'
         cursor='pointer'
         p={2}
+        m={2}
         my={1}
         {...getListItemProps({
           index,

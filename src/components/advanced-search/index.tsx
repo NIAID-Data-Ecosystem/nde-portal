@@ -15,11 +15,13 @@ import {
   SearchWithPredictiveText,
   usePredictiveSearch,
 } from 'src/components/search-with-predictive-text';
-import { QueryBuilderDragArea } from './components/QueryBuilderDragArea';
-import { DragItem } from './components/DraggableItem';
 import { AddWithUnion, OpenModal, options } from './components/buttons';
-import { transformQueryArray2Querystring } from './helpers';
 import { uniqueId } from 'lodash';
+import {
+  DragItem,
+  SortableWithCombine,
+} from './components/SortableWithCombine';
+import { convertObject2QueryString } from './utils';
 
 interface AdvancedSearchProps {
   buttonProps?: TextProps;
@@ -60,15 +62,16 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
         isOpen={isOpen}
         onClose={onClose}
         onSubmit={e => {
-          const q = transformQueryArray2Querystring(items);
+          const querystring = convertObject2QueryString(items);
           router.push({
             pathname: `/search`,
-            query: { q, advancedSearch: true },
+            query: { q: querystring, advancedSearch: true },
           });
         }}
         {...modalProps}
       >
-        <QueryBuilderDragArea itemsList={items} updateItems={setItems} />
+        <SortableWithCombine items={items} setItems={setItems} handle />
+        {/* <QueryBuilderDragArea itemsList={items} updateItems={setItems} /> */}
         <Flex
           flexDirection={{ base: 'column', md: 'row' }}
           alignItems={{ base: 'flex-start', md: 'center' }}
@@ -122,29 +125,23 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
                 ></AddWithUnion>
               );
             }}
-            handleSubmit={(value, __, data) => {
+            handleSubmit={(term, __, data) => {
               // if no union type is selected, default to "AND"
-              const union = unionType || 'AND';
-              !unionType && setUnionType(union);
+              const union = unionType || undefined;
+              !unionType && setUnionType(union || 'AND');
               setItems(prev => {
-                if (!value) return prev;
+                if (!term) return prev;
                 const newItems = [...prev];
-                const id = `${uniqueId(`${value}-${items.length}-`)}`;
-                const unionObj = {
-                  id: `${uniqueId(`${union}-${items.length}-`)}`,
-                  field: 'union',
-                  value: union,
-                };
-
-                // Add the union type after an item is entered (aka only add the union when the second item is entered)
-                if (items.length) {
-                  newItems.push(unionObj);
-                }
+                const id = `${uniqueId(`${term}-${items.length}-`)}`;
 
                 newItems.push({
                   id, // unique identifier
-                  value,
-                  field: searchField,
+                  value: {
+                    field: searchField,
+                    term,
+                    union,
+                  },
+                  children: [],
                 });
 
                 return newItems;
