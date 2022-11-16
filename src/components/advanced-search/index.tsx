@@ -20,16 +20,20 @@ import {
   SearchWithPredictiveText,
   usePredictiveSearch,
 } from 'src/components/search-with-predictive-text';
-import { AddWithUnion, OpenModal, options } from './components/buttons';
+import { OpenModal } from './components/buttons';
 import { uniqueId } from 'lodash';
 import {
   buildTree,
   DragItem,
   SortableWithCombine,
 } from './components/SortableWithCombine';
-import { convertObject2QueryString } from './utils';
-import { FaArrowsAltV, FaCaretDown, FaSearch } from 'react-icons/fa';
-import { UniqueIdentifier } from '@dnd-kit/core';
+import {
+  convertObject2QueryString,
+  getUnionTheme,
+  unionOptions,
+} from './utils';
+import { FaArrowsAltV, FaSearch } from 'react-icons/fa';
+import { DropdownButton } from '../dropdown-button';
 
 interface AdvancedSearchProps {
   buttonProps?: TextProps;
@@ -65,7 +69,9 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
       enabled: !!isOpen, // Run query when modal is open.
     },
   );
-  const [unionType, setUnionType] = useState<typeof options[number] | ''>('');
+  const [unionType, setUnionType] = useState<typeof unionOptions[number] | ''>(
+    '',
+  );
 
   return (
     <>
@@ -132,11 +138,24 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
               field={searchField}
               renderSubmitButton={props => {
                 return (
-                  <AddWithUnion
-                    unionType={unionType}
-                    setUnionType={setUnionType}
+                  <DropdownButton
+                    placeholder='Add'
+                    selectedOption={unionType}
+                    setSelectedOption={setUnionType}
+                    options={unionOptions.map(term => {
+                      return {
+                        name: `Add with ${term}`,
+                        value: term,
+                        props: { ...getUnionTheme(term) },
+                      };
+                    })}
                     {...props}
-                  ></AddWithUnion>
+                    colorScheme={
+                      unionType
+                        ? getUnionTheme(unionType).colorScheme
+                        : 'primary'
+                    }
+                  />
                 );
               }}
               handleSubmit={(term, __, data) => {
@@ -167,7 +186,7 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
             Or choose from the sample queries below.
           </Heading>
           <Button
-            rightIcon={<FaSearch />}
+            leftIcon={<FaSearch />}
             onClick={() =>
               setItems(
                 buildTree([

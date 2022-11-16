@@ -139,7 +139,6 @@ export const DraggableItem: React.FC<DraggableItemProps> = props => {
         ></AddWithUnion>
       ) : (
         <Flex flexDirection='column' justifyContent='center' px={2} pr={4}>
-          {/* <Tag/> */}
           <Text fontSize='12px' lineHeight='short'>
             {property || ' '}
           </Text>

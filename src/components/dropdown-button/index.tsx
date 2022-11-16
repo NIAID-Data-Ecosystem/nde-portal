@@ -8,33 +8,41 @@ import {
   ButtonProps,
   Icon,
   IconButton,
+  IconButtonProps,
   ListItem,
   UnorderedList,
 } from 'nde-design-system';
+import { ListItemProps } from '@chakra-ui/react';
 
-export const options = ['AND', 'OR', 'NOT'] as const;
-
-export interface AddWithUnionProps extends ButtonGroupProps {
+export interface DropdownButton extends ButtonGroupProps {
   ariaLabel: string;
   type: ButtonProps['type'];
-  unionType: typeof options[number] | '';
-  setUnionType: (arg: AddWithUnionProps['unionType']) => void;
+  selectedOption: string;
+  setSelectedOption: (arg: DropdownButton['selectedOption']) => void;
+  options: {
+    name: string;
+    value: string;
+    props: Omit<ListItemProps, 'textUnderlineOffset'>;
+  }[];
+  iconButtonProps?: IconButtonProps;
 }
 
-export const AddWithUnion: React.FC<AddWithUnionProps> = ({
+export const DropdownButton: React.FC<DropdownButton> = ({
   ariaLabel,
   size,
   colorScheme = 'primary',
   isDisabled,
   type,
-  unionType,
-  setUnionType,
+  selectedOption,
+  setSelectedOption,
+  placeholder,
   height,
+  options,
   ...props
 }) => {
   const [optionsOpen, setOptionsOpen] = useState(false);
   return (
-    <Box onMouseLeave={() => setOptionsOpen(false)} height={height}>
+    <Box onMouseLeave={() => setOptionsOpen(false)} height={height} bg='white'>
       <ButtonGroup
         isAttached
         variant='solid'
@@ -45,7 +53,7 @@ export const AddWithUnion: React.FC<AddWithUnionProps> = ({
         {...props}
       >
         <Button aria-label={ariaLabel} type={type} height={height}>
-          {unionType || 'Add'}
+          {selectedOption || placeholder}
         </Button>
         <IconButton
           height={height}
@@ -55,10 +63,15 @@ export const AddWithUnion: React.FC<AddWithUnionProps> = ({
           onClick={() => setOptionsOpen(!optionsOpen)}
           onMouseEnter={() => setOptionsOpen(true)}
           padding={0}
+          bg={`${colorScheme}.400`}
+          _hover={{
+            bg: `${colorScheme}.600`,
+          }}
+          _focus={{ boxShadow: 'none' }}
+          {...props.iconButtonProps}
         />
       </ButtonGroup>
       {/* Menu of options */}
-
       {optionsOpen && (
         <Box position='relative' w='100%'>
           <Box
@@ -69,29 +82,33 @@ export const AddWithUnion: React.FC<AddWithUnionProps> = ({
             borderRadius='semi'
             overflow='hidden'
             boxShadow='base'
+            bg='white'
           >
             <UnorderedList ml={0}>
-              {options.map(option => {
+              {options.map((option, index) => {
                 return (
                   <ListItem
-                    key={option}
+                    key={option.value}
                     px={4}
                     py={1}
-                    bg={`${colorScheme}.600`}
+                    mt={0.5}
+                    bg={`${colorScheme}.500`}
                     cursor='pointer'
                     color='white'
                     whiteSpace='nowrap'
+                    userSelect='none'
                     _hover={{ bg: `${colorScheme}.400` }}
-                    onClick={() => setUnionType(option)}
+                    onClick={() => setSelectedOption(option.value)}
+                    {...option.props}
                   >
-                    Add with {option}
+                    {option.name}
                   </ListItem>
                 );
               })}
             </UnorderedList>
           </Box>
         </Box>
-      )}
+      )}{' '}
     </Box>
   );
 };

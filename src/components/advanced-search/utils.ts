@@ -1,5 +1,34 @@
 import type { DragItem } from './components/SortableWithCombine';
 
+type UnionTypes = 'AND' | 'OR' | 'NOT';
+
+export const unionOptions = ['AND', 'OR', 'NOT'] as UnionTypes[];
+
+export const getUnionTheme = (term: UnionTypes) => {
+  if (term === 'AND') {
+    return {
+      background: 'primary.500',
+      colorScheme: 'primary',
+      _hover: { bg: 'primary.600' },
+    };
+  }
+  if (term === 'OR') {
+    return {
+      background: 'secondary.500',
+      colorScheme: 'secondary',
+      _hover: { bg: 'secondary.600' },
+    };
+  }
+  if (term === 'NOT') {
+    return {
+      background: 'red.500',
+      colorScheme: 'red',
+      _hover: { bg: 'red.600' },
+    };
+  }
+  return {};
+};
+
 export const convertObject2QueryString = (items: DragItem[]) => {
   const reduceQueryString = (items: DragItem[]) =>
     items.reduce((r, item, i) => {

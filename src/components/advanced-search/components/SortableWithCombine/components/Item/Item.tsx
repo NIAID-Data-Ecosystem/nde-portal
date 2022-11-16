@@ -4,6 +4,7 @@ import type { Transform } from '@dnd-kit/utilities';
 import { Handle } from './components/Handle';
 import { Remove } from './components/Remove';
 import type { DragItem } from '../../types';
+import { AddWithUnion } from '../../../buttons';
 
 export interface Props {
   dragOverlay?: boolean;
@@ -126,6 +127,17 @@ export const Item = React.memo(
           // onMouseOut={() => setShowHandle(false)}
         >
           {data.value.union && !dragOverlay && (
+            // <AddWithUnion
+            //   ariaLabel='Join two query terms'
+            //   // size='sm'
+            //   type='button'
+            //   unionType={data.value.union}
+            //   setUnionType={value => {
+            //     // onUpdate && onUpdate({ value });
+            //   }}
+            //   zIndex='popover'
+            //   height='100%'
+            // ></AddWithUnion>
             <div
               style={{
                 ...wrapperStyle,

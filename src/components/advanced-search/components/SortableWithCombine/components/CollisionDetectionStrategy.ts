@@ -100,8 +100,6 @@ export const useCollisionDetection = () => {
         ];
       }
 
-      console.log('THIS NEEVER HAPPENS');
-      // Out of bounds
       // When a draggable item moves to a new container, the layout may shift
       // and the `overId` may become `null`. We manually set the cached `lastOverId`
       // to the id of the draggable item that was moved to the new container, otherwise
