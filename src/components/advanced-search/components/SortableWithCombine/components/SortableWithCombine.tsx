@@ -504,6 +504,7 @@ export function SortableWithCombine({
               activeIndex,
               droppableIndex,
             );
+            console.log('N', newItems, buildTree(newItems));
             setItems(buildTree(newItems));
             resetState();
           }
