@@ -207,6 +207,7 @@ export const Item = React.memo(
               <span>
                 {onRemove ? (
                   <Remove
+                    aria-label={`remove item ${data.value.term}`}
                     onClick={onRemove}
                     color='gray.200'
                     bg='transparent'

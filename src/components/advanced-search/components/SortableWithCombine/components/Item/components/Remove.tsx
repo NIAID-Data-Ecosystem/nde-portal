@@ -1,7 +1,7 @@
 import React from 'react';
-import { Box, IconButton } from 'nde-design-system';
+import { Box, IconButton, IconButtonProps } from 'nde-design-system';
 
-export const Remove = props => {
+export const Remove = (props: IconButtonProps) => {
   return (
     <Box py={2}>
       <IconButton
