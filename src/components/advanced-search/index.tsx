@@ -32,7 +32,7 @@ import {
   getUnionTheme,
   unionOptions,
 } from './utils';
-import { FaArrowsAltV, FaSearch } from 'react-icons/fa';
+import { FaArrowsAltV, FaSearch, FaUndoAlt } from 'react-icons/fa';
 import { DropdownButton } from '../dropdown-button';
 
 interface AdvancedSearchProps {
@@ -175,6 +175,7 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
                       union,
                     },
                     children: [],
+                    index: items.length,
                   });
 
                   return newItems;
@@ -189,9 +190,10 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
             leftIcon={<FaSearch />}
             onClick={() =>
               setItems(
+                // [TO DO]: create transform string to query object function.
                 buildTree([
                   {
-                    id: `${uniqueId('West Siberian virus')}`,
+                    id: 'West Siberian virus'.split(' ').join('-'),
                     children: [],
                     value: { term: 'West Siberian virus' },
                     parentId: null,
@@ -246,6 +248,7 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
                     children: [],
                     value: {
                       term: 'Siberian subtype',
+                      union: 'AND',
                     },
                     parentId:
                       'Tickborne-encephalitis-OR-Tick-borne-encephalitis-AND-Siberian-subtype',
@@ -265,20 +268,42 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
 
         {/* Query Builder Area */}
         <Box m={2} mt={6}>
-          <Heading
-            size='sm'
-            fontWeight='medium'
-            color={items.length ? 'text.heading' : 'gray.600'}
+          <Flex>
+            <Heading
+              flex={1}
+              size='sm'
+              fontWeight='medium'
+              color={items.length ? 'text.heading' : 'gray.600'}
+            >
+              Query Builder
+            </Heading>
+            <Button
+              colorScheme='primary'
+              size='sm'
+              leftIcon={<FaUndoAlt />}
+              variant='ghost'
+              isDisabled={!items.length}
+              onClick={() => setItems([])}
+            >
+              Reset query
+            </Button>
+          </Flex>
+          <Text
+            color={items.length ? 'text.body' : 'gray.600'}
+            fontSize='sm'
+            ml={4}
           >
-            Query Builder
-          </Heading>
-          <Text color={items.length ? 'text.body' : 'gray.600'} fontSize='sm'>
             Re-order query terms by click and drag. Group items together by
             dragging a element over another.
           </Text>
 
           <Box bg='gray.100'>
-            <SortableWithCombine items={items} setItems={setItems} handle />
+            <SortableWithCombine
+              items={items}
+              setItems={setItems}
+              handle
+              removable
+            />
             {/* <QueryBuilderDragArea itemsList={items} updateItems={setItems} /> */}
           </Box>
 

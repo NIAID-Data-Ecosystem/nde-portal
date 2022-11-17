@@ -16,9 +16,9 @@ import { ListItemProps } from '@chakra-ui/react';
 
 export interface DropdownButton extends ButtonGroupProps {
   ariaLabel: string;
-  type: ButtonProps['type'];
-  selectedOption: string;
-  setSelectedOption: (arg: DropdownButton['selectedOption']) => void;
+  type?: ButtonProps['type'];
+  selectedOption: DropdownButton['options'][number]['value'];
+  setSelectedOption: (arg: DropdownButton['options'][number]['value']) => void;
   options: {
     name: string;
     value: string;
@@ -52,7 +52,12 @@ export const DropdownButton: React.FC<DropdownButton> = ({
         height={height}
         {...props}
       >
-        <Button aria-label={ariaLabel} type={type} height={height}>
+        <Button
+          aria-label={ariaLabel}
+          type={type}
+          height={height}
+          _focus={{ boxShadow: 'none' }}
+        >
           {selectedOption || placeholder}
         </Button>
         <IconButton

@@ -15,7 +15,7 @@ export interface SortableItemProps {
   children?: React.ReactElement;
   handle: boolean;
   data: DragItem;
-  wrapperStyle({
+  wrapperStyle?({
     index,
     isDragging,
     id,
@@ -72,7 +72,6 @@ export function SortableCombineItem({
   return (
     <Item
       ref={setNodeRef}
-      value={id}
       data={data}
       disabled={disabled}
       dragging={isDragging}
@@ -82,7 +81,6 @@ export function SortableCombineItem({
       index={index}
       isMergeable={isMergeable}
       overIndex={overIndex}
-      newIndex={newIndex}
       activeIndex={activeIndex}
       style={
         style
@@ -108,7 +106,10 @@ export function SortableCombineItem({
           ? (update: Partial<DragItem>) => onUpdate({ ...data, ...update })
           : undefined
       }
-      wrapperStyle={wrapperStyle({ index, isDragging, isMergeable, id, data })}
+      wrapperStyle={
+        wrapperStyle &&
+        wrapperStyle({ index, isDragging, isMergeable, id, data })
+      }
       listeners={listeners}
       data-index={index}
       data-id={id}

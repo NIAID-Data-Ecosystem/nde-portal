@@ -3,13 +3,12 @@ import type { DraggableSyntheticListeners } from '@dnd-kit/core';
 import type { Transform } from '@dnd-kit/utilities';
 import { Handle } from './components/Handle';
 import { Remove } from './components/Remove';
-import type { DragItem } from '../../types';
+import type { DragItem, UnionTypes } from '../../types';
 import { DropdownButton } from 'src/components/dropdown-button';
 import {
   getUnionTheme,
   unionOptions,
 } from 'src/components/advanced-search/utils';
-import { textAlign } from 'styled-system';
 import { Box } from 'nde-design-system';
 
 export interface Props {
@@ -26,15 +25,13 @@ export interface Props {
   isMergeable: boolean;
   fadeIn?: boolean;
   activeIndex: number;
-  newIndex: number;
-  overIndex: number;
+  overIndex?: number;
   transform?: Transform | null;
   listeners?: DraggableSyntheticListeners;
   sorting?: boolean;
   style?: React.CSSProperties;
   transition?: string | null;
   wrapperStyle?: React.CSSProperties;
-  value: React.ReactNode;
   onUpdate?: (data: Partial<DragItem>) => void;
   onRemove?(): void;
   renderItem?(args: {
@@ -48,7 +45,7 @@ export interface Props {
     style: React.CSSProperties | undefined;
     transform: Props['transform'];
     transition: Props['transition'];
-    value: Props['value'];
+    data: Props['data'];
   }): React.ReactElement;
 }
 
@@ -70,7 +67,6 @@ export const Item = React.memo(
         index,
         isMergeable,
         listeners,
-        newIndex,
         onRemove,
         onUpdate,
         overIndex,
@@ -79,7 +75,6 @@ export const Item = React.memo(
         style,
         transition,
         transform,
-        value,
         wrapperStyle,
         ...props
       },
@@ -109,10 +104,10 @@ export const Item = React.memo(
           style,
           transform,
           transition,
-          value,
+          data,
         })
       ) : (
-        <div
+        <li
           ref={ref}
           id={`item-${data.id}`}
           style={{
@@ -121,11 +116,17 @@ export const Item = React.memo(
             borderLeft: '2px solid',
             borderRight: '2px solid',
             borderLeftColor:
-              !isMergeable && overIndex === index && activeIndex > index
+              index &&
+              !isMergeable &&
+              overIndex === index &&
+              activeIndex > index
                 ? '#D5D5D5'
                 : 'transparent',
             borderRightColor:
-              !isMergeable && overIndex === index && activeIndex < index
+              index &&
+              !isMergeable &&
+              overIndex === index &&
+              activeIndex < index
                 ? '#D5D5D5'
                 : 'transparent',
             ...style,
@@ -137,6 +138,8 @@ export const Item = React.memo(
             <Box mr={1}>
               <DropdownButton
                 size='sm'
+                ariaLabel='union betwee n query elements'
+                onClick={() => {}}
                 options={unionOptions.map(term => {
                   return {
                     name: `${term}`,
@@ -156,7 +159,10 @@ export const Item = React.memo(
                 selectedOption={data.value.union}
                 setSelectedOption={union => {
                   onUpdate &&
-                    onUpdate({ ...data, value: { ...data.value, union } });
+                    onUpdate({
+                      ...data,
+                      value: { ...data.value, union: union as UnionTypes },
+                    });
                 }}
               />
             </Box>
@@ -196,7 +202,7 @@ export const Item = React.memo(
                 />
               ) : null}
               <div style={{ display: 'flex', flex: 1, padding: '0.5rem' }}>
-                {children || value}
+                {children || data.value.term}
               </div>
               <span>
                 {onRemove ? (
@@ -216,7 +222,7 @@ export const Item = React.memo(
               </span>
             </div>
           </div>
-        </div>
+        </li>
       );
     },
   ),

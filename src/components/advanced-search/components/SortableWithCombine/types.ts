@@ -16,7 +16,7 @@ import type {
   SortingStrategy,
 } from '@dnd-kit/sortable';
 
-type UnionTypes = 'AND' | 'OR' | 'NOT';
+export type UnionTypes = 'AND' | 'OR' | 'NOT';
 
 export interface DragItem {
   // unique id for a tag.
@@ -24,6 +24,7 @@ export interface DragItem {
 
   // data obj
   value: { term: string; field?: string; union?: UnionTypes };
+  index: number;
 
   // the list of DragItem children that are within group. Defaults to empty array.
   children: DragItem[];
@@ -68,7 +69,7 @@ export interface SortableWithCombineProps {
   items: DragItem[];
   setItems: React.Dispatch<React.SetStateAction<DragItem[]>>;
   getItemStyles?(args: ItemStylesProps): React.CSSProperties;
-  wrapperStyle({
+  wrapperStyle?({
     index,
     isDragging,
     id,

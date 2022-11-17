@@ -1,74 +1,36 @@
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
-import { createPortal } from 'react-dom';
+import { useCallback, useEffect, useRef } from 'react';
 import {
   CollisionDetection,
-  DragOverlay,
-  DndContext,
-  DropAnimation,
-  defaultDropAnimation,
-  KeyboardSensor,
-  MouseSensor,
-  TouchSensor,
   UniqueIdentifier,
-  useSensor,
-  useSensors,
-  Collision,
   rectIntersection,
-  MeasuringStrategy,
   pointerWithin,
   getFirstCollision,
 } from '@dnd-kit/core';
-import {
-  arrayMove,
-  SortableContext,
-  sortableKeyboardCoordinates,
-  SortingStrategy,
-  verticalListSortingStrategy,
-  horizontalListSortingStrategy,
-  rectSortingStrategy,
-} from '@dnd-kit/sortable';
-import {
-  buildTree,
-  collapseContainers,
-  convertObject2QueryString,
-  flattenTree,
-  getIntersectionRatio,
-} from '../utils';
-import type {
-  DragItem,
-  FlattenedItem,
-  ItemStylesProps,
-  Params,
-  SortableProps,
-  SortableWithCombineProps,
-  WrapperStylesProps,
-} from '../types';
-import { CSS } from '@dnd-kit/utilities';
-import { SortableCombineItem, SortableItemProps } from './SortableCombineItem';
-// import { Item } from './Item';
-import { uniqueId } from 'lodash';
 
-export const useCollisionDetection = () => {
+import { getIntersectionRatio } from '../utils';
+import type { DragItem } from '../types';
+
+export const useCollisionDetection = ({
+  items,
+  activeId,
+}: {
+  items: DragItem[];
+  activeId: UniqueIdentifier | null;
+}) => {
   const lastOverId = useRef<UniqueIdentifier | null>(null);
 
   const recentlyMovedToNewContainer = useRef(false);
 
+  /**
+   * Custom collision detection strategy optimized for multiple containers
+   *
+   * - First, find any droppable containers intersecting with the pointer.
+   * - If there are none, find intersecting containers with the active draggable.
+   * - If there are no intersecting containers, return the last matched intersection
+   *
+   */
   const collisionDetectionStrategy: CollisionDetection = useCallback(
     args => {
-      /**
-       * Custom collision detection strategy optimized for multiple containers
-       *
-       * - First, find any droppable containers intersecting with the pointer.
-       * - If there are none, find intersecting containers with the active draggable.
-       * - If there are no intersecting containers, return the last matched intersection
-       *
-       */
       const pointerIntersections = pointerWithin(args);
       const intersections =
         pointerIntersections.length > 0
