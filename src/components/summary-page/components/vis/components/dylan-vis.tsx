@@ -9,7 +9,7 @@ import {
 } from 'chart.js';
 import { FacetTerm, FetchSearchResultsResponse } from 'src/utils/api/types';
 import { useQuery } from 'react-query';
-import { queryFilterObject2String } from 'src/components/filter';
+import { queryFilterObject2String } from 'src/components/filters';
 import { fetchSearchResults } from 'src/utils/api';
 import {
   createDataCatalogDataset,
@@ -21,7 +21,7 @@ import DylanDoughnutChart from './dylan-doughnut';
 import { enUS } from 'date-fns/locale';
 import 'chartjs-adapter-moment';
 import { Box, Flex } from 'nde-design-system';
-import { SelectedFilterType } from '../../hooks';
+import { SelectedFilterType } from 'src/components/filters/types';
 import LoadingSpinner from 'src/components/loading';
 import { PageContent } from 'src/components/page-container';
 

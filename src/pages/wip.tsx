@@ -12,18 +12,16 @@ import { Box, Flex, SearchInput, Text } from 'nde-design-system';
 import {
   SummaryTable,
   Filters,
+  FilterTags,
   displayQueryString,
   useFilterString,
   useQueryString,
-  DylanVis,
   Network,
+  filtersConfig,
 } from 'src/components/summary-page';
 import { useHasMounted } from 'src/hooks/useHasMounted';
-import { queryFilterObject2String } from 'src/components/filter';
-import { FilterTags } from 'src/components/search-results-page/components/filters/components/tags';
-import { useQuery } from 'react-query';
-import { FacetTerm, FetchSearchResultsResponse } from 'src/utils/api/types';
-import { fetchSearchResults } from 'src/utils/api';
+import { queryFilterObject2String } from 'src/components/filters';
+import { FacetTerm } from 'src/utils/api/types';
 
 /*
  [COMPONENT INFO]:
@@ -132,76 +130,6 @@ const SummaryPage: NextPage = () => {
   const hasMounted = useHasMounted();
   const router = useRouter();
 
-  // All the facets that you need.
-  const facets = [
-    'includedInDataCatalog.name',
-    'infectiousAgent.name',
-    '@type',
-    'dateModified',
-    'infectiousDisease.name',
-    'measurementTechnique.name',
-    'date',
-    'funding.funder.name',
-  ];
-
-  // This query function is interchangeable for both queries we have below.
-  // const queryFn = (queryString: string, filters?: {}) => {
-  //   if (typeof queryString !== 'string' && !queryString) {
-  //     return;
-  //   }
-  //   const filter_string = filters ? queryFilterObject2String(filters) : null;
-
-  //   return fetchSearchResults({
-  //     q: filter_string
-  //       ? `${
-  //           queryString === '__all__' ? '' : `${queryString} AND `
-  //         }${filter_string}`
-  //       : `${queryString}`,
-  //     facet_size: 1000,
-  //     facets: facets.join(','),
-  //   });
-  // };
-
-  /*
-  Get Grant names. We might extract this query to "pages/summary.tsx" and just get all the facets we need that are unchanging in one spot. I use a similar query for Filters and will probably need the same for my viz.
-  */
-
-  // const { data, isLoading, error } = useQuery<
-  //   FetchSearchResultsResponse | undefined,
-  //   Error,
-  //   SummaryQueryResponse | null
-  // >(
-  //   [
-  //     'search-results',
-  //     {
-  //       q: queryString,
-  //       facets,
-  //     },
-  //   ],
-  //   () => queryFn(queryString),
-  //   {
-  //     refetchOnWindowFocus: false,
-  //     select: d => {
-  //       if (!d || !d.facets) {
-  //         return null;
-  //       }
-  //       return {
-  //         total: d.total,
-  //         facets: {
-  //           type: d.facets['@type'].terms || [],
-  //           date: d.facets['date'].terms || [],
-  //           dateModified: d.facets['dateModified'].terms || [],
-  //           funder: d.facets['funding.funder.name'].terms || [],
-  //           source: d.facets['includedInDataCatalog.name'].terms || [],
-  //           infectiousAgent: d.facets['infectiousAgent.name'].terms || [],
-  //           infectiousDisease: d.facets['infectiousDisease.name'].terms || [],
-  //           measurementTechnique:
-  //             d.facets['measurementTechnique.name'].terms || [],
-  //         },
-  //       };
-  //     },
-  //   },
-  // );
   if (!hasMounted || !router.isReady) {
     return null;
   }
@@ -266,35 +194,18 @@ const SummaryPage: NextPage = () => {
             </>
           </PageHeader>
         </section>
+        {/* Filter Handling */}
         <section id='search-filters'>
           <PageContent minH='unset' bg='white'>
-            {/* Filters */}
             <Box w='100%'>
-              <Flex>
-                {Object.values(filters).flat().length > 0 && (
-                  <FilterTags
-                    tags={filter_tags}
-                    removeAllFilters={() => removeAllFilters()}
-                    removeSelectedFilter={(
-                      name: string,
-                      value: string | number,
-                    ) => {
-                      let updatedFilter = {
-                        [name]: filters[name].filter(v => v !== value),
-                      };
-                      // If date is removed we set the value to an empty array.
-                      if (name === 'date') {
-                        updatedFilter = { [name]: [] };
-                      }
-                      updateFilters(updatedFilter);
-                    }}
-                  />
-                )}
-              </Flex>
+              <FilterTags
+                filters={filters}
+                updateFilters={updateFilters}
+                removeAllFilters={removeAllFilters}
+              ></FilterTags>
               <Filters
                 queryString={queryString}
                 filters={filters}
-                facets={Object.keys(filtersConfig).join(',')}
                 handleSelectedFilters={updateFilters}
               />
             </Box>

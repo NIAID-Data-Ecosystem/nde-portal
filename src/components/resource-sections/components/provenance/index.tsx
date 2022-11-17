@@ -1,12 +1,13 @@
 import React from 'react';
 import {
+  Box,
   Button,
   Flex,
+  Heading,
   Image,
   Link,
   Stack,
-  Stat,
-  StatLabel,
+  StackDivider,
   Text,
 } from 'nde-design-system';
 import { FormattedResource } from 'src/utils/api/types';
@@ -14,12 +15,14 @@ import { Skeleton } from '@chakra-ui/skeleton';
 import { getRepositoryImage } from 'src/utils/helpers';
 import { assetPrefix } from 'next.config';
 import { formatDate } from 'src/utils/api/helpers';
+import StatField from '../overview/components/stat-field';
 
 interface Provenance {
   isLoading: boolean;
   includedInDataCatalog?: FormattedResource['includedInDataCatalog'];
   url?: FormattedResource['url'];
   sdPublisher?: FormattedResource['sdPublisher'];
+  curatedBy?: FormattedResource['curatedBy'];
 }
 
 const Provenance: React.FC<Provenance> = ({
@@ -27,17 +30,21 @@ const Provenance: React.FC<Provenance> = ({
   isLoading,
   url,
   sdPublisher,
+  curatedBy,
 }) => {
   const imageURL =
     includedInDataCatalog?.name &&
     getRepositoryImage(includedInDataCatalog.name);
 
   return (
-    <Skeleton isLoaded={!isLoading}>
-      <Stack spacing={4} alignItems='flex-start'>
+    <Skeleton isLoaded={!isLoading} display='flex' flexWrap='wrap'>
+      <Stack spacing={2} alignItems='flex-start' my={4}>
+        <Heading as='h3' size='xs' color='gray.700' lineHeight='short'>
+          Repository Information
+        </Heading>
         {/* Source where data is retrieved from */}
         {includedInDataCatalog?.name ? (
-          <Stat>
+          <StatField label='Provided By' isLoading={isLoading}>
             <dd>
               {imageURL && (
                 <Image
@@ -48,9 +55,6 @@ const Provenance: React.FC<Provenance> = ({
                   alt='Data source logo'
                 />
               )}
-            </dd>
-            <StatLabel>Provided By</StatLabel>
-            <dd>
               {includedInDataCatalog.url ? (
                 <Link
                   href={includedInDataCatalog.url}
@@ -63,13 +67,14 @@ const Provenance: React.FC<Provenance> = ({
                 <Text>{includedInDataCatalog.name}</Text>
               )}
             </dd>
-          </Stat>
+          </StatField>
         ) : (
           <Text>No data available.</Text>
         )}
 
         {/* Original publisher of data */}
-        {sdPublisher && sdPublisher.length > 0 ? (
+        {sdPublisher &&
+          sdPublisher.length > 0 &&
           sdPublisher?.map((publisher, i) => {
             if (
               (!publisher.name && !publisher.url) ||
@@ -78,8 +83,7 @@ const Provenance: React.FC<Provenance> = ({
               return <></>;
             }
             return (
-              <Stat key={i}>
-                <StatLabel>Original Source</StatLabel>
+              <StatField key={i} label='Original Source' isLoading={isLoading}>
                 <dd>
                   {publisher.url ? (
                     <Link href={publisher.url} target='_blank' isExternal>
@@ -89,18 +93,14 @@ const Provenance: React.FC<Provenance> = ({
                     <Text>{publisher.name || publisher.url}</Text>
                   )}
                 </dd>
-              </Stat>
+              </StatField>
             );
-          })
-        ) : (
-          <></>
-        )}
+          })}
 
         {includedInDataCatalog?.versionDate && (
-          <Stat>
-            <StatLabel>Version Date</StatLabel>
+          <StatField label='Version Date' isLoading={isLoading}>
             <dd>{formatDate(includedInDataCatalog.versionDate)} </dd>
-          </Stat>
+          </StatField>
         )}
 
         {url && (
@@ -110,6 +110,7 @@ const Provenance: React.FC<Provenance> = ({
             href={url}
             h='unset'
             isExternal
+            size='sm'
           >
             <Flex alignItems='center' direction={['column', 'row']}>
               <Text color='inherit' whiteSpace='normal'>
@@ -119,6 +120,36 @@ const Provenance: React.FC<Provenance> = ({
           </Button>
         )}
       </Stack>
+
+      {curatedBy && (
+        <Box my={4}>
+          <Heading as='h3' size='xs' color='gray.700' lineHeight='short'>
+            Curation Information
+          </Heading>
+          <Stack
+            direction={['column', 'row']}
+            divider={<StackDivider borderColor='gray.200' />}
+          >
+            {(curatedBy?.name || curatedBy?.url) && (
+              <StatField label='Curated by' isLoading={isLoading}>
+                {curatedBy.url ? (
+                  <Link href={curatedBy.url} isExternal whiteSpace='nowrap'>
+                    {curatedBy?.name || curatedBy.url}
+                  </Link>
+                ) : (
+                  <> {curatedBy?.name}</>
+                )}
+              </StatField>
+            )}
+
+            {curatedBy?.versionDate && (
+              <StatField label='Version date' isLoading={isLoading}>
+                {curatedBy?.versionDate}
+              </StatField>
+            )}
+          </Stack>
+        </Box>
+      )}
     </Skeleton>
   );
 };

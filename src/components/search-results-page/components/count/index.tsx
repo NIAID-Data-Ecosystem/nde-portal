@@ -1,4 +1,4 @@
-import { Box, Heading, HeadingProps, SkeletonText } from 'nde-design-system';
+import { Box, Heading, HeadingProps, Spinner } from 'nde-design-system';
 import React from 'react';
 import { formatNumber } from 'src/utils/helpers';
 
@@ -35,12 +35,12 @@ const ResultsCount: React.FC<ResultsCount> = ({
           }}
         >
           {isLoading ? (
-            <SkeletonText
-              noOfLines={1}
-              w={'50px'}
-              mr={2}
-              mt={2}
-              endColor='niaid.placeholder'
+            <Spinner
+              thickness='1px'
+              speed='0.5s'
+              emptyColor='gray.200'
+              color='primary.500'
+              size='md'
             />
           ) : (
             formatNumber(total)

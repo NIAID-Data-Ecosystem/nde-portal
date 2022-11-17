@@ -1,7 +1,5 @@
 // @ts-nocheck
 import React from 'react';
-import { useQuery } from 'react-query';
-import { FacetTerm, FetchSearchResultsResponse } from 'src/utils/api/types';
 import {
   Accordion,
   Heading,
@@ -10,11 +8,13 @@ import {
   AccordionPanel,
   Flex,
 } from 'nde-design-system';
-import LoadingSpinner from 'src/components/loading';
-import { fetchSearchResults } from 'src/utils/api';
-import { Filter, queryFilterObject2String } from 'src/components/filter';
 import { FaMinus, FaPlus } from 'react-icons/fa';
-import { SelectedFilterType } from '../../../hooks';
+import { SelectedFilterType } from 'src/components/filters/types';
+import {
+  useFacetsData,
+  FiltersList,
+  queryFilterObject2String,
+} from 'src/components/filters';
 import { encodeString } from 'src/utils/querystring-helpers';
 
 interface FiltersProps {
@@ -22,118 +22,64 @@ interface FiltersProps {
   queryString: string;
   // Filters object
   filters: SelectedFilterType;
-  // Default stringified filters.
-  facets: string;
   // HandlerFn for updating filters
-  handleSelectedFilters: (updatedFilters: SelectedFilterType) => void;
+  handleSelectedFilters: (
+    updatedFilters: SelectedFilterType,
+    queryString?: string,
+  ) => void;
 }
+
+// List of needed filters/naming convention.
+export const filtersConfig: {
+  [key: string]: {
+    name: string;
+  };
+} = {
+  'includedInDataCatalog.name': { name: 'Source' },
+  'funding.funder.name': { name: 'Funding' },
+  'infectiousAgent.name': { name: 'Pathogen' },
+  'measurementTechnique.name': {
+    name: 'Measurement Technique',
+  },
+};
 
 export const Filters: React.FC<FiltersProps> = ({
   queryString,
   filters,
-  facets,
   handleSelectedFilters,
 }) => {
-  // List of needed filters/naming convention.
-  const filtersConfig: {
-    [key: string]: {
-      name: string;
-    };
-  } = {
-    'includedInDataCatalog.name': { name: 'Source' },
-    'funding.funder.name': { name: 'Funding' },
-    'infectiousAgent.name': { name: 'Pathogen' },
-    'measurementTechnique.name': {
-      name: 'Measurement Technique',
-    },
-    variableMeasured: { name: 'Variable Measured' },
+  const FACET_SIZE = 1000;
+  const facets = Object.keys(filtersConfig);
+  const filter_string = queryFilterObject2String(filters);
+
+  const queryParams = {
+    q: encodeString(queryString),
+    extra_filter: filter_string || '', // extra filter updates aggregate fields
+    facet_size: FACET_SIZE,
   };
 
-  const fetchData = (queryString: string, filters?: {}) => {
-    if (typeof queryString !== 'string' && !queryString) {
-      return;
-    }
-    const filter_string = filters ? queryFilterObject2String(filters) : null;
+  const [{ data, error, isLoading }] = useFacetsData({
+    queryParams,
+    facets,
+  });
 
-    return fetchSearchResults({
-      q: queryString,
-      extra_filter: filter_string || '', // extra filter updates aggregate fields
-      facet_size: 1000,
-      facets,
-    });
-  };
-
-  /*
-   Using two queries so that we have display ALL filters displayed based on querystring and update the count only based on selected filters. Can't find a better way to do this for now.
-   Query below: retrieves all facets for a given query without considering which filters are selected.
-   */
-  const { data: allFilters, isLoading } = useQuery<
-    FetchSearchResultsResponse | undefined,
-    Error
-  >(
-    [
-      'search-results',
-      {
-        q: queryString,
-        facets,
-      },
-    ],
-    () => fetchData(queryString),
-    {
-      refetchOnWindowFocus: false,
-    },
-  );
-
-  // Query below: retrieves all facets for a given query filtered by the selected filters. Used for count updates.
-  const { data: updatedFilters } = useQuery<
-    FetchSearchResultsResponse | undefined,
-    Error
-  >(
-    [
-      'search-results-with-filters',
-      {
-        q: encodeString(queryString),
-        filters,
-        facets,
-      },
-    ],
-    () => fetchData(encodeString(queryString), filters),
-
-    // Don't refresh everytime window is touched.
-    {
-      refetchOnWindowFocus: false,
-    },
-  );
-
-  /*
-   Fn for updating the filter items count when a filter checkbox is toggled. We want to keep the original filter terms and only update the counts.
-   */
-  const updateFilterCount = (
-    items: FacetTerm[],
-    facets: { data?: FacetTerm[]; isLoading?: boolean },
-  ) => {
-    return items.map(({ term, count }) => {
-      let updatedCount;
-      if (!facets?.isLoading && facets?.data) {
-        const updated = facets?.data.find(f => f.term === term);
-        updatedCount = updated ? updated?.count || count : 0;
-      }
-
-      return {
-        count: updatedCount,
-        term: term,
-      };
-    });
-  };
-
-  return (
+  return error ? (
+    <Flex p={4} bg='status.error'>
+      <Heading size='sm' color='white' fontWeight='semibold'>
+        Something went wrong, unable to load filters. <br />
+        Try reloading the page.
+      </Heading>
+    </Flex>
+  ) : (
     <Accordion
       allowMultiple
       w='100%'
       bg='#fff'
       d={{ base: 'block', xl: 'flex' }}
     >
-      {facets.split(',').map(prop => {
+      {facets.map(prop => {
+        const { name, glyph, property } = filtersConfig[prop];
+
         return (
           <AccordionItem
             key={prop}
@@ -189,21 +135,29 @@ export const Filters: React.FC<FiltersProps> = ({
                   borderLeft='4px solid'
                   borderLeftColor='accent.bg'
                 >
-                  {isLoading && <LoadingSpinner isLoading={isLoading} />}
+                  <FiltersList
+                    key={prop}
+                    searchPlaceholder={`Search ${name.toLowerCase()} filters`}
+                    terms={data[prop]}
+                    selectedFilters={filters[prop].map(filter => {
+                      if (typeof filter === 'object') {
+                        return Object.keys(filter)[0];
+                      } else {
+                        return filter;
+                      }
+                    })}
+                    handleSelectedFilters={values => {
+                      const updatedValues = values.map(value => {
+                        // return object with inverted facet + key for exists values
+                        if (value === '-_exists_' || value === '_exists_') {
+                          return { [value]: [prop] };
+                        }
+                        return value;
+                      });
 
-                  <Filter
-                    name={filtersConfig[prop].name}
-                    values={updateFilterCount(
-                      allFilters?.facets[prop].terms || [],
-                      {
-                        isLoading: isLoading,
-                        data: updatedFilters?.facets[prop].terms,
-                      },
-                    )}
-                    selectedFilters={filters[prop]}
-                    handleSelectedFilters={v =>
-                      handleSelectedFilters({ [prop]: v })
-                    }
+                      handleSelectedFilters({ [prop]: updatedValues });
+                    }}
+                    isLoading={isLoading}
                   />
                 </AccordionPanel>
               </>

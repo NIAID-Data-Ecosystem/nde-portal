@@ -47,6 +47,7 @@ export const getFileIcon = (value: string) => {
       <MetadataIcon id={id!} glyph='fasta' stroke='currentColor' {...props} />
     );
   } else if (
+    value.toLowerCase().includes('zip') ||
     value.toLowerCase().includes('.tar') ||
     value.toLowerCase().includes('.7z') ||
     value.toLowerCase().includes('.gzip')

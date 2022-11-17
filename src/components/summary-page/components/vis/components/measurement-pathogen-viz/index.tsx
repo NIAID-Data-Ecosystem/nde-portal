@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box, Heading, Text } from 'nde-design-system';
-import { SelectedFilterType } from 'src/components/summary-page';
+import { SelectedFilterType } from 'src/components/filters/types';
 import { BarChart } from './components/bar-chart';
 import {
   Data,

@@ -53,20 +53,20 @@ const Overview: React.FC<OverviewProps> = ({
   spatialCoverage,
   species,
   temporalCoverage,
-  topic,
   usageInfo,
   variableMeasured,
   ...data
 }) => {
-  const StatIcon = ({ glyph, ...props }: IconProps) => (
-    <MetadataIcon
-      boxSize={4}
-      mr={2}
-      glyph={glyph}
-      stroke='currentColor'
-      fill={getMetadataColor(glyph)}
-      {...props}
-    />
+  const StatIcon = ({ id, glyph }: IconProps) => (
+    <Box mr={2}>
+      <MetadataIcon
+        id={id}
+        boxSize={4}
+        glyph={glyph}
+        stroke='currentColor'
+        fill={getMetadataColor(glyph)}
+      />
+    </Box>
   );
 
   // get copy label from config for a given property.
@@ -281,6 +281,7 @@ const Overview: React.FC<OverviewProps> = ({
               </StatField>
             </Box>
           )}
+
           {/* species covered in resource */}
           <StatField
             isLoading={isLoading}
@@ -289,15 +290,27 @@ const Overview: React.FC<OverviewProps> = ({
           >
             {species ? (
               <UnorderedList ml={0}>
-                {species.map((m, i) => {
-                  const name = Array.isArray(m.name)
-                    ? m.name.join(', ')
-                    : m.name;
+                {species.map((s, i) => {
+                  const name = Array.isArray(s.name)
+                    ? s.name.join(', ')
+                    : s.name;
 
                   return (
-                    <ListItem key={`${name}-${i}`}>
-                      <StatContent url={m.url} content={name} isExternal />
-                    </ListItem>
+                    <React.Fragment key={`${name}-${i}`}>
+                      <ListItem>
+                        <StatContent url={s.url} content={name} isExternal />
+                      </ListItem>
+
+                      {s.additionalType && (
+                        <ListItem>
+                          <StatContent
+                            url={s.additionalType?.url}
+                            content={s.additionalType?.name}
+                            isExternal
+                          />
+                        </ListItem>
+                      )}
+                    </React.Fragment>
                   );
                 })}
               </UnorderedList>
@@ -358,13 +371,6 @@ const Overview: React.FC<OverviewProps> = ({
             )}
           </StatField>
 
-          {/* topics covered in resource*/}
-          {topic && (
-            <StatField isLoading={isLoading} {...getStatInfo('topic')}>
-              {topic.join(', ')}
-            </StatField>
-          )}
-
           {/* variable measured, used in conjunction with measurement technique */}
           <StatField
             isLoading={isLoading}
@@ -404,33 +410,6 @@ const Overview: React.FC<OverviewProps> = ({
               '-'
             )}
           </StatField>
-
-          {/* programming language */}
-          {programmingLanguage && (
-            <StatField
-              isLoading={isLoading}
-              {...getStatInfo('programmingLanguage')}
-            >
-              <UnorderedList ml={0}>
-                {programmingLanguage?.map((language, i) => {
-                  return (
-                    <ListItem key={`${language}-${i}`}>
-                      <StatContent content={language} />
-                    </ListItem>
-                  );
-                })}
-              </UnorderedList>
-            </StatField>
-          )}
-
-          {softwareVersion && (
-            <StatField
-              isLoading={isLoading}
-              {...getStatInfo('softwareVersion')}
-            >
-              {softwareVersion.join(',')}
-            </StatField>
-          )}
 
           {/* language */}
           {inLanguage && inLanguage.name && (
@@ -485,32 +464,100 @@ const Overview: React.FC<OverviewProps> = ({
             </StatField>
           )}
 
-          {/* Type of Computational Tool */}
-          {data['@type'] === 'ComputationalTool' &&
-            (data['applicationCategory'] || data['applicationSubCategory']) && (
-              <Box>
-                <StatField isLoading={isLoading} label='Tool'>
-                  <StatField isLoading={isLoading} label='Category' py={1}>
-                    <StatContent
-                      content={data.applicationCategory?.join(', ')}
-                    />
-                  </StatField>
+          {/* programming language */}
+          {data['@type'] === 'ComputationalTool' && (
+            <StatField
+              isLoading={isLoading}
+              icon={() => (
+                <StatIcon
+                  id='programmingLanguage'
+                  glyph='programmingLanguage'
+                />
+              )}
+              {...getStatInfo('programmingLanguage')}
+            >
+              {programmingLanguage ? (
+                <UnorderedList ml={0}>
+                  {programmingLanguage?.map((language, i) => {
+                    return (
+                      <ListItem key={`${language}-${i}`}>
+                        <StatContent content={language} />
+                      </ListItem>
+                    );
+                  })}
+                </UnorderedList>
+              ) : (
+                '-'
+              )}
+            </StatField>
+          )}
 
-                  {data.applicationSubCategory && (
-                    <StatField isLoading={isLoading} label='Subcategory' py={1}>
+          {softwareVersion && (
+            <StatField
+              isLoading={isLoading}
+              {...getStatInfo('softwareVersion')}
+            >
+              {softwareVersion.join(',')}
+            </StatField>
+          )}
+
+          {/* Type of Computational Tool */}
+          {data['@type'] === 'ComputationalTool' && (
+            <Box>
+              <StatField
+                isLoading={isLoading}
+                label='Software Information'
+                icon={() => (
+                  <StatIcon
+                    id='applicationCategory'
+                    glyph='applicationCategory'
+                  />
+                )}
+              >
+                {!data.applicationCategory &&
+                !data.applicationSubCategory &&
+                !data.applicationSuite ? (
+                  '-'
+                ) : (
+                  <>
+                    <StatField isLoading={isLoading} label='Category' py={1}>
                       <StatContent
-                        content={data.applicationSubCategory.join(', ')}
+                        content={data.applicationCategory?.join(', ')}
                       />
                     </StatField>
-                  )}
-                  {data.applicationSuite && (
-                    <StatField isLoading={isLoading} label='Suite' py={1}>
-                      <StatContent content={data.applicationSuite.join(', ')} />
-                    </StatField>
-                  )}
-                </StatField>
-              </Box>
-            )}
+
+                    {data.applicationSubCategory && (
+                      <StatField
+                        isLoading={isLoading}
+                        label='Subcategory'
+                        py={1}
+                      >
+                        {data.applicationSubCategory.map(
+                          ({ name, identifier, url }, i) => {
+                            return (
+                              <StatContent
+                                key={`${identifier || i}}`}
+                                url={url}
+                                content={name || url}
+                                isExternal
+                              />
+                            );
+                          },
+                        )}
+                      </StatField>
+                    )}
+                    {data.applicationSuite && (
+                      <StatField isLoading={isLoading} label='Suite' py={1}>
+                        <StatContent
+                          content={data.applicationSuite.join(', ')}
+                        />
+                      </StatField>
+                    )}
+                  </>
+                )}
+              </StatField>
+            </Box>
+          )}
 
           {/* Related Ids */}
           <StatField

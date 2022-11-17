@@ -1,7 +1,7 @@
 import * as d3 from 'd3';
 import { theme } from 'nde-design-system';
 import { useEffect, useRef } from 'react';
-import { SelectedFilterType } from 'src/components/summary-page/components/hooks';
+import { SelectedFilterType } from 'src/components/filters/types';
 import { formatClassName, highlightNodes } from '../helpers';
 import { Datum } from './chart';
 

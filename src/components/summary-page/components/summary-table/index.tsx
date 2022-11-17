@@ -20,12 +20,11 @@ import {
 } from 'nde-design-system';
 import { useQuery } from 'react-query';
 import { fetchSearchResults } from 'src/utils/api';
-import { queryFilterObject2String } from 'src/components/filter/helpers';
+import { queryFilterObject2String } from 'src/components/filters';
 import {
   FetchSearchResultsResponse,
   FormattedResource,
 } from 'src/utils/api/types';
-import { SelectedFilterType } from '../hooks';
 import { useRouter } from 'next/router';
 import LoadingSpinner from 'src/components/loading';
 import Empty from 'src/components/empty';
@@ -35,6 +34,7 @@ import { getTableRows } from './helpers';
 import Banner from 'src/components/banner';
 import { formatNumber } from 'src/utils/helpers';
 import { Buttons } from './Buttons';
+import { SelectedFilterType } from 'src/components/filters/types';
 
 interface SummaryTableProps {
   // Stringified query.

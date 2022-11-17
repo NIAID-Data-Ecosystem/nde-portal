@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { formatAPIResource } from './helpers';
+import { formatAPIResource, formatISOString } from './helpers';
 import { FetchSearchResultsResponse, Metadata } from './types';
 
 export const getResourceById = async (id?: string | string[]) => {
@@ -23,7 +23,7 @@ export const getResourceById = async (id?: string | string[]) => {
 };
 
 // Get all resources where query term contains the search term.
-interface Params {
+export interface Params {
   q: string;
   size?: string | number;
   from?: string;
@@ -34,6 +34,7 @@ interface Params {
   extra_filter?: string;
   fields?: string;
   dotfield?: boolean;
+  hist?: string;
 }
 
 // Fetch all search results from API.
@@ -53,8 +54,9 @@ export const fetchSearchResults = async (params: Params) => {
         params,
       },
     );
+
     if (!data.hits) {
-      return { results: [], total: 0, facets: data.facets || null };
+      return { results: [], total: data.total, facets: data.facets || null };
     }
 
     const results: FetchSearchResultsResponse['results'] = data.hits.map(
@@ -62,6 +64,14 @@ export const fetchSearchResults = async (params: Params) => {
     );
     const total: FetchSearchResultsResponse['total'] = data.total;
     const facets: FetchSearchResultsResponse['facets'] = data.facets;
+
+    if (facets && facets['date']) {
+      // format ISO string
+      facets['date'].terms = facets?.['date'].terms.map(d => ({
+        ...d,
+        term: formatISOString(d.term),
+      }));
+    }
 
     return { results, total, facets };
   } catch (err) {

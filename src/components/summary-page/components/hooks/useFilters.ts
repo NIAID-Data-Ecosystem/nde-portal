@@ -3,12 +3,9 @@ import { useRouter } from 'next/router';
 import {
   queryFilterObject2String,
   queryFilterString2Object,
-} from 'src/components/filter/helpers';
+} from 'src/components/filters/';
 import { updateRoute } from './helpers';
-
-export type SelectedFilterType = {
-  [key: string]: string[];
-};
+import { SelectedFilterType } from 'src/components/filters/types';
 
 /*
   This hook takes a filters object and transforms it into a string to use in the route.
@@ -60,8 +57,11 @@ export const useFilterString = (facets: {
       ...updatedFilters,
     };
     let updatedFilterString = queryFilterObject2String(filtersObject);
-
-    updateRoute({ q, from: 1, filters: updatedFilterString }, router);
+    if (typeof q !== 'undefined') {
+      updateRoute({ q, from: 1, filters: updatedFilterString }, router);
+    } else {
+      updateRoute({ from: 1, filters: updatedFilterString }, router);
+    }
   };
 
   // Restore filter preferences to default. Note: resets pagination.

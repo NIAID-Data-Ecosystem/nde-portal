@@ -1,11 +1,11 @@
 import React from 'react';
 import { Box, Button, Flex } from 'nde-design-system';
-import { queryFilterObject2String } from 'src/components/filter/helpers';
-import { SelectedFilterType } from '../hooks';
+import { queryFilterObject2String } from 'src/components/filters';
 import { DownloadMetadata } from 'src/components/download-metadata';
 import { useRouter } from 'next/router';
 import NextLink from 'next/link';
 import { FaSearch } from 'react-icons/fa';
+import { SelectedFilterType } from 'src/components/filters/types';
 
 interface SummaryTableProps {
   // Stringified query.

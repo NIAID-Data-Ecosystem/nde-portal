@@ -10,7 +10,11 @@
       "name": "Bioconductor",
       "imageUrl": "/assets/resources/bioconductor.svg"
     },
-
+    {
+      "sourceName": "BioContainers",
+      "name": "BioContainers",
+      "imageUrl": "/assets/resources/biocontainers.png"
+    },
     {
       "sourceName": "biotools",
       "name": "bio.tools",
@@ -51,7 +55,11 @@
       "name": "NCBI Gene Expression Omnibus",
       "imageUrl": "/assets/resources/geo.gif"
     },
-
+    {
+      "sourceName": "NCBI SRA",
+      "name": "NCBI Sequence Read Archive",
+      "imageUrl": "/assets/resources/ncbi-sra.png"
+    },
     {
       "sourceName": "Omics Discovery Index (OmicsDI)",
       "name": "Omics Discovery Index (OmicsDI)",
@@ -76,6 +84,11 @@
       "sourceName": "Vivli",
       "name": "Vivli",
       "imageUrl": "/assets/resources/vivli.png"
+    },
+    {
+      "sourceName": "WorkflowHub",
+      "name": "WorkflowHub",
+      "imageUrl": "/assets/resources/workflowhub.svg"
     },
     {
       "sourceName": "Zenodo",

@@ -8,11 +8,11 @@ import React, {
 import * as d3 from 'd3';
 import { Box, Checkbox, theme } from 'nde-design-system';
 import { formatClassName } from '../helpers';
-import { SelectedFilterType } from 'src/components/summary-page/components/hooks';
 import { PrimaryNodes } from './primary-node';
 import { SecondaryNodes } from './secondary-node';
 import { WrapperNode } from './wrapper-node';
 import { options } from '../index';
+import { SelectedFilterType } from 'src/components/filters/types';
 /**
  * Component that helps visualize data between two groups by displaying them in a circle pack and applying a force to the nodes.
  */

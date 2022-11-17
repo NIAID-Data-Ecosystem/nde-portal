@@ -197,6 +197,11 @@ export const formatType = (type: string): ResourceType => {
   }
 };
 
+// Convert ISO date to format YYYY-MM-DD
+export const formatISOString = (date: string) => {
+  return date.substring(0, 10);
+};
+
 // Format Date object to string  YYYY-MM-DD
 export const formatDate = (date?: string | Date) => {
   if (!date) {
@@ -259,6 +264,7 @@ export const formatAPIResource = (data: any) => {
     applicationCategory: convertToArray(data.applicationCategory),
     applicationSubCategory: convertToArray(data.applicationSubCategory),
     applicationSuite: convertToArray(data.applicationSuite),
+    availableOnDevice: data.availableOnDevice || null,
     author: formatAuthor(data.author),
     citation: formatCitation(data.citation),
     citedBy: data.citedBy || null,
@@ -266,6 +272,7 @@ export const formatAPIResource = (data: any) => {
     condition: data.condition || null,
     conditionsOfAccess:
       formatConditionsOfAccess(data.conditionsOfAccess) || null,
+    curatedBy: data.curatedBy || null,
     date: formatDate(data.date) || null,
     dateCreated: formatDate(data.dateCreated) || null,
     dateModified: formatDate(data.dateModified) || null,
@@ -291,6 +298,8 @@ export const formatAPIResource = (data: any) => {
         }
       : null,
     infectiousAgent: convertToArray(data.infectiousAgent),
+    input: convertToArray(data.input),
+
     interactionStatistics: data.interactionStatistics || null,
     isAccessibleForFree: data.isAccessibleForFree,
     isBasedOn: convertToArray(data.isBasedOn),
@@ -311,6 +320,7 @@ export const formatAPIResource = (data: any) => {
     mainEntityOfPage: data.mainEntityOfPage || null,
     measurementTechnique: convertToArray(data.measurementTechnique),
     nctid: data['nctid'] || null,
+    output: convertToArray(data.output),
     processorRequirements: convertToArray(data.processorRequirements),
     programmingLanguage: convertToArray(data.programmingLanguage),
     publisher: data.publisher || null,
@@ -324,7 +334,7 @@ export const formatAPIResource = (data: any) => {
     spatialCoverage: convertToArray(data.spatialCoverage),
     species: convertToArray(data.species),
     temporalCoverage: data.temporalCoverage || null,
-    topic: convertToArray(data.topicCategory),
+    topicCategory: convertToArray(data.topicCategory),
     url: data.url || null,
     usageInfo: data.usageInfo || null,
     variableMeasured:

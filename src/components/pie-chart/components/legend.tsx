@@ -12,7 +12,7 @@ import {
 import { LegendOrdinal, LegendItem } from '@visx/legend';
 import { formatNumber } from 'src/utils/helpers';
 import NextLink from 'next/link';
-import { queryFilterObject2String } from 'src/components/filter';
+import { queryFilterObject2String } from 'src/components/filters';
 import { colorScale, formatPieChartData, getCount } from '../helpers';
 import { RawDataProps } from '../types';
 

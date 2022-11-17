@@ -44,13 +44,7 @@ export const SortResults: React.FC<SortResultsProps> = ({
     return '';
   };
   return (
-    <Flex
-      flexDirection={['column', 'row']}
-      w={['100%', 'unset']}
-      bg='white'
-      justifyContent='flex-end'
-      p={1}
-    >
+    <Flex flexDirection={['column', 'row']} flex={1} bg='white'>
       {/* Sort Order dropdown. */}
       <Box mr={[0, 2]}>
         <label htmlFor='sorting-order-select' title='Sort order'></label>
@@ -64,7 +58,7 @@ export const SortResults: React.FC<SortResultsProps> = ({
           my={1}
           _hover={{ boxShadow: 'low' }}
           onChange={e => handleSortOrder(e.target.value)}
-          size={'lg'}
+          size='md'
         >
           {sortOptions.map(option => {
             return (
@@ -93,7 +87,7 @@ export const SortResults: React.FC<SortResultsProps> = ({
           cursor='pointer'
           value={selectedPerPage}
           my={1}
-          size={'lg'}
+          size='md'
           _hover={{ boxShadow: 'low' }}
           onChange={e => handleSelectedPerPage(+e.target.value)}
         >

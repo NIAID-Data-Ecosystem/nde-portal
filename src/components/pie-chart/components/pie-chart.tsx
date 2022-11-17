@@ -17,7 +17,7 @@ import {
   useTooltipInPortal,
 } from '@visx/tooltip';
 import NextLink from 'next/link';
-import { queryFilterObject2String } from 'src/components/filter';
+import { queryFilterObject2String } from 'src/components/filters';
 import { DataProps, RawDataProps } from '../types';
 import { colorScale, formatPieChartData, getCount } from '../helpers';
 
@@ -146,7 +146,6 @@ export const PieChart = ({
             position: 'absolute',
             boxShadow: 'none',
             background: 'none',
-            minWidth: '200px',
           }}
         >
           <Box
@@ -157,6 +156,7 @@ export const PieChart = ({
             boxShadow='low'
             zIndex={1000}
             bg='white'
+            minWidth={['unset', '200px']}
           >
             <Text fontWeight='semibold' whiteSpace='nowrap'>
               {tooltipData.term}
@@ -170,9 +170,13 @@ export const PieChart = ({
                 py={0}
                 borderTop='1px solid'
                 borderColor='gray.100'
+                display='flex'
+                flexDirection='row'
+                flexWrap='wrap'
+                minWidth={['unset', '200px', '300px']}
               >
                 {tooltipData.data.map((d, i) => (
-                  <ListItem key={i} my={4}>
+                  <ListItem key={i} my={4} px={1} flex='1 1 50%' minW='100px'>
                     <Text fontWeight='semibold'>{d.term}</Text>
                     <Text>{formatNumber(d.count)} records</Text>
                   </ListItem>

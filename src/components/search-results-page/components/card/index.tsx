@@ -325,19 +325,19 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                         )}
 
                         {/* original source */}
-                        {sdPublisher?.map(publisher => {
+                        {sdPublisher?.map((publisher, i) => {
                           return publisher?.url ? (
-                            <Link href={publisher.url} isExternal>
+                            <Link key={i} href={publisher.url} isExternal>
                               <Text fontSize='xs' as='i'>
                                 Original source {publisher.name}
                               </Text>
                             </Link>
                           ) : publisher?.name ? (
-                            <Text fontSize='xs' as='i'>
+                            <Text key={i} fontSize='xs' as='i'>
                               Original source {publisher.name}
                             </Text>
                           ) : (
-                            <></>
+                            <React.Fragment key={i}></React.Fragment>
                           );
                         })}
                       </Flex>

@@ -1,8 +1,7 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/router';
 import { useQuery } from 'react-query';
 import Empty from 'src/components/empty';
-import { PageContent } from 'src/components/page-container';
 import { fetchSearchResults } from 'src/utils/api';
 import {
   FetchSearchResultsResponse,
@@ -13,9 +12,7 @@ import {
   Button,
   Collapse,
   Flex,
-  Heading,
   ListItem,
-  Spinner,
   Stack,
   Text,
   UnorderedList,
@@ -23,17 +20,12 @@ import {
 import {
   queryFilterObject2String,
   queryFilterString2Object,
-} from 'src/components/filter/helpers';
+  updateRoute,
+} from 'src/components/filters';
 import { Error, ErrorCTA } from 'src/components/error';
 import { Pagination, MAX_PAGES } from './components/pagination';
 import { useHasMounted } from 'src/hooks/useHasMounted';
-import { FilterTags } from './components/filters/components/tags';
-import {
-  FACET_SIZE,
-  Filters,
-  filtersConfig,
-  SelectedFilterType,
-} from './components/filters';
+import { FACET_SIZE, filtersConfig } from './components/filters';
 import Card from './components/card';
 import Banner from '../banner';
 import { formatNumber } from 'src/utils/helpers';
@@ -43,6 +35,7 @@ import { DownloadMetadata } from '../download-metadata';
 import NextLink from 'next/link';
 import { FaChartBar } from 'react-icons/fa';
 import { encodeString } from 'src/utils/querystring-helpers';
+import { SelectedFilterType } from '../filters/types';
 
 /*
 [COMPONENT INFO]:
@@ -65,21 +58,21 @@ export interface SortOptionsInterface {
   orderBy: typeof sortOptions[number]['orderBy'];
 }
 
+// Default config for query.
+export const defaultQuery = {
+  queryString: '__all__',
+  selectedPage: 1,
+  selectedPerPage: 10,
+  facets: Object.keys(filtersConfig),
+  facetSize: FACET_SIZE,
+  sortOrder: '_score',
+};
+
 const SearchResultsPage = () => {
   const [total, setTotal] = useState(0);
 
   const hasMounted = useHasMounted();
   const router = useRouter();
-
-  // Default config for query.
-  const defaultQuery = {
-    queryString: '__all__',
-    selectedPage: 1,
-    selectedPerPage: 10,
-    facets: Object.keys(filtersConfig),
-    facetSize: FACET_SIZE,
-    sortOrder: '_score',
-  };
 
   // Currently selected filters.
   const defaultFilters = useMemo(
@@ -108,6 +101,10 @@ const SearchResultsPage = () => {
     // don't escape parenthesis or colons when its an advanced search
     q: router.query.advancedSearch ? queryString : encodeString(queryString),
     extra_filter: filter_string || '', // extra filter updates aggregate fields
+    facet_size: defaultQuery.facetSize,
+    size: `${selectedPerPage}`,
+    from: `${(selectedPage - 1) * selectedPerPage}`,
+    sort: sortOrder,
   };
 
   const { isLoading, error, data } = useQuery<
@@ -117,7 +114,7 @@ const SearchResultsPage = () => {
     [
       'search-results',
       {
-        q: params.q,
+        ...params,
         filters: selectedFilters,
         size: selectedPerPage,
         from: selectedPage,
@@ -132,15 +129,13 @@ const SearchResultsPage = () => {
       return fetchSearchResults({
         q: params.q,
         extra_filter: params.extra_filter,
-        size: `${selectedPerPage}`,
-        from: `${(selectedPage - 1) * selectedPerPage}`,
-        facet_size: defaultQuery.facetSize,
-        facets: defaultQuery.facets.join(','),
-        sort: sortOrder,
+        size: params.size,
+        from: params.from,
+        sort: params.sort,
       });
     },
     // Don't refresh everytime window is touched.
-    { refetchOnWindowFocus: false, enabled: true },
+    { refetchOnWindowFocus: false, enabled: !!hasMounted },
   );
 
   // Set total results value
@@ -196,41 +191,7 @@ const SearchResultsPage = () => {
         ...queryObject,
       };
     });
-  }, [
-    defaultFilters,
-    defaultQuery.queryString,
-    defaultQuery.selectedPage,
-    router,
-  ]);
-
-  // Update the route to reflect changes on page without re-render.
-  const updateRoute = (update: {}) => {
-    router.push(
-      {
-        query: {
-          ...router.query,
-          ...update,
-        },
-      },
-      undefined,
-      {
-        shallow: true,
-        scroll: true,
-      },
-    );
-  };
-
-  // Currently applied filters
-  const applied_filters = Object.entries(selectedFilters).filter(
-    ([_, filters]) => filters.length > 0,
-  );
-
-  const removeAllFilters = () => {
-    return updateRoute({
-      from: defaultQuery.selectedPage,
-      filters: defaultFilters,
-    });
-  };
+  }, [defaultFilters, router]);
 
   // embed altmetric data. For more information: https://api.altmetric.com/embeds.html
   useEffect(() => {
@@ -249,6 +210,12 @@ const SearchResultsPage = () => {
     }
   }, [data]);
 
+  // Update the route to reflect changes on page without re-render.
+  const handleRouteUpdate = useCallback(
+    (update: {}) => updateRoute(update, router),
+    [router],
+  );
+
   if (!hasMounted || !router.isReady) {
     return null;
   }
@@ -256,7 +223,6 @@ const SearchResultsPage = () => {
     <>
       {error ? (
         // [ERROR STATE]: API response error
-
         <Error message="It's possible that the server is experiencing some issues.">
           <ErrorCTA>
             <Button onClick={() => router.reload()} variant='outline'>
@@ -265,230 +231,174 @@ const SearchResultsPage = () => {
           </ErrorCTA>
         </Error>
       ) : (
-        <Flex w='100%'>
-          {/* Filters sidebar */}
-          <PageContent w='100%' flexDirection='column'>
-            <Heading
-              as='h1'
-              size='sm'
-              color='text.body'
-              fontWeight='semibold'
-              mb={4}
-            >
-              {queryString === '__all__'
-                ? `Showing all results`
-                : `Showing results for`}
-
-              {queryString !== '__all__' && (
-                <Heading as='span' ml={2} fontWeight='bold' size='sm' w='100%'>
-                  {queryString}
-                </Heading>
-              )}
-            </Heading>
-
-            {/* Chips with the names of the currently selected filters */}
-            <Collapse in={applied_filters.length > 0}>
-              <FilterTags
-                tags={applied_filters}
-                removeAllFilters={removeAllFilters}
-                removeSelectedFilter={(
-                  name: string,
-                  value: string | number,
-                ) => {
-                  const updatedFilter = {
-                    [name]: selectedFilters[name].filter(v => v !== value),
-                  };
-
-                  let filters = queryFilterObject2String({
-                    ...selectedFilters,
-                    ...updatedFilter,
-                  });
-                  updateRoute({
-                    from: defaultQuery.selectedPage,
-                    filters,
-                  });
-                }}
-              />
-            </Collapse>
-            <Flex w='100%'>
-              <Filters
-                searchTerm={params.q}
-                facets={{ isLoading: isLoading, data: data?.facets }}
-                selectedFilters={selectedFilters}
-                removeAllFilters={
-                  applied_filters.length > 0
-                    ? () => removeAllFilters()
-                    : undefined
-                }
-                handleSelectedFilters={(
-                  updatedFilters: typeof selectedFilters,
-                ) => {
-                  let updatedFilterString = queryFilterObject2String({
-                    ...selectedFilters,
-                    ...updatedFilters,
-                  });
-
-                  updateRoute({
-                    from: defaultQuery.selectedPage,
-                    filters: updatedFilterString,
-                  });
-                }}
-              />
+        <>
+          <Box flex={1}>
+            <Flex w='100%' flexDirection='column' mx={[0, 0, 4]} flex={[1, 2]}>
               <Flex
                 w='100%'
-                flexDirection='column'
-                mx={[0, 0, 4]}
-                flex={[1, 2]}
+                borderBottom='2px solid'
+                borderColor='gray.700'
+                flexWrap='wrap'
+                justifyContent='space-between'
+                alignItems='center'
+              >
+                <ResultsCount total={total} isLoading={isLoading} />
+              </Flex>
+
+              <Pagination
+                id='pagination-top'
+                selectedPage={selectedPage}
+                handleSelectedPage={from => {
+                  handleRouteUpdate({ from });
+                }}
+                selectedPerPage={selectedPerPage}
+                total={total}
+                isLoading={isLoading}
+                ariaLabel='paginate through resources top bar'
               >
                 <Flex
-                  w='100%'
-                  borderBottom='2px solid'
-                  borderColor='gray.700'
-                  flexWrap='wrap'
+                  flex={1}
                   justifyContent='space-between'
                   alignItems='center'
-                >
-                  <ResultsCount total={total} isLoading={isLoading} />
-                  <NextLink
-                    href={router.asPath.replace('search', 'summary')}
-                    passHref
-                  >
-                    <Button
-                      leftIcon={<FaChartBar />}
-                      my={2}
-                      whiteSpace='normal'
-                    >
-                      View visual summary of results
-                    </Button>
-                  </NextLink>
-                </Flex>
-
-                <Pagination
-                  id='pagination-top'
-                  selectedPage={selectedPage}
-                  handleSelectedPage={from => {
-                    updateRoute({ from });
-                  }}
-                  selectedPerPage={selectedPerPage}
-                  total={total}
-                  isLoading={isLoading}
-                  ariaLabel='paginate through resources top bar'
+                  flexWrap='wrap'
+                  flexDirection={{ md: 'row-reverse' }}
+                  pb={[4, 4, 2]}
+                  mb={[4, 4, 2]}
+                  borderBottom={{ base: '1px solid' }}
+                  borderColor={{ base: 'page.alt' }}
+                  w='100%'
+                  minW={{ md: 500 }}
                 >
                   <Flex
+                    alignItems='center'
                     flex={1}
-                    justifyContent='space-between'
-                    borderBottom='1px solid'
-                    borderColor='page.alt'
-                    pb={4}
-                    mb={4}
+                    justifyContent={{
+                      base: 'center',
+                      sm: 'flex-start',
+                      xl: 'flex-end',
+                    }}
+                    flexWrap={{ base: 'wrap', md: 'nowrap' }}
+                    flexDirection={['column', 'row']}
+                    mb={2}
+                    w='100%'
+                    mx={{ base: 0, xl: 2 }}
                   >
-                    <Flex>
-                      {isLoading && (
-                        <Spinner
-                          thickness='6px'
-                          speed='0.65s'
-                          emptyColor='gray.200'
-                          color='primary.500'
-                          size='xl'
-                        />
-                      )}
-                    </Flex>
-                    <Box>
-                      <Flex w='100%' justifyContent='flex-end' pb={4}>
-                        <DownloadMetadata
-                          exportName='nde-results'
-                          variant='outline'
-                          params={params}
-                        >
-                          Download Metadata
-                        </DownloadMetadata>
-                      </Flex>
-
-                      <SortResults
-                        sortOptions={sortOptions}
-                        sortOrder={sortOrder}
-                        handleSortOrder={sort => {
-                          updateRoute({
-                            sort,
-                            from: defaultQuery.selectedPage,
-                          });
-                        }}
-                        selectedPerPage={selectedPerPage}
-                        handleSelectedPerPage={v =>
-                          updateRoute({ from: 1, size: v })
-                        }
-                      />
+                    <Box mr={[0, 2]} w={['100%', 'unset']} m={[1]} ml={0}>
+                      <DownloadMetadata
+                        exportName='nde-results'
+                        variant='outline'
+                        params={params}
+                      >
+                        Download Metadata
+                      </DownloadMetadata>
                     </Box>
-                  </Flex>
-                </Pagination>
-
-                {/* Display banner on last page if results exceed amount allotted by API */}
-                <Collapse
-                  in={selectedPage === Math.floor(MAX_PAGES / selectedPerPage)}
-                  animateOpacity
-                >
-                  <Banner status='info'>
-                    Only the first {formatNumber(10000)} results are displayed,
-                    please limit your query to get better results or use our API
-                    to download all results.
-                  </Banner>
-                </Collapse>
-                <Stack
-                  direction='row'
-                  justifyContent='space-between'
-                  flex={1}
-                  w='100%'
-                >
-                  {/* Results Cards */}
-                  {/* Empty state if no results found */}
-                  {!isLoading && (!data || data.results.length === 0) && (
-                    <Empty
-                      message='No results found.'
-                      alignSelf='center'
-                      h='50vh'
+                    <NextLink
+                      href={router.asPath.replace('search', 'summary')}
+                      passHref
                     >
-                      <Text>Search yielded no results, please try again.</Text>
-                      <Button href='/' mt={4}>
-                        Go to search page.
+                      <Button
+                        leftIcon={<FaChartBar />}
+                        whiteSpace='nowrap'
+                        px={{ base: 4, md: 6 }}
+                        flex={1}
+                        w='100%'
+                        m={[1]}
+                        maxW={{ base: 'unset', sm: '200px' }}
+                      >
+                        Visual Summary
                       </Button>
-                    </Empty>
-                  )}
+                    </NextLink>
+                  </Flex>
+                  <Box
+                    w={['100%', '100%', 'unset']}
+                    flex={{ base: 'unset', md: 1 }}
+                    minW={{ base: 'unset', md: 300 }}
+                    mr={{ base: 'unset', md: 2 }}
+                  >
+                    <SortResults
+                      sortOptions={sortOptions}
+                      sortOrder={sortOrder}
+                      handleSortOrder={sort => {
+                        handleRouteUpdate({
+                          sort,
+                          from: defaultQuery.selectedPage,
+                        });
+                      }}
+                      selectedPerPage={selectedPerPage}
+                      handleSelectedPerPage={v =>
+                        handleRouteUpdate({ from: 1, size: v })
+                      }
+                    />
+                  </Box>
+                </Flex>
+              </Pagination>
 
-                  <UnorderedList ml={0} flex={3} w='100%'>
-                    {isLoading || (data && data.results?.length > 0)
-                      ? new Array(selectedPerPage).fill(null).map((_, i) => {
-                          const result: FormattedResource | null =
-                            data?.results && data.results.length > 0
-                              ? data.results[i]
-                              : null;
+              {/* Display banner on last page if results exceed amount allotted by API */}
+              <Collapse
+                in={selectedPage === Math.floor(MAX_PAGES / selectedPerPage)}
+                animateOpacity
+              >
+                <Banner status='info'>
+                  Only the first {formatNumber(10000)} results are displayed,
+                  please limit your query to get better results or use our API
+                  to download all results.
+                </Banner>
+              </Collapse>
+              <Stack
+                direction='row'
+                justifyContent='space-between'
+                flex={1}
+                w='100%'
+              >
+                {/* Results Cards */}
+                {/* Empty state if no results found */}
+                {!isLoading && (!data || data.results.length === 0) && (
+                  <Empty
+                    message='No results found.'
+                    alignSelf='center'
+                    h='50vh'
+                  >
+                    <Text>Search yielded no results, please try again.</Text>
+                    <Button href='/' mt={4}>
+                      Go to search page.
+                    </Button>
+                  </Empty>
+                )}
 
-                          // if waiting for results to load display placeholder loading cards until content is available
-                          if (result || isLoading) {
-                            return (
-                              <ListItem key={i} my={4} mb={8}>
-                                <Card isLoading={isLoading} data={result} />
-                              </ListItem>
-                            );
-                          }
-                        })
-                      : null}
-                  </UnorderedList>
-                </Stack>
-                <Pagination
-                  id='pagination-bottom'
-                  selectedPage={selectedPage}
-                  handleSelectedPage={from => {
-                    updateRoute({ from });
-                  }}
-                  selectedPerPage={selectedPerPage}
-                  total={total}
-                  isLoading={isLoading}
-                  ariaLabel='paginate through resources bottom bar'
-                />
-              </Flex>
+                <UnorderedList ml={0} flex={3} w='100%'>
+                  {isLoading || (data && data.results?.length > 0)
+                    ? new Array(selectedPerPage).fill(null).map((_, i) => {
+                        const result: FormattedResource | null =
+                          data?.results && data.results.length > 0
+                            ? data.results[i]
+                            : null;
+
+                        // if waiting for results to load display placeholder loading cards until content is available
+                        if (result || isLoading) {
+                          return (
+                            <ListItem key={i} my={4} mb={8}>
+                              <Card isLoading={isLoading} data={result} />
+                            </ListItem>
+                          );
+                        }
+                      })
+                    : null}
+                </UnorderedList>
+              </Stack>
+              <Pagination
+                id='pagination-bottom'
+                selectedPage={selectedPage}
+                handleSelectedPage={from => {
+                  handleRouteUpdate({ from });
+                }}
+                selectedPerPage={selectedPerPage}
+                total={total}
+                isLoading={isLoading}
+                ariaLabel='paginate through resources bottom bar'
+              />
             </Flex>
-          </PageContent>
-        </Flex>
+          </Box>
+        </>
       )}
     </>
   );

@@ -9,6 +9,8 @@ import {
   FaQuoteLeft,
   FaInfo,
   FaRegCalendarAlt,
+  FaLaptopCode,
+  FaCode,
 } from 'react-icons/fa';
 import { IconType } from 'react-icons';
 import Glyph from './components/glyph';
@@ -27,7 +29,7 @@ export interface IconProps
 
 // Icon displaying symbol
 export const MetadataIcon = React.forwardRef<HTMLDivElement, IconProps>(
-  ({ id, glyph, label, title, ...props }: IconProps, ref) => {
+  ({ id, glyph, title, color, fill, boxSize, viewBox }: IconProps, ref) => {
     if (!glyph) {
       return <></>;
     }
@@ -42,20 +44,22 @@ export const MetadataIcon = React.forwardRef<HTMLDivElement, IconProps>(
       FaIcon = FaQuoteLeft;
     } else if (glyph?.toLowerCase() === 'identifier') {
       FaIcon = FaFingerprint;
+    } else if (glyph?.toLowerCase() === 'applicationcategory') {
+      FaIcon = FaLaptopCode;
+    } else if (glyph?.toLowerCase() === 'programminglanguage') {
+      FaIcon = FaCode;
     } else if (glyph?.toLowerCase() === 'date') {
       FaIcon = FaRegCalendarAlt;
     } else if (glyph?.toLowerCase() === 'info') {
       FaIcon = () => (
         <Icon
           as={FaInfo}
-          color='gray.700'
-          mx={3}
+          color={color || 'gray.700'}
+          fill={fill || '#000'}
+          boxSize={boxSize || '1.15rem'}
           border='0.625px solid'
           borderRadius='100%'
-          p={0.5}
-          boxSize={4}
-          viewBox='0 0 200 200'
-          {...props}
+          p='0.2rem'
         />
       );
     } else {
@@ -65,22 +69,20 @@ export const MetadataIcon = React.forwardRef<HTMLDivElement, IconProps>(
       <Flex ref={ref}>
         {FaIcon ? (
           <Icon
-            viewBox='0 0 200 200'
-            boxSize={5}
             as={FaIcon}
-            color='#000'
-            fill='#000'
-            {...props}
+            viewBox={viewBox || '0 0 200 200'}
+            color={color || '#000'}
+            fill={fill || '#000'}
+            boxSize={boxSize || 5}
           />
         ) : (
           <Icon
-            viewBox='0 0 200 200'
-            color='#000'
-            fill='#000'
-            boxSize={5}
+            viewBox={viewBox || '0 0 200 200'}
+            color={color || '#000'}
+            fill={fill || '#000'}
+            boxSize={boxSize || 5}
             aria-labelledby={id}
             role='img'
-            {...props}
           >
             <Glyph id={id} glyph={glyph} stroke='currentColor' title={title} />
           </Icon>

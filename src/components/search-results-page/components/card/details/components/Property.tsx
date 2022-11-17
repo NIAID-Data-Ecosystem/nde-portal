@@ -29,17 +29,14 @@ export const MetadataProperty: React.FC<MetadataPropertyProps> = ({
     >
       <Flex alignItems='center' pb={0} position='relative'>
         <MetadataToolTip propertyName={glyph} recordType={type}>
-          <MetadataIcon
-            id={id}
-            viewBox='0 0 200 200'
-            fill={!children ? 'gray.400' : getMetadataColor(glyph)}
-            opacity={children ? 1 : 0.6}
-            boxSize={6}
-            glyph={glyph}
-            m={2}
-            mr={0}
-            label={label}
-          />
+          <Box opacity={children ? 1 : 0.6} m={2} mr={0}>
+            <MetadataIcon
+              id={id}
+              glyph={glyph}
+              fill={!children ? 'gray.400' : getMetadataColor(glyph)}
+              boxSize={6}
+            />
+          </Box>
         </MetadataToolTip>
         <Text
           color='text.body'

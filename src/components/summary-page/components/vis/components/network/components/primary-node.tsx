@@ -1,6 +1,6 @@
 import * as d3 from 'd3';
 import { useEffect, useRef } from 'react';
-import { SelectedFilterType } from 'src/components/summary-page/components/hooks';
+import { SelectedFilterType } from 'src/components/filters/types';
 import { Datum, parameters } from './chart';
 import { formatClassName, highlightNodes } from '../helpers';
 
