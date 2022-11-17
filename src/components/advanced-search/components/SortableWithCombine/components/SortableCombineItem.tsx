@@ -27,6 +27,7 @@ export interface SortableItemProps {
   isMergeable: boolean;
   useDragOverlay?: boolean;
   onRemove?(id: UniqueIdentifier): void;
+  onUpdate?: (data: DragItem) => void;
   style: SortableWithCombineProps['getItemStyles'];
   renderItem?(args: any): React.ReactElement;
 }
@@ -41,6 +42,7 @@ export function SortableCombineItem({
   index,
   style,
   onRemove,
+  onUpdate,
   renderItem,
   isMergeable: shouldMerge,
   useDragOverlay,
@@ -101,6 +103,11 @@ export function SortableCombineItem({
           : undefined
       }
       onRemove={onRemove ? () => onRemove(id) : undefined}
+      onUpdate={
+        onUpdate
+          ? (update: Partial<DragItem>) => onUpdate({ ...data, ...update })
+          : undefined
+      }
       wrapperStyle={wrapperStyle({ index, isDragging, isMergeable, id, data })}
       listeners={listeners}
       data-index={index}

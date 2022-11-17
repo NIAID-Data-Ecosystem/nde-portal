@@ -6,7 +6,6 @@ export const Remove = props => {
     <Box py={2}>
       <IconButton
         className='remove-tag'
-        // colorScheme={props.colorScheme || 'primary'}
         icon={
           // custom close icon
           <svg

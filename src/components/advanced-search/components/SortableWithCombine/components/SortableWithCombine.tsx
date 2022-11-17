@@ -37,6 +37,7 @@ import {
   buildTree,
   collapseContainers,
   convertObject2QueryString,
+  findItem,
   flattenTree,
   getIntersectionRatio,
 } from '../utils';
@@ -115,7 +116,7 @@ const config: Partial<SortableProps> = {
       borderRadius: '0.3125rem',
       boxShadow:
         '0 10px 15px -3px rgba(0, 0, 0, 0.1),0 4px 6px -2px rgba(0, 0, 0, 0.05)',
-      overflow: 'hidden',
+      // overflow: 'hidden',
     };
   },
   getItemStyles: ({ data, isMergeable }: ItemStylesProps) => {
@@ -302,6 +303,18 @@ export function SortableWithCombine({
     setIsMergeable(false);
     setOverId(null);
     setActiveId(null);
+  };
+
+  const handleUpdate = (item: DragItem) => {
+    const clonedItems = [...flattenedItems];
+    const updateIndex = clonedItems.findIndex(({ id }) => id === item.id);
+    clonedItems[updateIndex] = { ...clonedItems[updateIndex], ...item };
+    setItems(buildTree(clonedItems));
+  };
+
+  const handleRemove = (id: DragItem['id']) => {
+    const newItems = [...flattenedItems].filter(item => item.id !== id);
+    setItems(buildTree(newItems));
   };
 
   return (
@@ -532,7 +545,8 @@ export function SortableWithCombine({
                 wrapperStyle={wrapperStyle}
                 isMergeable={isMergeable}
                 style={getItemStyles}
-                // onRemove={handleRemove}
+                onUpdate={handleUpdate}
+                onRemove={handleRemove}
                 useDragOverlay={useDragOverlay}
               >
                 {/* add sortale context here for children */}
@@ -545,8 +559,9 @@ export function SortableWithCombine({
                   strategy={strategy}
                   isMergeable={isMergeable}
                   style={getItemStyles}
-                  // onRemove={handleRemove}
+                  onRemove={handleRemove}
                   useDragOverlay={useDragOverlay}
+                  onUpdate={handleUpdate}
                 />
               </SortableCombineItem>
             ))}
@@ -583,7 +598,6 @@ export function SortableWithCombine({
                         isMergeable && droppableItem?.id === id
                       }
                       style={getItemStyles}
-                      // onRemove={handleRemove}
                       useDragOverlay={useDragOverlay}
                     />
                   </Item>
@@ -647,8 +661,6 @@ const TagContent: React.FC<TagContentProps> = props => {
               index={index}
               data={value}
               isMergeable={props.isMergeable}
-
-              // onRemove={handleRemove}
             >
               <TagContent
                 {...props}

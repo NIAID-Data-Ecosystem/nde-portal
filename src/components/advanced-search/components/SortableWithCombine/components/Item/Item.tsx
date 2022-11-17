@@ -1,10 +1,16 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import type { DraggableSyntheticListeners } from '@dnd-kit/core';
 import type { Transform } from '@dnd-kit/utilities';
 import { Handle } from './components/Handle';
 import { Remove } from './components/Remove';
 import type { DragItem } from '../../types';
-import { AddWithUnion } from '../../../buttons';
+import { DropdownButton } from 'src/components/dropdown-button';
+import {
+  getUnionTheme,
+  unionOptions,
+} from 'src/components/advanced-search/utils';
+import { textAlign } from 'styled-system';
+import { Box } from 'nde-design-system';
 
 export interface Props {
   dragOverlay?: boolean;
@@ -29,6 +35,7 @@ export interface Props {
   transition?: string | null;
   wrapperStyle?: React.CSSProperties;
   value: React.ReactNode;
+  onUpdate?: (data: Partial<DragItem>) => void;
   onRemove?(): void;
   renderItem?(args: {
     dragOverlay: boolean;
@@ -65,6 +72,7 @@ export const Item = React.memo(
         listeners,
         newIndex,
         onRemove,
+        onUpdate,
         overIndex,
         renderItem,
         sorting,
@@ -73,12 +81,11 @@ export const Item = React.memo(
         transform,
         value,
         wrapperStyle,
-
         ...props
       },
       ref,
     ) => {
-      // const [showHandle, setShowHandle] = useState(false);
+      const [showTagOptions, setShowTagOptions] = useState(false);
       useEffect(() => {
         if (!dragOverlay) {
           return;
@@ -123,43 +130,36 @@ export const Item = React.memo(
                 : 'transparent',
             ...style,
           }}
-          // onMouseOver={() => setShowHandle(true)}
-          // onMouseOut={() => setShowHandle(false)}
+          onMouseOver={() => setShowTagOptions(true)}
+          onMouseOut={() => setShowTagOptions(false)}
         >
           {data.value.union && !dragOverlay && (
-            // <AddWithUnion
-            //   ariaLabel='Join two query terms'
-            //   // size='sm'
-            //   type='button'
-            //   unionType={data.value.union}
-            //   setUnionType={value => {
-            //     // onUpdate && onUpdate({ value });
-            //   }}
-            //   zIndex='popover'
-            //   height='100%'
-            // ></AddWithUnion>
-            <div
-              style={{
-                ...wrapperStyle,
-                flex: 'unset',
-                borderColor: 'transparent',
-                minWidth: 'unset',
-                paddingLeft: '1rem',
-                paddingRight: '1rem',
-                background:
-                  data.value.union === 'AND'
-                    ? 'teal'
-                    : data.value.union === 'OR'
-                    ? 'navy'
-                    : 'red',
-                opacity: dragging && dragOverlay ? 0 : 1,
-              }}
-            >
-              <p style={{ fontSize: 'sm', color: 'white' }}>
-                {' '}
-                {data.value.union || ''}
-              </p>
-            </div>
+            <Box mr={1}>
+              <DropdownButton
+                size='sm'
+                options={unionOptions.map(term => {
+                  return {
+                    name: `${term}`,
+                    value: term,
+                    props: {
+                      ...getUnionTheme(term),
+                      fontSize: 'xs',
+                      textAlign: 'left',
+                    },
+                  };
+                })}
+                colorScheme={
+                  data.value.union
+                    ? getUnionTheme(data.value.union).colorScheme
+                    : 'primary'
+                }
+                selectedOption={data.value.union}
+                setSelectedOption={union => {
+                  onUpdate &&
+                    onUpdate({ ...data, value: { ...data.value, union } });
+                }}
+              />
+            </Box>
           )}
           <div
             style={
@@ -195,10 +195,25 @@ export const Item = React.memo(
                   {...listeners}
                 />
               ) : null}
-              <div style={{ display: 'flex', padding: '0.5rem' }}>
+              <div style={{ display: 'flex', flex: 1, padding: '0.5rem' }}>
                 {children || value}
               </div>
-              <span>{onRemove ? <Remove onClick={onRemove} /> : null}</span>
+              <span>
+                {onRemove ? (
+                  <Remove
+                    onClick={onRemove}
+                    color='gray.200'
+                    bg='transparent'
+                    p={1}
+                    opacity={showTagOptions ? 1 : 0}
+                    colorScheme='gray'
+                    _hover={{
+                      bg: 'gray.100',
+                      color: 'gray.600',
+                    }}
+                  />
+                ) : null}
+              </span>
             </div>
           </div>
         </div>

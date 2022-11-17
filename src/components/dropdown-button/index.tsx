@@ -42,7 +42,7 @@ export const DropdownButton: React.FC<DropdownButton> = ({
 }) => {
   const [optionsOpen, setOptionsOpen] = useState(false);
   return (
-    <Box onMouseLeave={() => setOptionsOpen(false)} height={height} bg='white'>
+    <Box onMouseLeave={() => setOptionsOpen(false)} height={height}>
       <ButtonGroup
         isAttached
         variant='solid'
@@ -62,7 +62,6 @@ export const DropdownButton: React.FC<DropdownButton> = ({
           icon={<Icon as={FaChevronDown} />}
           onClick={() => setOptionsOpen(!optionsOpen)}
           onMouseEnter={() => setOptionsOpen(true)}
-          padding={0}
           bg={`${colorScheme}.400`}
           _hover={{
             bg: `${colorScheme}.600`,
@@ -83,9 +82,10 @@ export const DropdownButton: React.FC<DropdownButton> = ({
             overflow='hidden'
             boxShadow='base'
             bg='white'
+            w='100%'
           >
             <UnorderedList ml={0}>
-              {options.map((option, index) => {
+              {options.map(option => {
                 return (
                   <ListItem
                     key={option.value}
@@ -98,6 +98,7 @@ export const DropdownButton: React.FC<DropdownButton> = ({
                     whiteSpace='nowrap'
                     userSelect='none'
                     _hover={{ bg: `${colorScheme}.400` }}
+                    fontWeight='medium'
                     onClick={() => setSelectedOption(option.value)}
                     {...option.props}
                   >
@@ -108,7 +109,7 @@ export const DropdownButton: React.FC<DropdownButton> = ({
             </UnorderedList>
           </Box>
         </Box>
-      )}{' '}
+      )}
     </Box>
   );
 };
