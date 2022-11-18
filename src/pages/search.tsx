@@ -12,7 +12,6 @@ import {
 } from 'src/components/search-results-page/components/filters';
 import {
   FilterTags,
-  FilterTagsWrapper,
   queryFilterObject2String,
   queryFilterString2Object,
   updateRoute,
@@ -22,6 +21,7 @@ import {
   SelectedFilterType,
   SelectedFilterTypeValue,
 } from 'src/components/filters/types';
+import { encodeString } from 'src/utils/querystring-helpers';
 
 //  This page renders the search results from the search bar.
 const Search: NextPage = () => {
@@ -37,21 +37,21 @@ const Search: NextPage = () => {
     from: `${(defaultQuery.selectedPage - 1) * defaultQuery.selectedPerPage}`,
     sort: defaultQuery.sortOrder,
   };
+  const queryString = Array.isArray(router.query.q)
+    ? router.query.q.map(s => s.trim()).join('+')
+    : router.query.q || defaultParams.q;
 
   const queryParams = {
     ...defaultParams,
     ...router.query,
-    q: Array.isArray(router.query.q)
-      ? router.query.q.join('')
-      : router.query.q || defaultParams.q,
+    q:
+      router.query.advancedSearch === 'true'
+        ? queryString
+        : encodeString(queryString),
     extra_filter: Array.isArray(router.query.filters)
       ? router.query.filters.join('')
       : router.query.filters || '',
   };
-
-  const queryString = Array.isArray(router.query.q)
-    ? router.query.q.join(' ')
-    : router.query.q || '';
 
   const selectedFilters: SelectedFilterType =
     queryFilterString2Object(queryParams.extra_filter) || [];
@@ -123,7 +123,7 @@ const Search: NextPage = () => {
 
               {queryString !== '__all__' && (
                 <Heading as='span' ml={2} fontWeight='bold' size='sm' w='100%'>
-                  {queryString}
+                  {queryString.replaceAll('\\', '')}
                 </Heading>
               )}
             </Heading>

@@ -128,7 +128,7 @@ export const DropdownInput: React.FC<DropdownInputProps> = ({
             ref={inputRightRef}
             p={1}
             w='unset'
-            zIndex='sticky'
+            zIndex='dropdown'
           >
             {renderSubmitButton({
               type: 'submit',

@@ -40,7 +40,10 @@ export const useFacetsData = ({
     }
     const data = await fetchSearchResults({
       ...params,
-      q: encodeString(params.q),
+      q:
+        queryParams.advancedSearch === 'true'
+          ? params.q
+          : encodeString(params.q),
       hist: 'date',
     }).then(response => {
       const facetsData = {} as { [key: string]: { terms: FacetTerm[] } };
@@ -75,7 +78,11 @@ export const useFacetsData = ({
       facets.map(facet => {
         /* Fetch facets using query params. Note that we also get the facets count where data is non-existent to be used as an "N/A" attribute. */
         return fetchSearchResults({
-          q: encodeString(params.q),
+          q:
+            queryParams.advancedSearch === 'true'
+              ? params.q
+              : encodeString(params.q),
+
           extra_filter: params?.extra_filter
             ? `${params.extra_filter} AND -_exists_:${facet}`
             : `-_exists_:${facet}`,

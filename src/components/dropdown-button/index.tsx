@@ -60,20 +60,22 @@ export const DropdownButton: React.FC<DropdownButton> = ({
         >
           {selectedOption || placeholder}
         </Button>
-        <IconButton
-          height={height}
-          aria-label={ariaLabel}
-          alignItems='center'
-          icon={<Icon as={FaChevronDown} />}
-          onClick={() => setOptionsOpen(!optionsOpen)}
-          onMouseEnter={() => setOptionsOpen(true)}
-          bg={`${colorScheme}.400`}
-          _hover={{
-            bg: `${colorScheme}.600`,
-          }}
-          _focus={{ boxShadow: 'none' }}
-          {...props.iconButtonProps}
-        />
+        {options.length > 0 && (
+          <IconButton
+            height={height}
+            aria-label={ariaLabel}
+            alignItems='center'
+            icon={<Icon as={FaChevronDown} />}
+            onClick={() => setOptionsOpen(!optionsOpen)}
+            onMouseEnter={() => setOptionsOpen(true)}
+            bg={`${colorScheme}.400`}
+            _hover={{
+              bg: `${colorScheme}.600`,
+            }}
+            _focus={{ boxShadow: 'none' }}
+            {...props.iconButtonProps}
+          />
+        )}
       </ButtonGroup>
       {/* Menu of options */}
       {optionsOpen && (

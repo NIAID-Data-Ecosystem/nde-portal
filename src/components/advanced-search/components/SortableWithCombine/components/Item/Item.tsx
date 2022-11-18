@@ -41,7 +41,6 @@ export const Item = React.memo(
     (
       {
         activeIndex,
-        children,
         color,
         data,
         dragOverlay,
@@ -109,6 +108,7 @@ export const Item = React.memo(
             <Box mr={1}>
               <DropdownButton
                 size='sm'
+                isDisabled={dragging}
                 ariaLabel='union betwee n query elements'
                 onClick={() => {}}
                 options={unionOptions.map(term => {

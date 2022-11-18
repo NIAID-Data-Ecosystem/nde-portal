@@ -149,12 +149,6 @@ export const Filters: React.FC<FiltersProps> = ({
 
         if (facet === 'date') {
           return (
-            // <FiltersSection
-            //   key={facet}
-            //   name={name}
-            //   icon={glyph}
-            //   property={property || ''}
-            // >
             <FiltersDateSlider
               key={facet}
               colorScheme={colorScheme}
@@ -167,7 +161,6 @@ export const Filters: React.FC<FiltersProps> = ({
               }
               resetFilter={() => handleSelectedFilters([], facet)}
             ></FiltersDateSlider>
-            // </FiltersSection>
           );
         }
 

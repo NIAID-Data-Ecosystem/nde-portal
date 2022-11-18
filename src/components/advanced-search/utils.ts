@@ -1,3 +1,4 @@
+import { encodeString } from 'src/utils/querystring-helpers';
 import type { DragItem } from './components/SortableWithCombine';
 
 type UnionTypes = 'AND' | 'OR' | 'NOT';
@@ -29,7 +30,10 @@ export const getUnionTheme = (term: UnionTypes) => {
   return {};
 };
 
-export const convertObject2QueryString = (items: DragItem[]) => {
+export const convertObject2QueryString = (
+  items: DragItem[],
+  encode?: boolean,
+) => {
   const reduceQueryString = (items: DragItem[]) =>
     items.reduce((r, item, i) => {
       const union = `${item.value.union ? ` ${item.value.union} ` : ''}`;
@@ -38,9 +42,10 @@ export const convertObject2QueryString = (items: DragItem[]) => {
       } else {
         let str = '';
         if (item.value.field) {
-          str += `${item.value.field}: `;
+          str += `${item.value.field}:`;
         }
-        str += item.value.term;
+        // TO DO: if exact match don't encode.
+        str += encode ? encodeString(item.value.term) : item.value.term;
         r += `${union}(${str})`;
       }
 

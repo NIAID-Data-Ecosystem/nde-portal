@@ -119,7 +119,7 @@ export const SearchWithPredictiveText: React.FC<
               return renderSubmitButton({
                 colorScheme: colorScheme,
                 ariaLabel: ariaLabel,
-                isDisabled: isLoading || false,
+                isDisabled: isLoading || !searchTerm || false,
                 size: size,
                 ...props,
               });

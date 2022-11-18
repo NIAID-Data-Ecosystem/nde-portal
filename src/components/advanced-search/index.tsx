@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Box,
   Button,
@@ -73,6 +73,17 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
     '',
   );
 
+  useEffect(() => {
+    setUnionType(prev => {
+      if (items.length === 0) {
+        return '';
+      } else if (!prev && items.length > 0) {
+        return 'AND';
+      }
+      return prev;
+    });
+  }, [items]);
+
   return (
     <>
       <OpenModal onClick={onOpen} {...buttonProps}></OpenModal>
@@ -80,10 +91,10 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
         isOpen={isOpen}
         onClose={onClose}
         onSubmit={e => {
-          const querystring = convertObject2QueryString(items);
+          const querystring = convertObject2QueryString(items, true);
           router.push({
             pathname: `/search`,
-            query: { q: querystring, advancedSearch: true },
+            query: { q: `${querystring}`, advancedSearch: true },
           });
         }}
         {...modalProps}
@@ -125,12 +136,6 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
               </Select>
             </Skeleton>
             {/* Input field with suggestions matching the search term. */}
-
-            {/*
-        [TO DO]:
-           [] Add union type submit.
-        */}
-
             <SearchWithPredictiveText
               ariaLabel='Search for datasets or tools'
               placeholder='Search for datasets or tools'
@@ -142,13 +147,16 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
                     placeholder='Add'
                     selectedOption={unionType}
                     setSelectedOption={setUnionType}
-                    options={unionOptions.map(term => {
-                      return {
-                        name: `Add with ${term}`,
-                        value: term,
-                        props: { ...getUnionTheme(term) },
-                      };
-                    })}
+                    options={
+                      items.length > 0 &&
+                      unionOptions.map(term => {
+                        return {
+                          name: `Add with ${term}`,
+                          value: term,
+                          props: { ...getUnionTheme(term) },
+                        };
+                      })
+                    }
                     {...props}
                     colorScheme={
                       unionType
@@ -284,15 +292,12 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
               variant='ghost'
               isDisabled={!items.length}
               onClick={() => setItems([])}
+              ml={4}
             >
               Reset query
             </Button>
           </Flex>
-          <Text
-            color={items.length ? 'text.body' : 'gray.600'}
-            fontSize='sm'
-            ml={4}
-          >
+          <Text color={items.length ? 'text.body' : 'gray.600'} fontSize='sm'>
             Re-order query terms by click and drag. Group items together by
             dragging a element over another.
           </Text>
@@ -304,7 +309,6 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
               handle
               removable
             />
-            {/* <QueryBuilderDragArea itemsList={items} updateItems={setItems} /> */}
           </Box>
 
           <Collapse in={showRawQuery}>
