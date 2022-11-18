@@ -47,6 +47,7 @@ import { Item } from './Item';
 import { useCollisionDetection } from './CollisionDetectionStrategy';
 import { StyleProps } from '@chakra-ui/react';
 import { ItemContent } from './ItemContent';
+import { theme } from 'nde-design-system';
 
 const dropAnimationConfig: DropAnimation = {
   keyframes({ transform }) {
@@ -421,6 +422,7 @@ export function SortableWithCombine({
               <DragOverlay
                 adjustScale={adjustScale}
                 dropAnimation={dropAnimation}
+                zIndex={theme.zIndices['popover']}
               >
                 {activeId && activeItem ? (
                   <Item
@@ -475,16 +477,20 @@ export const getSortingStrategy = (items: DragItem[]) => {
           return subItem.children.length > 0;
         }),
     ).length > 0;
-  const sortOrder = { strategy: () => null, direction: 'column' };
+  const sortOrder: {
+    strategy: SortingStrategy;
+    direction: 'row' | 'row-reverse' | 'column' | 'column-reverse';
+  } = { strategy: () => null, direction: 'column' };
+
   if (itemHasChildren || numItems > 3) {
     // vertical
+    // sortOrder.strategy = verticalListSortingStrategy;
     sortOrder.direction = 'column';
   } else {
     // horizontal
+    // sortOrder.strategy = horizontalListSortingStrategy;
+
     sortOrder.direction = 'row';
   }
-  return sortOrder as {
-    strategy: () => null;
-    direction: 'row' | 'row-reverse' | 'column' | 'column-reverse';
-  };
+  return sortOrder;
 };
