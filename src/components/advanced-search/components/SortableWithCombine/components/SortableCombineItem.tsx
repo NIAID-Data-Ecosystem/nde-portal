@@ -42,7 +42,7 @@ export function SortableCombineItem({
   onRemove,
   onUpdate,
   renderItem,
-  isMergeable: shouldMerge,
+  isMergeable,
   useDragOverlay,
   wrapperStyle,
   ...rest
@@ -64,8 +64,8 @@ export function SortableCombineItem({
     disabled,
   });
 
-  // Check if mergeable and the current hovered over item matches.
-  const isMergeable = (shouldMerge && over && over.id === id) || false;
+  // Check if this element is mergeable.
+  const isAvailableForMerge = (isMergeable && over && over.id === id) || false;
   return (
     <Item
       ref={setNodeRef}
@@ -91,7 +91,7 @@ export function SortableCombineItem({
         })
       }
       index={index}
-      isMergeable={isMergeable}
+      isMergeable={isAvailableForMerge}
       overIndex={overIndex}
       activeIndex={activeIndex}
       style={
@@ -104,7 +104,7 @@ export function SortableCombineItem({
                 isDragging,
                 isSorting,
                 overIndex,
-                isMergeable,
+                isMergeable: isAvailableForMerge,
                 isDragOverlay: true,
               }),
               transform: CSS.Translate.toString(transform),
@@ -120,7 +120,13 @@ export function SortableCombineItem({
       }
       wrapperStyle={
         wrapperStyle &&
-        wrapperStyle({ index, isDragging, isMergeable, id, data })
+        wrapperStyle({
+          index,
+          isDragging,
+          isMergeable: isAvailableForMerge,
+          id,
+          data,
+        })
       }
       listeners={listeners}
       data-index={index}
