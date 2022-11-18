@@ -46,6 +46,7 @@ import { SortableCombineItem, SortableItemProps } from './SortableCombineItem';
 import { Item } from './Item';
 import { useCollisionDetection } from './CollisionDetectionStrategy';
 import { StyleProps } from '@chakra-ui/react';
+import { ItemContent } from './ItemContent';
 
 const dropAnimationConfig: DropAnimation = {
   keyframes({ transform }) {
@@ -401,31 +402,17 @@ export function SortableWithCombine({
               <SortableCombineItem
                 key={value.id}
                 id={value.id}
+                data={value}
                 handle={handle}
                 index={index}
-                data={value}
                 wrapperStyle={wrapperStyle}
                 isMergeable={isMergeable}
                 style={getItemStyles}
                 onUpdate={handleUpdate}
                 onRemove={removable ? handleRemove : undefined}
                 useDragOverlay={useDragOverlay}
-              >
-                {/* add sortale context here for children */}
-                <TagContent
-                  id={value.id}
-                  data={value}
-                  handle={handle}
-                  index={index}
-                  wrapperStyle={wrapperStyle}
-                  strategy={strategy}
-                  isMergeable={isMergeable}
-                  style={getItemStyles}
-                  onRemove={removable ? handleRemove : undefined}
-                  useDragOverlay={useDragOverlay}
-                  onUpdate={handleUpdate}
-                />
-              </SortableCombineItem>
+                renderItem={props => <ItemContent {...props} />}
+              />
             ))}
           </SortableContext>
         </div>
@@ -454,19 +441,20 @@ export function SortableWithCombine({
                     isMergeable={false}
                     activeIndex={activeItem.index}
                     overIndex={droppableItem?.index}
-                  >
-                    <TagContent
-                      id={activeItem.id}
-                      data={activeItem}
-                      handle={handle}
-                      index={activeItem.index}
-                      isMergeable={isMergeable}
-                      wrapperStyle={wrapperStyle}
-                      strategy={strategy}
-                      style={getItemStyles}
-                      useDragOverlay={useDragOverlay}
-                    />
-                  </Item>
+                    renderItem={() => (
+                      <ItemContent
+                        id={activeItem.id}
+                        data={activeItem}
+                        handle={handle}
+                        index={activeItem.index}
+                        isMergeable={isMergeable}
+                        wrapperStyle={wrapperStyle}
+                        strategy={strategy}
+                        style={getItemStyles}
+                        useDragOverlay={useDragOverlay}
+                      />
+                    )}
+                  />
                 ) : null}
               </DragOverlay>,
               document.body,
@@ -476,7 +464,8 @@ export function SortableWithCombine({
     </div>
   );
 }
-const getSortingStrategy = (items: DragItem[]) => {
+
+export const getSortingStrategy = (items: DragItem[]) => {
   const numItems = items.length;
   const itemHasChildren =
     items.filter(
@@ -498,76 +487,4 @@ const getSortingStrategy = (items: DragItem[]) => {
     strategy: () => null;
     direction: 'row' | 'row-reverse' | 'column' | 'column-reverse';
   };
-};
-
-interface TagContentProps extends SortableItemProps {
-  data: DragItem;
-  strategy?: SortingStrategy;
-}
-
-const TagContent: React.FC<TagContentProps> = props => {
-  const { data } = props;
-
-  const ChildrenContext = () => {
-    if (!data.children || data.children.length === 0) {
-      return <></>;
-    }
-    return (
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: getSortingStrategy(data.children).direction,
-          flexWrap: 'wrap',
-        }}
-      >
-        <SortableContext
-          items={data.children}
-          strategy={getSortingStrategy(data.children).strategy}
-        >
-          {data.children.map((value, index) => (
-            <SortableCombineItem
-              key={value.id}
-              {...props}
-              id={value.id}
-              index={index}
-              data={value}
-              isMergeable={props.isMergeable}
-            >
-              <TagContent
-                {...props}
-                id={value.id}
-                data={value}
-                handle={props.handle}
-                index={index}
-              />
-            </SortableCombineItem>
-          ))}
-        </SortableContext>
-      </div>
-    );
-  };
-
-  return (
-    <div id='tag-content'>
-      {data.children.length === 0 && (
-        <div>
-          {data.value.field && (
-            <p
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                fontSize: '10px',
-              }}
-            >
-              {data?.value?.field?.toUpperCase() || ''}
-              <br />
-            </p>
-          )}
-          <p>{data.value?.term || ''}</p>
-        </div>
-      )}
-
-      {data.children.length > 0 ? <ChildrenContext /> : <></>}
-    </div>
-  );
 };

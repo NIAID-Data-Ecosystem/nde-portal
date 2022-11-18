@@ -12,19 +12,18 @@ import {
 import { Box } from 'nde-design-system';
 
 export interface Props {
-  dragOverlay?: boolean;
-  children: React.ReactElement<any, string | React.JSXElementConstructor<any>>;
-  color?: string;
+  activeIndex: number;
   data: DragItem;
+  isMergeable: boolean;
+  dragOverlay?: boolean;
+  color?: string;
   disabled?: boolean;
   dragging?: boolean;
   handle?: boolean;
   handleProps?: any;
   height?: number;
   index?: number;
-  isMergeable: boolean;
   fadeIn?: boolean;
-  activeIndex: number;
   overIndex?: number;
   transform?: Transform | null;
   listeners?: DraggableSyntheticListeners;
@@ -34,19 +33,7 @@ export interface Props {
   wrapperStyle?: React.CSSProperties;
   onUpdate?: (data: Partial<DragItem>) => void;
   onRemove?(): void;
-  renderItem?(args: {
-    dragOverlay: boolean;
-    dragging: boolean;
-    sorting: boolean;
-    index: number | undefined;
-    fadeIn: boolean;
-    listeners: DraggableSyntheticListeners;
-    ref: React.Ref<HTMLElement>;
-    style: React.CSSProperties | undefined;
-    transform: Props['transform'];
-    transition: Props['transition'];
-    data: Props['data'];
-  }): React.ReactElement;
+  renderItem?: (props?: any) => JSX.Element | undefined;
 }
 
 export const Item = React.memo(
@@ -63,7 +50,6 @@ export const Item = React.memo(
         fadeIn,
         handle,
         handleProps,
-        height,
         index,
         isMergeable,
         listeners,
@@ -71,16 +57,15 @@ export const Item = React.memo(
         onUpdate,
         overIndex,
         renderItem,
-        sorting,
         style,
         transition,
         transform,
         wrapperStyle,
-        ...props
       },
       ref,
     ) => {
-      const [showTagOptions, setShowTagOptions] = useState(false);
+      const [showActions, setShowActions] = useState(false);
+
       useEffect(() => {
         if (!dragOverlay) {
           return;
@@ -92,21 +77,7 @@ export const Item = React.memo(
         };
       }, [dragOverlay]);
 
-      return renderItem ? (
-        renderItem({
-          dragOverlay: Boolean(dragOverlay),
-          dragging: Boolean(dragging),
-          sorting: Boolean(sorting),
-          index,
-          fadeIn: Boolean(fadeIn),
-          listeners,
-          ref,
-          style,
-          transform,
-          transition,
-          data,
-        })
-      ) : (
+      return (
         <li
           ref={ref}
           id={`item-${data.id}`}
@@ -131,8 +102,8 @@ export const Item = React.memo(
                 : 'transparent',
             ...style,
           }}
-          onMouseOver={() => setShowTagOptions(true)}
-          onMouseOut={() => setShowTagOptions(false)}
+          onMouseOver={() => setShowActions(true)}
+          onMouseOut={() => setShowActions(false)}
         >
           {data.value.union && !dragOverlay && (
             <Box mr={1}>
@@ -192,6 +163,7 @@ export const Item = React.memo(
             }
           >
             <div id={`content-data-${data.id}`} style={{ display: 'flex' }}>
+              {/* Handle for dragging the item. */}
               {handle ? (
                 <Handle
                   bg='white'
@@ -201,9 +173,11 @@ export const Item = React.memo(
                   {...listeners}
                 />
               ) : null}
-              <div style={{ display: 'flex', flex: 1, padding: '0.5rem' }}>
-                {children || data.value.term}
-              </div>
+
+              {/* Content of draggable. */}
+              {renderItem ? renderItem() : <></>}
+
+              {/* Close button */}
               <span>
                 {onRemove ? (
                   <Remove
@@ -212,7 +186,7 @@ export const Item = React.memo(
                     color='gray.200'
                     bg='transparent'
                     p={1}
-                    opacity={showTagOptions ? 1 : 0}
+                    opacity={showActions ? 1 : 0}
                     colorScheme='gray'
                     _hover={{
                       bg: 'gray.100',

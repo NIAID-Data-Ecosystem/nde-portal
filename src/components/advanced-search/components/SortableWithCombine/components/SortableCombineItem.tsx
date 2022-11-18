@@ -12,7 +12,6 @@ import type {
 export interface SortableItemProps {
   id: UniqueIdentifier;
   index: number;
-  children?: React.ReactElement;
   handle: boolean;
   data: DragItem;
   wrapperStyle?({
@@ -29,11 +28,10 @@ export interface SortableItemProps {
   onRemove?(id: UniqueIdentifier): void;
   onUpdate?: (data: DragItem) => void;
   style: SortableWithCombineProps['getItemStyles'];
-  renderItem?(args: any): React.ReactElement;
+  renderItem?: (props: any) => JSX.Element | undefined;
 }
 
 export function SortableCombineItem({
-  children,
   disabled,
   animateLayoutChanges,
   handle,
@@ -47,16 +45,14 @@ export function SortableCombineItem({
   isMergeable: shouldMerge,
   useDragOverlay,
   wrapperStyle,
+  ...rest
 }: SortableItemProps) {
   const {
-    active,
     activeIndex,
     attributes,
     isDragging,
     isSorting,
-    items,
     listeners,
-    newIndex,
     over,
     overIndex,
     setNodeRef,
@@ -68,6 +64,7 @@ export function SortableCombineItem({
     disabled,
   });
 
+  // Check if mergeable and the current hovered over item matches.
   const isMergeable = (shouldMerge && over && over.id === id) || false;
   return (
     <Item
@@ -77,7 +74,22 @@ export function SortableCombineItem({
       dragging={isDragging}
       sorting={isSorting}
       handle={handle}
-      renderItem={renderItem}
+      renderItem={args =>
+        renderItem &&
+        renderItem({
+          ...args,
+          id,
+          data,
+          handle,
+          index,
+          wrapperStyle,
+          isMergeable,
+          style,
+          onUpdate,
+          onRemove,
+          useDragOverlay,
+        })
+      }
       index={index}
       isMergeable={isMergeable}
       overIndex={overIndex}
@@ -115,8 +127,7 @@ export function SortableCombineItem({
       data-id={id}
       dragOverlay={!useDragOverlay && isDragging}
       {...attributes}
-    >
-      {children || <></>}
-    </Item>
+      {...rest}
+    />
   );
 }
