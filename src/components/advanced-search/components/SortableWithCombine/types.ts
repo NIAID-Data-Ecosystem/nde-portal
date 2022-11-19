@@ -15,6 +15,7 @@ import type {
   NewIndexGetter,
   SortingStrategy,
 } from '@dnd-kit/sortable';
+import { BoxProps } from 'nde-design-system';
 
 export type UnionTypes = 'AND' | 'OR' | 'NOT';
 
@@ -63,18 +64,14 @@ export interface ItemStylesProps {
   isDragging: boolean;
   isMergeable: boolean;
   shouldCombine?: boolean;
+  style?: BoxProps;
 }
 
 export interface SortableWithCombineProps {
   items: DragItem[];
   setItems: React.Dispatch<React.SetStateAction<DragItem[]>>;
-  getItemStyles?(args: ItemStylesProps): React.CSSProperties;
-  wrapperStyle?({
-    index,
-    isDragging,
-    id,
-    data,
-  }: WrapperStylesProps): React.CSSProperties;
+  getItemStyle?: (args: ItemStylesProps) => BoxProps | {};
+  wrapperStyle?({ index, isDragging, id, data }: WrapperStylesProps): BoxProps;
   handle?: boolean;
   measuring?: MeasuringConfiguration;
   removable?: boolean;
@@ -114,20 +111,13 @@ export interface SortableProps {
   removable?: boolean;
   reorderItems?: typeof arrayMove;
   strategy?: SortingStrategy;
-  style?: React.CSSProperties;
+  style?: BoxProps;
   useDragOverlay?: boolean;
-  getItemStyles?(args: {
-    id: UniqueIdentifier;
-    index: number;
-    isSorting: boolean;
-    isDragOverlay: boolean;
-    overIndex: number;
-    isDragging: boolean;
-  }): React.CSSProperties;
+  getItemStyle: SortableWithCombineProps['getItemStyle'];
   wrapperStyle?(args: {
     index: number;
     isDragging: boolean;
     id: UniqueIdentifier;
-  }): React.CSSProperties;
+  }): BoxProps;
   isDisabled?(id: UniqueIdentifier): boolean;
 }

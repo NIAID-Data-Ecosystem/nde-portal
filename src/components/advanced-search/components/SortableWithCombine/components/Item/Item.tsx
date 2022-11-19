@@ -9,7 +9,7 @@ import {
   getUnionTheme,
   unionOptions,
 } from 'src/components/advanced-search/utils';
-import { Box } from 'nde-design-system';
+import { Box, BoxProps, Flex } from 'nde-design-system';
 
 export interface Props {
   activeIndex: number;
@@ -28,9 +28,9 @@ export interface Props {
   transform?: Transform | null;
   listeners?: DraggableSyntheticListeners;
   sorting?: boolean;
-  style?: React.CSSProperties;
+  style: BoxProps;
   transition?: string | null;
-  wrapperStyle?: React.CSSProperties;
+  wrapperStyle?: BoxProps;
   onUpdate?: (data: Partial<DragItem>) => void;
   onRemove?(): void;
   renderItem?: (props?: any) => JSX.Element | undefined;
@@ -41,12 +41,9 @@ export const Item = React.memo(
     (
       {
         activeIndex,
-        color,
         data,
         dragOverlay,
         dragging,
-        disabled,
-        fadeIn,
         handle,
         handleProps,
         index,
@@ -57,8 +54,6 @@ export const Item = React.memo(
         overIndex,
         renderItem,
         style,
-        transition,
-        transform,
         wrapperStyle,
       },
       ref,
@@ -79,124 +74,109 @@ export const Item = React.memo(
       return (
         <li
           ref={ref}
-          id={`item-${data.id}`}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            borderLeft: '2px solid',
-            borderRight: '2px solid',
-            borderLeftColor:
+          style={{ flexDirection: 'inherit', alignItems: 'inherit' }}
+        >
+          <Flex
+            id={`item-${data.id}`}
+            onMouseOver={() => setShowActions(true)}
+            onMouseOut={() => setShowActions(false)}
+            borderLeft='2px solid'
+            borderRight='2px solid'
+            borderLeftColor={
               index &&
               !isMergeable &&
               overIndex === index &&
               activeIndex > index
                 ? '#D5D5D5'
-                : 'transparent',
-            borderRightColor:
+                : 'transparent'
+            }
+            borderRightColor={
               index &&
               !isMergeable &&
               overIndex === index &&
               activeIndex < index
                 ? '#D5D5D5'
-                : 'transparent',
-            ...style,
-          }}
-          onMouseOver={() => setShowActions(true)}
-          onMouseOut={() => setShowActions(false)}
-        >
-          {data.value.union && !dragOverlay && (
-            <Box mr={1}>
-              <DropdownButton
-                size='sm'
-                isDisabled={dragging}
-                ariaLabel='union betwee n query elements'
-                onClick={() => {}}
-                options={unionOptions.map(term => {
-                  return {
-                    name: `${term}`,
-                    value: term,
-                    props: {
-                      ...getUnionTheme(term),
-                      fontSize: 'xs',
-                      textAlign: 'left',
-                    },
-                  };
-                })}
-                colorScheme={
-                  data.value.union
-                    ? getUnionTheme(data.value.union).colorScheme
-                    : 'primary'
-                }
-                selectedOption={data.value.union}
-                setSelectedOption={union => {
-                  onUpdate &&
-                    onUpdate({
-                      ...data,
-                      value: { ...data.value, union: union as UnionTypes },
-                    });
-                }}
-              />
-            </Box>
-          )}
-          <div
-            style={
-              {
-                ...wrapperStyle,
-                transition: [transition, wrapperStyle?.transition]
-                  .filter(Boolean)
-                  .join(', '),
-                '--translate-x': transform
-                  ? `${Math.round(transform.x)}px`
-                  : undefined,
-                '--translate-y': transform
-                  ? `${Math.round(transform.y)}px`
-                  : undefined,
-                '--scale-x': transform?.scaleX
-                  ? `${transform.scaleX}`
-                  : undefined,
-                '--scale-y': transform?.scaleY
-                  ? `${transform.scaleY}`
-                  : undefined,
-                '--index': index,
-                '--color': color,
-              } as React.CSSProperties
+                : 'transparent'
             }
+            {...style}
           >
-            <div id={`content-data-${data.id}`} style={{ display: 'flex' }}>
-              {/* Handle for dragging the item. */}
-              {handle ? (
-                <Handle
-                  bg='white'
-                  color='gray.600'
-                  _hover={{ background: 'blackAlpha.100' }}
-                  {...handleProps}
-                  {...listeners}
+            {data.value.union && !dragOverlay && (
+              <Box m={1}>
+                <DropdownButton
+                  size='sm'
+                  isDisabled={dragging}
+                  ariaLabel='union between query elements'
+                  onClick={() => {}}
+                  options={unionOptions.map(term => {
+                    return {
+                      name: `${term}`,
+                      value: term,
+                      props: {
+                        ...getUnionTheme(term),
+                        fontSize: 'xs',
+                        textAlign: 'left',
+                      },
+                    };
+                  })}
+                  colorScheme={
+                    data.value.union
+                      ? getUnionTheme(data.value.union).colorScheme
+                      : 'primary'
+                  }
+                  selectedOption={data.value.union}
+                  setSelectedOption={union => {
+                    onUpdate &&
+                      onUpdate({
+                        ...data,
+                        value: { ...data.value, union: union as UnionTypes },
+                      });
+                  }}
                 />
-              ) : null}
+              </Box>
+            )}
 
-              {/* Content of draggable. */}
-              {renderItem ? renderItem() : <></>}
-
-              {/* Close button */}
-              <span>
-                {onRemove ? (
-                  <Remove
-                    aria-label={`remove item ${data.value.term}`}
-                    onClick={onRemove}
-                    color='gray.200'
-                    bg='transparent'
-                    p={1}
-                    opacity={showActions ? 1 : 0}
-                    colorScheme='gray'
-                    _hover={{
-                      bg: 'gray.100',
-                      color: 'gray.600',
-                    }}
+            <Box
+              {...wrapperStyle}
+              maxW={dragOverlay ? '400px' : 'unset'}
+              maxH={dragOverlay ? '200px' : 'unset'}
+              overflow={dragOverlay ? 'hidden' : 'unset'}
+            >
+              <Flex id={`content-data-${data.id}`}>
+                {/* Handle for dragging the item. */}
+                {handle ? (
+                  <Handle
+                    bg='white'
+                    color='gray.600'
+                    _hover={{ background: 'blackAlpha.100' }}
+                    {...handleProps}
+                    {...listeners}
                   />
                 ) : null}
-              </span>
-            </div>
-          </div>
+
+                {/* Content of draggable. */}
+                {renderItem ? renderItem({ dragOverlay }) : <></>}
+
+                {/* Close button */}
+                <span>
+                  {onRemove ? (
+                    <Remove
+                      aria-label={`remove item ${data.value.term}`}
+                      onClick={onRemove}
+                      color='gray.200'
+                      bg='transparent'
+                      p={1}
+                      opacity={showActions ? 1 : 0}
+                      colorScheme='gray'
+                      _hover={{
+                        bg: 'gray.100',
+                        color: 'gray.600',
+                      }}
+                    />
+                  ) : null}
+                </span>
+              </Flex>
+            </Box>
+          </Flex>
         </li>
       );
     },

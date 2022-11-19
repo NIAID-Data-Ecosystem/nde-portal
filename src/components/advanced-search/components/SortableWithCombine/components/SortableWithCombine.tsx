@@ -42,12 +42,12 @@ import type {
   WrapperStylesProps,
 } from '../types';
 import { CSS } from '@dnd-kit/utilities';
-import { SortableCombineItem, SortableItemProps } from './SortableCombineItem';
+import { SortableCombineItem } from './SortableCombineItem';
 import { Item } from './Item';
 import { useCollisionDetection } from './CollisionDetectionStrategy';
-import { StyleProps } from '@chakra-ui/react';
+import { theme } from '@chakra-ui/react';
 import { ItemContent } from './ItemContent';
-import { theme } from 'nde-design-system';
+import { Box } from 'nde-design-system';
 
 const dropAnimationConfig: DropAnimation = {
   keyframes({ transform }) {
@@ -89,14 +89,12 @@ const params: Params = {
   useDragOverlay: true,
 };
 
-const config: Partial<SortableProps> = {
+export const config: Partial<SortableProps> = {
   adjustScale: true,
   wrapperStyle: ({ isMergeable, data }: WrapperStylesProps) => {
     const styles = {
       background: isMergeable ? 'aliceblue' : 'white',
     };
-    if (data.children) {
-    }
 
     return {
       ...styles,
@@ -108,14 +106,18 @@ const config: Partial<SortableProps> = {
       borderRadius: '0.3125rem',
       boxShadow:
         '0 10px 15px -3px rgba(0, 0, 0, 0.1),0 4px 6px -2px rgba(0, 0, 0, 0.05)',
-      // overflow: 'hidden',
     };
   },
-  getItemStyles: ({ data, isMergeable }: ItemStylesProps) => {
-    const styles = {
-      // padding: '2rem', margin: '0.25rem'
+  getItemStyle: ({ data, isMergeable, style, ...props }: ItemStylesProps) => {
+    const direction = style?.flexDirection || 'row';
+    const alignItems = direction === 'row' ? 'center' : 'flex-start';
+    const itemStyles = {
+      ...style,
+      flexDirection: direction,
+
+      alignItems: style?.alignItems || alignItems,
     };
-    return styles;
+    return itemStyles;
   },
 };
 
@@ -125,7 +127,7 @@ export function SortableWithCombine({
   handle = false,
   removable,
   wrapperStyle = config.wrapperStyle,
-  getItemStyles = config.getItemStyles,
+  getItemStyle = config.getItemStyle,
 }: SortableWithCombineProps) {
   const {
     activationConstraint,
@@ -257,6 +259,7 @@ export function SortableWithCombine({
     }
 
     let isMergeable = shouldCombine(active.id, collisions, [0.1, 0.4]);
+
     setIsMergeable(isMergeable);
   };
 
@@ -320,7 +323,6 @@ export function SortableWithCombine({
       resetState();
       return;
     }
-
     /**
      * [SORTING ITEMS]:
      *  - Updates the order of items for both containers and individual items
@@ -364,6 +366,7 @@ export function SortableWithCombine({
 
         return;
       }
+
       // classic sorting mechanism between elements with same parent container
       const newItems = arrayMove(clonedItems, activeIndex, droppableIndex);
       setItems(buildTree(newItems));
@@ -372,7 +375,18 @@ export function SortableWithCombine({
   };
 
   return (
-    <div style={{ background: 'transparent' }}>
+    <Box
+      bg={
+        !isMergeable &&
+        activeItem &&
+        droppableItem &&
+        !droppableItem.parentId &&
+        activeItem.parentId !== droppableItem.parentId
+          ? 'gray.200'
+          : 'gray.100'
+      }
+      p={4}
+    >
       <DndContext
         measuring={measuring}
         sensors={sensors}
@@ -408,7 +422,17 @@ export function SortableWithCombine({
                 index={index}
                 wrapperStyle={wrapperStyle}
                 isMergeable={isMergeable}
-                style={getItemStyles}
+                style={args =>
+                  getItemStyle
+                    ? getItemStyle({
+                        ...args,
+                        style: {
+                          flexDirection: getSortingStrategy(items).direction,
+                          ...args.style, // for nested elements to override
+                        },
+                      })
+                    : () => ({})
+                }
                 onUpdate={handleUpdate}
                 onRemove={removable ? handleRemove : undefined}
                 useDragOverlay={useDragOverlay}
@@ -439,11 +463,12 @@ export function SortableWithCombine({
                           })
                         : {}
                     }
+                    style={{}}
                     dragOverlay
                     isMergeable={false}
                     activeIndex={activeItem.index}
                     overIndex={droppableItem?.index}
-                    renderItem={() => (
+                    renderItem={props => (
                       <ItemContent
                         id={activeItem.id}
                         data={activeItem}
@@ -451,9 +476,9 @@ export function SortableWithCombine({
                         index={activeItem.index}
                         isMergeable={isMergeable}
                         wrapperStyle={wrapperStyle}
-                        strategy={strategy}
-                        style={getItemStyles}
+                        style={getItemStyle}
                         useDragOverlay={useDragOverlay}
+                        {...props}
                       />
                     )}
                   />
@@ -463,7 +488,7 @@ export function SortableWithCombine({
             )
           : null}
       </DndContext>
-    </div>
+    </Box>
   );
 }
 
@@ -477,16 +502,21 @@ export const getSortingStrategy = (items: DragItem[]) => {
           return subItem.children.length > 0;
         }),
     ).length > 0;
+
   const sortOrder: {
     strategy: SortingStrategy;
     direction: 'row' | 'row-reverse' | 'column' | 'column-reverse';
   } = { strategy: () => null, direction: 'column' };
-
-  if (itemHasChildren || numItems > 3) {
+  const MAX_ROW_ITEMS = 2;
+  // we want items in a column if one of the items is a container for other items
+  // or if the number of items is larger than [MAX_ROW_ITEMS] .
+  if (itemHasChildren || numItems > MAX_ROW_ITEMS) {
     // vertical
     // sortOrder.strategy = verticalListSortingStrategy;
     sortOrder.direction = 'column';
   } else {
+    // console.log('getSortingStrat', items, itemHasChildren, numItems);
+
     // horizontal
     // sortOrder.strategy = horizontalListSortingStrategy;
 

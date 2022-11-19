@@ -173,7 +173,11 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
                 setItems(prev => {
                   if (!term) return prev;
                   const newItems = [...prev];
-                  const id = `${uniqueId(`${term}-${items.length}-`)}`;
+                  const id = `${uniqueId(
+                    `${term.slice(0, 20).split(' ').join('-')}-${
+                      items.length
+                    }-`,
+                  )}`;
 
                   newItems.push({
                     id, // unique identifier
@@ -302,14 +306,12 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
             dragging a element over another.
           </Text>
 
-          <Box bg='gray.100'>
-            <SortableWithCombine
-              items={items}
-              setItems={setItems}
-              handle
-              removable
-            />
-          </Box>
+          <SortableWithCombine
+            items={items}
+            setItems={setItems}
+            handle
+            removable
+          />
 
           <Collapse in={showRawQuery}>
             {/* [TO DO]: add syntax highlighting on hover */}
@@ -327,6 +329,7 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
             colorScheme='gray'
             color='text.body'
             size='sm'
+            mt={2}
           >
             view string query
           </Button>

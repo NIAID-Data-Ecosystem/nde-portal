@@ -8,18 +8,14 @@ import type {
   SortableWithCombineProps,
   WrapperStylesProps,
 } from '../types';
+import { BoxProps } from 'nde-design-system';
 
 export interface SortableItemProps {
   id: UniqueIdentifier;
   index: number;
   handle: boolean;
   data: DragItem;
-  wrapperStyle?({
-    index,
-    isDragging,
-    id,
-    data,
-  }: WrapperStylesProps): React.CSSProperties;
+  wrapperStyle?({ index, isDragging, id, data }: WrapperStylesProps): BoxProps;
   animateLayoutChanges?: AnimateLayoutChanges;
   disabled?: boolean;
   isOverlay?: boolean;
@@ -27,8 +23,13 @@ export interface SortableItemProps {
   useDragOverlay?: boolean;
   onRemove?(id: UniqueIdentifier): void;
   onUpdate?: (data: DragItem) => void;
-  style: SortableWithCombineProps['getItemStyles'];
+  style: SortableWithCombineProps['getItemStyle'];
   renderItem?: (props: any) => JSX.Element | undefined;
+  wrapperStyle?(args: {
+    index: number;
+    isDragging: boolean;
+    id: UniqueIdentifier;
+  }): BoxProps;
 }
 
 export function SortableCombineItem({
@@ -52,6 +53,7 @@ export function SortableCombineItem({
     attributes,
     isDragging,
     isSorting,
+    items,
     listeners,
     over,
     overIndex,
@@ -63,7 +65,6 @@ export function SortableCombineItem({
     animateLayoutChanges,
     disabled,
   });
-
   // Check if this element is mergeable.
   const isAvailableForMerge = (isMergeable && over && over.id === id) || false;
   return (
@@ -110,7 +111,7 @@ export function SortableCombineItem({
               transform: CSS.Translate.toString(transform),
               transition,
             }
-          : undefined
+          : {}
       }
       onRemove={onRemove ? () => onRemove(id) : undefined}
       onUpdate={
