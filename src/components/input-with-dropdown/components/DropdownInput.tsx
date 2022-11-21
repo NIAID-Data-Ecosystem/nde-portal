@@ -14,6 +14,7 @@ import {
 import { FaSearch } from 'react-icons/fa';
 import { useDropdownContext } from '..';
 import { ReactElement } from 'react-markdown/lib/react-markdown';
+import { theme } from '@chakra-ui/react';
 
 /*
 [Component Information]: [DropdownInput] is a regular input field with a list of suggestions based on the user typing.
@@ -128,7 +129,7 @@ export const DropdownInput: React.FC<DropdownInputProps> = ({
             ref={inputRightRef}
             p={1}
             w='unset'
-            zIndex='dropdown'
+            zIndex={theme.zIndices['dropdown'] + 10}
           >
             {renderSubmitButton({
               type: 'submit',

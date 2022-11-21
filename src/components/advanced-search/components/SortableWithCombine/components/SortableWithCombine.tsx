@@ -404,7 +404,7 @@ export function SortableWithCombine({
         <div
           style={{
             display: 'flex',
-            flexWrap: 'wrap',
+            // flexWrap: 'wrap',
             padding: '1rem',
             flexDirection: getSortingStrategy(items).direction,
           }}
@@ -512,13 +512,13 @@ export const getSortingStrategy = (items: DragItem[]) => {
   // or if the number of items is larger than [MAX_ROW_ITEMS] .
   if (itemHasChildren || numItems > MAX_ROW_ITEMS) {
     // vertical
-    // sortOrder.strategy = verticalListSortingStrategy;
+    sortOrder.strategy = verticalListSortingStrategy;
     sortOrder.direction = 'column';
   } else {
     // console.log('getSortingStrat', items, itemHasChildren, numItems);
 
     // horizontal
-    // sortOrder.strategy = horizontalListSortingStrategy;
+    sortOrder.strategy = horizontalListSortingStrategy;
 
     sortOrder.direction = 'row';
   }

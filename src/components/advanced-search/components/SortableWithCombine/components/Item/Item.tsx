@@ -80,6 +80,7 @@ export const Item = React.memo(
             id={`item-${data.id}`}
             onMouseOver={() => setShowActions(true)}
             onMouseOut={() => setShowActions(false)}
+            h='100%'
             borderLeft='2px solid'
             borderRight='2px solid'
             borderLeftColor={
