@@ -79,7 +79,7 @@ export const PageContainer: React.FC<PageContainerProps> = ({
             position='sticky'
             top={0}
             w='100%'
-            zIndex={2000}
+            zIndex={'sticky'}
             minW={300}
           >
             <Navigation
