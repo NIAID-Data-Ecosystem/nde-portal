@@ -22,7 +22,6 @@ import {
   SortingStrategy,
   verticalListSortingStrategy,
   horizontalListSortingStrategy,
-  rectSortingStrategy,
 } from '@dnd-kit/sortable';
 import {
   addToExistingGroup,
@@ -37,7 +36,6 @@ import type {
   FlattenedItem,
   ItemStylesProps,
   Params,
-  SortableProps,
   SortableWithCombineProps,
   WrapperStylesProps,
 } from '../types';
@@ -48,6 +46,7 @@ import { useCollisionDetection } from './CollisionDetectionStrategy';
 import { theme } from '@chakra-ui/react';
 import { ItemContent } from './ItemContent';
 import { Box } from 'nde-design-system';
+import { getUnionTheme } from 'src/components/advanced-search/utils';
 
 const dropAnimationConfig: DropAnimation = {
   keyframes({ transform }) {
@@ -89,23 +88,40 @@ const params: Params = {
   useDragOverlay: true,
 };
 
-export const config: Partial<SortableProps> = {
+export const config: Partial<SortableWithCombineProps> = {
   adjustScale: true,
-  wrapperStyle: ({ isMergeable, data }: WrapperStylesProps) => {
-    const styles = {
-      background: isMergeable ? 'aliceblue' : 'white',
-    };
+  wrapperStyle: ({
+    isMergeable,
+    data,
+    items,
+    ...props
+  }: WrapperStylesProps) => {
+    const currentItem = items && items.find(item => item.id === data.id);
+    if (!currentItem) {
+      return {};
+    }
+    const itemList = items.filter(item => item.depth === currentItem.depth);
+
+    const nextElement = itemList[data.index + 1];
+
+    const unionColor = data.value.union
+      ? getUnionTheme(data.value.union).background
+      : nextElement && nextElement.value.union
+      ? getUnionTheme(nextElement.value.union).background
+      : 'gray.200';
 
     return {
-      ...styles,
+      background: isMergeable ? 'aliceblue' : 'white',
       minWidth: 160,
       flex: 1,
       margin: '0.15rem',
       paddingRight: '1rem',
       border: '1px solid #D5D5D5',
       borderRadius: '0.3125rem',
+      borderLeft: '3px solid',
       boxShadow:
         '0 10px 15px -3px rgba(0, 0, 0, 0.1),0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+      borderLeftColor: unionColor,
     };
   },
   getItemStyle: ({ data, isMergeable, style, ...props }: ItemStylesProps) => {
@@ -200,11 +216,9 @@ export function SortableWithCombine({
       No adaptations are needed - the shifting of elements happens according
       to the strategy.
      */
-
     const overId = over?.id;
 
     // Index and data for actively dragged item.
-
     if (!overId) {
       // [Note]: if you pull a nested el onto a non nested one this is triggered.
       //  Also triggered when trying to merge two non nested. could deal with on drag end i guess/
@@ -344,8 +358,8 @@ export function SortableWithCombine({
           depth: droppableItem.depth,
         };
 
-        // [delta] refers to the mouse position, where a negative value indicated the pointer moving left and pos value = pointer moving right.
-        if (delta.x > 0) {
+        // [delta] refers to the mouse position, where a negative value indicated the pointer moving left/top and pos value = pointer moving right/bottom.
+        if (delta.x > 0 || delta.y > 0) {
           const parentItem = clonedItems.find(
             ({ id }) => id === activeItem.parentId,
           );
@@ -420,7 +434,11 @@ export function SortableWithCombine({
                 data={value}
                 handle={handle}
                 index={index}
-                wrapperStyle={wrapperStyle}
+                wrapperStyle={args =>
+                  wrapperStyle
+                    ? wrapperStyle({ ...args, items: flattenedItems })
+                    : {}
+                }
                 isMergeable={isMergeable}
                 style={args =>
                   getItemStyle
@@ -455,15 +473,14 @@ export function SortableWithCombine({
                     wrapperStyle={
                       wrapperStyle
                         ? wrapperStyle({
-                            index: activeItem.index,
-                            isDragging: true,
-                            id: activeItem.id,
                             data: activeItem,
                             isMergeable,
+                            items: flattenedItems,
                           })
                         : {}
                     }
                     style={{}}
+                    index={activeItem.index}
                     dragOverlay
                     isMergeable={false}
                     activeIndex={activeItem.index}
@@ -515,8 +532,6 @@ export const getSortingStrategy = (items: DragItem[]) => {
     sortOrder.strategy = verticalListSortingStrategy;
     sortOrder.direction = 'column';
   } else {
-    // console.log('getSortingStrat', items, itemHasChildren, numItems);
-
     // horizontal
     sortOrder.strategy = horizontalListSortingStrategy;
 

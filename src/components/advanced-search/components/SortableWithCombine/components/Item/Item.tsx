@@ -14,6 +14,7 @@ import { Box, BoxProps, Flex } from 'nde-design-system';
 export interface Props {
   activeIndex: number;
   data: DragItem;
+  index: number;
   isMergeable: boolean;
   dragOverlay?: boolean;
   color?: string;
@@ -22,7 +23,6 @@ export interface Props {
   handle?: boolean;
   handleProps?: any;
   height?: number;
-  index?: number;
   fadeIn?: boolean;
   overIndex?: number;
   transform?: Transform | null;
@@ -101,7 +101,7 @@ export const Item = React.memo(
             }
             {...style}
           >
-            {data.value.union && !dragOverlay && (
+            {data.index !== 0 && data.value.union && !dragOverlay && (
               <Box m={1}>
                 <DropdownButton
                   size='sm'

@@ -95,13 +95,15 @@ export function buildTree(flattenedItems: FlattenedItem[]): DragItems {
     };
   });
 
-  items.forEach(item => {
-    const { id, children, value, index } = item;
-    const parentId = item.parentId ?? root.id;
-    const parent = nodes[parentId] ?? findItem(items, parentId);
-    nodes[id] = { index, id, children, value: { ...value } };
-    parent.children.push(item);
-  });
+  items
+    .sort((a, b) => a.index - b.index)
+    .forEach(item => {
+      const { id, children, value, index } = item;
+      const parentId = item.parentId ?? root.id;
+      const parent = nodes[parentId] ?? findItem(items, parentId);
+      nodes[id] = { index, id, children, value: { ...value } };
+      parent.children.push(item);
+    });
 
   return collapseTree([...root.children]);
 }

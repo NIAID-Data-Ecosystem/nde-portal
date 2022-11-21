@@ -47,11 +47,12 @@ export type SensorContext = MutableRefObject<{
 }>;
 
 export interface WrapperStylesProps {
-  index: number;
-  isDragging: boolean;
-  id: UniqueIdentifier;
+  // index: number;
+  // isDragging: boolean;
+  // id: UniqueIdentifier;
   data: DragItem;
   isMergeable: boolean;
+  items: FlattenedItem[];
 }
 
 export interface ItemStylesProps {
@@ -70,8 +71,9 @@ export interface ItemStylesProps {
 export interface SortableWithCombineProps {
   items: DragItem[];
   setItems: React.Dispatch<React.SetStateAction<DragItem[]>>;
+  adjustScale?: boolean;
   getItemStyle?: (args: ItemStylesProps) => BoxProps | {};
-  wrapperStyle?({ index, isDragging, id, data }: WrapperStylesProps): BoxProps;
+  wrapperStyle?: (args: WrapperStylesProps) => BoxProps;
   handle?: boolean;
   measuring?: MeasuringConfiguration;
   removable?: boolean;
@@ -91,33 +93,4 @@ export interface Params {
   reorderItems?: typeof arrayMove;
   strategy?: SortingStrategy;
   useDragOverlay?: boolean;
-}
-
-export interface SortableProps {
-  activationConstraint?: PointerActivationConstraint;
-  animateLayoutChanges?: AnimateLayoutChanges;
-  adjustScale?: boolean;
-  collisionDetection?: CollisionDetection;
-  coordinateGetter?: KeyboardCoordinateGetter;
-  Container?: any; // To-do: Fix me
-  dropAnimation?: DropAnimation | null;
-  getNewIndex?: NewIndexGetter;
-  handle?: boolean;
-  itemCount?: number;
-  items?: UniqueIdentifier[];
-  measuring?: MeasuringConfiguration;
-  modifiers?: Modifiers;
-  renderItem?: any;
-  removable?: boolean;
-  reorderItems?: typeof arrayMove;
-  strategy?: SortingStrategy;
-  style?: BoxProps;
-  useDragOverlay?: boolean;
-  getItemStyle: SortableWithCombineProps['getItemStyle'];
-  wrapperStyle?(args: {
-    index: number;
-    isDragging: boolean;
-    id: UniqueIdentifier;
-  }): BoxProps;
-  isDisabled?(id: UniqueIdentifier): boolean;
 }
