@@ -8,6 +8,15 @@ import {
 } from 'src/utils/api/types';
 import { encodeString } from 'src/utils/querystring-helpers';
 
+export interface usePredictiveSearchResponse {
+  isLoading: boolean;
+  error: Error | null;
+  results: FormattedResource[];
+  searchTerm: string;
+  searchField: string;
+  updateSearchTerm: (value: string) => void;
+  setSearchField: (value: string) => void;
+}
 // Handles query formatting for predictive search
 export const usePredictiveSearch = (term = '', field = '') => {
   const [results, setResults] = useState<FormattedResource[]>([]);
@@ -79,7 +88,6 @@ export const usePredictiveSearch = (term = '', field = '') => {
     searchTerm,
     searchField,
     updateSearchTerm,
-    setSearchTerm,
     setSearchField,
   };
 };
