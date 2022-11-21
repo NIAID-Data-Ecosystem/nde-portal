@@ -9,6 +9,7 @@ interface ItemContentProps extends SortableItemProps {
   data: DragItem;
   strategy?: SortingStrategy;
   dragOverlay: boolean;
+  enableMovement: boolean;
 }
 
 export const ItemContent: React.FC<ItemContentProps> = React.memo(
@@ -18,7 +19,10 @@ export const ItemContent: React.FC<ItemContentProps> = React.memo(
         if (!data || data.length === 0) {
           return <></>;
         }
-        const { direction, strategy } = getSortingStrategy(data);
+        const { direction, strategy } = getSortingStrategy(
+          data,
+          props.enableMovement,
+        );
         return (
           <Flex
             flexDirection={direction}
@@ -78,12 +82,17 @@ export const ItemContent: React.FC<ItemContentProps> = React.memo(
           {data.children.length === 0 && (
             <div>
               {data.value.field && (
-                <Text fontSize='12px'>
+                <Text fontSize='12px' color='inherit'>
                   {data?.value?.field?.toUpperCase() || ''}
                   <br />
                 </Text>
               )}
-              <Text fontSize='sm' fontWeight='medium' noOfLines={3}>
+              <Text
+                fontSize='sm'
+                fontWeight='medium'
+                noOfLines={3}
+                color='inherit'
+              >
                 {data.value?.term || ''}
               </Text>
             </div>

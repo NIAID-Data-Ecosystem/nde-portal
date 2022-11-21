@@ -45,7 +45,7 @@ import { Item } from './Item';
 import { useCollisionDetection } from './CollisionDetectionStrategy';
 import { theme } from '@chakra-ui/react';
 import { ItemContent } from './ItemContent';
-import { Box } from 'nde-design-system';
+import { Box, Checkbox } from 'nde-design-system';
 import { getUnionTheme } from 'src/components/advanced-search/utils';
 
 const dropAnimationConfig: DropAnimation = {
@@ -111,7 +111,8 @@ export const config: Partial<SortableWithCombineProps> = {
       : 'gray.200';
 
     return {
-      background: isMergeable ? 'aliceblue' : 'white',
+      background: isMergeable ? 'status.info' : 'white',
+      color: isMergeable ? 'white' : 'text.body',
       minWidth: 160,
       flex: 1,
       margin: '0.15rem',
@@ -388,128 +389,146 @@ export function SortableWithCombine({
     }
   };
 
+  const [enableMovement, setEnableMovement] = useState(true);
   return (
-    <Box
-      bg={
-        !isMergeable &&
-        activeItem &&
-        droppableItem &&
-        !droppableItem.parentId &&
-        activeItem.parentId !== droppableItem.parentId
-          ? 'gray.200'
-          : 'gray.100'
-      }
-      p={4}
-    >
-      <DndContext
-        measuring={measuring}
-        sensors={sensors}
-        collisionDetection={collisionDetectionStrategy}
-        onDragStart={({ active }) => {
-          if (!active) {
-            return;
-          }
-          setActiveId(active.id);
-        }}
-        onDragMove={handleDragMove}
-        onDragEnd={handleDragEnd}
-        onDragCancel={() => resetState()}
+    <>
+      <Checkbox
+        isChecked={enableMovement}
+        onChange={() => setEnableMovement(!enableMovement)}
       >
-        <div
-          style={{
-            display: 'flex',
-            // flexWrap: 'wrap',
-            padding: '1rem',
-            flexDirection: getSortingStrategy(items).direction,
+        Enable sorting movement (for testing purposes)
+      </Checkbox>
+      <Box
+        bg={
+          !isMergeable &&
+          activeItem &&
+          droppableItem &&
+          !droppableItem.parentId &&
+          activeItem.parentId !== droppableItem.parentId
+            ? 'status.info'
+            : 'gray.100'
+        }
+        p={4}
+      >
+        <DndContext
+          measuring={measuring}
+          sensors={sensors}
+          collisionDetection={collisionDetectionStrategy}
+          onDragStart={({ active }) => {
+            if (!active) {
+              return;
+            }
+            setActiveId(active.id);
           }}
+          onDragMove={handleDragMove}
+          onDragEnd={handleDragEnd}
+          onDragCancel={() => resetState()}
         >
-          <SortableContext
-            items={sortedIds}
-            strategy={getSortingStrategy(items).strategy}
+          <div
+            style={{
+              display: 'flex',
+              // flexWrap: 'wrap',
+              padding: '1rem',
+              flexDirection: getSortingStrategy(items, enableMovement)
+                .direction,
+            }}
           >
-            {items.map((value, index) => (
-              <SortableCombineItem
-                key={value.id}
-                id={value.id}
-                data={value}
-                handle={handle}
-                index={index}
-                wrapperStyle={args =>
-                  wrapperStyle
-                    ? wrapperStyle({ ...args, items: flattenedItems })
-                    : {}
-                }
-                isMergeable={isMergeable}
-                style={args =>
-                  getItemStyle
-                    ? getItemStyle({
-                        ...args,
-                        style: {
-                          flexDirection: getSortingStrategy(items).direction,
-                          ...args.style, // for nested elements to override
-                        },
-                      })
-                    : () => ({})
-                }
-                onUpdate={handleUpdate}
-                onRemove={removable ? handleRemove : undefined}
-                useDragOverlay={useDragOverlay}
-                renderItem={props => <ItemContent {...props} />}
-              />
-            ))}
-          </SortableContext>
-        </div>
-        {useDragOverlay
-          ? createPortal(
-              <DragOverlay
-                adjustScale={adjustScale}
-                dropAnimation={dropAnimation}
-                zIndex={theme.zIndices['popover']}
-              >
-                {activeId && activeItem ? (
-                  <Item
-                    data={activeItem}
-                    handle={handle}
-                    wrapperStyle={
-                      wrapperStyle
-                        ? wrapperStyle({
-                            data: activeItem,
-                            isMergeable,
-                            items: flattenedItems,
-                          })
-                        : {}
-                    }
-                    style={{}}
-                    index={activeItem.index}
-                    dragOverlay
-                    isMergeable={false}
-                    activeIndex={activeItem.index}
-                    overIndex={droppableItem?.index}
-                    renderItem={props => (
-                      <ItemContent
-                        id={activeItem.id}
-                        data={activeItem}
-                        handle={handle}
-                        index={activeItem.index}
-                        isMergeable={isMergeable}
-                        wrapperStyle={wrapperStyle}
-                        style={getItemStyle}
-                        useDragOverlay={useDragOverlay}
-                        {...props}
-                      />
-                    )}
-                  />
-                ) : null}
-              </DragOverlay>,
-              document.body,
-            )
-          : null}
-      </DndContext>
-    </Box>
+            <SortableContext
+              items={sortedIds}
+              strategy={getSortingStrategy(items, enableMovement).strategy}
+            >
+              {items.map((value, index) => (
+                <SortableCombineItem
+                  key={value.id}
+                  id={value.id}
+                  data={value}
+                  handle={handle}
+                  index={index}
+                  wrapperStyle={args =>
+                    wrapperStyle
+                      ? wrapperStyle({ ...args, items: flattenedItems })
+                      : {}
+                  }
+                  isMergeable={isMergeable}
+                  style={args =>
+                    getItemStyle
+                      ? getItemStyle({
+                          ...args,
+                          style: {
+                            flexDirection: getSortingStrategy(
+                              items,
+                              enableMovement,
+                            ).direction,
+                            ...args.style, // for nested elements to override
+                          },
+                        })
+                      : () => ({})
+                  }
+                  onUpdate={handleUpdate}
+                  onRemove={removable ? handleRemove : undefined}
+                  useDragOverlay={useDragOverlay}
+                  renderItem={props => (
+                    <ItemContent enableMovement={enableMovement} {...props} />
+                  )}
+                />
+              ))}
+            </SortableContext>
+          </div>
+          {useDragOverlay
+            ? createPortal(
+                <DragOverlay
+                  adjustScale={adjustScale}
+                  dropAnimation={dropAnimation}
+                  zIndex={theme.zIndices['popover']}
+                >
+                  {activeId && activeItem ? (
+                    <Item
+                      data={activeItem}
+                      handle={handle}
+                      wrapperStyle={
+                        wrapperStyle
+                          ? wrapperStyle({
+                              data: activeItem,
+                              isMergeable,
+                              items: flattenedItems,
+                            })
+                          : {}
+                      }
+                      style={{}}
+                      index={activeItem.index}
+                      dragOverlay
+                      isMergeable={false}
+                      activeIndex={activeItem.index}
+                      overIndex={droppableItem?.index}
+                      renderItem={props => (
+                        <ItemContent
+                          id={activeItem.id}
+                          data={activeItem}
+                          handle={handle}
+                          index={activeItem.index}
+                          isMergeable={isMergeable}
+                          wrapperStyle={wrapperStyle}
+                          style={getItemStyle}
+                          useDragOverlay={useDragOverlay}
+                          {...props}
+                        />
+                      )}
+                    />
+                  ) : null}
+                </DragOverlay>,
+                document.body,
+              )
+            : null}
+        </DndContext>
+      </Box>
+    </>
   );
 }
 
-export const getSortingStrategy = (items: DragItem[]) => {
+export const getSortingStrategy = (
+  items: DragItem[],
+  enableMovement: boolean,
+) => {
   const numItems = items.length;
   const itemHasChildren =
     items.filter(
@@ -536,6 +555,9 @@ export const getSortingStrategy = (items: DragItem[]) => {
     sortOrder.strategy = horizontalListSortingStrategy;
 
     sortOrder.direction = 'row';
+  }
+  if (!enableMovement) {
+    sortOrder.strategy = () => null;
   }
   return sortOrder;
 };

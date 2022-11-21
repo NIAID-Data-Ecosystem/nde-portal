@@ -146,7 +146,7 @@ export const Item = React.memo(
                 {/* Handle for dragging the item. */}
                 {handle ? (
                   <Handle
-                    bg='white'
+                    bg='transparent'
                     color='gray.600'
                     _hover={{ background: 'blackAlpha.100' }}
                     {...handleProps}
