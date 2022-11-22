@@ -187,10 +187,6 @@ const Test: NextPage = () => {
           body={[homepageCopy.sections[0].body]}
         >
           <>
-            {/* [TO DO]: Implement Advanced Query */}
-            {/* <Flex w='100%' justifyContent='flex-end'>
-              <AdvancedSearch />
-            </Flex> */}
             <Flex w='100%' justifyContent='flex-end'>
               <AdvancedSearch />
             </Flex>

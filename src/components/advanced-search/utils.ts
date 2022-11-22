@@ -46,7 +46,7 @@ export const convertObject2QueryString = (
         }
         // TO DO: if exact match don't encode.
         str += encode ? encodeString(item.value.term) : item.value.term;
-        r += `${union}(${str})`;
+        r += `${union}${str}`;
       }
 
       return r;

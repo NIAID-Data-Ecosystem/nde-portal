@@ -119,8 +119,9 @@ export const DropdownInput: React.FC<DropdownInputProps> = ({
                 updatedInputValue && setInputValue(updatedInputValue);
               }
             },
-            onChange: (e: React.ChangeEvent<HTMLInputElement>) =>
-              onChange ? onChange(e.currentTarget.value) : void 0,
+            onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
+              onChange ? onChange(e.currentTarget.value) : void 0;
+            },
           })}
         />
         {/* Optional submit button. */}

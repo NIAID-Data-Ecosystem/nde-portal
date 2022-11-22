@@ -23,6 +23,7 @@ interface SearchWithPredictiveTextProps extends usePredictiveSearchResponse {
   //   e: React.MouseEvent<HTMLLIElement, MouseEvent>,
   //   data: FormattedResource,
   // ) => void; // triggered when suggestion item from list is clicked / press enters.
+  onChange?: (arg: string) => void;
   handleSubmit: (
     inputValue: string,
     field: string,
@@ -39,6 +40,7 @@ export const PredictiveSearch: React.FC<SearchWithPredictiveTextProps> = ({
   colorScheme = 'primary',
   handleSubmit,
   renderSubmitButton,
+  onChange,
   isLoading,
   ...props
 }) => {
@@ -98,7 +100,7 @@ export const PredictiveSearch: React.FC<SearchWithPredictiveTextProps> = ({
           placeholder={placeholder}
           size={size}
           isLoading={isLoading}
-          onChange={updateSearchTerm}
+          onChange={onChange ? onChange : updateSearchTerm}
           onSubmit={(value, idx) => {
             handleSubmit(value, searchField, results[idx]);
           }}
