@@ -90,12 +90,7 @@ const params: Params = {
 
 export const config: Partial<SortableWithCombineProps> = {
   adjustScale: true,
-  wrapperStyle: ({
-    isMergeable,
-    data,
-    items,
-    ...props
-  }: WrapperStylesProps) => {
+  wrapperStyle: ({ isMergeable, data, items }: WrapperStylesProps) => {
     const currentItem = items && items.find(item => item.id === data.id);
     if (!currentItem) {
       return {};

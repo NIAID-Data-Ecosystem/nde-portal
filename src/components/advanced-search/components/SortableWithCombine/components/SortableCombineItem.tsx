@@ -15,7 +15,6 @@ export interface SortableItemProps {
   index: number;
   handle: boolean;
   data: DragItem;
-  wrapperStyle?(args: WrapperStylesProps): BoxProps;
   animateLayoutChanges?: AnimateLayoutChanges;
   disabled?: boolean;
   isOverlay?: boolean;
@@ -25,7 +24,7 @@ export interface SortableItemProps {
   onUpdate?: (data: DragItem) => void;
   style: SortableWithCombineProps['getItemStyle'];
   renderItem?: (props: any) => JSX.Element | undefined;
-  wrapperStyle?(args: WrapperStylesProps): BoxProps;
+  wrapperStyle: (args: WrapperStylesProps) => BoxProps;
 }
 
 export function SortableCombineItem({
@@ -49,7 +48,6 @@ export function SortableCombineItem({
     attributes,
     isDragging,
     isSorting,
-    items,
     listeners,
     over,
     overIndex,

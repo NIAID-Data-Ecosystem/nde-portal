@@ -5,16 +5,10 @@ import type {
   KeyboardCoordinateGetter,
   MeasuringConfiguration,
   MeasuringStrategy,
-  Modifiers,
   PointerActivationConstraint,
   UniqueIdentifier,
 } from '@dnd-kit/core';
-import type {
-  AnimateLayoutChanges,
-  arrayMove,
-  NewIndexGetter,
-  SortingStrategy,
-} from '@dnd-kit/sortable';
+import type { arrayMove, SortingStrategy } from '@dnd-kit/sortable';
 import { BoxProps } from 'nde-design-system';
 
 export type UnionTypes = 'AND' | 'OR' | 'NOT';
@@ -52,7 +46,7 @@ export interface WrapperStylesProps {
   // id: UniqueIdentifier;
   data: DragItem;
   isMergeable: boolean;
-  items: FlattenedItem[];
+  items?: FlattenedItem[];
 }
 
 export interface ItemStylesProps {
