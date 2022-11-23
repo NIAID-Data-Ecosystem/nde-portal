@@ -19,13 +19,13 @@ const fetchSchema = async () => {
     This has comments about what computational tool and has almost all things except variableMeasured and includedInDataCatalog
     https://discovery.biothings.io/api/registry/niaid
   */
-    const schemaData = await axios
-      .get(`https://discovery.biothings.io/api/registry/schema/schema:Dataset`)
-      .then(response => {
-        return [
-          { label: response.data.label, properties: response.data.properties },
-        ];
-      });
+    // const schemaData = await axios
+    //   .get(`https://discovery.biothings.io/api/registry/schema/schema:Dataset`)
+    //   .then(response => {
+    //     return [
+    //       { label: response.data.label, properties: response.data.properties },
+    //     ];
+    //   });
 
     const niaidData = await axios
       .get(`https://discovery.biothings.io/api/registry/nde`)
@@ -59,8 +59,6 @@ const fetchSchema = async () => {
           r[data.label] = {
             title: getPropertyTitle(data.label, items),
             property: data.label,
-            // type: data.type,
-            // format: data.format,
           };
         }
         // Metadata description.

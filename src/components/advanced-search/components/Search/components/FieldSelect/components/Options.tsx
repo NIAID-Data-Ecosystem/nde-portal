@@ -9,7 +9,8 @@ import {
 export const OptionsList: React.FC = ({ children }) => {
   return (
     <UnorderedList
-      maxH='200px'
+      position='absolute'
+      maxH='300px'
       overflowX='hidden'
       overflowY='auto'
       boxShadow='base'
@@ -17,6 +18,8 @@ export const OptionsList: React.FC = ({ children }) => {
       w='100%'
       ml={0}
       py={2}
+      bg='white'
+      zIndex='dropdown'
     >
       {children}
     </UnorderedList>
@@ -37,7 +40,7 @@ export const OptionItem: React.FC<OptionProps> = ({
   const { isOpen: showDescription, onClose, onOpen } = useDisclosure();
   return (
     <ListItem
-      px={2}
+      px={3}
       py={2}
       cursor='pointer'
       _hover={{ bg: 'gray.100' }}

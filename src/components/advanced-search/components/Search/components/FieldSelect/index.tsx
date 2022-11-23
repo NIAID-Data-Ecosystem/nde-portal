@@ -12,8 +12,10 @@ import { fetchFields, FetchFieldsResponse } from 'src/utils/api';
 import { useDisclosure, useOutsideClick } from '@chakra-ui/react';
 import { useAdvancedSearchContext } from '../AdvancedSearchFormContext';
 import { FaChevronDown } from 'react-icons/fa';
-import { formatPropertyInfo } from './utils';
+import { getPropertyInConfig } from 'src/utils/metadata-schema';
 import { OptionItem, OptionsList } from './components/Options';
+import MetadataConfig from 'configs/resource-metadata.json';
+import { getMetadataNameByProperty } from 'src/components/advanced-search/utils';
 
 interface FieldSelectProps {
   isDisabled: boolean;
@@ -24,11 +26,13 @@ export const FieldSelect: React.FC<FieldSelectProps> = ({
   size = 'md',
   isDisabled,
 }) => {
-  const { setSearchField } = useAdvancedSearchContext();
+  const { searchInputType, setSearchField, setSearchInputType } =
+    useAdvancedSearchContext();
   const [inputValue, setInputValue] = useState('');
   const { isOpen, onToggle, onClose, onOpen } = useDisclosure();
 
   // Retrieve fields for select dropdown.
+
   const { isLoading, data: fields } = useQuery<
     FetchFieldsResponse[] | undefined,
     Error,
@@ -36,7 +40,7 @@ export const FieldSelect: React.FC<FieldSelectProps> = ({
         description: string;
         name: string;
         property: string;
-        type: string;
+        type?: string;
       }[]
     | undefined
   >(
@@ -60,13 +64,30 @@ export const FieldSelect: React.FC<FieldSelectProps> = ({
             }
             return true;
           })
-          .map(option => {
-            return { ...option, ...formatPropertyInfo(option.property) };
+          .map(field => {
+            const fieldInformation = getPropertyInConfig(
+              field.property,
+              MetadataConfig,
+            );
+            const name =
+              fieldInformation?.title ||
+              getMetadataNameByProperty(field.property);
+            let description =
+              fieldInformation?.abstract || fieldInformation?.description || '';
+            if (typeof description === 'object') {
+              description = Object.values(description).join(' or ');
+            }
+            return {
+              name,
+              description,
+              property: field.property,
+            };
           });
       },
     },
   );
 
+  // Filter the options based on user input
   const options = useMemo(
     () =>
       fields?.filter(item =>
@@ -75,6 +96,7 @@ export const FieldSelect: React.FC<FieldSelectProps> = ({
     [fields, inputValue],
   );
 
+  // Handles when the user clicks outside the select dropdown.
   const ref = useRef(null);
   useOutsideClick({
     ref: ref,
@@ -93,15 +115,42 @@ export const FieldSelect: React.FC<FieldSelectProps> = ({
   const resetState = () => {
     setInputValue('');
     setSearchField('');
+    setSearchInputType('text');
   };
+
+  // // Based on the user's selection we want to update the input to reflect the type of input (ex. date type of input for date field selection)
+  // const handleSearchType = (type: string) => {
+  //   let inputType: 'number' | 'boolean' | 'text' | 'date' | 'enum' = 'text';
+  //   if (type === 'keyword' || type === 'text') {
+  //     inputType = 'text';
+  //   } else if (
+  //     type === 'unsigned_long' ||
+  //     type === 'double' ||
+  //     type === 'integer' ||
+  //     type === 'float'
+  //   ) {
+  //     inputType = 'number';
+  //   } else if (type === 'date') {
+  //     inputType = 'date';
+  //   } else if (type === 'boolean') {
+  //     inputType = 'enum';
+  //   } else {
+  //     inputType = 'text';
+  //   }
+
+  //   if (inputType !== searchInputType) {
+  //     setSearchInputType(inputType);
+  //   }
+  // };
+
   return (
     <Skeleton
-      minW='150px'
+      minW='300px'
       w={{ base: '100%', md: 'unset' }}
       ml={0}
       isLoaded={!isLoading}
     >
-      <Box ref={ref}>
+      <Box ref={ref} position='relative' mr={1}>
         {options ? (
           <>
             <InputGroup size={size}>
@@ -140,6 +189,7 @@ export const FieldSelect: React.FC<FieldSelectProps> = ({
                       onClick={() => {
                         setSearchField(option.property);
                         setInputValue(option.name);
+                        // option.type && handleSearchType(option.type);
                         onClose();
                       }}
                     />
