@@ -21,7 +21,8 @@ import {
 } from './components/SortableWithCombine';
 import { convertObject2QueryString } from './utils';
 import { FaArrowsAltV, FaSearch, FaUndoAlt } from 'react-icons/fa';
-import { SearchBar } from './components/SearchBar';
+// import { SearchBar } from './components/SearchBar';
+import { AdvancedSearchFormContext, FieldSelect } from './components/Search';
 
 interface AdvancedSearchProps {
   buttonProps?: TextProps;
@@ -41,7 +42,6 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
     defaultIsOpen: false,
   });
   const [items, setItems] = useState<DragItem[]>([]);
-
   return (
     <>
       <OpenModal onClick={onOpen} {...buttonProps}></OpenModal>
@@ -62,33 +62,71 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
           <Heading size='sm' fontWeight='medium'>
             Add terms to the query builder.
           </Heading>
+          <Flex
+            flexDirection={{ base: 'column', md: 'row' }}
+            alignItems={{ base: 'flex-start', md: 'center' }}
+          >
+            {isOpen && (
+              <AdvancedSearchFormContext term='' field=''>
+                <FieldSelect isDisabled={!isOpen}></FieldSelect>
+              </AdvancedSearchFormContext>
+            )}
 
-          <SearchBar
-            isDisabled={!isOpen}
-            items={items}
-            handleSubmit={({ term, field, union }) => {
-              setItems(prev => {
-                if (!term) return prev;
-                const newItems = [...prev];
-                const id = `${uniqueId(
-                  `${term.slice(0, 20).split(' ').join('-')}-${items.length}-`,
-                )}`;
+            {/* <Search
+             isDisabled={!isOpen}
+             items={items}
+             handleSubmit={({ term, field, union }) => {
+               setItems(prev => {
+                 if (!term) return prev;
+                 const newItems = [...prev];
+                 const id = `${uniqueId(
+                   `${term.slice(0, 20).split(' ').join('-')}-${
+                     items.length
+                   }-`,
+                 )}`;
 
-                newItems.push({
-                  id, // unique identifier
-                  value: {
-                    field,
-                    term,
-                    union,
-                  },
-                  children: [],
-                  index: items.length,
+                 newItems.push({
+                   id, // unique identifier
+                   value: {
+                     field,
+                     term,
+                     union,
+                   },
+                   children: [],
+                   index: items.length,
+                 });
+
+                 return newItems;
+               })/> */}
+            {/* <SearchBar
+              isDisabled={!isOpen}
+              items={items}
+              handleSubmit={({ term, field, union }) => {
+                setItems(prev => {
+                  if (!term) return prev;
+                  const newItems = [...prev];
+                  const id = `${uniqueId(
+                    `${term.slice(0, 20).split(' ').join('-')}-${
+                      items.length
+                    }-`,
+                  )}`;
+
+                  newItems.push({
+                    id, // unique identifier
+                    value: {
+                      field,
+                      term,
+                      union,
+                    },
+                    children: [],
+                    index: items.length,
+                  });
+
+                  return newItems;
                 });
-
-                return newItems;
-              });
-            }}
-          />
+              }}
+            /> */}
+          </Flex>
 
           <Heading size='sm' fontWeight='medium' mt={2}>
             Or choose from the sample queries below.

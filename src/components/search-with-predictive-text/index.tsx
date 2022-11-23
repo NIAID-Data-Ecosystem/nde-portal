@@ -1,6 +1,5 @@
-import React, { ReactElement, useMemo } from 'react';
-import { groupBy, uniqBy } from 'lodash';
-import { Box, Button, Flex, InputProps, Text } from 'nde-design-system';
+import React, { ReactElement } from 'react';
+import { InputProps } from 'nde-design-system';
 import { FormattedResource } from 'src/utils/api/types';
 import { usePredictiveSearch } from './hooks/usePredictiveSearch';
 import { PredictiveSearch } from './components/PredictiveSearch';
@@ -13,10 +12,6 @@ interface SearchWithPredictiveTextProps {
   size?: InputProps['size'];
   isLoading?: boolean;
   colorScheme?: InputProps['colorScheme'];
-  // handleClick: (
-  //   e: React.MouseEvent<HTMLLIElement, MouseEvent>,
-  //   data: FormattedResource,
-  // ) => void; // triggered when suggestion item from list is clicked / press enters.
   handleSubmit: (
     inputValue: string,
     field: string,
