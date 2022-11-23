@@ -41,12 +41,23 @@ const fetchSchema = async () => {
         });
       });
     // Format data.
+
+    let MetadataNames = fs.readFileSync('configs/metadata-standard-names.json');
+    let items = [];
+    try {
+      let parsed = JSON.parse(MetadataNames);
+      items = parsed;
+    } catch (err) {
+      if (err) {
+        items = [];
+      }
+    }
     const data = [...schemaData, ...niaidData].reduce((r, d) => {
       const type = d.label;
       const addProperty = data => {
         if (!r[data.label]) {
           r[data.label] = {
-            title: getPropertyTitle(data.label),
+            title: getPropertyTitle(data.label, items),
             property: data.label,
           };
         }
@@ -72,8 +83,10 @@ const fetchSchema = async () => {
               if (!r[data.label]['items']) {
                 r[data.label]['items'] = {};
               }
+
               if (!r[data.label]['items'][property]) {
                 r[data.label]['items'][property] = {
+                  title: getPropertyTitle(`${data.label}.${property}`, items),
                   description: item.description,
                 };
               }

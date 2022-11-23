@@ -1,8 +1,11 @@
 // Format display title for property.
-const getPropertyTitle = str => {
+const getPropertyTitle = (str, data) => {
   let property = str;
-
-  if (str === 'url') {
+  const standardized_item =
+    data && data.find(item => item.property === property);
+  if (standardized_item) {
+    property = standardized_item.name;
+  } else if (str === 'url') {
     property = 'URL';
   } else if (str.toLowerCase() === 'sdpublisher') {
     property = 'Source publisher';

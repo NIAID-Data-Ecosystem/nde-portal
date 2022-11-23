@@ -1,0 +1,13 @@
+[
+  { "property": "@type", "name": "type" },
+  {
+    "property": "aggregateRating.ratingCount",
+    "name": "Aggregate Rating Count"
+  },
+  {
+    "property": "aggregateRating.ratingValue",
+    "name": "Aggregate Rating Value"
+  },
+  { "property": "includedInDataCatalog", "name": "Source" },
+  { "property": "doi", "name": "DOI" }
+]
