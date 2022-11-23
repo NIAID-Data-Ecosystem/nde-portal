@@ -52,13 +52,15 @@ const fetchSchema = async () => {
         items = [];
       }
     }
-    const data = [...schemaData, ...niaidData].reduce((r, d) => {
+    const data = [...niaidData].reduce((r, d) => {
       const type = d.label;
       const addProperty = data => {
         if (!r[data.label]) {
           r[data.label] = {
             title: getPropertyTitle(data.label, items),
             property: data.label,
+            // type: data.type,
+            // format: data.format,
           };
         }
         // Metadata description.
@@ -75,10 +77,29 @@ const fetchSchema = async () => {
           }
           r[data.label]['abstract'][type.toLowerCase()] = data.abstract;
         }
+        // Metadata type.
+        if (data.type) {
+          if (!r[data.label]['type']) {
+            r[data.label].type = data.type;
+          }
+        }
+        if (data.format) {
+          if (!r[data.label]['format']) {
+            r[data.label].format = data.format;
+          }
+        }
         // Metadata sub properties descriptions.
         if (data.oneOf) {
           data.oneOf.map(o => {
-            if (!o.items || !o.items.properties) return;
+            if (!o.items || (!o.items && !r[data.label]['type'])) {
+              r[data.label]['type'] = o.type;
+              r[data.label]['enum'] = o.enum;
+              return;
+            }
+
+            r[data.label]['type'] = o.items.type;
+            if (!o.items.properties) return;
+
             Object.entries(o.items.properties).map(([property, item]) => {
               if (!r[data.label]['items']) {
                 r[data.label]['items'] = {};
@@ -88,6 +109,10 @@ const fetchSchema = async () => {
                 r[data.label]['items'][property] = {
                   title: getPropertyTitle(`${data.label}.${property}`, items),
                   description: item.description,
+                  property: property,
+                  type: item.type,
+                  format: item.format,
+                  enum: item.enum,
                 };
               }
             });

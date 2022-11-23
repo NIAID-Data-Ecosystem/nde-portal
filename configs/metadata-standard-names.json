@@ -8,6 +8,7 @@
     "property": "aggregateRating.ratingValue",
     "name": "Aggregate Rating Value"
   },
+  { "property": "citedBy.name", "name": "Cited By Name" },
   { "property": "includedInDataCatalog", "name": "Source" },
   { "property": "doi", "name": "DOI" }
 ]
