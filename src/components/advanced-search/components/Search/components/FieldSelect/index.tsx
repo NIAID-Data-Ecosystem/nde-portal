@@ -1,5 +1,6 @@
 import React, { useMemo, useRef, useState } from 'react';
 import { useQuery } from 'react-query';
+import { FaChevronDown } from 'react-icons/fa';
 import {
   Box,
   IconButton,
@@ -7,15 +8,16 @@ import {
   InputGroup,
   InputRightElement,
   Skeleton,
+  Text,
+  useDisclosure,
+  useOutsideClick,
 } from 'nde-design-system';
-import { fetchFields, FetchFieldsResponse } from 'src/utils/api';
-import { useDisclosure, useOutsideClick } from '@chakra-ui/react';
-import { useAdvancedSearchContext } from '../AdvancedSearchFormContext';
-import { FaChevronDown } from 'react-icons/fa';
-import { getPropertyInConfig } from 'src/utils/metadata-schema';
-import { OptionItem, OptionsList } from './components/Options';
 import MetadataConfig from 'configs/resource-metadata.json';
 import { getMetadataNameByProperty } from 'src/components/advanced-search/utils';
+import { getPropertyInConfig } from 'src/utils/metadata-schema';
+import { fetchFields, FetchFieldsResponse } from 'src/utils/api';
+import { useAdvancedSearchContext } from '../AdvancedSearchFormContext';
+import { OptionItem, OptionsList } from './components/Options';
 
 interface FieldSelectProps {
   isDisabled: boolean;
@@ -26,8 +28,7 @@ export const FieldSelect: React.FC<FieldSelectProps> = ({
   size = 'md',
   isDisabled,
 }) => {
-  const { searchInputType, setSearchField, setSearchInputType } =
-    useAdvancedSearchContext();
+  const { setSearchField } = useAdvancedSearchContext();
   const [inputValue, setInputValue] = useState('');
   const { isOpen, onToggle, onClose, onOpen } = useDisclosure();
 
@@ -115,33 +116,7 @@ export const FieldSelect: React.FC<FieldSelectProps> = ({
   const resetState = () => {
     setInputValue('');
     setSearchField('');
-    setSearchInputType('text');
   };
-
-  // // Based on the user's selection we want to update the input to reflect the type of input (ex. date type of input for date field selection)
-  // const handleSearchType = (type: string) => {
-  //   let inputType: 'number' | 'boolean' | 'text' | 'date' | 'enum' = 'text';
-  //   if (type === 'keyword' || type === 'text') {
-  //     inputType = 'text';
-  //   } else if (
-  //     type === 'unsigned_long' ||
-  //     type === 'double' ||
-  //     type === 'integer' ||
-  //     type === 'float'
-  //   ) {
-  //     inputType = 'number';
-  //   } else if (type === 'date') {
-  //     inputType = 'date';
-  //   } else if (type === 'boolean') {
-  //     inputType = 'enum';
-  //   } else {
-  //     inputType = 'text';
-  //   }
-
-  //   if (inputType !== searchInputType) {
-  //     setSearchInputType(inputType);
-  //   }
-  // };
 
   return (
     <Skeleton
@@ -153,8 +128,12 @@ export const FieldSelect: React.FC<FieldSelectProps> = ({
       <Box ref={ref} position='relative' mr={1}>
         {options ? (
           <>
+            <Text fontWeight='medium' color='gray.600'>
+              <label htmlFor='query-fields'>Select field</label>
+            </Text>
             <InputGroup size={size}>
               <Input
+                id='query-fields'
                 placeholder='All Fields'
                 value={inputValue}
                 onChange={e => setInputValue(e.currentTarget.value)}

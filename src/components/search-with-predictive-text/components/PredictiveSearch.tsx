@@ -17,6 +17,7 @@ interface SearchWithPredictiveTextProps extends usePredictiveSearchResponse {
   field?: string; //default field to search through,
   term?: string; //default term to search with,
   size?: InputProps['size'];
+  type?: InputProps['type'];
   //   isLoading?: boolean;
   colorScheme?: InputProps['colorScheme'];
   // handleClick: (
@@ -37,6 +38,7 @@ export const PredictiveSearch: React.FC<SearchWithPredictiveTextProps> = ({
   ariaLabel,
   placeholder,
   size = 'sm',
+  type = 'text',
   colorScheme = 'primary',
   handleSubmit,
   renderSubmitButton,
@@ -92,13 +94,14 @@ export const PredictiveSearch: React.FC<SearchWithPredictiveTextProps> = ({
       {/* Keep dropdown agnostic from results. */}
       <InputWithDropdown
         inputValue={searchTerm}
-        colorScheme='primary'
+        colorScheme={colorScheme}
         cursorMax={suggestions.length}
       >
         <DropdownInput
           ariaLabel={ariaLabel}
           placeholder={placeholder}
           size={size}
+          type={type}
           isLoading={isLoading}
           onChange={onChange ? onChange : updateSearchTerm}
           onSubmit={(value, idx) => {
@@ -107,10 +110,10 @@ export const PredictiveSearch: React.FC<SearchWithPredictiveTextProps> = ({
           renderSubmitButton={props => {
             if (renderSubmitButton) {
               return renderSubmitButton({
-                colorScheme: colorScheme,
-                ariaLabel: ariaLabel,
+                colorScheme,
+                ariaLabel,
+                size,
                 isDisabled: isLoading || !searchTerm || false,
-                size: size,
                 ...props,
               });
             }

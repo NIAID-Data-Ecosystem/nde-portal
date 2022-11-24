@@ -1,5 +1,6 @@
-import { encodeString } from 'src/utils/querystring-helpers';
 import type { DragItem } from './components/SortableWithCombine';
+import MetadataConfig from 'configs/resource-metadata.json';
+import MetadataNames from 'configs/metadata-standard-names.json';
 
 type UnionTypes = 'AND' | 'OR' | 'NOT';
 
@@ -30,9 +31,14 @@ export const getUnionTheme = (term: UnionTypes) => {
   return {};
 };
 
+/**
+ * [convertObject2QueryString]: Converts a nested query object (tree)
+ * to a string for querying the API.
+ *
+ */
 export const convertObject2QueryString = (
   items: DragItem[],
-  encode?: boolean,
+  shouldEncodeString?: boolean,
 ) => {
   const reduceQueryString = (items: DragItem[]) =>
     items.reduce((r, item, i) => {
@@ -41,11 +47,16 @@ export const convertObject2QueryString = (
         r += `${union}(${reduceQueryString(item.children)})`;
       } else {
         let str = '';
-        if (item.value.field) {
-          str += `${item.value.field}:`;
+        const { field, term, querystring } = item.value;
+        if (field) {
+          str += `${field}:`;
         }
         // TO DO: if exact match don't encode.
-        str += encode ? encodeString(item.value.term) : item.value.term;
+        let formattedTerm = querystring ? querystring : term;
+        // if (shouldEncodeString && field !== 'date') {
+        //   formattedTerm = encodeString(item.value.term);
+        // }
+        str += formattedTerm;
         r += `${union}${str}`;
       }
 
@@ -53,4 +64,36 @@ export const convertObject2QueryString = (
     }, '');
 
   return reduceQueryString(items);
+};
+
+/**
+ * [getMetadataNameByProperty]: Given a metadata property retrieves the associated display name.
+ * Searches for name in standard config, followed by transformed API config, followed by basic formatting.
+ */
+
+const MetadataNamesConfig = MetadataNames as {
+  property: string;
+  name: string;
+}[];
+
+export const getMetadataNameByProperty = (property: string) => {
+  const standardized_name = MetadataNamesConfig.find(
+    item => item.property === property,
+  );
+  const config_name = MetadataConfig.find(item => item.property === property);
+  let name = '';
+  if (standardized_name) {
+    name = standardized_name.name;
+  } else if (config_name) {
+    name = config_name.title;
+  } else {
+    // apply some basic formatting.
+    name = property
+      .split('.')
+      .join(' ')
+      .split(/(?=[A-Z])/)
+      .join(' ');
+  }
+
+  return name.charAt(0).toUpperCase() + name.slice(1);
 };

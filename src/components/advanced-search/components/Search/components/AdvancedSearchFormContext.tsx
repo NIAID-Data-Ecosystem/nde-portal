@@ -4,8 +4,11 @@ import {
   usePredictiveSearchResponse,
 } from 'src/components/search-with-predictive-text';
 
+export interface AdvancedSearchContextProps
+  extends usePredictiveSearchResponse {}
+
 const AdvancedSearchContext = React.createContext<
-  usePredictiveSearchResponse | undefined
+  AdvancedSearchContextProps | undefined
 >(undefined);
 AdvancedSearchContext.displayName = 'AdvancedSearchContext';
 
@@ -20,7 +23,11 @@ export const AdvancedSearchFormContext: React.FC<AdvancedSearchFormProps> = ({
   children,
 }) => {
   return (
-    <AdvancedSearchContext.Provider value={usePredictiveSearch(term, field)}>
+    <AdvancedSearchContext.Provider
+      value={{
+        ...usePredictiveSearch(term, field),
+      }}
+    >
       {children}
     </AdvancedSearchContext.Provider>
   );

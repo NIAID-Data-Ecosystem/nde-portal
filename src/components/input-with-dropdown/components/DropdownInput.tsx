@@ -20,29 +20,11 @@ import { theme } from '@chakra-ui/react';
 [Component Information]: [DropdownInput] is a regular input field with a list of suggestions based on the user typing.
 */
 
-const SIZE_CONFIG: any = {
-  xs: {
-    width: 5,
-    h: 1.75,
-  },
-  sm: {
-    width: 5.5,
-    h: 2,
-  },
-  md: {
-    width: 5.5,
-    h: 2.5,
-  },
-  lg: {
-    width: 6.5,
-    h: 3,
-  },
-};
-
 interface DropdownInputProps {
   ariaLabel: string; // input label for accessibility
   colorScheme?: InputProps['colorScheme'];
   size?: InputProps['size'];
+  type: InputProps['type'];
   placeholder?: string;
   isLoading?: boolean;
   getInputValue: (arg: number) => string;
@@ -56,6 +38,7 @@ export const DropdownInput: React.FC<DropdownInputProps> = ({
   placeholder,
   isLoading,
   size = 'sm',
+  type,
   renderSubmitButton,
   getInputValue,
   onChange,
@@ -110,6 +93,7 @@ export const DropdownInput: React.FC<DropdownInputProps> = ({
             placeholder: placeholder || 'Search',
             tabIndex: 0,
             pr: inputRightRef?.current?.clientWidth || 4,
+            type,
             onKeyDown: (
               _: React.KeyboardEvent<HTMLInputElement>,
               index: number,

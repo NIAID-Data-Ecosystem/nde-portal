@@ -108,7 +108,7 @@ const fetchSchema = async () => {
                   title: getPropertyTitle(`${data.label}.${property}`, items),
                   description: item.description,
                   property: property,
-                  type: item.type,
+                  type: item.type || item.oneOf[0].type,
                   format: item.format,
                   enum: item.enum,
                 };

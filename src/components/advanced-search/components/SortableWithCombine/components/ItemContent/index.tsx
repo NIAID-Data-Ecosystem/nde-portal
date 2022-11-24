@@ -1,9 +1,9 @@
 import React from 'react';
-import { SortableContext, SortingStrategy } from '@dnd-kit/sortable';
-import { DragItem } from '../../types';
-import { SortableCombineItem, SortableItemProps } from '../SortableCombineItem';
-import { getSortingStrategy } from '../SortableWithCombine';
 import { Flex, Text } from 'nde-design-system';
+import { SortableContext, SortingStrategy } from '@dnd-kit/sortable';
+import { SortableCombineItem, SortableItemProps } from '../SortableCombineItem';
+import { getSortingStrategy, DragItem } from '../../index';
+import { getMetadataNameByProperty } from 'src/components/advanced-search/utils';
 
 interface ItemContentProps extends SortableItemProps {
   data: DragItem;
@@ -71,6 +71,10 @@ export const ItemContent: React.FC<ItemContentProps> = React.memo(
         );
       };
 
+      const field = data.value.field
+        ? getMetadataNameByProperty(data.value.field)
+        : '';
+
       return (
         <Flex
           className='item-content'
@@ -83,7 +87,7 @@ export const ItemContent: React.FC<ItemContentProps> = React.memo(
             <div>
               {data.value.field && (
                 <Text fontSize='12px' color='inherit'>
-                  {data?.value?.field?.toUpperCase() || ''}
+                  {field}
                   <br />
                 </Text>
               )}
@@ -93,7 +97,7 @@ export const ItemContent: React.FC<ItemContentProps> = React.memo(
                 noOfLines={3}
                 color='inherit'
               >
-                {data.value?.term || ''}
+                {data.value.term}
               </Text>
             </div>
           )}

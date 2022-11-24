@@ -21,8 +21,11 @@ import {
 } from './components/SortableWithCombine';
 import { convertObject2QueryString } from './utils';
 import { FaArrowsAltV, FaSearch, FaUndoAlt } from 'react-icons/fa';
-// import { SearchBar } from './components/SearchBar';
-import { AdvancedSearchFormContext, FieldSelect } from './components/Search';
+import {
+  AdvancedSearchFormContext,
+  FieldSelect,
+  SearchInput,
+} from './components/Search';
 
 interface AdvancedSearchProps {
   buttonProps?: TextProps;
@@ -69,6 +72,36 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
             {isOpen && (
               <AdvancedSearchFormContext term='' field=''>
                 <FieldSelect isDisabled={!isOpen}></FieldSelect>
+                <SearchInput
+                  size='md'
+                  colorScheme='primary'
+                  items={items}
+                  handleSubmit={({ term, field, union, querystring }) => {
+                    setItems(prev => {
+                      if (!term) return prev;
+                      const newItems = [...prev];
+                      const id = `${uniqueId(
+                        `${term.slice(0, 20).split(' ').join('-')}-${
+                          items.length
+                        }-`,
+                      )}`;
+
+                      newItems.push({
+                        id, // unique identifier
+                        value: {
+                          field,
+                          term,
+                          union,
+                          querystring,
+                        },
+                        children: [],
+                        index: items.length,
+                      });
+
+                      return newItems;
+                    });
+                  }}
+                />
               </AdvancedSearchFormContext>
             )}
 

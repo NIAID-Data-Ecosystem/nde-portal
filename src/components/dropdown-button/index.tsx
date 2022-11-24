@@ -14,11 +14,13 @@ import {
 } from 'nde-design-system';
 import { ListItemProps } from '@chakra-ui/react';
 
-export interface DropdownButton extends ButtonGroupProps {
+export interface DropdownButtonProps extends ButtonGroupProps {
   ariaLabel: string;
   type?: ButtonProps['type'];
-  selectedOption: DropdownButton['options'][number]['value'];
-  setSelectedOption: (arg: DropdownButton['options'][number]['value']) => void;
+  selectedOption: DropdownButtonProps['options'][number]['value'];
+  setSelectedOption: (
+    arg: DropdownButtonProps['options'][number]['value'],
+  ) => void;
   options: {
     name: string;
     value: string;
@@ -27,7 +29,7 @@ export interface DropdownButton extends ButtonGroupProps {
   iconButtonProps?: IconButtonProps;
 }
 
-export const DropdownButton: React.FC<DropdownButton> = ({
+export const DropdownButton: React.FC<DropdownButtonProps> = ({
   ariaLabel,
   size,
   colorScheme = 'primary',

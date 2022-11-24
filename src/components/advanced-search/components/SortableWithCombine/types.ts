@@ -18,7 +18,12 @@ export interface DragItem {
   id: UniqueIdentifier;
 
   // data obj
-  value: { term: string; field?: string; union?: UnionTypes };
+  value: {
+    term: string;
+    querystring?: string;
+    field?: string;
+    union?: UnionTypes;
+  };
   index: number;
 
   // the list of DragItem children that are within group. Defaults to empty array.
