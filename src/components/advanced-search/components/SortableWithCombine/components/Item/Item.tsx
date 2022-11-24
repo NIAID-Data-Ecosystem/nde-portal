@@ -113,7 +113,8 @@ export const Item = React.memo(
                       name: `${term}`,
                       value: term,
                       props: {
-                        ...getUnionTheme(term),
+                        bg: getUnionTheme(term).bg,
+                        _hover: getUnionTheme(term)._hover,
                         fontSize: 'xs',
                         textAlign: 'left',
                       },

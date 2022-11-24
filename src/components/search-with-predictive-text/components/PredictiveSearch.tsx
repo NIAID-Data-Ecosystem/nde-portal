@@ -98,6 +98,7 @@ export const PredictiveSearch: React.FC<SearchWithPredictiveTextProps> = ({
         cursorMax={suggestions.length}
       >
         <DropdownInput
+          id='predictive-search-input'
           ariaLabel={ariaLabel}
           placeholder={placeholder}
           size={size}

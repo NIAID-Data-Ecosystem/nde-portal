@@ -67,7 +67,7 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
           </Heading>
           <Flex
             flexDirection={{ base: 'column', md: 'row' }}
-            alignItems={{ base: 'flex-start', md: 'center' }}
+            alignItems={{ base: 'flex-start', md: 'flex-end' }}
           >
             {isOpen && (
               <AdvancedSearchFormContext term='' field=''>

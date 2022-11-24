@@ -10,6 +10,7 @@ export const getUnionTheme = (term: UnionTypes) => {
   if (term === 'AND') {
     return {
       background: 'primary.500',
+      bg: 'primary.500',
       colorScheme: 'primary',
       _hover: { bg: 'primary.600' },
     };
@@ -17,6 +18,7 @@ export const getUnionTheme = (term: UnionTypes) => {
   if (term === 'OR') {
     return {
       background: 'secondary.500',
+      bg: 'secondary.500',
       colorScheme: 'secondary',
       _hover: { bg: 'secondary.600' },
     };
@@ -24,6 +26,7 @@ export const getUnionTheme = (term: UnionTypes) => {
   if (term === 'NOT') {
     return {
       background: 'red.500',
+      bg: 'red.500',
       colorScheme: 'red',
       _hover: { bg: 'red.600' },
     };

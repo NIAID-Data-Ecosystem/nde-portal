@@ -21,6 +21,7 @@ import { theme } from '@chakra-ui/react';
 */
 
 interface DropdownInputProps {
+  id: string;
   ariaLabel: string; // input label for accessibility
   colorScheme?: InputProps['colorScheme'];
   size?: InputProps['size'];
@@ -34,6 +35,7 @@ interface DropdownInputProps {
 }
 
 export const DropdownInput: React.FC<DropdownInputProps> = ({
+  id,
   ariaLabel,
   placeholder,
   isLoading,
@@ -65,7 +67,7 @@ export const DropdownInput: React.FC<DropdownInputProps> = ({
     >
       {/* Label for accessibility */}
       <VisuallyHidden>
-        <label htmlFor={ariaLabel}>{ariaLabel}</label>
+        <label htmlFor={id}>{ariaLabel}</label>
       </VisuallyHidden>
 
       {/* Search input */}
@@ -90,10 +92,11 @@ export const DropdownInput: React.FC<DropdownInputProps> = ({
 
         <Input
           {...getInputProps({
+            id,
             placeholder: placeholder || 'Search',
             tabIndex: 0,
-            pr: inputRightRef?.current?.clientWidth || 4,
             type,
+            pr: inputRightRef?.current?.clientWidth || 4,
             onKeyDown: (
               _: React.KeyboardEvent<HTMLInputElement>,
               index: number,

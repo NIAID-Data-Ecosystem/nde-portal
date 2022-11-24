@@ -25,45 +25,44 @@ export const ItemContent: React.FC<ItemContentProps> = React.memo(
         );
         return (
           <Flex
+            as='ul'
             flexDirection={direction}
             alignItems={direction === 'row' ? 'center' : 'flex-start'}
           >
             <SortableContext items={data} strategy={strategy}>
               {data.map((datum, index) => {
                 return (
-                  <>
-                    <SortableCombineItem
-                      key={datum.id}
-                      {...props}
-                      id={datum.id}
-                      index={index}
-                      data={datum}
-                      isMergeable={props.isMergeable}
-                      style={args =>
-                        props.style
-                          ? props.style({
-                              ...args,
-                              style: {
-                                ...args.style,
-                                flexDirection: 'inherit',
-                                alignItems: 'inherit',
-                              },
-                            })
-                          : () => ({})
-                      }
-                      renderItem={renderItemProps => {
-                        return (
-                          <ItemContent
-                            {...renderItemProps}
-                            id={datum.id}
-                            data={datum}
-                            handle={props.handle}
-                            index={index}
-                          />
-                        );
-                      }}
-                    ></SortableCombineItem>
-                  </>
+                  <SortableCombineItem
+                    key={datum.id}
+                    {...props}
+                    id={datum.id}
+                    index={index}
+                    data={datum}
+                    isMergeable={props.isMergeable}
+                    style={args =>
+                      props.style
+                        ? props.style({
+                            ...args,
+                            style: {
+                              ...args.style,
+                              flexDirection: 'inherit',
+                              alignItems: 'inherit',
+                            },
+                          })
+                        : () => ({})
+                    }
+                    renderItem={renderItemProps => {
+                      return (
+                        <ItemContent
+                          {...renderItemProps}
+                          id={datum.id}
+                          data={datum}
+                          handle={props.handle}
+                          index={index}
+                        />
+                      );
+                    }}
+                  />
                 );
               })}
             </SortableContext>
