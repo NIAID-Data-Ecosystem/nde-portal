@@ -1,23 +1,16 @@
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useQuery } from 'react-query';
-import { FaChevronDown } from 'react-icons/fa';
-import {
-  Box,
-  IconButton,
-  Input,
-  InputGroup,
-  InputRightElement,
-  Skeleton,
-  Text,
-  useDisclosure,
-  useOutsideClick,
-} from 'nde-design-system';
+import { Skeleton, Text, useDisclosure } from 'nde-design-system';
 import MetadataConfig from 'configs/resource-metadata.json';
 import { getMetadataNameByProperty } from 'src/components/advanced-search/utils';
 import { getPropertyInConfig } from 'src/utils/metadata-schema';
 import { fetchFields, FetchFieldsResponse } from 'src/utils/api';
 import { useAdvancedSearchContext } from '../AdvancedSearchFormContext';
-import { OptionItem, OptionsList } from './components/Options';
+import {
+  OptionItem,
+  OptionsList,
+  SelectWithInput,
+} from 'src/components/select';
 
 interface FieldSelectProps {
   isDisabled: boolean;
@@ -30,8 +23,8 @@ export const FieldSelect: React.FC<FieldSelectProps> = ({
 }) => {
   const { setSearchField } = useAdvancedSearchContext();
   const [inputValue, setInputValue] = useState('');
-  const { isOpen, onToggle, onClose, onOpen } = useDisclosure();
-
+  const disclosure = useDisclosure();
+  const { onClose } = disclosure;
   // Retrieve fields for select dropdown.
 
   const { isLoading, data: fields } = useQuery<
@@ -98,20 +91,15 @@ export const FieldSelect: React.FC<FieldSelectProps> = ({
   );
 
   // Handles when the user clicks outside the select dropdown.
-  const ref = useRef(null);
-  useOutsideClick({
-    ref: ref,
-    handler: () => {
-      // if the input value doesn't match one of the options we use the default state to prevent user from choosing a non existing field.
-      if (
-        !options?.length ||
-        !options?.find(option => option.name === inputValue)
-      ) {
-        resetState();
-      }
-      onClose();
-    },
-  });
+  const handleOnClickOutside = () => {
+    // if the input value doesn't match one of the options we use the default state to prevent user from choosing a non existing field.
+    if (
+      !options?.length ||
+      !options?.find(option => option.name === inputValue)
+    ) {
+      resetState();
+    }
+  };
 
   const resetState = () => {
     setInputValue('');
@@ -125,62 +113,41 @@ export const FieldSelect: React.FC<FieldSelectProps> = ({
       ml={0}
       isLoaded={!isLoading}
     >
-      <Box ref={ref} position='relative' mr={1}>
-        {options ? (
-          <>
-            <Text fontWeight='medium' color='gray.600'>
-              <label htmlFor='query-fields'>Select field</label>
-            </Text>
-            <InputGroup size={size}>
-              <Input
-                id='query-fields'
-                placeholder='All Fields'
-                value={inputValue}
-                onChange={e => setInputValue(e.currentTarget.value)}
-                onClick={onOpen} // open dropdown options when clicking in input box.
-              />
-              <InputRightElement p={1} w='unset'>
-                <IconButton
-                  onClick={() => {
-                    if (!isOpen) {
-                      setInputValue('');
-                    }
-                    // toggle open dropdown options.
-                    onToggle();
-                  }}
-                  variant='ghost'
-                  colorScheme='primary'
-                  size={size}
-                  aria-label='Show field options'
-                  icon={<FaChevronDown />}
-                />
-              </InputRightElement>
-            </InputGroup>
-
-            {isOpen && (
-              <OptionsList>
-                {options.map(option => {
-                  return (
-                    <OptionItem
-                      key={option.property}
-                      name={option.name}
-                      description={option.description}
-                      onClick={() => {
-                        setSearchField(option.property);
-                        setInputValue(option.name);
-                        // option.type && handleSearchType(option.type);
-                        onClose();
-                      }}
-                    />
-                  );
-                })}
-              </OptionsList>
-            )}
-          </>
-        ) : (
-          <></>
-        )}
-      </Box>
+      {options ? (
+        <>
+          <Text fontWeight='medium' color='gray.600'>
+            Select field
+          </Text>
+          <SelectWithInput
+            id='select-query-fields'
+            ariaLabel='Show query field options.'
+            placeholder='All Fields'
+            value={inputValue}
+            onChange={e => setInputValue(e.currentTarget.value)}
+            handleOnClickOutside={handleOnClickOutside}
+            {...disclosure}
+          >
+            <OptionsList>
+              {options.map(option => {
+                return (
+                  <OptionItem
+                    key={option.property}
+                    name={option.name}
+                    description={option.description}
+                    onClick={() => {
+                      setSearchField(option.property);
+                      setInputValue(option.name);
+                      onClose();
+                    }}
+                  />
+                );
+              })}
+            </OptionsList>
+          </SelectWithInput>
+        </>
+      ) : (
+        <></>
+      )}
     </Skeleton>
   );
 };

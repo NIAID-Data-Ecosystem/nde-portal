@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { InputProps } from 'nde-design-system';
 import { DropdownButton } from 'src/components/dropdown-button';
-import { PredictiveSearch } from 'src/components/search-with-predictive-text/components/PredictiveSearch';
 import {
   DragItem,
   UnionTypes,
@@ -14,6 +13,7 @@ import { useAdvancedSearchContext } from '../AdvancedSearchFormContext';
 import { DateInputGroup } from './components/DateInput';
 import { getPropertyInConfig } from 'src/utils/metadata-schema';
 import MetadataConfig from 'configs/resource-metadata.json';
+import { TextInput } from './components/TextInput';
 
 interface SearchInputProps {
   //   isDisabled: boolean;
@@ -74,6 +74,7 @@ export const SearchInput: React.FC<SearchInputProps> = ({
           })
         }
         {...props}
+        py={0}
         size={size}
         colorScheme={
           unionType ? getUnionTheme(unionType).colorScheme : colorScheme
@@ -118,13 +119,10 @@ export const SearchInput: React.FC<SearchInputProps> = ({
   }
 
   return (
-    /* Input field with suggestions matching the search term. */
-    <PredictiveSearch
-      ariaLabel='Search for datasets or tools'
-      placeholder='Search for datasets or tools'
+    <TextInput
       size={size}
       renderSubmitButton={InputButton}
-      handleSubmit={(term, field) => {
+      handleSubmit={({ term, field }) => {
         // [TO DO]: if radio for exact is selected or whatever we would modify
         // the encoding here for (querystring)
         onSubmit({ term, field, querystring: term });

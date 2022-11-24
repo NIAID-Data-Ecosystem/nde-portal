@@ -88,8 +88,6 @@ export const DateInputGroup: React.FC<DateInputProps> = ({
           renderSubmitButton({
             type: 'submit',
             w: '100%',
-            // set padding top and bottom for safari, do not remove.
-            py: 0,
           })}
       </Flex>
     </Flex>
