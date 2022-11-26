@@ -11,15 +11,17 @@ import {
   DropdownContent,
 } from 'src/components/input-with-dropdown';
 
-interface SearchWithPredictiveTextProps extends usePredictiveSearchResponse {
+export interface SearchWithPredictiveTextProps
+  extends usePredictiveSearchResponse {
   ariaLabel: string; // input label for accessibility
   placeholder: string; // input placeholder text
   field?: string; //default field to search through,
   term?: string; //default term to search with,
   size?: InputProps['size'];
   type?: InputProps['type'];
-  //   isLoading?: boolean;
+  isDisabled?: boolean;
   colorScheme?: InputProps['colorScheme'];
+  inputValue?: string;
   // handleClick: (
   //   e: React.MouseEvent<HTMLLIElement, MouseEvent>,
   //   data: FormattedResource,
@@ -43,7 +45,9 @@ export const PredictiveSearch: React.FC<SearchWithPredictiveTextProps> = ({
   handleSubmit,
   renderSubmitButton,
   onChange,
+  isDisabled,
   isLoading,
+  inputValue,
   ...props
 }) => {
   // Search term entered in search bar
@@ -93,12 +97,13 @@ export const PredictiveSearch: React.FC<SearchWithPredictiveTextProps> = ({
     <Box width='100%'>
       {/* Keep dropdown agnostic from results. */}
       <InputWithDropdown
-        inputValue={searchTerm}
+        inputValue={inputValue !== undefined ? inputValue : searchTerm}
         colorScheme={colorScheme}
         cursorMax={suggestions.length}
       >
         <DropdownInput
           id='predictive-search-input'
+          isDisabled={isDisabled}
           ariaLabel={ariaLabel}
           placeholder={placeholder}
           size={size}

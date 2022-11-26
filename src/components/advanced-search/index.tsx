@@ -26,12 +26,82 @@ import {
   FieldSelect,
   SearchInput,
 } from './components/Search';
+import { SearchOptions } from './components/Search/components/SearchOptions';
 
 interface AdvancedSearchProps {
   buttonProps?: TextProps;
   modalProps?: ModalProps;
 }
 
+export const SEARCH_OPTIONS = [
+  {
+    name: 'Field exists',
+    value: '_exists_',
+    description: 'Matches where selected field contains any value.',
+  },
+  {
+    name: "Field doesn't exist",
+    value: '-_exists_',
+    description: 'Matches where selected field is left blank.',
+  },
+  {
+    options: [
+      {
+        name: 'Contains',
+        value: 'default',
+        description: 'Contains all these words in any order.',
+        example: `mycobacterium tuberculosis · contains both
+        'mycobacterium' and 'tuberculosis'`,
+        transformValue: (value: string) => value,
+      },
+      {
+        name: 'Exact Match',
+        value: 'exact',
+        type: 'text',
+        description: 'Contains the exact term or phrase.',
+        example: `west siberian virus · contains the exact phrase 'west siberian virus'`,
+        transformValue: (value: string) => `"${value}"`,
+      },
+      {
+        name: 'Starts with',
+        value: 'starts',
+        type: 'text',
+        description: 'Starts with any of the terms listed.',
+        example: `mycobacterium tuberculosis · contains results with words begining with 'west' or 'tuberculosis'`,
+        transformValue: (value: string) =>
+          value
+            .split(' ')
+            .map(str => (str ? `${str}*` : ''))
+            .join(' '),
+      },
+
+      {
+        name: 'Ends with',
+        value: 'ends',
+        type: 'text',
+        description: 'Ends with any of the terms listed.',
+        example: `mycobacterium tuberculosis · contains results with words ending with 'west' or 'tuberculosis'`,
+        transformValue: (value: string) =>
+          value
+            .split(' ')
+            .map(str => (str ? `*${str}` : ''))
+            .join(' '),
+      },
+      {
+        name: 'Starts and ends with',
+        value: 'starts_and_ends',
+        type: 'text',
+        description: 'Starts and ends with any of the terms listed.',
+        example: `mycobacterium tuberculosis · contains results with words beginning and ending with 'west' or 'tuberculosis'`,
+        transformValue: (value: string) =>
+          value
+            .split(' ')
+            .map(str => (str ? `*${str}*` : ''))
+            .join(' '),
+      },
+    ],
+  },
+];
 export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
   buttonProps,
   modalProps,
@@ -68,97 +138,52 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
           <Flex
             flexDirection={{ base: 'column', md: 'row' }}
             alignItems={{ base: 'flex-start', md: 'flex-end' }}
+            flexWrap='wrap'
           >
             {isOpen && (
-              <AdvancedSearchFormContext term='' field=''>
-                <FieldSelect isDisabled={!isOpen}></FieldSelect>
-                <SearchInput
-                  size='md'
-                  colorScheme='primary'
-                  items={items}
-                  handleSubmit={({ term, field, union, querystring }) => {
-                    setItems(prev => {
-                      if (!term) return prev;
-                      const newItems = [...prev];
-                      const id = `${uniqueId(
-                        `${term.slice(0, 20).split(' ').join('-')}-${
-                          items.length
-                        }-`,
-                      )}`;
+              <AdvancedSearchFormContext
+                term=''
+                field=''
+                searchOptions={SEARCH_OPTIONS}
+              >
+                <Flex w='100%' justifyContent='flex-end'>
+                  <SearchOptions />
+                </Flex>
+                <Flex w='100%' alignItems='flex-end'>
+                  <FieldSelect isDisabled={!isOpen}></FieldSelect>
+                  <SearchInput
+                    size='md'
+                    colorScheme='primary'
+                    items={items}
+                    handleSubmit={({ term, field, union, querystring }) => {
+                      setItems(prev => {
+                        if (!term) return prev;
+                        const newItems = [...prev];
+                        const id = `${uniqueId(
+                          `${term.slice(0, 20).split(' ').join('-')}-${
+                            items.length
+                          }-`,
+                        )}`;
 
-                      newItems.push({
-                        id, // unique identifier
-                        value: {
-                          field,
-                          term,
-                          union,
-                          querystring,
-                        },
-                        children: [],
-                        index: items.length,
+                        newItems.push({
+                          id, // unique identifier
+                          value: {
+                            field,
+                            term,
+                            union,
+                            querystring,
+                          },
+                          children: [],
+                          index: items.length,
+                        });
+
+                        return newItems;
                       });
-
-                      return newItems;
-                    });
-                  }}
-                />
+                    }}
+                  />
+                </Flex>
               </AdvancedSearchFormContext>
             )}
-
-            {/* <Search
-             isDisabled={!isOpen}
-             items={items}
-             handleSubmit={({ term, field, union }) => {
-               setItems(prev => {
-                 if (!term) return prev;
-                 const newItems = [...prev];
-                 const id = `${uniqueId(
-                   `${term.slice(0, 20).split(' ').join('-')}-${
-                     items.length
-                   }-`,
-                 )}`;
-
-                 newItems.push({
-                   id, // unique identifier
-                   value: {
-                     field,
-                     term,
-                     union,
-                   },
-                   children: [],
-                   index: items.length,
-                 });
-
-                 return newItems;
-               })/> */}
-            {/* <SearchBar
-              isDisabled={!isOpen}
-              items={items}
-              handleSubmit={({ term, field, union }) => {
-                setItems(prev => {
-                  if (!term) return prev;
-                  const newItems = [...prev];
-                  const id = `${uniqueId(
-                    `${term.slice(0, 20).split(' ').join('-')}-${
-                      items.length
-                    }-`,
-                  )}`;
-
-                  newItems.push({
-                    id, // unique identifier
-                    value: {
-                      field,
-                      term,
-                      union,
-                    },
-                    children: [],
-                    index: items.length,
-                  });
-
-                  return newItems;
-                });
-              }}
-            /> */}
           </Flex>
 
           <Heading size='sm' fontWeight='medium' mt={2}>

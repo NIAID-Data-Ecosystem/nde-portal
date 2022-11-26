@@ -1,6 +1,11 @@
 import React, { useMemo, useState } from 'react';
 import { useQuery } from 'react-query';
-import { Skeleton, Text, useDisclosure } from 'nde-design-system';
+import {
+  Skeleton,
+  Text,
+  useDisclosure,
+  VisuallyHidden,
+} from 'nde-design-system';
 import MetadataConfig from 'configs/resource-metadata.json';
 import { getMetadataNameByProperty } from 'src/components/advanced-search/utils';
 import { getPropertyInConfig } from 'src/utils/metadata-schema';
@@ -115,9 +120,11 @@ export const FieldSelect: React.FC<FieldSelectProps> = ({
     >
       {options ? (
         <>
-          <Text fontWeight='medium' color='gray.600'>
-            Select field
-          </Text>
+          <VisuallyHidden>
+            <Text fontWeight='medium' color='gray.600'>
+              Select field
+            </Text>
+          </VisuallyHidden>
           <SelectWithInput
             id='select-query-fields'
             ariaLabel='Show query field options.'
@@ -125,6 +132,7 @@ export const FieldSelect: React.FC<FieldSelectProps> = ({
             value={inputValue}
             onChange={e => setInputValue(e.currentTarget.value)}
             handleOnClickOutside={handleOnClickOutside}
+            size={size}
             {...disclosure}
           >
             <OptionsList>

@@ -9,6 +9,7 @@ import {
 } from 'nde-design-system';
 
 interface DateInputProps {
+  isDisabled?: boolean;
   size: InputProps['size'];
   handleSubmit: (args: { term: string; querystring: string }) => void;
   renderSubmitButton?: (props: ButtonProps) => React.ReactElement;
@@ -18,6 +19,7 @@ export const DateInputGroup: React.FC<DateInputProps> = ({
   size,
   handleSubmit,
   renderSubmitButton,
+  ...props
 }) => {
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
@@ -63,6 +65,7 @@ export const DateInputGroup: React.FC<DateInputProps> = ({
           onChange={e => {
             setStartDate(e.target.value);
           }}
+          {...props}
         ></Input>
       </Box>
 
@@ -80,6 +83,7 @@ export const DateInputGroup: React.FC<DateInputProps> = ({
           onChange={e => {
             setEndDate(e.target.value);
           }}
+          {...props}
         ></Input>
       </Box>
 

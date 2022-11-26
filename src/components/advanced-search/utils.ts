@@ -44,7 +44,7 @@ export const convertObject2QueryString = (
   shouldEncodeString?: boolean,
 ) => {
   const reduceQueryString = (items: DragItem[]) =>
-    items.reduce((r, item, i) => {
+    items.reduce((r, item) => {
       const union = `${item.value.union ? ` ${item.value.union} ` : ''}`;
       if (item.children.length > 0) {
         r += `${union}(${reduceQueryString(item.children)})`;
@@ -54,7 +54,6 @@ export const convertObject2QueryString = (
         if (field) {
           str += `${field}:`;
         }
-        // TO DO: if exact match don't encode.
         let formattedTerm = querystring ? querystring : term;
         // if (shouldEncodeString && field !== 'date') {
         //   formattedTerm = encodeString(item.value.term);

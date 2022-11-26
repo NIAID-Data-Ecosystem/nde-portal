@@ -1,6 +1,7 @@
+import { ListItemProps } from '@chakra-ui/react';
 import { Heading, ListItem, Text, useDisclosure } from 'nde-design-system';
 
-interface OptionProps {
+interface OptionProps extends Omit<ListItemProps, 'textUnderlineOffset'> {
   name: string;
   description?: string;
   onClick: React.MouseEventHandler<HTMLLIElement>;
@@ -10,6 +11,7 @@ export const OptionItem: React.FC<OptionProps> = ({
   name,
   description,
   onClick,
+  ...props
 }) => {
   const { isOpen: showDescription, onClose, onOpen } = useDisclosure();
   return (
@@ -21,6 +23,7 @@ export const OptionItem: React.FC<OptionProps> = ({
       onClick={onClick}
       onMouseOver={onOpen}
       onMouseLeave={onClose}
+      {...props}
     >
       <Heading
         size='xs'

@@ -18,7 +18,7 @@ export interface usePredictiveSearchResponse {
   setSearchField: (value: string) => void;
 }
 // Handles query formatting for predictive search
-export const usePredictiveSearch = (term = '', field = '') => {
+export const usePredictiveSearch = (term = '', field = '', encode = true) => {
   const [results, setResults] = useState<FormattedResource[]>([]);
   const [searchTerm, setSearchTerm] = useState(term);
   const [searchField, setSearchField] = useState(field);
@@ -30,16 +30,9 @@ export const usePredictiveSearch = (term = '', field = '') => {
   >(
     ['advanced-search', { term: searchTerm, facet: searchField }],
     () => {
-      const queryString = encodeString(searchTerm);
-
-      // add wild card to each term in querystring for fielded searches (ES automatically does this for non fielded queries).
+      const queryString = encode ? encodeString(searchTerm) : searchTerm;
       return fetchSearchResults({
-        q: searchField
-          ? `${searchField}:${queryString
-              .split(' ')
-              .map(str => `${str}*`)
-              .join(' ')}`
-          : `${queryString}`,
+        q: searchField ? `${searchField}:${queryString}` : `${queryString}`,
         size: 20,
         // return flattened version of data.
         dotfield: true,
@@ -73,8 +66,9 @@ export const usePredictiveSearch = (term = '', field = '') => {
   [Update query with a delay]
   Wrapping debounce in useRef since its an expensive call, only run if fn changes.
   */
+
   const debouncedUpdate = useRef(
-    debounce((term: string) => setSearchTerm(term), 200),
+    debounce((term: string) => setSearchTerm(term), 400),
   );
 
   const updateSearchTerm = (value: string) => {
