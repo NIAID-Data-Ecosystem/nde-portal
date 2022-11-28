@@ -27,6 +27,7 @@ import {
   SearchInput,
 } from './components/Search';
 import { SearchOptions } from './components/Search/components/SearchOptions';
+import { ResultsCount } from './components/ResultsCount';
 
 interface AdvancedSearchProps {
   buttonProps?: TextProps;
@@ -115,6 +116,7 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
     defaultIsOpen: false,
   });
   const [items, setItems] = useState<DragItem[]>([]);
+
   return (
     <>
       <OpenModal onClick={onOpen} {...buttonProps}></OpenModal>
@@ -296,6 +298,7 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
             Re-order query terms by click and drag. Group items together by
             dragging an element over another.
           </Text>
+          <ResultsCount queryString={convertObject2QueryString(items)} />
 
           <SortableWithCombine
             items={items}
@@ -304,26 +307,28 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
             removable
           />
 
-          <Collapse in={showRawQuery}>
-            {/* [TO DO]: add syntax highlighting on hover */}
-            <Box m={2}>
-              <Text fontSize='sm' fontStyle='italic'>
-                {convertObject2QueryString(items)}
-              </Text>
-            </Box>
-          </Collapse>
+          <Box w='100%'>
+            <Collapse in={showRawQuery}>
+              {/* [TO DO]: add syntax highlighting on hover */}
+              <Box m={2}>
+                <Text fontSize='sm' fontStyle='italic'>
+                  {convertObject2QueryString(items)}
+                </Text>
+              </Box>
+            </Collapse>
 
-          <Button
-            isDisabled={items.length === 0}
-            rightIcon={<FaArrowsAltV />}
-            onClick={toggleShowRawQuery}
-            colorScheme='gray'
-            color='text.body'
-            size='sm'
-            mt={2}
-          >
-            view string query
-          </Button>
+            <Button
+              isDisabled={items.length === 0}
+              rightIcon={<FaArrowsAltV />}
+              onClick={toggleShowRawQuery}
+              colorScheme='gray'
+              color='text.body'
+              size='sm'
+              mt={2}
+            >
+              view string query
+            </Button>
+          </Box>
         </Box>
       </AdvancedSearchModal>
     </>

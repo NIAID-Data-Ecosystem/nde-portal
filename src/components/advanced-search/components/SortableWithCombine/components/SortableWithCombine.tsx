@@ -387,12 +387,6 @@ export function SortableWithCombine({
   const [enableMovement, setEnableMovement] = useState(true);
   return (
     <>
-      <Checkbox
-        isChecked={enableMovement}
-        onChange={() => setEnableMovement(!enableMovement)}
-      >
-        Enable sorting movement (for testing purposes)
-      </Checkbox>
       <Box
         bg={
           !isMergeable &&
@@ -516,6 +510,12 @@ export function SortableWithCombine({
             : null}
         </DndContext>
       </Box>
+      <Checkbox
+        isChecked={enableMovement}
+        onChange={() => setEnableMovement(!enableMovement)}
+      >
+        Enable sorting movement (for testing purposes)
+      </Checkbox>
     </>
   );
 }
