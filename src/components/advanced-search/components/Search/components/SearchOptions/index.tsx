@@ -1,21 +1,12 @@
 import { RadioGroup } from '@chakra-ui/react';
 import { Stack } from 'nde-design-system';
-import { getPropertyInConfig } from 'src/utils/metadata-schema';
 import { useAdvancedSearchContext } from '../AdvancedSearchFormContext';
 import { RadioItem } from './components/RadioItem';
 import { RadioSelect } from './components/RadioSelect';
-import MetadataConfig from 'configs/resource-metadata.json';
 
 export const SearchOptions: React.FC = () => {
   const { searchField, searchOption, searchOptionsList, setSearchOption } =
     useAdvancedSearchContext();
-
-  const searchFieldDetails = searchField
-    ? getPropertyInConfig(searchField, MetadataConfig)
-    : null;
-
-  const type = searchFieldDetails?.type;
-
   return (
     <RadioGroup mb={4}>
       <Stack direction='row' spacing={6}>
@@ -33,11 +24,12 @@ export const SearchOptions: React.FC = () => {
           return (
             <RadioItem
               key={option.value}
-              {...option}
-              value={option.value}
+              name={option.name}
+              description={option.description}
               onChange={() => setSearchOption(option)}
               hasTooltip
               isDisabled={!searchField}
+              isChecked={option.value === searchOption.value}
             />
           );
         })}

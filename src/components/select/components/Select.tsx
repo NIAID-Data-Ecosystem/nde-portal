@@ -128,7 +128,6 @@ export const SelectWithButton: React.FC<SelectWithButtonProps> = ({
   onToggle,
   onClose,
   name,
-  // onOpen,
   ...props
 }) => {
   return (
