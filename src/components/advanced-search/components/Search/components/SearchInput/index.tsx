@@ -140,23 +140,30 @@ export const SearchInput: React.FC<SearchInputProps> = ({
     );
   }
 
+  const handleQueryString = (value: string) => {
+    let term = value;
+    if (searchOption?.transformValue) {
+      term = searchOption.transformValue(value, searchField);
+    }
+    return term;
+  };
+
   return (
     <TextInput
       size={size}
       isDisabled={inputIsDisabled}
       renderSubmitButton={InputButton}
       onChange={value => {
-        let term = value;
-        if (searchOption?.transformValue) {
-          term = searchOption.transformValue(value);
-        }
+        let term = handleQueryString(value);
+        // Update the predictive search list;
         updateSearchTerm(term);
       }}
+      onClick={(term, field) => {
+        let querystring = handleQueryString(term);
+        onSubmit({ term, field, querystring: `${querystring}` });
+      }}
       handleSubmit={({ term, field }) => {
-        let querystring = term;
-        if (searchOption?.transformValue) {
-          querystring = searchOption.transformValue(term);
-        }
+        let querystring = handleQueryString(term);
         onSubmit({ term, field, querystring });
       }}
       {...advancedSearchProps}

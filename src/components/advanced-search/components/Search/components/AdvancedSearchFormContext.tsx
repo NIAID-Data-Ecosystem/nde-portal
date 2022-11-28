@@ -11,7 +11,7 @@ export interface Option {
   example?: string;
   options?: Option[];
   type?: string;
-  transformValue?: (value: string) => string;
+  transformValue?: (value: string, field?: string) => string;
 }
 
 export interface AdvancedSearchContextProps

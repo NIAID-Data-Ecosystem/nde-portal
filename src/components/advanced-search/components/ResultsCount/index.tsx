@@ -2,6 +2,7 @@ import { Flex, Heading, Spinner } from 'nde-design-system';
 import { useQuery } from 'react-query';
 import { fetchSearchResults } from 'src/utils/api';
 import { FetchSearchResultsResponse } from 'src/utils/api/types';
+import { formatNumber } from 'src/utils/helpers';
 
 interface ResultsCountProps {
   queryString: string;
@@ -33,7 +34,7 @@ export const ResultsCount: React.FC<ResultsCountProps> = ({ queryString }) => {
     { refetchOnWindowFocus: false, enabled: !!queryString },
   );
 
-  if (!data || error) {
+  if ((!isLoading && !data) || error) {
     return <></>;
   }
 
@@ -56,7 +57,7 @@ export const ResultsCount: React.FC<ResultsCountProps> = ({ queryString }) => {
           ></Spinner>
         ) : (
           <Heading as='span' mx={1} size='inherit' color='inherit'>
-            {data.total}
+            {data?.total ? formatNumber(data.total) : 0}
           </Heading>
         )}
         result{data?.total === 1 ? '' : 's'}

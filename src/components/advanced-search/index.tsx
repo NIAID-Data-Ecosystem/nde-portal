@@ -53,7 +53,15 @@ export const SEARCH_OPTIONS = [
         description: 'Contains all these words in any order.',
         example: `mycobacterium tuberculosis · contains both
         'mycobacterium' and 'tuberculosis'`,
-        transformValue: (value: string) => value,
+        transformValue: (value: string, field?: string) => {
+          const searchTerms = value.trim().split(' ');
+          const querystring = `${searchTerms.join(' AND ')}`;
+          if (!field && searchTerms.length === 1) {
+            // [NOTE]: consider wrapping this in quotes as the default behaviour of the API is to append a wildcard to the querystring : querystring*
+            return querystring;
+          }
+          return `(${querystring})`;
+        },
       },
       {
         name: 'Exact Match',
@@ -61,44 +69,60 @@ export const SEARCH_OPTIONS = [
         type: 'text',
         description: 'Contains the exact term or phrase.',
         example: `west siberian virus · contains the exact phrase 'west siberian virus'`,
-        transformValue: (value: string) => `"${value}"`,
+        transformValue: (value: string, field?: string) => `"${value}"`,
       },
       {
         name: 'Starts with',
         value: 'starts',
         type: 'text',
-        description: 'Starts with any of the terms listed.',
-        example: `mycobacterium tuberculosis · contains results with words begining with 'west' or 'tuberculosis'`,
-        transformValue: (value: string) =>
-          value
-            .split(' ')
+        description: 'Field contains value that starts with given term.',
+        example: `covid · contains results beginning with 'covid' such as 'covid-19`,
+        transformValue: (value: string, field?: string) => {
+          const searchTerms = value.trim().split(' ');
+          const querystring = `${searchTerms
             .map(str => (str ? `${str}*` : ''))
-            .join(' '),
+            .join(' AND ')}`;
+          if (!field && searchTerms.length === 1) {
+            return querystring;
+          }
+          return `(${querystring})`;
+        },
       },
 
       {
         name: 'Ends with',
         value: 'ends',
         type: 'text',
-        description: 'Ends with any of the terms listed.',
-        example: `mycobacterium tuberculosis · contains results with words ending with 'west' or 'tuberculosis'`,
-        transformValue: (value: string) =>
-          value
-            .split(' ')
+        description: 'Field contains value that ends with given term.',
+        example: `osis · contains results ending with 'osis' such as 'tuberculosis'`,
+        transformValue: (value: string, field?: string) => {
+          const searchTerms = value.trim().split(' ');
+          const querystring = `${searchTerms
             .map(str => (str ? `*${str}` : ''))
-            .join(' '),
+            .join(' AND ')}`;
+          if (!field && searchTerms.length === 1) {
+            return querystring;
+          }
+          return `(${querystring})`;
+        },
       },
       {
         name: 'Starts and ends with',
         value: 'starts_and_ends',
         type: 'text',
-        description: 'Starts and ends with any of the terms listed.',
-        example: `mycobacterium tuberculosis · contains results with words beginning and ending with 'west' or 'tuberculosis'`,
-        transformValue: (value: string) =>
-          value
-            .split(' ')
+        description:
+          'Field contains value that starts or ends with given term.',
+        example: `oronaviru · contains results ending with 'oronaviru' such as 'coronavirus'`,
+        transformValue: (value: string, field?: string) => {
+          const searchTerms = value.trim().split(' ');
+          const querystring = `${searchTerms
             .map(str => (str ? `*${str}*` : ''))
-            .join(' '),
+            .join(' AND ')}`;
+          if (!field && searchTerms.length === 1) {
+            return querystring;
+          }
+          return `(${querystring})`;
+        },
       },
     ],
   },

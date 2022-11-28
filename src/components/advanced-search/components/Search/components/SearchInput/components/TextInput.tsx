@@ -3,11 +3,17 @@ import { Box, ButtonProps, InputProps } from 'nde-design-system';
 import { PredictiveSearch } from 'src/components/search-with-predictive-text/components/PredictiveSearch';
 import { UnionTypes } from 'src/components/advanced-search/components/SortableWithCombine';
 import { AdvancedSearchContextProps } from '../../AdvancedSearchFormContext';
+import { FormattedResource } from 'src/utils/api/types';
 
 interface TextInputProps extends AdvancedSearchContextProps {
   isDisabled?: boolean;
   colorScheme?: InputProps['colorScheme'];
   size: InputProps['size'];
+  onClick?: (
+    inputValue: string,
+    field: string,
+    data?: FormattedResource,
+  ) => void; // triggered when suggestion item from list is clicked.
   onChange: (value: string) => void;
   handleSubmit: (args: {
     term: string;

@@ -22,10 +22,11 @@ export interface SearchWithPredictiveTextProps
   isDisabled?: boolean;
   colorScheme?: InputProps['colorScheme'];
   inputValue?: string;
-  // handleClick: (
-  //   e: React.MouseEvent<HTMLLIElement, MouseEvent>,
-  //   data: FormattedResource,
-  // ) => void; // triggered when suggestion item from list is clicked / press enters.
+  onClick?: (
+    inputValue: string,
+    field: string,
+    data?: FormattedResource,
+  ) => void; // triggered when suggestion item from list is clicked.
   onChange?: (arg: string) => void;
   handleSubmit: (
     inputValue: string,
@@ -45,6 +46,7 @@ export const PredictiveSearch: React.FC<SearchWithPredictiveTextProps> = ({
   handleSubmit,
   renderSubmitButton,
   onChange,
+  onClick,
   isDisabled,
   isLoading,
   inputValue,
@@ -186,11 +188,19 @@ export const PredictiveSearch: React.FC<SearchWithPredictiveTextProps> = ({
                       <DropdownListItem
                         key={result.id}
                         index={i}
-                        searchTerm={searchTerm}
+                        searchTerm={
+                          inputValue !== undefined ? inputValue : searchTerm
+                        }
                         value={result[fieldName]}
                         name={fieldName}
                         onClick={e => {
-                          handleSubmit(result[fieldName], searchField, result);
+                          onClick
+                            ? onClick(result[fieldName], searchField, result)
+                            : handleSubmit(
+                                result[fieldName],
+                                searchField,
+                                result,
+                              );
                         }}
                       >
                         {result.id}
