@@ -59,7 +59,7 @@ export const convertObject2QueryString = (
         //   formattedTerm = encodeString(item.value.term);
         // }
         str += formattedTerm;
-        r += `${union}${str}`;
+        r += `${union}(${str})`;
       }
 
       return r;

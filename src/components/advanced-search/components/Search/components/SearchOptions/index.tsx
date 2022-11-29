@@ -17,7 +17,7 @@ export const SearchOptions: React.FC = () => {
                 searchOption={searchOption}
                 updateSearchOption={setSearchOption}
                 options={option.options}
-                isDisabled={!searchField}
+                // isDisabled={!searchField}
               />
             );
           }

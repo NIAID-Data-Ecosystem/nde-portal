@@ -28,6 +28,7 @@ import {
 } from './components/Search';
 import { SearchOptions } from './components/Search/components/SearchOptions';
 import { ResultsCount } from './components/ResultsCount';
+import { encodeString } from 'src/utils/querystring-helpers';
 
 interface AdvancedSearchProps {
   buttonProps?: TextProps;
@@ -55,12 +56,15 @@ export const SEARCH_OPTIONS = [
         'mycobacterium' and 'tuberculosis'`,
         transformValue: (value: string, field?: string) => {
           const searchTerms = value.trim().split(' ');
-          const querystring = `${searchTerms.join(' AND ')}`;
-          if (!field && searchTerms.length === 1) {
-            // [NOTE]: consider wrapping this in quotes as the default behaviour of the API is to append a wildcard to the querystring : querystring*
-            return querystring;
+          if (!value) {
+            return '';
           }
-          return `(${querystring})`;
+          const querystring = `${searchTerms.join(' AND ')}`;
+          // if (!field && searchTerms.length === 1) {
+          //   // [NOTE]: consider wrapping this in quotes as the default behaviour of the API is to append a wildcard to the querystring : querystring*
+          // }
+          return encodeString(querystring);
+          // return `${querystring}`;
         },
       },
       {
@@ -69,7 +73,7 @@ export const SEARCH_OPTIONS = [
         type: 'text',
         description: 'Contains the exact term or phrase.',
         example: `west siberian virus · contains the exact phrase 'west siberian virus'`,
-        transformValue: (value: string, field?: string) => `"${value}"`,
+        transformValue: (value: string) => `"${value}"`,
       },
       {
         name: 'Starts with',
@@ -79,13 +83,16 @@ export const SEARCH_OPTIONS = [
         example: `covid · contains results beginning with 'covid' such as 'covid-19`,
         transformValue: (value: string, field?: string) => {
           const searchTerms = value.trim().split(' ');
+          if (!value) {
+            return '';
+          }
           const querystring = `${searchTerms
             .map(str => (str ? `${str}*` : ''))
             .join(' AND ')}`;
-          if (!field && searchTerms.length === 1) {
-            return querystring;
-          }
-          return `(${querystring})`;
+          // if (!field && searchTerms.length === 1) {
+          //   return querystring;
+          // }
+          return encodeString(querystring);
         },
       },
 
@@ -97,13 +104,16 @@ export const SEARCH_OPTIONS = [
         example: `osis · contains results ending with 'osis' such as 'tuberculosis'`,
         transformValue: (value: string, field?: string) => {
           const searchTerms = value.trim().split(' ');
+          if (!value) {
+            return '';
+          }
           const querystring = `${searchTerms
             .map(str => (str ? `*${str}` : ''))
             .join(' AND ')}`;
-          if (!field && searchTerms.length === 1) {
-            return querystring;
-          }
-          return `(${querystring})`;
+          // if (!field && searchTerms.length === 1) {
+          //   return querystring;
+          // }
+          return encodeString(querystring);
         },
       },
       {
@@ -115,13 +125,16 @@ export const SEARCH_OPTIONS = [
         example: `oronaviru · contains results ending with 'oronaviru' such as 'coronavirus'`,
         transformValue: (value: string, field?: string) => {
           const searchTerms = value.trim().split(' ');
+          if (!value) {
+            return '';
+          }
           const querystring = `${searchTerms
             .map(str => (str ? `*${str}*` : ''))
             .join(' AND ')}`;
-          if (!field && searchTerms.length === 1) {
-            return querystring;
-          }
-          return `(${querystring})`;
+          // if (!field && searchTerms.length === 1) {
+          //   return querystring;
+          // }
+          return encodeString(querystring);
         },
       },
     ],

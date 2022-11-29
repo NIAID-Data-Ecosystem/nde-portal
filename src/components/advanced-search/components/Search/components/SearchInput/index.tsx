@@ -35,7 +35,8 @@ export const SearchInput: React.FC<SearchInputProps> = ({
   handleSubmit,
 }) => {
   const advancedSearchProps = useAdvancedSearchContext();
-  const { searchField, searchOption, updateSearchTerm } = advancedSearchProps;
+  const { searchTerm, searchField, searchOption, updateSearchTerm } =
+    advancedSearchProps;
   // Input is disabledinputValue wen search whether entire field exists (or doesn't exist).
   const inputIsDisabled =
     searchOption.value === '_exists_' || searchOption.value === '-_exists_';
@@ -82,7 +83,8 @@ export const SearchInput: React.FC<SearchInputProps> = ({
         colorScheme={
           unionType ? getUnionTheme(unionType).colorScheme : colorScheme
         }
-        // isDisabled={!searchTerm && !inputIsDisabled}
+        // set as disabled if no search term is entered and exists option is not selected.
+        isDisabled={!searchTerm && !inputIsDisabled}
       />
     );
   };
@@ -159,8 +161,8 @@ export const SearchInput: React.FC<SearchInputProps> = ({
         updateSearchTerm(term);
       }}
       onClick={(term, field) => {
-        let querystring = handleQueryString(term);
-        onSubmit({ term, field, querystring: `${querystring}` });
+        // let querystring = handleQueryString(term);
+        onSubmit({ term, field, querystring: `"${term}"` });
       }}
       handleSubmit={({ term, field }) => {
         let querystring = handleQueryString(term);

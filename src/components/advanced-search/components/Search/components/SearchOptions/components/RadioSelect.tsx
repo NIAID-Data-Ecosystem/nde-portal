@@ -15,7 +15,7 @@ export const RadioSelect = ({
   searchOption,
   isDisabled,
 }: {
-  isDisabled: boolean;
+  isDisabled?: boolean;
   options: Option[];
   searchOption: Option;
   updateSearchOption: (arg: Option) => void;
