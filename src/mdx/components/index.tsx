@@ -1,26 +1,28 @@
 import { chakra } from '@chakra-ui/react';
 import {
   Box,
+  Flex,
   Heading,
+  Image,
   Text,
   UnorderedList,
   OrderedList,
   ListItem,
   Link,
+  ImageProps,
 } from 'nde-design-system';
-import NextImage from 'next/image';
 
 export const MDXComponents = {
-  Image: (props: any) => (
-    <Box my='5'>
-      <NextImage
-        layout='responsive'
+  Image: (props: ImageProps) => (
+    <Flex my='5' justifyContent='center'>
+      <Image
+        alt='image'
         width={700}
         height={400}
         objectFit='contain'
         {...props}
       />
-    </Box>
+    </Flex>
   ),
   h1: (props: any) => (
     <Heading
@@ -47,9 +49,12 @@ export const MDXComponents = {
 
   br: ({ ...props }) => <br />,
 
-  p: (props: any) => <Text mt={5} {...props} />,
-  ul: (props: any) => <UnorderedList {...props} />,
+  p: (props: any) => <Text mt={5} fontSize='md' {...props} />,
+  ul: (props: any) => <UnorderedList my={4} ml={12} {...props} />,
   ol: (props: any) => <OrderedList {...props} />,
-  li: (props: any) => <ListItem pb='4px' listStyleType='initial' {...props} />,
+  li: (props: any) => (
+    <ListItem pb='4px' listStyleType='initial' fontSize='md' {...props} />
+  ),
   a: (props: any) => <Link {...props} />,
+  Flex: (props: any) => <Flex {...props} />,
 };

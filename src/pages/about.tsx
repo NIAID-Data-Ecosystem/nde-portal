@@ -21,7 +21,7 @@ const About: NextPage = () => {
         alignItems='center'
         bg='white'
       >
-        <Box maxW='1200px' mb={32}>
+        <Box maxW='1000px' mb={32}>
           <MDXProvider components={MDXComponents}>
             <AboutContent />
           </MDXProvider>
