@@ -50,7 +50,7 @@ export const PageContainer: React.FC<PageContainerProps> = ({
       if (r['href'].charAt(0) === '/') {
         return {
           ...r,
-          href: `${env.BASE_URL}${r['href']}${
+          href: `${env?.BASE_URL}${r['href']}${
             r['href'].slice(-1) === '/' ? '' : '/'
           }`,
         };

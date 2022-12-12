@@ -286,7 +286,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                               maxH='40px'
                               maxW='250px'
                               mr={4}
-                              src={`${assetPrefix}${imageURL}`}
+                              src={`${assetPrefix || ''}${imageURL}`}
                               alt='Data source name'
                             ></Image>
                           </Link>
@@ -297,7 +297,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                             maxW='200px'
                             mr={4}
                             mb={[2, 2, 0]}
-                            src={`${assetPrefix}${imageURL}`}
+                            src={`${assetPrefix || ''}${imageURL}`}
                             alt='Data source name'
                           ></Image>
                         )

@@ -3,7 +3,7 @@
   "routes": [
     { "label": "Search", "href": "/" },
 
-    { "label": "About", "href": "https://data-staging.niaid.nih.gov/about" },
+    { "label": "About", "href": "/about" },
 
     {
       "label": "Resources",
