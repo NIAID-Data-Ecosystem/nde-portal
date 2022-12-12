@@ -3,7 +3,7 @@ import { PageContainer, PageContent } from 'src/components/page-container';
 import { MDXProvider } from '@mdx-js/react';
 import { MDXComponents } from 'src/mdx';
 import AboutContent from 'content/about.mdx';
-import { Box, Heading } from 'nde-design-system';
+import { Box } from 'nde-design-system';
 
 const About: NextPage = () => {
   return (
