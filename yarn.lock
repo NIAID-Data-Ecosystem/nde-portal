@@ -5115,10 +5115,10 @@ natural-compare@^1.4.0:
   resolved "https://registry.yarnpkg.com/natural-compare/-/natural-compare-1.4.0.tgz#4abebfeed7541f2c27acfb29bdbbd15c8d5ba4f7"
   integrity sha512-OWND8ei3VtNC9h7V60qff3SVobHr996CTwgxubgyQYEpg290h9J0buyECNNJexkFm5sOajh5G116RYA1c8ZMSw==
 
-nde-design-system@^0.2.84:
-  version "0.2.84"
-  resolved "https://registry.yarnpkg.com/nde-design-system/-/nde-design-system-0.2.84.tgz#c468a3f891b29399ed6ddc1d24d1e6e82ffaeb3d"
-  integrity sha512-xwUJ1XZ0joX2Vo6cMxmFtFOlr67LNsfLYjhyDAnoAIAVRGnf34LPfjcY8F/zw5bo+W7YZA2504rM5dFfoVBX4g==
+nde-design-system@^0.2.85:
+  version "0.2.85"
+  resolved "https://registry.yarnpkg.com/nde-design-system/-/nde-design-system-0.2.85.tgz#b460f3cdf1bf1d44ccaaee533d8ccf442d9c6f5b"
+  integrity sha512-6HIaQZkaRKSCZ0lmbLTATnP+f9UPH3KKXHXEhlVdnjLfKY6mVorwWnWhoI6Hcv4OpVJFr7ob/L7yui+zIIBlhA==
   dependencies:
     "@chakra-ui/icons" "^1.1.7"
     "@chakra-ui/react" "1.7.2"
