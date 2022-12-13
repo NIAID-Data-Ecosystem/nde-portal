@@ -250,7 +250,7 @@ const Overview: React.FC<OverviewProps> = ({
               <>
                 {licenseInfo?.img && (
                   <Image
-                    src={`${assetPrefix}${licenseInfo.img}`}
+                    src={`${assetPrefix || ''}${licenseInfo.img}`}
                     alt={licenseInfo.type}
                   />
                 )}

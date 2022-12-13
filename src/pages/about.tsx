@@ -1,5 +1,9 @@
 import type { NextPage } from 'next';
 import { PageContainer, PageContent } from 'src/components/page-container';
+import { MDXProvider } from '@mdx-js/react';
+import { MDXComponents } from 'src/mdx';
+import AboutContent from 'content/about.mdx';
+import { Box } from 'nde-design-system';
 
 const About: NextPage = () => {
   return (
@@ -8,10 +12,20 @@ const About: NextPage = () => {
       title='About'
       metaDescription='About page.'
       px={0}
+      bg='white'
       py={0}
     >
-      <PageContent w='100%' flexDirection='column' minW='740px'>
-        About page
+      <PageContent
+        w='100%'
+        flexDirection='column'
+        alignItems='center'
+        bg='white'
+      >
+        <Box maxW='1000px' mb={32}>
+          <MDXProvider components={MDXComponents}>
+            <AboutContent />
+          </MDXProvider>
+        </Box>
       </PageContent>
     </PageContainer>
   );

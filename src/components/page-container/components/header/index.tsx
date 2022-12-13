@@ -46,7 +46,7 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
           bg ||
           `linear-gradient(180deg, ${theme.colors.primary[500]}, ${theme.colors.tertiary[700]})`
         }
-        bgImg={bgImg || `${assetPrefix}/assets/home-bg.png`}
+        bgImg={bgImg || `${assetPrefix || ''}/assets/home-bg.png`}
         backgroundSize='cover'
         flexWrap='wrap'
         minH='unset'

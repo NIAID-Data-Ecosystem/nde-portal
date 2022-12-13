@@ -131,7 +131,7 @@ const SummaryPage: NextPage = () => {
           <PageHeader
             title='Visual Summary'
             subtitle='Search for datasets and gather insights.'
-            bgImg={`${assetPrefix}/assets/summary-bg-01.png`}
+            bgImg={`${assetPrefix || ''}/assets/summary-bg-01.png`}
           >
             <>
               <SearchInput
