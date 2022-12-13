@@ -588,6 +588,7 @@ const Overview: React.FC<OverviewProps> = ({
                   <StatContent
                     url={doi?.includes('http') ? doi : ''}
                     content={doi}
+                    isExternal
                   />
                 </ListItem>
               )}
@@ -599,6 +600,7 @@ const Overview: React.FC<OverviewProps> = ({
                   <StatContent
                     url={nctid?.includes('http') ? nctid : ''}
                     content={nctid}
+                    isExternal
                   />
                 </ListItem>
               )}
