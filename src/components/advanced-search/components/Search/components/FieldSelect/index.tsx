@@ -1,5 +1,4 @@
 import React, { useRef } from 'react';
-import { useQuery } from 'react-query';
 import {
   Box,
   Flex,
@@ -12,12 +11,12 @@ import {
   VisuallyHidden,
 } from 'nde-design-system';
 import MetadataConfig from 'configs/resource-metadata.json';
+import MetadataFields from 'configs/resource-fields.json';
 import { getMetadataNameByProperty } from 'src/components/advanced-search/utils';
 import { getPropertyInConfig } from 'src/utils/metadata-schema';
-import { fetchFields, FetchFieldsResponse } from 'src/utils/api';
 import { useAdvancedSearchContext } from '../AdvancedSearchFormContext';
 import Select, { components, OptionProps, ControlProps } from 'react-select';
-import { FaHashtag, FaRegCalendar, FaSearch } from 'react-icons/fa';
+import { FaHashtag, FaRegCalendarAlt, FaSearch, FaTh } from 'react-icons/fa';
 import { MdTextFormat } from 'react-icons/md';
 
 interface FieldSelectProps {
@@ -32,73 +31,35 @@ export const FieldSelect: React.FC<FieldSelectProps> = ({
   const { setSearchField } = useAdvancedSearchContext();
 
   // Retrieve fields for select dropdown.
-  const { isLoading, data: fields } = useQuery<
-    FetchFieldsResponse[] | undefined,
-    Error,
-    | {
-        description: string;
-        label: string;
-        value: string;
-        type?: string;
-      }[]
-    | undefined
-  >(
-    ['metadata-fields'],
-    () => {
-      return fetchFields();
-    },
-
+  const isLoading = false;
+  const fields = [
     {
-      refetchOnWindowFocus: false,
-      enabled: !isDisabled, // Run query if not disabled
-      select(data) {
-        if (!data) {
-          return [];
-        }
-        // remove fields that are not searchable (i.e. objects)
-        return [
-          {
-            label: 'All Fields',
-            description: '',
-            value: '',
-            type: '',
-          },
-          ...data
-            .filter(field => {
-              if (
-                field.type === 'object' ||
-                (field.property.includes('@') && field.property !== '@type')
-              ) {
-                return false;
-              }
-              return true;
-            })
-            .map(field => {
-              const fieldInformation = getPropertyInConfig(
-                field.property,
-                MetadataConfig,
-              );
-              const label =
-                fieldInformation?.title ||
-                getMetadataNameByProperty(field.property);
-              let description =
-                fieldInformation?.abstract ||
-                fieldInformation?.description ||
-                '';
-              if (typeof description === 'object') {
-                description = Object.values(description).join(' or ');
-              }
-              return {
-                label,
-                description,
-                value: field.property,
-                type: field.type,
-              };
-            }),
-        ];
-      },
+      label: 'All Fields',
+      description: '',
+      value: '',
+      type: '',
     },
-  );
+    ...MetadataFields.map(field => {
+      const fieldInformation = getPropertyInConfig(
+        field.property,
+        MetadataConfig,
+      );
+      const label =
+        fieldInformation?.title || getMetadataNameByProperty(field.property);
+      let description =
+        fieldInformation?.abstract || fieldInformation?.description || '';
+      if (typeof description === 'object') {
+        description = Object.values(description).join(' or ');
+      }
+      return {
+        ...fieldInformation,
+        label,
+        description,
+        value: field.property,
+        type: field.type,
+      };
+    }),
+  ];
 
   const Control = (props: ControlProps<any>) => {
     return (
@@ -119,8 +80,11 @@ export const FieldSelect: React.FC<FieldSelectProps> = ({
     let tooltipLabel = type;
     if (type === 'text' || type === 'keyword') {
       icon = MdTextFormat;
+      if (data.enum) {
+        icon = FaTh;
+      }
     } else if (type === 'date') {
-      icon = FaRegCalendar;
+      icon = FaRegCalendarAlt;
     } else if (
       type === 'unsigned_long' ||
       type === 'integer' ||
@@ -141,7 +105,13 @@ export const FieldSelect: React.FC<FieldSelectProps> = ({
         >
           <Flex
             alignItems='center'
-            color={props.isFocused ? 'primary.600' : 'text.body'}
+            color={
+              props.isFocused && !props.isSelected
+                ? 'primary.600'
+                : props.isSelected
+                ? 'white'
+                : 'text.body'
+            }
           >
             <Tooltip
               hasArrow
@@ -175,7 +145,6 @@ export const FieldSelect: React.FC<FieldSelectProps> = ({
               color={props.isSelected ? 'inherit' : 'gray.600'}
               transition='0.2s linear'
               maxW={350}
-              noOfLines={2} //truncate after 2 lines
             >
               {description.charAt(0).toUpperCase() +
                 description.toLowerCase().slice(1)}
@@ -203,7 +172,7 @@ export const FieldSelect: React.FC<FieldSelectProps> = ({
           </VisuallyHidden>
           <Select
             components={{ Control, Option }}
-            defaultValue={fields[0]}
+            // defaultValue={fields[0]}
             isDisabled={isDisabled}
             isClearable
             isSearchable={true}

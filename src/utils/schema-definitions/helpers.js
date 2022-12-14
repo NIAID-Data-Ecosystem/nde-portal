@@ -27,6 +27,7 @@ const getPropertyTitle = (dotfield, data) => {
     } else {
       // basic formatting for handling most property labels, split on camelCase and uppercase the first letter in each word.
       property = str
+        .replace('@type', 'type')
         .split(/(?=[A-Z])/)
         .map(
           word =>

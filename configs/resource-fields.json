@@ -1,0 +1,524 @@
+[
+  { "name": "Type", "property": "@type", "type": "keyword", "count": 2591795 },
+  {
+    "name": "Alternate Name",
+    "property": "alternateName",
+    "type": "text",
+    "count": 104
+  },
+  {
+    "name": "Application Category",
+    "property": "applicationCategory",
+    "type": "keyword",
+    "count": 7963
+  },
+  {
+    "name": "Application Sub Category Name",
+    "property": "applicationSubCategory.name",
+    "type": "keyword",
+    "count": 646
+  },
+  {
+    "name": "Application Suite",
+    "property": "applicationSuite",
+    "type": "text",
+    "count": 2718
+  },
+  {
+    "name": "Author Affiliation Name",
+    "property": "author.affiliation.name",
+    "type": "keyword",
+    "count": 351793
+  },
+  {
+    "name": "Author Affiliation Same As",
+    "property": "author.affiliation.sameAs",
+    "type": "keyword",
+    "count": 45030
+  },
+  {
+    "name": "Author Family Name",
+    "property": "author.familyName",
+    "type": "text",
+    "count": 113063
+  },
+  {
+    "name": "Author Given Name",
+    "property": "author.givenName",
+    "type": "text",
+    "count": 113041
+  },
+  {
+    "name": "Author Identifier",
+    "property": "author.identifier",
+    "type": "text",
+    "count": 136521
+  },
+  {
+    "name": "Author Name",
+    "property": "author.name",
+    "type": "text",
+    "count": 1968172
+  },
+  {
+    "name": "Author Role",
+    "property": "author.role",
+    "type": "keyword",
+    "count": 631
+  },
+  {
+    "name": "Citation Author Family Name",
+    "property": "citation.author.familyName",
+    "type": "text",
+    "count": 129
+  },
+  {
+    "name": "Citation Author Given Name",
+    "property": "citation.author.givenName",
+    "type": "text",
+    "count": 129
+  },
+  {
+    "name": "Citation Author Name",
+    "property": "citation.author.name",
+    "type": "text",
+    "count": 259827
+  },
+  {
+    "name": "Citation Date Published",
+    "property": "citation.datePublished",
+    "type": "date",
+    "count": 259964
+  },
+  {
+    "name": "Citation Doi",
+    "property": "citation.doi",
+    "type": "keyword",
+    "count": 22434
+  },
+  {
+    "name": "Citation Identifier",
+    "property": "citation.identifier",
+    "type": "keyword",
+    "count": 259967
+  },
+  {
+    "name": "Citation Issue Number",
+    "property": "citation.issueNumber",
+    "type": "text",
+    "count": 124
+  },
+  {
+    "name": "Citation Journal Name",
+    "property": "citation.journalName",
+    "type": "keyword",
+    "count": 259966
+  },
+  {
+    "name": "Citation Journal Name Abbrev",
+    "property": "citation.journalNameAbbrev",
+    "type": "keyword",
+    "count": 132
+  },
+  {
+    "name": "Citation Name",
+    "property": "citation.name",
+    "type": "text",
+    "count": 281510
+  },
+  {
+    "name": "Citation Pagination",
+    "property": "citation.pagination",
+    "type": "text",
+    "count": 132
+  },
+  {
+    "name": "Citation Pmid",
+    "property": "citation.pmid",
+    "type": "text",
+    "count": 263008
+  },
+  {
+    "name": "Citation Volume Number",
+    "property": "citation.volumeNumber",
+    "type": "text",
+    "count": 131
+  },
+  {
+    "name": "Cited By Doi",
+    "property": "citedBy.doi",
+    "type": "keyword",
+    "count": 509
+  },
+  {
+    "name": "Cited By Name",
+    "property": "citedBy.name",
+    "type": "text",
+    "count": 509
+  },
+  {
+    "name": "Cited By Pmid",
+    "property": "citedBy.pmid",
+    "type": "text",
+    "count": 509
+  },
+  {
+    "name": "Code Repository",
+    "property": "codeRepository",
+    "type": "text",
+    "count": 7311
+  },
+  {
+    "name": "Conditions Of Access",
+    "property": "conditionsOfAccess",
+    "type": "text",
+    "count": 463169
+  },
+  {
+    "name": "Contributor Name",
+    "property": "contributor.name",
+    "type": "text",
+    "count": 606
+  },
+  {
+    "name": "Curated By Name",
+    "property": "curatedBy.name",
+    "type": "keyword",
+    "count": 416020
+  },
+  {
+    "name": "Curated By Version Date",
+    "property": "curatedBy.versionDate",
+    "type": "date",
+    "count": 416020
+  },
+  { "name": "Date", "property": "date", "type": "date", "count": 717924 },
+  {
+    "name": "Date Created",
+    "property": "dateCreated",
+    "type": "date",
+    "count": 12182
+  },
+  {
+    "name": "Date Modified",
+    "property": "dateModified",
+    "type": "date",
+    "count": 667050
+  },
+  {
+    "name": "Date Published",
+    "property": "datePublished",
+    "type": "date",
+    "count": 711333
+  },
+  {
+    "name": "Description",
+    "property": "description",
+    "type": "text",
+    "count": 2587413
+  },
+  {
+    "name": "Distribution Date Modified",
+    "property": "distribution.dateModified",
+    "type": "date",
+    "count": 63440
+  },
+  {
+    "name": "Distribution Encoding Format",
+    "property": "distribution.encodingFormat",
+    "type": "text",
+    "count": 1396271
+  },
+  {
+    "name": "Distribution Name",
+    "property": "distribution.name",
+    "type": "keyword",
+    "count": 63983
+  },
+  { "name": "Doi", "property": "doi", "type": "text", "count": 474367 },
+  {
+    "name": "Funding Funder Alternate Name",
+    "property": "funding.funder.alternateName",
+    "type": "keyword",
+    "count": 628
+  },
+  {
+    "name": "Funding Funder Name",
+    "property": "funding.funder.name",
+    "type": "keyword",
+    "count": 191122
+  },
+  {
+    "name": "Funding Funder Parent Organization",
+    "property": "funding.funder.parentOrganization",
+    "type": "keyword",
+    "count": 649
+  },
+  {
+    "name": "Funding Identifier",
+    "property": "funding.identifier",
+    "type": "text",
+    "count": 153466
+  },
+  {
+    "name": "Has Part Name",
+    "property": "hasPart.name",
+    "type": "text",
+    "count": 38993
+  },
+  {
+    "name": "Health Condition Name",
+    "property": "healthCondition.name",
+    "type": "keyword",
+    "count": 7201
+  },
+  {
+    "name": "Identifier",
+    "property": "identifier",
+    "type": "text",
+    "count": 714846
+  },
+  {
+    "name": "In Language Name",
+    "property": "inLanguage.name",
+    "type": "text",
+    "count": 50215
+  },
+  {
+    "name": "Source Name",
+    "property": "includedInDataCatalog.name",
+    "type": "keyword",
+    "count": 2591795
+  },
+  {
+    "name": "Source Version Date",
+    "property": "includedInDataCatalog.versionDate",
+    "type": "date",
+    "count": 2588318
+  },
+  {
+    "name": "Pathogen Name",
+    "property": "infectiousAgent.name",
+    "type": "keyword",
+    "count": 366
+  },
+  {
+    "name": "Input Description",
+    "property": "input.description",
+    "type": "text",
+    "count": 108
+  },
+  {
+    "name": "Input Encoding Format",
+    "property": "input.encodingFormat",
+    "type": "text",
+    "count": 493
+  },
+  {
+    "name": "Input Identifier",
+    "property": "input.identifier",
+    "type": "text",
+    "count": 162
+  },
+  {
+    "name": "Input Name",
+    "property": "input.name",
+    "type": "text",
+    "count": 709
+  },
+  {
+    "name": "Interaction Statistic Interaction Type",
+    "property": "interactionStatistic.interactionType",
+    "type": "text",
+    "count": 3184
+  },
+  {
+    "name": "Interaction Statistic User Interaction Count",
+    "property": "interactionStatistic.userInteractionCount",
+    "type": "unsigned_long",
+    "count": 3184
+  },
+  {
+    "name": "Is Accessible For Free",
+    "property": "isAccessibleForFree",
+    "type": "boolean",
+    "count": 50465
+  },
+  {
+    "name": "Is Based On Additional Type Name",
+    "property": "isBasedOn.additionalType.name",
+    "type": "keyword",
+    "count": 499
+  },
+  {
+    "name": "Is Based On Description",
+    "property": "isBasedOn.description",
+    "type": "text",
+    "count": 499
+  },
+  {
+    "name": "Is Based On Identifier",
+    "property": "isBasedOn.identifier",
+    "type": "text",
+    "count": 2438
+  },
+  {
+    "name": "Is Based On Name",
+    "property": "isBasedOn.name",
+    "type": "text",
+    "count": 2435
+  },
+  {
+    "name": "Is Related To Identifier",
+    "property": "isRelatedTo.identifier",
+    "type": "keyword",
+    "count": 1589
+  },
+  {
+    "name": "Is Related To Name",
+    "property": "isRelatedTo.name",
+    "type": "text",
+    "count": 1589
+  },
+  {
+    "name": "Keywords",
+    "property": "keywords",
+    "type": "keyword",
+    "count": 324241
+  },
+  { "name": "License", "property": "license", "type": "text", "count": 288847 },
+  {
+    "name": "Main Entity Of Page",
+    "property": "mainEntityOfPage",
+    "type": "text",
+    "count": 4755
+  },
+  {
+    "name": "Measurement Technique Name",
+    "property": "measurementTechnique.name",
+    "type": "keyword",
+    "count": 179142
+  },
+  { "name": "Name", "property": "name", "type": "keyword", "count": 2529298 },
+  {
+    "name": "Output Encoding Format",
+    "property": "output.encodingFormat",
+    "type": "text",
+    "count": 458
+  },
+  {
+    "name": "Output Identifier",
+    "property": "output.identifier",
+    "type": "text",
+    "count": 139
+  },
+  {
+    "name": "Output Name",
+    "property": "output.name",
+    "type": "text",
+    "count": 719
+  },
+  {
+    "name": "Processor Requirements",
+    "property": "processorRequirements",
+    "type": "text",
+    "count": 492
+  },
+  {
+    "name": "Programming Language",
+    "property": "programmingLanguage",
+    "type": "keyword",
+    "count": 7821
+  },
+  { "name": "Same As", "property": "sameAs", "type": "text", "count": 1873401 },
+  {
+    "name": "Source publisher Identifier",
+    "property": "sdPublisher.identifier",
+    "type": "text",
+    "count": 6916
+  },
+  {
+    "name": "Source publisher Name",
+    "property": "sdPublisher.name",
+    "type": "text",
+    "count": 1359317
+  },
+  {
+    "name": "Software Help Name",
+    "property": "softwareHelp.name",
+    "type": "text",
+    "count": 2023
+  },
+  {
+    "name": "Software Requirements",
+    "property": "softwareRequirements",
+    "type": "text",
+    "count": 2543
+  },
+  {
+    "name": "Software Version",
+    "property": "softwareVersion",
+    "type": "text",
+    "count": 5634
+  },
+  {
+    "name": "Geographical Information Identifier",
+    "property": "spatialCoverage.identifier",
+    "type": "text",
+    "count": 4324
+  },
+  {
+    "name": "Geographical Information Name",
+    "property": "spatialCoverage.name",
+    "type": "text",
+    "count": 20602
+  },
+  {
+    "name": "Species Additional Type Name",
+    "property": "species.additionalType.name",
+    "type": "keyword",
+    "count": 499
+  },
+  {
+    "name": "Species Name",
+    "property": "species.name",
+    "type": "keyword",
+    "count": 167143
+  },
+  {
+    "name": "Period Temporal Interval End Date",
+    "property": "temporalCoverage.temporalInterval.endDate",
+    "type": "date",
+    "count": 54356
+  },
+  {
+    "name": "Period Temporal Interval Start Date",
+    "property": "temporalCoverage.temporalInterval.startDate",
+    "type": "date",
+    "count": 4981
+  },
+  {
+    "name": "Topic Category Curated By Name",
+    "property": "topicCategory.curatedBy.name",
+    "type": "text",
+    "count": 4058
+  },
+  {
+    "name": "Topic Category Description",
+    "property": "topicCategory.description",
+    "type": "text",
+    "count": 3124
+  },
+  {
+    "name": "Topic Category Name",
+    "property": "topicCategory.name",
+    "type": "keyword",
+    "count": 137581
+  },
+  {
+    "name": "Variable Measured",
+    "property": "variableMeasured",
+    "type": "keyword",
+    "count": 1878034
+  }
+]
