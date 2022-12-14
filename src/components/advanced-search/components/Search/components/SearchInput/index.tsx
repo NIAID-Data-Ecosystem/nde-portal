@@ -14,6 +14,7 @@ import { DateInputGroup } from './components/DateInput';
 import { getPropertyInConfig } from 'src/utils/metadata-schema';
 import MetadataConfig from 'configs/resource-metadata.json';
 import { TextInput } from './components/TextInput';
+import { EnumInput } from './components/EnumInput';
 
 interface SearchInputProps {
   //   isDisabled: boolean;
@@ -84,7 +85,7 @@ export const SearchInput: React.FC<SearchInputProps> = ({
           unionType ? getUnionTheme(unionType).colorScheme : colorScheme
         }
         // set as disabled if no search term is entered and exists option is not selected.
-        isDisabled={!searchTerm && !inputIsDisabled}
+        // isDisabled={!searchTerm && !inputIsDisabled}
       />
     );
   };
@@ -140,7 +141,50 @@ export const SearchInput: React.FC<SearchInputProps> = ({
         renderSubmitButton={InputButton}
       />
     );
+  } else if (searchFieldDetails && searchFieldDetails.enum) {
+    return (
+      <EnumInput
+        field={searchField}
+        options={searchFieldDetails.enum}
+        renderSubmitButton={InputButton}
+        isDisabled={inputIsDisabled}
+        handleSubmit={({
+          term,
+          querystring,
+        }: {
+          term: string;
+          querystring: string;
+        }) => {
+          onSubmit({ term, field: searchField, querystring });
+        }}
+      />
+    );
   }
+  // else if (
+  //   searchFieldDetails &&
+  //   (searchFieldDetails.type === 'unsigned_long' ||
+  //     searchFieldDetails.type === 'integer' ||
+  //     searchFieldDetails.type === 'double' ||
+  //     searchFieldDetails.type === 'float')
+  // ) {
+  //   return (
+  //     <EnumInput
+  //       field={searchField}
+  //       options={searchFieldDetails.enum}
+  //       renderSubmitButton={InputButton}
+  //       isDisabled={inputIsDisabled}
+  //       handleSubmit={({
+  //         term,
+  //         querystring,
+  //       }: {
+  //         term: string;
+  //         querystring: string;
+  //       }) => {
+  //         onSubmit({ term, field: searchField, querystring });
+  //       }}
+  //     />
+  //   );
+  // }
 
   const handleQueryString = (value: string) => {
     let term = value;

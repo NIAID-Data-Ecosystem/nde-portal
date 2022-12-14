@@ -3,7 +3,6 @@ import {
   Box,
   Flex,
   Icon,
-  Skeleton,
   Text,
   theme,
   Tooltip,
@@ -31,7 +30,6 @@ export const FieldSelect: React.FC<FieldSelectProps> = ({
   const { setSearchField } = useAdvancedSearchContext();
 
   // Retrieve fields for select dropdown.
-  const isLoading = false;
   const fields = [
     {
       label: 'All Fields',
@@ -156,13 +154,7 @@ export const FieldSelect: React.FC<FieldSelectProps> = ({
   };
 
   return (
-    <Skeleton
-      minW='300px'
-      w={{ base: '100%', md: 'unset' }}
-      ml={0}
-      mr={2}
-      isLoaded={!isLoading}
-    >
+    <Box minW='300px' w={{ base: '100%', md: 'unset' }} ml={0} mr={2}>
       {fields ? (
         <>
           <VisuallyHidden>
@@ -227,6 +219,6 @@ export const FieldSelect: React.FC<FieldSelectProps> = ({
       ) : (
         <></>
       )}
-    </Skeleton>
+    </Box>
   );
 };
