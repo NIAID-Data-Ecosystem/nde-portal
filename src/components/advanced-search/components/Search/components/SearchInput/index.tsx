@@ -72,7 +72,7 @@ export const SearchInput: React.FC<SearchInputProps> = ({
           items.length > 0 &&
           unionOptions.map(term => {
             return {
-              name: `Add with ${term}`,
+              name: `${term}`,
               value: term,
               props: { ...getUnionTheme(term) },
             };
