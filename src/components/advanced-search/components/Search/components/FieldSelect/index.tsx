@@ -17,6 +17,7 @@ import { useAdvancedSearchContext } from '../AdvancedSearchFormContext';
 import Select, { components, OptionProps, ControlProps } from 'react-select';
 import { FaHashtag, FaRegCalendarAlt, FaSearch, FaTh } from 'react-icons/fa';
 import { MdTextFormat } from 'react-icons/md';
+import { formatNumber } from 'src/utils/helpers';
 
 interface FieldSelectProps {
   isDisabled: boolean;
@@ -55,6 +56,7 @@ export const FieldSelect: React.FC<FieldSelectProps> = ({
         description,
         value: field.property,
         type: field.type,
+        count: field.count,
       };
     }),
   ];
@@ -71,7 +73,8 @@ export const FieldSelect: React.FC<FieldSelectProps> = ({
   const Option = (props: OptionProps<any>) => {
     const { isOpen: showDescription, onClose, onOpen } = useDisclosure();
     const { data } = props;
-    const { label, description, type } = data;
+    const { label, description, type, count } = data;
+    console.log(data);
     const ref = useRef(null);
 
     let icon;
@@ -130,9 +133,21 @@ export const FieldSelect: React.FC<FieldSelectProps> = ({
             </Tooltip>
 
             {/* Name of field. */}
-            <Text fontWeight='medium' color='inherit'>
-              {label}
-            </Text>
+            <Box>
+              <Text fontWeight='medium' color='inherit' lineHeight='none'>
+                {label}
+              </Text>
+              {count && (
+                <Text
+                  as='span'
+                  fontStyle='italic'
+                  fontSize='xs'
+                  fontWeight='light'
+                >
+                  {formatNumber(count)} records
+                </Text>
+              )}
+            </Box>
           </Flex>
 
           {showDescription && description && (
