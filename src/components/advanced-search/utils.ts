@@ -37,12 +37,8 @@ export const getUnionTheme = (term: UnionTypes) => {
 /**
  * [convertObject2QueryString]: Converts a nested query object (tree)
  * to a string for querying the API.
- *
  */
-export const convertObject2QueryString = (
-  items: DragItem[],
-  shouldEncodeString?: boolean,
-) => {
+export const convertObject2QueryString = (items: DragItem[]) => {
   const reduceQueryString = (items: DragItem[]) =>
     items.reduce((r, item) => {
       const union = `${item.value.union ? ` ${item.value.union} ` : ''}`;
@@ -55,10 +51,9 @@ export const convertObject2QueryString = (
           str += `${field}:`;
         }
         let formattedTerm = querystring ? querystring : term;
-        // if (shouldEncodeString && field !== 'date') {
-        //   formattedTerm = encodeString(item.value.term);
-        // }
-        str += formattedTerm;
+
+        // wrap querystring in parenthesis if a field is selected so that the term is applied to the field.
+        str += field ? `(${formattedTerm})` : formattedTerm;
         r += `${union}(${str})`;
       }
 

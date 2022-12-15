@@ -36,8 +36,7 @@ export const SearchInput: React.FC<SearchInputProps> = ({
   handleSubmit,
 }) => {
   const advancedSearchProps = useAdvancedSearchContext();
-  const { searchTerm, searchField, searchOption, updateSearchTerm } =
-    advancedSearchProps;
+  const { searchField, searchOption, updateSearchTerm } = advancedSearchProps;
   // Input is disabledinputValue wen search whether entire field exists (or doesn't exist).
   const inputIsDisabled =
     searchOption.value === '_exists_' || searchOption.value === '-_exists_';

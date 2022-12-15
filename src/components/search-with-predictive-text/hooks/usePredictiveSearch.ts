@@ -32,7 +32,7 @@ export const usePredictiveSearch = (term = '', field = '', encode = true) => {
     () => {
       const queryString = encode ? encodeString(searchTerm) : searchTerm;
       return fetchSearchResults({
-        q: searchField ? `${searchField}:${queryString}` : `${queryString}`,
+        q: searchField ? `${searchField}:(${queryString})` : `${queryString}`,
         size: 20,
         // return flattened version of data.
         dotfield: true,
@@ -74,7 +74,6 @@ export const usePredictiveSearch = (term = '', field = '', encode = true) => {
   const updateSearchTerm = (value: string) => {
     debouncedUpdate.current(value);
   };
-
   return {
     isLoading: isLoading || isFetching,
     error,

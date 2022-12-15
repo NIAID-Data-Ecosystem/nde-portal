@@ -51,22 +51,43 @@ export const SEARCH_OPTIONS = [
       {
         name: 'Contains',
         value: 'default',
-        description: 'Contains all these words in any order.',
-        example: `mycobacterium tuberculosis · contains both
-        'mycobacterium' and 'tuberculosis'`,
+        type: 'text',
+        description:
+          'Field contains value that starts or ends with given term.',
+        example: `oronaviru · contains results ending with 'oronaviru' such as 'coronavirus'`,
         transformValue: (value: string, field?: string) => {
           const searchTerms = value.trim().split(' ');
           if (!value) {
             return '';
           }
-          const querystring = `${searchTerms.join(' AND ')}`;
+          const querystring = `${searchTerms
+            .map(str => (str ? `*${str}*` : ''))
+            .join(' AND ')}`;
           // if (!field && searchTerms.length === 1) {
-          //   // [NOTE]: consider wrapping this in quotes as the default behaviour of the API is to append a wildcard to the querystring : querystring*
+          //   return querystring;
           // }
           return encodeString(querystring);
-          // return `${querystring}`;
         },
       },
+      // {
+      //   name: 'Contains',
+      //   value: 'default',
+      //   description: 'Contains all these words in any order.',
+      //   example: `mycobacterium tuberculosis · contains both
+      //   'mycobacterium' and 'tuberculosis'`,
+      //   transformValue: (value: string, field?: string) => {
+      //     const searchTerms = value.trim().split(' ');
+      //     if (!value) {
+      //       return '';
+      //     }
+      //     const querystring = `${searchTerms.join(' AND ')}`;
+      //     // if (!field && searchTerms.length === 1) {
+      //     //   // [NOTE]: consider wrapping this in quotes as the default behaviour of the API is to append a wildcard to the querystring : querystring*
+      //     // }
+      //     return encodeString(querystring);
+      //     // return `${querystring}`;
+      //   },
+      // },
       {
         name: 'Exact Match',
         value: 'exact',
@@ -116,27 +137,6 @@ export const SEARCH_OPTIONS = [
           return encodeString(querystring);
         },
       },
-      {
-        name: 'Starts and ends with',
-        value: 'starts_and_ends',
-        type: 'text',
-        description:
-          'Field contains value that starts or ends with given term.',
-        example: `oronaviru · contains results ending with 'oronaviru' such as 'coronavirus'`,
-        transformValue: (value: string, field?: string) => {
-          const searchTerms = value.trim().split(' ');
-          if (!value) {
-            return '';
-          }
-          const querystring = `${searchTerms
-            .map(str => (str ? `*${str}*` : ''))
-            .join(' AND ')}`;
-          // if (!field && searchTerms.length === 1) {
-          //   return querystring;
-          // }
-          return encodeString(querystring);
-        },
-      },
     ],
   },
 ];
@@ -161,7 +161,7 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
         isOpen={isOpen}
         onClose={onClose}
         onSubmit={e => {
-          const querystring = convertObject2QueryString(items, true);
+          const querystring = convertObject2QueryString(items);
           router.push({
             pathname: `/search`,
             query: { q: `${querystring}`, advancedSearch: true },

@@ -54,9 +54,7 @@ export const PredictiveSearch: React.FC<SearchWithPredictiveTextProps> = ({
 }) => {
   // Search term entered in search bar
   const { results, searchField, searchTerm, updateSearchTerm } = props;
-
   const fieldName = searchField || 'name';
-
   // List of suggestions to search query.
   const uniqueSuggestions = useMemo(
     () =>
@@ -68,8 +66,8 @@ export const PredictiveSearch: React.FC<SearchWithPredictiveTextProps> = ({
             value = result[fieldName]
               .filter((r: string) => {
                 let name = r.toLowerCase();
-                let search = searchTerm.toLowerCase();
-                return name.includes(search);
+                let input = inputValue?.toLowerCase() || '';
+                return name.includes(input);
               })
               .join(',');
           } else {
@@ -80,9 +78,8 @@ export const PredictiveSearch: React.FC<SearchWithPredictiveTextProps> = ({
         // filter out duplicate values
         v => v[fieldName],
       ),
-    [fieldName, searchTerm, results],
+    [fieldName, results, inputValue],
   );
-
   // Group suggestions by type.
   const suggestionsGroupedByType = useMemo(
     () => Object.entries(groupBy(uniqueSuggestions, d => d.type)),

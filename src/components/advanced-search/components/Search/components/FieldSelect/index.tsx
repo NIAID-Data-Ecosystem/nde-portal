@@ -74,7 +74,6 @@ export const FieldSelect: React.FC<FieldSelectProps> = ({
     const { isOpen: showDescription, onClose, onOpen } = useDisclosure();
     const { data } = props;
     const { label, description, type, count } = data;
-    console.log(data);
     const ref = useRef(null);
 
     let icon;
