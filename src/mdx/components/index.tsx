@@ -14,15 +14,13 @@ import {
 
 export const MDXComponents = {
   Image: (props: ImageProps) => (
-    <Flex my='5' justifyContent='center'>
-      <Image
-        alt='image'
-        width={700}
-        height={400}
-        objectFit='contain'
-        {...props}
-      />
-    </Flex>
+    <Image
+      alt='image'
+      width={700}
+      height={400}
+      objectFit='contain'
+      {...props}
+    />
   ),
   h1: (props: any) => (
     <Heading
@@ -57,4 +55,5 @@ export const MDXComponents = {
   ),
   a: (props: any) => <Link {...props} />,
   Flex: (props: any) => <Flex {...props} />,
+  Box: (props: any) => <Box {...props} />,
 };
