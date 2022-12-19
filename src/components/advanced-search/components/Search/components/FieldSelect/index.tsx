@@ -9,15 +9,13 @@ import {
   useDisclosure,
   VisuallyHidden,
 } from 'nde-design-system';
-import MetadataConfig from 'configs/resource-metadata.json';
 import MetadataFields from 'configs/resource-fields.json';
-import { getMetadataNameByProperty } from 'src/components/advanced-search/utils';
-import { getPropertyInConfig } from 'src/utils/metadata-schema';
 import { useAdvancedSearchContext } from '../AdvancedSearchFormContext';
 import Select, { components, OptionProps, ControlProps } from 'react-select';
 import { FaHashtag, FaRegCalendarAlt, FaSearch, FaTh } from 'react-icons/fa';
 import { MdTextFormat } from 'react-icons/md';
 import { formatNumber } from 'src/utils/helpers';
+import { filterFields, transformFieldName } from './helpers';
 
 interface FieldSelectProps {
   isDisabled: boolean;
@@ -33,7 +31,6 @@ export const FieldSelect: React.FC<FieldSelectProps> = ({
 }) => {
   const { searchField, setSearchField } = useAdvancedSearchContext();
 
-  // Retrieve fields for select dropdown.
   const fields = [
     {
       label: 'All Fields',
@@ -41,29 +38,14 @@ export const FieldSelect: React.FC<FieldSelectProps> = ({
       value: '',
       type: '',
     },
-    ...MetadataFields.map(field => {
-      const fieldInformation = getPropertyInConfig(
-        field.property,
-        MetadataConfig,
-      );
-      const label =
-        fieldInformation?.title || getMetadataNameByProperty(field.property);
-      let description =
-        fieldInformation?.abstract || fieldInformation?.description || '';
-      if (typeof description === 'object') {
-        description = Object.values(description).join(' or ');
-      }
+    ...MetadataFields.filter(filterFields).map(field => {
       return {
-        ...fieldInformation,
-        label,
-        description,
+        ...field,
+        label: transformFieldName(field),
         value: field.property,
-        type: field.type,
-        count: field.count,
       };
     }),
   ];
-
   const Control = (props: ControlProps<any>) => {
     return (
       <components.Control {...props}>
@@ -76,7 +58,7 @@ export const FieldSelect: React.FC<FieldSelectProps> = ({
   const Option = (props: OptionProps<any>) => {
     const { isOpen: showDescription, onClose, onOpen } = useDisclosure();
     const { data } = props;
-    const { label, description, type, count } = data;
+    const { label, type, count } = data;
     const ref = useRef(null);
 
     let icon;
@@ -98,6 +80,12 @@ export const FieldSelect: React.FC<FieldSelectProps> = ({
       tooltipLabel = 'number';
     }
 
+    let description = data.abstract ? data.abstract : data.description;
+    if (typeof description === 'object') {
+      description = Object.values(description)
+        .filter((str, idx) => Object.values(description).indexOf(str) === idx)
+        .join(' or ');
+    }
     return (
       <components.Option {...props}>
         <Box
@@ -164,6 +152,7 @@ export const FieldSelect: React.FC<FieldSelectProps> = ({
             >
               {description.charAt(0).toUpperCase() +
                 description.toLowerCase().slice(1)}
+              {description.charAt(description.length - 1) === '.' ? '' : '.'}
             </Text>
           )}
         </Box>

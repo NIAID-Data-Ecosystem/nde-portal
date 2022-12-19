@@ -6,8 +6,7 @@ import {
 } from 'src/components/advanced-search/components/SortableWithCombine';
 import { useAdvancedSearchContext } from '../AdvancedSearchFormContext';
 import { DateInputGroup } from './components/DateInput';
-import { getPropertyInConfig } from 'src/utils/metadata-schema';
-import MetadataConfig from 'configs/resource-metadata.json';
+import MetadataFieldsConfig from 'configs/resource-fields.json';
 import { TextInput } from './components/TextInput';
 import { EnumInput } from './components/EnumInput';
 import { InputSubmitButton } from './components/InputSubmitButton';
@@ -90,9 +89,9 @@ export const SearchInput: React.FC<SearchInputProps> = ({
   }, [updateSearchTerm]);
 
   // Information about the search field such as type to use for inputs type.
-  const searchFieldDetails = searchField
-    ? getPropertyInConfig(searchField, MetadataConfig)
-    : null;
+  const field = MetadataFieldsConfig.find(
+    field => field.property === searchField,
+  );
 
   const handleSubmit = ({
     term,
@@ -136,27 +135,27 @@ export const SearchInput: React.FC<SearchInputProps> = ({
 
   useEffect(() => {
     setInputType(() => {
-      if (searchFieldDetails?.enum) {
+      if (field?.enum) {
         return 'enum';
-      } else if (searchFieldDetails?.format === 'date') {
+      } else if (field?.format === 'date') {
         return 'date';
       } else if (
-        searchFieldDetails?.type === 'unsigned_long' ||
-        searchFieldDetails?.type === 'integer' ||
-        searchFieldDetails?.type === 'double' ||
-        searchFieldDetails?.type === 'float'
+        field?.type === 'unsigned_long' ||
+        field?.type === 'integer' ||
+        field?.type === 'double' ||
+        field?.type === 'float'
       ) {
         return 'number';
       }
       return 'string';
     });
-  }, [searchFieldDetails]);
+  }, [field]);
 
   return (
     <CustomInput
       size={size}
       type={inputType}
-      options={searchFieldDetails?.enum}
+      options={field?.enum}
       inputValue={inputValue}
       isDisabled={inputIsDisabled}
       handleChange={props => {

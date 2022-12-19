@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { ButtonProps, Flex, theme } from 'nde-design-system';
 import Select from 'react-select';
+import { useAdvancedSearchContext } from '../../AdvancedSearchFormContext';
+import { formatType } from 'src/utils/api/helpers';
 
 interface EnumInputProps {
   isDisabled: boolean;
@@ -15,7 +17,15 @@ export const EnumInput: React.FC<EnumInputProps> = ({
   handleSubmit,
   renderSubmitButton,
 }) => {
-  const selectOptions = [...options?.map(value => ({ label: value, value }))];
+  const { searchField } = useAdvancedSearchContext();
+  const selectOptions = [
+    ...options?.map(value => {
+      if (searchField === '@type') {
+        return { label: formatType(value), value };
+      }
+      return { label: value, value };
+    }),
+  ];
   const defaultOption = selectOptions[0];
   const [selectedOption, setSelectedOption] = useState<{
     label: string;
