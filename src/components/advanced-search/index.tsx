@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Box,
   Button,
@@ -51,22 +51,43 @@ export const SEARCH_OPTIONS = [
       {
         name: 'Contains',
         value: 'default',
-        description: 'Contains all these words in any order.',
-        example: `mycobacterium tuberculosis · contains both
-        'mycobacterium' and 'tuberculosis'`,
+        type: 'text',
+        description:
+          'Field contains value that starts or ends with given term.',
+        example: `oronaviru · contains results ending with 'oronaviru' such as 'coronavirus'`,
         transformValue: (value: string, field?: string) => {
           const searchTerms = value.trim().split(' ');
           if (!value) {
             return '';
           }
-          const querystring = `${searchTerms.join(' AND ')}`;
+          const querystring = `${searchTerms
+            .map(str => (str ? `*${str}*` : ''))
+            .join(' AND ')}`;
           // if (!field && searchTerms.length === 1) {
-          //   // [NOTE]: consider wrapping this in quotes as the default behaviour of the API is to append a wildcard to the querystring : querystring*
+          //   return querystring;
           // }
           return encodeString(querystring);
-          // return `${querystring}`;
         },
       },
+      // {
+      //   name: 'Contains',
+      //   value: 'default',
+      //   description: 'Contains all these words in any order.',
+      //   example: `mycobacterium tuberculosis · contains both
+      //   'mycobacterium' and 'tuberculosis'`,
+      //   transformValue: (value: string, field?: string) => {
+      //     const searchTerms = value.trim().split(' ');
+      //     if (!value) {
+      //       return '';
+      //     }
+      //     const querystring = `${searchTerms.join(' AND ')}`;
+      //     // if (!field && searchTerms.length === 1) {
+      //     //   // [NOTE]: consider wrapping this in quotes as the default behaviour of the API is to append a wildcard to the querystring : querystring*
+      //     // }
+      //     return encodeString(querystring);
+      //     // return `${querystring}`;
+      //   },
+      // },
       {
         name: 'Exact Match',
         value: 'exact',
@@ -116,27 +137,6 @@ export const SEARCH_OPTIONS = [
           return encodeString(querystring);
         },
       },
-      {
-        name: 'Starts and ends with',
-        value: 'starts_and_ends',
-        type: 'text',
-        description:
-          'Field contains value that starts or ends with given term.',
-        example: `oronaviru · contains results ending with 'oronaviru' such as 'coronavirus'`,
-        transformValue: (value: string, field?: string) => {
-          const searchTerms = value.trim().split(' ');
-          if (!value) {
-            return '';
-          }
-          const querystring = `${searchTerms
-            .map(str => (str ? `*${str}*` : ''))
-            .join(' AND ')}`;
-          // if (!field && searchTerms.length === 1) {
-          //   return querystring;
-          // }
-          return encodeString(querystring);
-        },
-      },
     ],
   },
 ];
@@ -145,6 +145,7 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
   modalProps,
 }) => {
   const router = useRouter();
+  const [resetForm, setResetForm] = useState(false);
 
   // Handles the opening of the modal.
   // [TO DO]: remove {isOpen:true} after dev mode.
@@ -154,6 +155,12 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
   });
   const [items, setItems] = useState<DragItem[]>([]);
 
+  useEffect(() => {
+    if (items.length > 0 && resetForm === true) {
+      setResetForm(false);
+    }
+  }, [items, resetForm]);
+
   return (
     <>
       <OpenModal onClick={onOpen} {...buttonProps}></OpenModal>
@@ -161,7 +168,7 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
         isOpen={isOpen}
         onClose={onClose}
         onSubmit={e => {
-          const querystring = convertObject2QueryString(items, true);
+          const querystring = convertObject2QueryString(items);
           router.push({
             pathname: `/search`,
             query: { q: `${querystring}`, advancedSearch: true },
@@ -189,12 +196,18 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
                   <SearchOptions />
                 </Flex>
                 <Flex w='100%' alignItems='flex-end'>
-                  <FieldSelect isDisabled={!isOpen}></FieldSelect>
+                  <FieldSelect
+                    isDisabled={!isOpen}
+                    isFormReset={resetForm}
+                    setResetForm={setResetForm}
+                  ></FieldSelect>
                   <SearchInput
                     size='md'
                     colorScheme='primary'
                     items={items}
-                    handleSubmit={({ term, field, union, querystring }) => {
+                    isFormReset={resetForm}
+                    setResetForm={setResetForm}
+                    onSubmit={({ term, field, union, querystring }) => {
                       setItems(prev => {
                         if (!term) return prev;
                         const newItems = [...prev];
@@ -325,7 +338,10 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
               leftIcon={<FaUndoAlt />}
               variant='ghost'
               isDisabled={!items.length}
-              onClick={() => setItems([])}
+              onClick={() => {
+                setItems([]);
+                setResetForm(true);
+              }}
               ml={4}
             >
               Reset query

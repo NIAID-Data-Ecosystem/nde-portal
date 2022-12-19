@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import {
   Box,
   ButtonProps,
@@ -11,18 +10,20 @@ import {
 interface DateInputProps {
   isDisabled?: boolean;
   size: InputProps['size'];
+  inputValue: { startDate: string; endDate: string };
+  handleChange: (value: DateInputProps['inputValue']) => void;
   handleSubmit: (args: { term: string; querystring: string }) => void;
   renderSubmitButton?: (props: ButtonProps) => React.ReactElement;
 }
 
 export const DateInputGroup: React.FC<DateInputProps> = ({
   size,
+  handleChange,
   handleSubmit,
   renderSubmitButton,
-  ...props
+  inputValue,
 }) => {
-  const [startDate, setStartDate] = useState('');
-  const [endDate, setEndDate] = useState('');
+  const { startDate, endDate } = inputValue;
 
   return (
     <Flex
@@ -61,11 +62,10 @@ export const DateInputGroup: React.FC<DateInputProps> = ({
           size={size}
           min={undefined}
           max={endDate || undefined} // set the max start date to the end date in the current selection to prevent setting a start date later than the end date.
-          value={startDate}
+          value={startDate || ''}
           onChange={e => {
-            setStartDate(e.target.value);
+            handleChange({ ...inputValue, startDate: e.target.value });
           }}
-          {...props}
         ></Input>
       </Box>
 
@@ -79,11 +79,10 @@ export const DateInputGroup: React.FC<DateInputProps> = ({
           size={size}
           min={startDate} // set the minimum end date to the start date in the current selection to prevent setting an end date earlier than the start date.
           max={undefined}
-          value={endDate}
+          value={endDate || ''}
           onChange={e => {
-            setEndDate(e.target.value);
+            handleChange({ ...inputValue, endDate: e.target.value });
           }}
-          {...props}
         ></Input>
       </Box>
 
