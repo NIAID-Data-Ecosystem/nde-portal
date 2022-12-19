@@ -3,21 +3,19 @@ import { ButtonProps, Flex, theme } from 'nde-design-system';
 import Select from 'react-select';
 
 interface EnumInputProps {
-  field: string;
   isDisabled: boolean;
-  options: string[];
+  options?: string[];
   handleSubmit: (args: { term: string; querystring: string }) => void;
   renderSubmitButton?: (props: ButtonProps) => React.ReactElement;
 }
 
 export const EnumInput: React.FC<EnumInputProps> = ({
-  field,
   isDisabled,
-  options,
+  options = [],
   handleSubmit,
   renderSubmitButton,
 }) => {
-  const selectOptions = [...options.map(value => ({ label: value, value }))];
+  const selectOptions = [...options?.map(value => ({ label: value, value }))];
   const defaultOption = selectOptions[0];
   const [selectedOption, setSelectedOption] = useState<{
     label: string;
@@ -35,13 +33,15 @@ export const EnumInput: React.FC<EnumInputProps> = ({
           term: selectedOption?.label || '',
           querystring: selectedOption?.value || '',
         });
+        setSelectedOption(defaultOption);
       }}
     >
       <Select
         defaultValue={defaultOption}
         isDisabled={isDisabled}
         isSearchable={true}
-        name={`${field} options`}
+        name='Field options'
+        value={selectedOption}
         options={selectOptions}
         onChange={(option: any) => {
           setSelectedOption(option);

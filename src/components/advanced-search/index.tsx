@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Box,
   Button,
@@ -145,6 +145,7 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
   modalProps,
 }) => {
   const router = useRouter();
+  const [resetForm, setResetForm] = useState(false);
 
   // Handles the opening of the modal.
   // [TO DO]: remove {isOpen:true} after dev mode.
@@ -153,6 +154,12 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
     defaultIsOpen: false,
   });
   const [items, setItems] = useState<DragItem[]>([]);
+
+  useEffect(() => {
+    if (items.length > 0 && resetForm === true) {
+      setResetForm(false);
+    }
+  }, [items, resetForm]);
 
   return (
     <>
@@ -189,12 +196,18 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
                   <SearchOptions />
                 </Flex>
                 <Flex w='100%' alignItems='flex-end'>
-                  <FieldSelect isDisabled={!isOpen}></FieldSelect>
+                  <FieldSelect
+                    isDisabled={!isOpen}
+                    isFormReset={resetForm}
+                    setResetForm={setResetForm}
+                  ></FieldSelect>
                   <SearchInput
                     size='md'
                     colorScheme='primary'
                     items={items}
-                    handleSubmit={({ term, field, union, querystring }) => {
+                    isFormReset={resetForm}
+                    setResetForm={setResetForm}
+                    onSubmit={({ term, field, union, querystring }) => {
                       setItems(prev => {
                         if (!term) return prev;
                         const newItems = [...prev];
@@ -325,7 +338,10 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
               leftIcon={<FaUndoAlt />}
               variant='ghost'
               isDisabled={!items.length}
-              onClick={() => setItems([])}
+              onClick={() => {
+                setItems([]);
+                setResetForm(true);
+              }}
               ml={4}
             >
               Reset query

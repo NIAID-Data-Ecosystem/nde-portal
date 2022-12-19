@@ -1,40 +1,46 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Box, ButtonProps, InputProps } from 'nde-design-system';
 import { PredictiveSearch } from 'src/components/search-with-predictive-text/components/PredictiveSearch';
 import { UnionTypes } from 'src/components/advanced-search/components/SortableWithCombine';
-import { AdvancedSearchContextProps } from '../../AdvancedSearchFormContext';
-import { FormattedResource } from 'src/utils/api/types';
+import { useAdvancedSearchContext } from '../../AdvancedSearchFormContext';
 
-interface TextInputProps extends AdvancedSearchContextProps {
+interface TextInputProps {
   isDisabled?: boolean;
   colorScheme?: InputProps['colorScheme'];
   size: InputProps['size'];
-  onClick?: (
-    inputValue: string,
-    field: string,
-    data?: FormattedResource,
-  ) => void; // triggered when suggestion item from list is clicked.
-  onChange: (value: string) => void;
+  inputValue: any;
+  handleClick: (args: { term: string; field: string }) => void; // triggered when suggestion item from list is clicked.
+  handleChange: (value: string) => void;
   handleSubmit: (args: {
     term: string;
     field: string;
+    querystring: string;
     union?: UnionTypes;
-    querystring?: string;
   }) => void;
   renderSubmitButton?: (props: ButtonProps) => React.ReactElement;
 }
 
 export const TextInput: React.FC<TextInputProps> = ({
   colorScheme = 'primary',
+  inputValue,
+  isDisabled,
   size,
+  handleChange,
+  handleClick,
   handleSubmit,
-  onChange,
-  searchOptionsList,
-  setSearchOptionsList,
-  ...props
+  renderSubmitButton,
 }) => {
-  // input value (not affected by search type (exact, etc))
-  const [inputValue, setInputValue] = useState('');
+  const advancedSearchProps = useAdvancedSearchContext();
+
+  const { searchField, searchOption, updateSearchTerm } = advancedSearchProps;
+
+  const handleQueryString = (value: string) => {
+    let term = value;
+    if (searchOption?.transformValue) {
+      term = searchOption.transformValue(value, searchField);
+    }
+    return term;
+  };
 
   return (
     <Box width='100%'>
@@ -42,17 +48,26 @@ export const TextInput: React.FC<TextInputProps> = ({
       <PredictiveSearch
         ariaLabel='Search for datasets or tools'
         placeholder='Search for datasets or tools'
+        colorScheme={colorScheme}
         size={size}
         inputValue={inputValue}
+        isDisabled={isDisabled}
         onChange={value => {
-          onChange(value);
-          setInputValue(value);
+          let term = handleQueryString(value);
+          // Update the predictive search list;
+          updateSearchTerm(term);
+          handleChange(value);
         }}
-        // isDisabled={!searchTerm | !searchOption}
+        onClick={(term, field) => {
+          handleClick({ term, field });
+        }}
+        // isDisabled={!searchTerm || !searchOption}
         handleSubmit={(term, field) => {
-          handleSubmit({ term, field, querystring: term });
+          let querystring = handleQueryString(term);
+          handleSubmit({ term, field, querystring });
         }}
-        {...props}
+        renderSubmitButton={renderSubmitButton}
+        {...advancedSearchProps}
       />
     </Box>
   );

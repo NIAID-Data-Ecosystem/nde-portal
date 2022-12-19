@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import {
   Box,
   Flex,
@@ -22,13 +22,16 @@ import { formatNumber } from 'src/utils/helpers';
 interface FieldSelectProps {
   isDisabled: boolean;
   size?: 'sm' | 'md' | 'lg';
+  isFormReset: boolean;
+  setResetForm: (arg: boolean) => void;
 }
 
 export const FieldSelect: React.FC<FieldSelectProps> = ({
-  size = 'md',
   isDisabled,
+  isFormReset,
+  setResetForm,
 }) => {
-  const { setSearchField } = useAdvancedSearchContext();
+  const { searchField, setSearchField } = useAdvancedSearchContext();
 
   // Retrieve fields for select dropdown.
   const fields = [
@@ -142,6 +145,7 @@ export const FieldSelect: React.FC<FieldSelectProps> = ({
                   fontStyle='italic'
                   fontSize='xs'
                   fontWeight='light'
+                  color='inherit'
                 >
                   {formatNumber(count)} records
                 </Text>
@@ -167,6 +171,10 @@ export const FieldSelect: React.FC<FieldSelectProps> = ({
     );
   };
 
+  useEffect(() => {
+    isFormReset && setSearchField('');
+  }, [isFormReset, setSearchField]);
+
   return (
     <Box minW='300px' w={{ base: '100%', md: 'unset' }} ml={0} mr={2}>
       {fields ? (
@@ -178,20 +186,18 @@ export const FieldSelect: React.FC<FieldSelectProps> = ({
           </VisuallyHidden>
           <Select
             components={{ Control, Option }}
-            // defaultValue={fields[0]}
+            value={fields.filter(field => field.value === searchField)[0]}
             isDisabled={isDisabled}
-            isClearable
+            // is clearable when not the default "all fields" selection.
+            isClearable={searchField !== ''}
             isSearchable={true}
             placeholder='All Fields'
             name='Field'
             options={fields}
-            onChange={(option: any) => {
-              if (!option) {
-                setSearchField('');
-              } else {
-                setSearchField(option.value);
-              }
-            }}
+            onFocus={() => isFormReset && setResetForm(false)}
+            onChange={(option: any) =>
+              setSearchField(!option ? '' : option.value)
+            }
             styles={{
               control: base => {
                 return {
