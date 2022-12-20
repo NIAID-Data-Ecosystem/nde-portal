@@ -114,7 +114,7 @@ export const config: Partial<SortableWithCombineProps> = {
       paddingRight: '1rem',
       border: '1px solid #D5D5D5',
       borderRadius: '0.3125rem',
-      borderLeft: '3px solid',
+      borderLeft: '5px solid',
       boxShadow:
         '0 10px 15px -3px rgba(0, 0, 0, 0.1),0 4px 6px -2px rgba(0, 0, 0, 0.05)',
       borderLeftColor: unionColor,
@@ -384,7 +384,7 @@ export function SortableWithCombine({
     }
   };
 
-  const [enableMovement, setEnableMovement] = useState(true);
+  const [enableMovement] = useState(false);
   return (
     <>
       <Box
@@ -510,12 +510,6 @@ export function SortableWithCombine({
             : null}
         </DndContext>
       </Box>
-      <Checkbox
-        isChecked={enableMovement}
-        onChange={() => setEnableMovement(!enableMovement)}
-      >
-        Enable sorting movement (for testing purposes)
-      </Checkbox>
     </>
   );
 }

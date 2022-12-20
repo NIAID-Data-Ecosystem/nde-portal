@@ -6,21 +6,21 @@ import {
 import { unionOptions } from 'src/components/advanced-search/utils';
 import { UnionTypes } from '../../SortableWithCombine/types';
 
-export interface Option {
-  name?: string;
-  value?: string;
-  description?: string;
-  example?: string;
-  options?: Option[];
+export interface SearchOption {
+  name: string;
+  value: string;
+  description: string;
   type?: string;
+  example?: string;
   transformValue?: (value: string, field?: string) => string;
+  options?: SearchOption[];
 }
 
 export interface AdvancedSearchContextProps
   extends usePredictiveSearchResponse {
-  searchOptionsList: Option[];
-  setSearchOptionsList: (arg: Option[]) => void;
-  searchOption: Option;
+  searchOptionsList: SearchOption[];
+  setSearchOptionsList: (arg: SearchOption[]) => void;
+  searchOption: SearchOption;
   setSearchOption: (arg: AdvancedSearchContextProps['searchOption']) => void;
   unionType: '' | UnionTypes;
   setUnionType: React.Dispatch<React.SetStateAction<'' | UnionTypes>>;
@@ -34,7 +34,7 @@ AdvancedSearchContext.displayName = 'AdvancedSearchContext';
 interface AdvancedSearchFormProps {
   term?: string;
   field?: string;
-  searchOptions: Option[];
+  searchOptions: SearchOption[];
 }
 
 export const AdvancedSearchFormContext: React.FC<AdvancedSearchFormProps> = ({
@@ -61,7 +61,7 @@ export const AdvancedSearchFormContext: React.FC<AdvancedSearchFormProps> = ({
       r = v;
     }
     return r;
-  }, {});
+  }, {} as SearchOption);
 
   const [searchOption, setSearchOption] =
     useState<AdvancedSearchContextProps['searchOption']>(defaultItem);

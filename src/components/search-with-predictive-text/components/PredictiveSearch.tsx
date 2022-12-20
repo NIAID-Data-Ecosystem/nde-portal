@@ -1,6 +1,15 @@
 import React, { ReactElement, useMemo } from 'react';
 import { groupBy, uniqBy } from 'lodash';
-import { Box, Button, Flex, InputProps, Text } from 'nde-design-system';
+import {
+  Box,
+  Button,
+  Circle,
+  Divider,
+  Flex,
+  Icon,
+  InputProps,
+  Text,
+} from 'nde-design-system';
 import { FormattedResource } from 'src/utils/api/types';
 import { usePredictiveSearchResponse } from '../hooks/usePredictiveSearch';
 import {
@@ -10,6 +19,7 @@ import {
   DropdownListItem,
   DropdownContent,
 } from 'src/components/input-with-dropdown';
+import { FaInfo } from 'react-icons/fa';
 
 export interface SearchWithPredictiveTextProps
   extends usePredictiveSearchResponse {
@@ -127,7 +137,7 @@ export const PredictiveSearch: React.FC<SearchWithPredictiveTextProps> = ({
                 display='flex'
                 colorScheme={colorScheme}
                 aria-label={ariaLabel}
-                isDisabled={isLoading || false}
+                // isDisabled={isLoading || false}
                 size={size}
                 {...props}
               >
@@ -143,6 +153,31 @@ export const PredictiveSearch: React.FC<SearchWithPredictiveTextProps> = ({
           }}
         />
         <DropdownContent>
+          {/* if no suggestions are listed, remind users that sometimes data is missing from data sources. */}
+          {!isLoading && !suggestions.length && searchField && searchTerm && (
+            <Flex flexDirection='column' alignItems='center'>
+              <Text fontStyle='italic' p={2} fontSize='xs'>
+                No results
+              </Text>
+              <Divider w='100%' mx={8} />
+              <Flex p={4}>
+                <Circle
+                  size='20px'
+                  borderColor='gray.600'
+                  borderWidth='1px'
+                  color='gray.600'
+                  mr={1}
+                >
+                  <Icon as={FaInfo} boxSize={2} />
+                </Circle>
+                <Text fontSize='xs' lineHeight='shorter'>
+                  The Discovery Portal attempts to standardize metadata that is
+                  available, however the number of results are affected by
+                  metadata missing at the source.
+                </Text>
+              </Flex>
+            </Flex>
+          )}
           {/* Group results by type (dataset/computational tool) */}
           {suggestionsGroupedByType.map(([type]) => {
             return (
@@ -175,7 +210,6 @@ export const PredictiveSearch: React.FC<SearchWithPredictiveTextProps> = ({
                 )}
 
                 {/* column displaying the fielded result */}
-
                 <DropdownList flex={3}>
                   {suggestions.map((result, i) => {
                     if (result.type !== type || !result[fieldName]) {

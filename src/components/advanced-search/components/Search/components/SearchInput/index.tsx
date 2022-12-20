@@ -4,7 +4,10 @@ import {
   DragItem,
   UnionTypes,
 } from 'src/components/advanced-search/components/SortableWithCombine';
-import { useAdvancedSearchContext } from '../AdvancedSearchFormContext';
+import {
+  SearchOption,
+  useAdvancedSearchContext,
+} from '../AdvancedSearchFormContext';
 import { DateInputGroup } from './components/DateInput';
 import MetadataFieldsConfig from 'configs/resource-fields.json';
 import { TextInput } from './components/TextInput';
@@ -50,6 +53,7 @@ interface SearchInputProps {
     field: string;
     querystring: string;
     union?: UnionTypes;
+    searchType: SearchOption;
   }) => void;
   isFormReset: boolean;
   setResetForm: (arg: boolean) => void;
@@ -95,7 +99,6 @@ export const SearchInput: React.FC<SearchInputProps> = ({
 
   const handleSubmit = ({
     term,
-    field,
     querystring,
   }: {
     term: string;
@@ -115,15 +118,20 @@ export const SearchInput: React.FC<SearchInputProps> = ({
       searchOption.value === '-_exists_'
     ) {
       onSubmit({
-        term: `Must ${
-          searchOption.value === '-_exists_' ? 'not' : ''
-        } contain ${field} field`,
+        term: field?.property || '',
         field: searchOption.value,
         union,
-        querystring: field,
+        searchType: searchOption,
+        querystring: field?.property || '',
       });
     } else {
-      onSubmit({ term, field, union, querystring });
+      onSubmit({
+        term,
+        field: field?.property || '',
+        union,
+        querystring,
+        searchType: searchOption,
+      });
     }
   };
 
@@ -177,6 +185,11 @@ export const SearchInput: React.FC<SearchInputProps> = ({
           items={items}
           size={size}
           colorScheme={colorScheme}
+          isDisabled={
+            searchOption.value !== '_exists_' &&
+            searchOption.value !== '-_exists_' &&
+            inputValue === ''
+          }
           {...props}
         />
       )}

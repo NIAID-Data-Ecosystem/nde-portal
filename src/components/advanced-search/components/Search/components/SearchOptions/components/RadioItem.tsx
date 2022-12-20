@@ -1,6 +1,6 @@
 import { Radio, RadioProps } from '@chakra-ui/react';
 import { Text, Tooltip } from 'nde-design-system';
-import { Option } from 'src/components/advanced-search/components/Search/components/AdvancedSearchFormContext';
+import { SearchOption } from '../../AdvancedSearchFormContext';
 
 export const RadioTooltip: React.FC<Partial<RadioItemProps>> = ({
   children,
@@ -12,6 +12,7 @@ export const RadioTooltip: React.FC<Partial<RadioItemProps>> = ({
     <Tooltip
       hasArrow
       isDisabled={isDisabled}
+      whiteSpace='pre-line'
       label={
         <>
           {description && (
@@ -35,7 +36,9 @@ export const RadioTooltip: React.FC<Partial<RadioItemProps>> = ({
   );
 };
 
-interface RadioItemProps extends Omit<RadioProps, 'name' | 'value'>, Option {
+interface RadioItemProps
+  extends Omit<RadioProps, 'name' | 'value'>,
+    SearchOption {
   hasTooltip?: boolean;
 }
 

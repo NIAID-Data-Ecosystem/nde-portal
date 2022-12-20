@@ -1,9 +1,10 @@
 import React from 'react';
-import { Flex, Text } from 'nde-design-system';
+import { Box, Flex, Text } from 'nde-design-system';
 import { SortableContext, SortingStrategy } from '@dnd-kit/sortable';
 import { SortableCombineItem, SortableItemProps } from '../SortableCombineItem';
+import MetadataFieldsConfig from 'configs/resource-fields.json';
 import { getSortingStrategy, DragItem } from '../../index';
-import { getMetadataNameByProperty } from 'src/components/advanced-search/utils';
+import { getTypeLabel } from './helpers';
 
 interface ItemContentProps extends SortableItemProps {
   data: DragItem;
@@ -70,34 +71,72 @@ export const ItemContent: React.FC<ItemContentProps> = React.memo(
         );
       };
 
-      const field = data.value.field
-        ? getMetadataNameByProperty(data.value.field)
-        : '';
+      type MetadataField = typeof MetadataFieldsConfig[number];
+      const field = MetadataFieldsConfig.find(
+        field => field.property === data.value.field,
+      ) as MetadataField;
+
+      const getDisplayTerm = (value: DragItem['value']) => {
+        if (value.field === '_exists_' || value.field === '-_exists_') {
+          const fieldName = MetadataFieldsConfig.find(
+            field => field.property === data.value.term,
+          );
+          return (
+            <span>
+              Must contain{' '}
+              <Text as='span' fontWeight='extrabold'>
+                {fieldName?.name}
+              </Text>{' '}
+              field.
+            </span>
+          );
+        }
+        return <span>{value.term}</span>;
+      };
 
       return (
         <Flex
           className='item-content'
           flex={1}
-          p={2}
+          py={2}
+          px={1}
+          w='100%'
           userSelect='none'
           opacity={dragOverlay ? 0.5 : 1}
         >
           {data.children.length === 0 && (
             <div>
-              {/* Don't show field if it's an exists type */}
-              {data.value.field && !data.value.field.includes('exists') && (
-                <Text fontSize='12px' color='inherit'>
-                  {field}
-                  <br />
+              <Box w='100%'>
+                {/* Don't show field if it's an exists type */}
+                {data.value.field && !data.value.field.includes('exists') && (
+                  <Text
+                    fontWeight='bold'
+                    fontFamily='heading'
+                    fontSize='xs'
+                    color='inherit'
+                    lineHeight='short'
+                  >
+                    {field.name}
+                    <br />
+                  </Text>
+                )}
+                <Text
+                  fontWeight='semibold'
+                  fontFamily='heading'
+                  fontSize='10px'
+                  textTransform='uppercase'
+                >
+                  {getTypeLabel(data.value)}
                 </Text>
-              )}
+              </Box>
               <Text
                 fontSize='sm'
                 fontWeight='medium'
                 noOfLines={3}
                 color='inherit'
+                mt={1}
               >
-                {data.value.term}
+                {getDisplayTerm(data.value)}
               </Text>
             </div>
           )}

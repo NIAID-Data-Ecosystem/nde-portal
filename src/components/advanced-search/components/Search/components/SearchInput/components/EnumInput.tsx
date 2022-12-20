@@ -100,6 +100,7 @@ export const EnumInput: React.FC<EnumInputProps> = ({
           renderSubmitButton({
             type: 'submit',
             w: '100%',
+            isDisabled: false,
           })}
       </Flex>
     </Flex>
