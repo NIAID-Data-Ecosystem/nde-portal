@@ -12,7 +12,7 @@ import {
 import { useAdvancedSearchContext } from '../../AdvancedSearchFormContext';
 
 interface InputSubmitButtonProps {
-  //   isDisabled: boolean;
+  isDisabled: boolean;
   colorScheme?: InputProps['colorScheme'];
   items: DragItem[];
   size: InputProps['size'];
@@ -23,6 +23,7 @@ export const InputSubmitButton: React.FC<InputSubmitButtonProps> = ({
   colorScheme = 'primary',
   size = 'md',
   items,
+  isDisabled,
   ...props
 }) => {
   const { unionType, setUnionType } = useAdvancedSearchContext();
@@ -61,8 +62,7 @@ export const InputSubmitButton: React.FC<InputSubmitButtonProps> = ({
       colorScheme={
         unionType ? getUnionTheme(unionType).colorScheme : colorScheme
       }
-      // set as disabled if no search term is entered and exists option is not selected.
-      // isDisabled={!searchTerm && !inputIsDisabled}
+      isDisabled={isDisabled}
     />
   );
 };

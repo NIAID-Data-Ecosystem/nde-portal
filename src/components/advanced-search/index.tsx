@@ -25,6 +25,7 @@ import {
   AdvancedSearchFormContext,
   FieldSelect,
   SearchInput,
+  SearchOption,
 } from './components/Search';
 import { SearchOptions } from './components/Search/components/SearchOptions';
 import { ResultsCount } from './components/ResultsCount';
@@ -35,7 +36,7 @@ interface AdvancedSearchProps {
   modalProps?: ModalProps;
 }
 
-export const SEARCH_OPTIONS = [
+export const SEARCH_OPTIONS: SearchOption[] = [
   {
     name: 'Field exists',
     value: '_exists_',
@@ -47,6 +48,9 @@ export const SEARCH_OPTIONS = [
     description: 'Matches where selected field is left blank.',
   },
   {
+    name: '',
+    value: '',
+    description: '',
     options: [
       {
         name: 'Contains',
@@ -91,16 +95,16 @@ export const SEARCH_OPTIONS = [
       {
         name: 'Exact Match',
         value: 'exact',
-        type: 'text',
         description: 'Contains the exact term or phrase.',
+        type: 'text',
         example: `west siberian virus · contains the exact phrase 'west siberian virus'`,
         transformValue: (value: string) => `"${value}"`,
       },
       {
         name: 'Starts with',
         value: 'starts',
-        type: 'text',
         description: 'Field contains value that starts with given term.',
+        type: 'text',
         example: `covid · contains results beginning with 'covid' such as 'covid-19`,
         transformValue: (value: string, field?: string) => {
           const searchTerms = value.trim().split(' ');
@@ -116,7 +120,6 @@ export const SEARCH_OPTIONS = [
           return encodeString(querystring);
         },
       },
-
       {
         name: 'Ends with',
         value: 'ends',
@@ -207,7 +210,13 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
                     items={items}
                     isFormReset={resetForm}
                     setResetForm={setResetForm}
-                    onSubmit={({ term, field, union, querystring }) => {
+                    onSubmit={({
+                      term,
+                      field,
+                      union,
+                      querystring,
+                      searchType,
+                    }) => {
                       setItems(prev => {
                         if (!term) return prev;
                         const newItems = [...prev];
@@ -224,6 +233,7 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
                             term,
                             union,
                             querystring,
+                            searchType,
                           },
                           children: [],
                           index: items.length,
