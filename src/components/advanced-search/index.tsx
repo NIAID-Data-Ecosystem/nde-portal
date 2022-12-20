@@ -57,8 +57,10 @@ export const SEARCH_OPTIONS: SearchOption[] = [
         value: 'default',
         type: 'text',
         description:
-          'Field contains value that starts or ends with given term.',
-        example: `oronaviru · contains results ending with 'oronaviru' such as 'coronavirus'`,
+          'Field contains value that starts or ends with given term. Note that when given multiple terms, terms wil be searched for separately and not grouped together.',
+        example: `oronaviru · contains results that contain the string fragment 'oronaviru' such as 'coronavirus'.
+        immune dis · contains results that contain the string fragment 'immune' and 'dis' - though not always sequentially.
+        `,
         transformValue: (value: string, field?: string) => {
           const searchTerms = value.trim().split(' ');
           if (!value) {
@@ -151,8 +153,7 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
   const [resetForm, setResetForm] = useState(false);
 
   // Handles the opening of the modal.
-  // [TO DO]: remove {isOpen:true} after dev mode.
-  const { isOpen, onOpen, onClose } = useDisclosure({ isOpen: true });
+  const { isOpen, onOpen, onClose } = useDisclosure();
   const { isOpen: showRawQuery, onToggle: toggleShowRawQuery } = useDisclosure({
     defaultIsOpen: false,
   });

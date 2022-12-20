@@ -114,6 +114,7 @@ export const ItemContent: React.FC<ItemContentProps> = React.memo(
                     fontFamily='heading'
                     fontSize='xs'
                     color='inherit'
+                    lineHeight='short'
                   >
                     {field.name}
                     <br />

@@ -44,7 +44,7 @@ export const usePredictiveSearch = (term = '', field = '', encode = true) => {
     // Don't refresh everytime window is touched, only run query if there's is a search term
     {
       refetchOnWindowFocus: false,
-      enabled: searchTerm.length > 0,
+      enabled: searchTerm.length > 0 && !!searchField,
       onSuccess: data => {
         // if results exist set state.
         if (data?.results) {

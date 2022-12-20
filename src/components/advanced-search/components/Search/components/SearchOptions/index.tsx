@@ -24,6 +24,7 @@ export const SearchOptions: React.FC = () => {
           return (
             <RadioItem
               key={option.value}
+              value={option.value}
               name={option.name}
               description={option.description}
               onChange={() => setSearchOption(option)}

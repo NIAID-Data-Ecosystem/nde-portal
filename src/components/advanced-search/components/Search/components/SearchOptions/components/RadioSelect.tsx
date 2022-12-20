@@ -6,7 +6,7 @@ import {
   OptionsList,
   SelectWithButton,
 } from 'src/components/select';
-import { Option } from '../../AdvancedSearchFormContext';
+import { SearchOption } from '../../AdvancedSearchFormContext';
 import { RadioTooltip } from './RadioItem';
 
 export const RadioSelect = ({
@@ -16,9 +16,9 @@ export const RadioSelect = ({
   isDisabled,
 }: {
   isDisabled?: boolean;
-  options: Option[];
-  searchOption: Option;
-  updateSearchOption: (arg: Option) => void;
+  options: SearchOption[];
+  searchOption: SearchOption;
+  updateSearchOption: (arg: SearchOption) => void;
 }) => {
   const disclosure = useDisclosure();
   const [selected, setSelected] = useState(options[0]);
