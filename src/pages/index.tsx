@@ -5,6 +5,7 @@ import {
   Flex,
   Heading,
   Image,
+  SearchInput,
   SimpleGrid,
   Text,
   useBreakpointValue,
@@ -85,6 +86,14 @@ const sample_queries = [
 const Home: NextPage = () => {
   const router = useRouter();
   const size = useBreakpointValue({ base: 300, lg: 350 });
+
+  // Search term entered in search bar
+  const [searchTerm, setSearchTerm] = useState<string>('');
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>): void =>
+    setSearchTerm(e.target.value);
+
+  // update value when changed
+  // useEffect(() => setSearchTerm(value || ''), [value]);
 
   // Fetch stats about number of resources
   const params = {
@@ -188,7 +197,25 @@ const Home: NextPage = () => {
             <Flex w='100%' justifyContent='flex-end'>
               <AdvancedSearch />
             </Flex>
-            <SearchWithPredictiveText
+
+            <SearchInput
+              ariaLabel='Search for datasets or tools'
+              placeholder='Search for datasets or tools'
+              size='md'
+              colorScheme='primary'
+              w='100%'
+              value={searchTerm}
+              handleChange={handleChange}
+              handleSubmit={e => {
+                e.preventDefault();
+                router.push({
+                  pathname: `/search`,
+                  query: { q: `${searchTerm.trim()}` },
+                });
+              }}
+            />
+            {/* [NOTE]: Test with autocomplete in the future */}
+            {/* <SearchWithPredictiveText
               ariaLabel='Search for datasets or tools'
               placeholder='Search for datasets or tools'
               size='md'
@@ -205,7 +232,7 @@ const Home: NextPage = () => {
                   });
                 }
               }}
-            />
+            /> */}
 
             <Flex mt={2} flexWrap={['wrap']}>
               <Text color='whiteAlpha.800' mr={2}>

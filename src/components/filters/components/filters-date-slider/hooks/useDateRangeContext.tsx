@@ -50,9 +50,14 @@ export const DateRangeSlider: React.FC<{
   const data = useMemo(
     () =>
       addMissingYears(
-        initialData?.date?.filter(
-          d => !(d.term === '-_exists_' || d.count === 0),
-        ) || [],
+        initialData?.date
+          ?.filter(datum => {
+            // filter out dates that exceed the current year.
+            return (
+              new Date(datum.term).getFullYear() < new Date().getFullYear()
+            );
+          })
+          .filter(d => !(d.term === '-_exists_' || d.count === 0)) || [],
       ),
     [initialData?.date],
   );
