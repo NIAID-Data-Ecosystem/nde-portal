@@ -9,7 +9,8 @@ import {
   getUnionTheme,
   unionOptions,
 } from 'src/components/advanced-search/utils';
-import { Box, BoxProps, Flex } from 'nde-design-system';
+import { Box, BoxProps, Flex, Icon } from 'nde-design-system';
+import { FaArrowsAlt } from 'react-icons/fa';
 
 export interface Props {
   activeIndex: number;
@@ -81,26 +82,33 @@ export const Item = React.memo(
             onMouseOver={() => setShowActions(true)}
             onMouseOut={() => setShowActions(false)}
             h='100%'
-            borderLeft='2px solid'
-            borderRight='2px solid'
-            borderLeftColor={
-              index &&
-              !isMergeable &&
-              overIndex === index &&
-              activeIndex > index
-                ? '#D5D5D5'
-                : 'transparent'
-            }
-            borderRightColor={
-              index &&
-              !isMergeable &&
-              overIndex === index &&
-              activeIndex < index
-                ? '#D5D5D5'
-                : 'transparent'
-            }
             {...style}
           >
+            {/* Sorting indicator start */}
+            {!!(
+              index &&
+              activeIndex > index &&
+              !isMergeable &&
+              overIndex === index
+            ) && (
+              <Flex
+                bg='status.info_lt'
+                borderStyle='dashed'
+                borderColor='status.info'
+                borderRadius='base'
+                borderWidth='1px'
+                flex={1}
+                w='100%'
+                minW={8}
+                h={20}
+                minH={4}
+                m={2}
+                alignItems='center'
+                justifyContent='center'
+              >
+                <Icon as={FaArrowsAlt} m={2} color='status.info' />
+              </Flex>
+            )}
             {data.index !== 0 && data.value.union && !dragOverlay && (
               <Box m={1}>
                 <DropdownButton
@@ -136,7 +144,6 @@ export const Item = React.memo(
                 />
               </Box>
             )}
-
             <Box
               {...wrapperStyle}
               maxW={dragOverlay ? '400px' : 'unset'}
@@ -178,6 +185,31 @@ export const Item = React.memo(
                 </span>
               </Flex>
             </Box>
+            {/* Sorting indicator end */}
+            {!!(
+              index &&
+              activeIndex < index &&
+              !isMergeable &&
+              overIndex === index
+            ) && (
+              <Flex
+                bg='status.info_lt'
+                borderStyle='dashed'
+                borderColor='status.info'
+                borderRadius='base'
+                borderWidth='1px'
+                flex={1}
+                w='100%'
+                minW={8}
+                h={20}
+                minH={4}
+                m={2}
+                alignItems='center'
+                justifyContent='center'
+              >
+                <Icon as={FaArrowsAlt} m={2} color='status.info' />
+              </Flex>
+            )}
           </Flex>
         </li>
       );

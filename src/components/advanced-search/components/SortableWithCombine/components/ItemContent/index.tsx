@@ -110,7 +110,7 @@ export const ItemContent: React.FC<ItemContentProps> = React.memo(
                 {/* Don't show field if it's an exists type */}
                 {data.value.field && !data.value.field.includes('exists') && (
                   <Text
-                    fontWeight='semibold'
+                    fontWeight='bold'
                     fontFamily='heading'
                     fontSize='xs'
                     color='inherit'
