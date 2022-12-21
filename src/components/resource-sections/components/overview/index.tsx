@@ -126,7 +126,6 @@ const Overview: React.FC<OverviewProps> = ({
     }
     return <>{content || '-'}</>;
   };
-
   return (
     <Flex p={[0, 4]} w='100%' flexWrap='wrap' flexDirection={['column', 'row']}>
       {(doi || nctid) && (
@@ -570,7 +569,11 @@ const Overview: React.FC<OverviewProps> = ({
                 {getStatInfo('doi').description}
                 <br />
                 <strong>PMID: </strong>
-                {getStatInfo('citation').items?.pmid.description}
+                {
+                  getStatInfo('citation').items?.pmid?.description[
+                    data?.['@type']?.toLowerCase()
+                  ]
+                }
                 <br />
                 <strong>NCTID: </strong>
                 {getStatInfo('nctid').description}
