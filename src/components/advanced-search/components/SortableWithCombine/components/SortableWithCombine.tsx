@@ -353,7 +353,6 @@ export function SortableWithCombine({
           parentId: droppableItem.parentId,
           depth: droppableItem.depth,
         };
-
         // [delta] refers to the mouse position, where a negative value indicated the pointer moving left/top and pos value = pointer moving right/bottom.
         if (delta.x > 0 || delta.y > 0) {
           const parentItem = clonedItems.find(
@@ -365,10 +364,11 @@ export function SortableWithCombine({
             arrayMoveDropIndex = droppableIndex + numChildren;
           }
         }
+
         const newItems = arrayMove(
           clonedItems,
           activeIndex,
-          arrayMoveDropIndex,
+          arrayMoveDropIndex + 1,
         );
 
         setItems(buildTree(newItems));
@@ -376,9 +376,9 @@ export function SortableWithCombine({
 
         return;
       }
-
       // classic sorting mechanism between elements with same parent container
       const newItems = arrayMove(clonedItems, activeIndex, droppableIndex);
+
       setItems(buildTree(newItems));
       resetState();
     }

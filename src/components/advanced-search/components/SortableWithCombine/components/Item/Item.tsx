@@ -85,12 +85,7 @@ export const Item = React.memo(
             {...style}
           >
             {/* Sorting indicator start */}
-            {!!(
-              index &&
-              activeIndex > index &&
-              !isMergeable &&
-              overIndex === index
-            ) && (
+            {!!(activeIndex > index && !isMergeable && overIndex === index) && (
               <Flex
                 bg='status.info_lt'
                 borderStyle='dashed'
@@ -186,12 +181,7 @@ export const Item = React.memo(
               </Flex>
             </Box>
             {/* Sorting indicator end */}
-            {!!(
-              index &&
-              activeIndex < index &&
-              !isMergeable &&
-              overIndex === index
-            ) && (
+            {!!(activeIndex < index && !isMergeable && overIndex === index) && (
               <Flex
                 bg='status.info_lt'
                 borderStyle='dashed'
