@@ -153,7 +153,7 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
   const [resetForm, setResetForm] = useState(false);
 
   // Handles the opening of the modal.
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const { isOpen, onOpen, onClose } = useDisclosure({ isOpen: true });
   const { isOpen: showRawQuery, onToggle: toggleShowRawQuery } = useDisclosure({
     defaultIsOpen: false,
   });

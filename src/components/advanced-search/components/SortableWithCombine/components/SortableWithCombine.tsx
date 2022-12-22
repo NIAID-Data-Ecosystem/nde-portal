@@ -268,7 +268,7 @@ export function SortableWithCombine({
       }
     }
 
-    let isMergeable = shouldCombine(active.id, collisions, [0.1, 0.4]);
+    let isMergeable = shouldCombine(active.id, collisions, [0.1, 0.6]);
 
     setIsMergeable(isMergeable);
   };
