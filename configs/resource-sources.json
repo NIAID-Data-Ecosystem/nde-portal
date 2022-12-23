@@ -41,6 +41,16 @@
       "imageUrl": "/assets/resources/dryad.png"
     },
     {
+      "sourceName": "HuBMAP",
+      "name": "HuBMAP",
+      "imageUrl": "/assets/resources/hubmap.png"
+    },
+    {
+      "sourceName": "Human Cell Atlas",
+      "name": "Human Cell Atlas",
+      "imageUrl": "/assets/resources/hca.png"
+    },
+    {
       "sourceName": "ImmPort",
       "name": "Immunology Database and Analysis Portal",
       "imageUrl": "/assets/resources/immport.png"
@@ -69,6 +79,11 @@
       "sourceName": "PublicApps@SevenBridges",
       "name": "Seven Bridges Public Apps Gallery",
       "imageUrl": "/assets/resources/sb.png"
+    },
+    {
+      "sourceName": "Qiita",
+      "name": "Qiita",
+      "imageUrl": "/assets/resources/qiita.png"
     },
     {
       "sourceName": "ReframeDB",
