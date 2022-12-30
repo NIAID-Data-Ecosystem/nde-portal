@@ -184,7 +184,7 @@ const Home: NextPage = () => {
     <>
       <PageContainer
         hasNavigation
-        title='Search'
+        title='Home'
         metaDescription='NIAID Data Ecosystem Discovery Portal - Home.'
         disableSearchBar
       >
