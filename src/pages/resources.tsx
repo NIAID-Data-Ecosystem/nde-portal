@@ -104,7 +104,7 @@ const ResourcePage: NextPage = props => {
     <>
       <PageContainer
         hasNavigation
-        title='Resource'
+        title={`${data?.name ? data?.name : isLoading ? '' : 'Resource'}`}
         metaDescription='NDE Discovery Portal - Detailed resource information.'
       >
         <PageContent>
