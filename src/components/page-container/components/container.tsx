@@ -70,7 +70,7 @@ export const PageContainer: React.FC<PageContainerProps> = ({
         <meta name='description' content={metaDescription} />
       </Head>
 
-      <Flex as={'main'} w={'100%'} flexDirection={'column'} minW={300}>
+      <Flex as='main' w='100%' flexDirection='column' minW={300}>
         {topNavigation && hasNavigation && (
           // Sticky Nav Bar.
           <Box
@@ -79,7 +79,7 @@ export const PageContainer: React.FC<PageContainerProps> = ({
             position='sticky'
             top={0}
             w='100%'
-            zIndex={'sticky'}
+            zIndex='sticky'
             minW={300}
           >
             <Navigation
@@ -92,7 +92,7 @@ export const PageContainer: React.FC<PageContainerProps> = ({
         )}
 
         {/*Page content has margin-top to compensate for fixed nav bar. */}
-        <Box id={'pagebody'} position='relative'>
+        <Box id='pagebody' position='relative'>
           <Notice />
           {!disableSearchBar && <SearchBar />}
           {children}

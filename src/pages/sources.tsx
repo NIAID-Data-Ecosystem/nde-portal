@@ -30,6 +30,7 @@ const Sources: NextPage = () => {
       metaDescription='NDE Discovery Portal - API data sources.'
       px={0}
       py={0}
+      disableSearchBar
     >
       <Flex>
         {error && (
@@ -56,7 +57,6 @@ const Sources: NextPage = () => {
                 display='flex'
                 flexDirection='column'
                 py={4}
-                position='sticky'
                 top={0}
                 ml={0}
               >
@@ -67,15 +67,6 @@ const Sources: NextPage = () => {
         )}
 
         <PageContent w='100%' flexDirection='column' bg='#fff'>
-          <Flex justifyContent='end'>
-            <Button
-              href='https://github.com/NIAID-Data-Ecosystem/nde-crawlers/issues/new?assignees=&labels=&template=suggest-a-new-resource.md&title=%5BSOURCE%5D'
-              isExternal
-              colorScheme='secondary'
-            >
-              Suggest a new Source
-            </Button>
-          </Flex>
           {isLoading && <LoadingSpinner isLoading={isLoading} />}
           {!error && sourceData && <Main sourceData={sourceData} />}
         </PageContent>
