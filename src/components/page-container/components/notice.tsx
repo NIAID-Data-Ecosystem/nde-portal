@@ -4,7 +4,7 @@ import { IoIosWarning } from 'react-icons/io';
 import { useLocalStorage } from 'usehooks-ts';
 
 const Notice = () => {
-  let niaid_help = 'help@data.niaid.nih.gov';
+  let niaid_help = 'NIAIDDataEcosystem@mail.nih.gov';
   const [isOpen, setOpen] = useLocalStorage('warningOpen', true);
 
   const toggleWarning = () => {
