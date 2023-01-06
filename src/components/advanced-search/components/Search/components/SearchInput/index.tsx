@@ -141,6 +141,11 @@ export const SearchInput: React.FC<SearchInputProps> = ({
     }
   }, [isFormReset, clearInputField]);
 
+  // Clear input when field is changed.
+  useEffect(() => {
+    clearInputField();
+  }, [searchField, clearInputField]);
+
   useEffect(() => {
     setInputType(() => {
       if (field?.enum) {

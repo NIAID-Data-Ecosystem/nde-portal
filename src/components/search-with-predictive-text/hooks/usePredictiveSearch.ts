@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useQuery } from 'react-query';
 import { debounce } from 'lodash';
 import { fetchSearchResults } from 'src/utils/api';
@@ -71,9 +71,10 @@ export const usePredictiveSearch = (term = '', field = '', encode = true) => {
     debounce((term: string) => setSearchTerm(term), 400),
   );
 
-  const updateSearchTerm = (value: string) => {
+  const updateSearchTerm = useCallback((value: string) => {
     debouncedUpdate.current(value);
-  };
+  }, []);
+
   return {
     isLoading: isLoading || isFetching,
     error,
