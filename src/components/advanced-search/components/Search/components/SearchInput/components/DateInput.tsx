@@ -94,6 +94,7 @@ export const DateInputGroup: React.FC<DateInputProps> = ({
           renderSubmitButton({
             type: 'submit',
             w: '100%',
+            isDisabled: false,
           })}
       </Flex>
     </Flex>

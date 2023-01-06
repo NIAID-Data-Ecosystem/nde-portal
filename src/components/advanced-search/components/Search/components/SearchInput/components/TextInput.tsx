@@ -33,8 +33,7 @@ export const TextInput: React.FC<TextInputProps> = ({
 }) => {
   const advancedSearchProps = useAdvancedSearchContext();
 
-  const { searchField, searchOption, searchOptionsList, updateSearchTerm } =
-    advancedSearchProps;
+  const { searchField, searchOption, updateSearchTerm } = advancedSearchProps;
 
   const handleQueryString = (value: string) => {
     let term = value;
@@ -79,7 +78,19 @@ export const TextInput: React.FC<TextInputProps> = ({
           let querystring = handleQueryString(term);
           handleSubmit({ term, field, querystring });
         }}
-        renderSubmitButton={renderSubmitButton}
+        renderSubmitButton={props =>
+          renderSubmitButton ? (
+            renderSubmitButton({
+              ...props,
+              isDisabled:
+                searchOption.value !== '_exists_' &&
+                searchOption.value !== '-_exists_' &&
+                inputValue === '',
+            })
+          ) : (
+            <></>
+          )
+        }
         {...advancedSearchProps}
       />
     </Box>
