@@ -1,6 +1,7 @@
 import type { DragItem } from './components/SortableWithCombine';
 import MetadataConfig from 'configs/resource-metadata.json';
 import MetadataNames from 'configs/metadata-standard-names.json';
+import { encodeString } from 'src/utils/querystring-helpers';
 
 type UnionTypes = 'AND' | 'OR' | 'NOT';
 
@@ -93,4 +94,34 @@ export const getMetadataNameByProperty = (property: string) => {
   }
 
   return name.charAt(0).toUpperCase() + name.slice(1);
+};
+
+export const wildcardQueryString = ({
+  value,
+  field,
+  wildcard,
+}: {
+  value: string;
+  field?: string;
+  wildcard?: 'start' | 'end';
+}) => {
+  const searchTerms = value.trim().split(' ');
+  if (!value) {
+    return '';
+  }
+  const querystring = `${searchTerms
+    .map(str => {
+      let wildcarded_str = '';
+      if (wildcard === 'start') {
+        wildcarded_str = `*${str}`;
+      } else if (wildcard === 'end') {
+        wildcarded_str = `${str}*`;
+      } else {
+        wildcarded_str = `*${str}*`;
+      }
+      return str ? `*${wildcarded_str}*` : '';
+    })
+    .join(' AND ')}`;
+
+  return encodeString(querystring);
 };

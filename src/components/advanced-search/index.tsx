@@ -19,7 +19,7 @@ import {
   DragItem,
   SortableWithCombine,
 } from './components/SortableWithCombine';
-import { convertObject2QueryString } from './utils';
+import { convertObject2QueryString, wildcardQueryString } from './utils';
 import { FaArrowsAltV, FaSearch, FaUndoAlt } from 'react-icons/fa';
 import {
   AdvancedSearchFormContext,
@@ -29,7 +29,6 @@ import {
 } from './components/Search';
 import { SearchOptions } from './components/Search/components/SearchOptions';
 import { ResultsCount } from './components/ResultsCount';
-import { encodeString } from 'src/utils/querystring-helpers';
 
 interface AdvancedSearchProps {
   buttonProps?: TextProps;
@@ -62,38 +61,9 @@ export const SEARCH_OPTIONS: SearchOption[] = [
         immune dis · contains results that contain the string fragment 'immune' and 'dis' - though not always sequentially.
         `,
         transformValue: (value: string, field?: string) => {
-          const searchTerms = value.trim().split(' ');
-          if (!value) {
-            return '';
-          }
-          const querystring = `${searchTerms
-            .map(str => (str ? `*${str}*` : ''))
-            .join(' AND ')}`;
-          // if (!field && searchTerms.length === 1) {
-          //   return querystring;
-          // }
-          return encodeString(querystring);
+          return wildcardQueryString({ value, field });
         },
       },
-      // {
-      //   name: 'Contains',
-      //   value: 'default',
-      //   description: 'Contains all these words in any order.',
-      //   example: `mycobacterium tuberculosis · contains both
-      //   'mycobacterium' and 'tuberculosis'`,
-      //   transformValue: (value: string, field?: string) => {
-      //     const searchTerms = value.trim().split(' ');
-      //     if (!value) {
-      //       return '';
-      //     }
-      //     const querystring = `${searchTerms.join(' AND ')}`;
-      //     // if (!field && searchTerms.length === 1) {
-      //     //   // [NOTE]: consider wrapping this in quotes as the default behaviour of the API is to append a wildcard to the querystring : querystring*
-      //     // }
-      //     return encodeString(querystring);
-      //     // return `${querystring}`;
-      //   },
-      // },
       {
         name: 'Exact Match',
         value: 'exact',
@@ -109,17 +79,7 @@ export const SEARCH_OPTIONS: SearchOption[] = [
         type: 'text',
         example: `covid · contains results beginning with 'covid' such as 'covid-19`,
         transformValue: (value: string, field?: string) => {
-          const searchTerms = value.trim().split(' ');
-          if (!value) {
-            return '';
-          }
-          const querystring = `${searchTerms
-            .map(str => (str ? `${str}*` : ''))
-            .join(' AND ')}`;
-          // if (!field && searchTerms.length === 1) {
-          //   return querystring;
-          // }
-          return encodeString(querystring);
+          return wildcardQueryString({ value, field, wildcard: 'end' });
         },
       },
       {
@@ -129,17 +89,7 @@ export const SEARCH_OPTIONS: SearchOption[] = [
         description: 'Field contains value that ends with given term.',
         example: `osis · contains results ending with 'osis' such as 'tuberculosis'`,
         transformValue: (value: string, field?: string) => {
-          const searchTerms = value.trim().split(' ');
-          if (!value) {
-            return '';
-          }
-          const querystring = `${searchTerms
-            .map(str => (str ? `*${str}` : ''))
-            .join(' AND ')}`;
-          // if (!field && searchTerms.length === 1) {
-          //   return querystring;
-          // }
-          return encodeString(querystring);
+          return wildcardQueryString({ value, field, wildcard: 'start' });
         },
       },
     ],

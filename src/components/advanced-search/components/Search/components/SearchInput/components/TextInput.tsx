@@ -3,6 +3,7 @@ import { Box, ButtonProps, InputProps } from 'nde-design-system';
 import { PredictiveSearch } from 'src/components/search-with-predictive-text/components/PredictiveSearch';
 import { UnionTypes } from 'src/components/advanced-search/components/SortableWithCombine';
 import { useAdvancedSearchContext } from '../../AdvancedSearchFormContext';
+import { wildcardQueryString } from 'src/components/advanced-search/utils';
 
 interface TextInputProps {
   isDisabled?: boolean;
@@ -32,7 +33,8 @@ export const TextInput: React.FC<TextInputProps> = ({
 }) => {
   const advancedSearchProps = useAdvancedSearchContext();
 
-  const { searchField, searchOption, updateSearchTerm } = advancedSearchProps;
+  const { searchField, searchOption, searchOptionsList, updateSearchTerm } =
+    advancedSearchProps;
 
   const handleQueryString = (value: string) => {
     let term = value;
@@ -53,7 +55,14 @@ export const TextInput: React.FC<TextInputProps> = ({
         inputValue={inputValue}
         isDisabled={isDisabled}
         onChange={value => {
-          let term = handleQueryString(value);
+          let term = value;
+
+          // for exact search we still want the list of available options to be wildcarded
+          if (searchOption.value === 'exact') {
+            term = wildcardQueryString({ value, field: searchField });
+          } else {
+            term = handleQueryString(value);
+          }
           // Update the predictive search list;
           updateSearchTerm(term);
           handleChange(value);
