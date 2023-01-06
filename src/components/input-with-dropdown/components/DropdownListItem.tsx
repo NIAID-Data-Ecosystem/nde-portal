@@ -61,7 +61,7 @@ export const DropdownListItem: React.FC<DropdownListItemProps> = React.memo(
 
     // If item is highlighted (mouseover or keydown), update the input string with the value of the list item.
     const isSelected = useMemo(() => cursor === index, [index, cursor]);
-
+    const displayValue = Array.isArray(value) ? value.join(' ') : value;
     return (
       <NDEListItem
         borderRadius='base'
@@ -108,7 +108,7 @@ export const DropdownListItem: React.FC<DropdownListItemProps> = React.memo(
             },
           }}
         >
-          <Highlight tags={searchTerm.split(' ')}>{value}</Highlight>
+          <Highlight tags={searchTerm.split(' ')}>{displayValue}</Highlight>
         </Heading>
       </NDEListItem>
     );

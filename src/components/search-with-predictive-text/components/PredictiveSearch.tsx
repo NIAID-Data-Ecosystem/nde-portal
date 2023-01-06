@@ -69,27 +69,13 @@ export const PredictiveSearch: React.FC<SearchWithPredictiveTextProps> = ({
   const uniqueSuggestions = useMemo(
     () =>
       uniqBy(
-        results.map(result => {
-          let value;
-          // if value is array, extract value that matches search result
-          if (Array.isArray(result[fieldName])) {
-            value = result[fieldName]
-              .filter((r: string) => {
-                let name = r.toLowerCase();
-                let input = inputValue?.toLowerCase() || '';
-                return name.includes(input);
-              })
-              .join(',');
-          } else {
-            value = result[fieldName];
-          }
-          return { ...result, [fieldName]: value };
-        }),
+        results,
         // filter out duplicate values
         v => v[fieldName],
       ),
-    [fieldName, results, inputValue],
+    [fieldName, results],
   );
+
   // Group suggestions by type.
   const suggestionsGroupedByType = useMemo(
     () => Object.entries(groupBy(uniqueSuggestions, d => d.type)),

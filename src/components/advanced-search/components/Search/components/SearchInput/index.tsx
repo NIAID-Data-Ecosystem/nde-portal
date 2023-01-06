@@ -174,7 +174,7 @@ export const SearchInput: React.FC<SearchInputProps> = ({
         handleSubmit({
           term,
           field: field || searchField,
-          querystring: `"${term}"`,
+          querystring: term,
         });
       }}
       handleSubmit={props => {

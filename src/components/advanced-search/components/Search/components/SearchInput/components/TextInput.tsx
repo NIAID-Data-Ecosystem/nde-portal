@@ -59,7 +59,11 @@ export const TextInput: React.FC<TextInputProps> = ({
           handleChange(value);
         }}
         onClick={(term, field) => {
-          handleClick({ term, field });
+          let value = term;
+          if (Array.isArray(term)) {
+            value = `${term.join('" AND "')}`;
+          }
+          handleClick({ term: `"${value}"`, field });
         }}
         // isDisabled={!searchTerm || !searchOption}
         handleSubmit={(term, field) => {
