@@ -48,7 +48,7 @@ export const SEARCH_OPTIONS: SearchOption[] = [
   },
   {
     name: 'Field Contains',
-    value: '',
+    value: 'default',
     description: '',
     options: [
       {
