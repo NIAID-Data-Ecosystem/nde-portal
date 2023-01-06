@@ -83,8 +83,12 @@ export const ItemContent: React.FC<ItemContentProps> = React.memo(
           );
           return (
             <span>
-              Must contain{' '}
-              <Text as='span' fontWeight='extrabold'>
+              Must{' '}
+              <Text as='span' textDecoration='underline'>
+                {value.field === '-_exists_' ? 'not' : ''}
+              </Text>{' '}
+              contain{' '}
+              <Text as='span' fontWeight='bold'>
                 {fieldName?.name}
               </Text>{' '}
               field.
@@ -120,14 +124,16 @@ export const ItemContent: React.FC<ItemContentProps> = React.memo(
                     <br />
                   </Text>
                 )}
-                <Text
-                  fontWeight='semibold'
-                  fontFamily='heading'
-                  fontSize='10px'
-                  textTransform='uppercase'
-                >
-                  {getTypeLabel(data.value)}
-                </Text>
+                {field?.format !== 'enum' && field?.type !== 'date' && (
+                  <Text
+                    fontWeight='semibold'
+                    fontFamily='heading'
+                    fontSize='10px'
+                    textTransform='uppercase'
+                  >
+                    {getTypeLabel(data.value)}
+                  </Text>
+                )}
               </Box>
               <Text
                 fontSize='sm'

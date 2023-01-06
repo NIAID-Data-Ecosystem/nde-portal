@@ -48,7 +48,7 @@ export const SEARCH_OPTIONS: SearchOption[] = [
     description: 'Matches where selected field is left blank.',
   },
   {
-    name: '',
+    name: 'Field Contains',
     value: '',
     description: '',
     options: [

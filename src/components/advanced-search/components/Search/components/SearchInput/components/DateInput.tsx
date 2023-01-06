@@ -22,6 +22,7 @@ export const DateInputGroup: React.FC<DateInputProps> = ({
   handleSubmit,
   renderSubmitButton,
   inputValue,
+  ...props
 }) => {
   const { startDate, endDate } = inputValue;
 
@@ -66,7 +67,8 @@ export const DateInputGroup: React.FC<DateInputProps> = ({
           onChange={e => {
             handleChange({ ...inputValue, startDate: e.target.value });
           }}
-        ></Input>
+          isDisabled={props.isDisabled}
+        />
       </Box>
 
       <Box flex={1} mr={2}>
@@ -83,7 +85,8 @@ export const DateInputGroup: React.FC<DateInputProps> = ({
           onChange={e => {
             handleChange({ ...inputValue, endDate: e.target.value });
           }}
-        ></Input>
+          isDisabled={props.isDisabled}
+        />
       </Box>
 
       <Flex mt={8} alignItems='center'>

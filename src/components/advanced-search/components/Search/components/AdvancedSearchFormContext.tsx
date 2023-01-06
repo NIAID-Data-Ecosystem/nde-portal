@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   usePredictiveSearch,
   usePredictiveSearchResponse,
 } from 'src/components/search-with-predictive-text';
 import { unionOptions } from 'src/components/advanced-search/utils';
 import { UnionTypes } from '../../SortableWithCombine/types';
+import MetadataFieldsConfig from 'configs/resource-fields.json';
 
 export interface SearchOption {
   name: string;
@@ -43,28 +44,53 @@ export const AdvancedSearchFormContext: React.FC<AdvancedSearchFormProps> = ({
   searchOptions: defaultSearchOptions,
   children,
 }) => {
+  const getSearchOption = (searchOptions: SearchOption[]) =>
+    searchOptions.reduce((r, v) => {
+      if (v.options && v.options.length) {
+        let defaultSubItem = v.options.filter(item => item.value === 'default');
+        if (defaultSubItem.length) {
+          r = defaultSubItem[0];
+        }
+      } else if (v.value === 'default') {
+        r = v;
+      }
+      return r;
+    }, {} as SearchOption);
+
   const predictiveSearchProps = usePredictiveSearch(term, field, false);
+  const { searchField } = predictiveSearchProps;
+
   const [searchOptionsList, setSearchOptionsList] =
     useState(defaultSearchOptions);
+
+  const [searchOption, setSearchOption] = useState<
+    AdvancedSearchContextProps['searchOption']
+  >(() => getSearchOption(searchOptionsList));
 
   const [unionType, setUnionType] = useState<typeof unionOptions[number] | ''>(
     '',
   );
 
-  const defaultItem = defaultSearchOptions.reduce((r, v) => {
-    if (v.options) {
-      let defaultSubItem = v.options.filter(item => item.value === 'default');
-      if (defaultSubItem.length) {
-        r = defaultSubItem[0];
-      }
-    } else if (v.value === 'default') {
-      r = v;
-    }
-    return r;
-  }, {} as SearchOption);
+  const fieldDetails = MetadataFieldsConfig.find(
+    f => f.property === searchField,
+  );
 
-  const [searchOption, setSearchOption] =
-    useState<AdvancedSearchContextProps['searchOption']>(defaultItem);
+  // Update options based on field.
+  useEffect(() => {
+    setSearchOptionsList(() => {
+      if (fieldDetails?.format === 'enum' || fieldDetails?.type === 'date') {
+        return defaultSearchOptions.map(item => {
+          return { ...item, options: undefined };
+        });
+      }
+      return defaultSearchOptions;
+    });
+  }, [defaultSearchOptions, searchField, fieldDetails]);
+
+  // Update default search options when options list changes
+  useEffect(() => {
+    setSearchOption(getSearchOption(searchOptionsList));
+  }, [searchOptionsList]);
 
   return (
     <AdvancedSearchContext.Provider

@@ -7,11 +7,12 @@ import { RadioSelect } from './components/RadioSelect';
 export const SearchOptions: React.FC = () => {
   const { searchField, searchOption, searchOptionsList, setSearchOption } =
     useAdvancedSearchContext();
+
   return (
     <RadioGroup mb={4}>
       <Stack direction='row' spacing={6}>
         {searchOptionsList.map(option => {
-          if (option.options) {
+          if (option.options && option.options.length) {
             return (
               <RadioSelect
                 searchOption={searchOption}
