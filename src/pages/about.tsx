@@ -14,6 +14,7 @@ const About: NextPage = () => {
       px={0}
       bg='white'
       py={0}
+      disableSearchBar
     >
       <PageContent
         w='100%'

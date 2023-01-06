@@ -9,6 +9,7 @@ export interface AdvancedSearchButtonProps extends TextProps {
 export const OpenModal: React.FC<AdvancedSearchButtonProps> = ({
   ...props
 }) => {
+  const { _hover, ...rest } = props;
   return (
     <>
       <Text
@@ -22,8 +23,9 @@ export const OpenModal: React.FC<AdvancedSearchButtonProps> = ({
             transform: 'translateX(-8px)',
             transition: '0.2s ease-in-out',
           },
+          ..._hover,
         }}
-        {...props}
+        {...rest}
       >
         <Icon
           as={FaSearch}

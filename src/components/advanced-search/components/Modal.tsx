@@ -13,6 +13,7 @@ import {
 
 export interface AdvancedSearchModalProps extends ModalProps {
   isOpen: boolean;
+  isDisabled: boolean;
   onSubmit?: (e: React.FormEvent<HTMLButtonElement>) => void;
 }
 
@@ -22,6 +23,7 @@ export const AdvancedSearchModal: React.FC<AdvancedSearchModalProps> = ({
   children,
   colorScheme = 'primary',
   onSubmit,
+  isDisabled,
   ...props
 }) => {
   return (
@@ -51,7 +53,14 @@ export const AdvancedSearchModal: React.FC<AdvancedSearchModalProps> = ({
             </Button>
           )}
           {onSubmit && (
-            <Button colorScheme={colorScheme} onClick={onSubmit}>
+            <Button
+              colorScheme={colorScheme}
+              onClick={e => {
+                onSubmit(e);
+                onClose();
+              }}
+              isDisabled={isDisabled}
+            >
               Submit
             </Button>
           )}

@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { PageContent } from '../page-container';
 import { SearchWithPredictiveText } from '../search-with-predictive-text';
-import { SearchInput } from 'nde-design-system';
+import { Flex, SearchInput } from 'nde-design-system';
+import { AdvancedSearch } from '../advanced-search';
 
 export const SearchBar = ({
   value,
@@ -27,7 +28,13 @@ export const SearchBar = ({
       minH='unset'
       borderBottom='1px solid'
       borderColor='gray.100'
+      flexDirection='column'
     >
+      <Flex w='100%' justifyContent='flex-end'>
+        <AdvancedSearch
+          buttonProps={{ color: 'gray.600', _hover: { color: 'gray.900' } }}
+        />
+      </Flex>
       <SearchInput
         ariaLabel='Search for datasets or tools'
         placeholder='Search for datasets or tools'
@@ -45,6 +52,7 @@ export const SearchBar = ({
         }}
         {...props}
       />
+
       {/* <SearchWithPredictiveText
         ariaLabel='Search for datasets or tools'
         placeholder='Search for datasets or tools'

@@ -128,6 +128,7 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
             query: { q: `${querystring}`, advancedSearch: true },
           });
         }}
+        isDisabled={items.length === 0}
         {...modalProps}
       >
         {/* Search For Query Term */}
