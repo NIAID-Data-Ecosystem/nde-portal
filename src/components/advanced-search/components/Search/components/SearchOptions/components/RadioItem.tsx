@@ -38,8 +38,9 @@ export const RadioTooltip: React.FC<Partial<RadioItemProps>> = ({
 
 interface RadioItemProps
   extends Omit<RadioProps, 'name' | 'value'>,
-    SearchOption {
+    Omit<SearchOption, 'value'> {
   hasTooltip?: boolean;
+  value?: SearchOption['value'];
 }
 
 export const RadioItem: React.FC<RadioItemProps> = ({
