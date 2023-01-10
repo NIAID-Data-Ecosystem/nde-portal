@@ -40,6 +40,7 @@
     "date-fns": "^2.28.0",
     "env-cmd": "^10.1.0",
     "framer-motion": "^4",
+    "fuse.js": "^6.6.2",
     "lodash": "^4.17.21",
     "moment": "^2.29.4",
     "nde-design-system": "^0.2.85",

@@ -22,6 +22,7 @@ import {
 import { MdTextFormat } from 'react-icons/md';
 import { formatNumber } from 'src/utils/helpers';
 import { filterFields, transformFieldName } from './helpers';
+import Fuse from 'fuse.js';
 
 const Option = (props: OptionProps<any>) => {
   const { isOpen: showDescription, onClose, onOpen } = useDisclosure();
@@ -173,6 +174,9 @@ export const FieldSelect: React.FC<FieldSelectProps> = ({
       }),
   ];
 
+  const fuse = new Fuse(fields, { keys: ['label'] });
+  const fuzzy_fields = fuse.search(inputValue).map(({ item }) => item);
+
   useEffect(() => {
     isFormReset && setSearchField('');
   }, [isFormReset, setSearchField]);
@@ -195,13 +199,14 @@ export const FieldSelect: React.FC<FieldSelectProps> = ({
             isSearchable={true}
             placeholder='All Fields'
             name='Field'
-            options={fields}
+            options={inputValue ? fuzzy_fields : fields}
             onFocus={() => isFormReset && setResetForm(false)}
             onChange={(option: any) =>
               setSearchField(!option ? '' : option.value)
             }
             inputValue={inputValue}
             onInputChange={setInputValue}
+            getOptionValue={option => `${option['label']}`}
             styles={{
               control: base => {
                 return {
