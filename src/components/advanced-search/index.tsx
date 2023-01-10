@@ -17,6 +17,7 @@ import { uniqueId } from 'lodash';
 import {
   buildTree,
   DragItem,
+  FlattenedItem,
   SortableWithCombine,
 } from './components/SortableWithCombine';
 import { convertObject2QueryString, wildcardQueryString } from './utils';
@@ -29,6 +30,12 @@ import {
 } from './components/Search';
 import { SearchOptions } from './components/Search/components/SearchOptions';
 import { ResultsCount } from './components/ResultsCount';
+import SampleQueries from 'configs/sample-queries.json';
+
+const sample_queries = SampleQueries as {
+  name: string;
+  items: FlattenedItem[];
+}[];
 
 interface AdvancedSearchProps {
   buttonProps?: TextProps;
@@ -203,84 +210,21 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
           <Heading size='sm' fontWeight='medium' mt={2}>
             Or choose from the sample queries below.
           </Heading>
-          <Button
-            leftIcon={<FaSearch />}
-            onClick={() =>
-              setItems(
-                // [TO DO]: create transform string to query object function.
-                buildTree([
-                  {
-                    id: 'West Siberian virus'.split(' ').join('-'),
-                    children: [],
-                    value: { term: 'West Siberian virus' },
-                    parentId: null,
-                    index: 0,
-                    depth: 0,
-                  },
-                  {
-                    id: 'Tickborne-encephalitis-OR-Tick-borne-encephalitis-AND-Siberian-subtype',
-                    children: [],
-                    value: {
-                      term: 'Tickborne-encephalitis-OR-Tick-borne-encephalitis-AND-Siberian-subtype',
-                      union: 'OR',
-                    },
-                    parentId: null,
-                    index: 1,
-                    depth: 0,
-                  },
-                  {
-                    id: 'Tickborne-encephalitis-OR-Tick-borne-encephalitis',
-                    children: [],
-                    value: {
-                      term: 'Tickborne-encephalitis-OR-Tick-borne-encephalitis',
-                    },
-                    parentId:
-                      'Tickborne-encephalitis-OR-Tick-borne-encephalitis-AND-Siberian-subtype',
-                    index: 0,
-                    depth: 1,
-                  },
-                  {
-                    id: 'Tickborne-encephalitis',
-                    children: [],
-                    value: { term: 'Tickborne encephalitis' },
-                    parentId:
-                      'Tickborne-encephalitis-OR-Tick-borne-encephalitis',
-                    index: 0,
-                    depth: 2,
-                  },
-                  {
-                    id: 'Tick-borne-encephalitis',
-                    children: [],
-                    value: {
-                      term: 'Tick-borne encephalitis',
-                      union: 'OR',
-                    },
-                    parentId:
-                      'Tickborne-encephalitis-OR-Tick-borne-encephalitis',
-                    index: 1,
-                    depth: 2,
-                  },
-                  {
-                    id: 'Siberian-subtype',
-                    children: [],
-                    value: {
-                      term: 'Siberian subtype',
-                      union: 'AND',
-                    },
-                    parentId:
-                      'Tickborne-encephalitis-OR-Tick-borne-encephalitis-AND-Siberian-subtype',
-                    index: 1,
-                    depth: 1,
-                  },
-                ]),
-              )
-            }
-            colorScheme='gray'
-            color='text.body'
-            size='sm'
-          >
-            Tickborne encephalitis, West Siberian subtype
-          </Button>
+          {sample_queries.map(query => {
+            return (
+              <Button
+                key={query.name}
+                mx={1}
+                leftIcon={<FaSearch />}
+                colorScheme='gray'
+                color='text.body'
+                size='sm'
+                onClick={() => setItems(buildTree(query.items))}
+              >
+                {query.name}
+              </Button>
+            );
+          })}
         </Box>
 
         {/* Query Builder Area */}

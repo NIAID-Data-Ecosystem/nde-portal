@@ -1,0 +1,422 @@
+[
+  {
+    "name": "Tickborne encephalitis, West Siberian subtype",
+    "items": [
+      {
+        "id": "West-Siberian-virus",
+        "children": [],
+        "value": { "term": "West Siberian virus" },
+        "parentId": null,
+        "index": 0,
+        "depth": 0
+      },
+      {
+        "id": "Tickborne-encephalitis-OR-Tick-borne-encephalitis-AND-Siberian-subtype",
+        "children": [],
+        "value": {
+          "term": "Tickborne-encephalitis-OR-Tick-borne-encephalitis-AND-Siberian-subtype",
+          "union": "OR"
+        },
+        "parentId": null,
+        "index": 1,
+        "depth": 0
+      },
+      {
+        "id": "Tickborne-encephalitis-OR-Tick-borne-encephalitis",
+        "children": [],
+        "value": {
+          "term": "Tickborne-encephalitis-OR-Tick-borne-encephalitis"
+        },
+        "parentId": "Tickborne-encephalitis-OR-Tick-borne-encephalitis-AND-Siberian-subtype",
+        "index": 0,
+        "depth": 1
+      },
+      {
+        "id": "Tickborne-encephalitis",
+        "children": [],
+        "value": { "term": "Tickborne encephalitis" },
+        "parentId": "Tickborne-encephalitis-OR-Tick-borne-encephalitis",
+        "index": 0,
+        "depth": 2
+      },
+      {
+        "id": "Tick-borne-encephalitis",
+        "children": [],
+        "value": {
+          "term": "Tick-borne encephalitis",
+          "union": "OR"
+        },
+        "parentId": "Tickborne-encephalitis-OR-Tick-borne-encephalitis",
+        "index": 1,
+        "depth": 2
+      },
+      {
+        "id": "Siberian-subtype",
+        "children": [],
+        "value": {
+          "term": "Siberian subtype",
+          "union": "AND"
+        },
+        "parentId": "Tickborne-encephalitis-OR-Tick-borne-encephalitis-AND-Siberian-subtype",
+        "index": 1,
+        "depth": 1
+      }
+    ]
+  },
+  {
+    "name": "Fungal Diseases",
+    "items": [
+      {
+        "id": "Candida-Calbicans-Cglabrata-Cparapsilosis-Ctropicalis-Cauris",
+        "children": [],
+        "value": {
+          "term": "Candida - C. albicans - C. glabrata - C. parapsilosis - C. tropicalis - C. auris"
+        },
+        "parentId": null,
+        "index": 0,
+        "depth": 0
+      },
+      {
+        "id": "Candida",
+        "children": [],
+        "value": {
+          "term": "Candida",
+          "union": "OR"
+        },
+        "parentId": "Candida-Calbicans-Cglabrata-Cparapsilosis-Ctropicalis-Cauris",
+        "index": 0,
+        "depth": 1
+      },
+      {
+        "id": "Calbicans",
+        "children": [],
+        "value": {
+          "term": "C. albicans",
+          "union": "OR"
+        },
+        "parentId": "Candida-Calbicans-Cglabrata-Cparapsilosis-Ctropicalis-Cauris",
+        "index": 1,
+        "depth": 1
+      },
+      {
+        "id": "Cglabrata",
+        "children": [],
+        "value": {
+          "term": "C. glabrata",
+          "union": "OR"
+        },
+        "parentId": "Candida-Calbicans-Cglabrata-Cparapsilosis-Ctropicalis-Cauris",
+        "index": 2,
+        "depth": 1
+      },
+      {
+        "id": "Cparapsilosis",
+        "children": [],
+        "value": {
+          "term": "C. parapsilosis",
+          "union": "OR"
+        },
+        "parentId": "Candida-Calbicans-Cglabrata-Cparapsilosis-Ctropicalis-Cauris",
+        "index": 3,
+        "depth": 1
+      },
+      {
+        "id": "Ctropicalis",
+        "children": [],
+        "value": {
+          "term": "C. tropicalis",
+          "union": "OR"
+        },
+        "parentId": "Candida-Calbicans-Cglabrata-Cparapsilosis-Ctropicalis-Cauris",
+        "index": 4,
+        "depth": 1
+      },
+      {
+        "id": "Cauris",
+        "children": [],
+        "value": {
+          "term": "C. auris",
+          "union": "OR"
+        },
+        "parentId": "Candida-Calbicans-Cglabrata-Cparapsilosis-Ctropicalis-Cauris",
+        "index": 5,
+        "depth": 1
+      },
+      {
+        "id": "Cryptococcus-cryptococcal-meningitis-Cryptococcosis-Cneoformans-Cgattii",
+        "children": [],
+        "value": {
+          "term": "Cryptococcus-cryptococcal-meningitis-Cryptococcosis-Cneoformans-Cgattii",
+          "union": "OR"
+        },
+        "parentId": null,
+        "index": 1,
+        "depth": 0
+      },
+      {
+        "id": "Cryptococcus",
+        "children": [],
+        "value": {
+          "term": "Cryptococcus",
+          "union": "OR"
+        },
+        "parentId": "Cryptococcus-cryptococcal-meningitis-Cryptococcosis-Cneoformans-Cgattii",
+        "index": 0,
+        "depth": 1
+      },
+      {
+        "id": "cryptococcal-meningitis",
+        "children": [],
+        "value": {
+          "term": "cryptococcal meningitis",
+          "union": "OR"
+        },
+        "parentId": "Cryptococcus-cryptococcal-meningitis-Cryptococcosis-Cneoformans-Cgattii",
+        "index": 1,
+        "depth": 1
+      },
+      {
+        "id": "Cryptococcosis",
+        "children": [],
+        "value": {
+          "term": "Cryptococcosis",
+          "union": "OR"
+        },
+        "parentId": "Cryptococcus-cryptococcal-meningitis-Cryptococcosis-Cneoformans-Cgattii",
+        "index": 2,
+        "depth": 1
+      },
+      {
+        "id": "C. neoformans",
+        "children": [],
+        "value": {
+          "term": "C. neoformans",
+          "union": "OR"
+        },
+        "parentId": "Cryptococcus-cryptococcal-meningitis-Cryptococcosis-Cneoformans-Cgattii",
+        "index": 3,
+        "depth": 1
+      },
+      {
+        "id": "C. gattii",
+        "children": [],
+        "value": {
+          "term": "C. gattii",
+          "union": "OR"
+        },
+        "parentId": "Cryptococcus-cryptococcal-meningitis-Cryptococcosis-Cneoformans-Cgattii",
+        "index": 4,
+        "depth": 1
+      },
+      {
+        "id": "Aspergillosis-Aspergillus",
+        "children": [],
+        "value": {
+          "term": "Aspergillosis-Aspergillus",
+          "union": "OR"
+        },
+        "parentId": null,
+        "index": 2,
+        "depth": 0
+      },
+      {
+        "id": "Aspergillosis",
+        "children": [],
+        "value": {
+          "term": "Aspergillosis",
+          "union": "OR"
+        },
+        "parentId": "Aspergillosis-Aspergillus",
+        "index": 0,
+        "depth": 1
+      },
+      {
+        "id": "Aspergillus",
+        "children": [],
+        "value": {
+          "term": "Aspergillus",
+          "union": "OR"
+        },
+        "parentId": "Aspergillosis-Aspergillus",
+        "index": 0,
+        "depth": 2
+      },
+      {
+        "id": "Coccidioidomycosis-Cimmitis-Coccidioides-Cposadasii",
+        "children": [],
+        "value": {
+          "term": "Coccidioidomycosis-Cimmitis-Coccidioides-Cposadasii",
+          "union": "OR"
+        },
+        "parentId": null,
+        "index": 3,
+        "depth": 0
+      },
+      {
+        "id": "Coccidioidomycosis",
+        "children": [],
+        "value": {
+          "term": "Coccidioidomycosis",
+          "union": "OR"
+        },
+        "parentId": "Coccidioidomycosis-Cimmitis-Coccidioides-Cposadasii",
+        "index": 0,
+        "depth": 1
+      },
+      {
+        "id": "Cimmitis",
+        "children": [],
+        "value": {
+          "term": "C. immitis",
+          "union": "OR"
+        },
+        "parentId": "Coccidioidomycosis-Cimmitis-Coccidioides-Cposadasii",
+        "index": 1,
+        "depth": 1
+      },
+      {
+        "id": "Coccidioides",
+        "children": [],
+        "value": {
+          "term": "Coccidioides",
+          "union": "OR"
+        },
+        "parentId": "Coccidioidomycosis-Cimmitis-Coccidioides-Cposadasii",
+        "index": 2,
+        "depth": 1
+      },
+      {
+        "id": "Cposadasii",
+        "children": [],
+        "value": {
+          "term": "C. posadasii",
+          "union": "OR"
+        },
+        "parentId": "Coccidioidomycosis-Cimmitis-Coccidioides-Cposadasii",
+        "index": 3,
+        "depth": 1
+      },
+      {
+        "id": "Histoplasma-Histoplasmosis-Hcapsulatum",
+        "children": [],
+        "value": {
+          "term": "Histoplasma-Histoplasmosis-Hcapsulatum",
+          "union": "OR"
+        },
+        "parentId": null,
+        "index": 4,
+        "depth": 0
+      },
+      {
+        "id": "Histoplasma",
+        "children": [],
+        "value": {
+          "term": "Histoplasma",
+          "union": "OR"
+        },
+        "parentId": "Histoplasma-Histoplasmosis-Hcapsulatum",
+        "index": 0,
+        "depth": 1
+      },
+      {
+        "id": "Histoplasmosis",
+        "children": [],
+        "value": {
+          "term": "Histoplasmosis",
+          "union": "OR"
+        },
+        "parentId": "Histoplasma-Histoplasmosis-Hcapsulatum",
+        "index": 0,
+        "depth": 2
+      },
+      {
+        "id": "Hcapsulatum",
+        "children": [],
+        "value": {
+          "term": "H. capsulatum",
+          "union": "OR"
+        },
+        "parentId": "Histoplasma-Histoplasmosis-Hcapsulatum",
+        "index": 0,
+        "depth": 3
+      },
+      {
+        "id": "Blastomyc-Bdermatitidis",
+        "children": [],
+        "value": {
+          "term": "Blastomyc-Bdermatitidis",
+          "union": "OR"
+        },
+        "parentId": null,
+        "index": 5,
+        "depth": 0
+      },
+      {
+        "id": "Blastomyc",
+        "children": [],
+        "value": {
+          "term": "*Blastomyc*",
+          "union": "OR"
+        },
+        "parentId": "Blastomyc-Bdermatitidis",
+        "index": 0,
+        "depth": 1
+      },
+      {
+        "id": "Bdermatitidis",
+        "children": [],
+        "value": {
+          "term": "B. dermatitidis",
+          "union": "OR"
+        },
+        "parentId": "Blastomyc-Bdermatitidis",
+        "index": 1,
+        "depth": 1
+      },
+      {
+        "id": "Pneumocystis-Pjirovecii-Pcarinii",
+        "children": [],
+        "value": {
+          "term": "Pneumocystis-Pjirovecii-Pcarinii",
+          "union": "OR"
+        },
+        "parentId": null,
+        "index": 6,
+        "depth": 0
+      },
+      {
+        "id": "Pneumocystis",
+        "children": [],
+        "value": {
+          "term": "Pneumocystis",
+          "union": "OR"
+        },
+        "parentId": "Pneumocystis-Pjirovecii-Pcarinii",
+        "index": 0,
+        "depth": 1
+      },
+      {
+        "id": "Pjirovecii",
+        "children": [],
+        "value": {
+          "term": "P. jirovecii",
+          "union": "OR"
+        },
+        "parentId": "Pneumocystis-Pjirovecii-Pcarinii",
+        "index": 1,
+        "depth": 1
+      },
+      {
+        "id": "Pcarinii",
+        "children": [],
+        "value": {
+          "term": "P. carinii",
+          "union": "OR"
+        },
+        "parentId": "Pneumocystis-Pjirovecii-Pcarinii",
+        "index": 2,
+        "depth": 1
+      }
+    ]
+  }
+]
