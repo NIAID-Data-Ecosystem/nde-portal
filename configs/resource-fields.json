@@ -1,5 +1,12 @@
 [
   {
+    "name": "@context",
+    "property": "@context",
+    "type": "text",
+    "count": 2512931
+  },
+  { "name": "@id", "property": "@id", "type": "keyword", "count": 0 },
+  {
     "name": "Type",
     "property": "@type",
     "type": "keyword",
@@ -28,6 +35,12 @@
       "dataset": "rating of the work",
       "computationaltool": "rating of the work"
     }
+  },
+  {
+    "name": "Aggregate Rating Type",
+    "property": "aggregateRating.@type",
+    "type": "text",
+    "count": 0
   },
   {
     "name": "Aggregate Rating Rating Count",
@@ -78,9 +91,15 @@
     "type": "object",
     "count": 746,
     "description": {
-      "computationaltool": "Subcategory of the application, e.g. 'Arcade Game'."
+      "computationaltool": "Subcategory of the computational tool, like gene regulation"
     },
     "abstract": { "computationaltool": "software subcategory" }
+  },
+  {
+    "name": "Application Sub Category Type",
+    "property": "applicationSubCategory.@type",
+    "type": "text",
+    "count": 0
   },
   {
     "name": "Application Sub Category Identifier",
@@ -92,7 +111,17 @@
     "name": "Application Sub Category Name",
     "property": "applicationSubCategory.name",
     "type": "keyword",
-    "count": 746
+    "count": 746,
+    "description": {
+      "computationaltool": "Subcategory of the tool (ex: gene regulation)"
+    }
+  },
+  {
+    "name": "Application Sub Category URL",
+    "property": "applicationSubCategory.url",
+    "type": "keyword",
+    "count": 52,
+    "format": "uri"
   },
   {
     "name": "Application Suite",
@@ -115,10 +144,22 @@
     }
   },
   {
+    "name": "Author Type",
+    "property": "author.@type",
+    "type": "text",
+    "count": 1487246
+  },
+  {
     "name": "Author Affiliation",
     "property": "author.affiliation",
     "type": "object",
     "count": 353626
+  },
+  {
+    "name": "Author Affiliation Type",
+    "property": "author.affiliation.@type",
+    "type": "keyword",
+    "count": 46573
   },
   {
     "name": "Author Affiliation Name",
@@ -131,6 +172,16 @@
     "property": "author.affiliation.sameAs",
     "type": "keyword",
     "count": 45639
+  },
+  {
+    "name": "Author Email",
+    "property": "author.email",
+    "type": "text",
+    "count": 3299,
+    "description": {
+      "dataset": "Email address of the organization",
+      "computationaltool": "Email address of the organization"
+    }
   },
   {
     "name": "Author Family Name",
@@ -193,6 +244,17 @@
     }
   },
   {
+    "name": "Author URL",
+    "property": "author.url",
+    "type": "keyword",
+    "count": 2034,
+    "description": {
+      "dataset": "Link to the organization",
+      "computationaltool": "Link to the organization"
+    },
+    "format": "uri"
+  },
+  {
     "name": "Available On Device",
     "property": "availableOnDevice",
     "type": "text",
@@ -217,6 +279,12 @@
     }
   },
   {
+    "name": "Citation Type",
+    "property": "citation.@type",
+    "type": "keyword",
+    "count": 9271
+  },
+  {
     "name": "Citation Abstract",
     "property": "citation.abstract",
     "type": "text",
@@ -235,6 +303,12 @@
       "dataset": "Author(s) of the referenced work",
       "computationaltool": "Author(s) of the referenced work"
     }
+  },
+  {
+    "name": "Citation Author Type",
+    "property": "citation.author.@type",
+    "type": "text",
+    "count": 260115
   },
   {
     "name": "Citation Author Family Name",
@@ -386,6 +460,17 @@
     }
   },
   {
+    "name": "Citation URL",
+    "property": "citation.url",
+    "type": "keyword",
+    "count": 295627,
+    "description": {
+      "dataset": "The url of the work",
+      "computationaltool": "The url of the work"
+    },
+    "format": "uri"
+  },
+  {
     "name": "Citation Volume Number",
     "property": "citation.volumeNumber",
     "type": "text",
@@ -406,6 +491,12 @@
     }
   },
   {
+    "name": "Cited By Type",
+    "property": "citedBy.@type",
+    "type": "keyword",
+    "count": 509
+  },
+  {
     "name": "Cited By Abstract",
     "property": "citedBy.abstract",
     "type": "text",
@@ -424,6 +515,12 @@
       "dataset": "Author(s) of the referenced work",
       "computationaltool": "Author(s) of the referenced work"
     }
+  },
+  {
+    "name": "Cited By Author Type",
+    "property": "citedBy.author.@type",
+    "type": "text",
+    "count": 0
   },
   {
     "name": "Cited By Author Family Name",
@@ -575,6 +672,17 @@
     }
   },
   {
+    "name": "Cited By URL",
+    "property": "citedBy.url",
+    "type": "keyword",
+    "count": 1292,
+    "description": {
+      "dataset": "The url of the work",
+      "computationaltool": "The url of the work"
+    },
+    "format": "uri"
+  },
+  {
     "name": "Cited By Volume Number",
     "property": "citedBy.volumeNumber",
     "type": "text",
@@ -617,6 +725,12 @@
     "count": 0
   },
   {
+    "name": "Content Url",
+    "property": "contentUrl",
+    "type": "text",
+    "count": 0
+  },
+  {
     "name": "Contributor",
     "property": "contributor",
     "type": "object",
@@ -627,6 +741,18 @@
     "abstract": {
       "computationaltool": "contributor to development or maintenance"
     }
+  },
+  {
+    "name": "Contributor @id",
+    "property": "contributor.@id",
+    "type": "text",
+    "count": 0
+  },
+  {
+    "name": "Contributor Type",
+    "property": "contributor.@type",
+    "type": "text",
+    "count": 0
   },
   {
     "name": "Contributor Affiliation",
@@ -648,9 +774,21 @@
     "count": 416068
   },
   {
+    "name": "Curated By Type",
+    "property": "curatedBy.@type",
+    "type": "text",
+    "count": 416068
+  },
+  {
     "name": "Curated By Name",
     "property": "curatedBy.name",
     "type": "keyword",
+    "count": 416068
+  },
+  {
+    "name": "Curated By URL",
+    "property": "curatedBy.url",
+    "type": "text",
     "count": 416068
   },
   {
@@ -718,6 +856,17 @@
     }
   },
   {
+    "name": "Discussion Url",
+    "property": "discussionUrl",
+    "type": "text",
+    "count": 958,
+    "description": {
+      "computationaltool": "A link to a webpage containing the comments about the computational tool."
+    },
+    "abstract": { "computationaltool": "link to tool discussion page" },
+    "format": "uri"
+  },
+  {
     "name": "Distribution",
     "property": "distribution",
     "type": "object",
@@ -728,10 +877,29 @@
     "abstract": { "dataset": "download link" }
   },
   {
+    "name": "Distribution @id",
+    "property": "distribution.@id",
+    "type": "keyword",
+    "count": 0
+  },
+  {
+    "name": "Distribution Type",
+    "property": "distribution.@type",
+    "type": "keyword",
+    "count": 1510177
+  },
+  {
     "name": "Distribution Content Size",
     "property": "distribution.contentSize",
     "type": "text",
     "count": 64587
+  },
+  {
+    "name": "Distribution Content Url",
+    "property": "distribution.contentUrl",
+    "type": "text",
+    "count": 1575558,
+    "format": "uri"
   },
   {
     "name": "Distribution Date Created",
@@ -744,6 +912,7 @@
     "property": "distribution.dateModified",
     "type": "date",
     "count": 65308,
+    "description": { "dataset": "date the file was modified" },
     "format": "date"
   },
   {
@@ -762,7 +931,8 @@
     "name": "Distribution Encoding Format",
     "property": "distribution.encodingFormat",
     "type": "text",
-    "count": 1399070
+    "count": 1399070,
+    "description": { "dataset": "file type (ex: XLSX)" }
   },
   {
     "name": "Distribution Name",
@@ -783,6 +953,21 @@
       "dataset": "digital object identifier",
       "computationaltool": "digital object identifier"
     }
+  },
+  {
+    "name": "Download Url",
+    "property": "downloadUrl",
+    "type": "object",
+    "count": 6046,
+    "description": {
+      "computationaltool": "URL to download the computational tool"
+    }
+  },
+  {
+    "name": "Download Url Name",
+    "property": "downloadUrl.name",
+    "type": "text",
+    "count": 6046
   },
   {
     "name": "Feature List",
@@ -875,6 +1060,17 @@
     }
   },
   {
+    "name": "Funding Funder URL",
+    "property": "funding.funder.url",
+    "type": "text",
+    "count": 628,
+    "description": {
+      "dataset": "Link to the organization",
+      "computationaltool": "Link to the organization"
+    },
+    "format": "uri"
+  },
+  {
     "name": "Funding Identifier",
     "property": "funding.identifier",
     "type": "text",
@@ -883,6 +1079,17 @@
       "dataset": "Unique identifier(s) for the grant or contract used to fund the work",
       "computationaltool": "Unique identifier(s) for the grant or contract used to fund the work"
     }
+  },
+  {
+    "name": "Funding URL",
+    "property": "funding.url",
+    "type": "text",
+    "count": 14087,
+    "description": {
+      "dataset": "award / grant URL",
+      "computationaltool": "award / grant URL"
+    },
+    "format": "uri"
   },
   {
     "name": "Has Part",
@@ -894,6 +1101,18 @@
       "computationaltool": "An item that is part of this computational tool"
     },
     "abstract": { "dataset": "data limitations or dictionaries" }
+  },
+  {
+    "name": "Has Part @id",
+    "property": "hasPart.@id",
+    "type": "text",
+    "count": 0
+  },
+  {
+    "name": "Has Part Type",
+    "property": "hasPart.@type",
+    "type": "text",
+    "count": 5
   },
   {
     "name": "Has Part Encoding Format",
@@ -910,6 +1129,17 @@
       "dataset": "Name or title",
       "computationaltool": "Name or title"
     }
+  },
+  {
+    "name": "Has Part URL",
+    "property": "hasPart.url",
+    "type": "text",
+    "count": 5,
+    "description": {
+      "dataset": "The url of the work",
+      "computationaltool": "The url of the work"
+    },
+    "format": "uri"
   },
   {
     "name": "Health Condition",
@@ -929,7 +1159,17 @@
     "name": "Health Condition Name",
     "property": "healthCondition.name",
     "type": "keyword",
-    "count": 7461
+    "count": 7461,
+    "description": {
+      "dataset": "The health condition(s) /infectious disease(s) which are the focus of the work (ex: COVID-19)"
+    }
+  },
+  {
+    "name": "Health Condition URL",
+    "property": "healthCondition.url",
+    "type": "text",
+    "count": 29,
+    "format": "uri"
   },
   {
     "name": "Identifier",
@@ -953,6 +1193,12 @@
     }
   },
   {
+    "name": "In Language Type",
+    "property": "inLanguage.@type",
+    "type": "text",
+    "count": 0
+  },
+  {
     "name": "In Language Alternate Name",
     "property": "inLanguage.alternateName",
     "type": "text",
@@ -962,7 +1208,8 @@
     "name": "In Language Name",
     "property": "inLanguage.name",
     "type": "text",
-    "count": 50215
+    "count": 50215,
+    "description": { "dataset": "language of the work" }
   },
   {
     "name": "Source",
@@ -979,11 +1226,25 @@
     }
   },
   {
+    "name": "Source Type",
+    "property": "includedInDataCatalog.@type",
+    "type": "text",
+    "count": 2528181
+  },
+  {
     "name": "Source Name",
     "property": "includedInDataCatalog.name",
     "type": "keyword",
     "count": 2596659,
     "description": { "dataset": "Data or tool catalog name" }
+  },
+  {
+    "name": "Source URL",
+    "property": "includedInDataCatalog.url",
+    "type": "text",
+    "count": 2593071,
+    "description": { "dataset": "Link to data or tool catalog" },
+    "format": "uri"
   },
   {
     "name": "Source Version Date",
@@ -1013,7 +1274,15 @@
     "name": "Pathogen Name",
     "property": "infectiousAgent.name",
     "type": "keyword",
-    "count": 366
+    "count": 366,
+    "description": { "computationaltool": "infectious agent / pathogen" }
+  },
+  {
+    "name": "Pathogen URL",
+    "property": "infectiousAgent.url",
+    "type": "text",
+    "count": 338,
+    "format": "uri"
   },
   {
     "name": "Input",
@@ -1026,17 +1295,24 @@
     "abstract": { "computationaltool": "input file/parameter" }
   },
   {
+    "name": "Input Type",
+    "property": "input.@type",
+    "type": "keyword",
+    "count": 0
+  },
+  {
     "name": "Input Description",
     "property": "input.description",
     "type": "text",
     "count": 110,
-    "description": { "computationaltool": "Description of the software input." }
+    "description": { "computationaltool": "Description of the software input" }
   },
   {
     "name": "Input Encoding Format",
     "property": "input.encodingFormat",
     "type": "text",
-    "count": 579
+    "count": 579,
+    "description": { "computationaltool": "File type of the software input" }
   },
   {
     "name": "Input Identifier",
@@ -1049,7 +1325,7 @@
     "property": "input.name",
     "type": "text",
     "count": 808,
-    "description": { "computationaltool": "Name of the software input." }
+    "description": { "computationaltool": "Name of the software input" }
   },
   {
     "name": "Interaction Statistic",
@@ -1064,6 +1340,12 @@
       "dataset": "views or downloads",
       "computationaltool": "views or downloads"
     }
+  },
+  {
+    "name": "Interaction Statistic Type",
+    "property": "interactionStatistic.@type",
+    "type": "text",
+    "count": 0
   },
   {
     "name": "Interaction Statistic Interaction Type",
@@ -1106,6 +1388,12 @@
     }
   },
   {
+    "name": "Is Based On Type",
+    "property": "isBasedOn.@type",
+    "type": "keyword",
+    "count": 23
+  },
+  {
     "name": "Is Based On Abstract",
     "property": "isBasedOn.abstract",
     "type": "text",
@@ -1129,6 +1417,13 @@
     "property": "isBasedOn.additionalType.name",
     "type": "keyword",
     "count": 499
+  },
+  {
+    "name": "Is Based On Additional Type URL",
+    "property": "isBasedOn.additionalType.url",
+    "type": "text",
+    "count": 499,
+    "format": "uri"
   },
   {
     "name": "Is Based On Citation",
@@ -1210,6 +1505,17 @@
     }
   },
   {
+    "name": "Is Based On URL",
+    "property": "isBasedOn.url",
+    "type": "text",
+    "count": 1926,
+    "description": {
+      "dataset": "The url of the work",
+      "computationaltool": "The url of the work"
+    },
+    "format": "uri"
+  },
+  {
     "name": "Is Basis For",
     "property": "isBasisFor",
     "type": "object",
@@ -1240,6 +1546,17 @@
     }
   },
   {
+    "name": "Is Basis For URL",
+    "property": "isBasisFor.url",
+    "type": "text",
+    "count": 0,
+    "description": {
+      "dataset": "The url of the work",
+      "computationaltool": "The url of the work"
+    },
+    "format": "uri"
+  },
+  {
     "name": "Is Part Of",
     "property": "isPartOf",
     "type": "object",
@@ -1252,6 +1569,18 @@
       "dataset": "study or project including the work",
       "computationaltool": "study or project including the work"
     }
+  },
+  {
+    "name": "Is Part Of @id",
+    "property": "isPartOf.@id",
+    "type": "text",
+    "count": 0
+  },
+  {
+    "name": "Is Part Of Type",
+    "property": "isPartOf.@type",
+    "type": "text",
+    "count": 0
   },
   {
     "name": "Is Part Of Identifier",
@@ -1274,6 +1603,17 @@
     }
   },
   {
+    "name": "Is Part Of URL",
+    "property": "isPartOf.url",
+    "type": "text",
+    "count": 4,
+    "description": {
+      "dataset": "The url of the work",
+      "computationaltool": "The url of the work"
+    },
+    "format": "uri"
+  },
+  {
     "name": "Is Related To",
     "property": "isRelatedTo",
     "type": "object",
@@ -1288,6 +1628,12 @@
     }
   },
   {
+    "name": "Is Related To Type",
+    "property": "isRelatedTo.@type",
+    "type": "text",
+    "count": 4
+  },
+  {
     "name": "Is Related To Has Part",
     "property": "isRelatedTo.hasPart",
     "type": "object",
@@ -1296,6 +1642,12 @@
       "dataset": "A portion of the work",
       "computationaltool": "A portion of the work"
     }
+  },
+  {
+    "name": "Is Related To Has Part Type",
+    "property": "isRelatedTo.hasPart.@type",
+    "type": "text",
+    "count": 0
   },
   {
     "name": "Is Related To Has Part Identifier",
@@ -1324,10 +1676,22 @@
     }
   },
   {
+    "name": "Is Related To Source Type",
+    "property": "isRelatedTo.includedInDataCatalog.@type",
+    "type": "text",
+    "count": 0
+  },
+  {
     "name": "Is Related To Source Name",
     "property": "isRelatedTo.includedInDataCatalog.name",
     "type": "keyword",
     "count": 4
+  },
+  {
+    "name": "Is Related To Source URL",
+    "property": "isRelatedTo.includedInDataCatalog.url",
+    "type": "text",
+    "count": 0
   },
   {
     "name": "Is Related To Source Version Date",
@@ -1370,6 +1734,12 @@
     }
   },
   {
+    "name": "Is Similar To Type",
+    "property": "isSimilarTo.@type",
+    "type": "text",
+    "count": 0
+  },
+  {
     "name": "Is Similar To Identifier",
     "property": "isSimilarTo.identifier",
     "type": "keyword",
@@ -1390,9 +1760,21 @@
     }
   },
   {
+    "name": "Is Similar To Source Type",
+    "property": "isSimilarTo.includedInDataCatalog.@type",
+    "type": "text",
+    "count": 0
+  },
+  {
     "name": "Is Similar To Source Name",
     "property": "isSimilarTo.includedInDataCatalog.name",
     "type": "keyword",
+    "count": 0
+  },
+  {
+    "name": "Is Similar To Source URL",
+    "property": "isSimilarTo.includedInDataCatalog.url",
+    "type": "text",
     "count": 0
   },
   {
@@ -1486,7 +1868,15 @@
     "name": "Measurement Technique Name",
     "property": "measurementTechnique.name",
     "type": "keyword",
-    "count": 180383
+    "count": 180383,
+    "description": { "dataset": "Technique used to collect the dataset" }
+  },
+  {
+    "name": "Measurement Technique URL",
+    "property": "measurementTechnique.url",
+    "type": "text",
+    "count": 29,
+    "format": "uri"
   },
   {
     "name": "Name",
@@ -1516,10 +1906,17 @@
     "description": { "computationaltool": "Output of the computational tool" }
   },
   {
+    "name": "Output Type",
+    "property": "output.@type",
+    "type": "keyword",
+    "count": 0
+  },
+  {
     "name": "Output Encoding Format",
     "property": "output.encodingFormat",
     "type": "text",
-    "count": 534
+    "count": 534,
+    "description": { "computationaltool": "file type of the tool's output" }
   },
   {
     "name": "Output Identifier",
@@ -1531,7 +1928,8 @@
     "name": "Output Name",
     "property": "output.name",
     "type": "text",
-    "count": 819
+    "count": 819,
+    "description": { "computationaltool": "name of the tool's output" }
   },
   {
     "name": "Processor Requirements",
@@ -1587,6 +1985,12 @@
     }
   },
   {
+    "name": "Source publisher Type",
+    "property": "sdPublisher.@type",
+    "type": "keyword",
+    "count": 1283529
+  },
+  {
     "name": "Source publisher Identifier",
     "property": "sdPublisher.identifier",
     "type": "text",
@@ -1601,6 +2005,17 @@
       "dataset": "Data or tool catalog name",
       "computationaltool": "Data or tool catalog name"
     }
+  },
+  {
+    "name": "Source publisher URL",
+    "property": "sdPublisher.url",
+    "type": "keyword",
+    "count": 1283517,
+    "description": {
+      "dataset": "Link to data or tool catalog",
+      "computationaltool": "Link to data or tool catalog"
+    },
+    "format": "uri"
   },
   {
     "name": "Software Add On",
@@ -1634,6 +2049,13 @@
     "property": "softwareHelp.name",
     "type": "text",
     "count": 2022
+  },
+  {
+    "name": "Software Help URL",
+    "property": "softwareHelp.url",
+    "type": "text",
+    "count": 6005,
+    "format": "uri"
   },
   {
     "name": "Software Requirements",
@@ -1689,6 +2111,12 @@
     "count": 0
   },
   {
+    "name": "Source Info URL",
+    "property": "sourceInfo.url",
+    "type": "text",
+    "count": 0
+  },
+  {
     "name": "Geographical Information",
     "property": "spatialCoverage",
     "type": "object",
@@ -1699,9 +2127,21 @@
     "abstract": { "dataset": "geographic focus of the work" }
   },
   {
+    "name": "Geographical Information Type",
+    "property": "spatialCoverage.@type",
+    "type": "text",
+    "count": 12
+  },
+  {
     "name": "Geographical Information Geo",
     "property": "spatialCoverage.geo",
     "type": "object",
+    "count": 0
+  },
+  {
+    "name": "Geographical Information Geo Type",
+    "property": "spatialCoverage.geo.@type",
+    "type": "text",
     "count": 0
   },
   {
@@ -1759,6 +2199,12 @@
     "count": 499
   },
   {
+    "name": "Species Additional Type URL",
+    "property": "species.additionalType.url",
+    "type": "text",
+    "count": 499
+  },
+  {
     "name": "Species Identifier",
     "property": "species.identifier",
     "type": "text",
@@ -1768,7 +2214,17 @@
     "name": "Species Name",
     "property": "species.name",
     "type": "keyword",
-    "count": 167446
+    "count": 167446,
+    "description": {
+      "dataset": "Species / host organism from which the dataset has been collected."
+    }
+  },
+  {
+    "name": "Species URL",
+    "property": "species.url",
+    "type": "text",
+    "count": 246,
+    "format": "uri"
   },
   {
     "name": "Period",
@@ -1785,6 +2241,12 @@
     "property": "temporalCoverage.temporalInterval",
     "type": "object",
     "count": 55640
+  },
+  {
+    "name": "Period Temporal Interval Type",
+    "property": "temporalCoverage.temporalInterval.@type",
+    "type": "text",
+    "count": 0
   },
   {
     "name": "Period Temporal Interval Duration",
@@ -1809,6 +2271,16 @@
     "property": "temporalCoverage.temporalInterval.startDate",
     "type": "date",
     "count": 5010
+  },
+  {
+    "name": "Thumbnail Url",
+    "property": "thumbnailUrl",
+    "type": "text",
+    "count": 60,
+    "description": {
+      "computationaltool": "A thumbnail image of the computational tool"
+    },
+    "format": "uri"
   },
   {
     "name": "Topic Category",
@@ -1838,6 +2310,12 @@
     "count": 4121
   },
   {
+    "name": "Topic Category Curated By URL",
+    "property": "topicCategory.curatedBy.url",
+    "type": "text",
+    "count": 4121
+  },
+  {
     "name": "Topic Category Description",
     "property": "topicCategory.description",
     "type": "text",
@@ -1856,6 +2334,28 @@
       "dataset": "topic name",
       "computationaltool": "topic name"
     }
+  },
+  {
+    "name": "Topic Category URL",
+    "property": "topicCategory.url",
+    "type": "text",
+    "count": 137652,
+    "description": {
+      "dataset": "URL linking to the topic",
+      "computationaltool": "URL linking to the topic"
+    },
+    "format": "uri"
+  },
+  {
+    "name": "URL",
+    "property": "url",
+    "type": "text",
+    "count": 2589365,
+    "description": {
+      "dataset": "URL of the work",
+      "computationaltool": "URL of the work."
+    },
+    "format": "uri"
   },
   {
     "name": "Usage Info",
@@ -1880,6 +2380,14 @@
     "type": "text",
     "count": 0,
     "description": { "dataset": "Name or title" }
+  },
+  {
+    "name": "Usage Info URL",
+    "property": "usageInfo.url",
+    "type": "text",
+    "count": 6,
+    "description": { "dataset": "The url of the work" },
+    "format": "uri"
   },
   {
     "name": "Variable Measured",

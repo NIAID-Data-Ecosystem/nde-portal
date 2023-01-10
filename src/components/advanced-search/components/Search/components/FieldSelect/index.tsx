@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   Box,
   Flex,
@@ -12,11 +12,130 @@ import {
 import MetadataFields from 'configs/resource-fields.json';
 import { useAdvancedSearchContext } from '../AdvancedSearchFormContext';
 import Select, { components, OptionProps, ControlProps } from 'react-select';
-import { FaHashtag, FaRegCalendarAlt, FaSearch, FaTh } from 'react-icons/fa';
+import {
+  FaHashtag,
+  FaRegCalendarAlt,
+  FaRegCheckCircle,
+  FaSearch,
+  FaTh,
+} from 'react-icons/fa';
 import { MdTextFormat } from 'react-icons/md';
 import { formatNumber } from 'src/utils/helpers';
 import { filterFields, transformFieldName } from './helpers';
 
+const Option = (props: OptionProps<any>) => {
+  const { isOpen: showDescription, onClose, onOpen } = useDisclosure();
+  const { data } = props;
+  const { label, type, count } = data;
+  const ref = useRef(null);
+
+  let icon;
+  let tooltipLabel = type;
+  if (type === 'text' || type === 'keyword') {
+    icon = MdTextFormat;
+    if (data.enum) {
+      icon = FaTh;
+    }
+  } else if (type === 'date') {
+    icon = FaRegCalendarAlt;
+  } else if (
+    type === 'unsigned_long' ||
+    type === 'integer' ||
+    type === 'double' ||
+    type === 'float'
+  ) {
+    icon = FaHashtag;
+    tooltipLabel = 'number';
+  } else if (type === 'boolean') {
+    icon = FaRegCheckCircle;
+  }
+
+  let description = data.abstract ? data.abstract : data.description;
+  if (typeof description === 'object') {
+    description = Object.values(description)
+      .filter((str, idx) => Object.values(description).indexOf(str) === idx)
+      .join(' or ');
+  }
+  return (
+    <components.Option {...props}>
+      <Box
+        key={label}
+        onMouseOver={onOpen}
+        onMouseLeave={onClose}
+        cursor='pointer'
+      >
+        <Flex
+          alignItems='center'
+          color={
+            props.isFocused && !props.isSelected
+              ? 'primary.600'
+              : props.isSelected
+              ? 'white'
+              : 'text.body'
+          }
+        >
+          <Tooltip
+            hasArrow
+            label={tooltipLabel.charAt(0).toUpperCase() + tooltipLabel.slice(1)}
+            placement='top-start'
+          >
+            {/* icon displaying the type of field. */}
+            <Box
+              ref={ref}
+              _hover={{
+                svg: { color: props.isFocused ? 'primary.600' : 'gray.800' },
+              }}
+            >
+              {icon && <Icon as={icon} mr={2} boxSize={4} />}
+            </Box>
+          </Tooltip>
+
+          {/* Name of field. */}
+          <Box>
+            <Text fontWeight='medium' color='inherit' lineHeight='none'>
+              {label}
+            </Text>
+            {count && (
+              <Text
+                as='span'
+                fontStyle='italic'
+                fontSize='xs'
+                fontWeight='light'
+                color='inherit'
+              >
+                {formatNumber(count)} records
+              </Text>
+            )}
+          </Box>
+        </Flex>
+
+        {showDescription && description && (
+          <Text
+            fontSize='xs'
+            lineHeight='shorter'
+            fontWeight='medium'
+            color={props.isSelected ? 'inherit' : 'gray.600'}
+            transition='0.2s linear'
+            maxW={350}
+          >
+            {description.charAt(0).toUpperCase() +
+              description.toLowerCase().slice(1)}
+            {description.charAt(description.length - 1) === '.' ? '' : '.'}
+          </Text>
+        )}
+      </Box>
+    </components.Option>
+  );
+};
+
+const Control = (props: ControlProps<any>) => {
+  return (
+    <components.Control {...props}>
+      <Icon as={FaSearch} ml={2} color='gray.300' />
+      {props.children}
+    </components.Control>
+  );
+};
 interface FieldSelectProps {
   isDisabled: boolean;
   size?: 'sm' | 'md' | 'lg';
@@ -30,7 +149,7 @@ export const FieldSelect: React.FC<FieldSelectProps> = ({
   setResetForm,
 }) => {
   const { searchField, setSearchField } = useAdvancedSearchContext();
-
+  const [inputValue, setInputValue] = useState('');
   const fields = [
     {
       label: 'All Fields',
@@ -38,127 +157,21 @@ export const FieldSelect: React.FC<FieldSelectProps> = ({
       value: '',
       type: '',
     },
-    ...MetadataFields.filter(filterFields).map(field => {
-      return {
-        ...field,
-        label: transformFieldName(field),
-        value: field.property,
-      };
-    }),
+    ...MetadataFields.filter(filterFields)
+      .map(field => {
+        return {
+          ...field,
+          label: transformFieldName(field),
+          value: field.property,
+        };
+      })
+      .sort((a, b) => {
+        if (!inputValue) {
+          return b.count - a.count;
+        }
+        return a.label.localeCompare(b.label);
+      }),
   ];
-  const Control = (props: ControlProps<any>) => {
-    return (
-      <components.Control {...props}>
-        <Icon as={FaSearch} ml={2} color='gray.300' />
-        {props.children}
-      </components.Control>
-    );
-  };
-
-  const Option = (props: OptionProps<any>) => {
-    const { isOpen: showDescription, onClose, onOpen } = useDisclosure();
-    const { data } = props;
-    const { label, type, count } = data;
-    const ref = useRef(null);
-
-    let icon;
-    let tooltipLabel = type;
-    if (type === 'text' || type === 'keyword') {
-      icon = MdTextFormat;
-      if (data.enum) {
-        icon = FaTh;
-      }
-    } else if (type === 'date') {
-      icon = FaRegCalendarAlt;
-    } else if (
-      type === 'unsigned_long' ||
-      type === 'integer' ||
-      type === 'double' ||
-      type === 'float'
-    ) {
-      icon = FaHashtag;
-      tooltipLabel = 'number';
-    }
-
-    let description = data.abstract ? data.abstract : data.description;
-    if (typeof description === 'object') {
-      description = Object.values(description)
-        .filter((str, idx) => Object.values(description).indexOf(str) === idx)
-        .join(' or ');
-    }
-    return (
-      <components.Option {...props}>
-        <Box
-          key={label}
-          onMouseOver={onOpen}
-          onMouseLeave={onClose}
-          cursor='pointer'
-        >
-          <Flex
-            alignItems='center'
-            color={
-              props.isFocused && !props.isSelected
-                ? 'primary.600'
-                : props.isSelected
-                ? 'white'
-                : 'text.body'
-            }
-          >
-            <Tooltip
-              hasArrow
-              label={
-                tooltipLabel.charAt(0).toUpperCase() + tooltipLabel.slice(1)
-              }
-              placement='top-start'
-            >
-              {/* icon displaying the type of field. */}
-              <Box
-                ref={ref}
-                _hover={{
-                  svg: { color: props.isFocused ? 'primary.600' : 'gray.800' },
-                }}
-              >
-                {icon && <Icon as={icon} mr={2} boxSize={4} />}
-              </Box>
-            </Tooltip>
-
-            {/* Name of field. */}
-            <Box>
-              <Text fontWeight='medium' color='inherit' lineHeight='none'>
-                {label}
-              </Text>
-              {count && (
-                <Text
-                  as='span'
-                  fontStyle='italic'
-                  fontSize='xs'
-                  fontWeight='light'
-                  color='inherit'
-                >
-                  {formatNumber(count)} records
-                </Text>
-              )}
-            </Box>
-          </Flex>
-
-          {showDescription && description && (
-            <Text
-              fontSize='xs'
-              lineHeight='shorter'
-              fontWeight='medium'
-              color={props.isSelected ? 'inherit' : 'gray.600'}
-              transition='0.2s linear'
-              maxW={350}
-            >
-              {description.charAt(0).toUpperCase() +
-                description.toLowerCase().slice(1)}
-              {description.charAt(description.length - 1) === '.' ? '' : '.'}
-            </Text>
-          )}
-        </Box>
-      </components.Option>
-    );
-  };
 
   useEffect(() => {
     isFormReset && setSearchField('');
@@ -175,7 +188,7 @@ export const FieldSelect: React.FC<FieldSelectProps> = ({
           </VisuallyHidden>
           <Select
             components={{ Control, Option }}
-            value={fields.filter(field => field.value === searchField)[0]}
+            value={fields.filter(field => field.label === searchField)[0]}
             isDisabled={isDisabled}
             // is clearable when not the default "all fields" selection.
             isClearable={searchField !== ''}
@@ -187,6 +200,8 @@ export const FieldSelect: React.FC<FieldSelectProps> = ({
             onChange={(option: any) =>
               setSearchField(!option ? '' : option.value)
             }
+            inputValue={inputValue}
+            onInputChange={setInputValue}
             styles={{
               control: base => {
                 return {

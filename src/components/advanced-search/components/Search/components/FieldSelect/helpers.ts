@@ -49,6 +49,7 @@ const UNUSED_FIELDS = [
   'citedBy.@type',
   'citedBy.url',
   'citedBy.volumeNumber',
+  'codeRepository',
   'contentSize',
   'contentUrl',
   'contributor.@id',
@@ -59,10 +60,12 @@ const UNUSED_FIELDS = [
   'curatedBy.versionDate',
   'discussionUrl',
   'distribution.@id',
+  'distribution.contentSize',
   'distribution.contentUrl',
   'distribution.dateCreated',
   'distribution.datePublished',
   'distribution.description',
+  'distribution.name',
   'distribution.@type',
   'featureList',
   'funding.description',
@@ -174,6 +177,7 @@ const UNUSED_FIELDS = [
 // Filter out fields we want to remove from field select.
 export const filterFields = (field: Field) => {
   return (
+    !field.property.toLowerCase().includes('haspart') &&
     !field.property.toLowerCase().includes('email') &&
     !field.property.toLowerCase().includes('url') &&
     !field.property.toLowerCase().includes('mainEntityOfPage') &&
@@ -189,6 +193,8 @@ export const transformFieldName = (field: Field) => {
     return 'Author ORCID ID';
   } else if (field.property === 'citation.name') {
     return 'Citation Title';
+  } else if (field.name.toLowerCase().includes('distribution')) {
+    return field.name.replace('Distribution', 'File - ');
   }
   return field.name;
 };

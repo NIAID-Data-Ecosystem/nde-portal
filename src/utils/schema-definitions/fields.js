@@ -114,6 +114,17 @@ const fetchFields = async () => {
                   },
                 );
               }
+
+              if (o.items.vocabulary && o.items.vocabulary.property) {
+                Object.entries(o.items.vocabulary.property).map(
+                  ([childProperty, item]) => {
+                    updateField({
+                      ...item,
+                      dotfield: `${property}.${childProperty}`,
+                    });
+                  },
+                );
+              }
             });
 
           handleNested(data.oneOf);

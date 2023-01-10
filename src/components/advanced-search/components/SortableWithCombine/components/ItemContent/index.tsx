@@ -5,6 +5,7 @@ import { SortableCombineItem, SortableItemProps } from '../SortableCombineItem';
 import MetadataFieldsConfig from 'configs/resource-fields.json';
 import { getSortingStrategy, DragItem } from '../../index';
 import { getTypeLabel } from './helpers';
+import { transformFieldName } from '../../../Search/components/FieldSelect/helpers';
 
 interface ItemContentProps extends SortableItemProps {
   data: DragItem;
@@ -78,7 +79,7 @@ export const ItemContent: React.FC<ItemContentProps> = React.memo(
 
       const getDisplayTerm = (value: DragItem['value']) => {
         if (value.field === '_exists_' || value.field === '-_exists_') {
-          const fieldName = MetadataFieldsConfig.find(
+          const fieldData = MetadataFieldsConfig.find(
             field => field.property === data.value.term,
           );
           return (
@@ -89,7 +90,7 @@ export const ItemContent: React.FC<ItemContentProps> = React.memo(
               </Text>{' '}
               contain{' '}
               <Text as='span' fontWeight='bold'>
-                {fieldName?.name}
+                {fieldData?.name ? transformFieldName(fieldData) : ''}
               </Text>{' '}
               field.
             </span>
@@ -120,7 +121,7 @@ export const ItemContent: React.FC<ItemContentProps> = React.memo(
                     color='inherit'
                     lineHeight='short'
                   >
-                    {field.name}
+                    {transformFieldName(field)}
                     <br />
                   </Text>
                 )}
