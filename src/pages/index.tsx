@@ -426,7 +426,6 @@ const Home: NextPage = () => {
                             href={{
                               pathname: route.path,
                             }}
-                            isExternal={route.isExternal || false}
                             passHref
                           >
                             <Button w='100%' variant='outline'>
