@@ -285,16 +285,19 @@ const Home: NextPage = () => {
               {homepageCopy.sections[1]?.routes &&
                 homepageCopy.sections[1].routes.map(route => {
                   return (
-                    <Button
+                    <NextLink
                       key={route.title}
-                      href={`${route.path}`}
-                      w='100%'
-                      my={2}
-                      target='_self'
-                      isExternal={route.isExternal || false}
+                      href={{
+                        pathname: `${route.isExternal ? '' : env?.BASE_URL}${
+                          route.path
+                        }`,
+                      }}
+                      passHref
                     >
-                      {route.title}
-                    </Button>
+                      <Button w='100%' my={2}>
+                        {route.title}
+                      </Button>
+                    </NextLink>
                   );
                 })}
             </StyledSectionButtonGroup>
