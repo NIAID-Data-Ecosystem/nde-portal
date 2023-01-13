@@ -422,14 +422,17 @@ const Home: NextPage = () => {
                             'flex-start',
                           ]}
                         >
-                          <Button
-                            href={route.path}
-                            w='100%'
-                            variant='outline'
+                          <NextLink
+                            href={{
+                              pathname: route.path,
+                            }}
                             isExternal={route.isExternal || false}
+                            passHref
                           >
-                            {route.title}
-                          </Button>
+                            <Button w='100%' variant='outline'>
+                              {route.title}
+                            </Button>
+                          </NextLink>
                         </StyledSectionButtonGroup>
                       );
                     },
@@ -455,38 +458,40 @@ const Home: NextPage = () => {
         </PageContent>
 
         {/* Connect to the workspace section */}
-        <PageContent
-          bg='#fff'
-          minH='unset'
-          flexDirection='column'
-          alignItems='center'
-        >
-          <StyledSection id='workspace' flexDirection={{ md: 'row-reverse' }}>
-            <Image
-              w='100%'
-              p={4}
-              maxW={{ base: 300, xl: 400 }}
-              src={`${assetPrefix || ''}/assets/home-analyze.png`}
-              alt={''}
-            ></Image>
-            <StyledBody>
-              <StyledSectionHeading mt={[4, 6]}>
-                {homepageCopy.sections[3].heading}
-              </StyledSectionHeading>
-              <StyledText>{homepageCopy.sections[3].body}</StyledText>
-              {homepageCopy.sections[3]?.routes &&
-                homepageCopy.sections[3].routes.map(route => {
-                  return (
-                    <StyledSectionButtonGroup key={route.title}>
-                      <Button href={route.path} w='100%' isExternal>
-                        {route.title}
-                      </Button>
-                    </StyledSectionButtonGroup>
-                  );
-                })}
-            </StyledBody>
-          </StyledSection>
-        </PageContent>
+        {homepageCopy?.sections[3] && (
+          <PageContent
+            bg='#fff'
+            minH='unset'
+            flexDirection='column'
+            alignItems='center'
+          >
+            <StyledSection id='workspace' flexDirection={{ md: 'row-reverse' }}>
+              <Image
+                w='100%'
+                p={4}
+                maxW={{ base: 300, xl: 400 }}
+                src={`${assetPrefix || ''}/assets/home-analyze.png`}
+                alt={''}
+              ></Image>
+              <StyledBody>
+                <StyledSectionHeading mt={[4, 6]}>
+                  {homepageCopy.sections[3].heading}
+                </StyledSectionHeading>
+                <StyledText>{homepageCopy.sections[3].body}</StyledText>
+                {homepageCopy.sections[3]?.routes &&
+                  homepageCopy.sections[3].routes.map(route => {
+                    return (
+                      <StyledSectionButtonGroup key={route.title}>
+                        <Button href={route.path} w='100%' isExternal>
+                          {route.title}
+                        </Button>
+                      </StyledSectionButtonGroup>
+                    );
+                  })}
+              </StyledBody>
+            </StyledSection>
+          </PageContent>
+        )}
       </PageContainer>
     </>
   );

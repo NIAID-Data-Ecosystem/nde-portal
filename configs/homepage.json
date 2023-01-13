@@ -30,17 +30,6 @@
           "isExternal": true
         }
       ]
-    },
-    {
-      "heading": "Connect to the workspace.",
-      "body": "Connect to the Analysis Workspace to analyze datasets or to integrate computational tools in your own pipeline.",
-      "routes": [
-        {
-          "title": "Go to workspace",
-          "path": "https://accounts.niaiddata.org/auth/login",
-          "isExternal": true
-        }
-      ]
     }
   ]
 }
