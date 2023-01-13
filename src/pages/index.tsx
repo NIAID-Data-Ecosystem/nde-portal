@@ -36,6 +36,7 @@ import { assetPrefix } from 'next.config';
 import NextLink from 'next/link';
 import { AdvancedSearch } from 'src/components/advanced-search';
 import { SearchWithPredictiveText } from 'src/components/search-with-predictive-text';
+import { env } from 'next.config';
 
 const sample_queries = [
   {
@@ -424,7 +425,9 @@ const Home: NextPage = () => {
                         >
                           <NextLink
                             href={{
-                              pathname: route.path,
+                              pathname: `${
+                                route.isExternal ? '' : env?.BASE_URL
+                              }${route.path}`,
                             }}
                             passHref
                           >
