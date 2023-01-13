@@ -288,9 +288,7 @@ const Home: NextPage = () => {
                     <NextLink
                       key={route.title}
                       href={{
-                        pathname: `${route.isExternal ? '' : env?.BASE_URL}${
-                          route.path
-                        }`,
+                        pathname: route.path,
                       }}
                       passHref
                     >
@@ -426,14 +424,7 @@ const Home: NextPage = () => {
                             'flex-start',
                           ]}
                         >
-                          <NextLink
-                            href={{
-                              pathname: `${
-                                route.isExternal ? '' : env?.BASE_URL
-                              }${route.path}`,
-                            }}
-                            passHref
-                          >
+                          <NextLink href={route.path} passHref>
                             <Button w='100%' variant='outline'>
                               {route.title}
                             </Button>
