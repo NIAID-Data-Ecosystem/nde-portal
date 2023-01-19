@@ -31,6 +31,7 @@ import {
 import { SearchOptions } from './components/Search/components/SearchOptions';
 import { ResultsCount } from './components/ResultsCount';
 import SampleQueries from 'configs/sample-queries.json';
+import { Disclaimer } from './components/Search/components/Disclaimer';
 
 const sample_queries = SampleQueries as {
   name: string;
@@ -56,11 +57,12 @@ export const SEARCH_OPTIONS: SearchOption[] = [
   {
     name: 'Field Contains',
     value: 'default',
+    isDefault: true,
     description: '',
     options: [
       {
         name: 'Contains',
-        value: 'default',
+        value: 'contains',
         type: 'text',
         description:
           'Field contains value that starts or ends with given term. Note that when given multiple terms, terms wil be searched for separately and not grouped together.',
@@ -70,6 +72,8 @@ export const SEARCH_OPTIONS: SearchOption[] = [
         transformValue: (value: string, field?: string) => {
           return wildcardQueryString({ value, field });
         },
+        additionalInfo:
+          'Querying for records containing phrase fragments can be slow. "Exact" matching yields quicker results.',
       },
       {
         name: 'Exact Match',
@@ -78,6 +82,7 @@ export const SEARCH_OPTIONS: SearchOption[] = [
         type: 'text',
         example: `west siberian virus · contains the exact phrase 'west siberian virus'`,
         transformValue: (value: string) => `"${value}"`,
+        isDefault: true,
       },
       {
         name: 'Starts with',
@@ -203,6 +208,7 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
                     }}
                   />
                 </Flex>
+                <Disclaimer />
               </AdvancedSearchFormContext>
             )}
           </Flex>

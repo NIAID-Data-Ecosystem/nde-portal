@@ -21,7 +21,10 @@ export const RadioSelect = ({
   updateSearchOption: (arg: SearchOption) => void;
 }) => {
   const disclosure = useDisclosure();
-  const [selected, setSelected] = useState(options[0]);
+  const selectedOption = options.filter(
+    option => option.value === searchOption.value,
+  );
+  const [selected, setSelected] = useState(selectedOption[0]);
   const values = options.map(o => o.value);
 
   return (

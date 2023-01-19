@@ -56,7 +56,8 @@ export const TextInput: React.FC<TextInputProps> = ({
         onChange={value => {
           let term = value;
 
-          // for exact search we still want the list of available options to be wildcarded
+          // for exact search we still want the list of available options to be wildcarded.
+          // https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/153
           if (searchOption.value === 'exact') {
             term = wildcardQueryString({ value, field: searchField });
           } else {

@@ -15,6 +15,8 @@ export interface SearchOption {
   example?: string;
   transformValue?: (value: string, field?: string) => string;
   options?: SearchOption[];
+  isDefault?: boolean;
+  additionalInfo?: string;
 }
 
 export interface AdvancedSearchContextProps
@@ -47,11 +49,11 @@ export const AdvancedSearchFormContext: React.FC<AdvancedSearchFormProps> = ({
   const getSearchOption = (searchOptions: SearchOption[]) =>
     searchOptions.reduce((r, v) => {
       if (v.options && v.options.length) {
-        let defaultSubItem = v.options.filter(item => item.value === 'default');
+        let defaultSubItem = v.options.filter(item => item.isDefault);
         if (defaultSubItem.length) {
           r = defaultSubItem[0];
         }
-      } else if (v.value === 'default') {
+      } else if (v.isDefault) {
         r = v;
       }
       return r;

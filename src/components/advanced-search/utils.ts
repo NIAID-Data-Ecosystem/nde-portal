@@ -119,7 +119,7 @@ export const wildcardQueryString = ({
       } else {
         wildcarded_str = `*${str}*`;
       }
-      return str ? `*${wildcarded_str}*` : '';
+      return str ? `${wildcarded_str}` : '';
     })
     .join(' AND ')}`;
 
