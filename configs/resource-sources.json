@@ -56,14 +56,29 @@
       "imageUrl": "/assets/resources/immport.png"
     },
     {
+      "sourceName": "BD2K-LINCS DCIC",
+      "name": "LINCS",
+      "imageUrl": "/assets/resources/lincs.png"
+    },
+    {
       "sourceName": "Mendeley",
       "name": "Mendeley",
       "imageUrl": "/assets/resources/mendeley.svg"
     },
     {
+      "sourceName": "MicrobiomeDB",
+      "name": "MicrobiomeDB",
+      "imageUrl": "/assets/resources/microbiome.png"
+    },
+    {
       "sourceName": "NCBI GEO",
       "name": "NCBI Gene Expression Omnibus",
       "imageUrl": "/assets/resources/geo.gif"
+    },
+    {
+      "sourceName": "NCBI PMC",
+      "name": "NCBI PMC",
+      "imageUrl": "/assets/resources/pmc.png"
     },
     {
       "sourceName": "NCBI SRA",
@@ -91,9 +106,14 @@
       "imageUrl": "/assets/resources/reframedb.png"
     },
     {
-      "sourceName": "VEuPathDB",
-      "name": "VEuPathDB",
-      "imageUrl": "/assets/resources/VEuPathDB.png"
+      "sourceName": "WorkflowHub",
+      "name": "WorkflowHub",
+      "imageUrl": "/assets/resources/workflowhub.svg"
+    },
+    {
+      "sourceName": "VDJServer",
+      "name": "VDJServer",
+      "imageUrl": "/assets/resources/vdjserver.png"
     },
     {
       "sourceName": "Vivli",
