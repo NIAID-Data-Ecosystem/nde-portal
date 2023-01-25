@@ -52,16 +52,6 @@
               ]
             }
           ]
-        },
-        {
-          "label": "Analysis Workspace",
-          "routes": [
-            {
-              "label": "Go to workspace",
-              "href": "https://accounts.niaiddata.org/auth/login",
-              "isExternal": true
-            }
-          ]
         }
       ]
     },
