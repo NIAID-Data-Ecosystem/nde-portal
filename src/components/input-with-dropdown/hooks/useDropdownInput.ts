@@ -102,7 +102,13 @@ export const useDropdownInput = ({
       id: `li-${index}`,
       bg: isSelected ? `${colorScheme}.100` : `${colorScheme}.50`,
       color: isSelected ? 'text.heading' : 'text.body',
-      onClick: callAllHandlers(onClick, () => handleListItemClick(value)),
+      onClick: callAllHandlers(
+        (e: React.MouseEvent<HTMLLIElement, MouseEvent>) => {
+          e.stopPropagation();
+          onClick && onClick(e);
+        },
+        () => handleListItemClick(value),
+      ),
       onMouseOver: callAllHandlers(e => {
         e.stopPropagation();
         index !== cursor && setCursor(index);

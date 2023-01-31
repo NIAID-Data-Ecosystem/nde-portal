@@ -2,11 +2,11 @@ import React, { useEffect, useState } from 'react';
 import {
   Box,
   Button,
+  ButtonProps,
   Collapse,
   Flex,
   Heading,
   Text,
-  TextProps,
   useDisclosure,
 } from 'nde-design-system';
 import { useRouter } from 'next/router';
@@ -39,7 +39,7 @@ const sample_queries = SampleQueries as {
 }[];
 
 interface AdvancedSearchProps {
-  buttonProps?: TextProps;
+  buttonProps?: ButtonProps;
   modalProps?: ModalProps;
 }
 
