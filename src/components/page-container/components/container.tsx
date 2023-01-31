@@ -23,8 +23,6 @@ interface PageContainerProps extends FlexProps {
   disableSearchBar?: boolean;
 }
 
-export const NAV_HEIGHT = { base: '105px', sm: '77px', md: '89px' };
-
 export const PageContainer: React.FC<PageContainerProps> = ({
   children,
   hasNavigation,

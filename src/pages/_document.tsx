@@ -8,7 +8,8 @@ import NextDocument, {
 import React from 'react';
 import { assetPrefix } from 'next.config';
 import { Box } from 'nde-design-system';
-import { NAV_HEIGHT } from 'src/components/page-container';
+
+export const NAV_HEIGHT = { base: '105px', sm: '77px', md: '89px' };
 
 class Document extends NextDocument {
   static getInitialProps(ctx: DocumentContext) {
