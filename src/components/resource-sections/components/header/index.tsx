@@ -64,10 +64,10 @@ const Header: React.FC<HeaderProps> = ({
           <Box m={[4, 6]}>
             {/* Title of resource */}
             <Heading as='h1' size='lg' fontFamily='body' wordBreak='break-word'>
-              <DisplayHTMLString>{name}</DisplayHTMLString>
+              <DisplayHTMLString>{name || alternateName}</DisplayHTMLString>
             </Heading>
             {/* Alternate name of resource if it exists */}
-            {alternateName && (
+            {!!name && alternateName && (
               <Heading
                 as='h2'
                 size='sm'

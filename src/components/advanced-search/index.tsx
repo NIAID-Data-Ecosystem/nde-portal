@@ -61,6 +61,15 @@ export const SEARCH_OPTIONS: SearchOption[] = [
     description: '',
     options: [
       {
+        name: 'Exact Match',
+        value: 'exact',
+        description: 'Contains the exact term or phrase.',
+        type: 'text',
+        example: `west siberian virus · contains the exact phrase 'west siberian virus'`,
+        transformValue: (value: string) => `"${value}"`,
+        isDefault: true,
+      },
+      {
         name: 'Contains',
         value: 'contains',
         type: 'text',
@@ -74,15 +83,6 @@ export const SEARCH_OPTIONS: SearchOption[] = [
         },
         additionalInfo:
           'Querying for records containing phrase fragments can be slow. "Exact" matching yields quicker results.',
-      },
-      {
-        name: 'Exact Match',
-        value: 'exact',
-        description: 'Contains the exact term or phrase.',
-        type: 'text',
-        example: `west siberian virus · contains the exact phrase 'west siberian virus'`,
-        transformValue: (value: string) => `"${value}"`,
-        isDefault: true,
       },
       {
         name: 'Starts with',
