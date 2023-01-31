@@ -1,6 +1,6 @@
 import { Radio } from '@chakra-ui/react';
 import { Flex, useDisclosure } from 'nde-design-system';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   OptionItem,
   OptionsList,
@@ -27,6 +27,10 @@ export const RadioSelect = ({
   const [selected, setSelected] = useState(selectedOption[0]);
   const values = options.map(o => o.value);
 
+  useEffect(() => {
+    setSelected(selectedOption[0]);
+  }, [selectedOption]);
+
   return (
     <Flex>
       <Radio
@@ -44,7 +48,7 @@ export const RadioSelect = ({
         colorScheme='gray'
         _hover={{ bg: 'gray.100' }}
         _focus={{ boxShadow: 'none' }}
-        name={selected.name}
+        name={selected?.name}
         variant='outline'
         size='sm'
         justifyContent='space-between'
