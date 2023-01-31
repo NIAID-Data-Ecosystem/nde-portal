@@ -1420,7 +1420,7 @@
 
 "@commitlint/lint@^17.4.2":
   version "17.4.2"
-  resolved "https://registry.npmjs.org/@commitlint/lint/-/lint-17.4.2.tgz"
+  resolved "https://registry.yarnpkg.com/@commitlint/lint/-/lint-17.4.2.tgz#1277cb4d5395e9d6c39cbc351984bac9dcc6b7cd"
   integrity sha512-HcymabrdBhsDMNzIv146+ZPNBPBK5gMNsVH+el2lCagnYgCi/4ixrHooeVyS64Fgce2K26+MC7OQ4vVH8wQWVw==
   dependencies:
     "@commitlint/is-ignored" "^17.4.2"
@@ -1430,7 +1430,7 @@
 
 "@commitlint/load@^17.4.2":
   version "17.4.2"
-  resolved "https://registry.npmjs.org/@commitlint/load/-/load-17.4.2.tgz"
+  resolved "https://registry.yarnpkg.com/@commitlint/load/-/load-17.4.2.tgz#551875c3e1dce6dc0375dc9c8ad551de8ba35de4"
   integrity sha512-Si++F85rJ9t4hw6JcOw1i2h0fdpdFQt0YKwjuK4bk9KhFjyFkRxvR3SB2dPaMs+EwWlDrDBGL+ygip1QD6gmPw==
   dependencies:
     "@commitlint/config-validator" "^17.4.0"
@@ -1464,7 +1464,7 @@
 
 "@commitlint/read@^17.4.2":
   version "17.4.2"
-  resolved "https://registry.npmjs.org/@commitlint/read/-/read-17.4.2.tgz"
+  resolved "https://registry.yarnpkg.com/@commitlint/read/-/read-17.4.2.tgz#4880a05271fb44cefa54d365a17d5753496a6de0"
   integrity sha512-hasYOdbhEg+W4hi0InmXHxtD/1favB4WdwyFxs1eOy/DvMw6+2IZBmATgGOlqhahsypk4kChhxjAFJAZ2F+JBg==
   dependencies:
     "@commitlint/top-level" "^17.4.0"
