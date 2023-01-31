@@ -33,7 +33,7 @@ export const FilterTags: React.FC<FilterTagsProps> = ({
         removeAllFilters={() => removeAllFilters()}
         removeSelectedFilter={(
           name: keyof SelectedFilterType,
-          value: SelectedFilterTypeValue,
+          value: SelectedFilterTypeValue | SelectedFilterTypeValue[],
         ) => {
           let updatedFilter = {
             [name]: filters[name].filter(v => v !== value),

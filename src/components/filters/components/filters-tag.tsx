@@ -21,7 +21,7 @@ interface FilterTags extends FlexProps {
   removeAllFilters: () => void;
   removeSelectedFilter: (
     name: keyof SelectedFilterType,
-    value: SelectedFilterTypeValue,
+    value: SelectedFilterTypeValue | SelectedFilterTypeValue[],
   ) => void;
 }
 
@@ -55,20 +55,34 @@ export const FilterTags: React.FC<FilterTags> = ({
         const name = filtersConfig[key]?.name || `${key}`;
 
         if (key === 'date') {
-          return <></>;
-          // return (
-          //   <Tag
-          //     key={`${values.join('-')}`}
-          //     colorScheme='secondary'
-          //     size='lg'
-          //     m={1}
-          //   >
-          //     <TagLabel whiteSpace='break-spaces'>
-          //       {name}: {values.join(' to ')}
-          //     </TagLabel>
-          //     <TagCloseButton onClick={() => removeSelectedFilter(key, '')} />
-          //   </Tag>
-          // );
+          const str = values.reduce((r: string, value) => {
+            if (typeof value === 'string') {
+              const year = value.split('-')[0];
+              // if year is same as previous year, then condense it to just the year instead of "date to date" format
+              if (r && year === r?.split('-')[0]) {
+                r = year;
+                return r;
+              }
+              return r + (r.length ? ` to ${value}` : value);
+            }
+
+            return r;
+          }, '') as string;
+
+          if (!str) {
+            return <></>;
+          }
+
+          return (
+            <Tag key={`${str}`} colorScheme='secondary' size='lg' m={1}>
+              <TagLabel whiteSpace='break-spaces'>
+                {name}: {str}
+              </TagLabel>
+              <TagCloseButton
+                onClick={() => removeSelectedFilter(key, values)}
+              />
+            </Tag>
+          );
         }
 
         return values.map(v => {
