@@ -1,76 +1,182 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
+import { FaSearch } from 'react-icons/fa';
+import { uniq } from 'lodash';
 import { useRouter } from 'next/router';
-import { PageContent } from '../page-container';
-import { SearchWithPredictiveText } from '../search-with-predictive-text';
-import { Flex, SearchInput } from 'nde-design-system';
-import { AdvancedSearch } from '../advanced-search';
+import { Button, Heading, Icon, ListItem } from 'nde-design-system';
+import { useLocalStorage } from 'usehooks-ts';
+import {
+  DropdownContent,
+  DropdownInput,
+  DropdownList,
+  Highlight,
+  InputWithDropdown,
+  useDropdownContext,
+} from '../input-with-dropdown';
+
+interface RecentItemProps {
+  colorScheme: string;
+  index: number;
+  searchTerm: string;
+  value: string;
+  onClick?: React.MouseEventHandler<HTMLLIElement> | undefined;
+}
+const RecentItem = ({
+  colorScheme,
+  index,
+  searchTerm,
+  value,
+  onClick,
+}: RecentItemProps) => {
+  const { cursor, getListItemProps } = useDropdownContext();
+
+  const isSelected = useMemo(() => cursor === index, [index, cursor]);
+
+  return (
+    <ListItem
+      display='flex'
+      alignItems='center'
+      borderRadius='base'
+      cursor='pointer'
+      px={2}
+      py={1}
+      m={2}
+      my={1}
+      {...getListItemProps({
+        index,
+        value,
+        isSelected,
+        onClick,
+      })}
+    >
+      <Icon as={FaSearch} mr={2} color='primary.500'></Icon>
+      <Heading
+        as='h4'
+        size='sm'
+        lineHeight='short'
+        color='text.body'
+        wordBreak='break-word'
+        fontWeight='normal'
+        textAlign='left'
+        sx={{
+          '* > .search-term': {
+            fontWeight: 'bold',
+            textDecoration: 'underline',
+            color: `${colorScheme}.400`,
+            bg: 'transparent',
+          },
+        }}
+      >
+        <Highlight tags={searchTerm.split(' ')}>{value}</Highlight>
+      </Heading>
+    </ListItem>
+  );
+};
+
+interface SearchBarProps {
+  value?: string;
+  ariaLabel: string;
+  placeholder: string;
+  colorScheme?: string;
+  size?: string;
+}
 
 export const SearchBar = ({
-  value,
   ariaLabel,
-  ...props
-}: {
-  ariaLabel?: string;
-  value?: string;
-}) => {
+  placeholder,
+  colorScheme = 'primary',
+  size = 'md',
+}: SearchBarProps) => {
   const router = useRouter();
+  console.log(router);
+  const [recentSearches, setRecentSearches] = useLocalStorage<string[]>(
+    'recent-searches',
+    [],
+  );
 
-  // Search term entered in search bar
-  const [searchTerm, setSearchTerm] = useState<string>(value || '');
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>): void =>
-    setSearchTerm(e.target.value);
+  // Search term entered in search bar.
+  const [searchTerm, setSearchTerm] = useState<string>('');
 
-  // update value when changed
-  useEffect(() => setSearchTerm(value || ''), [value]);
+  // Update value when changed.
+  useEffect(() => {
+    const { q } = router.query;
+
+    setSearchTerm(prev => {
+      if (q && router.query.advancedSearch !== 'true') {
+        return q as string;
+      }
+      return prev;
+    });
+  }, [router]);
+
+  const handleSubmit = (term: string) => {
+    setRecentSearches(prev => {
+      const newRecentSearches = uniq(
+        [...prev, term].filter(recentSearch => recentSearch.trim().length > 0),
+      );
+
+      if (newRecentSearches.length > 5) {
+        newRecentSearches.shift();
+      }
+
+      return newRecentSearches;
+    });
+
+    router.push({
+      pathname: `/search`,
+      query: { q: `${term.trim()}` },
+    });
+  };
+
   return (
-    <PageContent
-      bg='#fff'
-      minH='unset'
-      borderBottom='1px solid'
-      borderColor='gray.100'
-      flexDirection='column'
+    <InputWithDropdown
+      inputValue={searchTerm}
+      cursorMax={recentSearches.length}
+      colorScheme={colorScheme}
     >
-      <Flex w='100%' justifyContent='flex-end'>
-        <AdvancedSearch
-          buttonProps={{ color: 'gray.600', _hover: { color: 'gray.900' } }}
-        />
-      </Flex>
-      <SearchInput
-        ariaLabel='Search for datasets or tools'
-        placeholder='Search for datasets or tools'
-        size='md'
-        colorScheme='primary'
-        w='100%'
-        value={searchTerm}
-        handleChange={handleChange}
-        handleSubmit={e => {
-          e.preventDefault();
-          router.push({
-            pathname: `/search`,
-            query: { q: `${searchTerm.trim()}` },
-          });
+      <DropdownInput
+        id='search-bar'
+        ariaLabel={ariaLabel}
+        placeholder={placeholder}
+        size={size}
+        type='text'
+        onChange={setSearchTerm}
+        onSubmit={() => handleSubmit(searchTerm)}
+        renderSubmitButton={() => {
+          return (
+            <Button
+              display='flex'
+              colorScheme={colorScheme}
+              aria-label={ariaLabel}
+              size={size}
+              onClick={() => handleSubmit(searchTerm)}
+            >
+              Search
+            </Button>
+          );
         }}
-        {...props}
-      />
-
-      {/* <SearchWithPredictiveText
-        ariaLabel='Search for datasets or tools'
-        placeholder='Search for datasets or tools'
-        size='md'
-        handleSubmit={(stringValue, __, data) => {
-          if (data && data.id) {
-            router.push({
-              pathname: `/resources`,
-              query: { id: `${data.id}` },
-            });
-          } else {
-            router.push({
-              pathname: `/search`,
-              query: { q: `${stringValue.trim()}` },
-            });
+        getInputValue={(idx: number): string => {
+          if (recentSearches && recentSearches[idx]) {
+            return recentSearches[idx] || '';
           }
+          return '';
         }}
-      /> */}
-    </PageContent>
+      />
+      <DropdownContent>
+        <DropdownList my={2}>
+          {recentSearches.map((recentSearch, i) => {
+            return (
+              <RecentItem
+                key={i}
+                index={i}
+                colorScheme={colorScheme}
+                searchTerm={searchTerm}
+                value={recentSearch}
+                onClick={() => handleSubmit(recentSearch)}
+              />
+            );
+          })}
+        </DropdownList>
+      </DropdownContent>
+    </InputWithDropdown>
   );
 };

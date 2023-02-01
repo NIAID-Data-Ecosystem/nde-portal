@@ -15,6 +15,8 @@ import Head from 'next/head';
 import Notice from './notice';
 import { env } from 'next.config';
 import { SearchBar } from 'src/components/search-bar';
+import { PageContent } from './content';
+import { AdvancedSearch } from 'src/components/advanced-search';
 
 interface PageContainerProps extends FlexProps {
   hasNavigation?: boolean;
@@ -22,8 +24,6 @@ interface PageContainerProps extends FlexProps {
   metaDescription: string;
   disableSearchBar?: boolean;
 }
-
-export const NAV_HEIGHT = { base: '105px', sm: '77px', md: '89px' };
 
 export const PageContainer: React.FC<PageContainerProps> = ({
   children,
@@ -93,7 +93,25 @@ export const PageContainer: React.FC<PageContainerProps> = ({
         {/*Page content has margin-top to compensate for fixed nav bar. */}
         <Box id='pagebody' position='relative'>
           <Notice />
-          {!disableSearchBar && <SearchBar />}
+          {!disableSearchBar && (
+            <PageContent
+              bg='#fff'
+              minH='unset'
+              borderBottom='1px solid'
+              borderColor='gray.100'
+              flexDirection='column'
+              py={4}
+            >
+              <Flex w='100%' justifyContent='flex-end' mb={2}>
+                <AdvancedSearch />
+              </Flex>
+              <SearchBar
+                ariaLabel='Search for datasets or tools'
+                placeholder='Search for datasets or tools'
+                size='md'
+              />
+            </PageContent>
+          )}
           {children}
           <Footer
             navigation={{

@@ -70,7 +70,16 @@ const Search: NextPage = () => {
     ([_, filters]) => filters.length > 0,
   );
 
-  const tags = applied_filters.filter(t => t[0] !== 'date');
+  // Filter out date tags that have a single value such as "exists" and not "exists"
+  const tags = applied_filters.filter(
+    tag =>
+      !(
+        tag[0] === 'date' &&
+        tag[1].length === 1 &&
+        (Object.keys(tag[1][0]).includes('_exists_') ||
+          Object.keys(tag[1][0]).includes('-_exists_'))
+      ),
+  );
 
   // Default filters list.
   const defaultFilters = useMemo(
@@ -136,17 +145,18 @@ const Search: NextPage = () => {
                 removeAllFilters={removeAllFilters}
                 removeSelectedFilter={(
                   name: keyof SelectedFilterType,
-                  value: SelectedFilterTypeValue,
+                  value: SelectedFilterTypeValue | SelectedFilterTypeValue[],
                 ) => {
                   let updatedFilter = {
                     [name]: selectedFilters[name].filter(v => {
-                      if (typeof value === 'object' || v === 'object') {
+                      if (Array.isArray(value)) {
+                        return !value.includes(v);
+                      } else if (typeof value === 'object' || v === 'object') {
                         return JSON.stringify(v) !== JSON.stringify(value);
                       }
                       return v !== value;
                     }),
                   };
-
                   let filters = queryFilterObject2String({
                     ...selectedFilters,
                     ...updatedFilter,

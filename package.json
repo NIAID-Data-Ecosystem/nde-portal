@@ -8,7 +8,12 @@
     "start": "next start",
     "lint": "next lint",
     "schema-definitions": "node src/utils/schema-definitions/index.js",
-    "schema-fields": "node src/utils/schema-definitions/fields.js"
+    "schema-fields": "node src/utils/schema-definitions/fields.js",
+    "prepare": "husky install",
+    "release": "standard-version",
+    "release:minor": "standard-version --release-as minor",
+    "release:patch": "standard-version --release-as patch",
+    "release:major": "standard-version --release-as major"
   },
   "dependencies": {
     "@chakra-ui/react": "^1.8.8",
@@ -45,6 +50,7 @@
     "moment": "^2.29.4",
     "nde-design-system": "^0.2.85",
     "next": "^12.2.0",
+    "next-mdx-remote": "^4.3.0",
     "react": "17.0.2",
     "react-chartjs-2": "^4.2.0",
     "react-countup": "^6.2.0",
@@ -61,6 +67,8 @@
     "usehooks-ts": "^2.4.1"
   },
   "devDependencies": {
+    "@commitlint/cli": "^17.4.2",
+    "@commitlint/config-conventional": "^17.4.2",
     "@emotion/babel-plugin": "^11.3.0",
     "@types/chartjs": "^0.0.31",
     "@types/mdx": "^2.0.3",
@@ -72,6 +80,11 @@
     "eslint": "7",
     "eslint-config-next": "12.0.3",
     "eslint-config-prettier": "^8.5.0",
+    "husky": "^8.0.3",
+    "lint-staged": "^13.1.0",
+    "prettier": "^2.8.3",
+    "standard-version": "^9.5.0",
     "typescript": "^4.6.3"
-  }
+  },
+  "version": "0.0.1"
 }

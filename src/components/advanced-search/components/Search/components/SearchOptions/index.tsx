@@ -15,6 +15,7 @@ export const SearchOptions: React.FC = () => {
           if (option.options && option.options.length) {
             return (
               <RadioSelect
+                key='select'
                 searchOption={searchOption}
                 updateSearchOption={setSearchOption}
                 options={option.options}

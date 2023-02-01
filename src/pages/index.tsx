@@ -5,7 +5,6 @@ import {
   Flex,
   Heading,
   Image,
-  SearchInput,
   SimpleGrid,
   Text,
   useBreakpointValue,
@@ -35,8 +34,7 @@ import {
 import { assetPrefix } from 'next.config';
 import NextLink from 'next/link';
 import { AdvancedSearch } from 'src/components/advanced-search';
-import { SearchWithPredictiveText } from 'src/components/search-with-predictive-text';
-import { env } from 'next.config';
+import { SearchBar } from 'src/components/search-bar';
 
 const sample_queries = [
   {
@@ -195,26 +193,22 @@ const Home: NextPage = () => {
           body={[homepageCopy.sections[0].body]}
         >
           <>
-            <Flex w='100%' justifyContent='flex-end'>
-              <AdvancedSearch />
+            <Flex w='100%' justifyContent='flex-end' mb={2}>
+              <AdvancedSearch
+                buttonProps={{
+                  variant: 'outline',
+                  bg: 'whiteAlpha.500',
+                  color: 'white',
+                  _hover: { bg: 'whiteAlpha.800', color: 'primary.600' },
+                }}
+              />
             </Flex>
-
-            <SearchInput
+            <SearchBar
               ariaLabel='Search for datasets or tools'
               placeholder='Search for datasets or tools'
               size='md'
-              colorScheme='primary'
-              w='100%'
-              value={searchTerm}
-              handleChange={handleChange}
-              handleSubmit={e => {
-                e.preventDefault();
-                router.push({
-                  pathname: `/search`,
-                  query: { q: `${searchTerm.trim()}` },
-                });
-              }}
             />
+
             {/* [NOTE]: Test with autocomplete in the future */}
             {/* <SearchWithPredictiveText
               ariaLabel='Search for datasets or tools'

@@ -17,8 +17,8 @@ import {
   Icon,
 } from 'nde-design-system';
 import { FaFilter } from 'react-icons/fa';
-import { NAV_HEIGHT } from 'src/components/page-container';
 import { FiltersConfigProps, SelectedFilterType } from '../types';
+import { NAV_HEIGHT } from 'src/pages/_document';
 
 /*
 [COMPONENT INFO]:

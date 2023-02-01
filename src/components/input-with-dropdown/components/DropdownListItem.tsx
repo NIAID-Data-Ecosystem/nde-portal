@@ -17,7 +17,7 @@ interface DropdownListItemProps
 interface HighlightProps {
   tags: string[];
 }
-const Highlight: React.FC<HighlightProps> = ({
+export const Highlight: React.FC<HighlightProps> = ({
   children: text = '',
   tags = [],
 }) => {
