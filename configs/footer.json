@@ -48,6 +48,16 @@
                   "subLabel": "Guides and documentation to help with NIAID Data Ecosystem.",
                   "href": "https://niaid-data.readme.io/",
                   "isExternal": true
+                },
+                {
+                  "label": "FAQ",
+                  "subLabel": "Frequently asked questions",
+                  "href": "/faq"
+                },
+                {
+                  "label": "Changelog",
+                  "subLabel": "Log of updates to the NIAID Data Ecosystem",
+                  "href": "/changelog"
                 }
               ]
             }

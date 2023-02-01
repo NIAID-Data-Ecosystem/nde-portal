@@ -18,6 +18,8 @@ jobs:
       - run: yarn install
       - name: build website
         run: yarn run build
+        env:
+          README_API_KEY: ${{ secrets.README_API_KEY }}
       - name: sync s3
         uses: jakejarvis/s3-sync-action@master
         with:
@@ -27,6 +29,5 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ${{ secrets.AWS_REGION }}
-          README_API_KEY: ${{ secrets.README_API_KEY }}
           SOURCE_DIR: './out'
           DEST_DIR: 'production'

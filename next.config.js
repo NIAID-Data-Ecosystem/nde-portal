@@ -25,11 +25,23 @@ module.exports = withMDX({
     if (!isServer) {
       config.resolve.fallback.fs = false;
     }
-    return config;
+    return {
+      ...config,
+
+      module: Object.assign({}, config.module, {
+        rules: config.module.rules.concat([
+          {
+            test: /\.md$/,
+            loader: 'raw-loader',
+          },
+        ]),
+      }),
+    };
   },
   env: {
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
     NEXT_PUBLIC_GOOGLE_ANALYTICS: process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS,
     BASE_URL: isProd ? process.env.BASE_URL : '',
+    README_API_KEY: process.env.README_API_KEY,
   },
 });

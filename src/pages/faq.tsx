@@ -1,7 +1,7 @@
 import { Flex, Heading } from 'nde-design-system';
 import type { NextPage } from 'next';
-import { MDXComponents } from 'src/mdx';
 import { PageContainer, PageContent } from 'src/components/page-container';
+import { MDXComponents } from 'src/mdx';
 import { serialize } from 'next-mdx-remote/serialize';
 import { MDXRemote, MDXRemoteSerializeResult } from 'next-mdx-remote';
 
@@ -12,20 +12,19 @@ interface FrequentlyAskedProps {
 
 const FrequentlyAsked: NextPage<FrequentlyAskedProps> = props => {
   const { mdxSource, title } = props;
-  console.log('props', props);
+
   return (
     <PageContainer
       hasNavigation
       title='FAQ'
       metaDescription='Frequenty asked questions.'
       px={0}
-      bg='white'
       py={0}
       disableSearchBar
     >
       <PageContent justifyContent='center'>
         <Flex maxW='1000px' flexDirection='column' mb={32}>
-          <Heading as='h1' size='xl' mb={4}>
+          <Heading as='h1' size='lg' mb={6}>
             {title}
           </Heading>
 
@@ -44,17 +43,21 @@ export async function getStaticProps() {
         authorization: `Basic ${process.env.README_API_KEY}`,
       },
     })
-      .then(response => response.json())
-      .then(response => response)
+      .then(response => {
+        return response.json();
+      })
+      .then(response => {
+        return response;
+      })
       .catch(err => console.error(err));
 
   const res = await fetchData();
-  const formatttedBody = res.body
-    .replaceAll('#', '#### ')
-    // need to do this because next-mdx-remote doesn't support <details> tag
-    .replaceAll('<details>', '<Details>')
-    .replaceAll('</details>', '</Details>');
-  const mdxSource = await serialize(formatttedBody);
+  const body = await res.body
+    .replace(/#/g, '#### ')
+    .replace(/<details>/g, '<Details>')
+    .replace(/<\/details>/g, '</Details>');
+
+  const mdxSource = await serialize(body);
   return {
     props: { title: res.title, mdxSource },
   };

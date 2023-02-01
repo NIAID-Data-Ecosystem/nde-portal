@@ -12,7 +12,6 @@ const About: NextPage = () => {
       title='About'
       metaDescription='About page.'
       px={0}
-      bg='white'
       py={0}
       disableSearchBar
     >
@@ -20,9 +19,9 @@ const About: NextPage = () => {
         w='100%'
         flexDirection='column'
         alignItems='center'
-        bg='white'
+        bg='#fff'
       >
-        <Box maxW='1000px' mb={32}>
+        <Box w='100%' maxW='1000px' mb={32}>
           <MDXProvider components={MDXComponents}>
             <AboutContent />
           </MDXProvider>
