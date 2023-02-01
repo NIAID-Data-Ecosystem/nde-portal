@@ -44,17 +44,24 @@ export async function getStaticProps() {
         authorization: `Basic ${process.env.README_API_KEY}`,
       },
     })
-      .then(response => response.json())
-      .then(response => response)
+      .then(response => {
+        return response.json();
+      })
+      .then(response => {
+        return {
+          ...response,
+          body: response.body
+            .replaceAll('#', '#### ')
+            // need to do this because next-mdx-remote doesn't support <details> tag
+            .replaceAll('<details>', '<Details>')
+            .replaceAll('</details>', '</Details>'),
+        };
+      })
       .catch(err => console.error(err));
 
   const res = await fetchData();
-  const formatttedBody = res.body
-    .replaceAll('#', '#### ')
-    // need to do this because next-mdx-remote doesn't support <details> tag
-    .replaceAll('<details>', '<Details>')
-    .replaceAll('</details>', '</Details>');
-  const mdxSource = await serialize(formatttedBody);
+
+  const mdxSource = await serialize(res.body);
   return {
     props: { title: res.title, mdxSource },
   };

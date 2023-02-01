@@ -87,7 +87,6 @@ export const SearchBar = ({
   size = 'md',
 }: SearchBarProps) => {
   const router = useRouter();
-  console.log(router);
   const [recentSearches, setRecentSearches] = useLocalStorage<string[]>(
     'recent-searches',
     [],
