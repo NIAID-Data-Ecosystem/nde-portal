@@ -14,7 +14,7 @@ import footerConfig from 'configs/footer.json';
 import Head from 'next/head';
 import Notice from './notice';
 import { env } from 'next.config';
-import { SearchBar } from 'src/components/search-bar';
+import { SearchBarWithDropdown } from 'src/components/search-bar';
 import { PageContent } from './content';
 import { AdvancedSearch } from 'src/components/advanced-search';
 
@@ -105,7 +105,7 @@ export const PageContainer: React.FC<PageContainerProps> = ({
               <Flex w='100%' justifyContent='flex-end' mb={2}>
                 <AdvancedSearch />
               </Flex>
-              <SearchBar
+              <SearchBarWithDropdown
                 ariaLabel='Search for datasets or tools'
                 placeholder='Search for datasets or tools'
                 size='md'

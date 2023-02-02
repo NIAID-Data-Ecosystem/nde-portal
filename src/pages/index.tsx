@@ -34,7 +34,7 @@ import {
 import { assetPrefix } from 'next.config';
 import NextLink from 'next/link';
 import { AdvancedSearch } from 'src/components/advanced-search';
-import { SearchBar } from 'src/components/search-bar';
+import { SearchBarWithDropdown } from 'src/components/search-bar';
 
 const sample_queries = [
   {
@@ -203,7 +203,7 @@ const Home: NextPage = () => {
                 }}
               />
             </Flex>
-            <SearchBar
+            <SearchBarWithDropdown
               ariaLabel='Search for datasets or tools'
               placeholder='Search for datasets or tools'
               size='md'

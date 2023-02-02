@@ -17,6 +17,8 @@ jobs:
       - run: env
       - name: build website
         run: yarn run build:staging
+        env:
+          README_API_KEY: ${{ secrets.README_API_KEY }}
       - name: sync s3
         uses: jakejarvis/s3-sync-action@master
         with:
