@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { FaCaretDown, FaRegListAlt, FaSearch } from 'react-icons/fa';
+import { FaHistory, FaSearch } from 'react-icons/fa';
 import { uniq } from 'lodash';
 import { useRouter } from 'next/router';
 import {
@@ -114,13 +114,7 @@ const SearchInput = ({ ...inputProps }: DropdownInputProps) => {
                   aria-label='Toggle search history.'
                   icon={
                     <Flex px={2}>
-                      <Icon as={FaRegListAlt} />
-                      <Icon
-                        as={FaCaretDown}
-                        ml={1}
-                        transition='transform 250ms ease'
-                        transform={!isOpen ? `rotate(-90deg)` : `rotate(0deg)`}
-                      />
+                      <Icon as={FaHistory} />
                     </Flex>
                   }
                   onClick={() => setIsOpen(!isOpen)}
@@ -204,6 +198,7 @@ const SearchBar = ({
           return '';
         }}
       />
+
       <DropdownContent bg='#fff'>
         <DropdownList>
           <ListItem
@@ -217,10 +212,12 @@ const SearchBar = ({
               as='h3'
               size='xs'
               fontStyle='italic'
-              color='primary.600'
+              color={searchHistory.length ? 'primary.600' : 'gray.700'}
               fontWeight='medium'
             >
-              Previous Searches
+              {searchHistory.length
+                ? 'Previous searches'
+                : 'No previous searches.'}
             </Heading>
             <IconButton
               aria-label='Close search history.'
