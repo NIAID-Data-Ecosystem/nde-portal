@@ -1,24 +1,35 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { FaSearch } from 'react-icons/fa';
+import { FaCaretDown, FaRegListAlt, FaSearch } from 'react-icons/fa';
 import { uniq } from 'lodash';
 import { useRouter } from 'next/router';
-import { Button, Heading, Icon, ListItem } from 'nde-design-system';
+import {
+  Button,
+  Divider,
+  Flex,
+  Heading,
+  Icon,
+  IconButton,
+  ListItem,
+  Tooltip,
+} from 'nde-design-system';
 import { useLocalStorage } from 'usehooks-ts';
 import {
   DropdownContent,
   DropdownInput,
+  DropdownInputProps,
   DropdownList,
   Highlight,
   InputWithDropdown,
   useDropdownContext,
 } from '../input-with-dropdown';
+import { IoMdClose } from 'react-icons/io';
 
 interface RecentItemProps {
   colorScheme: string;
   index: number;
   searchTerm: string;
   value: string;
-  onClick?: React.MouseEventHandler<HTMLLIElement> | undefined;
+  onClick?: (arg: string) => void | undefined;
 }
 const RecentItem = ({
   colorScheme,
@@ -27,7 +38,7 @@ const RecentItem = ({
   value,
   onClick,
 }: RecentItemProps) => {
-  const { cursor, getListItemProps } = useDropdownContext();
+  const { cursor, getListItemProps, setInputValue } = useDropdownContext();
 
   const isSelected = useMemo(() => cursor === index, [index, cursor]);
 
@@ -45,7 +56,10 @@ const RecentItem = ({
         index,
         value,
         isSelected,
-        onClick,
+        onClick: () => {
+          setInputValue(value);
+          onClick && onClick(value);
+        },
       })}
     >
       <Icon as={FaSearch} mr={2} color='primary.500'></Icon>
@@ -72,25 +86,74 @@ const RecentItem = ({
   );
 };
 
-interface SearchBarProps {
+const SearchInput = ({ ...inputProps }: DropdownInputProps) => {
+  const { isOpen, setIsOpen } = useDropdownContext();
+
+  return (
+    <Flex w='100%' alignItems='center'>
+      <DropdownInput
+        {...inputProps}
+        renderSubmitButton={() => {
+          return (
+            <>
+              <Button
+                colorScheme={inputProps.colorScheme}
+                aria-label={inputProps.ariaLabel}
+                size={inputProps.size}
+                type='submit'
+                // onClick={inputProps.onSubmit}
+              >
+                Search
+              </Button>
+              <Divider orientation='vertical' borderColor='gray.200' m={1} />
+
+              <Tooltip label='Toggle search history.'>
+                <IconButton
+                  variant='ghost'
+                  size={inputProps.size}
+                  aria-label='Toggle search history.'
+                  icon={
+                    <Flex px={2}>
+                      <Icon as={FaRegListAlt} />
+                      <Icon
+                        as={FaCaretDown}
+                        ml={1}
+                        transition='transform 250ms ease'
+                        transform={!isOpen ? `rotate(-90deg)` : `rotate(0deg)`}
+                      />
+                    </Flex>
+                  }
+                  onClick={() => setIsOpen(!isOpen)}
+                />
+              </Tooltip>
+            </>
+          );
+        }}
+      />
+    </Flex>
+  );
+};
+
+interface SearchBarProps extends SearchBarWithDropdownProps {
   value?: string;
   ariaLabel: string;
   placeholder: string;
   colorScheme?: string;
   size?: string;
+  searchHistory: string[];
+  setSearchHistory: React.Dispatch<React.SetStateAction<string[]>>;
 }
 
-export const SearchBar = ({
+const SearchBar = ({
   ariaLabel,
   placeholder,
   colorScheme = 'primary',
   size = 'md',
+  searchHistory,
+  setSearchHistory,
 }: SearchBarProps) => {
   const router = useRouter();
-  const [recentSearches, setRecentSearches] = useLocalStorage<string[]>(
-    'recent-searches',
-    [],
-  );
+  const { setIsOpen } = useDropdownContext();
 
   // Search term entered in search bar.
   const [searchTerm, setSearchTerm] = useState<string>('');
@@ -98,7 +161,6 @@ export const SearchBar = ({
   // Update value when changed.
   useEffect(() => {
     const { q } = router.query;
-
     setSearchTerm(prev => {
       if (q && router.query.advancedSearch !== 'true') {
         return q as string;
@@ -108,18 +170,17 @@ export const SearchBar = ({
   }, [router]);
 
   const handleSubmit = (term: string) => {
-    setRecentSearches(prev => {
-      const newRecentSearches = uniq(
+    setSearchHistory(prev => {
+      const newSearchHistory = uniq(
         [...prev, term].filter(recentSearch => recentSearch.trim().length > 0),
       );
 
-      if (newRecentSearches.length > 5) {
-        newRecentSearches.shift();
+      if (newSearchHistory.length > 5) {
+        newSearchHistory.shift();
       }
 
-      return newRecentSearches;
+      return newSearchHistory;
     });
-
     router.push({
       pathname: `/search`,
       query: { q: `${term.trim()}` },
@@ -127,42 +188,49 @@ export const SearchBar = ({
   };
 
   return (
-    <InputWithDropdown
-      inputValue={searchTerm}
-      cursorMax={recentSearches.length}
-      colorScheme={colorScheme}
-    >
-      <DropdownInput
+    <>
+      <SearchInput
         id='search-bar'
         ariaLabel={ariaLabel}
         placeholder={placeholder}
         size={size}
         type='text'
         onChange={setSearchTerm}
-        onSubmit={() => handleSubmit(searchTerm)}
-        renderSubmitButton={() => {
-          return (
-            <Button
-              display='flex'
-              colorScheme={colorScheme}
-              aria-label={ariaLabel}
-              size={size}
-              onClick={() => handleSubmit(searchTerm)}
-            >
-              Search
-            </Button>
-          );
-        }}
+        onSubmit={handleSubmit}
         getInputValue={(idx: number): string => {
-          if (recentSearches && recentSearches[idx]) {
-            return recentSearches[idx] || '';
+          if (searchHistory && searchHistory[idx]) {
+            return searchHistory[idx] || '';
           }
           return '';
         }}
       />
-      <DropdownContent>
-        <DropdownList my={2}>
-          {recentSearches.map((recentSearch, i) => {
+      <DropdownContent bg='#fff'>
+        <DropdownList>
+          <ListItem
+            px={2}
+            mx={2}
+            my={1}
+            display='flex'
+            justifyContent='space-between'
+          >
+            <Heading
+              as='h3'
+              size='xs'
+              fontStyle='italic'
+              color='primary.600'
+              fontWeight='medium'
+            >
+              Previous Searches
+            </Heading>
+            <IconButton
+              aria-label='Close search history.'
+              icon={<Icon as={IoMdClose} />}
+              variant='ghost'
+              size='sm'
+              onClick={() => setIsOpen(false)}
+            />
+          </ListItem>
+          {searchHistory.map((recentSearch, i) => {
             return (
               <RecentItem
                 key={i}
@@ -170,12 +238,45 @@ export const SearchBar = ({
                 colorScheme={colorScheme}
                 searchTerm={searchTerm}
                 value={recentSearch}
-                onClick={() => handleSubmit(recentSearch)}
+                onClick={value => handleSubmit(value)}
               />
             );
           })}
         </DropdownList>
       </DropdownContent>
+    </>
+  );
+};
+
+interface SearchBarWithDropdownProps {
+  value?: string;
+  ariaLabel: string;
+  placeholder: string;
+  colorScheme?: string;
+  size?: string;
+}
+
+export const SearchBarWithDropdown = (props: SearchBarWithDropdownProps) => {
+  const router = useRouter();
+  const { q } = router.query;
+  const defaultInputValue =
+    q && router.query.advancedSearch !== 'true' ? (q as string) : '';
+
+  const [searchHistory, setSearchHistory] = useLocalStorage<string[]>(
+    'previous-searches',
+    [],
+  );
+  return (
+    <InputWithDropdown
+      inputValue={defaultInputValue}
+      cursorMax={searchHistory.length}
+      colorScheme={props.colorScheme}
+    >
+      <SearchBar
+        searchHistory={searchHistory}
+        setSearchHistory={setSearchHistory}
+        {...props}
+      />
     </InputWithDropdown>
   );
 };

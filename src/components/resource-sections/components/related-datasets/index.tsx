@@ -25,7 +25,10 @@ interface CardContainerProps {
 }
 
 /* Card for related datasets section */
-const CardContainer: React.FC<CardContainerProps> = ({ children, heading }) => {
+export const CardContainer: React.FC<CardContainerProps> = ({
+  children,
+  heading,
+}) => {
   return (
     <Card flex={1} ml={[0, 0, 4]} my={2} sx={{ '>*': { p: [2, 4, 4, 6] } }}>
       <Box w='100%'>
@@ -57,7 +60,7 @@ const RelatedDatasets: React.FC<RelatedDatasetsProps> = ({
     <>
       <Collapse in={!isEmpty}>
         <CardContainer heading='Related Datasets'>
-          <Box h='400px' overflow='auto'>
+          <Box overflow='auto'>
             {new Array(isRelatedTo?.length || 3).fill('').map((_, i) => {
               const data = isRelatedTo?.[i] || null;
               return (

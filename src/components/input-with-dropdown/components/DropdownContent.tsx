@@ -1,5 +1,5 @@
-import React, { useRef } from 'react';
-import { Box, BoxProps, useOutsideClick } from 'nde-design-system';
+import React from 'react';
+import { Box, BoxProps } from 'nde-design-system';
 import { useDropdownContext } from '..';
 
 interface DropdownContentProps extends BoxProps {}
@@ -10,21 +10,14 @@ export const DropdownContent: React.FC<DropdownContentProps> = ({
   maxHeight,
   ...props
 }) => {
-  const { isOpen, setIsOpen } = useDropdownContext();
-
-  // Handles closing the dropdown list when clicking outside the element.
-  const ref = useRef(null);
-  useOutsideClick({
-    ref: ref,
-    handler: () => setIsOpen(false),
-  });
+  const { isOpen } = useDropdownContext();
 
   if (!isOpen) {
     return <></>;
   }
 
   return (
-    <Box ref={ref} position='relative'>
+    <Box position='relative'>
       <Box
         position='absolute'
         w='100%'

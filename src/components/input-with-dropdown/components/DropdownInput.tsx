@@ -20,7 +20,7 @@ import { theme } from '@chakra-ui/react';
 [Component Information]: [DropdownInput] is a regular input field with a list of suggestions based on the user typing.
 */
 
-interface DropdownInputProps {
+export interface DropdownInputProps {
   id: string;
   ariaLabel: string; // input label for accessibility
   colorScheme?: InputProps['colorScheme'];
@@ -61,6 +61,7 @@ export const DropdownInput: React.FC<DropdownInputProps> = ({
   return (
     <Flex
       as='form'
+      flex={1}
       onSubmit={e => {
         e.preventDefault();
         setIsOpen(false);
