@@ -30,12 +30,6 @@ const DateRangeContext = React.createContext({
 });
 DateRangeContext.displayName = 'DateRangeContext';
 
-// [MIN_YEAR] = 1997 is the first year of data that we account for in the histogram.
-// This is due to NCBI PMC having data that goes back to 1799.
-// 1997 is the first year that we have data for from the other sources.
-// [TO DO]: This should be updated to be dynamic based on the data.
-const MIN_YEAR = 1997;
-
 /*
   HANDLE SLIDER DATE RANGE
   [DateRangeSlider]: Range controlled by sliders. Indices of resourcesWithDate.
@@ -57,10 +51,6 @@ export const DateRangeSlider: React.FC<{
     () =>
       addMissingYears(
         initialData?.date
-          ?.filter(datum => {
-            // filter out dates that exceed the current year.
-            return new Date(datum.term).getFullYear() >= MIN_YEAR;
-          })
           .filter(datum => {
             // filter out dates that exceed the current year.
             return (
