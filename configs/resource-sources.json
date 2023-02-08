@@ -41,6 +41,11 @@
       "imageUrl": "/assets/resources/dryad.png"
     },
     {
+      "sourceName": "Harvard Dataverse",
+      "name": "Dataverse",
+      "imageUrl": "/assets/resources/harvard-dataverse.png"
+    },
+    {
       "sourceName": "HuBMAP",
       "name": "HuBMAP",
       "imageUrl": "/assets/resources/hubmap.png"
