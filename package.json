@@ -5,6 +5,7 @@
     "dev": "next dev",
     "build": "yarn run schema-definitions && next build && next export",
     "build:staging": "env-cmd -f .env.staging yarn build",
+    "build:new-staging": "env-cmd -f .env.production yarn build",
     "start": "next start",
     "lint": "next lint",
     "schema-definitions": "node src/utils/schema-definitions/index.js",

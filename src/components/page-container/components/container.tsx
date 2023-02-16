@@ -69,7 +69,13 @@ export const PageContainer: React.FC<PageContainerProps> = ({
         <meta name='description' content={metaDescription} />
       </Head>
 
-      <Flex as='main' w='100%' flexDirection='column' minW={300}>
+      <Flex
+        as='main'
+        w='100%'
+        flexDirection='column'
+        minW={300}
+        minHeight='100vh'
+      >
         {topNavigation && hasNavigation && (
           // Sticky Nav Bar.
           <Box
@@ -91,7 +97,7 @@ export const PageContainer: React.FC<PageContainerProps> = ({
         )}
 
         {/*Page content has margin-top to compensate for fixed nav bar. */}
-        <Box id='pagebody' position='relative'>
+        <Flex id='pagebody' position='relative' flexDirection='column' flex={1}>
           <Notice />
           {!disableSearchBar && (
             <PageContent
@@ -101,6 +107,7 @@ export const PageContainer: React.FC<PageContainerProps> = ({
               borderColor='gray.100'
               flexDirection='column'
               py={4}
+              flex={1}
             >
               <Flex w='100%' justifyContent='flex-end' mb={2}>
                 <AdvancedSearch />
@@ -113,13 +120,13 @@ export const PageContainer: React.FC<PageContainerProps> = ({
             </PageContent>
           )}
           {children}
-          <Footer
+          {/* <Footer
             navigation={{
               ...footerNavigation,
               routes: [...prefixPortalRoutes(footerConfig.routes)],
             }}
-          />
-        </Box>
+          /> */}
+        </Flex>
       </Flex>
     </>
   );

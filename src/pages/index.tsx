@@ -7,6 +7,7 @@ import {
   Image,
   SimpleGrid,
   Text,
+  theme,
   useBreakpointValue,
 } from 'nde-design-system';
 import {
@@ -180,274 +181,34 @@ const Home: NextPage = () => {
     },
   });
   return (
-    <>
-      <PageContainer
-        hasNavigation
-        title='Home'
-        metaDescription='NIAID Data Ecosystem Discovery Portal - Home.'
-        disableSearchBar
+    <PageContainer
+      hasNavigation
+      title='Home'
+      metaDescription='NIAID Data Ecosystem Discovery Portal - Home.'
+      disableSearchBar
+    >
+      <PageContent
+        minH='400px'
+        flex={1}
+        bg={`linear-gradient(180deg, ${theme.colors.primary[500]}, ${theme.colors.tertiary[700]})`}
+        bgImg={`${assetPrefix || ''}/assets/home-bg.png`}
+        backgroundSize='cover'
+        flexWrap='wrap'
+        justifyContent={{ xl: 'center' }}
+        alignItems='center'
       >
-        <PageHeader
-          title={homepageCopy.sections[0].heading}
-          subtitle={homepageCopy.sections[0].subtitle}
-          body={[homepageCopy.sections[0].body]}
+        <Heading
+          as='h1'
+          size='h1'
+          color='whiteAlpha.800'
+          fontWeight='bold'
+          letterSpacing={1}
+          lineHeight='shorter'
         >
-          <>
-            <Flex w='100%' justifyContent='flex-end' mb={2}>
-              <AdvancedSearch
-                buttonProps={{
-                  variant: 'outline',
-                  bg: 'whiteAlpha.500',
-                  color: 'white',
-                  _hover: { bg: 'whiteAlpha.800', color: 'primary.600' },
-                }}
-              />
-            </Flex>
-            <SearchBarWithDropdown
-              ariaLabel='Search for datasets or tools'
-              placeholder='Search for datasets or tools'
-              size='md'
-            />
-
-            {/* [NOTE]: Test with autocomplete in the future */}
-            {/* <SearchWithPredictiveText
-              ariaLabel='Search for datasets or tools'
-              placeholder='Search for datasets or tools'
-              size='md'
-              handleSubmit={(stringValue, __, data) => {
-                if (data && data.id) {
-                  router.push({
-                    pathname: `/resources`,
-                    query: { id: `${data.id}` },
-                  });
-                } else {
-                  router.push({
-                    pathname: `/search`,
-                    query: { q: `${stringValue.trim()}` },
-                  });
-                }
-              }}
-            /> */}
-
-            <Flex mt={2} flexWrap={['wrap']}>
-              <Text color='whiteAlpha.800' mr={2}>
-                Try:
-              </Text>
-              {sample_queries.map((query, i) => {
-                return (
-                  <NextLink
-                    key={query.title}
-                    href={{
-                      pathname: `/search`,
-                      query: { q: query.searchTerms.join(' OR ') },
-                    }}
-                    passHref
-                  >
-                    <SearchQueryLink
-                      title={query.title}
-                      display={[i > 2 ? 'none' : 'block', 'block']}
-                    />
-                  </NextLink>
-                );
-              })}
-            </Flex>
-          </>
-        </PageHeader>
-
-        {/* NIAID Data Ecosystem section */}
-        <PageContent justifyContent='center' bg='white' minH='unset'>
-          <StyledSection
-            id='nde'
-            alignItems='center'
-            flexDirection='column'
-            maxWidth={['100%', '100%', '750px']}
-          >
-            <StyledSectionHeading>
-              {homepageCopy.sections[1].heading}
-            </StyledSectionHeading>
-
-            <StyledText
-              textAlign={['start', 'center']}
-              mt={4}
-              fontSize={['lg', 'xl']}
-              lineHeight='taller'
-              maxW='unset'
-            >
-              {homepageCopy.sections[1].body}
-            </StyledText>
-            <StyledSectionButtonGroup variant='solid' justifyContent='center'>
-              {homepageCopy.sections[1]?.routes &&
-                homepageCopy.sections[1].routes.map(route => {
-                  return (
-                    <NextLink
-                      key={route.title}
-                      href={{
-                        pathname: route.path,
-                      }}
-                      passHref
-                    >
-                      <Button w='100%' my={2}>
-                        {route.title}
-                      </Button>
-                    </NextLink>
-                  );
-                })}
-            </StyledSectionButtonGroup>
-          </StyledSection>
-        </PageContent>
-
-        {/* Display stats about the Biothings API */}
-        {!error && (
-          <PageContent
-            w='100%'
-            bg='white'
-            minH='unset'
-            flexDirection='column'
-            justifyContent='space-around'
-            alignItems='center'
-            py={[6, 10]}
-          >
-            <SimpleGrid
-              columns={[1, 2, Object.values(stats).length]}
-              w='100%'
-              spacing={[6, 8, 4]}
-            >
-              {Object.values(stats).map((stat, i) => {
-                return (
-                  <LoadingSpinner key={i} isLoading={isLoading}>
-                    {stat?.term && (
-                      <Flex
-                        alignItems='center'
-                        flexDirection='column'
-                        textAlign='center'
-                      >
-                        <Image
-                          src={`${assetPrefix || ''}/assets/${stat.term
-                            .toLowerCase()
-                            .replaceAll(' ', '-')}.svg`}
-                          alt={`Icon for ${stat.term}`}
-                          boxSize='50px'
-                          objectFit='contain'
-                          mb={1}
-                        />
-                        <Heading size='md' fontWeight='bold' my={1}>
-                          {formatNumber(stat.count)}
-                        </Heading>
-                        <Heading
-                          size='xs'
-                          fontWeight='medium'
-                          lineHeight='shorter'
-                        >
-                          {stat.term}
-                        </Heading>
-                      </Flex>
-                    )}
-                  </LoadingSpinner>
-                );
-              })}
-            </SimpleGrid>
-          </PageContent>
-        )}
-
-        {/* Data repository viz section */}
-        <PageContent
-          bg='page.alt'
-          minH='unset'
-          flexDirection='column'
-          alignItems='center'
-        >
-          <StyledSection
-            id='explore-date'
-            flexDirection={{ base: 'column', lg: 'column' }}
-          >
-            <Flex
-              width='100%'
-              flexDirection={{ base: 'column', lg: 'row' }}
-              justifyContent={{ lg: 'space-between' }}
-              alignItems='center'
-              flex={1}
-            >
-              <LoadingSpinner isLoading={isLoading}>
-                {/* Pie chart with number repositories and associated resources*/}
-                {stats?.repositories?.stats && (
-                  <PieChart
-                    width={size || 200}
-                    height={size || 200}
-                    data={stats.repositories.stats.sort(
-                      (a, b) => b.count - a.count,
-                    )}
-                  ></PieChart>
-                )}
-              </LoadingSpinner>
-              {/* Legend display for smaller screen size */}
-              <Flex
-                display={{ base: 'flex', lg: 'none' }}
-                w='100%'
-                justifyContent='center'
-              >
-                {stats?.repositories?.stats && (
-                  <Legend
-                    data={stats.repositories.stats.sort(
-                      (a, b) => b.count - a.count,
-                    )}
-                  ></Legend>
-                )}
-              </Flex>
-              <StyledBody
-                maxWidth={['unset', 'unset', '700px', '410px']}
-                textAlign={['start', 'start', 'center', 'start']}
-              >
-                <StyledSectionHeading mt={[4, 6]}>
-                  {homepageCopy.sections[2].heading}
-                </StyledSectionHeading>
-                <StyledText>{homepageCopy.sections[2].body}</StyledText>
-                {homepageCopy.sections[2]?.routes &&
-                  homepageCopy.sections[2].routes.map(
-                    (route: {
-                      title: string;
-                      path: string;
-                      isExternal?: boolean;
-                    }) => {
-                      return (
-                        <StyledSectionButtonGroup
-                          key={route.title}
-                          justifyContent={[
-                            'flex-start',
-                            'flex-start',
-                            'center',
-                            'flex-start',
-                          ]}
-                        >
-                          <NextLink href={route.path} passHref>
-                            <Button w='100%' variant='outline'>
-                              {route.title}
-                            </Button>
-                          </NextLink>
-                        </StyledSectionButtonGroup>
-                      );
-                    },
-                  )}
-              </StyledBody>
-            </Flex>
-
-            {/* Legend display for larger screen size */}
-            <Flex
-              display={{ base: 'none', lg: 'flex' }}
-              w='100%'
-              justifyContent='center'
-            >
-              {stats?.repositories?.stats && (
-                <Legend
-                  data={stats.repositories.stats.sort(
-                    (a, b) => b.count - a.count,
-                  )}
-                ></Legend>
-              )}
-            </Flex>
-          </StyledSection>
-        </PageContent>
-      </PageContainer>
-    </>
+          Coming soon
+        </Heading>
+      </PageContent>
+    </PageContainer>
   );
 };
 
