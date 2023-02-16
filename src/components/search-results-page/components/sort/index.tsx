@@ -38,7 +38,7 @@ export const SortResults: React.FC<SortResultsProps> = ({
       return 'Sort by relevancy.';
     } else if (sortBy === 'date') {
       return 'Sort by most recent activity (created, published or modified).';
-    } else if (sortBy === 'name') {
+    } else if (sortBy === 'name.raw') {
       return 'Sort alphabetically by title.';
     }
     return '';
