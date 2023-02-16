@@ -238,8 +238,8 @@
           "union": "OR"
         },
         "parentId": "Aspergillosis-Aspergillus",
-        "index": 0,
-        "depth": 2
+        "index": 1,
+        "depth": 1
       },
       {
         "id": "Coccidioidomycosis-Cimmitis-Coccidioides-Cposadasii",
@@ -326,8 +326,8 @@
           "union": "OR"
         },
         "parentId": "Histoplasma-Histoplasmosis-Hcapsulatum",
-        "index": 0,
-        "depth": 2
+        "index": 1,
+        "depth": 1
       },
       {
         "id": "Hcapsulatum",
@@ -337,8 +337,8 @@
           "union": "OR"
         },
         "parentId": "Histoplasma-Histoplasmosis-Hcapsulatum",
-        "index": 0,
-        "depth": 3
+        "index": 2,
+        "depth": 1
       },
       {
         "id": "Blastomyc-Bdermatitidis",

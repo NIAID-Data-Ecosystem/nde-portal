@@ -65,7 +65,7 @@ export const SummaryTable: React.FC<SummaryTableProps> = ({
   const [size, setSize] = useState(DEFAULT_SIZE);
   const [page, setPage] = useState(DEFAULT_PAGE);
   const [total, setTotal] = useState(0);
-  const [sortOrder, setSortOrder] = useState('name');
+  const [sortOrder, setSortOrder] = useState('_score');
 
   // Fetch data for table.
   const { data, isLoading } = useQuery<

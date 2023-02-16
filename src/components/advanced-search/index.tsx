@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   Box,
   Button,
@@ -16,27 +16,31 @@ import { OpenModal } from './components/buttons';
 import { uniqueId } from 'lodash';
 import {
   buildTree,
-  DragItem,
+  TreeItem,
   FlattenedItem,
   SortableWithCombine,
 } from './components/SortableWithCombine';
 import { convertObject2QueryString, wildcardQueryString } from './utils';
-import { FaArrowsAltV, FaSearch, FaUndoAlt } from 'react-icons/fa';
+import {
+  FaChevronDown,
+  FaChevronUp,
+  FaSearch,
+  FaUndoAlt,
+} from 'react-icons/fa';
 import {
   AdvancedSearchFormContext,
   FieldSelect,
+  Search,
   SearchInput,
   SearchOption,
 } from './components/Search';
 import { SearchOptions } from './components/Search/components/SearchOptions';
 import { ResultsCount } from './components/ResultsCount';
 import SampleQueries from 'configs/sample-queries.json';
+import { EditableQueryText } from './components/EditableQueryText';
 import { Disclaimer } from './components/Search/components/Disclaimer';
-
-const sample_queries = SampleQueries as {
-  name: string;
-  items: FlattenedItem[];
-}[];
+import { ErrorMessages } from './components/ErrorMessages';
+import { QueryStringError } from './components/EditableQueryText/utils';
 
 interface AdvancedSearchProps {
   buttonProps?: ButtonProps;
@@ -76,8 +80,8 @@ export const SEARCH_OPTIONS: SearchOption[] = [
         description:
           'Field contains value that starts or ends with given term. Note that when given multiple terms, terms wil be searched for separately and not grouped together.',
         example: `oronaviru · contains results that contain the string fragment 'oronaviru' such as 'coronavirus'.
-        immune dis · contains results that contain the string fragment 'immune' and 'dis' - though not always sequentially.
-        `,
+      immune dis · contains results that contain the string fragment 'immune' and 'dis' - though not always sequentially.
+      `,
         transformValue: (value: string, field?: string) => {
           return wildcardQueryString({ value, field });
         },
@@ -107,25 +111,35 @@ export const SEARCH_OPTIONS: SearchOption[] = [
     ],
   },
 ];
+
 export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
   buttonProps,
   modalProps,
 }) => {
+  const sample_queries = SampleQueries as {
+    name: string;
+    items: FlattenedItem[];
+  }[];
   const router = useRouter();
   const [resetForm, setResetForm] = useState(false);
 
   // Handles the opening of the modal.
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const { isOpen, onOpen, onClose } = useDisclosure({ defaultIsOpen: true });
   const { isOpen: showRawQuery, onToggle: toggleShowRawQuery } = useDisclosure({
-    defaultIsOpen: false,
+    defaultIsOpen: true,
   });
-  const [items, setItems] = useState<DragItem[]>([]);
+  const [items, setItems] = useState<TreeItem[]>([]);
+
+  // Errors with either the query string or the query string's output.
+  const [errors, setErrors] = useState<QueryStringError[]>([]);
 
   useEffect(() => {
     if (items.length > 0 && resetForm === true) {
       setResetForm(false);
     }
   }, [items, resetForm]);
+
+  const updateItems = useCallback(items => setItems(items), []);
 
   return (
     <>
@@ -141,7 +155,6 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
           });
         }}
         isDisabled={items.length === 0}
-        {...modalProps}
       >
         {/* Search For Query Term */}
         <Box m={2}>
@@ -154,62 +167,12 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
             flexWrap='wrap'
           >
             {isOpen && (
-              <AdvancedSearchFormContext
-                term=''
-                field=''
-                searchOptions={SEARCH_OPTIONS}
-              >
-                <Flex w='100%' justifyContent='flex-end'>
-                  <SearchOptions />
-                </Flex>
-                <Flex w='100%' alignItems='flex-end'>
-                  <FieldSelect
-                    isDisabled={!isOpen}
-                    isFormReset={resetForm}
-                    setResetForm={setResetForm}
-                  ></FieldSelect>
-                  <SearchInput
-                    size='md'
-                    colorScheme='primary'
-                    items={items}
-                    isFormReset={resetForm}
-                    setResetForm={setResetForm}
-                    onSubmit={({
-                      term,
-                      field,
-                      union,
-                      querystring,
-                      searchType,
-                    }) => {
-                      setItems(prev => {
-                        if (!term) return prev;
-                        const newItems = [...prev];
-                        const id = `${uniqueId(
-                          `${term.slice(0, 20).split(' ').join('-')}-${
-                            items.length
-                          }-`,
-                        )}`;
-
-                        newItems.push({
-                          id, // unique identifier
-                          value: {
-                            field,
-                            term,
-                            union,
-                            querystring,
-                            searchType,
-                          },
-                          children: [],
-                          index: items.length,
-                        });
-
-                        return newItems;
-                      });
-                    }}
-                  />
-                </Flex>
-                <Disclaimer />
-              </AdvancedSearchFormContext>
+              <Search
+                items={items}
+                setItems={updateItems}
+                resetForm={resetForm}
+                setResetForm={setResetForm}
+              />
             )}
           </Flex>
 
@@ -267,24 +230,28 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
 
           <SortableWithCombine
             items={items}
-            setItems={setItems}
-            handle
+            setItems={updateItems}
             removable
+            collapsible
           />
+
+          <ErrorMessages errors={errors} setErrors={setErrors} />
 
           <Box w='100%'>
             <Collapse in={showRawQuery}>
-              {/* [TO DO]: add syntax highlighting on hover */}
-              <Box m={2}>
-                <Text fontSize='sm' fontStyle='italic'>
-                  {convertObject2QueryString(items)}
-                </Text>
+              <Box my={2}>
+                <EditableQueryText
+                  queryObj={items}
+                  updateQueryObj={updateItems}
+                  errors={errors}
+                  setErrors={setErrors}
+                />
               </Box>
             </Collapse>
 
             <Button
               isDisabled={items.length === 0}
-              rightIcon={<FaArrowsAltV />}
+              rightIcon={showRawQuery ? <FaChevronUp /> : <FaChevronDown />}
               onClick={toggleShowRawQuery}
               colorScheme='gray'
               color='text.body'

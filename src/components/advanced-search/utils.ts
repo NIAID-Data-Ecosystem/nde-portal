@@ -1,7 +1,9 @@
-import type { DragItem } from './components/SortableWithCombine';
+import { collapseTree, TreeItem } from './components/SortableWithCombine';
 import MetadataConfig from 'configs/resource-metadata.json';
+import SchemaFields from 'configs/resource-fields.json';
 import MetadataNames from 'configs/metadata-standard-names.json';
 import { encodeString } from 'src/utils/querystring-helpers';
+import { flatten, uniqueId } from 'lodash';
 
 type UnionTypes = 'AND' | 'OR' | 'NOT';
 
@@ -33,35 +35,6 @@ export const getUnionTheme = (term: UnionTypes) => {
     };
   }
   return {};
-};
-
-/**
- * [convertObject2QueryString]: Converts a nested query object (tree)
- * to a string for querying the API.
- */
-export const convertObject2QueryString = (items: DragItem[]) => {
-  const reduceQueryString = (items: DragItem[]) =>
-    items.reduce((r, item) => {
-      const union = `${item.value.union ? ` ${item.value.union} ` : ''}`;
-      if (item.children.length > 0) {
-        r += `${union}(${reduceQueryString(item.children)})`;
-      } else {
-        let str = '';
-        const { field, term, querystring } = item.value;
-        if (field) {
-          str += `${field}:`;
-        }
-        let formattedTerm = querystring ? querystring : term;
-
-        // wrap querystring in parenthesis if a field is selected so that the term is applied to the field.
-        str += field ? `(${formattedTerm})` : formattedTerm;
-        r += `${union}(${str})`;
-      }
-
-      return r;
-    }, '');
-
-  return reduceQueryString(items);
 };
 
 /**
@@ -109,6 +82,7 @@ export const wildcardQueryString = ({
   if (!value) {
     return '';
   }
+
   const querystring = `${searchTerms
     .map(str => {
       let wildcarded_str = '';
@@ -121,7 +95,164 @@ export const wildcardQueryString = ({
       }
       return str ? `${wildcarded_str}` : '';
     })
-    .join(' AND ')}`;
+    .join(' ')}`;
 
   return encodeString(querystring);
+};
+
+/**
+ * [convertObject2QueryString]: Converts a nested query object (tree)
+ * to a string for querying the API.
+ */
+export const convertObject2QueryString = (items: TreeItem[]) => {
+  const reduceQueryString = (items: TreeItem[]) =>
+    items.reduce((r, item) => {
+      const union = `${
+        item.index !== 0 && item.value.union ? ` ${item.value.union} ` : ''
+      }`;
+      if (item.children.length > 0) {
+        r += `${union}(${reduceQueryString(item.children)})`;
+      } else {
+        let str = '';
+        const { field, term, querystring } = item.value;
+        if (field) {
+          str += `${field}:`;
+        }
+        let formattedTerm = querystring ? querystring : term;
+        // 1. if the term is wrapped in quotes, do nothing.
+        if (formattedTerm.startsWith('"') && formattedTerm.endsWith('"')) {
+          str += formattedTerm;
+        } else if (formattedTerm.split(' ').length > 1) {
+          // 2. if the term contains spaces or contains a field, wrap in parens.
+          str += `(${formattedTerm})`;
+        } else {
+          str += formattedTerm;
+        }
+
+        // wrap querystring in parenthesis if a field is selected so that the term is applied to the field.
+        r += `${union}${str}`;
+      }
+
+      return r;
+    }, '');
+
+  return reduceQueryString(items);
+};
+
+export const convertQueryString2Object = str => {
+  const newString = `(${str
+    .replaceAll(' AND ', `) AND (`)
+    .replaceAll(' OR ', `) OR (`)
+    .replaceAll(' NOT ', `) NOT (`)})`;
+  // Transform a string with nested parentheses into an array of arrays.
+  const parseString = string => {
+    var array = [];
+    var current = '';
+    var depth = 0;
+    for (var i = 0; i < string.length; i++) {
+      if (string[i] === '(') {
+        depth++;
+        if (depth === 1) {
+          if (current !== '') {
+            array.push(handleValue(current));
+          }
+          current = '';
+        } else {
+          current += '(';
+        }
+      } else if (string[i] === ')') {
+        depth--;
+        if (depth === 0) {
+          if (current !== '') {
+            array.push(parseString(current));
+          }
+          current = '';
+        } else {
+          current += ')';
+        }
+      } else {
+        current += string[i];
+      }
+    }
+    if (current !== '') {
+      array.push(handleValue(current));
+    }
+    return array;
+  };
+
+  // Build a nested tree from an array of arrays used for the query builder.
+  const buildTree = (tree, parentId = null, depth = 0) => {
+    const stack = [];
+    let union = '';
+    let field = '';
+    let index = 0;
+    tree.map((node, i) => {
+      if (node.field) {
+        field = node.field;
+      } else if (node.union) {
+        union = node.union;
+      } else if (Array.isArray(node) || node.value) {
+        const { term, querystring } = node[0] || node;
+        const id = uniqueId(term);
+        const newDepth = depth + 1;
+        stack.push({
+          id,
+          depth,
+          parentId,
+          index,
+          value: {
+            term,
+            querystring,
+            union,
+            field: node[0]?.field || field,
+          },
+          children: Array.isArray(node) ? buildTree(node, id, newDepth) : [],
+        });
+        index++;
+      }
+    });
+    return stack;
+  };
+  const flattenedTree = parseString(newString);
+
+  const tree = collapseTree(buildTree(flattenedTree));
+  return tree;
+};
+
+const isValidField = (field: string) => {
+  const fieldInSchemaIndex = SchemaFields.findIndex(
+    item => item.property === field,
+  );
+
+  return (
+    fieldInSchemaIndex > -1 || field === '_exists_' || field === '-_exists_'
+  );
+};
+
+const handleValue = value => {
+  const str = value.trim();
+  const fieldColonIndex = str.indexOf(':');
+  if (fieldColonIndex > -1 && str[fieldColonIndex - 1] !== '\\') {
+    const field = str.substring(0, fieldColonIndex);
+
+    // Check if the string that is separated by a colon is an actual field in the API.
+    if (isValidField(field)) {
+      const term = str.substring(fieldColonIndex + 1);
+      return { field, term: term };
+    } else {
+      // if exact string no need to escape.
+      if (
+        (str.charAt(0) === "'" && str.charAt(str.length - 1) === "'") ||
+        (str.charAt(0) === '"' && str.charAt(str.length - 1) === '"')
+      ) {
+        return { term: str, querystring: str };
+      } else {
+        return { term: str, querystring: encodeString(str) };
+      }
+    }
+  } else if (str === 'OR' || str === 'AND' || str === 'NOT') {
+    return { union: str };
+  } else {
+    return { term: str };
+  }
 };

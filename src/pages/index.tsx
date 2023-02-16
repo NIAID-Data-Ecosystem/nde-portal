@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import type { NextPage } from 'next';
 import {
+  Box,
   Button,
   Flex,
   Heading,
@@ -179,6 +180,7 @@ const Home: NextPage = () => {
       setStats(stat);
     },
   });
+
   return (
     <>
       <PageContainer
@@ -243,10 +245,12 @@ const Home: NextPage = () => {
                     }}
                     passHref
                   >
-                    <SearchQueryLink
-                      title={query.title}
-                      display={[i > 2 ? 'none' : 'block', 'block']}
-                    />
+                    <Box>
+                      <SearchQueryLink
+                        title={query.title}
+                        display={[i > 2 ? 'none' : 'block', 'block']}
+                      />
+                    </Box>
                   </NextLink>
                 );
               })}

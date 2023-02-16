@@ -54,9 +54,9 @@ export const sortOptions = [
 ] as const;
 
 export interface SortOptionsInterface {
-  name: typeof sortOptions[number]['name'];
-  sortBy: typeof sortOptions[number]['sortBy'];
-  orderBy: typeof sortOptions[number]['orderBy'];
+  name: (typeof sortOptions)[number]['name'];
+  sortBy: (typeof sortOptions)[number]['sortBy'];
+  orderBy: (typeof sortOptions)[number]['orderBy'];
 }
 
 // Default config for query.

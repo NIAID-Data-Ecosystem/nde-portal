@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { InputProps } from 'nde-design-system';
 import { DropdownButton } from 'src/components/dropdown-button';
 import {
-  DragItem,
+  TreeItem,
   UnionTypes,
 } from 'src/components/advanced-search/components/SortableWithCombine';
 import {
@@ -14,7 +14,7 @@ import { useAdvancedSearchContext } from '../../AdvancedSearchFormContext';
 interface InputSubmitButtonProps {
   isDisabled: boolean;
   colorScheme?: InputProps['colorScheme'];
-  items: DragItem[];
+  items: TreeItem[];
   size: InputProps['size'];
 }
 

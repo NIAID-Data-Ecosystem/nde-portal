@@ -13,6 +13,7 @@ import {
   UnorderedList,
 } from 'nde-design-system';
 import { ListItemProps } from '@chakra-ui/react';
+import { UnionTypes } from '../advanced-search/components/SortableWithCombineAlpha';
 
 export interface DropdownButtonProps extends ButtonGroupProps {
   ariaLabel: string;
@@ -23,7 +24,7 @@ export interface DropdownButtonProps extends ButtonGroupProps {
   ) => void;
   options: {
     name: string;
-    value: string;
+    value: UnionTypes;
     props: Omit<ListItemProps, 'textUnderlineOffset'>;
   }[];
   iconButtonProps?: IconButtonProps;

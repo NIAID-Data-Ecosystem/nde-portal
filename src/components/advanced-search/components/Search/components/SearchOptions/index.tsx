@@ -1,40 +1,68 @@
 import { RadioGroup } from '@chakra-ui/react';
 import { Stack } from 'nde-design-system';
+import React from 'react';
 import { useAdvancedSearchContext } from '../AdvancedSearchFormContext';
 import { RadioItem } from './components/RadioItem';
 import { RadioSelect } from './components/RadioSelect';
 
 export const SearchOptions: React.FC = () => {
-  const { searchField, searchOption, searchOptionsList, setSearchOption } =
-    useAdvancedSearchContext();
+  const {
+    queryValue,
+    selectedSearchType,
+    setSelectedSearchType,
+    searchTypeOptions,
+  } = useAdvancedSearchContext();
+  console.log('selectedSearchType', selectedSearchType);
 
   return (
-    <RadioGroup mb={4}>
+    <RadioGroup
+      mb={4}
+      onChange={value => {
+        const option = searchTypeOptions.find(option => option.label === value);
+        if (option) {
+          setSelectedSearchType(option);
+        }
+      }}
+    >
       <Stack direction='row' spacing={6}>
-        {searchOptionsList.map(option => {
-          if (option.options && option.options.length) {
+        {searchTypeOptions
+          .filter(
+            option =>
+              !(option.shouldOmit && option.shouldOmit(queryValue.field)),
+          )
+          .map(option => {
+            // if (option.options && option.options.length) {
+            //   return (
+            //     <RadioSelect
+            //       key='select'
+            //       searchOption={selectedSearchType}
+            //       updateSearchOption={setSelectedSearchType}
+            //       options={option.options}
+            //       // isDisabled={
+            //       //   (option.shouldDisable &&
+            //       //     option.shouldDisable(queryValue.field)) ||
+            //       //   false
+            //       // }
+            //     />
+            //   );
+            // }
+
             return (
-              <RadioSelect
-                key='select'
-                searchOption={searchOption}
-                updateSearchOption={setSearchOption}
-                options={option.options}
-                // isDisabled={!searchField}
+              <RadioItem
+                key={option.id}
+                label={option.label}
+                description={option.description}
+                // value={option.label}
+                onChange={() => setSelectedSearchType(option)}
+                hasTooltip
+                isDisabled={
+                  option.shouldDisable && option.shouldDisable(queryValue.field)
+                }
+                // isFocusable={false}
+                isChecked={option.label === selectedSearchType.label}
               />
             );
-          }
-          return (
-            <RadioItem
-              key={option.value}
-              name={option.name}
-              description={option.description}
-              onChange={() => setSearchOption(option)}
-              hasTooltip
-              isDisabled={!searchField}
-              isChecked={option.value === searchOption.value}
-            />
-          );
-        })}
+          })}
       </Stack>
     </RadioGroup>
   );

@@ -1,4 +1,10 @@
-import React, { useMemo, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { createPortal } from 'react-dom';
 import {
   DragOverlay,
@@ -6,47 +12,48 @@ import {
   DropAnimation,
   defaultDropAnimation,
   KeyboardSensor,
-  MouseSensor,
-  TouchSensor,
+  PointerSensor,
   UniqueIdentifier,
   useSensor,
   useSensors,
   MeasuringStrategy,
   DragEndEvent,
   DragMoveEvent,
+  DragStartEvent,
+  closestCenter,
+  DragOverEvent,
+  Modifier,
+  Announcements,
 } from '@dnd-kit/core';
 import {
   arrayMove,
   SortableContext,
   sortableKeyboardCoordinates,
-  SortingStrategy,
   verticalListSortingStrategy,
-  horizontalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import {
-  addToExistingGroup,
   buildTree,
   createNewGroup,
   flattenTree,
+  getChildCount,
+  getProjection,
+  removeChildrenOf,
   removeItem,
-  shouldCombine,
+  setProperty,
+  updateIndices,
 } from '../utils';
 import type {
-  DragItem,
   FlattenedItem,
-  ItemStylesProps,
   Params,
-  SortableWithCombineProps,
-  WrapperStylesProps,
+  SensorContext,
+  TreeItem,
+  UnionTypes,
 } from '../types';
 import { CSS } from '@dnd-kit/utilities';
-import { SortableCombineItem } from './SortableCombineItem';
-import { Item } from './Item';
-import { useCollisionDetection } from './CollisionDetectionStrategy';
 import { theme } from '@chakra-ui/react';
-import { ItemContent } from './ItemContent';
-import { Box, Checkbox } from 'nde-design-system';
-import { getUnionTheme } from 'src/components/advanced-search/utils';
+import { Box, UnorderedList } from 'nde-design-system';
+import { SortableTreeItem } from './Sortable';
+import { sortableTreeKeyboardCoordinates } from './keyboardCoordinates';
 
 const dropAnimationConfig: DropAnimation = {
   keyframes({ transform }) {
@@ -88,465 +95,414 @@ const params: Params = {
   useDragOverlay: true,
 };
 
-export const config: Partial<SortableWithCombineProps> = {
-  adjustScale: true,
-  wrapperStyle: ({ isMergeable, data, items }: WrapperStylesProps) => {
-    const currentItem = items && items.find(item => item.id === data.id);
-    if (!currentItem) {
-      return {};
-    }
-    const itemList = items.filter(item => item.depth === currentItem.depth);
-
-    const nextElement = itemList[data.index + 1];
-
-    const unionColor = data.value.union
-      ? getUnionTheme(data.value.union).background
-      : nextElement && nextElement.value.union
-      ? getUnionTheme(nextElement.value.union).background
-      : 'gray.200';
-
-    return {
-      background: isMergeable ? 'status.info' : 'white',
-      color: isMergeable ? 'white' : 'text.body',
-      minWidth: 160,
-      flex: 1,
-      margin: '0.15rem',
-      paddingRight: '1rem',
-      border: '1px solid #D5D5D5',
-      borderRadius: '0.3125rem',
-      borderLeft: '5px solid',
-      boxShadow:
-        '0 10px 15px -3px rgba(0, 0, 0, 0.1),0 4px 6px -2px rgba(0, 0, 0, 0.05)',
-      borderLeftColor: unionColor,
-    };
-  },
-  getItemStyle: ({ data, isMergeable, style, ...props }: ItemStylesProps) => {
-    const direction = style?.flexDirection || 'row';
-    const alignItems = direction === 'row' ? 'center' : 'flex-start';
-    const itemStyles = {
-      ...style,
-      flexDirection: direction,
-
-      alignItems: style?.alignItems || alignItems,
-    };
-    return itemStyles;
-  },
-};
+interface SortableWithCombineProps {
+  items: TreeItem[];
+  setItems: React.Dispatch<React.SetStateAction<TreeItem[]>>;
+  adjustScale?: boolean;
+  collapsible?: boolean;
+  indentationWidth?: number;
+  indicator?: boolean;
+  removable?: boolean;
+  useDragOverlay?: boolean;
+}
 
 export function SortableWithCombine({
-  items,
-  setItems,
-  handle = false,
-  removable,
-  wrapperStyle = config.wrapperStyle,
-  getItemStyle = config.getItemStyle,
+  collapsible = true,
+  indicator = true,
+  indentationWidth = 50,
+  items: defaultItems,
+  setItems: updateItems,
+  removable = true,
+  useDragOverlay = true,
 }: SortableWithCombineProps) {
-  const {
-    activationConstraint,
-    adjustScale,
-    measuring,
-    strategy,
-    dropAnimation,
-    useDragOverlay,
-  } = params;
+  const [items, setItems] = useState(() => defaultItems);
 
-  const sensors = useSensors(
-    useSensor(MouseSensor, {
-      activationConstraint,
-    }),
-    useSensor(TouchSensor, {
-      activationConstraint,
-    }),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
-    }),
-  );
+  const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null);
+  const [overId, setOverId] = useState<UniqueIdentifier | null>(null);
+  const [offsetLeft, setOffsetLeft] = useState(0);
+  const [currentPosition, setCurrentPosition] = useState<{
+    parentId: UniqueIdentifier | null;
+    overId: UniqueIdentifier;
+  } | null>(null);
 
   // Flattened version of items with index, parentId, and depth values.
   const flattenedItems = useMemo(() => {
     const flattenedTree = flattenTree(items);
-    return flattenedTree;
-  }, [items]);
+    // list of ids that are "collapsed"
+    const collapsedItems = flattenedTree.reduce<FlattenedItem['id'][]>(
+      (acc, { children, collapsed, id }) =>
+        collapsed && children.length ? [...acc, id] : acc,
+      [],
+    );
 
-  // Id [activeId] and data[activeItem] of currently dragged element.
-  const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null);
-  const activeItem = flattenedItems.find(({ id }) => id === activeId);
+    return removeChildrenOf(
+      flattenedTree,
+      activeId ? [activeId, ...collapsedItems] : collapsedItems,
+    );
+  }, [activeId, items]);
+
+  // ID [activeId] and data[activeItem] of currently dragged element.
+  const activeItem = useMemo(
+    () => flattenedItems.find(({ id }) => id === activeId),
+    [flattenedItems, activeId],
+  );
+
+  // Item that the active item is projected to land in.
+  const projected = useMemo(() => {
+    return activeId && overId
+      ? getProjection(
+          flattenedItems,
+          activeId,
+          overId,
+          offsetLeft,
+          indentationWidth,
+        )
+      : null;
+  }, [activeId, flattenedItems, indentationWidth, offsetLeft, overId]);
 
   // Sortable context requires items to be sorted in a consistent order
   const sortedIds = useMemo(
-    () => flattenedItems.filter(item => item.depth === 0).map(({ id }) => id),
+    () => flattenedItems.map(({ id }) => id),
     [flattenedItems],
   );
 
-  const collisionDetectionStrategy = useCollisionDetection({ items, activeId });
-
-  const [isMergeable, setIsMergeable] = useState(false);
-  const [overId, setOverId] = useState<UniqueIdentifier | null>(null);
-  const droppableItem = flattenedItems.find(({ id }) => id === overId);
-  const isMovingWithinContainer = useRef(false);
-
-  const resetState = () => {
-    setIsMergeable(false);
-    setOverId(null);
-    setActiveId(null);
+  // Announcements for accessibility.
+  const announcements: Announcements = {
+    onDragStart({ active }) {
+      return `Picked up ${active.id}.`;
+    },
+    onDragMove({ active, over }) {
+      return getMovementAnnouncement('onDragMove', active.id, over?.id);
+    },
+    onDragOver({ active, over }) {
+      return getMovementAnnouncement('onDragOver', active.id, over?.id);
+    },
+    onDragEnd({ active, over }) {
+      return getMovementAnnouncement('onDragEnd', active.id, over?.id);
+    },
+    onDragCancel({ active }) {
+      return `Moving was cancelled. ${active.id} was dropped in its original position.`;
+    },
   };
 
-  const handleUpdate = (item: DragItem) => {
-    const clonedItems = [...flattenedItems];
-    const updateIndex = clonedItems.findIndex(({ id }) => id === item.id);
-    clonedItems[updateIndex] = { ...clonedItems[updateIndex], ...item };
-    setItems(buildTree(clonedItems));
-  };
+  /**
+   * [Keyboard Interaction]
+   */
+  const sensorContext: SensorContext = useRef({
+    items: flattenedItems,
+    offset: offsetLeft,
+  });
 
-  const handleRemove = (id: DragItem['id']) => {
-    const removeableItem = flattenedItems.find(item => item.id === id);
-    if (!removeableItem) return;
-    const flattened = flattenTree(removeItem([...items], id));
+  const [coordinateGetter] = useState(() =>
+    sortableTreeKeyboardCoordinates(sensorContext, indicator, indentationWidth),
+  );
 
-    setItems(buildTree(flattened));
-  };
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter,
+    }),
+  );
 
-  const handleDragMove = ({ active, over, collisions }: DragMoveEvent) => {
-    /*
-     *If the over id is a base element (ie. not a nested element).
-      No adaptations are needed - the shifting of elements happens according
-      to the strategy.
-     */
-    const overId = over?.id;
+  useEffect(() => {
+    sensorContext.current = {
+      items: flattenedItems,
+      offset: offsetLeft,
+    };
+  }, [flattenedItems, offsetLeft]);
 
-    // Index and data for actively dragged item.
-    if (!overId) {
-      // [Note]: if you pull a nested el onto a non nested one this is triggered.
-      //  Also triggered when trying to merge two non nested. could deal with on drag end i guess/
-      // handle this case in on Drag End?
-      return;
-    }
+  useEffect(() => {
+    setItems(defaultItems);
+  }, [defaultItems]);
 
-    setActiveId(active.id);
-    setOverId(overId);
+  useEffect(() => {
+    // update items across other components
+    updateItems(items);
+  }, [items, updateItems]);
 
-    // prevent merge if the active item is still in it's original area.
-    // or if the active item is being dropped in the same container( this is
-    // typically a sorting behaviour)
+  /**
+   * [HANDLERS]:
+   * Fns that handle the state of individual data items.
+   */
+  const handleUnionUpdate = useCallback(
+    (id: FlattenedItem['id'], union: UnionTypes) => {
+      setItems(items =>
+        setProperty(items, id, 'value', value => {
+          return { ...value, union };
+        }),
+      );
+    },
+    [],
+  );
 
-    if (active.id === over.id || activeItem?.parentId === overId) {
-      setIsMergeable(false);
-      return;
-    }
-
-    // Prevent merge and handle action if the item is dropped within its own area or nested areas.
-    if (
-      activeItem &&
-      overId &&
-      activeItem.children.findIndex(item => item.id === overId) > -1
-    ) {
-      isMovingWithinContainer.current = true;
-      setIsMergeable(false);
-      return;
-    }
-
-    /**
-     * Prevent merge if tying to combine:
-     *  - active item and a droppable area which is its immediate container.
-     *  - active item and droppable area are already grouped
-     *    and there are no other items in the group with them, therefore further
-     *    grouping them would serve no purpose
-     */
-    if (activeItem && droppableItem) {
-      const dropParentIndex =
-        droppableItem &&
-        flattenedItems.findIndex(({ id }) => id === droppableItem.parentId);
-      if (
-        activeItem.parentId === droppableItem.id ||
-        (droppableItem.children.length === 0 &&
-          droppableItem.parentId === activeItem.parentId &&
-          dropParentIndex > -1 &&
-          flattenedItems[dropParentIndex].children.length <= 2)
-      ) {
-        setIsMergeable(false);
-        return;
-      }
-    }
-
-    let isMergeable = shouldCombine(active.id, collisions, [0.1, 0.6]);
-
-    setIsMergeable(isMergeable);
-  };
-
-  const handleDragEnd = ({ delta }: DragEndEvent) => {
-    const clonedItems: FlattenedItem[] = [...flattenedItems];
-    const activeIndex = clonedItems.findIndex(({ id }) => id === activeId);
-    const droppableIndex = clonedItems.findIndex(({ id }) => id === overId);
-    // If the active item is dropped in its own area nothing changes.
-    if (activeIndex === droppableIndex) {
-      return;
-    }
-
-    // Prevent nesting/sorting of a parent element with its child.
-    if (isMovingWithinContainer.current) {
-      isMovingWithinContainer.current = false;
-      return;
-    }
-
-    /**
-     * [MERGING ITEMS]:
-     * Covers the following:
-     *  - Basic merging of two items.
-     *  - Adding an item to a group of items.
-     *  - Condensing nested containers
-     */
-    if (isMergeable && activeItem && droppableItem) {
-      if (droppableItem.children.length > 0) {
-        /*
-          [ADD TO EXISTING GROUP]
-          if the droppable item has children we add the active item to the list of children.
-          */
-        const item = addToExistingGroup(droppableItem, activeItem);
-        clonedItems[activeIndex] = item;
-      } else {
-        /*
-          [CREATE NEW GROUP]
-          During a merging of two singular items, we need to set the droppable container
-          with a new ID, and nest both the droppable and active item as children.
-          */
-        const newGroup = createNewGroup(droppableItem, activeItem);
-        clonedItems[droppableIndex] = {
-          ...droppableItem,
-          parentId: newGroup.id,
-          depth: newGroup.depth + 1,
-          index: 0, //droppable tag defaults to first element in new group
-        };
-
-        clonedItems[activeIndex] = {
-          ...activeItem,
-          parentId: newGroup.id,
-          depth: newGroup.depth + 1,
-          index: 1,
-        };
-        clonedItems.splice(droppableIndex, 0, newGroup);
-      }
-      // Transform data to tree structure
-      const newItems = buildTree(clonedItems);
-      // Update the state
+  const handleRemove = useCallback(
+    (id: UniqueIdentifier) => {
+      const updatedItems = removeItem(items, id);
+      const flattened = flattenTree(updatedItems);
+      const newItems = buildTree(updateIndices(flattened));
       setItems(newItems);
+    },
+    [items],
+  );
 
-      resetState();
-      return;
-    }
-    /**
-     * [SORTING ITEMS]:
-     *  - Updates the order of items for both containers and individual items
-     *  - Handles unnesting of elements when sorting outside the container
-     *
-     */
-    let arrayMoveDropIndex = droppableIndex;
-    if (activeItem && droppableItem) {
-      if (activeItem.parentId !== droppableItem.parentId) {
-        /**
-         * This section handles when an item is being dragged (and sorted) outside its parent container.
-         * droppableItem here is the parent container.
-         * When placing an item to the right(delta.x>0) of the parent container, the item must be placed after the children of the parent.
-         * When placing an item to the left of its parent (delta.x<0), it takes the index of the parent (no adjustments needed)
-         */
-        clonedItems[activeIndex] = {
-          ...clonedItems[activeIndex],
-          parentId: droppableItem.parentId,
-          depth: droppableItem.depth,
-        };
-        // [delta] refers to the mouse position, where a negative value indicated the pointer moving left/top and pos value = pointer moving right/bottom.
-        if (delta.x > 0 || delta.y > 0) {
-          const parentItem = clonedItems.find(
-            ({ id }) => id === activeItem.parentId,
-          );
-          const numChildren = parentItem?.children.length;
-          if (numChildren !== undefined) {
-            // the drop index has to be after all the children of the parent element if the mouse is moving right.
-            arrayMoveDropIndex = droppableIndex + numChildren;
-          }
-        }
+  const handleCollapse = useCallback((id: TreeItem['id']) => {
+    setItems(items =>
+      setProperty(items, id, 'collapsed', value => {
+        return !value;
+      }),
+    );
+  }, []);
 
-        const newItems = arrayMove(
-          clonedItems,
-          activeIndex,
-          arrayMoveDropIndex + 1,
-        );
-
-        setItems(buildTree(newItems));
-        resetState();
-
-        return;
-      }
-      // classic sorting mechanism between elements with same parent container
-      const newItems = arrayMove(clonedItems, activeIndex, droppableIndex);
-
-      setItems(buildTree(newItems));
-      resetState();
-    }
-  };
-
-  const [enableMovement] = useState(false);
   return (
     <>
-      <Box
-        bg={
-          !isMergeable &&
-          activeItem &&
-          droppableItem &&
-          !droppableItem.parentId &&
-          activeItem.parentId !== droppableItem.parentId
-            ? 'status.info'
-            : 'gray.100'
-        }
-        p={4}
-      >
+      <Box bg='gray.100' p={4}>
         <DndContext
+          accessibility={{ announcements }}
           measuring={measuring}
           sensors={sensors}
-          collisionDetection={collisionDetectionStrategy}
-          onDragStart={({ active }) => {
-            if (!active) {
-              return;
-            }
-            setActiveId(active.id);
-          }}
+          collisionDetection={closestCenter}
+          onDragStart={handleDragStart}
           onDragMove={handleDragMove}
+          onDragOver={handleDragOver}
           onDragEnd={handleDragEnd}
-          onDragCancel={() => resetState()}
+          onDragCancel={handleDragCancel}
         >
-          <div
-            style={{
-              display: 'flex',
-              // flexWrap: 'wrap',
-              padding: '1rem',
-              flexDirection: getSortingStrategy(items, enableMovement)
-                .direction,
-            }}
-          >
+          <UnorderedList>
             <SortableContext
               items={sortedIds}
-              strategy={getSortingStrategy(items, enableMovement).strategy}
+              strategy={verticalListSortingStrategy}
             >
-              {items.map((value, index) => (
-                <SortableCombineItem
-                  key={value.id}
-                  id={value.id}
-                  data={value}
-                  handle={handle}
-                  index={index}
-                  wrapperStyle={args =>
-                    wrapperStyle
-                      ? wrapperStyle({ ...args, items: flattenedItems })
-                      : {}
-                  }
-                  isMergeable={isMergeable}
-                  style={args =>
-                    getItemStyle
-                      ? getItemStyle({
-                          ...args,
-                          style: {
-                            flexDirection: getSortingStrategy(
-                              items,
-                              enableMovement,
-                            ).direction,
-                            ...args.style, // for nested elements to override
-                          },
-                        })
-                      : () => ({})
-                  }
-                  onUpdate={handleUpdate}
-                  onRemove={removable ? handleRemove : undefined}
-                  useDragOverlay={useDragOverlay}
-                  renderItem={props => (
-                    <ItemContent enableMovement={enableMovement} {...props} />
-                  )}
-                />
-              ))}
-            </SortableContext>
-          </div>
-          {useDragOverlay
-            ? createPortal(
-                <DragOverlay
-                  adjustScale={adjustScale}
-                  dropAnimation={dropAnimation}
-                  zIndex={theme.zIndices['popover']}
-                >
-                  {activeId && activeItem ? (
-                    <Item
-                      data={activeItem}
-                      handle={handle}
-                      wrapperStyle={
-                        wrapperStyle
-                          ? wrapperStyle({
-                              data: activeItem,
-                              isMergeable,
-                              items: flattenedItems,
-                            })
-                          : {}
-                      }
-                      style={{}}
-                      index={activeItem.index}
-                      dragOverlay
-                      isMergeable={false}
-                      activeIndex={activeItem.index}
-                      overIndex={droppableItem?.index}
-                      renderItem={props => (
-                        <ItemContent
-                          id={activeItem.id}
-                          data={activeItem}
-                          handle={handle}
+              {flattenedItems.map(item => {
+                const { id, index, children, collapsed, depth, parentId } =
+                  item;
+                return (
+                  <SortableTreeItem
+                    key={id}
+                    id={id}
+                    index={index}
+                    value={item.value}
+                    parentList={item.parentList}
+                    childCount={children.length}
+                    depth={
+                      id === activeId && projected ? projected.depth : depth
+                    }
+                    indentationWidth={indentationWidth}
+                    indicator={indicator}
+                    collapsed={Boolean(collapsed && children.length)}
+                    onUpdate={handleUnionUpdate}
+                    onCollapse={
+                      collapsible && children.length
+                        ? handleCollapse
+                        : undefined
+                    }
+                    onRemove={removable ? handleRemove : undefined}
+                  />
+                );
+              })}
+
+              {useDragOverlay
+                ? createPortal(
+                    <DragOverlay
+                      dropAnimation={dropAnimationConfig}
+                      modifiers={indicator ? [adjustTranslate] : undefined}
+                      zIndex={theme.zIndices['popover']}
+                    >
+                      {activeId && activeItem ? (
+                        <SortableTreeItem
+                          clone
+                          id={activeId}
+                          depth={activeItem.depth}
                           index={activeItem.index}
-                          isMergeable={isMergeable}
-                          wrapperStyle={wrapperStyle}
-                          style={getItemStyle}
-                          useDragOverlay={useDragOverlay}
-                          {...props}
+                          value={activeItem.value}
+                          childCount={getChildCount(items, activeId)}
+                          indentationWidth={indentationWidth}
+                          parentList={[]}
                         />
-                      )}
-                    />
-                  ) : null}
-                </DragOverlay>,
-                document.body,
-              )
-            : null}
+                      ) : null}
+                    </DragOverlay>,
+                    document.body,
+                  )
+                : null}
+            </SortableContext>
+          </UnorderedList>
         </DndContext>
       </Box>
     </>
   );
+
+  /**
+   * [Drag Events]:
+   *  Functions that handle the different stages of dragging an item
+   */
+
+  function handleDragStart({ active: { id: activeId } }: DragStartEvent) {
+    setActiveId(activeId);
+    setOverId(activeId);
+
+    const activeItem = flattenedItems.find(({ id }) => id === activeId);
+
+    if (activeItem) {
+      setCurrentPosition({
+        parentId: activeItem.parentId,
+        overId: activeId,
+      });
+    }
+
+    document.body.style.setProperty('cursor', 'grabbing');
+  }
+
+  function handleDragMove({ delta }: DragMoveEvent) {
+    setOffsetLeft(delta.x);
+  }
+
+  function handleDragOver({ over }: DragOverEvent) {
+    setOverId(over?.id ?? null);
+  }
+
+  function handleDragEnd({ active, over }: DragEndEvent) {
+    resetState();
+
+    if (projected && over) {
+      const { depth, parentId } = projected;
+      const clonedItems: FlattenedItem[] = [...flattenTree(items)];
+      const overIndex = clonedItems.findIndex(({ id }) => id === over.id);
+      const activeIndex = clonedItems.findIndex(({ id }) => id === active.id);
+      const activeTreeItem = clonedItems[activeIndex];
+      // item that the active item will be dropped in.
+      const parentIndex = clonedItems.findIndex(({ id }) => id === parentId);
+      const parentItem = clonedItems[parentIndex];
+      let sortedItems = clonedItems;
+      if (
+        activeTreeItem.parentId !== parentId &&
+        parentItem &&
+        parentItem.children.length === 0
+      ) {
+        /*
+      [MERGING TWO ITEMS]
+      During a merging of two singular items(items without children), we need to set the droppable container
+      with a new ID, and nest both the droppable and active item as children.
+      */
+        const newGroup = createNewGroup(parentItem, activeTreeItem);
+
+        // update the parent to have the same group id
+        clonedItems[parentIndex] = {
+          ...parentItem,
+          id: newGroup.id,
+          depth: newGroup.depth,
+          value: {
+            ...parentItem.value,
+            term: '',
+          },
+        };
+
+        clonedItems[activeIndex] = {
+          ...activeTreeItem,
+          parentId: newGroup.id,
+          depth: newGroup.depth + 1,
+        };
+
+        sortedItems = [
+          {
+            ...parentItem,
+            parentId: newGroup.id,
+            depth: newGroup.depth + 1,
+          },
+          ...arrayMove(clonedItems, activeIndex, overIndex),
+        ];
+      } else {
+        clonedItems[activeIndex] = {
+          ...activeTreeItem,
+          depth,
+          parentId,
+        };
+        sortedItems = arrayMove(clonedItems, activeIndex, overIndex);
+      }
+
+      const newItems = buildTree(updateIndices(sortedItems));
+      setItems(newItems);
+    }
+  }
+
+  function handleDragCancel() {
+    resetState();
+  }
+
+  function resetState() {
+    setOverId(null);
+    setActiveId(null);
+    setOffsetLeft(0);
+    setCurrentPosition(null);
+
+    document.body.style.setProperty('cursor', '');
+  }
+
+  /**
+   * [Accessibility]:
+   * Update announcements based on drag and position
+   */
+  function getMovementAnnouncement(
+    eventName: string,
+    activeId: UniqueIdentifier,
+    overId?: UniqueIdentifier,
+  ) {
+    if (overId && projected) {
+      if (eventName !== 'onDragEnd') {
+        if (
+          currentPosition &&
+          projected.parentId === currentPosition.parentId &&
+          overId === currentPosition.overId
+        ) {
+          return;
+        } else {
+          setCurrentPosition({
+            parentId: projected.parentId,
+            overId,
+          });
+        }
+      }
+
+      const clonedItems: FlattenedItem[] = JSON.parse(
+        JSON.stringify(flattenTree(items)),
+      );
+      const overIndex = clonedItems.findIndex(({ id }) => id === overId);
+      const activeIndex = clonedItems.findIndex(({ id }) => id === activeId);
+      const sortedItems = arrayMove(clonedItems, activeIndex, overIndex);
+
+      const previousItem = sortedItems[overIndex - 1];
+
+      let announcement;
+      const movedVerb = eventName === 'onDragEnd' ? 'dropped' : 'moved';
+      const nestedVerb = eventName === 'onDragEnd' ? 'dropped' : 'nested';
+
+      if (!previousItem) {
+        const nextItem = sortedItems[overIndex + 1];
+        announcement = `${activeId} was ${movedVerb} before ${nextItem.id}.`;
+      } else {
+        if (projected.depth > previousItem.depth) {
+          announcement = `${activeId} was ${nestedVerb} under ${previousItem.id}.`;
+        } else {
+          let previousSibling: FlattenedItem | undefined = previousItem;
+          while (previousSibling && projected.depth < previousSibling.depth) {
+            const parentId: UniqueIdentifier | null = previousSibling.parentId;
+            previousSibling = sortedItems.find(({ id }) => id === parentId);
+          }
+
+          if (previousSibling) {
+            announcement = `${activeId} was ${movedVerb} after ${previousSibling.id}.`;
+          }
+        }
+      }
+
+      return announcement;
+    }
+
+    return;
+  }
 }
 
-export const getSortingStrategy = (
-  items: DragItem[],
-  enableMovement: boolean,
-) => {
-  const numItems = items.length;
-  const itemHasChildren =
-    items.filter(
-      item =>
-        item.children.length > 0 &&
-        item.children.map(subItem => {
-          return subItem.children.length > 0;
-        }),
-    ).length > 0;
-
-  const sortOrder: {
-    strategy: SortingStrategy;
-    direction: 'row' | 'row-reverse' | 'column' | 'column-reverse';
-  } = { strategy: () => null, direction: 'column' };
-  const MAX_ROW_ITEMS = 2;
-  // we want items in a column if one of the items is a container for other items
-  // or if the number of items is larger than [MAX_ROW_ITEMS] .
-  if (itemHasChildren || numItems > MAX_ROW_ITEMS) {
-    // vertical
-    sortOrder.strategy = verticalListSortingStrategy;
-    sortOrder.direction = 'column';
-  } else {
-    // horizontal
-    sortOrder.strategy = horizontalListSortingStrategy;
-
-    sortOrder.direction = 'row';
-  }
-  if (!enableMovement) {
-    sortOrder.strategy = () => null;
-  }
-  return sortOrder;
+const adjustTranslate: Modifier = ({ transform }) => {
+  return {
+    ...transform,
+    y: transform.y - 25,
+  };
 };

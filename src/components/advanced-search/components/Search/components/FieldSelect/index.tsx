@@ -23,6 +23,7 @@ import { MdTextFormat } from 'react-icons/md';
 import { formatNumber } from 'src/utils/helpers';
 import { filterFields, transformFieldName } from './helpers';
 import Fuse from 'fuse.js';
+import { QueryValue } from 'src/components/advanced-search/types';
 
 const Option = (props: OptionProps<any>) => {
   const { isOpen: showDescription, onClose, onOpen } = useDisclosure();
@@ -138,18 +139,18 @@ const Control = (props: ControlProps<any>) => {
   );
 };
 interface FieldSelectProps {
-  isDisabled: boolean;
+  isDisabled?: boolean;
   size?: 'sm' | 'md' | 'lg';
-  isFormReset: boolean;
-  setResetForm: (arg: boolean) => void;
+  selectedField: QueryValue['field'];
+  setSelectedField: (field: QueryValue['field']) => void;
 }
 
 export const FieldSelect: React.FC<FieldSelectProps> = ({
-  isDisabled,
-  isFormReset,
-  setResetForm,
+  isDisabled = false,
+  size = 'md',
+  selectedField,
+  setSelectedField,
 }) => {
-  const { searchField, setSearchField } = useAdvancedSearchContext();
   const [inputValue, setInputValue] = useState('');
   const fields = [
     {
@@ -177,10 +178,6 @@ export const FieldSelect: React.FC<FieldSelectProps> = ({
   const fuse = new Fuse(fields, { keys: ['label'] });
   const fuzzy_fields = fuse.search(inputValue).map(({ item }) => item);
 
-  useEffect(() => {
-    isFormReset && setSearchField('');
-  }, [isFormReset, setSearchField]);
-
   return (
     <Box minW='300px' w={{ base: '100%', md: 'unset' }} ml={0} mr={2}>
       {fields ? (
@@ -192,17 +189,16 @@ export const FieldSelect: React.FC<FieldSelectProps> = ({
           </VisuallyHidden>
           <Select
             components={{ Control, Option }}
-            value={fields.filter(field => field.label === searchField)[0]}
+            value={fields.filter(field => field.label === selectedField)[0]}
             isDisabled={isDisabled}
             // is clearable when not the default "all fields" selection.
-            isClearable={searchField !== ''}
+            isClearable={selectedField !== ''}
             isSearchable={true}
             placeholder='All Fields'
             name='Field'
             options={inputValue ? fuzzy_fields : fields}
-            onFocus={() => isFormReset && setResetForm(false)}
             onChange={(option: any) =>
-              setSearchField(!option ? '' : option.value)
+              setSelectedField(!option ? '' : option.value)
             }
             inputValue={inputValue}
             onInputChange={setInputValue}
@@ -249,5 +245,16 @@ export const FieldSelect: React.FC<FieldSelectProps> = ({
         <></>
       )}
     </Box>
+  );
+};
+
+export const FieldSelectWithContext = () => {
+  const { queryValue, updateQueryValue } = useAdvancedSearchContext();
+
+  return (
+    <FieldSelect
+      selectedField={queryValue.field}
+      setSelectedField={field => updateQueryValue({ field })}
+    />
   );
 };

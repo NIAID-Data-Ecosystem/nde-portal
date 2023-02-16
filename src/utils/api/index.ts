@@ -75,8 +75,8 @@ export const fetchSearchResults = async (params: Params) => {
     }
 
     return { results, total, facets };
-  } catch (err) {
-    throw err;
+  } catch (err: any) {
+    throw err.response;
   }
 };
 

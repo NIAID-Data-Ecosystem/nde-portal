@@ -44,7 +44,6 @@ export const RadioSelect = ({
 
       <SelectWithButton
         id='search-type'
-        ariaLabel='Select type of text search'
         colorScheme='gray'
         _hover={{ bg: 'gray.100' }}
         _focus={{ boxShadow: 'none' }}
@@ -54,7 +53,9 @@ export const RadioSelect = ({
         justifyContent='space-between'
         p={2}
         isDisabled={isDisabled}
-        {...disclosure}
+        isOpen={disclosure.isOpen}
+        onToggle={disclosure.onToggle}
+        onClose={disclosure.onClose}
       >
         <OptionsList zIndex='popover' w='unset' minW='100%'>
           {options.map(option => {

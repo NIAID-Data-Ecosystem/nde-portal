@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { ButtonProps, InputProps } from 'nde-design-system';
 import {
-  DragItem,
+  TreeItem,
   UnionTypes,
 } from 'src/components/advanced-search/components/SortableWithCombine';
 import {
@@ -47,7 +47,7 @@ interface SearchInputProps {
   //   isDisabled: boolean;
   colorScheme?: InputProps['colorScheme'];
   size: InputProps['size'];
-  items: DragItem[];
+  items: TreeItem[];
   onSubmit: (args: {
     term: string;
     field: string;

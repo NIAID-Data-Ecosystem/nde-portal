@@ -53,14 +53,15 @@ export const SelectWrapper: React.FC<{
 
 interface SelectProps extends UseDisclosureProps {
   id: string;
-  ariaLabel: string;
   handleOnClickOutside?: () => void;
   isDisabled?: boolean;
   renderButton?: (props: IconButtonProps) => React.ReactElement;
   onToggle: () => void;
 }
 
-interface SelectWithInputProps extends Omit<InputProps, 'id'>, SelectProps {}
+interface SelectWithInputProps extends Omit<InputProps, 'id'>, SelectProps {
+  ariaLabel: string;
+}
 
 export const SelectWithInput: React.FC<SelectWithInputProps> = ({
   id,
