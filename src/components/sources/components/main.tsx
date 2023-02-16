@@ -44,20 +44,18 @@ const Main: React.FC<Main> = ({ sourceData }) => {
     async () => {
       const data = await Promise.all(
         Object.entries(repos).map(([k, source]) => {
-          if (source.code.file) {
-            // Fetch source information from github
-            return fetchSources({
-              id: (source.sourceInfo && source.sourceInfo.identifier) || k,
-              sourcePath: source.code.file,
-              name: (source.sourceInfo && source.sourceInfo.name) || k,
-              description:
-                (source.sourceInfo && source.sourceInfo.description) || '',
-              dateModified: source.version || '',
-              numberOfRecords: source.stats[k] || 0,
-              schema: (source.sourceInfo && source.sourceInfo.schema) || null,
-              url: (source.sourceInfo && source.sourceInfo.url) || '',
-            });
-          }
+          // Fetch source information from github
+          return fetchSources({
+            id: (source.sourceInfo && source.sourceInfo.identifier) || k,
+            sourcePath: source?.code?.file || null,
+            name: (source.sourceInfo && source.sourceInfo.name) || k,
+            description:
+              (source.sourceInfo && source.sourceInfo.description) || '',
+            dateModified: source.version || '',
+            numberOfRecords: source.stats[k] || 0,
+            schema: (source.sourceInfo && source.sourceInfo.schema) || null,
+            url: (source.sourceInfo && source.sourceInfo.url) || '',
+          });
         }),
       );
       return data.filter(x => x !== undefined);
@@ -271,11 +269,15 @@ const Main: React.FC<Main> = ({ sourceData }) => {
                 <Box mt={4}>
                   <Heading as='h3' size='xs'>
                     Latest Release{' '}
-                    {new Date(sourceObj.dateModified).toDateString()}
+                    {sourceObj.dateModified
+                      ? new Date(sourceObj.dateModified).toDateString()
+                      : 'N/A'}
                   </Heading>
                   <Heading as='h3' size='xs'>
                     First Released{' '}
-                    {new Date(sourceObj.dateCreated).toDateString()}
+                    {sourceObj.dateCreated
+                      ? new Date(sourceObj.dateCreated).toDateString()
+                      : 'N/A'}
                   </Heading>
                 </Box>
                 <Flex
