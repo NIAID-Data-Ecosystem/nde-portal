@@ -2,7 +2,7 @@ import axios from 'axios';
 import { MetadataSource } from 'src/utils/api/types';
 
 interface fetchSourcesArgs {
-  sourcePath: string;
+  sourcePath: string | null;
   id: MetadataSource['sourceInfo']['identifier'];
   name: MetadataSource['sourceInfo']['name'];
   description: MetadataSource['sourceInfo']['description'];
@@ -28,7 +28,7 @@ export const fetchSources = async ({
   ...props
 }: fetchSourcesArgs) => {
   if (!sourcePath) {
-    return null;
+    return { ...props };
   }
 
   try {
