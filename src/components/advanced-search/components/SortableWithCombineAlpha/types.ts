@@ -10,7 +10,6 @@ import type {
 } from '@dnd-kit/core';
 import type { arrayMove, SortingStrategy } from '@dnd-kit/sortable';
 import { BoxProps } from 'nde-design-system';
-import { SearchOption } from '../Search/components/AdvancedSearchFormContext';
 
 export type UnionTypes = 'AND' | 'OR' | 'NOT';
 
@@ -24,7 +23,6 @@ export interface DragItem {
     querystring?: string;
     field?: string;
     union?: UnionTypes;
-    searchType?: SearchOption;
   };
   index: number;
 

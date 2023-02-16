@@ -1,4 +1,4 @@
-import { wildcardQueryString } from '../../utils';
+import { wildcardQueryString } from '../../utils/query-helpers';
 import MetadataFieldsConfig from 'configs/resource-fields.json';
 import { QueryValue } from '../../types';
 
@@ -22,9 +22,10 @@ export interface SearchTypesConfigProps {
   label: string;
   description: string;
   example?: string;
+  additionalInfo?: string;
   isDefault?: boolean;
   options?: SearchTypesConfigProps[];
-  transformValue?: () => {};
+  transformValue?: (query: QueryValue) => QueryValue;
   shouldDisable?: (field: QueryValue['field']) => boolean;
   shouldOmit?: (field: QueryValue['field']) => boolean;
 }
@@ -35,9 +36,20 @@ export const SEARCH_TYPES_CONFIG: SearchTypesConfigProps[] = [
     label: 'Field exists',
     description: 'Matches where selected field has a value.',
     isDefault: false,
-    transformValue: () => {},
     shouldDisable: (field: QueryValue['field']) => {
       return !field;
+    },
+    transformValue: (query: QueryValue) => {
+      /* For "exists" type queries, we want a format of _exists_: {field}, meaning:
+       * [field] is set to "_exists_"
+       * [term] and [querystring] are set to the field name
+       */
+      return {
+        ...query,
+        field: '_exists_',
+        term: query.field,
+        querystring: query.field,
+      };
     },
   },
   {
@@ -45,9 +57,20 @@ export const SEARCH_TYPES_CONFIG: SearchTypesConfigProps[] = [
     label: "Field doesn't exist",
     description: 'Matches where selected field has no set value.',
     isDefault: false,
-    transformValue: () => {},
     shouldDisable: (field: QueryValue['field']) => {
       return !field;
+    },
+    transformValue: (query: QueryValue) => {
+      /* For "-_exists_" type queries, we want a format of -_exists_: {field}, meaning:
+       * [field] is set to "-_exists_"
+       * [term] and [querystring] are set to the field name
+       */
+      return {
+        ...query,
+        field: '-_exists_',
+        term: query.field,
+        querystring: query.field,
+      };
     },
   },
   {
@@ -55,12 +78,16 @@ export const SEARCH_TYPES_CONFIG: SearchTypesConfigProps[] = [
     label: 'Field contains',
     description: 'Contains this term or phrase',
     isDefault: true,
-    transformValue: () => {},
     shouldOmit: (field: QueryValue['field']) => {
       if (!field) {
         return true;
       }
-      const fieldDetails = MetadataFieldsConfig.find(f => f.property === field);
+      const fieldDetails = MetadataFieldsConfig.find(f => {
+        // if(field==="_exists_" || field==="-_exists_") {
+        //   return f.property === querystring
+        // }
+        return f.property === field;
+      });
 
       if (fieldDetails?.format === 'enum' || fieldDetails?.format === 'date') {
         return false;
@@ -72,7 +99,6 @@ export const SEARCH_TYPES_CONFIG: SearchTypesConfigProps[] = [
     id: 'contains-multi',
     label: 'MultiField contains',
     description: 'Contains this term or phrase',
-    omitForFieldType: ['enum', 'boolean'],
     shouldOmit: (field: QueryValue['field']) => {
       if (!field) {
         return false;
@@ -82,7 +108,11 @@ export const SEARCH_TYPES_CONFIG: SearchTypesConfigProps[] = [
       return (
         fieldDetails?.format === 'enum' ||
         fieldDetails?.format === 'date' ||
-        fieldDetails?.type === 'boolean'
+        fieldDetails?.type === 'boolean' ||
+        fieldDetails?.type === 'unsigned_long' ||
+        fieldDetails?.type === 'integer' ||
+        fieldDetails?.type === 'double' ||
+        fieldDetails?.type === 'float'
       );
     },
     isDefault: true,
@@ -93,7 +123,29 @@ export const SEARCH_TYPES_CONFIG: SearchTypesConfigProps[] = [
         description: 'Contains the exact term or phrase.',
         isDefault: true,
         example: `west siberian virus · contains the exact phrase 'west siberian virus'`,
-        transformValue: (value: string) => `"${value}"`,
+        transformValue: (query: QueryValue) => {
+          // escape double quotes.
+          const querystring = query.term.replace(/"/g, '\\"');
+          return { ...query, querystring: `"${querystring}"` };
+        },
+        shouldOmit: (field: QueryValue['field']) => {
+          if (!field) {
+            return false;
+          }
+          const fieldDetails = MetadataFieldsConfig.find(
+            f => f.property === field,
+          );
+
+          return (
+            fieldDetails?.format === 'enum' ||
+            fieldDetails?.format === 'date' ||
+            fieldDetails?.type === 'boolean' ||
+            fieldDetails?.type === 'unsigned_long' ||
+            fieldDetails?.type === 'integer' ||
+            fieldDetails?.type === 'double' ||
+            fieldDetails?.type === 'float'
+          );
+        },
       },
 
       {
@@ -107,8 +159,32 @@ export const SEARCH_TYPES_CONFIG: SearchTypesConfigProps[] = [
         additionalInfo:
           'Querying for records containing phrase fragments can be slow. "Exact" matching yields quicker results.',
         isDefault: false,
-        transformValue: (value: string, field?: string) => {
-          return wildcardQueryString({ value, field });
+        transformValue: (query: QueryValue) => {
+          return {
+            ...query,
+            querystring: wildcardQueryString({
+              value: query.term,
+              field: query.field,
+            }),
+          };
+        },
+        shouldOmit: (field: QueryValue['field']) => {
+          if (!field) {
+            return false;
+          }
+          const fieldDetails = MetadataFieldsConfig.find(
+            f => f.property === field,
+          );
+
+          return (
+            fieldDetails?.format === 'enum' ||
+            fieldDetails?.format === 'date' ||
+            fieldDetails?.type === 'boolean' ||
+            fieldDetails?.type === 'unsigned_long' ||
+            fieldDetails?.type === 'integer' ||
+            fieldDetails?.type === 'double' ||
+            fieldDetails?.type === 'float'
+          );
         },
       },
 
@@ -118,8 +194,33 @@ export const SEARCH_TYPES_CONFIG: SearchTypesConfigProps[] = [
         description: 'Field contains value that starts with given term.',
         example: `covid · contains results beginning with 'covid' such as 'covid-19`,
         isDefault: false,
-        transformValue: (value: string, field?: string) => {
-          return wildcardQueryString({ value, field, wildcard: 'end' });
+        transformValue: (query: QueryValue) => {
+          return {
+            ...query,
+            querystring: wildcardQueryString({
+              value: query.term,
+              field: query.field,
+              wildcard: 'end',
+            }),
+          };
+        },
+        shouldOmit: (field: QueryValue['field']) => {
+          if (!field) {
+            return false;
+          }
+          const fieldDetails = MetadataFieldsConfig.find(
+            f => f.property === field,
+          );
+
+          return (
+            fieldDetails?.format === 'enum' ||
+            fieldDetails?.format === 'date' ||
+            fieldDetails?.type === 'boolean' ||
+            fieldDetails?.type === 'unsigned_long' ||
+            fieldDetails?.type === 'integer' ||
+            fieldDetails?.type === 'double' ||
+            fieldDetails?.type === 'float'
+          );
         },
       },
 
@@ -129,8 +230,33 @@ export const SEARCH_TYPES_CONFIG: SearchTypesConfigProps[] = [
         description: 'Field contains value that ends with given term.',
         example: `osis · contains results ending with 'osis' such as 'tuberculosis'`,
         isDefault: false,
-        transformValue: (value: string, field?: string) => {
-          return wildcardQueryString({ value, field, wildcard: 'start' });
+        transformValue: (query: QueryValue) => {
+          return {
+            ...query,
+            querystring: wildcardQueryString({
+              value: query.term,
+              field: query.field,
+              wildcard: 'start',
+            }),
+          };
+        },
+        shouldOmit: (field: QueryValue['field']) => {
+          if (!field) {
+            return false;
+          }
+          const fieldDetails = MetadataFieldsConfig.find(
+            f => f.property === field,
+          );
+
+          return (
+            fieldDetails?.format === 'enum' ||
+            fieldDetails?.format === 'date' ||
+            fieldDetails?.type === 'boolean' ||
+            fieldDetails?.type === 'unsigned_long' ||
+            fieldDetails?.type === 'integer' ||
+            fieldDetails?.type === 'double' ||
+            fieldDetails?.type === 'float'
+          );
         },
       },
     ],

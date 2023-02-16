@@ -15,7 +15,7 @@ import MetadataFieldsConfig from 'configs/resource-fields.json';
 import { getTypeLabel } from './helpers';
 import { FlattenedItem } from '../../types';
 import { transformFieldName } from '../../../Search/components/FieldSelect/helpers';
-import { getUnionTheme } from 'src/components/advanced-search/utils';
+import { getUnionTheme } from 'src/components/advanced-search/utils/query-helpers';
 import { FaCaretDown } from 'react-icons/fa';
 import { FieldSelect } from '../../../Search';
 
@@ -25,24 +25,16 @@ interface ItemContentProps {
   id: FlattenedItem['id'];
   index: FlattenedItem['index'];
 }
+type MetadataField = (typeof MetadataFieldsConfig)[number];
 
 const FieldComponent = ({
-  value,
+  field,
   colorScheme,
 }: {
-  value: ItemContentProps['value'];
+  field: MetadataField;
   colorScheme: string;
 }) => {
   const [toggleFieldMenu, setToggleFieldMenu] = useState(false);
-  type MetadataField = (typeof MetadataFieldsConfig)[number];
-
-  const field = MetadataFieldsConfig.find(field => {
-    if (value.field === '_exists_' || value.field === '-_exists_') {
-      return field.property === value.term;
-    }
-
-    return field.property === value.field;
-  }) as MetadataField;
 
   return (
     <>
@@ -68,13 +60,16 @@ const FieldComponent = ({
   );
 };
 
-// {/* {/* { <UnorderedList>
-//    {MetadataFieldsConfig.map(field => {
-//      return <ListItem key={field.property}>FieldSelect</ListItem>;
-//    })} */}
-//  </UnorderedList>} */}
 export const ItemContent = ({ childCount, value }: ItemContentProps) => {
   const { field, term, union } = value;
+
+  const fieldDetails = MetadataFieldsConfig.find(field => {
+    if (value.field === '_exists_' || value.field === '-_exists_') {
+      return field.property === value.term;
+    }
+
+    return field.property === value.field;
+  }) as MetadataField;
 
   const getDisplayTerm = (value: FlattenedItem['value']) => {
     if (value.field === '_exists_' || value.field === '-_exists_') {
@@ -86,7 +81,7 @@ export const ItemContent = ({ childCount, value }: ItemContentProps) => {
           </Text>{' '}
           contain{' '}
           <Text as='span' fontWeight='bold'>
-            {field ? transformFieldName(field) : ''}
+            {term ? transformFieldName(fieldDetails) : ''}
           </Text>{' '}
           field.
         </span>
@@ -119,7 +114,7 @@ export const ItemContent = ({ childCount, value }: ItemContentProps) => {
       {/* Don't show field if it's an exists type or parent container*/}
       {!childCount && value.field && (
         <FieldComponent
-          value={value}
+          field={fieldDetails}
           colorScheme={union ? getUnionTheme(union).colorScheme : 'gray'}
         />
       )}

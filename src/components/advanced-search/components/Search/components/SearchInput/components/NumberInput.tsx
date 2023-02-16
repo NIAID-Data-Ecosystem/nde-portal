@@ -1,102 +1,106 @@
-export {};
-// import { useState } from 'react';
-// import {
-//   Box,
-//   ButtonProps,
-//   Flex,
-//   Input,
-//   InputProps,
-//   Text,
-//   theme,
-// } from 'nde-design-system';
-// import Select, { components, OptionProps, ControlProps } from 'react-select';
+import { useState } from 'react';
+import { Flex, Select } from 'nde-design-system';
+import {
+  NumberDecrementStepper,
+  NumberIncrementStepper,
+  NumberInput as ChakraNumberInput,
+  NumberInputField,
+  NumberInputStepper,
+} from '@chakra-ui/react';
+import { AdvancedSearchInputProps } from '../types';
+import { formatNumber } from 'src/utils/helpers';
 
-// interface EnumInputProps {
-//   field: string;
-//   isDisabled: boolean;
-//   options: string[];
-//   handleSubmit: (args: { term: string; querystring: string }) => void;
-//   renderSubmitButton?: (props: ButtonProps) => React.ReactElement;
-// }
+interface NumberInputProps extends AdvancedSearchInputProps {
+  options?: {
+    label: string;
+    value: string;
+  }[];
+}
 
-// export const EnumInput: React.FC<EnumInputProps> = ({
-//   field,
-//   isDisabled,
-//   options,
-//   handleSubmit,
-//   renderSubmitButton,
-// }) => {
-//   const selectOptions = [...options.map(value => ({ label: value, value }))];
-//   const defaultOption = selectOptions[0];
-//   const [selectedOption, setSelectedOption] = useState<{
-//     label: string;
-//     value: string;
-//   } | null>(defaultOption);
+export const NumberInput: React.FC<NumberInputProps> = ({
+  isDisabled,
+  colorScheme,
+  size,
+  handleSubmit,
+  renderSubmitButton,
+}) => {
+  const options = [
+    { label: 'Equal to', value: '' },
+    { label: 'Bigger than', value: '>' },
+    { label: 'Bigger or Equal to', value: '>=' },
+    { label: 'Smaller or Equal to', value: '<=' },
+    { label: 'Smaller than', value: '<' },
+  ];
 
-//   return (
-//     <Flex
-//       as='form'
-//       w='100%'
-//       alignItems='center'
-//       onSubmit={e => {
-//         e.preventDefault();
-//         handleSubmit({
-//           term: selectedOption?.label || '',
-//           querystring: selectedOption?.value || '',
-//         });
-//       }}
-//     >
-//       <Select
-//         defaultValue={defaultOption}
-//         isDisabled={isDisabled}
-//         isSearchable={true}
-//         name={`${field} options`}
-//         options={['']}
-//         onChange={(option: any) => {
-//           setSelectedOption(option);
-//         }}
-//         styles={{
-//           container: base => ({ ...base, flex: 1 }),
-//           control: base => ({
-//             ...base,
-//             borderColor: theme.colors.gray[200],
-//             boxShadow: 'none',
-//             ':hover': {
-//               borderColor: theme.colors.gray[200],
-//             },
-//             ':focus': {
-//               borderColor: theme.colors.primary[500],
-//               boxShadow: `0 0 0 1px ${theme.colors.primary[600]}`,
-//             },
-//             ':focus-within': {
-//               borderColor: theme.colors.primary[500],
-//               boxShadow: `0 0 0 1px ${theme.colors.primary[600]}`,
-//             },
-//           }),
-//           option: (base, { isFocused, isSelected }) => ({
-//             ...base,
-//             cursor: 'pointer',
-//             backgroundColor: isSelected
-//               ? theme.colors.primary[500]
-//               : isFocused
-//               ? theme.colors.primary[100]
-//               : 'transparent',
-//             color: isSelected ? 'white' : theme.colors.text.body,
-//             ':hover': {
-//               background: isSelected
-//                 ? theme.colors.primary[500]
-//                 : theme.colors.primary[100],
-//             },
-//           }),
-//         }}
-//       />
-//       <Flex mx={2}>
-//         {renderSubmitButton &&
-//           renderSubmitButton({
-//             type: 'submit',
-//             w: '100%',
-//           })}
-//       </Flex>
-//     </Flex>
-//   );
-// };
+  const [count, setCount] = useState<string>('0');
+  const [operator, setOperator] = useState<(typeof options)[number]>(
+    options[0],
+  );
+
+  return (
+    <Flex
+      as='form'
+      w='100%'
+      alignItems='center'
+      onSubmit={e => {
+        e.preventDefault();
+        handleSubmit({
+          term: `${operator.label} ${formatNumber(+count)}`,
+          querystring: `${operator.value}${count}`,
+        });
+      }}
+    >
+      <Select
+        colorScheme={colorScheme}
+        // bg={colorScheme ? `${colorScheme}.50` : `gray.100`}
+        size='lg'
+        mr={2}
+        variant='outline'
+        isDisabled={isDisabled}
+        value={options.findIndex(option => option.label === operator.label)}
+        onChange={e => {
+          setOperator(options[+e.target.value]);
+        }}
+        fontWeight='semibold'
+      >
+        {options.map((option, index) => {
+          return (
+            <option key={option.label} value={index}>
+              {option.label} {option.value || '='}
+            </option>
+          );
+        })}
+      </Select>
+      <ChakraNumberInput
+        w='100%'
+        maxW={150}
+        value={formatNumber(+count, ' ')}
+        onChange={value => {
+          setCount(value);
+        }}
+        colorScheme={colorScheme} // [to do] - implement colorscheme.
+        clampValueOnBlur={true}
+        isDisabled={isDisabled}
+        allowMouseWheel
+        step={50}
+        defaultValue={0}
+        min={0}
+        size='lg' // [to do] - get this from the size prop and change size in nde-design-system
+      >
+        <NumberInputField />
+        <NumberInputStepper>
+          <NumberIncrementStepper />
+          <NumberDecrementStepper />
+        </NumberInputStepper>
+      </ChakraNumberInput>
+      <Flex mx={2}>
+        {renderSubmitButton &&
+          renderSubmitButton({
+            type: 'submit',
+            w: '100%',
+            isDisabled,
+          })}
+      </Flex>
+    </Flex>
+  );
+};

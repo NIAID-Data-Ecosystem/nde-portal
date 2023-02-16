@@ -27,13 +27,15 @@ import { useDebounce } from 'usehooks-ts';
 import {
   convertObject2QueryString,
   convertQueryString2Object,
-} from '../../utils';
+} from '../../utils/query-helpers';
+import {
+  QueryStringError,
+  removeDuplicateErrors,
+} from '../../utils/validation-checks';
 import { TreeItem } from '../SortableWithCombine';
 import {
   formatQueryString,
   getErrorMessage,
-  QueryStringError,
-  removeDuplicateErrors,
   validateQueryString,
 } from './utils';
 
@@ -102,6 +104,7 @@ export const EditableQueryText = ({
             removeDuplicateErrors([
               ...prev,
               {
+                id: 'no-results',
                 type: 'warning',
                 title: 'Search generates no results.',
                 message:
@@ -158,7 +161,9 @@ export const EditableQueryText = ({
 
         return;
       } else if (error) {
-        const errorMessage = getErrorMessage(error);
+        const errorMessage = getErrorMessage(
+          error as unknown as { status: string },
+        );
         if (errorMessage) {
           setErrors(prev => removeDuplicateErrors([...prev, errorMessage]));
         }

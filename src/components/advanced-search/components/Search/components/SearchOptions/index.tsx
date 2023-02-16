@@ -1,6 +1,6 @@
+import React from 'react';
 import { RadioGroup } from '@chakra-ui/react';
 import { Stack } from 'nde-design-system';
-import React from 'react';
 import { useAdvancedSearchContext } from '../AdvancedSearchFormContext';
 import { RadioItem } from './components/RadioItem';
 import { RadioSelect } from './components/RadioSelect';
@@ -12,7 +12,6 @@ export const SearchOptions: React.FC = () => {
     setSelectedSearchType,
     searchTypeOptions,
   } = useAdvancedSearchContext();
-  console.log('selectedSearchType', selectedSearchType);
 
   return (
     <RadioGroup
@@ -31,34 +30,33 @@ export const SearchOptions: React.FC = () => {
               !(option.shouldOmit && option.shouldOmit(queryValue.field)),
           )
           .map(option => {
-            // if (option.options && option.options.length) {
-            //   return (
-            //     <RadioSelect
-            //       key='select'
-            //       searchOption={selectedSearchType}
-            //       updateSearchOption={setSelectedSearchType}
-            //       options={option.options}
-            //       // isDisabled={
-            //       //   (option.shouldDisable &&
-            //       //     option.shouldDisable(queryValue.field)) ||
-            //       //   false
-            //       // }
-            //     />
-            //   );
-            // }
+            if (option.options && option.options.length) {
+              return (
+                <RadioSelect
+                  key='select'
+                  searchOption={selectedSearchType}
+                  updateSearchOption={setSelectedSearchType}
+                  options={option.options}
+                  isChecked={
+                    option.id === selectedSearchType.id ||
+                    option.options.findIndex(
+                      ({ id }) => id === selectedSearchType.id,
+                    ) > -1
+                  }
+                />
+              );
+            }
 
             return (
               <RadioItem
                 key={option.id}
                 label={option.label}
                 description={option.description}
-                // value={option.label}
                 onChange={() => setSelectedSearchType(option)}
                 hasTooltip
                 isDisabled={
                   option.shouldDisable && option.shouldDisable(queryValue.field)
                 }
-                // isFocusable={false}
                 isChecked={option.label === selectedSearchType.label}
               />
             );

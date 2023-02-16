@@ -40,12 +40,10 @@ interface RadioItemProps
   extends Omit<RadioProps, 'name' | 'value'>,
     Omit<SearchTypesConfigProps, 'id' | 'value'> {
   hasTooltip?: boolean;
-  value: string;
 }
 
 export const RadioItem: React.FC<RadioItemProps> = ({
   label,
-  value,
   description,
   example,
   hasTooltip,

@@ -30,6 +30,7 @@ export interface SearchWithPredictiveTextProps
   size?: InputProps['size'];
   type?: InputProps['type'];
   isDisabled?: boolean;
+  isInvalid?: boolean;
   colorScheme?: InputProps['colorScheme'];
   inputValue?: string;
   onClick?: (
@@ -58,6 +59,7 @@ export const PredictiveSearch: React.FC<SearchWithPredictiveTextProps> = ({
   onChange,
   onClick,
   isDisabled,
+  isInvalid,
   isLoading,
   inputValue,
   ...props
@@ -104,6 +106,7 @@ export const PredictiveSearch: React.FC<SearchWithPredictiveTextProps> = ({
           size={size}
           type={type}
           isLoading={isLoading}
+          isInvalid={isInvalid}
           onChange={onChange ? onChange : updateSearchTerm}
           onSubmit={(value, idx) => {
             handleSubmit(value, searchField, results[idx]);

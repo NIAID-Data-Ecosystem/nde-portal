@@ -5,12 +5,12 @@ import { Handle } from './components/Handle';
 import { Remove } from './components/Remove';
 import type { DragItem, UnionTypes } from '../../types';
 import { DropdownButton } from 'src/components/dropdown-button';
+import { Box, BoxProps, Flex, Icon } from 'nde-design-system';
+import { FaArrowsAlt } from 'react-icons/fa';
 import {
   getUnionTheme,
   unionOptions,
-} from 'src/components/advanced-search/utils';
-import { Box, BoxProps, Flex, Icon } from 'nde-design-system';
-import { FaArrowsAlt } from 'react-icons/fa';
+} from 'src/components/advanced-search/utils/query-helpers';
 
 export interface Props {
   activeIndex: number;

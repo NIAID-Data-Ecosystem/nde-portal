@@ -1,9 +1,9 @@
-import { collapseTree, TreeItem } from './components/SortableWithCombine';
+import { flatten, uniqueId } from 'lodash';
+import { collapseTree, TreeItem } from '../components/SortableWithCombine';
 import MetadataConfig from 'configs/resource-metadata.json';
 import SchemaFields from 'configs/resource-fields.json';
 import MetadataNames from 'configs/metadata-standard-names.json';
 import { encodeString } from 'src/utils/querystring-helpers';
-import { flatten, uniqueId } from 'lodash';
 
 type UnionTypes = 'AND' | 'OR' | 'NOT';
 
@@ -119,8 +119,16 @@ export const convertObject2QueryString = (items: TreeItem[]) => {
           str += `${field}:`;
         }
         let formattedTerm = querystring ? querystring : term;
+
+        const containsUnion = unionOptions.some(union =>
+          formattedTerm.includes(union),
+        );
         // 1. if the term is wrapped in quotes, do nothing.
-        if (formattedTerm.startsWith('"') && formattedTerm.endsWith('"')) {
+        if (
+          formattedTerm.startsWith('"') &&
+          formattedTerm.endsWith('"') &&
+          !containsUnion
+        ) {
           str += formattedTerm;
         } else if (formattedTerm.split(' ').length > 1) {
           // 2. if the term contains spaces or contains a field, wrap in parens.

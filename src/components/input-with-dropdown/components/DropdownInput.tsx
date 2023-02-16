@@ -28,6 +28,7 @@ export interface DropdownInputProps {
   type: InputProps['type'];
   placeholder?: string;
   isDisabled?: boolean;
+  isInvalid?: boolean;
   isLoading?: boolean;
   getInputValue: (arg: number) => string;
   renderSubmitButton?: (props: ButtonProps) => ReactElement;
@@ -43,6 +44,7 @@ export const DropdownInput: React.FC<DropdownInputProps> = ({
   size = 'sm',
   type,
   isDisabled,
+  isInvalid,
   renderSubmitButton,
   getInputValue,
   onChange,
@@ -101,6 +103,7 @@ export const DropdownInput: React.FC<DropdownInputProps> = ({
             type,
             pr: inputRightRef?.current?.clientWidth || 4,
             isDisabled,
+            isInvalid,
             onKeyDown: (
               _: React.KeyboardEvent<HTMLInputElement>,
               index: number,

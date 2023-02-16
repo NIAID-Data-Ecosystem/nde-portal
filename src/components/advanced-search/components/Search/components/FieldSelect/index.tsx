@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import {
   Box,
   Flex,
@@ -152,6 +152,19 @@ export const FieldSelect: React.FC<FieldSelectProps> = ({
   setSelectedField,
 }) => {
   const [inputValue, setInputValue] = useState('');
+  const fields_metadata = useMemo(
+    () => [
+      ...MetadataFields.filter(filterFields).map(field => {
+        return {
+          ...field,
+          label: transformFieldName(field),
+          value: field.property,
+        };
+      }),
+    ],
+    [],
+  );
+
   const fields = [
     {
       label: 'All Fields',
@@ -159,27 +172,24 @@ export const FieldSelect: React.FC<FieldSelectProps> = ({
       value: '',
       type: '',
     },
-    ...MetadataFields.filter(filterFields)
-      .map(field => {
-        return {
-          ...field,
-          label: transformFieldName(field),
-          value: field.property,
-        };
-      })
-      .sort((a, b) => {
-        if (!inputValue) {
-          return b.count - a.count;
-        }
-        return a.label.localeCompare(b.label);
-      }),
+    ...fields_metadata.sort((a, b) => {
+      if (!inputValue) {
+        return b.count - a.count;
+      }
+      return a.label.localeCompare(b.label);
+    }),
   ];
 
   const fuse = new Fuse(fields, { keys: ['label'] });
   const fuzzy_fields = fuse.search(inputValue).map(({ item }) => item);
-
   return (
-    <Box minW='300px' w={{ base: '100%', md: 'unset' }} ml={0} mr={2}>
+    <Box
+      minW='300px'
+      maxW={['unset', '400px']}
+      w={{ base: '100%', md: 'unset' }}
+      ml={0}
+      mr={2}
+    >
       {fields ? (
         <>
           <VisuallyHidden>
@@ -189,7 +199,11 @@ export const FieldSelect: React.FC<FieldSelectProps> = ({
           </VisuallyHidden>
           <Select
             components={{ Control, Option }}
-            value={fields.filter(field => field.label === selectedField)[0]}
+            value={
+              selectedField
+                ? fields.filter(field => field.label === selectedField)[0]
+                : fields[0]
+            }
             isDisabled={isDisabled}
             // is clearable when not the default "all fields" selection.
             isClearable={selectedField !== ''}
@@ -250,7 +264,6 @@ export const FieldSelect: React.FC<FieldSelectProps> = ({
 
 export const FieldSelectWithContext = () => {
   const { queryValue, updateQueryValue } = useAdvancedSearchContext();
-
   return (
     <FieldSelect
       selectedField={queryValue.field}

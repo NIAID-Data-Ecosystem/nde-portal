@@ -1,47 +1,49 @@
-import React from 'react';
-import { Box, ButtonProps, InputProps } from 'nde-design-system';
+import React, { useEffect } from 'react';
+import { Box } from 'nde-design-system';
 import { PredictiveSearch } from 'src/components/search-with-predictive-text/components/PredictiveSearch';
-import { UnionTypes } from 'src/components/advanced-search/components/SortableWithCombine';
 import { useAdvancedSearchContext } from '../../AdvancedSearchFormContext';
-import { wildcardQueryString } from 'src/components/advanced-search/utils';
+import { wildcardQueryString } from 'src/components/advanced-search/utils/query-helpers';
+import { usePredictiveSearch } from 'src/components/search-with-predictive-text';
+import { checkBalancedPunctuation } from 'src/components/advanced-search/utils/validation-checks';
+import { AdvancedSearchInputProps } from '../types';
 
-interface TextInputProps {
-  isDisabled?: boolean;
-  colorScheme?: InputProps['colorScheme'];
-  size: InputProps['size'];
-  inputValue: any;
-  handleClick: (args: { term: string; field: string }) => void; // triggered when suggestion item from list is clicked.
-  handleChange: (value: string) => void;
-  handleSubmit: (args: {
-    term: string;
-    field: string;
-    querystring: string;
-    union?: UnionTypes;
-  }) => void;
-  renderSubmitButton?: (props: ButtonProps) => React.ReactElement;
-}
-
-export const TextInput: React.FC<TextInputProps> = ({
+export const TextInput: React.FC<AdvancedSearchInputProps> = ({
   colorScheme = 'primary',
   inputValue,
   isDisabled,
   size,
+  errors,
+  setErrors,
   handleChange,
   handleClick,
   handleSubmit,
   renderSubmitButton,
+  ...props
 }) => {
-  const advancedSearchProps = useAdvancedSearchContext();
+  const stringInputValue = inputValue as string;
+  const { queryValue, selectedSearchType } = useAdvancedSearchContext();
 
-  const { searchField, searchOption, updateSearchTerm } = advancedSearchProps;
-
-  const handleQueryString = (value: string) => {
-    let term = value;
-    if (searchOption?.transformValue) {
-      term = searchOption.transformValue(value, searchField);
+  const validateInput = (value: string) => {
+    const errors = [];
+    const isBalanced = checkBalancedPunctuation(value);
+    if (!isBalanced.isValid) {
+      isBalanced.error && errors.push(isBalanced.error);
     }
-    return term;
+    setErrors(errors);
+    return errors;
   };
+  // Show predictive results based on input change.
+  const predictiveSearch = usePredictiveSearch(
+    stringInputValue,
+    queryValue.field,
+    true,
+  );
+
+  useEffect(() => {
+    if (stringInputValue === '') {
+      predictiveSearch.updateSearchTerm('');
+    }
+  }, [stringInputValue, predictiveSearch]);
 
   return (
     <Box width='100%'>
@@ -51,48 +53,85 @@ export const TextInput: React.FC<TextInputProps> = ({
         placeholder='Search for datasets or tools'
         colorScheme={colorScheme}
         size={size}
-        inputValue={inputValue}
+        inputValue={stringInputValue}
         isDisabled={isDisabled}
+        isInvalid={errors.length > 0}
         onChange={value => {
-          let term = value;
-
-          // for exact search we still want the list of available options to be wildcarded.
+          let searchTerm = value;
+          // for exact search we still want the list of predictive options to be wildcarded.
           // https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/153
-          if (searchOption.value === 'exact') {
-            term = wildcardQueryString({ value, field: searchField });
+          if (selectedSearchType.id === 'exact') {
+            searchTerm = wildcardQueryString({
+              value,
+              field: queryValue.field,
+            });
           } else {
-            term = handleQueryString(value);
+            if (selectedSearchType?.transformValue) {
+              searchTerm = selectedSearchType.transformValue({
+                ...queryValue,
+                term: value,
+              }).querystring;
+            }
           }
+
           // Update the predictive search list;
-          updateSearchTerm(term);
+          predictiveSearch.updateSearchTerm(searchTerm);
           handleChange(value);
+          if (errors.length) {
+            validateInput(value);
+          }
         }}
         onClick={(term, field) => {
-          let value = term;
+          /*
+          Some search terms are an array of strings, e.g. ["term1", "term2"]. In this case we want to return 
+          results that match either term1 or term2. This is the default though we may want to change this based
+          on search type in the future.
+          */
           if (Array.isArray(term)) {
-            value = `${term.join('" AND "')}`;
+            let querystring = `"${term.join('" OR "')}"`;
+            return handleClick({
+              querystring,
+              term: querystring,
+              field,
+            });
           }
-          handleClick({ term: `"${value}"`, field });
+
+          // if a suggestion is clicked, we exact term that search.
+          handleClick({ querystring: `"${term}"`, term: `"${term}"`, field });
         }}
-        // isDisabled={!searchTerm || !searchOption}
         handleSubmit={(term, field) => {
-          let querystring = handleQueryString(term);
-          handleSubmit({ term, field, querystring });
+          const errors = validateInput(term);
+          if (errors.length > 0) {
+            return;
+          } else {
+            // reset predictive search list.
+            predictiveSearch.updateSearchTerm('');
+
+            const result = selectedSearchType?.transformValue
+              ? selectedSearchType.transformValue({
+                  ...queryValue,
+                  term,
+                })
+              : { term, field };
+            handleSubmit(result);
+          }
         }}
         renderSubmitButton={props =>
           renderSubmitButton ? (
             renderSubmitButton({
               ...props,
               isDisabled:
-                searchOption.value !== '_exists_' &&
-                searchOption.value !== '-_exists_' &&
-                inputValue === '',
+                (selectedSearchType.id !== '_exists_' &&
+                  selectedSearchType.id !== '-_exists_' &&
+                  inputValue === '') ||
+                errors.length > 0,
             })
           ) : (
             <></>
           )
         }
-        {...advancedSearchProps}
+        {...predictiveSearch}
+        {...props}
       />
     </Box>
   );

@@ -46,7 +46,7 @@ import { useCollisionDetection } from './CollisionDetectionStrategy';
 import { theme } from '@chakra-ui/react';
 import { ItemContent } from './ItemContent';
 import { Box, Checkbox } from 'nde-design-system';
-import { getUnionTheme } from 'src/components/advanced-search/utils';
+import { getUnionTheme } from 'src/components/advanced-search/utils/query-helpers';
 
 const dropAnimationConfig: DropAnimation = {
   keyframes({ transform }) {

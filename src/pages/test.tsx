@@ -1,10 +1,7 @@
 import { uniqueId } from 'lodash';
 import { Box } from 'nde-design-system';
 import { collapseTree } from 'src/components/advanced-search/components/SortableWithCombine';
-import {
-  convertQs2Object,
-  convertQueryString2Object,
-} from 'src/components/advanced-search/utils';
+import { convertQueryString2Object } from 'src/components/advanced-search/utils/query-helpers';
 
 function findClosingBracketMatchIndex(str, pos) {
   if (str[pos] != '(') {

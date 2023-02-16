@@ -1,14 +1,13 @@
 import { useState } from 'react';
-import { ButtonProps, Flex, theme } from 'nde-design-system';
 import Select from 'react-select';
-import { useAdvancedSearchContext } from '../../AdvancedSearchFormContext';
-import { formatType } from 'src/utils/api/helpers';
+import { Flex, theme } from 'nde-design-system';
+import { AdvancedSearchInputProps } from '../types';
 
-interface EnumInputProps {
-  isDisabled: boolean;
-  options?: string[];
-  handleSubmit: (args: { term: string; querystring: string }) => void;
-  renderSubmitButton?: (props: ButtonProps) => React.ReactElement;
+interface EnumInputProps extends AdvancedSearchInputProps {
+  options?: {
+    label: string;
+    value: string;
+  }[];
 }
 
 export const EnumInput: React.FC<EnumInputProps> = ({
@@ -17,16 +16,7 @@ export const EnumInput: React.FC<EnumInputProps> = ({
   handleSubmit,
   renderSubmitButton,
 }) => {
-  const { searchField } = useAdvancedSearchContext();
-  const selectOptions = [
-    ...options?.map(value => {
-      if (searchField === '@type') {
-        return { label: formatType(value), value };
-      }
-      return { label: value, value };
-    }),
-  ];
-  const defaultOption = selectOptions[0];
+  const defaultOption = options[0];
   const [selectedOption, setSelectedOption] = useState<{
     label: string;
     value: string;
@@ -52,7 +42,7 @@ export const EnumInput: React.FC<EnumInputProps> = ({
         isSearchable={true}
         name='Field options'
         value={selectedOption}
-        options={selectOptions}
+        options={options}
         onChange={(option: any) => {
           setSelectedOption(option);
         }}

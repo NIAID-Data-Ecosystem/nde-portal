@@ -20,97 +20,25 @@ import {
   FlattenedItem,
   SortableWithCombine,
 } from './components/SortableWithCombine';
-import { convertObject2QueryString, wildcardQueryString } from './utils';
+import { convertObject2QueryString } from './utils/query-helpers';
 import {
   FaChevronDown,
   FaChevronUp,
   FaSearch,
   FaUndoAlt,
 } from 'react-icons/fa';
-import {
-  AdvancedSearchFormContext,
-  FieldSelect,
-  Search,
-  SearchInput,
-  SearchOption,
-} from './components/Search';
-import { SearchOptions } from './components/Search/components/SearchOptions';
+import { AdvancedSearchFormContext, Search } from './components/Search';
 import { ResultsCount } from './components/ResultsCount';
 import SampleQueries from 'configs/sample-queries.json';
 import { EditableQueryText } from './components/EditableQueryText';
-import { Disclaimer } from './components/Search/components/Disclaimer';
 import { ErrorMessages } from './components/ErrorMessages';
-import { QueryStringError } from './components/EditableQueryText/utils';
+import { SEARCH_TYPES_CONFIG } from './components/Search/search-types-config';
+import { QueryStringError } from './utils/validation-checks';
 
 interface AdvancedSearchProps {
   buttonProps?: ButtonProps;
   modalProps?: ModalProps;
 }
-
-export const SEARCH_OPTIONS: SearchOption[] = [
-  {
-    name: 'Field exists',
-    value: '_exists_',
-    description: 'Matches where selected field contains any value.',
-  },
-  {
-    name: "Field doesn't exist",
-    value: '-_exists_',
-    description: 'Matches where selected field is left blank.',
-  },
-  {
-    name: 'Field Contains',
-    value: 'default',
-    isDefault: true,
-    description: '',
-    options: [
-      {
-        name: 'Exact Match',
-        value: 'exact',
-        description: 'Contains the exact term or phrase.',
-        type: 'text',
-        example: `west siberian virus · contains the exact phrase 'west siberian virus'`,
-        transformValue: (value: string) => `"${value}"`,
-        isDefault: true,
-      },
-      {
-        name: 'Contains',
-        value: 'contains',
-        type: 'text',
-        description:
-          'Field contains value that starts or ends with given term. Note that when given multiple terms, terms wil be searched for separately and not grouped together.',
-        example: `oronaviru · contains results that contain the string fragment 'oronaviru' such as 'coronavirus'.
-      immune dis · contains results that contain the string fragment 'immune' and 'dis' - though not always sequentially.
-      `,
-        transformValue: (value: string, field?: string) => {
-          return wildcardQueryString({ value, field });
-        },
-        additionalInfo:
-          'Querying for records containing phrase fragments can be slow. "Exact" matching yields quicker results.',
-      },
-      {
-        name: 'Starts with',
-        value: 'starts',
-        description: 'Field contains value that starts with given term.',
-        type: 'text',
-        example: `covid · contains results beginning with 'covid' such as 'covid-19`,
-        transformValue: (value: string, field?: string) => {
-          return wildcardQueryString({ value, field, wildcard: 'end' });
-        },
-      },
-      {
-        name: 'Ends with',
-        value: 'ends',
-        type: 'text',
-        description: 'Field contains value that ends with given term.',
-        example: `osis · contains results ending with 'osis' such as 'tuberculosis'`,
-        transformValue: (value: string, field?: string) => {
-          return wildcardQueryString({ value, field, wildcard: 'start' });
-        },
-      },
-    ],
-  },
-];
 
 export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
   buttonProps,
@@ -167,12 +95,16 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
             flexWrap='wrap'
           >
             {isOpen && (
-              <Search
-                items={items}
-                setItems={updateItems}
-                resetForm={resetForm}
-                setResetForm={setResetForm}
-              />
+              <AdvancedSearchFormContext
+                searchTypeOptions={SEARCH_TYPES_CONFIG}
+              >
+                <Search
+                  items={items}
+                  setItems={updateItems}
+                  resetForm={resetForm}
+                  setResetForm={setResetForm}
+                />
+              </AdvancedSearchFormContext>
             )}
           </Flex>
 

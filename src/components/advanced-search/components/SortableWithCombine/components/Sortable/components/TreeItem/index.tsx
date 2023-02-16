@@ -5,7 +5,7 @@ import {
   UnionTypes,
 } from 'src/components/advanced-search/components/SortableWithCombine/types';
 import { TreeItemActions, UnionButton } from './components';
-import { getUnionTheme } from 'src/components/advanced-search/utils';
+import { getUnionTheme } from 'src/components/advanced-search/utils/query-helpers';
 import { ListItemProps } from '@chakra-ui/react';
 import { UniqueIdentifier } from '@dnd-kit/core';
 import { ItemContent } from '../../../ItemContent';

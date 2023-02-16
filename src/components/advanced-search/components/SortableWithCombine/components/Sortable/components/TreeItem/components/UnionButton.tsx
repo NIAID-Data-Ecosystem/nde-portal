@@ -8,7 +8,7 @@ import { UnionTypes } from 'src/components/advanced-search/components/SortableWi
 import {
   getUnionTheme,
   unionOptions,
-} from 'src/components/advanced-search/utils';
+} from 'src/components/advanced-search/utils/query-helpers';
 
 interface UnionButtonProps
   extends Pick<DropdownButtonProps, 'colorScheme' | 'selectedOption'> {

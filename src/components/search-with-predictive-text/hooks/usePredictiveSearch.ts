@@ -18,7 +18,12 @@ export interface usePredictiveSearchResponse {
   setSearchField: (value: string) => void;
 }
 // Handles query formatting for predictive search
-export const usePredictiveSearch = (term = '', field = '', encode = true) => {
+export const usePredictiveSearch = (
+  term = '',
+  field = '',
+  encode = true,
+  validate = (arg: string) => true,
+) => {
   const [results, setResults] = useState<FormattedResource[]>([]);
   const [searchTerm, setSearchTerm] = useState(term);
   const [searchField, setSearchField] = useState(field);
@@ -30,9 +35,11 @@ export const usePredictiveSearch = (term = '', field = '', encode = true) => {
   >(
     ['advanced-search', { term: searchTerm, facet: searchField }],
     () => {
-      const queryString = encode ? encodeString(searchTerm) : searchTerm;
+      const queryString = encode
+        ? encodeString(searchTerm).replace(/(?=[()])/g, '\\')
+        : searchTerm;
       return fetchSearchResults({
-        q: searchField ? `${searchField}:(${queryString})` : `${queryString}`,
+        q: searchField ? `(${searchField}:${queryString})` : `${queryString}`,
         size: 20,
         // return flattened version of data.
         dotfield: true,
@@ -44,7 +51,12 @@ export const usePredictiveSearch = (term = '', field = '', encode = true) => {
     // Don't refresh everytime window is touched, only run query if there's is a search term
     {
       refetchOnWindowFocus: false,
-      enabled: searchTerm.length > 0 && !!searchField,
+      retry: 1,
+      enabled:
+        validate &&
+        validate(searchTerm) &&
+        searchTerm.length > 0 &&
+        !!searchField,
       onSuccess: data => {
         // if results exist set state.
         if (data?.results) {

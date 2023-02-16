@@ -1,13 +1,15 @@
 import { uniqueId } from 'lodash';
 import { Flex } from 'nde-design-system';
+import { useEffect } from 'react';
 import { TreeItem } from '../SortableWithCombine';
-import { AdvancedSearchFormContext } from './components/AdvancedSearchFormContext';
+import {
+  AdvancedSearchFormContext,
+  useAdvancedSearchContext,
+} from './components/AdvancedSearchFormContext';
 import { Disclaimer } from './components/Disclaimer';
-import { FieldSelect, FieldSelectWithContext } from './components/FieldSelect';
 import { SearchInput } from './components/SearchInput';
 import { SearchOptions } from './components/SearchOptions';
 import { SEARCH_TYPES_CONFIG } from './search-types-config';
-// import { SearchOptions } from './components/SearchOptions';
 
 interface SearchProps {
   items: TreeItem[];
@@ -21,20 +23,31 @@ export const Search = ({
   resetForm,
   setResetForm,
 }: SearchProps) => {
+  const { onReset } = useAdvancedSearchContext();
+
+  // if form is reset, we reset the selected field, search type and input value
+  useEffect(() => {
+    if (resetForm) {
+      onReset();
+    }
+    return () => {
+      setResetForm(false);
+    };
+  }, [onReset, resetForm, setResetForm]);
+
   return (
-    <AdvancedSearchFormContext searchTypeOptions={SEARCH_TYPES_CONFIG}>
+    <>
       <Flex w='100%' justifyContent='flex-end'>
         <SearchOptions />
       </Flex>
       <Flex w='100%' alignItems='flex-end'>
-        <FieldSelectWithContext />
-        {/* <SearchInput
+        <SearchInput
           size='md'
           colorScheme='primary'
           items={items}
-          isFormReset={resetForm}
+          resetForm={resetForm}
           setResetForm={setResetForm}
-          onSubmit={({ term, field, union, querystring, searchType }) => {
+          onSubmit={({ term, field, union, querystring }) => {
             setItems(() => {
               if (!term) return items;
               const newItems = [...items];
@@ -51,7 +64,6 @@ export const Search = ({
                   term,
                   union,
                   querystring,
-                  searchType,
                 },
                 children: [],
                 index: items.length,
@@ -60,10 +72,10 @@ export const Search = ({
               return newItems;
             });
           }}
-        /> */}
+        />
       </Flex>
-      {/* <Disclaimer /> */}
-    </AdvancedSearchFormContext>
+      <Disclaimer />
+    </>
   );
 };
 

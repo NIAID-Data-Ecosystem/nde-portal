@@ -8,7 +8,6 @@ import type {
   UniqueIdentifier,
 } from '@dnd-kit/core';
 import type { arrayMove, SortingStrategy } from '@dnd-kit/sortable';
-import { SearchOption } from '../Search/components/AdvancedSearchFormContext';
 
 export type UnionTypes = 'AND' | 'OR' | 'NOT';
 
@@ -38,7 +37,6 @@ export interface TreeItem {
     querystring?: string;
     field?: string;
     union?: UnionTypes;
-    searchType?: SearchOption;
   };
   parentId: UniqueIdentifier | null;
   parentList?: {
