@@ -33,7 +33,7 @@ export const PageContainer: React.FC<PageContainerProps> = ({
   disableSearchBar,
 }) => {
   const topNavigation = navConfig as NavigationProps['navigation'];
-  const footerNavigation = footerConfig as FooterProps['navigation'];
+  // const footerNavigation = footerConfig as FooterProps['navigation'];
 
   const ref = useRef<HTMLDivElement>(null);
 
