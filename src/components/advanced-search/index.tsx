@@ -108,7 +108,7 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
             )}
           </Flex>
 
-          <Heading size='sm' fontWeight='medium' mt={2}>
+          <Heading size='sm' fontWeight='medium' mb={2}>
             Or choose from the sample queries below.
           </Heading>
           {sample_queries.map(query => {
@@ -116,7 +116,6 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
               <Button
                 key={query.name}
                 mx={1}
-                leftIcon={<FaSearch />}
                 colorScheme='gray'
                 color='text.body'
                 size='sm'
@@ -143,7 +142,7 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
               colorScheme='primary'
               size='sm'
               leftIcon={<FaUndoAlt />}
-              variant='ghost'
+              variant='outline'
               isDisabled={!items.length}
               onClick={() => {
                 setItems([]);
@@ -151,14 +150,14 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
               }}
               ml={4}
             >
-              Reset query
+              Clear query
             </Button>
           </Flex>
           <Text color={items.length ? 'text.body' : 'gray.600'} fontSize='sm'>
             Re-order query terms by click and drag. Group items together by
             dragging an element over another.
+            <ResultsCount queryString={convertObject2QueryString(items)} />
           </Text>
-          <ResultsCount queryString={convertObject2QueryString(items)} />
 
           <SortableWithCombine
             items={items}
