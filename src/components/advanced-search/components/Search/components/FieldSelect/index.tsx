@@ -31,33 +31,43 @@ const Option = (props: OptionProps<any>) => {
   const { label, type, count } = data;
   const ref = useRef(null);
 
-  let icon;
-  let tooltipLabel = type;
-  if (type === 'text' || type === 'keyword') {
-    icon = MdTextFormat;
-    if (data.enum) {
-      icon = FaTh;
+  const { icon, tooltipLabel } = useMemo(() => {
+    let icon;
+    let tooltipLabel = type;
+    if (type === 'text' || type === 'keyword') {
+      icon = MdTextFormat;
+      if (data.enum) {
+        icon = FaTh;
+      }
+    } else if (type === 'date') {
+      icon = FaRegCalendarAlt;
+    } else if (
+      type === 'unsigned_long' ||
+      type === 'integer' ||
+      type === 'double' ||
+      type === 'float'
+    ) {
+      icon = FaHashtag;
+      tooltipLabel = 'number';
+    } else if (type === 'boolean') {
+      icon = FaRegCheckCircle;
     }
-  } else if (type === 'date') {
-    icon = FaRegCalendarAlt;
-  } else if (
-    type === 'unsigned_long' ||
-    type === 'integer' ||
-    type === 'double' ||
-    type === 'float'
-  ) {
-    icon = FaHashtag;
-    tooltipLabel = 'number';
-  } else if (type === 'boolean') {
-    icon = FaRegCheckCircle;
-  }
 
-  let description = data.abstract ? data.abstract : data.description;
-  if (typeof description === 'object') {
-    description = Object.values(description)
-      .filter((str, idx) => Object.values(description).indexOf(str) === idx)
-      .join(' or ');
-  }
+    return { icon, tooltipLabel };
+  }, [type, data.enum]);
+
+  // Description is the abstract or description field from the metadata fields config.
+  let description = useMemo(() => {
+    const metaDescription = data.abstract ? data.abstract : data.description;
+    if (typeof metaDescription === 'object') {
+      return Object.values(metaDescription)
+        .filter(
+          (str, idx) => Object.values(metaDescription).indexOf(str) === idx,
+        )
+        .join(' or ');
+    }
+    return metaDescription;
+  }, [data.abstract, data.description]);
   return (
     <components.Option {...props}>
       <Box
