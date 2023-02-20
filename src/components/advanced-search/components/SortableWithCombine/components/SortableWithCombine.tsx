@@ -225,10 +225,10 @@ export function SortableWithCombine({
    * Fns that handle the state of individual data items.
    */
   const handleUnionUpdate = useCallback(
-    (id: FlattenedItem['id'], union: UnionTypes) => {
+    (id: FlattenedItem['id'], updatedValue: TreeItem['value']) => {
       setItems(items =>
         setProperty(items, id, 'value', value => {
-          return { ...value, union };
+          return { ...value, ...updatedValue };
         }),
       );
     },

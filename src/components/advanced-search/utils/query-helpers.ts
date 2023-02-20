@@ -78,11 +78,15 @@ export const wildcardQueryString = ({
   field?: string;
   wildcard?: 'start' | 'end';
 }) => {
-  const searchTerms = value.trim().split(' ');
   if (!value) {
     return '';
   }
 
+  const searchTerms = value.trim().split(' ');
+
+  // Wildcard with multiple words is pretty tricky and doesn't work well at the moment
+  // To get somewhat accurate results we need to wildcard each word individually
+  // i.e. (*perennial*+*allergic*+*rhinitis*) instead of (*perennial allergic rhinitis*)
   const querystring = `${searchTerms
     .map(str => {
       let wildcarded_str = '';
@@ -93,7 +97,7 @@ export const wildcardQueryString = ({
       } else {
         wildcarded_str = `*${str}*`;
       }
-      return str ? `${wildcarded_str}` : '';
+      return str ? `${wildcarded_str.replaceAll(',', '')}` : '';
     })
     .join(' ')}`;
 

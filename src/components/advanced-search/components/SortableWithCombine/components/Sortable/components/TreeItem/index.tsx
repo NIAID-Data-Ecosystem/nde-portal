@@ -26,7 +26,7 @@ export interface TreeItemProps
   indentationWidth: number;
   parentList: FlattenedItem['parentList'];
   value: FlattenedItem['value'];
-  onUpdate?(id: UniqueIdentifier, union: UnionTypes): void;
+  onUpdate?(id: UniqueIdentifier, value: TreeItem['value']): void;
   onCollapse?(id: UniqueIdentifier): void;
   onRemove?(id: UniqueIdentifier): void;
   wrapperRef?(node: HTMLLIElement): void;
@@ -174,7 +174,9 @@ export const TreeItem = React.memo(
                       union ? getUnionTheme(union).colorScheme : 'primary'
                     }
                     selectedOption={union}
-                    setSelectedOption={onUpdate}
+                    setSelectedOption={(id, union) => {
+                      onUpdate && onUpdate(id, { union });
+                    }}
                   />
                 </Box>
               )}
@@ -206,6 +208,7 @@ export const TreeItem = React.memo(
                       id={id}
                       childCount={childCount}
                       value={value}
+                      onUpdate={onUpdate}
                     />
                   </TreeItemActions>
 
@@ -309,18 +312,4 @@ const TreeItemWrapper = React.memo(
       </Wrapper>
     );
   },
-  // (prevProps, nextProps) => {
-  //   if (
-  //     prevProps.collapsed === nextProps.collapsed &&
-  //     prevProps.indentationWidth === nextProps.indentationWidth &&
-  //     prevProps.parentIndex === nextProps.parentIndex &&
-  //     prevProps.position === nextProps.position &&
-  //     JSON.stringify(prevProps.parentList) ===
-  //       JSON.stringify(nextProps.parentList)
-  //   ) {
-  //     return true;
-  //   } else {
-  //     return false;
-  //   }
-  // },
 );

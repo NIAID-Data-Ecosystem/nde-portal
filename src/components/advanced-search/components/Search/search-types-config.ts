@@ -1,6 +1,6 @@
 import { wildcardQueryString } from '../../utils/query-helpers';
 import MetadataFieldsConfig from 'configs/resource-fields.json';
-import { QueryValue } from '../../types';
+import { QueryValue, UnionTypes } from '../../types';
 
 /**
  * @interface SearchTypesConfigProps:
@@ -25,7 +25,7 @@ export interface SearchTypesConfigProps {
   additionalInfo?: string;
   isDefault?: boolean;
   options?: SearchTypesConfigProps[];
-  transformValue?: (query: QueryValue) => QueryValue;
+  transformValue?: (query: QueryValue) => QueryValue | QueryValue[];
   shouldDisable?: (field: QueryValue['field']) => boolean;
   shouldOmit?: (field: QueryValue['field']) => boolean;
 }
@@ -124,9 +124,22 @@ export const SEARCH_TYPES_CONFIG: SearchTypesConfigProps[] = [
         isDefault: true,
         example: `west siberian virus · contains the exact phrase 'west siberian virus'`,
         transformValue: (query: QueryValue) => {
-          // escape double quotes.
-          const querystring = query.term.replace(/"/g, '\\"');
-          return { ...query, querystring: `"${querystring}"` };
+          if (Array.isArray(query.term)) {
+            let querystring = query.term
+              // escape double quotes.
+              .map(term => term.replace(/"/g, '\\"'))
+              .join('" OR "');
+            return {
+              ...query,
+              term: `"${query.term.join('" OR "')}"`,
+              querystring: `"${querystring}"`,
+            };
+          } else {
+            return {
+              ...query,
+              querystring: `"${query.term.replace(/"/g, '\\"')}"`,
+            };
+          }
         },
         shouldOmit: (field: QueryValue['field']) => {
           if (!field) {
@@ -160,13 +173,34 @@ export const SEARCH_TYPES_CONFIG: SearchTypesConfigProps[] = [
           'Querying for records containing phrase fragments can be slow. "Exact" matching yields quicker results.',
         isDefault: false,
         transformValue: (query: QueryValue) => {
-          return {
-            ...query,
-            querystring: wildcardQueryString({
-              value: query.term,
-              field: query.field,
-            }),
-          };
+          /**
+           * if the query term is an array (such as a keywords array)
+           * we want to add a query value for each term that is wildcarded
+           * and join these field term values with "OR".
+           */
+          if (Array.isArray(query.term)) {
+            const queryValues = query.term.map(term => {
+              return {
+                ...query,
+                union: 'OR' as UnionTypes,
+                term,
+                querystring: wildcardQueryString({
+                  value: term,
+                  field: query.field,
+                }),
+              };
+            });
+
+            return queryValues;
+          } else {
+            return {
+              ...query,
+              querystring: wildcardQueryString({
+                value: query.term,
+                field: query.field,
+              }),
+            };
+          }
         },
         shouldOmit: (field: QueryValue['field']) => {
           if (!field) {
@@ -195,14 +229,31 @@ export const SEARCH_TYPES_CONFIG: SearchTypesConfigProps[] = [
         example: `covid · contains results beginning with 'covid' such as 'covid-19`,
         isDefault: false,
         transformValue: (query: QueryValue) => {
-          return {
-            ...query,
-            querystring: wildcardQueryString({
-              value: query.term,
-              field: query.field,
-              wildcard: 'end',
-            }),
-          };
+          if (Array.isArray(query.term)) {
+            const queryValues = query.term.map(term => {
+              return {
+                ...query,
+                union: 'OR' as UnionTypes,
+                term,
+                querystring: wildcardQueryString({
+                  value: term,
+                  field: query.field,
+                  wildcard: 'end',
+                }),
+              };
+            });
+
+            return queryValues;
+          } else {
+            return {
+              ...query,
+              querystring: wildcardQueryString({
+                value: query.term,
+                field: query.field,
+                wildcard: 'end',
+              }),
+            };
+          }
         },
         shouldOmit: (field: QueryValue['field']) => {
           if (!field) {
@@ -231,14 +282,31 @@ export const SEARCH_TYPES_CONFIG: SearchTypesConfigProps[] = [
         example: `osis · contains results ending with 'osis' such as 'tuberculosis'`,
         isDefault: false,
         transformValue: (query: QueryValue) => {
-          return {
-            ...query,
-            querystring: wildcardQueryString({
-              value: query.term,
-              field: query.field,
-              wildcard: 'start',
-            }),
-          };
+          if (Array.isArray(query.term)) {
+            const queryValues = query.term.map(term => {
+              return {
+                ...query,
+                union: 'OR' as UnionTypes,
+                term,
+                querystring: wildcardQueryString({
+                  value: term,
+                  field: query.field,
+                  wildcard: 'start',
+                }),
+              };
+            });
+
+            return queryValues;
+          } else {
+            return {
+              ...query,
+              querystring: wildcardQueryString({
+                value: query.term,
+                field: query.field,
+                wildcard: 'start',
+              }),
+            };
+          }
         },
         shouldOmit: (field: QueryValue['field']) => {
           if (!field) {

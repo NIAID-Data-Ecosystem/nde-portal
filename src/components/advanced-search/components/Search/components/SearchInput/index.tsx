@@ -27,7 +27,7 @@ interface SearchInputProps {
   size: InputProps['size'];
   items: TreeItem[];
   resetForm: boolean;
-  onSubmit: (args: QueryValue) => void;
+  onSubmit: (args: QueryValue | QueryValue[]) => void;
   setResetForm: (arg: boolean) => void;
 }
 export const SearchInput: React.FC<SearchInputProps> = ({
@@ -50,8 +50,13 @@ export const SearchInput: React.FC<SearchInputProps> = ({
     string | number | { startDate: string; endDate: string }
   >('');
 
-  const handleSubmit = (value: Partial<QueryValue>) => {
+  const handleSubmit = (value: Partial<QueryValue> | QueryValue[]) => {
     setInputValue('');
+
+    if (Array.isArray(value)) {
+      onSubmit(value);
+      return;
+    }
     const updatedQuery = { ...queryValue, ...value };
     // For "exists" type queries, we want a format of _exists_: {field} or -_exists_:{field}
     // so the exists keyword is set as field parameter
@@ -105,9 +110,15 @@ export const SearchInput: React.FC<SearchInputProps> = ({
     });
   }, [selectedFieldDetails]);
 
+  // if input type changes, clear input value.
+  useEffect(() => {
+    setInputValue('');
+  }, [inputType]);
+
   const inputProps = {
     size,
     inputValue,
+    clearInputValue: () => setInputValue(''),
     colorScheme,
     // Input is disabled when a search option that doesn't require text input is selected.
     isDisabled:

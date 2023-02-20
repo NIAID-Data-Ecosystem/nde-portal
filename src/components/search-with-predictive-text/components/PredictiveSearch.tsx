@@ -33,6 +33,7 @@ export interface SearchWithPredictiveTextProps
   isInvalid?: boolean;
   colorScheme?: InputProps['colorScheme'];
   inputValue?: string;
+  onClose?: () => void; // triggered when input 'x' is pressed.
   onClick?: (
     inputValue: string,
     field: string,
@@ -56,6 +57,7 @@ export const PredictiveSearch: React.FC<SearchWithPredictiveTextProps> = ({
   colorScheme = 'primary',
   handleSubmit,
   renderSubmitButton,
+  onClose,
   onChange,
   onClick,
   isDisabled,
@@ -140,6 +142,7 @@ export const PredictiveSearch: React.FC<SearchWithPredictiveTextProps> = ({
             }
             return '';
           }}
+          onClose={onClose}
         />
         <DropdownContent>
           {/* if no suggestions are listed, remind users that sometimes data is missing from data sources. */}

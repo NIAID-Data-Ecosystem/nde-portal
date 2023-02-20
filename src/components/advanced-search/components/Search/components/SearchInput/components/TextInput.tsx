@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Box } from 'nde-design-system';
+import { Box, Button } from 'nde-design-system';
 import { PredictiveSearch } from 'src/components/search-with-predictive-text/components/PredictiveSearch';
 import { useAdvancedSearchContext } from '../../AdvancedSearchFormContext';
 import { wildcardQueryString } from 'src/components/advanced-search/utils/query-helpers';
@@ -13,6 +13,7 @@ export const TextInput: React.FC<AdvancedSearchInputProps> = ({
   isDisabled,
   size,
   errors,
+  clearInputValue,
   setErrors,
   handleChange,
   handleClick,
@@ -39,12 +40,6 @@ export const TextInput: React.FC<AdvancedSearchInputProps> = ({
     true,
   );
 
-  useEffect(() => {
-    if (stringInputValue === '') {
-      predictiveSearch.updateSearchTerm('');
-    }
-  }, [stringInputValue, predictiveSearch]);
-
   return (
     <Box width='100%'>
       {/* Input field with suggestions matching the search term. */}
@@ -56,6 +51,15 @@ export const TextInput: React.FC<AdvancedSearchInputProps> = ({
         inputValue={stringInputValue}
         isDisabled={isDisabled}
         isInvalid={errors.length > 0}
+        onClose={
+          stringInputValue.length
+            ? () => {
+                predictiveSearch.setSearchTerm('');
+                clearInputValue();
+                predictiveSearch.cancelRequest();
+              }
+            : undefined
+        }
         onChange={value => {
           let searchTerm = value;
           // for exact search we still want the list of predictive options to be wildcarded.
@@ -67,10 +71,16 @@ export const TextInput: React.FC<AdvancedSearchInputProps> = ({
             });
           } else {
             if (selectedSearchType?.transformValue) {
-              searchTerm = selectedSearchType.transformValue({
+              const transformed_term = selectedSearchType.transformValue({
                 ...queryValue,
                 term: value,
-              }).querystring;
+              });
+              if (
+                !Array.isArray(transformed_term) &&
+                transformed_term?.querystring
+              ) {
+                searchTerm = transformed_term.querystring;
+              }
             }
           }
 
@@ -100,19 +110,20 @@ export const TextInput: React.FC<AdvancedSearchInputProps> = ({
           handleClick({ querystring: `"${term}"`, term: `"${term}"`, field });
         }}
         handleSubmit={(term, field) => {
-          const errors = validateInput(term);
+          const input_string = Array.isArray(term) ? term.join(' ') : term;
+          // 1. Check for errors.
+          const errors = validateInput(input_string);
           if (errors.length > 0) {
             return;
           } else {
             // reset predictive search list.
             predictiveSearch.updateSearchTerm('');
-
             const result = selectedSearchType?.transformValue
               ? selectedSearchType.transformValue({
                   ...queryValue,
                   term,
                 })
-              : { term, field };
+              : { querystring: term, term, field };
             handleSubmit(result);
           }
         }}

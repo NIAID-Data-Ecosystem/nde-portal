@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { useQuery } from 'react-query';
+import { useQuery, useQueryClient } from 'react-query';
 import { debounce } from 'lodash';
 import { fetchSearchResults } from 'src/utils/api';
 import {
@@ -28,24 +28,31 @@ export const usePredictiveSearch = (
   const [searchTerm, setSearchTerm] = useState(term);
   const [searchField, setSearchField] = useState(field);
 
+  const queryClient = useQueryClient();
+
   // Run query every time search term changes.
   const { isLoading, error, isFetching } = useQuery<
     FetchSearchResultsResponse | undefined,
     Error
   >(
-    ['advanced-search', { term: searchTerm, facet: searchField }],
-    () => {
+    ['predictive-search-results', { term: searchTerm, facet: searchField }],
+    ({ signal }) => {
       const queryString = encode
         ? encodeString(searchTerm).replace(/(?=[()])/g, '\\')
         : searchTerm;
-      return fetchSearchResults({
-        q: searchField ? `(${searchField}:${queryString})` : `${queryString}`,
-        size: 20,
-        // return flattened version of data.
-        dotfield: true,
-        fields: ['name', '@type', searchField].join(','),
-        sort: '_score',
-      });
+      return fetchSearchResults(
+        {
+          size: 20,
+          q: searchField
+            ? `(${searchField}:(${queryString}))`
+            : `${queryString}`,
+          // return flattened version of data.
+          dotfield: true,
+          fields: ['name', '@type', searchField].join(','),
+          sort: '_score',
+        },
+        signal, // used to detect if request has been cancelled.
+      );
     },
 
     // Don't refresh everytime window is touched, only run query if there's is a search term
@@ -69,6 +76,7 @@ export const usePredictiveSearch = (
   useEffect(() => {
     setSearchField(field);
   }, [field]);
+
   // reset results if no search term is provided.
   useEffect(() => {
     if (!searchTerm) setResults([]);
@@ -80,20 +88,31 @@ export const usePredictiveSearch = (
   */
 
   const debouncedUpdate = useRef(
-    debounce((term: string) => setSearchTerm(term), 400),
+    debounce((term: string) => {
+      setSearchTerm(term);
+    }, 400),
   );
 
   const updateSearchTerm = useCallback((value: string) => {
     debouncedUpdate.current(value);
   }, []);
 
+  // Cancels query if user changes search term before previous query is complete.
+  const cancelRequest = () => {
+    const keys = ['advanced-search', { term: searchTerm, facet: searchField }];
+    queryClient.cancelQueries(keys, { fetching: true });
+  };
+
   return {
     isLoading: isLoading || isFetching,
     error,
     results,
     searchTerm,
+    setSearchTerm,
     searchField,
     updateSearchTerm,
     setSearchField,
+    cancelRequest,
+    onReset: () => setSearchTerm(''),
   };
 };

@@ -14,7 +14,7 @@ import {
 import { FaSearch } from 'react-icons/fa';
 import { useDropdownContext } from '..';
 import { ReactElement } from 'react-markdown/lib/react-markdown';
-import { theme } from '@chakra-ui/react';
+import { CloseButton, theme } from '@chakra-ui/react';
 
 /*
 [Component Information]: [DropdownInput] is a regular input field with a list of suggestions based on the user typing.
@@ -33,6 +33,7 @@ export interface DropdownInputProps {
   getInputValue: (arg: number) => string;
   renderSubmitButton?: (props: ButtonProps) => ReactElement;
   onChange?: (value: string) => void;
+  onClose?: () => void;
   onSubmit: (inputValue: string, id: number) => void; // triggered when suggestion item from list is clicked / press enters.
 }
 
@@ -48,6 +49,7 @@ export const DropdownInput: React.FC<DropdownInputProps> = ({
   renderSubmitButton,
   getInputValue,
   onChange,
+  onClose,
   onSubmit,
 }) => {
   const inputRightRef = useRef<HTMLDivElement>(null);
@@ -126,6 +128,7 @@ export const DropdownInput: React.FC<DropdownInputProps> = ({
             w='unset'
             zIndex={theme.zIndices['dropdown'] + 10}
           >
+            {onClose && <CloseButton onClick={onClose} mr={1} />}
             {renderSubmitButton({
               type: 'submit',
               w: '100%',

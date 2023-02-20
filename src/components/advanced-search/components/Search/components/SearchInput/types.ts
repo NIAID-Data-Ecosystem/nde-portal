@@ -29,6 +29,6 @@ export interface AdvancedSearchInputProps {
   setErrors: (errors: QueryStringError[]) => void;
   handleClick: (args: Partial<QueryValue>) => void;
   handleChange: (value: AdvancedSearchInputProps['inputValue']) => void;
-  handleSubmit: (args: Partial<QueryValue>) => void;
+  handleSubmit: (args: Partial<QueryValue> | QueryValue[]) => void;
   renderSubmitButton?: (props: ButtonProps) => React.ReactElement;
 }

@@ -60,7 +60,11 @@ const FieldComponent = ({
   );
 };
 
-export const ItemContent = ({ childCount, value }: ItemContentProps) => {
+export const ItemContent = ({
+  childCount,
+  value,
+  onUpdate,
+}: ItemContentProps) => {
   const { field, term, union } = value;
 
   const fieldDetails = MetadataFieldsConfig.find(field => {
@@ -116,6 +120,7 @@ export const ItemContent = ({ childCount, value }: ItemContentProps) => {
         <FieldComponent
           field={fieldDetails}
           colorScheme={union ? getUnionTheme(union).colorScheme : 'gray'}
+          onUpdate={onUpdate}
         />
       )}
     </Flex>
