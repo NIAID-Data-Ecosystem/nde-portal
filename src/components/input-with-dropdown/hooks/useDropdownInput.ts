@@ -85,9 +85,9 @@ export const useDropdownInput = ({
   /* [Dropdown List Item Component]: props + handlers */
   const handleListItemClick = (value: DropdownListItemProps['value']) => {
     setIsOpen(false);
-    if (typeof value === 'string') {
-      setInputValue(value);
-    }
+    // if (typeof value === 'string') {
+    //   setInputValue(value);
+    // }
   };
 
   const getListItemProps = ({
@@ -102,7 +102,13 @@ export const useDropdownInput = ({
       id: `li-${index}`,
       bg: isSelected ? `${colorScheme}.100` : `${colorScheme}.50`,
       color: isSelected ? 'text.heading' : 'text.body',
-      onClick: callAllHandlers(() => handleListItemClick(value), onClick),
+      onClick: callAllHandlers(
+        (e: React.MouseEvent<HTMLLIElement, MouseEvent>) => {
+          e.stopPropagation();
+          onClick && onClick(e);
+        },
+        () => handleListItemClick(value),
+      ),
       onMouseOver: callAllHandlers(e => {
         e.stopPropagation();
         index !== cursor && setCursor(index);

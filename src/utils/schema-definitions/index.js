@@ -19,15 +19,15 @@ const fetchSchema = async () => {
     This has comments about what computational tool and has almost all things except variableMeasured and includedInDataCatalog
     https://discovery.biothings.io/api/registry/niaid
   */
-    const schemaData = await axios
-      .get(`https://discovery.biothings.io/api/registry/schema/schema:Dataset`)
-      .then(response => {
-        return [
-          { label: response.data.label, properties: response.data.properties },
-        ];
-      });
+    // const schemaData = await axios
+    //   .get(`https://discovery.biothings.io/api/registry/schema/schema:Dataset`)
+    //   .then(response => {
+    //     return [
+    //       { label: response.data.label, properties: response.data.properties },
+    //     ];
+    //   });
 
-    const niaidData = await axios
+    const ndeSchema = await axios
       .get(`https://discovery.biothings.io/api/registry/nde`)
       .then(response => {
         // Filter data with needed types.
@@ -41,56 +41,101 @@ const fetchSchema = async () => {
         });
       });
     // Format data.
-    const data = [...schemaData, ...niaidData].reduce((r, d) => {
-      const type = d.label;
-      const addProperty = data => {
-        if (!r[data.label]) {
-          r[data.label] = {
-            title: getPropertyTitle(data.label),
-            property: data.label,
+    let MetadataNamesJSON = fs.readFileSync(
+      'configs/metadata-standard-names.json',
+    );
+    let metadataNamesData = [];
+    try {
+      let parsed = JSON.parse(MetadataNamesJSON);
+      metadataNamesData = parsed;
+    } catch (err) {
+      if (err) {
+        metadataNamesData = [];
+      }
+    }
+    const data = [...ndeSchema].reduce((r, schemaData) => {
+      const resource_type = schemaData.label;
+      // Add property details to JSON
+      const addProperty = (data, dataObj) => {
+        const property = data.label;
+        if (!dataObj[property]) {
+          dataObj[property] = {
+            title: getPropertyTitle(
+              data.dotfield || property,
+              metadataNamesData,
+            ),
+            property: property,
+            dotfield: data.dotfield || property,
           };
         }
         // Metadata description.
         if (data.description) {
-          if (!r[data.label]['description']) {
-            r[data.label].description = {};
+          if (!dataObj[property]['description']) {
+            dataObj[property].description = {};
           }
-          r[data.label]['description'][type.toLowerCase()] = data.description;
+          dataObj[property]['description'][resource_type.toLowerCase()] =
+            data.description;
         }
         // Metadata short description.
         if (data.abstract) {
-          if (!r[data.label]['abstract']) {
-            r[data.label].abstract = {};
+          if (!dataObj[property]['abstract']) {
+            dataObj[property].abstract = {};
           }
-          r[data.label]['abstract'][type.toLowerCase()] = data.abstract;
+          dataObj[property]['abstract'][resource_type.toLowerCase()] =
+            data.abstract;
         }
+        // Metadata type.
+        if (data.type) {
+          if (!dataObj[property]['type']) {
+            dataObj[property].type = data.type;
+          }
+        }
+        // Metadata format includes enum, etc.
+        if (data.format) {
+          if (!dataObj[property]['format']) {
+            dataObj[property].format = data.format;
+          }
+        }
+
         // Metadata sub properties descriptions.
         if (data.oneOf) {
-          data.oneOf.map(o => {
-            if (!o.items || !o.items.properties) return;
-            Object.entries(o.items.properties).map(([property, item]) => {
-              if (!r[data.label]['items']) {
-                r[data.label]['items'] = {};
+          const handleNested = data =>
+            data.map(o => {
+              if (!o.items || (!o.items && !r[property]['type'])) {
+                dataObj[property]['type'] = o.type;
+                dataObj[property]['enum'] = o.enum;
+                return;
               }
-              if (!r[data.label]['items'][property]) {
-                r[data.label]['items'][property] = {
-                  description: item.description,
-                };
+              dataObj[property]['type'] = o.items.type;
+              if (o.items.properties) {
+                Object.entries(o.items.properties).map(
+                  ([childProperty, item]) => {
+                    if (!dataObj[property].items) {
+                      dataObj[property]['items'] = {};
+                    }
+                    addProperty(
+                      {
+                        ...item,
+                        label: childProperty,
+                        dotfield: `${property}.${childProperty}`,
+                      },
+                      dataObj[property]['items'],
+                    );
+                  },
+                );
               }
             });
-          });
+
+          handleNested(data.oneOf);
+          return dataObj;
         }
       };
 
-      addProperty(d);
-      if (d.properties) {
-        d.properties.map(property => {
-          addProperty(property);
-        });
-      }
-      if (d?.validation?.properties) {
-        Object.entries(d.validation.properties).map(([label, obj]) => {
-          addProperty({ ...obj, label });
+      addProperty(schemaData, r);
+
+      if (schemaData?.validation?.properties) {
+        Object.entries(schemaData.validation.properties).map(([label, obj]) => {
+          addProperty({ ...obj, label }, r);
         });
       }
       return r;

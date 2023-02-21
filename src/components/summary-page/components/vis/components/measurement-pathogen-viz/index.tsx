@@ -44,8 +44,8 @@ export const MeasurementPathogenViz: React.FC<MeasurementPathogenViz> = ({
       <Text color='white'>
         No data for grouping {options[secondaryKey].name} by{' '}
         {options[primaryKey].name} <br />
-        [TO DO]: group values that have no &quot;grouped by&quot; into n/a or
-        Other?
+        {/* [TO DO]: group values that have no &quot;grouped by&quot; into n/a or
+        Other? */}
       </Text>
     );
   }

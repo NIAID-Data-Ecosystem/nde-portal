@@ -12,7 +12,6 @@ import {
 } from 'src/components/search-results-page/components/filters';
 import {
   FilterTags,
-  FilterTagsWrapper,
   queryFilterObject2String,
   queryFilterString2Object,
   updateRoute,
@@ -22,6 +21,7 @@ import {
   SelectedFilterType,
   SelectedFilterTypeValue,
 } from 'src/components/filters/types';
+import { encodeString } from 'src/utils/querystring-helpers';
 
 //  This page renders the search results from the search bar.
 const Search: NextPage = () => {
@@ -37,21 +37,21 @@ const Search: NextPage = () => {
     from: `${(defaultQuery.selectedPage - 1) * defaultQuery.selectedPerPage}`,
     sort: defaultQuery.sortOrder,
   };
+  const queryString = Array.isArray(router.query.q)
+    ? router.query.q.map(s => s.trim()).join('+')
+    : router.query.q || defaultParams.q;
 
   const queryParams = {
     ...defaultParams,
     ...router.query,
-    q: Array.isArray(router.query.q)
-      ? router.query.q.join('')
-      : router.query.q || defaultParams.q,
+    q:
+      router.query.advancedSearch === 'true'
+        ? queryString
+        : encodeString(queryString),
     extra_filter: Array.isArray(router.query.filters)
       ? router.query.filters.join('')
       : router.query.filters || '',
   };
-
-  const queryString = Array.isArray(router.query.q)
-    ? router.query.q.join(' ')
-    : router.query.q || '';
 
   const selectedFilters: SelectedFilterType =
     queryFilterString2Object(queryParams.extra_filter) || [];
@@ -70,7 +70,16 @@ const Search: NextPage = () => {
     ([_, filters]) => filters.length > 0,
   );
 
-  const tags = applied_filters.filter(t => t[0] !== 'date');
+  // Filter out date tags that have a single value such as "exists" and not "exists"
+  const tags = applied_filters.filter(
+    tag =>
+      !(
+        tag[0] === 'date' &&
+        tag[1].length === 1 &&
+        (Object.keys(tag[1][0]).includes('_exists_') ||
+          Object.keys(tag[1][0]).includes('-_exists_'))
+      ),
+  );
 
   // Default filters list.
   const defaultFilters = useMemo(
@@ -102,7 +111,7 @@ const Search: NextPage = () => {
   return (
     <PageContainer
       hasNavigation
-      title='Search results'
+      title='Search'
       metaDescription='NDE Discovery Portal - Search results list based on query.'
       px={0}
       py={0}
@@ -123,7 +132,7 @@ const Search: NextPage = () => {
 
               {queryString !== '__all__' && (
                 <Heading as='span' ml={2} fontWeight='bold' size='sm' w='100%'>
-                  {queryString}
+                  {queryString.replaceAll('\\', '')}
                 </Heading>
               )}
             </Heading>
@@ -136,17 +145,18 @@ const Search: NextPage = () => {
                 removeAllFilters={removeAllFilters}
                 removeSelectedFilter={(
                   name: keyof SelectedFilterType,
-                  value: SelectedFilterTypeValue,
+                  value: SelectedFilterTypeValue | SelectedFilterTypeValue[],
                 ) => {
                   let updatedFilter = {
                     [name]: selectedFilters[name].filter(v => {
-                      if (typeof value === 'object' || v === 'object') {
+                      if (Array.isArray(value)) {
+                        return !value.includes(v);
+                      } else if (typeof value === 'object' || v === 'object') {
                         return JSON.stringify(v) !== JSON.stringify(value);
                       }
                       return v !== value;
                     }),
                   };
-
                   let filters = queryFilterObject2String({
                     ...selectedFilters,
                     ...updatedFilter,

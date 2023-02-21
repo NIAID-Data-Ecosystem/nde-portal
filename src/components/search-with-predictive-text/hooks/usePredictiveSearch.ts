@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useQuery } from 'react-query';
 import { debounce } from 'lodash';
 import { fetchSearchResults } from 'src/utils/api';
@@ -8,8 +8,17 @@ import {
 } from 'src/utils/api/types';
 import { encodeString } from 'src/utils/querystring-helpers';
 
+export interface usePredictiveSearchResponse {
+  isLoading: boolean;
+  error: Error | null;
+  results: FormattedResource[];
+  searchTerm: string;
+  searchField: string;
+  updateSearchTerm: (value: string) => void;
+  setSearchField: (value: string) => void;
+}
 // Handles query formatting for predictive search
-export const usePredictiveSearch = (term = '', field = '') => {
+export const usePredictiveSearch = (term = '', field = '', encode = true) => {
   const [results, setResults] = useState<FormattedResource[]>([]);
   const [searchTerm, setSearchTerm] = useState(term);
   const [searchField, setSearchField] = useState(field);
@@ -21,16 +30,9 @@ export const usePredictiveSearch = (term = '', field = '') => {
   >(
     ['advanced-search', { term: searchTerm, facet: searchField }],
     () => {
-      const queryString = encodeString(searchTerm);
-
-      // add wild card to each term in querystring for fielded searches (ES automatically does this for non fielded queries).
+      const queryString = encode ? encodeString(searchTerm) : searchTerm;
       return fetchSearchResults({
-        q: searchField
-          ? `${searchField}:${queryString
-              .split(' ')
-              .map(str => `${str}*`)
-              .join(' ')}`
-          : `${queryString}`,
+        q: searchField ? `${searchField}:(${queryString})` : `${queryString}`,
         size: 20,
         // return flattened version of data.
         dotfield: true,
@@ -42,7 +44,7 @@ export const usePredictiveSearch = (term = '', field = '') => {
     // Don't refresh everytime window is touched, only run query if there's is a search term
     {
       refetchOnWindowFocus: false,
-      enabled: searchTerm.length > 0,
+      enabled: searchTerm.length > 0 && !!searchField,
       onSuccess: data => {
         // if results exist set state.
         if (data?.results) {
@@ -52,6 +54,9 @@ export const usePredictiveSearch = (term = '', field = '') => {
     },
   );
 
+  useEffect(() => {
+    setSearchField(field);
+  }, [field]);
   // reset results if no search term is provided.
   useEffect(() => {
     if (!searchTerm) setResults([]);
@@ -61,13 +66,14 @@ export const usePredictiveSearch = (term = '', field = '') => {
   [Update query with a delay]
   Wrapping debounce in useRef since its an expensive call, only run if fn changes.
   */
+
   const debouncedUpdate = useRef(
-    debounce((term: string) => setSearchTerm(term), 200),
+    debounce((term: string) => setSearchTerm(term), 400),
   );
 
-  const updateSearchTerm = (value: string) => {
+  const updateSearchTerm = useCallback((value: string) => {
     debouncedUpdate.current(value);
-  };
+  }, []);
 
   return {
     isLoading: isLoading || isFetching,
@@ -76,7 +82,6 @@ export const usePredictiveSearch = (term = '', field = '') => {
     searchTerm,
     searchField,
     updateSearchTerm,
-    setSearchTerm,
     setSearchField,
   };
 };

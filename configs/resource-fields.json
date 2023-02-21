@@ -1,0 +1,2406 @@
+[
+  {
+    "name": "@context",
+    "property": "@context",
+    "type": "text",
+    "count": 2512931
+  },
+  { "name": "@id", "property": "@id", "type": "keyword", "count": 0 },
+  {
+    "name": "Type",
+    "property": "@type",
+    "type": "keyword",
+    "count": 2596659,
+    "format": "enum",
+    "enum": ["Dataset", "ComputationalTool"]
+  },
+  {
+    "name": "Abstract",
+    "property": "abstract",
+    "type": "text",
+    "count": 6,
+    "description": { "dataset": "Short description that summarizes a work." },
+    "abstract": { "dataset": "short description" }
+  },
+  {
+    "name": "Aggregate Rating",
+    "property": "aggregateRating",
+    "type": "object",
+    "count": 0,
+    "description": {
+      "dataset": "The overall rating, based on a collection of reviews or ratings, of the work. These ratings can be collected based on user reviews or through Altmetric scores of web-based citations.",
+      "computationaltool": "The overall rating, based on a collection of reviews or ratings, of the work. These ratings can be collected based on user reviews or through Altmetric scores of web-based citations."
+    },
+    "abstract": {
+      "dataset": "rating of the work",
+      "computationaltool": "rating of the work"
+    }
+  },
+  {
+    "name": "Aggregate Rating Type",
+    "property": "aggregateRating.@type",
+    "type": "text",
+    "count": 0
+  },
+  {
+    "name": "Aggregate Rating Rating Count",
+    "property": "aggregateRating.ratingCount",
+    "type": "unsigned_long",
+    "count": 0,
+    "description": {
+      "dataset": "Total number of ratings",
+      "computationaltool": "Total number of ratings"
+    }
+  },
+  {
+    "name": "Aggregate Rating Rating Value",
+    "property": "aggregateRating.ratingValue",
+    "type": "double",
+    "count": 0,
+    "description": {
+      "dataset": "Average rating",
+      "computationaltool": "Average rating"
+    }
+  },
+  {
+    "name": "Aggregate Rating Review Aspect",
+    "property": "aggregateRating.reviewAspect",
+    "type": "text",
+    "count": 0
+  },
+  {
+    "name": "Alternate Name",
+    "property": "alternateName",
+    "type": "text",
+    "count": 110,
+    "description": { "dataset": "An alias for the dataset name." }
+  },
+  {
+    "name": "Application Category",
+    "property": "applicationCategory",
+    "type": "keyword",
+    "count": 8032,
+    "description": {
+      "computationaltool": "Type of software application, e.g. 'Game, Multimedia'."
+    },
+    "abstract": { "computationaltool": "type of software application" }
+  },
+  {
+    "name": "Application Sub Category",
+    "property": "applicationSubCategory",
+    "type": "object",
+    "count": 746,
+    "description": {
+      "computationaltool": "Subcategory of the computational tool, like gene regulation"
+    },
+    "abstract": { "computationaltool": "software subcategory" }
+  },
+  {
+    "name": "Application Sub Category Type",
+    "property": "applicationSubCategory.@type",
+    "type": "text",
+    "count": 0
+  },
+  {
+    "name": "Application Sub Category Identifier",
+    "property": "applicationSubCategory.identifier",
+    "type": "text",
+    "count": 52
+  },
+  {
+    "name": "Application Sub Category Name",
+    "property": "applicationSubCategory.name",
+    "type": "keyword",
+    "count": 746,
+    "description": {
+      "computationaltool": "Subcategory of the tool (ex: gene regulation)"
+    }
+  },
+  {
+    "name": "Application Sub Category URL",
+    "property": "applicationSubCategory.url",
+    "type": "keyword",
+    "count": 52,
+    "format": "uri"
+  },
+  {
+    "name": "Application Suite",
+    "property": "applicationSuite",
+    "type": "text",
+    "count": 2796,
+    "description": {
+      "computationaltool": "The name of the application suite to which the application belongs (e.g. Excel belongs to Office)."
+    },
+    "abstract": { "computationaltool": "software suite for the tool" }
+  },
+  {
+    "name": "Author",
+    "property": "author",
+    "type": "object",
+    "count": 1972660,
+    "description": {
+      "dataset": "Author or creator of the work.",
+      "computationaltool": "Author or creator of the work."
+    }
+  },
+  {
+    "name": "Author Type",
+    "property": "author.@type",
+    "type": "text",
+    "count": 1487246
+  },
+  {
+    "name": "Author Affiliation",
+    "property": "author.affiliation",
+    "type": "object",
+    "count": 353626
+  },
+  {
+    "name": "Author Affiliation Type",
+    "property": "author.affiliation.@type",
+    "type": "keyword",
+    "count": 46573
+  },
+  {
+    "name": "Author Affiliation Name",
+    "property": "author.affiliation.name",
+    "type": "keyword",
+    "count": 353626
+  },
+  {
+    "name": "Author Affiliation Same As",
+    "property": "author.affiliation.sameAs",
+    "type": "keyword",
+    "count": 45639
+  },
+  {
+    "name": "Author Email",
+    "property": "author.email",
+    "type": "text",
+    "count": 3299,
+    "description": {
+      "dataset": "Email address of the organization",
+      "computationaltool": "Email address of the organization"
+    }
+  },
+  {
+    "name": "Author Family Name",
+    "property": "author.familyName",
+    "type": "text",
+    "count": 116746,
+    "description": {
+      "dataset": "Family name (surname) of the person",
+      "computationaltool": "Family name (surname) of the person"
+    }
+  },
+  {
+    "name": "Author Given Name",
+    "property": "author.givenName",
+    "type": "text",
+    "count": 116724,
+    "description": {
+      "dataset": "Given (first) name of the person",
+      "computationaltool": "Given (first) name of the person"
+    }
+  },
+  {
+    "name": "Author Identifier",
+    "property": "author.identifier",
+    "type": "text",
+    "count": 137983,
+    "description": {
+      "dataset": "Unique identifier of the organization",
+      "computationaltool": "Unique identifier of the organization"
+    }
+  },
+  {
+    "name": "Author Name",
+    "property": "author.name",
+    "type": "text",
+    "count": 1972584,
+    "description": {
+      "dataset": "Name of the organization",
+      "computationaltool": "Name of the organization"
+    }
+  },
+  {
+    "name": "Author Role",
+    "property": "author.role",
+    "type": "keyword",
+    "count": 857,
+    "description": {
+      "dataset": "What role the organization played in creating the dataset",
+      "computationaltool": "What role the organization played in creating the computational tool"
+    }
+  },
+  {
+    "name": "Author Title",
+    "property": "author.title",
+    "type": "text",
+    "count": 0,
+    "description": {
+      "dataset": "Title of the person",
+      "computationaltool": "Title of the person"
+    }
+  },
+  {
+    "name": "Author URL",
+    "property": "author.url",
+    "type": "keyword",
+    "count": 2034,
+    "description": {
+      "dataset": "Link to the organization",
+      "computationaltool": "Link to the organization"
+    },
+    "format": "uri"
+  },
+  {
+    "name": "Available On Device",
+    "property": "availableOnDevice",
+    "type": "text",
+    "count": 0,
+    "description": {
+      "computationaltool": "Device or platform required to run the application, such as Bioconda, Docker, or Singularity"
+    },
+    "abstract": { "computationaltool": "platform to run the application" }
+  },
+  {
+    "name": "Citation",
+    "property": "citation",
+    "type": "object",
+    "count": 323778,
+    "description": {
+      "dataset": "A citation or reference to a publication, dataset, or computational tool which uses the dataset. Examples: a publication which describes the collection/analysis of the dataset, a publication which reuses the dataset in a secondary analysis, a dataset which extends the existing dataset, or a computational tool which relies on the dataset.",
+      "computationaltool": "A citation or reference to a publication, dataset, or computational tool which uses the computational tool. Examples: a publication which describes the development of the computational tool, a publication which describes the extension or use of the computational tool, a dataset which was processed or analyzed using the tool, or a computational tool which relies on the given tool."
+    },
+    "abstract": {
+      "dataset": "citation to the work",
+      "computationaltool": "citation to the work"
+    }
+  },
+  {
+    "name": "Citation Type",
+    "property": "citation.@type",
+    "type": "keyword",
+    "count": 9271
+  },
+  {
+    "name": "Citation Abstract",
+    "property": "citation.abstract",
+    "type": "text",
+    "count": 0,
+    "description": {
+      "dataset": "Abstract of the referenced work",
+      "computationaltool": "Abstract of the referenced work"
+    }
+  },
+  {
+    "name": "Citation Author",
+    "property": "citation.author",
+    "type": "object",
+    "count": 260244,
+    "description": {
+      "dataset": "Author(s) of the referenced work",
+      "computationaltool": "Author(s) of the referenced work"
+    }
+  },
+  {
+    "name": "Citation Author Type",
+    "property": "citation.author.@type",
+    "type": "text",
+    "count": 260115
+  },
+  {
+    "name": "Citation Author Family Name",
+    "property": "citation.author.familyName",
+    "type": "text",
+    "count": 129,
+    "description": {
+      "dataset": "Family name (surname) of the person",
+      "computationaltool": "Family name (surname) of the person"
+    }
+  },
+  {
+    "name": "Citation Author Given Name",
+    "property": "citation.author.givenName",
+    "type": "text",
+    "count": 129,
+    "description": {
+      "dataset": "Given (first) name of the person",
+      "computationaltool": "Given (first) name of the person"
+    }
+  },
+  {
+    "name": "Citation Author Name",
+    "property": "citation.author.name",
+    "type": "text",
+    "count": 260115,
+    "description": {
+      "dataset": "Name of the organization",
+      "computationaltool": "Name of the organization"
+    }
+  },
+  {
+    "name": "Citation Citation",
+    "property": "citation.citation",
+    "type": "text",
+    "count": 0,
+    "description": {
+      "dataset": "The bibliographic citation for the referenced work as is provided",
+      "computationaltool": "The bibliographic citation for the referenced work as is provided"
+    }
+  },
+  {
+    "name": "Citation Date Published",
+    "property": "citation.datePublished",
+    "type": "date",
+    "count": 260252,
+    "description": {
+      "dataset": "Date the referenced work was published",
+      "computationaltool": "Date the referenced work was published"
+    },
+    "format": "date"
+  },
+  {
+    "name": "Citation Description",
+    "property": "citation.description",
+    "type": "text",
+    "count": 0,
+    "description": {
+      "dataset": "Description of the referenced work",
+      "computationaltool": "Description of the referenced work"
+    }
+  },
+  {
+    "name": "Citation Doi",
+    "property": "citation.doi",
+    "type": "keyword",
+    "count": 22965,
+    "description": {
+      "dataset": "A digital object identifier (DOI) of the referenced work",
+      "computationaltool": "A digital object identifier (DOI) of the referenced work"
+    },
+    "abstract": {
+      "dataset": "digital object identifier",
+      "computationaltool": "digital object identifier"
+    }
+  },
+  {
+    "name": "Citation Identifier",
+    "property": "citation.identifier",
+    "type": "keyword",
+    "count": 260255,
+    "description": {
+      "dataset": "An identifier associated with the work",
+      "computationaltool": "An identifier associated with the work"
+    }
+  },
+  {
+    "name": "Citation Issue Number",
+    "property": "citation.issueNumber",
+    "type": "text",
+    "count": 124,
+    "description": {
+      "dataset": "Issue number where the article appears",
+      "computationaltool": "Issue number where the article appears"
+    }
+  },
+  {
+    "name": "Citation Journal Name",
+    "property": "citation.journalName",
+    "type": "keyword",
+    "count": 260254,
+    "description": {
+      "dataset": "Journal where the article appears",
+      "computationaltool": "Journal where the article appears"
+    }
+  },
+  {
+    "name": "Citation Journal Name Abbrev",
+    "property": "citation.journalNameAbbrev",
+    "type": "keyword",
+    "count": 132,
+    "description": {
+      "dataset": "Abbreviated journal name where the article appears",
+      "computationaltool": "Abbreviated journal name where the article appears"
+    }
+  },
+  {
+    "name": "Citation Name",
+    "property": "citation.name",
+    "type": "text",
+    "count": 282362,
+    "description": {
+      "dataset": "Name or title",
+      "computationaltool": "Name or title"
+    }
+  },
+  {
+    "name": "Citation Pagination",
+    "property": "citation.pagination",
+    "type": "text",
+    "count": 132,
+    "description": {
+      "dataset": "Page numbers in the journal where the article appears",
+      "computationaltool": "Page numbers in the journal where the article appears"
+    }
+  },
+  {
+    "name": "Citation Pmid",
+    "property": "citation.pmid",
+    "type": "text",
+    "count": 263248,
+    "description": {
+      "dataset": "A PubMed identifier (PMID) of the referenced publication",
+      "computationaltool": "A PubMed identifier (PMID) of the referenced publication"
+    },
+    "abstract": {
+      "dataset": "PubMed identifier",
+      "computationaltool": "PubMed identifier"
+    }
+  },
+  {
+    "name": "Citation URL",
+    "property": "citation.url",
+    "type": "keyword",
+    "count": 295627,
+    "description": {
+      "dataset": "The url of the work",
+      "computationaltool": "The url of the work"
+    },
+    "format": "uri"
+  },
+  {
+    "name": "Citation Volume Number",
+    "property": "citation.volumeNumber",
+    "type": "text",
+    "count": 131,
+    "description": {
+      "dataset": "Volume of the journal where the article appears",
+      "computationaltool": "Volume of the journal where the article appears"
+    }
+  },
+  {
+    "name": "Cited By",
+    "property": "citedBy",
+    "type": "object",
+    "count": 1292,
+    "description": {
+      "dataset": "Publications, datasets, or computational tools that cite the work.",
+      "computationaltool": "Publications, datasets, or computational tools that cite the work."
+    }
+  },
+  {
+    "name": "Cited By Type",
+    "property": "citedBy.@type",
+    "type": "keyword",
+    "count": 509
+  },
+  {
+    "name": "Cited By Abstract",
+    "property": "citedBy.abstract",
+    "type": "text",
+    "count": 0,
+    "description": {
+      "dataset": "Abstract of the referenced work",
+      "computationaltool": "Abstract of the referenced work"
+    }
+  },
+  {
+    "name": "Cited By Author",
+    "property": "citedBy.author",
+    "type": "object",
+    "count": 0,
+    "description": {
+      "dataset": "Author(s) of the referenced work",
+      "computationaltool": "Author(s) of the referenced work"
+    }
+  },
+  {
+    "name": "Cited By Author Type",
+    "property": "citedBy.author.@type",
+    "type": "text",
+    "count": 0
+  },
+  {
+    "name": "Cited By Author Family Name",
+    "property": "citedBy.author.familyName",
+    "type": "text",
+    "count": 0,
+    "description": {
+      "dataset": "Family name (surname) of the person",
+      "computationaltool": "Family name (surname) of the person"
+    }
+  },
+  {
+    "name": "Cited By Author Given Name",
+    "property": "citedBy.author.givenName",
+    "type": "text",
+    "count": 0,
+    "description": {
+      "dataset": "Given (first) name of the person",
+      "computationaltool": "Given (first) name of the person"
+    }
+  },
+  {
+    "name": "Cited By Author Name",
+    "property": "citedBy.author.name",
+    "type": "text",
+    "count": 0,
+    "description": {
+      "dataset": "Name of the organization",
+      "computationaltool": "Name of the organization"
+    }
+  },
+  {
+    "name": "Cited By Citation",
+    "property": "citedBy.citation",
+    "type": "text",
+    "count": 0,
+    "description": {
+      "dataset": "The bibliographic citation for the referenced work as is provided",
+      "computationaltool": "The bibliographic citation for the referenced work as is provided"
+    }
+  },
+  {
+    "name": "Cited By Date Published",
+    "property": "citedBy.datePublished",
+    "type": "date",
+    "count": 0,
+    "description": {
+      "dataset": "Date the referenced work was published",
+      "computationaltool": "Date the referenced work was published"
+    },
+    "format": "date"
+  },
+  {
+    "name": "Cited By Description",
+    "property": "citedBy.description",
+    "type": "text",
+    "count": 0,
+    "description": {
+      "dataset": "Description of the referenced work",
+      "computationaltool": "Description of the referenced work"
+    }
+  },
+  {
+    "name": "Cited By Doi",
+    "property": "citedBy.doi",
+    "type": "keyword",
+    "count": 509,
+    "description": {
+      "dataset": "A digital object identifier (DOI) of the referenced work",
+      "computationaltool": "A digital object identifier (DOI) of the referenced work"
+    },
+    "abstract": {
+      "dataset": "digital object identifier",
+      "computationaltool": "digital object identifier"
+    }
+  },
+  {
+    "name": "Cited By Identifier",
+    "property": "citedBy.identifier",
+    "type": "keyword",
+    "count": 0,
+    "description": {
+      "dataset": "An identifier associated with the work",
+      "computationaltool": "An identifier associated with the work"
+    }
+  },
+  {
+    "name": "Cited By Issue Number",
+    "property": "citedBy.issueNumber",
+    "type": "text",
+    "count": 0,
+    "description": {
+      "dataset": "Issue number where the article appears",
+      "computationaltool": "Issue number where the article appears"
+    }
+  },
+  {
+    "name": "Cited By Journal Name",
+    "property": "citedBy.journalName",
+    "type": "keyword",
+    "count": 0,
+    "description": {
+      "dataset": "Journal where the article appears",
+      "computationaltool": "Journal where the article appears"
+    }
+  },
+  {
+    "name": "Cited By Journal Name Abbrev",
+    "property": "citedBy.journalNameAbbrev",
+    "type": "keyword",
+    "count": 0,
+    "description": {
+      "dataset": "Abbreviated journal name where the article appears",
+      "computationaltool": "Abbreviated journal name where the article appears"
+    }
+  },
+  {
+    "name": "Cited By Name",
+    "property": "citedBy.name",
+    "type": "text",
+    "count": 509,
+    "description": {
+      "dataset": "Name or title",
+      "computationaltool": "Name or title"
+    }
+  },
+  {
+    "name": "Cited By Pagination",
+    "property": "citedBy.pagination",
+    "type": "text",
+    "count": 0,
+    "description": {
+      "dataset": "Page numbers in the journal where the article appears",
+      "computationaltool": "Page numbers in the journal where the article appears"
+    }
+  },
+  {
+    "name": "Cited By Pmid",
+    "property": "citedBy.pmid",
+    "type": "text",
+    "count": 509,
+    "description": {
+      "dataset": "A PubMed identifier (PMID) of the referenced publication",
+      "computationaltool": "A PubMed identifier (PMID) of the referenced publication"
+    },
+    "abstract": {
+      "dataset": "PubMed identifier",
+      "computationaltool": "PubMed identifier"
+    }
+  },
+  {
+    "name": "Cited By URL",
+    "property": "citedBy.url",
+    "type": "keyword",
+    "count": 1292,
+    "description": {
+      "dataset": "The url of the work",
+      "computationaltool": "The url of the work"
+    },
+    "format": "uri"
+  },
+  {
+    "name": "Cited By Volume Number",
+    "property": "citedBy.volumeNumber",
+    "type": "text",
+    "count": 0,
+    "description": {
+      "dataset": "Volume of the journal where the article appears",
+      "computationaltool": "Volume of the journal where the article appears"
+    }
+  },
+  {
+    "name": "Code Repository",
+    "property": "codeRepository",
+    "type": "text",
+    "count": 7450,
+    "description": {
+      "computationaltool": "Link to the source code repository of the tool such as GitHub"
+    },
+    "abstract": { "computationaltool": "source code link" }
+  },
+  {
+    "name": "Conditions Of Access",
+    "property": "conditionsOfAccess",
+    "type": "text",
+    "count": 463788,
+    "description": {
+      "dataset": "Conditions that affect the availability of, or method(s) of access to, the work. Options include open (freely available), restricted (may include restrictions such as on use), closed (requires registration to access), or embargoed (unpublished).",
+      "computationaltool": "Conditions that affect the availability of, or method(s) of access to, the work. Options include open (freely available), restricted (may include restrictions such as on use), closed (requires registration to access), or embargoed (unpublished)."
+    },
+    "abstract": {
+      "dataset": "accessibility of the work",
+      "computationaltool": "accessibility of the work"
+    },
+    "format": "enum",
+    "enum": ["Closed", "Open", "Restricted", "Embargoed"]
+  },
+  {
+    "name": "Content Size",
+    "property": "contentSize",
+    "type": "text",
+    "count": 0
+  },
+  {
+    "name": "Content Url",
+    "property": "contentUrl",
+    "type": "text",
+    "count": 0
+  },
+  {
+    "name": "Contributor",
+    "property": "contributor",
+    "type": "object",
+    "count": 703,
+    "description": {
+      "computationaltool": "A secondary contributor to the developement or maintenance of the computational tool"
+    },
+    "abstract": {
+      "computationaltool": "contributor to development or maintenance"
+    }
+  },
+  {
+    "name": "Contributor @id",
+    "property": "contributor.@id",
+    "type": "text",
+    "count": 0
+  },
+  {
+    "name": "Contributor Type",
+    "property": "contributor.@type",
+    "type": "text",
+    "count": 0
+  },
+  {
+    "name": "Contributor Affiliation",
+    "property": "contributor.affiliation",
+    "type": "text",
+    "count": 0
+  },
+  {
+    "name": "Contributor Name",
+    "property": "contributor.name",
+    "type": "text",
+    "count": 703,
+    "description": { "computationaltool": "Name of the organization" }
+  },
+  {
+    "name": "Curated By",
+    "property": "curatedBy",
+    "type": "object",
+    "count": 416068
+  },
+  {
+    "name": "Curated By Type",
+    "property": "curatedBy.@type",
+    "type": "text",
+    "count": 416068
+  },
+  {
+    "name": "Curated By Name",
+    "property": "curatedBy.name",
+    "type": "keyword",
+    "count": 416068
+  },
+  {
+    "name": "Curated By URL",
+    "property": "curatedBy.url",
+    "type": "text",
+    "count": 416068
+  },
+  {
+    "name": "Curated By Version Date",
+    "property": "curatedBy.versionDate",
+    "type": "date",
+    "count": 416068
+  },
+  {
+    "name": "Date",
+    "property": "date",
+    "type": "date",
+    "count": 722107,
+    "description": {
+      "dataset": "Date the work has changed: most recent date of dateModified, datePublished, and dateCreated.",
+      "computationaltool": "Date the work has changed: most recent date of dateModified, datePublished, and dateCreated."
+    },
+    "abstract": {
+      "dataset": "date changed",
+      "computationaltool": "date changed"
+    },
+    "format": "date"
+  },
+  {
+    "name": "Date Created",
+    "property": "dateCreated",
+    "type": "date",
+    "count": 13535,
+    "description": {
+      "dataset": "Date the work was created",
+      "computationaltool": "Date the work was created"
+    },
+    "format": "date"
+  },
+  {
+    "name": "Date Modified",
+    "property": "dateModified",
+    "type": "date",
+    "count": 670609,
+    "description": {
+      "dataset": "Date the work was modified",
+      "computationaltool": "Date the work was modified"
+    },
+    "format": "date"
+  },
+  {
+    "name": "Date Published",
+    "property": "datePublished",
+    "type": "date",
+    "count": 715414,
+    "description": {
+      "dataset": "Date the work was first published",
+      "computationaltool": "Date the work was first published"
+    },
+    "format": "date"
+  },
+  {
+    "name": "Description",
+    "property": "description",
+    "type": "text",
+    "count": 2592271,
+    "description": {
+      "dataset": "A description of the dataset",
+      "computationaltool": "A description of the computational tool"
+    }
+  },
+  {
+    "name": "Discussion Url",
+    "property": "discussionUrl",
+    "type": "text",
+    "count": 958,
+    "description": {
+      "computationaltool": "A link to a webpage containing the comments about the computational tool."
+    },
+    "abstract": { "computationaltool": "link to tool discussion page" },
+    "format": "uri"
+  },
+  {
+    "name": "Distribution",
+    "property": "distribution",
+    "type": "object",
+    "count": 1577152,
+    "description": {
+      "dataset": "A downloadable form of this dataset, at a specific location, in a specific format."
+    },
+    "abstract": { "dataset": "download link" }
+  },
+  {
+    "name": "Distribution @id",
+    "property": "distribution.@id",
+    "type": "keyword",
+    "count": 0
+  },
+  {
+    "name": "Distribution Type",
+    "property": "distribution.@type",
+    "type": "keyword",
+    "count": 1510177
+  },
+  {
+    "name": "Distribution Content Size",
+    "property": "distribution.contentSize",
+    "type": "text",
+    "count": 64587
+  },
+  {
+    "name": "Distribution Content Url",
+    "property": "distribution.contentUrl",
+    "type": "text",
+    "count": 1575558,
+    "format": "uri"
+  },
+  {
+    "name": "Distribution Date Created",
+    "property": "distribution.dateCreated",
+    "type": "date",
+    "count": 0
+  },
+  {
+    "name": "Distribution Date Modified",
+    "property": "distribution.dateModified",
+    "type": "date",
+    "count": 65308,
+    "description": { "dataset": "date the file was modified" },
+    "format": "date"
+  },
+  {
+    "name": "Distribution Date Published",
+    "property": "distribution.datePublished",
+    "type": "date",
+    "count": 0
+  },
+  {
+    "name": "Distribution Description",
+    "property": "distribution.description",
+    "type": "text",
+    "count": 288
+  },
+  {
+    "name": "Distribution Encoding Format",
+    "property": "distribution.encodingFormat",
+    "type": "text",
+    "count": 1399070,
+    "description": { "dataset": "file type (ex: XLSX)" }
+  },
+  {
+    "name": "Distribution Name",
+    "property": "distribution.name",
+    "type": "keyword",
+    "count": 66169
+  },
+  {
+    "name": "Doi",
+    "property": "doi",
+    "type": "text",
+    "count": 478032,
+    "description": {
+      "dataset": "Digital Object Identifier (DOI) for the work, not any associated publications.",
+      "computationaltool": "Digital object identifier (DOI) for the work, not any associated publications"
+    },
+    "abstract": {
+      "dataset": "digital object identifier",
+      "computationaltool": "digital object identifier"
+    }
+  },
+  {
+    "name": "Download Url",
+    "property": "downloadUrl",
+    "type": "object",
+    "count": 6046,
+    "description": {
+      "computationaltool": "URL to download the computational tool"
+    }
+  },
+  {
+    "name": "Download Url Name",
+    "property": "downloadUrl.name",
+    "type": "text",
+    "count": 6046
+  },
+  {
+    "name": "Feature List",
+    "property": "featureList",
+    "type": "text",
+    "count": 43,
+    "description": {
+      "computationaltool": "Features or modules provided by this application (and possibly required by other applications)."
+    },
+    "abstract": { "computationaltool": "features of the tool" }
+  },
+  {
+    "name": "Funding",
+    "property": "funding",
+    "type": "object",
+    "count": 186103,
+    "description": {
+      "dataset": "Funding that supports (sponsors) the collection of this dataset through some kind of financial contribution.",
+      "computationaltool": "Funding that supports (sponsors) the development of this computational tool through some kind of financial contribution."
+    },
+    "abstract": {
+      "dataset": "funding source (grant, contract, etc.)",
+      "computationaltool": "funding source (grant, contract, etc.)"
+    }
+  },
+  {
+    "name": "Funding Description",
+    "property": "funding.description",
+    "type": "text",
+    "count": 19,
+    "description": {
+      "dataset": "description of the funding award / grant",
+      "computationaltool": "description of the funding award / grant"
+    }
+  },
+  {
+    "name": "Funding Funder",
+    "property": "funding.funder",
+    "type": "object",
+    "count": 186102,
+    "description": {
+      "dataset": "An organization or person who funded the creation of the work",
+      "computationaltool": "An organization or person who funded the creation of the work"
+    }
+  },
+  {
+    "name": "Funding Funder Alternate Name",
+    "property": "funding.funder.alternateName",
+    "type": "keyword",
+    "count": 628,
+    "description": {
+      "dataset": "Alias of the name",
+      "computationaltool": "Alias of the name"
+    }
+  },
+  {
+    "name": "Funding Funder Class",
+    "property": "funding.funder.class",
+    "type": "keyword",
+    "count": 0
+  },
+  {
+    "name": "Funding Funder Name",
+    "property": "funding.funder.name",
+    "type": "keyword",
+    "count": 186102,
+    "description": {
+      "dataset": "Name of the organization",
+      "computationaltool": "Name of the organization"
+    }
+  },
+  {
+    "name": "Funding Funder Parent Organization",
+    "property": "funding.funder.parentOrganization",
+    "type": "keyword",
+    "count": 649,
+    "description": {
+      "dataset": "Name of the parent organization. For instance, the parentOrganization of NIAID is the National Institutes of health (NIH)",
+      "computationaltool": "Name of the parent organization. For instance, the parentOrganization of NIAID is the National Institutes of health (NIH)"
+    }
+  },
+  {
+    "name": "Funding Funder Role",
+    "property": "funding.funder.role",
+    "type": "keyword",
+    "count": 0,
+    "description": {
+      "dataset": "What role the organization played in creating the dataset",
+      "computationaltool": "What role the organization played in creating the computational tool"
+    }
+  },
+  {
+    "name": "Funding Funder URL",
+    "property": "funding.funder.url",
+    "type": "text",
+    "count": 628,
+    "description": {
+      "dataset": "Link to the organization",
+      "computationaltool": "Link to the organization"
+    },
+    "format": "uri"
+  },
+  {
+    "name": "Funding Identifier",
+    "property": "funding.identifier",
+    "type": "text",
+    "count": 148321,
+    "description": {
+      "dataset": "Unique identifier(s) for the grant or contract used to fund the work",
+      "computationaltool": "Unique identifier(s) for the grant or contract used to fund the work"
+    }
+  },
+  {
+    "name": "Funding URL",
+    "property": "funding.url",
+    "type": "text",
+    "count": 14087,
+    "description": {
+      "dataset": "award / grant URL",
+      "computationaltool": "award / grant URL"
+    },
+    "format": "uri"
+  },
+  {
+    "name": "Has Part",
+    "property": "hasPart",
+    "type": "object",
+    "count": 39285,
+    "description": {
+      "dataset": "Associated materials for the dataset, including data dictionaries and data limitation descriptions",
+      "computationaltool": "An item that is part of this computational tool"
+    },
+    "abstract": { "dataset": "data limitations or dictionaries" }
+  },
+  {
+    "name": "Has Part @id",
+    "property": "hasPart.@id",
+    "type": "text",
+    "count": 0
+  },
+  {
+    "name": "Has Part Type",
+    "property": "hasPart.@type",
+    "type": "text",
+    "count": 5
+  },
+  {
+    "name": "Has Part Encoding Format",
+    "property": "hasPart.encodingFormat",
+    "type": "text",
+    "count": 5
+  },
+  {
+    "name": "Has Part Name",
+    "property": "hasPart.name",
+    "type": "text",
+    "count": 39285,
+    "description": {
+      "dataset": "Name or title",
+      "computationaltool": "Name or title"
+    }
+  },
+  {
+    "name": "Has Part URL",
+    "property": "hasPart.url",
+    "type": "text",
+    "count": 5,
+    "description": {
+      "dataset": "The url of the work",
+      "computationaltool": "The url of the work"
+    },
+    "format": "uri"
+  },
+  {
+    "name": "Health Condition",
+    "property": "healthCondition",
+    "type": "object",
+    "count": 7461,
+    "description": {
+      "dataset": "The health condition(s) /infectious disease(s) which are the focus of the work (like COVID-19, coronavirus).",
+      "computationaltool": "The health condition(s) /infectious disease(s) which are the focus of the work (like COVID-19, coronavirus)."
+    },
+    "abstract": {
+      "dataset": "health condition/disease",
+      "computationaltool": "health condition/disease"
+    }
+  },
+  {
+    "name": "Health Condition Name",
+    "property": "healthCondition.name",
+    "type": "keyword",
+    "count": 7461,
+    "description": {
+      "dataset": "The health condition(s) /infectious disease(s) which are the focus of the work (ex: COVID-19)"
+    }
+  },
+  {
+    "name": "Health Condition URL",
+    "property": "healthCondition.url",
+    "type": "text",
+    "count": 29,
+    "format": "uri"
+  },
+  {
+    "name": "Identifier",
+    "property": "identifier",
+    "type": "text",
+    "count": 717429,
+    "description": {
+      "dataset": "Dataset identifier or accession number, such as a digital object identifier (DOI), sequence read archive (SRA) or GenBank accession number, etc.",
+      "computationaltool": "Identifier for the computational tool"
+    },
+    "abstract": { "dataset": "identifier or accession number" }
+  },
+  {
+    "name": "In Language",
+    "property": "inLanguage",
+    "type": "object",
+    "count": 50215,
+    "description": {
+      "dataset": "The language of the content of the dataset",
+      "computationaltool": "The language of the computational tool (not programming language)"
+    }
+  },
+  {
+    "name": "In Language Type",
+    "property": "inLanguage.@type",
+    "type": "text",
+    "count": 0
+  },
+  {
+    "name": "In Language Alternate Name",
+    "property": "inLanguage.alternateName",
+    "type": "text",
+    "count": 0
+  },
+  {
+    "name": "In Language Name",
+    "property": "inLanguage.name",
+    "type": "text",
+    "count": 50215,
+    "description": { "dataset": "language of the work" }
+  },
+  {
+    "name": "Source",
+    "property": "includedInDataCatalog",
+    "type": "object",
+    "count": 2596659,
+    "description": {
+      "dataset": "Data or tool catalog where the work is published; original source of the metadata.",
+      "computationaltool": "Data or tool catalog"
+    },
+    "abstract": {
+      "dataset": "catalog containing the work",
+      "computationaltool": "catalog containing the work"
+    }
+  },
+  {
+    "name": "Source Type",
+    "property": "includedInDataCatalog.@type",
+    "type": "text",
+    "count": 2528181
+  },
+  {
+    "name": "Source Name",
+    "property": "includedInDataCatalog.name",
+    "type": "keyword",
+    "count": 2596659,
+    "description": { "dataset": "Data or tool catalog name" }
+  },
+  {
+    "name": "Source URL",
+    "property": "includedInDataCatalog.url",
+    "type": "text",
+    "count": 2593071,
+    "description": { "dataset": "Link to data or tool catalog" },
+    "format": "uri"
+  },
+  {
+    "name": "Source Version Date",
+    "property": "includedInDataCatalog.versionDate",
+    "type": "date",
+    "count": 2593071,
+    "description": {
+      "dataset": "date the metadata was harvested from the catalog"
+    },
+    "format": "date"
+  },
+  {
+    "name": "Pathogen",
+    "property": "infectiousAgent",
+    "type": "object",
+    "count": 366,
+    "description": {
+      "dataset": "Infectious agent(s) / pathogen(s) which are the focus of the work (like SARS-CoV-2).",
+      "computationaltool": "Infectious agent(s) / pathogen(s) which are the focus of the work (like SARS-CoV-2)."
+    },
+    "abstract": {
+      "dataset": "infectious agent / pathogen",
+      "computationaltool": "infectious agent / pathogen"
+    }
+  },
+  {
+    "name": "Pathogen Name",
+    "property": "infectiousAgent.name",
+    "type": "keyword",
+    "count": 366,
+    "description": { "computationaltool": "infectious agent / pathogen" }
+  },
+  {
+    "name": "Pathogen URL",
+    "property": "infectiousAgent.url",
+    "type": "text",
+    "count": 338,
+    "format": "uri"
+  },
+  {
+    "name": "Input",
+    "property": "input",
+    "type": "object",
+    "count": 867,
+    "description": {
+      "computationaltool": "software input, such as a file or parameter"
+    },
+    "abstract": { "computationaltool": "input file/parameter" }
+  },
+  {
+    "name": "Input Type",
+    "property": "input.@type",
+    "type": "keyword",
+    "count": 0
+  },
+  {
+    "name": "Input Description",
+    "property": "input.description",
+    "type": "text",
+    "count": 110,
+    "description": { "computationaltool": "Description of the software input" }
+  },
+  {
+    "name": "Input Encoding Format",
+    "property": "input.encodingFormat",
+    "type": "text",
+    "count": 579,
+    "description": { "computationaltool": "File type of the software input" }
+  },
+  {
+    "name": "Input Identifier",
+    "property": "input.identifier",
+    "type": "text",
+    "count": 164
+  },
+  {
+    "name": "Input Name",
+    "property": "input.name",
+    "type": "text",
+    "count": 808,
+    "description": { "computationaltool": "Name of the software input" }
+  },
+  {
+    "name": "Interaction Statistic",
+    "property": "interactionStatistic",
+    "type": "object",
+    "count": 3183,
+    "description": {
+      "dataset": "The number of interactions with the work, such as page views or tool downloads.",
+      "computationaltool": "The number of interactions with the work, such as page views or tool downloads."
+    },
+    "abstract": {
+      "dataset": "views or downloads",
+      "computationaltool": "views or downloads"
+    }
+  },
+  {
+    "name": "Interaction Statistic Type",
+    "property": "interactionStatistic.@type",
+    "type": "text",
+    "count": 0
+  },
+  {
+    "name": "Interaction Statistic Interaction Type",
+    "property": "interactionStatistic.interactionType",
+    "type": "text",
+    "count": 3183
+  },
+  {
+    "name": "Interaction Statistic User Interaction Count",
+    "property": "interactionStatistic.userInteractionCount",
+    "type": "unsigned_long",
+    "count": 3183
+  },
+  {
+    "name": "Is Accessible For Free",
+    "property": "isAccessibleForFree",
+    "type": "boolean",
+    "count": 52600,
+    "description": {
+      "dataset": "A flag to signal that the work is accessible for free.",
+      "computationaltool": "A flag to signal that the work is accessible for free."
+    },
+    "abstract": {
+      "dataset": "accessible without charge",
+      "computationaltool": "accessible without charge"
+    }
+  },
+  {
+    "name": "Is Based On",
+    "property": "isBasedOn",
+    "type": "object",
+    "count": 3685,
+    "description": {
+      "dataset": "A dataset, publication, or computational tool from which this work is derived, modified, or adapted.",
+      "computationaltool": "A dataset, publication, or computational tool from which this work is derived, modified, or adapted."
+    },
+    "abstract": {
+      "dataset": "dataset, publication, or tool used to create the work",
+      "computationaltool": "dataset, publication, or tool used to create the work"
+    }
+  },
+  {
+    "name": "Is Based On Type",
+    "property": "isBasedOn.@type",
+    "type": "keyword",
+    "count": 23
+  },
+  {
+    "name": "Is Based On Abstract",
+    "property": "isBasedOn.abstract",
+    "type": "text",
+    "count": 0,
+    "description": {
+      "dataset": "Abstract of the referenced work",
+      "computationaltool": "Abstract of the referenced work"
+    }
+  },
+  {
+    "name": "Is Based On Additional Type",
+    "property": "isBasedOn.additionalType",
+    "type": "object",
+    "count": 499,
+    "description": {
+      "computationaltool": "Additional type of the referenced work, such as a Sample, Run, Experiment, or BioProject"
+    }
+  },
+  {
+    "name": "Is Based On Additional Type Name",
+    "property": "isBasedOn.additionalType.name",
+    "type": "keyword",
+    "count": 499
+  },
+  {
+    "name": "Is Based On Additional Type URL",
+    "property": "isBasedOn.additionalType.url",
+    "type": "text",
+    "count": 499,
+    "format": "uri"
+  },
+  {
+    "name": "Is Based On Citation",
+    "property": "isBasedOn.citation",
+    "type": "text",
+    "count": 0,
+    "description": {
+      "dataset": "The bibliographic citation for the referenced work as is provided",
+      "computationaltool": "The bibliographic citation for the referenced work as is provided"
+    }
+  },
+  {
+    "name": "Is Based On Date Published",
+    "property": "isBasedOn.datePublished",
+    "type": "date",
+    "count": 0,
+    "description": {
+      "dataset": "Date the referenced work was published",
+      "computationaltool": "Date the referenced work was published"
+    },
+    "format": "date"
+  },
+  {
+    "name": "Is Based On Description",
+    "property": "isBasedOn.description",
+    "type": "text",
+    "count": 499,
+    "description": {
+      "dataset": "Description of the referenced work",
+      "computationaltool": "Description of the referenced work"
+    }
+  },
+  {
+    "name": "Is Based On Doi",
+    "property": "isBasedOn.doi",
+    "type": "text",
+    "count": 898,
+    "description": {
+      "dataset": "A digital object identifier (DOI) of the referenced work",
+      "computationaltool": "A digital object identifier (DOI) of the referenced work"
+    },
+    "abstract": {
+      "dataset": "digital object identifier",
+      "computationaltool": "digital object identifier"
+    }
+  },
+  {
+    "name": "Is Based On Identifier",
+    "property": "isBasedOn.identifier",
+    "type": "text",
+    "count": 2437,
+    "description": {
+      "dataset": "An identifier associated with the work",
+      "computationaltool": "An identifier associated with the work"
+    }
+  },
+  {
+    "name": "Is Based On Name",
+    "property": "isBasedOn.name",
+    "type": "text",
+    "count": 3636,
+    "description": {
+      "dataset": "Name or title",
+      "computationaltool": "Name or title"
+    }
+  },
+  {
+    "name": "Is Based On Pmid",
+    "property": "isBasedOn.pmid",
+    "type": "text",
+    "count": 0,
+    "description": {
+      "dataset": "A PubMed identifier (PMID) of the referenced publication",
+      "computationaltool": "A PubMed identifier (PMID) of the referenced publication"
+    },
+    "abstract": {
+      "dataset": "PubMed identifier",
+      "computationaltool": "PubMed identifier"
+    }
+  },
+  {
+    "name": "Is Based On URL",
+    "property": "isBasedOn.url",
+    "type": "text",
+    "count": 1926,
+    "description": {
+      "dataset": "The url of the work",
+      "computationaltool": "The url of the work"
+    },
+    "format": "uri"
+  },
+  {
+    "name": "Is Basis For",
+    "property": "isBasisFor",
+    "type": "object",
+    "count": 0,
+    "description": {
+      "dataset": "A dataset which reuses the dataset.",
+      "computationaltool": "A computational tool which reuses the computational tool"
+    }
+  },
+  {
+    "name": "Is Basis For Identifier",
+    "property": "isBasisFor.identifier",
+    "type": "text",
+    "count": 0,
+    "description": {
+      "dataset": "An identifier associated with the work",
+      "computationaltool": "An identifier associated with the work"
+    }
+  },
+  {
+    "name": "Is Basis For Name",
+    "property": "isBasisFor.name",
+    "type": "text",
+    "count": 0,
+    "description": {
+      "dataset": "Name or title",
+      "computationaltool": "Name or title"
+    }
+  },
+  {
+    "name": "Is Basis For URL",
+    "property": "isBasisFor.url",
+    "type": "text",
+    "count": 0,
+    "description": {
+      "dataset": "The url of the work",
+      "computationaltool": "The url of the work"
+    },
+    "format": "uri"
+  },
+  {
+    "name": "Is Part Of",
+    "property": "isPartOf",
+    "type": "object",
+    "count": 4,
+    "description": {
+      "dataset": "Indicates a broader study, project, or collection the work is part of.",
+      "computationaltool": "Indicates a broader study, project, or collection the work is part of."
+    },
+    "abstract": {
+      "dataset": "study or project including the work",
+      "computationaltool": "study or project including the work"
+    }
+  },
+  {
+    "name": "Is Part Of @id",
+    "property": "isPartOf.@id",
+    "type": "text",
+    "count": 0
+  },
+  {
+    "name": "Is Part Of Type",
+    "property": "isPartOf.@type",
+    "type": "text",
+    "count": 0
+  },
+  {
+    "name": "Is Part Of Identifier",
+    "property": "isPartOf.identifier",
+    "type": "keyword",
+    "count": 4,
+    "description": {
+      "dataset": "An identifier associated with the work",
+      "computationaltool": "An identifier associated with the work"
+    }
+  },
+  {
+    "name": "Is Part Of Name",
+    "property": "isPartOf.name",
+    "type": "text",
+    "count": 4,
+    "description": {
+      "dataset": "Name or title",
+      "computationaltool": "Name or title"
+    }
+  },
+  {
+    "name": "Is Part Of URL",
+    "property": "isPartOf.url",
+    "type": "text",
+    "count": 4,
+    "description": {
+      "dataset": "The url of the work",
+      "computationaltool": "The url of the work"
+    },
+    "format": "uri"
+  },
+  {
+    "name": "Is Related To",
+    "property": "isRelatedTo",
+    "type": "object",
+    "count": 1588,
+    "description": {
+      "dataset": "Datasets which are related to the given dataset; often datasets involved in the same study. These linkages are created via human curation.",
+      "computationaltool": "Computational tools which are related to the given computational tool. These linkages are created via human curation."
+    },
+    "abstract": {
+      "dataset": "related datasets (via curation)",
+      "computationaltool": "related records (via curation)"
+    }
+  },
+  {
+    "name": "Is Related To Type",
+    "property": "isRelatedTo.@type",
+    "type": "text",
+    "count": 4
+  },
+  {
+    "name": "Is Related To Has Part",
+    "property": "isRelatedTo.hasPart",
+    "type": "object",
+    "count": 4,
+    "description": {
+      "dataset": "A portion of the work",
+      "computationaltool": "A portion of the work"
+    }
+  },
+  {
+    "name": "Is Related To Has Part Type",
+    "property": "isRelatedTo.hasPart.@type",
+    "type": "text",
+    "count": 0
+  },
+  {
+    "name": "Is Related To Has Part Identifier",
+    "property": "isRelatedTo.hasPart.identifier",
+    "type": "keyword",
+    "count": 4
+  },
+  {
+    "name": "Is Related To Identifier",
+    "property": "isRelatedTo.identifier",
+    "type": "keyword",
+    "count": 1588,
+    "description": {
+      "dataset": "An identifier associated with the work",
+      "computationaltool": "An identifier associated with the work"
+    }
+  },
+  {
+    "name": "Is Related To Source",
+    "property": "isRelatedTo.includedInDataCatalog",
+    "type": "object",
+    "count": 4,
+    "description": {
+      "dataset": "Data or tool catalog which houses the work",
+      "computationaltool": "Data or tool catalog which houses the work"
+    }
+  },
+  {
+    "name": "Is Related To Source Type",
+    "property": "isRelatedTo.includedInDataCatalog.@type",
+    "type": "text",
+    "count": 0
+  },
+  {
+    "name": "Is Related To Source Name",
+    "property": "isRelatedTo.includedInDataCatalog.name",
+    "type": "keyword",
+    "count": 4
+  },
+  {
+    "name": "Is Related To Source URL",
+    "property": "isRelatedTo.includedInDataCatalog.url",
+    "type": "text",
+    "count": 0
+  },
+  {
+    "name": "Is Related To Source Version Date",
+    "property": "isRelatedTo.includedInDataCatalog.versionDate",
+    "type": "date",
+    "count": 0
+  },
+  {
+    "name": "Is Related To Name",
+    "property": "isRelatedTo.name",
+    "type": "text",
+    "count": 1588,
+    "description": {
+      "dataset": "Name or title",
+      "computationaltool": "Name or title"
+    }
+  },
+  {
+    "name": "Is Related To Relationship",
+    "property": "isRelatedTo.relationship",
+    "type": "text",
+    "count": 4,
+    "description": {
+      "dataset": "How the works are related",
+      "computationaltool": "How the works are related"
+    }
+  },
+  {
+    "name": "Is Similar To",
+    "property": "isSimilarTo",
+    "type": "object",
+    "count": 0,
+    "description": {
+      "dataset": "Datasets or computational tools which are similar to the work, based on terms in the names, descriptions, authors, measurementTechniques, infectiousAgents, healthConditions, etc.",
+      "computationaltool": "Datasets or computational tools which are similar to the work, based on terms in the names, descriptions, authors, measurementTechniques, infectiousAgents, healthConditions, etc."
+    },
+    "abstract": {
+      "dataset": "similar datasets (auto-assigned)",
+      "computationaltool": "similar records (auto-assigned)"
+    }
+  },
+  {
+    "name": "Is Similar To Type",
+    "property": "isSimilarTo.@type",
+    "type": "text",
+    "count": 0
+  },
+  {
+    "name": "Is Similar To Identifier",
+    "property": "isSimilarTo.identifier",
+    "type": "keyword",
+    "count": 0,
+    "description": {
+      "dataset": "An identifier associated with the work",
+      "computationaltool": "An identifier associated with the work"
+    }
+  },
+  {
+    "name": "Is Similar To Source",
+    "property": "isSimilarTo.includedInDataCatalog",
+    "type": "object",
+    "count": 0,
+    "description": {
+      "dataset": "Data or tool catalog which houses the work",
+      "computationaltool": "Data or tool catalog which houses the work"
+    }
+  },
+  {
+    "name": "Is Similar To Source Type",
+    "property": "isSimilarTo.includedInDataCatalog.@type",
+    "type": "text",
+    "count": 0
+  },
+  {
+    "name": "Is Similar To Source Name",
+    "property": "isSimilarTo.includedInDataCatalog.name",
+    "type": "keyword",
+    "count": 0
+  },
+  {
+    "name": "Is Similar To Source URL",
+    "property": "isSimilarTo.includedInDataCatalog.url",
+    "type": "text",
+    "count": 0
+  },
+  {
+    "name": "Is Similar To Source Version Date",
+    "property": "isSimilarTo.includedInDataCatalog.versionDate",
+    "type": "date",
+    "count": 0
+  },
+  {
+    "name": "Is Similar To Name",
+    "property": "isSimilarTo.name",
+    "type": "text",
+    "count": 0,
+    "description": {
+      "dataset": "Name or title",
+      "computationaltool": "Name or title"
+    }
+  },
+  {
+    "name": "Is Similar To Relationship",
+    "property": "isSimilarTo.relationship",
+    "type": "keyword",
+    "count": 0,
+    "description": {
+      "dataset": "How the works are related",
+      "computationaltool": "How the works are related"
+    }
+  },
+  {
+    "name": "Keywords",
+    "property": "keywords",
+    "type": "keyword",
+    "count": 328443,
+    "description": {
+      "dataset": "Keywords or tags used to describe this work.",
+      "computationaltool": "Keywords or tags used to describe this work."
+    },
+    "abstract": {
+      "dataset": "keywords or tags",
+      "computationaltool": "keywords or tags"
+    }
+  },
+  {
+    "name": "License",
+    "property": "license",
+    "type": "text",
+    "count": 289460,
+    "description": {
+      "dataset": "A license document that applies to this work, typically indicated by URL.",
+      "computationaltool": "A license document that applies to this work, typically indicated by URL."
+    },
+    "abstract": {
+      "dataset": "license for use",
+      "computationaltool": "license for use"
+    },
+    "format": "uri"
+  },
+  {
+    "name": "Main Entity Of Page",
+    "property": "mainEntityOfPage",
+    "type": "text",
+    "count": 5333,
+    "description": {
+      "dataset": "Website which describes the work and provides additional details.",
+      "computationaltool": "Website which describes the work and provides additional details."
+    },
+    "abstract": {
+      "dataset": "associated webpage",
+      "computationaltool": "associated webpage"
+    }
+  },
+  {
+    "name": "Measurement Technique",
+    "property": "measurementTechnique",
+    "type": "object",
+    "count": 180383,
+    "description": {
+      "dataset": "A technique or technology used in a  dataset corresponding to the method used for measuring the corresponding variable(s) (described using variableMeasured). For example, if variableMeasured is molecule concentration, measurementTechnique could be: \"mass spectrometry\" or \"nmr spectroscopy\" or \"colorimetry\" or \"immunofluorescence\"."
+    },
+    "abstract": {
+      "dataset": "measurement technique used to collect the dataset"
+    }
+  },
+  {
+    "name": "Measurement Technique Description",
+    "property": "measurementTechnique.description",
+    "type": "text",
+    "count": 1099
+  },
+  {
+    "name": "Measurement Technique Name",
+    "property": "measurementTechnique.name",
+    "type": "keyword",
+    "count": 180383,
+    "description": { "dataset": "Technique used to collect the dataset" }
+  },
+  {
+    "name": "Measurement Technique URL",
+    "property": "measurementTechnique.url",
+    "type": "text",
+    "count": 29,
+    "format": "uri"
+  },
+  {
+    "name": "Name",
+    "property": "name",
+    "type": "text",
+    "count": 2534162,
+    "description": {
+      "dataset": "Dataset name",
+      "computationaltool": "Computational tool name"
+    }
+  },
+  {
+    "name": "Nctid",
+    "property": "nctid",
+    "type": "keyword",
+    "count": 6,
+    "description": {
+      "dataset": "ClinicalTrials.gov identifier associated with the dataset."
+    },
+    "abstract": { "dataset": "ClinicalTrials.gov ID" }
+  },
+  {
+    "name": "Output",
+    "property": "output",
+    "type": "object",
+    "count": 841,
+    "description": { "computationaltool": "Output of the computational tool" }
+  },
+  {
+    "name": "Output Type",
+    "property": "output.@type",
+    "type": "keyword",
+    "count": 0
+  },
+  {
+    "name": "Output Encoding Format",
+    "property": "output.encodingFormat",
+    "type": "text",
+    "count": 534,
+    "description": { "computationaltool": "file type of the tool's output" }
+  },
+  {
+    "name": "Output Identifier",
+    "property": "output.identifier",
+    "type": "text",
+    "count": 142
+  },
+  {
+    "name": "Output Name",
+    "property": "output.name",
+    "type": "text",
+    "count": 819,
+    "description": { "computationaltool": "name of the tool's output" }
+  },
+  {
+    "name": "Processor Requirements",
+    "property": "processorRequirements",
+    "type": "text",
+    "count": 492,
+    "description": {
+      "computationaltool": "Processor architecture required to run the application (e.g. IA64)."
+    },
+    "abstract": { "computationaltool": "processor requirements" }
+  },
+  {
+    "name": "Programming Language",
+    "property": "programmingLanguage",
+    "type": "keyword",
+    "count": 7896,
+    "description": {
+      "computationaltool": "The main programming language(s) used to build or execute the tool"
+    },
+    "abstract": { "computationaltool": "programming language" }
+  },
+  {
+    "name": "Relationship",
+    "property": "relationship",
+    "type": "text",
+    "count": 0,
+    "description": {
+      "dataset": "How an associated work is related to the dataset."
+    }
+  },
+  {
+    "name": "Same As",
+    "property": "sameAs",
+    "type": "text",
+    "count": 1873665,
+    "description": {
+      "dataset": "URL of additional sources for the work.",
+      "computationaltool": "URL of additional sources for the work."
+    }
+  },
+  {
+    "name": "Source publisher",
+    "property": "sdPublisher",
+    "type": "object",
+    "count": 1361324,
+    "description": {
+      "dataset": "Original publisher of the dataset metadata (like GenBank, ImmPort, etc.)",
+      "computationaltool": "Original publisher of the computational tool metadata (like GitHub, Dockstore, etc.)"
+    },
+    "abstract": {
+      "dataset": "original metadata source",
+      "computationaltool": "original metadata source"
+    }
+  },
+  {
+    "name": "Source publisher Type",
+    "property": "sdPublisher.@type",
+    "type": "keyword",
+    "count": 1283529
+  },
+  {
+    "name": "Source publisher Identifier",
+    "property": "sdPublisher.identifier",
+    "type": "text",
+    "count": 6946
+  },
+  {
+    "name": "Source publisher Name",
+    "property": "sdPublisher.name",
+    "type": "text",
+    "count": 1361323,
+    "description": {
+      "dataset": "Data or tool catalog name",
+      "computationaltool": "Data or tool catalog name"
+    }
+  },
+  {
+    "name": "Source publisher URL",
+    "property": "sdPublisher.url",
+    "type": "keyword",
+    "count": 1283517,
+    "description": {
+      "dataset": "Link to data or tool catalog",
+      "computationaltool": "Link to data or tool catalog"
+    },
+    "format": "uri"
+  },
+  {
+    "name": "Software Add On",
+    "property": "softwareAddOn",
+    "type": "object",
+    "count": 85,
+    "description": {
+      "computationaltool": "Additional content for a software application"
+    }
+  },
+  {
+    "name": "Software Add On Identifier",
+    "property": "softwareAddOn.identifier",
+    "type": "text",
+    "count": 85,
+    "description": {
+      "computationaltool": "An identifier associated with the work"
+    }
+  },
+  {
+    "name": "Software Help",
+    "property": "softwareHelp",
+    "type": "object",
+    "count": 6005,
+    "description": {
+      "computationaltool": "URL to access software application help"
+    }
+  },
+  {
+    "name": "Software Help Name",
+    "property": "softwareHelp.name",
+    "type": "text",
+    "count": 2022
+  },
+  {
+    "name": "Software Help URL",
+    "property": "softwareHelp.url",
+    "type": "text",
+    "count": 6005,
+    "format": "uri"
+  },
+  {
+    "name": "Software Requirements",
+    "property": "softwareRequirements",
+    "type": "text",
+    "count": 2639,
+    "description": {
+      "computationaltool": "Component dependency requirements for application. This includes runtime environments and shared libraries that are not included in the application distribution package, but required to run the application (Examples: DirectX, Java or .NET runtime)."
+    },
+    "abstract": { "computationaltool": "requirements of tool" }
+  },
+  {
+    "name": "Software Version",
+    "property": "softwareVersion",
+    "type": "text",
+    "count": 5816,
+    "description": { "computationaltool": "Software version" }
+  },
+  {
+    "name": "Source Info",
+    "property": "sourceInfo",
+    "type": "object",
+    "count": 0
+  },
+  {
+    "name": "Source Info Description",
+    "property": "sourceInfo.description",
+    "type": "text",
+    "count": 0
+  },
+  {
+    "name": "Source Info Identifier",
+    "property": "sourceInfo.identifier",
+    "type": "text",
+    "count": 0
+  },
+  {
+    "name": "Source Info Name",
+    "property": "sourceInfo.name",
+    "type": "text",
+    "count": 0
+  },
+  {
+    "name": "Source Info Schema",
+    "property": "sourceInfo.schema",
+    "type": "object",
+    "count": 0
+  },
+  {
+    "name": "Source Info Schema Field",
+    "property": "sourceInfo.schema.field",
+    "type": "text",
+    "count": 0
+  },
+  {
+    "name": "Source Info URL",
+    "property": "sourceInfo.url",
+    "type": "text",
+    "count": 0
+  },
+  {
+    "name": "Geographical Information",
+    "property": "spatialCoverage",
+    "type": "object",
+    "count": 20632,
+    "description": {
+      "dataset": "The place(s) which are the focus of the dataset"
+    },
+    "abstract": { "dataset": "geographic focus of the work" }
+  },
+  {
+    "name": "Geographical Information Type",
+    "property": "spatialCoverage.@type",
+    "type": "text",
+    "count": 12
+  },
+  {
+    "name": "Geographical Information Geo",
+    "property": "spatialCoverage.geo",
+    "type": "object",
+    "count": 0
+  },
+  {
+    "name": "Geographical Information Geo Type",
+    "property": "spatialCoverage.geo.@type",
+    "type": "text",
+    "count": 0
+  },
+  {
+    "name": "Geographical Information Geo Latitude",
+    "property": "spatialCoverage.geo.latitude",
+    "type": "float",
+    "count": 0
+  },
+  {
+    "name": "Geographical Information Geo Longitude",
+    "property": "spatialCoverage.geo.longitude",
+    "type": "float",
+    "count": 0
+  },
+  {
+    "name": "Geographical Information Identifier",
+    "property": "spatialCoverage.identifier",
+    "type": "text",
+    "count": 4354,
+    "description": {
+      "dataset": "An identifier for the location, preferably a Wikidata ID"
+    }
+  },
+  {
+    "name": "Geographical Information Name",
+    "property": "spatialCoverage.name",
+    "type": "text",
+    "count": 20632,
+    "description": { "dataset": "The name of the location" }
+  },
+  {
+    "name": "Species",
+    "property": "species",
+    "type": "object",
+    "count": 167446,
+    "description": {
+      "dataset": "Species / host organism from which the dataset has been collected.",
+      "computationaltool": "Species / host organism from which the computational tool was designed or applied."
+    },
+    "abstract": {
+      "dataset": "species/host organism",
+      "computationaltool": "species/host organism"
+    }
+  },
+  {
+    "name": "Species Additional Type",
+    "property": "species.additionalType",
+    "type": "object",
+    "count": 499
+  },
+  {
+    "name": "Species Additional Type Name",
+    "property": "species.additionalType.name",
+    "type": "keyword",
+    "count": 499
+  },
+  {
+    "name": "Species Additional Type URL",
+    "property": "species.additionalType.url",
+    "type": "text",
+    "count": 499
+  },
+  {
+    "name": "Species Identifier",
+    "property": "species.identifier",
+    "type": "text",
+    "count": 0
+  },
+  {
+    "name": "Species Name",
+    "property": "species.name",
+    "type": "keyword",
+    "count": 167446,
+    "description": {
+      "dataset": "Species / host organism from which the dataset has been collected."
+    }
+  },
+  {
+    "name": "Species URL",
+    "property": "species.url",
+    "type": "text",
+    "count": 246,
+    "format": "uri"
+  },
+  {
+    "name": "Period",
+    "property": "temporalCoverage",
+    "type": "object",
+    "count": 55640,
+    "description": {
+      "dataset": "The period of time covered within the dataset."
+    },
+    "abstract": { "dataset": "time period" }
+  },
+  {
+    "name": "Period Temporal Interval",
+    "property": "temporalCoverage.temporalInterval",
+    "type": "object",
+    "count": 55640
+  },
+  {
+    "name": "Period Temporal Interval Type",
+    "property": "temporalCoverage.temporalInterval.@type",
+    "type": "text",
+    "count": 0
+  },
+  {
+    "name": "Period Temporal Interval Duration",
+    "property": "temporalCoverage.temporalInterval.duration",
+    "type": "text",
+    "count": 0
+  },
+  {
+    "name": "Period Temporal Interval End Date",
+    "property": "temporalCoverage.temporalInterval.endDate",
+    "type": "date",
+    "count": 55007
+  },
+  {
+    "name": "Period Temporal Interval Name",
+    "property": "temporalCoverage.temporalInterval.name",
+    "type": "text",
+    "count": 0
+  },
+  {
+    "name": "Period Temporal Interval Start Date",
+    "property": "temporalCoverage.temporalInterval.startDate",
+    "type": "date",
+    "count": 5010
+  },
+  {
+    "name": "Thumbnail Url",
+    "property": "thumbnailUrl",
+    "type": "text",
+    "count": 60,
+    "description": {
+      "computationaltool": "A thumbnail image of the computational tool"
+    },
+    "format": "uri"
+  },
+  {
+    "name": "Topic Category",
+    "property": "topicCategory",
+    "type": "object",
+    "count": 137652,
+    "description": {
+      "dataset": "Topic of the work. This topic may be assigned by a human curator or through automated algorithms.",
+      "computationaltool": "Topic of the work. This topic may be assigned by a human curator or through automated algorithms."
+    },
+    "abstract": { "dataset": "topic", "computationaltool": "topic" }
+  },
+  {
+    "name": "Topic Category Curated By",
+    "property": "topicCategory.curatedBy",
+    "type": "object",
+    "count": 4121,
+    "description": {
+      "dataset": "The person, organization, or catalog that categorized the dataset",
+      "computationaltool": "The person, organization, or catalog that categorized the computational tool"
+    }
+  },
+  {
+    "name": "Topic Category Curated By Name",
+    "property": "topicCategory.curatedBy.name",
+    "type": "text",
+    "count": 4121
+  },
+  {
+    "name": "Topic Category Curated By URL",
+    "property": "topicCategory.curatedBy.url",
+    "type": "text",
+    "count": 4121
+  },
+  {
+    "name": "Topic Category Description",
+    "property": "topicCategory.description",
+    "type": "text",
+    "count": 2987,
+    "description": {
+      "dataset": "description of the topic",
+      "computationaltool": "description of the topic"
+    }
+  },
+  {
+    "name": "Topic Category Name",
+    "property": "topicCategory.name",
+    "type": "keyword",
+    "count": 137644,
+    "description": {
+      "dataset": "topic name",
+      "computationaltool": "topic name"
+    }
+  },
+  {
+    "name": "Topic Category URL",
+    "property": "topicCategory.url",
+    "type": "text",
+    "count": 137652,
+    "description": {
+      "dataset": "URL linking to the topic",
+      "computationaltool": "URL linking to the topic"
+    },
+    "format": "uri"
+  },
+  {
+    "name": "URL",
+    "property": "url",
+    "type": "text",
+    "count": 2589365,
+    "description": {
+      "dataset": "URL of the work",
+      "computationaltool": "URL of the work."
+    },
+    "format": "uri"
+  },
+  {
+    "name": "Usage Info",
+    "property": "usageInfo",
+    "type": "object",
+    "count": 6,
+    "description": {
+      "dataset": "Data usage agreement, specifying the terms under which the dataset can be used. Note that this is related to but distinct from the license."
+    },
+    "abstract": { "dataset": "data usage agreement" }
+  },
+  {
+    "name": "Usage Info Description",
+    "property": "usageInfo.description",
+    "type": "text",
+    "count": 0,
+    "description": { "dataset": "Description of the referenced work" }
+  },
+  {
+    "name": "Usage Info Name",
+    "property": "usageInfo.name",
+    "type": "text",
+    "count": 0,
+    "description": { "dataset": "Name or title" }
+  },
+  {
+    "name": "Usage Info URL",
+    "property": "usageInfo.url",
+    "type": "text",
+    "count": 6,
+    "description": { "dataset": "The url of the work" },
+    "format": "uri"
+  },
+  {
+    "name": "Variable Measured",
+    "property": "variableMeasured",
+    "type": "keyword",
+    "count": 1878062,
+    "description": { "dataset": "Variables measured within the dataset." }
+  },
+  {
+    "name": "Version",
+    "property": "version",
+    "type": "text",
+    "count": 0,
+    "description": { "dataset": "Dataset version." }
+  }
+]

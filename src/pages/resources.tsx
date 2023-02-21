@@ -1,12 +1,23 @@
 import React, { useEffect } from 'react';
 import type { NextPage } from 'next';
+import NextLink from 'next/link';
 import { PageContainer, PageContent } from 'src/components/page-container';
 import { useRouter } from 'next/router';
 import { useQuery } from 'react-query';
 import { getResourceById } from 'src/utils/api';
 import { FormattedResource } from 'src/utils/api/types';
 import Empty from 'src/components/empty';
-import { Box, Button, Card, Flex, Text } from 'nde-design-system';
+import {
+  Box,
+  Button,
+  Card,
+  Collapse,
+  Flex,
+  Link,
+  ListItem,
+  Text,
+  UnorderedList,
+} from 'nde-design-system';
 import {
   Navigation,
   RelatedDatasets,
@@ -16,6 +27,8 @@ import { Error, ErrorCTA } from 'src/components/error';
 import Sections, { section_metadata } from 'src/components/resource-sections';
 import navigationData from 'configs/resource-sections.json';
 import { Route, showSection } from 'src/components/resource-sections/helpers';
+import { useLocalStorage } from 'usehooks-ts';
+import { CardContainer } from 'src/components/resource-sections/components/related-datasets';
 
 // Error display is data fetching goes wrong.
 const ErrorState = ({ retryFn }: { retryFn: () => void }) => {
@@ -47,7 +60,7 @@ const EmptyState = () => {
 const ResourcePage: NextPage = props => {
   const router = useRouter();
   const { id } = router.query;
-
+  const [searchHistory] = useLocalStorage<string[]>('previous-searches', []);
   // Access query client
   const { isLoading, error, data } = useQuery<
     FormattedResource | undefined,
@@ -104,7 +117,7 @@ const ResourcePage: NextPage = props => {
     <>
       <PageContainer
         hasNavigation
-        title='Resource'
+        title={`${data?.name ? data?.name : isLoading ? '' : 'Resource'}`}
         metaDescription='NDE Discovery Portal - Detailed resource information.'
       >
         <PageContent>
@@ -169,6 +182,29 @@ const ResourcePage: NextPage = props => {
                     isRelatedTo={data?.isRelatedTo || null}
                     includedInDataCatalog={data?.includedInDataCatalog}
                   />
+
+                  {/* Search History links */}
+                  <Collapse in={!!searchHistory.length}>
+                    <CardContainer heading='Previous Searches'>
+                      <UnorderedList ml={0}>
+                        {searchHistory.map((search, index) => (
+                          <ListItem key={index}>
+                            <NextLink
+                              href={{
+                                pathname: '/search',
+                                query: { q: search },
+                              }}
+                              passHref
+                            >
+                              <Link wordBreak='break-word' fontSize='xs'>
+                                {search}
+                              </Link>
+                            </NextLink>
+                          </ListItem>
+                        ))}
+                      </UnorderedList>
+                    </CardContainer>
+                  </Collapse>
                 </Box>
               </Flex>
             </Flex>

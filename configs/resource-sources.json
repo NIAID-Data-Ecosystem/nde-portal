@@ -41,9 +41,29 @@
       "imageUrl": "/assets/resources/dryad.png"
     },
     {
+      "sourceName": "Harvard Dataverse",
+      "name": "Dataverse",
+      "imageUrl": "/assets/resources/harvard-dataverse.png"
+    },
+    {
+      "sourceName": "HuBMAP",
+      "name": "HuBMAP",
+      "imageUrl": "/assets/resources/hubmap.png"
+    },
+    {
+      "sourceName": "Human Cell Atlas",
+      "name": "Human Cell Atlas",
+      "imageUrl": "/assets/resources/hca.png"
+    },
+    {
       "sourceName": "ImmPort",
       "name": "Immunology Database and Analysis Portal",
       "imageUrl": "/assets/resources/immport.png"
+    },
+    {
+      "sourceName": "BD2K-LINCS DCIC",
+      "name": "LINCS",
+      "imageUrl": "/assets/resources/lincs.png"
     },
     {
       "sourceName": "Mendeley",
@@ -51,9 +71,19 @@
       "imageUrl": "/assets/resources/mendeley.svg"
     },
     {
+      "sourceName": "MicrobiomeDB",
+      "name": "MicrobiomeDB",
+      "imageUrl": "/assets/resources/microbiome.png"
+    },
+    {
       "sourceName": "NCBI GEO",
       "name": "NCBI Gene Expression Omnibus",
       "imageUrl": "/assets/resources/geo.gif"
+    },
+    {
+      "sourceName": "NCBI PMC",
+      "name": "NCBI PMC",
+      "imageUrl": "/assets/resources/pmc.png"
     },
     {
       "sourceName": "NCBI SRA",
@@ -71,14 +101,24 @@
       "imageUrl": "/assets/resources/sb.png"
     },
     {
+      "sourceName": "Qiita",
+      "name": "Qiita",
+      "imageUrl": "/assets/resources/qiita.png"
+    },
+    {
       "sourceName": "ReframeDB",
       "name": "ReframeDB",
       "imageUrl": "/assets/resources/reframedb.png"
     },
     {
-      "sourceName": "VEuPathDB",
-      "name": "VEuPathDB",
-      "imageUrl": "/assets/resources/VEuPathDB.png"
+      "sourceName": "WorkflowHub",
+      "name": "WorkflowHub",
+      "imageUrl": "/assets/resources/workflowhub.svg"
+    },
+    {
+      "sourceName": "VDJServer",
+      "name": "VDJServer",
+      "imageUrl": "/assets/resources/vdjserver.png"
     },
     {
       "sourceName": "Vivli",

@@ -32,8 +32,8 @@ DateRangeContext.displayName = 'DateRangeContext';
 
 /*
   HANDLE SLIDER DATE RANGE
-    [activeDateRange]: Range controlled by sliders. Indices of resourcesWithDate.
-  */
+  [DateRangeSlider]: Range controlled by sliders. Indices of resourcesWithDate.
+*/
 export const DateRangeSlider: React.FC<{
   data: FacetTerms;
   selectedDates: string[];
@@ -50,13 +50,17 @@ export const DateRangeSlider: React.FC<{
   const data = useMemo(
     () =>
       addMissingYears(
-        initialData?.date?.filter(
-          d => !(d.term === '-_exists_' || d.count === 0),
-        ) || [],
+        initialData?.date
+          .filter(datum => {
+            // filter out dates that exceed the current year.
+            return (
+              new Date(datum.term).getFullYear() < new Date().getFullYear()
+            );
+          })
+          .filter(d => !(d.term === '-_exists_' || d.count === 0)) || [],
       ),
     [initialData?.date],
   );
-
   useEffect(() => {
     // This logic is added to control the state when filter tags are updated / page is refreshed.
     setDateRange(prev => {

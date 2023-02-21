@@ -14,7 +14,9 @@ import footerConfig from 'configs/footer.json';
 import Head from 'next/head';
 import Notice from './notice';
 import { env } from 'next.config';
-import { SearchBar } from 'src/components/search-bar';
+import { SearchBarWithDropdown } from 'src/components/search-bar';
+import { PageContent } from './content';
+import { AdvancedSearch } from 'src/components/advanced-search';
 
 interface PageContainerProps extends FlexProps {
   hasNavigation?: boolean;
@@ -23,15 +25,12 @@ interface PageContainerProps extends FlexProps {
   disableSearchBar?: boolean;
 }
 
-export const NAV_HEIGHT = { base: '105px', sm: '77px', md: '89px' };
-
 export const PageContainer: React.FC<PageContainerProps> = ({
   children,
   hasNavigation,
   title,
   metaDescription,
   disableSearchBar,
-  ...rest
 }) => {
   const topNavigation = navConfig as NavigationProps['navigation'];
   const footerNavigation = footerConfig as FooterProps['navigation'];
@@ -50,7 +49,7 @@ export const PageContainer: React.FC<PageContainerProps> = ({
       if (r['href'].charAt(0) === '/') {
         return {
           ...r,
-          href: `${env.BASE_URL}${r['href']}${
+          href: `${env?.BASE_URL}${r['href']}${
             r['href'].slice(-1) === '/' ? '' : '/'
           }`,
         };
@@ -70,7 +69,7 @@ export const PageContainer: React.FC<PageContainerProps> = ({
         <meta name='description' content={metaDescription} />
       </Head>
 
-      <Flex as={'main'} w={'100%'} flexDirection={'column'} minW={300}>
+      <Flex as='main' w='100%' flexDirection='column' minW={300}>
         {topNavigation && hasNavigation && (
           // Sticky Nav Bar.
           <Box
@@ -79,7 +78,7 @@ export const PageContainer: React.FC<PageContainerProps> = ({
             position='sticky'
             top={0}
             w='100%'
-            zIndex={100}
+            zIndex='sticky'
             minW={300}
           >
             <Navigation
@@ -92,9 +91,27 @@ export const PageContainer: React.FC<PageContainerProps> = ({
         )}
 
         {/*Page content has margin-top to compensate for fixed nav bar. */}
-        <Box id={'pagebody'} position='relative'>
+        <Box id='pagebody' position='relative'>
           <Notice />
-          {!disableSearchBar && <SearchBar />}
+          {!disableSearchBar && (
+            <PageContent
+              bg='#fff'
+              minH='unset'
+              borderBottom='1px solid'
+              borderColor='gray.100'
+              flexDirection='column'
+              py={4}
+            >
+              <Flex w='100%' justifyContent='flex-end' mb={2}>
+                <AdvancedSearch />
+              </Flex>
+              <SearchBarWithDropdown
+                ariaLabel='Search for datasets or tools'
+                placeholder='Search for datasets or tools'
+                size='md'
+              />
+            </PageContent>
+          )}
           {children}
           <Footer
             navigation={{

@@ -1,9 +1,10 @@
 {
   "href": "https://data-staging.niaid.nih.gov/",
   "routes": [
-    { "label": "Search", "href": "/" },
+    { "label": "Home", "href": "/" },
+    { "label": "Search", "href": "/search" },
 
-    { "label": "About", "href": "https://data-staging.niaid.nih.gov/about" },
+    { "label": "About", "href": "/about" },
 
     {
       "label": "Resources",
@@ -24,6 +25,16 @@
           "subLabel": "Guides and documentation to help with NIAID Data Ecosystem.",
           "href": "https://niaid-data.readme.io/",
           "isExternal": true
+        },
+        {
+          "label": "FAQ",
+          "subLabel": "Frequently asked questions",
+          "href": "/faq"
+        },
+        {
+          "label": "Changelog",
+          "subLabel": "Log of updates to the NIAID Data Ecosystem",
+          "href": "/changelog"
         }
       ]
     }

@@ -15,12 +15,13 @@ export const DropdownContent: React.FC<DropdownContentProps> = ({
   if (!isOpen) {
     return <></>;
   }
+
   return (
     <Box position='relative'>
       <Box
         position='absolute'
         w='100%'
-        zIndex={5}
+        zIndex='dropdown'
         boxShadow='lg'
         bg='white'
         borderRadius='base'

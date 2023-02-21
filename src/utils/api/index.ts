@@ -35,6 +35,7 @@ export interface Params {
   fields?: string;
   dotfield?: boolean;
   hist?: string;
+  advancedSearch?: string;
 }
 
 // Fetch all search results from API.

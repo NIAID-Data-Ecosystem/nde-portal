@@ -50,6 +50,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
 }) => {
   const {
     id,
+    alternateName,
     name,
     type,
     date,
@@ -123,7 +124,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
           pl={[2, 4, 6]}
           flexDirection={['column', 'row']}
           bg='niaid.color'
-        ></TypeBanner>
+        />
         {/* Card header where name of resource is a link to resource apge */}
 
         <CardHeader bg='white' position='relative' px={paddingCard} pt={4}>
@@ -134,7 +135,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
             h={isLoading ? '20px' : 'unset'}
             w='100%'
           >
-            {name && (
+            {(name || alternateName) && (
               <NextLink
                 href={{
                   pathname: '/resources/',
@@ -166,8 +167,10 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                       size='h6'
                       lineHeight='short'
                       fontWeight='semibold'
-                      dangerouslySetInnerHTML={{ __html: name || '' }}
-                    ></CardTitle>
+                      dangerouslySetInnerHTML={{
+                        __html: name || alternateName || '',
+                      }}
+                    />
                     <Icon
                       as={FaChevronRight}
                       boxSize={4}
@@ -286,7 +289,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                               maxH='40px'
                               maxW='250px'
                               mr={4}
-                              src={`${assetPrefix}${imageURL}`}
+                              src={`${assetPrefix || ''}${imageURL}`}
                               alt='Data source name'
                             ></Image>
                           </Link>
@@ -297,7 +300,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                             maxW='200px'
                             mr={4}
                             mb={[2, 2, 0]}
-                            src={`${assetPrefix}${imageURL}`}
+                            src={`${assetPrefix || ''}${imageURL}`}
                             alt='Data source name'
                           ></Image>
                         )

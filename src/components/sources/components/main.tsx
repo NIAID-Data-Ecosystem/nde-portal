@@ -1,5 +1,14 @@
-import { Box, Button, Collapse, Flex, Heading, Text } from 'nde-design-system';
 import React, { useState } from 'react';
+import {
+  Box,
+  Button,
+  Collapse,
+  Divider,
+  Flex,
+  Heading,
+  SearchInput,
+  Text,
+} from 'nde-design-system';
 import { useQuery } from 'react-query';
 import { Metadata } from 'src/utils/api/types';
 import { fetchSources, SourceResponse } from '../utils';
@@ -9,7 +18,6 @@ import { useRouter } from 'next/router';
 import Empty from 'src/components/empty';
 import { DisplayHTMLContent } from 'src/components/html-content';
 import NextLink from 'next/link';
-import ResourceConfig from 'configs/resource-sources.json';
 
 interface Main {
   sourceData: Metadata;
@@ -20,6 +28,7 @@ const Main: React.FC<Main> = ({ sourceData }) => {
   const repos = sourceData.src;
   const [schemaId, setSchemaId] = useState<string[]>([]);
   const [schemaText, setSchemaText] = useState<string[]>([]);
+  const [searchValue, setSearchValue] = useState('');
 
   function schemaIdFunc(sourceName: string) {
     if (schemaId.includes(sourceName) || schemaText.includes(sourceName)) {
@@ -35,58 +44,100 @@ const Main: React.FC<Main> = ({ sourceData }) => {
     async () => {
       const data = await Promise.all(
         Object.entries(repos).map(([k, source]) => {
-          if (source.code.file) {
-            // Fetch source information from github
-            return fetchSources({
-              id: (source.sourceInfo && source.sourceInfo.identifier) || k,
-              sourcePath: source.code.file,
-              name: (source.sourceInfo && source.sourceInfo.name) || k,
-              description:
-                (source.sourceInfo && source.sourceInfo.description) || '',
-              dateModified: source.version || '',
-              numberOfRecords: source.stats[k] || 0,
-              schema: (source.sourceInfo && source.sourceInfo.schema) || null,
-              url: (source.sourceInfo && source.sourceInfo.url) || '',
-            });
-          }
+          // Fetch source information from github
+          return fetchSources({
+            id: (source.sourceInfo && source.sourceInfo.identifier) || k,
+            sourcePath: source?.code?.file || null,
+            name: (source.sourceInfo && source.sourceInfo.name) || k,
+            description:
+              (source.sourceInfo && source.sourceInfo.description) || '',
+            dateModified: source.version || '',
+            numberOfRecords: source.stats[k] || 0,
+            schema: (source.sourceInfo && source.sourceInfo.schema) || null,
+            url: (source.sourceInfo && source.sourceInfo.url) || '',
+          });
         }),
       );
       return data.filter(x => x !== undefined);
     },
     { refetchOnWindowFocus: false },
   );
-  if (error) {
-    return (
-      <Error
-        message='The data is unavailable at this time.'
-        bg='transparent'
-        color='text.body'
-        minH='unset'
-      >
-        <Button flex={1} onClick={() => router.reload()} variant='solid'>
-          Retry
-        </Button>
-      </Error>
-    );
-  }
+
   const sources =
-    data?.sort((a: { name: string }, b: { name: any }) =>
-      a.name.localeCompare(b.name),
-    ) || [];
+    data
+      ?.filter((source: { name: string }) =>
+        source.name.toLowerCase().includes(searchValue.toLowerCase()),
+      )
+      .sort((a: { name: string }, b: { name: any }) =>
+        a.name.localeCompare(b.name),
+      ) || [];
 
   return (
     <Box id='sources-main' mb={10}>
-      <Box borderBottom='2px solid' borderColor='gray.100'>
-        <Heading as='h1' size='h5' p={2} my={4} ml={[0, 0, 4]}>
-          Version 1.0.0 Data Sources
-        </Heading>
+      <Box>
+        <Flex justifyContent='space-between' alignItems='center'>
+          <Heading as='h1' size='h5' p={2} my={4} ml={0}>
+            Version 1.0.0 Data Sources
+          </Heading>
+          <Button
+            href='https://github.com/NIAID-Data-Ecosystem/nde-crawlers/issues/new?assignees=&labels=&template=suggest-a-new-resource.md&title=%5BSOURCE%5D'
+            isExternal
+            colorScheme='secondary'
+            size='sm'
+            variant='outline'
+          >
+            Suggest a new Source
+          </Button>
+        </Flex>
+        <Divider />
       </Box>
+      <Flex justifyContent='flex-end' my={8}>
+        <Box>
+          <SearchInput
+            size='sm'
+            ariaLabel='Search for a source'
+            placeholder='Search for a source'
+            value={searchValue}
+            handleChange={e => setSearchValue(e.currentTarget.value)}
+            type='text'
+          />
+          {data?.length && (
+            <Text
+              fontSize='xs'
+              fontWeight='light'
+              mt={2}
+              color='gray.800'
+              textAlign='right'
+            >
+              <Text as='span' fontWeight='medium'>
+                {sources.length}
+              </Text>{' '}
+              result{sources.length === 1 ? '' : 's'}.
+            </Text>
+          )}
+        </Box>
+      </Flex>
+      {error && (
+        <Error
+          message='The data is unavailable at this time.'
+          bg='transparent'
+          color='text.body'
+          minH='unset'
+          alignItems='flex-start'
+        >
+          <Button flex={1} onClick={() => router.reload()} variant='solid'>
+            Retry
+          </Button>
+        </Error>
+      )}
       {isLoading ? (
         <LoadingSpinner isLoading={isLoading} />
       ) : sources.length === 0 ? (
-        <Empty message='No data available.' alignSelf='center' h='50vh'>
-          <Text>No sources.</Text>
-        </Empty>
+        error ? (
+          <></>
+        ) : (
+          <Empty message='No data available.' alignSelf='center' h='50vh' />
+        )
       ) : (
         sources.map((sourceObj: SourceResponse, i: number) => {
           return (
@@ -218,11 +269,15 @@ const Main: React.FC<Main> = ({ sourceData }) => {
                 <Box mt={4}>
                   <Heading as='h3' size='xs'>
                     Latest Release{' '}
-                    {new Date(sourceObj.dateModified).toDateString()}
+                    {sourceObj.dateModified
+                      ? new Date(sourceObj.dateModified).toDateString()
+                      : 'N/A'}
                   </Heading>
                   <Heading as='h3' size='xs'>
                     First Released{' '}
-                    {new Date(sourceObj.dateCreated).toDateString()}
+                    {sourceObj.dateCreated
+                      ? new Date(sourceObj.dateCreated).toDateString()
+                      : 'N/A'}
                   </Heading>
                 </Box>
                 <Flex

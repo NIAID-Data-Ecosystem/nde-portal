@@ -34,7 +34,7 @@ import {
 import { assetPrefix } from 'next.config';
 import NextLink from 'next/link';
 import { AdvancedSearch } from 'src/components/advanced-search';
-import { SearchWithPredictiveText } from 'src/components/search-with-predictive-text';
+import { SearchBarWithDropdown } from 'src/components/search-bar';
 
 const sample_queries = [
   {
@@ -85,6 +85,14 @@ const sample_queries = [
 const Home: NextPage = () => {
   const router = useRouter();
   const size = useBreakpointValue({ base: 300, lg: 350 });
+
+  // Search term entered in search bar
+  const [searchTerm, setSearchTerm] = useState<string>('');
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>): void =>
+    setSearchTerm(e.target.value);
+
+  // update value when changed
+  // useEffect(() => setSearchTerm(value || ''), [value]);
 
   // Fetch stats about number of resources
   const params = {
@@ -175,7 +183,7 @@ const Home: NextPage = () => {
     <>
       <PageContainer
         hasNavigation
-        title='Search'
+        title='Home'
         metaDescription='NIAID Data Ecosystem Discovery Portal - Home.'
         disableSearchBar
       >
@@ -185,11 +193,24 @@ const Home: NextPage = () => {
           body={[homepageCopy.sections[0].body]}
         >
           <>
-            {/* [TO DO]: Implement Advanced Query */}
-            {/* <Flex w='100%' justifyContent='flex-end'>
-              <AdvancedSearch />
-            </Flex> */}
-            <SearchWithPredictiveText
+            <Flex w='100%' justifyContent='flex-end' mb={2}>
+              <AdvancedSearch
+                buttonProps={{
+                  variant: 'outline',
+                  bg: 'whiteAlpha.500',
+                  color: 'white',
+                  _hover: { bg: 'whiteAlpha.800', color: 'primary.600' },
+                }}
+              />
+            </Flex>
+            <SearchBarWithDropdown
+              ariaLabel='Search for datasets or tools'
+              placeholder='Search for datasets or tools'
+              size='md'
+            />
+
+            {/* [NOTE]: Test with autocomplete in the future */}
+            {/* <SearchWithPredictiveText
               ariaLabel='Search for datasets or tools'
               placeholder='Search for datasets or tools'
               size='md'
@@ -206,7 +227,7 @@ const Home: NextPage = () => {
                   });
                 }
               }}
-            />
+            /> */}
 
             <Flex mt={2} flexWrap={['wrap']}>
               <Text color='whiteAlpha.800' mr={2}>
@@ -258,16 +279,17 @@ const Home: NextPage = () => {
               {homepageCopy.sections[1]?.routes &&
                 homepageCopy.sections[1].routes.map(route => {
                   return (
-                    <Button
+                    <NextLink
                       key={route.title}
-                      href={`${route.path}`}
-                      w='100%'
-                      my={2}
-                      target='_self'
-                      isExternal={route.isExternal || false}
+                      href={{
+                        pathname: route.path,
+                      }}
+                      passHref
                     >
-                      {route.title}
-                    </Button>
+                      <Button w='100%' my={2}>
+                        {route.title}
+                      </Button>
+                    </NextLink>
                   );
                 })}
             </StyledSectionButtonGroup>
@@ -300,7 +322,7 @@ const Home: NextPage = () => {
                         textAlign='center'
                       >
                         <Image
-                          src={`${assetPrefix}/assets/${stat.term
+                          src={`${assetPrefix || ''}/assets/${stat.term
                             .toLowerCase()
                             .replaceAll(' ', '-')}.svg`}
                           alt={`Icon for ${stat.term}`}
@@ -396,14 +418,11 @@ const Home: NextPage = () => {
                             'flex-start',
                           ]}
                         >
-                          <Button
-                            href={route.path}
-                            w='100%'
-                            variant='outline'
-                            isExternal={route.isExternal || false}
-                          >
-                            {route.title}
-                          </Button>
+                          <NextLink href={route.path} passHref>
+                            <Button w='100%' variant='outline'>
+                              {route.title}
+                            </Button>
+                          </NextLink>
                         </StyledSectionButtonGroup>
                       );
                     },
@@ -425,40 +444,6 @@ const Home: NextPage = () => {
                 ></Legend>
               )}
             </Flex>
-          </StyledSection>
-        </PageContent>
-
-        {/* Connect to the workspace section */}
-        <PageContent
-          bg='#fff'
-          minH='unset'
-          flexDirection='column'
-          alignItems='center'
-        >
-          <StyledSection id='workspace' flexDirection={{ md: 'row-reverse' }}>
-            <Image
-              w='100%'
-              p={4}
-              maxW={{ base: 300, xl: 400 }}
-              src={`${assetPrefix}/assets/home-analyze.png`}
-              alt={''}
-            ></Image>
-            <StyledBody>
-              <StyledSectionHeading mt={[4, 6]}>
-                {homepageCopy.sections[3].heading}
-              </StyledSectionHeading>
-              <StyledText>{homepageCopy.sections[3].body}</StyledText>
-              {homepageCopy.sections[3]?.routes &&
-                homepageCopy.sections[3].routes.map(route => {
-                  return (
-                    <StyledSectionButtonGroup key={route.title}>
-                      <Button href={route.path} w='100%' isExternal>
-                        {route.title}
-                      </Button>
-                    </StyledSectionButtonGroup>
-                  );
-                })}
-            </StyledBody>
           </StyledSection>
         </PageContent>
       </PageContainer>

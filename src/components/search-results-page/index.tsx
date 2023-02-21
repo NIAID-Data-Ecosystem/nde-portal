@@ -48,14 +48,14 @@ export const sortOptions = [
   { name: 'Best Match', sortBy: '_score', orderBy: 'asc' },
   { name: 'Date: oldest to newest', sortBy: 'date', orderBy: 'asc' },
   { name: 'Date: newest to oldest', sortBy: 'date', orderBy: 'desc' },
-  { name: 'A-Z', sortBy: 'name', orderBy: 'asc' },
-  { name: 'Z-A', sortBy: 'name', orderBy: 'desc' },
+  { name: 'A-Z', sortBy: 'name.raw', orderBy: 'asc' },
+  { name: 'Z-A', sortBy: 'name.raw', orderBy: 'desc' },
 ] as const;
 
 export interface SortOptionsInterface {
-  name: typeof sortOptions[number]['name'];
-  sortBy: typeof sortOptions[number]['sortBy'];
-  orderBy: typeof sortOptions[number]['orderBy'];
+  name: (typeof sortOptions)[number]['name'];
+  sortBy: (typeof sortOptions)[number]['sortBy'];
+  orderBy: (typeof sortOptions)[number]['orderBy'];
 }
 
 // Default config for query.
@@ -98,7 +98,8 @@ const SearchResultsPage = () => {
   // Query Parameters
   const filter_string = queryFilterObject2String(selectedFilters);
   const params = {
-    q: encodeString(queryString),
+    // don't escape parenthesis or colons when its an advanced search
+    q: router.query.advancedSearch ? queryString : encodeString(queryString),
     extra_filter: filter_string || '', // extra filter updates aggregate fields
     facet_size: defaultQuery.facetSize,
     size: `${selectedPerPage}`,

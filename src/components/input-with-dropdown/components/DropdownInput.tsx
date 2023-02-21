@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import {
   ButtonProps,
   Flex,
@@ -14,35 +14,20 @@ import {
 import { FaSearch } from 'react-icons/fa';
 import { useDropdownContext } from '..';
 import { ReactElement } from 'react-markdown/lib/react-markdown';
+import { theme } from '@chakra-ui/react';
 
 /*
 [Component Information]: [DropdownInput] is a regular input field with a list of suggestions based on the user typing.
 */
 
-const SIZE_CONFIG: any = {
-  xs: {
-    width: 5,
-    h: 1.75,
-  },
-  sm: {
-    width: 5.5,
-    h: 2,
-  },
-  md: {
-    width: 5.5,
-    h: 2.5,
-  },
-  lg: {
-    width: 6.5,
-    h: 3,
-  },
-};
-
-interface DropdownInputProps {
+export interface DropdownInputProps {
+  id: string;
   ariaLabel: string; // input label for accessibility
   colorScheme?: InputProps['colorScheme'];
   size?: InputProps['size'];
+  type: InputProps['type'];
   placeholder?: string;
+  isDisabled?: boolean;
   isLoading?: boolean;
   getInputValue: (arg: number) => string;
   renderSubmitButton?: (props: ButtonProps) => ReactElement;
@@ -51,15 +36,19 @@ interface DropdownInputProps {
 }
 
 export const DropdownInput: React.FC<DropdownInputProps> = ({
+  id,
   ariaLabel,
   placeholder,
   isLoading,
   size = 'sm',
+  type,
+  isDisabled,
   renderSubmitButton,
   getInputValue,
   onChange,
   onSubmit,
 }) => {
+  const inputRightRef = useRef<HTMLDivElement>(null);
   const {
     colorScheme,
     cursor,
@@ -72,6 +61,7 @@ export const DropdownInput: React.FC<DropdownInputProps> = ({
   return (
     <Flex
       as='form'
+      flex={1}
       onSubmit={e => {
         e.preventDefault();
         setIsOpen(false);
@@ -80,7 +70,7 @@ export const DropdownInput: React.FC<DropdownInputProps> = ({
     >
       {/* Label for accessibility */}
       <VisuallyHidden>
-        <label htmlFor={ariaLabel}>{ariaLabel}</label>
+        <label htmlFor={id}>{ariaLabel}</label>
       </VisuallyHidden>
 
       {/* Search input */}
@@ -105,9 +95,12 @@ export const DropdownInput: React.FC<DropdownInputProps> = ({
 
         <Input
           {...getInputProps({
+            id,
             placeholder: placeholder || 'Search',
             tabIndex: 0,
-            pr: renderSubmitButton ? `${SIZE_CONFIG[size]['width']}rem` : 4,
+            type,
+            pr: inputRightRef?.current?.clientWidth || 4,
+            isDisabled,
             onKeyDown: (
               _: React.KeyboardEvent<HTMLInputElement>,
               index: number,
@@ -117,13 +110,19 @@ export const DropdownInput: React.FC<DropdownInputProps> = ({
                 updatedInputValue && setInputValue(updatedInputValue);
               }
             },
-            onChange: (e: React.ChangeEvent<HTMLInputElement>) =>
-              onChange ? onChange(e.currentTarget.value) : void 0,
+            onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
+              onChange ? onChange(e.currentTarget.value) : void 0;
+            },
           })}
         />
         {/* Optional submit button. */}
         {renderSubmitButton && (
-          <InputRightElement p={1} w={`${SIZE_CONFIG[size]['width']}rem`}>
+          <InputRightElement
+            ref={inputRightRef}
+            p={1}
+            w='unset'
+            zIndex={theme.zIndices['dropdown'] + 10}
+          >
             {renderSubmitButton({
               type: 'submit',
               w: '100%',

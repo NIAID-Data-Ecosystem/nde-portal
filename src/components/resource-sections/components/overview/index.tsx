@@ -126,7 +126,6 @@ const Overview: React.FC<OverviewProps> = ({
     }
     return <>{content || '-'}</>;
   };
-
   return (
     <Flex p={[0, 4]} w='100%' flexWrap='wrap' flexDirection={['column', 'row']}>
       {(doi || nctid) && (
@@ -250,7 +249,7 @@ const Overview: React.FC<OverviewProps> = ({
               <>
                 {licenseInfo?.img && (
                   <Image
-                    src={`${assetPrefix}${licenseInfo.img}`}
+                    src={`${assetPrefix || ''}${licenseInfo.img}`}
                     alt={licenseInfo.type}
                   />
                 )}
@@ -570,7 +569,11 @@ const Overview: React.FC<OverviewProps> = ({
                 {getStatInfo('doi').description}
                 <br />
                 <strong>PMID: </strong>
-                {getStatInfo('citation').items?.pmid.description}
+                {
+                  getStatInfo('citation').items?.pmid?.description[
+                    data?.['@type']?.toLowerCase()
+                  ]
+                }
                 <br />
                 <strong>NCTID: </strong>
                 {getStatInfo('nctid').description}
@@ -588,6 +591,7 @@ const Overview: React.FC<OverviewProps> = ({
                   <StatContent
                     url={doi?.includes('http') ? doi : ''}
                     content={doi}
+                    isExternal
                   />
                 </ListItem>
               )}
@@ -599,6 +603,7 @@ const Overview: React.FC<OverviewProps> = ({
                   <StatContent
                     url={nctid?.includes('http') ? nctid : ''}
                     content={nctid}
+                    isExternal
                   />
                 </ListItem>
               )}

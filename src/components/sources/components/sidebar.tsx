@@ -25,7 +25,7 @@ const Sidebar: React.FC<Sidebar> = ({ data }) => {
           <ListItem key={index} _hover={{ bg: 'gray.50' }} cursor='pointer'>
             <Box
               as='a'
-              d='block'
+              display='block'
               href={`#${name}`}
               aria-label={`Go to ${name} section`}
               px={[2, 4, 6]}

@@ -17,7 +17,7 @@ interface DropdownListItemProps
 interface HighlightProps {
   tags: string[];
 }
-const Highlight: React.FC<HighlightProps> = ({
+export const Highlight: React.FC<HighlightProps> = ({
   children: text = '',
   tags = [],
 }) => {
@@ -61,12 +61,13 @@ export const DropdownListItem: React.FC<DropdownListItemProps> = React.memo(
 
     // If item is highlighted (mouseover or keydown), update the input string with the value of the list item.
     const isSelected = useMemo(() => cursor === index, [index, cursor]);
-
+    const displayValue = Array.isArray(value) ? value.join(' ') : value;
     return (
       <NDEListItem
         borderRadius='base'
         cursor='pointer'
         p={2}
+        m={2}
         my={1}
         {...getListItemProps({
           index,
@@ -107,7 +108,7 @@ export const DropdownListItem: React.FC<DropdownListItemProps> = React.memo(
             },
           }}
         >
-          <Highlight tags={searchTerm.split(' ')}>{value}</Highlight>
+          <Highlight tags={searchTerm.split(' ')}>{displayValue}</Highlight>
         </Heading>
       </NDEListItem>
     );

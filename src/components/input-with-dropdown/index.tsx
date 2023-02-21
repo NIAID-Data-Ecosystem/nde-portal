@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { ListItemProps } from '@chakra-ui/react';
 import { useDropdownInput } from './hooks/useDropdownInput';
+import { Box, useOutsideClick } from 'nde-design-system';
 
 interface DropdownListItemProps extends ListItemProps {
   index: number;
@@ -55,6 +56,12 @@ export const InputWithDropdown: React.FC<{
     isOpen: defaultContext.isOpen,
   });
 
+  // Handles closing the dropdown list when clicking outside the element.
+  const ref = useRef(null);
+  useOutsideClick({
+    ref: ref,
+    handler: () => dropdownInput.setIsOpen(false),
+  });
   const context = {
     cursorMax,
     colorScheme,
@@ -63,7 +70,7 @@ export const InputWithDropdown: React.FC<{
 
   return (
     <DropdownInputContext.Provider value={context}>
-      {children}
+      <Box ref={ref}>{children}</Box>
     </DropdownInputContext.Provider>
   );
 };

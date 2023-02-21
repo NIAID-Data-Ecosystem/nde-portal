@@ -16,7 +16,7 @@
         },
         {
           "title": "Learn More",
-          "path": "https://data-staging.niaid.nih.gov/about"
+          "path": "/about"
         }
       ]
     },
@@ -27,17 +27,6 @@
         {
           "title": "Suggest a new source",
           "path": "https://github.com/NIAID-Data-Ecosystem/nde-crawlers/issues/new?assignees=&labels=&template=suggest-a-new-resource.md&title=%5BSOURCE%5D",
-          "isExternal": true
-        }
-      ]
-    },
-    {
-      "heading": "Connect to the workspace.",
-      "body": "Connect to the Analysis Workspace to analyze datasets or to integrate computational tools in your own pipeline.",
-      "routes": [
-        {
-          "title": "Go to workspace",
-          "path": "https://accounts.niaiddata.org/auth/login",
           "isExternal": true
         }
       ]
