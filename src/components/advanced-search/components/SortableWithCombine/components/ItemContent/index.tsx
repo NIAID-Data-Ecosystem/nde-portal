@@ -72,7 +72,7 @@ export const ItemContent: React.FC<ItemContentProps> = React.memo(
         );
       };
 
-      type MetadataField = typeof MetadataFieldsConfig[number];
+      type MetadataField = (typeof MetadataFieldsConfig)[number];
       const field = MetadataFieldsConfig.find(
         field => field.property === data.value.field,
       ) as MetadataField;

@@ -1,6 +1,6 @@
 import MetadataFields from 'configs/resource-fields.json';
 
-type Field = typeof MetadataFields[number];
+type Field = (typeof MetadataFields)[number];
 
 /****
  * Overlapping or unnecessary fields.

@@ -69,9 +69,9 @@ export const AdvancedSearchFormContext: React.FC<AdvancedSearchFormProps> = ({
     AdvancedSearchContextProps['searchOption']
   >(() => getSearchOption(searchOptionsList));
 
-  const [unionType, setUnionType] = useState<typeof unionOptions[number] | ''>(
-    '',
-  );
+  const [unionType, setUnionType] = useState<
+    (typeof unionOptions)[number] | ''
+  >('');
 
   const fieldDetails = MetadataFieldsConfig.find(
     f => f.property === searchField,
