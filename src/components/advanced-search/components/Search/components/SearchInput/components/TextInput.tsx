@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Box, Button } from 'nde-design-system';
+import { Box } from 'nde-design-system';
 import { PredictiveSearch } from 'src/components/search-with-predictive-text/components/PredictiveSearch';
 import { useAdvancedSearchContext } from '../../AdvancedSearchFormContext';
 import { wildcardQueryString } from 'src/components/advanced-search/utils/query-helpers';
@@ -7,10 +7,14 @@ import { usePredictiveSearch } from 'src/components/search-with-predictive-text'
 import { checkBalancedPunctuation } from 'src/components/advanced-search/utils/validation-checks';
 import { AdvancedSearchInputProps } from '../types';
 
-export const TextInput: React.FC<AdvancedSearchInputProps> = ({
+interface TextInputProps extends AdvancedSearchInputProps {
+  hideSuggestions?: boolean;
+}
+export const TextInput: React.FC<TextInputProps> = ({
   colorScheme = 'primary',
   inputValue,
   isDisabled,
+  hideSuggestions,
   size,
   errors,
   clearInputValue,
@@ -30,7 +34,6 @@ export const TextInput: React.FC<AdvancedSearchInputProps> = ({
     if (!isBalanced.isValid) {
       isBalanced.error && errors.push(isBalanced.error);
     }
-    setErrors(errors);
     return errors;
   };
   // Show predictive results based on input change.
@@ -38,7 +41,15 @@ export const TextInput: React.FC<AdvancedSearchInputProps> = ({
     stringInputValue,
     queryValue.field,
     true,
+    () => !hideSuggestions,
   );
+
+  useEffect(() => {
+    // clear predictive search results when input is cleared.
+    if (!stringInputValue.length) {
+      predictiveSearch.onReset();
+    }
+  }, [predictiveSearch, stringInputValue]);
 
   return (
     <Box width='100%'>
@@ -50,6 +61,7 @@ export const TextInput: React.FC<AdvancedSearchInputProps> = ({
         size={size}
         inputValue={stringInputValue}
         isDisabled={isDisabled}
+        hideSuggestions={hideSuggestions}
         isInvalid={errors.length > 0}
         onClose={
           stringInputValue.length
@@ -61,6 +73,7 @@ export const TextInput: React.FC<AdvancedSearchInputProps> = ({
             : undefined
         }
         onChange={value => {
+          // Handles which results to show in predictive list
           let searchTerm = value;
           // for exact search we still want the list of predictive options to be wildcarded.
           // https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/153
@@ -73,7 +86,8 @@ export const TextInput: React.FC<AdvancedSearchInputProps> = ({
             if (selectedSearchType?.transformValue) {
               const transformed_term = selectedSearchType.transformValue({
                 ...queryValue,
-                term: value,
+                term: value.trim(),
+                querystring: value.trim(),
               });
               if (
                 !Array.isArray(transformed_term) &&
@@ -86,33 +100,22 @@ export const TextInput: React.FC<AdvancedSearchInputProps> = ({
 
           // Update the predictive search list;
           predictiveSearch.updateSearchTerm(searchTerm);
-          handleChange(value);
+          handleChange({ value });
           if (errors.length) {
-            validateInput(value);
+            const errors = validateInput(value);
+            setErrors(errors);
           }
         }}
         onClick={(term, field) => {
-          /*
-          Some search terms are an array of strings, e.g. ["term1", "term2"]. In this case we want to return 
-          results that match either term1 or term2. This is the default though we may want to change this based
-          on search type in the future.
-          */
-          if (Array.isArray(term)) {
-            let querystring = `"${term.join('" OR "')}"`;
-            return handleClick({
-              querystring,
-              term: querystring,
-              field,
-            });
-          }
-
           // if a suggestion is clicked, we exact term that search.
           handleClick({ querystring: `"${term}"`, term: `"${term}"`, field });
         }}
         handleSubmit={(term, field) => {
           const input_string = Array.isArray(term) ? term.join(' ') : term;
           // 1. Check for errors.
+
           const errors = validateInput(input_string);
+          setErrors(errors);
           if (errors.length > 0) {
             return;
           } else {
@@ -122,24 +125,24 @@ export const TextInput: React.FC<AdvancedSearchInputProps> = ({
               ? selectedSearchType.transformValue({
                   ...queryValue,
                   term,
+                  querystring: term,
                 })
               : { querystring: term, term, field };
             handleSubmit(result);
           }
         }}
-        renderSubmitButton={props =>
-          renderSubmitButton ? (
-            renderSubmitButton({
-              ...props,
-              isDisabled:
-                (selectedSearchType.id !== '_exists_' &&
-                  selectedSearchType.id !== '-_exists_' &&
-                  inputValue === '') ||
-                errors.length > 0,
-            })
-          ) : (
-            <></>
-          )
+        renderSubmitButton={
+          renderSubmitButton
+            ? props =>
+                renderSubmitButton({
+                  ...props,
+                  isDisabled:
+                    (selectedSearchType.id !== '_exists_' &&
+                      selectedSearchType.id !== '-_exists_' &&
+                      inputValue === '') ||
+                    errors.length > 0,
+                })
+            : undefined
         }
         {...predictiveSearch}
         {...props}

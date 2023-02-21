@@ -5,9 +5,41 @@ import { QueryStringError } from 'src/components/advanced-search/utils/validatio
 
 /**
  * The [SearchInput] component renders different inputs based on the selected field.
- * These props are passed down to the input components and handle each type of input value.
+ *
+ * @interface SearchInputProps
+ *
+ * @defaultInputValue {any} - default value of input field.
+ * @colorScheme {InputProps['colorScheme']} - color scheme for input field.
+ * @hideSuggestions {boolean} - hide suggestions list/disable api requests.
+ * @size {InputProps['size']} - size of input field.
+ * @errors {QueryStringError[]} - array of errors.
+ * @setErrors {(errors: QueryStringError[]) => void} - function to set errors.
+ * @onChange {(value: string) => void} - triggered when input value changes.
+ * @onSubmit {(args: Partial<QueryValue>) => void} - triggered when input value is submitted.
+ * @resetForm {boolean} - reset form.
+ * @renderSubmitButton {(props: ButtonProps) => React.ReactElement} - function to render submit button.
+ */
+
+export interface SearchInputProps {
+  defaultInputValue: string | number | { startDate?: string; endDate?: string };
+  colorScheme?: InputProps['colorScheme'];
+  size: 'sm' | 'md' | 'lg';
+  hideSuggestions?: boolean;
+  resetForm: boolean;
+  errors: QueryStringError[];
+  setErrors: (arg: QueryStringError[]) => void;
+  onChange?: (args: string | Partial<QueryValue>) => void;
+  onSubmit: (args: QueryValue) => void;
+  setResetForm: (arg: boolean) => void;
+  renderSubmitButton?: (props: ButtonProps) => React.ReactElement;
+}
+
+/**
+ * The [SearchInput] component renders different inputs based on the selected field.
+ * These props are passed down to each of the input components and can handle each type of input value.
  *
  * @interface AdvancedSearchInputProps
+ *
  * @isDisabled {boolean} - disable input field.
  * @colorScheme {InputProps['colorScheme']} - color scheme for input field.
  * @size {InputProps['size']} - size of input field.
@@ -21,14 +53,19 @@ import { QueryStringError } from 'src/components/advanced-search/utils/validatio
  */
 
 export interface AdvancedSearchInputProps {
+  colorScheme?: SearchInputProps['colorScheme'];
   isDisabled?: boolean;
-  colorScheme?: InputProps['colorScheme'];
-  size: InputProps['size'];
-  inputValue: string | number | { startDate: string; endDate: string };
-  errors: QueryStringError[];
-  setErrors: (errors: QueryStringError[]) => void;
+  size: SearchInputProps['size'];
+  inputValue: SearchInputProps['defaultInputValue'];
+  errors: SearchInputProps['errors'];
+  setErrors: SearchInputProps['setErrors'];
+  clearInputValue: () => void;
   handleClick: (args: Partial<QueryValue>) => void;
-  handleChange: (value: AdvancedSearchInputProps['inputValue']) => void;
-  handleSubmit: (args: Partial<QueryValue> | QueryValue[]) => void;
-  renderSubmitButton?: (props: ButtonProps) => React.ReactElement;
+  handleChange: (args: {
+    value: AdvancedSearchInputProps['inputValue'];
+    term?: string;
+    querystring?: string;
+  }) => void;
+  handleSubmit: (args: Partial<QueryValue>) => void;
+  renderSubmitButton?: SearchInputProps['renderSubmitButton'];
 }

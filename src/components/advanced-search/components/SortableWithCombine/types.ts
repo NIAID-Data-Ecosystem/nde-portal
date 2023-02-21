@@ -8,8 +8,7 @@ import type {
   UniqueIdentifier,
 } from '@dnd-kit/core';
 import type { arrayMove, SortingStrategy } from '@dnd-kit/sortable';
-
-export type UnionTypes = 'AND' | 'OR' | 'NOT';
+import { QueryValue } from '../../types';
 
 export interface Params {
   activationConstraint?: PointerActivationConstraint;
@@ -27,29 +26,22 @@ export interface Params {
   useDragOverlay?: boolean;
 }
 
+export interface Value extends Partial<QueryValue> {}
+
 export interface TreeItem {
   id: UniqueIdentifier;
+  value: Value;
   children: TreeItem[];
-  depth: number;
-  index: number;
-  value: {
-    term: string;
-    querystring?: string;
-    field?: string;
-    union?: UnionTypes;
-  };
-  parentId: UniqueIdentifier | null;
-  parentList?: {
-    id: TreeItem['id'] | null;
-    value: Partial<TreeItem['value']>;
-    isLastChild: boolean;
-  }[];
   collapsed?: boolean;
 }
 
-export type TreeItems = TreeItem[];
+export interface FlattenedItem extends TreeItem {
+  parentId: UniqueIdentifier | null;
+  index: number;
+  depth: number;
+}
 
-export interface FlattenedItem extends TreeItem {}
+export type TreeItems = TreeItem[];
 
 export type SensorContext = MutableRefObject<{
   items: FlattenedItem[];

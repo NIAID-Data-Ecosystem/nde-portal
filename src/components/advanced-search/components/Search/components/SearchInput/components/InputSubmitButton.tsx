@@ -53,7 +53,10 @@ export const InputSubmitButton: React.FC<InputSubmitButtonProps> = ({
               return {
                 name: `${term}`,
                 value: term,
-                props: { ...getUnionTheme(term) },
+                props: {
+                  bg: getUnionTheme(term).bg,
+                  _hover: getUnionTheme(term)._hover,
+                },
               };
             })
           : []

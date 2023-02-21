@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Select from 'react-select';
 import { Flex, theme } from 'nde-design-system';
 import { AdvancedSearchInputProps } from '../types';
+import { customStyles } from '../../FieldSelect';
 
 interface EnumInputProps extends AdvancedSearchInputProps {
   options?: {
@@ -13,14 +14,27 @@ interface EnumInputProps extends AdvancedSearchInputProps {
 export const EnumInput: React.FC<EnumInputProps> = ({
   isDisabled,
   options = [],
+  inputValue,
+  size,
+  handleChange,
   handleSubmit,
   renderSubmitButton,
 }) => {
-  const defaultOption = options[0];
+  const defaultOption =
+    (inputValue && options.find(option => option.value === inputValue)) ||
+    options[0];
   const [selectedOption, setSelectedOption] = useState<{
     label: string;
     value: string;
   } | null>(defaultOption);
+
+  useEffect(() => {
+    handleChange({
+      value: selectedOption?.value || '',
+      term: selectedOption?.label || '',
+      querystring: selectedOption?.value || '',
+    });
+  }, [handleChange, selectedOption]);
 
   return (
     <Flex
@@ -47,9 +61,26 @@ export const EnumInput: React.FC<EnumInputProps> = ({
           setSelectedOption(option);
         }}
         styles={{
+          valueContainer: base => ({
+            ...base,
+            ...customStyles[size]?.valueContainer,
+          }),
+          input: base => ({
+            ...base,
+            ...customStyles[size]?.input,
+          }),
+          indicatorSeparator: base => ({
+            ...base,
+            ...customStyles[size]?.indicatorSeparator,
+          }),
+          indicatorsContainer: base => ({
+            ...base,
+            ...customStyles[size]?.indicatorsContainer,
+          }),
           container: base => ({ ...base, flex: 1 }),
           control: base => ({
             ...base,
+            ...customStyles[size]?.control,
             borderColor: theme.colors.gray[200],
             boxShadow: 'none',
             ':hover': {
@@ -66,6 +97,7 @@ export const EnumInput: React.FC<EnumInputProps> = ({
           }),
           option: (base, { isFocused, isSelected }) => ({
             ...base,
+            ...customStyles[size]?.option,
             cursor: 'pointer',
             backgroundColor: isSelected
               ? theme.colors.primary[500]
@@ -81,6 +113,8 @@ export const EnumInput: React.FC<EnumInputProps> = ({
           }),
           singleValue: base => ({
             ...base,
+            ...customStyles[size]?.singleValue,
+
             fontWeight: theme.fontWeights['medium' as any],
           }),
         }}

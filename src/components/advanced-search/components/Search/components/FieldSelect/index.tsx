@@ -107,7 +107,8 @@ const Option = (props: OptionProps<any>) => {
             <Text fontWeight='medium' color='inherit' lineHeight='none'>
               {label}
             </Text>
-            {count && (
+            {/* don't show count for items with no property (ex. "all fields") */}
+            {data.property && count && (
               <Text
                 as='span'
                 fontStyle='italic'
@@ -148,50 +149,75 @@ const Control = (props: ControlProps<any>) => {
     </components.Control>
   );
 };
+
 interface FieldSelectProps {
   isDisabled?: boolean;
-  size?: 'sm' | 'md' | 'lg';
   selectedField: QueryValue['field'];
   setSelectedField: (field: QueryValue['field']) => void;
+  defaultMenuIsOpen?: boolean;
+  fields: typeof MetadataFields;
+  size?: 'sm' | 'md' | 'lg';
 }
 
+export const customStyles: any = {
+  sm: {
+    control: {
+      background: '#fff',
+      borderColor: '#9e9e9e',
+      minHeight: '30px',
+      height: '30px',
+    },
+    valueContainer: {
+      height: '30px',
+      padding: '0 6px',
+    },
+    singleValue: { height: '100%' },
+    input: {
+      margin: '0px',
+      height: '30px',
+    },
+    indicatorSeparator: {
+      display: 'none',
+    },
+    indicatorsContainer: {
+      height: '30px',
+    },
+  },
+  md: {},
+};
+
 export const FieldSelect: React.FC<FieldSelectProps> = ({
-  isDisabled = false,
   size = 'md',
+  isDisabled = false,
   selectedField,
   setSelectedField,
+  defaultMenuIsOpen = false,
+  fields: allFields,
 }) => {
   const [inputValue, setInputValue] = useState('');
-  const fields_metadata = useMemo(
-    () => [
-      ...MetadataFields.filter(filterFields).map(field => {
-        return {
-          ...field,
-          label: transformFieldName(field),
-          value: field.property,
-        };
-      }),
-    ],
-    [],
+  const fields = useMemo(
+    () =>
+      allFields
+        .filter(filterFields)
+        .map(field => {
+          return {
+            ...field,
+            label: transformFieldName(field),
+            value: field.property,
+            property: field.property,
+          };
+        })
+        .sort((a, b) => {
+          if (!inputValue) {
+            return b.count - a.count;
+          }
+          return a.label.localeCompare(b.label);
+        }),
+    [allFields, inputValue],
   );
-
-  const fields = [
-    {
-      label: 'All Fields',
-      description: '',
-      value: '',
-      type: '',
-    },
-    ...fields_metadata.sort((a, b) => {
-      if (!inputValue) {
-        return b.count - a.count;
-      }
-      return a.label.localeCompare(b.label);
-    }),
-  ];
-
   const fuse = new Fuse(fields, { keys: ['label'] });
   const fuzzy_fields = fuse.search(inputValue).map(({ item }) => item);
+
   return (
     <Box
       minW='300px'
@@ -211,10 +237,15 @@ export const FieldSelect: React.FC<FieldSelectProps> = ({
             components={{ Control, Option }}
             value={
               selectedField
-                ? fields.filter(field => field.label === selectedField)[0]
+                ? fields.filter(
+                    field =>
+                      field?.property === selectedField ||
+                      field?.label === selectedField,
+                  )[0]
                 : fields[0]
             }
             isDisabled={isDisabled}
+            defaultMenuIsOpen={defaultMenuIsOpen}
             // is clearable when not the default "all fields" selection.
             isClearable={selectedField !== ''}
             isSearchable={true}
@@ -228,6 +259,27 @@ export const FieldSelect: React.FC<FieldSelectProps> = ({
             onInputChange={setInputValue}
             getOptionValue={option => `${option['label']}`}
             styles={{
+              valueContainer: base => ({
+                ...base,
+                ...customStyles[size]?.valueContainer,
+              }),
+
+              singleValue: base => ({
+                ...base,
+                ...customStyles[size]?.singleValue,
+              }),
+              input: base => ({
+                ...base,
+                ...customStyles[size]?.input,
+              }),
+              indicatorSeparator: base => ({
+                ...base,
+                ...customStyles[size]?.indicatorSeparator,
+              }),
+              indicatorsContainer: base => ({
+                ...base,
+                ...customStyles[size]?.indicatorsContainer,
+              }),
               control: base => {
                 return {
                   ...base,
@@ -244,9 +296,11 @@ export const FieldSelect: React.FC<FieldSelectProps> = ({
                     borderColor: theme.colors.primary[500],
                     boxShadow: `0 0 0 1px ${theme.colors.primary[600]}`,
                   },
+                  ...customStyles[size]?.control,
                 };
               },
-              option: (base, { isFocused, isSelected, ...eep }) => {
+
+              option: (base, { isFocused, isSelected }) => {
                 return {
                   ...base,
                   backgroundColor: isSelected
@@ -260,6 +314,7 @@ export const FieldSelect: React.FC<FieldSelectProps> = ({
                       ? theme.colors.primary[500]
                       : theme.colors.primary[100],
                   },
+                  ...customStyles[size]?.option,
                 };
               },
             }}
@@ -274,10 +329,12 @@ export const FieldSelect: React.FC<FieldSelectProps> = ({
 
 export const FieldSelectWithContext = () => {
   const { queryValue, updateQueryValue } = useAdvancedSearchContext();
+
   return (
     <FieldSelect
       selectedField={queryValue.field}
       setSelectedField={field => updateQueryValue({ field })}
+      fields={MetadataFields}
     />
   );
 };

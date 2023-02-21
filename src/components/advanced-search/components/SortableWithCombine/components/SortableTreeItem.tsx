@@ -2,9 +2,9 @@ import React, { CSSProperties } from 'react';
 import type { UniqueIdentifier } from '@dnd-kit/core';
 import { AnimateLayoutChanges, useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { TreeItem, TreeItemProps } from './TreeItem';
+import { TreeItem, TreeItemComponentProps } from './TreeItem';
 
-interface SortableTreeItemProps extends TreeItemProps {
+interface SortableTreeItemProps extends TreeItemComponentProps {
   id: UniqueIdentifier;
 }
 
@@ -13,12 +13,17 @@ const animateLayoutChanges: AnimateLayoutChanges = ({
   wasDragging,
 }) => (isSorting || wasDragging ? false : true);
 
+/**
+ * [SortableTreeItem]:
+ * Handles the drag and drop functionality for the tree items.
+ */
 export function SortableTreeItem({
   id,
   depth,
   ...props
 }: SortableTreeItemProps) {
   const {
+    active,
     attributes,
     isDragging,
     isSorting,
@@ -27,6 +32,7 @@ export function SortableTreeItem({
     setDroppableNodeRef,
     transform,
     transition,
+    ...rest
   } = useSortable({
     id,
     animateLayoutChanges,
@@ -35,7 +41,6 @@ export function SortableTreeItem({
     transform: CSS.Translate.toString(transform),
     transition,
   };
-
   return (
     <TreeItem
       ref={setDraggableNodeRef}

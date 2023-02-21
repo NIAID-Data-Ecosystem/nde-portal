@@ -1,11 +1,18 @@
+import { useEffect, useState } from 'react';
 import { uniqueId } from 'lodash';
-import { Flex } from 'nde-design-system';
-import { useEffect } from 'react';
+import { Flex, ListItem, Text, UnorderedList } from 'nde-design-system';
+import { FormControl, FormErrorMessage } from '@chakra-ui/react';
+import { QueryStringError } from '../../utils/validation-checks';
 import { TreeItem } from '../SortableWithCombine';
 import { useAdvancedSearchContext } from './components/AdvancedSearchFormContext';
 import { Disclaimer } from './components/Disclaimer';
 import { SearchInput } from './components/SearchInput';
 import { SearchOptions } from './components/SearchOptions';
+import { FieldSelectWithContext } from './components/FieldSelect';
+import {
+  InputSubmitButton,
+  InputSubmitButtonProps,
+} from './components/SearchInput/components';
 
 interface SearchProps {
   items: TreeItem[];
@@ -19,17 +26,26 @@ export const Search = ({
   resetForm,
   setResetForm,
 }: SearchProps) => {
-  const { onReset } = useAdvancedSearchContext();
+  const [errors, setErrors] = useState<QueryStringError[]>([]);
+
+  const { queryValue, onReset, selectedSearchType, updateQueryValue } =
+    useAdvancedSearchContext();
 
   // if form is reset, we reset the selected field, search type and input value
   useEffect(() => {
     if (resetForm) {
       onReset();
+      setErrors([]);
     }
     return () => {
       setResetForm(false);
     };
   }, [onReset, resetForm, setResetForm]);
+
+  // clear errors when field is changed.
+  useEffect(() => {
+    setErrors([]);
+  }, [queryValue.field]);
 
   return (
     <>
@@ -37,46 +53,80 @@ export const Search = ({
         <SearchOptions />
       </Flex>
       <Flex w='100%' alignItems='flex-end'>
-        <SearchInput
-          size='md'
-          colorScheme='primary'
-          items={items}
-          resetForm={resetForm}
-          setResetForm={setResetForm}
-          onSubmit={queryValue => {
-            setItems(prev => {
-              const queryItem = Array.isArray(queryValue)
-                ? queryValue
-                : [queryValue];
+        <FormControl isInvalid={errors.length > 0}>
+          <Flex alignItems='flex-end'>
+            <FieldSelectWithContext />
+            <SearchInput
+              size='md'
+              colorScheme='primary'
+              errors={errors}
+              setErrors={setErrors}
+              resetForm={resetForm}
+              setResetForm={setResetForm}
+              onSubmit={queryValue => {
+                setItems(prev => {
+                  const queryItem = Array.isArray(queryValue)
+                    ? queryValue
+                    : [queryValue];
 
-              const newItems = [...prev];
+                  const newItems = [...prev];
 
-              queryItem.map((item, i) => {
-                const { field, term, union, querystring } = item;
+                  queryItem.map((item, i) => {
+                    const { field, term, union, querystring } = item;
+                    const id = `${uniqueId(
+                      `${term.slice(0, 20).split(' ').join('-')}-${
+                        items.length
+                      }-`,
+                    )}`;
 
-                const id = `${uniqueId(
-                  `${term.slice(0, 20).split(' ').join('-')}-${items.length}-`,
-                )}`;
+                    newItems.push({
+                      id,
+                      value: {
+                        field,
+                        term,
+                        union: union || undefined,
+                        querystring,
+                      },
+                      children: [],
+                      collapsed: false,
+                      // parentId: null,
+                      // depth: 0,
+                      // index: items.length + i,
+                    });
+                  });
 
-                newItems.push({
-                  id,
-                  parentId: null,
-                  depth: 0,
-                  value: {
-                    field,
-                    term,
-                    union: union || undefined,
-                    querystring,
-                  },
-                  children: [],
-                  index: items.length + i,
+                  return newItems;
                 });
-              });
-
-              return newItems;
-            });
-          }}
-        />
+              }}
+              defaultInputValue={''}
+              renderSubmitButton={(props: Partial<InputSubmitButtonProps>) => (
+                <InputSubmitButton
+                  items={items}
+                  size='md'
+                  colorScheme='primary'
+                  // Button is disabled when the text input is needed but empty.
+                  isDisabled={
+                    selectedSearchType.id !== '_exists_' &&
+                    selectedSearchType.id !== '-_exists_'
+                  }
+                  {...props}
+                />
+              )}
+            />
+          </Flex>
+          <FormErrorMessage justifyContent='flex-end'>
+            <UnorderedList>
+              {/* This is my error message */}
+              {errors.map((error, index) => (
+                <ListItem key={index}>
+                  <Text color='inherit' lineHeight='shorter'>
+                    <strong>{error.title}</strong>: {error.message}
+                  </Text>
+                </ListItem>
+              ))}
+            </UnorderedList>
+          </FormErrorMessage>
+        </FormControl>
       </Flex>
       <Disclaimer />
     </>

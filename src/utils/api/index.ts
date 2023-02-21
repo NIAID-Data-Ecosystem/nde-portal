@@ -39,7 +39,10 @@ export interface Params {
 }
 
 // Fetch all search results from API.
-export const fetchSearchResults = async (params: Params, signal) => {
+export const fetchSearchResults = async (
+  params: Params,
+  signal?: AbortSignal,
+) => {
   if (!params || !params.q) {
     return;
   }

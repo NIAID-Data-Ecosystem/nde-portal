@@ -1,11 +1,14 @@
-import { flatten, uniqueId } from 'lodash';
-import { collapseTree, TreeItem } from '../components/SortableWithCombine';
+import { uniqueId } from 'lodash';
+import {
+  collapseTree,
+  FlattenedItem,
+  TreeItem,
+} from '../components/SortableWithCombine';
 import MetadataConfig from 'configs/resource-metadata.json';
 import SchemaFields from 'configs/resource-fields.json';
 import MetadataNames from 'configs/metadata-standard-names.json';
 import { encodeString } from 'src/utils/querystring-helpers';
-
-type UnionTypes = 'AND' | 'OR' | 'NOT';
+import { QueryValue, UnionTypes } from '../types';
 
 export const unionOptions = ['AND', 'OR', 'NOT'] as UnionTypes[];
 
@@ -107,12 +110,14 @@ export const wildcardQueryString = ({
 /**
  * [convertObject2QueryString]: Converts a nested query object (tree)
  * to a string for querying the API.
+ * @params items: TreeItem[]
+ * @returns string
  */
 export const convertObject2QueryString = (items: TreeItem[]) => {
   const reduceQueryString = (items: TreeItem[]) =>
-    items.reduce((r, item) => {
+    items.reduce((r, item, index) => {
       const union = `${
-        item.index !== 0 && item.value.union ? ` ${item.value.union} ` : ''
+        index !== 0 && item.value.union ? ` ${item.value.union} ` : ''
       }`;
       if (item.children.length > 0) {
         r += `${union}(${reduceQueryString(item.children)})`;
@@ -122,7 +127,7 @@ export const convertObject2QueryString = (items: TreeItem[]) => {
         if (field) {
           str += `${field}:`;
         }
-        let formattedTerm = querystring ? querystring : term;
+        let formattedTerm = querystring ? querystring.trim() : term.trim();
 
         const containsUnion = unionOptions.some(union =>
           formattedTerm.includes(union),
@@ -151,13 +156,21 @@ export const convertObject2QueryString = (items: TreeItem[]) => {
   return reduceQueryString(items);
 };
 
-export const convertQueryString2Object = str => {
+type ParseInterface = Array<ParseInterface | Partial<QueryValue>>;
+/**
+ * [convertObject2QueryString]: Converts a nested query object (tree)
+ * to a string for querying the API.
+ * @params string - a string with optional nested parentheses.
+ * @returns array - an array of arrays.
+ */
+export const convertQueryString2Object = (str: string) => {
   const newString = `(${str
     .replaceAll(' AND ', `) AND (`)
     .replaceAll(' OR ', `) OR (`)
     .replaceAll(' NOT ', `) NOT (`)})`;
+
   // Transform a string with nested parentheses into an array of arrays.
-  const parseString = string => {
+  const parseString = (string: string): ParseInterface => {
     var array = [];
     var current = '';
     var depth = 0;
@@ -193,32 +206,48 @@ export const convertQueryString2Object = str => {
   };
 
   // Build a nested tree from an array of arrays used for the query builder.
-  const buildTree = (tree, parentId = null, depth = 0) => {
-    const stack = [];
-    let union = '';
+  const getNestedItems = (
+    tree: ParseInterface,
+    parentId: FlattenedItem['parentId'] = null,
+    depth = 0,
+  ) => {
+    const stack: FlattenedItem[] = [];
+    let union = '' as QueryValue['union'];
     let field = '';
     let index = 0;
     tree.map((node, i) => {
-      if (node.field) {
+      if (!Array.isArray(node) && node.field) {
         field = node.field;
-      } else if (node.union) {
+      } else if (!Array.isArray(node) && node.union) {
         union = node.union;
-      } else if (Array.isArray(node) || node.value) {
-        const { term, querystring } = node[0] || node;
+      } else if (Array.isArray(node)) {
+        let term = '';
+        let querystring = '';
+        let node_field;
+
+        if (!Array.isArray(node[0])) {
+          term = node[0]?.term || '';
+          querystring = node[0].querystring || '';
+          node_field = node[0].field;
+        }
+
         const id = uniqueId(term);
         const newDepth = depth + 1;
+
         stack.push({
           id,
           depth,
           parentId,
           index,
           value: {
-            term,
-            querystring,
-            union,
-            field: node[0]?.field || field,
+            term: term.trim(),
+            querystring: querystring.trim(),
+            union: union,
+            field: (node_field || field).trim(),
           },
-          children: Array.isArray(node) ? buildTree(node, id, newDepth) : [],
+          children: Array.isArray(node)
+            ? getNestedItems(node, id, newDepth)
+            : [],
         });
         index++;
       }
@@ -227,21 +256,11 @@ export const convertQueryString2Object = str => {
   };
   const flattenedTree = parseString(newString);
 
-  const tree = collapseTree(buildTree(flattenedTree));
+  const tree = collapseTree(getNestedItems(flattenedTree));
   return tree;
 };
 
-const isValidField = (field: string) => {
-  const fieldInSchemaIndex = SchemaFields.findIndex(
-    item => item.property === field,
-  );
-
-  return (
-    fieldInSchemaIndex > -1 || field === '_exists_' || field === '-_exists_'
-  );
-};
-
-const handleValue = value => {
+const handleValue = (value: string): Partial<QueryValue> => {
   const str = value.trim();
   const fieldColonIndex = str.indexOf(':');
   if (fieldColonIndex > -1 && str[fieldColonIndex - 1] !== '\\') {
@@ -267,4 +286,19 @@ const handleValue = value => {
   } else {
     return { term: str };
   }
+};
+
+/**
+ * Checks if a field is a valid field in the API.
+ * @param field {string} property to match against the schema.
+ * @returns boolean - whether the field is valid or not.
+ */
+const isValidField = (field: string) => {
+  const fieldInSchemaIndex = SchemaFields.findIndex(
+    item => item.property === field,
+  );
+
+  return (
+    fieldInSchemaIndex > -1 || field === '_exists_' || field === '-_exists_'
+  );
 };

@@ -6,8 +6,8 @@ import {
   DroppableContainer,
 } from '@dnd-kit/core';
 
-import type { SensorContext } from '../types';
-import { getProjection } from '../utils';
+import type { SensorContext } from './types';
+import { getProjection } from './utils';
 
 const directions: string[] = [
   KeyboardCode.Down,

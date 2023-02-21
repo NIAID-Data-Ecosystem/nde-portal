@@ -26,8 +26,7 @@ export const SearchOptions: React.FC = () => {
       <Stack direction='row' spacing={6}>
         {searchTypeOptions
           .filter(
-            option =>
-              !(option.shouldOmit && option.shouldOmit(queryValue.field)),
+            option => !(option.shouldOmit && option.shouldOmit(queryValue)),
           )
           .map(option => {
             if (option.options && option.options.length) {
@@ -55,7 +54,7 @@ export const SearchOptions: React.FC = () => {
                 onChange={() => setSelectedSearchType(option)}
                 hasTooltip
                 isDisabled={
-                  option.shouldDisable && option.shouldDisable(queryValue.field)
+                  option.shouldDisable && option.shouldDisable(queryValue)
                 }
                 isChecked={option.label === selectedSearchType.label}
               />

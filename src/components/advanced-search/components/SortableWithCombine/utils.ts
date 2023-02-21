@@ -74,8 +74,6 @@ export function flatten(
 ): FlattenedItem[] {
   const parentId = parent?.id || null;
   return items.reduce<FlattenedItem[]>((acc, item, index) => {
-    const parentList = parent?.parentList || [];
-
     const isLastChild = parent?.children
       ? parent.children[parent.children.length - 1].id === item.id &&
         !item.children.length
@@ -89,7 +87,6 @@ export function flatten(
     const updatedItem = {
       ...item,
       parentId,
-      parentList: parentId ? [...parentList, parentItem] : parentList,
       depth,
       index,
       value: {
@@ -130,9 +127,8 @@ export function buildTree(flattenedItems: FlattenedItem[]): TreeItems {
     const { id, children } = item;
     const parentId = item.parentId ?? root.id;
     const parent = nodes[parentId] ?? findItem(items, parentId);
-    const parentList = parent?.parentList || [];
 
-    nodes[id] = { id, children, parentId, parentList };
+    nodes[id] = { id, children, parentId };
     if (parent && parent.children) {
       parent.children.push(item);
     }
@@ -393,7 +389,7 @@ export function findItemDeep(
 function countChildren(items: TreeItem[], count = 0): number {
   return items.reduce((acc, { children }) => {
     if (children.length) {
-      return countChildren(children, acc + 1);
+      return countChildren(children, acc);
     }
 
     return acc + 1;
@@ -402,7 +398,6 @@ function countChildren(items: TreeItem[], count = 0): number {
 
 export function getChildCount(items: TreeItems, id: UniqueIdentifier) {
   const item = findItemDeep(items, id);
-
   return item ? countChildren(item.children) : 0;
 }
 

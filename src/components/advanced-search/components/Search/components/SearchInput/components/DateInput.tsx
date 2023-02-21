@@ -1,4 +1,5 @@
 import { Box, Flex, Input, Text } from 'nde-design-system';
+import { getDateQuerystring } from '../helpers';
 import { AdvancedSearchInputProps } from '../types';
 
 interface DateInputProps extends AdvancedSearchInputProps {}
@@ -19,24 +20,7 @@ export const DateInputGroup: React.FC<DateInputProps> = ({
       as='form'
       onSubmit={e => {
         e.preventDefault();
-        const startQuery = !startDate ? '*' : startDate;
-        const endQuery = !endDate ? '*' : endDate;
-
-        let term = '';
-        if (!startDate && !endDate) {
-          term = 'Any Dates';
-        } else if (startDate && endDate) {
-          term = `Between ${startDate} and ${endDate}`;
-        } else if (!startDate) {
-          term = `Before ${endDate}`;
-        } else if (!endDate) {
-          term = `After ${startDate}`;
-        }
-
-        handleSubmit({
-          term,
-          querystring: `[${startQuery} TO ${endQuery}]`,
-        });
+        handleSubmit(getDateQuerystring({ startDate, endDate }));
       }}
       flex={1}
       px={2}
@@ -53,7 +37,12 @@ export const DateInputGroup: React.FC<DateInputProps> = ({
           max={endDate || undefined} // set the max start date to the end date in the current selection to prevent setting a start date later than the end date.
           value={startDate || ''}
           onChange={e => {
-            handleChange({ ...dateInputValue, startDate: e.target.value });
+            const value = getDateQuerystring({ startDate, endDate });
+
+            handleChange({
+              ...value,
+              value: { ...dateInputValue, startDate: e.target.value },
+            });
           }}
           isDisabled={props.isDisabled}
         />
@@ -71,7 +60,12 @@ export const DateInputGroup: React.FC<DateInputProps> = ({
           max={undefined}
           value={endDate || ''}
           onChange={e => {
-            handleChange({ ...dateInputValue, endDate: e.target.value });
+            const value = getDateQuerystring({ startDate, endDate });
+
+            handleChange({
+              ...value,
+              value: { ...dateInputValue, endDate: e.target.value },
+            });
           }}
           isDisabled={props.isDisabled}
         />

@@ -61,7 +61,6 @@ export const DropdownInput: React.FC<DropdownInputProps> = ({
     getInputProps,
     setIsOpen,
   } = useDropdownContext();
-
   return (
     <Flex
       as='form'
@@ -103,7 +102,7 @@ export const DropdownInput: React.FC<DropdownInputProps> = ({
             placeholder: placeholder || 'Search',
             tabIndex: 0,
             type,
-            pr: inputRightRef?.current?.clientWidth || 4,
+            pr: renderSubmitButton ? inputRightRef?.current?.clientWidth : 4,
             isDisabled,
             isInvalid,
             onKeyDown: (

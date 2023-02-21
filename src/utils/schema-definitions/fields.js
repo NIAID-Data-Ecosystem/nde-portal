@@ -13,8 +13,23 @@ const fetchFields = async () => {
 
     const fields = Object.keys(fieldsData);
     let results = [];
+
+    // Add count for all fields option.
+    const allFields = await axios
+      .get('https://api-staging.data.niaid.nih.gov/v1/query/')
+      .then(response => {
+        return {
+          name: 'All Fields',
+          property: '',
+          count: response.data.total,
+          type: 'text',
+          description: '',
+        };
+      });
+    results.push(allFields);
+
     try {
-      results = await Promise.all(
+      const data = await Promise.all(
         fields.map(async property => {
           const response = await axios.get(
             `https://api-staging.data.niaid.nih.gov/v1/query?&q=_exists_:${property}`,
@@ -29,6 +44,8 @@ const fetchFields = async () => {
           };
         }),
       );
+
+      results = [...results, ...data];
     } catch (e) {
       // do something to handle the error here
       console.log(e);
@@ -54,13 +71,22 @@ const fetchFields = async () => {
       const resource_type = schemaData.label;
       const fieldIndex = results.findIndex(f => f.property === '@type');
 
-      // Add enum field for type property.
+      // Add enum & description field for type property.
       if (results[fieldIndex]) {
         results[fieldIndex]['format'] = 'enum';
         if (!results[fieldIndex]['enum']) {
           results[fieldIndex]['enum'] = [];
         }
         results[fieldIndex]['enum'].push(resource_type);
+        results[fieldIndex]['description'] = {
+          dataset: 'The type associated with the record (software or dataset).',
+          computationaltool:
+            'The type associated with the record (software or dataset).',
+        };
+        results[fieldIndex]['abstract'] = {
+          dataset: 'type of record (software or dataset)',
+          computationaltool: 'type of record (software or dataset)',
+        };
       }
 
       // Add property details to JSON

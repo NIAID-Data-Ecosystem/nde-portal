@@ -13,7 +13,6 @@ import { useRouter } from 'next/router';
 import { ModalProps } from '@chakra-ui/react';
 import { AdvancedSearchModal } from './components/Modal';
 import { OpenModal } from './components/buttons';
-import { uniqueId } from 'lodash';
 import {
   buildTree,
   TreeItem,
@@ -21,12 +20,7 @@ import {
   SortableWithCombine,
 } from './components/SortableWithCombine';
 import { convertObject2QueryString } from './utils/query-helpers';
-import {
-  FaChevronDown,
-  FaChevronUp,
-  FaSearch,
-  FaUndoAlt,
-} from 'react-icons/fa';
+import { FaChevronDown, FaChevronUp, FaUndoAlt } from 'react-icons/fa';
 import { AdvancedSearchFormContext, Search } from './components/Search';
 import { ResultsCount } from './components/ResultsCount';
 import SampleQueries from 'configs/sample-queries.json';
@@ -156,8 +150,8 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
           <Text color={items.length ? 'text.body' : 'gray.600'} fontSize='sm'>
             Re-order query terms by click and drag. Group items together by
             dragging an element over another.
-            <ResultsCount queryString={convertObject2QueryString(items)} />
           </Text>
+          <ResultsCount queryString={convertObject2QueryString(items)} />
 
           <SortableWithCombine
             items={items}

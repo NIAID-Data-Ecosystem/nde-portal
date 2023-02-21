@@ -36,6 +36,7 @@ import { TreeItem } from '../SortableWithCombine';
 import {
   formatQueryString,
   getErrorMessage,
+  removeUnnecessaryParentheses,
   validateQueryString,
 } from './utils';
 
@@ -170,7 +171,9 @@ export const EditableQueryText = ({
         setIsSubmitting(false);
       } else {
         refetch();
-        const queryObject = convertQueryString2Object(validation.querystring);
+        const queryObject = convertQueryString2Object(
+          removeUnnecessaryParentheses(validation.querystring),
+        );
         updateQueryObj(queryObject);
         const submitProps = getSubmitButtonProps && getSubmitButtonProps();
         submitProps.onClick && submitProps.onClick(e);

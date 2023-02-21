@@ -108,7 +108,13 @@ export const checkMissingUnion = (str: string): ValidationConfig => {
   queryWords.forEach((item, i) => {
     if (item.startsWith('(') && i > 0 && queryWords[i - 1]) {
       const prevWord = queryWords[i - 1];
-      if (prevWord !== 'AND' && prevWord !== 'OR' && prevWord !== 'NOT') {
+      // if previous word ends in a colon or is a union operator, then there is no error. Not the most robust check, but it works for now.
+      if (
+        prevWord.charAt(prevWord.length - 1) !== ':' &&
+        prevWord !== 'AND' &&
+        prevWord !== 'OR' &&
+        prevWord !== 'NOT'
+      ) {
         isMissingUnion = true;
       }
     }

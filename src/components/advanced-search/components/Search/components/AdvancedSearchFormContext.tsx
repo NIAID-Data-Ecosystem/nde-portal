@@ -37,39 +37,38 @@ AdvancedSearchContext.displayName = 'AdvancedSearchContext';
 
 export const AdvancedSearchFormContext = ({
   searchTypeOptions,
+  value,
   children,
+  defaultSearchType,
 }: {
   searchTypeOptions: SearchTypesConfigProps[];
+  defaultSearchType?: SearchTypesConfigProps;
+  value?: QueryValue;
   children: ReactNode;
 }) => {
-  const [queryValue, setQueryValue] = useState<QueryValue>({
-    term: '',
-    field: '',
-    querystring: '',
-    union: '',
-  });
-
-  const fields = [
-    {
-      name: 'All Fields',
-      property: '',
-      count: 0,
-      value: '',
-      type: '',
-      format: '',
+  const [queryValue, setQueryValue] = useState<QueryValue>(
+    value || {
+      term: '',
+      field: '',
+      querystring: '',
+      union: '',
     },
-    ...MetadataFieldsConfig,
-  ];
-  const selectedFieldDetails = fields.find(
-    f => f.property === queryValue.field,
   );
 
+  const selectedFieldDetails = MetadataFieldsConfig.find(f => {
+    if (queryValue.field === '_exists_' || queryValue.field === '-_exists_') {
+      return f.property === queryValue.querystring;
+    }
+
+    return f.property === queryValue.field;
+  });
+
   // Get default search type for the field type.
-  const getSearchOption: any = useCallback(
+  const getDefaultSearchOption: any = useCallback(
     (searchTypeOptions: SearchTypesConfigProps[]) => {
       const filteredSearchTypes = filterSearchTypes(
         searchTypeOptions,
-        queryValue.field,
+        queryValue,
       );
 
       let defaultSearchOption = filteredSearchTypes[0];
@@ -90,11 +89,13 @@ export const AdvancedSearchFormContext = ({
       });
       return defaultSearchOption;
     },
-    [queryValue.field],
+    [queryValue],
   );
 
   const [selectedSearchType, setSelectedSearchType] =
-    useState<SearchTypesConfigProps>(getSearchOption(searchTypeOptions));
+    useState<SearchTypesConfigProps>(
+      defaultSearchType || getDefaultSearchOption(searchTypeOptions),
+    );
 
   const updateQueryValue = React.useCallback(
     (update: Partial<AdvancedSearchContextProps['queryValue']>) => {
@@ -117,15 +118,15 @@ export const AdvancedSearchFormContext = ({
   useEffect(() => {
     setSelectedSearchType(prev => {
       if (
-        (prev.shouldOmit && prev.shouldOmit(queryValue.field)) ||
-        (prev.shouldDisable && prev.shouldDisable(queryValue.field))
+        (prev.shouldOmit && prev.shouldOmit(queryValue)) ||
+        (prev.shouldDisable && prev.shouldDisable(queryValue))
       ) {
-        return getSearchOption(searchTypeOptions);
+        return getDefaultSearchOption(searchTypeOptions);
       } else {
         return prev;
       }
     });
-  }, [getSearchOption, queryValue.field, searchTypeOptions]);
+  }, [getDefaultSearchOption, queryValue, searchTypeOptions]);
 
   const onReset = () => {
     setQueryValue({
@@ -134,7 +135,7 @@ export const AdvancedSearchFormContext = ({
       querystring: '',
       union: '',
     });
-    setSelectedSearchType(getSearchOption(searchTypeOptions));
+    setSelectedSearchType(getDefaultSearchOption(searchTypeOptions));
   };
 
   return (
