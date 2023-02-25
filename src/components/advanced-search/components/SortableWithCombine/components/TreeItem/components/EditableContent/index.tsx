@@ -1,13 +1,9 @@
 import { Box, Button, Flex } from 'nde-design-system';
-import { useEffect } from 'react';
 import {
   AdvancedSearchFormContext,
   useAdvancedSearchContext,
 } from 'src/components/advanced-search/components/Search';
-import {
-  SearchTypesConfigProps,
-  SEARCH_TYPES_CONFIG,
-} from 'src/components/advanced-search/components/Search/search-types-config';
+import { SearchTypesConfigProps } from 'src/components/advanced-search/components/Search/search-types-config';
 import { UnionTypes } from 'src/components/advanced-search/types';
 import { FlattenedItem, Value } from '../../../../types';
 import { getSearchType, stripSearchTerm } from '../../helpers';

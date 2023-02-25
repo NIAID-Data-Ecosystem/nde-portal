@@ -26,7 +26,9 @@ export interface Params {
   useDragOverlay?: boolean;
 }
 
-export interface Value extends Partial<QueryValue> {}
+export interface Value extends Partial<QueryValue> {
+  term: QueryValue['term'];
+}
 
 export interface TreeItem {
   id: UniqueIdentifier;

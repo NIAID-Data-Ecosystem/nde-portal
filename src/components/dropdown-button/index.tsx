@@ -13,7 +13,7 @@ import {
   UnorderedList,
 } from 'nde-design-system';
 import { ListItemProps } from '@chakra-ui/react';
-import { UnionTypes } from '../advanced-search/components/SortableWithCombineAlpha';
+import { UnionTypes } from 'src/components/advanced-search/types';
 
 export interface DropdownButtonProps extends ButtonGroupProps {
   ariaLabel: string;

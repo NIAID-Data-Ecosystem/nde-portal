@@ -4,11 +4,11 @@ import {
   DropdownButton,
   DropdownButtonProps,
 } from 'src/components/dropdown-button';
-import { UnionTypes } from 'src/components/advanced-search/components/SortableWithCombineAlpha';
 import {
   getUnionTheme,
   unionOptions,
 } from 'src/components/advanced-search/utils/query-helpers';
+import { UnionTypes } from 'src/components/advanced-search/types';
 
 interface UnionButtonProps
   extends Pick<DropdownButtonProps, 'colorScheme' | 'selectedOption'> {

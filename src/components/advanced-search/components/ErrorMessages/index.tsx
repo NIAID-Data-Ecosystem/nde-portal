@@ -1,16 +1,15 @@
-import { QueryStringError } from '../EditableQueryText/utils';
 import {
   Box,
   Collapse,
   Flex,
   Heading,
-  Icon,
   ListIcon,
   ListItem,
   Text,
   UnorderedList,
 } from 'nde-design-system';
 import { FaExclamationCircle, FaTimesCircle } from 'react-icons/fa';
+import { QueryStringError } from '../../utils/validation-checks';
 
 interface EditableQueryTextProps {
   errors: QueryStringError[];
