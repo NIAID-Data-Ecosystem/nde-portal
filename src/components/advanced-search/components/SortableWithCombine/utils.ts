@@ -74,15 +74,11 @@ export function flatten(
 ): FlattenedItem[] {
   const parentId = parent?.id || null;
   return items.reduce<FlattenedItem[]>((acc, item, index) => {
-    const isLastChild = parent?.children
-      ? parent.children[parent.children.length - 1].id === item.id &&
-        !item.children.length
-      : false;
-    const parentItem = {
-      id: parentId,
-      value: { term: parent?.value.term, union: parent?.value.union },
-      isLastChild,
-    };
+    let union = item.value.union;
+    // if the item is the first in a list and has no assigned union, copy the union value of the next element.
+    if (index === 0) {
+      union = items[index + 1]?.value.union;
+    }
 
     const updatedItem = {
       ...item,
@@ -91,12 +87,7 @@ export function flatten(
       index,
       value: {
         ...item.value,
-        union: getUnionValue(items, {
-          ...item,
-          depth,
-          index,
-          parentId,
-        }),
+        union,
       },
     };
 
@@ -128,7 +119,7 @@ export function buildTree(flattenedItems: FlattenedItem[]): TreeItems {
     const parentId = item.parentId ?? root.id;
     const parent = nodes[parentId] ?? findItem(items, parentId);
 
-    nodes[id] = { id, children, parentId };
+    nodes[id] = { id, children };
     if (parent && parent.children) {
       parent.children.push(item);
     }
