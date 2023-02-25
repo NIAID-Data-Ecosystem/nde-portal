@@ -69,7 +69,7 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
       <AdvancedSearchModal
         isOpen={isOpen}
         onClose={onClose}
-        onSubmit={e => {
+        onSubmit={() => {
           const querystring = convertObject2QueryString(items);
           router.push({
             pathname: `/search`,
@@ -79,7 +79,7 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
         isDisabled={items.length === 0}
       >
         {/* Search For Query Term */}
-        <Box m={2}>
+        <Box m={2} w='100%'>
           <Heading size='sm' fontWeight='medium'>
             Add terms to the query builder.
           </Heading>
@@ -109,13 +109,15 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
             return (
               <Button
                 key={query.name}
+                w={['100%', 'unset']}
+                my={[2, 2, 0]}
                 mx={1}
                 colorScheme='gray'
                 color='text.body'
                 size='sm'
                 onClick={() => setItems(buildTree(query.items))}
               >
-                {query.name}
+                <Text isTruncated>{query.name}</Text>
               </Button>
             );
           })}

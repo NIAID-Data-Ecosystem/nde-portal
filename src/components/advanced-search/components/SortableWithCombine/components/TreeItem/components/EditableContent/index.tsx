@@ -42,18 +42,25 @@ const ItemContent = ({
           <SearchLabel value={value} options={searchOptions} />
         )}
 
-        <Flex alignItems='center' mt={1} flex={1}>
+        <Flex
+          alignItems='center'
+          mt={1}
+          flex={1}
+          flexDirection={['column', 'column', 'row']}
+        >
           <Box
+            w='100%'
             flex={1}
-            mr={
+            mr={[
+              0,
+              0,
               selectedFieldDetails?.type === 'keyword' ||
               selectedFieldDetails?.type === 'text'
                 ? 4
-                : 0
-            }
+                : 0,
+            ]}
           >
             {/* Term string */}
-
             <TermLabel
               term={value.term}
               querystring={stripSearchTerm(value?.querystring || '')}

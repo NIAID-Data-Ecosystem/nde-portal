@@ -14,7 +14,7 @@ export const FieldTag = () => {
   );
 
   return (
-    <Box position='relative'>
+    <Box position='relative' maxW={['unset', 'unset', '400px']} mt={[4, 2, 0]}>
       <FieldSelect
         size='sm'
         fields={MetadataFieldsConfig}

@@ -241,8 +241,15 @@ export function SortableWithCombine({
   );
 
   return (
-    <>
-      <Box bg='gray.100' p={4}>
+    <Box
+      bg='gray.100'
+      p={4}
+      w='100%'
+      overflow='auto'
+      border='2px solid'
+      borderColor='gray.100'
+    >
+      <Box minW='400px'>
         <DndContext
           accessibility={{ announcements }}
           measuring={measuring}
@@ -316,7 +323,7 @@ export function SortableWithCombine({
           </UnorderedList>
         </DndContext>
       </Box>
-    </>
+    </Box>
   );
 
   /**

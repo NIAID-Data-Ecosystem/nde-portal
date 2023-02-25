@@ -122,56 +122,54 @@ export const SearchInput: React.FC<SearchInputProps> = ({
   };
 
   return (
-    <>
-      <Flex flexDirection='column' flex={1}>
-        {/* [date]: Two date type inputs. */}
-        {inputType === 'date' ? <DateInputGroup {...inputProps} /> : <></>}
-        {/* [enum]: Select/Option Component. */}
-        {inputType === 'enum' ? (
-          <EnumInput
-            options={selectedFieldDetails?.enum?.map(value => {
-              // [@type] needs to be formatted to the terms we use in the UI.
-              if (selectedFieldDetails.property === '@type') {
-                return { label: formatType(value), value };
-              }
-              return { label: value, value };
-            })}
-            {...inputProps}
-          />
-        ) : (
-          <></>
-        )}
-        {/* [boolean]: Select/Option Component. */}
-        {inputType === 'boolean' ? (
-          <EnumInput
-            options={[
-              {
-                label: 'Yes',
-                value: 'true',
-              },
-              {
-                label: 'No',
-                value: 'false',
-              },
-            ]}
-            {...inputProps}
-          />
-        ) : (
-          <></>
-        )}
-        {/* [number]: Number input */}
-        {inputType === 'number' ? (
-          <NumberInput {...inputProps}></NumberInput>
-        ) : (
-          <></>
-        )}
-        {/* [string]: Text input */}
-        {inputType === 'string' ? (
-          <TextInput hideSuggestions={hideSuggestions} {...inputProps} />
-        ) : (
-          <></>
-        )}
-      </Flex>
-    </>
+    <Flex w='100%' flexDirection='column' flex={1}>
+      {/* [date]: Two date type inputs. */}
+      {inputType === 'date' ? <DateInputGroup {...inputProps} /> : <></>}
+      {/* [enum]: Select/Option Component. */}
+      {inputType === 'enum' ? (
+        <EnumInput
+          options={selectedFieldDetails?.enum?.map(value => {
+            // [@type] needs to be formatted to the terms we use in the UI.
+            if (selectedFieldDetails.property === '@type') {
+              return { label: formatType(value), value };
+            }
+            return { label: value, value };
+          })}
+          {...inputProps}
+        />
+      ) : (
+        <></>
+      )}
+      {/* [boolean]: Select/Option Component. */}
+      {inputType === 'boolean' ? (
+        <EnumInput
+          options={[
+            {
+              label: 'Yes',
+              value: 'true',
+            },
+            {
+              label: 'No',
+              value: 'false',
+            },
+          ]}
+          {...inputProps}
+        />
+      ) : (
+        <></>
+      )}
+      {/* [number]: Number input */}
+      {inputType === 'number' ? (
+        <NumberInput {...inputProps}></NumberInput>
+      ) : (
+        <></>
+      )}
+      {/* [string]: Text input */}
+      {inputType === 'string' ? (
+        <TextInput hideSuggestions={hideSuggestions} {...inputProps} />
+      ) : (
+        <></>
+      )}
+    </Flex>
   );
 };

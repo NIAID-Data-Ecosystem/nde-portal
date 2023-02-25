@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { uniqueId } from 'lodash';
-import { Flex, ListItem, Text, UnorderedList } from 'nde-design-system';
+import { Box, Flex, ListItem, Text, UnorderedList } from 'nde-design-system';
 import { FormControl, FormErrorMessage } from '@chakra-ui/react';
 import { QueryStringError } from '../../utils/validation-checks';
 import { TreeItem } from '../SortableWithCombine';
@@ -49,13 +49,31 @@ export const Search = ({
 
   return (
     <>
-      <Flex w='100%' justifyContent='flex-end'>
+      <Flex
+        w='100%'
+        justifyContent={['flex-start', 'flex-start', 'flex-end']}
+        my={[4, 2, 0]}
+      >
         <SearchOptions />
       </Flex>
+
       <Flex w='100%' alignItems='flex-end'>
         <FormControl isInvalid={errors.length > 0}>
-          <Flex alignItems='flex-end'>
-            <FieldSelectWithContext />
+          <Flex
+            flexDirection={['column', 'column', 'row']}
+            alignItems='flex-end'
+          >
+            <Box
+              maxW={['unset', 'unset', '300px']}
+              flex={1}
+              w='100%'
+              position='relative'
+              zIndex='popover'
+              mb={[4, 2, 0]}
+              mr={[0, 0, 4]}
+            >
+              <FieldSelectWithContext />
+            </Box>
             <SearchInput
               size='md'
               colorScheme='primary'

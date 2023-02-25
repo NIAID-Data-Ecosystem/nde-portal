@@ -219,13 +219,7 @@ export const FieldSelect: React.FC<FieldSelectProps> = ({
   const fuzzy_fields = fuse.search(inputValue).map(({ item }) => item);
 
   return (
-    <Box
-      minW='300px'
-      maxW={['unset', '400px']}
-      w={{ base: '100%', md: 'unset' }}
-      ml={0}
-      mr={2}
-    >
+    <Box minW='300px' w={{ base: '100%', md: 'unset' }} ml={0} mr={2}>
       {fields ? (
         <>
           <VisuallyHidden>

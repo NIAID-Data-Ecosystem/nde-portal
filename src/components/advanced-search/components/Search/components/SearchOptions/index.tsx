@@ -23,7 +23,7 @@ export const SearchOptions: React.FC = () => {
         }
       }}
     >
-      <Stack direction='row' spacing={6}>
+      <Stack direction={['column', 'column', 'row']} spacing={6}>
         {searchTypeOptions
           .filter(
             option => !(option.shouldOmit && option.shouldOmit(queryValue)),
