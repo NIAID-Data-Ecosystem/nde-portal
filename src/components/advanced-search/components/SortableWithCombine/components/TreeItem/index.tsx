@@ -113,6 +113,7 @@ export const TreeItem = React.memo(
             clone={clone}
             ghost={ghost}
             disableInteraction={disableInteraction}
+            collapsed={collapsed}
           >
             <Box flex={1}>
               {/* Union dropdown button */}
