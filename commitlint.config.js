@@ -7,5 +7,8 @@ module.exports = {
       ['sentence-case', 'start-case', 'pascal-case', 'upper-case'],
     ],
   },
-  ignores: [message => message.toUpperCase().includes('WIP')],
+  ignores: [
+    message => message.toUpperCase().includes('WIP'),
+    message => message.includes('merge'),
+  ],
 };

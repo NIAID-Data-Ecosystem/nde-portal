@@ -5,10 +5,19 @@
     { "label": "Search", "href": "/search" },
 
     { "label": "About", "href": "/about" },
+    {
+      "label": "FAQ",
+      "href": "/faq"
+    },
 
     {
       "label": "Resources",
       "routes": [
+        {
+          "label": "Advanced Search",
+          "subLabel": "Build more complex queries",
+          "href": "/advanced-search"
+        },
         {
           "label": "Sources",
           "subLabel": "Latest information about our data sources",
@@ -26,11 +35,7 @@
           "href": "https://niaid-data.readme.io/",
           "isExternal": true
         },
-        {
-          "label": "FAQ",
-          "subLabel": "Frequently asked questions",
-          "href": "/faq"
-        },
+
         {
           "label": "Changelog",
           "subLabel": "Log of updates to the NIAID Data Ecosystem",

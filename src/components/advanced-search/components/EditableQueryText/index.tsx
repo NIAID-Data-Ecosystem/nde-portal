@@ -77,7 +77,7 @@ export const EditableQueryText = ({
         queryString: debouncedQueryString,
       },
     ],
-    () => {
+    ({ signal }) => {
       if (typeof debouncedQueryString !== 'string' && !debouncedQueryString) {
         return;
       }
@@ -87,10 +87,13 @@ export const EditableQueryText = ({
         return;
       }
 
-      return fetchSearchResults({
-        q: debouncedQueryString,
-        size: 0,
-      });
+      return fetchSearchResults(
+        {
+          q: debouncedQueryString,
+          size: 0,
+        },
+        signal,
+      );
     },
     // Don't refresh everytime window is touched.
     {

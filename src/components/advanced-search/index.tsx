@@ -30,7 +30,7 @@ import {
 } from 'react-icons/fa';
 import { AdvancedSearchFormContext, Search } from './components/Search';
 import { ResultsCount } from './components/ResultsCount';
-import SampleQueries from 'configs/sample-queries.json';
+import SampleQueriesData from 'configs/sample-queries.json';
 import { EditableQueryText } from './components/EditableQueryText';
 import { ErrorMessages } from './components/ErrorMessages';
 import { SEARCH_TYPES_CONFIG } from './components/Search/search-types-config';
@@ -41,23 +41,27 @@ import {
 import { validateQueryString } from './components/EditableQueryText/utils';
 
 interface AdvancedSearchProps {
-  buttonProps?: ButtonProps;
-  modalProps?: ModalProps;
-}
-
-export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
-  buttonProps,
-  modalProps,
-}) => {
-  const sample_queries = SampleQueries as {
+  colorScheme?: string;
+  sampleQueries?: {
     name: string;
     items: FlattenedItem[];
   }[];
+  renderButtonGroup?: (props: any) => JSX.Element;
+  onValidSubmit?: () => void;
+}
+
+export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
+  onValidSubmit,
+  renderButtonGroup,
+  colorScheme = 'primary',
+  sampleQueries = SampleQueriesData as {
+    name: string;
+    items: FlattenedItem[];
+  }[],
+}) => {
   const router = useRouter();
   const [resetForm, setResetForm] = useState(false);
 
-  // Handles the opening of the modal.
-  const { isOpen, onOpen, onClose } = useDisclosure({ defaultIsOpen: true });
   const { isOpen: showRawQuery, onToggle: toggleShowRawQuery } = useDisclosure({
     defaultIsOpen: true,
   });
@@ -84,150 +88,194 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
     });
   }, []);
 
+  const handleSubmit = () => {
+    // add validation
+    const querystring = convertObject2QueryString(items);
+
+    const validation = validateQueryString(querystring);
+    if (validation.isValid) {
+      router.push({
+        pathname: `/search`,
+        query: { q: `${querystring}`, advancedSearch: true },
+      });
+      onValidSubmit && onValidSubmit();
+    } else {
+      handleErrors(validation.errors);
+    }
+  };
+
   return (
     <>
-      <OpenModal onClick={onOpen} {...buttonProps}></OpenModal>
-      <AdvancedSearchModal
-        isOpen={isOpen}
-        onClose={onClose}
-        onSubmit={() => {
-          // add validation
-          const querystring = convertObject2QueryString(items);
-
-          const validation = validateQueryString(querystring);
-          if (validation.isValid) {
-            router.push({
-              pathname: `/search`,
-              query: { q: `${querystring}`, advancedSearch: true },
-            });
-            onClose();
-          } else {
-            handleErrors(validation.errors);
-          }
-        }}
-        isDisabled={
-          items.length === 0 ||
-          errors.filter(({ type }) => type == 'error').length > 0
-        }
-      >
-        {/* Search For Query Term */}
-        <Box m={2} w='100%'>
-          <Heading size='sm' fontWeight='medium'>
-            Add terms to the query builder.
-          </Heading>
-          <Flex
-            flexDirection={{ base: 'column', md: 'row' }}
-            alignItems={{ base: 'flex-start', md: 'flex-end' }}
-            flexWrap='wrap'
-          >
-            {isOpen && (
-              <AdvancedSearchFormContext
-                searchTypeOptions={SEARCH_TYPES_CONFIG}
-              >
-                <Search
-                  items={items}
-                  setItems={updateItems}
-                  resetForm={resetForm}
-                  setResetForm={setResetForm}
-                />
-              </AdvancedSearchFormContext>
-            )}
-          </Flex>
-
-          <Heading size='sm' fontWeight='medium' mb={2}>
-            Or choose from the sample queries below.
-          </Heading>
-          {sample_queries.map(query => {
-            return (
-              <Button
-                key={query.name}
-                w={['100%', 'unset']}
-                my={[2, 2, 0]}
-                mx={1}
-                colorScheme='gray'
-                color='text.body'
-                size='sm'
-                onClick={() => setItems(buildTree(query.items))}
-              >
-                <Text isTruncated>{query.name}</Text>
-              </Button>
-            );
-          })}
-        </Box>
-
-        {/* Query Builder Area */}
-        <Box m={2} mt={6}>
-          <Flex>
-            <Heading
-              flex={1}
-              size='sm'
-              fontWeight='medium'
-              color={items.length ? 'text.heading' : 'gray.600'}
-            >
-              Query Builder
-            </Heading>
-            <Button
-              colorScheme='primary'
-              size='sm'
-              leftIcon={<FaUndoAlt />}
-              variant='outline'
-              isDisabled={!items.length}
-              onClick={() => {
-                setItems([]);
-                setResetForm(true);
-              }}
-              ml={4}
-            >
-              Clear query
-            </Button>
-          </Flex>
-          <Text color={items.length ? 'text.body' : 'gray.600'} fontSize='sm'>
-            Re-order query terms by click and drag. Group items together by
-            dragging an element over another.
-          </Text>
-          <ResultsCount
-            queryString={convertObject2QueryString(items)}
-            handleErrors={handleErrors}
-          />
-
-          <Box bg='gray.100'>
-            <SortableWithCombine
+      {/* Search For Query Term */}
+      <Box m={2} w='100%'>
+        <Heading size='sm' fontWeight='medium'>
+          Add terms to the query builder.
+        </Heading>
+        <Flex
+          flexDirection={{ base: 'column', md: 'row' }}
+          alignItems={{ base: 'flex-start', md: 'flex-end' }}
+          flexWrap='wrap'
+        >
+          <AdvancedSearchFormContext searchTypeOptions={SEARCH_TYPES_CONFIG}>
+            <Search
               items={items}
               setItems={updateItems}
-              removable
-              collapsible
+              resetForm={resetForm}
+              setResetForm={setResetForm}
             />
-          </Box>
+          </AdvancedSearchFormContext>
+        </Flex>
 
-          <Box w='100%'>
-            <Collapse in={showRawQuery}>
-              <Box my={2}>
-                <EditableQueryText
-                  queryObj={items}
-                  updateQueryObj={updateItems}
-                  errors={errors}
-                  setErrors={setErrors}
-                />
-              </Box>
-            </Collapse>
-
+        <Heading size='sm' fontWeight='medium' mb={2}>
+          Or choose from the sample queries below.
+        </Heading>
+        {sampleQueries.map(query => {
+          return (
             <Button
-              isDisabled={items.length === 0}
-              rightIcon={showRawQuery ? <FaChevronUp /> : <FaChevronDown />}
-              onClick={toggleShowRawQuery}
+              key={query.name}
+              w={['100%', 'unset']}
+              my={[2, 2, 0]}
+              mx={1}
               colorScheme='gray'
               color='text.body'
               size='sm'
-              mt={2}
-              leftIcon={
-                showRawQuery ? <Icon as={FaEyeSlash} /> : <Icon as={FaEye} />
-              }
+              onClick={() => setItems(buildTree(query.items))}
             >
-              {showRawQuery ? 'hide' : 'view'} raw query
+              <Text isTruncated>{query.name}</Text>
             </Button>
-          </Box>
-          <ErrorMessages errors={errors} setErrors={setErrors} />
+          );
+        })}
+      </Box>
+
+      {/* Query Builder Area */}
+      <Box m={2} mt={6}>
+        <Flex>
+          <Heading
+            flex={1}
+            size='sm'
+            fontWeight='medium'
+            color={items.length ? 'text.heading' : 'gray.600'}
+          >
+            Query Builder
+          </Heading>
+          <Button
+            colorScheme='primary'
+            size='sm'
+            leftIcon={<FaUndoAlt />}
+            variant='outline'
+            isDisabled={!items.length}
+            onClick={() => {
+              setItems([]);
+              setResetForm(true);
+            }}
+            ml={4}
+          >
+            Clear query
+          </Button>
+        </Flex>
+        <Text color={items.length ? 'text.body' : 'gray.600'} fontSize='sm'>
+          Re-order query terms by click and drag. Group items together by
+          dragging an element over another.
+        </Text>
+        <ResultsCount
+          queryString={convertObject2QueryString(items)}
+          handleErrors={handleErrors}
+        />
+
+        <Box bg='gray.100'>
+          <SortableWithCombine
+            items={items}
+            setItems={updateItems}
+            removable
+            collapsible
+          />
         </Box>
+
+        <Box w='100%'>
+          <Collapse in={showRawQuery}>
+            <Box my={2}>
+              <EditableQueryText
+                queryObj={items}
+                updateQueryObj={updateItems}
+                errors={errors}
+                setErrors={setErrors}
+              />
+            </Box>
+          </Collapse>
+
+          <Button
+            isDisabled={items.length === 0}
+            rightIcon={showRawQuery ? <FaChevronUp /> : <FaChevronDown />}
+            onClick={toggleShowRawQuery}
+            colorScheme='gray'
+            color='text.body'
+            size='sm'
+            mt={2}
+            leftIcon={
+              showRawQuery ? <Icon as={FaEyeSlash} /> : <Icon as={FaEye} />
+            }
+          >
+            {showRawQuery ? 'hide' : 'view'} raw query
+          </Button>
+        </Box>
+        <ErrorMessages errors={errors} setErrors={setErrors} />
+      </Box>
+      <Flex my={4} justifyContent='flex-end'>
+        {renderButtonGroup && renderButtonGroup({ colorScheme })}
+        {handleSubmit && (
+          <Button
+            colorScheme={colorScheme}
+            onClick={handleSubmit}
+            isDisabled={
+              items.length === 0 ||
+              errors.filter(({ type }) => type == 'error').length > 0
+            }
+            size='md'
+          >
+            Submit
+          </Button>
+        )}
+      </Flex>
+    </>
+  );
+};
+
+interface AdvancedSearchPropsWithModal extends AdvancedSearchProps {
+  buttonProps?: ButtonProps;
+  modalProps?: ModalProps;
+}
+
+export const AdvancedSearchWithModal: React.FC<
+  AdvancedSearchPropsWithModal
+> = ({ buttonProps, modalProps }) => {
+  // Handles the opening of the modal.
+  const { isOpen, onOpen, onClose } = useDisclosure();
+
+  return (
+    <>
+      <OpenModal onClick={onOpen} {...buttonProps} />
+
+      <AdvancedSearchModal
+        isOpen={isOpen}
+        handleClose={onClose}
+        {...modalProps}
+      >
+        {isOpen && (
+          <AdvancedSearch
+            onValidSubmit={onClose}
+            renderButtonGroup={(props: any) => (
+              <Button
+                {...props}
+                mr={3}
+                onClick={onClose}
+                variant='outline'
+                size='md'
+              >
+                Close
+              </Button>
+            )}
+          />
+        )}
       </AdvancedSearchModal>
     </>
   );

@@ -240,6 +240,13 @@ export function SortableWithCombine({
     [flattenedItems],
   );
 
+  const [documentBody, setDocumentBody] = useState<HTMLElement | null>(null);
+
+  useEffect(() => {
+    // document is undefined in SSR
+    setDocumentBody(document?.body || null);
+  }, []);
+
   return (
     <Box
       bg='gray.100'
@@ -295,7 +302,7 @@ export function SortableWithCombine({
                 );
               })}
 
-              {useDragOverlay
+              {documentBody && useDragOverlay
                 ? createPortal(
                     <DragOverlay
                       dropAnimation={dropAnimationConfig}
@@ -316,7 +323,7 @@ export function SortableWithCombine({
                         />
                       ) : null}
                     </DragOverlay>,
-                    document.body,
+                    documentBody,
                   )
                 : null}
             </SortableContext>
