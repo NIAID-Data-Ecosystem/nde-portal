@@ -7,7 +7,12 @@ import {
   Flex,
   Heading,
   Icon,
+  ListItem,
+  Tag,
+  TagLabel,
   Text,
+  Tooltip,
+  UnorderedList,
   useDisclosure,
 } from 'nde-design-system';
 import { useRouter } from 'next/router';
@@ -20,12 +25,16 @@ import {
   FlattenedItem,
   SortableWithCombine,
 } from './components/SortableWithCombine';
-import { convertObject2QueryString } from './utils/query-helpers';
+import {
+  convertObject2QueryString,
+  convertQueryString2Object,
+} from './utils/query-helpers';
 import {
   FaChevronDown,
   FaChevronUp,
   FaEye,
   FaEyeSlash,
+  FaHistory,
   FaUndoAlt,
 } from 'react-icons/fa';
 import { AdvancedSearchFormContext, Search } from './components/Search';
@@ -39,6 +48,8 @@ import {
   removeDuplicateErrors,
 } from './utils/validation-checks';
 import { validateQueryString } from './components/EditableQueryText/utils';
+import { useLocalStorage } from 'usehooks-ts';
+import { formatNumber } from 'src/utils/helpers';
 
 interface AdvancedSearchProps {
   colorScheme?: string;
@@ -59,7 +70,12 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
     items: FlattenedItem[];
   }[],
 }) => {
+  const [count, setCount] = useState(0);
   const router = useRouter();
+
+  const [searchHistory, setSearchHistory] = useLocalStorage<
+    { querystring: string; count: number }[]
+  >('advanced-searches', []);
   const [resetForm, setResetForm] = useState(false);
 
   const { isOpen: showRawQuery, onToggle: toggleShowRawQuery } = useDisclosure({
@@ -99,6 +115,13 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
         query: { q: `${querystring}`, advancedSearch: true },
       });
       onValidSubmit && onValidSubmit();
+
+      setSearchHistory(prev => {
+        const newSearchHistory = [...prev, { querystring, count }];
+        // Only keep the last 5 searches in history.
+        newSearchHistory.length > 5 && newSearchHistory.shift();
+        return newSearchHistory;
+      });
     } else {
       handleErrors(validation.errors);
     }
@@ -180,6 +203,7 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
         <ResultsCount
           queryString={convertObject2QueryString(items)}
           handleErrors={handleErrors}
+          setCount={setCount}
         />
 
         <Box bg='gray.100'>
@@ -218,24 +242,95 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
             {showRawQuery ? 'hide' : 'view'} raw query
           </Button>
         </Box>
+
         <ErrorMessages errors={errors} setErrors={setErrors} />
-      </Box>
-      <Flex my={4} justifyContent='flex-end'>
-        {renderButtonGroup && renderButtonGroup({ colorScheme })}
-        {handleSubmit && (
-          <Button
-            colorScheme={colorScheme}
-            onClick={handleSubmit}
-            isDisabled={
-              items.length === 0 ||
-              errors.filter(({ type }) => type == 'error').length > 0
-            }
-            size='md'
+        <Flex my={4} justifyContent='flex-end'>
+          {renderButtonGroup && renderButtonGroup({ colorScheme })}
+          {handleSubmit && (
+            <Button
+              colorScheme={colorScheme}
+              onClick={handleSubmit}
+              isDisabled={
+                items.length === 0 ||
+                errors.filter(({ type }) => type == 'error').length > 0
+              }
+              size='md'
+            >
+              Submit
+            </Button>
+          )}
+        </Flex>
+
+        <Box my={4}>
+          <Heading
+            size='sm'
+            fontWeight='semibold'
+            color='text.heading'
+            display='flex'
+            alignItems='center'
           >
-            Submit
-          </Button>
-        )}
-      </Flex>
+            <Icon as={FaHistory} mx={2} color='primary.500'></Icon>
+            Search History
+          </Heading>
+          <UnorderedList ml={0}>
+            {searchHistory.map((query, index) => {
+              return (
+                <ListItem
+                  key={index}
+                  onClick={() => {
+                    setItems(convertQueryString2Object(query.querystring));
+                  }}
+                  _hover={{
+                    cursor: 'pointer',
+                    p: {
+                      textDecoration: 'underline',
+                    },
+                  }}
+                  bg='status.info'
+                  borderRadius='semi'
+                  my={0.5}
+                >
+                  <Flex
+                    bg={index % 2 ? 'whiteAlpha.800' : 'whiteAlpha.900'}
+                    flexDirection={{ base: 'column', md: 'row-reverse' }}
+                    alignItems={{ base: 'flex-start', md: 'center' }}
+                    justifyContent={{ base: 'space-between' }}
+                    px={2}
+                  >
+                    <Flex
+                      bg='status.info'
+                      m={2}
+                      py={1}
+                      px={2}
+                      alignItems='flex-end'
+                      flexDirection='column'
+                      borderRadius='semi'
+                      alignSelf={{ base: 'flex-end', md: 'center' }}
+                    >
+                      <Text
+                        whiteSpace='normal'
+                        fontWeight='semibold'
+                        fontSize='md'
+                        color='#fff'
+                      >
+                        {formatNumber(query.count)}
+                        <Text as='span' fontSize='12px' color='inherit' ml={2}>
+                          results
+                        </Text>
+                      </Text>
+                    </Flex>
+                    <Box>
+                      <Text fontSize='xs' fontWeight='medium' noOfLines={3}>
+                        {query.querystring}
+                      </Text>
+                    </Box>
+                  </Flex>
+                </ListItem>
+              );
+            })}
+          </UnorderedList>
+        </Box>
+      </Box>
     </>
   );
 };

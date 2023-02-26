@@ -1,4 +1,4 @@
-import { Flex, Heading, Spinner, Text } from 'nde-design-system';
+import { Flex, Heading, Spinner } from 'nde-design-system';
 import { useQuery } from 'react-query';
 import { fetchSearchResults } from 'src/utils/api';
 import { FetchSearchResultsResponse } from 'src/utils/api/types';
@@ -9,11 +9,13 @@ import { getErrorMessage } from '../EditableQueryText/utils';
 interface ResultsCountProps {
   queryString: string;
   handleErrors: (errors: QueryStringError[]) => void;
+  setCount: (count: number) => void;
 }
 
 export const ResultsCount: React.FC<ResultsCountProps> = ({
   queryString,
   handleErrors,
+  setCount,
 }) => {
   // Get total count of results based on query string.
   const { isLoading, error, data } = useQuery<
@@ -49,6 +51,7 @@ export const ResultsCount: React.FC<ResultsCountProps> = ({
         handleErrors(errorMessage ? [errorMessage] : []);
       },
       onSuccess: res => {
+        setCount(res?.total || 0);
         if (res?.total === 0) {
           handleErrors([
             {
