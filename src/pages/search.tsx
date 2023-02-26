@@ -22,7 +22,6 @@ import {
   SelectedFilterTypeValue,
 } from 'src/components/filters/types';
 import { encodeString } from 'src/utils/querystring-helpers';
-import { AdvancedSearchWithModal } from 'src/components/advanced-search';
 
 //  This page renders the search results from the search bar.
 const Search: NextPage = () => {
@@ -127,12 +126,6 @@ const Search: NextPage = () => {
                 </Heading>
               )}
             </Heading>
-            <Box maxWidth='200px' my={2}>
-              <AdvancedSearchWithModal
-                querystring={queryString}
-                buttonProps={{ children: 'View query in Advanced Search' }}
-              />
-            </Box>
 
             {/* Tags with the names of the currently selected filters */}
             <Collapse in={tags.length > 0}>

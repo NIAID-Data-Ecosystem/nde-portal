@@ -36,6 +36,7 @@ import NextLink from 'next/link';
 import { FaChartBar } from 'react-icons/fa';
 import { encodeString } from 'src/utils/querystring-helpers';
 import { SelectedFilterType } from '../filters/types';
+import { AdvancedSearchWithModal } from '../advanced-search';
 
 /*
 [COMPONENT INFO]:
@@ -82,7 +83,7 @@ const SearchResultsPage = () => {
 
   const [selectedFilters, setSelectedFilters] =
     useState<SelectedFilterType>(defaultFilters);
-  // Currently selected page.
+
   const [queryString, setQueryString] = useState(defaultQuery.queryString);
 
   // Currently selected page.
@@ -238,11 +239,17 @@ const SearchResultsPage = () => {
                 w='100%'
                 borderBottom='2px solid'
                 borderColor='gray.700'
-                flexWrap='wrap'
+                flexWrap={{ base: 'wrap-reverse', sm: 'wrap' }}
                 justifyContent='space-between'
                 alignItems='center'
               >
                 <ResultsCount total={total} isLoading={isLoading} />
+                <Box my={2}>
+                  <AdvancedSearchWithModal
+                    querystring={queryString}
+                    buttonProps={{ children: 'View query in Advanced Search' }}
+                  />
+                </Box>
               </Flex>
 
               <Pagination
