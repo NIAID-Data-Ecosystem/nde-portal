@@ -47,7 +47,8 @@ export const AdvancedSearchModal: React.FC<AdvancedSearchModalProps> = ({
               colorScheme={colorScheme}
               mr={3}
               onClick={onClose}
-              variant='ghost'
+              variant='outline'
+              size='md'
             >
               Close
             </Button>
@@ -57,9 +58,9 @@ export const AdvancedSearchModal: React.FC<AdvancedSearchModalProps> = ({
               colorScheme={colorScheme}
               onClick={e => {
                 onSubmit(e);
-                onClose();
               }}
               isDisabled={isDisabled}
+              size='md'
             >
               Submit
             </Button>

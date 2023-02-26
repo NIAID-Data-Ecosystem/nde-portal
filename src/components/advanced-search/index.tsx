@@ -6,6 +6,7 @@ import {
   Collapse,
   Flex,
   Heading,
+  Icon,
   Text,
   useDisclosure,
 } from 'nde-design-system';
@@ -20,14 +21,24 @@ import {
   SortableWithCombine,
 } from './components/SortableWithCombine';
 import { convertObject2QueryString } from './utils/query-helpers';
-import { FaChevronDown, FaChevronUp, FaUndoAlt } from 'react-icons/fa';
+import {
+  FaChevronDown,
+  FaChevronUp,
+  FaEye,
+  FaEyeSlash,
+  FaUndoAlt,
+} from 'react-icons/fa';
 import { AdvancedSearchFormContext, Search } from './components/Search';
 import { ResultsCount } from './components/ResultsCount';
 import SampleQueries from 'configs/sample-queries.json';
 import { EditableQueryText } from './components/EditableQueryText';
 import { ErrorMessages } from './components/ErrorMessages';
 import { SEARCH_TYPES_CONFIG } from './components/Search/search-types-config';
-import { QueryStringError } from './utils/validation-checks';
+import {
+  QueryStringError,
+  removeDuplicateErrors,
+} from './utils/validation-checks';
+import { validateQueryString } from './components/EditableQueryText/utils';
 
 interface AdvancedSearchProps {
   buttonProps?: ButtonProps;
@@ -58,10 +69,20 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
   useEffect(() => {
     if (items.length > 0 && resetForm === true) {
       setResetForm(false);
+      setErrors([]);
     }
   }, [items, resetForm]);
 
   const updateItems = useCallback(items => setItems(items), []);
+
+  const handleErrors = useCallback((queryErrors: QueryStringError[]) => {
+    return setErrors(prev => {
+      if (queryErrors.length) {
+        return removeDuplicateErrors([...queryErrors]);
+      }
+      return [...prev];
+    });
+  }, []);
 
   return (
     <>
@@ -70,13 +91,24 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
         isOpen={isOpen}
         onClose={onClose}
         onSubmit={() => {
+          // add validation
           const querystring = convertObject2QueryString(items);
-          router.push({
-            pathname: `/search`,
-            query: { q: `${querystring}`, advancedSearch: true },
-          });
+
+          const validation = validateQueryString(querystring);
+          if (validation.isValid) {
+            router.push({
+              pathname: `/search`,
+              query: { q: `${querystring}`, advancedSearch: true },
+            });
+            onClose();
+          } else {
+            handleErrors(validation.errors);
+          }
         }}
-        isDisabled={items.length === 0}
+        isDisabled={
+          items.length === 0 ||
+          errors.filter(({ type }) => type == 'error').length > 0
+        }
       >
         {/* Search For Query Term */}
         <Box m={2} w='100%'>
@@ -153,16 +185,19 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
             Re-order query terms by click and drag. Group items together by
             dragging an element over another.
           </Text>
-          <ResultsCount queryString={convertObject2QueryString(items)} />
-
-          <SortableWithCombine
-            items={items}
-            setItems={updateItems}
-            removable
-            collapsible
+          <ResultsCount
+            queryString={convertObject2QueryString(items)}
+            handleErrors={handleErrors}
           />
 
-          <ErrorMessages errors={errors} setErrors={setErrors} />
+          <Box bg='gray.100'>
+            <SortableWithCombine
+              items={items}
+              setItems={updateItems}
+              removable
+              collapsible
+            />
+          </Box>
 
           <Box w='100%'>
             <Collapse in={showRawQuery}>
@@ -184,10 +219,14 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
               color='text.body'
               size='sm'
               mt={2}
+              leftIcon={
+                showRawQuery ? <Icon as={FaEyeSlash} /> : <Icon as={FaEye} />
+              }
             >
-              view string query
+              {showRawQuery ? 'hide' : 'view'} raw query
             </Button>
           </Box>
+          <ErrorMessages errors={errors} setErrors={setErrors} />
         </Box>
       </AdvancedSearchModal>
     </>

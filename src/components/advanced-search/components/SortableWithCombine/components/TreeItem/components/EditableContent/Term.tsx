@@ -6,6 +6,7 @@ import {
 } from 'src/components/advanced-search/components/Search';
 import { getDateQuerystring } from 'src/components/advanced-search/components/Search/components/SearchInput/helpers';
 import { SearchInputProps } from 'src/components/advanced-search/components/Search/components/SearchInput/types';
+import { QueryStringError } from 'src/components/advanced-search/utils/validation-checks';
 import { ItemContentProps } from '.';
 import { transformQueryString } from '../../helpers';
 
@@ -13,9 +14,13 @@ export const TermLabel = React.memo(
   ({
     term,
     querystring,
+    errors,
+    handleValidation,
   }: {
     term: ItemContentProps['value']['term'];
     querystring: ItemContentProps['value']['querystring'];
+    errors: QueryStringError[];
+    handleValidation: (value: string) => QueryStringError[];
   }) => {
     const { updateQueryValue, selectedFieldDetails, selectedSearchType } =
       useAdvancedSearchContext();
@@ -26,10 +31,18 @@ export const TermLabel = React.memo(
 
     const [inputTerm, setTerm] = useState<string>(term || '');
 
-    const handleChange = useCallback(updated => {
-      setInputValue(updated.value);
-      setTerm(updated.term);
-    }, []);
+    const handleChange = useCallback(
+      updated => {
+        setInputValue(updated.value);
+        setTerm(updated.term);
+
+        // Update errors as user changes input
+        if (errors.length > 0) {
+          handleValidation(updated.value);
+        }
+      },
+      [errors.length, handleValidation],
+    );
 
     useEffect(() => {
       if (
@@ -69,7 +82,7 @@ export const TermLabel = React.memo(
         onChange={handleChange}
         hideSuggestions={true}
         resetForm={false}
-        errors={[]}
+        errors={errors}
         onSubmit={() => {}}
         setErrors={() => {}}
         setResetForm={() => {}}

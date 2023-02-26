@@ -73,7 +73,9 @@ const checkQuery = (tree: TreeItem[]): QueryStringError[] => {
   return errors;
 };
 
-export const getErrorMessage = (error: { status: string }) => {
+export const getErrorMessage = (error: {
+  status: string;
+}): QueryStringError | undefined => {
   if (error) {
     const errorStatus = error.status;
 

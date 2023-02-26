@@ -1,10 +1,16 @@
-import { Box, Button, Flex } from 'nde-design-system';
+import { Box, Button, Collapse, Flex, Text } from 'nde-design-system';
+import { useState } from 'react';
 import {
   AdvancedSearchFormContext,
   useAdvancedSearchContext,
 } from 'src/components/advanced-search/components/Search';
 import { SearchTypesConfigProps } from 'src/components/advanced-search/components/Search/search-types-config';
 import { UnionTypes } from 'src/components/advanced-search/types';
+import {
+  checkBalancedPunctuation,
+  QueryStringError,
+  removeDuplicateErrors,
+} from 'src/components/advanced-search/utils/validation-checks';
 import { FlattenedItem, Value } from '../../../../types';
 import { getSearchType, stripSearchTerm } from '../../helpers';
 import { FieldTag } from './Field';
@@ -31,8 +37,26 @@ const ItemContent = ({
   onUpdate,
   searchOptions,
 }: ItemContentProps) => {
+  const [errors, setErrors] = useState<QueryStringError[]>([]);
   const { queryValue, selectedSearchType, selectedFieldDetails, onReset } =
     useAdvancedSearchContext();
+
+  const validateQueryString = (value: string) => {
+    const errors = [] as QueryStringError[];
+    if (
+      selectedFieldDetails?.type !== 'text' &&
+      selectedFieldDetails?.type !== 'keyword'
+    ) {
+      return errors;
+    } else {
+      const isBalanced = checkBalancedPunctuation(value);
+      if (!isBalanced.isValid) {
+        isBalanced.error && errors.push(isBalanced.error);
+      }
+      setErrors(() => removeDuplicateErrors([...errors]));
+      return errors;
+    }
+  };
 
   return (
     <Flex flex={1} p={1} mx={2} flexDirection='column'>
@@ -64,6 +88,8 @@ const ItemContent = ({
             <TermLabel
               term={value.term}
               querystring={stripSearchTerm(value?.querystring || '')}
+              errors={errors}
+              handleValidation={validateQueryString}
             />
           </Box>
 
@@ -71,6 +97,18 @@ const ItemContent = ({
           <FieldTag />
         </Flex>
       </Box>
+      <Collapse in={errors.length > 0}>
+        {errors.map(error => (
+          <Text
+            key={error.id}
+            color='status.error'
+            fontSize='xs'
+            fontStyle='italic'
+          >
+            {error.message}
+          </Text>
+        ))}
+      </Collapse>
 
       <Flex alignItems='center' justifyContent='flex-end' mt={2}>
         <Button
@@ -91,14 +129,17 @@ const ItemContent = ({
             !{
               ...value,
               ...queryValue,
-            }.term
+            }.term || errors.length > 0
           }
           onClick={() => {
             let updatedQuery = {
               ...value,
               ...queryValue,
             };
-
+            const errors = validateQueryString(updatedQuery.querystring);
+            if (errors.length > 0) {
+              return;
+            }
             // transform the querystring according to the selected search type
             if (selectedSearchType && selectedSearchType.transformValue) {
               if (
@@ -116,7 +157,6 @@ const ItemContent = ({
             } else {
               onUpdate && onUpdate(id, updatedQuery);
             }
-
             setIsEditMode(false);
           }}
         >

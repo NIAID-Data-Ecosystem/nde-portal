@@ -180,7 +180,7 @@ export const EditableQueryText = ({
       }
     };
 
-    return isEditing || hasErrors ? (
+    return isEditing ? (
       <ButtonGroup justifyContent='end' size='sm' w='full' spacing={2} mt={2}>
         <IconButton
           aria-label='Cancel'
@@ -225,7 +225,6 @@ export const EditableQueryText = ({
         value={value}
         placeholder='Click to write query string.'
         onCancel={() => {
-          setErrors([]);
           setValue(defaultValue);
         }}
         onChange={nextValue => {
@@ -262,7 +261,7 @@ export const EditableQueryText = ({
           px={4}
           fontSize='sm'
           as={EditableTextarea}
-          isInvalid={!!errors.length}
+          isInvalid={hasErrors}
           _focus={{
             boxShadow: hasErrors
               ? `0 0 0 1px ${theme.colors.status.error}`
