@@ -57,11 +57,13 @@ interface AdvancedSearchProps {
     name: string;
     items: FlattenedItem[];
   }[];
+  querystring?: string;
   renderButtonGroup?: (props: any) => JSX.Element;
   onValidSubmit?: () => void;
 }
 
 export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
+  querystring: initialQuerystring,
   onValidSubmit,
   renderButtonGroup,
   colorScheme = 'primary',
@@ -92,6 +94,13 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
       setErrors([]);
     }
   }, [items, resetForm]);
+
+  useEffect(() => {
+    if (initialQuerystring) {
+      const items = convertQueryString2Object(initialQuerystring);
+      setItems(items);
+    }
+  }, [initialQuerystring]);
 
   const updateItems = useCallback(items => setItems(items), []);
 
@@ -342,7 +351,7 @@ interface AdvancedSearchPropsWithModal extends AdvancedSearchProps {
 
 export const AdvancedSearchWithModal: React.FC<
   AdvancedSearchPropsWithModal
-> = ({ buttonProps, modalProps }) => {
+> = ({ buttonProps, modalProps, ...props }) => {
   // Handles the opening of the modal.
   const { isOpen, onOpen, onClose } = useDisclosure();
 
@@ -369,6 +378,7 @@ export const AdvancedSearchWithModal: React.FC<
                 Close
               </Button>
             )}
+            {...props}
           />
         )}
       </AdvancedSearchModal>
