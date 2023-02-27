@@ -16,7 +16,7 @@ import Notice from './notice';
 import { env } from 'next.config';
 import { SearchBarWithDropdown } from 'src/components/search-bar';
 import { PageContent } from './content';
-import { AdvancedSearch } from 'src/components/advanced-search';
+import { AdvancedSearchWithModal } from 'src/components/advanced-search';
 
 interface PageContainerProps extends FlexProps {
   hasNavigation?: boolean;
@@ -103,7 +103,7 @@ export const PageContainer: React.FC<PageContainerProps> = ({
               py={4}
             >
               <Flex w='100%' justifyContent='flex-end' mb={2}>
-                <AdvancedSearch />
+                <AdvancedSearchWithModal />
               </Flex>
               <SearchBarWithDropdown
                 ariaLabel='Search for datasets or tools'

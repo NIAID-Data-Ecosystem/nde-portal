@@ -1,20 +1,8 @@
-import {
-  Box,
-  ButtonProps,
-  Flex,
-  Input,
-  InputProps,
-  Text,
-} from 'nde-design-system';
+import { Box, Flex, Input, Text } from 'nde-design-system';
+import { getDateQuerystring } from '../helpers';
+import { AdvancedSearchInputProps } from '../types';
 
-interface DateInputProps {
-  isDisabled?: boolean;
-  size: InputProps['size'];
-  inputValue: { startDate: string; endDate: string };
-  handleChange: (value: DateInputProps['inputValue']) => void;
-  handleSubmit: (args: { term: string; querystring: string }) => void;
-  renderSubmitButton?: (props: ButtonProps) => React.ReactElement;
-}
+interface DateInputProps extends AdvancedSearchInputProps {}
 
 export const DateInputGroup: React.FC<DateInputProps> = ({
   size,
@@ -24,37 +12,21 @@ export const DateInputGroup: React.FC<DateInputProps> = ({
   inputValue,
   ...props
 }) => {
-  const { startDate, endDate } = inputValue;
+  const dateInputValue = inputValue as { startDate: string; endDate: string };
+  const { startDate, endDate } = dateInputValue;
 
   return (
     <Flex
       as='form'
       onSubmit={e => {
         e.preventDefault();
-        const startQuery = !startDate ? '*' : startDate;
-        const endQuery = !endDate ? '*' : endDate;
-
-        let term = '';
-        if (!startDate && !endDate) {
-          term = 'Any Dates';
-        } else if (startDate && endDate) {
-          term = `Between ${startDate} and ${endDate}`;
-        } else if (!startDate) {
-          term = `Before ${endDate}`;
-        } else if (!endDate) {
-          term = `After ${startDate}`;
-        }
-
-        handleSubmit({
-          term,
-          querystring: `[${startQuery} TO ${endQuery}]`,
-        });
+        handleSubmit(getDateQuerystring({ startDate, endDate }));
       }}
       flex={1}
       px={2}
     >
       <Box flex={1} mr={2}>
-        <Text fontWeight='medium' color='gray.600'>
+        <Text fontWeight='medium' color='niaid.placeholder'>
           <label htmlFor='date-start'>From:</label>
         </Text>
         <Input
@@ -65,14 +37,19 @@ export const DateInputGroup: React.FC<DateInputProps> = ({
           max={endDate || undefined} // set the max start date to the end date in the current selection to prevent setting a start date later than the end date.
           value={startDate || ''}
           onChange={e => {
-            handleChange({ ...inputValue, startDate: e.target.value });
+            const value = getDateQuerystring({ startDate, endDate });
+
+            handleChange({
+              ...value,
+              value: { ...dateInputValue, startDate: e.target.value },
+            });
           }}
           isDisabled={props.isDisabled}
         />
       </Box>
 
       <Box flex={1} mr={2}>
-        <Text fontWeight='medium' color='gray.600'>
+        <Text fontWeight='medium' color='niaid.placeholder'>
           <label htmlFor='date-end'>To:</label>
         </Text>
         <Input
@@ -83,7 +60,12 @@ export const DateInputGroup: React.FC<DateInputProps> = ({
           max={undefined}
           value={endDate || ''}
           onChange={e => {
-            handleChange({ ...inputValue, endDate: e.target.value });
+            const value = getDateQuerystring({ startDate, endDate });
+
+            handleChange({
+              ...value,
+              value: { ...dateInputValue, endDate: e.target.value },
+            });
           }}
           isDisabled={props.isDisabled}
         />

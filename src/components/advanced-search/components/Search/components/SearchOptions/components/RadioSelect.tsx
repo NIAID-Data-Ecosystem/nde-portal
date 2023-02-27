@@ -6,7 +6,7 @@ import {
   OptionsList,
   SelectWithButton,
 } from 'src/components/select';
-import { SearchOption } from '../../AdvancedSearchFormContext';
+import { SearchTypesConfigProps } from '../../../search-types-config';
 import { RadioTooltip } from './RadioItem';
 
 export const RadioSelect = ({
@@ -14,27 +14,28 @@ export const RadioSelect = ({
   updateSearchOption,
   searchOption,
   isDisabled,
+  isChecked,
 }: {
   isDisabled?: boolean;
-  options: SearchOption[];
-  searchOption: SearchOption;
-  updateSearchOption: (arg: SearchOption) => void;
+  isChecked: boolean;
+  options: SearchTypesConfigProps[];
+  searchOption: SearchTypesConfigProps;
+  updateSearchOption: (arg: SearchTypesConfigProps) => void;
 }) => {
   const disclosure = useDisclosure();
   const selectedOption = options.filter(
-    option => option.value === searchOption.value,
+    option => option.id === searchOption.id,
   );
   const [selected, setSelected] = useState(selectedOption[0]);
-  const values = options.map(o => o.value);
 
   useEffect(() => {
-    setSelected(selectedOption[0]);
-  }, [selectedOption]);
+    setSelected(selectedOption[0] || options[0]);
+  }, [options, selectedOption]);
 
   return (
     <Flex>
       <Radio
-        isChecked={values.includes(searchOption.value)}
+        isChecked={isChecked}
         onChange={() => {
           updateSearchOption(selected);
         }}
@@ -44,23 +45,24 @@ export const RadioSelect = ({
 
       <SelectWithButton
         id='search-type'
-        ariaLabel='Select type of text search'
         colorScheme='gray'
         _hover={{ bg: 'gray.100' }}
         _focus={{ boxShadow: 'none' }}
-        name={selected?.name}
+        name={selected?.label}
         variant='outline'
         size='sm'
         justifyContent='space-between'
         p={2}
         isDisabled={isDisabled}
-        {...disclosure}
+        isOpen={disclosure.isOpen}
+        onToggle={disclosure.onToggle}
+        onClose={disclosure.onClose}
       >
         <OptionsList zIndex='popover' w='unset' minW='100%'>
           {options.map(option => {
             return (
               <RadioTooltip
-                key={option.value}
+                key={option.id}
                 description={option.description}
                 example={option.example}
                 isDisabled={!disclosure.isOpen}
@@ -68,7 +70,7 @@ export const RadioSelect = ({
                 <div>
                   <OptionItem
                     whiteSpace='nowrap'
-                    name={option?.name || ''}
+                    name={option?.label || ''}
                     onClick={() => {
                       setSelected(option);
                       updateSearchOption(option);

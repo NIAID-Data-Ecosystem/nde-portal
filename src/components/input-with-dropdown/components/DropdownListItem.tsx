@@ -56,12 +56,11 @@ export const Highlight: React.FC<HighlightProps> = ({
 
 export const DropdownListItem: React.FC<DropdownListItemProps> = React.memo(
   ({ name, searchTerm, value, index, onMouseOver, onClick, ...props }) => {
-    const { colorScheme, cursor, getListItemProps, setInputValue } =
-      useDropdownContext();
+    const { colorScheme, cursor, getListItemProps } = useDropdownContext();
 
     // If item is highlighted (mouseover or keydown), update the input string with the value of the list item.
     const isSelected = useMemo(() => cursor === index, [index, cursor]);
-    const displayValue = Array.isArray(value) ? value.join(' ') : value;
+    const displayValue = Array.isArray(value) ? value.join(' or ') : value;
     return (
       <NDEListItem
         borderRadius='base'

@@ -4,7 +4,7 @@ import { useAdvancedSearchContext } from '../AdvancedSearchFormContext';
 import { useLocalStorage } from 'usehooks-ts';
 
 export const Disclaimer = () => {
-  const { searchOption } = useAdvancedSearchContext();
+  const { selectedSearchType } = useAdvancedSearchContext();
   const [isMinimized, setIsMinimized] = useLocalStorage(
     'query-disclaimer-minimize',
     false,
@@ -12,7 +12,7 @@ export const Disclaimer = () => {
 
   return (
     <Flex
-      opacity={searchOption?.additionalInfo ? 1 : 0}
+      opacity={selectedSearchType?.additionalInfo ? 1 : 0}
       w='100%'
       justifyContent='flex-end'
       alignItems='center'
@@ -34,7 +34,7 @@ export const Disclaimer = () => {
       </Button>
 
       <SlideFade
-        in={!isMinimized && !!searchOption?.additionalInfo}
+        in={!isMinimized && !!selectedSearchType?.additionalInfo}
         offsetX={20}
         offsetY={0}
       >
@@ -45,7 +45,7 @@ export const Disclaimer = () => {
           py={1}
         >
           <Text fontStyle='italic' fontWeight='light' fontSize='sm'>
-            {searchOption.additionalInfo}
+            {selectedSearchType.additionalInfo}
           </Text>
           <Button
             variant='ghost'

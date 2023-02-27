@@ -1,35 +1,31 @@
 import React from 'react';
-import { Box, Button } from 'nde-design-system';
+import { Box } from 'nde-design-system';
 import {
   Modal,
   ModalBody,
   ModalCloseButton,
   ModalContent,
-  ModalFooter,
   ModalHeader,
   ModalOverlay,
   ModalProps,
 } from '@chakra-ui/react';
 
-export interface AdvancedSearchModalProps extends ModalProps {
+export interface AdvancedSearchModalProps extends Omit<ModalProps, 'onClose'> {
   isOpen: boolean;
-  isDisabled: boolean;
-  onSubmit?: (e: React.FormEvent<HTMLButtonElement>) => void;
+  handleClose: ModalProps['onClose'];
 }
 
 export const AdvancedSearchModal: React.FC<AdvancedSearchModalProps> = ({
-  isOpen,
-  onClose,
   children,
   colorScheme = 'primary',
-  onSubmit,
-  isDisabled,
+  isOpen,
+  handleClose,
   ...props
 }) => {
   return (
     <Modal
       isOpen={isOpen}
-      onClose={onClose}
+      onClose={handleClose}
       blockScrollOnMount={false}
       size='5xl'
       {...props}
@@ -41,30 +37,6 @@ export const AdvancedSearchModal: React.FC<AdvancedSearchModalProps> = ({
         <ModalBody>
           <Box>{children}</Box>
         </ModalBody>
-        <ModalFooter>
-          {onClose && onSubmit && (
-            <Button
-              colorScheme={colorScheme}
-              mr={3}
-              onClick={onClose}
-              variant='ghost'
-            >
-              Close
-            </Button>
-          )}
-          {onSubmit && (
-            <Button
-              colorScheme={colorScheme}
-              onClick={e => {
-                onSubmit(e);
-                onClose();
-              }}
-              isDisabled={isDisabled}
-            >
-              Submit
-            </Button>
-          )}
-        </ModalFooter>
       </ModalContent>
     </Modal>
   );

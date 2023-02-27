@@ -1,6 +1,6 @@
 import { Radio, RadioProps } from '@chakra-ui/react';
 import { Text, Tooltip } from 'nde-design-system';
-import { SearchOption } from '../../AdvancedSearchFormContext';
+import { SearchTypesConfigProps } from '../../../search-types-config';
 
 export const RadioTooltip: React.FC<Partial<RadioItemProps>> = ({
   children,
@@ -38,14 +38,12 @@ export const RadioTooltip: React.FC<Partial<RadioItemProps>> = ({
 
 interface RadioItemProps
   extends Omit<RadioProps, 'name' | 'value'>,
-    Omit<SearchOption, 'value'> {
+    Omit<SearchTypesConfigProps, 'id' | 'value'> {
   hasTooltip?: boolean;
-  value?: SearchOption['value'];
 }
 
 export const RadioItem: React.FC<RadioItemProps> = ({
-  name,
-  value,
+  label,
   description,
   example,
   hasTooltip,
@@ -60,19 +58,24 @@ export const RadioItem: React.FC<RadioItemProps> = ({
       </Text>
     );
   };
-
   return (
-    <Radio value={value} isDisabled={isDisabled} {...props}>
+    <Radio
+      isDisabled={isDisabled}
+      _focus={{
+        boxShadow: props.isChecked && !isDisabled ? 'outline' : 'none',
+      }}
+      {...props}
+    >
       {hasTooltip && (description || example) ? (
         <RadioTooltip
           isDisabled={isDisabled}
           description={description}
           example={example}
         >
-          {name && <RadioText name={name} />}
+          {label && <RadioText name={label} />}
         </RadioTooltip>
       ) : (
-        <>{name && <RadioText name={name} />}</>
+        <>{label && <RadioText name={label} />}</>
       )}
     </Radio>
   );

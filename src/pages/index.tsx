@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import type { NextPage } from 'next';
 import {
+  Box,
   Button,
   Flex,
   Heading,
@@ -33,7 +34,7 @@ import {
 } from 'src/components/pie-chart';
 import { assetPrefix } from 'next.config';
 import NextLink from 'next/link';
-import { AdvancedSearch } from 'src/components/advanced-search';
+import { AdvancedSearchWithModal } from 'src/components/advanced-search';
 import { SearchBarWithDropdown } from 'src/components/search-bar';
 
 const sample_queries = [
@@ -179,6 +180,7 @@ const Home: NextPage = () => {
       setStats(stat);
     },
   });
+
   return (
     <>
       <PageContainer
@@ -194,7 +196,7 @@ const Home: NextPage = () => {
         >
           <>
             <Flex w='100%' justifyContent='flex-end' mb={2}>
-              <AdvancedSearch
+              <AdvancedSearchWithModal
                 buttonProps={{
                   variant: 'outline',
                   bg: 'whiteAlpha.500',
@@ -204,8 +206,8 @@ const Home: NextPage = () => {
               />
             </Flex>
             <SearchBarWithDropdown
-              ariaLabel='Search for datasets or tools'
               placeholder='Search for datasets or tools'
+              ariaLabel='Search for datasets or tools'
               size='md'
             />
 
@@ -243,10 +245,12 @@ const Home: NextPage = () => {
                     }}
                     passHref
                   >
-                    <SearchQueryLink
-                      title={query.title}
-                      display={[i > 2 ? 'none' : 'block', 'block']}
-                    />
+                    <Box>
+                      <SearchQueryLink
+                        title={query.title}
+                        display={[i > 2 ? 'none' : 'block', 'block']}
+                      />
+                    </Box>
                   </NextLink>
                 );
               })}

@@ -36,6 +36,7 @@ export interface FacetTerm {
 export type ResourceType =
   | 'Dataset'
   | 'Computational Tool'
+  | 'Software'
   | 'Scholarly Article'
   | 'Other';
 
