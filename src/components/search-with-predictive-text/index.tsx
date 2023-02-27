@@ -15,7 +15,7 @@ interface SearchWithPredictiveTextProps {
   handleSubmit: (
     inputValue: string,
     field: string,
-    data?: FormattedResource,
+    data?: Partial<FormattedResource>,
   ) => void; // triggered when suggestion item from list is clicked / press enters.
   renderSubmitButton?: (props: any) => ReactElement; // an optional custom button rendered as the "submit" button.
 }

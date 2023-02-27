@@ -60,7 +60,7 @@ const EmptyState = () => {
 const ResourcePage: NextPage = props => {
   const router = useRouter();
   const { id } = router.query;
-  const [searchHistory] = useLocalStorage<string[]>('previous-searches', []);
+  const [searchHistory] = useLocalStorage<string[]>('basic-searches', []);
   // Access query client
   const { isLoading, error, data } = useQuery<
     FormattedResource | undefined,

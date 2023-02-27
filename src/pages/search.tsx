@@ -56,15 +56,6 @@ const Search: NextPage = () => {
   const selectedFilters: SelectedFilterType =
     queryFilterString2Object(queryParams.extra_filter) || [];
 
-  // Format query string.
-  const displayQueryString = (str: string) => {
-    if (!str) {
-      return;
-    }
-
-    return str;
-  };
-
   // Currently applied filters
   const applied_filters = Object.entries(selectedFilters).filter(
     ([_, filters]) => filters.length > 0,
@@ -107,7 +98,6 @@ const Search: NextPage = () => {
   if (!hasMounted || !router.isReady) {
     return null;
   }
-
   return (
     <PageContainer
       hasNavigation

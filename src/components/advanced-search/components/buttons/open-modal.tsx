@@ -40,7 +40,7 @@ export const OpenModal: React.FC<AdvancedSearchButtonProps> = ({
       }
       {...rest}
     >
-      Advanced Search
+      {props.children || 'Advanced Search'}
     </Button>
   );
 };
