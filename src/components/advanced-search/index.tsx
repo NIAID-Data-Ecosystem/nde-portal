@@ -1,5 +1,10 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import {
+  Accordion,
+  AccordionButton,
+  AccordionIcon,
+  AccordionItem,
+  AccordionPanel,
   Box,
   Button,
   ButtonProps,
@@ -270,75 +275,98 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
           )}
         </Flex>
 
-        <Box my={4}>
-          <Heading
-            size='sm'
-            fontWeight='semibold'
-            color='text.heading'
-            display='flex'
-            alignItems='center'
-          >
-            <Icon as={FaHistory} mx={2} color='primary.500'></Icon>
-            Search History
-          </Heading>
-          <UnorderedList ml={0}>
-            {searchHistory.map((query, index) => {
-              return (
-                <ListItem
-                  key={index}
-                  onClick={() => {
-                    setItems(convertQueryString2Object(query.querystring));
-                  }}
-                  _hover={{
-                    cursor: 'pointer',
-                    p: {
-                      textDecoration: 'underline',
-                    },
-                  }}
-                  bg='status.info'
-                  borderRadius='semi'
-                  my={0.5}
-                >
-                  <Flex
-                    bg={index % 2 ? 'whiteAlpha.800' : 'whiteAlpha.900'}
-                    flexDirection={{ base: 'column', md: 'row-reverse' }}
-                    alignItems={{ base: 'flex-start', md: 'center' }}
-                    justifyContent={{ base: 'space-between' }}
-                    px={2}
+        {searchHistory.length > 0 && (
+          <Accordion my={4} defaultIndex={[0]} allowToggle>
+            <AccordionItem>
+              <h2>
+                <AccordionButton>
+                  <Text
+                    size='sm'
+                    fontWeight='semibold'
+                    color='text.heading'
+                    display='flex'
+                    alignItems='center'
+                    flex={1}
                   >
-                    <Flex
-                      bg='status.info'
-                      m={2}
-                      py={1}
-                      px={2}
-                      alignItems='flex-end'
-                      flexDirection='column'
-                      borderRadius='semi'
-                      alignSelf={{ base: 'flex-end', md: 'center' }}
-                    >
-                      <Text
-                        whiteSpace='normal'
-                        fontWeight='semibold'
-                        fontSize='md'
-                        color='#fff'
+                    <Icon as={FaHistory} mx={2} color='status.info'></Icon>
+                    Search History
+                  </Text>
+                  <AccordionIcon />
+                </AccordionButton>
+              </h2>
+              <AccordionPanel>
+                <UnorderedList ml={0}>
+                  {searchHistory.reverse().map((query, index) => {
+                    return (
+                      <ListItem
+                        key={index}
+                        onClick={() => {
+                          setItems(
+                            convertQueryString2Object(query.querystring),
+                          );
+                        }}
+                        _hover={{
+                          cursor: 'pointer',
+                          p: {
+                            textDecoration: 'underline',
+                          },
+                        }}
+                        bg='status.info'
+                        borderRadius='semi'
+                        my={0.5}
                       >
-                        {formatNumber(query.count)}
-                        <Text as='span' fontSize='12px' color='inherit' ml={2}>
-                          results
-                        </Text>
-                      </Text>
-                    </Flex>
-                    <Box>
-                      <Text fontSize='xs' fontWeight='medium' noOfLines={3}>
-                        {query.querystring}
-                      </Text>
-                    </Box>
-                  </Flex>
-                </ListItem>
-              );
-            })}
-          </UnorderedList>
-        </Box>
+                        <Flex
+                          bg={index % 2 ? 'whiteAlpha.800' : 'whiteAlpha.900'}
+                          flexDirection={{ base: 'column', md: 'row-reverse' }}
+                          alignItems={{ base: 'flex-start', md: 'center' }}
+                          justifyContent={{ base: 'space-between' }}
+                          px={2}
+                        >
+                          <Flex
+                            bg='status.info'
+                            m={2}
+                            py={1}
+                            px={2}
+                            alignItems='flex-end'
+                            flexDirection='column'
+                            borderRadius='semi'
+                            alignSelf={{ base: 'flex-end', md: 'center' }}
+                          >
+                            <Text
+                              whiteSpace='normal'
+                              fontWeight='semibold'
+                              fontSize='md'
+                              color='#fff'
+                            >
+                              {formatNumber(query.count)}
+                              <Text
+                                as='span'
+                                fontSize='12px'
+                                color='inherit'
+                                ml={2}
+                              >
+                                results
+                              </Text>
+                            </Text>
+                          </Flex>
+                          <Box>
+                            <Text
+                              fontSize='xs'
+                              fontWeight='medium'
+                              noOfLines={3}
+                            >
+                              {query.querystring}
+                            </Text>
+                          </Box>
+                        </Flex>
+                      </ListItem>
+                    );
+                  })}
+                </UnorderedList>
+              </AccordionPanel>
+            </AccordionItem>
+          </Accordion>
+        )}
       </Box>
     </>
   );
