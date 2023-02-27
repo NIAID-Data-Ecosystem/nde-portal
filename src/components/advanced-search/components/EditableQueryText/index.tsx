@@ -20,6 +20,7 @@ import { MouseEventHandler, useEffect, useState } from 'react';
 import { FaCheck, FaRegEdit } from 'react-icons/fa';
 import { IoClose } from 'react-icons/io5';
 import { useQuery } from 'react-query';
+import { getQueryStatusError } from 'src/components/error/utils';
 import { fetchSearchResults } from 'src/utils/api';
 import { FetchSearchResultsResponse } from 'src/utils/api/types';
 import { formatNumber } from 'src/utils/helpers';
@@ -35,7 +36,6 @@ import {
 import { TreeItem } from '../SortableWithCombine';
 import {
   formatQueryString,
-  getErrorMessage,
   removeUnnecessaryParentheses,
   validateQueryString,
 } from './utils';
@@ -165,7 +165,7 @@ export const EditableQueryText = ({
 
         return;
       } else if (error) {
-        const errorMessage = getErrorMessage(
+        const errorMessage = getQueryStatusError(
           error as unknown as { status: string },
         );
         if (errorMessage) {

@@ -45,6 +45,7 @@ export const useFacetsData = ({
           ? params.q
           : encodeString(params.q),
       hist: 'date',
+      size: 0,
     }).then(response => {
       const facetsData = {} as { [key: string]: { terms: FacetTerm[] } };
       if (response?.facets) {
@@ -140,6 +141,7 @@ export const useFacetsData = ({
         extra_filter: '',
         facet_size: queryParams.facet_size,
         facets: facets.filter(facet => facet !== 'date').join(','),
+        size: 0,
       });
     },
     {
@@ -184,6 +186,7 @@ export const useFacetsData = ({
         facet_size: queryParams.facet_size,
         extra_filter: queryParams.extra_filter,
         facets: facets.join(','),
+        size: 0,
       });
     },
     {

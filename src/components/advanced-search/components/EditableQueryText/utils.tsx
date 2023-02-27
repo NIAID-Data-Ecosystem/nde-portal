@@ -73,61 +73,6 @@ const checkQuery = (tree: TreeItem[]): QueryStringError[] => {
   return errors;
 };
 
-export const getErrorMessage = (error: {
-  status: string;
-}): QueryStringError | undefined => {
-  if (error) {
-    const errorStatus = error.status;
-
-    if (+errorStatus === 400) {
-      return {
-        id: 'bad-request',
-        type: 'error' as ErrorType,
-        title: 'Bad Request',
-        message: `Check that your query is formatted properly. For more information, see the documentation.`,
-      };
-    }
-
-    if (+errorStatus === 404) {
-      return {
-        id: 'not-found',
-        type: 'error' as ErrorType,
-        title: 'Not Found',
-        message:
-          'Check that your query is formatted properly. For more information, see the documentation.',
-      };
-    }
-    if (+errorStatus === 500) {
-      return {
-        id: 'internal-server-error',
-        type: 'error' as ErrorType,
-        title: 'Internal Server Error',
-        message:
-          'We are experiencing issues with our servers. Please try again later.',
-      };
-    }
-
-    if (+errorStatus === 503) {
-      return {
-        id: 'service-unavailable',
-        type: 'error' as ErrorType,
-        title: 'Service Unavailable',
-        message:
-          'We are experiencing issues with your request. If you have many wildcards in your query, try removing them. If you are still experiencing issues, please try again later.',
-      };
-    }
-    if (+errorStatus === 504) {
-      return {
-        id: 'gateway-timeout',
-        type: 'error' as ErrorType,
-        title: 'Gateway Timeout',
-        message:
-          'We are experiencing issues with your request. If you have many wildcards in your query, try removing them. If you are still experiencing issues, please try again later.',
-      };
-    }
-  }
-};
-
 /**
  * [removeUnnecessaryParentheses]:
  * Removes unnecessary wrapping parentheses from a query string.

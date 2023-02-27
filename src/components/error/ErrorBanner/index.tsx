@@ -15,7 +15,7 @@ import {
   FaInfoCircle,
   FaTimesCircle,
 } from 'react-icons/fa';
-import { QueryStringError } from '../../utils/validation-checks';
+import { QueryStringError } from 'src/components/advanced-search/utils/validation-checks';
 
 interface EditableQueryTextProps {
   errors: QueryStringError[];
@@ -101,9 +101,7 @@ export const MessageBlock = ({
   );
 };
 
-export const ErrorMessages = ({
-  errors: allErrors,
-}: EditableQueryTextProps) => {
+export const ErrorBanner = ({ errors: allErrors }: EditableQueryTextProps) => {
   const warnings = allErrors.filter(error => error.type === 'warning');
   const errors = allErrors.filter(error => error.type === 'error');
   return (
