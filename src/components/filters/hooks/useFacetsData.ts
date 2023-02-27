@@ -95,7 +95,7 @@ export const useFacetsData = ({
           const empty = {
             count: response?.total || 0,
             term: '-_exists_',
-            displayAs: 'None',
+            displayAs: 'Not Specified',
             facet,
           };
           // add facet term for "empty" property

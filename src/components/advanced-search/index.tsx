@@ -20,7 +20,7 @@ import {
 import { useRouter } from 'next/router';
 import { ModalProps } from '@chakra-ui/react';
 import { AdvancedSearchModal } from './components/Modal';
-import { OpenModal } from './components/buttons';
+import { AdvancedSearchOpen } from './components/buttons';
 import {
   buildTree,
   TreeItem,
@@ -382,7 +382,7 @@ export const AdvancedSearchWithModal: React.FC<
 
   return (
     <>
-      <OpenModal onClick={onOpen} {...buttonProps} />
+      <AdvancedSearchOpen onClick={onOpen} {...buttonProps} />
 
       <AdvancedSearchModal
         isOpen={isOpen}

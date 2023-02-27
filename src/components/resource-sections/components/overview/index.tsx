@@ -119,7 +119,7 @@ const Overview: React.FC<OverviewProps> = ({
   }) => {
     if (url) {
       return (
-        <Link href={url} isExternal={isExternal}>
+        <Link href={url} target={isExternal ? '_blank' : '_self'}>
           {content}
         </Link>
       );
@@ -589,7 +589,11 @@ const Overview: React.FC<OverviewProps> = ({
                 <ListItem>
                   <strong>DOI: </strong>
                   <StatContent
-                    url={doi?.includes('http') ? doi : ''}
+                    url={
+                      doi?.includes('http') || doi?.includes('doi.org')
+                        ? doi
+                        : ''
+                    }
                     content={doi}
                     isExternal
                   />
