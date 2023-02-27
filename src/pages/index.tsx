@@ -34,8 +34,8 @@ import {
 } from 'src/components/pie-chart';
 import { assetPrefix } from 'next.config';
 import NextLink from 'next/link';
-import { AdvancedSearchWithModal } from 'src/components/advanced-search';
 import { SearchBarWithDropdown } from 'src/components/search-bar';
+import { AdvancedSearchOpen } from 'src/components/advanced-search/components/buttons';
 
 const sample_queries = [
   {
@@ -196,14 +196,17 @@ const Home: NextPage = () => {
         >
           <>
             <Flex w='100%' justifyContent='flex-end' mb={2}>
-              <AdvancedSearchWithModal
-                buttonProps={{
-                  variant: 'outline',
-                  bg: 'whiteAlpha.500',
-                  color: 'white',
-                  _hover: { bg: 'whiteAlpha.800', color: 'primary.600' },
-                }}
-              />
+              <NextLink href={{ pathname: 'advanced-search' }} passHref>
+                <Box>
+                  <AdvancedSearchOpen
+                    onClick={() => {}}
+                    variant='outline'
+                    bg='whiteAlpha.500'
+                    color='white'
+                    _hover={{ bg: 'whiteAlpha.800', color: 'primary.600' }}
+                  />
+                </Box>
+              </NextLink>
             </Flex>
             <SearchBarWithDropdown
               placeholder='Search for datasets or tools'
@@ -257,48 +260,6 @@ const Home: NextPage = () => {
             </Flex>
           </>
         </PageHeader>
-
-        {/* NIAID Data Ecosystem section */}
-        <PageContent justifyContent='center' bg='white' minH='unset'>
-          <StyledSection
-            id='nde'
-            alignItems='center'
-            flexDirection='column'
-            maxWidth={['100%', '100%', '750px']}
-          >
-            <StyledSectionHeading>
-              {homepageCopy.sections[1].heading}
-            </StyledSectionHeading>
-
-            <StyledText
-              textAlign={['start', 'center']}
-              mt={4}
-              fontSize={['lg', 'xl']}
-              lineHeight='taller'
-              maxW='unset'
-            >
-              {homepageCopy.sections[1].body}
-            </StyledText>
-            <StyledSectionButtonGroup variant='solid' justifyContent='center'>
-              {homepageCopy.sections[1]?.routes &&
-                homepageCopy.sections[1].routes.map(route => {
-                  return (
-                    <NextLink
-                      key={route.title}
-                      href={{
-                        pathname: route.path,
-                      }}
-                      passHref
-                    >
-                      <Button w='100%' my={2}>
-                        {route.title}
-                      </Button>
-                    </NextLink>
-                  );
-                })}
-            </StyledSectionButtonGroup>
-          </StyledSection>
-        </PageContent>
 
         {/* Display stats about the Biothings API */}
         {!error && (
@@ -402,11 +363,11 @@ const Home: NextPage = () => {
                 textAlign={['start', 'start', 'center', 'start']}
               >
                 <StyledSectionHeading mt={[4, 6]}>
-                  {homepageCopy.sections[2].heading}
+                  {homepageCopy.sections[1].heading}
                 </StyledSectionHeading>
-                <StyledText>{homepageCopy.sections[2].body}</StyledText>
-                {homepageCopy.sections[2]?.routes &&
-                  homepageCopy.sections[2].routes.map(
+                <StyledText>{homepageCopy.sections[1].body}</StyledText>
+                {homepageCopy.sections[1]?.routes &&
+                  homepageCopy.sections[1].routes.map(
                     (route: {
                       title: string;
                       path: string;
