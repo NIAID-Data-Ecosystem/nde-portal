@@ -14,7 +14,10 @@ export const getTypeColor = (type: FormattedResource['type']) => {
     return;
   } else if (type.toLowerCase() === 'dataset') {
     return 'status.info';
-  } else if (type.toLowerCase().includes('tool')) {
+  } else if (
+    type.toLowerCase().includes('tool') ||
+    type.toLowerCase().includes('software')
+  ) {
     return 'primary.800';
   }
   return 'niaid.color';
