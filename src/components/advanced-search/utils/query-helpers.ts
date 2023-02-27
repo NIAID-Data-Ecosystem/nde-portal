@@ -227,7 +227,7 @@ export const convertQueryString2Object = (str: string) => {
 
         if (!Array.isArray(node[0])) {
           term = node[0]?.term || '';
-          querystring = node[0].querystring || '';
+          querystring = node[0].querystring || node[0]?.term || '';
           node_field = node[0].field;
         }
 

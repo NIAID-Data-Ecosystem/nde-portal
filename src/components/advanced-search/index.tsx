@@ -13,10 +13,7 @@ import {
   Heading,
   Icon,
   ListItem,
-  Tag,
-  TagLabel,
   Text,
-  Tooltip,
   UnorderedList,
   useDisclosure,
 } from 'nde-design-system';
@@ -46,7 +43,6 @@ import { AdvancedSearchFormContext, Search } from './components/Search';
 import { ResultsCount } from './components/ResultsCount';
 import SampleQueriesData from 'configs/sample-queries.json';
 import { EditableQueryText } from './components/EditableQueryText';
-import { ErrorMessages } from './components/ErrorMessages';
 import { SEARCH_TYPES_CONFIG } from './components/Search/search-types-config';
 import {
   QueryStringError,
@@ -55,6 +51,7 @@ import {
 import { validateQueryString } from './components/EditableQueryText/utils';
 import { useLocalStorage } from 'usehooks-ts';
 import { formatNumber } from 'src/utils/helpers';
+import { ErrorBanner } from '../error/ErrorBanner';
 
 interface AdvancedSearchProps {
   colorScheme?: string;
@@ -257,7 +254,7 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
           </Button>
         </Box>
 
-        <ErrorMessages errors={errors} setErrors={setErrors} />
+        <ErrorBanner errors={errors} setErrors={setErrors} />
         <Flex my={4} justifyContent='flex-end'>
           {renderButtonGroup && renderButtonGroup({ colorScheme })}
           {handleSubmit && (

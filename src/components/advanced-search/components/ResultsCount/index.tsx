@@ -1,10 +1,10 @@
 import { Flex, Heading, Spinner } from 'nde-design-system';
 import { useQuery } from 'react-query';
+import { getQueryStatusError } from 'src/components/error/utils';
 import { fetchSearchResults } from 'src/utils/api';
 import { FetchSearchResultsResponse } from 'src/utils/api/types';
 import { formatNumber } from 'src/utils/helpers';
 import { QueryStringError } from '../../utils/validation-checks';
-import { getErrorMessage } from '../EditableQueryText/utils';
 
 interface ResultsCountProps {
   queryString: string;
@@ -45,7 +45,7 @@ export const ResultsCount: React.FC<ResultsCountProps> = ({
       enabled: !!queryString,
       retry: 1,
       onError: error => {
-        const errorMessage = getErrorMessage(
+        const errorMessage = getQueryStatusError(
           error as unknown as { status: string },
         );
         handleErrors(errorMessage ? [errorMessage] : []);

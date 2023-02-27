@@ -32,41 +32,18 @@ Config for the naming/text of a filter.
 export const filtersConfig: FiltersConfigProps = {
   date: { name: 'Date ', glyph: 'date', property: 'date', isDefaultOpen: true },
   '@type': { name: 'Type', isDefaultOpen: true },
-  'includedInDataCatalog.name': {
-    name: 'Source',
-    glyph: 'info',
-    property: 'includedInDataCatalog',
-  },
-  keywords: {
-    name: 'Keywords',
-    glyph: 'info',
-    property: 'keywords',
-  },
-  'measurementTechnique.name': {
-    name: 'Measurement Technique',
-    glyph: 'measurementTechnique',
-    property: 'measurementTechnique',
-  },
-  variableMeasured: {
-    name: 'Variable Measured',
-    glyph: 'variableMeasured',
-    property: 'variableMeasured',
-  },
-  'funding.funder.name': {
-    name: 'Funding',
-    glyph: 'funding',
-    property: 'funding',
-  },
   'healthCondition.name': {
     name: 'Health Condition',
     glyph: 'healthCondition',
     property: 'healthCondition',
   },
+
   'infectiousAgent.name': {
     name: 'Pathogen',
     glyph: 'infectiousAgent',
     property: 'infectiousAgent',
   },
+
   'species.name': { name: 'Species', glyph: 'species', property: 'species' },
   applicationCategory: {
     name: 'Software Category',
@@ -77,6 +54,31 @@ export const filtersConfig: FiltersConfigProps = {
     name: 'Programming Language',
     glyph: 'programmingLanguage',
     property: 'programmingLanguage',
+  },
+  'includedInDataCatalog.name': {
+    name: 'Source',
+    glyph: 'info',
+    property: 'includedInDataCatalog',
+  },
+  'funding.funder.name': {
+    name: 'Funding',
+    glyph: 'funding',
+    property: 'funding',
+  },
+  // conditionsOfAccess: {
+  //   name: 'Conditions of Access',
+  //   glyph: '',
+  //   property: 'conditionsOfAccess',
+  // },
+  variableMeasured: {
+    name: 'Variable Measured',
+    glyph: 'variableMeasured',
+    property: 'variableMeasured',
+  },
+  'measurementTechnique.name': {
+    name: 'Measurement Technique',
+    glyph: 'measurementTechnique',
+    property: 'measurementTechnique',
   },
 };
 
