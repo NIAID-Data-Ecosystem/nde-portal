@@ -1,5 +1,5 @@
 {
-  "href": "https://data-staging.niaid.nih.gov/",
+  "href": "/",
   "routes": [
     { "label": "Home", "href": "/" },
     { "label": "Search", "href": "/search" },

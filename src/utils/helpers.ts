@@ -121,6 +121,8 @@ export const formatDOI = (doi: FormattedResource['doi']) => {
   }
   if (doi.includes('https://doi.org/')) {
     return doi?.split('https://doi.org/')[1];
+  } else if (doi.includes('doi.org/')) {
+    return doi?.split('doi.org/')[1];
   }
   return doi;
 };

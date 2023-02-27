@@ -35,7 +35,7 @@ export const SortResults: React.FC<SortResultsProps> = ({
   */
   const getTooltip = (sortBy: SortOptionsInterface['sortBy']) => {
     if (sortBy === '_score') {
-      return 'Sort by relevancy.';
+      return 'Sort by relevancy (field name is boosted).';
     } else if (sortBy === 'date') {
       return 'Sort by most recent activity (created, published or modified).';
     } else if (sortBy === 'name.raw') {

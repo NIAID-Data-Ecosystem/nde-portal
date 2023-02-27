@@ -82,7 +82,7 @@ export const FilterTags: React.FC<FilterTags> = ({
         return values.map(v => {
           let value = v || '';
           if (typeof v === 'object' && Object.keys(v)[0].includes('exists')) {
-            value = 'None';
+            value = 'Not Specified';
           }
 
           return (

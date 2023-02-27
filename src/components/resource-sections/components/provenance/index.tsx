@@ -1,8 +1,6 @@
 import React from 'react';
 import {
   Box,
-  Button,
-  Flex,
   Heading,
   Image,
   Link,
@@ -16,6 +14,7 @@ import { getRepositoryImage } from 'src/utils/helpers';
 import { assetPrefix } from 'next.config';
 import { formatDate } from 'src/utils/api/helpers';
 import StatField from '../overview/components/stat-field';
+import { ExternalSourceButton } from 'src/components/external-buttons/index.';
 
 interface Provenance {
   isLoading: boolean;
@@ -32,37 +31,30 @@ const Provenance: React.FC<Provenance> = ({
   sdPublisher,
   curatedBy,
 }) => {
-  const imageURL =
-    includedInDataCatalog?.name &&
-    getRepositoryImage(includedInDataCatalog.name);
-
+  console.log(includedInDataCatalog, curatedBy);
   return (
     <Skeleton isLoaded={!isLoading} display='flex' flexWrap='wrap'>
-      <Stack spacing={2} alignItems='flex-start' my={4}>
+      <Stack spacing={2} alignItems='flex-start' m={4} w='100%'>
         <Heading as='h3' size='xs' color='gray.700' lineHeight='short'>
           Repository Information
         </Heading>
-        {/* Source where data is retrieved from */}
+
         {includedInDataCatalog?.name ? (
           <StatField label='Provided By' isLoading={isLoading}>
             <dd>
-              {imageURL && (
-                <Image
-                  h='50px'
-                  objectFit='contain'
-                  my={[2, 4]}
-                  src={`${assetPrefix || ''}${imageURL}`}
-                  alt='Data source logo'
-                />
-              )}
+              {/* Source where data is retrieved from */}
               {includedInDataCatalog.url ? (
-                <Link
-                  href={includedInDataCatalog.url}
-                  target='_blank'
-                  isExternal
-                >
-                  {includedInDataCatalog.name}
-                </Link>
+                <ExternalSourceButton
+                  w='100%'
+                  alt='Data source name'
+                  src={
+                    getRepositoryImage(includedInDataCatalog.name) || undefined
+                  }
+                  colorScheme='secondary'
+                  href={url || undefined}
+                  sourceHref={includedInDataCatalog?.url}
+                  name={'Access Data'}
+                ></ExternalSourceButton>
               ) : (
                 <Text>{includedInDataCatalog.name}</Text>
               )}
@@ -102,27 +94,10 @@ const Provenance: React.FC<Provenance> = ({
             <dd>{formatDate(includedInDataCatalog.versionDate)} </dd>
           </StatField>
         )}
-
-        {url && (
-          <Button
-            colorScheme='primary'
-            variant='outline'
-            href={url}
-            h='unset'
-            isExternal
-            size='sm'
-          >
-            <Flex alignItems='center' direction={['column', 'row']}>
-              <Text color='inherit' whiteSpace='normal'>
-                View data in source repository
-              </Text>
-            </Flex>
-          </Button>
-        )}
       </Stack>
 
       {curatedBy && (
-        <Box my={4}>
+        <Box m={4}>
           <Heading as='h3' size='xs' color='gray.700' lineHeight='short'>
             Curation Information
           </Heading>
@@ -133,11 +108,43 @@ const Provenance: React.FC<Provenance> = ({
             {(curatedBy?.name || curatedBy?.url) && (
               <StatField label='Curated by' isLoading={isLoading}>
                 {curatedBy.url ? (
-                  <Link href={curatedBy.url} isExternal whiteSpace='nowrap'>
-                    {curatedBy?.name || curatedBy.url}
+                  <Link
+                    href={curatedBy.url}
+                    target='_blank'
+                    whiteSpace='nowrap'
+                  >
+                    {/* {curatedBy?.name || curatedBy.url} */}
+
+                    {curatedBy?.name && getRepositoryImage(curatedBy.name) ? (
+                      <Image
+                        h='50px'
+                        objectFit='contain'
+                        my={[2, 4]}
+                        src={`${assetPrefix || ''}${getRepositoryImage(
+                          curatedBy.name,
+                        )}`}
+                        alt='Data source logo'
+                      />
+                    ) : (
+                      curatedBy?.name || curatedBy.url
+                    )}
                   </Link>
                 ) : (
-                  <> {curatedBy?.name}</>
+                  <>
+                    {curatedBy?.name && getRepositoryImage(curatedBy.name) ? (
+                      <Image
+                        h='50px'
+                        objectFit='contain'
+                        my={[2, 4]}
+                        src={`${assetPrefix || ''}${getRepositoryImage(
+                          curatedBy.name,
+                        )}`}
+                        alt='Data source logo'
+                      />
+                    ) : (
+                      curatedBy?.name || curatedBy.url
+                    )}
+                  </>
                 )}
               </StatField>
             )}
