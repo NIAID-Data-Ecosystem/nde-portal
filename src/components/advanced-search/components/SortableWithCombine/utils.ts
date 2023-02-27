@@ -110,6 +110,7 @@ export function buildTree(flattenedItems: FlattenedItem[]): TreeItems {
     children: [],
     value: {
       ...item.value,
+      querystring: item.value.querystring || item.value.term,
       union: getUnionValue(flattenedItems, item),
     },
   }));
