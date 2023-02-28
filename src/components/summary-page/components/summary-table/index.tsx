@@ -139,7 +139,7 @@ export const SummaryTable: React.FC<SummaryTableProps> = ({
   }
 
   const columns = [
-    { key: '@type', title: 'type', hasSort: true },
+    // { key: '@type', title: 'type', hasSort: true },
     { key: 'name', title: 'Name', hasSort: true },
     { key: 'author', title: 'Author' },
     { key: 'citation', title: 'Associated Citations' },

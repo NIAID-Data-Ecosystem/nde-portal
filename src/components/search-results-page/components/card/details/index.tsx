@@ -38,8 +38,8 @@ const CardDetails: React.FC<CardDetailsProps> = ({ data }) => {
     infectiousAgent,
     healthCondition,
     usageInfo,
-    applicationCategory,
-    programmingLanguage,
+    // applicationCategory,
+    // programmingLanguage,
   } = data || {};
 
   const paddingCard = [4, 6, 8, 10];
@@ -81,8 +81,8 @@ const CardDetails: React.FC<CardDetailsProps> = ({ data }) => {
         <Badge glyph='infectiousAgent' value={infectiousAgent} />
         <Badge glyph='healthCondition' value={healthCondition} />
         <Badge glyph='species' value={species} />
-        <Badge glyph='applicationCategory' value={applicationCategory} />{' '}
-        <Badge glyph='programmingLanguage' value={programmingLanguage} />
+        {/* <Badge glyph='applicationCategory' value={applicationCategory} />{' '}
+        <Badge glyph='programmingLanguage' value={programmingLanguage} /> */}
       </Flex>
     );
   };
@@ -331,7 +331,7 @@ const CardDetails: React.FC<CardDetailsProps> = ({ data }) => {
                   </MetadataProperty>
 
                   {/* Application Category */}
-                  <MetadataProperty
+                  {/* <MetadataProperty
                     id={`applicationCategory-${id}`}
                     label='Software Category'
                     glyph='applicationCategory'
@@ -348,10 +348,10 @@ const CardDetails: React.FC<CardDetailsProps> = ({ data }) => {
                         })}
                       </UnorderedList>
                     )}
-                  </MetadataProperty>
+                  </MetadataProperty> */}
 
                   {/* Programming Language */}
-                  <MetadataProperty
+                  {/* <MetadataProperty
                     id={`programmingLanguage-${id}`}
                     label='Programming Language'
                     glyph='programmingLanguage'
@@ -368,7 +368,7 @@ const CardDetails: React.FC<CardDetailsProps> = ({ data }) => {
                         })}
                       </UnorderedList>
                     )}
-                  </MetadataProperty>
+                  </MetadataProperty> */}
                 </SimpleGrid>
               </AccordionPanel>
             </>

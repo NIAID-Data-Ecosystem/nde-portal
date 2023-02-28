@@ -31,7 +31,7 @@ Config for the naming/text of a filter.
 */
 export const filtersConfig: FiltersConfigProps = {
   date: { name: 'Date ', glyph: 'date', property: 'date', isDefaultOpen: true },
-  '@type': { name: 'Type', isDefaultOpen: true },
+  // '@type': { name: 'Type', isDefaultOpen: true },
   'healthCondition.name': {
     name: 'Health Condition',
     glyph: 'healthCondition',
@@ -45,16 +45,16 @@ export const filtersConfig: FiltersConfigProps = {
   },
 
   'species.name': { name: 'Species', glyph: 'species', property: 'species' },
-  applicationCategory: {
-    name: 'Software Category',
-    glyph: 'applicationCategory',
-    property: 'applicationCategory',
-  },
-  programmingLanguage: {
-    name: 'Programming Language',
-    glyph: 'programmingLanguage',
-    property: 'programmingLanguage',
-  },
+  // applicationCategory: {
+  //   name: 'Software Category',
+  //   glyph: 'applicationCategory',
+  //   property: 'applicationCategory',
+  // },
+  // programmingLanguage: {
+  //   name: 'Programming Language',
+  //   glyph: 'programmingLanguage',
+  //   property: 'programmingLanguage',
+  // },
   'includedInDataCatalog.name': {
     name: 'Source',
     glyph: 'info',
