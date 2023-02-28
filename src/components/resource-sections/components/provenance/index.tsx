@@ -31,7 +31,6 @@ const Provenance: React.FC<Provenance> = ({
   sdPublisher,
   curatedBy,
 }) => {
-  console.log(includedInDataCatalog, curatedBy);
   return (
     <Skeleton isLoaded={!isLoading} display='flex' flexWrap='wrap'>
       <Stack spacing={2} alignItems='flex-start' m={4} w='100%'>
