@@ -46,7 +46,7 @@ export const FiltersContainer: React.FC<FiltersContainerProps> = ({
   filtersConfig,
   removeAllFilters,
 }) => {
-  const [openSections, setOpenSections] = useState([]);
+  const [openSections, setOpenSections] = useState<number[]>([]);
   // Handle toggle open status of mobile filter
   const btnRef = React.useRef(null);
   const { isOpen, onOpen, onClose } = useDisclosure();
