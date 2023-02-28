@@ -10,8 +10,8 @@ export const Handle = React.memo(
         variant='ghost'
         bg={props.bg}
         color={props.color || 'gray.600'}
-        pl={1}
-        pr={1}
+        pl={[2, 1]}
+        pr={[2, 1]}
         mx={0.5}
         icon={
           <svg viewBox='0 0 20 20' width='15' fill='currentColor'>

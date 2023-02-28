@@ -115,16 +115,16 @@ const Home: NextPage = () => {
 
   interface Stats {
     datasets: Stat | null;
-    computationaltool: Stat | null;
+    // computationaltool: Stat | null;
     measurementTechnique: Stat | null;
     repositories: Stat | null;
   }
 
   const [stats, setStats] = useState<Stats>({
-    datasets: null,
-    computationaltool: null,
-    measurementTechnique: null,
     repositories: null,
+    datasets: null,
+    // computationaltool: null,
+    measurementTechnique: null,
   });
 
   const { isLoading, error } = useQuery<
@@ -170,10 +170,10 @@ const Home: NextPage = () => {
           stats: sources,
         };
         stat = {
-          datasets: types.dataset,
-          computationaltool: types.computationaltool,
-          measurementTechnique,
           repositories,
+          datasets: types.dataset,
+          // computationaltool: types.computationaltool,
+          measurementTechnique,
         };
       }
 
@@ -209,15 +209,15 @@ const Home: NextPage = () => {
               </NextLink>
             </Flex>
             <SearchBarWithDropdown
-              placeholder='Search for datasets or tools'
-              ariaLabel='Search for datasets or tools'
+              placeholder='Search for datasets'
+              ariaLabel='Search for datasets'
               size='md'
             />
 
             {/* [NOTE]: Test with autocomplete in the future */}
             {/* <SearchWithPredictiveText
-              ariaLabel='Search for datasets or tools'
-              placeholder='Search for datasets or tools'
+              ariaLabel='Search for datasets'
+              placeholder='Search for datasets'
               size='md'
               handleSubmit={(stringValue, __, data) => {
                 if (data && data.id) {

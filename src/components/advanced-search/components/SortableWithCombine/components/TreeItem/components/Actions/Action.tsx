@@ -14,8 +14,8 @@ export const Action = React.memo((props: ActionProps) => {
       variant='ghost'
       bg={props.bg}
       color={props.color || 'gray.600'}
-      pl={1}
-      pr={1}
+      pl={[2, 1]}
+      pr={[2, 1]}
       mx={0.5}
       icon={props.icon}
       onClick={() => props.handleClick(props.id)}

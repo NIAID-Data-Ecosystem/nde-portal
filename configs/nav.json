@@ -25,7 +25,7 @@
         },
         {
           "label": "Schemas",
-          "subLabel": "Dataset and Computational Tool schemas",
+          "subLabel": "Information about the API schema",
           "href": "https://discovery.biothings.io/view/nde",
           "isExternal": true
         },

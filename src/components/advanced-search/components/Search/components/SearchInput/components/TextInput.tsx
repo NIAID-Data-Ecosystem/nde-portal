@@ -55,8 +55,8 @@ export const TextInput: React.FC<TextInputProps> = ({
     <Box width='100%'>
       {/* Input field with suggestions matching the search term. */}
       <PredictiveSearch
-        ariaLabel='Search for datasets or tools'
-        placeholder='Search for datasets or tools'
+        ariaLabel='Search for datasets'
+        placeholder='Search for datasets'
         colorScheme={colorScheme}
         size={size}
         inputValue={stringInputValue}
