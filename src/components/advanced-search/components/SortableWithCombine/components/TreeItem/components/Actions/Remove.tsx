@@ -16,8 +16,8 @@ export const Remove: React.FC<RemoveProps> = React.memo(props => {
       variant='ghost'
       bg={props.bg}
       color={props.color || 'gray.600'}
-      pl={1}
-      pr={1}
+      pl={[2, 1]}
+      pr={[2, 1]}
       mx={0.5}
       icon={<Icon as={IoClose} boxSize={4} transition='transform 250ms ease' />}
       onClick={() => props.handleClick && props.handleClick(props.id)}

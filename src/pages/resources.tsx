@@ -150,7 +150,7 @@ const ResourcePage: NextPage = props => {
                 <Box
                   flex={1}
                   position='sticky'
-                  top='80px'
+                  top='0px'
                   w='100%'
                   h='100%'
                   minW='350px'

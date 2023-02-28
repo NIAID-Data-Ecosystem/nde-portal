@@ -141,7 +141,7 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
   return (
     <>
       {/* Search For Query Term */}
-      <Box m={2} w='100%'>
+      <Box m={{ base: 0, sm: 2 }} w='100%'>
         <Heading size='sm' fontWeight='medium'>
           Add terms to the query builder.
         </Heading>
@@ -276,7 +276,10 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
           <Accordion my={4} defaultIndex={[0]} allowToggle>
             <AccordionItem>
               <h2>
-                <AccordionButton>
+                <AccordionButton
+                  _hover={{ bg: 'transparent' }}
+                  _focus={{ boxShadow: 'none' }}
+                >
                   <Text
                     size='sm'
                     fontWeight='semibold'
@@ -291,7 +294,7 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
                   <AccordionIcon />
                 </AccordionButton>
               </h2>
-              <AccordionPanel>
+              <AccordionPanel px={[1, 4]}>
                 <UnorderedList ml={0}>
                   {searchHistory.reverse().map((query, index) => {
                     return (
@@ -304,7 +307,7 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
                         }}
                         _hover={{
                           cursor: 'pointer',
-                          p: {
+                          ['.hist-querystring']: {
                             textDecoration: 'underline',
                           },
                         }}
@@ -313,6 +316,7 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
                         my={0.5}
                       >
                         <Flex
+                          className='hist-row'
                           bg={index % 2 ? 'whiteAlpha.800' : 'whiteAlpha.900'}
                           flexDirection={{ base: 'column', md: 'row-reverse' }}
                           alignItems={{ base: 'flex-start', md: 'center' }}
@@ -348,6 +352,7 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
                           </Flex>
                           <Box>
                             <Text
+                              className='hist-querystring'
                               fontSize='xs'
                               fontWeight='medium'
                               noOfLines={3}

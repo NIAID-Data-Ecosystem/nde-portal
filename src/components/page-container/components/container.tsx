@@ -36,8 +36,6 @@ export const PageContainer: React.FC<PageContainerProps> = ({
   const topNavigation = navConfig as NavigationProps['navigation'];
   const footerNavigation = footerConfig as FooterProps['navigation'];
 
-  const ref = useRef<HTMLDivElement>(null);
-
   const prefixPortalRoutes = (routes: FooterItem[]): FooterItem[] => {
     return routes.map(r => {
       if (r?.routes) {
@@ -73,15 +71,7 @@ export const PageContainer: React.FC<PageContainerProps> = ({
       <Flex as='main' w='100%' flexDirection='column' minW={300}>
         {topNavigation && hasNavigation && (
           // Sticky Nav Bar.
-          <Box
-            id='nav-wrapper'
-            ref={ref}
-            position='sticky'
-            top={0}
-            w='100%'
-            zIndex='sticky'
-            minW={300}
-          >
+          <Box id='nav-wrapper' w='100%' minW={300}>
             <Navigation
               navigation={{
                 ...topNavigation,

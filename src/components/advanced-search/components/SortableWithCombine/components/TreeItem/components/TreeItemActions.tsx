@@ -57,8 +57,6 @@ export const TreeItemActions = React.memo(
             variant='ghost'
             color='niaid.placeholder'
             mx={1}
-            pl={1}
-            pr={1}
             icon={collapseIcon}
           />
         )}
@@ -74,8 +72,6 @@ export const TreeItemActions = React.memo(
             variant='ghost'
             color='niaid.placeholder'
             mx={1}
-            pl={1}
-            pr={1}
             icon={<Icon as={FaRegEdit} />}
           />
         )}

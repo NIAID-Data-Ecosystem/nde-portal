@@ -250,11 +250,12 @@ export function SortableWithCombine({
   return (
     <Box
       bg='gray.100'
-      p={4}
+      p={{ base: 1, sm: 4 }}
       w='100%'
       overflow='auto'
       border='2px solid'
       borderColor='gray.100'
+      userSelect={{ base: 'none', sm: 'auto' }}
     >
       <Box minW='400px'>
         <DndContext
@@ -268,7 +269,7 @@ export function SortableWithCombine({
           onDragEnd={handleDragEnd}
           onDragCancel={handleDragCancel}
         >
-          <UnorderedList>
+          <UnorderedList ml={0}>
             <SortableContext
               items={sortedIds}
               strategy={verticalListSortingStrategy}

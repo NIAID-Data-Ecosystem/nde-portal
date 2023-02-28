@@ -274,7 +274,7 @@ const SearchResultsPage = () => {
           <ResultsCount total={total} isLoading={isLoading} />
           <Box my={2}>
             <AdvancedSearchWithModal
-              querystring={queryString}
+              querystring={queryString === '__all__' ? '' : queryString}
               buttonProps={{ children: 'View query in Advanced Search' }}
             />
           </Box>

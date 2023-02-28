@@ -58,7 +58,7 @@ export const RadioSelect = ({
         onToggle={disclosure.onToggle}
         onClose={disclosure.onClose}
       >
-        <OptionsList zIndex='popover' w='unset' minW='100%'>
+        <OptionsList zIndex='tooltip' w='unset' minW='100%'>
           {options.map(option => {
             return (
               <RadioTooltip
