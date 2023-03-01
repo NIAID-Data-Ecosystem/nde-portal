@@ -75,159 +75,160 @@ export const Chart: React.FC<NetworkProps> = ({
   updateFilters,
   setHovered,
 }) => {
-  // User toggles checkbox to show a more detailed view(i.e. show all secondary nodes).
-  const [isClusterOpen, setIsClusterOpen] = useState(false);
+  return <div>Chart</div>;
+  // // User toggles checkbox to show a more detailed view(i.e. show all secondary nodes).
+  // const [isClusterOpen, setIsClusterOpen] = useState(false);
 
-  // Strings representing each facet shown in the viz. Note that group two items are grouped/faceted by group one.
-  const [primaryKey] = keys;
-  const svgRef = useRef(null);
-  const clusterRef = useRef(null);
-  const wrapperRef = useRef(null);
-  const dimensions = useMemo(() => ({ width: 600, height: 600 }), []);
+  // // Strings representing each facet shown in the viz. Note that group two items are grouped/faceted by group one.
+  // const [primaryKey] = keys;
+  // const svgRef = useRef(null);
+  // const clusterRef = useRef(null);
+  // const wrapperRef = useRef(null);
+  // const dimensions = useMemo(() => ({ width: 600, height: 600 }), []);
 
-  /****
-   * Process Data
-   * Format data for packing in a circular packing format.
-   */
-  const packData = useCallback(
-    (data: { name: string; children: Data[] }) =>
-      d3
-        .pack()
-        .size([dimensions.width, dimensions.height])
-        .padding(parameters.padding)(
-        d3.hierarchy(data).sum((d: any) => {
-          // helpers roundCount to round circle radius
-          return d.count;
-        }),
-      ) as d3.HierarchyCircularNode<Datum>,
-    [dimensions.height, dimensions.width],
-  );
+  // /****
+  //  * Process Data
+  //  * Format data for packing in a circular packing format.
+  //  */
+  // // const packData = useCallback(
+  // //   (data: { name: string; children: Data[] }) =>
+  // //     d3
+  // //       .pack()
+  // //       .size([dimensions.width, dimensions.height])
+  // //       .padding(parameters.padding)(
+  // //       d3.hierarchy(data).sum((d: any) => {
+  // //         // helpers roundCount to round circle radius
+  // //         return d.count;
+  // //       }),
+  // //     ) as d3.HierarchyCircularNode<Datum>,
+  // //   [dimensions.height, dimensions.width],
+  // // );
 
-  const root: d3.HierarchyCircularNode<Datum> = useMemo(
-    () =>
-      packData({
-        name: 'root',
-        children: data,
-      }),
-    [data, packData],
-  );
+  // const root: d3.HierarchyCircularNode<Datum> = useMemo(
+  //   () =>
+  //     packData({
+  //       name: 'root',
+  //       children: data,
+  //     }),
+  //   [data, packData],
+  // );
 
-  /****
-   * Render SVG elements
-   */
+  // /****
+  //  * Render SVG elements
+  //  */
 
-  const chart_data = useMemo(() => root.descendants().slice(1), [root]); // removes root overlay circle from data.
+  // const chart_data = useMemo(() => root.descendants().slice(1), [root]); // removes root overlay circle from data.
 
-  // Group all nodes by primary value.
-  const nodesGroupedByPrimaryName = useMemo(() => {
-    const scaleRadius = (r: number) => r / parameters.scaleFactor;
-    return d3.group(
-      chart_data
-        .filter(d => d.depth === 2)
-        .map(d => {
-          return {
-            ...d,
-            r: scaleRadius(d.r),
-            x: d.parent!.x - root.x,
-            y: d.parent!.y - root.y,
-          };
-        }),
-      d => (d.data.type === primaryKey ? d.data.name : d.data.primary?.name),
-    );
-  }, [chart_data, primaryKey, root.x, root.y]);
+  // // Group all nodes by primary value.
+  // const nodesGroupedByPrimaryName = useMemo(() => {
+  //   const scaleRadius = (r: number) => r / parameters.scaleFactor;
+  //   return d3.group(
+  //     chart_data
+  //       .filter(d => d.depth === 2)
+  //       .map(d => {
+  //         return {
+  //           ...d,
+  //           r: scaleRadius(d.r),
+  //           x: d.parent!.x - root.x,
+  //           y: d.parent!.y - root.y,
+  //         };
+  //       }),
+  //     d => (d.data.type === primaryKey ? d.data.name : d.data.primary?.name),
+  //   );
+  // }, [chart_data, primaryKey, root.x, root.y]);
 
-  return (
-    <Box p={6} flex={2}>
-      <div
-        ref={wrapperRef}
-        style={{
-          width: '100%',
-          display: 'flex',
-          justifyContent: 'center',
-          maxWidth: '500px',
-        }}
-      >
-        <svg
-          id='svg-node'
-          ref={svgRef}
-          viewBox={`${-dimensions.width / 2} ${-dimensions.height / 2} ${
-            dimensions.width
-          } ${dimensions.height}`}
-          style={{ display: 'block' }}
-        >
-          <g id='network-chart'>
-            {/* Map over primary values */}
-            {chart_data
-              .filter(d => d.depth === 1)
-              .map(node => {
-                if (!node.parent) {
-                  return;
-                }
+  // return (
+  //   <Box p={6} flex={2}>
+  //     <div
+  //       ref={wrapperRef}
+  //       style={{
+  //         width: '100%',
+  //         display: 'flex',
+  //         justifyContent: 'center',
+  //         maxWidth: '500px',
+  //       }}
+  //     >
+  //       <svg
+  //         id='svg-node'
+  //         ref={svgRef}
+  //         viewBox={`${-dimensions.width / 2} ${-dimensions.height / 2} ${
+  //           dimensions.width
+  //         } ${dimensions.height}`}
+  //         style={{ display: 'block' }}
+  //       >
+  //         <g id='network-chart'>
+  //           {/* Map over primary values */}
+  //           {chart_data
+  //             .filter(d => d.depth === 1)
+  //             .map(node => {
+  //               if (!node.parent) {
+  //                 return;
+  //               }
 
-                const primaryNode = nodesGroupedByPrimaryName
-                  .get(node.data.name)
-                  ?.filter(d => d.data.type === primaryKey)[0];
+  //               const primaryNode = nodesGroupedByPrimaryName
+  //                 .get(node.data.name)
+  //                 ?.filter(d => d.data.type === primaryKey)[0];
 
-                const isPrimarySelected = filters[primaryKey].includes(
-                  node.data.name,
-                );
+  //               const isPrimarySelected = filters[primaryKey].includes(
+  //                 node.data.name,
+  //               );
 
-                return (
-                  <g
-                    id={`${formatClassName(node.data.name)}`}
-                    key={`${node.data.name}`}
-                    className='grouped-nodes'
-                    ref={clusterRef}
-                  >
-                    {/* circle shape wrapping the primary and secondary group nodes. */}
-                    {primaryNode && (
-                      <WrapperNode
-                        node={primaryNode}
-                        filters={filters}
-                        r={node.r}
-                        updateFilters={updateFilters}
-                        setHovered={setHovered}
-                      />
-                    )}
-                    {/* Display nodes from secondary group */}
-                    {primaryNode && nodesGroupedByPrimaryName && (
-                      <SecondaryNodes
-                        nodes={
-                          nodesGroupedByPrimaryName.get(node.data.name) || []
-                        }
-                        primaryNode={primaryNode}
-                        isClusterOpen={isClusterOpen || isPrimarySelected}
-                        filters={filters}
-                        updateFilters={updateFilters}
-                        setHovered={setHovered}
-                      />
-                    )}
+  //               return (
+  //                 <g
+  //                   id={`${formatClassName(node.data.name)}`}
+  //                   key={`${node.data.name}`}
+  //                   className='grouped-nodes'
+  //                   ref={clusterRef}
+  //                 >
+  //                   {/* circle shape wrapping the primary and secondary group nodes. */}
+  //                   {primaryNode && (
+  //                     <WrapperNode
+  //                       node={primaryNode}
+  //                       filters={filters}
+  //                       r={node.r}
+  //                       updateFilters={updateFilters}
+  //                       setHovered={setHovered}
+  //                     />
+  //                   )}
+  //                   {/* Display nodes from secondary group */}
+  //                   {primaryNode && nodesGroupedByPrimaryName && (
+  //                     <SecondaryNodes
+  //                       nodes={
+  //                         nodesGroupedByPrimaryName.get(node.data.name) || []
+  //                       }
+  //                       primaryNode={primaryNode}
+  //                       isClusterOpen={isClusterOpen || isPrimarySelected}
+  //                       filters={filters}
+  //                       updateFilters={updateFilters}
+  //                       setHovered={setHovered}
+  //                     />
+  //                   )}
 
-                    {/* Display nodes from primary group */}
-                    {primaryNode && (
-                      <PrimaryNodes
-                        isSelected={isPrimarySelected}
-                        node={primaryNode}
-                        filters={filters}
-                        updateFilters={updateFilters}
-                        setHovered={setHovered}
-                      />
-                    )}
-                  </g>
-                );
-              })}
-          </g>
-          <g className='primary-label'></g>
-        </svg>
-      </div>
-      <Checkbox
-        isChecked={!isClusterOpen}
-        mt={4}
-        onChange={() => setIsClusterOpen(!isClusterOpen)}
-        color='whiteAlpha.800'
-      >
-        Show {options[primaryKey]['name']} nodes only
-      </Checkbox>
-    </Box>
-  );
+  //                   {/* Display nodes from primary group */}
+  //                   {primaryNode && (
+  //                     <PrimaryNodes
+  //                       isSelected={isPrimarySelected}
+  //                       node={primaryNode}
+  //                       filters={filters}
+  //                       updateFilters={updateFilters}
+  //                       setHovered={setHovered}
+  //                     />
+  //                   )}
+  //                 </g>
+  //               );
+  //             })}
+  //         </g>
+  //         <g className='primary-label'></g>
+  //       </svg>
+  //     </div>
+  //     <Checkbox
+  //       isChecked={!isClusterOpen}
+  //       mt={4}
+  //       onChange={() => setIsClusterOpen(!isClusterOpen)}
+  //       color='whiteAlpha.800'
+  //     >
+  //       Show {options[primaryKey]['name']} nodes only
+  //     </Checkbox>
+  //   </Box>
+  // );
 };
