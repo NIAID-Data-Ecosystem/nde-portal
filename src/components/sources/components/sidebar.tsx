@@ -1,18 +1,17 @@
 import React from 'react';
-import { Metadata } from 'src/utils/api/types';
 import { Box, Heading, ListItem, Text } from 'nde-design-system';
 import { formatDate } from 'src/utils/api/helpers';
+import { SourceResponse } from 'src/pages/sources';
 
 interface Sidebar {
-  data: Metadata;
+  data: SourceResponse[];
 }
 
 const Sidebar: React.FC<Sidebar> = ({ data }) => {
   const sourceNames = [];
-
-  for (const source in data.src) {
-    if (data.src[source]) {
-      sourceNames.push([data.src[source]?.sourceInfo?.name || source, source]);
+  for (const source in data) {
+    if (data[source]) {
+      sourceNames.push([data[source]?.name || source, source]);
     }
   }
 
@@ -35,7 +34,7 @@ const Sidebar: React.FC<Sidebar> = ({ data }) => {
                 {name} <br />
               </Heading>
               <Text fontWeight='medium' fontSize='sm'>
-                Latest Release {formatDate(data.src[id].version)}
+                Latest Release {formatDate(data[+id].dateModified)}
               </Text>
             </Box>
           </ListItem>
