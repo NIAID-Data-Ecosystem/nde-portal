@@ -39,7 +39,7 @@ const Provenance: React.FC<Provenance> = ({
         </Heading>
 
         {includedInDataCatalog?.name ? (
-          <StatField label='Provided By' isLoading={isLoading}>
+          <StatField label='' isLoading={isLoading}>
             <dd>
               {/* Source where data is retrieved from */}
               {includedInDataCatalog.url ? (
@@ -53,14 +53,29 @@ const Provenance: React.FC<Provenance> = ({
                   href={url || undefined}
                   sourceHref={includedInDataCatalog?.url}
                   name={'Access Data'}
-                ></ExternalSourceButton>
+                />
               ) : (
-                <Text>{includedInDataCatalog.name}</Text>
+                <ExternalSourceButton
+                  w='100%'
+                  alt='Data source name'
+                  src={
+                    getRepositoryImage(includedInDataCatalog.name) || undefined
+                  }
+                  colorScheme='secondary'
+                  sourceHref={includedInDataCatalog?.url}
+                  name={'Access Data'}
+                />
               )}
             </dd>
           </StatField>
         ) : (
           <Text>No data available.</Text>
+        )}
+
+        {includedInDataCatalog?.name && (
+          <StatField label='Name' isLoading={isLoading}>
+            <dd>{includedInDataCatalog.name} </dd>
+          </StatField>
         )}
 
         {/* Original publisher of data */}
