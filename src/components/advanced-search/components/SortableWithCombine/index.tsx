@@ -252,12 +252,11 @@ export function SortableWithCombine({
       bg='gray.100'
       p={{ base: 1, sm: 4 }}
       w='100%'
-      overflow='auto'
       border='2px solid'
       borderColor='gray.100'
       userSelect={{ base: 'none', sm: 'auto' }}
     >
-      <Box minW='400px'>
+      <Box minW={{ base: 'unset', sm: '400px' }}>
         <DndContext
           accessibility={{ announcements }}
           measuring={measuring}

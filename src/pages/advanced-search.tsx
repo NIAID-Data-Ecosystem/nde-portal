@@ -18,6 +18,7 @@ const AdvancedSearchPage: NextPage = () => {
         flexDirection='column'
         alignItems='center'
         bg='#fff'
+        px={{ base: 0, sm: 6, lg: 10, xl: '5%' }}
       >
         <Box w='100%' maxW='1000px' mb={32}>
           <AdvancedSearch />
