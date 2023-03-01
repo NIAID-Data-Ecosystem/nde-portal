@@ -20,6 +20,7 @@ jobs:
         run: yarn run build
         env:
           README_API_KEY: ${{ secrets.README_API_KEY }}
+          GITHUB_API_KEY: ${{ secrets.GITHUB_API_KEY }}
       - name: sync s3
         uses: jakejarvis/s3-sync-action@master
         with:
