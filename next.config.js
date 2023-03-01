@@ -22,8 +22,12 @@ module.exports = withMDX({
   basePath: isProd ? process.env.BASE_URL : '',
   webpack: (config, { isServer, webpack }) => {
     // Fixes npm packages (mdx) that depend on `fs` module
+
     if (!isServer) {
-      config.resolve.fallback.fs = false;
+      config.resolve.fallback = {
+        fs: false,
+        child_process: false,
+      };
     }
 
     config.plugins.push(
