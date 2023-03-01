@@ -28,7 +28,7 @@ export const getItemStyles = ({
       parentItem.children[parentItem.children.length - 1].id === id);
 
   const styles: any = {
-    pl: { base: `${indentationWidth / 4}px`, sm: `${indentationWidth}px` },
+    pl: { base: `${indentationWidth / 2}px`, sm: `${indentationWidth}px` },
     pr: { base: 0, sm: `${indentationWidth / 2}px` },
     pt: isFirstChild ? 4 : 0,
     position: 'relative',

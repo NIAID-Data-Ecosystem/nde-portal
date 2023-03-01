@@ -29,6 +29,7 @@ import navigationData from 'configs/resource-sections.json';
 import { Route, showSection } from 'src/components/resource-sections/helpers';
 import { useLocalStorage } from 'usehooks-ts';
 import { CardContainer } from 'src/components/resource-sections/components/related-datasets';
+import ResourceStats from 'src/components/resource-sections/components/stats';
 
 // Error display is data fetching goes wrong.
 const ErrorState = ({ retryFn }: { retryFn: () => void }) => {
@@ -170,7 +171,16 @@ const ResourcePage: NextPage = props => {
                       codeRepository={data?.codeRepository}
                       hasPart={data?.hasPart}
                       url={data?.url}
-                    />
+                    >
+                      <ResourceStats
+                        includedInDataCatalog={data?.includedInDataCatalog}
+                        citation={data?.citation}
+                        doi={data?.doi}
+                        nctid={data?.nctid}
+                        aggregateRating={data?.aggregateRating}
+                        interactionStatistics={data?.interactionStatistics}
+                      />
+                    </ResourceLinks>
                   </Card>
 
                   {/* Local navigation for page */}

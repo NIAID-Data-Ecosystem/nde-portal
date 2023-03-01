@@ -125,7 +125,7 @@ export const DropdownInput: React.FC<DropdownInputProps> = ({
             ref={inputRightRef}
             p={1}
             w='unset'
-            zIndex={theme.zIndices['dropdown'] + 10}
+            zIndex={theme.zIndices['dropdown']}
           >
             {onClose && <CloseButton onClick={onClose} mr={1} />}
             {renderSubmitButton({

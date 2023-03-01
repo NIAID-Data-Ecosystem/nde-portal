@@ -141,7 +141,7 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
   return (
     <>
       {/* Search For Query Term */}
-      <Box m={{ base: 0, sm: 2 }} w='100%'>
+      <Box w='100%' p={2}>
         <Heading size='sm' fontWeight='medium'>
           Add terms to the query builder.
         </Heading>

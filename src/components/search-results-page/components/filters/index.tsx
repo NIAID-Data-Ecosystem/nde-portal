@@ -65,11 +65,11 @@ export const filtersConfig: FiltersConfigProps = {
     glyph: 'funding',
     property: 'funding',
   },
-  // conditionsOfAccess: {
-  //   name: 'Conditions of Access',
-  //   glyph: '',
-  //   property: 'conditionsOfAccess',
-  // },
+  conditionsOfAccess: {
+    name: 'Conditions of Access',
+    glyph: 'info',
+    property: 'conditionsOfAccess',
+  },
   variableMeasured: {
     name: 'Variable Measured',
     glyph: 'variableMeasured',
@@ -183,7 +183,7 @@ export const Filters: React.FC<FiltersProps> = ({
               }
               isLoading={isLoading}
               isUpdating={isUpdating}
-            ></FiltersList>
+            />
           </FiltersSection>
         );
       })}
