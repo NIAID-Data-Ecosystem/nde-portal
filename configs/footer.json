@@ -26,6 +26,11 @@
             { "label": "Home", "href": "/" },
             { "label": "Search", "href": "/search" },
             {
+              "label": "Advanced Search",
+              "subLabel": "Build more complex queries",
+              "href": "/advanced-search"
+            },
+            {
               "label": "About",
               "href": "https://data-staging.niaid.nih.gov/about"
             },

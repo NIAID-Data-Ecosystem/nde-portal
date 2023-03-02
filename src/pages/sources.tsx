@@ -105,7 +105,9 @@ export async function getStaticProps() {
             const url = `https://api.github.com/repos/NIAID-Data-Ecosystem/nde-crawlers/commits`;
             const response = await axios.get(url, {
               headers: {
-                Authorization: `Bearer ${process.env.GITHUB_API_KEY}`,
+                Authorization: process.env.GH_API_KEY
+                  ? `Bearer ${process.env.GH_API_KEY}`
+                  : '',
                 'Content-Type': 'application/json',
               },
               params: {

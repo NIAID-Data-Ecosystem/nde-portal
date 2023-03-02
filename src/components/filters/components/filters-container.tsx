@@ -64,20 +64,17 @@ export const FiltersContainer: React.FC<FiltersContainerProps> = ({
           .filter(([_, v]) => v.length > 0)
           .map(o =>
             Object.keys(filtersConfig)
-              .filter(key => key === 'date')
+              .filter(key => key !== 'date')
               .indexOf(o[0]),
           );
-
       // 2. The filter config specifies that this filter should be open by default.
-      Object.values(filtersConfig).forEach((v, i) => {
-        if (
-          v.property !== 'date' &&
-          v.isDefaultOpen &&
-          !selectedKeys.includes(i)
-        ) {
-          selectedKeys.push(i);
-        }
-      });
+      Object.values(filtersConfig)
+        .filter(item => item.property !== 'date')
+        .forEach((v, i) => {
+          if (v.isDefaultOpen && !selectedKeys.includes(i)) {
+            selectedKeys.push(i);
+          }
+        });
       return selectedKeys;
     });
     // Only run on mount.

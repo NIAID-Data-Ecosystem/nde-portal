@@ -9,7 +9,6 @@ interface Sidebar {
 
 const Sidebar: React.FC<Sidebar> = ({ data }) => {
   const sourceNames = [];
-
   for (const source in data) {
     if (data[source]) {
       sourceNames.push([data[source]?.name || source, source]);
@@ -35,7 +34,7 @@ const Sidebar: React.FC<Sidebar> = ({ data }) => {
                 {name} <br />
               </Heading>
               <Text fontWeight='medium' fontSize='sm'>
-                Latest Release {formatDate(data[id].version)}
+                Latest Release {formatDate(data[+id].dateModified)}
               </Text>
             </Box>
           </ListItem>
