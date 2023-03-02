@@ -1,5 +1,5 @@
 {
-  "href": "https://data-staging.niaid.nih.gov/",
+  "href": "/",
   "contact": {
     "label": "Connect with us",
     "routes": [
@@ -32,7 +32,7 @@
             },
             {
               "label": "About",
-              "href": "https://data-staging.niaid.nih.gov/about"
+              "href": "/about"
             },
 
             {
