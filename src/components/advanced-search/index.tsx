@@ -1,300 +1,416 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
+  Accordion,
+  AccordionButton,
+  AccordionIcon,
+  AccordionItem,
+  AccordionPanel,
   Box,
   Button,
   ButtonProps,
   Collapse,
   Flex,
   Heading,
+  Icon,
+  ListItem,
   Text,
+  UnorderedList,
   useDisclosure,
 } from 'nde-design-system';
 import { useRouter } from 'next/router';
 import { ModalProps } from '@chakra-ui/react';
 import { AdvancedSearchModal } from './components/Modal';
-import { OpenModal } from './components/buttons';
-import { uniqueId } from 'lodash';
+import { AdvancedSearchOpen } from './components/buttons';
 import {
   buildTree,
-  DragItem,
+  TreeItem,
   FlattenedItem,
   SortableWithCombine,
 } from './components/SortableWithCombine';
-import { convertObject2QueryString, wildcardQueryString } from './utils';
-import { FaArrowsAltV, FaSearch, FaUndoAlt } from 'react-icons/fa';
 import {
-  AdvancedSearchFormContext,
-  FieldSelect,
-  SearchInput,
-  SearchOption,
-} from './components/Search';
-import { SearchOptions } from './components/Search/components/SearchOptions';
+  convertObject2QueryString,
+  convertQueryString2Object,
+} from './utils/query-helpers';
+import {
+  FaChevronDown,
+  FaChevronUp,
+  FaEye,
+  FaEyeSlash,
+  FaHistory,
+  FaUndoAlt,
+} from 'react-icons/fa';
+import { AdvancedSearchFormContext, Search } from './components/Search';
 import { ResultsCount } from './components/ResultsCount';
-import SampleQueries from 'configs/sample-queries.json';
-import { Disclaimer } from './components/Search/components/Disclaimer';
-
-const sample_queries = SampleQueries as {
-  name: string;
-  items: FlattenedItem[];
-}[];
+import SampleQueriesData from 'configs/sample-queries.json';
+import { EditableQueryText } from './components/EditableQueryText';
+import { SEARCH_TYPES_CONFIG } from './components/Search/search-types-config';
+import {
+  QueryStringError,
+  removeDuplicateErrors,
+} from './utils/validation-checks';
+import { validateQueryString } from './components/EditableQueryText/utils';
+import { useLocalStorage } from 'usehooks-ts';
+import { formatNumber } from 'src/utils/helpers';
+import { ErrorBanner } from '../error/ErrorBanner';
 
 interface AdvancedSearchProps {
-  buttonProps?: ButtonProps;
-  modalProps?: ModalProps;
+  colorScheme?: string;
+  sampleQueries?: {
+    name: string;
+    items: FlattenedItem[];
+  }[];
+  querystring?: string;
+  renderButtonGroup?: (props: any) => JSX.Element;
+  onValidSubmit?: () => void;
 }
 
-export const SEARCH_OPTIONS: SearchOption[] = [
-  {
-    name: 'Field exists',
-    value: '_exists_',
-    description: 'Matches where selected field contains any value.',
-  },
-  {
-    name: "Field doesn't exist",
-    value: '-_exists_',
-    description: 'Matches where selected field is left blank.',
-  },
-  {
-    name: 'Field Contains',
-    value: 'default',
-    isDefault: true,
-    description: '',
-    options: [
-      {
-        name: 'Exact Match',
-        value: 'exact',
-        description: 'Contains the exact term or phrase.',
-        type: 'text',
-        example: `west siberian virus · contains the exact phrase 'west siberian virus'`,
-        transformValue: (value: string) => `"${value}"`,
-        isDefault: true,
-      },
-      {
-        name: 'Contains',
-        value: 'contains',
-        type: 'text',
-        description:
-          'Field contains value that starts or ends with given term. Note that when given multiple terms, terms wil be searched for separately and not grouped together.',
-        example: `oronaviru · contains results that contain the string fragment 'oronaviru' such as 'coronavirus'.
-        immune dis · contains results that contain the string fragment 'immune' and 'dis' - though not always sequentially.
-        `,
-        transformValue: (value: string, field?: string) => {
-          return wildcardQueryString({ value, field });
-        },
-        additionalInfo:
-          'Querying for records containing phrase fragments can be slow. "Exact" matching yields quicker results.',
-      },
-      {
-        name: 'Starts with',
-        value: 'starts',
-        description: 'Field contains value that starts with given term.',
-        type: 'text',
-        example: `covid · contains results beginning with 'covid' such as 'covid-19`,
-        transformValue: (value: string, field?: string) => {
-          return wildcardQueryString({ value, field, wildcard: 'end' });
-        },
-      },
-      {
-        name: 'Ends with',
-        value: 'ends',
-        type: 'text',
-        description: 'Field contains value that ends with given term.',
-        example: `osis · contains results ending with 'osis' such as 'tuberculosis'`,
-        transformValue: (value: string, field?: string) => {
-          return wildcardQueryString({ value, field, wildcard: 'start' });
-        },
-      },
-    ],
-  },
-];
 export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
-  buttonProps,
-  modalProps,
+  querystring: initialQuerystring,
+  onValidSubmit,
+  renderButtonGroup,
+  colorScheme = 'primary',
+  sampleQueries = SampleQueriesData as {
+    name: string;
+    items: FlattenedItem[];
+  }[],
 }) => {
+  const [count, setCount] = useState(0);
   const router = useRouter();
+
+  const [searchHistory, setSearchHistory] = useLocalStorage<
+    { querystring: string; count: number }[]
+  >('advanced-searches', []);
   const [resetForm, setResetForm] = useState(false);
 
-  // Handles the opening of the modal.
-  const { isOpen, onOpen, onClose } = useDisclosure();
   const { isOpen: showRawQuery, onToggle: toggleShowRawQuery } = useDisclosure({
-    defaultIsOpen: false,
+    defaultIsOpen: true,
   });
-  const [items, setItems] = useState<DragItem[]>([]);
+  const [items, setItems] = useState<TreeItem[]>([]);
+
+  // Errors with either the query string or the query string's output.
+  const [errors, setErrors] = useState<QueryStringError[]>([]);
 
   useEffect(() => {
     if (items.length > 0 && resetForm === true) {
       setResetForm(false);
+      setErrors([]);
     }
   }, [items, resetForm]);
 
+  useEffect(() => {
+    if (initialQuerystring) {
+      const items = convertQueryString2Object(initialQuerystring);
+      setItems(items);
+    }
+  }, [initialQuerystring]);
+
+  const updateItems = useCallback(items => setItems(items), []);
+
+  const handleErrors = useCallback((queryErrors: QueryStringError[]) => {
+    return setErrors(prev => {
+      if (queryErrors.length) {
+        return removeDuplicateErrors([...queryErrors]);
+      }
+      return [...prev];
+    });
+  }, []);
+
+  const handleSubmit = () => {
+    // add validation
+    const querystring = convertObject2QueryString(items);
+
+    const validation = validateQueryString(querystring);
+    if (validation.isValid) {
+      router.push({
+        pathname: `/search`,
+        query: { q: `${querystring}`, advancedSearch: true },
+      });
+      onValidSubmit && onValidSubmit();
+
+      setSearchHistory(prev => {
+        const newSearchHistory = [...prev, { querystring, count }];
+        // Only keep the last 5 searches in history.
+        newSearchHistory.length > 5 && newSearchHistory.shift();
+        return newSearchHistory;
+      });
+    } else {
+      handleErrors(validation.errors);
+    }
+  };
+
   return (
     <>
-      <OpenModal onClick={onOpen} {...buttonProps}></OpenModal>
-      <AdvancedSearchModal
-        isOpen={isOpen}
-        onClose={onClose}
-        onSubmit={e => {
-          const querystring = convertObject2QueryString(items);
-          router.push({
-            pathname: `/search`,
-            query: { q: `${querystring}`, advancedSearch: true },
-          });
-        }}
-        isDisabled={items.length === 0}
-        {...modalProps}
-      >
-        {/* Search For Query Term */}
-        <Box m={2}>
-          <Heading size='sm' fontWeight='medium'>
-            Add terms to the query builder.
-          </Heading>
-          <Flex
-            flexDirection={{ base: 'column', md: 'row' }}
-            alignItems={{ base: 'flex-start', md: 'flex-end' }}
-            flexWrap='wrap'
-          >
-            {isOpen && (
-              <AdvancedSearchFormContext
-                term=''
-                field=''
-                searchOptions={SEARCH_OPTIONS}
-              >
-                <Flex w='100%' justifyContent='flex-end'>
-                  <SearchOptions />
-                </Flex>
-                <Flex w='100%' alignItems='flex-end'>
-                  <FieldSelect
-                    isDisabled={!isOpen}
-                    isFormReset={resetForm}
-                    setResetForm={setResetForm}
-                  ></FieldSelect>
-                  <SearchInput
-                    size='md'
-                    colorScheme='primary'
-                    items={items}
-                    isFormReset={resetForm}
-                    setResetForm={setResetForm}
-                    onSubmit={({
-                      term,
-                      field,
-                      union,
-                      querystring,
-                      searchType,
-                    }) => {
-                      setItems(prev => {
-                        if (!term) return prev;
-                        const newItems = [...prev];
-                        const id = `${uniqueId(
-                          `${term.slice(0, 20).split(' ').join('-')}-${
-                            items.length
-                          }-`,
-                        )}`;
+      {/* Search For Query Term */}
+      <Box w='100%' p={2}>
+        <Heading size='sm' fontWeight='medium'>
+          Add terms to the query builder.
+        </Heading>
+        <Flex
+          flexDirection={{ base: 'column', md: 'row' }}
+          alignItems={{ base: 'flex-start', md: 'flex-end' }}
+          flexWrap='wrap'
+        >
+          <AdvancedSearchFormContext searchTypeOptions={SEARCH_TYPES_CONFIG}>
+            <Search
+              items={items}
+              setItems={updateItems}
+              resetForm={resetForm}
+              setResetForm={setResetForm}
+            />
+          </AdvancedSearchFormContext>
+        </Flex>
 
-                        newItems.push({
-                          id, // unique identifier
-                          value: {
-                            field,
-                            term,
-                            union,
-                            querystring,
-                            searchType,
-                          },
-                          children: [],
-                          index: items.length,
-                        });
-
-                        return newItems;
-                      });
-                    }}
-                  />
-                </Flex>
-                <Disclaimer />
-              </AdvancedSearchFormContext>
-            )}
-          </Flex>
-
-          <Heading size='sm' fontWeight='medium' mt={2}>
-            Or choose from the sample queries below.
-          </Heading>
-          {sample_queries.map(query => {
-            return (
-              <Button
-                key={query.name}
-                mx={1}
-                leftIcon={<FaSearch />}
-                colorScheme='gray'
-                color='text.body'
-                size='sm'
-                onClick={() => setItems(buildTree(query.items))}
-              >
-                {query.name}
-              </Button>
-            );
-          })}
-        </Box>
-
-        {/* Query Builder Area */}
-        <Box m={2} mt={6}>
-          <Flex>
-            <Heading
-              flex={1}
-              size='sm'
-              fontWeight='medium'
-              color={items.length ? 'text.heading' : 'gray.600'}
-            >
-              Query Builder
-            </Heading>
+        <Heading size='sm' fontWeight='medium' mb={2}>
+          Or choose from the sample queries below.
+        </Heading>
+        {sampleQueries.map(query => {
+          return (
             <Button
-              colorScheme='primary'
-              size='sm'
-              leftIcon={<FaUndoAlt />}
-              variant='ghost'
-              isDisabled={!items.length}
-              onClick={() => {
-                setItems([]);
-                setResetForm(true);
-              }}
-              ml={4}
-            >
-              Reset query
-            </Button>
-          </Flex>
-          <Text color={items.length ? 'text.body' : 'gray.600'} fontSize='sm'>
-            Re-order query terms by click and drag. Group items together by
-            dragging an element over another.
-          </Text>
-          <ResultsCount queryString={convertObject2QueryString(items)} />
-
-          <SortableWithCombine
-            items={items}
-            setItems={setItems}
-            handle
-            removable
-          />
-
-          <Box w='100%'>
-            <Collapse in={showRawQuery}>
-              {/* [TO DO]: add syntax highlighting on hover */}
-              <Box m={2}>
-                <Text fontSize='sm' fontStyle='italic'>
-                  {convertObject2QueryString(items)}
-                </Text>
-              </Box>
-            </Collapse>
-
-            <Button
-              isDisabled={items.length === 0}
-              rightIcon={<FaArrowsAltV />}
-              onClick={toggleShowRawQuery}
+              key={query.name}
+              w={['100%', 'unset']}
+              my={[2, 2, 0]}
+              mx={1}
               colorScheme='gray'
               color='text.body'
               size='sm'
-              mt={2}
+              onClick={() => setItems(buildTree(query.items))}
             >
-              view string query
+              <Text isTruncated>{query.name}</Text>
             </Button>
-          </Box>
+          );
+        })}
+      </Box>
+
+      {/* Query Builder Area */}
+      <Box m={2} mt={6}>
+        <Flex>
+          <Heading
+            flex={1}
+            size='sm'
+            fontWeight='medium'
+            color={items.length ? 'text.heading' : 'gray.600'}
+          >
+            Query Builder
+          </Heading>
+          <Button
+            colorScheme='primary'
+            size='sm'
+            leftIcon={<FaUndoAlt />}
+            variant='outline'
+            isDisabled={!items.length}
+            onClick={() => {
+              setItems([]);
+              setResetForm(true);
+            }}
+            ml={4}
+          >
+            Clear query
+          </Button>
+        </Flex>
+        <Text color={items.length ? 'text.body' : 'gray.600'} fontSize='sm'>
+          Re-order query terms by click and drag. Group items together by
+          dragging an element over another.
+        </Text>
+        <ResultsCount
+          queryString={convertObject2QueryString(items)}
+          handleErrors={handleErrors}
+          setCount={setCount}
+        />
+
+        <Box bg='gray.100'>
+          <SortableWithCombine
+            items={items}
+            setItems={updateItems}
+            removable
+            collapsible
+          />
         </Box>
+
+        <Box w='100%'>
+          <Collapse in={showRawQuery}>
+            <Box my={2}>
+              <EditableQueryText
+                queryObj={items}
+                updateQueryObj={updateItems}
+                errors={errors}
+                setErrors={setErrors}
+              />
+            </Box>
+          </Collapse>
+
+          <Button
+            isDisabled={items.length === 0}
+            rightIcon={showRawQuery ? <FaChevronUp /> : <FaChevronDown />}
+            onClick={toggleShowRawQuery}
+            colorScheme='gray'
+            color='text.body'
+            size='sm'
+            mt={2}
+            leftIcon={
+              showRawQuery ? <Icon as={FaEyeSlash} /> : <Icon as={FaEye} />
+            }
+          >
+            {showRawQuery ? 'hide' : 'view'} raw query
+          </Button>
+        </Box>
+
+        <ErrorBanner errors={errors} setErrors={setErrors} />
+        <Flex my={4} justifyContent='flex-end'>
+          {renderButtonGroup && renderButtonGroup({ colorScheme })}
+          {handleSubmit && (
+            <Button
+              colorScheme={colorScheme}
+              onClick={handleSubmit}
+              isDisabled={
+                items.length === 0 ||
+                errors.filter(({ type }) => type == 'error').length > 0
+              }
+              size='md'
+            >
+              Submit
+            </Button>
+          )}
+        </Flex>
+
+        {searchHistory.length > 0 && (
+          <Accordion my={4} defaultIndex={[0]} allowToggle>
+            <AccordionItem>
+              <h2>
+                <AccordionButton
+                  _hover={{ bg: 'transparent' }}
+                  _focus={{ boxShadow: 'none' }}
+                >
+                  <Text
+                    size='sm'
+                    fontWeight='semibold'
+                    color='text.heading'
+                    display='flex'
+                    alignItems='center'
+                    flex={1}
+                  >
+                    <Icon as={FaHistory} mx={2} color='status.info'></Icon>
+                    Search History
+                  </Text>
+                  <AccordionIcon />
+                </AccordionButton>
+              </h2>
+              <AccordionPanel px={[1, 4]}>
+                <UnorderedList ml={0}>
+                  {searchHistory.reverse().map((query, index) => {
+                    return (
+                      <ListItem
+                        key={index}
+                        onClick={() => {
+                          setItems(
+                            convertQueryString2Object(query.querystring),
+                          );
+                        }}
+                        _hover={{
+                          cursor: 'pointer',
+                          ['.hist-querystring']: {
+                            textDecoration: 'underline',
+                          },
+                        }}
+                        bg='status.info'
+                        borderRadius='semi'
+                        my={0.5}
+                      >
+                        <Flex
+                          className='hist-row'
+                          bg={index % 2 ? 'whiteAlpha.800' : 'whiteAlpha.900'}
+                          flexDirection={{ base: 'column', md: 'row-reverse' }}
+                          alignItems={{ base: 'flex-start', md: 'center' }}
+                          justifyContent={{ base: 'space-between' }}
+                          px={2}
+                        >
+                          <Flex
+                            bg='status.info'
+                            m={2}
+                            py={1}
+                            px={2}
+                            alignItems='flex-end'
+                            flexDirection='column'
+                            borderRadius='semi'
+                            alignSelf={{ base: 'flex-end', md: 'center' }}
+                          >
+                            <Text
+                              whiteSpace='normal'
+                              fontWeight='semibold'
+                              fontSize='md'
+                              color='#fff'
+                            >
+                              {formatNumber(query.count)}
+                              <Text
+                                as='span'
+                                fontSize='12px'
+                                color='inherit'
+                                ml={2}
+                              >
+                                results
+                              </Text>
+                            </Text>
+                          </Flex>
+                          <Box>
+                            <Text
+                              className='hist-querystring'
+                              fontSize='xs'
+                              fontWeight='medium'
+                              noOfLines={3}
+                            >
+                              {query.querystring}
+                            </Text>
+                          </Box>
+                        </Flex>
+                      </ListItem>
+                    );
+                  })}
+                </UnorderedList>
+              </AccordionPanel>
+            </AccordionItem>
+          </Accordion>
+        )}
+      </Box>
+    </>
+  );
+};
+
+interface AdvancedSearchPropsWithModal extends AdvancedSearchProps {
+  buttonProps?: ButtonProps;
+  modalProps?: ModalProps;
+}
+
+export const AdvancedSearchWithModal: React.FC<
+  AdvancedSearchPropsWithModal
+> = ({ buttonProps, modalProps, ...props }) => {
+  // Handles the opening of the modal.
+  const { isOpen, onOpen, onClose } = useDisclosure();
+
+  return (
+    <>
+      <AdvancedSearchOpen onClick={onOpen} {...buttonProps} />
+
+      <AdvancedSearchModal
+        isOpen={isOpen}
+        handleClose={onClose}
+        {...modalProps}
+      >
+        {isOpen && (
+          <AdvancedSearch
+            onValidSubmit={onClose}
+            renderButtonGroup={(props: any) => (
+              <Button
+                {...props}
+                mr={3}
+                onClick={onClose}
+                variant='outline'
+                size='md'
+              >
+                Close
+              </Button>
+            )}
+            {...props}
+          />
+        )}
       </AdvancedSearchModal>
     </>
   );

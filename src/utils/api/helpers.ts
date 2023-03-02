@@ -189,7 +189,7 @@ export const formatType = (type: string): ResourceType => {
   if (type.toLowerCase() === 'dataset') {
     return 'Dataset';
   } else if (type.toLowerCase() === 'computationaltool') {
-    return 'Computational Tool';
+    return 'Software';
   } else if (type.toLowerCase() === 'scholarlyarticle') {
     return 'Scholarly Article';
   } else {

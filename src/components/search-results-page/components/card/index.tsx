@@ -1,5 +1,6 @@
 import React from 'react';
 import {
+  Box,
   Button,
   Card,
   CardHeader,
@@ -15,6 +16,7 @@ import {
   ToggleContainer,
   VisuallyHidden,
   BoxProps,
+  Tooltip,
 } from 'nde-design-system';
 import {
   FaArrowAltCircleRight,
@@ -113,7 +115,6 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
       </Flex>
     );
   };
-
   return (
     <>
       {/* Banner with resource type + date of publication */}
@@ -234,10 +235,21 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                   bg='secondary.50'
                   fontWeight='semibold'
                 >
-                  <Flex whiteSpace='nowrap' alignItems='center'>
-                    <Icon as={FaRegClock} mr={2} />
-                    <Text fontSize='xs'>{date}</Text>
-                  </Flex>
+                  <Tooltip
+                    label='Corresponds to the most recenf of date modified, date published and date created.'
+                    hasArrow
+                    bg='#fff'
+                    sx={{
+                      color: 'text.body',
+                    }}
+                  >
+                    <Box>
+                      <Flex whiteSpace='nowrap' alignItems='center'>
+                        <Icon as={FaRegClock} mr={2} />
+                        <Text fontSize='xs'>{date}</Text>
+                      </Flex>
+                    </Box>
+                  </Tooltip>
                 </Flex>
               )}
               {/* Description Text */}
@@ -412,6 +424,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                   <Button
                     maxW={{ xl: '230px' }}
                     w='100%'
+                    size='sm'
                     rightIcon={<FaArrowAltCircleRight />}
                     aria-label={`Go to details about resource ${name}`}
                   >

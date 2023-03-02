@@ -29,6 +29,7 @@ import navigationData from 'configs/resource-sections.json';
 import { Route, showSection } from 'src/components/resource-sections/helpers';
 import { useLocalStorage } from 'usehooks-ts';
 import { CardContainer } from 'src/components/resource-sections/components/related-datasets';
+import ResourceStats from 'src/components/resource-sections/components/stats';
 
 // Error display is data fetching goes wrong.
 const ErrorState = ({ retryFn }: { retryFn: () => void }) => {
@@ -60,7 +61,7 @@ const EmptyState = () => {
 const ResourcePage: NextPage = props => {
   const router = useRouter();
   const { id } = router.query;
-  const [searchHistory] = useLocalStorage<string[]>('previous-searches', []);
+  const [searchHistory] = useLocalStorage<string[]>('basic-searches', []);
   // Access query client
   const { isLoading, error, data } = useQuery<
     FormattedResource | undefined,
@@ -150,7 +151,7 @@ const ResourcePage: NextPage = props => {
                 <Box
                   flex={1}
                   position='sticky'
-                  top='80px'
+                  top='0px'
                   w='100%'
                   h='100%'
                   minW='350px'
@@ -170,7 +171,16 @@ const ResourcePage: NextPage = props => {
                       codeRepository={data?.codeRepository}
                       hasPart={data?.hasPart}
                       url={data?.url}
-                    />
+                    >
+                      <ResourceStats
+                        includedInDataCatalog={data?.includedInDataCatalog}
+                        citation={data?.citation}
+                        doi={data?.doi}
+                        nctid={data?.nctid}
+                        aggregateRating={data?.aggregateRating}
+                        interactionStatistics={data?.interactionStatistics}
+                      />
+                    </ResourceLinks>
                   </Card>
 
                   {/* Local navigation for page */}

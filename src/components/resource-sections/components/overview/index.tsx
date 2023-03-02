@@ -6,21 +6,12 @@ import {
   Link,
   ListItem,
   SimpleGrid,
-  Stack,
-  StackDivider,
-  StatHelpText,
-  StatNumber,
   Text,
   UnorderedList,
 } from 'nde-design-system';
 import { FormattedResource } from 'src/utils/api/types';
 import { FaCalendarAlt, FaGlobeAmericas } from 'react-icons/fa';
-import {
-  formatCitationString,
-  formatDOI,
-  formatLicense,
-  formatNumber,
-} from 'src/utils/helpers';
+import { formatCitationString, formatLicense } from 'src/utils/helpers';
 import MetadataConfig from 'configs/resource-metadata.json';
 import StatField from './components/stat-field';
 import { assetPrefix } from 'next.config';
@@ -119,7 +110,7 @@ const Overview: React.FC<OverviewProps> = ({
   }) => {
     if (url) {
       return (
-        <Link href={url} isExternal={isExternal}>
+        <Link href={url} target={isExternal ? '_blank' : '_self'}>
           {content}
         </Link>
       );
@@ -128,108 +119,6 @@ const Overview: React.FC<OverviewProps> = ({
   };
   return (
     <Flex p={[0, 4]} w='100%' flexWrap='wrap' flexDirection={['column', 'row']}>
-      {(doi || nctid) && (
-        <Box w={{ sm: '100%', lg: 'unset' }} my={4}>
-          <Stack
-            direction={['column', 'column', 'row']}
-            spacing={4}
-            p={4}
-            border='0.5px solid'
-            borderRadius='semi'
-            borderColor='gray.100'
-            divider={<StackDivider borderColor='gray.200' />}
-          >
-            {/* Altmetric Badge */}
-            {(doi || nctid || citation?.[0]['pmid']) && (
-              <StatField
-                isLoading={false}
-                {...getStatInfo('Altmetric Rating')}
-                d='flex'
-                justifyContent='center'
-                mr={2}
-                minWidth='200px'
-              >
-                <Flex alignItems='center' direction='column'>
-                  {(doi || nctid || citation?.[0]['pmid']) && (
-                    <div
-                      role='link'
-                      aria-label={`altmetric badge for id ${doi || nctid}`}
-                      data-badge-popover='right'
-                      data-badge-type='donut'
-                      data-doi={doi && formatDOI(doi)}
-                      data-nct-id={nctid}
-                      data-pmid={citation?.[0]['pmid']}
-                      className='altmetric-embed'
-                      data-link-target='blank'
-                    ></div>
-                  )}
-
-                  <Link
-                    fontSize='xs'
-                    href={
-                      'https://help.altmetric.com/support/solutions/articles/6000233311-how-is-the-altmetric-attention-score-calculated'
-                    }
-                    target='_blank'
-                    isExternal
-                  >
-                    Learn More
-                  </Link>
-                </Flex>
-              </StatField>
-            )}
-
-            {aggregateRating &&
-              (aggregateRating.ratingValue || aggregateRating.ratingCount) &&
-              includedInDataCatalog?.name && (
-                <StatField
-                  isLoading={false}
-                  d='flex'
-                  {...getStatInfo(`${includedInDataCatalog.name} Metrics`)}
-                  justifyContent='center'
-                  mr={2}
-                  flex={1}
-                  minWidth='200px'
-                >
-                  <StatNumber>
-                    {aggregateRating?.ratingValue &&
-                      formatNumber(aggregateRating?.ratingValue)}
-                    {aggregateRating?.ratingCount &&
-                      formatNumber(aggregateRating?.ratingCount)}
-                  </StatNumber>
-                  {aggregateRating.reviewAspect && (
-                    <StatHelpText>{aggregateRating.reviewAspect}</StatHelpText>
-                  )}
-                </StatField>
-              )}
-
-            {interactionStatistics &&
-              interactionStatistics.userInteractionCount &&
-              includedInDataCatalog?.name && (
-                <StatField
-                  isLoading={false}
-                  d='flex'
-                  {...getStatInfo(
-                    `${includedInDataCatalog.name} User Interaction Metrics`,
-                  )}
-                  justifyContent='center'
-                  mr={2}
-                  flex={1}
-                  minWidth='200px'
-                >
-                  <StatNumber>
-                    {formatNumber(interactionStatistics.userInteractionCount)}
-                  </StatNumber>
-                  {interactionStatistics.interactionType && (
-                    <StatHelpText>
-                      {interactionStatistics.interactionType}
-                    </StatHelpText>
-                  )}
-                </StatField>
-              )}
-          </Stack>
-        </Box>
-      )}
-
       <Flex alignItems='center' w='100%'>
         <SimpleGrid
           columns={[1, 1, 2, 2, 3]}
@@ -589,7 +478,11 @@ const Overview: React.FC<OverviewProps> = ({
                 <ListItem>
                   <strong>DOI: </strong>
                   <StatContent
-                    url={doi?.includes('http') ? doi : ''}
+                    url={
+                      doi?.includes('http') || doi?.includes('doi.org')
+                        ? doi
+                        : ''
+                    }
                     content={doi}
                     isExternal
                   />

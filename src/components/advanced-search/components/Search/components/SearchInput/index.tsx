@@ -1,203 +1,175 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import { ButtonProps, InputProps } from 'nde-design-system';
+import React, { useEffect, useState } from 'react';
+import { Flex } from 'nde-design-system';
+import { useAdvancedSearchContext } from '../AdvancedSearchFormContext';
 import {
-  DragItem,
-  UnionTypes,
-} from 'src/components/advanced-search/components/SortableWithCombine';
-import {
-  SearchOption,
-  useAdvancedSearchContext,
-} from '../AdvancedSearchFormContext';
-import { DateInputGroup } from './components/DateInput';
-import MetadataFieldsConfig from 'configs/resource-fields.json';
-import { TextInput } from './components/TextInput';
-import { EnumInput } from './components/EnumInput';
-import { InputSubmitButton } from './components/InputSubmitButton';
+  DateInputGroup,
+  EnumInput,
+  NumberInput,
+  TextInput,
+} from './components/';
+import { QueryValue } from 'src/components/advanced-search/types';
+import { formatType } from 'src/utils/api/helpers';
+import { SearchInputProps } from './types';
 
-interface CustomInputProps {
-  size: InputProps['size'];
-  inputValue: any;
-  isDisabled: boolean;
-  colorScheme?: InputProps['colorScheme'];
-  handleClick: (args: { term: string; field: string }) => void; // triggered when suggestion item from list is clicked.
-  handleChange: (
-    value: string | { startDate: string; endDate: string },
-  ) => void;
-  handleSubmit: (args: {
-    term: string;
-    field?: string;
-    union?: UnionTypes;
-    querystring: string;
-  }) => void;
-  renderSubmitButton?: (props: ButtonProps) => React.ReactElement;
-  type: 'number' | 'string' | 'date' | 'enum';
-  options?: string[];
-}
-
-const CustomInput: React.FC<CustomInputProps> = props => {
-  if (props.type === 'date') {
-    return <DateInputGroup {...props} />;
-  } else if (props.type === 'enum') {
-    return <EnumInput {...props} />;
-  }
-  return <TextInput {...props} />;
-};
-
-interface SearchInputProps {
-  //   isDisabled: boolean;
-  colorScheme?: InputProps['colorScheme'];
-  size: InputProps['size'];
-  items: DragItem[];
-  onSubmit: (args: {
-    term: string;
-    field: string;
-    querystring: string;
-    union?: UnionTypes;
-    searchType: SearchOption;
-  }) => void;
-  isFormReset: boolean;
-  setResetForm: (arg: boolean) => void;
-}
 export const SearchInput: React.FC<SearchInputProps> = ({
-  colorScheme = 'primary',
-  items,
+  defaultInputValue = '',
+  errors,
+  hideSuggestions = false,
+  resetForm,
   size,
+  onChange,
   onSubmit,
-  isFormReset,
+  renderSubmitButton,
+  setErrors,
   setResetForm,
 }) => {
-  const advancedSearchProps = useAdvancedSearchContext();
   const {
-    searchField,
-    searchOption,
-    updateSearchTerm,
-    unionType,
-    setUnionType,
-  } = advancedSearchProps;
+    queryValue,
+    selectedFieldDetails,
+    selectedSearchType,
+    updateQueryValue,
+  } = useAdvancedSearchContext();
 
   const [inputType, setInputType] = useState<
-    'number' | 'string' | 'date' | 'enum'
+    'number' | 'string' | 'date' | 'enum' | 'boolean'
   >('string');
 
-  const [inputValue, setInputValue] = useState<
-    string | number | { startDate: string; endDate: string }
-  >('');
+  const [inputValue, setInputValue] =
+    useState<SearchInputProps['defaultInputValue']>(defaultInputValue);
 
-  // Input is disabled when a search option that is not "contains" is chosen.
-  const inputIsDisabled =
-    searchOption.value === '_exists_' || searchOption.value === '-_exists_';
+  const handleSubmit = (value: Partial<QueryValue>) => {
+    setInputValue(defaultInputValue);
 
-  const clearInputField = useCallback(() => {
-    updateSearchTerm('');
-    setInputValue('');
-  }, [updateSearchTerm]);
-
-  // Information about the search field such as type to use for inputs type.
-  const field = MetadataFieldsConfig.find(
-    field => field.property === searchField,
-  );
-
-  const handleSubmit = ({
-    term,
-    querystring,
-  }: {
-    term: string;
-    field: string;
-    querystring: string;
-  }) => {
-    clearInputField();
-    // if no union type is selected, default to "AND"
-    const union = unionType || undefined;
-    !unionType && setUnionType(union || 'AND');
+    const updatedQuery = { ...queryValue, ...value };
 
     // For "exists" type queries, we want a format of _exists_: {field} or -_exists_:{field}
     // so the exists keyword is set as field parameter
     // and the field is set as the querystring parameter.
     if (
-      searchOption.value === '_exists_' ||
-      searchOption.value === '-_exists_'
+      selectedSearchType.id === '_exists_' ||
+      selectedSearchType.id === '-_exists_'
     ) {
-      onSubmit({
-        term: field?.property || '',
-        field: searchOption.value,
-        union,
-        searchType: searchOption,
-        querystring: field?.property || '',
-      });
+      if (selectedSearchType.transformValue) {
+        onSubmit(selectedSearchType.transformValue(queryValue));
+      }
     } else {
-      onSubmit({
-        term,
-        field: field?.property || '',
-        union,
-        querystring,
-        searchType: searchOption,
-      });
+      onSubmit(updatedQuery);
     }
   };
 
+  // If form is reset, clear input value.
   useEffect(() => {
-    if (isFormReset) {
-      clearInputField();
+    if (resetForm) {
+      setInputValue('');
+      updateQueryValue({ term: '', querystring: '', field: '', union: '' });
     }
-  }, [isFormReset, clearInputField]);
+    return () => {
+      setResetForm(false);
+    };
+  }, [resetForm, setResetForm, updateQueryValue]);
 
-  // Clear input when field is changed.
-  useEffect(() => {
-    clearInputField();
-  }, [searchField, clearInputField]);
-
+  // Determine input type based on field type.
   useEffect(() => {
     setInputType(() => {
-      if (field?.enum) {
+      if (selectedFieldDetails?.enum) {
         return 'enum';
-      } else if (field?.format === 'date') {
+      } else if (selectedFieldDetails?.type === 'boolean') {
+        return 'boolean';
+      } else if (selectedFieldDetails?.format === 'date') {
         return 'date';
       } else if (
-        field?.type === 'unsigned_long' ||
-        field?.type === 'integer' ||
-        field?.type === 'double' ||
-        field?.type === 'float'
+        selectedFieldDetails?.type === 'unsigned_long' ||
+        selectedFieldDetails?.type === 'integer' ||
+        selectedFieldDetails?.type === 'double' ||
+        selectedFieldDetails?.type === 'float'
       ) {
         return 'number';
       }
       return 'string';
     });
-  }, [field]);
+  }, [selectedFieldDetails]);
+
+  // if input type changes, clear input value.
+  useEffect(() => {
+    setInputValue(defaultInputValue);
+  }, [inputType, defaultInputValue]);
+
+  const inputProps = {
+    size,
+    inputValue,
+    clearInputValue: () => {
+      setInputValue('');
+      setErrors([]);
+    },
+    // Input is disabled when a search option that doesn't require text input is selected.
+    isDisabled:
+      selectedSearchType.id === '_exists_' ||
+      selectedSearchType.id === '-_exists_',
+    errors,
+    setErrors,
+    handleChange: (queryObject: {
+      value: typeof inputValue;
+      term?: string;
+      querystring?: string;
+    }) => {
+      setInputValue(queryObject.value || '');
+      onChange && onChange(queryObject);
+    },
+
+    handleSubmit,
+    handleClick: handleSubmit,
+    renderSubmitButton,
+  };
 
   return (
-    <CustomInput
-      size={size}
-      type={inputType}
-      options={field?.enum}
-      inputValue={inputValue}
-      isDisabled={inputIsDisabled}
-      handleChange={props => {
-        setInputValue(props);
-        setResetForm(false);
-      }}
-      handleClick={({ term, field }) => {
-        handleSubmit({
-          term,
-          field: field || searchField,
-          querystring: term,
-        });
-      }}
-      handleSubmit={props => {
-        handleSubmit({ field: searchField, ...props });
-      }}
-      renderSubmitButton={props => (
-        <InputSubmitButton
-          items={items}
-          size={size}
-          colorScheme={colorScheme}
-          isDisabled={
-            searchOption.value !== '_exists_' &&
-            searchOption.value !== '-_exists_' &&
-            inputValue === ''
-          }
-          {...props}
+    <Flex w='100%' flexDirection='column' flex={1}>
+      {/* [date]: Two date type inputs. */}
+      {inputType === 'date' ? <DateInputGroup {...inputProps} /> : <></>}
+      {/* [enum]: Select/Option Component. */}
+      {inputType === 'enum' ? (
+        <EnumInput
+          options={selectedFieldDetails?.enum?.map(value => {
+            // [@type] needs to be formatted to the terms we use in the UI.
+            if (selectedFieldDetails.property === '@type') {
+              return { label: formatType(value), value };
+            }
+            return { label: value, value };
+          })}
+          {...inputProps}
         />
+      ) : (
+        <></>
       )}
-    />
+      {/* [boolean]: Select/Option Component. */}
+      {inputType === 'boolean' ? (
+        <EnumInput
+          options={[
+            {
+              label: 'Yes',
+              value: 'true',
+            },
+            {
+              label: 'No',
+              value: 'false',
+            },
+          ]}
+          {...inputProps}
+        />
+      ) : (
+        <></>
+      )}
+      {/* [number]: Number input */}
+      {inputType === 'number' ? (
+        <NumberInput {...inputProps}></NumberInput>
+      ) : (
+        <></>
+      )}
+      {/* [string]: Text input */}
+      {inputType === 'string' ? (
+        <TextInput hideSuggestions={hideSuggestions} {...inputProps} />
+      ) : (
+        <></>
+      )}
+    </Flex>
   );
 };

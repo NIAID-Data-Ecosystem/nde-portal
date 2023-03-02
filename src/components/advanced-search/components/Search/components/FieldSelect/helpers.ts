@@ -1,6 +1,6 @@
 import MetadataFields from 'configs/resource-fields.json';
 
-type Field = typeof MetadataFields[number];
+type Field = (typeof MetadataFields)[number];
 
 /****
  * Overlapping or unnecessary fields.
@@ -174,6 +174,8 @@ const UNUSED_FIELDS = [
   'version',
 ];
 
+// Minimum amount of records a field must have to be included in field select.
+const MIN_FIELD_RECORDS = 100;
 // Filter out fields we want to remove from field select.
 export const filterFields = (field: Field) => {
   return (
@@ -183,7 +185,7 @@ export const filterFields = (field: Field) => {
     !field.property.toLowerCase().includes('mainEntityOfPage') &&
     !(field.property.includes('@') && field.property !== '@type') &&
     field.type !== 'object' &&
-    field.count >= 100 &&
+    field.count >= MIN_FIELD_RECORDS &&
     !UNUSED_FIELDS.includes(field.property)
   );
 };
@@ -193,7 +195,7 @@ export const transformFieldName = (field: Field) => {
     return 'Author ORCID ID';
   } else if (field.property === 'citation.name') {
     return 'Citation Title';
-  } else if (field.name.toLowerCase().includes('distribution')) {
+  } else if (field?.name.toLowerCase().includes('distribution')) {
     return field.name.replace('Distribution', 'File - ');
   }
   return field.name;

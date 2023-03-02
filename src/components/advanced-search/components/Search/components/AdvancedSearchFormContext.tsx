@@ -1,32 +1,33 @@
-import React, { useEffect, useState } from 'react';
-import {
-  usePredictiveSearch,
-  usePredictiveSearchResponse,
-} from 'src/components/search-with-predictive-text';
-import { unionOptions } from 'src/components/advanced-search/utils';
-import { UnionTypes } from '../../SortableWithCombine/types';
+import React, { ReactNode, useCallback, useEffect, useState } from 'react';
 import MetadataFieldsConfig from 'configs/resource-fields.json';
+import { SearchTypesConfigProps } from '../search-types-config';
+import { QueryValue } from 'src/components/advanced-search/types';
+import { filterSearchTypes } from './SearchOptions/utils';
 
-export interface SearchOption {
-  name: string;
-  value: string;
-  description: string;
-  type?: string;
-  example?: string;
-  transformValue?: (value: string, field?: string) => string;
-  options?: SearchOption[];
-  isDefault?: boolean;
-  additionalInfo?: string;
-}
+/**
+ * @interface AdvancedSearchContextProps:
+ *
+ * @queryValue QueryValue object containing the current query value (field, term, querystring, union).
+ * @searchTypeOptions List of search types options to display.
+ * @selectedFieldDetails Details of the selected field from the API including type, format and count of records.
+ * @selectedSearchType The currently selected search type such as (contains, exact, etc).
+ * @setSelectedSearchType Function to set the selected search type.
+ * @updateQueryValue Function to update the query value.
+ * @onReset Function to reset the queryValue and search type.
+ */
 
-export interface AdvancedSearchContextProps
-  extends usePredictiveSearchResponse {
-  searchOptionsList: SearchOption[];
-  setSearchOptionsList: (arg: SearchOption[]) => void;
-  searchOption: SearchOption;
-  setSearchOption: (arg: AdvancedSearchContextProps['searchOption']) => void;
-  unionType: '' | UnionTypes;
-  setUnionType: React.Dispatch<React.SetStateAction<'' | UnionTypes>>;
+export interface AdvancedSearchContextProps {
+  queryValue: QueryValue;
+  searchTypeOptions: SearchTypesConfigProps[];
+  selectedFieldDetails?: (typeof MetadataFieldsConfig)[number];
+  selectedSearchType: SearchTypesConfigProps;
+  setSelectedSearchType: (
+    arg: AdvancedSearchContextProps['selectedSearchType'],
+  ) => void;
+  updateQueryValue: (
+    arg: Partial<AdvancedSearchContextProps['queryValue']>,
+  ) => void;
+  onReset: () => void;
 }
 
 const AdvancedSearchContext = React.createContext<
@@ -34,76 +35,119 @@ const AdvancedSearchContext = React.createContext<
 >(undefined);
 AdvancedSearchContext.displayName = 'AdvancedSearchContext';
 
-interface AdvancedSearchFormProps {
-  term?: string;
-  field?: string;
-  searchOptions: SearchOption[];
-}
-
-export const AdvancedSearchFormContext: React.FC<AdvancedSearchFormProps> = ({
-  term,
-  field,
-  searchOptions: defaultSearchOptions,
+export const AdvancedSearchFormContext = ({
+  searchTypeOptions,
+  value,
   children,
+  defaultSearchType,
+}: {
+  searchTypeOptions: SearchTypesConfigProps[];
+  defaultSearchType?: SearchTypesConfigProps;
+  value?: QueryValue;
+  children: ReactNode;
 }) => {
-  const getSearchOption = (searchOptions: SearchOption[]) =>
-    searchOptions.reduce((r, v) => {
-      if (v.options && v.options.length) {
-        let defaultSubItem = v.options.filter(item => item.isDefault);
-        if (defaultSubItem.length) {
-          r = defaultSubItem[0];
+  const [queryValue, setQueryValue] = useState<QueryValue>(
+    value || {
+      term: '',
+      field: '',
+      querystring: '',
+      union: '',
+    },
+  );
+
+  const selectedFieldDetails = MetadataFieldsConfig.find(f => {
+    if (queryValue.field === '_exists_' || queryValue.field === '-_exists_') {
+      return f.property === queryValue.querystring;
+    }
+
+    return f.property === queryValue.field;
+  });
+
+  // Get default search type for the field type.
+  const getDefaultSearchOption: any = useCallback(
+    (searchTypeOptions: SearchTypesConfigProps[]) => {
+      const filteredSearchTypes = filterSearchTypes(
+        searchTypeOptions,
+        queryValue,
+      );
+
+      let defaultSearchOption = filteredSearchTypes[0];
+      filteredSearchTypes.forEach(searchType => {
+        if (searchType.isDefault) {
+          // if there are suboptions look for the default.
+          if (searchType?.options?.length) {
+            const defaultSubOption = searchType.options.find(
+              option => option.isDefault,
+            );
+            if (defaultSubOption) {
+              defaultSearchOption = defaultSubOption;
+            }
+          } else {
+            defaultSearchOption = searchType;
+          }
         }
-      } else if (v.isDefault) {
-        r = v;
-      }
-      return r;
-    }, {} as SearchOption);
-
-  const predictiveSearchProps = usePredictiveSearch(term, field, false);
-  const { searchField } = predictiveSearchProps;
-
-  const [searchOptionsList, setSearchOptionsList] =
-    useState(defaultSearchOptions);
-
-  const [searchOption, setSearchOption] = useState<
-    AdvancedSearchContextProps['searchOption']
-  >(() => getSearchOption(searchOptionsList));
-
-  const [unionType, setUnionType] = useState<typeof unionOptions[number] | ''>(
-    '',
+      });
+      return defaultSearchOption;
+    },
+    [queryValue],
   );
 
-  const fieldDetails = MetadataFieldsConfig.find(
-    f => f.property === searchField,
+  const [selectedSearchType, setSelectedSearchType] =
+    useState<SearchTypesConfigProps>(
+      defaultSearchType || getDefaultSearchOption(searchTypeOptions),
+    );
+
+  const updateQueryValue = React.useCallback(
+    (update: Partial<AdvancedSearchContextProps['queryValue']>) => {
+      setQueryValue(prev => {
+        // Transform the querystring according to the selected search type (ex: enquote exact search terms)
+        if (
+          !prev.querystring &&
+          !update.querystring &&
+          selectedSearchType?.transformValue
+        ) {
+          return selectedSearchType.transformValue({ ...prev, ...update });
+        }
+        return { ...prev, ...update };
+      });
+    },
+    [selectedSearchType],
   );
 
-  // Update options based on field.
+  // Update toggled search type option when field changes.
   useEffect(() => {
-    setSearchOptionsList(() => {
-      if (fieldDetails?.format === 'enum' || fieldDetails?.type === 'date') {
-        return defaultSearchOptions.map(item => {
-          return { ...item, options: undefined };
-        });
+    setSelectedSearchType(prev => {
+      if (
+        (prev.shouldOmit && prev.shouldOmit(queryValue)) ||
+        (prev.shouldDisable && prev.shouldDisable(queryValue))
+      ) {
+        return getDefaultSearchOption(searchTypeOptions);
+      } else {
+        return prev;
       }
-      return defaultSearchOptions;
     });
-  }, [defaultSearchOptions, searchField, fieldDetails]);
+  }, [getDefaultSearchOption, queryValue, searchTypeOptions]);
 
-  // Update default search options when options list changes
-  useEffect(() => {
-    setSearchOption(getSearchOption(searchOptionsList));
-  }, [searchOptionsList]);
+  const onReset = () => {
+    setQueryValue({
+      term: '',
+      field: '',
+      querystring: '',
+      union: '',
+    });
+    setSelectedSearchType(getDefaultSearchOption(searchTypeOptions));
+  };
 
   return (
     <AdvancedSearchContext.Provider
       value={{
-        ...predictiveSearchProps,
-        searchOptionsList,
-        setSearchOptionsList,
-        searchOption,
-        setSearchOption,
-        unionType,
-        setUnionType,
+        queryValue,
+        updateQueryValue,
+        selectedFieldDetails,
+        selectedSearchType,
+        setSelectedSearchType,
+        searchTypeOptions,
+        onReset,
       }}
     >
       {children}
