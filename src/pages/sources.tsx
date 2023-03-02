@@ -1,27 +1,33 @@
 import type { NextPage } from 'next';
 import React from 'react';
-import { useQuery } from 'react-query';
-import { Button, Flex, UnorderedList } from 'nde-design-system';
+import { Flex, Text, UnorderedList } from 'nde-design-system';
 import { PageContainer, PageContent } from 'src/components/page-container';
 import { Main, Sidebar } from 'src/components/sources';
 import { fetchMetadata } from 'src/utils/api';
-import { Error, ErrorCTA } from 'src/components/error';
+import { Error } from 'src/components/error';
 import { useRouter } from 'next/router';
-import LoadingSpinner from 'src/components/loading';
+import axios from 'axios';
+import { MetadataSource } from 'src/utils/api/types';
 
-const Sources: NextPage = () => {
+export interface SourceResponse {
+  dateCreated: string;
+  id: MetadataSource['sourceInfo']['identifier'];
+  name: MetadataSource['sourceInfo']['name'];
+  description: MetadataSource['sourceInfo']['description'];
+  dateModified: MetadataSource['version'];
+  numberOfRecords: number;
+  schema: MetadataSource['sourceInfo']['schema'];
+  url: MetadataSource['sourceInfo']['url'];
+}
+
+interface SourcesProps {
+  data: SourceResponse[];
+  error: { status: number; message: string; type: string } | null;
+  children: any;
+}
+const Sources: NextPage<SourcesProps> = ({ data, error }) => {
   const router = useRouter();
   // Fetch metadata stats from API.
-  const {
-    data: sourceData,
-    isLoading,
-    error,
-  } = useQuery(
-    ['metadata'],
-    fetchMetadata, // Don't refresh everytime window is touched.
-    { refetchOnWindowFocus: false },
-  );
-
   return (
     <PageContainer
       id='sources-page'
@@ -34,15 +40,16 @@ const Sources: NextPage = () => {
     >
       <Flex>
         {error && (
-          <Error message="It's possible that the server is experiencing some issues.">
-            <ErrorCTA>
-              <Button onClick={() => router.reload()} variant='outline'>
-                Reload the page
-              </Button>
-            </ErrorCTA>
+          <Error>
+            <Flex flexDirection='column' alignItems='center'>
+              <Text textTransform='capitalize'>
+                {error?.message ||
+                  'It’s possible that the server is experiencing some issues.'}{' '}
+              </Text>
+            </Flex>
           </Error>
         )}
-        {!error && sourceData && (
+        {!error && data && (
           <>
             <Flex
               flexDirection='column'
@@ -60,19 +67,85 @@ const Sources: NextPage = () => {
                 top={0}
                 ml={0}
               >
-                <Sidebar data={sourceData} />
+                <Sidebar data={data} />
               </UnorderedList>
             </Flex>
+            <PageContent w='100%' flexDirection='column' bg='#fff'>
+              <Main data={data} />
+            </PageContent>
           </>
         )}
-
-        <PageContent w='100%' flexDirection='column' bg='#fff'>
-          {isLoading && <LoadingSpinner isLoading={isLoading} />}
-          {!error && sourceData && <Main sourceData={sourceData} />}
-        </PageContent>
       </Flex>
     </PageContainer>
   );
 };
+
+export async function getStaticProps() {
+  const fetchRepositoryInfo = async (sourceData: any) => {
+    try {
+      const data = await Promise.all(
+        sourceData.map(async ([k, source]: [string, any]) => {
+          const sourceData = {
+            id: (source.sourceInfo && source.sourceInfo.identifier) || k,
+            sourcePath: source?.code?.file || null,
+            name: (source.sourceInfo && source.sourceInfo.name) || k,
+            description:
+              (source.sourceInfo && source.sourceInfo.description) || '',
+            dateModified: source.version || '',
+            numberOfRecords: source.stats[k] || 0,
+            schema: (source.sourceInfo && source.sourceInfo.schema) || null,
+            url: (source.sourceInfo && source.sourceInfo.url) || '',
+          };
+          if (!sourceData.sourcePath) {
+            return sourceData;
+          }
+
+          // Fetch source information from github
+          try {
+            const url = `https://api.github.com/repos/NIAID-Data-Ecosystem/nde-crawlers/commits`;
+            const response = await axios.get(url, {
+              headers: {
+                Authorization: `Bearer ${process.env.GH_API_KEY}`,
+                'Content-Type': 'application/json',
+              },
+              params: {
+                url: '/repos/{owner}/{repo}/commits?path={path}',
+                owner: 'NIAID-Data-Ecosystem',
+                repo: 'nde-crawlers',
+                path: 'biothings-hub/files/nde-hub/hub/dataload/sources/immport/uploader.py',
+              },
+            });
+            const data = await response.data;
+            const dates: string[] = [];
+            if (data) {
+              data.forEach(
+                (jsonObj: { commit: { author: { date: string } } }) => {
+                  dates.push(jsonObj.commit.author.date);
+                },
+              );
+            }
+
+            return { ...sourceData, dateCreated: dates[dates.length - 1] };
+          } catch (err) {
+            throw err;
+          }
+        }),
+      );
+      return { error: null, data };
+    } catch (err: any) {
+      return {
+        data: [],
+        error: {
+          type: 'error',
+          status: err.response.status,
+          message: err.response.statusText,
+        },
+      };
+    }
+  };
+  const sources = await fetchMetadata();
+  const sourceData = await fetchRepositoryInfo(Object.entries(sources.src));
+  return { props: { ...sourceData } };
+}
 
 export default Sources;
