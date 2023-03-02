@@ -36,7 +36,7 @@ StyledSection.defaultProps = {
   flexDirection: ['column', 'column', 'row'],
   alignItems: ['flex-start', 'center', 'center'],
   justifyContent: ['center', 'center', 'center', 'space-between'],
-  maxWidth: ['100%', '100%', '1280px'],
+  maxWidth: ['100%', '100%', '100%'],
 };
 
 export const StyledSectionHeading = styled(Heading)<HeadingProps>(

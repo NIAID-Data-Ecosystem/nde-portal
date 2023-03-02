@@ -125,6 +125,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
           pl={[2, 4, 6]}
           flexDirection={['column', 'row']}
           bg='niaid.color'
+          sourceName={includedInDataCatalog?.name}
         />
         {/* Card header where name of resource is a link to resource apge */}
 
