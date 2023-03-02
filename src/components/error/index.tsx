@@ -3,7 +3,7 @@ import { Button, Flex, FlexProps, Heading, Text } from 'nde-design-system';
 import { PageContent } from 'src/components/page-container';
 
 interface Error extends FlexProps {
-  message: string;
+  message?: string;
 }
 
 // Default error container.
@@ -19,9 +19,9 @@ export const Error: React.FC<Error> = ({ children, message, ...props }) => {
         <Heading as='h1' my={4} color='inherit'>
           Oh no! Something went wrong.
         </Heading>
-        <Text color='inherit'>{message}</Text>
+        {message ? <Text color='inherit'>{message}</Text> : <></>}
         {children && (
-          <Flex mt={4} flex={1} w='100%'>
+          <Flex flex={1} w='100%'>
             {children}
           </Flex>
         )}

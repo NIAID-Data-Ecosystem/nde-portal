@@ -27,7 +27,7 @@ interface StyledText extends TextProps {
 }
 export const StyledText = ({ title, children, ...props }: StyledText) => {
   return (
-    <Text fontSize='sm' lineHeight='short' {...props}>
+    <Text fontSize='sm' lineHeight='short' wordBreak='break-all' {...props}>
       {title && (
         <Text fontSize='xs' fontWeight='semibold' color='gray.700'>
           {title}

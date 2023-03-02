@@ -73,7 +73,9 @@ export const useDropdownInput = ({
     onKeyDown,
     ...props
   }: DropdownInputProps) => ({
-    colorScheme,
+    colorScheme: props.isInvalid ? 'red' : colorScheme,
+    borderColor: props.isInvalid ? 'status.error' : 'inherit',
+    _focus: { borderColor: props.isInvalid ? 'status.error' : 'inherit' },
     bg: 'white',
     type: 'search',
     value: inputValue,

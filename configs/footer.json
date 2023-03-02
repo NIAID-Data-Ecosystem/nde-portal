@@ -26,6 +26,11 @@
             { "label": "Home", "href": "/" },
             { "label": "Search", "href": "/search" },
             {
+              "label": "Advanced Search",
+              "subLabel": "Build more complex queries",
+              "href": "/advanced-search"
+            },
+            {
               "label": "About",
               "href": "https://data-staging.niaid.nih.gov/about"
             },
@@ -40,7 +45,7 @@
                 },
                 {
                   "label": "Schemas",
-                  "subLabel": "Dataset and Computational Tool schemas",
+                  "subLabel": "Information about the API schema",
                   "href": "https://discovery.biothings.io/portal/niaid"
                 },
                 {

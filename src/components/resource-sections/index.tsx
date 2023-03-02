@@ -27,6 +27,7 @@ import CitedByTable from './components/cited-by-table';
 import { DisplayHTMLContent } from '../html-content';
 import { DownloadMetadata } from '../download-metadata';
 import SoftwareInformation from './components/software-information';
+import ResourceStats from './components/stats';
 
 // Metadata displayed in each section
 export const section_metadata: { [key: string]: (keyof FormattedResource)[] } =
@@ -107,6 +108,17 @@ const Sections = ({
             isLoading={isLoading}
             isCollapsible={section.isCollapsible}
           >
+            {/* Only show here on small screens. */}
+            {/* <Box display={{ base: 'block', lg: 'none' }}>
+              <ResourceStats
+                includedInDataCatalog={data?.includedInDataCatalog}
+                citation={data?.citation}
+                doi={data?.doi}
+                nctid={data?.nctid}
+                aggregateRating={data?.aggregateRating}
+                interactionStatistics={data?.interactionStatistics}
+              />
+            </Box> */}
             {section.hash === 'overview' && (
               <ResourceOverview isLoading={isLoading} {...data} />
             )}
@@ -114,13 +126,23 @@ const Sections = ({
               <Box display={{ base: 'block', lg: 'none' }}>
                 <ResourceLinks
                   isLoading={isLoading}
-                  includedInDataCatalog={data?.includedInDataCatalog}
                   url={data?.url}
                   mainEntityOfPage={data?.mainEntityOfPage}
                   codeRepository={data?.codeRepository}
-                />
+                  includedInDataCatalog={data?.includedInDataCatalog}
+                >
+                  <ResourceStats
+                    includedInDataCatalog={data?.includedInDataCatalog}
+                    citation={data?.citation}
+                    doi={data?.doi}
+                    nctid={data?.nctid}
+                    aggregateRating={data?.aggregateRating}
+                    interactionStatistics={data?.interactionStatistics}
+                  />
+                </ResourceLinks>
               </Box>
             )}
+
             {/* Show keywords */}
             {section.hash === 'keywords' && (
               <Skeleton isLoaded={!isLoading}>

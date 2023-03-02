@@ -291,7 +291,7 @@ export const DylanVis: React.FC<ChartTemplateProps> = ({
         }
         updateFilters({
           // 'date': ['["2022-04-27" TO "2022-04-27"]'],
-          date: range,
+          date: [range[0], range[1]],
         });
       }
     },

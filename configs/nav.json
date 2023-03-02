@@ -1,14 +1,23 @@
 {
-  "href": "https://data-staging.niaid.nih.gov/",
+  "href": "/",
   "routes": [
     { "label": "Home", "href": "/" },
     { "label": "Search", "href": "/search" },
 
     { "label": "About", "href": "/about" },
+    {
+      "label": "FAQ",
+      "href": "/faq"
+    },
 
     {
       "label": "Resources",
       "routes": [
+        {
+          "label": "Advanced Search",
+          "subLabel": "Build more complex queries",
+          "href": "/advanced-search"
+        },
         {
           "label": "Sources",
           "subLabel": "Latest information about our data sources",
@@ -16,7 +25,7 @@
         },
         {
           "label": "Schemas",
-          "subLabel": "Dataset and Computational Tool schemas",
+          "subLabel": "Information about the API schema",
           "href": "https://discovery.biothings.io/view/nde",
           "isExternal": true
         },
@@ -26,11 +35,7 @@
           "href": "https://niaid-data.readme.io/",
           "isExternal": true
         },
-        {
-          "label": "FAQ",
-          "subLabel": "Frequently asked questions",
-          "href": "/faq"
-        },
+
         {
           "label": "Changelog",
           "subLabel": "Log of updates to the NIAID Data Ecosystem",
