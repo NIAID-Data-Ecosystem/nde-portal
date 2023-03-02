@@ -32,6 +32,11 @@ Config for the naming/text of a filter.
 export const filtersConfig: FiltersConfigProps = {
   date: { name: 'Date ', glyph: 'date', property: 'date', isDefaultOpen: true },
   // '@type': { name: 'Type', isDefaultOpen: true },
+  'includedInDataCatalog.name': {
+    name: 'Source',
+    glyph: 'info',
+    property: 'includedInDataCatalog',
+  },
   'healthCondition.name': {
     name: 'Health Condition',
     glyph: 'healthCondition',
@@ -55,11 +60,6 @@ export const filtersConfig: FiltersConfigProps = {
   //   glyph: 'programmingLanguage',
   //   property: 'programmingLanguage',
   // },
-  'includedInDataCatalog.name': {
-    name: 'Source',
-    glyph: 'info',
-    property: 'includedInDataCatalog',
-  },
   'funding.funder.name': {
     name: 'Funding',
     glyph: 'funding',
@@ -162,7 +162,7 @@ export const Filters: React.FC<FiltersProps> = ({
                 handleSelectedFilters(values, facet)
               }
               resetFilter={() => handleSelectedFilters([], facet)}
-            ></FiltersDateSlider>
+            />
           );
         }
 
