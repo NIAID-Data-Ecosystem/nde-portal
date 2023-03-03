@@ -66,7 +66,7 @@ const TypeBanner: React.FC<TypeBannerProps> = ({
         {isNiaidFunded && (
           <StyledLabel
             _before={{
-              bg: 'secondary.700',
+              bg: 'niaid.color',
             }}
           >
             <Text
