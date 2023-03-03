@@ -1,16 +1,25 @@
 import type { NextPage } from 'next';
 import React from 'react';
-import { Flex, Text, UnorderedList } from 'nde-design-system';
+import {
+  Box,
+  Flex,
+  Skeleton,
+  Spinner,
+  Text,
+  UnorderedList,
+} from 'nde-design-system';
 import { PageContainer, PageContent } from 'src/components/page-container';
 import { Main, Sidebar } from 'src/components/sources';
 import { fetchMetadata } from 'src/utils/api';
 import { Error } from 'src/components/error';
 import { useRouter } from 'next/router';
 import axios from 'axios';
-import { MetadataSource } from 'src/utils/api/types';
+import { Metadata, MetadataSource } from 'src/utils/api/types';
+import { useQuery } from 'react-query';
+import { getQueryStatusError } from 'src/components/error/utils';
 
 export interface SourceResponse {
-  dateCreated: string;
+  dateCreated?: string;
   id: MetadataSource['sourceInfo']['identifier'];
   name: MetadataSource['sourceInfo']['name'];
   description: MetadataSource['sourceInfo']['description'];
@@ -26,8 +35,36 @@ interface SourcesProps {
   children: any;
 }
 const Sources: NextPage<SourcesProps> = ({ data, error }) => {
-  const router = useRouter();
   // Fetch metadata stats from API.
+  const {
+    data: sources,
+    isLoading,
+    error: sourcesError,
+  } = useQuery(['metadata'], fetchMetadata, {
+    refetchOnMount: true,
+    select: res => {
+      const sources = res.src;
+      const sourceDetails = Object.entries(sources).map(([key, source]) => {
+        const id = (source.sourceInfo && source.sourceInfo.identifier) || key;
+        const githubInfo = data.find(item => {
+          return item.id === id;
+        });
+        return {
+          ...githubInfo,
+          id,
+          name: (source.sourceInfo && source.sourceInfo.name) || key,
+          description:
+            (source.sourceInfo && source.sourceInfo.description) || '',
+          dateModified: source.version || '',
+          numberOfRecords: source.stats[key] || 0,
+          schema: (source.sourceInfo && source.sourceInfo.schema) || null,
+          url: (source.sourceInfo && source.sourceInfo.url) || '',
+        };
+      });
+      return sourceDetails;
+    },
+  });
+
   return (
     <PageContainer
       id='sources-page'
@@ -39,17 +76,21 @@ const Sources: NextPage<SourcesProps> = ({ data, error }) => {
       disableSearchBar
     >
       <Flex>
-        {error && (
+        {(error || sourcesError) && (
           <Error>
             <Flex flexDirection='column' alignItems='center'>
-              <Text textTransform='capitalize'>
-                {error?.message ||
-                  'It’s possible that the server is experiencing some issues.'}{' '}
+              <Text>
+                {error ? error.message : ''}
+                {!error && sourcesError
+                  ? getQueryStatusError(
+                      sourcesError as unknown as { status: string },
+                    )
+                  : ''}
               </Text>
             </Flex>
           </Error>
         )}
-        {!error && data && (
+        {!(error || sourcesError) && (
           <>
             <Flex
               flexDirection='column'
@@ -67,11 +108,11 @@ const Sources: NextPage<SourcesProps> = ({ data, error }) => {
                 top={0}
                 ml={0}
               >
-                <Sidebar data={data} />
+                {!isLoading && sources ? <Sidebar data={sources} /> : <></>}
               </UnorderedList>
             </Flex>
             <PageContent w='100%' flexDirection='column' bg='#fff'>
-              <Main data={data} />
+              <Main data={sources} isLoading={isLoading} />
             </PageContent>
           </>
         )}
@@ -88,13 +129,6 @@ export async function getStaticProps() {
           const sourceData = {
             id: (source.sourceInfo && source.sourceInfo.identifier) || k,
             sourcePath: source?.code?.file || null,
-            name: (source.sourceInfo && source.sourceInfo.name) || k,
-            description:
-              (source.sourceInfo && source.sourceInfo.description) || '',
-            dateModified: source.version || '',
-            numberOfRecords: source.stats[k] || 0,
-            schema: (source.sourceInfo && source.sourceInfo.schema) || null,
-            url: (source.sourceInfo && source.sourceInfo.url) || '',
           };
           if (!sourceData.sourcePath) {
             return sourceData;

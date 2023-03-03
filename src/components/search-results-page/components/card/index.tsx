@@ -236,7 +236,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                   fontWeight='semibold'
                 >
                   <Tooltip
-                    label='Corresponds to the most recenf of date modified, date published and date created.'
+                    label='Corresponds to the most recent of date modified, date published and date created.'
                     hasArrow
                     bg='#fff'
                     sx={{
@@ -380,7 +380,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                       </VisuallyHidden>
                       <div
                         role='link'
-                        aria-label={`altmetric badge for doi ${doi}`}
+                        title='altmetric badge'
                         data-badge-popover='left'
                         data-badge-type='bar'
                         data-doi={formatDOI(doi)}

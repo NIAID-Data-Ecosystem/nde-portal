@@ -82,7 +82,7 @@ export const ExternalSourceButton: React.FC<ExternalButtonProps> = ({
               transition='0.2s linear'
               sx={{
                 color: '#fff',
-                '#button-arrow': {
+                '.button-arrow': {
                   px: 4,
                   transition: '0.2s ease-in-out',
                 },
@@ -90,7 +90,7 @@ export const ExternalSourceButton: React.FC<ExternalButtonProps> = ({
               _hover={{
                 color: 'whiteAlpha.900',
                 bg: 'secondary.600',
-                '#button-arrow': {
+                '.button-arrow': {
                   px: 8,
                   transition: '0.2s ease-in-out',
                 },
@@ -108,7 +108,7 @@ export const ExternalSourceButton: React.FC<ExternalButtonProps> = ({
                 {name}
               </Heading>
               <Box
-                id='button-arrow'
+                className='button-arrow'
                 bg='whiteAlpha.600'
                 borderRadius='semi'
                 px={2}
