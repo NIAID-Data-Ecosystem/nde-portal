@@ -39,12 +39,24 @@ export const getFileIcon = (value: string) => {
   } else if (value.toLowerCase().includes('bam')) {
     // Archived file extensions
     icon = ({ id, ...props }: IconProps) => (
-      <MetadataIcon id={id!} glyph='bam' stroke='currentColor' {...props} />
+      <MetadataIcon
+        id={id!}
+        glyph='bam'
+        title='bam file type'
+        stroke='currentColor'
+        {...props}
+      />
     );
   } else if (value.toLowerCase().includes('fasta')) {
     // Archived file extensions
     icon = ({ id, ...props }: IconProps) => (
-      <MetadataIcon id={id!} glyph='fasta' stroke='currentColor' {...props} />
+      <MetadataIcon
+        id={id!}
+        glyph='fasta'
+        title='fasta file type'
+        stroke='currentColor'
+        {...props}
+      />
     );
   } else if (
     value.toLowerCase().includes('zip') ||
