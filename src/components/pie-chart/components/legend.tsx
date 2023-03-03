@@ -119,7 +119,7 @@ export const Legend = ({ data: rawData }: { data: RawDataProps[] }) => {
   };
   return (
     <Flex
-      id='chart-legend'
+      className='chart-legend'
       w='100%'
       minWidth={[200, 200, 300]}
       // maxW={{ base: 600, lg: 'unset' }}

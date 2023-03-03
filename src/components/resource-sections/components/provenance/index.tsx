@@ -40,33 +40,31 @@ const Provenance: React.FC<Provenance> = ({
 
         {includedInDataCatalog?.name ? (
           <StatField label='' isLoading={isLoading}>
-            <dd>
-              {/* Source where data is retrieved from */}
-              {includedInDataCatalog.url ? (
-                <ExternalSourceButton
-                  w='100%'
-                  alt='Data source name'
-                  src={
-                    getRepositoryImage(includedInDataCatalog.name) || undefined
-                  }
-                  colorScheme='secondary'
-                  href={url || undefined}
-                  sourceHref={includedInDataCatalog?.url}
-                  name={'Access Data'}
-                />
-              ) : (
-                <ExternalSourceButton
-                  w='100%'
-                  alt='Data source name'
-                  src={
-                    getRepositoryImage(includedInDataCatalog.name) || undefined
-                  }
-                  colorScheme='secondary'
-                  sourceHref={includedInDataCatalog?.url}
-                  name={'Access Data'}
-                />
-              )}
-            </dd>
+            {/* Source where data is retrieved from */}
+            {includedInDataCatalog.url ? (
+              <ExternalSourceButton
+                w='100%'
+                alt='Data source name'
+                src={
+                  getRepositoryImage(includedInDataCatalog.name) || undefined
+                }
+                colorScheme='secondary'
+                href={url || undefined}
+                sourceHref={includedInDataCatalog?.url}
+                name={'Access Data'}
+              />
+            ) : (
+              <ExternalSourceButton
+                w='100%'
+                alt='Data source name'
+                src={
+                  getRepositoryImage(includedInDataCatalog.name) || undefined
+                }
+                colorScheme='secondary'
+                sourceHref={includedInDataCatalog?.url}
+                name={'Access Data'}
+              />
+            )}
           </StatField>
         ) : (
           <Text>No data available.</Text>
@@ -74,7 +72,7 @@ const Provenance: React.FC<Provenance> = ({
 
         {includedInDataCatalog?.name && (
           <StatField label='Name' isLoading={isLoading}>
-            <dd>{includedInDataCatalog.name} </dd>
+            {includedInDataCatalog.name}
           </StatField>
         )}
 
@@ -90,22 +88,20 @@ const Provenance: React.FC<Provenance> = ({
             }
             return (
               <StatField key={i} label='Original Source' isLoading={isLoading}>
-                <dd>
-                  {publisher.url ? (
-                    <Link href={publisher.url} target='_blank' isExternal>
-                      {publisher.name || publisher.url}
-                    </Link>
-                  ) : (
-                    <Text>{publisher.name || publisher.url}</Text>
-                  )}
-                </dd>
+                {publisher.url ? (
+                  <Link href={publisher.url} target='_blank' isExternal>
+                    {publisher.name || publisher.url}
+                  </Link>
+                ) : (
+                  <Text>{publisher.name || publisher.url}</Text>
+                )}
               </StatField>
             );
           })}
 
         {includedInDataCatalog?.versionDate && (
           <StatField label='Version Date' isLoading={isLoading}>
-            <dd>{formatDate(includedInDataCatalog.versionDate)} </dd>
+            {formatDate(includedInDataCatalog.versionDate)}
           </StatField>
         )}
       </Stack>

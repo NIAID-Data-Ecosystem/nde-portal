@@ -48,7 +48,7 @@ const Overview: React.FC<OverviewProps> = ({
   variableMeasured,
   ...data
 }) => {
-  const StatIcon = ({ id, glyph }: IconProps) => (
+  const StatIcon = ({ id, glyph, title }: IconProps) => (
     <Box mr={2}>
       <MetadataIcon
         id={id}
@@ -56,6 +56,7 @@ const Overview: React.FC<OverviewProps> = ({
         glyph={glyph}
         stroke='currentColor'
         fill={getMetadataColor(glyph)}
+        title={title}
       />
     </Box>
   );
@@ -132,7 +133,9 @@ const Overview: React.FC<OverviewProps> = ({
           {
             <StatField
               isLoading={isLoading}
-              icon={() => <StatIcon id='license' glyph='license' />}
+              icon={() => (
+                <StatIcon id='license' title='license' glyph='license' />
+              )}
               {...getStatInfo('license')}
             >
               <>
@@ -155,7 +158,13 @@ const Overview: React.FC<OverviewProps> = ({
             <Box>
               <StatField
                 isLoading={isLoading}
-                icon={() => <StatIcon id='usageInfo' glyph='usageInfo' />}
+                icon={() => (
+                  <StatIcon
+                    id='usageInfo'
+                    title='usage info'
+                    glyph='usageInfo'
+                  />
+                )}
                 {...getStatInfo('usageInfo')}
               >
                 <Box>
@@ -173,7 +182,9 @@ const Overview: React.FC<OverviewProps> = ({
           {/* species covered in resource */}
           <StatField
             isLoading={isLoading}
-            icon={() => <StatIcon id='species' glyph='species' />}
+            icon={() => (
+              <StatIcon id='species' title='species' glyph='species' />
+            )}
             {...getStatInfo('species')}
           >
             {species ? (
@@ -210,7 +221,13 @@ const Overview: React.FC<OverviewProps> = ({
           {/* infectious agent involved */}
           <StatField
             isLoading={isLoading}
-            icon={() => <StatIcon id='pathogen' glyph='infectiousAgent' />}
+            icon={() => (
+              <StatIcon
+                id='pathogen'
+                title='pathogen'
+                glyph='infectiousAgent'
+              />
+            )}
             {...getStatInfo('infectiousAgent')}
           >
             {infectiousAgent ? (
@@ -236,7 +253,11 @@ const Overview: React.FC<OverviewProps> = ({
           <StatField
             isLoading={isLoading}
             icon={() => (
-              <StatIcon id='healthCondition' glyph='healthCondition' />
+              <StatIcon
+                id='healthCondition'
+                title='health condition'
+                glyph='healthCondition'
+              />
             )}
             {...getStatInfo('healthCondition')}
           >
@@ -263,7 +284,11 @@ const Overview: React.FC<OverviewProps> = ({
           <StatField
             isLoading={isLoading}
             icon={() => (
-              <StatIcon id='variableMeasured' glyph='variableMeasured' />
+              <StatIcon
+                id='variableMeasured'
+                title='variable measured'
+                glyph='variableMeasured'
+              />
             )}
             {...getStatInfo('variableMeasured')}
           >
@@ -276,6 +301,7 @@ const Overview: React.FC<OverviewProps> = ({
             icon={() => (
               <StatIcon
                 id='measurementTechnique'
+                title='measurement technique'
                 glyph='measurementTechnique'
               />
             )}
@@ -359,6 +385,7 @@ const Overview: React.FC<OverviewProps> = ({
               icon={() => (
                 <StatIcon
                   id='programmingLanguage'
+                  title='programming language'
                   glyph='programmingLanguage'
                 />
               )}
@@ -398,6 +425,7 @@ const Overview: React.FC<OverviewProps> = ({
                 icon={() => (
                   <StatIcon
                     id='applicationCategory'
+                    title='application category'
                     glyph='applicationCategory'
                   />
                 )}
@@ -451,7 +479,9 @@ const Overview: React.FC<OverviewProps> = ({
           <StatField
             isLoading={isLoading}
             label='Related Identifiers'
-            icon={() => <StatIcon id='identifier' glyph='identifier' />}
+            icon={() => (
+              <StatIcon id='identifier' title='identifier' glyph='identifier' />
+            )}
             description={
               <p>
                 <strong>DOI: </strong>
@@ -531,7 +561,9 @@ const Overview: React.FC<OverviewProps> = ({
             <Box>
               <StatField
                 isLoading={isLoading}
-                icon={() => <StatIcon id='citation' glyph='citation' />}
+                icon={() => (
+                  <StatIcon id='citation' title='citation' glyph='citation' />
+                )}
                 {...getStatInfo('citation')}
               >
                 {citation.map((c, i) => {
