@@ -17,7 +17,7 @@ const withMDX = require('@next/mdx')({
 module.exports = withMDX({
   pageExtensions: ['js', 'jsx', 'ts', 'tsx', 'md', 'mdx'],
   reactStrictMode: true,
-  trailingSlash: true,
+  // trailingSlash: true,
   assetPrefix: isProd ? process.env.BASE_URL : undefined,
   basePath: isProd ? process.env.BASE_URL : '',
   webpack: (config, { isServer, webpack }) => {
