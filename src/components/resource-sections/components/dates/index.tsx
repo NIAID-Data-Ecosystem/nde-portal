@@ -96,7 +96,10 @@ const ResourceDates: React.FC<ResourceDates> = ({ data }) => {
     });
 
   return (
-    <TypeBanner type={data?.type}>
+    <TypeBanner
+      type={data?.type}
+      sourceName={data?.includedInDataCatalog?.name}
+    >
       <Flex flexWrap='wrap' ml={[0, 0, 4]}>
         {date_data.map((date, i) => {
           return <DateTag key={i} type={date.name} date={date.value} />;

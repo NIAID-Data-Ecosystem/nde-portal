@@ -1,0 +1,30 @@
+{
+  "repositories": [
+    {
+      "id": "AccessClinicalData@NIAID",
+      "name": "AccessClinicalData@NIAID"
+    },
+    {
+      "id": "ClinEpiDB",
+      "name": "ClinEpiDB"
+    },
+    {
+      "id": "ImmPort",
+      "name": "Immunology Database and Analysis Portal"
+    },
+
+    {
+      "id": "MicrobiomeDB",
+      "name": "MicrobiomeDB"
+    },
+
+    {
+      "id": "VDJServer",
+      "name": "VDJServer"
+    },
+    {
+      "id": "VEuPathDB",
+      "name": "VEuPathDB"
+    }
+  ]
+}

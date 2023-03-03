@@ -86,14 +86,6 @@ const sample_queries = [
 const Home: NextPage = () => {
   const size = useBreakpointValue({ base: 300, lg: 350 });
 
-  // Search term entered in search bar
-  const [searchTerm, setSearchTerm] = useState<string>('');
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>): void =>
-    setSearchTerm(e.target.value);
-
-  // update value when changed
-  // useEffect(() => setSearchTerm(value || ''), [value]);
-
   // Fetch stats about number of resources
   const params = {
     q: '__all__',
@@ -179,7 +171,6 @@ const Home: NextPage = () => {
       setStats(stat);
     },
   });
-
   return (
     <>
       <PageContainer
@@ -326,10 +317,11 @@ const Home: NextPage = () => {
           >
             <Flex
               width='100%'
-              flexDirection={{ base: 'column', lg: 'row' }}
-              justifyContent={{ lg: 'space-between' }}
-              alignItems='center'
+              flexDirection={{ base: 'column', lg: 'row-reverse' }}
+              justifyContent={{ lg: 'center' }}
               flex={1}
+              alignItems='center'
+              maxW={{ base: 'unset', lg: '1400px' }}
             >
               <LoadingSpinner isLoading={isLoading}>
                 {/* Pie chart with number repositories and associated resources*/}
@@ -340,7 +332,7 @@ const Home: NextPage = () => {
                     data={stats.repositories.stats.sort(
                       (a, b) => b.count - a.count,
                     )}
-                  ></PieChart>
+                  />
                 )}
               </LoadingSpinner>
               {/* Legend display for smaller screen size */}
@@ -358,7 +350,7 @@ const Home: NextPage = () => {
                 )}
               </Flex>
               <StyledBody
-                maxWidth={['unset', 'unset', '700px', '410px']}
+                maxWidth={['unset', 'unset', '700px', '600px']}
                 textAlign={['start', 'start', 'center', 'start']}
               >
                 <StyledSectionHeading mt={[4, 6]}>
@@ -393,22 +385,21 @@ const Home: NextPage = () => {
                   )}
               </StyledBody>
             </Flex>
-
-            {/* Legend display for larger screen size */}
-            <Flex
-              display={{ base: 'none', lg: 'flex' }}
-              w='100%'
-              justifyContent='center'
-            >
-              {stats?.repositories?.stats && (
-                <Legend
-                  data={stats.repositories.stats.sort(
-                    (a, b) => b.count - a.count,
-                  )}
-                ></Legend>
-              )}
-            </Flex>
           </StyledSection>
+          {/* Legend display for larger screen size */}
+          <Flex
+            display={{ base: 'none', lg: 'flex' }}
+            w='100%'
+            justifyContent={{ base: 'center', md: 'space-between' }}
+          >
+            {stats?.repositories?.stats && (
+              <Legend
+                data={stats.repositories.stats.sort(
+                  (a, b) => b.count - a.count,
+                )}
+              ></Legend>
+            )}
+          </Flex>
         </PageContent>
       </PageContainer>
     </>
