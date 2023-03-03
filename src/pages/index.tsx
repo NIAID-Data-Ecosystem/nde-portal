@@ -87,14 +87,6 @@ const sample_queries = [
 const Home: NextPage = () => {
   const size = useBreakpointValue({ base: 300, lg: 350 });
 
-  // Search term entered in search bar
-  const [searchTerm, setSearchTerm] = useState<string>('');
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>): void =>
-    setSearchTerm(e.target.value);
-
-  // update value when changed
-  // useEffect(() => setSearchTerm(value || ''), [value]);
-
   // Fetch stats about number of resources
   const params = {
     q: '__all__',
@@ -180,7 +172,6 @@ const Home: NextPage = () => {
       setStats(stat);
     },
   });
-
   return (
     <PageContainer
       hasNavigation
