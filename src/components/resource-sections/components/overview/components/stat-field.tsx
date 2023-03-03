@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
 import {
+  Box,
   Flex,
   FlexProps,
+  Heading,
   Icon,
-  Stat,
-  StatLabel,
-  StatNumber,
   Text,
   useBreakpointValue,
 } from 'nde-design-system';
@@ -39,62 +38,66 @@ const StatField: React.FC<MetadataStatProps> = ({
       return <>{children}</>;
     }
     if (typeof children === 'number') {
-      return <StatNumber>{formatNumber(children)}</StatNumber>;
+      return <Text size='sm'>{formatNumber(children)}</Text>;
     }
     return (
-      <Text as='dd' fontSize='sm' lineHeight='short' mt={1}>
+      <Text as='div' fontSize='sm' lineHeight='short' mt={1}>
         {children || '-'}
       </Text>
     );
   };
 
   return (
-    <Stat p={2} w='100%' m={0.5} {...rest}>
+    <Box as='div' p={2} w='100%' m={0.5} {...rest}>
       <Flex flexDirection='column'>
         <Flex>
-          <StatLabel
-            color='gray.600'
-            fontSize='xs'
-            lineHeight='shorter'
-            fontWeight='medium'
-            whiteSpace='nowrap'
-            mb={1}
-            onClick={() => isMobile && setTooltipOpen(!isTooltipOpen)}
-          >
-            <Tooltip
-              aria-label={`Tooltip for ${label}`}
-              label={description}
-              hasArrow
-              placement='top'
-              isOpen={isMobile ? isTooltipOpen : undefined}
-              closeDelay={300}
+          {label && (
+            <Heading
+              as='h6'
+              size='h6'
+              color='gray.800'
+              fontSize='xs'
+              lineHeight='shorter'
+              fontWeight='medium'
+              whiteSpace='nowrap'
+              mb={1}
+              onClick={() => isMobile && setTooltipOpen(!isTooltipOpen)}
             >
-              <span
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  cursor: description ? 'pointer' : 'default',
-                }}
+              <Tooltip
+                aria-label={`Tooltip for ${label}`}
+                label={description}
+                hasArrow
+                placement='top'
+                isOpen={isMobile ? isTooltipOpen : undefined}
+                closeDelay={300}
               >
-                {icon && <Icon as={icon} color='gray.500' mx={1} />}
-                {label}
-                {/* button used here to allow user to focus on tooltip*/}
-                {description && (
-                  <button aria-label={label}>
-                    <Icon
-                      as={FaInfo}
-                      mx={2}
-                      color='gray.700'
-                      border='0.625px solid'
-                      borderRadius='100%'
-                      p={0.5}
-                      boxSize='0.85rem'
-                    />
-                  </button>
-                )}
-              </span>
-            </Tooltip>
-          </StatLabel>
+                <span
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    cursor: description ? 'pointer' : 'default',
+                  }}
+                >
+                  {icon && <Icon as={icon} color='gray.500' mx={1} />}
+                  {label}
+                  {/* button used here to allow user to focus on tooltip*/}
+                  {description && (
+                    <button aria-label={label}>
+                      <Icon
+                        as={FaInfo}
+                        mx={2}
+                        color='gray.800'
+                        border='0.625px solid'
+                        borderRadius='100%'
+                        p={0.5}
+                        boxSize='0.85rem'
+                      />
+                    </button>
+                  )}
+                </span>
+              </Tooltip>
+            </Heading>
+          )}
         </Flex>
         {isLoading ? (
           <LoadingSpinner
@@ -107,7 +110,7 @@ const StatField: React.FC<MetadataStatProps> = ({
           <StatText />
         )}
       </Flex>
-    </Stat>
+    </Box>
   );
 };
 

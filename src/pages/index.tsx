@@ -84,7 +84,6 @@ const sample_queries = [
 ];
 
 const Home: NextPage = () => {
-  const router = useRouter();
   const size = useBreakpointValue({ base: 300, lg: 350 });
 
   // Search term entered in search bar

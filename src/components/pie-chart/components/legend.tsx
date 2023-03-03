@@ -68,7 +68,7 @@ export const Legend = ({ data: rawData }: { data: RawDataProps[] }) => {
   };
   return (
     <Flex
-      id='chart-legend'
+      className='chart-legend'
       w='100%'
       my={4}
       mx={[4, 4, 8]}
