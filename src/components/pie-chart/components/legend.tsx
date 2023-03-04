@@ -1,6 +1,5 @@
 import React from 'react';
 import {
-  Badge,
   Box,
   Flex,
   Heading,
@@ -10,12 +9,12 @@ import {
   Tag,
   Text,
 } from 'nde-design-system';
-import { LegendOrdinal, LegendItem } from '@visx/legend';
+import { LegendOrdinal } from '@visx/legend';
 import { formatNumber } from 'src/utils/helpers';
 import NextLink from 'next/link';
 import { queryFilterObject2String } from 'src/components/filters';
 import { colorScale, formatPieChartData } from '../helpers';
-import { DataProps, RawDataProps } from '../types';
+import { RawDataProps } from '../types';
 import { assetPrefix } from 'next.config';
 import NIAID_FUNDED from 'configs/niaid-sources.json';
 
@@ -74,7 +73,12 @@ const Label = ({
           <Box>
             <Text lineHeight='shorter' fontWeight='semibold'>
               {text}
-              <Text lineHeight='shorter' fontSize='sm' fontWeight='normal'>
+              <Text
+                as='span'
+                lineHeight='shorter'
+                fontSize='sm'
+                fontWeight='normal'
+              >
                 {formatNumber(count)} records
               </Text>
             </Text>
@@ -122,7 +126,6 @@ export const Legend = ({ data: rawData }: { data: RawDataProps[] }) => {
       className='chart-legend'
       w='100%'
       minWidth={[200, 200, 300]}
-      // maxW={{ base: 600, lg: 'unset' }}
       justifyContent={{ base: 'center', sm: 'space-between', md: 'center' }}
       flexDirection={{ base: 'column', md: 'row' }}
       flexWrap='wrap'
@@ -187,10 +190,10 @@ export const Legend = ({ data: rawData }: { data: RawDataProps[] }) => {
                     p={2}
                     justifyContent='space-around'
                   >
-                    {niaid_labels.map(label => {
+                    {niaid_labels.map((label, i) => {
                       return (
                         <Flex
-                          key={label.term}
+                          key={`${label.term}-${i}`}
                           flexDirection='column'
                           flex='1 1 50%'
                           p={2}
@@ -237,7 +240,7 @@ export const Legend = ({ data: rawData }: { data: RawDataProps[] }) => {
                     }
                     const datum = data.filter(d => d.term === label.text)[0];
                     return (
-                      <Box w='100%' key={i}>
+                      <Box w='100%' key={label.text}>
                         <Label
                           swatchColor={label.value}
                           text={label.text}
@@ -278,7 +281,7 @@ export const Legend = ({ data: rawData }: { data: RawDataProps[] }) => {
                 {/* grouped "other" type labels */}
                 {labels.map((label, i) => {
                   if (label.text.toLowerCase() !== 'other') {
-                    return <></>;
+                    return <React.Fragment key={i}></React.Fragment>;
                   }
                   const datum = data.filter(d => d.term === label.text)[0];
                   return (
