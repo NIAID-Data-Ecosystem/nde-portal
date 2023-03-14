@@ -72,7 +72,7 @@ const Label = ({
           {swatchColor && <Box bg={swatchColor} w={3} h={3} mr={3} />}
           <Box>
             <Text lineHeight='shorter' fontWeight='semibold'>
-              {text}
+              {text} <br />
               <Text
                 as='span'
                 lineHeight='shorter'
