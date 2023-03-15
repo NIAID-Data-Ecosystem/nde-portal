@@ -28,8 +28,14 @@
         {
           "label": "Discovery Portal",
           "routes": [
-            { "label": "Home", "href": "/" },
-            { "label": "Search", "href": "/search" },
+            {
+              "label": "Home",
+              "href": "/"
+            },
+            {
+              "label": "Search",
+              "href": "/search"
+            },
             {
               "label": "Advanced Search",
               "subLabel": "Build more complex queries",
@@ -39,7 +45,6 @@
               "label": "About",
               "href": "/about"
             },
-
             {
               "label": "Resources",
               "routes": [
@@ -51,7 +56,8 @@
                 {
                   "label": "Schemas",
                   "subLabel": "Information about the API schema",
-                  "href": "https://discovery.biothings.io/portal/niaid"
+                  "href": "https://discovery.biothings.io/portal/niaid",
+                  "isExternal": true
                 },
                 {
                   "label": "Documentation",
