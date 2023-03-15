@@ -64,7 +64,7 @@ export const PageContainer: React.FC<PageContainerProps> = ({
   return (
     <>
       <Head>
-        <title>NDE Portal {title && ` | ${title}`}</title>
+        <title>NIAID Data Discovery Portal {title && ` | ${title}`}</title>
         <meta name='description' content={metaDescription} />
       </Head>
 
