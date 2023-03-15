@@ -176,7 +176,7 @@ const Home: NextPage = () => {
       <PageContainer
         hasNavigation
         title='Home'
-        metaDescription='NIAID Data Ecosystem Discovery Portal - Home.'
+        metaDescription='Find and access allergic, immune-mediated and infectious disease data by searching across biomedical data repositories with the NIAID Data Ecosystem Discovery Portal'
         disableSearchBar
       >
         <PageHeader
