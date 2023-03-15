@@ -1,5 +1,10 @@
 {
   "href": "/",
+  "lastUpdate": {
+    "label": "Content Last Updated: 2023-02-27",
+    "href": "https://data-staging.niaid.nih.gov/changelog/",
+    "isExternal": true
+  },
   "contact": {
     "label": "Connect with us",
     "routes": [
