@@ -3,11 +3,11 @@
     {
       "heading": "Discovery Portal",
       "subtitle": "Accelerate your research.",
-      "body": "Find, access and understand datasets across many repositories."
+      "body": "Find Infectious and Immune-mediated Disease (IID) data across many repositories."
     },
     {
       "heading": "Explore data from many repositories",
-      "body": "Search simultaneously across millions of publicly available datasets to find immune-mediated and infectious disease data for reanalysis.",
+      "body": "Search simultaneously across millions of publicly available datasets to infectious and immune-mediated disease data",
       "routes": [
         {
           "title": "Suggest a new source",

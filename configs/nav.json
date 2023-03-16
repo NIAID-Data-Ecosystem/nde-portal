@@ -1,15 +1,18 @@
 {
   "href": "/",
   "routes": [
-    { "label": "Home", "href": "/" },
-    { "label": "Search", "href": "/search" },
-
-    { "label": "About", "href": "/about" },
     {
-      "label": "FAQ",
-      "href": "/faq"
+      "label": "Home",
+      "href": "/"
     },
-
+    {
+      "label": "Search",
+      "href": "/search"
+    },
+    {
+      "label": "About",
+      "href": "/about"
+    },
     {
       "label": "Resources",
       "routes": [
@@ -19,26 +22,19 @@
           "href": "/advanced-search"
         },
         {
-          "label": "Sources",
-          "subLabel": "Latest information about our data sources",
+          "label": "Data Repositories",
+          "subLabel": "Latest information about the data repositories included",
           "href": "/sources"
         },
         {
-          "label": "Schemas",
-          "subLabel": "Information about the API schema",
-          "href": "https://discovery.biothings.io/view/nde",
-          "isExternal": true
-        },
-        {
           "label": "Documentation",
-          "subLabel": "Guides and documentation to help with NIAID Data Ecosystem.",
+          "subLabel": "Guides and documentation to help navigate and use the Discovery Portal",
           "href": "https://niaid-data.readme.io/",
           "isExternal": true
         },
-
         {
           "label": "Changelog",
-          "subLabel": "Log of updates to the NIAID Data Ecosystem",
+          "subLabel": "Log of updates to the NIAID Data Ecosystem Discovery Portal",
           "href": "/changelog"
         }
       ]

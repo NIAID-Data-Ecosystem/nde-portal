@@ -23,6 +23,7 @@ interface PageContainerProps extends FlexProps {
   hasNavigation?: boolean;
   title: string;
   metaDescription: string;
+  keywords: string;
   disableSearchBar?: boolean;
 }
 
@@ -31,6 +32,7 @@ export const PageContainer: React.FC<PageContainerProps> = ({
   hasNavigation,
   title,
   metaDescription,
+  keywords,
   disableSearchBar,
 }) => {
   const topNavigation = navConfig as NavigationProps['navigation'];
@@ -64,8 +66,9 @@ export const PageContainer: React.FC<PageContainerProps> = ({
   return (
     <>
       <Head>
-        <title>NDE Portal {title && ` | ${title}`}</title>
+        <title>NIAID Data Discovery Portal {title && ` | ${title}`}</title>
         <meta name='description' content={metaDescription} />
+        <meta name='keywords' content={keywords} />
       </Head>
 
       <Flex as='main' w='100%' flexDirection='column' minW={300}>
