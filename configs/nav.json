@@ -28,7 +28,7 @@
         },
         {
           "label": "Documentation",
-          "subLabel": "Guides and documentation to help navigate and use the Discovery Portal",
+          "subLabel": "Guides and documentation to help navigate \b and use the Discovery Portal",
           "href": "https://niaid-data.readme.io/",
           "isExternal": true
         },
