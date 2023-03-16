@@ -23,7 +23,7 @@ interface PageContainerProps extends FlexProps {
   hasNavigation?: boolean;
   title: string;
   metaDescription: string;
-  keywords: string;
+  keywords?: string;
   disableSearchBar?: boolean;
 }
 
