@@ -18,6 +18,7 @@ import { SearchBarWithDropdown } from 'src/components/search-bar';
 import { PageContent } from './content';
 import { AdvancedSearchOpen } from 'src/components/advanced-search/components/buttons';
 import NextLink from 'next/link';
+import { assetPrefix } from 'next.config';
 
 interface PageContainerProps extends FlexProps {
   hasNavigation?: boolean;
@@ -69,6 +70,34 @@ export const PageContainer: React.FC<PageContainerProps> = ({
         <title>NIAID Data Discovery Portal {title && ` | ${title}`}</title>
         <meta name='description' content={metaDescription} />
         <meta name='keywords' content={keywords} />
+
+        {/* og meta */}
+        <meta property='og:url' content='https://data-staging.niaid.nih.gov/' />
+        <meta
+          property='og:title'
+          content={'NIAID Data Discovery Portal ' + title && ` | ${title}`}
+        />
+        <meta property='og:description' content={metaDescription} />
+        <meta property='og:type' content='website' />
+        <meta property='og:site_name' content='NIAID Data Discovery Portal' />
+        <meta
+          property='og:image'
+          content={`${assetPrefix || ''}/assets/preview.png`}
+        />
+
+        {/* twitter meta */}
+        <meta
+          property='twitter:title'
+          content={'NIAID Data Discovery Portal ' + title && ` | ${title}`}
+        />
+        <meta property='twitter:description' content={metaDescription} />
+        {/* <meta property='twitter:site' content='@NIAID' />
+        <meta property='twitter:creator' content='@NIAID' /> */}
+        <meta property='twitter:card' content='summary' />
+        <meta
+          property='twitter:image'
+          content={`${assetPrefix || ''}/assets/preview.png`}
+        />
       </Head>
 
       <Flex as='main' w='100%' flexDirection='column' minW={300}>
