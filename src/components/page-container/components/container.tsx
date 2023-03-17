@@ -73,10 +73,7 @@ export const PageContainer: React.FC<PageContainerProps> = ({
 
         {/* og meta */}
         <meta property='og:url' content='https://data-staging.niaid.nih.gov/' />
-        <meta
-          property='og:title'
-          content={'NIAID Data Discovery Portal ' + title && ` | ${title}`}
-        />
+        <meta property='og:title' content={'NIAID Data Discovery Portal'} />
         <meta property='og:description' content={metaDescription} />
         <meta property='og:type' content='website' />
         <meta property='og:site_name' content='NIAID Data Discovery Portal' />
@@ -88,7 +85,7 @@ export const PageContainer: React.FC<PageContainerProps> = ({
         {/* twitter meta */}
         <meta
           property='twitter:title'
-          content={'NIAID Data Discovery Portal ' + title && ` | ${title}`}
+          content={'NIAID Data Discovery Portal'}
         />
         <meta property='twitter:description' content={metaDescription} />
         {/* <meta property='twitter:site' content='@NIAID' />
