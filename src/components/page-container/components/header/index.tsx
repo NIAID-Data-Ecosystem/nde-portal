@@ -59,7 +59,8 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
           alignItems={{ base: 'flex-start', xl: 'center' }}
           textAlign={{ xl: 'center' }}
         >
-          <Box maxW='600px'>
+          {/* <Box maxW='600px'> */}
+          <Box maxW='680px'>
             <Heading
               as='h1'
               size='h1'
