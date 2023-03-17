@@ -79,7 +79,7 @@ export const PageContainer: React.FC<PageContainerProps> = ({
         <meta property='og:site_name' content='NIAID Data Discovery Portal' />
         <meta
           property='og:image'
-          content={`${assetPrefix || ''}/assets/preview.png`}
+          content={`https://data-staging.niaid.nih.gov/assets/preview.png`}
         />
 
         {/* twitter meta */}
@@ -93,7 +93,7 @@ export const PageContainer: React.FC<PageContainerProps> = ({
         <meta property='twitter:card' content='summary' />
         <meta
           property='twitter:image'
-          content={`${assetPrefix || ''}/assets/preview.png`}
+          content={`https://data-staging.niaid.nih.gov/assets/preview.png`}
         />
       </Head>
 
