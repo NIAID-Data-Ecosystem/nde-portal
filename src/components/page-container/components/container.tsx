@@ -68,13 +68,25 @@ export const PageContainer: React.FC<PageContainerProps> = ({
     <>
       <Head>
         <title>NIAID Data Discovery Portal {title && ` | ${title}`}</title>
-        <meta name='description' content={metaDescription} />
-        <meta name='keywords' content={keywords} />
+        {/* <meta name='description' content={metaDescription} />
+        <meta name='keywords' content={keywords} /> */}
+        <meta
+          name='description'
+          content='Find and access allergic, immune-mediated and infectious disease data by searching across biomedical data repositories with the NIAID Data Ecosystem Discovery Portal'
+        />
+        <meta
+          name='keywords'
+          content='omics, data, infectious disease, epidemiology, clinical trial, immunology, bioinformatics, search, repository'
+        />
 
         {/* og meta */}
         <meta property='og:url' content='https://data-staging.niaid.nih.gov/' />
         <meta property='og:title' content={'NIAID Data Discovery Portal'} />
-        <meta property='og:description' content={metaDescription} />
+        {/* <meta property='og:description' content={metaDescription} /> */}
+        <meta
+          property='og:description'
+          content='Find and access allergic, immune-mediated and infectious disease data by searching across biomedical data repositories with the NIAID Data Ecosystem Discovery Portal'
+        />
         <meta property='og:type' content='website' />
         <meta property='og:site_name' content='NIAID Data Discovery Portal' />
         <meta

@@ -7,7 +7,7 @@ export const formatPieChartData = (data: RawDataProps[]) => {
   const MIN_COUNT = 10000;
 
   const formatted = data.reduce((r, d, i) => {
-    const NIAIDrepos = NIAID_FUNDED.repositories as { id: string }[];
+    const NIAIDrepos = NIAID_FUNDED.niaid.repositories as { id: string }[];
     const isNIAIDSource =
       NIAIDrepos.filter(({ id }) => id === d.term).length > 0;
     if (isNIAIDSource) {

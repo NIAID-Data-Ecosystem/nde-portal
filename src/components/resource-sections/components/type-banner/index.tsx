@@ -33,7 +33,7 @@ const TypeBanner: React.FC<TypeBannerProps> = ({
   sourceName,
   ...props
 }) => {
-  const NIAIDrepos = NIAID_FUNDED.repositories as { id: string }[];
+  const NIAIDrepos = NIAID_FUNDED.niaid.repositories as { id: string }[];
   const isNiaidFunded =
     sourceName && NIAIDrepos.filter(({ id }) => id === sourceName).length > 0;
   return (
