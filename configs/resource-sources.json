@@ -121,6 +121,11 @@
       "imageUrl": "/assets/resources/vdjserver.png"
     },
     {
+      "sourceName": "VEuPathDB",
+      "name": "VEuPathDB",
+      "imageUrl": "/assets/resources/VEuPathDB.png"
+    },
+    {
       "sourceName": "Vivli",
       "name": "Vivli",
       "imageUrl": "/assets/resources/vivli.png"

@@ -119,7 +119,7 @@ export const Pagination: React.FC<PaginationProps> = ({
               <VisuallyHidden>Previous page</VisuallyHidden>
               <Icon as={FaAngleLeft} />
             </StyledPaginationButton>
-            <Box display={['none', 'block']}>
+            <Flex>
               <StyledPaginationButtonGroup>
                 {Array(
                   selectedPage < totalPages - 5
@@ -140,7 +140,18 @@ export const Pagination: React.FC<PaginationProps> = ({
                     );
                   })}
               </StyledPaginationButtonGroup>
-            </Box>
+              {totalPages > 5 && selectedPage < totalPages - 1 && (
+                <PaginationButton
+                  isActive={totalPages === selectedPage}
+                  onClick={() => {
+                    handleSelectedPage(totalPages);
+                  }}
+                >
+                  {totalPages}
+                </PaginationButton>
+              )}
+            </Flex>
+            {/* Mobile */}
             <Select
               display={{ sm: 'none' }}
               p={1}

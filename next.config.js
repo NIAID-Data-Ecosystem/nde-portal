@@ -20,11 +20,24 @@ module.exports = withMDX({
   trailingSlash: true,
   assetPrefix: isProd ? process.env.BASE_URL : undefined,
   basePath: isProd ? process.env.BASE_URL : '',
-  webpack: (config, { isServer }) => {
+  webpack: (config, { isServer, webpack }) => {
     // Fixes npm packages (mdx) that depend on `fs` module
+
     if (!isServer) {
-      config.resolve.fallback.fs = false;
+      config.resolve.fallback = {
+        fs: false,
+        child_process: false,
+      };
     }
+
+    config.plugins.push(
+      // Remove node: from import specifiers, because Next.js does not yet support node: scheme
+      // https://github.com/vercel/next.js/issues/28774
+      new webpack.NormalModuleReplacementPlugin(/^node:/, resource => {
+        resource.request = resource.request.replace(/^node:/, '');
+      }),
+    );
+
     return {
       ...config,
 
@@ -41,7 +54,7 @@ module.exports = withMDX({
   env: {
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
     NEXT_PUBLIC_GOOGLE_ANALYTICS: process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS,
-    BASE_URL: isProd ? process.env.BASE_URL : '',
+    BASE_URL: '',
     README_API_KEY: process.env.README_API_KEY,
   },
 });

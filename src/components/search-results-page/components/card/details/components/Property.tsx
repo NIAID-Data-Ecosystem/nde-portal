@@ -35,6 +35,7 @@ export const MetadataProperty: React.FC<MetadataPropertyProps> = ({
               glyph={glyph}
               fill={!children ? 'gray.400' : getMetadataColor(glyph)}
               boxSize={6}
+              title={label}
             />
           </Box>
         </MetadataToolTip>

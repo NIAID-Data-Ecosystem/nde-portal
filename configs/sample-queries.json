@@ -5,7 +5,10 @@
       {
         "id": "West-Siberian-virus",
         "children": [],
-        "value": { "term": "West Siberian virus" },
+        "value": {
+          "term": "West Siberian virus",
+          "querystring": "\"West Siberian virus\""
+        },
         "parentId": null,
         "index": 0,
         "depth": 0
@@ -34,7 +37,10 @@
       {
         "id": "Tickborne-encephalitis",
         "children": [],
-        "value": { "term": "Tickborne encephalitis" },
+        "value": {
+          "term": "Tickborne encephalitis",
+          "querystring": "\"Tickborne encephalitis\""
+        },
         "parentId": "Tickborne-encephalitis-OR-Tick-borne-encephalitis",
         "index": 0,
         "depth": 2
@@ -44,6 +50,7 @@
         "children": [],
         "value": {
           "term": "Tick-borne encephalitis",
+          "querystring": "\"Tick-borne encephalitis\"",
           "union": "OR"
         },
         "parentId": "Tickborne-encephalitis-OR-Tick-borne-encephalitis",
@@ -55,6 +62,7 @@
         "children": [],
         "value": {
           "term": "Siberian subtype",
+          "querystring": "\"Siberian subtype\"",
           "union": "AND"
         },
         "parentId": "Tickborne-encephalitis-OR-Tick-borne-encephalitis-AND-Siberian-subtype",
@@ -81,6 +89,7 @@
         "children": [],
         "value": {
           "term": "Candida",
+          "querystring": "\"Candida\"",
           "union": "OR"
         },
         "parentId": "Candida-Calbicans-Cglabrata-Cparapsilosis-Ctropicalis-Cauris",
@@ -92,6 +101,7 @@
         "children": [],
         "value": {
           "term": "C. albicans",
+          "querystring": "\"C. albicans\"",
           "union": "OR"
         },
         "parentId": "Candida-Calbicans-Cglabrata-Cparapsilosis-Ctropicalis-Cauris",
@@ -103,6 +113,7 @@
         "children": [],
         "value": {
           "term": "C. glabrata",
+          "querystring": "\"C. glabrata\"",
           "union": "OR"
         },
         "parentId": "Candida-Calbicans-Cglabrata-Cparapsilosis-Ctropicalis-Cauris",
@@ -114,6 +125,7 @@
         "children": [],
         "value": {
           "term": "C. parapsilosis",
+          "querystring": "\"C. parapsilosis\"",
           "union": "OR"
         },
         "parentId": "Candida-Calbicans-Cglabrata-Cparapsilosis-Ctropicalis-Cauris",
@@ -125,6 +137,7 @@
         "children": [],
         "value": {
           "term": "C. tropicalis",
+          "querystring": "\"C. tropicalis\"",
           "union": "OR"
         },
         "parentId": "Candida-Calbicans-Cglabrata-Cparapsilosis-Ctropicalis-Cauris",
@@ -136,6 +149,7 @@
         "children": [],
         "value": {
           "term": "C. auris",
+          "querystring": "\"C. auris\"",
           "union": "OR"
         },
         "parentId": "Candida-Calbicans-Cglabrata-Cparapsilosis-Ctropicalis-Cauris",
@@ -158,6 +172,7 @@
         "children": [],
         "value": {
           "term": "Cryptococcus",
+          "querystring": "\"Cryptococcus\"",
           "union": "OR"
         },
         "parentId": "Cryptococcus-cryptococcal-meningitis-Cryptococcosis-Cneoformans-Cgattii",
@@ -169,6 +184,7 @@
         "children": [],
         "value": {
           "term": "cryptococcal meningitis",
+          "querystring": "\"cryptococcal meningitis\"",
           "union": "OR"
         },
         "parentId": "Cryptococcus-cryptococcal-meningitis-Cryptococcosis-Cneoformans-Cgattii",
@@ -180,6 +196,7 @@
         "children": [],
         "value": {
           "term": "Cryptococcosis",
+          "querystring": "\"Cryptococcosis\"",
           "union": "OR"
         },
         "parentId": "Cryptococcus-cryptococcal-meningitis-Cryptococcosis-Cneoformans-Cgattii",
@@ -191,6 +208,7 @@
         "children": [],
         "value": {
           "term": "C. neoformans",
+          "querystring": "\"C. neoformans\"",
           "union": "OR"
         },
         "parentId": "Cryptococcus-cryptococcal-meningitis-Cryptococcosis-Cneoformans-Cgattii",
@@ -202,6 +220,7 @@
         "children": [],
         "value": {
           "term": "C. gattii",
+          "querystring": "\"C. gattii\"",
           "union": "OR"
         },
         "parentId": "Cryptococcus-cryptococcal-meningitis-Cryptococcosis-Cneoformans-Cgattii",
@@ -224,6 +243,7 @@
         "children": [],
         "value": {
           "term": "Aspergillosis",
+          "querystring": "\"Aspergillosis\"",
           "union": "OR"
         },
         "parentId": "Aspergillosis-Aspergillus",
@@ -235,11 +255,12 @@
         "children": [],
         "value": {
           "term": "Aspergillus",
+          "querystring": "\"Aspergillus\"",
           "union": "OR"
         },
         "parentId": "Aspergillosis-Aspergillus",
-        "index": 0,
-        "depth": 2
+        "index": 1,
+        "depth": 1
       },
       {
         "id": "Coccidioidomycosis-Cimmitis-Coccidioides-Cposadasii",
@@ -257,6 +278,7 @@
         "children": [],
         "value": {
           "term": "Coccidioidomycosis",
+          "querystring": "\"Coccidioidomycosis\"",
           "union": "OR"
         },
         "parentId": "Coccidioidomycosis-Cimmitis-Coccidioides-Cposadasii",
@@ -268,6 +290,7 @@
         "children": [],
         "value": {
           "term": "C. immitis",
+          "querystring": "\"C. immitis\"",
           "union": "OR"
         },
         "parentId": "Coccidioidomycosis-Cimmitis-Coccidioides-Cposadasii",
@@ -279,6 +302,7 @@
         "children": [],
         "value": {
           "term": "Coccidioides",
+          "querystring": "\"Coccidioides\"",
           "union": "OR"
         },
         "parentId": "Coccidioidomycosis-Cimmitis-Coccidioides-Cposadasii",
@@ -290,6 +314,7 @@
         "children": [],
         "value": {
           "term": "C. posadasii",
+          "querystring": "\"C. posadasii\"",
           "union": "OR"
         },
         "parentId": "Coccidioidomycosis-Cimmitis-Coccidioides-Cposadasii",
@@ -312,6 +337,7 @@
         "children": [],
         "value": {
           "term": "Histoplasma",
+          "querystring": "\"Histoplasma\"",
           "union": "OR"
         },
         "parentId": "Histoplasma-Histoplasmosis-Hcapsulatum",
@@ -323,28 +349,30 @@
         "children": [],
         "value": {
           "term": "Histoplasmosis",
+          "querystring": "\"Histoplasmosis\"",
           "union": "OR"
         },
         "parentId": "Histoplasma-Histoplasmosis-Hcapsulatum",
-        "index": 0,
-        "depth": 2
+        "index": 1,
+        "depth": 1
       },
       {
         "id": "Hcapsulatum",
         "children": [],
         "value": {
           "term": "H. capsulatum",
+          "querystring": "\"H. capsulatum\"",
           "union": "OR"
         },
         "parentId": "Histoplasma-Histoplasmosis-Hcapsulatum",
-        "index": 0,
-        "depth": 3
+        "index": 2,
+        "depth": 1
       },
       {
         "id": "Blastomyc-Bdermatitidis",
         "children": [],
         "value": {
-          "term": "Blastomyc-Bdermatitidis",
+          "term": "\"Blastomyc-Bdermatitidis\"",
           "union": "OR"
         },
         "parentId": null,
@@ -355,7 +383,8 @@
         "id": "Blastomyc",
         "children": [],
         "value": {
-          "term": "*Blastomyc*",
+          "term": "Blastomyc",
+          "querystring": "\"Blastomyc\"",
           "union": "OR"
         },
         "parentId": "Blastomyc-Bdermatitidis",
@@ -367,6 +396,7 @@
         "children": [],
         "value": {
           "term": "B. dermatitidis",
+          "querystring": "\"B. dermatitidis\"",
           "union": "OR"
         },
         "parentId": "Blastomyc-Bdermatitidis",
@@ -389,6 +419,7 @@
         "children": [],
         "value": {
           "term": "Pneumocystis",
+          "querystring": "\"Pneumocystis\"",
           "union": "OR"
         },
         "parentId": "Pneumocystis-Pjirovecii-Pcarinii",
@@ -400,6 +431,7 @@
         "children": [],
         "value": {
           "term": "P. jirovecii",
+          "querystring": "\"P. jirovecii\"",
           "union": "OR"
         },
         "parentId": "Pneumocystis-Pjirovecii-Pcarinii",
@@ -411,6 +443,7 @@
         "children": [],
         "value": {
           "term": "P. carinii",
+          "querystring": "\"P. carinii\"",
           "union": "OR"
         },
         "parentId": "Pneumocystis-Pjirovecii-Pcarinii",

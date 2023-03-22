@@ -38,8 +38,8 @@ const CardDetails: React.FC<CardDetailsProps> = ({ data }) => {
     infectiousAgent,
     healthCondition,
     usageInfo,
-    applicationCategory,
-    programmingLanguage,
+    // applicationCategory,
+    // programmingLanguage,
   } = data || {};
 
   const paddingCard = [4, 6, 8, 10];
@@ -52,10 +52,11 @@ const CardDetails: React.FC<CardDetailsProps> = ({ data }) => {
 
   const Badge = ({
     glyph,
-    fill,
     value,
+    property,
   }: {
     glyph: string;
+    property: string;
     fill?: string;
     value: any;
   }) => (
@@ -65,6 +66,7 @@ const CardDetails: React.FC<CardDetailsProps> = ({ data }) => {
           id={`indicator-${glyph}-${id}`}
           glyph={glyph}
           fill={value ? getMetadataColor(glyph) : 'gray.400'}
+          title={property}
         />
       </Box>
     </MetadataToolTip>
@@ -73,16 +75,36 @@ const CardDetails: React.FC<CardDetailsProps> = ({ data }) => {
   const MetadataIndicator = () => {
     return (
       <Flex mx={[0, 2]} my={1}>
-        <Badge glyph='license' value={licenseInfo} />
-        <Badge glyph='usageInfo' value={usageInfo?.name} />
-        <Badge glyph='funding' value={fundingInfo} />
-        <Badge glyph='measurementTechnique' value={measurementTechnique} />
-        <Badge glyph='variableMeasured' value={variableMeasured} />
-        <Badge glyph='infectiousAgent' value={infectiousAgent} />
-        <Badge glyph='healthCondition' value={healthCondition} />
-        <Badge glyph='species' value={species} />
-        <Badge glyph='applicationCategory' value={applicationCategory} />{' '}
-        <Badge glyph='programmingLanguage' value={programmingLanguage} />
+        <Badge property='license' glyph='license' value={licenseInfo} />
+        <Badge
+          property='usage info'
+          glyph='usageInfo'
+          value={usageInfo?.name}
+        />
+        <Badge property='funding' glyph='funding' value={fundingInfo} />
+        <Badge
+          property='measurement technique'
+          glyph='measurementTechnique'
+          value={measurementTechnique}
+        />
+        <Badge
+          property='variable measured'
+          glyph='variableMeasured'
+          value={variableMeasured}
+        />
+        <Badge
+          property='infectious agent'
+          glyph='infectiousAgent'
+          value={infectiousAgent}
+        />
+        <Badge
+          property='health condition'
+          glyph='healthCondition'
+          value={healthCondition}
+        />
+        <Badge property='species' glyph='species' value={species} />
+        {/* <Badge glyph='applicationCategory' value={applicationCategory} />{' '}
+        <Badge glyph='programmingLanguage' value={programmingLanguage} /> */}
       </Flex>
     );
   };
@@ -331,7 +353,7 @@ const CardDetails: React.FC<CardDetailsProps> = ({ data }) => {
                   </MetadataProperty>
 
                   {/* Application Category */}
-                  <MetadataProperty
+                  {/* <MetadataProperty
                     id={`applicationCategory-${id}`}
                     label='Software Category'
                     glyph='applicationCategory'
@@ -348,10 +370,10 @@ const CardDetails: React.FC<CardDetailsProps> = ({ data }) => {
                         })}
                       </UnorderedList>
                     )}
-                  </MetadataProperty>
+                  </MetadataProperty> */}
 
                   {/* Programming Language */}
-                  <MetadataProperty
+                  {/* <MetadataProperty
                     id={`programmingLanguage-${id}`}
                     label='Programming Language'
                     glyph='programmingLanguage'
@@ -368,7 +390,7 @@ const CardDetails: React.FC<CardDetailsProps> = ({ data }) => {
                         })}
                       </UnorderedList>
                     )}
-                  </MetadataProperty>
+                  </MetadataProperty> */}
                 </SimpleGrid>
               </AccordionPanel>
             </>

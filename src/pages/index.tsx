@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import type { NextPage } from 'next';
 import {
+  Box,
   Button,
   Flex,
   Heading,
@@ -33,8 +34,8 @@ import {
 } from 'src/components/pie-chart';
 import { assetPrefix } from 'next.config';
 import NextLink from 'next/link';
-import { AdvancedSearch } from 'src/components/advanced-search';
 import { SearchBarWithDropdown } from 'src/components/search-bar';
+import { AdvancedSearchOpen } from 'src/components/advanced-search/components/buttons';
 
 const sample_queries = [
   {
@@ -83,16 +84,7 @@ const sample_queries = [
 ];
 
 const Home: NextPage = () => {
-  const router = useRouter();
   const size = useBreakpointValue({ base: 300, lg: 350 });
-
-  // Search term entered in search bar
-  const [searchTerm, setSearchTerm] = useState<string>('');
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>): void =>
-    setSearchTerm(e.target.value);
-
-  // update value when changed
-  // useEffect(() => setSearchTerm(value || ''), [value]);
 
   // Fetch stats about number of resources
   const params = {
@@ -114,16 +106,16 @@ const Home: NextPage = () => {
 
   interface Stats {
     datasets: Stat | null;
-    computationaltool: Stat | null;
+    // computationaltool: Stat | null;
     measurementTechnique: Stat | null;
     repositories: Stat | null;
   }
 
   const [stats, setStats] = useState<Stats>({
-    datasets: null,
-    computationaltool: null,
-    measurementTechnique: null,
     repositories: null,
+    datasets: null,
+    // computationaltool: null,
+    measurementTechnique: null,
   });
 
   const { isLoading, error } = useQuery<
@@ -169,10 +161,10 @@ const Home: NextPage = () => {
           stats: sources,
         };
         stat = {
-          datasets: types.dataset,
-          computationaltool: types.computationaltool,
-          measurementTechnique,
           repositories,
+          datasets: types.dataset,
+          // computationaltool: types.computationaltool,
+          measurementTechnique,
         };
       }
 
@@ -184,7 +176,8 @@ const Home: NextPage = () => {
       <PageContainer
         hasNavigation
         title='Home'
-        metaDescription='NIAID Data Ecosystem Discovery Portal - Home.'
+        metaDescription='Find and access allergic, immune-mediated and infectious disease data by searching across biomedical data repositories with the NIAID Data Ecosystem Discovery Portal'
+        keywords='omics, data, infectious disease, epidemiology, clinical trial, immunology, bioinformatics, search, repository'
         disableSearchBar
       >
         <PageHeader
@@ -194,25 +187,28 @@ const Home: NextPage = () => {
         >
           <>
             <Flex w='100%' justifyContent='flex-end' mb={2}>
-              <AdvancedSearch
-                buttonProps={{
-                  variant: 'outline',
-                  bg: 'whiteAlpha.500',
-                  color: 'white',
-                  _hover: { bg: 'whiteAlpha.800', color: 'primary.600' },
-                }}
-              />
+              <NextLink href={{ pathname: 'advanced-search' }} passHref>
+                <Box>
+                  <AdvancedSearchOpen
+                    onClick={() => {}}
+                    variant='outline'
+                    bg='whiteAlpha.500'
+                    color='white'
+                    _hover={{ bg: 'whiteAlpha.800', color: 'primary.600' }}
+                  />
+                </Box>
+              </NextLink>
             </Flex>
             <SearchBarWithDropdown
-              ariaLabel='Search for datasets or tools'
-              placeholder='Search for datasets or tools'
+              placeholder='Search for datasets'
+              ariaLabel='Search for datasets'
               size='md'
             />
 
             {/* [NOTE]: Test with autocomplete in the future */}
             {/* <SearchWithPredictiveText
-              ariaLabel='Search for datasets or tools'
-              placeholder='Search for datasets or tools'
+              ariaLabel='Search for datasets'
+              placeholder='Search for datasets'
               size='md'
               handleSubmit={(stringValue, __, data) => {
                 if (data && data.id) {
@@ -243,58 +239,18 @@ const Home: NextPage = () => {
                     }}
                     passHref
                   >
-                    <SearchQueryLink
-                      title={query.title}
-                      display={[i > 2 ? 'none' : 'block', 'block']}
-                    />
+                    <Box>
+                      <SearchQueryLink
+                        title={query.title}
+                        display={[i > 2 ? 'none' : 'block', 'block']}
+                      />
+                    </Box>
                   </NextLink>
                 );
               })}
             </Flex>
           </>
         </PageHeader>
-
-        {/* NIAID Data Ecosystem section */}
-        <PageContent justifyContent='center' bg='white' minH='unset'>
-          <StyledSection
-            id='nde'
-            alignItems='center'
-            flexDirection='column'
-            maxWidth={['100%', '100%', '750px']}
-          >
-            <StyledSectionHeading>
-              {homepageCopy.sections[1].heading}
-            </StyledSectionHeading>
-
-            <StyledText
-              textAlign={['start', 'center']}
-              mt={4}
-              fontSize={['lg', 'xl']}
-              lineHeight='taller'
-              maxW='unset'
-            >
-              {homepageCopy.sections[1].body}
-            </StyledText>
-            <StyledSectionButtonGroup variant='solid' justifyContent='center'>
-              {homepageCopy.sections[1]?.routes &&
-                homepageCopy.sections[1].routes.map(route => {
-                  return (
-                    <NextLink
-                      key={route.title}
-                      href={{
-                        pathname: route.path,
-                      }}
-                      passHref
-                    >
-                      <Button w='100%' my={2}>
-                        {route.title}
-                      </Button>
-                    </NextLink>
-                  );
-                })}
-            </StyledSectionButtonGroup>
-          </StyledSection>
-        </PageContent>
 
         {/* Display stats about the Biothings API */}
         {!error && (
@@ -362,10 +318,11 @@ const Home: NextPage = () => {
           >
             <Flex
               width='100%'
-              flexDirection={{ base: 'column', lg: 'row' }}
-              justifyContent={{ lg: 'space-between' }}
-              alignItems='center'
+              flexDirection={{ base: 'column', lg: 'row-reverse' }}
+              justifyContent={{ lg: 'center' }}
               flex={1}
+              alignItems='center'
+              maxW={{ base: 'unset', lg: '1400px' }}
             >
               <LoadingSpinner isLoading={isLoading}>
                 {/* Pie chart with number repositories and associated resources*/}
@@ -376,7 +333,7 @@ const Home: NextPage = () => {
                     data={stats.repositories.stats.sort(
                       (a, b) => b.count - a.count,
                     )}
-                  ></PieChart>
+                  />
                 )}
               </LoadingSpinner>
               {/* Legend display for smaller screen size */}
@@ -394,15 +351,15 @@ const Home: NextPage = () => {
                 )}
               </Flex>
               <StyledBody
-                maxWidth={['unset', 'unset', '700px', '410px']}
+                maxWidth={['unset', 'unset', '700px', '600px']}
                 textAlign={['start', 'start', 'center', 'start']}
               >
                 <StyledSectionHeading mt={[4, 6]}>
-                  {homepageCopy.sections[2].heading}
+                  {homepageCopy.sections[1].heading}
                 </StyledSectionHeading>
-                <StyledText>{homepageCopy.sections[2].body}</StyledText>
-                {homepageCopy.sections[2]?.routes &&
-                  homepageCopy.sections[2].routes.map(
+                <StyledText>{homepageCopy.sections[1].body}</StyledText>
+                {homepageCopy.sections[1]?.routes &&
+                  homepageCopy.sections[1].routes.map(
                     (route: {
                       title: string;
                       path: string;
@@ -429,22 +386,21 @@ const Home: NextPage = () => {
                   )}
               </StyledBody>
             </Flex>
-
-            {/* Legend display for larger screen size */}
-            <Flex
-              display={{ base: 'none', lg: 'flex' }}
-              w='100%'
-              justifyContent='center'
-            >
-              {stats?.repositories?.stats && (
-                <Legend
-                  data={stats.repositories.stats.sort(
-                    (a, b) => b.count - a.count,
-                  )}
-                ></Legend>
-              )}
-            </Flex>
           </StyledSection>
+          {/* Legend display for larger screen size */}
+          <Flex
+            display={{ base: 'none', lg: 'flex' }}
+            w='100%'
+            justifyContent={{ base: 'center', md: 'space-between' }}
+          >
+            {stats?.repositories?.stats && (
+              <Legend
+                data={stats.repositories.stats.sort(
+                  (a, b) => b.count - a.count,
+                )}
+              ></Legend>
+            )}
+          </Flex>
         </PageContent>
       </PageContainer>
     </>

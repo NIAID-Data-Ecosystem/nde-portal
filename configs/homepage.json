@@ -3,26 +3,11 @@
     {
       "heading": "Discovery Portal",
       "subtitle": "Accelerate your research.",
-      "body": "Find, access and understand datasets and tools across many repositories."
-    },
-    {
-      "heading": "A Data Ecosystem",
-      "body": "The NIAID Data Ecosystem provides a secure environment to find, access and analyze immune-mediated and infectious disease data to speed the development of diagnostics, therapeutics, and vaccines.",
-      "routes": [
-        {
-          "title": "Get started",
-          "path": "https://niaid-data.readme.io/",
-          "isExternal": true
-        },
-        {
-          "title": "Learn More",
-          "path": "/about"
-        }
-      ]
+      "body": "Find Infectious and Immune-mediated Disease (IID) data across many repositories."
     },
     {
       "heading": "Explore data from many repositories",
-      "body": "Search simultaneously across millions of publicly available datasets to find immune-mediated and infectious disease data for reanalysis.",
+      "body": "Search simultaneously across millions of publicly available datasets to find infectious and immune-mediated disease data",
       "routes": [
         {
           "title": "Suggest a new source",

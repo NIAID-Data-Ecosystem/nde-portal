@@ -46,7 +46,7 @@ export const FiltersContainer: React.FC<FiltersContainerProps> = ({
   filtersConfig,
   removeAllFilters,
 }) => {
-  const [openSections, setOpenSections] = useState([0]);
+  const [openSections, setOpenSections] = useState<number[]>([]);
   // Handle toggle open status of mobile filter
   const btnRef = React.useRef(null);
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -55,23 +55,26 @@ export const FiltersContainer: React.FC<FiltersContainerProps> = ({
     sm: 'tablet',
     md: 'desktop',
   });
-
   useEffect(() => {
     setOpenSections(() => {
-      // 2 reasons a filter section is open by default.
       // 1. If filter is selected, default to an open accordion panel.
       let selectedKeys =
         selectedFilters &&
         Object.entries(selectedFilters)
           .filter(([_, v]) => v.length > 0)
-          .map(o => Object.keys(filtersConfig).indexOf(o[0]));
+          .map(o =>
+            Object.keys(filtersConfig)
+              .filter(key => key !== 'date')
+              .indexOf(o[0]),
+          );
       // 2. The filter config specifies that this filter should be open by default.
-      Object.values(filtersConfig).forEach((v, i) => {
-        if (v.isDefaultOpen && !selectedKeys.includes(i)) {
-          selectedKeys.push(i);
-        }
-      });
-
+      Object.values(filtersConfig)
+        .filter(item => item.property !== 'date')
+        .forEach((v, i) => {
+          if (v.isDefaultOpen && !selectedKeys.includes(i)) {
+            selectedKeys.push(i);
+          }
+        });
       return selectedKeys;
     });
     // Only run on mount.
@@ -182,9 +185,11 @@ export const FiltersContainer: React.FC<FiltersContainerProps> = ({
       flex={1}
       minW='270px'
       maxW='400px'
-      h={[`calc(100vh - ${NAV_HEIGHT.sm})`, `calc(100vh - ${NAV_HEIGHT.md})`]}
       position='sticky'
-      top={NAV_HEIGHT}
+      h='100vh'
+      top='0px'
+      // h={[`calc(100vh - ${NAV_HEIGHT.sm})`, `calc(100vh - ${NAV_HEIGHT.md})`]}
+      // top={NAV_HEIGHT}
       boxShadow='base'
       background='white'
       borderRadius='semi'

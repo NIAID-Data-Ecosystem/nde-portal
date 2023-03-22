@@ -56,7 +56,9 @@ export const FiltersList: React.FC<FiltersList> = React.memo(
 
     const items: FilterTerm[] =
       terms?.length > 0
-        ? terms.filter(t => t.displayAs.toLowerCase().includes(searchTerm))
+        ? terms.filter(t =>
+            t.displayAs.toLowerCase().includes(searchTerm.toLowerCase()),
+          )
         : isLoading
         ? Array(NUM_ITEMS_MIN).fill('') // for loading skeleton purposes
         : [];

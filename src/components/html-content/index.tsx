@@ -37,7 +37,9 @@ export const DisplayHTMLContent: React.FC<DisplayHTMLContentProps> = ({
 
   const formatContent = (contentString: DisplayHTMLContentProps['content']) => {
     // replace no break space with breaking space.
-    let formattedContent = contentString.replace(/\u00a0/g, ' ');
+    let formattedContent = contentString
+      .replace(/\u00a0/g, ' ')
+      .replace(`&emsp;`, ' ');
     return formattedContent;
   };
   return (
@@ -53,6 +55,10 @@ export const DisplayHTMLContent: React.FC<DisplayHTMLContentProps> = ({
           color: 'link.color',
           textDecoration: 'underline',
           _hover: { textDecoration: 'none' },
+          wordBreak: 'break-word',
+        },
+        '>*': {
+          whiteSpace: 'pre-wrap',
           wordBreak: 'break-word',
         },
       }}

@@ -260,7 +260,7 @@ export const SearchBarWithDropdown = (props: SearchBarWithDropdownProps) => {
     q && router.query.advancedSearch !== 'true' ? (q as string) : '';
 
   const [searchHistory, setSearchHistory] = useLocalStorage<string[]>(
-    'previous-searches',
+    'basic-searches',
     [],
   );
   return (

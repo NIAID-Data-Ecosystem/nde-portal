@@ -6,7 +6,7 @@ export interface AdvancedSearchButtonProps extends ButtonProps {
   onClick: ButtonProps['onClick'];
 }
 
-export const OpenModal: React.FC<AdvancedSearchButtonProps> = ({
+export const AdvancedSearchOpen: React.FC<AdvancedSearchButtonProps> = ({
   colorScheme = 'primary',
   ...props
 }) => {
@@ -40,7 +40,7 @@ export const OpenModal: React.FC<AdvancedSearchButtonProps> = ({
       }
       {...rest}
     >
-      Advanced Search
+      {props.children || 'Advanced Search'}
     </Button>
   );
 };

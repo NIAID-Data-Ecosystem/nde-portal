@@ -1,14 +1,22 @@
 import { Flex, Heading, Spinner } from 'nde-design-system';
 import { useQuery } from 'react-query';
+import { getQueryStatusError } from 'src/components/error/utils';
 import { fetchSearchResults } from 'src/utils/api';
 import { FetchSearchResultsResponse } from 'src/utils/api/types';
 import { formatNumber } from 'src/utils/helpers';
+import { QueryStringError } from '../../utils/validation-checks';
 
 interface ResultsCountProps {
   queryString: string;
+  handleErrors: (errors: QueryStringError[]) => void;
+  setCount: (count: number) => void;
 }
 
-export const ResultsCount: React.FC<ResultsCountProps> = ({ queryString }) => {
+export const ResultsCount: React.FC<ResultsCountProps> = ({
+  queryString,
+  handleErrors,
+  setCount,
+}) => {
   // Get total count of results based on query string.
   const { isLoading, error, data } = useQuery<
     FetchSearchResultsResponse | undefined,
@@ -30,8 +38,33 @@ export const ResultsCount: React.FC<ResultsCountProps> = ({ queryString }) => {
         size: 0,
       });
     },
+
     // Don't refresh everytime window is touched.
-    { refetchOnWindowFocus: false, enabled: !!queryString },
+    {
+      refetchOnWindowFocus: false,
+      enabled: !!queryString,
+      retry: 1,
+      onError: error => {
+        const errorMessage = getQueryStatusError(
+          error as unknown as { status: string },
+        );
+        handleErrors(errorMessage ? [errorMessage] : []);
+      },
+      onSuccess: res => {
+        setCount(res?.total || 0);
+        if (res?.total === 0) {
+          handleErrors([
+            {
+              id: 'no-results',
+              type: 'warning',
+              title: 'Search generates no results.',
+              message:
+                'Your search query has no errors but it generates 0 results. Try making it more general.',
+            },
+          ]);
+        }
+      },
+    },
   );
 
   if ((!isLoading && !data) || error) {

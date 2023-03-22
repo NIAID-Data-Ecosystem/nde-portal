@@ -64,8 +64,9 @@ export const FiltersSection: React.FC<FiltersSectionProps> = React.memo(
                           <MetadataIcon
                             id={`filter-${property}`}
                             glyph={icon}
+                            title={property}
                             fill={getMetadataColor(icon)}
-                          ></MetadataIcon>
+                          />
                         </Box>
                       </MetadataToolTip>
                     )}

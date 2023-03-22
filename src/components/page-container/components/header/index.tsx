@@ -34,10 +34,10 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
   color,
 }) => {
   // Don't animate based on users preference (uses window.matchMedia).
-  const prefersReducedMotion = usePrefersReducedMotion();
-  const animation = prefersReducedMotion
-    ? undefined
-    : `${fade} 1.2s ease-in-out both`;
+  // const prefersReducedMotion = usePrefersReducedMotion();
+  // const animation = prefersReducedMotion
+  //   ? undefined
+  //   : `${fade} 1.2s ease-in-out both`;
 
   return (
     <>
@@ -59,7 +59,8 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
           alignItems={{ base: 'flex-start', xl: 'center' }}
           textAlign={{ xl: 'center' }}
         >
-          <Box maxW='600px'>
+          {/* <Box maxW='600px'> */}
+          <Box maxW='680px'>
             <Heading
               as='h1'
               size='h1'
@@ -67,7 +68,7 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
               fontWeight='bold'
               letterSpacing={1}
               lineHeight='shorter'
-              animation={animation}
+              // animation={animation}
             >
               {title}
             </Heading>
@@ -77,7 +78,7 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
                 fontSize='xl'
                 fontWeight='semibold'
                 mt={4}
-                animation={animation}
+                // animation={animation}
                 sx={{ animationDelay: '1s' }}
               >
                 {subtitle}
@@ -95,7 +96,7 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
                     lineHeight='short'
                     mt={2}
                     maxWidth={{ base: '400px', xl: 'unset' }}
-                    animation={animation}
+                    // animation={animation}
                     sx={{ animationDelay: `${1.5 + i * 0.5}s` }}
                   >
                     {text}

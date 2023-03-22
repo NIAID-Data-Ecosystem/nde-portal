@@ -3,10 +3,12 @@ import { Flex, FlexProps, Icon, Text } from 'nde-design-system';
 import { FaRegClock } from 'react-icons/fa';
 import { FormattedResource } from 'src/utils/api/types';
 import { StyledLabel } from './styles';
+import NIAID_FUNDED from 'configs/niaid-sources.json';
 
 interface TypeBannerProps extends FlexProps {
   type?: FormattedResource['type'];
   date?: FormattedResource['date'];
+  sourceName?: string | null;
 }
 
 export const getTypeColor = (type: FormattedResource['type']) => {
@@ -14,7 +16,10 @@ export const getTypeColor = (type: FormattedResource['type']) => {
     return;
   } else if (type.toLowerCase() === 'dataset') {
     return 'status.info';
-  } else if (type.toLowerCase().includes('tool')) {
+  } else if (
+    type.toLowerCase().includes('tool') ||
+    type.toLowerCase().includes('software')
+  ) {
     return 'primary.800';
   }
   return 'niaid.color';
@@ -25,16 +30,21 @@ const TypeBanner: React.FC<TypeBannerProps> = ({
   date,
   children,
   pl,
+  sourceName,
   ...props
 }) => {
+  const NIAIDrepos = NIAID_FUNDED.niaid.repositories as { id: string }[];
+  const isNiaidFunded =
+    sourceName && NIAIDrepos.filter(({ id }) => id === sourceName).length > 0;
   return (
     <Flex flexWrap='wrap' w='100%' bg={props.bg || 'status.info_lt'} {...props}>
       <Flex
         bg={props.bg || 'status.info_lt'}
+        px={{ base: 2, lg: 4 }}
         pl={pl}
         py={0}
         overflow='hidden'
-        minW={'150px'}
+        minW='250px'
       >
         {type && (
           <StyledLabel
@@ -50,6 +60,23 @@ const TypeBanner: React.FC<TypeBannerProps> = ({
               whiteSpace='nowrap'
             >
               {type.toUpperCase()}
+            </Text>
+          </StyledLabel>
+        )}
+        {isNiaidFunded && (
+          <StyledLabel
+            _before={{
+              bg: 'niaid.color',
+            }}
+          >
+            <Text
+              fontSize='xs'
+              color='white'
+              px={2}
+              fontWeight='semibold'
+              whiteSpace='nowrap'
+            >
+              NIAID
             </Text>
           </StyledLabel>
         )}

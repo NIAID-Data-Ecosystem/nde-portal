@@ -21,9 +21,9 @@ class Document extends NextDocument {
         as={Html}
         lang='en'
         // put padding for scroll to sections that equals the nav height
-        sx={{
-          scrollPaddingTop: Object.values(NAV_HEIGHT),
-        }}
+        // sx={{
+        //   scrollPaddingTop: Object.values(NAV_HEIGHT),
+        // }}
       >
         <Head>
           <style data-href='https://fonts.googleapis.com/css2?family=Public+Sans:wght@100;200;300;400;500;600;700;800;900'></style>

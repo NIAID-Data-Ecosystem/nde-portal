@@ -1,5 +1,9 @@
 {
-  "href": "https://data-staging.niaid.nih.gov/",
+  "href": "/",
+  "lastUpdate": {
+    "label": "Content Last Updated: 2023-02-27",
+    "href": "https://data-staging.niaid.nih.gov/changelog/"
+  },
   "contact": {
     "label": "Connect with us",
     "routes": [
@@ -23,13 +27,23 @@
         {
           "label": "Discovery Portal",
           "routes": [
-            { "label": "Home", "href": "/" },
-            { "label": "Search", "href": "/search" },
+            {
+              "label": "Home",
+              "href": "/"
+            },
+            {
+              "label": "Search",
+              "href": "/search"
+            },
+            {
+              "label": "Advanced Search",
+              "subLabel": "Build more complex queries",
+              "href": "/advanced-search"
+            },
             {
               "label": "About",
-              "href": "https://data-staging.niaid.nih.gov/about"
+              "href": "/about"
             },
-
             {
               "label": "Resources",
               "routes": [
@@ -40,8 +54,9 @@
                 },
                 {
                   "label": "Schemas",
-                  "subLabel": "Dataset and Computational Tool schemas",
-                  "href": "https://discovery.biothings.io/portal/niaid"
+                  "subLabel": "Information about the API schema",
+                  "href": "https://discovery.biothings.io/portal/niaid",
+                  "isExternal": true
                 },
                 {
                   "label": "Documentation",

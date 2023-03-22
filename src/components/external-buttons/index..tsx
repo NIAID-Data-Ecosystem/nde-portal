@@ -1,7 +1,17 @@
 import React from 'react';
-import { LinkProps, Image, Link, Text } from 'nde-design-system';
+import {
+  Box,
+  Button,
+  Flex,
+  Heading,
+  Icon,
+  Image,
+  LinkProps,
+  Stack,
+} from 'nde-design-system';
 import { ImageProps } from '@chakra-ui/image';
 import { assetPrefix } from 'next.config';
+import { FaArrowRight } from 'react-icons/fa';
 
 interface ExternalButtonProps extends LinkProps {
   src?: string | null;
@@ -19,40 +29,98 @@ export const ExternalSourceButton: React.FC<ExternalButtonProps> = ({
   ariaLabel,
   imageProps,
   sourceHref,
+  colorScheme = 'secondary',
   ...props
 }) => {
-  const SourceImage = () => (
+  const SourceImage = (props: any) => (
     <Image
-      h='40px'
-      mr={2}
-      mb={[2, 2, 0]}
+      // h='50px'
+      maxH='50px'
       src={`${assetPrefix || ''}${src}`}
       alt={alt}
       {...imageProps}
+      {...props}
     />
   );
   return (
     <>
-      {/* Link to repository if url exists */}
-      {src &&
-        (sourceHref ? (
-          <Link href={sourceHref} target='_blank'>
-            <SourceImage />
-          </Link>
-        ) : (
-          <SourceImage />
-        ))}
-      {!href && (
-        <Text color='gray.800' fontWeight='semibold' w='100%'>
-          {name || undefined}
-        </Text>
-      )}
-      {/* resource specific url in source repository. */}
-      {href && (
-        <Link isExternal href={href} flex={1} whiteSpace='normal' {...props}>
-          {name}
-        </Link>
-      )}
+      <Stack
+        w='100%'
+        alignItems={['center', 'flex-start']}
+        justifyContent='space-between'
+        flexWrap='wrap'
+        flexDirection={{ base: 'column', sm: 'row', lg: 'column' }}
+      >
+        {/* Link to repository if url exists */}
+        {src &&
+          (sourceHref ? (
+            <Button
+              href={sourceHref}
+              target='_blank'
+              px={4}
+              py={4}
+              variant='none'
+            >
+              <SourceImage />
+            </Button>
+          ) : (
+            <Box p={2}>
+              <SourceImage />
+            </Box>
+          ))}
+
+        <Flex minW={{ base: 'unset', sm: '260px' }} justifyContent='center'>
+          {href && (
+            <Button
+              px={[0]}
+              py={[0]}
+              alignItems='center'
+              p={1}
+              colorScheme={colorScheme}
+              href={href}
+              target='_blank'
+              transition='0.2s linear'
+              sx={{
+                color: '#fff',
+                '.button-arrow': {
+                  px: 4,
+                  transition: '0.2s ease-in-out',
+                },
+              }}
+              _hover={{
+                color: 'whiteAlpha.900',
+                bg: 'secondary.600',
+                '.button-arrow': {
+                  px: 8,
+                  transition: '0.2s ease-in-out',
+                },
+              }}
+            >
+              {' '}
+              <Heading
+                px={8}
+                py={[2, 0]}
+                color='inherit'
+                fontSize='md'
+                fontWeight='semibold'
+                letterSpacing='wide'
+              >
+                {name}
+              </Heading>
+              <Box
+                className='button-arrow'
+                bg='whiteAlpha.600'
+                borderRadius='semi'
+                px={2}
+                py={2}
+                display={{ base: 'none', sm: 'block' }}
+              >
+                <Icon as={FaArrowRight}></Icon>
+              </Box>
+            </Button>
+          )}
+        </Flex>
+      </Stack>
     </>
   );
 };

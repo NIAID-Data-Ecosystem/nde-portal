@@ -138,7 +138,7 @@ const SummaryPage: NextPage = () => {
                 w='100%'
                 isResponsive={false}
                 colorScheme='secondary'
-                ariaLabel='Search for grants, datasets or tools.'
+                ariaLabel='Search for grants or datasets.'
                 placeholder='Visualize your search'
                 value={searchTerm}
                 handleChange={handleChange}

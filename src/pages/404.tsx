@@ -7,6 +7,7 @@ import { assetPrefix } from 'next.config';
 const NotFoundPage: NextPage = () => {
   return (
     <PageContainer
+      hasNavigation
       title='Page Not Found'
       metaDescription='404 Error: Page Not Found.'
     >

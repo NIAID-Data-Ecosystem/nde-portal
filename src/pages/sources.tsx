@@ -1,26 +1,69 @@
 import type { NextPage } from 'next';
 import React from 'react';
-import { useQuery } from 'react-query';
-import { Button, Flex, UnorderedList } from 'nde-design-system';
+import {
+  Box,
+  Flex,
+  Skeleton,
+  Spinner,
+  Text,
+  UnorderedList,
+} from 'nde-design-system';
 import { PageContainer, PageContent } from 'src/components/page-container';
 import { Main, Sidebar } from 'src/components/sources';
 import { fetchMetadata } from 'src/utils/api';
-import { Error, ErrorCTA } from 'src/components/error';
+import { Error } from 'src/components/error';
 import { useRouter } from 'next/router';
-import LoadingSpinner from 'src/components/loading';
+import axios from 'axios';
+import { Metadata, MetadataSource } from 'src/utils/api/types';
+import { useQuery } from 'react-query';
+import { getQueryStatusError } from 'src/components/error/utils';
 
-const Sources: NextPage = () => {
-  const router = useRouter();
+export interface SourceResponse {
+  dateCreated?: string;
+  id: MetadataSource['sourceInfo']['identifier'];
+  name: MetadataSource['sourceInfo']['name'];
+  description: MetadataSource['sourceInfo']['description'];
+  dateModified: MetadataSource['version'];
+  numberOfRecords: number;
+  schema: MetadataSource['sourceInfo']['schema'];
+  url: MetadataSource['sourceInfo']['url'];
+}
+
+interface SourcesProps {
+  data: SourceResponse[];
+  error: { status: number; message: string; type: string } | null;
+  children: any;
+}
+const Sources: NextPage<SourcesProps> = ({ data, error }) => {
   // Fetch metadata stats from API.
   const {
-    data: sourceData,
+    data: sources,
     isLoading,
-    error,
-  } = useQuery(
-    ['metadata'],
-    fetchMetadata, // Don't refresh everytime window is touched.
-    { refetchOnWindowFocus: false },
-  );
+    error: sourcesError,
+  } = useQuery(['metadata'], fetchMetadata, {
+    refetchOnMount: true,
+    select: res => {
+      const sources = res.src;
+      const sourceDetails = Object.entries(sources).map(([key, source]) => {
+        const id = (source.sourceInfo && source.sourceInfo.identifier) || key;
+        const githubInfo = data.find(item => {
+          return item.id === id;
+        });
+        return {
+          ...githubInfo,
+          id,
+          name: (source.sourceInfo && source.sourceInfo.name) || key,
+          description:
+            (source.sourceInfo && source.sourceInfo.description) || '',
+          dateModified: source.version || '',
+          numberOfRecords: source.stats[key] || 0,
+          schema: (source.sourceInfo && source.sourceInfo.schema) || null,
+          url: (source.sourceInfo && source.sourceInfo.url) || '',
+        };
+      });
+      return sourceDetails;
+    },
+  });
 
   return (
     <PageContainer
@@ -33,16 +76,21 @@ const Sources: NextPage = () => {
       disableSearchBar
     >
       <Flex>
-        {error && (
-          <Error message="It's possible that the server is experiencing some issues.">
-            <ErrorCTA>
-              <Button onClick={() => router.reload()} variant='outline'>
-                Reload the page
-              </Button>
-            </ErrorCTA>
+        {(error || sourcesError) && (
+          <Error>
+            <Flex flexDirection='column' alignItems='center'>
+              <Text>
+                {error ? error.message : ''}
+                {!error && sourcesError
+                  ? getQueryStatusError(
+                      sourcesError as unknown as { status: string },
+                    )
+                  : ''}
+              </Text>
+            </Flex>
           </Error>
         )}
-        {!error && sourceData && (
+        {!(error || sourcesError) && (
           <>
             <Flex
               flexDirection='column'
@@ -60,19 +108,80 @@ const Sources: NextPage = () => {
                 top={0}
                 ml={0}
               >
-                <Sidebar data={sourceData} />
+                {!isLoading && sources ? <Sidebar data={sources} /> : <></>}
               </UnorderedList>
             </Flex>
+            <PageContent w='100%' flexDirection='column' bg='#fff'>
+              <Main data={sources} isLoading={isLoading} />
+            </PageContent>
           </>
         )}
-
-        <PageContent w='100%' flexDirection='column' bg='#fff'>
-          {isLoading && <LoadingSpinner isLoading={isLoading} />}
-          {!error && sourceData && <Main sourceData={sourceData} />}
-        </PageContent>
       </Flex>
     </PageContainer>
   );
 };
+
+export async function getStaticProps() {
+  const fetchRepositoryInfo = async (sourceData: any) => {
+    try {
+      const data = await Promise.all(
+        sourceData.map(async ([k, source]: [string, any]) => {
+          const sourceData = {
+            id: (source.sourceInfo && source.sourceInfo.identifier) || k,
+            sourcePath: source?.code?.file || null,
+          };
+          if (!sourceData.sourcePath) {
+            return sourceData;
+          }
+
+          // Fetch source information from github
+          try {
+            const url = `https://api.github.com/repos/NIAID-Data-Ecosystem/nde-crawlers/commits`;
+            const response = await axios.get(url, {
+              headers: {
+                Authorization: process.env.GH_API_KEY
+                  ? `Bearer ${process.env.GH_API_KEY}`
+                  : '',
+                'Content-Type': 'application/json',
+              },
+              params: {
+                url: '/repos/{owner}/{repo}/commits?path={path}',
+                owner: 'NIAID-Data-Ecosystem',
+                repo: 'nde-crawlers',
+                path: 'biothings-hub/files/nde-hub/hub/dataload/sources/immport/uploader.py',
+              },
+            });
+            const data = await response.data;
+            const dates: string[] = [];
+            if (data) {
+              data.forEach(
+                (jsonObj: { commit: { author: { date: string } } }) => {
+                  dates.push(jsonObj.commit.author.date);
+                },
+              );
+            }
+
+            return { ...sourceData, dateCreated: dates[dates.length - 1] };
+          } catch (err) {
+            throw err;
+          }
+        }),
+      );
+      return { error: null, data };
+    } catch (err: any) {
+      return {
+        data: [],
+        error: {
+          type: 'error',
+          status: err.response.status,
+          message: err.response.statusText,
+        },
+      };
+    }
+  };
+  const sources = await fetchMetadata();
+  const sourceData = await fetchRepositoryInfo(Object.entries(sources.src));
+  return { props: { ...sourceData } };
+}
 
 export default Sources;

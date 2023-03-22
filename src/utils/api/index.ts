@@ -39,7 +39,10 @@ export interface Params {
 }
 
 // Fetch all search results from API.
-export const fetchSearchResults = async (params: Params) => {
+export const fetchSearchResults = async (
+  params: Params,
+  signal?: AbortSignal,
+) => {
   if (!params || !params.q) {
     return;
   }
@@ -53,6 +56,7 @@ export const fetchSearchResults = async (params: Params) => {
       `${process.env.NEXT_PUBLIC_API_URL}/query?`,
       {
         params,
+        signal,
       },
     );
 
@@ -75,8 +79,8 @@ export const fetchSearchResults = async (params: Params) => {
     }
 
     return { results, total, facets };
-  } catch (err) {
-    throw err;
+  } catch (err: any) {
+    throw err.response;
   }
 };
 
