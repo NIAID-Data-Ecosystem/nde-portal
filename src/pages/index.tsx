@@ -176,8 +176,8 @@ const Home: NextPage = () => {
       <PageContainer
         hasNavigation
         title='Home'
-        metaDescription='Find and access allergic, immune-mediated and infectious disease data by searching across biomedical data repositories with the NIAID Data Ecosystem Discovery Portal'
-        keywords='omics, data, infectious disease, epidemiology, clinical trial, immunology, bioinformatics, search, repository'
+        metaDescription='Find and access allergic, infectious and immune-mediated disease data by searching across biomedical data repositories with the NIAID Data Discovery Portal'
+        keywords='omics, data, infectious disease, epidemiology, clinical trial, immunology, bioinformatics, surveillance, search, repository'
         disableSearchBar
       >
         <PageHeader
