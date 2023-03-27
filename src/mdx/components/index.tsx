@@ -59,19 +59,11 @@ export const MDXComponents = {
     <ListItem pb='4px' listStyleType='initial' fontSize='md' {...props} />
   ),
   // a: (props: any) => <Link {...props} />,
-  a(props: any) {
-    const { href, children } = props;
-    if (children === 'metadata schema') {
-      return <Link {...props} isExternal={true} />;
-    } else if (children === 'suggest a data repository here') {
-      return <Link {...props} isExternal={true} />;
-    } else if (children === 'FAIR Guiding Principles') {
-      return <Link {...props} isExternal={true} />;
-    } else if (children === 'Scripps Research') {
-      return <Link {...props} isExternal={true} />;
-    } else {
-      return <Link {...props} />;
-    }
+  a: (props: any) => {
+    return <Link {...props} />;
+  },
+  Link: (props: any) => {
+    return <Link {...props} />;
   },
   Flex: (props: any) => <Flex {...props} />,
 
