@@ -72,11 +72,11 @@ export const PageContainer: React.FC<PageContainerProps> = ({
         <meta name='keywords' content={keywords} /> */}
         <meta
           name='description'
-          content='Find and access allergic, immune-mediated and infectious disease data by searching across biomedical data repositories with the NIAID Data Ecosystem Discovery Portal'
+          content='Find and access allergic, infectious and immune-mediated disease data by searching across biomedical data repositories with the NIAID Data Discovery Portal'
         />
         <meta
           name='keywords'
-          content='omics, data, infectious disease, epidemiology, clinical trial, immunology, bioinformatics, search, repository'
+          content='omics, data, infectious disease, epidemiology, clinical trial, immunology, bioinformatics, surveillance, search, repository'
         />
 
         {/* og meta */}
@@ -85,7 +85,7 @@ export const PageContainer: React.FC<PageContainerProps> = ({
         {/* <meta property='og:description' content={metaDescription} /> */}
         <meta
           property='og:description'
-          content='Find and access allergic, immune-mediated and infectious disease data by searching across biomedical data repositories with the NIAID Data Ecosystem Discovery Portal'
+          content='Find and access allergic, infectious and immune-mediated disease data by searching across biomedical data repositories with the NIAID Data Discovery Portal'
         />
         <meta property='og:type' content='website' />
         <meta property='og:site_name' content='NIAID Data Discovery Portal' />
