@@ -4,55 +4,38 @@
       {
         "id": "AccessClinicalData@NIAID",
         "name": "AccessClinicalData@NIAID",
-        "abstract": "Enables access to NIAID-sponsored clinical trial datasets",
-        "genre": [
-          "clinical"
-        ]
+        "abstract": "Enables access to NIAID-sponsored clinical trial records",
+        "genre": ["clinical"]
       },
       {
         "id": "ClinEpiDB",
         "name": "ClinEpiDB",
         "abstract": "Integrates data from epidemiological studies",
-        "genre": [
-          "clinical",
-          "epidemiology"
-        ]
+        "genre": ["clinical", "epidemiology"]
       },
       {
         "id": "ImmPort",
         "name": "Immunology Database and Analysis Portal",
         "abstract": "Hosts immunology data from basic science and clinical studies",
-        "genre": [
-          "omics",
-          "clinical",
-          "imaging",
-          "immunology",
-          "molecular"
-        ]
+        "genre": ["omics", "clinical", "imaging", "immunology", "molecular"]
       },
       {
         "id": "MicrobiomeDB",
         "name": "MicrobiomeDB",
         "abstract": "Systems biology platform for exploring microbiome experiments",
-        "genre": [
-          "omics"
-        ]
+        "genre": ["omics"]
       },
       {
         "id": "VDJServer",
         "name": "VDJServer",
         "abstract": "Data commons for immune repertoire sequences and rearrangements",
-        "genre": [
-          "omics"
-        ]
+        "genre": ["omics"]
       },
       {
         "id": "VEuPathDB",
         "name": "VEuPathDB",
         "abstract": "Database of genome-scale research data for vectors, parasites, and fungi",
-        "genre": [
-          "omics"
-        ]
+        "genre": ["omics"]
       }
     ]
   },
@@ -62,22 +45,13 @@
         "id": "LINCS",
         "name": "LINCS",
         "abstract": "Catalogs changes in gene expression and other cellular processes",
-        "genre": [
-          "imaging",
-          "omics",
-          "molecular"
-        ]
+        "genre": ["imaging", "omics", "molecular"]
       },
       {
         "id": "HuBMAP",
         "name": "HuBMAP",
         "abstract": "Single-cell tissue data repository",
-        "genre": [
-          "physiology",
-          "imaging",
-          "omics",
-          "spectrometry"
-        ]
+        "genre": ["physiology", "imaging", "omics", "spectrometry"]
       },
       {
         "id": "Data Discovery Engine",
@@ -103,33 +77,25 @@
         "id": "Omics Discovery Index (OmicsDI)",
         "name": "Omics Discovery Index (OmicsDI)",
         "abstract": "Aggregates omics data from multiple sources",
-        "genre": [
-          "omics"
-        ]
+        "genre": ["omics"]
       },
       {
         "id": "Vivli",
         "name": "Vivli",
         "abstract": "Global clinical research data sharing platform",
-        "genre": [
-          "clinical"
-        ]
+        "genre": ["clinical"]
       },
       {
         "id": "NCBI GEO",
         "name": "NCBI GEO",
         "abstract": "Repository of microarray, next-generation sequencing, & other high-throughput functional genomic data",
-        "genre": [
-          "omics"
-        ]
+        "genre": ["omics"]
       },
       {
         "id": "NCBI SRA",
         "name": "NCBI SRA",
         "abstract": "Largest public repository of high throughput sequencing data",
-        "genre": [
-          "omics"
-        ]
+        "genre": ["omics"]
       },
       {
         "id": "Zenodo",
@@ -144,79 +110,55 @@
         "id": "VEuPathDB",
         "name": "VEuPathDB",
         "abstract": "Database of genome-scale research data for vectors, parasites, and fungi",
-        "genre": [
-          "omics"
-        ]
+        "genre": ["omics"]
       },
       {
         "id": "VDJServer",
         "name": "VDJServer",
         "abstract": "Data commons for immune repertoire sequences and rearrangements",
-        "genre": [
-          "omics"
-        ]
+        "genre": ["omics"]
       },
       {
         "id": "MicrobiomeDB",
         "name": "MicrobiomeDB",
         "abstract": "Systems biology platform for exploring microbiome experiments",
-        "genre": [
-          "omics"
-        ]
+        "genre": ["omics"]
       },
       {
         "id": "ImmPort",
         "name": "Immunology Database and Analysis Portal",
         "abstract": "Hosts immunology data from basic science and clinical studies",
-        "genre": [
-          "omics",
-          "clinical",
-          "imaging",
-          "immunology",
-          "molecular"
-        ]
+        "genre": ["omics", "clinical", "imaging", "immunology", "molecular"]
       },
       {
         "id": "AccessClinicalData@NIAID",
         "name": "AccessClinicalData@NIAID",
-        "abstract": "Enables access to NIAID-sponsored clinical trial datasets",
-        "genre": [
-          "clinical"
-        ]
+        "abstract": "Enables access to NIAID-sponsored clinical trial records",
+        "genre": ["clinical"]
       },
       {
         "id": "ClinEpiDB",
         "name": "ClinEpiDB",
         "abstract": "Integrates data from epidemiological studies",
-        "genre": [
-          "clinical",
-          "epidemiology"
-        ]
+        "genre": ["clinical", "epidemiology"]
       },
       {
         "id": "Human Cell Atlas",
         "name": "Human Cell Atlas",
         "abstract": "Single-cell data repository",
-        "genre": [
-          "physiology",
-          "omics"
-        ]
+        "genre": ["physiology", "omics"]
       },
       {
         "id": "Qiita",
         "name": "Qiita",
-        "abstract": "Allows scientists to share multi-omics datasets as studies",
-        "genre": [
-          "omics"
-        ]
+        "abstract": "Allows scientists to share multi-omics records as studies",
+        "genre": ["omics"]
       },
       {
         "id": "ReframeDB",
         "name": "ReframeDB",
         "abstract": "Screening library of 12,000 molecules",
-        "genre": [
-          "molecular"
-        ]
+        "genre": ["molecular"]
       }
     ]
   }

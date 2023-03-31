@@ -253,7 +253,7 @@ const Home: NextPage = () => {
         </PageHeader>
 
         {/* Display stats about the Biothings API */}
-        {!error && (
+        {/* {!error && (
           <PageContent
             w='100%'
             bg='white'
@@ -262,7 +262,7 @@ const Home: NextPage = () => {
             justifyContent='space-around'
             alignItems='center'
             py={[6, 10]}
-          >
+          > 
             <SimpleGrid
               columns={[1, 2, Object.values(stats).length]}
               w='100%'
@@ -301,9 +301,9 @@ const Home: NextPage = () => {
                   </LoadingSpinner>
                 );
               })}
-            </SimpleGrid>
+            </SimpleGrid> q
           </PageContent>
-        )}
+        )}*/}
 
         {/* Data repository viz section */}
         <PageContent
@@ -353,37 +353,53 @@ const Home: NextPage = () => {
               <StyledBody
                 maxWidth={['unset', 'unset', '700px', '600px']}
                 textAlign={['start', 'start', 'center', 'start']}
+                m={2}
               >
-                <StyledSectionHeading mt={[4, 6]}>
+                <StyledSectionHeading mt={6}>
                   {homepageCopy.sections[1].heading}
                 </StyledSectionHeading>
-                <StyledText>{homepageCopy.sections[1].body}</StyledText>
-                {homepageCopy.sections[1]?.routes &&
-                  homepageCopy.sections[1].routes.map(
-                    (route: {
-                      title: string;
-                      path: string;
-                      isExternal?: boolean;
-                    }) => {
-                      return (
-                        <StyledSectionButtonGroup
-                          key={route.title}
-                          justifyContent={[
-                            'flex-start',
-                            'flex-start',
-                            'center',
-                            'flex-start',
-                          ]}
-                        >
-                          <NextLink href={route.path} passHref>
-                            <Button w='100%' variant='outline'>
+                <StyledSectionButtonGroup
+                  justifyContent={[
+                    'flex-start',
+                    'flex-start',
+                    'center',
+                    'flex-start',
+                  ]}
+                  flexWrap={['wrap', 'nowrap']}
+                  maxWidth={['unset', 'unset', '400px', '400px']}
+                >
+                  {homepageCopy.sections[1]?.routes &&
+                    homepageCopy.sections[1].routes.map(
+                      (
+                        route: {
+                          title: string;
+                          path: string;
+                          isExternal?: boolean;
+                        },
+                        index,
+                      ) => {
+                        return (
+                          <NextLink
+                            key={route.title}
+                            href={route.path}
+                            passHref
+                          >
+                            <Button
+                              w='100%'
+                              variant={index % 2 ? 'solid' : 'outline'}
+                              size='sm'
+                              m={[0, 2, 0]}
+                              my={[1, 2, 0]}
+                              py={[6]}
+                              maxWidth={['200px', '200px', '400px', '400px']}
+                            >
                               {route.title}
                             </Button>
                           </NextLink>
-                        </StyledSectionButtonGroup>
-                      );
-                    },
-                  )}
+                        );
+                      },
+                    )}
+                </StyledSectionButtonGroup>
               </StyledBody>
             </Flex>
           </StyledSection>

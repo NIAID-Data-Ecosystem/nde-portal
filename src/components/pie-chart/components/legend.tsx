@@ -388,7 +388,7 @@ export const Legend = ({ data: rawData }: { data: RawDataProps[] }) => {
                       <Text as='span' fontWeight='bold' fontSize='xl' mr={1}>
                         {formatNumber(iidNumDatasets)}
                       </Text>{' '}
-                      dataset{iidNumDatasets === 1 ? '' : 's'}
+                      record{iidNumDatasets === 1 ? '' : 's'}
                     </Text>
                   )}
                 </Flex>
@@ -464,7 +464,7 @@ export const Legend = ({ data: rawData }: { data: RawDataProps[] }) => {
               Generalist Data
             </Heading>
             <Text fontSize={'xs'} mx={4} color='text.body'>
-              Caveat: Currently all datasets from general repositories are
+              Caveat: Currently all records from general repositories are
               included, not only those related to infectious and immune-mediated
               diseases (IID).
             </Text>
@@ -489,7 +489,7 @@ export const Legend = ({ data: rawData }: { data: RawDataProps[] }) => {
                       <Text as='span' fontWeight='bold' fontSize='xl' mr={1}>
                         {formatNumber(generalistNumDatasets)}
                       </Text>{' '}
-                      dataset{generalistNumDatasets === 1 ? '' : 's'}
+                      record{generalistNumDatasets === 1 ? '' : 's'}
                     </Text>
                   )}
                 </Flex>

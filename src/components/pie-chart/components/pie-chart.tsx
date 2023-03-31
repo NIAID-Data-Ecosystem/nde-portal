@@ -127,12 +127,15 @@ export const PieChart = ({
         {/* Total datasets */}
         <Heading
           as='h3'
-          fontWeight='medium'
+          fontWeight='semibold'
           size='h4'
           color='gray.900'
           textAlign={['center']}
         >
-          {formatNumber(total)} Resources
+          {formatNumber(total)}{' '}
+          <Text as='span' fontWeight='normal' fontSize='h3' color='gray.800'>
+            records
+          </Text>
         </Heading>
       </Flex>
       {/* Hover tooltip */}
