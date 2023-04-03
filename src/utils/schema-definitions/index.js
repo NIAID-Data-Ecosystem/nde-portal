@@ -187,3 +187,67 @@ fetchSchema().then(data => {
     },
   );
 });
+
+const fetchRepositoryInfo = async () => {
+  // Fetch source information from github
+  try {
+    const url = `https://api.github.com/repos/NIAID-Data-Ecosystem/nde-portal`;
+    const response = await axios.get(url, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      params: {
+        url: '/repos/{owner}/{repo}',
+        owner: 'NIAID-Data-Ecosystem',
+        repo: 'nde-portal',
+      },
+    });
+    const data = await response.data;
+
+    return { data };
+  } catch (err) {
+    return {
+      data: [],
+      error: {
+        type: 'error',
+        status: err.response.status,
+        message: err.response.statusText,
+      },
+    };
+  }
+};
+
+fetchRepositoryInfo().then(response => {
+  const file_path = './configs/footer.json';
+  let rawdata = fs.readFileSync(file_path);
+  let properties = [];
+  try {
+    let prevData = JSON.parse(rawdata);
+    properties = prevData;
+  } catch (err) {
+    // JSON file is empty.
+    if (err) {
+      properties = [];
+    }
+  }
+
+  // Write update to json
+  fs.writeFile(
+    file_path,
+    JSON.stringify({
+      ...properties,
+      lastUpdate: {
+        label:
+          response && response.data && response.data.pushed_at
+            ? `Content Last Updated: ${response.data.pushed_at.split('T')[0]}`
+            : '',
+        href: '/changelog/',
+      },
+    }),
+    err => {
+      if (err) {
+        console.error('error writing to file.');
+      }
+    },
+  );
+});

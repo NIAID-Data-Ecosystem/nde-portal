@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useState } from 'react';
 import {
   Box,
   Flex,
@@ -13,12 +13,10 @@ import navConfig from 'configs/nav.json';
 import footerConfig from 'configs/footer.json';
 import Head from 'next/head';
 import Notice from './notice';
-import { env } from 'next.config';
 import { SearchBarWithDropdown } from 'src/components/search-bar';
 import { PageContent } from './content';
 import { AdvancedSearchOpen } from 'src/components/advanced-search/components/buttons';
 import NextLink from 'next/link';
-import { assetPrefix } from 'next.config';
 
 interface PageContainerProps extends FlexProps {
   hasNavigation?: boolean;
@@ -33,7 +31,6 @@ export const PageContainer: React.FC<PageContainerProps> = ({
   hasNavigation,
   title,
   metaDescription,
-  keywords,
   disableSearchBar,
 }) => {
   const topNavigation = navConfig as NavigationProps['navigation'];
@@ -51,9 +48,7 @@ export const PageContainer: React.FC<PageContainerProps> = ({
       if (r['href'].charAt(0) === '/') {
         return {
           ...r,
-          href: `${env?.BASE_URL}${r['href']}${
-            r['href'].slice(-1) === '/' ? '' : '/'
-          }`,
+          href: `${r['href']}${r['href'].slice(-1) === '/' ? '' : '/'}`,
         };
       }
 
@@ -68,8 +63,6 @@ export const PageContainer: React.FC<PageContainerProps> = ({
     <>
       <Head>
         <title>NIAID Data Discovery Portal {title && ` | ${title}`}</title>
-        {/* <meta name='description' content={metaDescription} />
-        <meta name='keywords' content={keywords} /> */}
         <meta
           name='description'
           content='Find and access allergic, infectious and immune-mediated disease data by searching across biomedical data repositories with the NIAID Data Discovery Portal'
@@ -80,9 +73,11 @@ export const PageContainer: React.FC<PageContainerProps> = ({
         />
 
         {/* og meta */}
-        <meta property='og:url' content='https://data-staging.niaid.nih.gov/' />
-        <meta property='og:title' content={'NIAID Data Discovery Portal'} />
-        {/* <meta property='og:description' content={metaDescription} /> */}
+        <meta
+          property='og:url'
+          content={`${process.env.NEXT_PUBLIC_BASE_URL}`}
+        />
+        <meta property='og:title' content='NIAID Data Discovery Portal' />
         <meta
           property='og:description'
           content='Find and access allergic, infectious and immune-mediated disease data by searching across biomedical data repositories with the NIAID Data Discovery Portal'
@@ -91,21 +86,18 @@ export const PageContainer: React.FC<PageContainerProps> = ({
         <meta property='og:site_name' content='NIAID Data Discovery Portal' />
         <meta
           property='og:image'
-          content={`https://data-staging.niaid.nih.gov/assets/preview.png`}
+          content={`${process.env.NEXT_PUBLIC_BASE_URL}/assets/preview.png`}
         />
 
         {/* twitter meta */}
-        <meta
-          property='twitter:title'
-          content={'NIAID Data Discovery Portal'}
-        />
+        <meta property='twitter:title' content='NIAID Data Discovery Portal' />
         <meta property='twitter:description' content={metaDescription} />
         {/* <meta property='twitter:site' content='@NIAID' />
         <meta property='twitter:creator' content='@NIAID' /> */}
         <meta property='twitter:card' content='summary' />
         <meta
           property='twitter:image'
-          content={`https://data-staging.niaid.nih.gov/assets/preview.png`}
+          content={`${process.env.NEXT_PUBLIC_BASE_URL}/assets/preview.png`}
         />
       </Head>
 
