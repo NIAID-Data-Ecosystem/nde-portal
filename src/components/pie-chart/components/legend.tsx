@@ -459,9 +459,9 @@ export const Legend = ({ data: rawData }: { data: RawDataProps[] }) => {
           border='1px solid'
           borderColor='gray.200'
         >
-          <Flex direction={'column'}>
+          <Flex flexDirection='column'>
             <Heading size='h5' mx={4} color='text.body'>
-              Generalist Data
+              Generalist Repositories
             </Heading>
             <Text fontSize={'xs'} mx={4} color='text.body'>
               Caveat: Currently all records from general repositories are
