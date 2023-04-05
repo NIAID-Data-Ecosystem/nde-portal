@@ -236,13 +236,15 @@ fetchRepositoryInfo().then(response => {
     file_path,
     JSON.stringify({
       ...properties,
-      lastUpdate: {
-        label:
-          response && response.data && response.data.pushed_at
-            ? `Content Last Updated: ${response.data.pushed_at.split('T')[0]}`
-            : '',
-        href: '/changelog/',
-      },
+      lastUpdate: [
+        {
+          label:
+            response && response.data && response.data.pushed_at
+              ? `Content updated: ${response.data.pushed_at.split('T')[0]}`
+              : '',
+          href: '/changelog/',
+        },
+      ],
     }),
     err => {
       if (err) {

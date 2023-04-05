@@ -138,8 +138,7 @@
       ]
     }
   ],
-  "lastUpdate": {
-    "label": "Content Last Updated: 2023-04-03",
-    "href": "/changelog/"
-  }
+  "lastUpdate": [
+    { "label": "Content updated: 2023-04-04", "href": "/changelog/" }
+  ]
 }

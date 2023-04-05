@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import {
   Box,
   Flex,
@@ -17,6 +16,8 @@ import { SearchBarWithDropdown } from 'src/components/search-bar';
 import { PageContent } from './content';
 import { AdvancedSearchOpen } from 'src/components/advanced-search/components/buttons';
 import NextLink from 'next/link';
+import { useQuery } from 'react-query';
+import { fetchMetadata } from 'src/utils/api';
 
 interface PageContainerProps extends FlexProps {
   hasNavigation?: boolean;
@@ -58,6 +59,16 @@ export const PageContainer: React.FC<PageContainerProps> = ({
       };
     });
   };
+
+  const { data } = useQuery(['metadata'], fetchMetadata);
+  const lastDataUpdate = data?.build_date
+    ? [
+        {
+          label: `Data harvested: ${data?.build_date.split('T')[0]}`,
+          href: '/sources/',
+        },
+      ]
+    : [];
 
   return (
     <>
@@ -145,6 +156,13 @@ export const PageContainer: React.FC<PageContainerProps> = ({
             navigation={{
               ...footerNavigation,
               routes: [...prefixPortalRoutes(footerConfig.routes)],
+              lastUpdate:
+                footerNavigation.lastUpdate || lastDataUpdate.length
+                  ? [
+                      ...(lastDataUpdate || []),
+                      ...(footerNavigation.lastUpdate || []),
+                    ]
+                  : [],
             }}
           />
         </Box>
