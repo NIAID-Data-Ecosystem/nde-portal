@@ -123,7 +123,7 @@ const Home: NextPage = () => {
       setStats(stat);
     },
   });
-  console.log(stats);
+
   return (
     <>
       <PageContainer

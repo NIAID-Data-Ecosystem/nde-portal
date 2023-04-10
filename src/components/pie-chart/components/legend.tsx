@@ -146,7 +146,7 @@ export const Legend = ({ data: rawData }: { data: RawDataProps[] }) => {
     }
     return r;
   }, [] as { term: string; count: number; abstract?: string; value?: string; genre?: string[] }[]);
-  console.log(generalist_labels);
+
   const generalistNumSources = generalist_labels.length || 0;
   const generalistNumDatasets = generalist_labels.reduce(
     (r, v) => (r += v.count),
