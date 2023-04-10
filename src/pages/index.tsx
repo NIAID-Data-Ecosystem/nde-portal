@@ -1,38 +1,25 @@
 import { useState } from 'react';
 import type { NextPage } from 'next';
-import {
-  Box,
-  Button,
-  Flex,
-  Heading,
-  Image,
-  SimpleGrid,
-  Text,
-  useBreakpointValue,
-} from 'nde-design-system';
+import { Box, Button, Flex, Text, useBreakpointValue } from 'nde-design-system';
 import {
   PageHeader,
   PageContainer,
   PageContent,
   SearchQueryLink,
 } from 'src/components/page-container';
-import { useRouter } from 'next/router';
 import homepageCopy from 'configs/homepage.json';
 import { fetchSearchResults } from 'src/utils/api';
 import { useQuery } from 'react-query';
 import { FetchSearchResultsResponse } from 'src/utils/api/types';
 import LoadingSpinner from 'src/components/loading';
-import { formatNumber } from 'src/utils/helpers';
 import {
   StyledSection,
   StyledSectionHeading,
-  StyledText,
   StyledBody,
   StyledSectionButtonGroup,
   PieChart,
   Legend,
 } from 'src/components/pie-chart';
-import { assetPrefix } from 'next.config';
 import NextLink from 'next/link';
 import { SearchBarWithDropdown } from 'src/components/search-bar';
 import { AdvancedSearchOpen } from 'src/components/advanced-search/components/buttons';
@@ -90,11 +77,7 @@ const Home: NextPage = () => {
   const params = {
     q: '__all__',
     size: 0,
-    facets: [
-      '@type',
-      'measurementTechnique.name',
-      'includedInDataCatalog.name',
-    ].join(','),
+    facets: ['includedInDataCatalog.name'].join(','),
     facet_size: 20,
   };
 
@@ -105,17 +88,11 @@ const Home: NextPage = () => {
   }
 
   interface Stats {
-    datasets: Stat | null;
-    // computationaltool: Stat | null;
-    measurementTechnique: Stat | null;
     repositories: Stat | null;
   }
 
   const [stats, setStats] = useState<Stats>({
     repositories: null,
-    datasets: null,
-    // computationaltool: null,
-    measurementTechnique: null,
   });
 
   const { isLoading, error } = useQuery<
@@ -130,28 +107,6 @@ const Home: NextPage = () => {
       if (data) {
         const { facets } = data;
 
-        // Data types - we're interested in computationaltool and datasets.
-        const types: { [key: string]: Stat } = facets['@type'].terms.reduce(
-          (r: { [key: string]: Stat }, v: Stat) => {
-            const key = v.term.toLowerCase();
-            if (key === 'dataset' || key === 'computationaltool') {
-              if (!r[`${key}`]) {
-                r[`${key}`] = { term: '', count: 0 };
-              }
-              r[`${key}`].term =
-                key === 'computationaltool' ? 'Tools' : 'Datasets';
-              r[`${key}`].count += v.count;
-            }
-            return r;
-          },
-          {},
-        );
-        // Get number of measurement techniques
-        const measurementTechnique = {
-          term: 'Measurement techniques',
-          count: facets['measurementTechnique.name'].total,
-        };
-
         const sources = [...facets['includedInDataCatalog.name'].terms];
 
         // Get number of repositories
@@ -162,15 +117,13 @@ const Home: NextPage = () => {
         };
         stat = {
           repositories,
-          datasets: types.dataset,
-          // computationaltool: types.computationaltool,
-          measurementTechnique,
         };
       }
 
       setStats(stat);
     },
   });
+  console.log(stats);
   return (
     <>
       <PageContainer
@@ -252,172 +205,123 @@ const Home: NextPage = () => {
           </>
         </PageHeader>
 
-        {/* Display stats about the Biothings API */}
-        {/* {!error && (
+        {/* Data repository viz section */}
+        {error ? (
+          <></>
+        ) : (
           <PageContent
-            w='100%'
-            bg='white'
+            bg='page.alt'
             minH='unset'
             flexDirection='column'
-            justifyContent='space-around'
             alignItems='center'
-            py={[6, 10]}
-          > 
-            <SimpleGrid
-              columns={[1, 2, Object.values(stats).length]}
-              w='100%'
-              spacing={[6, 8, 4]}
-            >
-              {Object.values(stats).map((stat, i) => {
-                return (
-                  <LoadingSpinner key={i} isLoading={isLoading}>
-                    {stat?.term && (
-                      <Flex
-                        alignItems='center'
-                        flexDirection='column'
-                        textAlign='center'
-                      >
-                        <Image
-                          src={`${assetPrefix || ''}/assets/${stat.term
-                            .toLowerCase()
-                            .replaceAll(' ', '-')}.svg`}
-                          alt={`Icon for ${stat.term}`}
-                          boxSize='50px'
-                          objectFit='contain'
-                          mb={1}
-                        />
-                        <Heading size='md' fontWeight='bold' my={1}>
-                          {formatNumber(stat.count)}
-                        </Heading>
-                        <Heading
-                          size='xs'
-                          fontWeight='medium'
-                          lineHeight='shorter'
-                        >
-                          {stat.term}
-                        </Heading>
-                      </Flex>
-                    )}
-                  </LoadingSpinner>
-                );
-              })}
-            </SimpleGrid> q
-          </PageContent>
-        )}*/}
-
-        {/* Data repository viz section */}
-        <PageContent
-          bg='page.alt'
-          minH='unset'
-          flexDirection='column'
-          alignItems='center'
-        >
-          <StyledSection
-            id='explore-date'
-            flexDirection={{ base: 'column', lg: 'column' }}
           >
-            <Flex
-              width='100%'
-              flexDirection={{ base: 'column', lg: 'row-reverse' }}
-              justifyContent={{ lg: 'center' }}
-              flex={1}
-              alignItems='center'
-              maxW={{ base: 'unset', lg: '1400px' }}
+            <StyledSection
+              id='explore-date'
+              flexDirection={{ base: 'column', lg: 'column' }}
             >
-              <LoadingSpinner isLoading={isLoading}>
-                {/* Pie chart with number repositories and associated resources*/}
-                {stats?.repositories?.stats && (
-                  <PieChart
-                    width={size || 200}
-                    height={size || 200}
-                    data={stats.repositories.stats.sort(
-                      (a, b) => b.count - a.count,
-                    )}
-                  />
-                )}
-              </LoadingSpinner>
-              {/* Legend display for smaller screen size */}
               <Flex
-                display={{ base: 'flex', lg: 'none' }}
-                w='100%'
-                justifyContent='center'
+                width='100%'
+                flexDirection={{ base: 'column', lg: 'row-reverse' }}
+                justifyContent={{ lg: 'center' }}
+                flex={1}
+                alignItems='center'
+                maxW={{ base: 'unset', lg: '1400px' }}
               >
-                {stats?.repositories?.stats && (
-                  <Legend
-                    data={stats.repositories.stats.sort(
-                      (a, b) => b.count - a.count,
-                    )}
-                  ></Legend>
-                )}
-              </Flex>
-              <StyledBody
-                maxWidth={['unset', 'unset', '700px', '600px']}
-                textAlign={['start', 'start', 'center', 'start']}
-                m={2}
-              >
-                <StyledSectionHeading mt={6}>
-                  {homepageCopy.sections[1].heading}
-                </StyledSectionHeading>
-                <StyledSectionButtonGroup
-                  justifyContent={[
-                    'flex-start',
-                    'flex-start',
-                    'center',
-                    'flex-start',
-                  ]}
-                  flexWrap={['wrap', 'nowrap']}
-                  maxWidth={['unset', 'unset', '400px', '400px']}
+                <LoadingSpinner isLoading={isLoading}>
+                  {/* Pie chart with number repositories and associated resources*/}
+                  {stats?.repositories?.stats && (
+                    <PieChart
+                      width={size || 200}
+                      height={size || 200}
+                      data={stats.repositories.stats.sort(
+                        (a, b) => b.count - a.count,
+                      )}
+                    />
+                  )}
+                </LoadingSpinner>
+                {/* Legend display for smaller screen size */}
+                <Flex
+                  display={{ base: 'flex', lg: 'none' }}
+                  w='100%'
+                  justifyContent='center'
                 >
-                  {homepageCopy.sections[1]?.routes &&
-                    homepageCopy.sections[1].routes.map(
-                      (
-                        route: {
-                          title: string;
-                          path: string;
-                          isExternal?: boolean;
-                        },
-                        index,
-                      ) => {
-                        return (
-                          <NextLink
-                            key={route.title}
-                            href={route.path}
-                            passHref
-                          >
-                            <Button
-                              w='100%'
-                              variant={index % 2 ? 'solid' : 'outline'}
-                              size='sm'
-                              m={[0, 2, 0]}
-                              my={[1, 2, 0]}
-                              py={[6]}
-                              maxWidth={['200px', '200px', '400px', '400px']}
+                  {stats?.repositories?.stats && (
+                    <Legend
+                      data={stats.repositories.stats.sort(
+                        (a, b) => b.count - a.count,
+                      )}
+                    />
+                  )}
+                </Flex>
+                <StyledBody
+                  maxWidth={['unset', 'unset', '700px', '600px']}
+                  textAlign={['start', 'start', 'center', 'start']}
+                  m={2}
+                >
+                  <StyledSectionHeading mt={6}>
+                    {homepageCopy.sections[1].heading}
+                  </StyledSectionHeading>
+                  <StyledSectionButtonGroup
+                    justifyContent={[
+                      'flex-start',
+                      'flex-start',
+                      'center',
+                      'flex-start',
+                    ]}
+                    flexWrap={['wrap', 'nowrap']}
+                    maxWidth={['unset', 'unset', '400px', '400px']}
+                  >
+                    {homepageCopy.sections[1]?.routes &&
+                      homepageCopy.sections[1].routes.map(
+                        (
+                          route: {
+                            title: string;
+                            path: string;
+                            isExternal?: boolean;
+                          },
+                          index,
+                        ) => {
+                          return (
+                            <NextLink
+                              key={route.title}
+                              href={route.path}
+                              passHref
                             >
-                              {route.title}
-                            </Button>
-                          </NextLink>
-                        );
-                      },
-                    )}
-                </StyledSectionButtonGroup>
-              </StyledBody>
+                              <Button
+                                w='100%'
+                                variant={index % 2 ? 'solid' : 'outline'}
+                                size='sm'
+                                m={[0, 2, 0]}
+                                my={[1, 2, 0]}
+                                py={[6]}
+                                maxWidth={['200px', '200px', '400px', '400px']}
+                              >
+                                {route.title}
+                              </Button>
+                            </NextLink>
+                          );
+                        },
+                      )}
+                  </StyledSectionButtonGroup>
+                </StyledBody>
+              </Flex>
+            </StyledSection>
+            {/* Legend display for larger screen size */}
+            <Flex
+              display={{ base: 'none', lg: 'flex' }}
+              w='100%'
+              justifyContent={{ base: 'center', md: 'space-between' }}
+            >
+              {stats?.repositories?.stats && (
+                <Legend
+                  data={stats.repositories.stats.sort(
+                    (a, b) => b.count - a.count,
+                  )}
+                ></Legend>
+              )}
             </Flex>
-          </StyledSection>
-          {/* Legend display for larger screen size */}
-          <Flex
-            display={{ base: 'none', lg: 'flex' }}
-            w='100%'
-            justifyContent={{ base: 'center', md: 'space-between' }}
-          >
-            {stats?.repositories?.stats && (
-              <Legend
-                data={stats.repositories.stats.sort(
-                  (a, b) => b.count - a.count,
-                )}
-              ></Legend>
-            )}
-          </Flex>
-        </PageContent>
+          </PageContent>
+        )}
       </PageContainer>
     </>
   );
