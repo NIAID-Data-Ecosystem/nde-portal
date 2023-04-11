@@ -101,7 +101,6 @@ const Home: NextPage = () => {
   >({
     queryKey: ['stats', params],
     queryFn: () => fetchSearchResults(params),
-    refetchOnWindowFocus: false,
     onSuccess: data => {
       let stat = { ...stats };
       if (data) {

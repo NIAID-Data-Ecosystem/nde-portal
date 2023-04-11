@@ -17,8 +17,8 @@ export const getResourceById = async (id?: string | string[]) => {
     const formattedData = await formatAPIResource(data.hits[0]);
 
     return formattedData;
-  } catch (err) {
-    throw err;
+  } catch (err: any) {
+    throw err.response;
   }
 };
 
