@@ -29,7 +29,7 @@ const FundingTable: React.FC<FundingTable> = ({ isLoading, funding }) => {
     identifier: 'Identifier',
     fundingURL: 'Funding URL',
     fundingDescription: 'Funding Description',
-    name: 'Funder',
+    name: 'Funder Name',
     alternateName: 'Alternate Name',
     role: 'Role',
     description: 'Funder Description',
@@ -49,12 +49,17 @@ const FundingTable: React.FC<FundingTable> = ({ isLoading, funding }) => {
   // Format rows
   const rows = data.map(d => {
     let obj = {} as Row;
-    Object.entries(d).map(([k, value]) => {
-      let props;
-      if (k === 'name') {
-        props = { minW: '200px' };
-      }
+    Object.entries(d).map(([k, v]) => {
+      let props: { [key: string]: any } = { styles: {} };
+      let value = v;
 
+      if (k === 'name') {
+        props.styles.minWidth = '200px';
+      }
+      if (k === 'fundingDescription' && value && value.length > 144) {
+        props = { ...props, tooltipText: v };
+        value = value.slice(0, 144) + '...';
+      }
       obj[k] = {
         value,
         props,
@@ -71,7 +76,7 @@ const FundingTable: React.FC<FundingTable> = ({ isLoading, funding }) => {
       columns={columns}
       rowData={rows}
       accessor={accessorFn}
-      caption={'Grant and funding information.'}
+      caption='Grant and funding information.'
     />
   );
 };
