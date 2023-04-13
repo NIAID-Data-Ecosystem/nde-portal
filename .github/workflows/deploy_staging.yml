@@ -25,12 +25,13 @@ jobs:
           npm run dev &
           sleep 15
         # working-directory: mygeneset.info-website
-      - name: Run tests... Install dependencies
+      - name: Install test dependencies
         working-directory: tests
         run: |
           python3 -m venv .venv
           source .venv/bin/activate
           pip3 install -r requirements.txt
+      - name: Run test
           python3 -m pytest check-links.py
         env:
           PROD: false
