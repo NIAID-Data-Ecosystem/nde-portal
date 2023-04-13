@@ -25,7 +25,12 @@ site_links = [
 ]
 
 
-driver = webdriver.Chrome()
+# driver = webdriver.Chrome()
+op = webdriver.ChromeOptions()
+op.add_argument('--headless')
+driver = webdriver.Chrome(options=op)
+
+
 
 broken_links = []
 
@@ -60,4 +65,4 @@ logging.basicConfig(filename=log_file_name, level=logging.DEBUG, format='%(ascti
 for link in set(broken_links):
     logging.error(link)
 
-print(f'Broken links: {set(broken_links)}')
+assert not broken_links, f"Broken links: {set(broken_links)}"
