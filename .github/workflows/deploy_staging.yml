@@ -23,7 +23,7 @@ jobs:
       - name: Start Frontend
         run: |
           npm run dev &
-          sleep 15
+          sleep 10
         # working-directory: mygeneset.info-website
       - name: Install test dependencies
         working-directory: tests
@@ -33,7 +33,9 @@ jobs:
           pip3 install -r requirements.txt
       - name: Run test
         working-directory: tests
-        run: python3 -m pytest check-links.py
+        run: |
+          source .venv/bin/activate
+          python3 -m pytest check-links.py
       - name: Run tests... Setup tmate debug session on failure
         if: ${{ failure() }}
         uses: mxschmitt/action-tmate@v3
@@ -57,10 +59,3 @@ jobs:
       #     AWS_REGION: 'us-east-1'
       #     AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       #     AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-
-      # - name: Install Selenium
-      #   run: pip install selenium
-      # - name: Install Selenium Wire
-      #   run: pip install selenium-wire
-      # - name: Install Webdriver Manager
-      #   run: pip install webdriver-manager
