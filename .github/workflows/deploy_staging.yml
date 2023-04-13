@@ -20,6 +20,23 @@ jobs:
         env:
           README_API_KEY: ${{ secrets.README_API_KEY }}
           GH_API_KEY: ${{ secrets.GH_API_KEY }}
+      - name: Start Frontend
+        run: |
+          npm run dev &
+          sleep 180
+        # working-directory: mygeneset.info-website
+      - name: Run tests... Install dependencies
+        working-directory: tests
+        run: |
+          python3 -m venv .venv
+          source .venv/bin/activate
+          pip3 install -r requirements.txt
+          python3 -m pytest check-links.py
+        env:
+          PROD: false
+      - name: Run tests... Setup tmate debug session on failure
+        if: ${{ failure() }}
+        uses: mxschmitt/action-tmate@v3
       # - name: sync s3
       #   uses: jakejarvis/s3-sync-action@master
       #   with:
@@ -47,15 +64,3 @@ jobs:
       #   run: pip install selenium-wire
       # - name: Install Webdriver Manager
       #   run: pip install webdriver-manager
-      - name: Run tests... Install dependencies
-        working-directory: tests
-        run: |
-          python3 -m venv .venv
-          source .venv/bin/activate
-          pip3 install -r requirements.txt
-          python3 check-links.py
-        env:
-          PROD: false
-      - name: Run tests... Setup tmate debug session on failure
-        if: ${{ failure() }}
-        uses: mxschmitt/action-tmate@v3
