@@ -1,7 +1,6 @@
 import time
 import requests
 import logging
-import os
 
 from datetime import datetime
 from selenium import webdriver
@@ -23,6 +22,7 @@ site_links = [
 op = webdriver.ChromeOptions()
 op.add_argument('--headless')
 driver = webdriver.Chrome(options=op)
+driver.implicitly_wait(10)
 
 
 
@@ -33,8 +33,6 @@ for site_link in site_links:
     logging.info(f'Current page: {full_url}')
 
     driver.get(full_url)
-
-    time.sleep(5)
 
     links = driver.find_elements("tag name", "a")
 
