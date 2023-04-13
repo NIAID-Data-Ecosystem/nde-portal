@@ -50,8 +50,6 @@ jobs:
       # - name: Install PyTest
       #   run: pip install pytest (edited)
 
-      - name: Run tests... Checkout code
-        uses: actions/checkout@v2
       - name: Run tests... Install dependencies
         working-directory: tests
         run: |
