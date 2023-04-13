@@ -23,7 +23,7 @@ jobs:
       - name: Start Frontend
         run: |
           npm run dev &
-          sleep 180
+          sleep 15
         # working-directory: mygeneset.info-website
       - name: Run tests... Install dependencies
         working-directory: tests
