@@ -8,12 +8,10 @@ from selenium import webdriver
 
 PROD = os.environ.get('PROD', False)
 
-start = time.now()
 if PROD:
     base_url = 'https://data.niaid.nih.gov'
 else:
-    base_url = 'http://localhost:3000'
-
+    base_url = 'https://data-staging.niaid.nih.gov'
 site_links = [
     '/',
     '/search/',
@@ -64,8 +62,6 @@ driver.close()
 
 log_file_name = f"broken_links_{datetime.today().strftime('%Y-%m-%d')}.log"
 logging.basicConfig(filename=log_file_name, level=logging.DEBUG, format='%(asctime)s %(message)s')
-end = time.end()
-broken_links.append(f"Total time: {end - start}")
 for link in set(broken_links):
     logging.error(link)
 
