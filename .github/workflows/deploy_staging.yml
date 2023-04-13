@@ -32,9 +32,8 @@ jobs:
           source .venv/bin/activate
           pip3 install -r requirements.txt
       - name: Run test
-          python3 -m pytest check-links.py
-        env:
-          PROD: false
+        working-directory: tests
+        run: python3 -m pytest check-links.py
       - name: Run tests... Setup tmate debug session on failure
         if: ${{ failure() }}
         uses: mxschmitt/action-tmate@v3
