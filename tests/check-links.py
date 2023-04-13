@@ -6,12 +6,8 @@ import os
 from datetime import datetime
 from selenium import webdriver
 
-PROD = os.environ.get('PROD', False)
+base_url = 'http://localhost:3000'
 
-if PROD:
-    base_url = 'https://data.niaid.nih.gov'
-else:
-    base_url = 'https://data-staging.niaid.nih.gov'
 site_links = [
     '/',
     '/search/',
