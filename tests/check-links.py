@@ -39,7 +39,11 @@ for site_link in site_links:
     links = driver.find_elements("tag name", "a")
 
     for link in links:
-        href = link.get_attribute("href")
+        try:
+            href = link.get_attribute("href")
+        except:
+            logging.info(f'Could not get href for {link}')
+            continue
         if href is not None and "http" in href:
             if 'altmetric' in href:
                 continue
