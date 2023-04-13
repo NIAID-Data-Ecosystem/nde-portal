@@ -47,20 +47,13 @@ jobs:
         run: pip install selenium-wire
       - name: Install Webdriver Manager
         run: pip install webdriver-manager
-      # - name: Install PyTest
-      #   run: pip install pytest (edited)
-
       - name: Run tests... Install dependencies
         working-directory: tests
         run: |
-# python3 -m venv .venv
-# source .venv/bin/activate
           pip install -r requirements.txt
           python3 check-links.py
         env:
           PROD: true
-      # - name: Run tests... Check links
-      # remove
       - name: Run tests... Setup tmate debug session on failure
         if: ${{ failure() }}
         uses: mxschmitt/action-tmate@v3
