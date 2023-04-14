@@ -1,5 +1,6 @@
 const axios = require('axios');
 const puppeteer = require('puppeteer');
+const fs = require('fs');
 
 const baseURL = 'http://localhost:3000';
 const siteLinks = [
@@ -53,9 +54,9 @@ describe('Check for broken links', () => {
 
     console.log(`Found ${savedLinks.length} links to check...`);
   }, 60000);
-
   test('Check all gathered links', async () => {
     for (const href of savedLinks) {
+      console.log(`brokenLinks 58: ${brokenLinks}`);
       console.log(`Checking ${href}`);
       await axios
         .get(href, {
@@ -77,20 +78,20 @@ describe('Check for broken links', () => {
           }
         });
     }
+    console.log(`brokenLinks 83: ${brokenLinks}`);
+    if (brokenLinks.length > 0) {
+      const logFileName = 'broken_links.log';
+      const logContent = brokenLinks.join('\n');
+
+      fs.writeFileSync(logFileName, logContent, 'utf-8', err => {
+        if (err) {
+          console.error(`Failed to write log file: ${err}`);
+        }
+      });
+
+      console.log(`Broken links logged to ${logFileName}`);
+    }
+    console.log(`After After brokenLinks: ${brokenLinks}`);
+    expect(brokenLinks).toEqual([]);
   }, 300000);
-
-  if (brokenLinks.length > 0) {
-    const logFileName = 'broken_links.log';
-    const logContent = brokenLinks.join('\n');
-
-    fs.writeFileSync(logFileName, logContent, 'utf-8', err => {
-      if (err) {
-        console.error(`Failed to write log file: ${err}`);
-      }
-    });
-
-    console.log(`Broken links logged to ${logFileName}`);
-  }
-
-  expect(brokenLinks).toEqual([]);
 });
