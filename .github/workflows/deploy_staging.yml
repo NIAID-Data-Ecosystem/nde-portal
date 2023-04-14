@@ -3,7 +3,7 @@ name: Staging Deployment of NDE-PORTAL Webapp
 on:
   push:
     branches:
-      - check-links-test
+      - staging
 
 jobs:
   build_and_deploy:

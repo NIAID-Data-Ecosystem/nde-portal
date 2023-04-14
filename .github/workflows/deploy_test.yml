@@ -1,0 +1,33 @@
+name: Staging Deployment of NDE-PORTAL Webapp
+
+on:
+  push:
+    branches:
+      - check-links-test
+
+jobs:
+  build_and_deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+      - run: yarn install
+      - run: env
+      - name: build website
+        run: yarn run build:staging
+        env:
+          README_API_KEY: ${{ secrets.README_API_KEY }}
+          GH_API_KEY: ${{ secrets.GH_API_KEY }}
+      - name: install additional packages for broken links test
+        run: yarn add puppeteer axios jest
+      - name: start react app
+        run: yarn start &
+        env:
+          README_API_KEY: ${{ secrets.README_API_KEY }}
+          GH_API_KEY: ${{ secrets.GH_API_KEY }}
+      - name: run broken links test
+        run: yarn test src/brokenLinks.test.js
+        env:
+          CI: true
