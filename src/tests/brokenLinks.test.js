@@ -79,7 +79,7 @@ describe('Check for broken links', () => {
     }
     if (brokenLinks.length > 0) {
       const logFileName = 'broken_links.log';
-      const logContent = brokenLinks.join('\n');
+      const logContent = brokenLinks.join(' | ');
 
       fs.writeFileSync(logFileName, logContent, 'utf-8', err => {
         if (err) {
