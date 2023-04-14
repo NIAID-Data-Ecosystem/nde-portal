@@ -57,33 +57,40 @@ describe('Check for broken links', () => {
   test('Check all gathered links', async () => {
     for (const href of savedLinks) {
       console.log(`Checking ${href}`);
-      try {
-        const response = await axios.get(href, {
+      await axios
+        .get(href, {
           headers: {
             'User-Agent':
               'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36',
           },
           maxRedirects: 10,
+        })
+        .catch(error => {
+          if (error.response) {
+            console.error(
+              `${href} is broken with status ${error.response.status}`,
+            );
+            brokenLinks.push(`${href} (${error.response.status})`);
+          } else {
+            console.error(`${href} is broken with ${error}`);
+            brokenLinks.push(`${href} (${error})`);
+          }
         });
-      } catch (error) {
-        console.error(`${href} is broken with status ${response.status}`);
-        brokenLinks.push(`${href} (${error.response.status})`);
+    }
+  });
+
+  if (brokenLinks.length > 0) {
+    const logFileName = 'broken_links.log';
+    const logContent = brokenLinks.join('\n');
+
+    fs.writeFileSync(logFileName, logContent, 'utf-8', err => {
+      if (err) {
+        console.error(`Failed to write log file: ${err}`);
       }
-    }
+    });
 
-    if (brokenLinks.length > 0) {
-      const logFileName = 'broken_links.log';
-      const logContent = brokenLinks.join('\n');
+    console.log(`Broken links logged to ${logFileName}`);
+  }
 
-      fs.writeFileSync(logFileName, logContent, 'utf-8', err => {
-        if (err) {
-          console.error(`Failed to write log file: ${err}`);
-        }
-      });
-
-      console.log(`Broken links logged to ${logFileName}`);
-    }
-
-    expect(brokenLinks).toEqual([]);
-  }, 300000);
-});
+  expect(brokenLinks).toEqual([]);
+}, 300000);
