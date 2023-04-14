@@ -65,15 +65,23 @@ describe('Check for broken links', () => {
           },
           maxRedirects: 10,
         });
-
-        if (response.status >= 400) {
-          console.error(`${href} is broken with status ${response.status}`);
-          brokenLinks.push(href);
-        }
       } catch (error) {
-        console.error(`${href} is broken`);
-        brokenLinks.push(href);
+        console.error(`${href} is broken with status ${response.status}`);
+        brokenLinks.push(`${href} (${error.response.status})`);
       }
+    }
+
+    if (brokenLinks.length > 0) {
+      const logFileName = 'broken_links.log';
+      const logContent = brokenLinks.join('\n');
+
+      fs.writeFileSync(logFileName, logContent, 'utf-8', err => {
+        if (err) {
+          console.error(`Failed to write log file: ${err}`);
+        }
+      });
+
+      console.log(`Broken links logged to ${logFileName}`);
     }
 
     expect(brokenLinks).toEqual([]);
