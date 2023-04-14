@@ -28,9 +28,8 @@ describe('Check for broken links', () => {
     await browser.close();
   });
 
-  test.each(siteLinks)(
-    'Check links on %s',
-    async siteLink => {
+  test('Gather all links', async () => {
+    for (const siteLink of siteLinks) {
       const fullURL = `${baseURL}${siteLink}`;
       console.log(`Current page: ${fullURL}`);
 
@@ -50,32 +49,33 @@ describe('Check for broken links', () => {
           savedLinks.push(href);
         }
       }
+    }
 
-      console.log(`Found ${savedLinks.length} links to check...`);
+    console.log(`Found ${savedLinks.length} links to check...`);
+  }, 60000);
 
-      for (const href of savedLinks) {
-        console.log(`Checking ${href}`);
-        try {
-          const response = await axios.get(href, {
-            headers: {
-              'User-Agent':
-                'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36',
-            },
-            maxRedirects: 10,
-          });
+  test('Check all gathered links', async () => {
+    for (const href of savedLinks) {
+      console.log(`Checking ${href}`);
+      try {
+        const response = await axios.get(href, {
+          headers: {
+            'User-Agent':
+              'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36',
+          },
+          maxRedirects: 10,
+        });
 
-          if (response.status >= 400) {
-            console.error(`${href} is broken`);
-            brokenLinks.push(href);
-          }
-        } catch (error) {
-          console.error(`${href} is broken`);
+        if (response.status >= 400) {
+          console.error(`${href} is broken with status ${response.status}`);
           brokenLinks.push(href);
         }
+      } catch (error) {
+        console.error(`${href} is broken`);
+        brokenLinks.push(href);
       }
+    }
 
-      expect(brokenLinks).toEqual([]);
-    },
-    60000,
-  );
-}, 60000);
+    expect(brokenLinks).toEqual([]);
+  }, 60000);
+});

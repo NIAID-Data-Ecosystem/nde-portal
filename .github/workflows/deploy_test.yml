@@ -28,6 +28,6 @@ jobs:
           README_API_KEY: ${{ secrets.README_API_KEY }}
           GH_API_KEY: ${{ secrets.GH_API_KEY }}
       - name: run broken links test
-        run: yarn test src/brokenLinks.test.js
+        run: yarn test --runTestsByPath src/tests/brokenLinks.test.js
         env:
           CI: true
