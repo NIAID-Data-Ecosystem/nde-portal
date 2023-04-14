@@ -77,7 +77,7 @@ describe('Check for broken links', () => {
           }
         });
     }
-  });
+  }, 300000);
 
   if (brokenLinks.length > 0) {
     const logFileName = 'broken_links.log';
@@ -93,4 +93,4 @@ describe('Check for broken links', () => {
   }
 
   expect(brokenLinks).toEqual([]);
-}, 300000);
+});
