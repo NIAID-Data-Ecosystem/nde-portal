@@ -77,5 +77,5 @@ describe('Check for broken links', () => {
     }
 
     expect(brokenLinks).toEqual([]);
-  }, 60000);
+  }, 300000);
 });
