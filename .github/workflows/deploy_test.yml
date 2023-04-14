@@ -31,3 +31,6 @@ jobs:
         run: yarn test --runTestsByPath src/tests/brokenLinks.test.js
         env:
           CI: true
+      - name: Run tests... Setup tmate debug session on failure
+        if: ${{ failure() }}
+        uses: mxschmitt/action-tmate@v3
