@@ -31,7 +31,6 @@ jobs:
         run: yarn test --runTestsByPath src/tests/brokenLinks.test.js
         env:
           CI: true
-        continue-on-error: true
       - name: Read log file contents
         id: read_log
         if: ${{ failure() }}

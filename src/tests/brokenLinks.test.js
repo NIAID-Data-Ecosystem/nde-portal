@@ -56,7 +56,6 @@ describe('Check for broken links', () => {
   }, 60000);
   test('Check all gathered links', async () => {
     for (const href of savedLinks) {
-      console.log(`brokenLinks 58: ${brokenLinks}`);
       console.log(`Checking ${href}`);
       await axios
         .get(href, {
@@ -78,7 +77,6 @@ describe('Check for broken links', () => {
           }
         });
     }
-    console.log(`brokenLinks 83: ${brokenLinks}`);
     if (brokenLinks.length > 0) {
       const logFileName = 'broken_links.log';
       const logContent = brokenLinks.join('\n');
@@ -91,7 +89,6 @@ describe('Check for broken links', () => {
 
       console.log(`Broken links logged to ${logFileName}`);
     }
-    console.log(`After After brokenLinks: ${brokenLinks}`);
     expect(brokenLinks).toEqual([]);
   }, 300000);
 });
