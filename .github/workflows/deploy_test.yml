@@ -37,6 +37,7 @@ jobs:
         run: |
           echo "::set-output name=broken_links::$(cat broken_links.log)"
       - name: Read broken links count
+        if: ${{ failure() }}
         id: read_links_count
         run: |
           count=$(grep -c '|' broken_links.log || true)
