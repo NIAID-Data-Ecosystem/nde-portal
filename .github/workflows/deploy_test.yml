@@ -36,24 +36,40 @@ jobs:
         if: ${{ failure() }}
         run: |
           echo "::set-output name=broken_links::$(cat broken_links.log)"
+      - name: Read broken links count
+        id: read_links_count
+        run: |
+          count=$(grep -c '|' broken_links.log || true)
+          echo "Broken links count: $count"
+          echo "broken_links_count=$count" >> $GITHUB_ENV
       - name: Send Slack notification if test fails
         if: ${{ failure() }}
         uses: 8398a7/action-slack@v3
         with:
           status: custom
           fields: repo,commit,author,action,eventName,ref,workflow,job,took
+          # custom_payload: |
+          #   {
+          #     attachments: [{
+          #       color: "${{ job.status }}",
+          #       pretext: `:boom: Broken links test failed for ${{ github.repository }}`,
+          #       title: "Broken links:",
+          #       text: "${{ steps.read_log.outputs.broken_links }}",
+          #       title_link: "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          #     }]
+          #   }
           custom_payload: |
             {
               attachments: [{
                 color: "${{ job.status }}",
-                pretext: `:boom: Broken links test failed for ${{ github.repository }}`,
+                pretext: ":boom: ${{ env.broken_links_count }} links broken for ${{ github.repository }}",
                 title: "Broken links:",
-                text: "${{ steps.read_log.outputs.broken_links }}",
+                text: "```| broken_url | page | error_code |\\n${{ steps.read_log.outputs.broken_links.replace('\n', '\\n') }}```",
                 title_link: "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
               }]
             }
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-      - name: Run tests... Setup tmate debug session on failure
-        if: ${{ failure() }}
-        uses: mxschmitt/action-tmate@v3
+      # - name: Run tests... Setup tmate debug session on failure
+      #   if: ${{ failure() }}
+      #   uses: mxschmitt/action-tmate@v3

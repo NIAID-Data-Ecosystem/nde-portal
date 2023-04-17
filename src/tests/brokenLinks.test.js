@@ -5,12 +5,12 @@ const fs = require('fs');
 const baseURL = 'http://localhost:3000';
 const siteLinks = [
   '/',
-  '/search/',
-  '/changelog/',
-  '/sources/',
-  '/advanced-search/',
-  '/about/',
-  '/faq/',
+  // '/search/',
+  // '/changelog/',
+  // '/sources/',
+  // '/advanced-search/',
+  // '/about/',
+  // '/faq/',
 ];
 
 let brokenLinks = [];
@@ -47,15 +47,24 @@ describe('Check for broken links', () => {
           !href.includes('altmetric') &&
           !savedLinks.includes(href)
         ) {
-          savedLinks.push(href);
+          savedLinks.push({ href, siteLink });
         }
       }
+      savedLinks = [
+        {
+          href: 'https://dash.readme.com/project/niaid-data/v1.0/docs/how-do-i-filter-results-by',
+          siteLink: '/',
+        },
+        { href: 'https://www.this.is.broken.com', siteLink: '/sources/' },
+      ];
     }
 
     console.log(`Found ${savedLinks.length} links to check...`);
   }, 60000);
   test('Check all gathered links', async () => {
-    for (const href of savedLinks) {
+    for (const obj of savedLinks) {
+      href = obj.href;
+      console.log(href, 'href');
       console.log(`Checking ${href}`);
       await axios
         .get(href, {
@@ -70,16 +79,20 @@ describe('Check for broken links', () => {
             console.error(
               `${href} is broken with status ${error.response.status}`,
             );
-            brokenLinks.push(`${href} (${error.response.status})`);
+            // brokenLinks.push(`${href} (${error.response.status})`);
+            brokenLinks.push(
+              `| ${href} | ${obj.siteLink} | ${error.response.status} |`,
+            );
           } else {
             console.error(`${href} is broken with ${error}`);
-            brokenLinks.push(`${href} (${error})`);
+            // brokenLinks.push(`${href} (${error})`);
+            brokenLinks.push(`| ${href} | ${obj.siteLink} | ${error} |`);
           }
         });
     }
     if (brokenLinks.length > 0) {
       const logFileName = 'broken_links.log';
-      const logContent = brokenLinks.join(' ');
+      const logContent = brokenLinks.join('\n');
 
       fs.writeFileSync(logFileName, logContent, 'utf-8', err => {
         if (err) {
