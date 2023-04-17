@@ -44,6 +44,12 @@ jobs:
           count=$(grep -c '|' broken_links.log || true)
           echo "Broken links count: $count"
           echo "broken_links_count=$count" >> $GITHUB_ENV
+      - name: Read broken links
+        id: read_links
+        run: |
+          broken_links="${{ steps.run_tests.outputs.broken_links }}"
+          echo "Broken links: $broken_links"
+          echo "broken_links=$broken_links" >> $GITHUB_ENV
       # - name: Prepare broken links for Slack message
       #   id: prepare_broken_links
       #   if: ${{ failure() }}
@@ -73,7 +79,7 @@ jobs:
                 color: "${{ job.status }}",
                 pretext: ":boom: ${{ env.broken_links_count }} links broken for ${{ github.repository }}",
                 title: "Broken links:",
-                text: "${{ steps.read_log.outputs.broken_links }}",
+                text: "| broken_url | page | error_code |\\n${{ env.broken_links }}",
                 title_link: "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
               }]
             }

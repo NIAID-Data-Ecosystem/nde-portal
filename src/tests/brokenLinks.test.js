@@ -1,6 +1,6 @@
 const axios = require('axios');
 const puppeteer = require('puppeteer');
-const fs = require('fs');
+const core = require('@actions/core');
 
 const baseURL = 'http://localhost:3000';
 const siteLinks = [
@@ -75,33 +75,54 @@ describe('Check for broken links', () => {
           maxRedirects: 10,
         })
         .catch(error => {
+          const message = `${href} - ${obj.siteLink} (${
+            error.response ? error.response.status : error
+          })`;
           if (error.response) {
             console.error(
-              `${href} is broken with status ${error.response.status}`,
-            );
-            // brokenLinks.push(`${href} (${error.response.status})`);
-            brokenLinks.push(
-              `| ${href} | ${obj.siteLink} | ${error.response.status} |`,
+              `${href} is broken with status ${error.response.status} on page ${obj.siteLink}`,
             );
           } else {
-            console.error(`${href} is broken with ${error}`);
-            // brokenLinks.push(`${href} (${error})`);
-            brokenLinks.push(`| ${href} | ${obj.siteLink} | ${error} |`);
+            console.error(
+              `${href} is broken with ${error} on page ${obj.siteLink}`,
+            );
           }
+          brokenLinks.push(message);
         });
+      // .catch(error => {
+      //   if (error.response) {
+      //     console.error(
+      //       `${href} is broken with status ${error.response.status}`,
+      //     );
+      //     // brokenLinks.push(`${href} (${error.response.status})`);
+      //     brokenLinks.push(
+      //       `| ${href} | ${obj.siteLink} | ${error.response.status} |`,
+      //     );
+      //   } else {
+      //     console.error(`${href} is broken with ${error}`);
+      //     // brokenLinks.push(`${href} (${error})`);
+      //     brokenLinks.push(`| ${href} | ${obj.siteLink} | ${error} |`);
+      //   }
+      // });
     }
+    // if (brokenLinks.length > 0) {
+    //   const logFileName = 'broken_links.log';
+    //   const logContent = brokenLinks.join('\n');
+
+    //   fs.writeFileSync(logFileName, logContent, 'utf-8', err => {
+    //     if (err) {
+    //       console.error(`Failed to write log file: ${err}`);
+    //     }
+    //   });
+
+    //   console.log(`Broken links logged to ${logFileName}`);
+    // }
     if (brokenLinks.length > 0) {
-      const logFileName = 'broken_links.log';
-      const logContent = brokenLinks.join('\n');
-
-      fs.writeFileSync(logFileName, logContent, 'utf-8', err => {
-        if (err) {
-          console.error(`Failed to write log file: ${err}`);
-        }
-      });
-
-      console.log(`Broken links logged to ${logFileName}`);
+      const logContent = brokenLinks.join('\\n');
+      core.setOutput('broken_links', logContent);
+      console.log(`Broken links: \n${logContent}`);
     }
+
     expect(brokenLinks).toEqual([]);
   }, 300000);
 });
