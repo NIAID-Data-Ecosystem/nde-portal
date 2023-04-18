@@ -8,7 +8,6 @@ on:
 jobs:
   build_and_deploy:
     runs-on: ubuntu-latest
-    continue-on-error: true
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v2
@@ -28,65 +27,8 @@ jobs:
         env:
           README_API_KEY: ${{ secrets.README_API_KEY }}
           GH_API_KEY: ${{ secrets.GH_API_KEY }}
-      - name: run broken links test
-        run: yarn test --runTestsByPath src/tests/brokenLinks.test.js
-        env:
-          CI: true
-      - name: Read log file contents
-        id: read_log
-        if: ${{ failure() }}
-        run: |
-          echo "::set-output name=broken_links::$(cat broken_links.log)"
-      - name: Read broken links count
-        if: ${{ failure() }}
-        id: read_links_count
-        run: |
-          count=$(grep -c '|' broken_links.log || true)
-          echo "Broken links count: $count"
-          echo "broken_links_count=$count" >> $GITHUB_ENV
-      - name: Read broken links
-        if: ${{ failure() }}
-        id: read_links
-        run: |
-          broken_links="${{ steps.run_tests.outputs.broken_links }}"
-          echo "Broken links: $broken_links"
-          echo "broken_links=$broken_links" >> $GITHUB_ENV
-      # - name: Prepare broken links for Slack message
-      #   id: prepare_broken_links
-      #   if: ${{ failure() }}
-      #   run: |
-      #     broken_links="${{ steps.read_log.outputs.broken_links }}"
-      #     formatted_broken_links="${broken_links//$'\n'/\\n}"
-      #     echo "formatted_broken_links=$formatted_broken_links" >> $GITHUB_ENV
-      - name: Send Slack notification if test fails
-        if: ${{ failure() }}
-        uses: 8398a7/action-slack@v3
-        with:
-          status: custom
-          fields: repo,commit,author,action,eventName,ref,workflow,job,took
-          # custom_payload: |
-          #   {
-          #     attachments: [{
-          #       color: "${{ job.status }}",
-          #       pretext: `:boom: Broken links test failed for ${{ github.repository }}`,
-          #       title: "Broken links:",
-          #       text: "${{ steps.read_log.outputs.broken_links }}",
-          #       title_link: "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-          #     }]
-          #   }
-          custom_payload: |
-            {
-              attachments: [{
-                color: "${{ job.status }}",
-                pretext: ":boom: ${{ env.broken_links_count }} links broken for ${{ github.repository }}",
-                title: "Broken links:",
-                text: "| broken_url | page | error_code |\n${{ env.broken_links }}",
-                title_link: "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-              }]
-            }
+      - name: Run tests and send Slack notification
+        run: npm test
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-
-      # - name: Run tests... Setup tmate debug session on failure
-      #   if: ${{ failure() }}
-      #   uses: mxschmitt/action-tmate@v3
+          GITHUB_REPOSITORY: ${{ github.repository }}
