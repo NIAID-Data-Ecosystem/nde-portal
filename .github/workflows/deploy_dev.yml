@@ -3,7 +3,7 @@ name: Dev Deployment of NDE-PORTAL Webapp
 on:
   push:
     branches:
-      - main
+      - dev
 
 jobs:
   build_and_deploy:
