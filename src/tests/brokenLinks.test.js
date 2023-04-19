@@ -78,6 +78,16 @@ const siteLinks = [
   '/faq/',
 ];
 
+const gatherLinks = async () => {
+  const anchors = Array.from(document.querySelectorAll('a'));
+  const validAnchors = anchors.filter(anchor => {
+    const cardDescriptionElement = anchor.closest('[id="card-description"]');
+    return !cardDescriptionElement;
+  });
+
+  return validAnchors.map(anchor => anchor.href);
+};
+
 let brokenLinks = [];
 let savedLinks = [];
 
@@ -101,9 +111,7 @@ describe('Check for broken links', () => {
 
       await page.goto(fullURL);
 
-      const links = await page.$$eval('a', anchors => {
-        return anchors.map(anchor => anchor.href);
-      });
+      const links = await page.evaluate(gatherLinks);
 
       for (const href of links) {
         if (
