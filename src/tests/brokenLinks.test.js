@@ -121,6 +121,13 @@ describe('Check for broken links', () => {
           !savedLinks.some(item => item.href === href)
         ) {
           savedLinks.push({ href, siteLink });
+        } else if (
+          href &&
+          !href.startsWith('http:') &&
+          !href.startsWith('mailto:') &&
+          !savedLinks.some(item => item.href === href)
+        ) {
+          savedLinks.push({ href, siteLink });
         }
       }
     }
