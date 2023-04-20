@@ -60,7 +60,11 @@ export const MDXComponents = {
   ),
   // a: (props: any) => <Link {...props} />,
   a: (props: any) => {
-    return <Link {...props} />;
+    let { href } = props;
+    if (href.startsWith('doc:')) {
+      href = '';
+    }
+    return <Link href={href} {...props} />;
   },
   Link: (props: any) => {
     return <Link {...props} />;
