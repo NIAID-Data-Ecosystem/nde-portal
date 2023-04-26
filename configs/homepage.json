@@ -1,13 +1,14 @@
 {
-  "sections": [
-    {
+  "sections": {
+    "hero": {
       "heading": "Discovery Portal",
       "subtitle": "Accelerate your research.",
       "body": "Find Infectious and Immune-mediated Disease (IID) data across many repositories."
     },
-    {
-      "heading": "Explore data from many repositories",
-      "body": "",
+    "repositories": {
+      "heading": "Currently included repositories"
+    },
+    "help": {
       "routes": [
         {
           "title": "Ask a question",
@@ -21,5 +22,5 @@
         }
       ]
     }
-  ]
+  }
 }
