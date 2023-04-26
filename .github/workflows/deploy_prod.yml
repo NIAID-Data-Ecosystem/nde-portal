@@ -29,7 +29,7 @@ jobs:
           README_API_KEY: ${{ secrets.README_API_KEY }}
           GH_API_KEY: ${{ secrets.GH_API_KEY }}
       - name: Run tests and send Slack notification
-        if: "!contains(github.event.commits[0].message, 'skip test')"
+        if: "!contains(github.event.head_commit.message, 'skip test')"
         run: npm test
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
