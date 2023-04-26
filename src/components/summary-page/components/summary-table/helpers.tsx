@@ -15,12 +15,12 @@ export const getTableRows = (data: FormattedResource[]) =>
 
     Object.entries(d).map(([k, v]) => {
       let value = v;
-      let props: { [key: string]: any } = {};
+      let props: { [key: string]: any } = { styles: {} };
       let sortValue = v;
       // Format authors with Link
       if (k === 'author') {
         let authors = v as FormattedResource['author'];
-        props.maxW = '300px';
+        props.styles.maxW = '300px';
         sortValue = formatAuthorsList2String(authors).trim();
         value = authors ? (
           <>
@@ -69,7 +69,7 @@ export const getTableRows = (data: FormattedResource[]) =>
       }
 
       if (k === 'name') {
-        props.minW = '300px';
+        props.styles.minW = '300px';
         value = (
           <NextLink
             href={{
@@ -125,7 +125,10 @@ export const getTableRows = (data: FormattedResource[]) =>
       obj[k] = {
         value,
         sortValue: sortValue,
-        props: { ...props, verticalAlign: 'top', fontSize: 'sm' },
+        props: {
+          ...props,
+          styles: { ...props.styles, verticalAlign: 'top', fontSize: 'sm' },
+        },
       };
     });
     return obj;
