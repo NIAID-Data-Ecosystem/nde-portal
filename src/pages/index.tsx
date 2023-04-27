@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import type { NextPage } from 'next';
 import {
   Box,
@@ -8,6 +8,7 @@ import {
   Heading,
   Image,
   Link,
+  SkeletonCircle,
   SkeletonText,
   Table as StyledTable,
   Thead,
@@ -21,6 +22,7 @@ import {
   Tabs,
   TabList,
   Tab,
+  Tag,
   Text,
   useBreakpointValue,
   theme,
@@ -161,13 +163,17 @@ const Home: NextPage = () => {
     { title: 'description', property: 'abstract' },
   ];
 
-  const rows = repositories
-    .filter(({ type }) => type === selectedType)
-    .sort((a, b) =>
-      sortOrder === 'ASC'
-        ? a.name.localeCompare(b.name)
-        : b.name.localeCompare(a.name),
-    );
+  const rows = useMemo(
+    () =>
+      repositories
+        .filter(({ type }) => type === selectedType)
+        .sort((a, b) =>
+          sortOrder === 'ASC'
+            ? a.name.localeCompare(b.name)
+            : b.name.localeCompare(a.name),
+        ),
+    [repositories, selectedType, sortOrder],
+  );
   return (
     <>
       <PageContainer
@@ -242,7 +248,13 @@ const Home: NextPage = () => {
             alignItems='center'
           >
             <Box maxW='1600px' width='100%'>
-              <Heading pb={[2, 4, 8]} as='h2' fontWeight='semibold' size='lg'>
+              <Heading
+                pb={[4, 4, 8]}
+                as='h2'
+                fontWeight='semibold'
+                size='lg'
+                textAlign={['center', 'left']}
+              >
                 {HOMEPAGE_COPY.sections.repositories.heading}
               </Heading>
 
@@ -255,15 +267,22 @@ const Home: NextPage = () => {
                     setSelectedType(types[index].property);
                   }}
                 >
-                  <TabList>
+                  <TabList
+                    flexWrap={['wrap', 'nowrap']}
+                    justifyContent={['center', 'flex-start']}
+                  >
                     {types.map(type => (
                       <Tab
+                        w={['100%', 'unset']}
                         key={type.property}
                         color='blackAlpha.500'
                         _selected={{
                           borderBottom: '4px solid',
                           borderBottomColor: 'primary.400',
                           color: 'text.heading',
+                          ['.tag']: {
+                            opacity: 1,
+                          },
                         }}
                         _focus={{ outline: 'none' }}
                       >
@@ -273,18 +292,28 @@ const Home: NextPage = () => {
                           fontWeight='semibold'
                           color='inherit'
                         >
-                          {type.label} (
+                          {type.label}
+                        </Heading>
+                        <Tag
+                          className='tag'
+                          borderRadius='full'
+                          ml={2}
+                          px={4}
+                          size='sm'
+                          opacity={0.25}
+                          colorScheme='gray'
+                        >
                           {
                             repositories.filter(
                               ({ type: t }) => t === type.property,
                             ).length
                           }
-                          )
-                        </Heading>
+                        </Tag>
                       </Tab>
                     ))}
                   </TabList>
                 </Tabs>
+
                 <TableWrapper colorScheme='gray' w='100%'>
                   <TableContainer>
                     <StyledTable variant='simple' bg='white' colorScheme='gray'>
@@ -346,40 +375,56 @@ const Home: NextPage = () => {
                                           minW='50px'
                                           isNumeric={typeof cell === 'number'}
                                         >
-                                          <Flex alignItems='center'>
-                                            {column.property === 'name' &&
-                                              row?.icon &&
-                                              (row?.url ? (
-                                                <Link
-                                                  href={row.url}
-                                                  fontWeight='medium'
-                                                >
-                                                  <Image
-                                                    minW='30px'
-                                                    w='30px'
-                                                    maxH='30px'
-                                                    objectFit='contain'
-                                                    src={`${row.icon}`}
-                                                    alt={`Logo for data source ${row.name}`}
-                                                  />
-                                                </Link>
-                                              ) : (
-                                                <Image
-                                                  minW='30px'
-                                                  maxH='30px'
-                                                  objectFit='contain'
-                                                  src={`${row.icon}`}
-                                                  alt={`Logo for data source ${row.name}`}
-                                                />
-                                              ))}
-
+                                          <Flex
+                                            alignItems={[
+                                              'flex-start',
+                                              'center',
+                                            ]}
+                                            flexDirection={['column', 'row']}
+                                            justifyContent='flex-start'
+                                          >
+                                            {column.property === 'name' && (
+                                              <SkeletonCircle
+                                                h='30px'
+                                                w='30px'
+                                                isLoaded={!isLoading}
+                                              >
+                                                {row?.icon && (
+                                                  <>
+                                                    {row?.url ? (
+                                                      <Link
+                                                        href={row.url}
+                                                        fontWeight='medium'
+                                                        target='_blank'
+                                                      >
+                                                        <Image
+                                                          src={`${row.icon}`}
+                                                          alt={`Logo for data source ${row.name}`}
+                                                          objectFit='contain'
+                                                          width='30px'
+                                                          height='30px'
+                                                        />
+                                                      </Link>
+                                                    ) : (
+                                                      <Image
+                                                        src={`${row.icon}`}
+                                                        alt={`Logo for data source ${row.name}`}
+                                                        objectFit='contain'
+                                                        width='30px'
+                                                        height='30px'
+                                                      />
+                                                    )}
+                                                  </>
+                                                )}
+                                              </SkeletonCircle>
+                                            )}
                                             <SkeletonText
                                               noOfLines={1}
                                               spacing='2'
                                               skeletonHeight={4}
                                               isLoaded={!isLoading}
                                               minW='75%'
-                                              ml={4}
+                                              ml={[0, 4]}
                                             >
                                               {row?.identifier &&
                                               column.property === 'name' ? (

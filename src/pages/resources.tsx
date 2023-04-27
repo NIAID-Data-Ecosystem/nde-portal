@@ -192,6 +192,7 @@ const ResourcePage: NextPage = props => {
                       codeRepository={data?.codeRepository}
                       hasPart={data?.hasPart}
                       url={data?.url}
+                      usageInfo={data?.usageInfo}
                     >
                       <ResourceStats
                         includedInDataCatalog={data?.includedInDataCatalog}

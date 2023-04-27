@@ -14,6 +14,9 @@ import { FormattedResource } from 'src/utils/api/types';
 import { getRepositoryImage } from 'src/utils/helpers';
 import { ExternalSourceButton } from 'src/components/external-buttons/index.';
 import { FaGithub } from 'react-icons/fa';
+import Tooltip from 'src/components/tooltip';
+import MetadataConfig from 'configs/resource-metadata.json';
+import { FaInfo } from 'react-icons/fa';
 
 interface ExternalLinks {
   isLoading: boolean;
@@ -23,6 +26,7 @@ interface ExternalLinks {
   hasPart?: FormattedResource['hasPart'];
   codeRepository?: FormattedResource['codeRepository'];
   url?: FormattedResource['url'];
+  usageInfo?: FormattedResource['usageInfo'];
 }
 
 const ExternalLinks: React.FC<ExternalLinks> = ({
@@ -34,6 +38,7 @@ const ExternalLinks: React.FC<ExternalLinks> = ({
   hasPart,
   showWorkspaceLink = true,
   url,
+  usageInfo,
 }) => {
   const imageURL =
     includedInDataCatalog?.name &&
@@ -55,7 +60,7 @@ const ExternalLinks: React.FC<ExternalLinks> = ({
       borderColor='page.alt'
     >
       <Flex direction='column' bg='secondary.50'>
-        <Box p={[0, 4]}>
+        <Box p={[0, 4]} pb={[0, 0]}>
           {includedInDataCatalog?.name && (
             <Flex
               flexDirection='column'
@@ -76,6 +81,38 @@ const ExternalLinks: React.FC<ExternalLinks> = ({
                 sourceHref={includedInDataCatalog?.url}
                 name='Access Data'
               />
+
+              {usageInfo?.url && (
+                <Flex mt={4}>
+                  <Tooltip
+                    aria-label={`Tooltip for usage information`}
+                    label={`${
+                      usageInfo?.description ||
+                      MetadataConfig?.find(d => d.property === 'usageInfo')
+                        ?.description['dataset'] ||
+                      ''
+                    }`}
+                    hasArrow
+                    placement='bottom'
+                    closeDelay={300}
+                  >
+                    <button aria-label='usage information description'>
+                      <Icon
+                        as={FaInfo}
+                        mx={2}
+                        color='gray.800'
+                        border='0.625px solid'
+                        borderRadius='100%'
+                        p={0.5}
+                        boxSize='0.85rem'
+                      />
+                    </button>
+                  </Tooltip>
+                  <Link href={usageInfo.url} fontSize='sm' isExternal>
+                    Usage Information
+                  </Link>
+                </Flex>
+              )}
             </Flex>
           )}
         </Box>
