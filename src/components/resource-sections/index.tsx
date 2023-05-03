@@ -253,7 +253,7 @@ const Sections = ({
               <>
                 <Flex w='100%' justifyContent='flex-end' pb={4}>
                   <DownloadMetadata
-                    colorScheme='secondary'
+                    buttonProps={{ colorScheme: 'secondary' }}
                     exportName={data.rawData['_id']}
                     params={{ q: `_id:"${data.rawData['_id']}"` }}
                   >
