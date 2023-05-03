@@ -18,56 +18,6 @@
   },
   "routes": [
     {
-      "label": "NIAID Data Ecosystem",
-      "routes": [
-        {
-          "label": "Discovery Portal",
-          "routes": [
-            { "label": "Home", "href": "/" },
-            { "label": "Search", "href": "/search" },
-            {
-              "label": "Advanced Search",
-              "subLabel": "Build more complex queries",
-              "href": "/advanced-search"
-            },
-            { "label": "About", "href": "/about" },
-            {
-              "label": "Resources",
-              "routes": [
-                {
-                  "label": "Sources",
-                  "subLabel": "Latest information about our data sources",
-                  "href": "/sources"
-                },
-                {
-                  "label": "Schemas",
-                  "subLabel": "Information about the API schema",
-                  "href": "https://discovery.biothings.io/portal/niaid",
-                  "isExternal": true
-                },
-                {
-                  "label": "Documentation",
-                  "subLabel": "Guides and documentation to help with NIAID Data Ecosystem.",
-                  "href": "https://niaid-data.readme.io/",
-                  "isExternal": true
-                },
-                {
-                  "label": "FAQ",
-                  "subLabel": "Frequently asked questions",
-                  "href": "/faq"
-                },
-                {
-                  "label": "Changelog",
-                  "subLabel": "Log of updates to the NIAID Data Ecosystem",
-                  "href": "/changelog"
-                }
-              ]
-            }
-          ]
-        }
-      ]
-    },
-    {
       "label": "Policies",
       "routes": [
         {

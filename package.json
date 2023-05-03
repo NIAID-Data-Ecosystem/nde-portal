@@ -50,7 +50,7 @@
     "fuse.js": "^6.6.2",
     "lodash": "^4.17.21",
     "moment": "^2.29.4",
-    "nde-design-system": "^0.2.90",
+    "nde-design-system": "^0.2.95",
     "next": "^12.2.0",
     "next-mdx-remote": "^4.3.0",
     "react": "17.0.2",
