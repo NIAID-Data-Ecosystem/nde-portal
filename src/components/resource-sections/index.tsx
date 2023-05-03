@@ -130,6 +130,7 @@ const Sections = ({
                   mainEntityOfPage={data?.mainEntityOfPage}
                   codeRepository={data?.codeRepository}
                   includedInDataCatalog={data?.includedInDataCatalog}
+                  usageInfo={data?.usageInfo}
                 >
                   <ResourceStats
                     includedInDataCatalog={data?.includedInDataCatalog}

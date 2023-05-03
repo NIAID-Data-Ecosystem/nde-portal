@@ -1,28 +1,47 @@
-import { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import type { NextPage } from 'next';
-import { Box, Button, Flex, Text, useBreakpointValue } from 'nde-design-system';
+import {
+  Box,
+  Button,
+  ButtonGroup,
+  Flex,
+  Heading,
+  Image,
+  Link,
+  SkeletonCircle,
+  SkeletonText,
+  Table as StyledTable,
+  Thead,
+  Tbody,
+  Tr,
+  Th,
+  Td,
+  TableContainer,
+  TableSortToggle,
+  TableWrapper,
+  Tabs,
+  TabList,
+  Tab,
+  Tag,
+  Text,
+  useBreakpointValue,
+  theme,
+} from 'nde-design-system';
 import {
   PageHeader,
   PageContainer,
   PageContent,
   SearchQueryLink,
 } from 'src/components/page-container';
-import homepageCopy from 'configs/homepage.json';
-import { fetchSearchResults } from 'src/utils/api';
+import HOMEPAGE_COPY from 'configs/homepage.json';
+import { fetchMetadata } from 'src/utils/api';
 import { useQuery } from 'react-query';
-import { FetchSearchResultsResponse } from 'src/utils/api/types';
-import LoadingSpinner from 'src/components/loading';
-import {
-  StyledSection,
-  StyledSectionHeading,
-  StyledBody,
-  StyledSectionButtonGroup,
-  PieChart,
-  Legend,
-} from 'src/components/pie-chart';
+import { Metadata } from 'src/utils/api/types';
 import NextLink from 'next/link';
 import { SearchBarWithDropdown } from 'src/components/search-bar';
 import { AdvancedSearchOpen } from 'src/components/advanced-search/components/buttons';
+import NIAID_FUNDED from 'configs/niaid-sources.json';
+import SOURCES from 'configs/resource-sources.json';
 
 const sample_queries = [
   {
@@ -73,56 +92,88 @@ const sample_queries = [
 const Home: NextPage = () => {
   const size = useBreakpointValue({ base: 300, lg: 350 });
 
-  // Fetch stats about number of resources
-  const params = {
-    q: '__all__',
-    size: 0,
-    facets: ['includedInDataCatalog.name'].join(','),
-    facet_size: 20,
-  };
-
-  interface Stat {
-    term: string;
-    count: number;
-    stats?: Stat[];
+  interface Repository {
+    identifier: string;
+    name: string;
+    type: 'generalist' | 'iid';
+    url?: string;
+    abstract?: string;
+    icon?: string;
   }
+  const types: { property: Repository['type']; label: string }[] = [
+    { property: 'iid', label: 'IID Domain Repositories' },
+    { property: 'generalist', label: 'Generalist Repositories' },
+  ];
+  const [selectedType, setSelectedType] = useState<Repository['type']>(
+    types[0].property,
+  );
 
-  interface Stats {
-    repositories: Stat | null;
-  }
+  const [sortOrder, setSortOrder] = useState<'ASC' | 'DESC'>('ASC');
 
-  const [stats, setStats] = useState<Stats>({
-    repositories: null,
-  });
+  const [repositories, setRepositories] = useState<Repository[]>([]);
 
-  const { isLoading, error } = useQuery<
-    FetchSearchResultsResponse | undefined,
-    Error
-  >({
-    queryKey: ['stats', params],
-    queryFn: () => fetchSearchResults(params),
+  const { isLoading, error } = useQuery<Metadata | undefined, Error>({
+    queryKey: ['metadata'],
+    queryFn: fetchMetadata,
     onSuccess: data => {
-      let stat = { ...stats };
-      if (data) {
-        const { facets } = data;
+      const sources = data?.src || [];
+      const repositories = Object.values(sources).map(({ sourceInfo }) => {
+        const { identifier, name, url } = sourceInfo || {};
 
-        const sources = [...facets['includedInDataCatalog.name'].terms];
-
-        // Get number of repositories
-        const repositories = {
-          term: 'Repositories',
-          count: sources.length,
-          stats: sources,
+        const data = {
+          identifier,
+          name,
+          url,
+          type: 'generalist',
         };
-        stat = {
-          repositories,
-        };
-      }
+        const icon = SOURCES.repositories.find(
+          ({ sourceName }) => sourceName === identifier,
+        )?.icon;
+        const niaidSource = NIAID_FUNDED.niaid.repositories.find(
+          ({ id }) => id === identifier,
+        );
+        if (niaidSource) {
+          return {
+            ...data,
+            icon,
+            type: 'iid' as const,
+            abstract: niaidSource?.abstract || '',
+          };
+        } else {
+          const generalRepo = NIAID_FUNDED.generalist.repositories.find(
+            ({ id }) => id === identifier,
+          );
+          return {
+            ...data,
+            icon,
+            type: 'generalist' as const,
+            abstract: generalRepo?.abstract || '',
+          };
+        }
+      });
 
-      setStats(stat);
+      setRepositories(
+        repositories.sort((a, b) => a.name.localeCompare(b.name)),
+      );
     },
   });
 
+  const TABLE_COLUMNS = [
+    { title: 'name', property: 'name', isSortable: true },
+    { title: 'description', property: 'abstract' },
+  ];
+
+  const rows = useMemo(
+    () =>
+      repositories
+        .filter(({ type }) => type === selectedType)
+        .sort((a, b) =>
+          sortOrder === 'ASC'
+            ? a.name.localeCompare(b.name)
+            : b.name.localeCompare(a.name),
+        ),
+    [repositories, selectedType, sortOrder],
+  );
   return (
     <>
       <PageContainer
@@ -132,193 +183,322 @@ const Home: NextPage = () => {
         keywords='omics, data, infectious disease, epidemiology, clinical trial, immunology, bioinformatics, surveillance, search, repository'
         disableSearchBar
       >
+        {/**** Hero banner + search bar *****/}
         <PageHeader
-          title={homepageCopy.sections[0].heading}
-          subtitle={homepageCopy.sections[0].subtitle}
-          body={[homepageCopy.sections[0].body]}
+          title={HOMEPAGE_COPY.sections.hero.heading}
+          subtitle={HOMEPAGE_COPY.sections.hero.subtitle}
+          body={[HOMEPAGE_COPY.sections.hero.body]}
         >
-          <>
-            <Flex w='100%' justifyContent='flex-end' mb={2}>
-              <NextLink href={{ pathname: 'advanced-search' }} passHref>
-                <Box>
-                  <AdvancedSearchOpen
-                    onClick={() => {}}
-                    variant='outline'
-                    bg='whiteAlpha.500'
-                    color='white'
-                    _hover={{ bg: 'whiteAlpha.800', color: 'primary.600' }}
-                  />
-                </Box>
-              </NextLink>
-            </Flex>
-            <SearchBarWithDropdown
-              placeholder='Search for datasets'
-              ariaLabel='Search for datasets'
-              size='md'
-            />
+          <Flex w='100%' justifyContent='flex-end' mb={2}>
+            <NextLink
+              href={{ pathname: 'advanced-search' }}
+              passHref
+              prefetch={false}
+            >
+              <Box>
+                <AdvancedSearchOpen
+                  onClick={() => {}}
+                  variant='outline'
+                  bg='whiteAlpha.500'
+                  color='white'
+                  _hover={{ bg: 'whiteAlpha.800', color: 'primary.600' }}
+                />
+              </Box>
+            </NextLink>
+          </Flex>
+          <SearchBarWithDropdown
+            placeholder='Search for datasets'
+            ariaLabel='Search for datasets'
+            size='md'
+          />
 
-            {/* [NOTE]: Test with autocomplete in the future */}
-            {/* <SearchWithPredictiveText
-              ariaLabel='Search for datasets'
-              placeholder='Search for datasets'
-              size='md'
-              handleSubmit={(stringValue, __, data) => {
-                if (data && data.id) {
-                  router.push({
-                    pathname: `/resources`,
-                    query: { id: `${data.id}` },
-                  });
-                } else {
-                  router.push({
+          <Flex mt={2} flexWrap={['wrap']}>
+            <Text color='whiteAlpha.800' mr={2}>
+              Try:
+            </Text>
+            {sample_queries.map((query, i) => {
+              return (
+                <NextLink
+                  key={query.title}
+                  href={{
                     pathname: `/search`,
-                    query: { q: `${stringValue.trim()}` },
-                  });
-                }
-              }}
-            /> */}
-
-            <Flex mt={2} flexWrap={['wrap']}>
-              <Text color='whiteAlpha.800' mr={2}>
-                Try:
-              </Text>
-              {sample_queries.map((query, i) => {
-                return (
-                  <NextLink
-                    key={query.title}
-                    href={{
-                      pathname: `/search`,
-                      query: { q: query.searchTerms.join(' OR ') },
-                    }}
-                    passHref
-                  >
-                    <Box>
-                      <SearchQueryLink
-                        title={query.title}
-                        display={[i > 2 ? 'none' : 'block', 'block']}
-                      />
-                    </Box>
-                  </NextLink>
-                );
-              })}
-            </Flex>
-          </>
+                    query: { q: query.searchTerms.join(' OR ') },
+                  }}
+                  passHref
+                  prefetch={false}
+                >
+                  <Box>
+                    <SearchQueryLink
+                      title={query.title}
+                      display={[i > 2 ? 'none' : 'block', 'block']}
+                    />
+                  </Box>
+                </NextLink>
+              );
+            })}
+          </Flex>
         </PageHeader>
 
-        {/* Data repository viz section */}
-        {error ? (
-          <></>
-        ) : (
+        {/**** Repositories Table section *****/}
+        {!error && (
           <PageContent
-            bg='page.alt'
-            minH='unset'
             flexDirection='column'
+            bg='#fff'
+            mb={20}
             alignItems='center'
           >
-            <StyledSection
-              id='explore-date'
-              flexDirection={{ base: 'column', lg: 'column' }}
-            >
-              <Flex
-                width='100%'
-                flexDirection={{ base: 'column', lg: 'row-reverse' }}
-                justifyContent={{ lg: 'center' }}
-                flex={1}
-                alignItems='center'
-                maxW={{ base: 'unset', lg: '1400px' }}
+            <Box maxW='1600px' width='100%'>
+              <Heading
+                pb={[4, 4, 8]}
+                as='h2'
+                fontWeight='semibold'
+                size='lg'
+                textAlign={['center', 'left']}
               >
-                <LoadingSpinner isLoading={isLoading}>
-                  {/* Pie chart with number repositories and associated resources*/}
-                  {stats?.repositories?.stats && (
-                    <PieChart
-                      width={size || 200}
-                      height={size || 200}
-                      data={stats.repositories.stats.sort(
-                        (a, b) => b.count - a.count,
-                      )}
-                    />
-                  )}
-                </LoadingSpinner>
-                {/* Legend display for smaller screen size */}
-                <Flex
-                  display={{ base: 'flex', lg: 'none' }}
+                {HOMEPAGE_COPY.sections.repositories.heading}
+              </Heading>
+
+              <Flex flexDirection='column'>
+                <Tabs
                   w='100%'
-                  justifyContent='center'
+                  colorScheme='primary'
+                  mb={4}
+                  onChange={index => {
+                    setSelectedType(types[index].property);
+                  }}
                 >
-                  {stats?.repositories?.stats && (
-                    <Legend
-                      data={stats.repositories.stats.sort(
-                        (a, b) => b.count - a.count,
-                      )}
-                    />
-                  )}
-                </Flex>
-                <StyledBody
-                  maxWidth={['unset', 'unset', '700px', '600px']}
-                  textAlign={['start', 'start', 'center', 'start']}
-                  m={2}
-                >
-                  <StyledSectionHeading mt={6}>
-                    {homepageCopy.sections[1].heading}
-                  </StyledSectionHeading>
-                  <StyledSectionButtonGroup
-                    justifyContent={[
-                      'flex-start',
-                      'flex-start',
-                      'center',
-                      'flex-start',
-                    ]}
+                  <TabList
                     flexWrap={['wrap', 'nowrap']}
-                    maxWidth={['unset', 'unset', '400px', '400px']}
+                    justifyContent={['center', 'flex-start']}
                   >
-                    {homepageCopy.sections[1]?.routes &&
-                      homepageCopy.sections[1].routes.map(
-                        (
-                          route: {
-                            title: string;
-                            path: string;
-                            isExternal?: boolean;
+                    {types.map(type => (
+                      <Tab
+                        w={['100%', 'unset']}
+                        key={type.property}
+                        color='blackAlpha.500'
+                        _selected={{
+                          borderBottom: '4px solid',
+                          borderBottomColor: 'primary.400',
+                          color: 'text.heading',
+                          ['.tag']: {
+                            opacity: 1,
                           },
-                          index,
-                        ) => {
-                          return (
-                            <NextLink
-                              key={route.title}
-                              href={route.path}
-                              passHref
-                            >
-                              <Button
-                                w='100%'
-                                variant={index % 2 ? 'solid' : 'outline'}
-                                size='sm'
-                                m={[0, 2, 0]}
-                                my={[1, 2, 0]}
-                                py={[6]}
-                                maxWidth={['200px', '200px', '400px', '400px']}
-                              >
-                                {route.title}
-                              </Button>
-                            </NextLink>
-                          );
-                        },
+                        }}
+                        _focus={{ outline: 'none' }}
+                      >
+                        <Heading
+                          as='h3'
+                          size='md'
+                          fontWeight='semibold'
+                          color='inherit'
+                        >
+                          {type.label}
+                        </Heading>
+                        <Tag
+                          className='tag'
+                          borderRadius='full'
+                          ml={2}
+                          px={4}
+                          size='sm'
+                          opacity={0.25}
+                          colorScheme='gray'
+                        >
+                          {
+                            repositories.filter(
+                              ({ type: t }) => t === type.property,
+                            ).length
+                          }
+                        </Tag>
+                      </Tab>
+                    ))}
+                  </TabList>
+                </Tabs>
+
+                <TableWrapper colorScheme='gray' w='100%'>
+                  <TableContainer>
+                    <StyledTable variant='simple' bg='white' colorScheme='gray'>
+                      {TABLE_COLUMNS && (
+                        <Thead>
+                          <Tr>
+                            {TABLE_COLUMNS.map(column => {
+                              return (
+                                <Th
+                                  key={column.property}
+                                  role='columnheader'
+                                  scope='col'
+                                  bg='page.alt'
+                                  borderBottom='1px solid !important'
+                                  borderBottomColor={`${theme.colors.gray[200]} !important`}
+                                >
+                                  {column.title}
+                                  {column.isSortable && (
+                                    <TableSortToggle
+                                      isSelected
+                                      sortBy={sortOrder}
+                                      handleToggle={isAsc => {
+                                        setSortOrder(isAsc ? 'ASC' : 'DESC');
+                                      }}
+                                    />
+                                  )}
+                                </Th>
+                              );
+                            })}
+                          </Tr>
+                        </Thead>
                       )}
-                  </StyledSectionButtonGroup>
-                </StyledBody>
+                      <Tbody>
+                        {(rows.length ? rows : Array.from(Array(10))).map(
+                          (_, i) => {
+                            return (
+                              <Tr key={i} id={`${i}`}>
+                                {Array.from(Array(TABLE_COLUMNS.length)).map(
+                                  (_, j) => {
+                                    if (TABLE_COLUMNS && rows) {
+                                      const row = rows[i];
+
+                                      if (!isLoading && !row) {
+                                        return (
+                                          <React.Fragment key={`${i}-${j}`} />
+                                        );
+                                      }
+                                      let column = TABLE_COLUMNS[j];
+                                      let cell =
+                                        row?.[
+                                          column.property as keyof Repository
+                                        ] || '';
+                                      return (
+                                        <Td
+                                          role='cell'
+                                          key={`${cell}-${i}-${j}`}
+                                          id={`${cell}-${i}-${j}`}
+                                          whiteSpace='break-spaces'
+                                          minW='50px'
+                                          isNumeric={typeof cell === 'number'}
+                                        >
+                                          <Flex
+                                            alignItems={[
+                                              'flex-start',
+                                              'center',
+                                            ]}
+                                            flexDirection={['column', 'row']}
+                                            justifyContent='flex-start'
+                                          >
+                                            {column.property === 'name' && (
+                                              <SkeletonCircle
+                                                h='30px'
+                                                w='30px'
+                                                isLoaded={!isLoading}
+                                              >
+                                                {row?.icon && (
+                                                  <>
+                                                    {row?.url ? (
+                                                      <Link
+                                                        href={row.url}
+                                                        fontWeight='medium'
+                                                        target='_blank'
+                                                      >
+                                                        <Image
+                                                          src={`${row.icon}`}
+                                                          alt={`Logo for data source ${row.name}`}
+                                                          objectFit='contain'
+                                                          width='30px'
+                                                          height='30px'
+                                                        />
+                                                      </Link>
+                                                    ) : (
+                                                      <Image
+                                                        src={`${row.icon}`}
+                                                        alt={`Logo for data source ${row.name}`}
+                                                        objectFit='contain'
+                                                        width='30px'
+                                                        height='30px'
+                                                      />
+                                                    )}
+                                                  </>
+                                                )}
+                                              </SkeletonCircle>
+                                            )}
+                                            <SkeletonText
+                                              noOfLines={1}
+                                              spacing='2'
+                                              skeletonHeight={4}
+                                              isLoaded={!isLoading}
+                                              minW='75%'
+                                              ml={[0, 4]}
+                                            >
+                                              {row?.identifier &&
+                                              column.property === 'name' ? (
+                                                <NextLink
+                                                  href={{
+                                                    pathname: `/search`,
+                                                    query: {
+                                                      q: '',
+                                                      filters: `includedInDataCatalog.name:${row.identifier}`,
+                                                    },
+                                                  }}
+                                                  passHref
+                                                  prefetch={false}
+                                                >
+                                                  <Link fontWeight='medium'>
+                                                    {cell}
+                                                  </Link>
+                                                </NextLink>
+                                              ) : (
+                                                <Text fontSize='sm'>
+                                                  {cell || '-'}
+                                                </Text>
+                                              )}
+                                            </SkeletonText>
+                                          </Flex>
+                                        </Td>
+                                      );
+                                    }
+                                  },
+                                )}
+                              </Tr>
+                            );
+                          },
+                        )}
+                      </Tbody>
+                    </StyledTable>
+                  </TableContainer>
+                </TableWrapper>
               </Flex>
-            </StyledSection>
-            {/* Legend display for larger screen size */}
-            <Flex
-              display={{ base: 'none', lg: 'flex' }}
-              w='100%'
-              justifyContent={{ base: 'center', md: 'space-between' }}
-            >
-              {stats?.repositories?.stats && (
-                <Legend
-                  data={stats.repositories.stats.sort(
-                    (a, b) => b.count - a.count,
-                  )}
-                ></Legend>
-              )}
-            </Flex>
+              <ButtonGroup
+                flexWrap={['wrap', 'nowrap']}
+                w='100%'
+                display='flex'
+                justifyContent='flex-end'
+                mt={4}
+              >
+                {HOMEPAGE_COPY.sections.help.routes.map(
+                  (
+                    route: {
+                      title: string;
+                      path: string;
+                      isExternal?: boolean;
+                    },
+                    index,
+                  ) => {
+                    return (
+                      <NextLink key={route.title} href={route.path} passHref>
+                        <Button
+                          w='100%'
+                          variant={index % 2 ? 'solid' : 'outline'}
+                          size='sm'
+                          m={[0, 2, 0]}
+                          my={[1, 2, 0]}
+                          py={[6]}
+                          maxWidth='200px'
+                        >
+                          {route.title}
+                        </Button>
+                      </NextLink>
+                    );
+                  },
+                )}
+              </ButtonGroup>
+            </Box>
           </PageContent>
         )}
       </PageContainer>
