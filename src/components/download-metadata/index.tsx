@@ -24,16 +24,14 @@ import { DownloadArgs, downloadAsCsv, downloadAsJson } from './helpers';
 interface DownloadMetadataProps extends FlexProps {
   exportName: string;
   params: any;
-  colorScheme?: ButtonProps['colorScheme'];
-  variant?: ButtonProps['variant'];
+  buttonProps?: ButtonProps;
 }
 
 export const DownloadMetadata: React.FC<DownloadMetadataProps> = ({
   params,
   exportName,
   children,
-  colorScheme = 'primary',
-  variant = 'solid',
+  buttonProps,
   ...props
 }) => {
   const [downloadFormat, setDownloadFormat] = useState<any | null>(null);
@@ -131,13 +129,14 @@ export const DownloadMetadata: React.FC<DownloadMetadataProps> = ({
         {/* Simple button with */}
         <Button
           leftIcon={<FaDownload />}
-          colorScheme={colorScheme}
+          colorScheme='primary'
           onClick={onToggle}
-          variant={variant}
+          variant='solid'
           isLoading={isFetching}
           loadingText='Downloading'
           w='100%'
           px={{ base: 4, md: 6 }}
+          {...buttonProps}
         >
           {children}
         </Button>
@@ -167,7 +166,9 @@ export const DownloadMetadata: React.FC<DownloadMetadataProps> = ({
                       px={4}
                       py={2}
                       cursor='pointer'
-                      _hover={{ bg: `${colorScheme}.50` }}
+                      _hover={{
+                        bg: `${buttonProps?.colorScheme || 'primary'}.50`,
+                      }}
                       onClick={async () => {
                         onClose();
                         setDownloadFormat(option);
