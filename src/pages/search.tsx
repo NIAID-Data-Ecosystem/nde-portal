@@ -21,7 +21,6 @@ import {
   SelectedFilterType,
   SelectedFilterTypeValue,
 } from 'src/components/filters/types';
-import { encodeString } from 'src/utils/querystring-helpers';
 
 //  This page renders the search results from the search bar.
 const Search: NextPage = () => {
@@ -44,10 +43,7 @@ const Search: NextPage = () => {
   const queryParams = {
     ...defaultParams,
     ...router.query,
-    q:
-      router.query.advancedSearch === 'true'
-        ? queryString
-        : encodeString(queryString),
+    q: queryString,
     extra_filter: Array.isArray(router.query.filters)
       ? router.query.filters.join('')
       : router.query.filters || '',
