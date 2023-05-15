@@ -3,15 +3,17 @@ import {
   Box,
   Button,
   Flex,
+  Heading,
   SearchInput,
   UnorderedList,
   ListItem,
   CheckboxGroup,
+  Text,
   ButtonProps,
 } from 'nde-design-system';
 import { FilterTerm } from '../types';
 import { FiltersCheckbox } from './filters-checkbox';
-
+import REPOS from 'configs/repositories.json';
 /*
 [COMPONENT INFO]:
 Filter list handles the number of items to show in list (expanded option).
@@ -31,6 +33,7 @@ interface FiltersList {
   // data loading states
   isLoading: boolean;
   isUpdating?: boolean;
+  property: string;
 }
 
 export const FiltersList: React.FC<FiltersList> = React.memo(
@@ -42,6 +45,7 @@ export const FiltersList: React.FC<FiltersList> = React.memo(
     handleSelectedFilters,
     isLoading,
     isUpdating,
+    property,
   }) => {
     /****** Limit List Items ******/
     // Toggle number of items to show from reduced view to "all" view.
@@ -63,20 +67,46 @@ export const FiltersList: React.FC<FiltersList> = React.memo(
         ? Array(NUM_ITEMS_MIN).fill('') // for loading skeleton purposes
         : [];
 
+    const iid_sources =
+      property === 'includedInDataCatalog'
+        ? items
+            .filter(item => {
+              const repo = REPOS.repositories.find(r => r.id === item.term);
+              return repo && repo.type === 'iid';
+            })
+            .sort((a, b) => a.displayAs.localeCompare(b.displayAs))
+            .sort((a, b) => b.count - a.count)
+        : [];
+
+    const generalist_sources =
+      property === 'includedInDataCatalog'
+        ? items
+            .filter(item => {
+              const repo = REPOS.repositories.find(r => r.id === item.term);
+              return repo && repo.type === 'generalist';
+            })
+            .sort((a, b) => a.displayAs.localeCompare(b.displayAs))
+            .sort((a, b) => b.count - a.count)
+        : [];
+
     return (
       <>
         {/* Search through filter terms */}
-        <SearchInput
-          ariaLabel={`Search filter ${searchPlaceholder} terms`}
-          placeholder={searchPlaceholder}
-          maxW='unset'
-          size='md'
-          value={searchTerm}
-          handleChange={handleSearchChange}
-          colorScheme={colorScheme}
-          pr='unset'
-        />
+
+        <Box>
+          <SearchInput
+            ariaLabel={`Search filter ${searchPlaceholder} terms`}
+            placeholder={searchPlaceholder}
+            maxW='unset'
+            size='md'
+            value={searchTerm}
+            handleChange={handleSearchChange}
+            colorScheme={colorScheme}
+            pr='unset'
+          />
+        </Box>
         <Box w='100%' my={4}>
+          {/* List of filters available narrowed based on search and expansion toggle */}
           <UnorderedList
             direction='column'
             ml={0}
@@ -91,29 +121,99 @@ export const FiltersList: React.FC<FiltersList> = React.memo(
               value={selectedFilters}
               onChange={handleSelectedFilters}
             >
-              {/* List of filters available narrowed based on search and expansion toggle */}
-              {items
-                .sort((a, b) => b.count - a.count)
-                .slice(0, showFullList ? items.length : 5)
-                .map((item, i) => {
-                  return (
-                    <ListItem
-                      key={i}
-                      p={2}
-                      py={0}
-                      my={0}
-                      _hover={{ bg: `${colorScheme}.50` }}
-                    >
-                      <FiltersCheckbox
-                        value={item.term}
-                        displayTerm={item.displayAs}
-                        count={item.count}
-                        isLoading={isLoading}
-                        isCountUpdating={isUpdating}
-                      />
-                    </ListItem>
-                  );
-                })}
+              {property === 'includedInDataCatalog' ? (
+                <>
+                  {/* IID repos */}
+                  {iid_sources.length > 0 && (
+                    <Box>
+                      <Text fontSize='sm' fontWeight='semibold' my={1}>
+                        {
+                          REPOS.repositoryTypes.find(
+                            repo => repo.type === 'iid',
+                          )?.label
+                        }
+                      </Text>
+                      {iid_sources.map((item, i) => {
+                        return (
+                          <ListItem
+                            key={i}
+                            p={2}
+                            py={0}
+                            my={0}
+                            _hover={{ bg: `${colorScheme}.50` }}
+                          >
+                            <FiltersCheckbox
+                              value={item.term}
+                              displayTerm={item.displayAs}
+                              count={item.count}
+                              isLoading={isLoading}
+                              isCountUpdating={isUpdating}
+                            />
+                          </ListItem>
+                        );
+                      })}
+                    </Box>
+                  )}
+                  {generalist_sources.length > 0 && (
+                    <>
+                      <Text fontSize='sm' fontWeight='semibold' my={1}>
+                        {
+                          REPOS.repositoryTypes.find(
+                            repo => repo.type === 'generalist',
+                          )?.label
+                        }
+                      </Text>
+                      {generalist_sources
+                        .slice(0, showFullList ? items.length : 5)
+                        .map((item, i) => {
+                          return (
+                            <ListItem
+                              key={i}
+                              p={2}
+                              py={0}
+                              my={0}
+                              _hover={{ bg: `${colorScheme}.50` }}
+                            >
+                              <FiltersCheckbox
+                                value={item.term}
+                                displayTerm={item.displayAs}
+                                count={item.count}
+                                isLoading={isLoading}
+                                isCountUpdating={isUpdating}
+                              />
+                            </ListItem>
+                          );
+                        })}
+                    </>
+                  )}
+                </>
+              ) : (
+                <>
+                  {items
+                    .sort((a, b) => b.count - a.count)
+                    .slice(0, showFullList ? items.length : 5)
+                    .map((item, i) => {
+                      console.log(item);
+                      return (
+                        <ListItem
+                          key={i}
+                          p={2}
+                          py={0}
+                          my={0}
+                          _hover={{ bg: `${colorScheme}.50` }}
+                        >
+                          <FiltersCheckbox
+                            value={item.term}
+                            displayTerm={item.displayAs}
+                            count={item.count}
+                            isLoading={isLoading}
+                            isCountUpdating={isUpdating}
+                          />
+                        </ListItem>
+                      );
+                    })}
+                </>
+              )}
             </CheckboxGroup>
           </UnorderedList>
         </Box>

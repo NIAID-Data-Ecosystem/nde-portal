@@ -14,7 +14,7 @@ export interface FiltersConfigProps {
   [key: string]: {
     name: string;
     glyph?: string;
-    property?: string;
+    property: string;
     isDefaultOpen?: boolean;
   };
 }

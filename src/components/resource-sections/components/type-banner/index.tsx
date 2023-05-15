@@ -3,7 +3,7 @@ import { Flex, FlexProps, Icon, Text } from 'nde-design-system';
 import { FaRegClock } from 'react-icons/fa';
 import { FormattedResource } from 'src/utils/api/types';
 import { StyledLabel } from './styles';
-import NIAID_FUNDED from 'configs/niaid-sources.json';
+import REPOS from 'configs/repositories.json';
 
 interface TypeBannerProps extends FlexProps {
   type?: FormattedResource['type'];
@@ -33,9 +33,14 @@ const TypeBanner: React.FC<TypeBannerProps> = ({
   sourceName,
   ...props
 }) => {
-  const NIAIDrepos = NIAID_FUNDED.niaid.repositories as { id: string }[];
+  const repositories = REPOS.repositories as {
+    id: string;
+    isNIAID?: boolean;
+  }[];
   const isNiaidFunded =
-    sourceName && NIAIDrepos.filter(({ id }) => id === sourceName).length > 0;
+    sourceName &&
+    repositories.filter(({ id, isNIAID }) => isNIAID && id === sourceName)
+      .length > 0;
   return (
     <Flex flexWrap='wrap' w='100%' bg={props.bg || 'status.info_lt'} {...props}>
       <Flex

@@ -40,8 +40,7 @@ import { Metadata } from 'src/utils/api/types';
 import NextLink from 'next/link';
 import { SearchBarWithDropdown } from 'src/components/search-bar';
 import { AdvancedSearchOpen } from 'src/components/advanced-search/components/buttons';
-import NIAID_FUNDED from 'configs/niaid-sources.json';
-import SOURCES from 'configs/resource-sources.json';
+import REPOSITORIES from 'configs/repositories.json';
 
 const sample_queries = [
   {
@@ -94,7 +93,7 @@ const Home: NextPage = () => {
 
   interface Repository {
     identifier: string;
-    name: string;
+    label: string;
     type: 'generalist' | 'iid';
     url?: string;
     abstract?: string;
@@ -118,48 +117,33 @@ const Home: NextPage = () => {
     onSuccess: data => {
       const sources = data?.src || [];
       const repositories = Object.values(sources).map(({ sourceInfo }) => {
-        const { identifier, name, url } = sourceInfo || {};
+        const { identifier, url } = sourceInfo || {};
 
         const data = {
           identifier,
-          name,
           url,
-          type: 'generalist',
         };
-        const icon = SOURCES.repositories.find(
-          ({ sourceName }) => sourceName === identifier,
-        )?.icon;
-        const niaidSource = NIAID_FUNDED.niaid.repositories.find(
+
+        const repo = REPOSITORIES.repositories.find(
           ({ id }) => id === identifier,
         );
-        if (niaidSource) {
-          return {
-            ...data,
-            icon,
-            type: 'iid' as const,
-            abstract: niaidSource?.abstract || '',
-          };
-        } else {
-          const generalRepo = NIAID_FUNDED.generalist.repositories.find(
-            ({ id }) => id === identifier,
-          );
-          return {
-            ...data,
-            icon,
-            type: 'generalist' as const,
-            abstract: generalRepo?.abstract || '',
-          };
-        }
+        return {
+          ...data,
+          label: repo?.label || '',
+          type: (repo?.type || 'generalist') as Repository['type'],
+          icon: repo?.icon || '',
+          abstract: repo?.abstract || '',
+        };
       });
 
       setRepositories(
-        repositories.sort((a, b) => a.name.localeCompare(b.name)),
+        repositories.sort((a, b) => a.label.localeCompare(b.label)),
       );
     },
   });
 
   const TABLE_COLUMNS = [
-    { title: 'name', property: 'name', isSortable: true },
+    { title: 'name', property: 'label', isSortable: true },
     { title: 'description', property: 'abstract' },
   ];
 
@@ -169,8 +153,8 @@ const Home: NextPage = () => {
         .filter(({ type }) => type === selectedType)
         .sort((a, b) =>
           sortOrder === 'ASC'
-            ? a.name.localeCompare(b.name)
-            : b.name.localeCompare(a.name),
+            ? a.label.localeCompare(b.label)
+            : b.label.localeCompare(a.label),
         ),
     [repositories, selectedType, sortOrder],
   );
@@ -383,7 +367,7 @@ const Home: NextPage = () => {
                                             flexDirection={['column', 'row']}
                                             justifyContent='flex-start'
                                           >
-                                            {column.property === 'name' && (
+                                            {column.property === 'label' && (
                                               <SkeletonCircle
                                                 h='30px'
                                                 w='30px'
@@ -399,7 +383,7 @@ const Home: NextPage = () => {
                                                       >
                                                         <Image
                                                           src={`${row.icon}`}
-                                                          alt={`Logo for data source ${row.name}`}
+                                                          alt={`Logo for data source ${row.label}`}
                                                           objectFit='contain'
                                                           width='30px'
                                                           height='30px'
@@ -408,7 +392,7 @@ const Home: NextPage = () => {
                                                     ) : (
                                                       <Image
                                                         src={`${row.icon}`}
-                                                        alt={`Logo for data source ${row.name}`}
+                                                        alt={`Logo for data source ${row.label}`}
                                                         objectFit='contain'
                                                         width='30px'
                                                         height='30px'
@@ -427,7 +411,7 @@ const Home: NextPage = () => {
                                               ml={[0, 4]}
                                             >
                                               {row?.identifier &&
-                                              column.property === 'name' ? (
+                                              column.property === 'label' ? (
                                                 <NextLink
                                                   href={{
                                                     pathname: `/search`,

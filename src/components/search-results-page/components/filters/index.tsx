@@ -181,6 +181,7 @@ export const Filters: React.FC<FiltersProps> = ({
               colorScheme={colorScheme}
               searchPlaceholder={`Search ${name.toLowerCase()} filters`}
               terms={facetTerms}
+              property={property}
               selectedFilters={selected || []}
               handleSelectedFilters={values =>
                 handleSelectedFilters(values, facet)
