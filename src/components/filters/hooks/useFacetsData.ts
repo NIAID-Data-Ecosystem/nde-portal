@@ -5,12 +5,17 @@ import { formatDate, formatISOString, formatType } from 'src/utils/api/helpers';
 import { Facet, FacetTerm, FormattedResource } from 'src/utils/api/types';
 import { encodeString } from 'src/utils/querystring-helpers';
 import { FacetTerms } from '../types';
+import REPOS from 'configs/repositories.json';
 
 export const formatFacetTermDisplay = (term: string, facet: string) => {
   if (facet === '@type') {
     return formatType(term);
   } else if (facet === 'date') {
     return formatDate(term)?.split('-')[0];
+  } else if (facet === 'date') {
+    return formatDate(term)?.split('-')[0];
+  } else if (facet === 'includedInDataCatalog.name') {
+    return REPOS.repositories.find(repo => repo.id === term)?.label || term;
   }
   return term;
 };

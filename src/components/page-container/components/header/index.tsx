@@ -1,19 +1,7 @@
 import React from 'react';
 import { PageContent } from 'src/components/page-container';
-import {
-  Box,
-  Flex,
-  Heading,
-  Icon,
-  Link,
-  LinkProps as ChakraLinkProps,
-  Text,
-  theme,
-  usePrefersReducedMotion,
-} from 'nde-design-system';
-import { fade, StyledSection } from './styles';
-import { assetPrefix } from 'next.config';
-import { FaChevronRight } from 'react-icons/fa';
+import { Box, Flex, Heading, Text, theme } from 'nde-design-system';
+import { StyledSection } from './styles';
 
 interface PageHeaderProps {
   title: string;
@@ -22,6 +10,7 @@ interface PageHeaderProps {
   bg?: string;
   bgImg?: string;
   color?: string;
+  children?: React.ReactNode;
 }
 
 export const PageHeader: React.FC<PageHeaderProps> = ({
@@ -46,7 +35,7 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
           bg ||
           `linear-gradient(180deg, ${theme.colors.primary[500]}, ${theme.colors.tertiary[700]})`
         }
-        bgImg={bgImg || `${assetPrefix || ''}/assets/home-bg.png`}
+        bgImg={bgImg || `/assets/home-bg.png`}
         backgroundSize='cover'
         flexWrap='wrap'
         minH='unset'
@@ -116,44 +105,5 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
         </StyledSection>
       </PageContent>
     </>
-  );
-};
-
-// Display for pre-written queries.
-interface SearchQueryLinkProps extends Omit<ChakraLinkProps, 'href'> {
-  title: string;
-}
-
-export const SearchQueryLink: React.FC<SearchQueryLinkProps> = ({
-  title,
-  _hover,
-  _visited,
-  ...props
-}) => {
-  if (!title) {
-    return null;
-  }
-  return (
-    <Link
-      px={2}
-      color='whiteAlpha.800'
-      _hover={{
-        color: 'white',
-        textDecoration: 'underline',
-        svg: { transform: 'translateX(0)', transition: '0.2s ease-in-out' },
-        ..._hover,
-      }}
-      _visited={{ color: 'white', ..._visited }}
-      {...props}
-    >
-      <Text>{title}</Text>
-      <Icon
-        as={FaChevronRight}
-        ml={2}
-        boxSize={3}
-        transform='translateX(-5px)'
-        transition='0.2s ease-in-out'
-      ></Icon>
-    </Link>
   );
 };

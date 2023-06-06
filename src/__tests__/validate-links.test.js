@@ -1,3 +1,6 @@
+/**
+ * @jest-environment node
+ */
 const axios = require('axios');
 const puppeteer = require('puppeteer');
 
@@ -96,7 +99,7 @@ describe('Check for broken links', () => {
   let page;
 
   beforeAll(async () => {
-    browser = await puppeteer.launch();
+    browser = await puppeteer.launch({ headless: 'false' });
     page = await browser.newPage();
   });
 
@@ -133,9 +136,10 @@ describe('Check for broken links', () => {
     }
     console.log(`Found ${savedLinks.length} links to check...`);
   }, 60000);
+
   test('Check all gathered links', async () => {
     for (const obj of savedLinks) {
-      href = obj.href;
+      const { href } = obj;
       console.log(`Checking ${href}`);
       await axios
         .get(href, {
@@ -166,7 +170,6 @@ describe('Check for broken links', () => {
       const blocks = buildSlackBlocks();
       await sendSlackMessage(blocks);
     }
-
     expect(brokenLinks).toEqual([]);
   }, 300000);
 });

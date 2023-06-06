@@ -12,7 +12,7 @@ interface CitedByTable {
 }
 
 const CitedByTable: React.FC<CitedByTable> = ({ isLoading, citedBy }) => {
-  const accessorFn = useCallback(v => v.sortValue, []);
+  const accessorFn = useCallback((v: any) => v.sortValue, []);
 
   if (isLoading) {
     return <LoadingSpinner isLoading={isLoading} />;

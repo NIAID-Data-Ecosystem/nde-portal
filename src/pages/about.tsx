@@ -1,11 +1,12 @@
 import type { NextPage } from 'next';
 import { PageContainer, PageContent } from 'src/components/page-container';
 import { MDXProvider } from '@mdx-js/react';
-import { MDXComponents } from 'src/mdx';
 import AboutContent from 'content/about.mdx';
 import { Box } from 'nde-design-system';
+import { useMDXComponents } from 'mdx-components';
 
 const About: NextPage = () => {
+  const MDXComponents = useMDXComponents({});
   return (
     <PageContainer
       hasNavigation

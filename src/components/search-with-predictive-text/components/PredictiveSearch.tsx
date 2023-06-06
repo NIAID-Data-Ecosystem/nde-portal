@@ -92,6 +92,7 @@ export const PredictiveSearch: React.FC<SearchWithPredictiveTextProps> = ({
     () => suggestionsGroupedByType.map(d => d[1]).flat(),
     [suggestionsGroupedByType],
   );
+
   return (
     <Box width='100%'>
       {/* Keep dropdown agnostic from results. */}
@@ -209,29 +210,24 @@ export const PredictiveSearch: React.FC<SearchWithPredictiveTextProps> = ({
                   <DropdownList flex={3}>
                     {suggestions.map((result, i) => {
                       if (!result[fieldName]) {
-                        return <React.Fragment key={i}></React.Fragment>;
+                        return <React.Fragment key={i} />;
                       }
+                      const value: any = result[fieldName];
                       return (
                         <DropdownListItem
-                          key={result.id}
+                          key={value}
                           index={i}
                           searchTerm={
                             inputValue !== undefined ? inputValue : searchTerm
                           }
-                          value={result[fieldName]}
+                          value={value}
                           name={fieldName}
                           onClick={e => {
                             onClick
-                              ? onClick(result[fieldName], searchField, result)
-                              : handleSubmit(
-                                  result[fieldName],
-                                  searchField,
-                                  result,
-                                );
+                              ? onClick(value, searchField, result)
+                              : handleSubmit(value, searchField, result);
                           }}
-                        >
-                          {result.id}
-                        </DropdownListItem>
+                        />
                       );
                     })}
                   </DropdownList>

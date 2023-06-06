@@ -14,11 +14,16 @@ import { SelectedFilterType } from '../../types';
 import { Params } from 'src/utils/api';
 import { queryFilterObject2String } from '../../helpers';
 import { Slider } from './components/slider';
-import { Histogram } from './components/histogram';
+// import { Histogram } from './components/histogram';
 import { FacetTerm } from 'src/utils/api/types';
 import { DatePicker } from './components/date-picker';
 import { formatNumber } from 'src/utils/helpers';
 import { DateRangeSlider } from './hooks/useDateRangeContext';
+import dynamic from 'next/dynamic';
+
+const Histogram = dynamic(() => import('./components/histogram'), {
+  ssr: false,
+});
 
 interface FiltersDateSliderProps {
   colorScheme: keyof typeof theme.colors;

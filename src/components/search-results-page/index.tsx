@@ -34,7 +34,6 @@ import { SortResults } from './components/sort';
 import ResultsCount from './components/count';
 import { DownloadMetadata } from '../download-metadata';
 import NextLink from 'next/link';
-import { FaChartBar } from 'react-icons/fa';
 import { encodeString } from 'src/utils/querystring-helpers';
 import { SelectedFilterType } from '../filters/types';
 import { AdvancedSearchWithModal } from '../advanced-search';
@@ -137,22 +136,19 @@ const SearchResultsPage = () => {
         sort: params.sort,
       });
     },
-    // Don't refresh everytime window is touched.
-    { refetchOnWindowFocus: false, enabled: !!hasMounted },
-  );
 
-  // Set total results value
-  useEffect(() => {
-    setTotal(prev => {
-      if (!data || data.total === undefined) {
-        return prev;
-      }
-      if (!isLoading) {
-        return data.total;
-      }
-      return prev;
-    });
-  }, [data, isLoading]);
+    // Don't refresh everytime window is touched.
+    {
+      refetchOnWindowFocus: false,
+      enabled: !!hasMounted,
+      // set total state based on total property
+      onSuccess: data => {
+        if (data?.total) {
+          setTotal(data.total);
+        }
+      },
+    },
+  );
 
   // Set initial state based on route params.
   useEffect(() => {
@@ -220,7 +216,7 @@ const SearchResultsPage = () => {
   );
 
   if (!hasMounted || !router.isReady) {
-    return null;
+    return <></>;
   }
   if (error) {
     const errorMessage =
@@ -353,9 +349,9 @@ const SearchResultsPage = () => {
           {!isLoading && (!data || data.results.length === 0) && (
             <Empty message='No results found.' alignSelf='center' h='50vh'>
               <Text>Search yielded no results, please try again.</Text>
-              <Button href='/' mt={4}>
-                Go to search page.
-              </Button>
+              <NextLink href={{ pathname: '/search' }}>
+                <Button mt={4}>Go to search</Button>
+              </NextLink>
             </Empty>
           )}
 

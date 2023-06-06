@@ -10,10 +10,10 @@ import {
   InputGroup,
   InputProps,
   InputRightElement,
+  UseDisclosureProps,
   useOutsideClick,
   VisuallyHidden,
 } from 'nde-design-system';
-import { UseDisclosureProps } from '@chakra-ui/react';
 
 export const SelectIcon = ({ size, onClick, ...rest }: IconButtonProps) => {
   return (
@@ -32,6 +32,7 @@ export const SelectWrapper: React.FC<{
   isOpen?: boolean;
   onClose: (() => void) | undefined;
   renderList: () => React.ReactNode;
+  children: React.ReactNode;
 }> = ({ children, handleOnClickOutside, isOpen, onClose, renderList }) => {
   // Handles when the user clicks outside the select dropdown.
   const ref = useRef(null);

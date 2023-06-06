@@ -8,7 +8,7 @@ import {
 } from 'nde-design-system';
 import { filtersConfig } from 'src/components/search-results-page/components/filters';
 import { SelectedFilterType, SelectedFilterTypeValue, ValueOf } from '../types';
-
+import REPOS from 'configs/repositories.json';
 /*
 [COMPONENT INFO]:
   When filters are applied to the data, we display tags/tags for each filter.
@@ -83,6 +83,8 @@ export const FilterTags: React.FC<FilterTags> = ({
           let value = v || '';
           if (typeof v === 'object' && Object.keys(v)[0].includes('exists')) {
             value = 'Not Specified';
+          } else if (key === 'includedInDataCatalog.name') {
+            value = REPOS.repositories.find(repo => repo.id === v)?.label || v;
           }
 
           return (

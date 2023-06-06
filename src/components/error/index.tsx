@@ -31,7 +31,9 @@ export const Error: React.FC<Error> = ({ children, message, ...props }) => {
 };
 
 // Error call to action to redirect user. Has default "Back to home page" button.
-export const ErrorCTA: React.FC = ({ children }) => {
+export const ErrorCTA: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   return (
     <Flex
       flex={1}

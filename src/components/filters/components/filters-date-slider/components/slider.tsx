@@ -1,11 +1,12 @@
 import React from 'react';
 import {
+  Box,
+  Heading,
   RangeSlider,
   RangeSliderFilledTrack,
   RangeSliderThumb,
   RangeSliderTrack,
-} from '@chakra-ui/react';
-import { Box, Heading } from 'nde-design-system';
+} from 'nde-design-system';
 import { useDateRangeContext } from '../hooks/useDateRangeContext';
 
 interface FiltersRangeSliderProps {
