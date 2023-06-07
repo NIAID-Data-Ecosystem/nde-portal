@@ -1,4 +1,5 @@
 import HOMEPAGE_COPY from 'configs/homepage.json';
+import HOME_QUERIES from 'configs/queries/home-queries.json';
 import Home, { RepositoryTable, RepositoryTabs } from 'src/pages/index';
 import { createWrapper } from './mocks/utils.tsx';
 import { useRepoData } from 'src/hooks/api';
@@ -19,8 +20,10 @@ function isHeading(element) {
 
 // Check if heading, subheading, and description are rendered on the page and match the config content.
 describe('Home Page', () => {
-  it('renders heading, subheading, description, and links correctly', () => {
+  it('renders text and links correctly', () => {
     const { getByText } = renderWithClient(<Home />);
+
+    // Check if content matches the config file.
     Object.keys(HOMEPAGE_COPY.sections).forEach(section => {
       Object.keys(HOMEPAGE_COPY.sections[section]).forEach(subSection => {
         const value = HOMEPAGE_COPY.sections[section][subSection];
@@ -47,6 +50,20 @@ describe('Home Page', () => {
           });
         }
       });
+    });
+
+    // Check that the sample queries are rendered as links on the page
+    HOME_QUERIES.map(({ title, searchTerms }) => {
+      const queryTitle = screen.getByText(title);
+      expect(queryTitle).toBeInTheDocument();
+
+      const link = queryTitle.closest('a');
+      const encodedHref = encodeURIComponent(searchTerms.join(' OR ')).replace(
+        /%20/g,
+        '+',
+      );
+      expect(link).toHaveAttribute('href', `/search?q=${encodedHref}`);
+      expect(link).toBeInTheDocument();
     });
   });
 

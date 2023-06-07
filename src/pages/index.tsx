@@ -33,57 +33,12 @@ import {
   PageContent,
 } from 'src/components/page-container';
 import HOMEPAGE_COPY from 'configs/homepage.json';
+import HOME_QUERIES from 'configs/queries/home-queries.json';
 import NextLink from 'next/link';
 import { SearchBarWithDropdown } from 'src/components/search-bar';
 import { AdvancedSearchOpen } from 'src/components/advanced-search/components/buttons';
 import { FaChevronRight } from 'react-icons/fa';
 import { useRepoData } from 'src/hooks/api';
-
-const sample_queries = [
-  {
-    title: 'Asthma',
-    searchTerms: ['"Asthma"'],
-  },
-  {
-    title: 'COVID-19',
-    searchTerms: [
-      '"SARS-CoV-2"',
-      '"Covid-19"',
-      '"Wuhan coronavirus"',
-      '"Wuhan pneumonia"',
-      '"2019-nCoV"',
-      '"HCoV-19"',
-    ],
-  },
-  {
-    title: 'HIV/AIDS',
-    searchTerms: ['"HIV"', '"AIDS"'],
-  },
-  { title: 'Influenza', searchTerms: ['"Influenza"', '"Flu"'] },
-  {
-    title: 'Malaria',
-    searchTerms: [
-      '"Malaria"',
-      '"Plasmodium falciparum"',
-      '"Plasmodium malariae"',
-      '"Plasmodium ovale curtisi"',
-      '"Plasmodium ovale wallikeri"',
-      '"Plasmodium vivax"',
-      '"Plasmodium knowlesi"',
-    ],
-  },
-  {
-    title: 'Tuberculosis',
-    searchTerms: [
-      '"Tuberculosis"',
-      '"Mycobacterium bovis"',
-      '"Mycobacterium africanum"',
-      '"Mycobacterium canetti"',
-      '"Mycobacterium microti"',
-      '"Phthisis"',
-    ],
-  },
-];
 
 interface Repository {
   identifier: string;
@@ -392,7 +347,7 @@ const Home: NextPage = () => {
           <Text color='whiteAlpha.800' mr={2}>
             Try:
           </Text>
-          {sample_queries.map((query, i) => {
+          {HOME_QUERIES.map((query, i) => {
             return (
               <Link
                 key={query.title}
