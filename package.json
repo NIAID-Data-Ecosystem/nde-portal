@@ -76,6 +76,7 @@
     "react-select": "^5.7.0",
     "rehype-raw": "^6.1.1",
     "remark-gfm": "^3.0.1",
+    "serve": "^14.2.0",
     "standard-version": "^9.5.0",
     "typescript": "^5.0.4",
     "usehooks-ts": "^2.4.1"
