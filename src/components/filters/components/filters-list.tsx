@@ -193,7 +193,6 @@ export const FiltersList: React.FC<FiltersList> = React.memo(
                     .sort((a, b) => b.count - a.count)
                     .slice(0, showFullList ? items.length : 5)
                     .map((item, i) => {
-                      console.log(item);
                       return (
                         <ListItem
                           key={i}
