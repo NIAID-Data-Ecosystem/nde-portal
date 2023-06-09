@@ -9,6 +9,7 @@ import {
   waitFor,
   waitForElementToBeRemoved,
   within,
+  act,
 } from '@testing-library/react';
 import { server } from '../../jest.setup.js';
 import { rest } from 'msw';
@@ -157,5 +158,13 @@ describe('Home Page', () => {
     await waitForElementToBeRemoved(() => screen.getAllByTestId('loading'));
 
     expect(screen.queryByRole(/table/i)).not.toBeInTheDocument();
+  });
+
+  test('renders advanced search button', async () => {
+    renderWithClient(<Home />);
+
+    const buttonEl = screen.getByRole('button', { name: /advanced search/i });
+
+    expect(buttonEl).toBeInTheDocument();
   });
 });
