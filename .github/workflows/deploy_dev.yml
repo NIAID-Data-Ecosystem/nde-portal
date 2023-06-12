@@ -16,7 +16,7 @@ jobs:
       - run: yarn install
       - run: env
       - name: build website
-        run: yarn run build:staging
+        run: yarn run build:dev
         env:
           README_API_KEY: ${{ secrets.README_API_KEY }}
           GH_API_KEY: ${{ secrets.GH_API_KEY }}
