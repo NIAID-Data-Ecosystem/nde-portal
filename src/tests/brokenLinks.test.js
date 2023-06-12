@@ -81,10 +81,9 @@ const siteLinks = [
 const gatherLinks = async () => {
   const anchors = Array.from(document.querySelectorAll('a'));
   const validAnchors = anchors.filter(anchor => {
-    const cardDescriptionElement = anchor.closest('[id="card-description"]');
+    const cardDescriptionElement = anchor.closest('ul.search-results-cards');
     return !cardDescriptionElement;
   });
-
   return validAnchors.map(anchor => anchor.href);
 };
 
