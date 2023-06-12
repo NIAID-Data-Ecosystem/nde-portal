@@ -242,7 +242,9 @@ fetchRepositoryInfo().then(response => {
       lastUpdate: [
         {
           label:
-            response && response.data && response.data.commit.committer.date
+            response &&
+            response.data &&
+            response.data.commit.commit.committer.date
               ? `Content updated: ${
                   response.data.commit.commit.committer.date.split('T')[0]
                 }`
