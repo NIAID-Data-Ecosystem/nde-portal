@@ -5,7 +5,7 @@
     "dev": "next dev",
     "build": "yarn run schema-definitions && next build",
     "build:staging": "env-cmd -f .env.staging yarn build",
-    "build:new-staging": "env-cmd -f .env.production yarn build",
+    "build:dev": "env-cmd -f .env.dev yarn build",
     "start": "next start",
     "lint": "next lint",
     "schema-definitions": "node src/utils/schema-definitions/index.js",
@@ -24,7 +24,7 @@
     "@testing-library/react-hooks": "^8.0.1",
     "@types/react-dom": "^18.2.4",
     "jest-environment-jsdom": "^29.5.0",
-    "nde-design-system": "^1.0.5",
+    "nde-design-system": "^1.0.6",
     "next": "^13.4.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"

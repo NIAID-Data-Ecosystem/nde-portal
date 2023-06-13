@@ -265,7 +265,6 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                 _hover={{ bg: 'page.alt' }}
                 _focus={{ outlineColor: 'transparent', bg: 'white' }}
                 alignIcon='center'
-                id='card-description'
               >
                 <DisplayHTMLContent content={description || ''} />
               </ToggleContainer>

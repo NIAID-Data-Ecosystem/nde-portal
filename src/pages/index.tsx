@@ -39,6 +39,7 @@ import { SearchBarWithDropdown } from 'src/components/search-bar';
 import { AdvancedSearchOpen } from 'src/components/advanced-search/components/buttons';
 import { FaChevronRight } from 'react-icons/fa';
 import { useRepoData } from 'src/hooks/api';
+import REPOSITORIES from 'configs/repositories.json';
 
 interface Repository {
   identifier: string;

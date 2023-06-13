@@ -188,22 +188,26 @@ fetchSchema().then(data => {
   );
 });
 
+// UPDATE footer
 const fetchRepositoryInfo = async () => {
   // Fetch source information from github
   try {
-    const url = `https://api.github.com/repos/NIAID-Data-Ecosystem/nde-portal`;
+    const owner = 'NIAID-Data-Ecosystem';
+    const repo = 'nde-portal';
+    const branch =
+      process.env.NODE_ENV === 'production'
+        ? 'production'
+        : process.env.NODE_ENV === 'development'
+        ? 'dev'
+        : 'main';
+
+    const url = `https://api.github.com/repos/${owner}/${repo}/branches/${branch}`;
     const response = await axios.get(url, {
       headers: {
         'Content-Type': 'application/json',
       },
-      params: {
-        url: '/repos/{owner}/{repo}',
-        owner: 'NIAID-Data-Ecosystem',
-        repo: 'nde-portal',
-      },
     });
     const data = await response.data;
-
     return { data };
   } catch (err) {
     return {
@@ -230,7 +234,6 @@ fetchRepositoryInfo().then(response => {
       properties = [];
     }
   }
-
   // Write update to json
   fs.writeFile(
     file_path,
@@ -239,8 +242,12 @@ fetchRepositoryInfo().then(response => {
       lastUpdate: [
         {
           label:
-            response && response.data && response.data.pushed_at
-              ? `Content updated: ${response.data.pushed_at.split('T')[0]}`
+            response &&
+            response.data &&
+            response.data.commit.commit.committer.date
+              ? `Content updated: ${
+                  response.data.commit.commit.committer.date.split('T')[0]
+                }`
               : '',
           href: '/changelog/',
         },
