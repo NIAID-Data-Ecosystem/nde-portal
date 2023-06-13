@@ -43,7 +43,7 @@
     "env-cmd": "^10.1.0",
     "fuse.js": "^6.6.2",
     "lodash": "^4.17.21",
-    "nde-design-system": "^0.2.96",
+    "nde-design-system": "^0.2.97",
     "next": "^12.2.0",
     "next-mdx-remote": "^4.3.0",
     "react-icons": "^4.3.1",
