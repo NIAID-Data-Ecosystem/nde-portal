@@ -53,6 +53,5 @@ module.exports = withMDX({
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
     NEXT_PUBLIC_GOOGLE_ANALYTICS: process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS,
     NEXT_PUBLIC_BASE_URL: process.env.BASE_URL,
-    README_API_KEY: process.env.README_API_KEY,
   },
 });
