@@ -9,7 +9,6 @@ import {
   waitFor,
   waitForElementToBeRemoved,
   within,
-  act,
 } from '@testing-library/react';
 import { server } from '../../jest.setup.js';
 import { rest } from 'msw';
