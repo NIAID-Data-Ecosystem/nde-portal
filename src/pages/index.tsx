@@ -1,84 +1,13 @@
 import React, { useMemo, useState } from 'react';
 import type { NextPage } from 'next';
-import {
-  Box,
-  Button,
-  ButtonGroup,
-  Flex,
-  Heading,
-  Image,
-  Link,
-  SkeletonCircle,
-  SkeletonText,
-  Table as StyledTable,
-  theme,
-  useBreakpointValue,
-  theme,
-} from 'nde-design-system';
-import {
-  PageHeader,
-  PageContainer,
-  PageContent,
-  SearchQueryLink,
-} from 'src/components/page-container';
-import HOMEPAGE_COPY from 'configs/homepage.json';
+import { Heading, theme, useBreakpointValue } from 'nde-design-system';
+import { PageContainer, PageContent } from 'src/components/page-container';
 import { fetchMetadata } from 'src/utils/api';
 import { useQuery } from 'react-query';
 import { Metadata } from 'src/utils/api/types';
-import NextLink from 'next/link';
-import { SearchBarWithDropdown } from 'src/components/search-bar';
-import { AdvancedSearchOpen } from 'src/components/advanced-search/components/buttons';
 import REPOSITORIES from 'configs/repositories.json';
 
-const sample_queries = [
-  {
-    title: 'Asthma',
-    searchTerms: ['"Asthma"'],
-  },
-  {
-    title: 'COVID-19',
-    searchTerms: [
-      '"SARS-CoV-2"',
-      '"Covid-19"',
-      '"Wuhan coronavirus"',
-      '"Wuhan pneumonia"',
-      '"2019-nCoV"',
-      '"HCoV-19"',
-    ],
-  },
-  {
-    title: 'HIV/AIDS',
-    searchTerms: ['"HIV"', '"AIDS"'],
-  },
-  { title: 'Influenza', searchTerms: ['"Influenza"', '"Flu"'] },
-  {
-    title: 'Malaria',
-    searchTerms: [
-      '"Malaria"',
-      '"Plasmodium falciparum"',
-      '"Plasmodium malariae"',
-      '"Plasmodium ovale curtisi"',
-      '"Plasmodium ovale wallikeri"',
-      '"Plasmodium vivax"',
-      '"Plasmodium knowlesi"',
-    ],
-  },
-  {
-    title: 'Tuberculosis',
-    searchTerms: [
-      '"Tuberculosis"',
-      '"Mycobacterium bovis"',
-      '"Mycobacterium africanum"',
-      '"Mycobacterium canetti"',
-      '"Mycobacterium microti"',
-      '"Phthisis"',
-    ],
-  },
-];
-
 const Home: NextPage = () => {
-  const size = useBreakpointValue({ base: 300, lg: 350 });
-
   interface Repository {
     identifier: string;
     label: string;
