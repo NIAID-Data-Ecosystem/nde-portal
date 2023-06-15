@@ -362,7 +362,7 @@ export interface MetadataSource {
 
 export interface Metadata {
   biothing_type: string;
-  build_date: Date;
+  build_date: string;
   build_version: string;
   src: {
     [key: string]: MetadataSource;

@@ -304,46 +304,14 @@ const SearchResultsPage = () => {
             w='100%'
             minW={{ md: 500 }}
           >
-            <Flex
-              alignItems='center'
-              flex={1}
-              justifyContent={{
-                base: 'center',
-                sm: 'flex-start',
-                xl: 'flex-end',
-              }}
-              flexWrap={{ base: 'wrap', md: 'nowrap' }}
-              flexDirection={['column', 'row']}
-              mb={2}
-              w='100%'
-              mx={{ base: 0, xl: 2 }}
+            <DownloadMetadata
+              exportName='nde-results'
+              params={params}
+              buttonProps={{ variant: 'outline' }}
             >
-              <Box mr={[0, 2]} w={['100%', 'unset']} m={[1]} ml={0}>
-                <DownloadMetadata
-                  exportName='nde-results'
-                  variant='outline'
-                  params={params}
-                >
-                  Download Metadata
-                </DownloadMetadata>
-              </Box>
-              <NextLink
-                href={router.asPath.replace('search', 'summary')}
-                passHref
-              >
-                <Button
-                  leftIcon={<FaChartBar />}
-                  whiteSpace='nowrap'
-                  px={{ base: 4, md: 6 }}
-                  flex={1}
-                  w='100%'
-                  m={[1]}
-                  maxW={{ base: 'unset', sm: '200px' }}
-                >
-                  Visual Summary
-                </Button>
-              </NextLink>
-            </Flex>
+              Download Metadata
+            </DownloadMetadata>
+
             <Box
               w={['100%', '100%', 'unset']}
               flex={{ base: 'unset', md: 1 }}
@@ -391,7 +359,12 @@ const SearchResultsPage = () => {
             </Empty>
           )}
 
-          <UnorderedList ml={0} flex={3} w='100%'>
+          <UnorderedList
+            className='search-results-cards'
+            ml={0}
+            flex={3}
+            w='100%'
+          >
             {isLoading || (data && data.results?.length > 0)
               ? new Array(selectedPerPage).fill(null).map((_, i) => {
                   const result: FormattedResource | null =

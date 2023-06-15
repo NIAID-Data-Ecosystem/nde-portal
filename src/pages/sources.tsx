@@ -1,22 +1,15 @@
 import type { NextPage } from 'next';
 import React from 'react';
-import {
-  Box,
-  Flex,
-  Skeleton,
-  Spinner,
-  Text,
-  UnorderedList,
-} from 'nde-design-system';
+import { Box, Button, Flex, Text, UnorderedList } from 'nde-design-system';
 import { PageContainer, PageContent } from 'src/components/page-container';
 import { Main, Sidebar } from 'src/components/sources';
 import { fetchMetadata } from 'src/utils/api';
-import { Error } from 'src/components/error';
-import { useRouter } from 'next/router';
+import { Error, ErrorCTA } from 'src/components/error';
 import axios from 'axios';
-import { Metadata, MetadataSource } from 'src/utils/api/types';
+import { MetadataSource } from 'src/utils/api/types';
 import { useQuery } from 'react-query';
 import { getQueryStatusError } from 'src/components/error/utils';
+import { useRouter } from 'next/router';
 
 export interface SourceResponse {
   dateCreated?: string;
@@ -35,6 +28,7 @@ interface SourcesProps {
   children: any;
 }
 const Sources: NextPage<SourcesProps> = ({ data, error }) => {
+  const router = useRouter();
   // Fetch metadata stats from API.
   const {
     data: sources,
@@ -78,15 +72,25 @@ const Sources: NextPage<SourcesProps> = ({ data, error }) => {
       <Flex>
         {(error || sourcesError) && (
           <Error>
-            <Flex flexDirection='column' alignItems='center'>
+            <Flex flexDirection='column' flex={1} alignItems='center'>
               <Text>
-                {error ? error.message : ''}
+                {error
+                  ? getQueryStatusError(error as unknown as { status: string })
+                      ?.message
+                  : ''}
                 {!error && sourcesError
                   ? getQueryStatusError(
                       sourcesError as unknown as { status: string },
-                    )
+                    )?.message
                   : ''}
               </Text>
+              <Box mt={4}>
+                <ErrorCTA>
+                  <Button onClick={() => router.reload()} variant='outline'>
+                    Retry
+                  </Button>
+                </ErrorCTA>
+              </Box>
             </Flex>
           </Error>
         )}
@@ -179,8 +183,23 @@ export async function getStaticProps() {
       };
     }
   };
-  const sources = await fetchMetadata();
-  const sourceData = await fetchRepositoryInfo(Object.entries(sources.src));
+  const sources = await fetchMetadata()
+    .then(data => ({ data }))
+    .catch(err => {
+      return {
+        data: null,
+        error: {
+          type: 'error',
+          status: err.response.status,
+        },
+      };
+    });
+  if (!sources.data) {
+    return { props: { ...sources } };
+  }
+  const sourceData = await fetchRepositoryInfo(
+    Object.entries(sources.data.src),
+  );
   return { props: { ...sourceData } };
 }
 

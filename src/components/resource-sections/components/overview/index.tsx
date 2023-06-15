@@ -44,7 +44,6 @@ const Overview: React.FC<OverviewProps> = ({
   spatialCoverage,
   species,
   temporalCoverage,
-  usageInfo,
   variableMeasured,
   ...data
 }) => {
@@ -153,32 +152,6 @@ const Overview: React.FC<OverviewProps> = ({
             </StatField>
           }
 
-          {/* Data Usage Agreement */}
-          {usageInfo && (
-            <Box>
-              <StatField
-                isLoading={isLoading}
-                icon={() => (
-                  <StatIcon
-                    id='usageInfo'
-                    title='usage info'
-                    glyph='usageInfo'
-                  />
-                )}
-                {...getStatInfo('usageInfo')}
-              >
-                <Box>
-                  <StatContent
-                    url={usageInfo.url}
-                    content={usageInfo.name || usageInfo.url}
-                  />
-                  <br />
-                  {usageInfo.description}
-                </Box>
-              </StatField>
-            </Box>
-          )}
-
           {/* species covered in resource */}
           <StatField
             isLoading={isLoading}
@@ -217,7 +190,6 @@ const Overview: React.FC<OverviewProps> = ({
               '-'
             )}
           </StatField>
-
           {/* infectious agent involved */}
           <StatField
             isLoading={isLoading}
@@ -248,7 +220,6 @@ const Overview: React.FC<OverviewProps> = ({
               '-'
             )}
           </StatField>
-
           {/* health condition covered */}
           <StatField
             isLoading={isLoading}
@@ -279,7 +250,6 @@ const Overview: React.FC<OverviewProps> = ({
               '-'
             )}
           </StatField>
-
           {/* variable measured, used in conjunction with measurement technique */}
           <StatField
             isLoading={isLoading}
@@ -294,7 +264,6 @@ const Overview: React.FC<OverviewProps> = ({
           >
             {variableMeasured?.join(', ')}
           </StatField>
-
           {/* measurement technique */}
           <StatField
             isLoading={isLoading}
@@ -324,14 +293,12 @@ const Overview: React.FC<OverviewProps> = ({
               '-'
             )}
           </StatField>
-
           {/* language */}
           {inLanguage && inLanguage.name && (
             <StatField isLoading={isLoading} {...getStatInfo('inLanguage')}>
               {languageName.of(inLanguage.name)}
             </StatField>
           )}
-
           {/* geographic */}
           {locationNames && locationNames.length > 0 && (
             <StatField
@@ -342,7 +309,6 @@ const Overview: React.FC<OverviewProps> = ({
               {locationNames.join(', ')}
             </StatField>
           )}
-
           {/* period covered */}
           {temporalCoverage?.temporalInterval && (
             <StatField
@@ -377,7 +343,6 @@ const Overview: React.FC<OverviewProps> = ({
               )}
             </StatField>
           )}
-
           {/* programming language */}
           {data['@type'] === 'ComputationalTool' && (
             <StatField
@@ -406,7 +371,6 @@ const Overview: React.FC<OverviewProps> = ({
               )}
             </StatField>
           )}
-
           {softwareVersion && (
             <StatField
               isLoading={isLoading}
@@ -415,7 +379,6 @@ const Overview: React.FC<OverviewProps> = ({
               {softwareVersion.join(',')}
             </StatField>
           )}
-
           {/* Type of Computational Tool */}
           {data['@type'] === 'ComputationalTool' && (
             <Box>
@@ -474,7 +437,6 @@ const Overview: React.FC<OverviewProps> = ({
               </StatField>
             </Box>
           )}
-
           {/* Related Ids */}
           <StatField
             isLoading={isLoading}
@@ -555,7 +517,6 @@ const Overview: React.FC<OverviewProps> = ({
               )}
             </UnorderedList>
           </StatField>
-
           {/* Citation */}
           {citation && (
             <Box>
@@ -588,7 +549,6 @@ const Overview: React.FC<OverviewProps> = ({
               </StatField>
             </Box>
           )}
-
           {/* Studies that this dataset is partOf*/}
           {isPartOf && (
             <StatField isLoading={isLoading} {...getStatInfo('isPartOf')}>

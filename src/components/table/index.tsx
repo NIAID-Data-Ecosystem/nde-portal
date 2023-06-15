@@ -16,6 +16,7 @@ import {
   TablePagination,
 } from 'nde-design-system';
 import { FormatLinkCell } from './helpers';
+import Tooltip from 'src/components/tooltip';
 
 export interface Column {
   key: string;
@@ -25,7 +26,7 @@ export interface Column {
 export interface Row {
   [key: Column['key']]: {
     value: any;
-    props?: Object;
+    props?: { styles?: Record<string, any>; tooltipText?: string };
     sortValue: string | number;
   };
 }
@@ -96,6 +97,7 @@ const Table: React.FC<TableProps> = ({
                     <Tr key={i} id={`${i}`}>
                       {columns.map((col, j) => {
                         let cell = row[col.key];
+
                         return (
                           <Td
                             role='cell'
@@ -105,9 +107,19 @@ const Table: React.FC<TableProps> = ({
                             minW='50px'
                             isNumeric={typeof cell.value === 'number'}
                             fontSize='xs'
-                            {...cell.props}
+                            {...cell?.props?.styles}
                           >
-                            <FormatLinkCell value={cell.value} />
+                            <Tooltip
+                              aria-label={`Tooltip for ${col.key}, row ${i}`}
+                              label={cell?.props?.tooltipText}
+                              hasArrow
+                              placement='bottom'
+                              minWidth='50vw'
+                            >
+                              <span>
+                                <FormatLinkCell value={cell.value} />
+                              </span>
+                            </Tooltip>
                           </Td>
                         );
                       })}

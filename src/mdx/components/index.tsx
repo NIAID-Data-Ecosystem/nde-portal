@@ -38,7 +38,7 @@ export const MDXComponents = {
   ),
 
   h2: (props: any) => (
-    <Heading as='h2' size='h2' mt={16} fontSize='3xl' {...props} />
+    <Heading as='h2' size='h2' mt={8} fontSize='3xl' {...props} />
   ),
   h3: (props: any) => (
     <Heading as='h3' size='h3' mt={8} fontSize='2xl' {...props} />
@@ -52,13 +52,23 @@ export const MDXComponents = {
 
   br: ({ ...props }) => <br />,
 
-  p: (props: any) => <Text mt={5} fontSize='md' {...props} />,
+  p: (props: any) => <Text mt={2} fontSize='md' {...props} />,
   ul: (props: any) => <UnorderedList my={4} ml={12} {...props} />,
   ol: (props: any) => <OrderedList {...props} />,
   li: (props: any) => (
     <ListItem pb='4px' listStyleType='initial' fontSize='md' {...props} />
   ),
-  a: (props: any) => <Link {...props} />,
+  // a: (props: any) => <Link {...props} />,
+  a: (props: any) => {
+    let { href } = props;
+    if (href.startsWith('doc:')) {
+      href = '';
+    }
+    return <Link href={href} {...props} />;
+  },
+  Link: (props: any) => {
+    return <Link {...props} />;
+  },
   Flex: (props: any) => <Flex {...props} />,
 
   Box: (props: any) => <Box {...props} />,

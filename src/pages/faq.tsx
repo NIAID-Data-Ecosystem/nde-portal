@@ -47,33 +47,39 @@ const FrequentlyAsked: NextPage<FrequentlyAskedProps> = props => {
 
 export async function getStaticProps() {
   try {
-    const fetchData = () =>
-      fetch('https://dash.readme.com/api/v1/docs/frequently-asked-questions', {
+    const [pageResponse, { baseUrl }] = await Promise.all([
+      fetch(
+        // get faq body
+        'https://dash.readme.com/api/v1/docs/frequently-asked-questions',
+        {
+          headers: {
+            accept: 'application/json',
+            authorization: `Basic ${process.env.README_API_KEY}`,
+          },
+        },
+      ).then(res => res.json()),
+      // get base url
+      fetch('https://dash.readme.com/api/v1/', {
         headers: {
           accept: 'application/json',
           authorization: `Basic ${process.env.README_API_KEY}`,
         },
-      })
-        .then(response => {
-          return response.json();
-        })
-        .then(response => {
-          return response;
-        })
-        .catch(err => {
-          console.error(err);
-          throw err;
-        });
+      }).then(res => res.json()),
+    ]).catch(err => {
+      console.error(err);
+      throw err;
+    });
 
-    const res = await fetchData();
-    const body = await res.body
+    // prepend readme base url to readme relative links
+    const body = await pageResponse.body
       .replace(/#/g, '#### ')
       .replace(/<details>/g, '<Details>')
-      .replace(/<\/details>/g, '</Details>');
+      .replace(/<\/details>/g, '</Details>')
+      .replace(/\(doc:/g, `(${baseUrl}/docs/`);
 
     const mdxSource = await serialize(body);
     return {
-      props: { title: res.title, mdxSource },
+      props: { title: pageResponse.title, mdxSource },
     };
   } catch (error) {
     return { props: { error: { message: 'Error retrieving data' } } };

@@ -33,7 +33,7 @@ export const filtersConfig: FiltersConfigProps = {
   date: { name: 'Date ', glyph: 'date', property: 'date', isDefaultOpen: true },
   // '@type': { name: 'Type', isDefaultOpen: true },
   'includedInDataCatalog.name': {
-    name: 'Source',
+    name: 'Repository',
     glyph: 'info',
     property: 'includedInDataCatalog',
   },
@@ -44,12 +44,16 @@ export const filtersConfig: FiltersConfigProps = {
   },
 
   'infectiousAgent.name': {
-    name: 'Pathogen',
+    name: 'Pathogen Species',
     glyph: 'infectiousAgent',
     property: 'infectiousAgent',
   },
 
-  'species.name': { name: 'Species', glyph: 'species', property: 'species' },
+  'species.name': {
+    name: 'Host Species',
+    glyph: 'species',
+    property: 'species',
+  },
   // applicationCategory: {
   //   name: 'Software Category',
   //   glyph: 'applicationCategory',
@@ -177,6 +181,7 @@ export const Filters: React.FC<FiltersProps> = ({
               colorScheme={colorScheme}
               searchPlaceholder={`Search ${name.toLowerCase()} filters`}
               terms={facetTerms}
+              property={property}
               selectedFilters={selected || []}
               handleSelectedFilters={values =>
                 handleSelectedFilters(values, facet)

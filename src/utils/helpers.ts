@@ -1,18 +1,18 @@
-import sourceData from 'configs/resource-sources.json';
+import REPOSITORIES from 'configs/repositories.json';
 import { Citation, FormattedResource } from './api/types';
 
 // Get image for repo based on config.
-export const getRepositoryImage = (repoName: string) => {
-  if (!repoName) {
+export const getRepositoryImage = (name: string) => {
+  if (!name) {
     return null;
   }
-  const { repositories } = sourceData;
-  const sourceRepoIndex = repositories.findIndex(source => {
-    return source.sourceName.toLowerCase().includes(repoName.toLowerCase());
+  const { repositories } = REPOSITORIES;
+  const sourceRepoIndex = repositories.findIndex(repo => {
+    return repo.id === name;
   });
 
   const imageURL =
-    sourceRepoIndex >= 0 ? repositories[sourceRepoIndex].imageUrl : null;
+    sourceRepoIndex >= 0 ? repositories[sourceRepoIndex].imageURL : null;
 
   return imageURL;
 };

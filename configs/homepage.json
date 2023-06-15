@@ -1,14 +1,20 @@
 {
-  "sections": [
-    {
+  "sections": {
+    "hero": {
       "heading": "Discovery Portal",
       "subtitle": "Accelerate your research.",
-      "body": "Find, access and understand datasets across many repositories."
+      "body": "Find Infectious and Immune-mediated Disease (IID) data across many repositories."
     },
-    {
-      "heading": "Explore data from many repositories",
-      "body": "Search simultaneously across millions of publicly available datasets to find immune-mediated and infectious disease data for reanalysis.",
+    "repositories": {
+      "heading": "Currently included repositories"
+    },
+    "help": {
       "routes": [
+        {
+          "title": "Ask a question",
+          "path": "mailto:NIAIDDataEcosystem@mail.nih.gov",
+          "isExternal": true
+        },
         {
           "title": "Suggest a new source",
           "path": "https://github.com/NIAID-Data-Ecosystem/nde-crawlers/issues/new?assignees=&labels=&template=suggest-a-new-resource.md&title=%5BSOURCE%5D",
@@ -16,5 +22,5 @@
         }
       ]
     }
-  ]
+  }
 }

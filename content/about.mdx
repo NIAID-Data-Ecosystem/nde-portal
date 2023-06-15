@@ -1,56 +1,65 @@
-# About the Discovery Portal
+## Metadata-driven data discovery
 
-The NIAID Data Ecosystem Discovery Portal has been developed by the
-[Office of Data Science and Emerging Technologies (ODSET)](https://www.niaid.nih.gov/research/office-data-science-and-emerging-technologies)
-in partnership with [Scripps Research](https://www.scripps.edu/) to enhance the
-findability of data. It allows users to search simultaneously across millions of
-publicly available datasets to find immune-mediated and infectious disease data
-for reanalysis. It also provides a resource for finding bioinformatics and
-computational tools that can aid analyses.
+The NIAID Data Ecosystem Discovery Portal enables users to find datasets from a 
+wide range of repositories and offers a convenient one-stop-shop for discovery of 
+data on infectious and immune-mediated diseases (IIDs). The Discovery Portal
+regularly collects metadata from all included repositories and indexes
+it in a searchable catalogue for anyone to explore.
 
-The Discovery Portal aggregates data and computational tools across numerous
-sources, including NIAID-supported repositories, general biomedical
-repositories, and other generalist sources. See the
-[data sources](https://data-staging.niaid.nih.gov/portal/sources/).
+## Data access through repositories
+
+Datasets are not stored in the Discovery Portal. The Discovery Portal 
+does not provide direct access to datasets but provides links to dataset landing 
+pages within their respective repositories. Users can use these links to explore 
+datasets of interest and obtain access as required by the repository.
 
 The Discovery Portal can be used to:
 
-- [Search across millions of datasets from numerous sources](https://data-staging.niaid.nih.gov/portal/search/?q=&from=1&filters=%28%40type%3A%28%22Dataset%22%29%29),
+- [Search across millions of datasets from numerous sources](/search/?q=&from=1&filters=%28%40type%3A%28%22Dataset%22%29%29),
   datasets that were previously unknown, to bring other dimensions into
   analyses.
-- [Find workflows, command line tools, apps, and other software](https://data-staging.niaid.nih.gov/portal/search/?q=&from=1&filters=%28%40type%3A%28%22ComputationalTool%22%29%29)
-  that can enhance or streamline analyses.
-- [Download metadata](https://data-staging.niaid.nih.gov/portal/search/), access
-  via [API](https://api.data.niaid.nih.gov/), or use the
-  [metadata visualization tools](https://data-staging.niaid.nih.gov/portal/summary/?q=&from=1&filters=)
-  to gather new insights about what’s available.
+- [Download metadata](/search/) or access via
+  [API](https://api.data.niaid.nih.gov/).
 - Track research across funding programs or specific scientific areas.
 
-Please note:
+## Interpret search results carefully
 
-- **It includes a limited number of data sources.** The Discovery Portal does
-  not aggregate every dataset from every source related to infectious and
-  allergic disease. The Discovery Portal pulls from a
-  [list of data sources](https://data-staging.niaid.nih.gov/portal/sources/).
+- The Discovery Portal does not aggregate every dataset from every source
+  related to IID. The Discovery Portal collects metadata from a defined list 
+  of [data repositories](/sources/) and standardizes them according to our <Link
+  isExternal href='https://discovery.biothings.io/view/nde'> metadata schema</Link>. 
+  The list is continuously updated. Anyone is welcome to <Link isExternal
+  href='https://github.com/NIAID-Data-Ecosystem/nde-crawlers/issues/new?assignees=&labels=&template=suggest-a-new-resource.md&title=%5BSOURCE%5D'>
+  suggest a data repository here</Link>.
 
-- **Results may include irrelevant datasets.** As the Discovery Portal
-  aggregates data from some generalist repositories, search results may include
-  datasets that are not related to immune-mediated, allergic, or infectious
-  disease.
+- Results may include irrelevant datasets. The Discovery Portal also
+  collects metadata from generalist repositories and search results may include
+  datasets that are not related to IIDs.
 
-- **Data cannot be directly downloaded or analyzed within the Discovery
-  Portal.** The Discovery Portal is not a repository. The Discovery Portal can
-  be used to search across repositories to find if/where data exists. It helps
-  support the FAIRness of data. However, users cannot analyze data in the
-  Discovery Portal, nor download data directly from the Discovery Portal.
+- Metadata fields may be incomplete. The Discovery Portal attempts to
+  standardize metadata that is made available by data repositories. If metadata
+  from the repositories is missing or incomplete, it will also be missing or
+  incomplete within the Discovery Portal. NIAID is working with the community to
+  improve the completeness, quality, and consistency of metadata, in accordance
+  with the <Link isExternal href='https://doi.org/10.1038/sdata.2016.18'>FAIR Guiding Principles</Link>.
 
-- **Metadata fields may be incomplete.** The Discovery Portal attempts to
-  standardize metadata that is available; however, it cannot create information
-  that does not exist. If metadata is missing at the source, it will also be
-  absent within the Discovery Portal.
+## Partnership
+
+The NIAID Data Ecosystem is being developed by a large number of partners - foremost, the numerous data repositories who host the data and provide metadata.
+Data repositories include domain specific repositories for IID data, some of 
+which are supported by NIAID, and general repositories. The Discovery Portal is 
+being developed by Scripps Research and built upon previous work in collaboration 
+with Seven Bridges. NIAID is also working with partners across NIH, the US Government, 
+and beyond to align the architecture and vision of the NIAID Ecosystem with similar 
+systems elsewhere. The NIAID Data Ecosystem is in early stages of development and the 
+partnerships will continue to expand as we continue to improve the capabilities and 
+value of the Ecosystem to the research community.
+
 
 For more information, visit
-[Frequently Asked Questions](https://data-staging.niaid.nih.gov/portal/faq/).
+[Frequently Asked Questions](/faq/).
+
+## Contact Us
 
 To provide feedback or ask additional questions, contact us at
 [NIAIDDataEcosystem@mail.nih.gov](mailto:NIAIDDataEcosystem@mail.nih.gov).

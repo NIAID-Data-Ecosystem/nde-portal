@@ -30,19 +30,7 @@ import { Route, showSection } from 'src/components/resource-sections/helpers';
 import { useLocalStorage } from 'usehooks-ts';
 import { CardContainer } from 'src/components/resource-sections/components/related-datasets';
 import ResourceStats from 'src/components/resource-sections/components/stats';
-
-// Error display is data fetching goes wrong.
-const ErrorState = ({ retryFn }: { retryFn: () => void }) => {
-  return (
-    <Error message="It's possible that the server is experiencing some issues.">
-      <ErrorCTA>
-        <Button onClick={() => retryFn()} variant='outline'>
-          Retry
-        </Button>
-      </ErrorCTA>
-    </Error>
-  );
-};
+import { getQueryStatusError } from 'src/components/error/utils';
 
 // Displays empty message when no data exists.
 const EmptyState = () => {
@@ -114,6 +102,9 @@ const ResourcePage: NextPage = props => {
     ),
   );
 
+  const errorResponse =
+    error && getQueryStatusError(error as unknown as { status: string });
+
   return (
     <>
       <PageContainer
@@ -124,7 +115,37 @@ const ResourcePage: NextPage = props => {
         <PageContent>
           {error ? (
             // [ERROR STATE]: API response error
-            <ErrorState retryFn={() => router.reload()} />
+            <Error>
+              <Flex flexDirection='column' alignItems='center'>
+                <Text>
+                  {errorResponse?.message ||
+                    'It’s possible that the server is experiencing some issues.'}{' '}
+                  {errorResponse?.relatedLinks &&
+                    errorResponse?.relatedLinks?.length > 0 &&
+                    errorResponse.relatedLinks.map(
+                      ({ label, href, isExternal }, idx) => {
+                        return (
+                          <Link
+                            key={`${label}-${idx}`}
+                            href={href}
+                            isExternal={isExternal}
+                          >
+                            {label}
+                          </Link>
+                        );
+                      },
+                    )}
+                </Text>
+
+                <Box mt={4}>
+                  <ErrorCTA>
+                    <Button onClick={() => router.reload()} variant='outline'>
+                      Retry
+                    </Button>
+                  </ErrorCTA>
+                </Box>
+              </Flex>
+            </Error>
           ) : !isLoading && !data ? (
             // [EMPTY STATE]: No Results
             <EmptyState />
@@ -171,6 +192,7 @@ const ResourcePage: NextPage = props => {
                       codeRepository={data?.codeRepository}
                       hasPart={data?.hasPart}
                       url={data?.url}
+                      usageInfo={data?.usageInfo}
                     >
                       <ResourceStats
                         includedInDataCatalog={data?.includedInDataCatalog}

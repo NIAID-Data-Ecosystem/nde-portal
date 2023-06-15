@@ -18,8 +18,6 @@ module.exports = withMDX({
   pageExtensions: ['js', 'jsx', 'ts', 'tsx', 'md', 'mdx'],
   reactStrictMode: true,
   trailingSlash: true,
-  assetPrefix: isProd ? process.env.BASE_URL : undefined,
-  basePath: isProd ? process.env.BASE_URL : '',
   webpack: (config, { isServer, webpack }) => {
     // Fixes npm packages (mdx) that depend on `fs` module
 
@@ -54,7 +52,6 @@ module.exports = withMDX({
   env: {
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
     NEXT_PUBLIC_GOOGLE_ANALYTICS: process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS,
-    BASE_URL: '',
-    README_API_KEY: process.env.README_API_KEY,
+    NEXT_PUBLIC_BASE_URL: process.env.BASE_URL,
   },
 });

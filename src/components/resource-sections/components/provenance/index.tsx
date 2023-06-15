@@ -161,7 +161,7 @@ const Provenance: React.FC<Provenance> = ({
 
             {curatedBy?.versionDate && (
               <StatField label='Version date' isLoading={isLoading}>
-                {curatedBy?.versionDate}
+                {formatDate(curatedBy?.versionDate)}
               </StatField>
             )}
           </Stack>

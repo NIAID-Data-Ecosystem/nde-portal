@@ -21,7 +21,7 @@ const CitedByTable: React.FC<CitedByTable> = ({ isLoading, citedBy }) => {
   if (!citedBy || citedBy.length === 0) {
     return (
       <Box overflow='auto'>
-        <Text>No citedBy data available.</Text>
+        <Text>No cited by data available.</Text>
       </Box>
     );
   }
@@ -47,13 +47,14 @@ const CitedByTable: React.FC<CitedByTable> = ({ isLoading, citedBy }) => {
     let obj = {} as Row;
     Object.entries(d).map(([k, v]) => {
       let value = v;
-      let props: { [key: string]: any } = {};
+      let props: { [key: string]: any } = { styles: {} };
 
       if (k.toLowerCase().includes('name')) {
-        props.minWidth = '400px';
+        props.styles.minWidth = '400px';
       }
+
       // Format date values.
-      if (k.toLowerCase().includes('date')) {
+      if (v && k.toLowerCase().includes('date')) {
         value = formatDate(v);
       }
 
