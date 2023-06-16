@@ -7726,12 +7726,11 @@ natural-compare@^1.4.0:
   resolved "https://registry.yarnpkg.com/natural-compare/-/natural-compare-1.4.0.tgz#4abebfeed7541f2c27acfb29bdbbd15c8d5ba4f7"
   integrity sha512-OWND8ei3VtNC9h7V60qff3SVobHr996CTwgxubgyQYEpg290h9J0buyECNNJexkFm5sOajh5G116RYA1c8ZMSw==
 
-nde-design-system@^1.0.6:
-  version "1.0.6"
-  resolved "https://registry.yarnpkg.com/nde-design-system/-/nde-design-system-1.0.6.tgz#9ccb7d37c407f8eabd9bcf53cd414dead6329467"
-  integrity sha512-7SWWQks8P1q54j8Nk6+WX92hM6dn42u/YXzB2vHPWWoHBX4OX548fiYbSulqsyb0zCc62pWnzCBaerr+ZydBGQ==
+nde-design-system@^1.0.8:
+  version "1.0.8"
+  resolved "https://registry.yarnpkg.com/nde-design-system/-/nde-design-system-1.0.8.tgz#11a971a24976e65d334a0bc8544aedff2217fde2"
+  integrity sha512-oD4CdHJ3IskQA9d79gZnIMeU8ME1+ue5Ul6TZT8Q8sWpD9aRqx1RzzM+Xixi54nPaYozafUoRmiQLD7qb27eIA==
   dependencies:
-    "@babel/types" "^7.21.5"
     "@chakra-ui/react" "^2.6.1"
     "@emotion/react" "^11.8.1"
     "@emotion/styled" "^11.8.1"

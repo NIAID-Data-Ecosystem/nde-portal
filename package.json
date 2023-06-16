@@ -24,7 +24,7 @@
     "@testing-library/react-hooks": "^8.0.1",
     "@types/react-dom": "^18.2.4",
     "jest-environment-jsdom": "^29.5.0",
-    "nde-design-system": "^1.0.6",
+    "nde-design-system": "^1.0.8",
     "next": "^13.4.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
