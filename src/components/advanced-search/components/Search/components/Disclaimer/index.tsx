@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { MetadataIcon } from 'src/components/icon';
-import { Box, Button, Flex, SlideFade, Text } from 'nde-design-system';
+import { Button, Flex, Icon, SlideFade, Text } from 'nde-design-system';
 import { useAdvancedSearchContext } from '../AdvancedSearchFormContext';
 import { useLocalStorage } from 'usehooks-ts';
+import { IoWarningOutline } from 'react-icons/io5';
 
 export const Disclaimer = () => {
   const { selectedSearchType } = useAdvancedSearchContext();
@@ -26,48 +26,61 @@ export const Disclaimer = () => {
       px={2}
       mt={1}
     >
-      <Button
-        size='sm'
-        variant='ghost'
-        onClick={() => setIsMinimized(!isMinimized)}
-        _active={{ boxShadow: 'none' }}
-        _focus={{ boxShadow: 'none' }}
-        px={2}
-        position='unset'
-      >
-        <Box mx={1}>
-          <MetadataIcon id='info' glyph='info' fill='primary.700' />
-        </Box>
-        <Text fontSize='sm'>About this query</Text>
-      </Button>
-      {isMounted && (
-        <SlideFade
-          in={!isMinimized && !!selectedSearchType?.additionalInfo}
-          offsetX={20}
-          offsetY={0}
-        >
-          <Flex
-            display={isMinimized ? 'none' : 'flex'}
-            alignItems='center'
-            justifyContent='flex-end'
-            py={1}
+      {isMounted ? (
+        <Flex bg='status.warning_lt' alignItems='center'>
+          <Button
+            size='sm'
+            variant='ghost'
+            onClick={() => setIsMinimized(!isMinimized)}
+            px={2}
+            position='unset'
+            bg={isMinimized ? 'status.warning' : 'status.warning_lt'}
+            borderColor='status.warning'
+            color='text.heading'
+            _hover={{ bg: 'status.warning_lt' }}
+            _active={{ boxShadow: 'none' }}
+            _focus={{ boxShadow: 'none' }}
           >
-            <Text fontStyle='italic' fontWeight='light' fontSize='sm'>
-              {selectedSearchType.additionalInfo}
-            </Text>
-            <Button
-              variant='ghost'
-              onClick={() => setIsMinimized(true)}
-              size='sm'
-              textDecoration='underline'
-              px={2}
-              mx={1}
-              position='unset'
+            <Flex mx={1}>
+              <Icon as={IoWarningOutline} color='inherit' />
+            </Flex>
+            {isMinimized && (
+              <Text fontSize='sm' color='inherit'>
+                About this query
+              </Text>
+            )}
+          </Button>
+          <SlideFade
+            in={!isMinimized && !!selectedSearchType?.additionalInfo}
+            offsetX={20}
+            offsetY={0}
+          >
+            <Flex
+              display={isMinimized ? 'none' : 'flex'}
+              alignItems='center'
+              justifyContent='flex-end'
             >
-              Got it
-            </Button>
-          </Flex>
-        </SlideFade>
+              <Text fontStyle='italic' fontWeight='light' fontSize='sm'>
+                {selectedSearchType.additionalInfo}
+              </Text>
+              <Button
+                variant='ghost'
+                onClick={() => setIsMinimized(true)}
+                size='sm'
+                textDecoration='underline'
+                px={2}
+                mx={1}
+                position='unset'
+                _hover={{ bg: 'status.warning' }}
+                _active={{ bg: 'status.warning', boxShadow: 'none' }}
+              >
+                Got it
+              </Button>
+            </Flex>
+          </SlideFade>
+        </Flex>
+      ) : (
+        <></>
       )}
     </Flex>
   );
