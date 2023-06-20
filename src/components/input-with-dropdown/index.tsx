@@ -43,14 +43,15 @@ DropdownInputContext.displayName = 'DropdownInputContext';
 export const InputWithDropdown: React.FC<{
   inputValue: string;
   cursorMax: number;
+  cursor?: number;
   colorScheme?: string;
   children: React.ReactNode;
-}> = ({ children, inputValue, colorScheme = 'primary', cursorMax }) => {
+}> = ({ children, inputValue, colorScheme = 'primary', cursor, cursorMax }) => {
   const dropdownInput = useDropdownInput({
     colorScheme,
     cursorMax,
     inputValue: inputValue || defaultContext.inputValue,
-    cursor: defaultContext.cursor,
+    cursor: cursor || cursor === 0 ? cursor : defaultContext.cursor,
     isOpen: defaultContext.isOpen,
   });
 

@@ -153,7 +153,6 @@ export const useDropdownInput = ({
     setInputValue,
     setIsOpen,
     getInputProps,
-    // getListProps,
     getListItemProps,
   };
 };
