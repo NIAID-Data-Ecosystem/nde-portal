@@ -194,13 +194,7 @@ const fetchRepositoryInfo = async () => {
   try {
     const owner = 'NIAID-Data-Ecosystem';
     const repo = 'nde-portal';
-    const branch =
-      process.env.NODE_ENV === 'production'
-        ? 'production'
-        : process.env.NODE_ENV === 'development'
-        ? 'dev'
-        : 'main';
-
+    const branch = process.env.GITHUB_BRANCH;
     const url = `https://api.github.com/repos/${owner}/${repo}/branches/${branch}`;
     const response = await axios.get(url, {
       headers: {

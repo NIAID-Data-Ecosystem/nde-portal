@@ -21,6 +21,7 @@ jobs:
         env:
           README_API_KEY: ${{ secrets.README_API_KEY }}
           GH_API_KEY: ${{ secrets.GH_API_KEY }}
+          GITHUB_BRANCH: ${{  github.ref_name }}
       - name: install additional packages for broken links test
         run: yarn add puppeteer@19.11.1 axios jest
       - name: start react app
@@ -34,6 +35,7 @@ jobs:
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
           GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_BRANCH: ${{  github.ref_name }}
       - name: sync s3
         uses: jakejarvis/s3-sync-action@master
         with:

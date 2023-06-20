@@ -1,8 +1,7 @@
 /**
  * @jest-environment node
  */
-const axios = require('axios');
-const exp = require('constants');
+
 const puppeteer = require('puppeteer');
 
 const baseURL = 'http://localhost:3000';
@@ -35,9 +34,8 @@ describe('Home Page', () => {
   });
 
   test('Check that there are no empty cells in the table', async () => {
-    console.log(process.env);
-    if (process.env.isProd === 'false') {
-      console.log('F');
+    // skip this test in dev branch.
+    if (process.env.GITHUB_BRANCH === 'dev') {
       return;
     }
     await page.goto(baseURL);
@@ -66,7 +64,7 @@ describe('Home Page', () => {
         if (!cell) {
           const message = `Missing text in cell:
             - tab: ${name}
-            - row: ${Math.round(i / columns.length)}
+            - row: ${Math.round(i / columns.length) + 1}
             - column: ${(i % columns.length) + 1}`;
           missingCells.push(message);
         }
@@ -74,7 +72,7 @@ describe('Home Page', () => {
     });
 
     if (missingCells.length > 0) {
-      console.log(missingCells.join('\n'));
+      console.error(missingCells.join('\n'));
     }
     expect(missingCells.length).toBe(0);
   }, 60000);
