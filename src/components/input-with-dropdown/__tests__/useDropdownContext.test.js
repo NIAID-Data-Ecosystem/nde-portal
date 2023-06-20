@@ -1,21 +1,9 @@
 import * as React from 'react';
-import { render, act, renderHook } from '@testing-library/react';
+import { act, renderHook } from '@testing-library/react';
 import {
-  defaultContext,
   useDropdownContext,
   InputWithDropdown,
 } from 'src/components/input-with-dropdown/';
-import exp from 'constants';
-
-const setup = ({ initialProps } = {}) => {
-  const result = {};
-  function TestComponent(props) {
-    result.current = useDropdownContext(props);
-    return null;
-  }
-  render(<TestComponent {...initialProps} />);
-  return result;
-};
 
 describe('useDropdownContext hook', () => {
   test('should toggle isOpen to true when setIsOpen is called with true', () => {
