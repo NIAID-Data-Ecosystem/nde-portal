@@ -8,7 +8,7 @@ import {
   Icon,
   Skeleton,
 } from 'nde-design-system';
-import { StyledSectionHead, StyledSectionHeading } from './styles';
+import { StyledSectionHeadContainer, StyledSectionHeading } from './styles';
 import { FaMinus, FaPlus } from 'react-icons/fa';
 import { getSectionIcon } from '../../helpers';
 
@@ -103,12 +103,12 @@ const Section: React.FC<SectionProps> = ({
   return (
     <section id={id} style={{ padding: 0 }}>
       {name && (
-        <StyledSectionHead color={color} px={4}>
+        <StyledSectionHeadContainer color={color} px={4}>
           <StyledSectionHeading>
             <SectionIcon />
             {name}
           </StyledSectionHeading>
-        </StyledSectionHead>
+        </StyledSectionHeadContainer>
       )}
 
       <Content />
