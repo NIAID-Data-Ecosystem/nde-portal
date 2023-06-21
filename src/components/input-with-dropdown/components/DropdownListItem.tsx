@@ -49,7 +49,7 @@ export const Highlight: React.FC<HighlightProps> = ({
         const untilNextText = text.slice(endIndex, nextIndex);
         return (
           <span key={i}>
-            <mark className='search-term'>{currentText}</mark>
+            <mark className='underlined-search-term'>{currentText}</mark>
             {untilNextText}
           </span>
         );
@@ -65,6 +65,7 @@ export const DropdownListItem: React.FC<DropdownListItemProps> = React.memo(
     // If item is highlighted (mouseover or keydown), update the input string with the value of the list item.
     const isSelected = useMemo(() => cursor === index, [index, cursor]);
     const displayValue = Array.isArray(value) ? value.join(' or ') : value;
+
     return (
       <NDEListItem
         borderRadius='base'
@@ -74,7 +75,6 @@ export const DropdownListItem: React.FC<DropdownListItemProps> = React.memo(
         my={1}
         {...getListItemProps({
           index,
-          value,
           isSelected,
           onMouseOver,
           onClick,
@@ -103,7 +103,7 @@ export const DropdownListItem: React.FC<DropdownListItemProps> = React.memo(
           fontWeight='normal'
           textAlign='left'
           sx={{
-            '* > .search-term': {
+            '* > .underlined-search-term': {
               fontWeight: 'bold',
               textDecoration: 'underline',
               color: `${colorScheme}.400`,

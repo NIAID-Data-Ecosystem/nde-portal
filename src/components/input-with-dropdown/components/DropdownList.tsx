@@ -16,7 +16,7 @@ export const DropdownList: React.FC<DropdownListProps> = ({
   }
 
   return (
-    <UnorderedList ml={0} {...props}>
+    <UnorderedList className='dropdown-list' ml={0} {...props}>
       {children}
     </UnorderedList>
   );

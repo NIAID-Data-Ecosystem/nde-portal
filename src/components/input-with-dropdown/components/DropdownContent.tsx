@@ -17,7 +17,7 @@ export const DropdownContent: React.FC<DropdownContentProps> = ({
   }
 
   return (
-    <Box position='relative'>
+    <Box className='dropdown-content' position='relative'>
       <Box
         position='absolute'
         w='100%'

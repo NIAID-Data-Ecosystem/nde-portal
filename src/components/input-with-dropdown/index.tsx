@@ -1,12 +1,9 @@
 import React, { useRef } from 'react';
-import { useDropdownInput } from './hooks/useDropdownInput';
+import {
+  useDropdownInput,
+  DropdownListItemProps,
+} from './hooks/useDropdownInput';
 import { Box, ListItemProps, useOutsideClick } from 'nde-design-system';
-
-interface DropdownListItemProps extends ListItemProps {
-  index: number;
-  value: string | number | readonly string[];
-  isSelected: boolean;
-}
 
 export interface ContextProps {
   colorScheme: string;
@@ -34,9 +31,9 @@ export const defaultContext: ContextProps = {
   getListItemProps: () => ({}),
 };
 
-const DropdownInputContext = React.createContext({
-  ...defaultContext,
-});
+const DropdownInputContext = React.createContext(
+  null,
+) as React.Context<ContextProps | null>;
 DropdownInputContext.displayName = 'DropdownInputContext';
 
 // [Context Provider]: Input with a keyboardable dropdown list.
@@ -45,14 +42,23 @@ export const InputWithDropdown: React.FC<{
   cursorMax: number;
   cursor?: number;
   colorScheme?: string;
+  isOpen?: boolean;
   children: React.ReactNode;
-}> = ({ children, inputValue, colorScheme = 'primary', cursor, cursorMax }) => {
+}> = ({
+  children,
+  inputValue,
+  colorScheme = 'primary',
+  cursor,
+  cursorMax,
+  isOpen,
+}) => {
   const dropdownInput = useDropdownInput({
+    ...defaultContext,
     colorScheme,
-    cursorMax,
-    inputValue: inputValue || defaultContext.inputValue,
-    cursor: cursor || cursor === 0 ? cursor : defaultContext.cursor,
-    isOpen: defaultContext.isOpen,
+    cursorMax: cursorMax ?? defaultContext.cursorMax,
+    inputValue: inputValue ?? defaultContext.inputValue,
+    cursor: cursor ?? defaultContext.cursor,
+    isOpen: isOpen ?? defaultContext.isOpen,
   });
 
   // Handles closing the dropdown list when clicking outside the element.
@@ -76,7 +82,7 @@ export const InputWithDropdown: React.FC<{
 
 export const useDropdownContext = () => {
   const context = React.useContext(DropdownInputContext);
-  if (context === undefined) {
+  if (!context) {
     throw new Error(
       'useDropdownContext must be wrapped with <InputWithDropdown/>',
     );

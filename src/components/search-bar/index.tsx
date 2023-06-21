@@ -54,7 +54,6 @@ const RecentItem = ({
       my={1}
       {...getListItemProps({
         index,
-        value,
         isSelected,
         onClick: () => {
           setInputValue(value);
@@ -107,11 +106,11 @@ const SearchInput = ({ ...inputProps }: DropdownInputProps) => {
               </Button>
               <Divider orientation='vertical' borderColor='gray.200' m={1} />
 
-              <Tooltip label='Toggle search history.'>
+              <Tooltip label='Toggle search history'>
                 <IconButton
                   variant='ghost'
                   size={inputProps.size}
-                  aria-label='Toggle search history.'
+                  aria-label='Toggle search history'
                   icon={
                     <Flex px={2}>
                       <Icon as={FaHistory} />

@@ -1,9 +1,7 @@
 import * as React from 'react';
-import { screen } from '@testing-library/react';
 import FOOTER_CONFIG from 'configs/footer.json';
 import { renderWithClient } from './mocks/utils';
 import { Footer } from 'nde-design-system';
-import userEvent from '@testing-library/user-event';
 
 describe('Footer', () => {
   it('renders logos with href tags', () => {

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { render, screen } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import NAVIGATION_CONFIG from 'configs/nav.json';
 import { renderWithClient } from './mocks/utils';
 import { Navigation } from 'nde-design-system';
@@ -79,14 +79,13 @@ describe('Navigation Bar', () => {
     expect(menuListExpanded.display).toBe('block');
   });
   it('toggles open/closed sub menu', async () => {
-    const { container, getByText, getAllByText, getByLabelText } =
-      renderWithClient(
-        <Navigation
-          navigation={{
-            ...NAVIGATION_CONFIG,
-          }}
-        />,
-      );
+    const { container } = renderWithClient(
+      <Navigation
+        navigation={{
+          ...NAVIGATION_CONFIG,
+        }}
+      />,
+    );
     const popover_menu_button = screen
       .getAllByText(/resources/i)
       .filter(link => {

@@ -1,38 +1,48 @@
-import { render } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import Notice from '../components/notice';
-import userEvent from '@testing-library/user-event';
+import { StyledSection, StyledText } from '../components/header/styles.tsx';
 
-describe('Notice component', () => {
+describe('Notice', () => {
   afterEach(() => {
     // restore the spy created with spyOn
     jest.restoreAllMocks();
+    window.localStorage.clear();
   });
 
-  it('sets "warningOpen" to false in localStorage when clicked', async () => {
+  it('sets warningOpen in localStorage to false when "Got it" button is clicked', () => {
     const { getByText } = render(<Notice />);
-    const button = getByText('Got it');
-    jest.spyOn(Storage.prototype, 'setItem');
-    Storage.prototype.setItem = jest.fn();
 
-    await userEvent.click(button);
+    expect(window.localStorage.getItem('warningOpen')).toBe(null);
+    expect(getByText('Read Less')).toBeInTheDocument();
 
-    expect(localStorage.setItem).toHaveBeenLastCalledWith(
-      'warningOpen',
-      JSON.stringify(false),
-    );
-  });
+    // Fire the "Got it" button.
+    const gotItButton = getByText('Got it');
+    fireEvent.click(gotItButton);
 
-  it('displays "Read More" when "warningOpen" is false', () => {
-    Storage.prototype.getItem = jest.fn(() => JSON.stringify(false));
-
-    const { getByText } = render(<Notice />);
+    // Then, check that warningOpen is false in localStorage
+    expect(window.localStorage.getItem('warningOpen')).toBe('false');
     expect(getByText('Read More')).toBeInTheDocument();
   });
+});
 
-  it('displays "Read Less" when "warningOpen" is true', () => {
-    Storage.prototype.getItem = jest.fn(() => JSON.stringify(true));
+describe('PageContainer Header', () => {
+  test('Styled Section renders children and propagates props', () => {
+    render(
+      <StyledSection data-testid='styled-section'>
+        <div>Test Child</div>
+      </StyledSection>,
+    );
 
-    const { getByText } = render(<Notice />);
-    expect(getByText('Read Less')).toBeInTheDocument();
+    const sectionElement = screen.getByTestId('styled-section');
+    expect(sectionElement).toBeInTheDocument();
+    expect(sectionElement).toHaveTextContent('Test Child');
+  });
+
+  test('StyledText renders children and propagates props', () => {
+    render(<StyledText data-testid='styled-text'>Test Text</StyledText>);
+
+    const textElement = screen.getByTestId('styled-text');
+    expect(textElement).toBeInTheDocument();
+    expect(textElement).toHaveTextContent('Test Text');
   });
 });

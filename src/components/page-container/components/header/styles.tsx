@@ -47,13 +47,7 @@ export const StyledText: React.FC<StyledTextProps> = ({
   ...props
 }) => {
   return (
-    <Text
-      mt={4}
-      fontSize={['lg']}
-      fontWeight='light'
-      lineHeight='short'
-      {...props}
-    >
+    <Text mt={4} fontSize='lg' fontWeight='light' lineHeight='short' {...props}>
       {children}
     </Text>
   );

@@ -124,19 +124,6 @@ export const PredictiveSearch: React.FC<SearchWithPredictiveTextProps> = ({
                     isDisabled: isLoading || !searchTerm || false,
                     ...props,
                   });
-
-                  // return (
-                  //   <Button
-                  //     display='flex'
-                  //     colorScheme={colorScheme}
-                  //     aria-label={ariaLabel}
-                  //     // isDisabled={isLoading || false}
-                  //     size={size}
-                  //     {...props}
-                  //   >
-                  //     Search
-                  //   </Button>
-                  // );
                 }
               : undefined
           }

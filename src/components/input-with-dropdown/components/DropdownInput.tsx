@@ -65,6 +65,7 @@ export const DropdownInput: React.FC<DropdownInputProps> = ({
   return (
     <Flex
       as='form'
+      role='form'
       flex={1}
       onSubmit={e => {
         e.preventDefault();

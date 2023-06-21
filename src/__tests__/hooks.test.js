@@ -27,6 +27,9 @@ describe('use query hook', () => {
   });
 
   test('failure query hook', async () => {
+    const consoleError = console.error;
+    console.error = jest.fn(); // to ignore React error boundary log
+
     server.use(
       rest.get('*', (_, res, ctx) => {
         return res(ctx.status(500));
@@ -39,5 +42,6 @@ describe('use query hook', () => {
     await waitFor(() => expect(result.current.isError).toBe(true));
 
     expect(result.current.error).toBeDefined();
+    console.error = consoleError;
   });
 });

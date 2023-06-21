@@ -20,12 +20,14 @@ const createTestQueryClient = () =>
     },
   });
 
-export function renderWithClient(ui: React.ReactElement) {
+//  wrap test component render with Apollo's QueryClientProvider and chakra-ui's ThemeProvider
+export function renderWithClient(ui: React.ReactElement, props?: any) {
   const testQueryClient = createTestQueryClient();
   const { rerender, ...result } = render(
     <QueryClientProvider client={testQueryClient}>
       <ThemeProvider theme={theme}>{ui}</ThemeProvider>
     </QueryClientProvider>,
+    props,
   );
   return {
     ...result,
@@ -46,3 +48,25 @@ export function createWrapper() {
     </QueryClientProvider>
   );
 }
+
+// Mock local storage
+interface LocalStorageMockInterface {
+  store: { [key: string]: string };
+  clear: () => void;
+  getItem: (key: string) => string | null;
+  setItem: (key: string, value: string) => void;
+}
+
+export const localStorageMock: LocalStorageMockInterface = {
+  store: {},
+  clear: function () {
+    this.store = {};
+  },
+  getItem: function (key) {
+    return this.store[key] || null;
+  },
+  setItem: function (key, value) {
+    this.store[key] = String(value);
+  },
+};
+Object.defineProperty(window, 'localStorage', { value: localStorageMock });

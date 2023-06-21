@@ -1,15 +1,14 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { InputProps, ListItemProps } from 'nde-design-system';
-import { callAllHandlers } from 'src/utils/functions';
+import { callAllHandlers } from '../utils';
 import { ContextProps } from '../index';
 
 interface DropdownInputProps extends Omit<InputProps, 'onKeyDown'> {
   onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>, idx: number) => void;
 }
 
-interface DropdownListItemProps extends ListItemProps {
+export interface DropdownListItemProps extends ListItemProps {
   index: number;
-  value: string | number | readonly string[];
   isSelected: boolean;
 }
 
@@ -84,16 +83,12 @@ export const useDropdownInput = ({
   });
 
   /* [Dropdown List Item Component]: props + handlers */
-  const handleListItemClick = (value: DropdownListItemProps['value']) => {
+  const handleListItemClick = () => {
     setIsOpen(false);
-    // if (typeof value === 'string') {
-    //   setInputValue(value);
-    // }
   };
 
   const getListItemProps = ({
     index,
-    value,
     isSelected,
     onClick,
     onMouseOver,
@@ -108,7 +103,7 @@ export const useDropdownInput = ({
           e.stopPropagation();
           onClick && onClick(e);
         },
-        () => handleListItemClick(value),
+        () => handleListItemClick(),
       ),
       onMouseOver: callAllHandlers(e => {
         e.stopPropagation();
@@ -120,9 +115,11 @@ export const useDropdownInput = ({
 
   // Update the suggested list scroll position so that currently selected element is always in view. Important for keydown.
   useEffect(() => {
-    const el = document.getElementById(`li-${cursor}`);
-    if (el) {
-      el.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+    if (cursor) {
+      const el = document.getElementById(`li-${cursor}`);
+      if (el) {
+        el.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+      }
     }
   }, [cursor]);
 

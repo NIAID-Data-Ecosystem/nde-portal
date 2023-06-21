@@ -4,6 +4,7 @@ export type FunctionArguments<T extends Function> = T extends (
   ? R
   : never;
 
+// when passed a series of functions, call them in succession with the same arguments
 export function callAllHandlers<T extends (event: any) => void>(
   ...fns: (T | undefined)[]
 ) {
