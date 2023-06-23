@@ -41,6 +41,7 @@ import NextLink from 'next/link';
 import { SearchBarWithDropdown } from 'src/components/search-bar';
 import { AdvancedSearchOpen } from 'src/components/advanced-search/components/buttons';
 import REPOSITORIES from 'configs/repositories.json';
+import { queryFilterObject2String } from 'src/components/filters';
 
 const sample_queries = [
   {
@@ -380,6 +381,9 @@ const Home: NextPage = () => {
                                                         href={row.url}
                                                         fontWeight='medium'
                                                         target='_blank'
+                                                        _focus={{
+                                                          boxShadow: 'none',
+                                                        }}
                                                       >
                                                         <Image
                                                           src={`${row.icon}`}
@@ -417,7 +421,13 @@ const Home: NextPage = () => {
                                                     pathname: `/search`,
                                                     query: {
                                                       q: '',
-                                                      filters: `includedInDataCatalog.name:${row.identifier}`,
+                                                      filters:
+                                                        queryFilterObject2String(
+                                                          {
+                                                            'includedInDataCatalog.name':
+                                                              [row.identifier],
+                                                          },
+                                                        ),
                                                     },
                                                   }}
                                                   passHref
