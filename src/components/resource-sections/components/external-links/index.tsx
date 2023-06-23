@@ -59,7 +59,7 @@ const ExternalLinks: React.FC<ExternalLinks> = ({
       borderTopWidth={['2px', '2px', 0]}
       borderColor='page.alt'
     >
-      <Flex direction='column' bg='secondary.50'>
+      <Flex flexDirection='column' bg='secondary.50'>
         <Box p={[0, 4]} pb={[0, 0]}>
           {includedInDataCatalog?.name && (
             <Flex
@@ -81,7 +81,6 @@ const ExternalLinks: React.FC<ExternalLinks> = ({
                 sourceHref={includedInDataCatalog?.url}
                 name='Access Data'
               />
-
               {usageInfo?.url && (
                 <Flex mt={4}>
                   <Tooltip

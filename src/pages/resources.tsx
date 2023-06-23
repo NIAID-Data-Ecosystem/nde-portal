@@ -194,14 +194,16 @@ const ResourcePage: NextPage = props => {
                       url={data?.url}
                       usageInfo={data?.usageInfo}
                     >
-                      <ResourceStats
-                        includedInDataCatalog={data?.includedInDataCatalog}
-                        citation={data?.citation}
-                        doi={data?.doi}
-                        nctid={data?.nctid}
-                        aggregateRating={data?.aggregateRating}
-                        interactionStatistics={data?.interactionStatistics}
-                      />
+                      {data && (data.citation || data.doi || data.nctid) ? (
+                        <ResourceStats
+                          includedInDataCatalog={data?.includedInDataCatalog}
+                          citation={data?.citation}
+                          doi={data?.doi}
+                          nctid={data?.nctid}
+                          aggregateRating={data?.aggregateRating}
+                          interactionStatistics={data?.interactionStatistics}
+                        />
+                      ) : null}
                     </ResourceLinks>
                   </Card>
 
