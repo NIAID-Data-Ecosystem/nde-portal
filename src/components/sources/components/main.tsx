@@ -13,6 +13,7 @@ import {
 import { DisplayHTMLContent } from 'src/components/html-content';
 import NextLink from 'next/link';
 import { SourceResponse } from 'src/pages/sources';
+import { queryFilterObject2String } from 'src/components/filters';
 
 interface Main {
   data?: SourceResponse[];
@@ -271,7 +272,9 @@ const Main: React.FC<Main> = ({ data, isLoading }) => {
                         pathname: `/search`,
                         query: {
                           q: '',
-                          filters: `includedInDataCatalog.name:${sourceObj.id}`,
+                          filters: queryFilterObject2String({
+                            'includedInDataCatalog.name': [sourceObj.id],
+                          }),
                         },
                       }}
                       passHref
