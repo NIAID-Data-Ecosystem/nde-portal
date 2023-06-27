@@ -52,4 +52,4 @@ serve.json
 
 .vscode/
 
-/src/pages/wip.tsx
+src/pages/wip.tsx

@@ -39,6 +39,7 @@ import { SearchBarWithDropdown } from 'src/components/search-bar';
 import { AdvancedSearchOpen } from 'src/components/advanced-search/components/buttons';
 import { FaChevronRight } from 'react-icons/fa';
 import { useRepoData } from 'src/hooks/api';
+import { queryFilterObject2String } from 'src/components/filters';
 
 interface Repository {
   identifier: string;
@@ -162,6 +163,9 @@ export const RepositoryTable: React.FC<{
                                         href={row.url}
                                         fontWeight='medium'
                                         target='_blank'
+                                        _focus={{
+                                          boxShadow: 'none',
+                                        }}
                                       >
                                         <Image
                                           src={`${row.icon}`}
@@ -199,7 +203,11 @@ export const RepositoryTable: React.FC<{
                                     pathname: `/search`,
                                     query: {
                                       q: '',
-                                      filters: `includedInDataCatalog.name:${row.identifier}`,
+                                      filters: queryFilterObject2String({
+                                        'includedInDataCatalog.name': [
+                                          row.identifier,
+                                        ],
+                                      }),
                                     },
                                   }}
                                   passHref

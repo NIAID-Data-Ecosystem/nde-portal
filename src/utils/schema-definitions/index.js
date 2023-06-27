@@ -205,7 +205,7 @@ const fetchRepositoryInfo = async () => {
     return { data };
   } catch (err) {
     return {
-      data: [],
+      data: null,
       error: {
         type: 'error',
         status: err.response.status,
@@ -229,28 +229,28 @@ fetchRepositoryInfo().then(response => {
     }
   }
   // Write update to json
-  fs.writeFile(
-    file_path,
-    JSON.stringify({
-      ...properties,
-      lastUpdate: [
-        {
-          label:
-            response &&
-            response.data &&
-            response.data.commit.commit.committer.date
-              ? `Content updated: ${
-                  response.data.commit.commit.committer.date.split('T')[0]
-                }`
-              : '',
-          href: '/changelog/',
-        },
-      ],
-    }),
-    err => {
-      if (err) {
-        console.error('error writing to file.');
-      }
-    },
-  );
+  response &&
+    response.data &&
+    fs.writeFile(
+      file_path,
+      JSON.stringify({
+        ...properties,
+        lastUpdate: [
+          {
+            label:
+              response.data && response.data.commit.commit.committer.date
+                ? `Content updated: ${
+                    response.data.commit.commit.committer.date.split('T')[0]
+                  }`
+                : '',
+            href: '/changelog/',
+          },
+        ],
+      }),
+      err => {
+        if (err) {
+          console.error('error writing to file.');
+        }
+      },
+    );
 });

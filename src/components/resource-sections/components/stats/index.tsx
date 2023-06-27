@@ -1,27 +1,16 @@
 import React from 'react';
-import {
-  Box,
-  Flex,
-  Link,
-  Stack,
-  StackDivider,
-  StatHelpText,
-  StatNumber,
-} from 'nde-design-system';
+import { Box, Flex, Link } from 'nde-design-system';
 import { FormattedResource } from 'src/utils/api/types';
-import { formatDOI, formatNumber } from 'src/utils/helpers';
+import { formatDOI } from 'src/utils/helpers';
 import StatField from '../overview/components/stat-field';
 
 export interface ResourceStatsProps extends Partial<FormattedResource> {}
 
-const ResourceStats: React.FC<ResourceStatsProps> = ({
-  aggregateRating,
-  citation,
-  doi,
-  includedInDataCatalog,
-  interactionStatistics,
-  nctid,
-}) => {
+const ResourceStats: React.FC<ResourceStatsProps> = props => {
+  const { citation, doi, nctid } = props;
+  if (!citation || !doi || !nctid) {
+    return <></>;
+  }
   return (
     <Flex
       w={{ base: 'unset', lg: '100%' }}
