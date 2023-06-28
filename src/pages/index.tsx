@@ -6,6 +6,7 @@ import {
   ButtonGroup,
   Flex,
   Heading,
+  Icon,
   Image,
   Link,
   SkeletonCircle,
@@ -42,6 +43,7 @@ import { SearchBarWithDropdown } from 'src/components/search-bar';
 import { AdvancedSearchOpen } from 'src/components/advanced-search/components/buttons';
 import REPOSITORIES from 'configs/repositories.json';
 import { queryFilterObject2String } from 'src/components/filters';
+import { FaRegEnvelope, FaGithub } from 'react-icons/fa';
 
 const sample_queries = [
   {
@@ -459,6 +461,7 @@ const Home: NextPage = () => {
                 </TableWrapper>
               </Flex>
               <ButtonGroup
+                spacing={[0, 2]}
                 flexWrap={['wrap', 'nowrap']}
                 w='100%'
                 display='flex'
@@ -474,20 +477,30 @@ const Home: NextPage = () => {
                     },
                     index,
                   ) => {
+                    const icon = route.title.includes('question')
+                      ? FaRegEnvelope
+                      : FaGithub;
                     return (
-                      <NextLink key={route.title} href={route.path} passHref>
-                        <Button
-                          w='100%'
-                          variant={index % 2 ? 'solid' : 'outline'}
-                          size='sm'
-                          m={[0, 2, 0]}
-                          my={[1, 2, 0]}
-                          py={[6]}
-                          maxWidth='200px'
+                      <Box key={route.title} w={['100%', 'unset']}>
+                        <NextLink
+                          href={route.path}
+                          passHref
+                          target={route.isExternal ? '_blank' : '_self'}
                         >
-                          {route.title}
-                        </Button>
-                      </NextLink>
+                          <Button
+                            w='100%'
+                            minWidth='200px'
+                            fontSize='sm'
+                            variant={index % 2 ? 'solid' : 'outline'}
+                            m={[0, 0, 0]}
+                            my={[1, 2, 0]}
+                            maxWidth={['unset', '250px']}
+                            leftIcon={<Icon as={icon} />}
+                          >
+                            {route.title}
+                          </Button>
+                        </NextLink>
+                      </Box>
                     );
                   },
                 )}

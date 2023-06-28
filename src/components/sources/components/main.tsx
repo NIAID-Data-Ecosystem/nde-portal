@@ -13,6 +13,7 @@ import {
 import { DisplayHTMLContent } from 'src/components/html-content';
 import NextLink from 'next/link';
 import { SourceResponse } from 'src/pages/sources';
+import { queryFilterObject2String } from 'src/components/filters';
 
 interface Main {
   data?: SourceResponse[];
@@ -164,7 +165,7 @@ const Main: React.FC<Main> = ({ data, isLoading }) => {
                             position='relative'
                             overflowX='auto'
                             boxShadow='low'
-                            borderRadius={'semi'}
+                            borderRadius='semi'
                           >
                             <Box
                               as='table'
@@ -174,7 +175,7 @@ const Main: React.FC<Main> = ({ data, isLoading }) => {
                               textAlign='left'
                               fontSize='sm'
                             >
-                              <Box as='thead' textTransform={'uppercase'}>
+                              <Box as='thead' textTransform='uppercase'>
                                 <tr>
                                   <Box as='th' scope='col' px={6} py={3}>
                                     {sourceObj.name} Property
@@ -271,7 +272,9 @@ const Main: React.FC<Main> = ({ data, isLoading }) => {
                         pathname: `/search`,
                         query: {
                           q: '',
-                          filters: `includedInDataCatalog.name:${sourceObj.id}`,
+                          filters: queryFilterObject2String({
+                            'includedInDataCatalog.name': [sourceObj.id],
+                          }),
                         },
                       }}
                       passHref
