@@ -150,6 +150,19 @@ const SearchResultsPage = () => {
     },
   );
 
+  // Set total results value
+  useEffect(() => {
+    setTotal(prev => {
+      if (!data || data.total === undefined) {
+        return prev;
+      }
+      if (!isLoading) {
+        return data.total;
+      }
+      return prev;
+    });
+  }, [data, isLoading]);
+
   // Set initial state based on route params.
   useEffect(() => {
     const { q, size, filters, from, sort } = router.query;
