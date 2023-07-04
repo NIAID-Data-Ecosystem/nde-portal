@@ -9,7 +9,6 @@ import {
 
 interface BannerProps {
   status?: 'info' | 'success' | 'warning' | 'error';
-  children?: React.ReactNode;
 }
 
 // [COMPONENT INFO]: Banner Element to notice user. NIAID design specs: https://designsystem.niaid.nih.gov/components/molecules

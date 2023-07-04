@@ -20,7 +20,6 @@ interface FiltersSectionProps {
   name: string;
   property: string;
   icon?: string;
-  children: React.ReactNode;
 }
 
 export const FiltersSection: React.FC<FiltersSectionProps> = React.memo(

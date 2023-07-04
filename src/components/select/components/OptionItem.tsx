@@ -1,12 +1,7 @@
-import {
-  Heading,
-  ListItem,
-  ListItemProps,
-  Text,
-  useDisclosure,
-} from 'nde-design-system';
+import { ListItemProps } from '@chakra-ui/react';
+import { Heading, ListItem, Text, useDisclosure } from 'nde-design-system';
 
-interface OptionProps extends ListItemProps {
+interface OptionProps extends Omit<ListItemProps, 'textUnderlineOffset'> {
   name: string;
   description?: string;
   onClick: React.MouseEventHandler<HTMLLIElement>;

@@ -1,10 +1,10 @@
+import { IconProps } from '@chakra-ui/react';
 import {
   Box,
   Collapse,
   Flex,
   Heading,
   Icon,
-  IconProps,
   ListIcon,
   ListItem,
   Text,
@@ -29,7 +29,7 @@ export const StatusIcon = ({
   props,
 }: {
   status: ErrorType;
-  props: IconProps;
+  props: Omit<IconProps, 'textUnderlineOffset'>;
 }) => {
   if (status === 'error') {
     return <Icon as={FaTimesCircle} color={`status.${status}`} {...props} />;

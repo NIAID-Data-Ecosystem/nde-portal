@@ -1,8 +1,6 @@
 import React, { useRef } from 'react';
 import {
   ButtonProps,
-  ChakraTheme as theme,
-  CloseButton,
   Flex,
   Icon,
   Input,
@@ -16,6 +14,7 @@ import {
 import { FaSearch } from 'react-icons/fa';
 import { useDropdownContext } from '..';
 import { ReactElement } from 'react-markdown/lib/react-markdown';
+import { CloseButton, theme } from '@chakra-ui/react';
 
 /*
 [Component Information]: [DropdownInput] is a regular input field with a list of suggestions based on the user typing.

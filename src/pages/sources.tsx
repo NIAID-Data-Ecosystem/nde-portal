@@ -25,7 +25,7 @@ export interface SourceResponse {
 interface SourcesProps {
   data: SourceResponse[];
   error: { status: number; message: string; type: string } | null;
-  children: React.ReactNode;
+  children: any;
 }
 const Sources: NextPage<SourcesProps> = ({ data, error }) => {
   const router = useRouter();
@@ -70,7 +70,7 @@ const Sources: NextPage<SourcesProps> = ({ data, error }) => {
       disableSearchBar
     >
       <Flex>
-        {error || sourcesError ? (
+        {(error || sourcesError) && (
           <Error>
             <Flex flexDirection='column' flex={1} alignItems='center'>
               <Text>
@@ -93,15 +93,13 @@ const Sources: NextPage<SourcesProps> = ({ data, error }) => {
               </Box>
             </Flex>
           </Error>
-        ) : (
-          <></>
         )}
         {!(error || sourcesError) && (
           <>
             <Flex
               flexDirection='column'
               bg='page.alt'
-              display={['none', 'none', 'flex']}
+              d={['none', 'none', 'flex']}
               w='50%'
               as='nav'
               aria-label='Navigation for data sources.'

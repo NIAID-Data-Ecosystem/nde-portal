@@ -1,6 +1,7 @@
 import React, { useRef } from 'react';
+import { ListItemProps } from '@chakra-ui/react';
 import { useDropdownInput } from './hooks/useDropdownInput';
-import { Box, ListItemProps, useOutsideClick } from 'nde-design-system';
+import { Box, useOutsideClick } from 'nde-design-system';
 
 interface DropdownListItemProps extends ListItemProps {
   index: number;
@@ -18,7 +19,9 @@ export interface ContextProps {
   setInputValue: React.Dispatch<React.SetStateAction<string>>;
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
   getInputProps: (props: any) => any;
-  getListItemProps: (props: DropdownListItemProps) => ListItemProps;
+  getListItemProps: (
+    props: DropdownListItemProps,
+  ) => Omit<ListItemProps, 'textUnderlineOffset'>;
 }
 
 export const defaultContext: ContextProps = {
@@ -44,7 +47,6 @@ export const InputWithDropdown: React.FC<{
   inputValue: string;
   cursorMax: number;
   colorScheme?: string;
-  children: React.ReactNode;
 }> = ({ children, inputValue, colorScheme = 'primary', cursorMax }) => {
   const dropdownInput = useDropdownInput({
     colorScheme,

@@ -1,14 +1,11 @@
 import React, { useMemo } from 'react';
-import {
-  Heading,
-  ListItem as NDEListItem,
-  ListItemProps as ChakraListItemProps,
-  Text,
-} from 'nde-design-system';
+import { Heading, ListItem as NDEListItem, Text } from 'nde-design-system';
 import { FormattedResource } from 'src/utils/api/types';
+import { ListItemProps as ChakraListItemProps } from '@chakra-ui/react';
 import { useDropdownContext } from '..';
 
-interface DropdownListItemProps extends ChakraListItemProps {
+interface DropdownListItemProps
+  extends Omit<ChakraListItemProps, 'textUnderlineOffset'> {
   searchTerm: string;
   name?: keyof FormattedResource;
   value: FormattedResource['name'];
@@ -19,7 +16,6 @@ interface DropdownListItemProps extends ChakraListItemProps {
 // See example: https://codesandbox.io/s/text-highlighting-vk1hj?file=/src/App.js
 interface HighlightProps {
   tags: string[];
-  children: React.ReactNode;
 }
 export const Highlight: React.FC<HighlightProps> = ({
   children: text = '',

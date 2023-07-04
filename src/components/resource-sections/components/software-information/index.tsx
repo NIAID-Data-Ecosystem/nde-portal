@@ -4,7 +4,6 @@ import {
   Link,
   ListItem,
   SimpleGrid,
-  Skeleton,
   Stack,
   Stat,
   StatLabel,
@@ -12,6 +11,7 @@ import {
   UnorderedList,
 } from 'nde-design-system';
 import { FormattedResource } from 'src/utils/api/types';
+import { Skeleton } from '@chakra-ui/skeleton';
 import BasedOn from '../based-on';
 import {
   FaArrowAltCircleUp,
@@ -61,7 +61,7 @@ const SoftwareInformation: React.FC<SoftwareInformation> = ({
     softwareVersion,
   } = props || {};
 
-  const StatText: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const StatText: React.FC = ({ children }) => {
     return (
       <Text fontSize='sm' lineHeight='short'>
         {children}

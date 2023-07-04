@@ -162,7 +162,7 @@ export const DownloadMetadata: React.FC<DownloadMetadataProps> = ({
                     <Box
                       as='a'
                       w='100%'
-                      display='block'
+                      d='block'
                       px={4}
                       py={2}
                       cursor='pointer'

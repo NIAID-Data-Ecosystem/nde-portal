@@ -1,5 +1,5 @@
-import React, { useEffect, useMemo, useState } from 'react';
 import { ButtonProps } from 'nde-design-system';
+import React, { useEffect, useMemo, useState } from 'react';
 import { FacetTerms, FilterTerm } from 'src/components/filters/types';
 import { addMissingYears } from '../helpers';
 
@@ -38,7 +38,6 @@ export const DateRangeSlider: React.FC<{
   data: FacetTerms;
   selectedDates: string[];
   colorScheme: ContextProps['colorScheme'];
-  children: React.ReactNode;
 }> = ({
   children,
   data: initialData,

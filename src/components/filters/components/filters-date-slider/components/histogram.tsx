@@ -13,7 +13,6 @@ import { LinearGradient } from '@visx/gradient';
 interface HistogramProps {
   updatedData: FacetTerm[];
   handleClick: (args: string[]) => void;
-  children: React.ReactNode;
 }
 
 type ThemeColorsKeys = keyof typeof theme.colors;
@@ -24,7 +23,7 @@ Histogram consists of :
 - [updatedData] (data updated to reflect filtered resources - represented by coloured bars)
 */
 
-const Histogram: React.FC<HistogramProps> = ({
+export const Histogram: React.FC<HistogramProps> = ({
   children,
   updatedData,
   handleClick,
@@ -376,5 +375,3 @@ const Histogram: React.FC<HistogramProps> = ({
     </div>
   );
 };
-
-export default Histogram;

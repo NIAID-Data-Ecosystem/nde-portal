@@ -6,10 +6,11 @@ import {
   Heading,
   Icon,
   Image,
-  ImageProps,
   LinkProps,
   Stack,
 } from 'nde-design-system';
+import { ImageProps } from '@chakra-ui/image';
+import { assetPrefix } from 'next.config';
 import { FaArrowRight } from 'react-icons/fa';
 
 interface ExternalButtonProps extends LinkProps {
@@ -29,12 +30,13 @@ export const ExternalSourceButton: React.FC<ExternalButtonProps> = ({
   imageProps,
   sourceHref,
   colorScheme = 'secondary',
+  ...props
 }) => {
   const SourceImage = (props: any) => (
     <Image
       h='50px'
       maxH='50px'
-      src={`${src}`}
+      src={`${assetPrefix || ''}${src}`}
       alt={alt}
       {...imageProps}
       {...props}

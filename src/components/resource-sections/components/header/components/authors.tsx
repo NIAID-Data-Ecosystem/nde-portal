@@ -5,7 +5,6 @@ import {
   AccordionButton,
   AccordionPanel,
   Box,
-  ChakraLink,
   Flex,
   Heading,
   Icon,
@@ -17,6 +16,7 @@ import {
   Tooltip,
   HStack,
 } from 'nde-design-system';
+import { Link as ChakraLink } from '@chakra-ui/react';
 import { FormattedResource } from 'src/utils/api/types';
 import { formatAuthorsList2String } from 'src/utils/helpers';
 import {

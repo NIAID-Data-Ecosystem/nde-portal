@@ -2,7 +2,11 @@ import { FormattedResource } from 'src/utils/api/types';
 import { VscJson } from 'react-icons/vsc';
 import { GrTextAlignFull } from 'react-icons/gr';
 import {
+  FaCode,
+  FaCog,
+  FaCogs,
   FaDatabase,
+  FaDesktop,
   FaDownload,
   FaSearchDollar,
   FaThList,

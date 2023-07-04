@@ -43,7 +43,8 @@ import {
 } from './utils';
 import type { FlattenedItem, SensorContext, TreeItem } from './types';
 import { CSS } from '@dnd-kit/utilities';
-import { Box, ChakraTheme as theme, UnorderedList } from 'nde-design-system';
+import { theme } from '@chakra-ui/react';
+import { Box, UnorderedList } from 'nde-design-system';
 import { SortableTreeItem } from './components/SortableTreeItem';
 import { sortableTreeKeyboardCoordinates } from './keyboardCoordinates';
 

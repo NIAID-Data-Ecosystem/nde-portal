@@ -1,4 +1,5 @@
-import { IconProps, Link, LinkProps } from 'nde-design-system';
+import { IconProps } from '@chakra-ui/icon';
+import { Link, LinkProps } from 'nde-design-system';
 import {
   FaFileAlt,
   FaFilePdf,

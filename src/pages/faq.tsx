@@ -1,10 +1,10 @@
 import { Flex, Heading, Text } from 'nde-design-system';
 import type { NextPage } from 'next';
 import { PageContainer, PageContent } from 'src/components/page-container';
+import { MDXComponents } from 'src/mdx';
 import { serialize } from 'next-mdx-remote/serialize';
 import { MDXRemote, MDXRemoteSerializeResult } from 'next-mdx-remote';
 import { Error } from 'src/components/error';
-import { useMDXComponents } from 'mdx-components';
 
 interface FrequentlyAskedProps {
   mdxSource: MDXRemoteSerializeResult;
@@ -14,7 +14,6 @@ interface FrequentlyAskedProps {
 
 const FrequentlyAsked: NextPage<FrequentlyAskedProps> = props => {
   const { mdxSource, title, error } = props;
-  const MDXComponents = useMDXComponents({});
 
   return (
     <PageContainer

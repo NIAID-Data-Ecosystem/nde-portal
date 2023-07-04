@@ -9,51 +9,24 @@ const withMDX = require('@next/mdx')({
     // https://github.com/remarkjs/remark-gfm#install
     remarkPlugins: [],
     rehypePlugins: [],
-    development: false,
     // If you use `MDXProvider`, uncomment the following line.
     providerImportSource: '@mdx-js/react',
   },
 });
 
-const nextConfig = {
+module.exports = withMDX({
   pageExtensions: ['js', 'jsx', 'ts', 'tsx', 'md', 'mdx'],
   reactStrictMode: true,
-  output: 'export',
-  // experimental: {
-  //   mdxRs: true,
-  //   turbo: {
-  //     loaders: {
-  //       // Option format
-  //       // '.md': [
-  //       //   {
-  //       //     loader: '@mdx-js/loader',
-  //       //     options: {
-  //       //       format: 'md',
-  //       //     },
-  //       //   },
-  //       // ],
-  //       // // Option-less format
-  //       '.mdx': ['@mdx-js/loader'],
-  //     },
-  //   },
-  // }, // used for mdx with TurboPack
+  trailingSlash: true,
   webpack: (config, { isServer, webpack }) => {
     // Fixes npm packages (mdx) that depend on `fs` module
-    // if (!isServer) {
-    //   config.resolve.fallback = {
-    //     ...config.resolve.fallback,
-    //     fs: false,
-    //     child_process: false,
-    //     console: false,
-    //     async_hooks: false,
-    //     diagnostics_channel: false,
-    //     net: false,
-    //     perf_hooks: false,
-    //     'stream/web': false,
-    //     tls: false,
-    //     worker_threads: false,
-    //   };
-    // }
+
+    if (!isServer) {
+      config.resolve.fallback = {
+        fs: false,
+        child_process: false,
+      };
+    }
 
     config.plugins.push(
       // Remove node: from import specifiers, because Next.js does not yet support node: scheme
@@ -81,6 +54,4 @@ const nextConfig = {
     NEXT_PUBLIC_GOOGLE_ANALYTICS: process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS,
     NEXT_PUBLIC_BASE_URL: process.env.BASE_URL,
   },
-};
-
-module.exports = withMDX(nextConfig);
+});

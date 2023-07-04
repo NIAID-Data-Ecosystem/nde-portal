@@ -1,18 +1,20 @@
 import {
-  ButtonGroup,
   Editable,
   EditablePreview,
   EditableTextarea,
+  keyframes,
+  Textarea,
+  useEditableControls,
+} from '@chakra-ui/react';
+import {
+  ButtonGroup,
   Flex,
   Heading,
   Icon,
   IconButton,
-  keyframes,
   Spinner,
   theme,
-  Textarea,
   Tooltip,
-  useEditableControls,
 } from 'nde-design-system';
 import { MouseEventHandler, useEffect, useState } from 'react';
 import { FaCheck, FaRegEdit } from 'react-icons/fa';

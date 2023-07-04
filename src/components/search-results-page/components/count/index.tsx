@@ -21,7 +21,7 @@ const ResultsCount: React.FC<ResultsCount> = ({
       <Heading
         as='h2'
         size='h6'
-        display='flex'
+        d='flex'
         alignItems='baseline'
         fontWeight='semibold'
         mr={2}

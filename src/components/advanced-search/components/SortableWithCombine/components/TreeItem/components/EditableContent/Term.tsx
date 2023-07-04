@@ -32,13 +32,13 @@ export const TermLabel = React.memo(
     const [inputTerm, setTerm] = useState<string>(term || '');
 
     const handleChange = useCallback(
-      (updated: any) => {
+      updated => {
         setInputValue(updated.value);
-        updated.term && setTerm(updated.term);
+        setTerm(updated.term);
 
         // Update errors as user changes input
         if (errors.length > 0) {
-          typeof updated.value === 'string' && handleValidation(updated.value);
+          handleValidation(updated.value);
         }
       },
       [errors.length, handleValidation],

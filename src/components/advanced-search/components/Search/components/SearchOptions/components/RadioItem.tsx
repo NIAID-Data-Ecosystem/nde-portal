@@ -1,4 +1,5 @@
-import { Radio, RadioProps, Text, Tooltip } from 'nde-design-system';
+import { Radio, RadioProps } from '@chakra-ui/react';
+import { Text, Tooltip } from 'nde-design-system';
 import { SearchTypesConfigProps } from '../../../search-types-config';
 
 export const RadioTooltip: React.FC<Partial<RadioItemProps>> = ({

@@ -1,6 +1,6 @@
 import React from 'react';
+import { Box } from 'nde-design-system';
 import {
-  Box,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -8,7 +8,7 @@ import {
   ModalHeader,
   ModalOverlay,
   ModalProps,
-} from 'nde-design-system';
+} from '@chakra-ui/react';
 
 export interface AdvancedSearchModalProps extends Omit<ModalProps, 'onClose'> {
   isOpen: boolean;

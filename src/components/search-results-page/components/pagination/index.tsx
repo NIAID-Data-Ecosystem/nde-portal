@@ -38,7 +38,6 @@ interface PaginationProps {
   total: number;
   // Handler fn on page change.
   handleSelectedPage: (pageNumber: number) => void;
-  children?: React.ReactNode;
 }
 
 // Max pages returned from the API.

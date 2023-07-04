@@ -22,7 +22,6 @@ interface RelatedDatasetsProps {
 
 interface CardContainerProps {
   heading: string;
-  children: React.ReactNode;
 }
 
 /* Card for related datasets section */
@@ -87,7 +86,7 @@ const RelatedDatasets: React.FC<RelatedDatasetsProps> = ({
                           }}
                           passHref
                         >
-                          <Link as='span' wordBreak='break-word' fontSize='xs'>
+                          <Link isExternal wordBreak='break-word' fontSize='xs'>
                             {data.name || data.identifier}
                           </Link>
                         </NextLink>
@@ -99,13 +98,13 @@ const RelatedDatasets: React.FC<RelatedDatasetsProps> = ({
                               href={{
                                 pathname: '/resources/',
                                 query: {
-                                  id: `${data.identifier}`,
+                                  id: `${includedInDataCatalog.name}_${data.identifier}`,
                                 },
                               }}
                               passHref
                             >
                               <Link
-                                as='span'
+                                isExternal
                                 wordBreak='break-word'
                                 fontSize='xs'
                               >

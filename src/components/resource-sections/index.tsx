@@ -30,46 +30,47 @@ import SoftwareInformation from './components/software-information';
 import ResourceStats from './components/stats';
 
 // Metadata displayed in each section
-export const sectionMetadata: { [key: string]: (keyof FormattedResource)[] } = {
-  overview: [
-    'citation',
-    'doi',
-    'healthCondition',
-    'infectiousAgent',
-    'inLanguage',
-    'license',
-    'measurementTechnique',
-    'nctid',
-    'programmingLanguage',
-    'softwareVersion',
-    'spatialCoverage',
-    'species',
-    'temporalCoverage',
-    'variableMeasured',
-  ],
-  softwareInformation: [
-    'applicationCategory',
-    'discussionUrl',
-    'input',
-    'output',
-    'isBasedOn',
-    'isBasisFor',
-    'processorRequirements',
-    'programmingLanguage',
-    'softwareAddOn',
-    'softwareHelp',
-    'softwareRequirements',
-    'softwareVersion',
-  ],
-  keywords: ['keywords'],
-  description: ['description'],
-  provenance: ['includedInDataCatalog', 'url', 'sdPublisher', 'curatedBy'],
-  downloads: ['distribution', 'downloadUrl'],
-  funding: ['funding'],
-  isBasedOn: ['isBasedOn'],
-  citedBy: ['citedBy'],
-  metadata: ['rawData'],
-};
+export const section_metadata: { [key: string]: (keyof FormattedResource)[] } =
+  {
+    overview: [
+      'citation',
+      'doi',
+      'healthCondition',
+      'infectiousAgent',
+      'inLanguage',
+      'license',
+      'measurementTechnique',
+      'nctid',
+      'programmingLanguage',
+      'softwareVersion',
+      'spatialCoverage',
+      'species',
+      'temporalCoverage',
+      'variableMeasured',
+    ],
+    softwareInformation: [
+      'applicationCategory',
+      'discussionUrl',
+      'input',
+      'output',
+      'isBasedOn',
+      'isBasisFor',
+      'processorRequirements',
+      'programmingLanguage',
+      'softwareAddOn',
+      'softwareHelp',
+      'softwareRequirements',
+      'softwareVersion',
+    ],
+    keywords: ['keywords'],
+    description: ['description'],
+    provenance: ['includedInDataCatalog', 'url', 'sdPublisher', 'curatedBy'],
+    downloads: ['distribution', 'downloadUrl'],
+    funding: ['funding'],
+    isBasedOn: ['isBasedOn'],
+    citedBy: ['citedBy'],
+    metadata: ['rawData'],
+  };
 
 // use config file to show content in sections.
 const Sections = ({
@@ -148,11 +149,11 @@ const Sections = ({
               <Skeleton isLoaded={!isLoading}>
                 <Flex flexWrap='wrap'>
                   {data?.keywords &&
-                    data.keywords.map((keyword, i) => {
+                    data.keywords.map(keyword => {
                       return (
                         <Tag
-                          key={`${keyword}-${i}`}
                           as='a'
+                          key={keyword}
                           m={2}
                           colorScheme='primary'
                           cursor='pointer'
@@ -174,7 +175,7 @@ const Sections = ({
 
             {section.hash === 'softwareInformation' && (
               <SoftwareInformation
-                keys={sectionMetadata[section.hash]}
+                keys={section_metadata[section.hash]}
                 isLoading={isLoading}
                 {...data}
               />

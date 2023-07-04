@@ -263,7 +263,6 @@ export const SearchBarWithDropdown = (props: SearchBarWithDropdownProps) => {
     'basic-searches',
     [],
   );
-
   return (
     <InputWithDropdown
       inputValue={defaultInputValue}

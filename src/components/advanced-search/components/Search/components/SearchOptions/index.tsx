@@ -1,5 +1,6 @@
 import React from 'react';
-import { RadioGroup, Stack } from 'nde-design-system';
+import { RadioGroup } from '@chakra-ui/react';
+import { Stack } from 'nde-design-system';
 import { useAdvancedSearchContext } from '../AdvancedSearchFormContext';
 import { RadioItem } from './components/RadioItem';
 import { RadioSelect } from './components/RadioSelect';

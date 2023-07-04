@@ -19,7 +19,6 @@ interface FilterTagsWrapperProps {
   colorScheme?: keyof typeof theme.colors;
   // Filters applied to data.
   filters: SelectedFilterType;
-  children: React.ReactNode;
 }
 /*
 [COMPONENT INFO]: Drawer that wraps the filter

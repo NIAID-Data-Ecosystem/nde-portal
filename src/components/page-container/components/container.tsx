@@ -16,7 +16,8 @@ import { SearchBarWithDropdown } from 'src/components/search-bar';
 import { PageContent } from './content';
 import { AdvancedSearchOpen } from 'src/components/advanced-search/components/buttons';
 import NextLink from 'next/link';
-import { useMetadata } from 'src/hooks/api';
+import { useQuery } from 'react-query';
+import { fetchMetadata } from 'src/utils/api';
 
 interface PageContainerProps extends FlexProps {
   hasNavigation?: boolean;
@@ -59,7 +60,7 @@ export const PageContainer: React.FC<PageContainerProps> = ({
     });
   };
 
-  const { data } = useMetadata();
+  const { data } = useQuery(['metadata'], fetchMetadata);
   const lastDataUpdate = data?.build_date
     ? [
         {
@@ -72,7 +73,7 @@ export const PageContainer: React.FC<PageContainerProps> = ({
   return (
     <>
       <Head>
-        <title>{`NIAID Data Discovery Portal ${title && ` | ${title}`}`}</title>
+        <title>NIAID Data Discovery Portal {title && ` | ${title}`}</title>
         <meta
           name='description'
           content='Find and access allergic, infectious and immune-mediated disease data by searching across biomedical data repositories with the NIAID Data Discovery Portal'

@@ -13,12 +13,12 @@ import {
   Heading,
   Icon,
   ListItem,
-  ModalProps,
   Text,
   UnorderedList,
   useDisclosure,
 } from 'nde-design-system';
 import { useRouter } from 'next/router';
+import { ModalProps } from '@chakra-ui/react';
 import { AdvancedSearchModal } from './components/Modal';
 import { AdvancedSearchOpen } from './components/buttons';
 import {
@@ -80,13 +80,6 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
   const [searchHistory, setSearchHistory] = useLocalStorage<
     { querystring: string; count: number }[]
   >('advanced-searches', []);
-
-  const [isMounted, setIsMounted] = useState(false); // local storage for SSR.
-
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
   const [resetForm, setResetForm] = useState(false);
 
   const { isOpen: showRawQuery, onToggle: toggleShowRawQuery } = useDisclosure({
@@ -111,10 +104,7 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
     }
   }, [initialQuerystring]);
 
-  const updateItems = useCallback(
-    (items: React.SetStateAction<TreeItem[]>) => setItems(items),
-    [],
-  );
+  const updateItems = useCallback(items => setItems(items), []);
 
   const handleErrors = useCallback((queryErrors: QueryStringError[]) => {
     return setErrors(prev => {
@@ -281,32 +271,32 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
             </Button>
           )}
         </Flex>
-        <Accordion my={4} defaultIndex={[0]} allowToggle>
-          <AccordionItem>
-            <h2>
-              <AccordionButton
-                _hover={{ bg: 'transparent' }}
-                _focus={{ boxShadow: 'none' }}
-              >
-                <Text
-                  size='sm'
-                  fontWeight='semibold'
-                  color='text.heading'
-                  display='flex'
-                  alignItems='center'
-                  flex={1}
+
+        {searchHistory.length > 0 && (
+          <Accordion my={4} defaultIndex={[0]} allowToggle>
+            <AccordionItem>
+              <h2>
+                <AccordionButton
+                  _hover={{ bg: 'transparent' }}
+                  _focus={{ boxShadow: 'none' }}
                 >
-                  <Icon as={FaHistory} mx={2} color='status.info'></Icon>
-                  Search History
-                </Text>
-                <AccordionIcon />
-              </AccordionButton>
-            </h2>
-            <AccordionPanel px={[1, 4]}>
-              <UnorderedList ml={0}>
-                {isMounted &&
-                  searchHistory.length > 0 &&
-                  searchHistory.reverse().map((query, index) => {
+                  <Text
+                    size='sm'
+                    fontWeight='semibold'
+                    color='text.heading'
+                    display='flex'
+                    alignItems='center'
+                    flex={1}
+                  >
+                    <Icon as={FaHistory} mx={2} color='status.info'></Icon>
+                    Search History
+                  </Text>
+                  <AccordionIcon />
+                </AccordionButton>
+              </h2>
+              <AccordionPanel px={[1, 4]}>
+                <UnorderedList ml={0}>
+                  {searchHistory.reverse().map((query, index) => {
                     return (
                       <ListItem
                         key={index}
@@ -374,10 +364,11 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
                       </ListItem>
                     );
                   })}
-              </UnorderedList>
-            </AccordionPanel>
-          </AccordionItem>
-        </Accordion>
+                </UnorderedList>
+              </AccordionPanel>
+            </AccordionItem>
+          </Accordion>
+        )}
       </Box>
     </>
   );

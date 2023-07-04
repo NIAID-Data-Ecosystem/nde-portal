@@ -1,7 +1,8 @@
 import React, { forwardRef, HTMLAttributes, useMemo, useState } from 'react';
-import { Box, Flex, ListItem, ListItemProps } from 'nde-design-system';
+import { Box, Flex, ListItem } from 'nde-design-system';
 import { FlattenedItem } from '../../types';
 import { getStyles } from './styles';
+import { ListItemProps } from '@chakra-ui/react';
 import { StyledWrapper, Wrapper } from './components/TreeItemWrapper';
 import { getUnionTheme } from 'src/components/advanced-search/utils/query-helpers';
 import { UnionButton } from './components/UnionButton';
@@ -73,7 +74,7 @@ export const TreeItem = React.memo(
         disableInteraction,
         ghost,
         indicator,
-      }) as ListItemProps;
+      }) as Omit<ListItemProps, 'textUnderlineOffset'>;
     }, [clone, depth, disableInteraction, ghost, indicator]);
 
     const [isEditMode, setIsEditMode] = useState(false);

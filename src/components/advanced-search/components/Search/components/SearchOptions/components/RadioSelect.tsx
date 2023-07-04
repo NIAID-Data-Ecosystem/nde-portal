@@ -1,4 +1,5 @@
-import { Flex, Radio, useDisclosure } from 'nde-design-system';
+import { Radio } from '@chakra-ui/react';
+import { Flex, useDisclosure } from 'nde-design-system';
 import { useEffect, useState } from 'react';
 import {
   OptionItem,

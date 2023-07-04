@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Box, Button, Flex, Icon, Link, Text } from 'nde-design-system';
 import { IoIosWarning } from 'react-icons/io';
 import { useLocalStorage } from 'usehooks-ts';
@@ -6,15 +6,10 @@ import { useLocalStorage } from 'usehooks-ts';
 const Notice = () => {
   let niaid_help = 'NIAIDDataEcosystem@mail.nih.gov';
   const [isOpen, setOpen] = useLocalStorage('warningOpen', true);
-  const [isMounted, setIsMounted] = useState(false); // for SSR
 
   const toggleWarning = () => {
     setOpen(!isOpen);
   };
-
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
 
   return (
     <Box
@@ -50,7 +45,6 @@ const Notice = () => {
             Portal.
           </strong>
         </Text>
-
         <Button
           variant='ghost'
           colorScheme='primary'
@@ -59,11 +53,10 @@ const Notice = () => {
           onClick={toggleWarning}
           w={['100%', 'unset']}
         >
-          {isMounted && isOpen ? 'Read Less' : 'Read More'}
+          {!isOpen ? 'Read More' : 'Read Less'}
         </Button>
       </Flex>
-      {/* Message is hidden by default and when SSR. */}
-      {isMounted && isOpen && (
+      {isOpen && (
         <Box py={[2, 4]}>
           <Text>
             This version is not production ready and is subject to changes.

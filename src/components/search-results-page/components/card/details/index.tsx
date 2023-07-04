@@ -18,6 +18,7 @@ import {
 import { FaMinus, FaPlus } from 'react-icons/fa';
 import { FormattedResource } from 'src/utils/api/types';
 import { formatLicense } from 'src/utils/helpers';
+import { assetPrefix } from 'next.config';
 import { MetadataProperty } from './components/Property';
 import { MetadataToolTip, MetadataIcon } from 'src/components/icon';
 import { getMetadataColor } from 'src/components/icon/helpers';
@@ -149,7 +150,7 @@ const CardDetails: React.FC<CardDetailsProps> = ({ data }) => {
                       <>
                         {licenseInfo?.img && (
                           <Image
-                            src={`${licenseInfo.img}`}
+                            src={`${assetPrefix || ''}${licenseInfo.img}`}
                             alt={licenseInfo.type}
                             mb={1}
                           />
