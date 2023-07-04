@@ -13,7 +13,6 @@ import {
 } from 'nde-design-system';
 import { FormattedResource } from 'src/utils/api/types';
 import LoadingSpinner from 'src/components/loading';
-import NextLink from 'next/link';
 import { IconType } from 'react-icons';
 
 interface BasedOn extends BoxProps {
@@ -29,7 +28,7 @@ export const StyledText = ({ title, children, ...props }: StyledText) => {
   return (
     <Text fontSize='sm' lineHeight='short' wordBreak='break-all' {...props}>
       {title && (
-        <Text fontSize='xs' fontWeight='semibold' color='gray.700'>
+        <Text as='span' fontSize='xs' fontWeight='semibold' color='gray.700'>
           {title}
         </Text>
       )}{' '}
@@ -71,7 +70,6 @@ const BasedOn: React.FC<BasedOn> = ({
         >
           {isBasedOn.map((basedOn, i) => {
             const {
-              _id,
               abstract,
               additionalType,
               citation,
@@ -104,32 +102,18 @@ const BasedOn: React.FC<BasedOn> = ({
                 <Box ml={1} w='100%'>
                   {(identifier || name) && (
                     <>
-                      {_id ? (
-                        <NextLink
-                          href={{
-                            pathname: '/resources/',
-                            query: { id: _id },
-                          }}
-                          passHref
-                        >
-                          <Link>
-                            <StyledText>{name || identifier}</StyledText>
+                      <StyledText
+                        fontWeight='semibold'
+                        fontFamily='text.heading'
+                      >
+                        {url ? (
+                          <Link href={url} isExternal>
+                            {name || url}
                           </Link>
-                        </NextLink>
-                      ) : (
-                        <StyledText
-                          fontWeight='semibold'
-                          fontFamily='text.heading'
-                        >
-                          {url ? (
-                            <Link href={url} isExternal>
-                              {name || url}
-                            </Link>
-                          ) : (
-                            <>{name || identifier} </>
-                          )}
-                        </StyledText>
-                      )}
+                        ) : (
+                          <>{name || identifier} </>
+                        )}
+                      </StyledText>
                     </>
                   )}
 
@@ -178,14 +162,6 @@ const BasedOn: React.FC<BasedOn> = ({
 
                   {citation && (
                     <StyledText title='Citation:'>{citation || '-'}</StyledText>
-                  )}
-                  {/* if _id field is used as a title link we display the source url here. */}
-                  {_id && url && (
-                    <StyledText title='Source URL:' color='gray.700'>
-                      <Link href={url} isExternal wordBreak='break-all'>
-                        {url || '-'}
-                      </Link>
-                    </StyledText>
                   )}
                 </Box>
               </ListItem>

@@ -12,7 +12,7 @@ import {
 } from 'nde-design-system';
 import { FormattedResource } from 'src/utils/api/types';
 import { getRepositoryImage } from 'src/utils/helpers';
-import { ExternalSourceButton } from 'src/components/external-buttons/index.';
+import { ExternalSourceButton } from 'src/components/external-buttons';
 import { FaGithub } from 'react-icons/fa';
 import Tooltip from 'src/components/tooltip';
 import MetadataConfig from 'configs/resource-metadata.json';
@@ -27,6 +27,7 @@ interface ExternalLinks {
   codeRepository?: FormattedResource['codeRepository'];
   url?: FormattedResource['url'];
   usageInfo?: FormattedResource['usageInfo'];
+  children?: React.ReactNode;
 }
 
 const ExternalLinks: React.FC<ExternalLinks> = ({
@@ -51,7 +52,7 @@ const ExternalLinks: React.FC<ExternalLinks> = ({
     !codeRepository &&
     !showWorkspaceLink
   ) {
-    return null;
+    return <></>;
   }
   return (
     <Skeleton
@@ -161,6 +162,7 @@ const ExternalLinks: React.FC<ExternalLinks> = ({
                           <Link
                             mt={2}
                             href={part.url}
+                            key={part.url}
                             isExternal
                             wordBreak='break-word'
                             fontSize='xs'
@@ -168,7 +170,11 @@ const ExternalLinks: React.FC<ExternalLinks> = ({
                             {part.name || part.url}
                           </Link>
                         ) : (
-                          <Text wordBreak='break-word' fontSize='xs'>
+                          <Text
+                            key={part.name}
+                            wordBreak='break-word'
+                            fontSize='xs'
+                          >
                             {part.name}
                           </Text>
                         );

@@ -108,7 +108,7 @@ export const FiltersList: React.FC<FiltersList> = React.memo(
         <Box w='100%' my={4}>
           {/* List of filters available narrowed based on search and expansion toggle */}
           <UnorderedList
-            direction='column'
+            flexDirection='column'
             ml={0}
             my={2}
             maxH={400}

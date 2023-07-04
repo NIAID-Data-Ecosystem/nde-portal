@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { MetadataIcon } from 'src/components/icon';
-import { Box, Button, Flex, Icon, SlideFade, Text } from 'nde-design-system';
+import { Button, Flex, Icon, SlideFade, Text } from 'nde-design-system';
 import { useAdvancedSearchContext } from '../AdvancedSearchFormContext';
 import { useLocalStorage } from 'usehooks-ts';
 import { IoWarningOutline } from 'react-icons/io5';

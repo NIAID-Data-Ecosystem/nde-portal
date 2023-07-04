@@ -228,6 +228,7 @@ export const FieldSelect: React.FC<FieldSelectProps> = ({
             </Text>
           </VisuallyHidden>
           <Select
+            instanceId='field-select'
             components={{ Control, Option }}
             value={
               selectedField

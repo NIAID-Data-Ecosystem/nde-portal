@@ -24,7 +24,7 @@ import {
   ResourceLinks,
 } from 'src/components/resource-sections/components';
 import { Error, ErrorCTA } from 'src/components/error';
-import Sections, { section_metadata } from 'src/components/resource-sections';
+import Sections, { sectionMetadata } from 'src/components/resource-sections';
 import navigationData from 'configs/resource-sections.json';
 import { Route, showSection } from 'src/components/resource-sections/helpers';
 import { useLocalStorage } from 'usehooks-ts';
@@ -38,9 +38,9 @@ const EmptyState = () => {
     <Card w='100%'>
       <Empty message='No data available.' alignSelf='center' h='50vh'>
         <Text>No information about this dataset is available.</Text>
-        <Button as={'a'} href='/' mt={4}>
-          Go to search.
-        </Button>
+        <NextLink href={{ pathname: '/search' }}>
+          <Button mt={4}>Go to search</Button>
+        </NextLink>
       </Empty>
     </Card>
   );
@@ -51,12 +51,20 @@ const ResourcePage: NextPage = props => {
   const { id } = router.query;
   const [searchHistory] = useLocalStorage<string[]>('basic-searches', []);
   // Access query client
-  const { isLoading, error, data } = useQuery<
-    FormattedResource | undefined,
-    Error
-  >(['search-result', { id }], () => getResourceById(id), {
-    refetchOnWindowFocus: false,
-  });
+
+  const {
+    isLoading: loadingData,
+    error,
+    data,
+  } = useQuery<FormattedResource | undefined, Error>(
+    ['search-result', { id }],
+    () => getResourceById(id),
+    {
+      refetchOnWindowFocus: false,
+    },
+  );
+
+  const isLoading = loadingData || !router.isReady;
 
   // embed metadata
   useEffect(() => {
@@ -85,10 +93,6 @@ const ResourcePage: NextPage = props => {
     document.body.appendChild(altmetricsScript);
   }, [data]);
 
-  if (!id) {
-    return <></>;
-  }
-
   const { routes } = navigationData as {
     title: string;
     routes: Route[];
@@ -97,13 +101,24 @@ const ResourcePage: NextPage = props => {
   // Check if the metadata is available for a given section before displaying it in navbar or page.
   const sections = routes.filter(route =>
     showSection(
-      { ...route, metadataProperties: section_metadata[route.hash] },
+      { ...route, metadataProperties: sectionMetadata[route.hash] },
       data,
     ),
   );
 
   const errorResponse =
     error && getQueryStatusError(error as unknown as { status: string });
+
+  const [isMounted, setIsMounted] = React.useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  if (!isLoading && !id) {
+    router.push('/404');
+    return <></>;
+  }
 
   return (
     <>
@@ -218,27 +233,33 @@ const ResourcePage: NextPage = props => {
                   />
 
                   {/* Search History links */}
-                  <Collapse in={!!searchHistory.length}>
-                    <CardContainer heading='Previous Searches'>
-                      <UnorderedList ml={0}>
-                        {searchHistory.map((search, index) => (
-                          <ListItem key={index}>
-                            <NextLink
-                              href={{
-                                pathname: '/search',
-                                query: { q: search },
-                              }}
-                              passHref
-                            >
-                              <Link wordBreak='break-word' fontSize='xs'>
-                                {search}
-                              </Link>
-                            </NextLink>
-                          </ListItem>
-                        ))}
-                      </UnorderedList>
-                    </CardContainer>
-                  </Collapse>
+                  {isMounted && (
+                    <Collapse in={!!searchHistory.length}>
+                      <CardContainer heading='Previous Searches'>
+                        <UnorderedList ml={0}>
+                          {searchHistory.map((search, index) => (
+                            <ListItem key={index}>
+                              <NextLink
+                                href={{
+                                  pathname: '/search',
+                                  query: { q: search },
+                                }}
+                                passHref
+                              >
+                                <Link
+                                  as='span'
+                                  wordBreak='break-word'
+                                  fontSize='xs'
+                                >
+                                  {search}
+                                </Link>
+                              </NextLink>
+                            </ListItem>
+                          ))}
+                        </UnorderedList>
+                      </CardContainer>
+                    </Collapse>
+                  )}
                 </Box>
               </Flex>
             </Flex>

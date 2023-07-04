@@ -2,18 +2,34 @@ import { useEffect } from 'react';
 import type { AppProps } from 'next/app';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
-import Script from 'next/script';
 import { QueryClient, QueryClientProvider } from 'react-query';
-import { ThemeProvider } from 'nde-design-system';
-import FontFace from 'src/theme/font-face';
+import {
+  extendTheme,
+  theme as NDETHEME,
+  ThemeProvider,
+} from 'nde-design-system';
+import { Public_Sans } from 'next/font/google';
 import * as ga from 'lib/ga';
 
 // Creates an instance of react-query for the app.
 const queryClient = new QueryClient();
 
+// Import the weights and subsets, add any other config here as well
+const public_sans_font = Public_Sans({
+  subsets: ['latin'],
+  display: 'swap',
+  fallback: ['arial', 'system-ui'],
+});
+
 function App({ Component, pageProps }: AppProps) {
   const router = useRouter();
-
+  const theme = extendTheme({
+    ...NDETHEME,
+    fonts: {
+      body: public_sans_font.style.fontFamily,
+      heading: public_sans_font.style.fontFamily,
+    },
+  });
   // useEffect(() => {
   //   const mainDataLayer = {
   //     pageTypeName: pageProps.page || null,
@@ -59,8 +75,7 @@ function App({ Component, pageProps }: AppProps) {
       </Head>
 
       <QueryClientProvider client={queryClient}>
-        <ThemeProvider>
-          <FontFace />
+        <ThemeProvider theme={theme}>
           {/* @ts-ignore */}
           <Component {...pageProps} />
         </ThemeProvider>

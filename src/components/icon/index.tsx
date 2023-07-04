@@ -1,6 +1,5 @@
 import React from 'react';
-import { IconProps as ChakraIconProps } from '@chakra-ui/icon';
-import { Flex, Icon } from 'nde-design-system';
+import { Flex, Icon, IconProps as ChakraIconProps } from 'nde-design-system';
 import {
   FaFlask,
   FaFingerprint,
@@ -19,8 +18,7 @@ import Tooltip from 'src/components/tooltip';
 import { ResourceMetadata } from 'src/utils/schema-definitions/types';
 
 // Metadata icon svg.
-export interface IconProps
-  extends Omit<ChakraIconProps, 'textUnderlineOffset'> {
+export interface IconProps extends ChakraIconProps {
   id: string; // id for aria-labelledby for icon for accessibility
   glyph?: string;
   label?: string; // label for icon for accessibility
@@ -90,7 +88,7 @@ export const MetadataIcon = React.forwardRef<HTMLDivElement, IconProps>(
             // title={title}
             aria-label={title}
           >
-            <Glyph id={id} glyph={glyph} stroke='currentColor' />
+            <Glyph id={id} glyph={glyph} stroke='currentColor' title={title} />
           </Icon>
         )}
       </Flex>
@@ -104,6 +102,7 @@ interface MetadataToolTipProps {
   propertyName?: string;
   recordType?: string;
   showAbstract?: boolean; // if true, show shortened definition if available.
+  children: React.ReactNode;
 }
 
 export const MetadataToolTip: React.FC<MetadataToolTipProps> = ({

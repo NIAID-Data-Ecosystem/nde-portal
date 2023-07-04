@@ -4,17 +4,16 @@ import {
   Heading,
   Image,
   Link,
+  Skeleton,
   Stack,
   StackDivider,
   Text,
 } from 'nde-design-system';
 import { FormattedResource } from 'src/utils/api/types';
-import { Skeleton } from '@chakra-ui/skeleton';
 import { getRepositoryImage } from 'src/utils/helpers';
-import { assetPrefix } from 'next.config';
 import { formatDate } from 'src/utils/api/helpers';
 import StatField from '../overview/components/stat-field';
-import { ExternalSourceButton } from 'src/components/external-buttons/index.';
+import { ExternalSourceButton } from 'src/components/external-buttons/';
 
 interface Provenance {
   isLoading: boolean;
@@ -51,7 +50,7 @@ const Provenance: React.FC<Provenance> = ({
                 colorScheme='secondary'
                 href={url || undefined}
                 sourceHref={includedInDataCatalog?.url}
-                name={'Access Data'}
+                name='Access Data'
               />
             ) : (
               <ExternalSourceButton
@@ -62,7 +61,7 @@ const Provenance: React.FC<Provenance> = ({
                 }
                 colorScheme='secondary'
                 sourceHref={includedInDataCatalog?.url}
-                name={'Access Data'}
+                name='Access Data'
               />
             )}
           </StatField>
@@ -130,9 +129,7 @@ const Provenance: React.FC<Provenance> = ({
                         h='50px'
                         objectFit='contain'
                         my={[2, 4]}
-                        src={`${assetPrefix || ''}${getRepositoryImage(
-                          curatedBy.name,
-                        )}`}
+                        src={`${getRepositoryImage(curatedBy.name)}`}
                         alt='Data source logo'
                       />
                     ) : (
@@ -146,9 +143,7 @@ const Provenance: React.FC<Provenance> = ({
                         h='50px'
                         objectFit='contain'
                         my={[2, 4]}
-                        src={`${assetPrefix || ''}${getRepositoryImage(
-                          curatedBy.name,
-                        )}`}
+                        src={`${getRepositoryImage(curatedBy.name)}`}
                         alt='Data source logo'
                       />
                     ) : (

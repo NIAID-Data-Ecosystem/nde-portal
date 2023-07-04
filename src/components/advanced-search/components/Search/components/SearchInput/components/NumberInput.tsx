@@ -1,12 +1,14 @@
 import { useState } from 'react';
-import { Flex, Select } from 'nde-design-system';
 import {
+  Flex,
   NumberDecrementStepper,
   NumberIncrementStepper,
   NumberInput as ChakraNumberInput,
   NumberInputField,
   NumberInputStepper,
-} from '@chakra-ui/react';
+  Select,
+} from 'nde-design-system';
+
 import { AdvancedSearchInputProps } from '../types';
 import { formatNumber } from 'src/utils/helpers';
 

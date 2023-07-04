@@ -1,7 +1,8 @@
-import { Box, BoxProps } from 'nde-design-system';
+import React from 'react';
 import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
 import remarkGfm from 'remark-gfm';
+import { Box, BoxProps } from 'nde-design-system';
 /**
  * Displays + formats HTML block content.
  */
@@ -10,7 +11,9 @@ interface DisplayHTMLContentProps extends BoxProps {
   content: string;
 }
 
-export const DisplayHTMLString: React.FC = ({ children }) => {
+export const DisplayHTMLString: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   if (!children || typeof children !== 'string') {
     return <></>;
   }

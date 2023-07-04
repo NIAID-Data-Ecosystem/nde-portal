@@ -14,7 +14,6 @@ import { FaCalendarAlt, FaGlobeAmericas } from 'react-icons/fa';
 import { formatCitationString, formatLicense } from 'src/utils/helpers';
 import MetadataConfig from 'configs/resource-metadata.json';
 import StatField from './components/stat-field';
-import { assetPrefix } from 'next.config';
 import { IconProps, MetadataIcon } from 'src/components/icon';
 import { getMetadataColor } from 'src/components/icon/helpers';
 import { DisplayHTMLContent } from 'src/components/html-content';
@@ -139,10 +138,7 @@ const Overview: React.FC<OverviewProps> = ({
             >
               <>
                 {licenseInfo?.img && (
-                  <Image
-                    src={`${assetPrefix || ''}${licenseInfo.img}`}
-                    alt={licenseInfo.type}
-                  />
+                  <Image src={`${licenseInfo.img}`} alt={licenseInfo.type} />
                 )}
                 <StatContent
                   url={licenseInfo?.url}
@@ -495,7 +491,7 @@ const Overview: React.FC<OverviewProps> = ({
 
               {/* PUBMED ID*/}
               {citation && (
-                <ListItem>
+                <>
                   {citation?.map((c, i) => {
                     if (!nctid && !doi && !c.pmid) {
                       return <ListItem key={i}>-</ListItem>;
@@ -513,7 +509,7 @@ const Overview: React.FC<OverviewProps> = ({
                       );
                     }
                   })}
-                </ListItem>
+                </>
               )}
             </UnorderedList>
           </StatField>
