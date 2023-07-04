@@ -14,7 +14,7 @@ jobs:
           ref: production
       - uses: actions/setup-node@v2
         with:
-          node-version: '14'
+          node-version: '16'
       - run: yarn install
       - name: build website
         run: yarn run build
