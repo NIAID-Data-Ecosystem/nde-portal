@@ -6,12 +6,13 @@ import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
 import remarkGfm from 'remark-gfm';
 import React from 'react';
-import { MDXComponents } from 'src/mdx';
 import packageJsonData from '../../package.json';
+import { useMDXComponents } from 'mdx-components';
 
 interface ChangelogProps {}
 
 const Changelog: NextPage<ChangelogProps> = () => {
+  const MDXComponents = useMDXComponents({});
   return (
     <PageContainer
       hasNavigation

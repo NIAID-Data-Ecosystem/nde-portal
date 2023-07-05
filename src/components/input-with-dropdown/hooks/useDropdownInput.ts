@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { ListItemProps } from '@chakra-ui/react';
-import { InputProps } from 'nde-design-system';
+import { InputProps, ListItemProps } from 'nde-design-system';
 import { callAllHandlers } from 'src/utils/functions';
 import { ContextProps } from '../index';
 

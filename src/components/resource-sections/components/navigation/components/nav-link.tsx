@@ -5,6 +5,7 @@ interface NavLinkProps {
   href: string;
   isSelected: boolean;
   onClick: () => void;
+  children: React.ReactNode;
 }
 
 export const NavLink: React.FC<NavLinkProps> = ({ isSelected, ...props }) => {

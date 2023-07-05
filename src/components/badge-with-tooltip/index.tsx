@@ -28,7 +28,7 @@ export const BadgeWithTooltip: React.FC<BadgeWithTooltipProps> = ({
       <Box ref={ref} cursor='default'>
         <Badge
           colorScheme={colorScheme}
-          d='flex'
+          display='flex'
           alignItems='center'
           {...props}
         >

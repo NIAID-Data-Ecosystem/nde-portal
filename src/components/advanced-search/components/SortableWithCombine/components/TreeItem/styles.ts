@@ -1,4 +1,4 @@
-import { ListItemProps } from '@chakra-ui/react';
+import { ListItemProps } from 'nde-design-system';
 import { TreeItemComponentProps } from '.';
 
 export const getStyles = ({
@@ -22,7 +22,7 @@ export const getStyles = ({
         borderRadius: 'base',
       },
     },
-  } as Omit<ListItemProps, 'textUnderlineOffset'>;
+  } as ListItemProps;
 
   if (clone) {
     styles = {

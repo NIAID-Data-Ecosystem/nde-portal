@@ -1,9 +1,8 @@
-import React, { useEffect, useMemo } from 'react';
-import { UnorderedList } from 'nde-design-system';
+import React from 'react';
+import { ListProps, UnorderedList } from 'nde-design-system';
 import { useDropdownContext } from '..';
-import { ListProps } from '@chakra-ui/react';
 
-interface DropdownListProps extends Omit<ListProps, 'textUnderlineOffset'> {}
+interface DropdownListProps extends ListProps {}
 
 // List wrapper that open when an input is entered.
 export const DropdownList: React.FC<DropdownListProps> = ({

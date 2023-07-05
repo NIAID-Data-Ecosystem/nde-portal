@@ -10,9 +10,9 @@ import {
   IconButton,
   IconButtonProps,
   ListItem,
+  ListItemProps,
   UnorderedList,
 } from 'nde-design-system';
-import { ListItemProps } from '@chakra-ui/react';
 import { UnionTypes } from 'src/components/advanced-search/types';
 
 export interface DropdownButtonProps extends ButtonGroupProps {
@@ -25,7 +25,7 @@ export interface DropdownButtonProps extends ButtonGroupProps {
   options: {
     name: string;
     value: UnionTypes | '';
-    props: Omit<ListItemProps, 'textUnderlineOffset'>;
+    props: ListItemProps;
   }[];
   iconButtonProps?: IconButtonProps;
 }

@@ -1,7 +1,14 @@
 import { useEffect, useState } from 'react';
 import { uniqueId } from 'lodash';
-import { Box, Flex, ListItem, Text, UnorderedList } from 'nde-design-system';
-import { FormControl, FormErrorMessage } from '@chakra-ui/react';
+import {
+  Box,
+  Flex,
+  FormControl,
+  FormErrorMessage,
+  ListItem,
+  Text,
+  UnorderedList,
+} from 'nde-design-system';
 import { QueryStringError } from '../../utils/validation-checks';
 import { TreeItem } from '../SortableWithCombine';
 import { useAdvancedSearchContext } from './components/AdvancedSearchFormContext';
@@ -28,7 +35,7 @@ export const Search = ({
 }: SearchProps) => {
   const [errors, setErrors] = useState<QueryStringError[]>([]);
 
-  const { queryValue, onReset, selectedSearchType, updateQueryValue } =
+  const { queryValue, onReset, selectedSearchType } =
     useAdvancedSearchContext();
 
   // if form is reset, we reset the selected field, search type and input value
@@ -89,7 +96,7 @@ export const Search = ({
 
                   const newItems = [...prev];
 
-                  queryItem.map((item, i) => {
+                  queryItem.map(item => {
                     const { field, term, union, querystring } = item;
                     const id = `${uniqueId(
                       `${term.slice(0, 20).split(' ').join('-')}-${

@@ -11,7 +11,7 @@ interface FundingTable {
 }
 
 const FundingTable: React.FC<FundingTable> = ({ isLoading, funding }) => {
-  const accessorFn = useCallback(v => v.sortValue, []);
+  const accessorFn = useCallback((v: any) => v.sortValue, []);
 
   if (isLoading) {
     return <LoadingSpinner isLoading={isLoading} />;

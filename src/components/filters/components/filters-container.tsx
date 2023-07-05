@@ -36,6 +36,7 @@ interface FiltersContainerProps {
   error: Error | null;
   // configuration for filters display.
   filtersConfig: FiltersConfigProps;
+  children: React.ReactNode;
 }
 
 export const FiltersContainer: React.FC<FiltersContainerProps> = ({
