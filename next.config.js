@@ -17,7 +17,26 @@ const withMDX = require('@next/mdx')({
 module.exports = withMDX({
   pageExtensions: ['js', 'jsx', 'ts', 'tsx', 'md', 'mdx'],
   reactStrictMode: true,
+  output: 'export',
   trailingSlash: true,
+  // experimental: {
+  //   mdxRs: true,
+  //   turbo: {
+  //     loaders: {
+  //       // Option format
+  //       // '.md': [
+  //       //   {
+  //       //     loader: '@mdx-js/loader',
+  //       //     options: {
+  //       //       format: 'md',
+  //       //     },
+  //       //   },
+  //       // ],
+  //       // // Option-less format
+  //       '.mdx': ['@mdx-js/loader'],
+  //     },
+  //   },
+  // }, // used for mdx with TurboPack
   webpack: (config, { isServer, webpack }) => {
     // Fixes npm packages (mdx) that depend on `fs` module
 
