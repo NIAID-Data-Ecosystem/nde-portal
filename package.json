@@ -6,6 +6,7 @@
     "build": "env-cmd -f .env.production yarn run schema-definitions && next build",
     "build:staging": "env-cmd -f .env.staging yarn build",
     "build:dev": "env-cmd -f .env.dev yarn build",
+    "postbuild": "next-sitemap",
     "start": "next start",
     "lint": "next lint",
     "schema-definitions": "node src/utils/schema-definitions/index.js",
@@ -16,6 +17,7 @@
     "release:patch": "standard-version --release-as patch",
     "release:major": "standard-version --release-as major",
     "test": "npx jest"
+
   },
   "dependencies": {
     "@chakra-ui/next-js": "^2.1.3",

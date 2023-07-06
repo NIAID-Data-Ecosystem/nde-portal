@@ -34,7 +34,7 @@ export const PageContainer: React.FC<PageContainerProps> = ({
   disableSearchBar,
 }) => {
   const topNavigation = navConfig as NavigationProps['navigation'];
-  const footerNavigation = footerConfig as FooterProps['navigation'];
+  // const footerNavigation = footerConfig as FooterProps['navigation'];
 
   const prefixPortalRoutes = (routes: FooterItem[]): FooterItem[] => {
     return routes.map(r => {
@@ -111,7 +111,13 @@ export const PageContainer: React.FC<PageContainerProps> = ({
         />
       </Head>
 
-      <Flex as='main' w='100%' flexDirection='column' minW={300}>
+      <Flex
+        as='main'
+        w='100%'
+        flexDirection='column'
+        minW={300}
+        minHeight='100vh'
+      >
         {topNavigation && hasNavigation && (
           // Sticky Nav Bar.
           <Box id='nav-wrapper' w='100%' minW={300} zIndex='popover'>
@@ -125,7 +131,7 @@ export const PageContainer: React.FC<PageContainerProps> = ({
         )}
 
         {/*Page content has margin-top to compensate for fixed nav bar. */}
-        <Box id='pagebody' position='relative'>
+        <Flex id='pagebody' position='relative' flexDirection='column' flex={1}>
           <Notice />
           {!disableSearchBar && (
             <PageContent
@@ -135,6 +141,7 @@ export const PageContainer: React.FC<PageContainerProps> = ({
               borderColor='gray.100'
               flexDirection='column'
               py={4}
+              flex={1}
             >
               <Flex w='100%' justifyContent='flex-end' mb={2}>
                 <NextLink href={{ pathname: 'advanced-search' }} passHref>
@@ -151,7 +158,7 @@ export const PageContainer: React.FC<PageContainerProps> = ({
             </PageContent>
           )}
           {children}
-          <Footer
+          {/* <Footer
             navigation={{
               ...footerNavigation,
               routes: [...prefixPortalRoutes(footerConfig.routes)],
@@ -163,8 +170,8 @@ export const PageContainer: React.FC<PageContainerProps> = ({
                     ]
                   : [],
             }}
-          />
-        </Box>
+          /> */}
+        </Flex>
       </Flex>
     </>
   );

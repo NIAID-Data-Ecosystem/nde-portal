@@ -1,43 +1,4 @@
 {
   "href": "/",
-  "routes": [
-    {
-      "label": "Home",
-      "href": "/"
-    },
-    {
-      "label": "Search",
-      "href": "/search"
-    },
-    {
-      "label": "About",
-      "href": "/about"
-    },
-    {
-      "label": "Resources",
-      "routes": [
-        {
-          "label": "Advanced Search",
-          "subLabel": "Build more complex queries",
-          "href": "/advanced-search"
-        },
-        {
-          "label": "Data Repositories",
-          "subLabel": "Latest information about the data repositories included",
-          "href": "/sources"
-        },
-        {
-          "label": "Documentation",
-          "subLabel": "Guides and documentation to help navigate and use the Discovery Portal",
-          "href": "https://niaid-data.readme.io/",
-          "isExternal": true
-        },
-        {
-          "label": "Changelog",
-          "subLabel": "Log of updates to the NIAID Data Ecosystem Discovery Portal",
-          "href": "/changelog"
-        }
-      ]
-    }
-  ]
+  "routes": []
 }
