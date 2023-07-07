@@ -281,12 +281,12 @@ const SearchResultsPage = () => {
           alignItems='center'
         >
           <ResultsCount total={total} isLoading={isLoading} />
-          <Box my={2}>
+          {/* <Box my={2}>
             <AdvancedSearchWithModal
               querystring={queryString === '__all__' ? '' : queryString}
               buttonProps={{ children: 'View query in Advanced Search' }}
             />
-          </Box>
+          </Box> */}
         </Flex>
 
         <Pagination
