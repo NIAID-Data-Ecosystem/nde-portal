@@ -25,7 +25,7 @@ class Document extends NextDocument {
         // }}
       >
         <Head>
-          <link rel='icon' href={`./favicon.png`} />
+          <link rel='icon' href='/favicon.png' />
           {/* Global Site Tag (gtag.js) - Google Analytics */}
           <script
             async
