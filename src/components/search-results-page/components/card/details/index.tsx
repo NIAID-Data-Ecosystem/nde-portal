@@ -60,20 +60,19 @@ const CardDetails: React.FC<CardDetailsProps> = ({ data }) => {
     value: any;
   }) => (
     <MetadataToolTip propertyName={glyph} recordType={data?.['@type']}>
-      <Box mx={1}>
-        <MetadataIcon
-          id={`indicator-${glyph}-${id}`}
-          glyph={glyph}
-          fill={value ? getMetadataColor(glyph) : 'gray.400'}
-          title={property}
-        />
-      </Box>
+      <MetadataIcon
+        id={`indicator-${glyph}-${id}`}
+        glyph={glyph}
+        fill={value ? getMetadataColor(glyph) : 'gray.400'}
+        title={property}
+        mx={1}
+      />
     </MetadataToolTip>
   );
 
   const MetadataIndicator = () => {
     return (
-      <Flex mx={[0, 2]} my={1}>
+      <>
         <Badge property='license' glyph='license' value={licenseInfo} />
         <Badge
           property='usage info'
@@ -104,7 +103,7 @@ const CardDetails: React.FC<CardDetailsProps> = ({ data }) => {
         <Badge property='species' glyph='species' value={species} />
         {/* <Badge glyph='applicationCategory' value={applicationCategory} />{' '}
         <Badge glyph='programmingLanguage' value={programmingLanguage} /> */}
-      </Flex>
+      </>
     );
   };
 
@@ -128,7 +127,7 @@ const CardDetails: React.FC<CardDetailsProps> = ({ data }) => {
                     flexWrap='wrap'
                     alignItems='center'
                   >
-                    <Heading fontSize='h6' fontWeight='semibold' ml={1}>
+                    <Heading fontSize='h6' fontWeight='semibold' mx={1}>
                       Details
                     </Heading>
                     <MetadataIndicator />

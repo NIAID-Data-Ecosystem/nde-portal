@@ -61,14 +61,13 @@ export const FiltersSection: React.FC<FiltersSectionProps> = React.memo(
                         recordType='Dataset' // [NOTE]: Choosing dataset for general definition.
                         showAbstract
                       >
-                        <Box mx={2}>
-                          <MetadataIcon
-                            id={`filter-${property}`}
-                            glyph={icon}
-                            title={property}
-                            fill={getMetadataColor(icon)}
-                          />
-                        </Box>
+                        <MetadataIcon
+                          id={`filter-${property}`}
+                          glyph={icon}
+                          title={property}
+                          fill={getMetadataColor(icon)}
+                          mx={2}
+                        />
                       </MetadataToolTip>
                     )}
                   </Flex>
