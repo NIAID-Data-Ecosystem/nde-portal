@@ -165,7 +165,7 @@ const Main: React.FC<Main> = ({ data, isLoading }) => {
                             position='relative'
                             overflowX='auto'
                             boxShadow='low'
-                            borderRadius={'semi'}
+                            borderRadius='semi'
                           >
                             <Box
                               as='table'
@@ -175,7 +175,7 @@ const Main: React.FC<Main> = ({ data, isLoading }) => {
                               textAlign='left'
                               fontSize='sm'
                             >
-                              <Box as='thead' textTransform={'uppercase'}>
+                              <Box as='thead' textTransform='uppercase'>
                                 <tr>
                                   <Box as='th' scope='col' px={6} py={3}>
                                     {sourceObj.name} Property

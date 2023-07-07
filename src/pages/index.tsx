@@ -40,6 +40,7 @@ import { AdvancedSearchOpen } from 'src/components/advanced-search/components/bu
 import { FaChevronRight } from 'react-icons/fa';
 import { useRepoData } from 'src/hooks/api';
 import { queryFilterObject2String } from 'src/components/filters';
+import { FaRegEnvelope, FaGithub } from 'react-icons/fa';
 
 interface Repository {
   identifier: string;
@@ -440,6 +441,9 @@ const Home: NextPage = () => {
                     },
                     index,
                   ) => {
+                    const icon = route.title.includes('question')
+                      ? FaRegEnvelope
+                      : FaGithub;
                     return (
                       <Box key={route.title} w={['100%', 'unset']}>
                         <NextLink
@@ -454,7 +458,8 @@ const Home: NextPage = () => {
                             variant={index % 2 ? 'solid' : 'outline'}
                             m={[0, 0, 0]}
                             my={[1, 2, 0]}
-                            maxWidth={['unset', '200px']}
+                            maxWidth={['unset', '250px']}
+                            leftIcon={<Icon as={icon} />}
                           >
                             {route.title}
                           </Button>

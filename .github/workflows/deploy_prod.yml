@@ -14,7 +14,7 @@ jobs:
           ref: production
       - uses: actions/setup-node@v2
         with:
-          node-version: '14'
+          node-version: '16'
       - run: yarn install
       - name: build website
         run: yarn run build
@@ -22,10 +22,10 @@ jobs:
           README_API_KEY: ${{ secrets.README_API_KEY }}
           GH_API_KEY: ${{ secrets.GH_API_KEY }}
           GITHUB_BRANCH: ${{  github.ref_name }}
-      - name: install additional packages for broken links test
+      - name: install additional packages for tests
         run: yarn add puppeteer@19.11.1 axios jest
       - name: start react app
-        run: yarn start &
+        run: yarn serve &
         env:
           README_API_KEY: ${{ secrets.README_API_KEY }}
           GH_API_KEY: ${{ secrets.GH_API_KEY }}
