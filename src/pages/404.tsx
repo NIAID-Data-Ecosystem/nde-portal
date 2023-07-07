@@ -15,7 +15,7 @@ const NotFoundPage: NextPage = () => {
         <Flex flexDirection='column' alignItems='center'>
           <Image
             w='80%'
-            src='/assets/404.png'
+            src='/assets/404.webp'
             alt='404: Page Not Found'
             mb={8}
           />
