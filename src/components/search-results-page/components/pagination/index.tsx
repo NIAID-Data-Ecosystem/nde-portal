@@ -9,6 +9,7 @@ import {
   PaginationButtonGroup as StyledPaginationButtonGroup,
   ScaleFade,
   Select,
+  useBreakpointValue,
   VisuallyHidden,
 } from 'nde-design-system';
 import {
@@ -54,6 +55,11 @@ export const Pagination: React.FC<PaginationProps> = ({
   handleSelectedPage,
   children,
 }) => {
+  const showPageDropdown = useBreakpointValue(
+    { base: true, md: false },
+    { ssr: false },
+  );
+
   const [totalPages, setTotalPages] = useState(0);
 
   useEffect(() => {
@@ -76,6 +82,15 @@ export const Pagination: React.FC<PaginationProps> = ({
       return prev;
     });
   }, [total, isLoading, selectedPerPage]);
+
+  // Function to generate options with two before and after the selected value
+  const generateOptions = (selectedVal: number) => {
+    let start = Math.max(1, selectedVal - 2);
+    let end = start + 4 <= totalPages ? start + 4 : totalPages;
+    return Array.from({ length: end - start + 1 }, (_, i) => start + i);
+  };
+
+  const options = generateOptions(selectedPage);
 
   // If no results, don't display pagination options
   if (!total) {
@@ -119,58 +134,56 @@ export const Pagination: React.FC<PaginationProps> = ({
               <VisuallyHidden>Previous page</VisuallyHidden>
               <Icon as={FaAngleLeft} />
             </StyledPaginationButton>
-            <Flex display={{ base: 'none', md: 'flex' }}>
-              <StyledPaginationButtonGroup>
-                {Array(
-                  selectedPage < totalPages - 5
-                    ? selectedPage + 5
-                    : selectedPage + (totalPages - selectedPage),
-                )
-                  .fill('')
-                  .map((_, i) => {
-                    const currentPage = i + 1;
-                    return (
-                      <PaginationButton
-                        key={i}
-                        isActive={currentPage === selectedPage}
-                        onClick={() => handleSelectedPage(currentPage)}
-                      >
-                        {i + 1}
-                      </PaginationButton>
-                    );
-                  })}
-              </StyledPaginationButtonGroup>
-              {totalPages > 5 && selectedPage < totalPages - 1 && (
-                <PaginationButton
-                  isActive={totalPages === selectedPage}
-                  onClick={() => {
-                    handleSelectedPage(totalPages);
-                  }}
-                >
-                  {totalPages}
-                </PaginationButton>
-              )}
-            </Flex>
+
             {/* Mobile */}
-            <Select
-              display={{ base: 'flex', md: 'none' }}
-              p={1}
-              onChange={e => handleSelectedPage(+e.target.value)}
-              size='md'
-              cursor='pointer'
-              value={selectedPage}
-            >
-              {Array(totalPages)
-                .fill('')
-                .map((_, i) => {
-                  const currentPage = i + 1;
+            {showPageDropdown ? (
+              <Select
+                p={1}
+                onChange={e => handleSelectedPage(+e.target.value)}
+                size='md'
+                cursor='pointer'
+                value={selectedPage}
+              >
+                {options.map((option, i) => {
                   return (
-                    <option key={i} value={currentPage}>
-                      {i + 1}
+                    <option key={i} value={option}>
+                      {option}
                     </option>
                   );
                 })}
-            </Select>
+              </Select>
+            ) : (
+              <Flex>
+                <StyledPaginationButtonGroup>
+                  {options.map((currentPage, i) => {
+                    return (
+                      <PaginationButton
+                        key={currentPage}
+                        isActive={currentPage === selectedPage}
+                        onClick={() => handleSelectedPage(currentPage)}
+                      >
+                        {currentPage}
+                      </PaginationButton>
+                    );
+                  })}
+                </StyledPaginationButtonGroup>
+                {totalPages > 5 && selectedPage < totalPages - 1 && (
+                  <>
+                    <Flex alignItems='flex-end' mx={4} color='gray.400'>
+                      ...
+                    </Flex>
+                    <PaginationButton
+                      isActive={totalPages === selectedPage}
+                      onClick={() => {
+                        handleSelectedPage(totalPages);
+                      }}
+                    >
+                      {totalPages}
+                    </PaginationButton>
+                  </>
+                )}
+              </Flex>
+            )}
             <StyledPaginationButton
               isDisabled={selectedPage === totalPages}
               onClick={() => handleSelectedPage(selectedPage + 1)}

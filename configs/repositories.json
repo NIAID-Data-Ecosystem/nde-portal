@@ -98,7 +98,7 @@
     },
     {
       "id": "ImmPort",
-      "label": "Immunology Database and Analysis Portal",
+      "label": "ImmPort",
       "abstract": "Hosts immunology data from basic science and clinical studies",
       "genre": ["omics", "clinical", "imaging", "immunology", "molecular"],
       "icon": "/assets/resources/immport-icon.jpg",
