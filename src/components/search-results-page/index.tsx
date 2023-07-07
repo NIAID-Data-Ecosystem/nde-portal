@@ -36,7 +36,7 @@ import { DownloadMetadata } from '../download-metadata';
 import NextLink from 'next/link';
 import { encodeString } from 'src/utils/querystring-helpers';
 import { SelectedFilterType } from '../filters/types';
-import { AdvancedSearchWithModal } from '../advanced-search';
+// import { AdvancedSearchWithModal } from '../advanced-search/AdvancedSearchWithModal';
 import { getQueryStatusError } from '../error/utils';
 
 /*
@@ -282,7 +282,7 @@ const SearchResultsPage = () => {
         >
           <ResultsCount total={total} isLoading={isLoading} />
           {/* <Box my={2}>
-            <AdvancedSearchWithModal
+            // <AdvancedSearchWithModal
               querystring={queryString === '__all__' ? '' : queryString}
               buttonProps={{ children: 'View query in Advanced Search' }}
             />
