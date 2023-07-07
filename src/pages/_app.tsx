@@ -3,14 +3,14 @@ import type { AppProps } from 'next/app';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
 import { QueryClient, QueryClientProvider } from 'react-query';
-import {
-  extendTheme,
-  theme as NDETHEME,
-  ThemeProvider,
-} from 'nde-design-system';
+import { extendTheme, theme as NDETHEME } from 'nde-design-system';
 import { Public_Sans } from 'next/font/google';
 import * as ga from 'lib/ga';
+import dynamic from 'next/dynamic';
 
+const ThemeProvider = dynamic(() =>
+  import('nde-design-system').then(mod => mod.ThemeProvider),
+);
 // Creates an instance of react-query for the app.
 const queryClient = new QueryClient();
 
