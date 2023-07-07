@@ -298,8 +298,8 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                             mb={[2, 2, 0]}
                           >
                             <Image
-                              minH='40px'
-                              maxH='40px'
+                              w='auto'
+                              h='40px'
                               maxW='250px'
                               mr={4}
                               src={`${imageURL}`}
@@ -308,9 +308,9 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                           </Link>
                         ) : (
                           <Image
-                            minH='20px'
-                            maxH='40px'
-                            maxW='200px'
+                            w='auto'
+                            h='40px'
+                            maxW='250px'
                             mr={4}
                             mb={[2, 2, 0]}
                             src={`${imageURL}`}

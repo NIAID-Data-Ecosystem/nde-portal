@@ -150,6 +150,8 @@ const CardDetails: React.FC<CardDetailsProps> = ({ data }) => {
                         <>
                           {licenseInfo?.img && (
                             <Image
+                              width='auto'
+                              height='2rem'
                               src={`${licenseInfo.img}`}
                               alt={licenseInfo.type}
                               mb={1}
