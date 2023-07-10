@@ -5,7 +5,7 @@ export const StyledLabel = styled(Flex)<FlexProps>`
   display: inline-flex;
   line-height: 1.5;
   position: relative;
-  z-index: 1;
+  z-index: 0;
   &:before {
     content: '';
     background-color: ${(props: any) =>

@@ -36,7 +36,7 @@ import { DownloadMetadata } from '../download-metadata';
 import NextLink from 'next/link';
 import { encodeString } from 'src/utils/querystring-helpers';
 import { SelectedFilterType } from '../filters/types';
-// import { AdvancedSearchWithModal } from '../advanced-search';
+// import { AdvancedSearchWithModal } from '../advanced-search/AdvancedSearchWithModal';
 import { getQueryStatusError } from '../error/utils';
 
 /*
@@ -270,142 +270,140 @@ const SearchResultsPage = () => {
     );
   }
   return (
-    <Box flex={1}>
-      <Flex w='100%' flexDirection='column' mx={[0, 0, 4]} flex={[1, 2]}>
-        <Flex
-          w='100%'
-          borderBottom='2px solid'
-          borderColor='gray.700'
-          flexWrap={{ base: 'wrap-reverse', sm: 'wrap' }}
-          justifyContent='space-between'
-          alignItems='center'
-        >
-          <ResultsCount total={total} isLoading={isLoading} />
-          {/* <Box my={2}>
-            <AdvancedSearchWithModal
+    <Flex w='100%' flexDirection='column' mx={[0, 0, 4]} flex={[1, 2]}>
+      <Flex
+        w='100%'
+        borderBottom='2px solid'
+        borderColor='gray.700'
+        flexWrap={{ base: 'wrap-reverse', sm: 'wrap' }}
+        justifyContent='space-between'
+        alignItems='center'
+      >
+        <ResultsCount total={total} isLoading={isLoading} />
+        {/* <Box my={2}>
+            // <AdvancedSearchWithModal
               querystring={queryString === '__all__' ? '' : queryString}
               buttonProps={{ children: 'View query in Advanced Search' }}
             />
           </Box> */}
-        </Flex>
-
-        <Pagination
-          id='pagination-top'
-          selectedPage={selectedPage}
-          handleSelectedPage={from => {
-            handleRouteUpdate({ from });
-          }}
-          selectedPerPage={selectedPerPage}
-          total={total}
-          isLoading={isLoading}
-          ariaLabel='paginate through resources top bar'
-        >
-          <Flex
-            flex={1}
-            justifyContent='space-between'
-            alignItems='center'
-            flexWrap='wrap'
-            flexDirection={{ md: 'row-reverse' }}
-            pb={[4, 4, 2]}
-            mb={[4, 4, 2]}
-            borderBottom={{ base: '1px solid' }}
-            borderColor={{ base: 'page.alt' }}
-            w='100%'
-            minW={{ md: 500 }}
-          >
-            <DownloadMetadata
-              exportName='nde-results'
-              params={params}
-              buttonProps={{ variant: 'outline' }}
-            >
-              Download Metadata
-            </DownloadMetadata>
-
-            <Box
-              w={['100%', '100%', 'unset']}
-              flex={{ base: 'unset', md: 1 }}
-              minW={{ base: 'unset', md: 300 }}
-              mr={{ base: 'unset', md: 2 }}
-            >
-              <SortResults
-                sortOptions={sortOptions}
-                sortOrder={sortOrder}
-                handleSortOrder={sort => {
-                  handleRouteUpdate({
-                    sort,
-                    from: defaultQuery.selectedPage,
-                  });
-                }}
-                selectedPerPage={selectedPerPage}
-                handleSelectedPerPage={v =>
-                  handleRouteUpdate({ from: 1, size: v })
-                }
-              />
-            </Box>
-          </Flex>
-        </Pagination>
-
-        {/* Display banner on last page if results exceed amount allotted by API */}
-        <Collapse
-          in={selectedPage === Math.floor(MAX_PAGES / selectedPerPage)}
-          animateOpacity
-        >
-          <Banner status='info'>
-            Only the first {formatNumber(10000)} results are displayed, please
-            limit your query to get better results or use our API to download
-            all results.
-          </Banner>
-        </Collapse>
-        <Stack direction='row' justifyContent='space-between' flex={1} w='100%'>
-          {/* Results Cards */}
-          {/* Empty state if no results found */}
-          {!isLoading && (!data || data.results.length === 0) && (
-            <Empty message='No results found.' alignSelf='center' h='50vh'>
-              <Text>Search yielded no results, please try again.</Text>
-              <NextLink href={{ pathname: '/search' }}>
-                <Button mt={4}>Go to search</Button>
-              </NextLink>
-            </Empty>
-          )}
-
-          <UnorderedList
-            className='search-results-cards'
-            ml={0}
-            flex={3}
-            w='100%'
-          >
-            {isLoading || (data && data.results?.length > 0)
-              ? new Array(selectedPerPage).fill(null).map((_, i) => {
-                  const result: FormattedResource | null =
-                    data?.results && data.results.length > 0
-                      ? data.results[i]
-                      : null;
-
-                  // if waiting for results to load display placeholder loading cards until content is available
-                  if (result || isLoading) {
-                    return (
-                      <ListItem key={i} my={4} mb={8}>
-                        <Card isLoading={isLoading} data={result} />
-                      </ListItem>
-                    );
-                  }
-                })
-              : null}
-          </UnorderedList>
-        </Stack>
-        <Pagination
-          id='pagination-bottom'
-          selectedPage={selectedPage}
-          handleSelectedPage={from => {
-            handleRouteUpdate({ from });
-          }}
-          selectedPerPage={selectedPerPage}
-          total={total}
-          isLoading={isLoading}
-          ariaLabel='paginate through resources bottom bar'
-        />
       </Flex>
-    </Box>
+
+      <Pagination
+        id='pagination-top'
+        selectedPage={selectedPage}
+        handleSelectedPage={from => {
+          handleRouteUpdate({ from });
+        }}
+        selectedPerPage={selectedPerPage}
+        total={total}
+        isLoading={isLoading}
+        ariaLabel='paginate through resources top bar'
+      >
+        <Flex
+          flex={1}
+          justifyContent='space-between'
+          alignItems='center'
+          flexWrap='wrap'
+          flexDirection={{ md: 'row-reverse' }}
+          pb={[4, 4, 2]}
+          mb={[4, 4, 2]}
+          borderBottom={{ base: '1px solid' }}
+          borderColor={{ base: 'page.alt' }}
+          w='100%'
+          minW={{ md: 500 }}
+        >
+          <DownloadMetadata
+            exportName='nde-results'
+            params={params}
+            buttonProps={{ variant: 'outline' }}
+          >
+            Download Metadata
+          </DownloadMetadata>
+
+          <Box
+            w={['100%', '100%', 'unset']}
+            flex={{ base: 'unset', md: 1 }}
+            minW={{ base: 'unset', md: 300 }}
+            mr={{ base: 'unset', md: 2 }}
+          >
+            <SortResults
+              sortOptions={sortOptions}
+              sortOrder={sortOrder}
+              handleSortOrder={sort => {
+                handleRouteUpdate({
+                  sort,
+                  from: defaultQuery.selectedPage,
+                });
+              }}
+              selectedPerPage={selectedPerPage}
+              handleSelectedPerPage={v =>
+                handleRouteUpdate({ from: 1, size: v })
+              }
+            />
+          </Box>
+        </Flex>
+      </Pagination>
+
+      {/* Display banner on last page if results exceed amount allotted by API */}
+      <Collapse
+        in={selectedPage === Math.floor(MAX_PAGES / selectedPerPage)}
+        animateOpacity
+      >
+        <Banner status='info'>
+          Only the first {formatNumber(10000)} results are displayed, please
+          limit your query to get better results or use our API to download all
+          results.
+        </Banner>
+      </Collapse>
+      <Stack direction='row' justifyContent='space-between' flex={1} w='100%'>
+        {/* Results Cards */}
+        {/* Empty state if no results found */}
+        {!isLoading && (!data || data.results.length === 0) && (
+          <Empty message='No results found.' alignSelf='center' h='50vh'>
+            <Text>Search yielded no results, please try again.</Text>
+            <NextLink href={{ pathname: '/search' }}>
+              <Button mt={4}>Go to search</Button>
+            </NextLink>
+          </Empty>
+        )}
+
+        <UnorderedList
+          className='search-results-cards'
+          ml={0}
+          flex={3}
+          w='100%'
+        >
+          {isLoading || (data && data.results?.length > 0)
+            ? new Array(selectedPerPage).fill(null).map((_, i) => {
+                const result: FormattedResource | null =
+                  data?.results && data.results.length > 0
+                    ? data.results[i]
+                    : null;
+
+                // if waiting for results to load display placeholder loading cards until content is available
+                if (result || isLoading) {
+                  return (
+                    <ListItem key={i} my={4} mb={8}>
+                      <Card isLoading={isLoading} data={result} />
+                    </ListItem>
+                  );
+                }
+              })
+            : null}
+        </UnorderedList>
+      </Stack>
+      <Pagination
+        id='pagination-bottom'
+        selectedPage={selectedPage}
+        handleSelectedPage={from => {
+          handleRouteUpdate({ from });
+        }}
+        selectedPerPage={selectedPerPage}
+        total={total}
+        isLoading={isLoading}
+        ariaLabel='paginate through resources bottom bar'
+      />
+    </Flex>
   );
 };
 

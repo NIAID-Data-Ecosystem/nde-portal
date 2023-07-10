@@ -7,20 +7,16 @@ import {
   AccordionPanel,
   Box,
   Button,
-  ButtonProps,
   Collapse,
   Flex,
   Heading,
   Icon,
   ListItem,
-  ModalProps,
   Text,
   UnorderedList,
   useDisclosure,
 } from 'nde-design-system';
 import { useRouter } from 'next/router';
-import { AdvancedSearchModal } from './components/Modal';
-import { AdvancedSearchOpen } from './components/buttons';
 import {
   buildTree,
   TreeItem,
@@ -53,7 +49,7 @@ import { useLocalStorage } from 'usehooks-ts';
 import { formatNumber } from 'src/utils/helpers';
 import { ErrorBanner } from '../error/ErrorBanner';
 
-interface AdvancedSearchProps {
+export interface AdvancedSearchProps {
   colorScheme?: string;
   sampleQueries?: {
     name: string;
@@ -379,48 +375,6 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
           </AccordionItem>
         </Accordion>
       </Box>
-    </>
-  );
-};
-
-interface AdvancedSearchPropsWithModal extends AdvancedSearchProps {
-  buttonProps?: ButtonProps;
-  modalProps?: ModalProps;
-}
-
-export const AdvancedSearchWithModal: React.FC<
-  AdvancedSearchPropsWithModal
-> = ({ buttonProps, modalProps, ...props }) => {
-  // Handles the opening of the modal.
-  const { isOpen, onOpen, onClose } = useDisclosure();
-
-  return (
-    <>
-      <AdvancedSearchOpen onClick={onOpen} {...buttonProps} />
-
-      <AdvancedSearchModal
-        isOpen={isOpen}
-        handleClose={onClose}
-        {...modalProps}
-      >
-        {isOpen && (
-          <AdvancedSearch
-            onValidSubmit={onClose}
-            renderButtonGroup={(props: any) => (
-              <Button
-                {...props}
-                mr={3}
-                onClick={onClose}
-                variant='outline'
-                size='md'
-              >
-                Close
-              </Button>
-            )}
-            {...props}
-          />
-        )}
-      </AdvancedSearchModal>
     </>
   );
 };

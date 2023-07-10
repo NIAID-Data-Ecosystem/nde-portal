@@ -22,12 +22,6 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
   children,
   color,
 }) => {
-  // Don't animate based on users preference (uses window.matchMedia).
-  // const prefersReducedMotion = usePrefersReducedMotion();
-  // const animation = prefersReducedMotion
-  //   ? undefined
-  //   : `${fade} 1.2s ease-in-out both`;
-
   return (
     <>
       <PageContent
@@ -35,7 +29,7 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
           bg ||
           `linear-gradient(180deg, ${theme.colors.primary[500]}, ${theme.colors.tertiary[700]})`
         }
-        bgImg={bgImg || `/assets/home-bg.png`}
+        bgImg={bgImg || '/assets/home-bg.webp'}
         backgroundSize='cover'
         flexWrap='wrap'
         minH='unset'
@@ -44,7 +38,7 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
         {/* Header section */}
         <StyledSection
           id='header'
-          flexDirection={'column'}
+          flexDirection='column'
           alignItems={{ base: 'flex-start', xl: 'center' }}
           textAlign={{ xl: 'center' }}
         >

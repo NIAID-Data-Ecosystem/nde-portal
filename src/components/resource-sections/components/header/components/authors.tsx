@@ -112,124 +112,128 @@ const ResourceAuthors = ({
             <AccordionPanel px={[1, 4, 6]} py={4} bg='page.alt'>
               {/* If the author list has an author with affiliation, we display the authors as a vertical list.
               Otherwise, display that authors as a paragraph */}
-              <UnorderedList
-                display={authors_have_details ? '' : 'inline-flex'}
-                flexWrap='wrap'
-              >
-                {authors.map((author, i) => {
-                  let { identifier, name, url, email } = author;
+              {isExpanded ? (
+                <UnorderedList
+                  display={authors_have_details ? '' : 'inline-flex'}
+                  flexWrap='wrap'
+                >
+                  {authors.map((author, i) => {
+                    let { identifier, name, url, email } = author;
 
-                  let authors_str =
-                    formatAuthorsList2String(authors).split(',');
-                  return (
-                    <ListItem
-                      key={`${i}-${name}`}
-                      display='flex'
-                      alignItems='center'
-                      mr={1}
-                      flexWrap='wrap'
-                    >
-                      {/* Author name. */}
-                      <Text>
-                        <strong>{authors_str[i]}</strong>
-                      </Text>
+                    let authors_str =
+                      formatAuthorsList2String(authors).split(',');
+                    return (
+                      <ListItem
+                        key={`${i}-${name}`}
+                        display='flex'
+                        alignItems='center'
+                        mr={1}
+                        flexWrap='wrap'
+                      >
+                        {/* Author name. */}
+                        <Text>
+                          <strong>{authors_str[i]}</strong>
+                        </Text>
 
-                      {author.role ? (
-                        <>
-                          <Text ml={1}>{author.role}</Text>
-                        </>
-                      ) : (
-                        <></>
-                      )}
+                        {author.role ? (
+                          <>
+                            <Text ml={1}>{author.role}</Text>
+                          </>
+                        ) : (
+                          <></>
+                        )}
 
-                      {(url || identifier || email) && (
-                        <HStack
-                          spacing={2}
-                          mx={1}
-                          pl={1.5}
-                          align='center'
-                          borderLeft='1px solid'
-                          borderLeftColor='primary.500'
-                        >
-                          {/* Author contact URLs(website, email, orcid). */}
-                          {url &&
-                            (url?.includes('orcid') ? (
-                              <OrcidLink url={url} />
-                            ) : (
-                              <Tooltip label='Website'>
-                                <ChakraLink
-                                  href={url}
-                                  as='a'
-                                  target='_blank'
-                                  display='flex'
-                                  alignItems='center'
-                                >
-                                  <Icon
-                                    as={FaRegWindowMaximize}
-                                    aria-label='Personal website.'
-                                  />
-                                </ChakraLink>
-                              </Tooltip>
-                            ))}
+                        {(url || identifier || email) && (
+                          <HStack
+                            spacing={2}
+                            mx={1}
+                            pl={1.5}
+                            align='center'
+                            borderLeft='1px solid'
+                            borderLeftColor='primary.500'
+                          >
+                            {/* Author contact URLs(website, email, orcid). */}
+                            {url &&
+                              (url?.includes('orcid') ? (
+                                <OrcidLink url={url} />
+                              ) : (
+                                <Tooltip label='Website'>
+                                  <ChakraLink
+                                    href={url}
+                                    as='a'
+                                    target='_blank'
+                                    display='flex'
+                                    alignItems='center'
+                                  >
+                                    <Icon
+                                      as={FaRegWindowMaximize}
+                                      aria-label='Personal website.'
+                                    />
+                                  </ChakraLink>
+                                </Tooltip>
+                              ))}
 
-                          {email && (
-                            <ChakraLink
-                              href={`mailto:${email}`}
-                              display='flex'
-                              alignItems='center'
-                            >
-                              <Icon as={FaRegEnvelope} />
-                            </ChakraLink>
-                          )}
-
-                          {/* Display author id if it's ORCID: */}
-                          {identifier && identifier?.includes('orcid') && (
-                            <OrcidLink url={identifier} />
-                          )}
-                        </HStack>
-                      )}
-
-                      {/* Author Affiliation. */}
-                      {author.affiliation?.name ? (
-                        <>
-                          {','}&nbsp;
-                          {author.affiliation.sameAs ? (
-                            <>
-                              <Link
-                                href={author.affiliation.sameAs}
-                                isExternal
-                                sx={{
-                                  svg: { marginLeft: '0.25rem !important' },
-                                }}
-                                ml={1}
+                            {email && (
+                              <ChakraLink
+                                href={`mailto:${email}`}
+                                display='flex'
+                                alignItems='center'
                               >
+                                <Icon as={FaRegEnvelope} />
+                              </ChakraLink>
+                            )}
+
+                            {/* Display author id if it's ORCID: */}
+                            {identifier && identifier?.includes('orcid') && (
+                              <OrcidLink url={identifier} />
+                            )}
+                          </HStack>
+                        )}
+
+                        {/* Author Affiliation. */}
+                        {author.affiliation?.name ? (
+                          <>
+                            {','}&nbsp;
+                            {author.affiliation.sameAs ? (
+                              <>
+                                <Link
+                                  href={author.affiliation.sameAs}
+                                  isExternal
+                                  sx={{
+                                    svg: { marginLeft: '0.25rem !important' },
+                                  }}
+                                  ml={1}
+                                >
+                                  {name
+                                    ? `${author.affiliation.name}`
+                                    : author.affiliation.name}
+                                </Link>
+                              </>
+                            ) : (
+                              <Text>
                                 {name
                                   ? `${author.affiliation.name}`
                                   : author.affiliation.name}
-                              </Link>
-                            </>
-                          ) : (
-                            <Text>
-                              {name
-                                ? `${author.affiliation.name}`
-                                : author.affiliation.name}
-                            </Text>
-                          )}{' '}
-                        </>
-                      ) : (
-                        ''
-                      )}
+                              </Text>
+                            )}{' '}
+                          </>
+                        ) : (
+                          ''
+                        )}
 
-                      {/* Append punctuation when not in vertical list form. */}
-                      {authors_have_details
-                        ? ''
-                        : i === authors.length - 1
-                        ? '.'
-                        : ','}
-                    </ListItem>
-                  );
-                })}
-              </UnorderedList>
+                        {/* Append punctuation when not in vertical list form. */}
+                        {authors_have_details
+                          ? ''
+                          : i === authors.length - 1
+                          ? '.'
+                          : ','}
+                      </ListItem>
+                    );
+                  })}
+                </UnorderedList>
+              ) : (
+                <></>
+              )}
             </AccordionPanel>
           </>
         )}
