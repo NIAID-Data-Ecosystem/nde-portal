@@ -86,22 +86,24 @@ const TypeBanner: React.FC<TypeBannerProps> = ({
           </StyledLabel>
         )}
       </Flex>
-      <Flex
-        bg={props.bg || 'status.info_lt'}
-        overflow='hidden'
-        flex={1}
-        minW='250px'
-      >
-        {date && (
-          <Flex alignItems='center' px={{ base: 2, lg: 4 }} py={[2, 1]}>
-            <Icon as={FaRegClock} mr={2}></Icon>
-            <Text fontSize='xs' fontWeight='semibold' whiteSpace='nowrap'>
-              {date}
-            </Text>
-          </Flex>
-        )}
-        {children}
-      </Flex>
+      {date && (
+        <Flex
+          bg={props.bg || 'status.info_lt'}
+          overflow='hidden'
+          flex={1}
+          minW='250px'
+        >
+          {date && (
+            <Flex alignItems='center' px={{ base: 2, lg: 4 }} py={[2, 1]}>
+              <Icon as={FaRegClock} mr={2}></Icon>
+              <Text fontSize='xs' fontWeight='semibold' whiteSpace='nowrap'>
+                {date}
+              </Text>
+            </Flex>
+          )}
+          {children}
+        </Flex>
+      )}
     </Flex>
   );
 };

@@ -126,6 +126,7 @@ const Provenance: React.FC<Provenance> = ({
 
                     {curatedBy?.name && getRepositoryImage(curatedBy.name) ? (
                       <Image
+                        w='auto'
                         h='50px'
                         objectFit='contain'
                         my={[2, 4]}
@@ -140,6 +141,7 @@ const Provenance: React.FC<Provenance> = ({
                   <>
                     {curatedBy?.name && getRepositoryImage(curatedBy.name) ? (
                       <Image
+                        w='auto'
                         h='50px'
                         objectFit='contain'
                         my={[2, 4]}

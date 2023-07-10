@@ -27,7 +27,10 @@ export interface IconProps extends ChakraIconProps {
 
 // Icon displaying symbol
 export const MetadataIcon = React.forwardRef<HTMLDivElement, IconProps>(
-  ({ id, glyph, title, color, fill, boxSize, viewBox }: IconProps, ref) => {
+  (
+    { id, glyph, title, color, fill, boxSize, viewBox, ...props }: IconProps,
+    ref,
+  ) => {
     if (!glyph) {
       return <></>;
     }
@@ -59,7 +62,7 @@ export const MetadataIcon = React.forwardRef<HTMLDivElement, IconProps>(
           borderRadius='100%'
           p='0.2rem'
           aria-label='information'
-          // title='information'
+          {...props}
         />
       );
     } else {
@@ -76,6 +79,7 @@ export const MetadataIcon = React.forwardRef<HTMLDivElement, IconProps>(
             boxSize={boxSize || 5}
             // title={title}
             aria-label={title}
+            {...props}
           />
         ) : (
           <Icon
@@ -87,6 +91,7 @@ export const MetadataIcon = React.forwardRef<HTMLDivElement, IconProps>(
             role='img'
             // title={title}
             aria-label={title}
+            {...props}
           >
             <Glyph id={id} glyph={glyph} stroke='currentColor' title={title} />
           </Icon>

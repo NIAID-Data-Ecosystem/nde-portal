@@ -86,7 +86,19 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
       return <Link {...props} />;
     },
     Flex: (props: any) => <Flex {...props} />,
-
+    blockquote: (props: any) => {
+      return (
+        <Box
+          borderLeft='0.2em solid'
+          borderLeftColor='status.info'
+          px={4}
+          py={2}
+          mx={{ base: 0, md: 2 }}
+          bg='status.info_lt'
+          {...props}
+        />
+      );
+    },
     Box: (props: any) => <Box {...props} />,
     Details: (props: any) => {
       const { children } = props;
