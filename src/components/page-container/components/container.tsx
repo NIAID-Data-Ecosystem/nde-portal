@@ -11,7 +11,7 @@ import {
 import navConfig from 'configs/nav.json';
 import footerConfig from 'configs/footer.json';
 import Head from 'next/head';
-import Notice from './notice';
+// import Notice from './notice';
 import { SearchBarWithDropdown } from 'src/components/search-bar';
 import { PageContent } from './content';
 import { AdvancedSearchOpen } from 'src/components/advanced-search/components/buttons';
@@ -34,7 +34,7 @@ export const PageContainer: React.FC<PageContainerProps> = ({
   disableSearchBar,
 }) => {
   const topNavigation = navConfig as NavigationProps['navigation'];
-  // const footerNavigation = footerConfig as FooterProps['navigation'];
+  const footerNavigation = footerConfig as FooterProps['navigation'];
 
   const prefixPortalRoutes = (routes: FooterItem[]): FooterItem[] => {
     return routes.map(r => {
@@ -132,7 +132,7 @@ export const PageContainer: React.FC<PageContainerProps> = ({
 
         {/*Page content has margin-top to compensate for fixed nav bar. */}
         <Flex id='pagebody' position='relative' flexDirection='column' flex={1}>
-          <Notice />
+          {/* <Notice /> */}
           {!disableSearchBar && (
             <PageContent
               bg='#fff'
@@ -158,7 +158,7 @@ export const PageContainer: React.FC<PageContainerProps> = ({
             </PageContent>
           )}
           {children}
-          {/* <Footer
+          <Footer
             navigation={{
               ...footerNavigation,
               routes: [...prefixPortalRoutes(footerConfig.routes)],
@@ -170,7 +170,7 @@ export const PageContainer: React.FC<PageContainerProps> = ({
                     ]
                   : [],
             }}
-          /> */}
+          />
         </Flex>
       </Flex>
     </>
