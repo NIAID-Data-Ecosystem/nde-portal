@@ -1,13 +1,13 @@
 import React, { useCallback } from 'react';
 import { Params } from 'src/utils/api';
 import { useFacetsData } from 'src/components/filters/hooks/useFacetsData';
+import { FiltersContainer } from 'src/components/filters/components/filters-container';
+import { FiltersList } from 'src/components/filters/components/filters-list';
+import { FiltersSection } from 'src/components/filters/components/filters-section';
 import {
-  FiltersContainer,
-  FiltersList,
-  FiltersSection,
   queryFilterObject2String,
   updateRoute,
-} from 'src/components/filters';
+} from 'src/components/filters/helpers';
 import {
   FiltersConfigProps,
   SelectedFilterType,
