@@ -19,7 +19,6 @@ const nextConfig = {
   pageExtensions: ['js', 'jsx', 'ts', 'tsx', 'md', 'mdx'],
   reactStrictMode: true,
   output: 'export',
-  trailingSlash: true,
   // experimental: {
   //   mdxRs: true,
   //   turbo: {
