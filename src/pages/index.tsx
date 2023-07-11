@@ -12,7 +12,7 @@ const Home: NextPage = () => {
       disableSearchBar
     >
       <PageContent
-        minH='400px'
+        minH='80vh'
         flex={1}
         bg={`linear-gradient(180deg, ${theme.colors.primary[500]}, ${theme.colors.tertiary[700]})`}
         bgImg={`/assets/home-bg.png`}
