@@ -3,17 +3,20 @@ import {
   Box,
   Button,
   Flex,
-  Heading,
+  Icon,
+  keyframes,
   SearchInput,
   UnorderedList,
   ListItem,
   CheckboxGroup,
   Text,
   ButtonProps,
+  usePrefersReducedMotion,
 } from 'nde-design-system';
 import { FilterTerm } from '../types';
 import { FiltersCheckbox } from './filters-checkbox';
 import REPOS from 'configs/repositories.json';
+import { FaArrowDown } from 'react-icons/fa';
 /*
 [COMPONENT INFO]:
 Filter list handles the number of items to show in list (expanded option).
@@ -35,7 +38,17 @@ interface FiltersList {
   isUpdating?: boolean;
   property: string;
 }
-
+const bounce = keyframes`
+  0%, 20%, 50%, 80%, 100% {
+      transform: translateY(0);
+  }
+  40% {
+      transform: translateY(-10px);
+  }
+  60% {
+      transform: translateY(-5px);
+  }
+`;
 export const FiltersList: React.FC<FiltersList> = React.memo(
   ({
     colorScheme,
@@ -47,6 +60,11 @@ export const FiltersList: React.FC<FiltersList> = React.memo(
     isUpdating,
     property,
   }) => {
+    const prefersReducedMotion = usePrefersReducedMotion();
+
+    const animation = prefersReducedMotion
+      ? undefined
+      : `${bounce} 1 1.5s ease-in-out`;
     /****** Limit List Items ******/
     // Toggle number of items to show from reduced view to "all" view.
     const NUM_ITEMS_MIN = 5;
@@ -111,7 +129,7 @@ export const FiltersList: React.FC<FiltersList> = React.memo(
             flexDirection='column'
             ml={0}
             my={2}
-            maxH={400}
+            maxH={showFullList ? 460 : 400}
             overflowY='auto'
           >
             {!isLoading && !isUpdating && !items.length && (
@@ -218,7 +236,12 @@ export const FiltersList: React.FC<FiltersList> = React.memo(
         </Box>
         {/* Show more expansion button. */}
         {items.length > NUM_ITEMS_MIN && (
-          <Flex justifyContent='flex-start' borderColor='gray.200'>
+          <Flex
+            w='100%'
+            justifyContent='space-between'
+            borderColor='gray.200'
+            alignItems='center'
+          >
             <Button
               variant='link'
               color='link.color'
@@ -226,8 +249,13 @@ export const FiltersList: React.FC<FiltersList> = React.memo(
               padding={2}
               onClick={() => setShowFullList(!showFullList)}
             >
-              {showFullList ? 'Show Less' : 'Show All'}
+              {showFullList ? 'Show less' : 'Show all'}
             </Button>
+            <Icon
+              as={FaArrowDown}
+              animation={showFullList ? animation : undefined}
+              color={showFullList ? 'gray.800' : 'gray.400'}
+            />
           </Flex>
         )}
       </>

@@ -16,8 +16,6 @@ interface HistogramProps {
   children: React.ReactNode;
 }
 
-type ThemeColorsKeys = keyof typeof theme.colors;
-
 /*
 Histogram consists of :
 - default [data] (data unaffected by date filtering - represented by gray bars)
@@ -36,11 +34,6 @@ const Histogram: React.FC<HistogramProps> = ({
     setDateRange,
     isDragging,
   } = useDateRangeContext();
-
-  const themeColorScheme = useMemo(
-    () => theme.colors[(colorScheme || 'primary') as ThemeColorsKeys],
-    [colorScheme],
-  );
 
   const params = useMemo(
     () => ({
@@ -80,6 +73,7 @@ const Histogram: React.FC<HistogramProps> = ({
   const { containerRef, containerBounds, TooltipInPortal } = useTooltipInPortal(
     {
       detectBounds: true,
+      scroll: true,
       zIndex: 1000,
     },
   );
@@ -147,17 +141,7 @@ const Histogram: React.FC<HistogramProps> = ({
     () =>
       scaleLinear({
         domain: [0, Math.max(...data.map(d => d.count))],
-        range: [...Object.values(themeColorScheme).slice(1, 7).reverse()],
-      }),
-    [data, themeColorScheme],
-  );
-
-  // opacity scale as bar is longer, the less opacity.
-  const opacityScale = useMemo(
-    () =>
-      scaleLinear({
-        domain: [0, Math.max(...data.map(d => d.count))],
-        range: [1, 0],
+        range: ['#241683', '#e05e8f'],
       }),
     [data],
   );
@@ -203,6 +187,7 @@ const Histogram: React.FC<HistogramProps> = ({
                 tooltipData.term >= range_min &&
                 tooltipData.term <= range_max &&
                 tooltipData.updatedCount !== tooltipData.count &&
+                tooltipData.updatedCount! > 0 &&
                 `${formatNumber(tooltipData.updatedCount)} of `}
               {formatNumber(tooltipData.count)}
             </>
@@ -215,38 +200,28 @@ const Histogram: React.FC<HistogramProps> = ({
         {data.length ? (
           <Box>
             <Box as='svg' id='filters-histogram' width={svgWidth}>
-              {/* Gradient fill for bars. */}
-              {/* <LinearGradient
-                id='gradient'
-                from={theme.colors.accent.bg}
-                to={themeColorScheme[600 as keyof typeof themeColorScheme]}
-              /> */}
-
-              {/* Gradient fill for bars on hover. */}
-              {/* <LinearGradient
-                id='gradient-hover'
-                from={theme.colors.accent.bg}
-                to={themeColorScheme[600 as keyof typeof themeColorScheme]}
-                fromOpacity={0.5}
-                toOpacity={0.5}
-              /> */}
               <Group>
                 {data.map((d, i) => {
                   const { term, count } = d;
-
-                  const barWidth = xScale.bandwidth();
-                  const barX = xScale(i);
-
-                  const barHeight = Math.ceil(height - yScale(count));
-                  const barY = height - barHeight;
-
                   /* Updated counts when date has changed */
                   const updatedCount =
                     updatedCounts.find(u => u.term === term)?.count || 0;
 
-                  const updatedBarHeight = Math.ceil(
-                    height - yScale(updatedCount),
-                  );
+                  const barWidth = xScale.bandwidth();
+                  const barX = xScale(i);
+
+                  const barCount =
+                    updatedCount > 0 && updatedCount < count
+                      ? updatedCount
+                      : count;
+
+                  const defaultBarHeight = Math.ceil(height - yScale(count));
+                  const barHeight = Math.ceil(height - yScale(barCount));
+                  const barY = height - barHeight;
+
+                  // const updatedBarHeight = Math.ceil(
+                  //   height - yScale(updatedCount),
+                  // );
                   const hovered = term === tooltipData?.term;
                   let fill = params.fill.gray;
 
@@ -274,14 +249,12 @@ const Histogram: React.FC<HistogramProps> = ({
                     <React.Fragment key={`bar-${term}`}>
                       <LinearGradient
                         id={`gradient-${term}`}
-                        from={colorScale(count)}
+                        from={colorScale(barCount)}
                         to={colorScale(0)}
-                        fromOpacity={opacityScale(count)}
-                        toOpacity={opacityScale(0)}
                       />
 
-                      {/* Bars that depict the initial data (without date filtering). */}
-                      <Bar
+                      {/* Bars that depict the full count (without date filtering). */}
+                      {/* <Bar
                         className='default-bar'
                         x={barX}
                         y={barY}
@@ -297,22 +270,11 @@ const Histogram: React.FC<HistogramProps> = ({
                             ? params.fill.gray
                             : fill
                         }
-                      />
+                      /> */}
 
                       {/* Updated count bars. Fill color based on selection. */}
-                      <Bar
+                      {/* <Bar
                         className='active-count-bg'
-                        x={barX}
-                        y={height - (isDragging ? barHeight : updatedBarHeight)}
-                        width={barWidth}
-                        height={isDragging ? barHeight : updatedBarHeight}
-                        fill={theme.colors.accent.bg}
-                        opacity={
-                          hovered ? params.opacity.hover : params.opacity.active
-                        }
-                      />
-                      <Bar
-                        className='active-count-gradient'
                         x={barX}
                         y={height - (isDragging ? barHeight : updatedBarHeight)}
                         width={barWidth}
@@ -321,9 +283,44 @@ const Histogram: React.FC<HistogramProps> = ({
                         opacity={
                           hovered ? params.opacity.hover : params.opacity.active
                         }
+                      /> */}
+
+                      {updatedCount > 0 && updatedCount < count && (
+                        <Bar
+                          x={barX}
+                          width={barWidth}
+                          opacity={
+                            hovered
+                              ? params.opacity.hover
+                              : params.opacity.active
+                          }
+                          y={height - defaultBarHeight}
+                          height={barY}
+                          fill={params.fill.gray}
+                        />
+                      )}
+
+                      {/* Bars that depict the full count (without date filtering). */}
+                      <Bar
+                        className='default-bar'
+                        x={barX}
+                        width={barWidth}
+                        opacity={
+                          hovered ? params.opacity.hover : params.opacity.active
+                        }
+                        y={barY}
+                        height={barHeight}
+                        fill={fill}
+                        // fill={
+                        //   termInRange &&
+                        //   updatedCount > 0 &&
+                        //   updatedCount !== count
+                        //     ? params.fill.gray
+                        //     : fill
+                        // }
                       />
 
-                      {/* Transparent full height bar used for detecting mouse over tooltip. */}
+                      {/* Invisible bars that are used to trigger the tooltip. */}
                       <Bar
                         className='hover-bar'
                         x={barX}

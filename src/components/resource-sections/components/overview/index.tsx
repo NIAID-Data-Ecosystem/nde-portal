@@ -138,7 +138,12 @@ const Overview: React.FC<OverviewProps> = ({
             >
               <>
                 {licenseInfo?.img && (
-                  <Image src={`${licenseInfo.img}`} alt={licenseInfo.type} />
+                  <Image
+                    src={`${licenseInfo.img}`}
+                    alt={licenseInfo.type}
+                    width='auto'
+                    height='2rem'
+                  />
                 )}
                 <StatContent
                   url={licenseInfo?.url}

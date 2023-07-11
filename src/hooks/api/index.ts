@@ -37,7 +37,7 @@ export function useRepoData(
     select: (data: Metadata) => {
       const sources = data?.src || [];
       const repositories = Object.values(sources).map(({ sourceInfo }) => {
-        const { identifier, url } = sourceInfo || {};
+        const { identifier, name, url } = sourceInfo || {};
 
         const data = {
           identifier,
@@ -49,7 +49,7 @@ export function useRepoData(
         );
         return {
           ...data,
-          label: repo?.label || '',
+          label: name || '',
           type: (repo?.type || 'generalist') as Repository['type'],
           icon: repo?.icon || '',
           abstract: repo?.abstract || '',

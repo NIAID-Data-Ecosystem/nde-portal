@@ -60,20 +60,19 @@ const CardDetails: React.FC<CardDetailsProps> = ({ data }) => {
     value: any;
   }) => (
     <MetadataToolTip propertyName={glyph} recordType={data?.['@type']}>
-      <Box mx={1}>
-        <MetadataIcon
-          id={`indicator-${glyph}-${id}`}
-          glyph={glyph}
-          fill={value ? getMetadataColor(glyph) : 'gray.400'}
-          title={property}
-        />
-      </Box>
+      <MetadataIcon
+        id={`indicator-${glyph}-${id}`}
+        glyph={glyph}
+        fill={value ? getMetadataColor(glyph) : 'gray.400'}
+        title={property}
+        mx={1}
+      />
     </MetadataToolTip>
   );
 
   const MetadataIndicator = () => {
     return (
-      <Flex mx={[0, 2]} my={1}>
+      <>
         <Badge property='license' glyph='license' value={licenseInfo} />
         <Badge
           property='usage info'
@@ -104,7 +103,7 @@ const CardDetails: React.FC<CardDetailsProps> = ({ data }) => {
         <Badge property='species' glyph='species' value={species} />
         {/* <Badge glyph='applicationCategory' value={applicationCategory} />{' '}
         <Badge glyph='programmingLanguage' value={programmingLanguage} /> */}
-      </Flex>
+      </>
     );
   };
 
@@ -128,7 +127,7 @@ const CardDetails: React.FC<CardDetailsProps> = ({ data }) => {
                     flexWrap='wrap'
                     alignItems='center'
                   >
-                    <Heading fontSize='h6' fontWeight='semibold' ml={1}>
+                    <Heading fontSize='h6' fontWeight='semibold' mx={1}>
                       Details
                     </Heading>
                     <MetadataIndicator />
@@ -137,170 +136,146 @@ const CardDetails: React.FC<CardDetailsProps> = ({ data }) => {
                 </AccordionButton>
               </h2>
               <AccordionPanel w='100%' px={paddingCard} my={2}>
-                <SimpleGrid minChildWidth='300px' spacing='10px'>
-                  {/* License*/}
-                  <MetadataProperty
-                    id={`license-${id}`}
-                    label='License'
-                    glyph='license'
-                    type={data?.['@type']}
-                  >
-                    {licenseInfo && (
-                      <>
-                        {licenseInfo?.img && (
-                          <Image
-                            src={`${licenseInfo.img}`}
-                            alt={licenseInfo.type}
-                            mb={1}
-                          />
-                        )}
-                        {licenseInfo?.url ? (
-                          <Link href={licenseInfo.url} isExternal>
-                            {licenseInfo.title}
-                          </Link>
-                        ) : (
-                          licenseInfo?.title
-                        )}
-                      </>
-                    )}
-                  </MetadataProperty>
+                {isExpanded ? (
+                  <SimpleGrid minChildWidth='300px' spacing='10px'>
+                    {/* License*/}
+                    <MetadataProperty
+                      id={`license-${id}`}
+                      label='License'
+                      glyph='license'
+                      type={data?.['@type']}
+                    >
+                      {licenseInfo && (
+                        <>
+                          {licenseInfo?.img && (
+                            <Image
+                              width='auto'
+                              height='2rem'
+                              src={`${licenseInfo.img}`}
+                              alt={licenseInfo.type}
+                              mb={1}
+                            />
+                          )}
+                          {licenseInfo?.url ? (
+                            <Link href={licenseInfo.url} isExternal>
+                              {licenseInfo.title}
+                            </Link>
+                          ) : (
+                            licenseInfo?.title
+                          )}
+                        </>
+                      )}
+                    </MetadataProperty>
 
-                  {/* Data Usage Information*/}
-                  <MetadataProperty
-                    id={`dua-${id}`}
-                    label='Data Usage Agreement'
-                    glyph='usageInfo'
-                    type={data?.['@type']}
-                  >
-                    {usageInfo && (
-                      <>
-                        {usageInfo?.url ? (
-                          <Link href={usageInfo.url} isExternal>
-                            {usageInfo.name}
-                          </Link>
-                        ) : (
-                          usageInfo?.name
-                        )}
-                        {usageInfo?.description && ` ${usageInfo.description}`}
-                      </>
-                    )}
-                  </MetadataProperty>
+                    {/* Data Usage Information*/}
+                    <MetadataProperty
+                      id={`dua-${id}`}
+                      label='Data Usage Agreement'
+                      glyph='usageInfo'
+                      type={data?.['@type']}
+                    >
+                      {usageInfo && (
+                        <>
+                          {usageInfo?.url ? (
+                            <Link href={usageInfo.url} isExternal>
+                              {usageInfo.name}
+                            </Link>
+                          ) : (
+                            usageInfo?.name
+                          )}
+                          {usageInfo?.description &&
+                            ` ${usageInfo.description}`}
+                        </>
+                      )}
+                    </MetadataProperty>
 
-                  {/* Funding */}
-                  <MetadataProperty
-                    id={`funding-${id}`}
-                    label='Funding'
-                    glyph='funding'
-                    type={data?.['@type']}
-                  >
-                    {fundingInfo && fundingInfo.length > 0 && (
-                      <UnorderedList ml={4}>
-                        {fundingInfo.map((f, i) => {
-                          const { funder } = f;
-                          let name = funder?.name;
-                          let identifier = f.identifier;
+                    {/* Funding */}
+                    <MetadataProperty
+                      id={`funding-${id}`}
+                      label='Funding'
+                      glyph='funding'
+                      type={data?.['@type']}
+                    >
+                      {fundingInfo && fundingInfo.length > 0 && (
+                        <UnorderedList ml={4}>
+                          {fundingInfo.map((f, i) => {
+                            const { funder } = f;
+                            let name = funder?.name;
+                            let identifier = f.identifier;
 
-                          return (
-                            <ListItem
-                              key={`${f.identifier || funder?.name}-${i}`}
-                              listStyleType='inherit'
-                              py={1}
-                            >
-                              <Text color='inherit' fontSize='xs'>
-                                <strong>{name}</strong>
-                                {name && identifier && ' | '}
-                                {identifier}
-                              </Text>
-                            </ListItem>
-                          );
-                        })}
-                      </UnorderedList>
-                    )}
-                  </MetadataProperty>
-                  {/* Measurement techniques*/}
-                  <MetadataProperty
-                    id={`mt-${id}`}
-                    label='Measurement Technique'
-                    glyph='measurementTechnique'
-                    type={data?.['@type']}
-                  >
-                    {measurementTechnique && (
-                      <UnorderedList ml={0}>
-                        {measurementTechnique.map((m, i) => {
-                          const name = Array.isArray(m.name)
-                            ? m.name.join(', ')
-                            : m.name;
-
-                          const MeasurementTechniqueLabel = () => (
-                            <Text color='inherit'>{name}</Text>
-                          );
-
-                          return (
-                            <ListItem key={`${name}-${i}`}>
-                              {m.url ? (
-                                <Link href={m.url} isExternal>
-                                  <MeasurementTechniqueLabel />
-                                </Link>
-                              ) : (
-                                <MeasurementTechniqueLabel />
-                              )}
-                            </ListItem>
-                          );
-                        })}
-                      </UnorderedList>
-                    )}
-                  </MetadataProperty>
-                  {/* Variable Measured */}
-                  <MetadataProperty
-                    id={`vm-${id}`}
-                    label='Variable Measured'
-                    glyph='variableMeasured'
-                    type={data?.['@type']}
-                  >
-                    {variableMeasured && (
-                      <Text color='inherit'>{variableMeasured.join(', ')}</Text>
-                    )}
-                  </MetadataProperty>
-                  {/* Infectious Agent*/}
-                  <MetadataProperty
-                    id={`ia-${id}`}
-                    label='Infectious Agent'
-                    glyph='infectiousAgent'
-                    type={data?.['@type']}
-                  >
-                    {infectiousAgent && (
-                      <UnorderedList ml={0}>
-                        {infectiousAgent.map((m, i) => {
-                          const name = Array.isArray(m.name)
-                            ? m.name.join(', ')
-                            : m.name;
-
-                          return (
-                            <ListItem key={`${name}-${i}`}>
-                              {m.url ? (
-                                <Link href={m.url} isExternal>
-                                  {name}
-                                </Link>
-                              ) : (
-                                name
-                              )}
-                            </ListItem>
-                          );
-                        })}
-                      </UnorderedList>
-                    )}
-                  </MetadataProperty>
-                  {/* Health Condition */}
-                  <MetadataProperty
-                    id={`condition-${id}`}
-                    label='Health Condition'
-                    glyph='healthCondition'
-                    type={data?.['@type']}
-                  >
-                    {healthCondition && (
-                      <>
+                            return (
+                              <ListItem
+                                key={`${f.identifier || funder?.name}-${i}`}
+                                listStyleType='inherit'
+                                py={1}
+                              >
+                                <Text color='inherit' fontSize='xs'>
+                                  <strong>{name}</strong>
+                                  {name && identifier && ' | '}
+                                  {identifier}
+                                </Text>
+                              </ListItem>
+                            );
+                          })}
+                        </UnorderedList>
+                      )}
+                    </MetadataProperty>
+                    {/* Measurement techniques*/}
+                    <MetadataProperty
+                      id={`mt-${id}`}
+                      label='Measurement Technique'
+                      glyph='measurementTechnique'
+                      type={data?.['@type']}
+                    >
+                      {measurementTechnique && (
                         <UnorderedList ml={0}>
-                          {healthCondition?.map((m, i) => {
+                          {measurementTechnique.map((m, i) => {
+                            const name = Array.isArray(m.name)
+                              ? m.name.join(', ')
+                              : m.name;
+
+                            const MeasurementTechniqueLabel = () => (
+                              <Text color='inherit'>{name}</Text>
+                            );
+
+                            return (
+                              <ListItem key={`${name}-${i}`}>
+                                {m.url ? (
+                                  <Link href={m.url} isExternal>
+                                    <MeasurementTechniqueLabel />
+                                  </Link>
+                                ) : (
+                                  <MeasurementTechniqueLabel />
+                                )}
+                              </ListItem>
+                            );
+                          })}
+                        </UnorderedList>
+                      )}
+                    </MetadataProperty>
+                    {/* Variable Measured */}
+                    <MetadataProperty
+                      id={`vm-${id}`}
+                      label='Variable Measured'
+                      glyph='variableMeasured'
+                      type={data?.['@type']}
+                    >
+                      {variableMeasured && (
+                        <Text color='inherit'>
+                          {variableMeasured.join(', ')}
+                        </Text>
+                      )}
+                    </MetadataProperty>
+                    {/* Infectious Agent*/}
+                    <MetadataProperty
+                      id={`ia-${id}`}
+                      label='Infectious Agent'
+                      glyph='infectiousAgent'
+                      type={data?.['@type']}
+                    >
+                      {infectiousAgent && (
+                        <UnorderedList ml={0}>
+                          {infectiousAgent.map((m, i) => {
                             const name = Array.isArray(m.name)
                               ? m.name.join(', ')
                               : m.name;
@@ -318,41 +293,71 @@ const CardDetails: React.FC<CardDetailsProps> = ({ data }) => {
                             );
                           })}
                         </UnorderedList>
-                      </>
-                    )}
-                  </MetadataProperty>
-                  {/* Species*/}
-                  <MetadataProperty
-                    id={`species-${id}`}
-                    label='Species'
-                    glyph='species'
-                    type={data?.['@type']}
-                  >
-                    {species && (
-                      <Text color='inherit'>
-                        {species.map((m, i) => {
-                          const name = Array.isArray(m.name)
-                            ? m.name.join(', ')
-                            : m.name;
+                      )}
+                    </MetadataProperty>
+                    {/* Health Condition */}
+                    <MetadataProperty
+                      id={`condition-${id}`}
+                      label='Health Condition'
+                      glyph='healthCondition'
+                      type={data?.['@type']}
+                    >
+                      {healthCondition && (
+                        <>
+                          <UnorderedList ml={0}>
+                            {healthCondition?.map((m, i) => {
+                              const name = Array.isArray(m.name)
+                                ? m.name.join(', ')
+                                : m.name;
 
-                          return (
-                            <React.Fragment key={`${name}-${i}`}>
-                              {m.url ? (
-                                <Link href={m.url} isExternal>
-                                  {name}
-                                </Link>
-                              ) : (
-                                name
-                              )}
-                            </React.Fragment>
-                          );
-                        })}
-                      </Text>
-                    )}
-                  </MetadataProperty>
+                              return (
+                                <ListItem key={`${name}-${i}`}>
+                                  {m.url ? (
+                                    <Link href={m.url} isExternal>
+                                      {name}
+                                    </Link>
+                                  ) : (
+                                    name
+                                  )}
+                                </ListItem>
+                              );
+                            })}
+                          </UnorderedList>
+                        </>
+                      )}
+                    </MetadataProperty>
+                    {/* Species*/}
+                    <MetadataProperty
+                      id={`species-${id}`}
+                      label='Species'
+                      glyph='species'
+                      type={data?.['@type']}
+                    >
+                      {species && (
+                        <Text color='inherit'>
+                          {species.map((m, i) => {
+                            const name = Array.isArray(m.name)
+                              ? m.name.join(', ')
+                              : m.name;
 
-                  {/* Application Category */}
-                  {/* <MetadataProperty
+                            return (
+                              <React.Fragment key={`${name}-${i}`}>
+                                {m.url ? (
+                                  <Link href={m.url} isExternal>
+                                    {name}
+                                  </Link>
+                                ) : (
+                                  name
+                                )}
+                              </React.Fragment>
+                            );
+                          })}
+                        </Text>
+                      )}
+                    </MetadataProperty>
+
+                    {/* Application Category */}
+                    {/* <MetadataProperty
                     id={`applicationCategory-${id}`}
                     label='Software Category'
                     glyph='applicationCategory'
@@ -371,8 +376,8 @@ const CardDetails: React.FC<CardDetailsProps> = ({ data }) => {
                     )}
                   </MetadataProperty> */}
 
-                  {/* Programming Language */}
-                  {/* <MetadataProperty
+                    {/* Programming Language */}
+                    {/* <MetadataProperty
                     id={`programmingLanguage-${id}`}
                     label='Programming Language'
                     glyph='programmingLanguage'
@@ -390,7 +395,10 @@ const CardDetails: React.FC<CardDetailsProps> = ({ data }) => {
                       </UnorderedList>
                     )}
                   </MetadataProperty> */}
-                </SimpleGrid>
+                  </SimpleGrid>
+                ) : (
+                  <></>
+                )}
               </AccordionPanel>
             </>
           )}
