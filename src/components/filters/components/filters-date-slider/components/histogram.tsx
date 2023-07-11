@@ -278,7 +278,22 @@ const Histogram: React.FC<HistogramProps> = ({
                         height={barHeight}
                         fill={fill}
                       />
+                    </React.Fragment>
+                  );
+                })}
+              </Group>
+              <Group>
+                {data.map((d, i) => {
+                  const { term } = d;
+                  /* Updated counts when date has changed */
+                  const updatedCount =
+                    updatedCounts.find(u => u.term === term)?.count || 0;
 
+                  const barWidth = xScale.bandwidth();
+                  const barX = xScale(i);
+
+                  return (
+                    <React.Fragment key={`invisible-bar-${term}`}>
                       {/* Invisible bars that are used to trigger the tooltip. */}
                       <Bar
                         className='hover-bar'
