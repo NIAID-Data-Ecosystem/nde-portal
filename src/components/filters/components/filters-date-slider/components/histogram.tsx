@@ -199,8 +199,8 @@ const Histogram: React.FC<HistogramProps> = ({
                   x2='0'
                   y2='100%'
                 >
-                  <stop offset='0' stop-color='#e05e8f'></stop>
-                  <stop offset='1' stop-color='#241683'></stop>
+                  <stop offset='0' stopColor='#e05e8f'></stop>
+                  <stop offset='1' stopColor='#241683'></stop>
                 </linearGradient>
               </defs>
               <Group>
