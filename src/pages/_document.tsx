@@ -26,13 +26,6 @@ class Document extends NextDocument {
       >
         <Head>
           <link rel='icon' href='/favicon.png' />
-          {/* Global Site Tag (gtag.js) - Google Analytics */}
-          <script
-            async
-            rel='preconnect'
-            src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS}`}
-          />
-
           <script id='google-analytics' rel='preconnect'>
             {`
             window.dataLayer = window.dataLayer || [];
@@ -43,6 +36,13 @@ class Document extends NextDocument {
             });
           `}
           </script>
+
+          {/* Google Tag Manager - Google Analytics */}
+          <script
+            async
+            rel='preconnect'
+            src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS}`}
+          />
         </Head>
         <body>
           <Main />
