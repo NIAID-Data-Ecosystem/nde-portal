@@ -5,6 +5,7 @@ import NextDocument, {
   Main,
   NextScript,
 } from 'next/document';
+import Script from 'next/script';
 import React from 'react';
 import { Box } from 'nde-design-system';
 
@@ -26,25 +27,21 @@ class Document extends NextDocument {
       >
         <Head>
           <link rel='icon' href='/favicon.png' />
-          <script id='google-analytics' rel='preconnect'>
+        </Head>
+        <body>
+          <Script id='google-analytics' strategy='afterInteractive'>
             {`
             window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}
             gtag('js', new Date());
             gtag('config', '${process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS}', {
               page_path: window.location.pathname,
-            });
-          `}
-          </script>
-
-          {/* Google Tag Manager - Google Analytics */}
-          <script
-            async
-            rel='preconnect'
+            });`}
+          </Script>
+          <Script
+            strategy='afterInteractive'
             src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS}`}
           />
-        </Head>
-        <body>
           <Main />
           <NextScript />
         </body>
