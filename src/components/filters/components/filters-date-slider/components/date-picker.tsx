@@ -73,9 +73,7 @@ export const DatePicker: React.FC<DatePickerProps> = ({
         </Box>
         <Box maxW='200px'>
           <Text fontSize='xs'>
-            <label fontSize='xs' htmlFor='end'>
-              End date:
-            </label>
+            <label htmlFor='end'>End date:</label>
           </Text>
           <Input
             id='end'
