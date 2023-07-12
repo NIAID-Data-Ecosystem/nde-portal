@@ -29,20 +29,20 @@ class Document extends NextDocument {
           {/* Global Site Tag (gtag.js) - Google Analytics */}
           <script
             async
+            rel='preconnect'
             src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS}`}
           />
-          <script
-            dangerouslySetInnerHTML={{
-              __html: `
+
+          <script id='google-analytics' rel='preconnect'>
+            {`
             window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}
             gtag('js', new Date());
             gtag('config', '${process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS}', {
               page_path: window.location.pathname,
             });
-          `,
-            }}
-          />
+          `}
+          </script>
         </Head>
         <body>
           <Main />

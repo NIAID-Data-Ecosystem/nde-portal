@@ -12,8 +12,8 @@ import {
 } from 'nde-design-system';
 import { DisplayHTMLContent } from 'src/components/html-content';
 import NextLink from 'next/link';
-import { SourceResponse } from 'src/pages/sources';
-import { queryFilterObject2String } from 'src/components/filters';
+import type { SourceResponse } from 'src/pages/sources';
+import { queryFilterObject2String } from 'src/components/filters/helpers';
 
 interface Main {
   data?: SourceResponse[];

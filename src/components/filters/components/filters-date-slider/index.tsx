@@ -108,6 +108,8 @@ export const FiltersDateSlider: React.FC<FiltersDateSliderProps> = ({
                 alignItems='center'
                 p={4}
                 px={8}
+                mt={-1.5}
+                flex={1}
               >
                 {/*  Histogram for resources grouped by year */}
                 <Histogram

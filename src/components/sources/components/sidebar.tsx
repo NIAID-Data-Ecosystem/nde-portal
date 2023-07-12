@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box, Heading, ListItem, Text } from 'nde-design-system';
 import { formatDate } from 'src/utils/api/helpers';
-import { SourceResponse } from 'src/pages/sources';
+import type { SourceResponse } from 'src/pages/sources';
 
 interface Sidebar {
   data: SourceResponse[];

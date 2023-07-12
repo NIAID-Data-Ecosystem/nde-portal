@@ -22,7 +22,7 @@ import {
   queryFilterObject2String,
   queryFilterString2Object,
   updateRoute,
-} from 'src/components/filters';
+} from 'src/components/filters/helpers';
 import { Error, ErrorCTA } from 'src/components/error';
 import { Pagination, MAX_PAGES } from './components/pagination';
 import { useHasMounted } from 'src/hooks/useHasMounted';
