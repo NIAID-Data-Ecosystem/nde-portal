@@ -39,7 +39,7 @@ import { SearchBarWithDropdown } from 'src/components/search-bar';
 import { AdvancedSearchOpen } from 'src/components/advanced-search/components/buttons';
 import { FaChevronRight } from 'react-icons/fa';
 import { useRepoData } from 'src/hooks/api';
-import { queryFilterObject2String } from 'src/components/filters';
+import { queryFilterObject2String } from 'src/components/filters/helpers';
 import { FaRegEnvelope, FaGithub } from 'react-icons/fa';
 
 interface Repository {

@@ -28,11 +28,11 @@ const Histogram: React.FC<HistogramProps> = ({
   handleClick,
 }) => {
   const {
-    colorScheme,
+    // colorScheme,
     data = [],
     dates,
     setDateRange,
-    isDragging,
+    // isDragging,
   } = useDateRangeContext();
 
   const params = useMemo(
@@ -47,7 +47,7 @@ const Histogram: React.FC<HistogramProps> = ({
       hover: {
         gray: theme.colors.blackAlpha[200],
       },
-      opacity: { hover: 0.5, active: 1 },
+      opacity: { hover: 0.65, active: 1 },
     }),
     [],
   );
@@ -136,16 +136,6 @@ const Histogram: React.FC<HistogramProps> = ({
     [data, height],
   );
 
-  // color scale using provided color scheme
-  const colorScale = useMemo(
-    () =>
-      scaleLinear({
-        domain: [0, Math.max(...data.map(d => d.count))],
-        range: ['#241683', '#e05e8f'],
-      }),
-    [data],
-  );
-
   // Set svg width to the exact width of the barchart.
   const svgWidth = useMemo(
     () => (xScale(data.length - 1) || 0) + xScale.bandwidth(),
@@ -200,6 +190,19 @@ const Histogram: React.FC<HistogramProps> = ({
         {data.length ? (
           <Box>
             <Box as='svg' id='filters-histogram' width={svgWidth}>
+              <defs>
+                <linearGradient
+                  id='histogram-gradient'
+                  gradientUnits='userSpaceOnUse'
+                  x1='0'
+                  y1='0'
+                  x2='0'
+                  y2='100%'
+                >
+                  <stop offset='0' stopColor='#e05e8f'></stop>
+                  <stop offset='1' stopColor='#241683'></stop>
+                </linearGradient>
+              </defs>
               <Group>
                 {data.map((d, i) => {
                   const { term, count } = d;
@@ -233,7 +236,7 @@ const Histogram: React.FC<HistogramProps> = ({
 
                   if (range_min && range_max) {
                     fill = termInRange
-                      ? `url(#gradient-${term})`
+                      ? `url("#histogram-gradient")`
                       : params.fill.gray;
 
                     // If bar is hovered over, fill with a different color.
@@ -247,44 +250,7 @@ const Histogram: React.FC<HistogramProps> = ({
 
                   return (
                     <React.Fragment key={`bar-${term}`}>
-                      <LinearGradient
-                        id={`gradient-${term}`}
-                        from={colorScale(barCount)}
-                        to={colorScale(0)}
-                      />
-
-                      {/* Bars that depict the full count (without date filtering). */}
-                      {/* <Bar
-                        className='default-bar'
-                        x={barX}
-                        y={barY}
-                        width={barWidth}
-                        height={barHeight}
-                        opacity={
-                          hovered ? params.opacity.hover : params.opacity.active
-                        }
-                        fill={
-                          termInRange &&
-                          updatedCount > 0 &&
-                          updatedCount !== count
-                            ? params.fill.gray
-                            : fill
-                        }
-                      /> */}
-
-                      {/* Updated count bars. Fill color based on selection. */}
-                      {/* <Bar
-                        className='active-count-bg'
-                        x={barX}
-                        y={height - (isDragging ? barHeight : updatedBarHeight)}
-                        width={barWidth}
-                        height={isDragging ? barHeight : updatedBarHeight}
-                        fill={fill}
-                        opacity={
-                          hovered ? params.opacity.hover : params.opacity.active
-                        }
-                      /> */}
-
+                      {/* Used only when the bar is selected and the updated count is less than the full count. */}
                       {updatedCount > 0 && updatedCount < count && (
                         <Bar
                           x={barX}
@@ -300,7 +266,7 @@ const Histogram: React.FC<HistogramProps> = ({
                         />
                       )}
 
-                      {/* Bars that depict the full count (without date filtering). */}
+                      {/* Bars that show the full count.*/}
                       <Bar
                         className='default-bar'
                         x={barX}
@@ -311,15 +277,23 @@ const Histogram: React.FC<HistogramProps> = ({
                         y={barY}
                         height={barHeight}
                         fill={fill}
-                        // fill={
-                        //   termInRange &&
-                        //   updatedCount > 0 &&
-                        //   updatedCount !== count
-                        //     ? params.fill.gray
-                        //     : fill
-                        // }
                       />
+                    </React.Fragment>
+                  );
+                })}
+              </Group>
+              <Group>
+                {data.map((d, i) => {
+                  const { term } = d;
+                  /* Updated counts when date has changed */
+                  const updatedCount =
+                    updatedCounts.find(u => u.term === term)?.count || 0;
 
+                  const barWidth = xScale.bandwidth();
+                  const barX = xScale(i);
+
+                  return (
+                    <React.Fragment key={`invisible-bar-${term}`}>
                       {/* Invisible bars that are used to trigger the tooltip. */}
                       <Bar
                         className='hover-bar'

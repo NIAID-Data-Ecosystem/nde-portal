@@ -162,14 +162,14 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                   svg: { color: 'link.color' },
                 }}
               >
-                <CardTitle
-                  size='h6'
-                  lineHeight='short'
-                  fontWeight='semibold'
-                  dangerouslySetInnerHTML={{
-                    __html: name || alternateName || '',
-                  }}
-                />
+                <CardTitle>
+                  <DisplayHTMLContent
+                    content={name || alternateName || ''}
+                    fontSize='lg'
+                    lineHeight='short'
+                    fontWeight='semibold'
+                  />
+                </CardTitle>
                 <Icon
                   as={FaChevronRight}
                   boxSize={4}

@@ -6,21 +6,30 @@ import { useHasMounted } from 'src/hooks/useHasMounted';
 import SearchResultsPage, {
   defaultQuery,
 } from 'src/components/search-results-page';
+import { filtersConfig } from 'src/components/search-results-page/components/filters';
 import {
-  Filters,
-  filtersConfig,
-} from 'src/components/search-results-page/components/filters';
-import {
-  FilterTags,
   queryFilterObject2String,
   queryFilterString2Object,
   updateRoute,
-} from 'src/components/filters';
+} from 'src/components/filters/helpers';
 import { useCallback, useMemo } from 'react';
 import {
   SelectedFilterType,
   SelectedFilterTypeValue,
 } from 'src/components/filters/types';
+import dynamic from 'next/dynamic';
+
+const Filters = dynamic(() =>
+  import('src/components/search-results-page/components/filters').then(
+    mod => mod.Filters,
+  ),
+);
+
+const FilterTags = dynamic(() =>
+  import('src/components/filters/components/filters-tag').then(
+    mod => mod.FilterTags,
+  ),
+);
 
 //  This page renders the search results from the search bar.
 const Search: NextPage = () => {
@@ -164,7 +173,7 @@ const Search: NextPage = () => {
                 removeAllFilters={
                   applied_filters.length > 0 ? removeAllFilters : undefined
                 }
-              ></Filters>
+              />
               {/* Result cards */}
               <SearchResultsPage />
             </Flex>
