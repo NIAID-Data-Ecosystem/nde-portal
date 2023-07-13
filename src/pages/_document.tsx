@@ -29,19 +29,21 @@ class Document extends NextDocument {
           <link rel='icon' href='/favicon.png' />
         </Head>
         <body>
-          <Script id='google-analytics' strategy='afterInteractive'>
-            {`
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', '${process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS}', {
-              page_path: window.location.pathname,
-            });`}
-          </Script>
+          {/* <!-- Google Tag Manager  --> */}
           <Script
             strategy='afterInteractive'
             src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS}`}
           />
+          {/* <!-- End Google Tag Manager --> */}
+          <Script id='google-analytics' strategy='afterInteractive'>
+            {`
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+ 
+          gtag('config', '${process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS}');
+        `}
+          </Script>
           <Main />
           <NextScript />
         </body>
