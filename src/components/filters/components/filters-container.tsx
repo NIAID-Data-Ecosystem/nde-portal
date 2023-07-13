@@ -4,6 +4,7 @@ import {
   Box,
   Button,
   Drawer,
+  DrawerHeader,
   DrawerBody,
   DrawerFooter,
   DrawerOverlay,
@@ -83,9 +84,14 @@ export const FiltersContainer: React.FC<FiltersContainerProps> = ({
 
   const content = (
     <>
-      <Flex justifyContent='space-between' px={4} py={4} alignItems='center'>
+      <Flex
+        justifyContent='space-between'
+        px={{ base: 0, md: 4 }}
+        py={{ base: 2, md: 4 }}
+        alignItems='center'
+      >
         {title && (
-          <Heading size='sm' fontWeight='semibold' py={[4, 4, 0]}>
+          <Heading size='sm' fontWeight='semibold'>
             {title}
           </Heading>
         )}
@@ -123,10 +129,10 @@ export const FiltersContainer: React.FC<FiltersContainerProps> = ({
       <Button
         ref={btnRef}
         variant='solid'
-        bg={'accent.bg'}
+        bg='accent.bg'
         onClick={onOpen}
         position='fixed'
-        zIndex={50}
+        zIndex='docked'
         left={4}
         bottom={50}
         boxShadow='high'
@@ -154,6 +160,7 @@ export const FiltersContainer: React.FC<FiltersContainerProps> = ({
         </Text>
       </Button>
       <Drawer
+        autoFocus={false}
         isOpen={isOpen}
         placement='left'
         onClose={onClose}
@@ -161,22 +168,20 @@ export const FiltersContainer: React.FC<FiltersContainerProps> = ({
         size={screenSize === 'mobile' ? 'full' : 'md'}
       >
         <DrawerOverlay />
-        <DrawerContent>
-          <DrawerCloseButton />
-          <DrawerBody px={[2, 4]} py={8}>
-            {content}
-          </DrawerBody>
-          <DrawerFooter>
-            <Button
-              w='100%'
-              variant='solid'
-              m={3}
-              onClick={onClose}
-              colorScheme='secondary'
-            >
-              Close
-            </Button>
-          </DrawerFooter>
+        {/* Wrapping content in <Box/> fixes issue with scrolling on iOS: https://github.com/chakra-ui/chakra-ui/issues/6131 */}
+        <DrawerContent overflow='auto'>
+          <Flex minHeight='100vh' flexDirection='column'>
+            <DrawerCloseButton />
+            <DrawerHeader borderBottomWidth='1px'>Filters</DrawerHeader>
+
+            <DrawerBody>{content}</DrawerBody>
+
+            <DrawerFooter borderTopWidth='1px'>
+              <Button onClick={onClose} colorScheme='secondary' size='md'>
+                Submit and Close
+              </Button>
+            </DrawerFooter>
+          </Flex>
         </DrawerContent>
       </Drawer>
     </>
