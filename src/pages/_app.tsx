@@ -34,16 +34,6 @@ function App({ Component, pageProps }: AppProps) {
       heading: public_sans_font.style.fontFamily,
     },
   });
-  // useEffect(() => {
-  //   const mainDataLayer = {
-  //     pageTypeName: pageProps.page || null,
-  //     url: router.pathname,
-  //     query: router.query,
-  //     search_term: router.query.q,
-  //   };
-
-  //   ga.gtmVirtualPageView(mainDataLayer);
-  // }, [pageProps, router]);
 
   useEffect(() => {
     const handleRouteChange = (url: string) => {
