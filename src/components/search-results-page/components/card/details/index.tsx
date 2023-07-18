@@ -46,7 +46,7 @@ const CardDetails: React.FC<CardDetailsProps> = ({ data }) => {
 
   const fundingInfo =
     funding?.filter(f => {
-      return f.identifier || f?.funder?.name;
+      return f.identifier || Array.isArray(f.funder) || f?.funder?.name;
     }) || null;
 
   const Badge = ({
@@ -69,7 +69,6 @@ const CardDetails: React.FC<CardDetailsProps> = ({ data }) => {
       />
     </MetadataToolTip>
   );
-
   const MetadataIndicator = () => {
     return (
       <>
@@ -202,6 +201,9 @@ const CardDetails: React.FC<CardDetailsProps> = ({ data }) => {
                             const { funder } = f;
                             let name = funder?.name;
                             let identifier = f.identifier;
+                            if (Array.isArray(funder)) {
+                              name = funder.map(f => f.name).join(', ');
+                            }
 
                             return (
                               <ListItem

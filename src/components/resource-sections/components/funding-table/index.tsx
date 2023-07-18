@@ -29,6 +29,7 @@ const FundingTable: React.FC<FundingTable> = ({ isLoading, funding }) => {
     identifier: 'Identifier',
     fundingURL: 'Funding URL',
     fundingDescription: 'Funding Description',
+    funder: 'Funder',
     name: 'Funder Name',
     alternateName: 'Alternate Name',
     role: 'Role',
@@ -36,10 +37,30 @@ const FundingTable: React.FC<FundingTable> = ({ isLoading, funding }) => {
     parentOrganization: 'Parent Organization',
     url: 'Funder URL',
   } as Record<keyof unknown, string>;
-
   const data = funding.map(f => {
+    let funder = f.funder;
+    if (Array.isArray(f.funder)) {
+      funder = f.funder.reduce((r, f) => {
+        if (!r.name) {
+          r.name = f.name || '';
+          r.alternateName = f.alternateName || '';
+          r.role = f.role || '';
+          r.description = f.description || '';
+          r.parentOrganization = f.parentOrganization || '';
+          r.url = f.url || '';
+        } else {
+          r.name += `, ${f.name}`;
+          r.alternateName += `, ${f.alternateName}`;
+          r.role += `, ${f.role}`;
+          r.description += `, ${f.description}`;
+          r.parentOrganization += `, ${f.parentOrganization}`;
+          r.url += `, ${f.url}`;
+        }
+        return r;
+      }, {});
+    }
     return {
-      ...f.funder,
+      ...funder,
       identifier: f.identifier,
       fundingURL: f.url,
       fundingDescription: f.description,
@@ -56,10 +77,16 @@ const FundingTable: React.FC<FundingTable> = ({ isLoading, funding }) => {
       if (k === 'name') {
         props.styles.minWidth = '200px';
       }
-      if (k === 'fundingDescription' && value && value.length > 144) {
+      if (
+        k === 'fundingDescription' &&
+        value &&
+        typeof value === 'string' &&
+        value.length > 144
+      ) {
         props = { ...props, tooltipText: v };
         value = value.slice(0, 144) + '...';
       }
+
       obj[k] = {
         value,
         props,
@@ -70,7 +97,6 @@ const FundingTable: React.FC<FundingTable> = ({ isLoading, funding }) => {
 
     return obj;
   });
-
   return (
     <Table
       columns={columns}
