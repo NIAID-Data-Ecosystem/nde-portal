@@ -56,6 +56,27 @@ export const FiltersContainer: React.FC<FiltersContainerProps> = ({
     sm: 'tablet',
     md: 'desktop',
   });
+
+  // Fixes issue with showing footer button on iOS: https://github.com/chakra-ui/chakra-ui/issues/2468
+  const [innerHeight, setH] = React.useState<number>(
+    typeof window !== 'undefined' ? window.innerHeight : 100,
+  );
+
+  function windowResizeHandler() {
+    if (window !== undefined) {
+      setH(window.innerHeight);
+    }
+  }
+
+  useEffect(() => {
+    if (window !== undefined) {
+      window.addEventListener('resize', windowResizeHandler);
+      return () => {
+        window.removeEventListener('resize', windowResizeHandler);
+      };
+    }
+  }, []);
+
   useEffect(() => {
     setOpenSections(() => {
       // 1. If filter is selected, default to an open accordion panel.
@@ -168,20 +189,17 @@ export const FiltersContainer: React.FC<FiltersContainerProps> = ({
         size={screenSize === 'mobile' ? 'full' : 'md'}
       >
         <DrawerOverlay />
-        {/* Wrapping content in <Box/> fixes issue with scrolling on iOS: https://github.com/chakra-ui/chakra-ui/issues/6131 */}
-        <DrawerContent overflow='auto'>
-          <Flex minHeight='100vh' flexDirection='column'>
-            <DrawerCloseButton />
-            <DrawerHeader borderBottomWidth='1px'>Filters</DrawerHeader>
+        <DrawerContent overflow='auto' height={`${innerHeight}px`}>
+          <DrawerCloseButton />
+          <DrawerHeader borderBottomWidth='1px'>Filters</DrawerHeader>
 
-            <DrawerBody>{content}</DrawerBody>
+          <DrawerBody>{content}</DrawerBody>
 
-            <DrawerFooter borderTopWidth='1px'>
-              <Button onClick={onClose} colorScheme='secondary' size='md'>
-                Submit and Close
-              </Button>
-            </DrawerFooter>
-          </Flex>
+          <DrawerFooter borderTopWidth='1px'>
+            <Button onClick={onClose} colorScheme='secondary' size='md'>
+              Submit and Close
+            </Button>
+          </DrawerFooter>
         </DrawerContent>
       </Drawer>
     </>
