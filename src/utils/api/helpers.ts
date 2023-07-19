@@ -115,22 +115,12 @@ export const formatFunding = (fundingData?: APIFunding | APIFunding[]) => {
 
   const getFundingFields = (data: APIFunding) => {
     return {
-      funder: data.funder
-        ? {
-            name: data.funder.name || null,
-            role: data.funder.role || null,
-            alternateName: data.funder.alternateName || null,
-            description: data.funder.description || null,
-            parentOrganization: data.funder.parentOrganization || null,
-            url: data.funder.url || null,
-          }
-        : null,
+      funder: data.funder,
       identifier: data.identifier || null,
       description: data.description || null,
       url: data.url || null,
     };
   };
-
   if (Array.isArray(fundingData)) {
     return fundingData.map(data => getFundingFields(data));
   } else {

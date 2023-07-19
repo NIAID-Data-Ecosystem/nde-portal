@@ -143,7 +143,7 @@ export const DownloadMetadata: React.FC<DownloadMetadataProps> = ({
 
         {/* Pop out list of download format options. */}
         <Box
-          zIndex={1000}
+          zIndex='dropdown'
           position='absolute'
           w='100%'
           boxShadow='base'

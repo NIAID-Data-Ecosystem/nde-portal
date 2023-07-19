@@ -82,7 +82,6 @@ const Sections = ({
   sections: Route[];
 }) => {
   const router = useRouter();
-
   return (
     <>
       <Section id='header' p={0}>

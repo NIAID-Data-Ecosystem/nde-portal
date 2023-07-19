@@ -93,7 +93,7 @@ export const MetadataIcon = React.forwardRef<HTMLDivElement, IconProps>(
             aria-label={title}
             {...props}
           >
-            <Glyph id={id} glyph={glyph} stroke='currentColor' title={title} />
+            <Glyph id={id} glyph={glyph} title={title} />
           </Icon>
         )}
       </Flex>

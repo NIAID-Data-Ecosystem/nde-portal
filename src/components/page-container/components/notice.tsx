@@ -20,7 +20,7 @@ const Notice = () => {
     <Box
       w='100%'
       bg='status.warning_lt'
-      zIndex={5}
+      zIndex='docked'
       __css={{
         '>*': {
           px: [4, 4, 6, 8],
