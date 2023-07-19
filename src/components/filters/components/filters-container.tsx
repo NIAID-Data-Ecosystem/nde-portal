@@ -4,6 +4,7 @@ import {
   Box,
   Button,
   Drawer,
+  DrawerHeader,
   DrawerBody,
   DrawerFooter,
   DrawerOverlay,
@@ -55,6 +56,27 @@ export const FiltersContainer: React.FC<FiltersContainerProps> = ({
     sm: 'tablet',
     md: 'desktop',
   });
+
+  // Fixes issue with showing footer button on iOS: https://github.com/chakra-ui/chakra-ui/issues/2468
+  const [innerHeight, setH] = React.useState<number>(
+    typeof window !== 'undefined' ? window.innerHeight : 100,
+  );
+
+  function windowResizeHandler() {
+    if (window !== undefined) {
+      setH(window.innerHeight);
+    }
+  }
+
+  useEffect(() => {
+    if (window !== undefined) {
+      window.addEventListener('resize', windowResizeHandler);
+      return () => {
+        window.removeEventListener('resize', windowResizeHandler);
+      };
+    }
+  }, []);
+
   useEffect(() => {
     setOpenSections(() => {
       // 1. If filter is selected, default to an open accordion panel.
@@ -83,9 +105,14 @@ export const FiltersContainer: React.FC<FiltersContainerProps> = ({
 
   const content = (
     <>
-      <Flex justifyContent='space-between' px={4} py={4} alignItems='center'>
+      <Flex
+        justifyContent='space-between'
+        px={{ base: 0, md: 4 }}
+        py={{ base: 2, md: 4 }}
+        alignItems='center'
+      >
         {title && (
-          <Heading size='sm' fontWeight='semibold' py={[4, 4, 0]}>
+          <Heading size='sm' fontWeight='semibold'>
             {title}
           </Heading>
         )}
@@ -123,10 +150,10 @@ export const FiltersContainer: React.FC<FiltersContainerProps> = ({
       <Button
         ref={btnRef}
         variant='solid'
-        bg={'accent.bg'}
+        bg='accent.bg'
         onClick={onOpen}
         position='fixed'
-        zIndex={50}
+        zIndex='docked'
         left={4}
         bottom={50}
         boxShadow='high'
@@ -154,6 +181,7 @@ export const FiltersContainer: React.FC<FiltersContainerProps> = ({
         </Text>
       </Button>
       <Drawer
+        autoFocus={false}
         isOpen={isOpen}
         placement='left'
         onClose={onClose}
@@ -161,20 +189,15 @@ export const FiltersContainer: React.FC<FiltersContainerProps> = ({
         size={screenSize === 'mobile' ? 'full' : 'md'}
       >
         <DrawerOverlay />
-        <DrawerContent>
+        <DrawerContent overflow='auto' height={`${innerHeight}px`}>
           <DrawerCloseButton />
-          <DrawerBody px={[2, 4]} py={8}>
-            {content}
-          </DrawerBody>
-          <DrawerFooter>
-            <Button
-              w='100%'
-              variant='solid'
-              m={3}
-              onClick={onClose}
-              colorScheme='secondary'
-            >
-              Close
+          <DrawerHeader borderBottomWidth='1px'>Filters</DrawerHeader>
+
+          <DrawerBody>{content}</DrawerBody>
+
+          <DrawerFooter borderTopWidth='1px'>
+            <Button onClick={onClose} colorScheme='secondary' size='md'>
+              Submit and Close
             </Button>
           </DrawerFooter>
         </DrawerContent>

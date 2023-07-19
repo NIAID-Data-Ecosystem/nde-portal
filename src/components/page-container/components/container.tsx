@@ -120,7 +120,7 @@ export const PageContainer: React.FC<PageContainerProps> = ({
       >
         {topNavigation && hasNavigation && (
           // Sticky Nav Bar.
-          <Box id='nav-wrapper' w='100%' minW={300} zIndex='popover'>
+          <Box id='nav-wrapper' w='100%' minW={300} zIndex='banner'>
             <Navigation
               navigation={{
                 ...topNavigation,
