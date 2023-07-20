@@ -27,6 +27,7 @@ class Document extends NextDocument {
       >
         <Head>
           <link rel='icon' href='/favicon.png' />
+          <meta name='robots' content='noindex' />
         </Head>
         <body>
           {/* <!-- Google Tag Manager (noscript) --> */}
