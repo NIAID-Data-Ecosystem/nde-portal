@@ -97,7 +97,7 @@ const Table: React.FC<TableProps> = ({
                     <Tr key={i} id={`${i}`}>
                       {columns.map((col, j) => {
                         let cell = row[col.key];
-
+                        if (!cell) return <td key={`cell-${j}`}>-</td>;
                         return (
                           <Td
                             role='cell'
