@@ -49,7 +49,7 @@ const Sources: NextPage<SourcesProps> = ({ data, error }) => {
           name: (source.sourceInfo && source.sourceInfo.name) || key,
           description:
             (source.sourceInfo && source.sourceInfo.description) || '',
-          dateModified: source.version || '',
+          dateModified: source.version.includes('T') ? source.version : '',
           numberOfRecords: source.stats[key] || 0,
           schema: (source.sourceInfo && source.sourceInfo.schema) || null,
           url: (source.sourceInfo && source.sourceInfo.url) || '',
