@@ -154,7 +154,7 @@ export async function getStaticProps() {
                 url: '/repos/{owner}/{repo}/commits?path={path}',
                 owner: 'NIAID-Data-Ecosystem',
                 repo: 'nde-crawlers',
-                path: 'biothings-hub/files/nde-hub/hub/dataload/sources/immport/uploader.py',
+                path: sourceData.sourcePath,
               },
             });
             const data = await response.data;
