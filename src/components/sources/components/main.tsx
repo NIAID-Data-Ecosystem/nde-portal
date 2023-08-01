@@ -14,6 +14,7 @@ import { DisplayHTMLContent } from 'src/components/html-content';
 import NextLink from 'next/link';
 import type { SourceResponse } from 'src/pages/sources';
 import { queryFilterObject2String } from 'src/components/filters/helpers';
+import { formatDate } from 'src/utils/api/helpers';
 
 interface Main {
   data?: SourceResponse[];
@@ -223,17 +224,35 @@ const Main: React.FC<Main> = ({ data, isLoading }) => {
                     </Box>
                   )}
                   <Box mt={4}>
-                    <Heading as='h3' size='xs'>
-                      Latest Release{' '}
-                      {sourceObj.dateModified
-                        ? new Date(sourceObj.dateModified).toDateString()
-                        : 'N/A'}
+                    <Heading as='h3' size='xs' fontWeight='semibold'>
+                      Latest Release:{' '}
+                      <Text as='span' fontWeight='medium'>
+                        {sourceObj.dateModified
+                          ? new Date(sourceObj.dateModified).toLocaleDateString(
+                              'en-US',
+                              {
+                                year: 'numeric',
+                                month: 'long',
+                                day: 'numeric',
+                              },
+                            )
+                          : 'N/A'}
+                      </Text>
                     </Heading>
-                    <Heading as='h3' size='xs'>
-                      First Released{' '}
-                      {sourceObj.dateCreated
-                        ? new Date(sourceObj.dateCreated).toDateString()
-                        : 'N/A'}
+                    <Heading as='h3' size='xs' fontWeight='semibold'>
+                      First Released:{' '}
+                      <Text as='span' fontWeight='medium'>
+                        {sourceObj.dateCreated
+                          ? new Date(sourceObj.dateCreated).toLocaleDateString(
+                              'en-US',
+                              {
+                                year: 'numeric',
+                                month: 'long',
+                                day: 'numeric',
+                              },
+                            )
+                          : 'N/A'}
+                      </Text>
                     </Heading>
                   </Box>
                   <Flex
