@@ -17,6 +17,7 @@ import { FaGithub } from 'react-icons/fa';
 import Tooltip from 'src/components/tooltip';
 import MetadataConfig from 'configs/resource-metadata.json';
 import { FaInfo } from 'react-icons/fa';
+import { DisplayHTMLContent } from 'src/components/html-content';
 
 interface ExternalLinks {
   isLoading: boolean;
@@ -141,7 +142,6 @@ const ExternalLinks: React.FC<ExternalLinks> = ({
                     >
                       Reference Documents
                     </Heading>
-
                     {/* mainEntityOfPage refers to a website for the resource. */}
                     {mainEntityOfPage && (
                       <Link
@@ -154,10 +154,9 @@ const ExternalLinks: React.FC<ExternalLinks> = ({
                         {mainEntityOfPage}
                       </Link>
                     )}
-
                     {/* hasPart refers to documentation that is related to the dataset, such as data dictionaries. */}
                     {hasPart &&
-                      hasPart.map(part => {
+                      hasPart.map((part, i) => {
                         return part.url ? (
                           <Link
                             mt={2}
@@ -169,14 +168,17 @@ const ExternalLinks: React.FC<ExternalLinks> = ({
                           >
                             {part.name || part.url}
                           </Link>
+                        ) : part.name ? (
+                          <Box sx={{ h4: { fontWeight: 'semibold' } }}>
+                            <DisplayHTMLContent
+                              key={part.name}
+                              wordBreak='break-word'
+                              fontSize='xs'
+                              content={part.name}
+                            />
+                          </Box>
                         ) : (
-                          <Text
-                            key={part.name}
-                            wordBreak='break-word'
-                            fontSize='xs'
-                          >
-                            {part.name}
-                          </Text>
+                          <React.Fragment key={i} />
                         );
                       })}
                   </Flex>

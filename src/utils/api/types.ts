@@ -357,7 +357,7 @@ export interface MetadataSource {
     identifier: string;
   };
   stats: { [key: string]: number };
-  version: Date;
+  version: string;
 }
 
 export interface Metadata {

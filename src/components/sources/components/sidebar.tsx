@@ -16,7 +16,6 @@ const Sidebar: React.FC<Sidebar> = ({ data }) => {
   }
 
   sourceNames.sort((a, b) => a[0].localeCompare(b[0]));
-
   return (
     <>
       {sourceNames.map(([name, id], index) => {
@@ -33,9 +32,15 @@ const Sidebar: React.FC<Sidebar> = ({ data }) => {
               <Heading size='h6'>
                 {name} <br />
               </Heading>
-              <Text fontWeight='medium' fontSize='sm'>
-                Latest Release {formatDate(data[+id].dateModified)}
-              </Text>
+              {data[+id].dateModified ? (
+                <Text fontWeight='medium' fontSize='sm'>
+                  Latest Release {formatDate(data[+id].dateModified)}
+                </Text>
+              ) : (
+                <Text fontWeight='medium' fontSize='sm'>
+                  Latest Release N/A
+                </Text>
+              )}
             </Box>
           </ListItem>
         );

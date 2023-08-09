@@ -100,7 +100,7 @@ const BasedOn: React.FC<BasedOn> = ({
                 )}
                 {/* title (contains url if available) */}
                 <Box ml={1} w='100%'>
-                  {(identifier || name) && (
+                  {(identifier || name || url) && (
                     <>
                       <StyledText
                         fontWeight='semibold'
@@ -111,7 +111,7 @@ const BasedOn: React.FC<BasedOn> = ({
                             {name || url}
                           </Link>
                         ) : (
-                          <>{name || identifier} </>
+                          <>{name || identifier || url} </>
                         )}
                       </StyledText>
                     </>
