@@ -51,22 +51,11 @@ const FrequentlyAsked: NextPage<FrequentlyAskedProps> = props => {
               Frequently Asked Questions
             </Heading>
             <ReactMarkdown
-              rehypePlugins={[rehypeRaw, remarkGfm]}
-              linkTarget='_blank'
               components={MDXComponents}
+              rehypePlugins={[rehypeRaw, remarkGfm]}
             >
               {data.attributes.description}
             </ReactMarkdown>
-            {/* <MDXRemote
-              {...data.compiledMDX}
-              components={{
-                ...MDXComponents,
-                // replace h1 elements with h4
-                h1: (props: any) => (
-                  <Heading as='h4' size='h4' mt={4} fontSize='xl' {...props} />
-                ),
-              }}
-            /> */}
           </Flex>
         ) : (
           <Empty message='Nothing to display.' alignSelf='center' h='50vh' />
@@ -80,7 +69,7 @@ export async function getStaticProps() {
   const fetchDocs = async () => {
     try {
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/api/docs?filters[$and][0][categories][name][$eq]=FAQ`,
+        `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/api/docs?populate=*&filters[category][name][$eq]=FAQ`,
       );
       const { data } = response.data;
       return data[0];
