@@ -223,7 +223,16 @@ const ResourcePage: NextPage = props => {
                   </Card>
 
                   {/* Local navigation for page */}
-                  {sections.length > 0 && <Navigation routes={sections} />}
+                  {sections.length > 0 && (
+                    <Card
+                      flex={1}
+                      ml={[0, 0, 4]}
+                      my={2}
+                      sx={{ '>*': { p: [2, 4, 4, 6] } }}
+                    >
+                      <Navigation routes={sections} />
+                    </Card>
+                  )}
 
                   {/* Associated Resources with current page */}
                   <RelatedDatasets

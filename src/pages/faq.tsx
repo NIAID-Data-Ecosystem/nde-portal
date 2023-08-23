@@ -2,20 +2,33 @@ import { Flex, Heading, Text } from 'nde-design-system';
 import type { NextPage } from 'next';
 import { PageContainer, PageContent } from 'src/components/page-container';
 import { serialize } from 'next-mdx-remote/serialize';
-import { MDXRemote, MDXRemoteSerializeResult } from 'next-mdx-remote';
+import { MDXRemoteSerializeResult } from 'next-mdx-remote';
 import { Error } from 'src/components/error';
 import { useMDXComponents } from 'mdx-components';
+import ReactMarkdown from 'react-markdown';
+import rehypeRaw from 'rehype-raw';
+import remarkGfm from 'remark-gfm';
+import axios from 'axios';
+import Empty from 'src/components/empty';
 
 interface FrequentlyAskedProps {
-  mdxSource: MDXRemoteSerializeResult;
-  title: string;
+  data: {
+    compiledMDX: MDXRemoteSerializeResult;
+    id: string;
+    attributes: {
+      description: string;
+      name: string;
+      createdAt: string;
+      publishedAt: string;
+      updatedAt: string;
+    };
+  } | null;
   error?: { message: string };
 }
 
 const FrequentlyAsked: NextPage<FrequentlyAskedProps> = props => {
-  const { mdxSource, title, error } = props;
+  const { data, error } = props;
   const MDXComponents = useMDXComponents({});
-
   return (
     <PageContainer
       hasNavigation
@@ -29,17 +42,34 @@ const FrequentlyAsked: NextPage<FrequentlyAskedProps> = props => {
         {error ? (
           <Error>
             <Flex flexDirection='column' alignItems='center'>
-              <Text>{error?.message}</Text>
+              <Text>{data?.attributes.name}</Text>
             </Flex>
           </Error>
-        ) : (
+        ) : data ? (
           <Flex maxW='1000px' flexDirection='column' mb={32}>
             <Heading as='h1' size='lg' mb={6}>
-              {title}
+              Frequently Asked Questions
             </Heading>
-
-            <MDXRemote {...mdxSource} components={MDXComponents} />
+            <ReactMarkdown
+              rehypePlugins={[rehypeRaw, remarkGfm]}
+              linkTarget='_blank'
+              components={MDXComponents}
+            >
+              {data.attributes.description}
+            </ReactMarkdown>
+            {/* <MDXRemote
+              {...data.compiledMDX}
+              components={{
+                ...MDXComponents,
+                // replace h1 elements with h4
+                h1: (props: any) => (
+                  <Heading as='h4' size='h4' mt={4} fontSize='xl' {...props} />
+                ),
+              }}
+            /> */}
           </Flex>
+        ) : (
+          <Empty message='Nothing to display.' alignSelf='center' h='50vh' />
         )}
       </PageContent>
     </PageContainer>
@@ -47,43 +77,31 @@ const FrequentlyAsked: NextPage<FrequentlyAskedProps> = props => {
 };
 
 export async function getStaticProps() {
-  try {
-    const [pageResponse, { baseUrl }] = await Promise.all([
-      fetch(
-        // get faq body
-        'https://dash.readme.com/api/v1/docs/frequently-asked-questions',
-        {
-          headers: {
-            accept: 'application/json',
-            authorization: `Basic ${process.env.README_API_KEY}`,
-          },
-        },
-      ).then(res => res.json()),
-      // get base url
-      fetch('https://dash.readme.com/api/v1/', {
-        headers: {
-          accept: 'application/json',
-          authorization: `Basic ${process.env.README_API_KEY}`,
-        },
-      }).then(res => res.json()),
-    ]).catch(err => {
-      console.error(err);
+  const fetchDocs = async () => {
+    try {
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/api/docs?filters[$and][0][categories][name][$eq]=FAQ`,
+      );
+      const { data } = response.data;
+      return data[0];
+    } catch (err) {
       throw err;
-    });
+    }
+  };
+  try {
+    const data = await fetchDocs();
+    const body = await data.attributes.description;
 
-    // prepend readme base url to readme relative links
-    const body = await pageResponse.body
-      .replace(/#/g, '#### ')
-      .replace(/<details>/g, '<Details>')
-      .replace(/<\/details>/g, '</Details>')
-      .replace(/\(doc:/g, `(${baseUrl}/docs/`);
+    const compiledMDX = await serialize(body);
 
-    const mdxSource = await serialize(body);
+    return { props: { data: { ...data, compiledMDX } } };
+  } catch (err) {
     return {
-      props: { title: pageResponse.title, mdxSource },
+      props: {
+        data: null,
+        error: { message: 'Error retrieving data' },
+      },
     };
-  } catch (error) {
-    return { props: { error: { message: 'Error retrieving data' } } };
   }
 }
 

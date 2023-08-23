@@ -1,10 +1,19 @@
 import React from 'react';
-import { Flex, FlexProps, Heading, Icon } from 'nde-design-system';
+import {
+  Flex,
+  FlexProps,
+  Heading,
+  HeadingProps,
+  Icon,
+  IconProps,
+} from 'nde-design-system';
 import Glyph from '../icon/components/glyph';
 
 interface EmptyProps extends FlexProps {
   icon?: string;
   message?: string;
+  iconProps?: IconProps;
+  headingProps?: HeadingProps;
 }
 
 // Empty state display component.
@@ -12,6 +21,8 @@ const Empty: React.FC<EmptyProps> = ({
   children,
   icon = 'empty',
   message,
+  iconProps,
+  headingProps,
   ...rest
 }) => {
   return (
@@ -30,6 +41,7 @@ const Empty: React.FC<EmptyProps> = ({
             fill='currentColor'
             aria-labelledby='empty'
             role='img'
+            {...iconProps}
           >
             <Glyph
               id='empty'
@@ -40,7 +52,13 @@ const Empty: React.FC<EmptyProps> = ({
           </Icon>
         )}
 
-        <Heading as={'h2'} fontFamily='body' mt={4} color='inherit'>
+        <Heading
+          as='h2'
+          fontFamily='body'
+          mt={4}
+          color='inherit'
+          {...headingProps}
+        >
           {message}
         </Heading>
         {children}

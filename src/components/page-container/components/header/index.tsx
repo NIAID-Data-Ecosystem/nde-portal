@@ -1,26 +1,40 @@
 import React from 'react';
 import { PageContent } from 'src/components/page-container';
-import { Box, Flex, Heading, Text, theme } from 'nde-design-system';
+import {
+  Box,
+  Flex,
+  Heading,
+  HeadingProps,
+  Text,
+  TextProps,
+  theme,
+} from 'nde-design-system';
 import { StyledSection } from './styles';
 
 interface PageHeaderProps {
-  title: string;
-  subtitle?: string;
-  body?: string[];
   bg?: string;
   bgImg?: string;
-  color?: string;
+  body?: string[];
+  bodyProps?: TextProps;
   children?: React.ReactNode;
+  color?: string;
+  subtitle?: string;
+  subtitleProps?: TextProps;
+  title: string;
+  titleProps?: HeadingProps;
 }
 
 export const PageHeader: React.FC<PageHeaderProps> = ({
-  title,
-  subtitle,
   bg,
   bgImg,
   body,
+  bodyProps,
   children,
   color,
+  subtitle,
+  subtitleProps,
+  title,
+  titleProps,
 }) => {
   return (
     <>
@@ -39,11 +53,10 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
         <StyledSection
           id='header'
           flexDirection='column'
-          alignItems={{ base: 'flex-start', xl: 'center' }}
+          alignItems={{ base: 'flex-start', md: 'center' }}
           textAlign={{ xl: 'center' }}
         >
-          {/* <Box maxW='600px'> */}
-          <Box maxW='680px'>
+          {title && (
             <Heading
               as='h1'
               size='h1'
@@ -51,51 +64,51 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
               fontWeight='bold'
               letterSpacing={1}
               lineHeight='shorter'
-              // animation={animation}
+              {...titleProps}
             >
               {title}
             </Heading>
-            {subtitle && (
-              <Text
-                color={color || '#fff'}
-                fontSize='xl'
-                fontWeight='semibold'
-                mt={4}
-                // animation={animation}
-                sx={{ animationDelay: '1s' }}
-              >
-                {subtitle}
-              </Text>
-            )}
-            {body &&
-              body.length > 0 &&
-              body.map((text, i) => {
-                return (
-                  <Text
-                    key={i}
-                    color={color || '#fff'}
-                    fontWeight='light'
-                    fontSize='lg'
-                    lineHeight='short'
-                    mt={2}
-                    maxWidth={{ base: '400px', xl: 'unset' }}
-                    // animation={animation}
-                    sx={{ animationDelay: `${1.5 + i * 0.5}s` }}
-                  >
-                    {text}
-                  </Text>
-                );
-              })}
-          </Box>
-          <Flex w='100%' mt={[15, 20, 24]} justifyContent='center'>
-            <Flex
-              flexDirection='column'
-              maxW={{ base: '600px', xl: '1000px' }}
-              w='100%'
+          )}
+          {subtitle && (
+            <Text
+              color={color || '#fff'}
+              fontSize='xl'
+              fontWeight='semibold'
+              mt={4}
+              {...subtitleProps}
             >
-              {children}
+              {subtitle}
+            </Text>
+          )}
+          {body &&
+            body.length > 0 &&
+            body.map((text, i) => {
+              return (
+                <Text
+                  key={i}
+                  color={color || 'whiteAlpha.800'}
+                  fontWeight='medium'
+                  fontSize='lg'
+                  lineHeight='tall'
+                  maxWidth={{ base: '400px', xl: 'unset' }}
+                  mt={2}
+                  {...bodyProps}
+                >
+                  {text}
+                </Text>
+              );
+            })}
+          {children && (
+            <Flex w='100%' mt={[15, 20, 24]} justifyContent='center'>
+              <Flex
+                flexDirection='column'
+                maxW={{ base: '600px', xl: '1000px' }}
+                w='100%'
+              >
+                {children}
+              </Flex>
             </Flex>
-          </Flex>
+          )}
         </StyledSection>
       </PageContent>
     </>
