@@ -17,7 +17,11 @@ import {
   Text,
 } from 'nde-design-system';
 import type { NextPage } from 'next';
-import { PageContainer } from 'src/components/page-container';
+import {
+  PageContainer,
+  PageContent,
+  PageHeader,
+} from 'src/components/page-container';
 import { serialize } from 'next-mdx-remote/serialize';
 import { MDXRemote, MDXRemoteSerializeResult } from 'next-mdx-remote';
 import { Error } from 'src/components/error';
@@ -30,6 +34,7 @@ import { FaYoutube } from 'react-icons/fa';
 import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
 import remarkGfm from 'remark-gfm';
+import { Section, SectionList } from 'src/views/news/components/Section';
 
 export interface NewsOrEventsObject {
   compiledMDX: MDXRemoteSerializeResult;
@@ -61,7 +66,11 @@ export interface NewsOrEventsObject {
 }
 
 export interface NewsProps {
-  data: { news: NewsOrEventsObject[]; events: NewsOrEventsObject[] };
+  data: {
+    news: NewsOrEventsObject[];
+    events: NewsOrEventsObject[];
+    webinars: NewsOrEventsObject[];
+  };
   error?: { message: string };
 }
 
@@ -95,88 +104,12 @@ const News: NextPage<NewsProps> = props => {
     },
   ]);
 
-  const Section = ({
-    id,
-    title,
-    children,
-  }: {
-    id: string;
-    title: string;
-    children: React.ReactNode;
-  }) => {
-    return (
-      <Box id={id} w='100%'>
-        <Heading
-          as='h2'
-          size='lg'
-          bg='page.alt'
-          px={2}
-          py={4}
-          mt={6}
-          mb={4}
-          borderBottom='1px solid'
-          borderBottomColor='blackAlpha.200'
-          position='sticky'
-          top='0px'
-          zIndex='banner'
-        >
-          {title}
-        </Heading>
-        <Box px={2}>{children}</Box>
-      </Box>
-    );
-  };
-
-  const SectionList = ({
-    id,
-    numItems,
-    increaseBy = 5,
-    children,
-  }: {
-    id: string;
-    numItems: number;
-    increaseBy?: number;
-    children: React.ReactNode;
-  }) => {
-    const currentSection = sections.findIndex(s => s.hash === id);
-    const { showMax } = sections[currentSection];
-    return (
-      <Stack flex={1}>
-        {children}
-        {showMax && showMax < numItems && (
-          <Flex justifyContent='center' my={4}>
-            <Button
-              size='sm'
-              colorScheme='gray'
-              variant='outline'
-              onClick={() => {
-                setSections(prev => {
-                  const currentSection = prev.find(s => s.hash === id);
-                  if (
-                    currentSection?.showMax &&
-                    currentSection.showMax < numItems
-                  ) {
-                    currentSection.showMax += increaseBy;
-                  }
-                  return [...prev];
-                });
-              }}
-            >
-              Show More
-            </Button>
-          </Flex>
-        )}
-      </Stack>
-    );
-  };
-
-  const NewsOrEventCard = ({ mdx, attributes }: NewsOrEventsObject) => {
+  const NewsOrEventCard = ({ attributes }: NewsOrEventsObject) => {
     const categoryColors = [
-      'gray',
-      'gray',
       'gray',
       'blue',
       'orange',
+      'gray',
       'purple',
       'green',
       'red',
@@ -186,7 +119,7 @@ const News: NextPage<NewsProps> = props => {
       'cyan',
     ];
     return (
-      <Card style={{ boxShadow: 'none' }}>
+      <Card border='1px solid' borderColor='gray.200' boxShadow='none'>
         <Flex p={2} flexWrap={['wrap', 'nowrap']}>
           {attributes.publishedAt && (
             <Text
@@ -214,14 +147,14 @@ const News: NextPage<NewsProps> = props => {
             )}
             <CardBody p={0}>
               {/* useful for client-side fetch mdx handling */}
-              {/* <ReactMarkdown
+              <ReactMarkdown
                 rehypePlugins={[rehypeRaw, remarkGfm]}
                 linkTarget='_blank'
                 components={MDXComponents}
               >
                 {`${attributes.description}`}
-              </ReactMarkdown> */}
-              <MDXRemote {...mdx.description} components={MDXComponents} />
+              </ReactMarkdown>
+              {/* <MDXRemote {...mdx.description} components={MDXComponents} /> */}
             </CardBody>
             {attributes.categories && attributes.categories.data.length && (
               <CardFooter p={0} mt={2}>
@@ -231,7 +164,9 @@ const News: NextPage<NewsProps> = props => {
                     <Tag
                       key={category.id}
                       m={1}
-                      colorScheme={categoryColors[category.id]}
+                      colorScheme={
+                        categoryColors[category.id % categoryColors.length]
+                      }
                       variant='subtle'
                       size='sm'
                     >
@@ -250,26 +185,65 @@ const News: NextPage<NewsProps> = props => {
   return (
     <PageContainer
       hasNavigation
-      title='Documentation'
-      metaDescription='Documentation for the portal.'
+      title='News'
+      metaDescription='Latest news releases for the NIAID Data Discovery Portal.'
       px={0}
       py={0}
       disableSearchBar
     >
-      {/* <PageContent justifyContent='center'> */}
-      {error ? (
-        <Error>
-          <Flex flexDirection='column' alignItems='center'>
-            <Text>{error.message}</Text>
-          </Flex>
-        </Error>
-      ) : data ? (
-        <Flex justifyContent='center' bg='page.alt' p={2}>
-          <Flex m='0 auto' maxW='1320px'>
-            <Flex flexDirection='column' mb={32} flex={3} alignItems='center'>
+      <PageHeader
+        title='News Releases'
+        titleProps={{
+          size: 'h3',
+        }}
+        body={['Latest news and events from the NIAID Data Discovery Portal']}
+        bodyProps={{
+          color: '#fff',
+          mt: 10,
+        }}
+        bgImg='/assets/news-01.jpg'
+        sx={{
+          '#header': {
+            minW: '100%',
+            bg: 'blackAlpha.600',
+          },
+        }}
+      />
+      <PageContent
+        bg='#fff'
+        maxW={{ base: 'unset', lg: '1600px' }}
+        margin='0 auto'
+        px={4}
+        py={4}
+        justifyContent='center'
+        mb={32}
+        flex={1}
+      >
+        {error ? (
+          <Error bg='inherit'>
+            <Flex flexDirection='column' alignItems='center'>
+              <Text>{error.message}</Text>
+            </Flex>
+          </Error>
+        ) : data ? (
+          <>
+            <Flex
+              flexDirection='column'
+              flex={1}
+              pb={32}
+              maxW={{ base: 'unset', lg: '70%' }}
+              width='100%'
+              alignItems='center'
+              m='0 auto'
+            >
               {/* NEWS */}
               <Section id='news' title='News'>
-                <SectionList id='news' numItems={data.news.length}>
+                <SectionList
+                  id='news'
+                  numItems={data.news.length}
+                  sections={sections}
+                  setSections={setSections}
+                >
                   {!data.news.length ? (
                     <Empty
                       message='No news to display'
@@ -289,7 +263,12 @@ const News: NextPage<NewsProps> = props => {
 
               {/* EVENTS */}
               <Section id='events' title='Events'>
-                <SectionList id='events' numItems={data.events.length}>
+                <SectionList
+                  id='events'
+                  numItems={data.events.length}
+                  sections={sections}
+                  setSections={setSections}
+                >
                   {!data.events.length ? (
                     <Empty
                       message='No events to display'
@@ -312,8 +291,13 @@ const News: NextPage<NewsProps> = props => {
 
               {/* Webinars */}
               <Section id='webinars' title='Webinar Recordings'>
-                <SectionList id='webinars' numItems={data.news.length}>
-                  {!data.news.length ? (
+                <SectionList
+                  id='webinars'
+                  numItems={data.news.length}
+                  sections={sections}
+                  setSections={setSections}
+                >
+                  {!data.webinars.length ? (
                     <Empty
                       message='No webinar recordings to display'
                       color='niaid.placeholder'
@@ -322,7 +306,7 @@ const News: NextPage<NewsProps> = props => {
                     />
                   ) : (
                     <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
-                      {data.news.map((webinar: NewsOrEventsObject) => {
+                      {data.webinars.map((webinar: NewsOrEventsObject) => {
                         return (
                           <Card key={webinar.id}>
                             <Box w='100%' height='250px' bg='gray.100'></Box>
@@ -360,14 +344,13 @@ const News: NextPage<NewsProps> = props => {
                   direction={{ base: 'column', sm: 'row' }}
                   divider={<StackDivider borderColor='primary.200' />}
                   spacing={4}
-                  fontSize='sm'
+                  fontSize='md'
                 >
-                  <Link href='https://niaid-data.readme.io/'>
-                    Documentation
-                  </Link>
+                  <Link href='/docs'>Documentation</Link>
                   <Link href='/faq'>FAQ</Link>
-                  <Link href='#'>SlideShare</Link>
-                  <Link href='#'>Ask a question</Link>
+                  <Link href='mailto:NIAIDDataEcosystem@mail.nih.gov'>
+                    Ask a question
+                  </Link>
                 </Stack>
               </Section>
 
@@ -378,6 +361,8 @@ const News: NextPage<NewsProps> = props => {
                   <Card
                     transform='translate(0, 2px)'
                     boxShadow='sm'
+                    border='1px solid'
+                    borderColor='gray.100'
                     transition='all 0.1s ease-in-out'
                     _hover={{
                       transform: 'translate(0, -2px)',
@@ -385,8 +370,8 @@ const News: NextPage<NewsProps> = props => {
                       transition: 'all 0.1s ease-in-out',
                     }}
                   >
-                    <CardBody>
-                      <Text lineHeight='short' color='gray.800'>
+                    <CardBody px={4} py={2}>
+                      <Text lineHeight='short' color='gray.600'>
                         Share your discovery Portal story with us by{' '}
                         <Link href='mailto:NIAIDDataEcosystem@mail.nih.gov'>
                           emailing the team
@@ -394,24 +379,26 @@ const News: NextPage<NewsProps> = props => {
                       </Text>
                     </CardBody>
                   </Card>
-                  {/* Follow */}
+                  {/* Socials */}
                   <Card
                     transform='translate(0, 2px)'
+                    border='1px solid'
+                    borderColor='gray.100'
                     boxShadow='sm'
                     transition='all 0.1s ease-in-out'
                     _hover={{
-                      transform: 'translate(0, -2px)',
+                      transform: 'translate(0, 0px)',
                       boxShadow: 'base',
                       transition: 'all 0.1s ease-in-out',
                     }}
                   >
-                    <CardBody>
+                    <CardBody px={4} py={2}>
                       <Text
                         lineHeight='short'
-                        color='text.heading'
-                        fontWeight='semibold'
+                        color='gray.600'
+                        fontWeight='medium'
                       >
-                        Follow us on
+                        Follow us
                       </Text>
                       <Stack
                         direction={{ base: 'column', md: 'row' }}
@@ -443,37 +430,43 @@ const News: NextPage<NewsProps> = props => {
               px={2}
             >
               <Box position='sticky' top='0px' p={4}>
-                <Navigation routes={sections} />
+                <Navigation
+                  routes={sections}
+                  itemProps={{
+                    borderLeftColor: 'primary.400',
+                  }}
+                />
               </Box>
             </Box>
-          </Flex>
-        </Flex>
-      ) : (
-        <Empty message='Nothing to display.' alignSelf='center' h='50vh' />
-      )}
+          </>
+        ) : (
+          <Empty message='Nothing to display.' alignSelf='center' h='50vh' />
+        )}
+      </PageContent>
     </PageContainer>
   );
 };
 
-export async function getStaticProps() {
-  const fetchData = async () => {
-    try {
-      const news = await axios.get(
-        `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/api/news-reports?populate=*&sort=publishedAt:DESC`,
-      );
-
-      const events = await axios.get(
-        `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/api/events?populate=*&sort=publishedAt:DESC`,
-      );
-
-      return { news: news.data.data, events: events.data.data };
-    } catch (err) {
-      throw err;
-    }
-  };
+const fetchNews = async () => {
   try {
-    const contents = await fetchData();
-    const [news, events] = await Promise.all(
+    const news = await axios.get(
+      `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/api/news-reports?populate=*&sort=publishedAt:DESC`,
+    );
+
+    const events = await axios.get(
+      `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/api/events?populate=*&sort=publishedAt:DESC`,
+    );
+
+    return { news: news.data.data, events: events.data.data, webinars: [] };
+  } catch (err) {
+    throw err;
+  }
+};
+
+export async function getStaticProps() {
+  try {
+    const contents = await fetchNews();
+    const [news, events, webinars] = await Promise.all(
       Object.entries(contents).map(async ([_, docs]) => {
         return Promise.all(
           docs.map(async (doc: any) => {
@@ -493,7 +486,7 @@ export async function getStaticProps() {
         );
       }),
     );
-    return { props: { data: { news, events } } };
+    return { props: { data: { news, events, webinars } } };
   } catch (err: any) {
     return {
       props: {

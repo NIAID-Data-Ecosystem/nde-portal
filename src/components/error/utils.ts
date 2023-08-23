@@ -25,7 +25,7 @@ export const getQueryStatusError = (error: {
         relatedLinks: [
           {
             label: 'Documentation',
-            href: 'https://niaid-data.readme.io/docs/advanced-searching',
+            href: '/docs/advanced-searching',
             isExternal: true,
           },
         ],
@@ -42,7 +42,7 @@ export const getQueryStatusError = (error: {
         relatedLinks: [
           {
             label: 'Documentation',
-            href: 'https://niaid-data.readme.io/docs/advanced-searching',
+            href: '/docs/advanced-searching',
             isExternal: true,
           },
         ],
@@ -68,7 +68,7 @@ export const getQueryStatusError = (error: {
         relatedLinks: [
           {
             label: 'Documentation',
-            href: 'https://niaid-data.readme.io/docs/advanced-searching',
+            href: '/docs/advanced-searching',
             isExternal: true,
           },
         ],
@@ -84,7 +84,7 @@ export const getQueryStatusError = (error: {
         relatedLinks: [
           {
             label: 'Documentation',
-            href: 'https://niaid-data.readme.io/docs/advanced-searching',
+            href: '/docs/advanced-searching',
             isExternal: true,
           },
         ],

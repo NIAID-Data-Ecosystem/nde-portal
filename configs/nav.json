@@ -29,8 +29,12 @@
         {
           "label": "Documentation",
           "subLabel": "Guides and documentation to help navigate and use the Discovery Portal",
-          "href": "https://niaid-data.readme.io/",
-          "isExternal": true
+          "href": "/docs"
+        },
+        {
+          "label": "News",
+          "subLabel": "Latest news releases from the NIAID Data Ecosystem",
+          "href": "/news"
         },
         {
           "label": "Changelog",

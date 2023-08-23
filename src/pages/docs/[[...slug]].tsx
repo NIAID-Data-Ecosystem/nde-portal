@@ -178,28 +178,39 @@ const Docs: NextPage<{
           {props.data?.id && props.slug ? (
             <Flex m='0 auto' flex={1}>
               {/* CONTENT */}
-              <MainContent
-                id={props.data.id}
-                data={props.data}
-                slug={props.slug}
-              />
+              <PageContent
+                id='docs-content'
+                bg='#fff'
+                maxW={{ base: 'unset', lg: '1600px' }}
+                margin='0 auto'
+                px={4}
+                py={4}
+                justifyContent='center'
+                mb={32}
+                flex={1}
+              >
+                <MainContent
+                  id={props.data.id}
+                  data={props.data}
+                  slug={props.slug}
+                />
+              </PageContent>
             </Flex>
           ) : (
             <Box w='100%'>
               <PageHeader
                 title={DOCUMENTATION_COPY.sections.hero.heading}
                 titleProps={{
-                  maxWidth: { base: '100%', md: '70%' },
                   size: 'h3',
                 }}
                 subtitle={DOCUMENTATION_COPY.sections.hero.subtitle}
                 body={[DOCUMENTATION_COPY.sections.hero.body]}
                 bodyProps={{
-                  maxWidth: { base: '100%', md: '70%' },
+                  maxW: 'unset',
                   mt: 10,
                 }}
               />
-              <PageContent id='page-content' w='100%' bg='white'>
+              <PageContent id='general-docs' w='100%' bg='white'>
                 {/* Empty state */}
                 {!isLoading &&
                 (!documentationPages || !documentationPages?.length) ? (

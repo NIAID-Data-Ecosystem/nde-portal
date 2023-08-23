@@ -142,64 +142,59 @@ const MainContent = ({ slug, data: initialData }: MainContentProps) => {
 
   return (
     <>
-      <Flex flexDirection='column' flex={3} alignItems='center'>
-        <Flex
-          flexDirection='column'
-          p={4}
-          px={8}
-          flex={1}
-          pb={32}
-          width='100%'
-          maxW='1000px'
-        >
-          {error ? (
-            <Error>
-              <Flex flexDirection='column' alignItems='center'>
-                <Text fontWeight='light' color='gray.600' fontSize='lg'>
-                  API Request:{' '}
-                  {error?.statusText ||
-                    'It’s possible that the server is experiencing some issues.'}{' '}
-                </Text>
-              </Flex>
-            </Error>
-          ) : data?.id ? (
-            <>
-              <Box mt={8} mb={4}>
-                <Heading
-                  id={transformString2Hash(data.attributes.name)}
-                  as='h1'
-                  size='xl'
-                  mb={2}
-                >
-                  {data.attributes.name}
-                </Heading>
-                <Text color='niaid.placeholder'>
-                  {data.attributes.subtitle}
-                </Text>
-              </Box>
-              <ReactMarkdown
-                rehypePlugins={[rehypeRaw, remarkGfm]}
-                components={MDXComponents}
-              >
-                {data.attributes.description}
-              </ReactMarkdown>
-              <Divider orientation='horizontal' mt={8} mb={4} />
-              <Text
-                fontStyle='italic'
-                fontSize='xs'
-                color='gray.600'
-                textAlign='end'
-              >
-                Last updated on{' '}
-                <Text as='span' fontWeight='semibold'>
-                  {updatedAt}
-                </Text>
+      <Flex
+        flexDirection='column'
+        flex={1}
+        pb={32}
+        maxW={{ base: 'unset', lg: '70%' }}
+        width='100%'
+        m='0 auto'
+      >
+        {error ? (
+          <Error>
+            <Flex flexDirection='column' alignItems='center'>
+              <Text fontWeight='light' color='gray.600' fontSize='lg'>
+                API Request:{' '}
+                {error?.statusText ||
+                  'It’s possible that the server is experiencing some issues.'}{' '}
               </Text>
-            </>
-          ) : (
-            <Empty>No documentation for this page exists.</Empty>
-          )}
-        </Flex>
+            </Flex>
+          </Error>
+        ) : data?.id ? (
+          <>
+            <Box mt={8} mb={4}>
+              <Heading
+                id={transformString2Hash(data.attributes.name)}
+                as='h1'
+                size='xl'
+                mb={2}
+              >
+                {data.attributes.name}
+              </Heading>
+              <Text color='niaid.placeholder'>{data.attributes.subtitle}</Text>
+            </Box>
+            <ReactMarkdown
+              rehypePlugins={[rehypeRaw, remarkGfm]}
+              components={MDXComponents}
+            >
+              {data.attributes.description}
+            </ReactMarkdown>
+            <Divider orientation='horizontal' mt={8} mb={4} />
+            <Text
+              fontStyle='italic'
+              fontSize='xs'
+              color='gray.600'
+              textAlign='end'
+            >
+              Last updated on{' '}
+              <Text as='span' fontWeight='semibold'>
+                {updatedAt}
+              </Text>
+            </Text>
+          </>
+        ) : (
+          <Empty>No documentation for this page exists.</Empty>
+        )}
       </Flex>
 
       {/* TABLE OF CONTENTS */}

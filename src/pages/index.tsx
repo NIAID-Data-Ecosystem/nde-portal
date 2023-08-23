@@ -338,7 +338,7 @@ const Home: NextPage<NewsProps> = props => {
         subtitle={HOMEPAGE_COPY.sections.hero.subtitle}
         body={[HOMEPAGE_COPY.sections.hero.body]}
       >
-        <Flex w='100%' justifyContent='flex-end' mb={2}>
+        <Flex w='100%' justifyContent='flex-end' mt={[15, 20, 24]} mb={2}>
           <NextLink
             href={{ pathname: '/advanced-search' }}
             passHref

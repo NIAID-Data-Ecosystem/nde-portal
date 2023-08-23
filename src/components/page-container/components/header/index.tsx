@@ -3,6 +3,7 @@ import { PageContent } from 'src/components/page-container';
 import {
   Box,
   Flex,
+  FlexProps,
   Heading,
   HeadingProps,
   Text,
@@ -11,7 +12,7 @@ import {
 } from 'nde-design-system';
 import { StyledSection } from './styles';
 
-interface PageHeaderProps {
+interface PageHeaderProps extends FlexProps {
   bg?: string;
   bgImg?: string;
   body?: string[];
@@ -20,7 +21,7 @@ interface PageHeaderProps {
   color?: string;
   subtitle?: string;
   subtitleProps?: TextProps;
-  title: string;
+  title?: string;
   titleProps?: HeadingProps;
 }
 
@@ -35,6 +36,7 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
   subtitleProps,
   title,
   titleProps,
+  ...props
 }) => {
   return (
     <>
@@ -48,58 +50,65 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
         flexWrap='wrap'
         minH='unset'
         justifyContent={{ xl: 'center' }}
+        px={0}
+        py={0}
+        {...props}
       >
         {/* Header section */}
         <StyledSection
           id='header'
           flexDirection='column'
-          alignItems={{ base: 'flex-start', md: 'center' }}
+          alignItems={{ base: 'flex-start', xl: 'center' }}
           textAlign={{ xl: 'center' }}
+          px={{ base: 6, sm: 10, lg: 16, xl: '5vw' }}
+          py={{ base: 6, sm: 10, xl: 16 }}
         >
-          {title && (
-            <Heading
-              as='h1'
-              size='h1'
-              color={color || '#fff'}
-              fontWeight='bold'
-              letterSpacing={1}
-              lineHeight='shorter'
-              {...titleProps}
-            >
-              {title}
-            </Heading>
-          )}
-          {subtitle && (
-            <Text
-              color={color || '#fff'}
-              fontSize='xl'
-              fontWeight='semibold'
-              mt={4}
-              {...subtitleProps}
-            >
-              {subtitle}
-            </Text>
-          )}
-          {body &&
-            body.length > 0 &&
-            body.map((text, i) => {
-              return (
-                <Text
-                  key={i}
-                  color={color || 'whiteAlpha.800'}
-                  fontWeight='medium'
-                  fontSize='lg'
-                  lineHeight='tall'
-                  maxWidth={{ base: '400px', xl: 'unset' }}
-                  mt={2}
-                  {...bodyProps}
-                >
-                  {text}
-                </Text>
-              );
-            })}
+          <Box w='100%' maxW='680px'>
+            {title && (
+              <Heading
+                as='h1'
+                size='h1'
+                color={color || '#fff'}
+                fontWeight='bold'
+                letterSpacing={1}
+                lineHeight='shorter'
+                {...titleProps}
+              >
+                {title}
+              </Heading>
+            )}
+            {subtitle && (
+              <Text
+                color={color || '#fff'}
+                fontSize='xl'
+                fontWeight='semibold'
+                mt={4}
+                {...subtitleProps}
+              >
+                {subtitle}
+              </Text>
+            )}
+            {body &&
+              body.length > 0 &&
+              body.map((text, i) => {
+                return (
+                  <Text
+                    key={i}
+                    color={color || 'whiteAlpha.800'}
+                    fontWeight='medium'
+                    fontSize='lg'
+                    lineHeight='tall'
+                    maxWidth={{ base: '400px', xl: 'unset' }}
+                    mt={2}
+                    {...bodyProps}
+                  >
+                    {text}
+                  </Text>
+                );
+              })}
+          </Box>
           {children && (
-            <Flex w='100%' mt={[15, 20, 24]} justifyContent='center'>
+            <Flex w='100%' justifyContent='center'>
               <Flex
                 flexDirection='column'
                 maxW={{ base: '600px', xl: '1000px' }}
