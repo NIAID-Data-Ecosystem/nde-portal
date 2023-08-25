@@ -54,6 +54,7 @@ const HashedHeading = (props: HeadingProps) => {
   }
   return <Heading id={hash} as='h2' fontSize='2xl' mt={6} mb={3} {...props} />;
 };
+
 export default {
   blockquote: (props: any) => {
     const getThemeByTitle = (node: any) => {

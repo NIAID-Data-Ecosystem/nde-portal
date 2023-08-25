@@ -150,9 +150,7 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
               !href.startsWith(process.env.NEXT_PUBLIC_BASE_URL) // links starting with portal domain
             }
             {...props}
-          >
-            {props.children[0]}
-          </Link>
+          ></Link>
         );
       }
       return (

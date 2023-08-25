@@ -26,9 +26,6 @@ import {
   Tag,
   Text,
   theme,
-  Card,
-  CardTitle,
-  CardBody,
 } from 'nde-design-system';
 import {
   PageHeader,
@@ -44,13 +41,11 @@ import { FaChevronRight } from 'react-icons/fa';
 import { useRepoData } from 'src/hooks/api';
 import { queryFilterObject2String } from 'src/components/filters/helpers';
 import { FaRegEnvelope, FaGithub } from 'react-icons/fa';
-import axios from 'axios';
-import { serialize } from 'next-mdx-remote/serialize';
-import { Carousel } from 'src/components/carousel';
-import { NewsProps } from './news';
-import { formatDate } from 'src/utils/api/helpers';
-import { MDXRemote } from 'next-mdx-remote';
-import { useMDXComponents } from 'mdx-components';
+import { NewsOrEventsObject } from './news';
+import {
+  NewsCarousel,
+  fetchNews,
+} from 'src/views/home/components/NewsCarousel';
 
 interface Repository {
   identifier: string;
@@ -87,6 +82,7 @@ export const RepositoryTable: React.FC<{
       ),
     [rowsByType, sortOrder],
   );
+
   return (
     <TableWrapper colorScheme='gray' w='100%'>
       <TableContainer>
@@ -314,7 +310,13 @@ export const RepositoryTabs: React.FC<{
   );
 };
 
-const Home: NextPage<NewsProps> = props => {
+const Home: NextPage<{
+  data: {
+    news: NewsOrEventsObject[];
+  };
+  error?: { message: string };
+}> = props => {
+  // For repositories table
   const [repositories, setRepositories] = useState<Repository[]>([]);
 
   const [selectedType, setSelectedType] = useState<Repository['type']>('iid');
@@ -324,6 +326,7 @@ const Home: NextPage<NewsProps> = props => {
   useEffect(() => {
     data && setRepositories([...data]);
   }, [data]);
+
   return (
     <PageContainer
       hasNavigation
@@ -479,97 +482,9 @@ const Home: NextPage<NewsProps> = props => {
                 )}
               </ButtonGroup>
               {/* NEWS */}
-              {/* {props.data.news.length > 0 && (
-                <Box mt={20} p={6} minH='500px' width='100%' borderRadius='lg'>
-                  <Heading
-                    as='h3'
-                    fontSize='lg'
-                    color='primary.600'
-                    fontWeight='normal'
-                    pb={4}
-                    mb={4}
-                    borderBottom='1px solid'
-                    borderBottomColor='primary.200'
-                  >
-                    Recent News Releases
-                  </Heading>
-
-                  <Carousel>
-                    {props.data.news.slice(0, 5).map(news => {
-                      return (
-                        <Card key={news.id}>
-                          {news.attributes.image.data ? (
-                            <Box h='150px' overflow='hidden' p={0}>
-                              <Image
-                                src={`${process.env.NEXT_PUBLIC_STRAPI_API_URL}${news.attributes.image.data[0].attributes.url}`}
-                                alt={
-                                  news.attributes.image.data[0].attributes
-                                    .alternativeText
-                                }
-                                objectFit='contain'
-                                width='100%'
-                                p={0}
-                              />
-                            </Box>
-                          ) : (
-                            <Box bg='gray.100' w='100%' h='150px'></Box>
-                          )}
-                          <Box p={4}>
-                            <CardTitle p={0} fontSize='lg' lineHeight='short'>
-                              {news.attributes.name}
-                            </CardTitle>
-                            <CardBody p={0}>
-                              {
-                                <Text
-                                  as='span'
-                                  mt={2}
-                                  fontSize='sm'
-                                  lineHeight='short'
-                                  noOfLines={3}
-                                >
-                                  {formatDate(news.attributes.publishedAt)}{' '}
-                                  &mdash;
-                                  {news.attributes.shortDescription ? (
-                                    news.attributes.shortDescription
-                                  ) : news.mdx.description ? (
-                                    <MDXRemote
-                                      {...news.mdx.description}
-                                      components={{
-                                        // remove formatting for p elements so that they call in line with date.
-                                        p: (props: any) => (
-                                          <>{props.children}</>
-                                        ),
-                                      }}
-                                    />
-                                  ) : (
-                                    <></>
-                                  )}
-                                </Text>
-                              }
-                            </CardBody>
-                          </Box>
-                        </Card>
-                      );
-                    })}
-                  </Carousel>
-                  <Flex flex={1} justifyContent='center' mt={4}>
-                    <NextLink
-                      href={{
-                        pathname: `/news`,
-                      }}
-                      passHref
-                      prefetch={false}
-                    >
-                      <Button
-                        size='sm'
-                        rightIcon={<Icon as={FaChevronRight} />}
-                      >
-                        All news releases
-                      </Button>
-                    </NextLink>
-                  </Flex>
-                </Box>
-              )} */}
+              {!props?.error?.message && (
+                <NewsCarousel news={props.data.news} />
+              )}
             </Box>
           </PageContent>
         )}
@@ -579,41 +494,9 @@ const Home: NextPage<NewsProps> = props => {
 };
 
 export async function getStaticProps() {
-  // const fetchData = async () => {
-  //   try {
-  //     const news = await axios.get(
-  //       `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/api/news-reports?populate=*&sort=publishedAt:DESC&pagination[page]=1&pagination[pageSize]=5`,
-  //     );
-
-  //     return { news: news.data.data };
-  //   } catch (err) {
-  //     throw err;
-  //   }
-  // };
   try {
-    // const contents = await fetchData();
-    // const news = await Promise.all(
-    //   contents.news.map(async (doc: any) => {
-    //     try {
-    //       if (doc?.attributes?.description) {
-    //         const body = doc.attributes.description
-    //           .replace(/{/g, '(')
-    //           .replace(/}/g, ')');
-
-    //         const compiledMDXDescription = await serialize(body);
-    //         return {
-    //           ...doc,
-    //           mdx: { description: compiledMDXDescription },
-    //         };
-    //       }
-    //       return doc;
-    //     } catch (err) {
-    //       throw err;
-    //     }
-    //   }),
-    // );
-
-    return { props: { data: { news: [] } } };
+    const { news } = await fetchNews({ pageSize: 5 });
+    return { props: { data: { news } } };
   } catch (err: any) {
     return {
       props: {

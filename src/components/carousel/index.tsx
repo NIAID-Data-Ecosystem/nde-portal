@@ -80,10 +80,17 @@ export const Carousel = ({
       setConstraint(2);
     }
     if (isGreaterThanXL) {
-      setItemWidth(width / 3 - gap);
-      setConstraint(3);
+      setItemWidth((children.length < 3 ? width / 2 : width / 3) - gap);
+      setConstraint(children.length < 3 ? 2 : 3);
     }
-  }, [isBetweenBaseAndMd, isBetweenMdAndXl, isGreaterThanXL, width, gap]);
+  }, [
+    isBetweenBaseAndMd,
+    isBetweenMdAndXl,
+    isGreaterThanXL,
+    width,
+    gap,
+    children,
+  ]);
 
   const itemProps = {
     setActiveItem,
@@ -143,7 +150,11 @@ export const Carousel = ({
           <Button
             onClick={handleDecrementClick}
             onFocus={handleFocus}
-            isDisabled={activeItem === positions.length - positions.length}
+            isDisabled={
+              // disable the 'prev' button when there all items fit in view or at first index item
+              children.length < constraint ||
+              activeItem === positions.length - positions.length
+            }
             mr={`${gap / 3}px`}
             color={`${colorScheme}.800`}
             variant='ghost'
@@ -170,7 +181,12 @@ export const Carousel = ({
           <Button
             onClick={handleIncrementClick}
             onFocus={handleFocus}
-            isDisabled={activeItem === positions.length - constraint}
+            isDisabled={
+              // disable the 'next' button when there all items fit in view or at last index item
+
+              children.length < constraint ||
+              activeItem === positions.length - constraint
+            }
             ml={`${gap / 3}px`}
             color={`${colorScheme}.800`}
             variant='ghost'

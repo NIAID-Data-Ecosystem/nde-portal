@@ -84,7 +84,10 @@ interface MainContentProps {
 }
 
 const MainContent = ({ slug, data: initialData }: MainContentProps) => {
-  const MDXComponents = useMDXComponents(mdxComponents);
+  // used to determine what levels of heading to add to table of contents.
+  const MAX_HEADING_DEPTH = 3;
+  const [tocSections, setTocSections] = useState<ContentHeading[]>([]);
+
   const [data, setData] = useState(initialData);
   // Fetch documentation from API.
   const fetchDocumentation = async () => {
@@ -98,8 +101,6 @@ const MainContent = ({ slug, data: initialData }: MainContentProps) => {
       throw err.response;
     }
   };
-  const [tocSections, setTocSections] = useState<ContentHeading[]>([]);
-  const MAX_HEADING_DEPTH = 3;
   const { isLoading, error } = useQuery<DocumentationProps[] | undefined, any>(
     ['doc', { slug }],
     fetchDocumentation,
@@ -139,6 +140,8 @@ const MainContent = ({ slug, data: initialData }: MainContentProps) => {
       setUpdatedAt(date);
     }
   }, [data]);
+
+  const MDXComponents = useMDXComponents(mdxComponents);
 
   return (
     <>
