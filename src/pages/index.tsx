@@ -482,7 +482,7 @@ const Home: NextPage<{
                 )}
               </ButtonGroup>
               {/* NEWS */}
-              {!props?.error?.message && (
+              {!props?.error?.message && props.data?.news && (
                 <NewsCarousel news={props.data.news} />
               )}
             </Box>
