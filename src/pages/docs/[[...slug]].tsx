@@ -54,8 +54,6 @@ const Docs: NextPage<{
   slug: string[];
   data: DocumentationProps;
 }> = props => {
-  // const { data, error } = props;
-
   // Fetch documentation from API.
   const fetchCategories = async () => {
     try {
@@ -69,7 +67,7 @@ const Docs: NextPage<{
     }
   };
   const {
-    data: documentationPages,
+    data: documentationPagesList,
     isLoading,
     error,
   } = useQuery<DocumentationByCategories[], any, SidebarContent[]>(
@@ -109,7 +107,7 @@ const Docs: NextPage<{
     fallback: false, // return false on the server, and re-evaluate on the client side
   });
 
-  const currentPage = documentationPages?.reduce((r, page) => {
+  const selectedPage = documentationPagesList?.reduce((r, page) => {
     const slug = Array.isArray(router.query.slug)
       ? router.query.slug[0]
       : router.query.slug;
@@ -149,13 +147,13 @@ const Docs: NextPage<{
           flexDirection={{ base: 'column', md: 'row' }}
         >
           {/* Documentation Pages Navigation */}
-          {!props.slug || (!isLoading && !documentationPages?.length) ? (
+          {!props.slug || (!isLoading && !documentationPagesList?.length) ? (
             <></>
           ) : isLargerThanSm ? (
             <SidebarContainer>
               <SidebarDesktop
                 isLoading={isLoading}
-                sections={documentationPages}
+                sections={documentationPagesList}
                 selectedSlug={
                   Array.isArray(router.query.slug)
                     ? router.query.slug[0]
@@ -166,13 +164,13 @@ const Docs: NextPage<{
           ) : (
             <SidebarMobile
               isLoading={isLoading}
-              menuTitle={currentPage?.name || ''}
+              menuTitle={selectedPage?.name || ''}
               selectedSlug={
                 Array.isArray(router.query.slug)
                   ? router.query.slug[0]
                   : router.query.slug
               }
-              sections={documentationPages}
+              sections={documentationPagesList}
             />
           )}
           {props.data?.id && props.slug ? (
@@ -213,7 +211,7 @@ const Docs: NextPage<{
               <PageContent id='general-docs' w='100%' bg='white'>
                 {/* Empty state */}
                 {!isLoading &&
-                (!documentationPages || !documentationPages?.length) ? (
+                (!documentationPagesList || !documentationPagesList?.length) ? (
                   <Empty
                     message='No documentation currently available.'
                     alignItems='flex-start'
@@ -233,7 +231,7 @@ const Docs: NextPage<{
                     w={{ base: '100%', lg: '1000px' }}
                     gridAutoRows='min-content'
                   >
-                    {documentationPages?.map((doc, i) => {
+                    {documentationPagesList?.map((doc, i) => {
                       return (
                         <Box h='unset' key={doc.id}>
                           <Heading
@@ -301,6 +299,7 @@ const Docs: NextPage<{
                                   passHref
                                 >
                                   <Link
+                                    as='span'
                                     variant='unstyled'
                                     fontSize='sm'
                                     color='gray.600'

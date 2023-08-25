@@ -89,8 +89,6 @@ const News: NextPage<NewsProps> = props => {
     data.events,
   );
 
-  console.log(events);
-
   useQuery<
     {
       news: NewsOrEventsObject[];
