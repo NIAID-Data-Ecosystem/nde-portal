@@ -109,7 +109,7 @@ const News: NextPage<NewsProps> = props => {
       });
     },
     refetchOnWindowFocus: false,
-    refetchOnMount: false,
+    // refetchOnMount: false,
   });
 
   useQuery<
@@ -132,7 +132,7 @@ const News: NextPage<NewsProps> = props => {
       });
     },
     refetchOnWindowFocus: false,
-    refetchOnMount: false,
+    // refetchOnMount: false,
   });
 
   // useQuery<
