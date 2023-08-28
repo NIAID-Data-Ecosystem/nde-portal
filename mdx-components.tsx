@@ -129,12 +129,18 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
         {props.children}
       </UnorderedList>
     ),
-    ol: (props: any) => <OrderedList>{props.children}</OrderedList>,
-    li: (props: any) => (
-      <ListItem pb='4px' listStyleType='initial' fontSize='md'>
+    ol: (props: any) => (
+      <OrderedList ml={12} my={2}>
         {props.children}
-      </ListItem>
+      </OrderedList>
     ),
+    li: (props: any) => {
+      return (
+        <ListItem listStyleType='inherit' pb='4px' fontSize='md'>
+          {props.children}
+        </ListItem>
+      );
+    },
     a: (props: any) => {
       let { href } = props;
       if (href.startsWith('doc:')) {

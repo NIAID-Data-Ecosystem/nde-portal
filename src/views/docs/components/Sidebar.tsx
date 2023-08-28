@@ -90,6 +90,7 @@ const SidebarContainer: React.FC<DocumentationSidebarProps> = ({
               h='100%'
               borderY='1px solid'
               borderColor='gray.200'
+              pb={4}
               sx={{
                 '&::-webkit-scrollbar': {
                   width: '7px',
