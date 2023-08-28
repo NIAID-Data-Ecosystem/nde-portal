@@ -1,13 +1,26 @@
 import React from 'react';
-import { Button, Flex, FlexProps, Heading, Text } from 'nde-design-system';
+import {
+  Button,
+  Flex,
+  FlexProps,
+  Heading,
+  HeadingProps,
+  Text,
+} from 'nde-design-system';
 import { PageContent } from 'src/components/page-container';
 
 interface Error extends FlexProps {
   message?: string;
+  headingProps?: HeadingProps;
 }
 
 // Default error container.
-export const Error: React.FC<Error> = ({ children, message, ...props }) => {
+export const Error: React.FC<Error> = ({
+  children,
+  message,
+  headingProps,
+  ...props
+}) => {
   return (
     <PageContent
       alignItems='center'
@@ -16,7 +29,7 @@ export const Error: React.FC<Error> = ({ children, message, ...props }) => {
       {...props}
     >
       <Flex flexDirection='column' alignItems='center'>
-        <Heading as='h1' my={4} color='inherit'>
+        <Heading as='h2' my={4} color='inherit' {...headingProps}>
           Oh no! Something went wrong.
         </Heading>
         {message ? <Text color='inherit'>{message}</Text> : <></>}

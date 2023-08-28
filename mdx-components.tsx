@@ -24,9 +24,69 @@ import { FaChevronDown } from 'react-icons/fa';
 
 // This file is required to use MDX in `app` directory.
 export function useMDXComponents(components: MDXComponents): MDXComponents {
+  const Details = (props: any) => {
+    const { children } = props;
+    const summaryIndex = children.findIndex(
+      (node: any) => node.type === 'summary',
+    );
+    const [isOpen, setIsOpen] = useState(false);
+
+    return (
+      <Box border='1px solid' borderColor='gray.100' my={0.5}>
+        <Flex
+          as='button'
+          w='100%'
+          borderLeft='4px solid'
+          p={4}
+          alignItems='center'
+          cursor='pointer'
+          bg={isOpen ? 'secondary.50' : 'white'}
+          borderLeftColor={isOpen ? 'secondary.600' : 'secondary.500'}
+          boxShadow={isOpen ? 'sm' : 'none'}
+          _hover={{
+            boxShadow: 'sm',
+            bg: 'secondary.50',
+          }}
+          onClick={() => setIsOpen(!isOpen)}
+          {...props}
+        >
+          <Heading as='h2' fontSize='xl' flex={1} textAlign='left'>
+            {children[summaryIndex]}
+          </Heading>
+          <Icon
+            as={FaChevronDown}
+            boxSize={4}
+            color={isOpen ? 'secondary.600' : 'secondary.500'}
+            transition='transform 250ms ease'
+            transform={!isOpen ? `rotate(-90deg)` : `rotate(0deg)`}
+            {...props}
+          />
+        </Flex>
+
+        <Collapse in={isOpen} animateOpacity>
+          <Box
+            px={6}
+            py={4}
+            pb={6}
+            bg='whiteAlpha.800'
+            sx={{
+              h3: {
+                fontSize: 'lg',
+                mt: 6,
+                mb: 4,
+              },
+            }}
+          >
+            {/* display content after summary */}
+            {children.slice(summaryIndex + 1)}
+          </Box>
+        </Collapse>
+      </Box>
+    );
+  };
+
   return {
     // Allows customizing built-in components, e.g. to add styling.
-    ...components,
     Image: (props: ImageProps) => (
       <Image
         alt='image'
@@ -51,7 +111,7 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
       <Heading as='h2' size='h2' mt={8} fontSize='3xl' {...props} />
     ),
     h3: (props: any) => (
-      <Heading as='h3' size='h3' mt={8} fontSize='2xl' {...props} />
+      <Heading as='h3' fontSize='lg' mt={6} mb={2} {...props} />
     ),
     h4: (props: any) => (
       <Heading as='h4' size='h4' mt={4} fontSize='xl' {...props} />
@@ -69,18 +129,41 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
         {props.children}
       </UnorderedList>
     ),
-    ol: (props: any) => <OrderedList>{props.children}</OrderedList>,
-    li: (props: any) => (
-      <ListItem pb='4px' listStyleType='initial' fontSize='md'>
+    ol: (props: any) => (
+      <OrderedList ml={12} my={2}>
         {props.children}
-      </ListItem>
+      </OrderedList>
     ),
+    li: (props: any) => {
+      return (
+        <ListItem listStyleType='inherit' pb='4px' fontSize='md'>
+          {props.children}
+        </ListItem>
+      );
+    },
     a: (props: any) => {
       let { href } = props;
       if (href.startsWith('doc:')) {
         href = '';
       }
-      return <Link href={href} {...props} />;
+      if (typeof props.children === 'object') {
+        return (
+          <Link
+            href={href}
+            isExternal={
+              props.target === '_blank' &&
+              !href.startsWith('/') && // relative links
+              !href.startsWith(process.env.NEXT_PUBLIC_BASE_URL) // links starting with portal domain
+            }
+            {...props}
+          ></Link>
+        );
+      }
+      return (
+        <Link href={href} {...props}>
+          {props.children}
+        </Link>
+      );
     },
     Link: (props: any) => {
       return <Link {...props} />;
@@ -100,48 +183,9 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
       );
     },
     Box: (props: any) => <Box {...props} />,
-    Details: (props: any) => {
-      const { children } = props;
-      const [isOpen, setIsOpen] = useState(false);
-      return (
-        <Box border='1px solid' borderColor='gray.100' my={0.5}>
-          <Flex
-            as='button'
-            w='100%'
-            borderLeft='4px solid'
-            p={4}
-            alignItems='center'
-            cursor='pointer'
-            bg={isOpen ? 'secondary.50' : 'white'}
-            borderLeftColor={isOpen ? 'secondary.600' : 'secondary.500'}
-            boxShadow={isOpen ? 'sm' : 'none'}
-            _hover={{
-              boxShadow: 'sm',
-              bg: 'secondary.50',
-            }}
-            onClick={() => setIsOpen(!isOpen)}
-            {...props}
-          >
-            <Heading as='h2' fontSize='xl' flex={1} textAlign='left'>
-              {children[0]}
-            </Heading>
-            <Icon
-              as={FaChevronDown}
-              boxSize={4}
-              color={isOpen ? 'secondary.600' : 'secondary.500'}
-              transition='transform 250ms ease'
-              transform={!isOpen ? `rotate(-90deg)` : `rotate(0deg)`}
-              {...props}
-            />
-          </Flex>
-
-          <Collapse in={isOpen} animateOpacity>
-            <Box px={6} py={4} bg='whiteAlpha.800'>
-              {children.slice(1)}
-            </Box>
-          </Collapse>
-        </Box>
-      );
+    details: props => {
+      return <Details {...props} />;
     },
+    ...components,
   };
 }

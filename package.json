@@ -70,15 +70,17 @@
     "prettier": "^2.8.3",
     "puppeteer": "^19.9.0",
     "raw-loader": "^4.0.2",
-    "react-icons": "^4.3.1",
+    "react-icons": "^4.10.1",
     "react-markdown": "^8.0.3",
     "react-query": "^3.39.3",
     "react-select": "^5.7.0",
     "rehype-raw": "^6.1.1",
+    "remark": "^14.0.3",
     "remark-gfm": "^3.0.1",
     "serve": "^14.2.0",
     "standard-version": "^9.5.0",
     "typescript": "^5.0.4",
+    "unified": "^11.0.1",
     "usehooks-ts": "^2.4.1"
   },
   "version": "0.0.3"

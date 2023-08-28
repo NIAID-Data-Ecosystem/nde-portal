@@ -1,7 +1,7 @@
 import { FormattedResource } from 'src/utils/api/types';
 import { VscJson } from 'react-icons/vsc';
-import { GrTextAlignFull } from 'react-icons/gr';
 import {
+  FaAlignLeft,
   FaDatabase,
   FaDownload,
   FaSearchDollar,
@@ -38,7 +38,7 @@ export const showSection = (section: Route, data?: FormattedResource) => {
 export const getSectionIcon = (sectionId: string) => {
   let icon;
   if (sectionId === 'description') {
-    icon = GrTextAlignFull;
+    icon = FaAlignLeft;
   }
   if (sectionId === 'metadata') {
     icon = VscJson;
