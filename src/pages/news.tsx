@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Box,
   Card,
@@ -196,6 +196,14 @@ const News: NextPage<NewsProps> = props => {
       new Date(Date.parse(event.attributes.eventDate.replace(/-/g, ' '))) <
         new Date(),
   );
+
+  // add scroll padding to account for sticky nav
+  useEffect(() => {
+    const htmlEl = document.querySelector('html');
+    if (htmlEl) {
+      htmlEl.style.cssText += 'scroll-padding-top:60px;';
+    }
+  }, []);
 
   return (
     <PageContainer
