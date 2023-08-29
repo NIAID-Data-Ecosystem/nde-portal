@@ -33,15 +33,14 @@ export const NewsCarousel = ({ news: initialData }: NewsCarouselProps) => {
     },
     any,
     { news: NewsOrEventsObject[] }
-  >(['news'], () => fetchNews({ pageSize: 5 }), {
+  >(['news'], () => fetchNews({ paginate: { page: 1, pageSize: 5 } }), {
     onSuccess(data) {
+      console.log('d', data);
       if (!data || !data.news) {
         return [];
       }
       setNews(data.news);
     },
-    refetchOnWindowFocus: false,
-    refetchOnMount: false,
   });
 
   return news.length > 0 ? (
@@ -158,23 +157,50 @@ export const NewsCarousel = ({ news: initialData }: NewsCarouselProps) => {
   );
 };
 
-export const fetchNews = async ({
-  populate = '*',
-  sort = 'publishedAt:DESC',
-  page = 1,
-  pageSize = 100,
-}): Promise<{
+interface NewsQueryParams {
+  publicationState?: string;
+  fields?: string[];
+  populate?:
+    | {
+        [key: string]: {
+          fields: string[];
+        };
+      }
+    | string;
+  sort?: string;
+  paginate?: { page?: number; pageSize?: number };
+}
+export const fetchNews = async (
+  params?: NewsQueryParams,
+): Promise<{
   news: NewsOrEventsObject[];
 }> => {
   try {
     const isProd = process.env.NODE_ENV;
     // in dev/staging mode, show drafts.
     const news = await axios.get(
-      `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/api/news-reports?${
-        isProd ? 'publicationState=preview&' : ''
-      }populate=${populate}&sort=${sort}&pagination[page]=${page}&pagination[pageSize]=${pageSize}`,
+      `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/api/news-reports`,
+      {
+        params: {
+          publicationState: isProd ? 'preview' : '',
+          populate: {
+            fields: [
+              'name',
+              'slug',
+              'publishedAt',
+              'updatedAt',
+              'shortDescription',
+            ],
+            image: {
+              fields: ['url', 'alternativeText'],
+            },
+          },
+          sort: { publishedAt: 'desc', updatedAt: 'desc' },
+          paginate: { page: 1, pageSize: 100 },
+          ...params,
+        },
+      },
     );
-
     return { news: news.data.data };
   } catch (err) {
     throw err;

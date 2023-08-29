@@ -95,7 +95,7 @@ const News: NextPage<NewsProps> = props => {
     },
     any,
     { news: NewsOrEventsObject[] }
-  >(['news'], () => fetchNews({ pageSize: 100 }), {
+  >(['news'], () => fetchNews({ paginate: { page: 1, pageSize: 100 } }), {
     onSuccess(data) {
       if (!data || !data.news) {
         return [];
@@ -118,7 +118,7 @@ const News: NextPage<NewsProps> = props => {
     },
     any,
     { events: NewsOrEventsObject[] }
-  >(['events'], () => fetchEvents({ pageSize: 100 }), {
+  >(['events'], () => fetchEvents({ paginate: { page: 1, pageSize: 100 } }), {
     onSuccess(data) {
       if (!data || !data.events) {
         return [];
@@ -141,7 +141,7 @@ const News: NextPage<NewsProps> = props => {
   //   },
   //   any,
   //   { webinars: NewsOrEventsObject[] }
-  // >(['webinars'], () => fetchWebinars({ pageSize: 100 }), {
+  // >(['webinars'], () => fetchWebinars({ paginate: { page: 1, pageSize: 100 } }), {
   //   onSuccess(data) {
   //     if (!data || !data.webinars) {
   //       return [];
@@ -538,21 +538,40 @@ const News: NextPage<NewsProps> = props => {
   );
 };
 
-const fetchEvents = async ({
-  populate = '*',
-  sort = 'publishedAt:DESC',
-  page = 1,
-  pageSize = 100,
-}): Promise<{
+interface QueryParams {
+  publicationState?: string;
+  fields?: string[];
+  populate?:
+    | {
+        [key: string]: {
+          fields: string[];
+        };
+      }
+    | string;
+  sort?: string;
+  paginate?: { page?: number; pageSize?: number };
+}
+const fetchEvents = async (
+  params: QueryParams,
+): Promise<{
   events: NewsOrEventsObject[];
 }> => {
   try {
-    const isProd = process.env.NODE_ENV;
     // in dev/staging mode, show drafts.
+    const isProd = process.env.NODE_ENV;
     const events = await axios.get(
-      `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/api/events?${
-        isProd ? 'publicationState=preview&' : ''
-      }populate=${populate}&sort=${sort}&pagination[page]=${page}&pagination[pageSize]=${pageSize}`,
+      `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/api/events`,
+      {
+        params: {
+          publicationState: isProd ? 'preview' : '',
+          populate: {
+            fields: ['*'],
+          },
+          sort: { publishedAt: 'desc', updatedAt: 'desc' },
+          paginate: { page: 1, pageSize: 100 },
+          ...params,
+        },
+      },
     );
 
     return { events: events.data.data };
@@ -561,21 +580,27 @@ const fetchEvents = async ({
   }
 };
 
-export const fetchWebinars = async ({
-  populate = '*',
-  sort = 'publishedAt:DESC',
-  page = 1,
-  pageSize = 100,
-}): Promise<{
+export const fetchWebinars = async (
+  params: QueryParams,
+): Promise<{
   webinars: NewsOrEventsObject[];
 }> => {
   try {
     const isProd = process.env.NODE_ENV;
     // in dev/staging mode, show drafts.
     const webinars = await axios.get(
-      `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/api/webinars?${
-        isProd ? 'publicationState=preview&' : ''
-      }populate=${populate}&sort=${sort}&pagination[page]=${page}&pagination[pageSize]=${pageSize}`,
+      `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/api/webinars`,
+      {
+        params: {
+          publicationState: isProd ? 'preview' : '',
+          populate: {
+            fields: ['*'],
+          },
+          sort: { publishedAt: 'desc', updatedAt: 'desc' },
+          paginate: { page: 1, pageSize: 100 },
+          ...params,
+        },
+      },
     );
 
     return { webinars: webinars.data.data };
@@ -586,7 +611,7 @@ export const fetchWebinars = async ({
 
 export async function getStaticProps() {
   try {
-    const news = await fetchNews({ pageSize: 100 })
+    const news = await fetchNews({ paginate: { page: 1, pageSize: 100 } })
       .then(res => ({ data: res.news, error: null }))
       .catch(err => {
         return {
@@ -598,7 +623,7 @@ export async function getStaticProps() {
         };
       });
 
-    const events = await fetchEvents({ pageSize: 100 })
+    const events = await fetchEvents({ paginate: { page: 1, pageSize: 100 } })
       .then(res => ({ data: res.events, error: null }))
       .catch(err => {
         return {
@@ -609,7 +634,9 @@ export async function getStaticProps() {
           },
         };
       });
-    const webinars = await fetchWebinars({ pageSize: 100 })
+    const webinars = await fetchWebinars({
+      paginate: { page: 1, pageSize: 100 },
+    })
       .then(res => ({ data: res.webinars, error: null }))
       .catch(err => {
         return {
