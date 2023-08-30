@@ -495,7 +495,7 @@ const Home: NextPage<{
 
 export async function getStaticProps() {
   try {
-    const { news } = await fetchNews({ pageSize: 5 });
+    const { news } = await fetchNews({ paginate: { page: 1, pageSize: 5 } });
     return { props: { data: { news } } };
   } catch (err: any) {
     return {

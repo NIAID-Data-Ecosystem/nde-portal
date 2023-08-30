@@ -83,5 +83,10 @@
     "unified": "^11.0.1",
     "usehooks-ts": "^2.4.1"
   },
-  "version": "0.0.3"
+  "version": "0.0.3",
+  "resolutions": {
+    "semver": "^7.5.2",
+    "word-wrap": "^1.2.4",
+    "tough-cookie": "^4.1.3"
+  }
 }
