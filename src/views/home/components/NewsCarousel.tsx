@@ -35,7 +35,6 @@ export const NewsCarousel = ({ news: initialData }: NewsCarouselProps) => {
     { news: NewsOrEventsObject[] }
   >(['news'], () => fetchNews({ paginate: { page: 1, pageSize: 5 } }), {
     onSuccess(data) {
-      console.log('d', data);
       if (!data || !data.news) {
         return [];
       }
