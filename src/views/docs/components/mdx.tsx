@@ -9,8 +9,11 @@ import {
 } from 'nde-design-system';
 import { transformString2Hash } from './helpers';
 
-const HashedHeading = (props: HeadingProps) => {
-  let hash = '';
+interface HashedHeadingProps extends HeadingProps {
+  hash: string;
+}
+export const HashedHeading = (props: HashedHeadingProps) => {
+  let hash = props.hash || '';
 
   if (
     props.children &&
@@ -58,7 +61,7 @@ const HashedHeading = (props: HeadingProps) => {
 export default {
   blockquote: (props: any) => {
     const getThemeByTitle = (node: any) => {
-      const text = node.children[0].value;
+      const text = node?.children[0]?.value;
       if (!text) {
         return {
           bg: 'status.info_lt',
@@ -88,11 +91,13 @@ export default {
       };
     };
 
-    const titleEl = props.node.children.find(
+    const titleEl = props?.node?.children.find(
       (child: any) => child.type === 'element',
     );
     const theme = getThemeByTitle(titleEl);
-
+    const childrenEl = props.children.filter(
+      (el: any) => typeof el === 'object',
+    );
     return (
       <Box
         borderLeft='0.2em solid'
@@ -105,11 +110,14 @@ export default {
           p: {
             my: 4,
           },
-          'p:first-of-type': {
-            color: theme.color,
-            fontWeight: 'bold',
-            fontSize: 'lg',
-          },
+          'p:first-of-type':
+            childrenEl.length > 1
+              ? {
+                  color: theme.color,
+                  fontWeight: 'bold',
+                  fontSize: 'lg',
+                }
+              : {},
         }}
         {...props}
       />
@@ -184,9 +192,11 @@ export default {
         React-markdown wraps every element in a p tag, which causes issues with img tags
         The following wraps components in a span instead of a p tag.
        */
-    const containsImgEl = props.children.some(
-      (child: any) => child?.props?.node?.tagName === 'img',
-    );
+    const containsImgEl =
+      Array.isArray(props.children) &&
+      props.children.some(
+        (child: any) => child?.props?.node?.tagName === 'img',
+      );
     if (containsImgEl) {
       return (
         <Text as='span' mt={2} size='sm' lineHeight='tall' color='text.body'>

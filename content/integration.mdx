@@ -1,0 +1,67 @@
+import { Box, Flex, Heading, Stack, Text } from 'nde-design-system';
+import {HashedHeading} from 'src/views/docs/components/mdx.tsx' 
+
+# Integrate your data
+
+The NIAID Discovery Portal collects metadata (information about datasets), not the datasets themselves. By integrating your metadata, **you make it easier for researchers to find, reuse, and cite your dataset.** The Discovery Portal points researchers to the repository which hosts the data, increasing traffic to the site, and ensures they will use your data access protocols to download and use your data.
+
+
+<Box id="suggest-a-repository-or-dataset" as='section' py={8} mt={[8,10]} >
+  <Flex flexDirection={{base:"column-reverse", md:"row"}}>
+    <Box flex={1}>
+       ### Suggest a repository or dataset
+
+      If you would like to suggest a repository or dataset to be included in the Discovery Portal, we just need some basic information about where they are hosted.
+    </Box>
+    <Image 
+    ml={[4,8,10]}
+    mb={[4,8,10]}
+    w="200px" height="200px" src="/assets/dataset.png" alt="repository icon"/>
+  </Flex>
+</Box>
+
+<Box id='our-team-works-on-integration' as="section" py={8} mt={[8,10]}>
+  <Flex flexDirection={{base:"column", md:"row"}}>
+    <Image 
+    mr={[4,8,10]}
+    mb={[4,8,10]}
+    w="200px" height="200px" src="/assets/dataset.png" alt="repository icon"/>
+    <Box flex={1}>
+      ### Our team works on integration
+
+      We take care of the rest. Our team will retrieve, reformat, and index metadata from the repository into our user-friendly portal allowing more researchers to find your dataset.    
+    </Box>
+  </Flex>
+</Box>
+
+<Box id="your-content-is-findable" as='section' py={8} mt={[8,10]} >
+  <Flex flexDirection={{base:"column-reverse", md:"row"}} >
+    <Box flex={1}>
+       ### Your content is findable
+      
+      After integration, researchers can find, cite, and use your dataset.
+    </Box>
+    <Image 
+    ml={[4,8,10]}
+    mb={[4,8,10]}
+    w="200px" height="200px" src="/assets/dataset.png" alt="repository icon"/>
+  </Flex>
+</Box>
+
+<Box id="steps-for-integration" as='section' py={8} mt={[8,10]} textAlign="center" >
+  ### Steps for integration
+  
+
+  **Thank you for the suggestion**
+
+  <Text color="gray.600" fontWeight="medium">The NIAID team will review the source suggestion issue.</Text>
+
+</Box>
+
+<Box id="contact-us" as='section' py={8} mt={[8,10]} >
+    <Box flex={1} textAlign="center">
+       ### Contact us
+      
+      If you have any questions or need assistance regarding integration, don't hesitate to contact us at [NIAIDDataEcosystem@mail.nih.gov](mailto:NIAIDDataEcosystem@mail.nih.gov)
+     </Box>
+</Box>
