@@ -1,4 +1,5 @@
-import { Box, Flex, Heading, Text } from 'nde-design-system';
+import React from 'react';
+import { Box, Flex } from 'nde-design-system';
 import type { NextPage } from 'next';
 import { PageContainer, PageContent } from 'src/components/page-container';
 import { useMDXComponents } from 'mdx-components';

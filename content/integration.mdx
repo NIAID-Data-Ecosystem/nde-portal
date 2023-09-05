@@ -1,5 +1,7 @@
-import { Box, Flex, Heading, Stack, Text } from 'nde-design-system';
-import {HashedHeading} from 'src/views/docs/components/mdx.tsx' 
+import { Box, Flex, Heading, Icon, Stack, Tabs, Tab, TabList, TabPanels, TabPanel, Text } from 'nde-design-system';
+import { StepCard } from 'src/views/methodology/components/Card.tsx'
+import { HashedHeading } from 'src/views/docs/components/mdx.tsx' 
+import { FaRegRectangleList } from 'react-icons/fa6';
 
 <Box maxW={{ base: 'unset', lg: '60%' }}>
   # Integrate your data
@@ -51,6 +53,23 @@ import {HashedHeading} from 'src/views/docs/components/mdx.tsx'
 
   <Box id="steps-for-integration" as='section' py={8} mt={[8,10]} textAlign="center" >
     ### Steps for integration
+
+    <Tabs>
+      <TabList>
+        <Tab>Repository</Tab>
+        <Tab>Self-hosted</Tab>
+      </TabList>
+
+      <TabPanels>
+        <TabPanel px={0} py={2}>
+          {[{title:'Review that your source meets the requirements', description:"we accept repositories", isRequired:true, icon: <Icon as={FaRegRectangleList} color="niaid.placeholder" boxSize={5}/>
+          }].map((step,index)=>{return <StepCard key={index} step={step.isRequired?`${index+1}/4`:"Optional"} {...step}/>})}
+        </TabPanel>
+        <TabPanel>
+          <p>two!</p>
+        </TabPanel>
+      </TabPanels>
+    </Tabs>
     
     **Thank you for the suggestion**
 
