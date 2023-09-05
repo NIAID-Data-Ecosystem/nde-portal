@@ -50,22 +50,22 @@ const Methodology: NextPage = () => {
     >
       <PageContent
         bg='#fff'
-        maxW={{ base: 'unset', lg: '1600px' }}
+        // maxW={{ base: 'unset', lg: '1600px' }}
         margin='0 auto'
-        px={4}
-        py={4}
+        // mb={32}
+        px={0}
+        py={0}
         justifyContent='center'
-        mb={32}
         flex={1}
       >
         <Flex
           flexDirection='column'
+          alignItems='center'
+          // px={[0, 8]}
+          // maxW={{ base: 'unset', lg: '60%' }}
           flex={1}
-          pb={32}
-          maxW={{ base: 'unset', lg: '60%' }}
           width='100%'
           m='0 auto'
-          px={[0, 8]}
         >
           <MDXProvider components={MDXComponents}>
             <IntegrationContent />
@@ -88,9 +88,8 @@ const Methodology: NextPage = () => {
           maxW='350px'
           display={{ base: 'none', lg: 'block' }}
           flexDirection='column'
-          px={2}
         >
-          <Box position='sticky' top='0px' p={4}>
+          <Box position='sticky' top='0px' py={4}>
             <LocalNavigation
               routes={sections}
               itemProps={{
