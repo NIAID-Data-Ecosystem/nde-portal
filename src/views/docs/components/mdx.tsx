@@ -71,24 +71,27 @@ export default {
 
       // Find emojis in text.
       const emojis = text.match(/\p{Emoji_Presentation}/gu);
-
-      if (emojis[0] === '🚧') {
+      if (!emojis) {
+        return {
+          bg: 'status.info_lt',
+          color: 'status.info',
+        };
+      } else if (emojis[0] === '🚧') {
         return {
           bg: 'status.warning_lt',
           color: 'status.warning',
         };
-      }
-      if (emojis[0] === '🚨') {
+      } else if (emojis[0] === '🚨') {
         return {
           bg: 'status.error_lt',
           color: 'status.error',
         };
+      } else {
+        return {
+          bg: 'status.info_lt',
+          color: 'status.info',
+        };
       }
-
-      return {
-        bg: 'status.info_lt',
-        color: 'status.info',
-      };
     };
 
     const titleEl = props?.node?.children.find(
@@ -189,9 +192,9 @@ export default {
   ),
   p: (props: any) => {
     /*
-        React-markdown wraps every element in a p tag, which causes issues with img tags
-        The following wraps components in a span instead of a p tag.
-       */
+      React-markdown wraps every element in a p tag, which causes issues with img tags
+      The following wraps components in a span instead of a p tag.
+    */
     const containsImgEl =
       Array.isArray(props.children) &&
       props.children.some(
