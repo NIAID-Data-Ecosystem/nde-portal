@@ -5,58 +5,9 @@ import {
   Image,
   ImageProps,
   Text,
-  HeadingProps,
 } from 'nde-design-system';
 import { transformString2Hash } from './helpers';
-
-interface HashedHeadingProps extends HeadingProps {
-  hash: string;
-}
-export const HashedHeading = (props: HashedHeadingProps) => {
-  let hash = props.hash || '';
-
-  if (
-    props.children &&
-    Array.isArray(props.children) &&
-    typeof props.children[0] === 'string'
-  ) {
-    hash = transformString2Hash(props.children[0]);
-  }
-
-  if (hash) {
-    return (
-      <a href={`#${hash}`}>
-        <Heading
-          id={hash}
-          sx={{
-            span: {
-              opacity: 0,
-              color: 'status.info',
-              fontWeight: 'extrabold',
-              mx: 2,
-              cursor: 'pointer',
-              transition: 'opacity 0.1s ease-in-out',
-            },
-            _hover: {
-              span: {
-                opacity: 1,
-                textDecoration: 'underline',
-                transition: 'opacity 0.1s ease-in-out',
-              },
-            },
-          }}
-          {...props}
-        >
-          {props.children}
-          <Text as='span' fontWeight='bold'>
-            #
-          </Text>
-        </Heading>
-      </a>
-    );
-  }
-  return <Heading id={hash} as='h2' fontSize='2xl' mt={6} mb={3} {...props} />;
-};
+import { HeadingWithLink } from 'src/components/heading-with-link/components/HeadingWithLink';
 
 export default {
   blockquote: (props: any) => {
@@ -152,17 +103,51 @@ export default {
     return <Heading as='h1' size='xl' mt={8} mb={4} {...props} />;
   },
   h2: (props: any) => {
-    return <HashedHeading as='h2' fontSize='2xl' mt={6} mb={3} {...props} />;
+    let id = '';
+
+    if (
+      props.children &&
+      Array.isArray(props.children) &&
+      typeof props.children[0] === 'string'
+    ) {
+      id = `${transformString2Hash(props.children[0])}`;
+    }
+
+    return (
+      <HeadingWithLink
+        as='h2'
+        id={id ? id : undefined}
+        slug={id ? `#${id}` : undefined}
+        fontSize='2xl'
+        mt={6}
+        mb={3}
+        scrollMarginTop='1rem'
+        {...props}
+      />
+    );
   },
   h3: (props: any) => {
+    let id = '';
+
+    if (
+      props.children &&
+      Array.isArray(props.children) &&
+      typeof props.children[0] === 'string'
+    ) {
+      id = `${transformString2Hash(props.children[0])}`;
+    }
+
     return (
-      <HashedHeading
+      <HeadingWithLink
         as='h3'
+        id={id ? id : undefined}
+        slug={id ? `#${id}` : undefined}
         fontSize='lg'
         mt={2}
         mb={1}
         lineHeight='shorter'
         color='text.body'
+        scrollMarginTop='1rem'
         {...props}
       />
     );
