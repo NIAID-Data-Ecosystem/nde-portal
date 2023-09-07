@@ -520,7 +520,7 @@ const News: NextPage<NewsProps> = props => {
               flexDirection='column'
               px={2}
             >
-              <Box position='sticky' top='0px' p={4}>
+              <Box position='sticky' top='0px'>
                 <Navigation
                   routes={sections}
                   itemProps={{

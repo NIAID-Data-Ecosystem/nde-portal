@@ -1,20 +1,9 @@
 import React, { useState } from 'react';
-import {
-  Box,
-  Flex,
-  Heading,
-  Image,
-  ListIcon,
-  ListItem,
-  Text,
-} from 'nde-design-system';
+import { Box, Flex, Heading, Text } from 'nde-design-system';
 import type { NextPage } from 'next';
 import { PageContainer, PageContent } from 'src/components/page-container';
 import { useMDXComponents } from 'mdx-components';
 import LocalNavigation from 'src/components/resource-sections/components/navigation';
-import { HashedHeading } from 'src/views/docs/components/mdx';
-import IntegrationContent from 'content/integration.mdx';
-import { MDXProvider } from '@mdx-js/react';
 import { useQuery } from 'react-query';
 import axios from 'axios';
 import ReactMarkdown from 'react-markdown';
@@ -23,7 +12,7 @@ import remarkGfm from 'remark-gfm';
 import type { ContentProps } from 'src/views/methodology/types';
 import { Error } from 'src/components/error';
 import Empty from 'src/components/empty';
-import { FaCheckCircle, FaStar } from 'react-icons/fa';
+import { ParagraphSection } from 'src/views/methodology/components/ParagraphSection';
 
 interface MethodologyProps {
   data: { page: ContentProps };
@@ -54,53 +43,6 @@ const Methodology: NextPage<MethodologyProps> = props => {
     refetchOnMount: false,
   });
 
-  const MDXComponents = useMDXComponents({
-    p: (props: any) => (
-      <Text my={4} lineHeight='tall' color='text.body' {...props} />
-    ),
-    blockquote: (props: any) => {
-      return (
-        <Flex
-          justifyContent='center'
-          borderRadius='semi'
-          bg='page.alt'
-          px={4}
-          py={4}
-          my={8}
-          sx={{ ul: { listStyleType: 'none', maxWidth: '70%' } }}
-          {...props}
-        >
-          <Box maxWidth='500px'>{props.children}</Box>
-        </Flex>
-      );
-    },
-    li: (props: any) => {
-      return (
-        <ListItem
-          listStyleType='inherit'
-          fontSize='sm'
-          lineHeight='shorter'
-          sx={{ input: { display: 'none' } }}
-          pb={4}
-          display='flex'
-        >
-          {props.checked !== null ? (
-            <ListIcon
-              as={props.checked ? FaCheckCircle : FaStar}
-              color={props.checked ? 'green.500' : 'yellow.400'}
-              boxSize={4}
-              my={1}
-              mx={3}
-            />
-          ) : (
-            <></>
-          )}
-          <Box>{props.children}</Box>
-        </ListItem>
-      );
-    },
-  });
-
   const sections = [
     ...(content?.attributes?.overview?.map(({ title, slug }) => ({
       title,
@@ -111,6 +53,8 @@ const Methodology: NextPage<MethodologyProps> = props => {
       hash: content?.attributes?.tabs?.slug || '',
     },
   ];
+
+  const MDXComponents = useMDXComponents({});
 
   return (
     <PageContainer
@@ -126,15 +70,14 @@ const Methodology: NextPage<MethodologyProps> = props => {
         maxW={{ base: 'unset', lg: '1600px' }}
         margin='0 auto'
         mb={32}
-        px={0}
-        py={[4, 6]}
+        px={[4, 6]}
         justifyContent='center'
         flex={1}
       >
         <Flex
           flexDirection='column'
           // alignItems='center'
-          // px={[0, 8]}
+          px={[4, 8]}
           maxW={{ base: 'unset', lg: '60%' }}
           flex={1}
           width='100%'
@@ -152,7 +95,7 @@ const Methodology: NextPage<MethodologyProps> = props => {
             </Error>
           ) : content.attributes ? (
             <Flex flexDirection='column'>
-              <Heading as='h1' size='xl' mb={2}>
+              <Heading as='h1' size='xl' mt={6} mb={2}>
                 {content.attributes.title}
               </Heading>
               <ReactMarkdown
@@ -162,52 +105,13 @@ const Methodology: NextPage<MethodologyProps> = props => {
                 {content.attributes.description}
               </ReactMarkdown>
               {/* Overview */}
-              {content.attributes.overview?.map(
-                ({ id, title, description, slug, image }) => (
-                  <Box
-                    key={id}
-                    id={slug}
-                    as='section'
-                    scrollMarginTop='-0.5rem'
-                  >
-                    <Flex
-                      flexDirection={{ base: 'column-reverse', md: 'row' }}
-                      py={8}
-                    >
-                      <Box flex={1}>
-                        <HashedHeading
-                          as='h3'
-                          hash={slug}
-                          id={`${id}-heading`}
-                          fontSize='lg'
-                          mt={6}
-                          mb={2}
-                        >
-                          {title}
-                        </HashedHeading>
-                        {description && (
-                          <ReactMarkdown
-                            rehypePlugins={[rehypeRaw, remarkGfm]}
-                            components={MDXComponents}
-                          >
-                            {description}
-                          </ReactMarkdown>
-                        )}
-                      </Box>
-                      {image && (
-                        <Image
-                          ml={[4, 8, 10]}
-                          mb={[4, 8, 10]}
-                          w='200px'
-                          height='200px'
-                          src={`${process.env.NEXT_PUBLIC_STRAPI_ASSETS_URL}${image.data.attributes.url}`}
-                          alt='repository icon'
-                        />
-                      )}
-                    </Flex>
-                  </Box>
-                ),
-              )}
+              {content.attributes.overview?.map((props, index) => (
+                <ParagraphSection
+                  key={props.id}
+                  imagePosition={index % 2 == 0 ? 'right' : 'left'}
+                  {...props}
+                />
+              ))}
             </Flex>
           ) : (
             <Empty>No content for this page exists.</Empty>
@@ -225,7 +129,7 @@ const Methodology: NextPage<MethodologyProps> = props => {
           flexDirection='column'
         >
           {sections.length || isLoading ? (
-            <Box position='sticky' top='0px' py={4}>
+            <Box position='sticky' top='0px'>
               {sections.length ? (
                 <LocalNavigation
                   routes={sections}

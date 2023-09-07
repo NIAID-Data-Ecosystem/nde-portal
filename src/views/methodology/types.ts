@@ -9,7 +9,7 @@ interface ImageProps {
   };
 }
 
-interface OverviewProps {
+export interface OverviewProps {
   id: number;
   title: string;
   slug: string;

@@ -84,7 +84,7 @@ const LocalNavigation: React.FC<LocalNavigationProps> = ({
   if (!routes || !routes.length) return <></>;
 
   return (
-    <Box as='nav' w='100%'>
+    <Box as='nav' w='100%' py={6}>
       <Heading as='h2' size='sm' fontWeight='semibold' mb={0} px={2}>
         On This Page
       </Heading>
