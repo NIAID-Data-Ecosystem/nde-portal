@@ -1,5 +1,15 @@
 import React, { useState } from 'react';
-import { Box, Flex, Heading, Text } from 'nde-design-system';
+import {
+  Box,
+  Flex,
+  Heading,
+  Tab,
+  TabList,
+  TabPanel,
+  TabPanels,
+  Tabs,
+  Text,
+} from 'nde-design-system';
 import type { NextPage } from 'next';
 import { PageContainer, PageContent } from 'src/components/page-container';
 import { useMDXComponents } from 'mdx-components';
@@ -12,7 +22,11 @@ import remarkGfm from 'remark-gfm';
 import type { ContentProps } from 'src/views/methodology/types';
 import { Error } from 'src/components/error';
 import Empty from 'src/components/empty';
-import { ParagraphSection } from 'src/views/methodology/components/ParagraphSection';
+import {
+  ParagraphSection,
+  ListBlock,
+} from 'src/views/methodology/components/Blocks';
+import { StepCard } from 'src/views/methodology/components/Card';
 
 interface MethodologyProps {
   data: { page: ContentProps };
@@ -55,7 +69,6 @@ const Methodology: NextPage<MethodologyProps> = props => {
   ];
 
   const MDXComponents = useMDXComponents({});
-
   return (
     <PageContainer
       hasNavigation
@@ -76,7 +89,6 @@ const Methodology: NextPage<MethodologyProps> = props => {
       >
         <Flex
           flexDirection='column'
-          // alignItems='center'
           px={[4, 8]}
           maxW={{ base: 'unset', lg: '60%' }}
           flex={1}
@@ -105,13 +117,57 @@ const Methodology: NextPage<MethodologyProps> = props => {
                 {content.attributes.description}
               </ReactMarkdown>
               {/* Overview */}
-              {content.attributes.overview?.map((props, index) => (
+              {content.attributes.overview?.map(
+                ({ description, ...props }, index) => {
+                  const [descriptionText, listItems] =
+                    description?.split('<hr/>') || [];
+                  return (
+                    <ParagraphSection
+                      key={props.id}
+                      description={descriptionText}
+                      imagePosition={index % 2 == 0 ? 'right' : 'left'}
+                      {...props}
+                    >
+                      {listItems && <ListBlock>{listItems}</ListBlock>}
+                    </ParagraphSection>
+                  );
+                },
+              )}
+              {content.attributes.tabs ? (
                 <ParagraphSection
-                  key={props.id}
-                  imagePosition={index % 2 == 0 ? 'right' : 'left'}
-                  {...props}
-                />
-              ))}
+                  title={content.attributes.tabs.title}
+                  slug={content.attributes.tabs.slug}
+                  textAlign='center'
+                >
+                  <Tabs>
+                    <TabList>
+                      {content.attributes.tabs.panels?.map(({ id, title }) => (
+                        <Tab key={id}>{title}</Tab>
+                      ))}
+                    </TabList>
+                    <TabPanels>
+                      {content.attributes.tabs.panels?.map(({ id, cards }) => (
+                        <TabPanel key={id} p={0} py={2}>
+                          <>
+                            {cards?.map(card => {
+                              return (
+                                <StepCard key={card.id} {...card}>
+                                  {/* <ParagraphSection
+                                      title=''
+                                      description={card.content}
+                                    /> */}
+                                </StepCard>
+                              );
+                            })}
+                          </>
+                        </TabPanel>
+                      ))}
+                    </TabPanels>
+                  </Tabs>
+                </ParagraphSection>
+              ) : (
+                <></>
+              )}
             </Flex>
           ) : (
             <Empty>No content for this page exists.</Empty>

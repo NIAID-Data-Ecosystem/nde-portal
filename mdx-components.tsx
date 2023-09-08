@@ -114,7 +114,7 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
       <Heading as='h3' fontSize='lg' mt={6} mb={2} {...props} />
     ),
     h4: (props: any) => (
-      <Heading as='h4' size='h4' mt={4} fontSize='xl' {...props} />
+      <Heading as='h4' fontSize='md' fontWeight='semibold' mt={2} {...props} />
     ),
 
     hr: (props: any) => <chakra.hr {...props} />,
@@ -130,7 +130,7 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
       </UnorderedList>
     ),
     ol: (props: any) => (
-      <OrderedList ml={12} my={2}>
+      <OrderedList ml={12} my={2} {...props}>
         {props.children}
       </OrderedList>
     ),

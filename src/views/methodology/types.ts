@@ -31,7 +31,7 @@ interface Panel {
   cards?: Card[];
 }
 
-interface Card {
+export interface Card {
   id: number;
   icon: ImageProps;
   additionalInfo?: string;
