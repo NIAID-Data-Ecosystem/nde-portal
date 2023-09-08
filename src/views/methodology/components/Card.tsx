@@ -11,10 +11,8 @@ interface StepCardProps extends Card {
   children?: React.ReactNode;
 }
 
-export const StepCard = ({ children, content, icon }: StepCardProps) => {
-  const MDXComponents = useMDXComponents({
-    ...styledMdxComponents,
-  });
+export const StepCard = ({ content, icon }: StepCardProps) => {
+  const MDXComponents = useMDXComponents(styledMdxComponents);
 
   return (
     <Box

@@ -19,14 +19,15 @@ import { FaCheckCircle, FaStar } from 'react-icons/fa';
 import { HeadingWithLink } from 'src/components/heading-with-link/components/HeadingWithLink';
 
 export const styledMdxComponents = {
-  ol: (props: any) => <OrderedList m={4} {...props} />,
+  ol: (props: any) => <OrderedList m={4}>{props.children}</OrderedList>,
   ul: (props: any) => (
     <UnorderedList
       listStyleType='none'
       m={4}
       sx={{ li: { display: 'flex', input: { display: 'none' } } }}
-      {...props}
-    />
+    >
+      {props.children}
+    </UnorderedList>
   ),
   li: (props: any) => {
     return (
