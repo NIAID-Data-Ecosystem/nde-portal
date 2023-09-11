@@ -33,6 +33,7 @@ interface Panel {
 
 export interface Card {
   id: number;
+  title: string;
   icon: ImageProps;
   additionalInfo?: string;
   isRequired?: boolean;
@@ -42,7 +43,7 @@ export interface Card {
 
 interface TabItem {
   id: number;
-  tabname: string;
+  name: string;
   content: string;
   icon: ImageProps;
 }

@@ -19,11 +19,12 @@ import { FaCheckCircle, FaStar } from 'react-icons/fa';
 import { HeadingWithLink } from 'src/components/heading-with-link/components/HeadingWithLink';
 
 export const styledMdxComponents = {
-  ol: (props: any) => <OrderedList m={4}>{props.children}</OrderedList>,
+  ol: (props: any) => <OrderedList p={[1, 2]}>{props.children}</OrderedList>,
   ul: (props: any) => (
     <UnorderedList
       listStyleType='none'
-      m={4}
+      mx={[1, 4]}
+      py={[1, 2]}
       sx={{ li: { display: 'flex', input: { display: 'none' } } }}
     >
       {props.children}
@@ -128,23 +129,22 @@ export const ListBlock = ({ children }: { children?: string }) => {
     <Flex
       flexDirection='column'
       alignItems='center'
-      bg='tertiary.50'
+      bg='#fcfcfc'
       borderRadius='semi'
       px={4}
       py={[4, 8]}
       w='100%'
-      sx={{
-        '>*': { maxWidth: { base: 'unset', sm: '400px' } },
-      }}
     >
-      {children && (
-        <ReactMarkdown
-          rehypePlugins={[rehypeRaw, remarkGfm]}
-          components={MDXComponents}
-        >
-          {children}
-        </ReactMarkdown>
-      )}
+      <Box margin='0 auto' w={{ base: '100%', sm: '70%' }}>
+        {children && (
+          <ReactMarkdown
+            rehypePlugins={[rehypeRaw, remarkGfm]}
+            components={MDXComponents}
+          >
+            {children}
+          </ReactMarkdown>
+        )}
+      </Box>
     </Flex>
   );
 };

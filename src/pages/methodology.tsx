@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Box,
+  Circle,
   Flex,
   Heading,
+  Icon,
   Tab,
   TabList,
   TabPanel,
@@ -27,10 +29,12 @@ import {
   ListBlock,
 } from 'src/views/methodology/components/Blocks';
 import { StepCard } from 'src/views/methodology/components/Card';
+import { FaLightbulb } from 'react-icons/fa6';
+import { useRouter } from 'next/router';
 
 interface MethodologyProps {
   data: { page: ContentProps };
-  error?: { message: string };
+  error?: { message: string; status: number };
 }
 
 const Methodology: NextPage<MethodologyProps> = props => {
@@ -51,24 +55,35 @@ const Methodology: NextPage<MethodologyProps> = props => {
       setContent(data.page);
     },
     onError(err) {
-      setError({ message: err.message });
+      setError(err);
     },
     refetchOnWindowFocus: false,
     refetchOnMount: false,
   });
 
-  const sections = [
-    ...(content?.attributes?.overview?.map(({ title, slug }) => ({
-      title,
-      hash: slug,
-    })) || []),
-    {
-      title: content?.attributes?.tabs?.title || '',
-      hash: content?.attributes?.tabs?.slug || '',
-    },
-  ];
-
+  const sections = content
+    ? [
+        ...(content?.attributes?.overview?.map(({ title, slug }) => ({
+          title,
+          hash: slug,
+        })) || []),
+      ]
+    : [];
   const MDXComponents = useMDXComponents({});
+
+  const router = useRouter();
+
+  const [isMounted, setIsMounted] = useState(false); // local storage for SSR.
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  if (isMounted && error && +error?.status === 404) {
+    router.push('/404');
+    return <></>;
+  }
+
   return (
     <PageContainer
       hasNavigation
@@ -93,6 +108,7 @@ const Methodology: NextPage<MethodologyProps> = props => {
           maxW={{ base: 'unset', lg: '60%' }}
           flex={1}
           width='100%'
+          minW='300px'
           m='0 auto'
         >
           {error ? (
@@ -105,7 +121,7 @@ const Methodology: NextPage<MethodologyProps> = props => {
                 </Text>
               </Flex>
             </Error>
-          ) : content.attributes ? (
+          ) : content?.attributes.title ? (
             <Flex flexDirection='column'>
               <Heading as='h1' size='xl' mt={6} mb={2}>
                 {content.attributes.title}
@@ -139,29 +155,73 @@ const Methodology: NextPage<MethodologyProps> = props => {
                   slug={content.attributes.tabs.slug}
                   textAlign='center'
                 >
-                  <Tabs>
+                  <Tabs colorScheme='primary'>
                     <TabList>
                       {content.attributes.tabs.panels?.map(({ id, title }) => (
-                        <Tab key={id}>{title}</Tab>
+                        <Tab
+                          key={id}
+                          fontSize='sm'
+                          color='blackAlpha.500'
+                          _selected={{
+                            borderBottomColor: 'primary.400',
+                            color: 'primary.500',
+                            ['.tag']: {
+                              opacity: 1,
+                            },
+                          }}
+                        >
+                          {title}
+                        </Tab>
                       ))}
                     </TabList>
                     <TabPanels>
-                      {content.attributes.tabs.panels?.map(({ id, cards }) => (
-                        <TabPanel key={id} p={0} py={2}>
-                          <>
+                      {content.attributes.tabs.panels?.map(({ id, cards }) => {
+                        let stepIndex = 0;
+                        const total_steps = cards?.filter(
+                          card => card.isRequired,
+                        ).length;
+                        return (
+                          <TabPanel key={id} p={0} py={2}>
                             {cards?.map(card => {
+                              if (card.isRequired) {
+                                stepIndex++;
+                              }
                               return (
-                                <StepCard key={card.id} {...card}>
-                                  {/* <ParagraphSection
-                                      title=''
-                                      description={card.content}
-                                    /> */}
-                                </StepCard>
+                                <React.Fragment key={card.id}>
+                                  <StepCard
+                                    step={`${stepIndex}/${total_steps}`}
+                                    {...card}
+                                  />
+                                  {card.additionalInfo && (
+                                    <Flex
+                                      alignItems='center'
+                                      bg='status.warning_lt'
+                                      borderRadius='semi'
+                                      px={4}
+                                      py={2}
+                                    >
+                                      <Circle bg='whiteAlpha.900' p={2} mr={4}>
+                                        <Icon
+                                          as={FaLightbulb}
+                                          color='status.warning'
+                                          boxSize={4}
+                                        />
+                                      </Circle>
+                                      <Text
+                                        textAlign={'center'}
+                                        flex={1}
+                                        fontSize='sm'
+                                      >
+                                        {card.additionalInfo}
+                                      </Text>
+                                    </Flex>
+                                  )}
+                                </React.Fragment>
                               );
                             })}
-                          </>
-                        </TabPanel>
-                      ))}
+                          </TabPanel>
+                        );
+                      })}
                     </TabPanels>
                   </Tabs>
                 </ParagraphSection>
@@ -253,24 +313,15 @@ export async function getStaticProps() {
     const data = await fetchPageContent()
       .then(res => res)
       .catch(err => {
-        return {
-          page: null,
-          error: {
-            message: `${err.response.status} : ${err.response.statusText}`,
-            status: err.response.status,
-          },
-        };
+        throw JSON.stringify(err);
       });
 
     return { props: { data } };
-  } catch (err: any) {
+  } catch (error: any) {
     return {
       props: {
         data: [],
-        error: {
-          type: 'error',
-          message: '' + err,
-        },
+        error: JSON.parse(error),
       },
     };
   }

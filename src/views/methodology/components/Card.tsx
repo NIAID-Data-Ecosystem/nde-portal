@@ -1,5 +1,16 @@
 import React from 'react';
-import { Box, Flex, Image } from 'nde-design-system';
+import {
+  Box,
+  Flex,
+  Heading,
+  Image,
+  Tab,
+  TabList,
+  TabPanel,
+  TabPanels,
+  Tabs,
+  Text,
+} from 'nde-design-system';
 import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
 import remarkGfm from 'remark-gfm';
@@ -8,12 +19,20 @@ import type { Card } from '../types';
 import { styledMdxComponents } from './Blocks';
 
 interface StepCardProps extends Card {
+  step: string;
   children?: React.ReactNode;
 }
 
-export const StepCard = ({ content, icon }: StepCardProps) => {
+export const StepCard = ({
+  content,
+  title,
+  icon,
+  isRequired,
+  tabItems,
+  step,
+  ...props
+}: StepCardProps) => {
   const MDXComponents = useMDXComponents(styledMdxComponents);
-
   return (
     <Box
       border='1px solid'
@@ -21,11 +40,18 @@ export const StepCard = ({ content, icon }: StepCardProps) => {
       borderRadius='semi'
       my={2}
       textAlign='left'
+      fontSize='sm'
     >
-      <Flex p={4} position='relative'>
+      <Flex p={4} position='relative' flexWrap='wrap'>
         {icon && (
           <Box>
-            <Box bg='page.alt' p={4} borderRadius='semi'>
+            <Box
+              bg='page.alt'
+              p={4}
+              mr={[4, 2]}
+              mb={[2, 0]}
+              borderRadius='semi'
+            >
               <Image
                 w='40px'
                 h='40px'
@@ -35,16 +61,10 @@ export const StepCard = ({ content, icon }: StepCardProps) => {
             </Box>
           </Box>
         )}
-        <Box
-          flex={1}
-          px={4}
-          sx={{
-            '*': { fontSize: 'sm' },
-            h4: { color: 'text.body' },
-            ul: { maxW: '400px', margin: '0 auto' },
-            ol: { maxW: '400px', margin: '0 auto' },
-          }}
-        >
+        <Box flex={1} px={[0, 4]} minW='250px'>
+          <Heading as='h4' fontSize='md' fontWeight='semibold' mt={2}>
+            {title}
+          </Heading>
           {content && (
             <ReactMarkdown
               rehypePlugins={[rehypeRaw, remarkGfm]}
@@ -54,7 +74,55 @@ export const StepCard = ({ content, icon }: StepCardProps) => {
             </ReactMarkdown>
           )}
         </Box>
+        <Text
+          fontStyle={isRequired ? 'normal' : 'italic'}
+          color='gray.600'
+          position='absolute'
+          top={1}
+          right={3}
+        >
+          {isRequired ? step : 'Optional'}
+        </Text>
       </Flex>
+      {tabItems.length > 0 ? (
+        <Tabs colorScheme='primary'>
+          <TabList px={4}>
+            {tabItems.map(({ id, name }) => (
+              <Tab
+                key={id}
+                fontSize='inherit'
+                color='blackAlpha.500'
+                _selected={{
+                  borderBottomColor: 'primary.400',
+                  color: 'primary.500',
+                  ['.tag']: {
+                    opacity: 1,
+                  },
+                }}
+              >
+                {name}
+              </Tab>
+            ))}
+          </TabList>
+          <TabPanels>
+            {tabItems.map(({ id, content, icon }) => (
+              <TabPanel key={id} bg='page.alt'>
+                <Flex p={4} alignItems='center'>
+                  <Image
+                    w='40px'
+                    h='40px'
+                    src={`${process.env.NEXT_PUBLIC_STRAPI_ASSETS_URL}${icon.data.attributes.url}`}
+                    alt={icon.data.attributes.alternativeText}
+                  />
+                  <Text px={4}>{content}</Text>
+                </Flex>
+              </TabPanel>
+            ))}
+          </TabPanels>
+        </Tabs>
+      ) : (
+        <></>
+      )}
     </Box>
   );
 };
