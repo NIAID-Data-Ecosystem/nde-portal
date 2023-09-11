@@ -21,23 +21,23 @@ import axios from 'axios';
 import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
 import remarkGfm from 'remark-gfm';
-import type { ContentProps } from 'src/views/methodology/types';
+import type { ContentProps } from 'src/views/integration/types';
 import { Error } from 'src/components/error';
 import Empty from 'src/components/empty';
 import {
   ParagraphSection,
   ListBlock,
-} from 'src/views/methodology/components/Blocks';
-import { StepCard } from 'src/views/methodology/components/Card';
+} from 'src/views/integration/components/Blocks';
+import { StepCard } from 'src/views/integration/components/Card';
 import { FaLightbulb } from 'react-icons/fa6';
 import { useRouter } from 'next/router';
 
-interface MethodologyProps {
+interface IntegrationProps {
   data: { page: ContentProps };
   error?: { message: string; status: number };
 }
 
-const Methodology: NextPage<MethodologyProps> = props => {
+const Integration: NextPage<IntegrationProps> = props => {
   const [content, setContent] = useState(props?.data?.page || null);
   const [error, setError] = useState(props?.error || null);
 
@@ -87,7 +87,7 @@ const Methodology: NextPage<MethodologyProps> = props => {
   return (
     <PageContainer
       hasNavigation
-      title='Methodology'
+      title='Integration'
       metaDescription='Information on integrating your data into the NIAID Data Ecosystem Discovery Portal.'
       px={0}
       py={0}
@@ -327,4 +327,4 @@ export async function getStaticProps() {
   }
 }
 
-export default Methodology;
+export default Integration;

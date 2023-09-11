@@ -14,7 +14,7 @@ import {
   UnorderedList,
 } from 'nde-design-system';
 import { useMDXComponents } from 'mdx-components';
-import type { OverviewProps } from 'src/views/methodology/types';
+import type { OverviewProps } from 'src/views/integration/types';
 import { FaCheckCircle, FaStar } from 'react-icons/fa';
 import { HeadingWithLink } from 'src/components/heading-with-link/components/HeadingWithLink';
 
