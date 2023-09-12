@@ -247,11 +247,11 @@ const Integration: NextPage<IntegrationProps> = props => {
               ) : (
                 <></>
               )}
-              {content.attributes.textBlocks &&
-                content.attributes.textBlocks.map((block, i) => {
+              {content.attributes?.textBlocks &&
+                content.attributes.textBlocks?.map((block, i) => {
                   return (
                     <React.Fragment key={block.id}>
-                      {i === content.attributes.textBlocks.length - 1 && (
+                      {i === content.attributes.textBlocks!.length - 1 && (
                         <Divider />
                       )}
                       <ParagraphSection textAlign='center' {...block} />
