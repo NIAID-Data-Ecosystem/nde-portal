@@ -86,18 +86,18 @@ const Integration: NextPage<IntegrationProps> = props => {
 
   const MDXComponents = useMDXComponents({});
 
-  const router = useRouter();
+  // const router = useRouter();
 
-  const [isMounted, setIsMounted] = useState(false); // local storage for SSR.
+  // const [isMounted, setIsMounted] = useState(false); // local storage for SSR.
 
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
+  // useEffect(() => {
+  //   setIsMounted(true);
+  // }, []);
 
-  if (isMounted && error && +error?.status === 404) {
-    router.push('/404');
-    return <></>;
-  }
+  // if (isMounted && error && +error?.status === 404) {
+  //   router.push('/404');
+  //   return <></>;
+  // }
 
   return (
     <PageContainer
