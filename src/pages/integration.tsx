@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import {
   Box,
   Circle,
+  Divider,
   Flex,
   Heading,
   Icon,
@@ -61,14 +62,28 @@ const Integration: NextPage<IntegrationProps> = props => {
     refetchOnMount: false,
   });
 
-  const sections = content
-    ? [
-        ...(content?.attributes?.overview?.map(({ title, slug }) => ({
-          title,
-          hash: slug,
-        })) || []),
-      ]
-    : [];
+  // Retrieve section information (title, slug) from content for the table of contents
+  const sections =
+    content &&
+    content.attributes &&
+    Object.values(content.attributes).reduce((r, block) => {
+      if (block && typeof block === 'object') {
+        if (Array.isArray(block)) {
+          block.map(({ title, slug }) => {
+            if (title && slug) {
+              r.push({
+                title,
+                hash: slug,
+              });
+            }
+          });
+        } else if (block.title && block.slug) {
+          r.push({ title: block.title, hash: block.slug });
+        }
+      }
+      return r;
+    }, [] as { title: string; hash: string }[]);
+
   const MDXComponents = useMDXComponents({});
 
   const router = useRouter();
@@ -151,6 +166,7 @@ const Integration: NextPage<IntegrationProps> = props => {
               )}
               {content.attributes.tabs ? (
                 <ParagraphSection
+                  id={content.attributes.tabs.id}
                   title={content.attributes.tabs.title}
                   slug={content.attributes.tabs.slug}
                   textAlign='center'
@@ -178,7 +194,7 @@ const Integration: NextPage<IntegrationProps> = props => {
                       {content.attributes.tabs.panels?.map(({ id, cards }) => {
                         let stepIndex = 0;
                         const total_steps = cards?.filter(
-                          card => card.isRequired,
+                          card => card.content && card.isRequired,
                         ).length;
                         return (
                           <TabPanel key={id} p={0} py={2}>
@@ -188,19 +204,15 @@ const Integration: NextPage<IntegrationProps> = props => {
                               }
                               return (
                                 <React.Fragment key={card.id}>
-                                  <StepCard
-                                    step={`${stepIndex}/${total_steps}`}
-                                    {...card}
-                                  />
                                   {card.additionalInfo && (
                                     <Flex
                                       alignItems='center'
                                       bg='status.warning_lt'
                                       borderRadius='semi'
-                                      px={4}
-                                      py={2}
+                                      p={2}
+                                      flexWrap='wrap'
                                     >
-                                      <Circle bg='whiteAlpha.900' p={2} mr={4}>
+                                      <Circle bg='whiteAlpha.900' p={2} m={2}>
                                         <Icon
                                           as={FaLightbulb}
                                           color='status.warning'
@@ -208,14 +220,21 @@ const Integration: NextPage<IntegrationProps> = props => {
                                         />
                                       </Circle>
                                       <Text
-                                        textAlign={'center'}
+                                        p={2}
+                                        textAlign='left'
                                         flex={1}
                                         fontSize='sm'
+                                        minW='250px'
+                                        lineHeight='tall'
                                       >
                                         {card.additionalInfo}
                                       </Text>
                                     </Flex>
                                   )}
+                                  <StepCard
+                                    step={`${stepIndex}/${total_steps}`}
+                                    {...card}
+                                  />
                                 </React.Fragment>
                               );
                             })}
@@ -228,6 +247,17 @@ const Integration: NextPage<IntegrationProps> = props => {
               ) : (
                 <></>
               )}
+              {content.attributes.textBlocks &&
+                content.attributes.textBlocks.map((block, i) => {
+                  return (
+                    <React.Fragment key={block.id}>
+                      {i === content.attributes.textBlocks.length - 1 && (
+                        <Divider />
+                      )}
+                      <ParagraphSection textAlign='center' {...block} />
+                    </React.Fragment>
+                  );
+                })}
             </Flex>
           ) : (
             <Empty>No content for this page exists.</Empty>
@@ -297,6 +327,7 @@ const fetchPageContent = async (
             'overview.image',
             'tabs.panels.cards.icon',
             'tabs.panels.cards.tabItems.icon',
+            'textBlocks',
           ],
           ...params,
         },

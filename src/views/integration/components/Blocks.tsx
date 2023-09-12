@@ -4,47 +4,51 @@ import rehypeRaw from 'rehype-raw';
 import remarkGfm from 'remark-gfm';
 import {
   Box,
+  BoxProps,
   Flex,
   Image,
-  ListIcon,
   ListItem,
   OrderedList,
   Text,
-  TextProps,
   UnorderedList,
 } from 'nde-design-system';
 import { useMDXComponents } from 'mdx-components';
-import type { OverviewProps } from 'src/views/integration/types';
-import { FaCheckCircle, FaStar } from 'react-icons/fa';
+import type { SectionProps } from 'src/views/integration/types';
 import { HeadingWithLink } from 'src/components/heading-with-link/components/HeadingWithLink';
 
 export const styledMdxComponents = {
-  ol: (props: any) => <OrderedList p={[1, 2]}>{props.children}</OrderedList>,
-  ul: (props: any) => (
-    <UnorderedList
-      listStyleType='none'
-      mx={[1, 4]}
-      py={[1, 2]}
-      sx={{ li: { display: 'flex', input: { display: 'none' } } }}
-    >
+  ol: ({ ordered, ...props }: any) => (
+    <OrderedList p={[1, 2]}>{props.children}</OrderedList>
+  ),
+  ul: ({ ordered, ...props }: any) => (
+    <UnorderedList listStyleType='none' py={[1, 2]} {...props}>
       {props.children}
     </UnorderedList>
   ),
-  li: (props: any) => {
+  li: ({ ordered, ...props }: any) => {
+    // Check if the first child of the list item is an emoji and style it accordingly.
+    if (Array.isArray(props.children)) {
+      const startsWithSymbol =
+        props.children[0].charAt(0) === '✅' ||
+        props.children[0].charAt(0) === '✨';
+      if (startsWithSymbol) {
+        return (
+          <ListItem
+            listStyleType='none'
+            display='flex'
+            lineHeight='tall'
+            pb={4}
+            {...props}
+          >
+            <Box>{props.children[0].charAt(0)}</Box>
+            <Text ml={2}>{props.children[0].slice(1)}</Text>
+          </ListItem>
+        );
+      }
+    }
     return (
-      <ListItem listStyleType='inherit' lineHeight='tall' pb={4}>
-        {props.checked !== null ? (
-          <ListIcon
-            as={props.checked ? FaCheckCircle : FaStar}
-            color={props.checked ? 'whatsapp.500' : 'orange.300'}
-            boxSize={4}
-            my={1}
-            mx={3}
-          />
-        ) : (
-          <></>
-        )}
-        <Box>{props.children}</Box>
+      <ListItem listStyleType='inherit' lineHeight='tall' pb={4} {...props}>
+        {props.children}{' '}
       </ListItem>
     );
   },
@@ -53,31 +57,27 @@ export const styledMdxComponents = {
   ),
 };
 
-interface ParagraphSectionProps extends Omit<OverviewProps, 'id'> {
+interface ParagraphSectionProps
+  extends Omit<BoxProps, 'id' | 'title'>,
+    SectionProps {
   imagePosition?: 'left' | 'right';
-  textAlign?: TextProps['textAlign'];
   children?: React.ReactNode;
 }
 
 export const ParagraphSection = ({
+  id,
   title,
   children,
   description,
   image,
   imagePosition = 'right',
   slug,
-  textAlign,
+  ...props
 }: ParagraphSectionProps) => {
   const MDXComponents = useMDXComponents(styledMdxComponents);
 
   return (
-    <Box
-      id={slug}
-      as='section'
-      scrollMarginTop='-0.5rem'
-      my={{ base: 4, md: 6, lg: 8 }}
-      textAlign={textAlign}
-    >
+    <Box id={slug || id} as='section' scrollMarginTop='-0.5rem' {...props}>
       <Flex
         flexDirection={{
           base: 'column-reverse',
@@ -89,7 +89,7 @@ export const ParagraphSection = ({
           {title && (
             <HeadingWithLink
               as='h3'
-              slug={`#${slug}`}
+              slug={slug ? `#${slug}` : ''}
               fontSize='lg'
               mt={6}
               mb={2}
@@ -106,7 +106,7 @@ export const ParagraphSection = ({
             </ReactMarkdown>
           )}
         </Flex>
-        {image && (
+        {image && image.data && (
           <Image
             ml={imagePosition === 'right' ? { base: 0, md: 8, lg: 10 } : {}}
             mr={imagePosition === 'left' ? { base: 0, md: 8, lg: 10 } : {}}
@@ -123,7 +123,14 @@ export const ParagraphSection = ({
 };
 
 export const ListBlock = ({ children }: { children?: string }) => {
-  const MDXComponents = useMDXComponents(styledMdxComponents);
+  const MDXComponents = useMDXComponents({
+    ...styledMdxComponents,
+    ul: (props: any) =>
+      styledMdxComponents.ul({
+        ...props,
+        px: { base: 0, md: 10 },
+      }),
+  });
 
   return (
     <Flex
@@ -135,7 +142,7 @@ export const ListBlock = ({ children }: { children?: string }) => {
       py={[4, 8]}
       w='100%'
     >
-      <Box margin='0 auto' w={{ base: '100%', sm: '70%' }}>
+      <Box margin='0 auto' maxW='500px'>
         {children && (
           <ReactMarkdown
             rehypePlugins={[rehypeRaw, remarkGfm]}

@@ -30,9 +30,11 @@ export const StepCard = ({
   isRequired,
   tabItems,
   step,
-  ...props
 }: StepCardProps) => {
   const MDXComponents = useMDXComponents(styledMdxComponents);
+  if (!content) {
+    return <></>;
+  }
   return (
     <Box
       border='1px solid'
@@ -43,7 +45,7 @@ export const StepCard = ({
       fontSize='sm'
     >
       <Flex p={4} position='relative' flexWrap='wrap'>
-        {icon && (
+        {icon && icon.data && (
           <Box>
             <Box
               bg='page.alt'
@@ -61,8 +63,8 @@ export const StepCard = ({
             </Box>
           </Box>
         )}
-        <Box flex={1} px={[0, 4]} minW='250px'>
-          <Heading as='h4' fontSize='md' fontWeight='semibold' mt={2}>
+        <Box flex={1} px={[0, 4]} minW='250px' maxW='500px'>
+          <Heading as='h4' fontSize='md' fontWeight='semibold' mt={2} pr={4}>
             {title}
           </Heading>
           {content && (
@@ -79,7 +81,7 @@ export const StepCard = ({
           color='gray.600'
           position='absolute'
           top={1}
-          right={3}
+          right={2}
         >
           {isRequired ? step : 'Optional'}
         </Text>
@@ -90,6 +92,7 @@ export const StepCard = ({
             {tabItems.map(({ id, name }) => (
               <Tab
                 key={id}
+                lineHeight='tall'
                 fontSize='inherit'
                 color='blackAlpha.500'
                 _selected={{
@@ -107,14 +110,23 @@ export const StepCard = ({
           <TabPanels>
             {tabItems.map(({ id, content, icon }) => (
               <TabPanel key={id} bg='page.alt'>
-                <Flex p={4} alignItems='center'>
-                  <Image
-                    w='40px'
-                    h='40px'
-                    src={`${process.env.NEXT_PUBLIC_STRAPI_ASSETS_URL}${icon.data.attributes.url}`}
-                    alt={icon.data.attributes.alternativeText}
-                  />
-                  <Text px={4}>{content}</Text>
+                <Flex
+                  p={2}
+                  alignItems={['flex-start', 'center']}
+                  flexDirection={['column', 'row']}
+                >
+                  {icon && icon.data && (
+                    <Image
+                      m={2}
+                      w='40px'
+                      h='40px'
+                      src={`${process.env.NEXT_PUBLIC_STRAPI_ASSETS_URL}${icon.data.attributes.url}`}
+                      alt={icon.data.attributes.alternativeText}
+                    />
+                  )}
+                  <Text p={2} lineHeight='tall' minW='250px'>
+                    {content}
+                  </Text>
                 </Flex>
               </TabPanel>
             ))}

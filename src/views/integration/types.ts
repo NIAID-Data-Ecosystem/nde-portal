@@ -9,10 +9,10 @@ interface ImageProps {
   };
 }
 
-export interface OverviewProps {
+export interface SectionProps {
   id: number;
   title: string;
-  slug: string;
+  slug?: string;
   description?: string;
   image?: ImageProps;
 }
@@ -56,7 +56,8 @@ export interface ContentProps {
     updatedAt: string;
     publishedAt: string;
     description: string;
-    overview?: OverviewProps[];
+    overview?: SectionProps[];
     tabs?: Tabs;
+    textBlocks?: SectionProps[];
   };
 }
