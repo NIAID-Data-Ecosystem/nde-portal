@@ -274,9 +274,9 @@ const Integration: NextPage<IntegrationProps> = props => {
           display={{ base: 'none', lg: 'block' }}
           flexDirection='column'
         >
-          {sections.length || isLoading ? (
+          {sections?.length || isLoading ? (
             <Box position='sticky' top='0px'>
-              {sections.length ? (
+              {sections?.length ? (
                 <LocalNavigation
                   routes={sections}
                   itemProps={{
