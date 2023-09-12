@@ -22,7 +22,9 @@ const LocalNavigation: React.FC<LocalNavigationProps> = ({
 }) => {
   // Detect active section and update nav accordingly
   const sectionNodesRefs = useRef<(HTMLElement | null)[]>([]);
-  const [activeSection, setActiveSection] = useState(routes[0].hash);
+  const [activeSection, setActiveSection] = useState(
+    routes.length ? routes[0].hash : '',
+  );
   const [itemClicked, setItemClicked] = useState(false);
 
   useEffect(() => {
@@ -79,8 +81,10 @@ const LocalNavigation: React.FC<LocalNavigationProps> = ({
     };
   }, [activeSection, routes, itemClicked]);
 
+  if (!routes || !routes.length) return <></>;
+
   return (
-    <Box as='nav' w='100%'>
+    <Box as='nav' w='100%' py={6}>
       <Heading as='h2' size='sm' fontWeight='semibold' mb={0} px={2}>
         On This Page
       </Heading>

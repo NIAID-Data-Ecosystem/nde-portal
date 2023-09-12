@@ -216,7 +216,7 @@ const MainContent = ({ slug, data: initialData }: MainContentProps) => {
           <Box
             position='sticky'
             top='0px'
-            p={4}
+            px={4}
             overflow='auto'
             maxH='100%'
             sx={{
