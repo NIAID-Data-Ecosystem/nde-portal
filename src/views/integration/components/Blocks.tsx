@@ -83,7 +83,7 @@ export const ParagraphSection = ({
           base: 'column-reverse',
           md: imagePosition == 'left' ? 'row-reverse' : 'row',
         }}
-        py={{ base: 4, md: 6, lg: 6 }}
+        py={{ base: 4, md: 6, lg: 10 }}
       >
         <Flex flexDirection='column' flex={1}>
           {title && (
@@ -108,9 +108,17 @@ export const ParagraphSection = ({
         </Flex>
         {image && image.data && (
           <Image
-            ml={imagePosition === 'right' ? { base: 0, md: 8, lg: 10 } : {}}
-            mr={imagePosition === 'left' ? { base: 0, md: 8, lg: 10 } : {}}
-            w='200px'
+            ml={
+              imagePosition === 'right'
+                ? { base: 0, md: 8, lg: 10 }
+                : { base: 0 }
+            }
+            mr={
+              imagePosition === 'left'
+                ? { base: 'auto', md: 8, lg: 10 }
+                : { base: 'auto' }
+            }
+            w='auto'
             h='200px'
             src={`${process.env.NEXT_PUBLIC_STRAPI_ASSETS_URL}${image.data.attributes.url}`}
             alt={image.data.attributes.alternativeText}

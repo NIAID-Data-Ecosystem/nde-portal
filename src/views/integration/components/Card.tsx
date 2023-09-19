@@ -55,8 +55,8 @@ export const StepCard = ({
               borderRadius='semi'
             >
               <Image
-                w='40px'
-                h='40px'
+                w='30px'
+                h='30px'
                 src={`${process.env.NEXT_PUBLIC_STRAPI_ASSETS_URL}${icon.data.attributes.url}`}
                 alt={icon.data.attributes.alternativeText}
               />
@@ -118,8 +118,8 @@ export const StepCard = ({
                   {icon && icon.data && (
                     <Image
                       m={2}
-                      w='40px'
-                      h='40px'
+                      w='25px'
+                      h='25px'
                       src={`${process.env.NEXT_PUBLIC_STRAPI_ASSETS_URL}${icon.data.attributes.url}`}
                       alt={icon.data.attributes.alternativeText}
                     />
