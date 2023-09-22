@@ -33,6 +33,7 @@ import MainContent, {
   DocumentationProps,
 } from 'src/views/docs/components/MainContent';
 import Empty from 'src/components/empty';
+import IntegrationMain from 'src/views/integration/components/Main';
 
 export interface DocumentationByCategories {
   id: number;
@@ -50,22 +51,28 @@ export interface DocumentationByCategories {
   };
 }
 
+// Fetch documentation from API.
+export const fetchCategories = async () => {
+  try {
+    const isProd =
+      process.env.NEXT_PUBLIC_BASE_URL === 'https://data.niaid.nih.gov';
+    const docs = await axios.get(
+      `${
+        process.env.NEXT_PUBLIC_STRAPI_API_URL
+      }/api/categories?filters[docs][name][$null]&populate[docs][fields][0]=name&populate[docs][fields][1]=slug&populate[docs][sort][1]=order:asc&pagination[page]=1&pagination[pageSize]=100&sort[0]=order:asc&publicationState=${
+        isProd ? 'live' : 'preview'
+      }`,
+    );
+
+    return docs.data.data;
+  } catch (err: any) {
+    throw err.response;
+  }
+};
 const Docs: NextPage<{
   slug: string[];
   data: DocumentationProps;
 }> = props => {
-  // Fetch documentation from API.
-  const fetchCategories = async () => {
-    try {
-      const docs = await axios.get(
-        `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/api/categories?filters[docs][name][$null]&populate[docs][fields][0]=name&populate[docs][fields][1]=slug&populate[docs][sort][1]=order:asc&pagination[page]=1&pagination[pageSize]=100&sort[0]=order:asc`,
-      );
-
-      return docs.data.data;
-    } catch (err: any) {
-      throw err.response;
-    }
-  };
   const {
     data: documentationPagesList,
     isLoading,
@@ -119,7 +126,6 @@ const Docs: NextPage<{
   }, {} as SidebarContent['items'][0]);
 
   const MAX_PAGES_PER_SECTION = 3;
-
   return (
     <PageContainer
       hasNavigation
@@ -187,11 +193,15 @@ const Docs: NextPage<{
                 mb={32}
                 flex={1}
               >
-                <MainContent
-                  id={props.data.id}
-                  data={props.data}
-                  slug={props.slug}
-                />
+                {props.slug[0] === 'integration' ? (
+                  <IntegrationMain />
+                ) : (
+                  <MainContent
+                    id={props.data.id}
+                    data={props.data}
+                    slug={props.slug}
+                  />
+                )}
               </PageContent>
             </Flex>
           ) : (
@@ -331,10 +341,16 @@ export const getStaticProps: GetStaticProps = async context => {
     return { props: { slug: '', data: {} } };
   }
   const { slug } = context.params;
+  const isProd =
+    process.env.NEXT_PUBLIC_BASE_URL === 'https://data.niaid.nih.gov';
   const fetchDocumentation = async () => {
     try {
       const docs = await axios.get(
-        `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/api/docs?populate=*&filters[$and][0][slug][$eqi]=${slug}`,
+        `${
+          process.env.NEXT_PUBLIC_STRAPI_API_URL
+        }/api/docs?populate=*&filters[$and][0][slug][$eqi]=${slug}&publicationState=${
+          isProd ? 'live' : 'preview'
+        }`,
       );
 
       return docs.data.data;
@@ -351,8 +367,15 @@ export const getStaticProps: GetStaticProps = async context => {
 export async function getStaticPaths() {
   const fetchData = async () => {
     try {
+      const isProd =
+        process.env.NEXT_PUBLIC_BASE_URL === 'https://data.niaid.nih.gov';
+
       const docs = await axios.get(
-        `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/api/docs?fields[0]=slug`,
+        `${
+          process.env.NEXT_PUBLIC_STRAPI_API_URL
+        }/api/docs?fields[0]=slug&publicationState=${
+          isProd ? 'live' : 'preview'
+        }`,
       );
       return {
         docs: docs.data.data as { id: number; attributes: { slug: string } }[],

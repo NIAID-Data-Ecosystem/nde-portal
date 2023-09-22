@@ -175,13 +175,14 @@ export const fetchNews = async (
   news: NewsOrEventsObject[];
 }> => {
   try {
-    const isProd = process.env.NODE_ENV;
+    const isProd =
+      process.env.NEXT_PUBLIC_BASE_URL === 'https://data.niaid.nih.gov';
     // in dev/staging mode, show drafts.
     const news = await axios.get(
       `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/api/news-reports`,
       {
         params: {
-          publicationState: isProd ? 'preview' : '',
+          publicationState: isProd ? 'live' : 'preview',
           populate: {
             fields: [
               'name',
