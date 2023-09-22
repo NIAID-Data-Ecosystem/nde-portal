@@ -54,12 +54,13 @@ export interface DocumentationByCategories {
 // Fetch documentation from API.
 export const fetchCategories = async () => {
   try {
-    const isProd = process.env.NODE_ENV === 'production';
+    const isProd =
+      process.env.NEXT_PUBLIC_BASE_URL === 'https://data.niaid.nih.gov';
     const docs = await axios.get(
       `${
         process.env.NEXT_PUBLIC_STRAPI_API_URL
       }/api/categories?filters[docs][name][$null]&populate[docs][fields][0]=name&populate[docs][fields][1]=slug&populate[docs][sort][1]=order:asc&pagination[page]=1&pagination[pageSize]=100&sort[0]=order:asc&publicationState=${
-        isProd ? '' : 'preview'
+        isProd ? 'live' : 'preview'
       }`,
     );
 
@@ -340,15 +341,15 @@ export const getStaticProps: GetStaticProps = async context => {
     return { props: { slug: '', data: {} } };
   }
   const { slug } = context.params;
-  const isProd = process.env.NODE_ENV === 'production';
-
+  const isProd =
+    process.env.NEXT_PUBLIC_BASE_URL === 'https://data.niaid.nih.gov';
   const fetchDocumentation = async () => {
     try {
       const docs = await axios.get(
         `${
           process.env.NEXT_PUBLIC_STRAPI_API_URL
         }/api/docs?populate=*&filters[$and][0][slug][$eqi]=${slug}&publicationState=${
-          isProd ? '' : 'preview'
+          isProd ? 'live' : 'preview'
         }`,
       );
 
@@ -366,11 +367,15 @@ export const getStaticProps: GetStaticProps = async context => {
 export async function getStaticPaths() {
   const fetchData = async () => {
     try {
-      const isProd = process.env.NODE_ENV === 'production';
+      const isProd =
+        process.env.NEXT_PUBLIC_BASE_URL === 'https://data.niaid.nih.gov';
+
       const docs = await axios.get(
         `${
           process.env.NEXT_PUBLIC_STRAPI_API_URL
-        }/api/docs?fields[0]=slug&publicationState=${isProd ? '' : 'preview'}`,
+        }/api/docs?fields[0]=slug&publicationState=${
+          isProd ? 'live' : 'preview'
+        }`,
       );
       return {
         docs: docs.data.data as { id: number; attributes: { slug: string } }[],
