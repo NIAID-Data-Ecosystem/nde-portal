@@ -520,7 +520,7 @@ const News: NextPage<NewsProps> = props => {
               flexDirection='column'
               px={2}
             >
-              <Box position='sticky' top='0px' p={4}>
+              <Box position='sticky' top='0px'>
                 <Navigation
                   routes={sections}
                   itemProps={{
@@ -558,12 +558,13 @@ const fetchEvents = async (
 }> => {
   try {
     // in dev/staging mode, show drafts.
-    const isProd = process.env.NODE_ENV;
+    const isProd =
+      process.env.NEXT_PUBLIC_BASE_URL === 'https://data.niaid.nih.gov';
     const events = await axios.get(
       `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/api/events`,
       {
         params: {
-          publicationState: isProd ? 'preview' : '',
+          publicationState: isProd ? 'live' : 'preview',
           populate: {
             fields: ['*'],
           },
@@ -586,13 +587,14 @@ export const fetchWebinars = async (
   webinars: NewsOrEventsObject[];
 }> => {
   try {
-    const isProd = process.env.NODE_ENV;
+    const isProd =
+      process.env.NEXT_PUBLIC_BASE_URL === 'https://data.niaid.nih.gov';
     // in dev/staging mode, show drafts.
     const webinars = await axios.get(
       `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/api/webinars`,
       {
         params: {
-          publicationState: isProd ? 'preview' : '',
+          publicationState: isProd ? 'live' : 'preview',
           populate: {
             fields: ['*'],
           },

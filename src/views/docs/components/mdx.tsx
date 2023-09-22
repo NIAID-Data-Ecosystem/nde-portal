@@ -5,60 +5,14 @@ import {
   Image,
   ImageProps,
   Text,
-  HeadingProps,
 } from 'nde-design-system';
 import { transformString2Hash } from './helpers';
-
-const HashedHeading = (props: HeadingProps) => {
-  let hash = '';
-
-  if (
-    props.children &&
-    Array.isArray(props.children) &&
-    typeof props.children[0] === 'string'
-  ) {
-    hash = transformString2Hash(props.children[0]);
-  }
-
-  if (hash) {
-    return (
-      <a href={`#${hash}`}>
-        <Heading
-          id={hash}
-          sx={{
-            span: {
-              opacity: 0,
-              color: 'status.info',
-              fontWeight: 'extrabold',
-              mx: 2,
-              cursor: 'pointer',
-              transition: 'opacity 0.1s ease-in-out',
-            },
-            _hover: {
-              span: {
-                opacity: 1,
-                textDecoration: 'underline',
-                transition: 'opacity 0.1s ease-in-out',
-              },
-            },
-          }}
-          {...props}
-        >
-          {props.children}
-          <Text as='span' fontWeight='bold'>
-            #
-          </Text>
-        </Heading>
-      </a>
-    );
-  }
-  return <Heading id={hash} as='h2' fontSize='2xl' mt={6} mb={3} {...props} />;
-};
+import { HeadingWithLink } from 'src/components/heading-with-link/components/HeadingWithLink';
 
 export default {
   blockquote: (props: any) => {
     const getThemeByTitle = (node: any) => {
-      const text = node.children[0].value;
+      const text = node?.children[0]?.value;
       if (!text) {
         return {
           bg: 'status.info_lt',
@@ -68,31 +22,36 @@ export default {
 
       // Find emojis in text.
       const emojis = text.match(/\p{Emoji_Presentation}/gu);
-
-      if (emojis[0] === '🚧') {
+      if (!emojis) {
+        return {
+          bg: 'status.info_lt',
+          color: 'status.info',
+        };
+      } else if (emojis[0] === '🚧') {
         return {
           bg: 'status.warning_lt',
           color: 'status.warning',
         };
-      }
-      if (emojis[0] === '🚨') {
+      } else if (emojis[0] === '🚨') {
         return {
           bg: 'status.error_lt',
           color: 'status.error',
         };
+      } else {
+        return {
+          bg: 'status.info_lt',
+          color: 'status.info',
+        };
       }
-
-      return {
-        bg: 'status.info_lt',
-        color: 'status.info',
-      };
     };
 
-    const titleEl = props.node.children.find(
+    const titleEl = props?.node?.children.find(
       (child: any) => child.type === 'element',
     );
     const theme = getThemeByTitle(titleEl);
-
+    const childrenEl = props.children.filter(
+      (el: any) => typeof el === 'object',
+    );
     return (
       <Box
         borderLeft='0.2em solid'
@@ -105,11 +64,14 @@ export default {
           p: {
             my: 4,
           },
-          'p:first-of-type': {
-            color: theme.color,
-            fontWeight: 'bold',
-            fontSize: 'lg',
-          },
+          'p:first-of-type':
+            childrenEl.length > 1
+              ? {
+                  color: theme.color,
+                  fontWeight: 'bold',
+                  fontSize: 'lg',
+                }
+              : {},
         }}
         {...props}
       />
@@ -141,17 +103,51 @@ export default {
     return <Heading as='h1' size='xl' mt={8} mb={4} {...props} />;
   },
   h2: (props: any) => {
-    return <HashedHeading as='h2' fontSize='2xl' mt={6} mb={3} {...props} />;
+    let id = '';
+
+    if (
+      props.children &&
+      Array.isArray(props.children) &&
+      typeof props.children[0] === 'string'
+    ) {
+      id = `${transformString2Hash(props.children[0])}`;
+    }
+
+    return (
+      <HeadingWithLink
+        as='h2'
+        id={id ? id : undefined}
+        slug={id ? `#${id}` : undefined}
+        fontSize='2xl'
+        mt={6}
+        mb={3}
+        scrollMarginTop='1rem'
+        {...props}
+      />
+    );
   },
   h3: (props: any) => {
+    let id = '';
+
+    if (
+      props.children &&
+      Array.isArray(props.children) &&
+      typeof props.children[0] === 'string'
+    ) {
+      id = `${transformString2Hash(props.children[0])}`;
+    }
+
     return (
-      <HashedHeading
+      <HeadingWithLink
         as='h3'
+        id={id ? id : undefined}
+        slug={id ? `#${id}` : undefined}
         fontSize='lg'
         mt={2}
         mb={1}
         lineHeight='shorter'
         color='text.body'
+        scrollMarginTop='1rem'
         {...props}
       />
     );
@@ -181,12 +177,14 @@ export default {
   ),
   p: (props: any) => {
     /*
-        React-markdown wraps every element in a p tag, which causes issues with img tags
-        The following wraps components in a span instead of a p tag.
-       */
-    const containsImgEl = props.children.some(
-      (child: any) => child?.props?.node?.tagName === 'img',
-    );
+      React-markdown wraps every element in a p tag, which causes issues with img tags
+      The following wraps components in a span instead of a p tag.
+    */
+    const containsImgEl =
+      Array.isArray(props.children) &&
+      props.children.some(
+        (child: any) => child?.props?.node?.tagName === 'img',
+      );
     if (containsImgEl) {
       return (
         <Text as='span' mt={2} size='sm' lineHeight='tall' color='text.body'>
