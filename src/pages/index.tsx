@@ -41,6 +41,11 @@ import { FaChevronRight } from 'react-icons/fa';
 import { useRepoData } from 'src/hooks/api';
 import { queryFilterObject2String } from 'src/components/filters/helpers';
 import { FaRegEnvelope, FaGithub } from 'react-icons/fa';
+import { NewsOrEventsObject } from './news';
+import {
+  NewsCarousel,
+  fetchNews,
+} from 'src/views/home/components/NewsCarousel';
 
 interface Repository {
   identifier: string;
@@ -77,6 +82,7 @@ export const RepositoryTable: React.FC<{
       ),
     [rowsByType, sortOrder],
   );
+
   return (
     <TableWrapper colorScheme='gray' w='100%'>
       <TableContainer>
@@ -304,7 +310,13 @@ export const RepositoryTabs: React.FC<{
   );
 };
 
-const Home: NextPage = () => {
+const Home: NextPage<{
+  data: {
+    news: NewsOrEventsObject[];
+  };
+  error?: { message: string };
+}> = props => {
+  // For repositories table
   const [repositories, setRepositories] = useState<Repository[]>([]);
 
   const [selectedType, setSelectedType] = useState<Repository['type']>('iid');
@@ -329,7 +341,7 @@ const Home: NextPage = () => {
         subtitle={HOMEPAGE_COPY.sections.hero.subtitle}
         body={[HOMEPAGE_COPY.sections.hero.body]}
       >
-        <Flex w='100%' justifyContent='flex-end' mb={2}>
+        <Flex w='100%' justifyContent='flex-end' mt={[15, 20, 24]} mb={2}>
           <NextLink
             href={{ pathname: '/advanced-search' }}
             passHref
@@ -469,6 +481,10 @@ const Home: NextPage = () => {
                   },
                 )}
               </ButtonGroup>
+              {/* NEWS */}
+              {!props?.error?.message && props.data?.news && (
+                <NewsCarousel news={props.data.news} />
+              )}
             </Box>
           </PageContent>
         )}
@@ -476,5 +492,22 @@ const Home: NextPage = () => {
     </PageContainer>
   );
 };
+
+export async function getStaticProps() {
+  try {
+    const { news } = await fetchNews({ paginate: { page: 1, pageSize: 5 } });
+    return { props: { data: { news } } };
+  } catch (err: any) {
+    return {
+      props: {
+        data: [],
+        error: {
+          type: 'error',
+          message: '' + err,
+        },
+      },
+    };
+  }
+}
 
 export default Home;

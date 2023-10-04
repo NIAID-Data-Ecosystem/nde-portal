@@ -3,6 +3,7 @@ import { renderHook, waitFor } from '@testing-library/react';
 import { createWrapper } from './mocks/utils.tsx';
 import { useRepoData } from 'src/hooks/api';
 import { server } from '../../jest.setup.js';
+import RepositoryData from 'configs/repositories.json';
 
 describe('use query hook', () => {
   test('successful useRepoData query hook', async () => {
@@ -11,16 +12,18 @@ describe('use query hook', () => {
     });
 
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    const repos = RepositoryData.repositories.filter(
+      ({ type }) => type === 'generalist',
+    );
+
+    const { identifier } = result.current.data[0];
+    const { type, icon, abstract } = repos.find(({ id }) => identifier === id);
     expect(result.current.data).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
-          identifier: 'LINCS',
-          url: 'https://lincsportal.ccs.miami.edu/',
-          label: 'BD2K-LINCS DCIC',
-          type: 'generalist',
-          icon: '/assets/resources/lincs-icon.jpg',
-          abstract:
-            'Catalogs changes in gene expression and other cellular processes',
+          type,
+          icon,
+          abstract,
         }),
       ]),
     );
