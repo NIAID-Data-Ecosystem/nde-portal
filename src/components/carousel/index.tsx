@@ -131,7 +131,7 @@ export const Carousel = ({
 
   return (
     <Flex ref={ref}>
-      <Box w='100%' overflow='hidden'>
+      <Box className='padded-carousel' w='100%' overflow='hidden' p={2}>
         <Track {...trackProps}>
           {children.map((child, index) => {
             return (
