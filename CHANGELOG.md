@@ -1,8 +1,22 @@
 # Changelog
 
-All notable changes to this project will be documented in this file. See
-[standard-version](https://github.com/conventional-changelog/standard-version)
-for commit guidelines.
+All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
+
+## [1.0.0](https://github.com/NIAID-Data-Ecosystem/nde-portal/compare/v0.0.3...v1.0.0) (2023-10-04)
+
+
+### 🐛 Bugfixes
+
+* **about:** content NIAID-Data-Ecosystem/niaid-feedback[#64](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/64) NIAID-Data-Ecosystem/niaid-feedback[#62](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/62) ([2c87355](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/2c8735500ab1f98f4fca6a851a68fc71a80ca68d))
+* **advanced-search:** update import path - skip test ([10aa835](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/10aa835cf48aeb5fee84e620f84003984178205b))
+* broken sources link ([80e31dd](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/80e31ddb3f8cdcc82b5e239eb8a3d58b39222620))
+* favicon asset path ([6dc1417](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/6dc1417b3cdeb7f56f513bb0b23939245487727e))
+* hide accordion panel contents + remove unnecessary nesting in svgs ([887aa65](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/887aa651b95e2777726ac2fa6c7c234c51c1437b))
+* mobile pagination ([f2885c9](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/f2885c9fcffb8295f70e8fc0b3f59af4c4c10288))
+* search count update ([ce66924](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/ce66924fcdb592e2f36820b038182ac8027a476c))
+* **search:** mobile pagination ([c3ab706](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/c3ab7067b851adc202e7ce08b917226182ecf757))
+* typo ([cf226be](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/cf226be95884c711f4f2edd15eb647c89a6f8c04))
+* typo ([d1d57d0](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/d1d57d012a7733683c74ec2a48adcbf15824c2de))
 
 ### [0.0.3](https://github.com/NIAID-Data-Ecosystem/nde-portal/releases/tag/v0.0.3) (2023-07-04)
 
