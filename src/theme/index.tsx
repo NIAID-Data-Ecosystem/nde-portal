@@ -1,8 +1,4 @@
-import {
-  extendTheme,
-  themeOverrides,
-  theme as NDETHEME,
-} from 'nde-design-system';
+import { extendTheme, theme as NDETHEME } from 'nde-design-system';
 import { Public_Sans } from 'next/font/google';
 
 // Import the weights and subsets, add any other config here as well
@@ -13,7 +9,7 @@ const public_sans_font = Public_Sans({
 });
 
 export const theme = extendTheme({
-  ...themeOverrides,
+  ...NDETHEME,
   fonts: {
     body: public_sans_font.style.fontFamily,
     heading: public_sans_font.style.fontFamily,
