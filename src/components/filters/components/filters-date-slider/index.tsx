@@ -7,8 +7,8 @@ import {
   Heading,
   Skeleton,
   Text,
-  theme,
 } from 'nde-design-system';
+import { theme } from 'src/theme';
 import { useFacetsData } from '../../hooks/useFacetsData';
 import { SelectedFilterType } from '../../types';
 import { Params } from 'src/utils/api';
@@ -26,7 +26,7 @@ const Histogram = dynamic(() => import('./components/histogram'), {
 });
 
 interface FiltersDateSliderProps {
-  colorScheme: keyof typeof theme.colors;
+  colorScheme: string;
   // Params used in query.
   queryParams: Params;
   // Selected resourcesWithDate [min, max] from router.

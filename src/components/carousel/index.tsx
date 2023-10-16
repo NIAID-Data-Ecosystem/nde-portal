@@ -11,10 +11,10 @@ import {
   Button,
   Flex,
   Icon,
-  theme,
   useMediaQuery,
   VStack,
 } from 'nde-design-system';
+import { theme } from 'src/theme';
 import { useElementSize } from 'usehooks-ts';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import { Progress } from '@chakra-ui/react';
