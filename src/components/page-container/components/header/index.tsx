@@ -8,8 +8,8 @@ import {
   HeadingProps,
   Text,
   TextProps,
-  theme,
 } from 'nde-design-system';
+import { theme } from 'src/theme';
 import { StyledSection } from './styles';
 
 interface PageHeaderProps extends FlexProps {

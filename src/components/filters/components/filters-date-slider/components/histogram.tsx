@@ -1,5 +1,6 @@
 import React, { useCallback, useMemo } from 'react';
-import { Box, Flex, theme } from 'nde-design-system';
+import { Box, Flex } from 'nde-design-system';
+import { theme } from 'src/theme';
 import { Bar } from '@visx/shape';
 import { Group } from '@visx/group';
 import { FacetTerm } from 'src/utils/api/types';
@@ -324,10 +325,10 @@ const Histogram: React.FC<HistogramProps> = ({
 
             {/* SLIDER */}
             <Flex w='100%' position='relative'>
-              {/* 
+              {/*
                 Position slider under bars where
                 [left]  = first bar's x-position + half bar width.
-                [width] = last bar's x-position - half bar width. 
+                [width] = last bar's x-position - half bar width.
                 */}
               {
                 <Box

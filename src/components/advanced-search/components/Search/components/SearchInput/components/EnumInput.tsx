@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import Select from 'react-select';
-import { Flex, theme } from 'nde-design-system';
+import { Flex } from 'nde-design-system';
 import { AdvancedSearchInputProps } from '../types';
 import { customStyles } from '../../FieldSelect';
+import { theme } from 'src/theme';
 
 interface EnumInputProps extends AdvancedSearchInputProps {
   options?: {
