@@ -10,13 +10,14 @@ import {
   ListItem,
   CheckboxGroup,
   Text,
-  ButtonProps,
   usePrefersReducedMotion,
 } from 'nde-design-system';
 import { FilterTerm } from '../types';
 import { FiltersCheckbox } from './filters-checkbox';
 import REPOS from 'configs/repositories.json';
 import { FaArrowDown } from 'react-icons/fa';
+import { theme } from 'src/theme';
+
 /*
 [COMPONENT INFO]:
 Filter list handles the number of items to show in list (expanded option).
@@ -24,7 +25,7 @@ Filter list handles the searching of filter items.
 */
 
 interface FiltersList {
-  colorScheme: ButtonProps['colorScheme'];
+  colorScheme: string;
   // list of filter terms to display.
   terms: FilterTerm[];
   // Search input placeholder text -- also used for aris-label.

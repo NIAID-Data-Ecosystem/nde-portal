@@ -1,7 +1,6 @@
 import React, { useRef } from 'react';
 import {
   ButtonProps,
-  ChakraTheme as theme,
   CloseButton,
   Flex,
   Icon,
@@ -13,6 +12,7 @@ import {
   Spinner,
   VisuallyHidden,
 } from 'nde-design-system';
+import { theme } from 'src/theme';
 import { FaSearch } from 'react-icons/fa';
 import { useDropdownContext } from '..';
 import { ReactElement } from 'react-markdown/lib/react-markdown';

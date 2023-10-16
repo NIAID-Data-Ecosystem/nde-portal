@@ -1,10 +1,9 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { ButtonProps } from 'nde-design-system';
 import { FacetTerms, FilterTerm } from 'src/components/filters/types';
 import { addMissingYears } from '../helpers';
 
 export interface ContextProps {
-  colorScheme: ButtonProps['colorScheme'];
+  colorScheme: string;
   data?: FilterTerm[];
   dates: (string | null)[];
   dateRange: number[];

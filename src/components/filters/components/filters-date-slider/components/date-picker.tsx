@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { Box, ButtonProps, Button, Flex, Input, Text } from 'nde-design-system';
+import { Box, Button, Flex, Input, Text } from 'nde-design-system';
 import { useDateRangeContext } from '../hooks/useDateRangeContext';
 import { formatISOString } from 'src/utils/api/helpers';
 
 interface DatePickerProps {
-  colorScheme: ButtonProps['colorScheme'];
+  colorScheme: string;
   selectedDates: string[];
   handleSelectedFilter: (arg: string[]) => void;
   resetFilter: () => void;
@@ -58,7 +58,7 @@ export const DatePicker: React.FC<DatePickerProps> = ({
           <Input
             id='start'
             type='date'
-            colorScheme={colorScheme}
+            colorScheme={colorScheme as string}
             bg='white'
             min={min}
             max={selected[1] || max} // set the maximum start date to the end date in the current selection or the end date in the data to prevent setting a start date later than the end date.
@@ -78,7 +78,7 @@ export const DatePicker: React.FC<DatePickerProps> = ({
           <Input
             id='end'
             type='date'
-            colorScheme={colorScheme}
+            colorScheme={colorScheme as string}
             bg='white'
             min={selected[0] || min} // set the minimum end date to the start date in the current selection or the start date in the data to prevent setting an end date earlier than the start date.
             max={max}
@@ -97,7 +97,7 @@ export const DatePicker: React.FC<DatePickerProps> = ({
           size='sm'
           variant='solid'
           type='submit'
-          colorScheme={colorScheme}
+          colorScheme={colorScheme as string}
           mr={1}
           isDisabled={isDisabled}
         >
@@ -106,7 +106,7 @@ export const DatePicker: React.FC<DatePickerProps> = ({
         <Button
           size='sm'
           variant='outline'
-          colorScheme={colorScheme}
+          colorScheme={colorScheme as string}
           onClick={() => resetFilter()}
           isDisabled={isDisabled || !selectedDates.length}
           mx={1}

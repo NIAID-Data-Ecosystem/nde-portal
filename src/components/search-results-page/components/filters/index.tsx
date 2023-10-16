@@ -14,7 +14,7 @@ import {
 } from 'src/components/filters/types';
 import { useRouter } from 'next/router';
 import { FiltersDateSlider } from 'src/components/filters/components/filters-date-slider/';
-import { theme } from 'nde-design-system';
+import { theme } from 'src/theme';
 
 /*
 [COMPONENT INFO]:
@@ -87,7 +87,7 @@ export const filtersConfig: FiltersConfigProps = {
 };
 
 interface FiltersProps {
-  colorScheme?: keyof typeof theme.colors;
+  colorScheme?: string;
   // Params used in query.
   queryParams: Params;
   // Currently selected filters

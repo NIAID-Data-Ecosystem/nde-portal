@@ -25,7 +25,7 @@ const Changelog: NextPage<ChangelogProps> = () => {
       <PageContent bg='#fff' justifyContent={'center'}>
         <Flex w='1000px' flexDirection='column' mb={32}>
           <Heading as='h1' size='lg' mt={8}>
-            Version {packageJsonData.version}
+            Changelog
           </Heading>
           <Box>
             <Badge
@@ -60,7 +60,7 @@ const Changelog: NextPage<ChangelogProps> = () => {
               h2: (props: any) => {
                 return (
                   <>
-                    <Heading as='h2' size='lg' mt={8} {...props}></Heading>
+                    <Heading as='h2' fontSize='2xl' mt={8} {...props}></Heading>
                   </>
                 );
               },

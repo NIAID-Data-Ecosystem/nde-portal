@@ -4,6 +4,78 @@ All notable changes to this project will be documented in this file. See
 [standard-version](https://github.com/conventional-changelog/standard-version)
 for commit guidelines.
 
+### [1.1.0](https://github.com/NIAID-Data-Ecosystem/nde-portal/compare/v0.0.3...v1.1.0) (2023-10-04)
+
+### 🚀 Features
+
+- add integration page
+  ([f27cb52](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/f27cb5211a96e1149114753d9444188fb561c066))
+- add news and docs pages
+  ([9f2e0af](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/9f2e0af9aa2b4b8b00bd96d8491c546ee221b964))
+- **docs:** add use case section
+  ([89e1056](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/89e105673cc189a8bdd8ded480be0369a82751ab))
+- revise data repository abstracts for homepage -
+  NIAID-Data-Ecosystem/niaid-feedback[#24](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/24)
+  ([8e6a795](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/8e6a795c9f7099e83c0c8916fdd6bd385666c7bf))
+
+### 🐛 Bugfixes
+
+- **about:** content
+  NIAID-Data-Ecosystem/niaid-feedback[#64](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/64)
+  NIAID-Data-Ecosystem/niaid-feedback[#62](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/62)
+  ([2c87355](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/2c8735500ab1f98f4fca6a851a68fc71a80ca68d))
+- **advanced-search:** update import path - skip test
+  ([10aa835](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/10aa835cf48aeb5fee84e620f84003984178205b))
+- **sources:** broken sources link
+  ([80e31dd](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/80e31ddb3f8cdcc82b5e239eb8a3d58b39222620))
+- **docs:** change query refresh
+  ([7fd040f](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/7fd040fc34025ff2a897ff2704874a23d40a7f06))
+- **docs:** show strapi content draft versions in dev mode
+  ([fff6ac0](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/fff6ac09400e95ef955299b797099493ac782762))
+- **docs:** faq content loading
+  ([81c71ab](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/81c71ab32e15d5aecbf1374b594c86ebc4b64738))
+- favicon asset path
+  ([6dc1417](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/6dc1417b3cdeb7f56f513bb0b23939245487727e))
+- **resource:** handle html in reference documents (hasPart)
+  ([9a3fa6d](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/9a3fa6d51fa015f41e50d499917e856f6816569b))
+- **index:** news carousel loading - skip test
+  ([06461eb](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/06461eb91fbe5b7db66a7011887fec0899ebf898))
+- **integration:** remove redirect
+  ([35bb56a](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/35bb56a077a2fefe7b1d96828132181d9a499fc0))
+- **integration:** rendering table of contents
+  ([97baff5](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/97baff5ac08bc20fa5e2984804c9d9ddaac6d510))
+- **resource:** missing cells in table
+  ([c9cdd8a](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/c9cdd8a6527e1a5b553c6c6d6d1798e6204647ee))
+- **resource:** missing dates + add basedOn url name
+  ([61cd0d2](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/61cd0d22dc786f11ef5bbca639b9cc5f482e8cf9))
+- **search:** mobile filters
+  ([d3c6cf4](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/d3c6cf42cc186eadc9d5332bfb52485eee26591b))
+- **search:** show footer button in modal
+  ([a23ed25](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/a23ed258280fe17a0a83997ad953d78f129966b5))
+- **search:** show footer button in modal + display multiple funders
+  ([ce9a016](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/ce9a0160167fd1adc155014538cbd701c6c188f4))
+- **resource:** show funding with multiple funders
+  ([35065f1](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/35065f1b3cec04f5388bc9a223f5f6b39894031c))
+- **sources:** date handling in different format
+  ([da86bd7](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/da86bd7f8db66a77f55503ffad4c78ace81da874))
+- **sources:** first release date
+  ([9d9a86c](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/9d9a86c6adc074ffbd4fb5e05dfa0263e85857a5))
+- **sources:** release date handling
+  ([3d3365f](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/3d3365fd12dfe67098777d469f8247ea23d11e2d))
+
+## [1.0.0](https://github.com/NIAID-Data-Ecosystem/nde-portal/compare/v0.0.3...v1.0.0) (2023-07-12)
+
+### 🐛 Bugfixes
+
+- **search:** hide accordion panel contents + remove unnecessary nesting in svgs
+  ([887aa65](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/887aa651b95e2777726ac2fa6c7c234c51c1437b))
+- **search:** mobile pagination
+  ([f2885c9](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/f2885c9fcffb8295f70e8fc0b3f59af4c4c10288))
+- **search:** search count update
+  ([ce66924](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/ce66924fcdb592e2f36820b038182ac8027a476c))
+- **search:** mobile pagination
+  ([c3ab706](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/c3ab7067b851adc202e7ce08b917226182ecf757))
+
 ### [0.0.3](https://github.com/NIAID-Data-Ecosystem/nde-portal/releases/tag/v0.0.3) (2023-07-04)
 
 ### 📝 Documentation

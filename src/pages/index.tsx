@@ -25,8 +25,8 @@ import {
   Tab,
   Tag,
   Text,
-  theme,
 } from 'nde-design-system';
+import { theme } from 'src/theme';
 import {
   PageHeader,
   PageContainer,

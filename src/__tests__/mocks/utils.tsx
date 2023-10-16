@@ -3,7 +3,8 @@ import { render } from '@testing-library/react';
 import { rest } from 'msw';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { mockRepositoriesMetadata } from './data';
-import { theme, ThemeProvider } from 'nde-design-system';
+import { ThemeProvider } from 'nde-design-system';
+import { theme } from 'src/theme';
 
 export const handlers = [
   rest.get('*/metadata', (_, res, ctx) => {

@@ -9,11 +9,11 @@ import {
   IconButton,
   keyframes,
   Spinner,
-  theme,
   Textarea,
   Tooltip,
   useEditableControls,
 } from 'nde-design-system';
+import { theme } from 'src/theme';
 import { MouseEventHandler, useEffect, useState } from 'react';
 import { FaCheck, FaRegEdit } from 'react-icons/fa';
 import { IoClose } from 'react-icons/io5';

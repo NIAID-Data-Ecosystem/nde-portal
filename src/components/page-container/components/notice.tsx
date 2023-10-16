@@ -30,7 +30,6 @@ const Notice = () => {
       <Flex
         w='100%'
         bg='status.warning'
-        justifyContent='space-between'
         alignItems='center'
         py={2}
         flexWrap='wrap'
@@ -43,14 +42,24 @@ const Notice = () => {
           p={1}
           mr={4}
         />
-
-        <Text py={[4, 0]}>
-          <strong>
+        <Flex flex={1} flexWrap='wrap' py={[4, 0]}>
+          <Text fontWeight='semibold'>
             This is the alpha version of the NIAID Data Ecosystem Discovery
             Portal.
-          </strong>
-        </Text>
-
+          </Text>
+          <Text px={[0, 2]} fontWeight='normal'>
+            Currently using the:{' '}
+            <Link
+              href={`${process.env.NEXT_PUBLIC_API_URL}/metadata`}
+              // target='_blank'
+            >
+              {process.env.NEXT_PUBLIC_API_URL?.includes('staging')
+                ? 'Staging'
+                : 'Production'}{' '}
+              API
+            </Link>
+          </Text>
+        </Flex>
         <Button
           variant='ghost'
           colorScheme='primary'

@@ -11,10 +11,10 @@ import {
   Button,
   Flex,
   Icon,
-  theme,
   useMediaQuery,
   VStack,
 } from 'nde-design-system';
+import { theme } from 'src/theme';
 import { useElementSize } from 'usehooks-ts';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import { Progress } from '@chakra-ui/react';
@@ -131,7 +131,7 @@ export const Carousel = ({
 
   return (
     <Flex ref={ref}>
-      <Box w='100%' overflow='hidden'>
+      <Box className='padded-carousel' w='100%' overflow='hidden' p={2}>
         <Track {...trackProps}>
           {children.map((child, index) => {
             return (
