@@ -10,12 +10,18 @@ import {
 import {
   Box,
   Button,
+  Circle,
   Collapse,
   Flex,
+  FormControl,
+  FormLabel,
+  Icon,
   Link,
   ListItem,
   Stack,
+  Switch,
   Text,
+  Tooltip,
   UnorderedList,
 } from 'nde-design-system';
 import {
@@ -38,7 +44,7 @@ import { encodeString } from 'src/utils/querystring-helpers';
 import { SelectedFilterType } from '../filters/types';
 // import { AdvancedSearchWithModal } from '../advanced-search/AdvancedSearchWithModal';
 import { getQueryStatusError } from '../error/utils';
-
+import { FaInfo } from 'react-icons/fa';
 /*
 [COMPONENT INFO]:
  Search results pages displays the list of records returned by a search.
@@ -71,6 +77,8 @@ export const defaultQuery = {
 };
 
 const SearchResultsPage = () => {
+  const [useMetadataScore, setUseMetadataScore] = useState(true);
+
   const [total, setTotal] = useState(0);
 
   const hasMounted = useHasMounted();
@@ -107,6 +115,7 @@ const SearchResultsPage = () => {
     size: `${selectedPerPage}`,
     from: `${(selectedPage - 1) * selectedPerPage}`,
     sort: sortOrder,
+    use_metadata_score: useMetadataScore ? 'true' : 'false',
   };
 
   const { isLoading, error, data } = useQuery<
@@ -134,6 +143,7 @@ const SearchResultsPage = () => {
         size: params.size,
         from: params.from,
         sort: params.sort,
+        use_metadata_score: params.use_metadata_score,
       });
     },
 
@@ -269,6 +279,7 @@ const SearchResultsPage = () => {
       </Error>
     );
   }
+
   return (
     <Flex w='100%' flexDirection='column' mx={[0, 0, 4]} flex={[1, 2]}>
       <Flex
@@ -340,6 +351,55 @@ const SearchResultsPage = () => {
                 handleRouteUpdate({ from: 1, size: v })
               }
             />
+            <FormControl display='flex' alignItems='center' mx={1} my={2}>
+              <Tooltip
+                bg='white'
+                isDisabled={sortOrder !== '_score'}
+                label={
+                  <Box color='text.body' lineHeight='shorter' p={1}>
+                    <Text color='inherit' pb={1.5}>
+                      Ranks results based on the presence of unique fields.
+                    </Text>
+                    <Text color='inherit' pb={1.5}>
+                      First scores by query, then refines rankings with an
+                      additional function score.
+                    </Text>
+                    <Text color='inherit' pb={1.5}>
+                      Adjusts results based on a calculated metadata score.
+                    </Text>
+                  </Box>
+                }
+                hasArrow
+                gutter={2}
+              >
+                <FormLabel
+                  htmlFor='metadata-score-toggle'
+                  mb='0'
+                  mr={2}
+                  display='flex'
+                  alignItems='start'
+                  opacity={sortOrder !== '_score' ? 0.4 : 1}
+                >
+                  Use Metadata Score?
+                  <Circle
+                    size={4}
+                    borderColor='gray.600'
+                    borderWidth='1px'
+                    color='gray.600'
+                    ml={1}
+                  >
+                    <Icon as={FaInfo} boxSize={2} />
+                  </Circle>
+                </FormLabel>
+              </Tooltip>
+              <Switch
+                id='metadata-score-toggle'
+                isChecked={useMetadataScore}
+                onChange={() => setUseMetadataScore(prev => !prev)}
+                colorScheme='secondary'
+                isDisabled={sortOrder !== '_score'}
+              />
+            </FormControl>
           </Box>
         </Flex>
       </Pagination>

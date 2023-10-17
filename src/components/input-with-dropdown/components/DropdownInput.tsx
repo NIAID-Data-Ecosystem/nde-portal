@@ -121,21 +121,30 @@ export const DropdownInput: React.FC<DropdownInputProps> = ({
           })}
         />
         {/* Optional submit button. */}
-        {renderSubmitButton && (
+
+        {(renderSubmitButton || onClose) && (
           <InputRightElement
             ref={inputRightRef}
             p={1}
             w='unset'
             zIndex={theme.zIndices['dropdown']}
           >
-            {onClose && <CloseButton onClick={onClose} mr={1} />}
-            {renderSubmitButton({
-              type: 'submit',
-              w: '100%',
-              h: '100%',
-              // set padding top and bottom for safari, do not remove.
-              py: 0,
-            })}
+            {onClose && (
+              <CloseButton
+                onClick={onClose}
+                mr={1}
+                size='sm'
+                colorScheme={'primary'}
+              />
+            )}
+            {renderSubmitButton &&
+              renderSubmitButton({
+                type: 'submit',
+                w: '100%',
+                h: '100%',
+                // set padding top and bottom for safari, do not remove.
+                py: 0,
+              })}
           </InputRightElement>
         )}
       </InputGroup>
