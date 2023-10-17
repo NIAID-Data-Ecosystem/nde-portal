@@ -168,6 +168,12 @@ export interface IncludedInDataCatalog {
   identifier?: string | null;
 }
 
+export interface InfectiousAgent extends PropertyNameWithURL {
+  displayName: string;
+  additionalType?: AdditionalType;
+  identifier?: string;
+}
+
 export interface InteractionStatistics {
   '@type'?: string | null;
   userInteractionCount: number | null;
@@ -239,6 +245,7 @@ interface SpatialCoverage {
 }
 
 export interface Species extends PropertyNameWithURL {
+  displayName: string;
   additionalType?: AdditionalType;
   identifier?: string;
 }
@@ -308,7 +315,7 @@ export interface FormattedResource {
   hasPart: HasPart[] | null;
   healthCondition: PropertyNameWithURL[] | null;
   includedInDataCatalog: IncludedInDataCatalog | null;
-  infectiousAgent: PropertyNameWithURL[] | null;
+  infectiousAgent: InfectiousAgent[] | null;
   inLanguage: {
     alternateName: string | null;
     name: string | null;

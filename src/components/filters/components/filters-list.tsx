@@ -226,6 +226,7 @@ export const FiltersList: React.FC<FiltersList> = React.memo(
                             count={item.count}
                             isLoading={isLoading}
                             isCountUpdating={isUpdating}
+                            property={property}
                           />
                         </ListItem>
                       );

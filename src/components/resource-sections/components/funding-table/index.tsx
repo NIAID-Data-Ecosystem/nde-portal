@@ -86,7 +86,6 @@ const FundingTable: React.FC<FundingTable> = ({ isLoading, funding }) => {
         props = { ...props, tooltipText: v };
         value = value.slice(0, 144) + '...';
       }
-
       obj[k] = {
         value,
         props,

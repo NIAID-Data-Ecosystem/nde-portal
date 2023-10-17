@@ -150,6 +150,7 @@ export const formatDistribution = (
 
   const getDistributionFields = (data: APIDistribution) => {
     return {
+      ...data,
       encodingFormat: data.encodingFormat || null,
       contentUrl: data.contentUrl || null,
       dateCreated: data.dateCreated || null,

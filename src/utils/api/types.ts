@@ -159,6 +159,11 @@ export interface IncludedInDataCatalog {
   identifier?: string | null;
 }
 
+export interface InfectiousAgent extends PropertyWithPubtator {
+  identifier?: string;
+  displayName: string;
+}
+
 export interface InteractionStatistics {
   '@type'?: string | null;
   userInteractionCount: number | null;
@@ -229,9 +234,23 @@ interface SpatialCoverage {
   name?: string;
 }
 
-export interface Species extends PropertyNameWithURL {
+interface PropertyWithPubtator extends PropertyNameWithURL {
+  inDefinedTermSet?: string;
+  alternateName?: string[];
+  originalName?: string | string[];
+  commonName?: string | string[];
+  isCurated?: boolean;
+  curatedBy?: {
+    name?: string;
+    url?: string;
+    dateModified?: string;
+  };
+}
+
+export interface Species extends PropertyWithPubtator {
   additionalType?: AdditionalType;
   identifier?: string;
+  displayName: string;
 }
 
 interface TemporalCoverage {
@@ -297,9 +316,9 @@ export interface FormattedResource {
   downloadUrl: { name: string }[] | null;
   funding: Funding[] | null;
   hasPart: HasPart[] | null;
-  healthCondition: PropertyNameWithURL[] | null;
+  healthCondition: PropertyWithPubtator[] | null;
   includedInDataCatalog: IncludedInDataCatalog | null;
-  infectiousAgent: PropertyNameWithURL[] | null;
+  infectiousAgent: InfectiousAgent[] | null;
   inLanguage: {
     alternateName: string | null;
     name: string | null;
