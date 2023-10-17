@@ -89,12 +89,12 @@ export const NewsCarousel = ({ news: initialData }: NewsCarouselProps) => {
                     w='100%'
                     maxHeight='100%'
                     src={
-                      news.attributes.image.data
+                      news.attributes?.image?.data
                         ? `${process.env.NEXT_PUBLIC_STRAPI_ASSETS_URL}${news.attributes.image.data[0].attributes.url}`
                         : `/assets/home-bg.webp`
                     }
                     alt={
-                      news.attributes.image.data
+                      news.attributes?.image?.data
                         ? news.attributes.image.data[0].attributes
                             .alternativeText
                         : 'Generic image'
