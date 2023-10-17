@@ -22,8 +22,8 @@
           "href": "/advanced-search"
         },
         {
-          "label": "Data Repositories",
-          "subLabel": "Latest information about the data repositories included",
+          "label": "Sources",
+          "subLabel": "Latest information about the data sources included",
           "href": "/sources"
         },
         {
