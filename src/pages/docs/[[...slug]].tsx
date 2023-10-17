@@ -85,16 +85,17 @@ const Docs: NextPage<{
       select: (res: DocumentationByCategories[]) => {
         return res
           .map(({ id, attributes }) => {
-            const items = attributes.docs.data.map(item => {
-              return {
-                id: item.id,
-                name: item.attributes.name,
-                slug: item.attributes.slug,
-                href: {
-                  pathname: `/docs/${item.attributes.slug}`,
-                },
-              };
-            });
+            const items =
+              attributes?.docs?.data?.map(item => {
+                return {
+                  id: item.id,
+                  name: item.attributes.name,
+                  slug: item.attributes.slug,
+                  href: {
+                    pathname: `/docs/${item.attributes.slug}`,
+                  },
+                };
+              }) || [];
             return {
               id,
               name: attributes.name,

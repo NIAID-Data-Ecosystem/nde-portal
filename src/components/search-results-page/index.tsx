@@ -351,7 +351,7 @@ const SearchResultsPage = () => {
                 handleRouteUpdate({ from: 1, size: v })
               }
             />
-            <FormControl display='flex' alignItems='center' mx={1} my={2}>
+            {/* <FormControl display='flex' alignItems='center' mx={1} my={2}>
               <Tooltip
                 bg='white'
                 isDisabled={sortOrder !== '_score'}
@@ -399,7 +399,7 @@ const SearchResultsPage = () => {
                 colorScheme='secondary'
                 isDisabled={sortOrder !== '_score'}
               />
-            </FormControl>
+            </FormControl> */}
           </Box>
         </Flex>
       </Pagination>
