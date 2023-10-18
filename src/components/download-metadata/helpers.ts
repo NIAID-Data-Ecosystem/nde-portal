@@ -44,7 +44,8 @@ export const downloadAsCsv = (
     ...data.map(row =>
       headers
         .map(fieldName => {
-          let stringified_value = JSON.stringify(row[fieldName], replacer);
+          let stringified_value =
+            JSON.stringify(row[fieldName], replacer) || '';
 
           // Truncate value if it exceeds max cell character length.
           let truncated_value =
@@ -61,6 +62,7 @@ export const downloadAsCsv = (
               '""',
             )}"`;
           }
+
           return truncated_value;
         })
         .join(','),
