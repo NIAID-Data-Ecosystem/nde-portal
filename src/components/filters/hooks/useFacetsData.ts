@@ -106,6 +106,35 @@ export const useFacetsData = ({
         });
       }),
     );
+    await Promise.all(
+      facets.map(facet => {
+        /* Fetch facets using query params. Note that we also get the facets count where data is non-existent to be used as an "N/A" attribute. */
+        return fetchSearchResults({
+          q:
+            queryParams.advancedSearch === 'true'
+              ? params.q
+              : encodeString(params.q),
+
+          extra_filter: params?.extra_filter
+            ? `${params.extra_filter} AND _exists_:${facet}`
+            : `_exists_:${facet}`,
+          facet_size: 0, // just need the total
+          size: 0,
+        }).then(response => {
+          if (!data || !response?.total) return;
+
+          const any = {
+            count: response?.total || 0,
+            term: '_exists_',
+            displayAs: 'Any Specified',
+            facet,
+          };
+          // add facet term for "any" property
+          data[facet].terms.unshift(any);
+          return any;
+        });
+      }),
+    );
     return data;
   };
 

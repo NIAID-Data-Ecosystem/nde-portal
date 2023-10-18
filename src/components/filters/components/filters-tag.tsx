@@ -81,7 +81,8 @@ export const FilterTags: React.FC<FilterTags> = ({
         return values.map(v => {
           let value = v || '';
           if (typeof v === 'object' && Object.keys(v)[0].includes('exists')) {
-            value = 'Not Specified';
+            value =
+              Object.keys(v)[0] === '-_exists_' ? 'Not Specified' : 'Specified';
           } else if (
             typeof v === 'string' &&
             v.includes(' | ') &&
@@ -95,7 +96,7 @@ export const FilterTags: React.FC<FilterTags> = ({
             } ( ${commonName.charAt(0).toUpperCase() + commonName.slice(1)} )`;
           }
           return (
-            <Tag key={`${v}`} colorScheme='secondary' size='lg' m={1}>
+            <Tag key={`${value}`} colorScheme='secondary' size='lg' m={1}>
               <TagLabel whiteSpace='break-spaces'>
                 {name}
                 {typeof value === 'string'
