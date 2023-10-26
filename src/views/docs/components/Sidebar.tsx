@@ -10,19 +10,17 @@ import {
   Icon,
   Link,
   ListItem,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
+  MenuGroup,
   SkeletonText,
   Text,
   UnorderedList,
   useDisclosure,
 } from 'nde-design-system';
 import { FaAngleDoubleLeft, FaAngleDoubleRight } from 'react-icons/fa';
-import {
-  Menu,
-  MenuButton,
-  MenuList,
-  MenuItem,
-  MenuGroup,
-} from '@chakra-ui/react';
 import NextLink from 'next/link';
 import { FaAngleDown, FaAngleRight, FaArrowsUpDown } from 'react-icons/fa6';
 import LoadingSpinner from 'src/components/loading';
