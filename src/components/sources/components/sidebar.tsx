@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Heading, ListItem, Text } from 'nde-design-system';
+import { Box, Flex, Heading, ListItem, Tag, Text } from 'nde-design-system';
 import { formatDate } from 'src/utils/api/helpers';
 import type { SourceResponse } from 'src/pages/sources';
 
@@ -29,9 +29,16 @@ const Sidebar: React.FC<Sidebar> = ({ data }) => {
               px={[2, 4, 6]}
               py={4}
             >
-              <Heading size='h6'>
-                {name} <br />
-              </Heading>
+              <Flex alignItems='center'>
+                <Heading size='h6' alignItems='center'>
+                  {name}{' '}
+                </Heading>
+                {data[+id].isNiaidFunded && (
+                  <Tag size='sm' bg='tertiary.700' mx={2}>
+                    NIAID
+                  </Tag>
+                )}
+              </Flex>
               {data[+id].dateModified ? (
                 <Text fontWeight='medium' fontSize='sm'>
                   Latest Release {formatDate(data[+id].dateModified)}

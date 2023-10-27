@@ -4,11 +4,11 @@ import {
   Flex,
   Icon,
   Text,
-  theme,
   Tooltip,
   useDisclosure,
   VisuallyHidden,
 } from 'nde-design-system';
+import { theme } from 'src/theme';
 import MetadataFields from 'configs/resource-fields.json';
 import { useAdvancedSearchContext } from '../AdvancedSearchFormContext';
 import Select, { components, OptionProps, ControlProps } from 'react-select';

@@ -3,14 +3,9 @@ import type { AppProps } from 'next/app';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
 import { QueryClient, QueryClientProvider } from 'react-query';
-import {
-  ThemeProvider,
-  extendTheme,
-  theme as NDETHEME,
-} from 'nde-design-system';
-import { Public_Sans } from 'next/font/google';
+import { theme } from 'src/theme';
 import * as ga from 'lib/ga';
-// import dynamic from 'next/dynamic';
+import { ThemeProvider } from 'nde-design-system';
 
 // const ThemeProvider = dynamic(() =>
 //   import('nde-design-system').then(mod => mod.ThemeProvider),
@@ -18,23 +13,8 @@ import * as ga from 'lib/ga';
 // Creates an instance of react-query for the app.
 const queryClient = new QueryClient();
 
-// Import the weights and subsets, add any other config here as well
-const public_sans_font = Public_Sans({
-  subsets: ['latin'],
-  display: 'swap',
-  fallback: ['arial', 'system-ui'],
-});
-
 function App({ Component, pageProps }: AppProps) {
   const router = useRouter();
-  const theme = extendTheme({
-    ...NDETHEME,
-    fonts: {
-      body: public_sans_font.style.fontFamily,
-      heading: public_sans_font.style.fontFamily,
-    },
-  });
-
   useEffect(() => {
     const handleRouteChange = (url: string) => {
       ga.pageview(url);

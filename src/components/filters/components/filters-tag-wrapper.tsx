@@ -11,12 +11,12 @@ import {
   Icon,
   Text,
   useDisclosure,
-  theme,
 } from 'nde-design-system';
+import { theme } from 'src/theme';
 import { SelectedFilterType } from '../types';
 
 interface FilterTagsWrapperProps {
-  colorScheme?: keyof typeof theme.colors;
+  colorScheme?: string;
   // Filters applied to data.
   filters: SelectedFilterType;
   children: React.ReactNode;

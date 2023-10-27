@@ -22,6 +22,9 @@ export const getColumnHeaders = (data: DownloadArgs['dataObject']) => {
   return headers;
 };
 
+// Excel cells max character length info: https://support.socrata.com/hc/en-us/articles/115005306167-Limitations-of-Excel-and-CSV-Downloads#:~:text=Cell%20Character%20Limits&text=csv%20files%20have%20a%20limit,this%20Microsoft%20support%20article%20here.
+const MAX_CELL_CHARACTERS = 32700;
+
 export const downloadAsCsv = (
   dataObject: DownloadArgs['dataObject'],
   downloadName: DownloadArgs['downloadName'],
@@ -41,20 +44,26 @@ export const downloadAsCsv = (
     ...data.map(row =>
       headers
         .map(fieldName => {
-          let v = row[fieldName];
-          let fieldValue = JSON.stringify(v, replacer);
+          let stringified_value =
+            JSON.stringify(row[fieldName], replacer) || '';
+
+          // Truncate value if it exceeds max cell character length.
+          let truncated_value =
+            stringified_value.length > MAX_CELL_CHARACTERS - 3
+              ? stringified_value.substring(0, MAX_CELL_CHARACTERS - 3) + '...'
+              : stringified_value;
 
           // if field contains a quote we need to escape it to ensure that it is not split into another cell.
-          if (fieldValue?.includes(',')) {
+          if (truncated_value?.includes(',')) {
             // wrap in quotes to keep in cell.
-            return `"${fieldValue.replace(
+            return `"${truncated_value.replace(
               /"/g,
               // to escape quotes in excel, replace with 2 double quotes.
               '""',
             )}"`;
           }
 
-          return fieldValue;
+          return truncated_value;
         })
         .join(','),
     ),

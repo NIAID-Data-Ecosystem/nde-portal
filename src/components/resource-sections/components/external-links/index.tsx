@@ -62,7 +62,7 @@ const ExternalLinks: React.FC<ExternalLinks> = ({
       borderColor='page.alt'
     >
       <Flex flexDirection='column' bg='secondary.50'>
-        <Box p={[0, 4]} pb={[0, 0]}>
+        <Box p={[0, 4]}>
           {includedInDataCatalog?.name && (
             <Flex
               flexDirection='column'

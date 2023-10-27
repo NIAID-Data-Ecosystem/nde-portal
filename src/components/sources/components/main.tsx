@@ -1,13 +1,17 @@
 import React, { useState } from 'react';
 import {
+  Badge,
   Box,
   Button,
   Collapse,
   Divider,
   Flex,
   Heading,
+  Icon,
+  Link,
   SearchInput,
   Skeleton,
+  Tag,
   Text,
 } from 'nde-design-system';
 import { DisplayHTMLContent } from 'src/components/html-content';
@@ -15,13 +19,19 @@ import NextLink from 'next/link';
 import type { SourceResponse } from 'src/pages/sources';
 import { queryFilterObject2String } from 'src/components/filters/helpers';
 import { formatDate } from 'src/utils/api/helpers';
+import { FaMinus, FaPlus } from 'react-icons/fa6';
+import { FaExternalLinkAlt, FaSearch } from 'react-icons/fa';
 
 interface Main {
   data?: SourceResponse[];
   isLoading: boolean;
+  metadata?: {
+    version: string;
+    date: string;
+  } | null;
 }
 
-const Main: React.FC<Main> = ({ data, isLoading }) => {
+const Main: React.FC<Main> = ({ data, isLoading, metadata }) => {
   const [schemaId, setSchemaId] = useState<string[]>([]);
   const [schemaText, setSchemaText] = useState<string[]>([]);
   const [searchValue, setSearchValue] = useState('');
@@ -45,16 +55,17 @@ const Main: React.FC<Main> = ({ data, isLoading }) => {
       ) || [];
 
   return (
-    <Box id='sources-main' mb={10} height='100%'>
+    <Box id='sources-main' mb={10} width='100%' height='100%'>
       <Box>
         <Flex
           justifyContent='space-between'
           alignItems='center'
           flexWrap='wrap'
         >
-          <Heading as='h1' size='h5' p={2} my={4} ml={0}>
-            Version 1.0.0 Data Sources
+          <Heading as='h1' size='h5' my={1} ml={0}>
+            Data Sources
           </Heading>
+
           <Button
             href='https://github.com/NIAID-Data-Ecosystem/nde-crawlers/issues/new?assignees=&labels=&template=suggest-a-new-resource.md&title=%5BSOURCE%5D'
             isExternal
@@ -70,31 +81,59 @@ const Main: React.FC<Main> = ({ data, isLoading }) => {
 
       {!isLoading ? (
         <>
-          <Flex justifyContent='flex-end' my={8}>
-            <Box>
-              <SearchInput
-                size='sm'
-                ariaLabel='Search for a source'
-                placeholder='Search for a source'
-                value={searchValue}
-                handleChange={e => setSearchValue(e.currentTarget.value)}
-                type='text'
-              />
-              {data?.length && (
-                <Text
-                  fontSize='xs'
-                  fontWeight='light'
-                  mt={2}
-                  color='gray.800'
-                  textAlign='right'
-                >
-                  <Text as='span' fontWeight='medium'>
-                    {sources.length}
-                  </Text>{' '}
-                  result{sources.length === 1 ? '' : 's'}.
+          <Flex justifyContent='space-between' flexWrap='wrap'>
+            <Box minW='250px' m={2}>
+              <Text fontSize='xs' color='gray.600'>
+                API Version:
+                {metadata?.version && (
+                  <Link
+                    href={`${process.env.NEXT_PUBLIC_API_URL}/metadata`}
+                    target='_blank'
+                  >
+                    <Tag
+                      bg='status.info_lt'
+                      variant='subtle'
+                      size='sm'
+                      fontWeight='semibold'
+                      mx={1}
+                    >
+                      V.{metadata.version}
+                    </Tag>
+                  </Link>
+                )}
+              </Text>
+              {metadata?.date && (
+                <Text fontSize='xs' color='gray.600' fontWeight='medium'>
+                  Data last harvested: {formatDate(metadata?.date)}
                 </Text>
               )}
             </Box>
+            <Flex justifyContent='flex-end' flex={1}>
+              <Box w='300px' m={2}>
+                <SearchInput
+                  size='sm'
+                  ariaLabel='Search for a source'
+                  placeholder='Search for a source'
+                  value={searchValue}
+                  handleChange={e => setSearchValue(e.currentTarget.value)}
+                  type='text'
+                />
+                {data?.length && (
+                  <Text
+                    fontSize='xs'
+                    fontWeight='light'
+                    mt={2}
+                    color='gray.800'
+                    textAlign='right'
+                  >
+                    <Text as='span' fontWeight='medium'>
+                      {sources.length}
+                    </Text>{' '}
+                    result{sources.length === 1 ? '' : 's'}.
+                  </Text>
+                )}
+              </Box>
+            </Flex>
           </Flex>
           {sources.map((sourceObj: SourceResponse, i: number) => {
             return (
@@ -102,63 +141,69 @@ const Main: React.FC<Main> = ({ data, isLoading }) => {
                 id={`${sourceObj.name}`}
                 as='section'
                 key={i}
-                pb={5}
                 boxShadow='low'
                 borderRadius='semi'
                 borderColor='gray.200'
-                m={2}
-                p={[4, 4, 2]}
+                my={4}
+                py={6}
+                sx={{ '>*': { px: 4, mt: 4, mx: [0, 4, 8] } }}
               >
-                <Box
-                  bg='tertiary.700'
-                  boxShadow='low'
-                  my={3}
-                  mt={[4, 6]}
-                  mx={[0, 0, 5]}
-                  borderRadius='semi'
-                  display='inline-flex'
-                >
-                  <Heading
-                    as='h2'
-                    size='h6'
-                    color='white'
-                    mx={4}
-                    display='inline'
-                    wordBreak='break-word'
-                  >
+                <Box mx={[0, 2, 6]}>
+                  <Badge bg='status.info' wordBreak='break-word' m={0.5}>
                     {sourceObj.name}
-                  </Heading>
+                  </Badge>
+                  {sourceObj.isNiaidFunded && (
+                    <Badge bg='tertiary.700' m={0.5}>
+                      NIAID
+                    </Badge>
+                  )}
                 </Box>
-                <Text ml={{ base: 2, md: 14 }} fontWeight='bold'>
-                  {sourceObj.numberOfRecords.toLocaleString()} Records Available
-                </Text>
-                <Box mx={[2, 2, 20]}>
-                  <DisplayHTMLContent content={sourceObj.description} mt={4} />
+                <Box>
+                  <Text fontWeight='bold' fontSize='sm'>
+                    {sourceObj.numberOfRecords.toLocaleString()} Records
+                    Available
+                  </Text>
+
+                  <DisplayHTMLContent content={sourceObj.description} />
 
                   {sourceObj?.schema && (
-                    <Box mt={4} fontWeight='bold' display={['none', 'block']}>
-                      <Heading as='h3' size='xs'>
-                        Visualization of {sourceObj.name} properties transformed
-                        to the NIAID Data Ecosystem
-                      </Heading>
-                      {(schemaText.includes(sourceObj.name) && (
-                        <Button
-                          id={`${sourceObj.name}-hide-button`}
-                          my={2}
-                          onClick={() => schemaIdFunc(sourceObj.name)}
+                    <Box mt={4} w='100%'>
+                      <Flex
+                        w='100%'
+                        as='button'
+                        flexDirection={{ base: 'column', sm: 'row' }}
+                        alignItems='center'
+                        justifyContent='space-between'
+                        onClick={() => schemaIdFunc(sourceObj.name)}
+                        borderY='1px solid'
+                        borderColor='gray.200'
+                        p={2}
+                      >
+                        <Text
+                          fontWeight='semibold'
+                          color='gray.600'
+                          textAlign={['center', 'left']}
                         >
-                          Hide Schema
-                        </Button>
-                      )) || (
-                        <Button
-                          id={`${sourceObj.name}-show-button`}
-                          onClick={() => schemaIdFunc(sourceObj.name)}
-                          my={2}
-                          variant={'outline'}
-                        >
-                          Show Schema
-                        </Button>
-                      )}
+                          Visualization of {sourceObj.name} properties
+                          transformed to the NIAID Data Ecosystem
+                        </Text>
+                        <Flex alignItems='center'>
+                          <Text mx={2} fontSize='xs' color='gray.600'>
+                            {schemaText.includes(sourceObj.name)
+                              ? 'Hide'
+                              : 'Show'}
+                          </Text>
+                          <Icon
+                            as={
+                              schemaText.includes(sourceObj.name)
+                                ? FaMinus
+                                : FaPlus
+                            }
+                            color='gray.600'
+                            boxSize={3}
+                          />
+                        </Flex>
+                      </Flex>
                       <Collapse in={schemaId.includes(sourceObj.name)}>
                         {schemaId.includes(sourceObj.name) && (
                           <Box
@@ -223,95 +268,103 @@ const Main: React.FC<Main> = ({ data, isLoading }) => {
                       </Collapse>
                     </Box>
                   )}
-                  <Box mt={4}>
-                    <Heading as='h3' size='xs' fontWeight='semibold'>
-                      Latest Release:{' '}
-                      <Text as='span' fontWeight='medium'>
-                        {sourceObj.dateModified
-                          ? new Date(sourceObj.dateModified).toLocaleDateString(
-                              'en-US',
-                              {
-                                year: 'numeric',
-                                month: 'long',
-                                day: 'numeric',
-                              },
-                            )
-                          : 'N/A'}
-                      </Text>
-                    </Heading>
-                    <Heading as='h3' size='xs' fontWeight='semibold'>
-                      First Released:{' '}
-                      <Text as='span' fontWeight='medium'>
-                        {sourceObj.dateCreated
-                          ? new Date(sourceObj.dateCreated).toLocaleDateString(
-                              'en-US',
-                              {
-                                year: 'numeric',
-                                month: 'long',
-                                day: 'numeric',
-                              },
-                            )
-                          : 'N/A'}
-                      </Text>
-                    </Heading>
-                  </Box>
-                  <Flex
-                    justifyContent='center'
-                    margin='0 auto'
-                    my={4}
-                    flexDirection={{ base: 'column', sm: 'row', lg: 'row' }}
-                    alignItems='center'
-                    flexWrap='wrap'
-                    maxW={600}
+                </Box>
+                <Box>
+                  <Heading
+                    as='h3'
+                    fontSize='xs'
+                    fontWeight='semibold'
+                    color='text.body'
                   >
-                    {sourceObj.url && (
-                      <NextLink
-                        href={{
-                          pathname: `${sourceObj.url}`,
-                        }}
-                        passHref
-                      >
-                        <Button
-                          wordBreak='break-word'
-                          whiteSpace='normal'
-                          m={[0, 2]}
-                          mt={4}
-                          textAlign='center'
-                          isExternal
-                          flex={1}
-                          minW={['unset', 400]}
-                          variant='outline'
-                        >
-                          View {sourceObj.name} Site
-                        </Button>
-                      </NextLink>
-                    )}
+                    Latest Release:{' '}
+                    <Text as='span' fontWeight='normal'>
+                      {sourceObj.dateModified
+                        ? new Date(sourceObj.dateModified).toLocaleDateString(
+                            'en-US',
+                            {
+                              year: 'numeric',
+                              month: 'long',
+                              day: 'numeric',
+                            },
+                          )
+                        : 'N/A'}
+                    </Text>
+                  </Heading>
+                  <Heading
+                    as='h3'
+                    fontSize='xs'
+                    fontWeight='semibold'
+                    color='text.body'
+                    mt={2}
+                  >
+                    First Released:{' '}
+                    <Text as='span' fontWeight='normal'>
+                      {sourceObj.dateCreated
+                        ? new Date(sourceObj.dateCreated).toLocaleDateString(
+                            'en-US',
+                            {
+                              year: 'numeric',
+                              month: 'long',
+                              day: 'numeric',
+                            },
+                          )
+                        : 'N/A'}
+                    </Text>
+                  </Heading>
+                </Box>
+                <Flex justifyContent={'space-between'} flexWrap='wrap'>
+                  <NextLink
+                    href={{
+                      pathname: `/search`,
+                      query: {
+                        q: '',
+                        filters: queryFilterObject2String({
+                          'includedInDataCatalog.name': [sourceObj.id],
+                        }),
+                      },
+                    }}
+                    passHref
+                  >
+                    <Button
+                      wordBreak='break-word'
+                      whiteSpace='normal'
+                      textAlign='center'
+                      flex={1}
+                      size='sm'
+                      colorScheme='primary'
+                      leftIcon={<Icon as={FaSearch} boxSize={3} />}
+                      variant='solid'
+                      height='unset'
+                      m={1}
+                    >
+                      Search for {sourceObj.name} records
+                    </Button>
+                  </NextLink>
+                  {sourceObj.url && (
                     <NextLink
                       href={{
-                        pathname: `/search`,
-                        query: {
-                          q: '',
-                          filters: queryFilterObject2String({
-                            'includedInDataCatalog.name': [sourceObj.id],
-                          }),
-                        },
+                        pathname: `${sourceObj.url}`,
                       }}
                       passHref
+                      target='_blank'
                     >
                       <Button
                         wordBreak='break-word'
                         whiteSpace='normal'
                         textAlign='center'
-                        m={[0, 2]}
-                        mt={4}
                         flex={1}
-                        minW={['unset', 400]}
+                        size='sm'
+                        colorScheme='primary'
+                        rightIcon={<Icon as={FaExternalLinkAlt} boxSize={3} />}
+                        variant='outline'
+                        height='unset'
+                        m={1}
                       >
-                        Search {sourceObj.name} records
+                        View {sourceObj.name} website
                       </Button>
                     </NextLink>
-                  </Flex>
-                </Box>
+                  )}
+                </Flex>
               </Box>
             );
           })}

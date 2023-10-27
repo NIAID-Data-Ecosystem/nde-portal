@@ -34,6 +34,7 @@ import MainContent, {
 } from 'src/views/docs/components/MainContent';
 import Empty from 'src/components/empty';
 import IntegrationMain from 'src/views/integration/components/Main';
+import { DocsSearchBar } from 'src/views/docs/components/SearchBar';
 
 export interface DocumentationByCategories {
   id: number;
@@ -84,16 +85,17 @@ const Docs: NextPage<{
       select: (res: DocumentationByCategories[]) => {
         return res
           .map(({ id, attributes }) => {
-            const items = attributes.docs.data.map(item => {
-              return {
-                id: item.id,
-                name: item.attributes.name,
-                slug: item.attributes.slug,
-                href: {
-                  pathname: `/docs/${item.attributes.slug}`,
-                },
-              };
-            });
+            const items =
+              attributes?.docs?.data?.map(item => {
+                return {
+                  id: item.id,
+                  name: item.attributes.name,
+                  slug: item.attributes.slug,
+                  href: {
+                    pathname: `/docs/${item.attributes.slug}`,
+                  },
+                };
+              }) || [];
             return {
               id,
               name: attributes.name,
@@ -135,6 +137,30 @@ const Docs: NextPage<{
       py={0}
       disableSearchBar
     >
+      <PageHeader
+        title={DOCUMENTATION_COPY.sections.hero.heading}
+        titleProps={{
+          size: 'h3',
+        }}
+        subtitle={DOCUMENTATION_COPY.sections.hero.subtitle}
+        body={!props.slug ? [DOCUMENTATION_COPY.sections.hero.body] : []}
+        bodyProps={{
+          maxW: 'unset',
+          mt: 10,
+        }}
+      />
+      <Flex
+        w='100%'
+        justifyContent='flex-end'
+        p={2}
+        borderBottom='1px solid'
+        borderBottomColor='gray.200'
+      >
+        <DocsSearchBar
+          placeholder='Search within documentation'
+          ariaLabel='Search within documentation'
+        />
+      </Flex>
       {error ? (
         <Error>
           <Flex flexDirection='column' justifyContent='center'>
@@ -206,18 +232,6 @@ const Docs: NextPage<{
             </Flex>
           ) : (
             <Box w='100%'>
-              <PageHeader
-                title={DOCUMENTATION_COPY.sections.hero.heading}
-                titleProps={{
-                  size: 'h3',
-                }}
-                subtitle={DOCUMENTATION_COPY.sections.hero.subtitle}
-                body={[DOCUMENTATION_COPY.sections.hero.body]}
-                bodyProps={{
-                  maxW: 'unset',
-                  mt: 10,
-                }}
-              />
               <PageContent id='general-docs' w='100%' bg='white'>
                 {/* Empty state */}
                 {!isLoading &&

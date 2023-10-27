@@ -10,6 +10,7 @@ import { MetadataSource } from 'src/utils/api/types';
 import { useQuery } from 'react-query';
 import { getQueryStatusError } from 'src/components/error/utils';
 import { useRouter } from 'next/router';
+import REPOSITORIESDETAILS from 'configs/repositories.json';
 
 export interface SourceResponse {
   dateCreated?: string;
@@ -20,6 +21,7 @@ export interface SourceResponse {
   numberOfRecords: number;
   schema: MetadataSource['sourceInfo']['schema'];
   url: MetadataSource['sourceInfo']['url'];
+  isNiaidFunded?: boolean;
 }
 
 interface SourcesProps {
@@ -29,15 +31,18 @@ interface SourcesProps {
 }
 const Sources: NextPage<SourcesProps> = ({ data, error }) => {
   const router = useRouter();
+
   // Fetch metadata stats from API.
   const {
-    data: sources,
+    data: metadata,
     isLoading,
-    error: sourcesError,
+    error: metadataError,
   } = useQuery(['metadata'], fetchMetadata, {
     refetchOnMount: true,
+
     select: res => {
       const sources = res.src;
+
       const sourceDetails = Object.entries(sources).map(([key, source]) => {
         const id = (source.sourceInfo && source.sourceInfo.identifier) || key;
         const githubInfo = data.find(item => {
@@ -54,6 +59,10 @@ const Sources: NextPage<SourcesProps> = ({ data, error }) => {
             )}-${source.version.substring(6, 8)}T00:00:00`
           : '';
 
+        const isNiaidFunded = REPOSITORIESDETAILS['repositories'].find(
+          repo => repo.id === id,
+        )?.isNIAID;
+
         return {
           ...githubInfo,
           id,
@@ -64,9 +73,16 @@ const Sources: NextPage<SourcesProps> = ({ data, error }) => {
           numberOfRecords: source.stats[key] || 0,
           schema: (source.sourceInfo && source.sourceInfo.schema) || null,
           url: (source.sourceInfo && source.sourceInfo.url) || '',
+          isNiaidFunded,
         };
       });
-      return sourceDetails;
+      return {
+        meta: {
+          version: res.build_version,
+          date: res.build_date,
+        },
+        sources: sourceDetails,
+      };
     },
   });
 
@@ -81,7 +97,7 @@ const Sources: NextPage<SourcesProps> = ({ data, error }) => {
       disableSearchBar
     >
       <Flex>
-        {error || sourcesError ? (
+        {error || metadataError ? (
           <Error>
             <Flex flexDirection='column' flex={1} alignItems='center'>
               <Text>
@@ -89,9 +105,9 @@ const Sources: NextPage<SourcesProps> = ({ data, error }) => {
                   ? getQueryStatusError(error as unknown as { status: string })
                       ?.message
                   : ''}
-                {!error && sourcesError
+                {!error && metadataError
                   ? getQueryStatusError(
-                      sourcesError as unknown as { status: string },
+                      metadataError as unknown as { status: string },
                     )?.message
                   : ''}
               </Text>
@@ -107,7 +123,7 @@ const Sources: NextPage<SourcesProps> = ({ data, error }) => {
         ) : (
           <></>
         )}
-        {!(error || sourcesError) && (
+        {!(error || metadataError) && (
           <>
             <Flex
               flexDirection='column'
@@ -125,11 +141,28 @@ const Sources: NextPage<SourcesProps> = ({ data, error }) => {
                 top={0}
                 ml={0}
               >
-                {!isLoading && sources ? <Sidebar data={sources} /> : <></>}
+                {!isLoading && metadata ? (
+                  <Sidebar data={metadata.sources} />
+                ) : (
+                  <></>
+                )}
               </UnorderedList>
             </Flex>
-            <PageContent w='100%' flexDirection='column' bg='#fff'>
-              <Main data={sources} isLoading={isLoading} />
+            <PageContent
+              bg='#fff'
+              maxW={{ base: 'unset', lg: '1200px' }}
+              margin='0 auto'
+              px={4}
+              py={4}
+              justifyContent='flex-start'
+              mb={32}
+              flex={1}
+            >
+              <Main
+                data={metadata?.sources}
+                isLoading={isLoading}
+                metadata={metadata?.meta}
+              />
             </PageContent>
           </>
         )}
