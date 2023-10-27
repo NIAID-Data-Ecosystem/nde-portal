@@ -8,7 +8,7 @@ export interface ResourceStatsProps extends Partial<FormattedResource> {}
 
 const ResourceStats: React.FC<ResourceStatsProps> = props => {
   const { citation, doi, nctid } = props;
-  if (!citation || !doi || !nctid) {
+  if (!citation && !doi && !nctid) {
     return <></>;
   }
   return (
