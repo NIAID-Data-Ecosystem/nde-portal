@@ -82,6 +82,7 @@ export const DropdownInput: React.FC<DropdownInputProps> = ({
         {/* Loading spinner/Search icon */}
         <InputLeftElement
           pointerEvents='none'
+          h='100%'
           // eslint-disable-next-line react/no-children-prop
           children={
             isLoading ? (
@@ -127,6 +128,7 @@ export const DropdownInput: React.FC<DropdownInputProps> = ({
             ref={inputRightRef}
             p={1}
             w='unset'
+            h='100%'
             zIndex={theme.zIndices['dropdown']}
           >
             {onClose && (
