@@ -1,5 +1,13 @@
 # *
 User-agent: *
+Disallow: /
+
+# googlebot
+User-agent: googlebot
+Allow: /
+
+# bingbot
+User-agent: bingbot
 Allow: /
 
 # Host
