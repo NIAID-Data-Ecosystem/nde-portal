@@ -77,7 +77,7 @@ export const defaultQuery = {
 };
 
 const SearchResultsPage = () => {
-  const [useMetadataScore, setUseMetadataScore] = useState(true);
+  // const [useMetadataScore, setUseMetadataScore] = useState(true);
 
   const [total, setTotal] = useState(0);
 
@@ -115,7 +115,7 @@ const SearchResultsPage = () => {
     size: `${selectedPerPage}`,
     from: `${(selectedPage - 1) * selectedPerPage}`,
     sort: sortOrder,
-    use_metadata_score: useMetadataScore ? 'true' : 'false',
+    // use_metadata_score: useMetadataScore ? 'true' : 'false',
   };
 
   const { isLoading, error, data } = useQuery<
@@ -143,7 +143,7 @@ const SearchResultsPage = () => {
         size: params.size,
         from: params.from,
         sort: params.sort,
-        use_metadata_score: params.use_metadata_score,
+        // use_metadata_score: params.use_metadata_score,
       });
     },
 
