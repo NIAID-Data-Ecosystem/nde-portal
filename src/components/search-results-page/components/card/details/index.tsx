@@ -177,10 +177,10 @@ const CardDetails: React.FC<CardDetailsProps> = ({ data }) => {
                         <>
                           {usageInfo?.url ? (
                             <Link href={usageInfo.url} isExternal>
-                              {usageInfo.name}
+                              {usageInfo.name || 'Data Usage Agreement'}
                             </Link>
                           ) : (
-                            usageInfo?.name
+                            usageInfo?.name || ''
                           )}
                           {usageInfo?.description &&
                             ` ${usageInfo.description}`}
