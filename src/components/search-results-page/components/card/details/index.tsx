@@ -4,23 +4,28 @@ import {
   AccordionItem,
   AccordionPanel,
   AccordionButton,
+  Box,
   Flex,
   Heading,
   Icon,
   Image,
   Link,
   ListItem,
+  Tag,
+  TagLabel,
   Text,
   UnorderedList,
   SimpleGrid,
-  Box,
 } from 'nde-design-system';
 import { FaMinus, FaPlus } from 'react-icons/fa';
 import { FormattedResource } from 'src/utils/api/types';
 import { formatLicense } from 'src/utils/helpers';
 import { MetadataProperty } from './components/Property';
 import { MetadataToolTip, MetadataIcon } from 'src/components/icon';
-import { getMetadataColor } from 'src/components/icon/helpers';
+import {
+  getMetadataColor,
+  getMetadataTheme,
+} from 'src/components/icon/helpers';
 
 interface CardDetailsProps {
   data?: FormattedResource | null;
@@ -49,62 +54,236 @@ const CardDetails: React.FC<CardDetailsProps> = ({ data }) => {
       return f.identifier || Array.isArray(f.funder) || f?.funder?.name;
     }) || null;
 
-  const Badge = ({
-    glyph,
-    value,
-    property,
-  }: {
-    glyph: string;
-    property: string;
-    fill?: string;
-    value: any;
-  }) => (
-    <MetadataToolTip propertyName={glyph} recordType={data?.['@type']}>
-      <MetadataIcon
-        id={`indicator-${glyph}-${id}`}
-        glyph={glyph}
-        fill={value ? getMetadataColor(glyph) : 'gray.400'}
-        title={property}
-        mx={1}
-      />
-    </MetadataToolTip>
-  );
-  const MetadataIndicator = () => {
-    return (
-      <>
-        <Badge property='license' glyph='license' value={licenseInfo} />
-        <Badge
-          property='usage info'
-          glyph='usageInfo'
-          value={usageInfo?.name}
-        />
-        <Badge property='funding' glyph='funding' value={fundingInfo} />
-        <Badge
-          property='measurement technique'
-          glyph='measurementTechnique'
-          value={measurementTechnique}
-        />
-        <Badge
-          property='variable measured'
-          glyph='variableMeasured'
-          value={variableMeasured}
-        />
-        <Badge
-          property='infectious agent'
-          glyph='infectiousAgent'
-          value={infectiousAgent}
-        />
-        <Badge
-          property='health condition'
-          glyph='healthCondition'
-          value={healthCondition}
-        />
-        <Badge property='species' glyph='species' value={species} />
-        {/* <Badge glyph='applicationCategory' value={applicationCategory} />{' '}
-        <Badge glyph='programmingLanguage' value={programmingLanguage} /> */}
-      </>
-    );
-  };
+  const tags = [
+    {
+      label: 'Species',
+      glyph: 'species',
+      isDisabled: !species,
+      content: (
+        <>
+          {species && (
+            <Text color='inherit'>
+              {species.map((m, i) => {
+                const name = Array.isArray(m.name) ? m.name.join(', ') : m.name;
+
+                return (
+                  <React.Fragment key={`${name}-${i}`}>
+                    {m.url ? (
+                      <Link href={m.url} isExternal>
+                        {name}
+                      </Link>
+                    ) : (
+                      name
+                    )}
+                  </React.Fragment>
+                );
+              })}
+            </Text>
+          )}
+        </>
+      ),
+    },
+    {
+      label: 'License',
+      glyph: 'license',
+      isDisabled: !license,
+      content: () => {
+        const data = license ? formatLicense(license) : null;
+        return (
+          <>
+            {license && (
+              <>
+                {data?.img && (
+                  <Image
+                    width='auto'
+                    height='2rem'
+                    src={`${data.img}`}
+                    alt={data.type}
+                    mb={1}
+                  />
+                )}
+                {data?.url ? (
+                  <Link href={data.url} isExternal>
+                    {data.title}
+                  </Link>
+                ) : (
+                  data?.title
+                )}
+              </>
+            )}
+          </>
+        );
+      },
+    },
+    {
+      label: 'Usage Info',
+      glyph: 'usageInfo',
+      isDisabled: !usageInfo,
+      content: () => {
+        return (
+          <>
+            {usageInfo && (
+              <>
+                {usageInfo?.url ? (
+                  <Link href={usageInfo.url} isExternal>
+                    {usageInfo.name}
+                  </Link>
+                ) : (
+                  usageInfo?.name
+                )}
+                {usageInfo?.description && ` ${usageInfo.description}`}
+              </>
+            )}
+          </>
+        );
+      },
+    },
+    {
+      label: 'Funding',
+      glyph: 'funding',
+      isDisabled: !fundingInfo || fundingInfo.length === 0,
+      content: () => {
+        if (!fundingInfo || fundingInfo.length > 0) {
+          return <></>;
+        }
+        return (
+          <UnorderedList ml={4}>
+            {fundingInfo.map((f, i) => {
+              const { funder } = f;
+              let name = funder?.name;
+              let identifier = f.identifier;
+              if (Array.isArray(funder)) {
+                name = funder.map(f => f.name).join(', ');
+              }
+
+              return (
+                <ListItem
+                  key={`${f.identifier || funder?.name}-${i}`}
+                  listStyleType='inherit'
+                  py={1}
+                >
+                  <Text color='inherit' fontSize='xs'>
+                    <strong>{name}</strong>
+                    {name && identifier && ' | '}
+                    {identifier}
+                  </Text>
+                </ListItem>
+              );
+            })}
+          </UnorderedList>
+        );
+      },
+    },
+    {
+      label: 'Variable Measured',
+      glyph: 'variableMeasured',
+      isDisabled: !variableMeasured,
+      content: () => {
+        if (!variableMeasured) {
+          return <></>;
+        }
+        return <Text color='inherit'>{variableMeasured.join(', ')}</Text>;
+      },
+    },
+    {
+      label: 'Health Condition',
+      glyph: 'healthCondition',
+      isDisabled: !healthCondition,
+      content: () => {
+        if (!healthCondition) {
+          return <></>;
+        }
+        return (
+          <UnorderedList ml={0}>
+            {healthCondition?.map((m, i) => {
+              const name = Array.isArray(m.name) ? m.name.join(', ') : m.name;
+
+              return (
+                <ListItem key={`${name}-${i}`}>
+                  {m.url ? (
+                    <Link href={m.url} isExternal>
+                      {name}
+                    </Link>
+                  ) : (
+                    name
+                  )}
+                </ListItem>
+              );
+            })}
+          </UnorderedList>
+        );
+      },
+    },
+
+    {
+      label: 'Pathogen',
+      glyph: 'infectiousAgent',
+      isDisabled: !infectiousAgent,
+      content: () => {
+        if (!infectiousAgent) {
+          return <></>;
+        }
+        return (
+          <UnorderedList ml={0}>
+            {infectiousAgent.map((m, i) => {
+              const name = Array.isArray(m.name) ? m.name.join(', ') : m.name;
+
+              return (
+                <ListItem key={`${name}-${i}`}>
+                  {m.url ? (
+                    <Link href={m.url} isExternal>
+                      {name}
+                    </Link>
+                  ) : (
+                    name
+                  )}
+                </ListItem>
+              );
+            })}
+          </UnorderedList>
+        );
+      },
+    },
+    {
+      label: 'Measurement Technique',
+      glyph: 'measurementTechnique',
+      isDisabled: !measurementTechnique,
+      content: () => {
+        if (!measurementTechnique) {
+          return <></>;
+        }
+        return (
+          <UnorderedList ml={0}>
+            {measurementTechnique.map((m, i) => {
+              const name = Array.isArray(m.name) ? m.name.join(', ') : m.name;
+
+              const MeasurementTechniqueLabel = () => (
+                <Text color='inherit'>{name}</Text>
+              );
+
+              return (
+                <ListItem key={`${name}-${i}`}>
+                  {m.url ? (
+                    <Link href={m.url} isExternal>
+                      <MeasurementTechniqueLabel />
+                    </Link>
+                  ) : (
+                    <MeasurementTechniqueLabel />
+                  )}
+                </ListItem>
+              );
+            })}
+          </UnorderedList>
+        );
+      },
+    },
+  ].sort((a, b) => {
+    // sort with non disabled first then sort by label
+    if (a.isDisabled === b.isDisabled) {
+      return a.label.localeCompare(b.label);
+    }
+    return a.isDisabled ? 1 : -1;
+  });
 
   return (
     <>
@@ -126,12 +305,65 @@ const CardDetails: React.FC<CardDetailsProps> = ({ data }) => {
                     flexWrap='wrap'
                     alignItems='center'
                   >
-                    <Heading fontSize='h6' fontWeight='semibold' mx={1}>
-                      Details
-                    </Heading>
-                    <MetadataIndicator />
+                    {tags.map(({ label, glyph, isDisabled }) => {
+                      return (
+                        <Tag
+                          key={label}
+                          size='sm'
+                          variant='subtle'
+                          borderRadius='full'
+                          colorScheme={
+                            isDisabled ? 'gray' : getMetadataTheme(glyph)
+                          }
+                          color={`${
+                            isDisabled ? 'gray' : getMetadataTheme(glyph)
+                          }.800`}
+                          m={0.5}
+                          opacity={isDisabled ? 0.65 : 1}
+                        >
+                          <MetadataToolTip
+                            key={label}
+                            propertyName={glyph}
+                            description={
+                              isDisabled
+                                ? `No ${label.toLocaleLowerCase()} data.`
+                                : undefined
+                            }
+                            recordType={data?.['@type']}
+                          >
+                            <Flex alignItems='center'>
+                              <Flex>
+                                <MetadataIcon
+                                  id={`indicator-${glyph}-${id}`}
+                                  title={glyph}
+                                  glyph={glyph}
+                                  fill={`${
+                                    isDisabled
+                                      ? 'gray'
+                                      : getMetadataTheme(glyph)
+                                  }.800`}
+                                  m={0.5}
+                                  boxSize={3}
+                                  isDisabled={isDisabled}
+                                />
+                              </Flex>
+                              <TagLabel lineHeight='none'>
+                                <Text fontSize='xs' m={0.5} color='inherit'>
+                                  {label}
+                                </Text>
+                              </TagLabel>
+                            </Flex>
+                          </MetadataToolTip>
+                        </Tag>
+                      );
+                    })}
                   </Flex>
-                  <Icon as={isExpanded ? FaMinus : FaPlus} fontSize='xs' />
+                  <Flex alignItems='center'>
+                    <Text fontSize='xs' mx={1} mr={2}>
+                      Show metadata
+                    </Text>
+                    <Icon as={isExpanded ? FaMinus : FaPlus} fontSize='xs' />
+                  </Flex>
                 </AccordionButton>
               </h2>
               <AccordionPanel w='100%' px={paddingCard} my={2}>
@@ -177,10 +409,10 @@ const CardDetails: React.FC<CardDetailsProps> = ({ data }) => {
                         <>
                           {usageInfo?.url ? (
                             <Link href={usageInfo.url} isExternal>
-                              {usageInfo.name}
+                              {usageInfo.name || 'Data Usage Agreement'}
                             </Link>
                           ) : (
-                            usageInfo?.name
+                            usageInfo?.name || ''
                           )}
                           {usageInfo?.description &&
                             ` ${usageInfo.description}`}
@@ -268,10 +500,10 @@ const CardDetails: React.FC<CardDetailsProps> = ({ data }) => {
                         </Text>
                       )}
                     </MetadataProperty>
-                    {/* Infectious Agent*/}
+                    {/* Pathogen*/}
                     <MetadataProperty
                       id={`ia-${id}`}
-                      label='Infectious Agent'
+                      label='Pathogen'
                       glyph='infectiousAgent'
                       type={data?.['@type']}
                     >

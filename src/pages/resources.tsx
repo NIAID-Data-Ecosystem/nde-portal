@@ -199,6 +199,16 @@ const ResourcePage: NextPage = props => {
                     my={[2, 2, 0]}
                     sx={{ '>*': { p: 0 } }}
                   >
+                    {data && (data.citation || data.doi || data.nctid) ? (
+                      <ResourceStats
+                        includedInDataCatalog={data?.includedInDataCatalog}
+                        citation={data?.citation}
+                        doi={data?.doi}
+                        nctid={data?.nctid}
+                        aggregateRating={data?.aggregateRating}
+                        interactionStatistics={data?.interactionStatistics}
+                      />
+                    ) : null}
                     {/* Show external links such as source url, in header when on mobile */}
                     <ResourceLinks
                       isLoading={isLoading}
@@ -208,18 +218,7 @@ const ResourcePage: NextPage = props => {
                       hasPart={data?.hasPart}
                       url={data?.url}
                       usageInfo={data?.usageInfo}
-                    >
-                      {data && (data.citation || data.doi || data.nctid) ? (
-                        <ResourceStats
-                          includedInDataCatalog={data?.includedInDataCatalog}
-                          citation={data?.citation}
-                          doi={data?.doi}
-                          nctid={data?.nctid}
-                          aggregateRating={data?.aggregateRating}
-                          interactionStatistics={data?.interactionStatistics}
-                        />
-                      ) : null}
-                    </ResourceLinks>
+                    />
                   </Card>
 
                   {/* Local navigation for page */}

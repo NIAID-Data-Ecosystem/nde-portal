@@ -23,25 +23,31 @@ export interface IconProps extends ChakraIconProps {
   glyph?: string;
   label?: string; // label for icon for accessibility
   title?: string; // title for svg (accessibility)
+  isDisabled?: boolean; // if true, icon is displayed as disable (with bar through it)
 }
 
 // Icon displaying symbol
 export const MetadataIcon = React.forwardRef<HTMLDivElement, IconProps>(
   (
-    { id, glyph, title, color, fill, boxSize, viewBox, ...props }: IconProps,
+    {
+      id,
+      glyph,
+      title,
+      color,
+      fill,
+      isDisabled,
+      boxSize,
+      viewBox,
+      ...props
+    }: IconProps,
     ref,
   ) => {
     if (!glyph) {
       return <></>;
     }
     let FaIcon = null as IconType | null;
-    if (glyph?.toLowerCase() === 'funding') {
-      FaIcon = FaSearchDollar;
-    } else if (glyph?.toLowerCase() === 'variablemeasured') {
-      FaIcon = FaFlask;
-    } else if (glyph?.toLowerCase() === 'usageinfo') {
-      FaIcon = FaFileSignature;
-    } else if (glyph?.toLowerCase() === 'citation') {
+
+    if (glyph?.toLowerCase() === 'citation') {
       FaIcon = FaQuoteLeft;
     } else if (glyph?.toLowerCase() === 'identifier') {
       FaIcon = FaFingerprint;
@@ -93,7 +99,12 @@ export const MetadataIcon = React.forwardRef<HTMLDivElement, IconProps>(
             aria-label={title}
             {...props}
           >
-            <Glyph id={id} glyph={glyph} title={title} />
+            <Glyph
+              id={id}
+              glyph={glyph}
+              title={title}
+              isDisabled={isDisabled}
+            />
           </Icon>
         )}
       </Flex>

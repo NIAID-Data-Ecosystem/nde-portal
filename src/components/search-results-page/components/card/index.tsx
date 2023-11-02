@@ -194,32 +194,34 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
         startColor='page.alt'
         endColor='niaid.placeholder'
       >
-        <Flex
-          flexDirection={['column-reverse', 'row']}
-          flexWrap={['wrap-reverse', 'wrap']}
-          w='100%'
-          borderY='1px solid'
-          borderColor='gray.100'
-        >
-          <ToggleContainer
-            ariaLabel='Show all authors.'
-            noOfLines={1}
-            justifyContent='flex-start'
-            m={0}
-            px={paddingCard}
-            py={2}
-            flex={1}
+        {(isAccessibleForFree || conditionsOfAccess || author) && (
+          <Flex
+            flexDirection={['column-reverse', 'row']}
+            flexWrap={['wrap-reverse', 'wrap']}
             w='100%'
-            _focus={{ outlineColor: 'transparent' }}
+            borderY='1px solid'
+            borderColor='gray.100'
           >
-            {author && (
-              <Text fontSize='xs' color='text.body'>
-                {formatAuthorsList2String(author, ',', 10)}.
-              </Text>
-            )}
-          </ToggleContainer>
-          <ConditionsOfAccess />
-        </Flex>
+            <ToggleContainer
+              ariaLabel='Show all authors.'
+              noOfLines={1}
+              justifyContent='flex-start'
+              m={0}
+              px={paddingCard}
+              py={2}
+              flex={1}
+              w='100%'
+              _focus={{ outlineColor: 'transparent' }}
+            >
+              {author && (
+                <Text fontSize='xs' color='text.body'>
+                  {formatAuthorsList2String(author, ',', 10)}.
+                </Text>
+              )}
+            </ToggleContainer>
+            <ConditionsOfAccess />
+          </Flex>
+        )}
 
         <CardBody p={0}>
           {date && (
@@ -249,21 +251,22 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
             </Flex>
           )}
           {/* Description Text */}
-          <ToggleContainer
-            ariaLabel='show more description'
-            noOfLines={[3, 10]}
-            px={paddingCard}
-            py={[2, 4, 6]}
-            my={0}
-            borderColor='transparent'
-            justifyContent='space-between'
-            _hover={{ bg: 'page.alt' }}
-            _focus={{ outlineColor: 'transparent', bg: 'white' }}
-            alignIcon='center'
-          >
-            <DisplayHTMLContent content={description || ''} />
-          </ToggleContainer>
-
+          {description && (
+            <ToggleContainer
+              ariaLabel='show more description'
+              noOfLines={[3, 10]}
+              px={paddingCard}
+              py={[2, 4, 6]}
+              my={0}
+              borderColor='transparent'
+              justifyContent='space-between'
+              _hover={{ bg: 'page.alt' }}
+              _focus={{ outlineColor: 'transparent', bg: 'white' }}
+              alignIcon='center'
+            >
+              <DisplayHTMLContent content={description || ''} />
+            </ToggleContainer>
+          )}
           <CardDetails data={data} />
           {/* Source Repository Link + Altmetric badge */}
           {(doi || includedInDataCatalog?.name) && (
