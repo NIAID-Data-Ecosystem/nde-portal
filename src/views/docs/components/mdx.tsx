@@ -93,7 +93,7 @@ export default {
           {...props}
           w='100%'
           margin='0 auto'
-          src={`${process.env.NEXT_PUBLIC_STRAPI_ASSETS_URL}${props.src}`}
+          src={`${process.env.NEXT_PUBLIC_STRAPI_API_URL}${props.src}`}
         />
       </Box>
     );
