@@ -8,6 +8,7 @@ interface GlyphProps {
   stroke?: string;
   fill?: string;
   title?: string;
+  isDisabled?: boolean;
 }
 
 const Glyph: React.FC<GlyphProps> = ({
