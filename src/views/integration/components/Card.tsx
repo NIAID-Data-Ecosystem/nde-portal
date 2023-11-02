@@ -57,7 +57,7 @@ export const StepCard = ({
               <Image
                 w='30px'
                 h='30px'
-                src={`${process.env.NEXT_PUBLIC_STRAPI_ASSETS_URL}${icon.data.attributes.url}`}
+                src={`${process.env.NEXT_PUBLIC_STRAPI_API_URLL}${icon.data.attributes.url}`}
                 alt={icon.data.attributes.alternativeText}
               />
             </Box>
@@ -120,7 +120,7 @@ export const StepCard = ({
                       m={2}
                       w='25px'
                       h='25px'
-                      src={`${process.env.NEXT_PUBLIC_STRAPI_ASSETS_URL}${icon.data.attributes.url}`}
+                      src={`${process.env.NEXT_PUBLIC_STRAPI_API_URL}${icon.data.attributes.url}`}
                       alt={icon.data.attributes.alternativeText}
                     />
                   )}
