@@ -367,6 +367,7 @@ export interface MetadataSource {
   };
   sourceInfo: {
     name: string;
+    abstract?: string;
     description: string;
     schema: Object | null;
     url: string;

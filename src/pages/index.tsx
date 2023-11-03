@@ -148,6 +148,9 @@ export const RepositoryTable: React.FC<{
                             px: `${theme.space[4]} !important`,
                             py: `${theme.space[2]} !important`,
                           }}
+                          verticalAlign={
+                            column.property === 'label' ? 'top' : 'middle'
+                          }
                         >
                           <Flex
                             alignItems={['flex-start', 'center']}
