@@ -52,7 +52,7 @@ interface Repository {
   label: string;
   type: 'generalist' | 'iid';
   url?: string;
-  abstract?: string;
+  description?: string;
   icon?: string;
 }
 
@@ -65,7 +65,7 @@ export const RepositoryTable: React.FC<{
 
   const TABLE_COLUMNS = [
     { title: 'name', property: 'label', isSortable: true },
-    { title: 'description', property: 'abstract' },
+    { title: 'description', property: 'description' },
   ];
 
   const rowsByType = useMemo(
@@ -148,6 +148,9 @@ export const RepositoryTable: React.FC<{
                             px: `${theme.space[4]} !important`,
                             py: `${theme.space[2]} !important`,
                           }}
+                          verticalAlign={
+                            column.property === 'label' ? 'top' : 'middle'
+                          }
                         >
                           <Flex
                             alignItems={['flex-start', 'center']}
