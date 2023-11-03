@@ -52,7 +52,7 @@ interface Repository {
   label: string;
   type: 'generalist' | 'iid';
   url?: string;
-  description?: string;
+  abstract?: string;
   icon?: string;
 }
 
@@ -65,7 +65,7 @@ export const RepositoryTable: React.FC<{
 
   const TABLE_COLUMNS = [
     { title: 'name', property: 'label', isSortable: true },
-    { title: 'description', property: 'description' },
+    { title: 'description', property: 'abstract' },
   ];
 
   const rowsByType = useMemo(
