@@ -32,7 +32,7 @@ import {
 } from 'src/utils/helpers';
 import { TypeBanner } from 'src/components/resource-sections/components';
 import NextLink from 'next/link';
-import CardDetails from './details';
+import MetadataAccordion from './metadata-accordion';
 import { DisplayHTMLContent } from 'src/components/html-content';
 import {
   badgesConfig,
@@ -267,7 +267,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
               <DisplayHTMLContent content={description || ''} />
             </ToggleContainer>
           )}
-          <CardDetails data={data} />
+          <MetadataAccordion data={data} />
           {/* Source Repository Link + Altmetric badge */}
           {(doi || includedInDataCatalog?.name) && (
             <Flex

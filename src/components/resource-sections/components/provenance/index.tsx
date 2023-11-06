@@ -98,11 +98,12 @@ const Provenance: React.FC<Provenance> = ({
             );
           })}
 
-        {includedInDataCatalog?.versionDate && (
-          <StatField label='Version Date' isLoading={isLoading}>
-            {formatDate(includedInDataCatalog.versionDate)}
-          </StatField>
-        )}
+        {includedInDataCatalog?.versionDate &&
+          typeof includedInDataCatalog?.versionDate === 'string' && (
+            <StatField label='Version Date' isLoading={isLoading}>
+              {formatDate(includedInDataCatalog.versionDate)}
+            </StatField>
+          )}
       </Stack>
 
       {curatedBy && (
