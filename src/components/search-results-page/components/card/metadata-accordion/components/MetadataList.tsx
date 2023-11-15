@@ -52,8 +52,8 @@ export const MetadataList = ({
         <NextLink href={showMoreURL}>
           <Link as='div' lineHeight='short' display='flex' ml={4}>
             <Text fontSize='xs' lineHeight='short'>
-              Show {React.Children.count(children) - maxItemsCount} other{' '}
-              {property}
+              Show {React.Children.count(children) - maxItemsCount} other item
+              {React.Children.count(children) - maxItemsCount > 1 ? 's' : ''}
             </Text>
           </Link>
         </NextLink>
