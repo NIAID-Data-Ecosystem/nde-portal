@@ -31,6 +31,7 @@ import { CopyMetadata } from '../copy-metadata';
 import { DownloadMetadata } from '../download-metadata';
 import SoftwareInformation from './components/software-information';
 import ResourceStats from './components/stats';
+import { Funding } from './components/funding';
 
 // Metadata displayed in each section
 export const sectionMetadata: { [key: string]: (keyof FormattedResource)[] } = {
@@ -240,10 +241,12 @@ const Sections = ({
             )}
 
             {/* Show funding */}
-            {section.hash === 'funding' && (
+            {/* {section.hash === 'funding' && (
               <FundingTable isLoading={isLoading} {...data} />
+            )} */}
+            {section.hash === 'funding' && (
+              <Funding isLoading={isLoading} data={data?.funding || []} />
             )}
-
             {/* Show citedBy */}
             {section.hash === 'citedBy' && (
               <CitedByTable isLoading={isLoading} {...data} />

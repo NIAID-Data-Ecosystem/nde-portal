@@ -72,7 +72,15 @@ const MetadataAccordion: React.FC<MetadataAccordionProps> = ({ data }) => {
           {fundingDetails?.map((funding, idx) => {
             return (
               <Box key={property + idx} display='inline-block'>
-                {funding?.funder?.name && <Text>{funding.funder.name}</Text>}
+                {funding?.funder &&
+                  (Array.isArray(funding.funder) ? (
+                    funding.funder.map(funder => {
+                      if (!funder.name) return null;
+                      return <Text key={funder.name}>{funder.name}</Text>;
+                    })
+                  ) : (
+                    <Text>{funding.funder.name}</Text>
+                  ))}
 
                 {funding?.identifier && (
                   <Flex alignItems='center'>
