@@ -120,14 +120,15 @@ export const Funding: React.FC<FundingProps> = ({
             aria-describedby='table-caption'
             aria-rowcount={rows.length}
             sx={{
-              tr: {
-                th: {
-                  borderBottom: '1px solid',
-                  borderBottomColor: `${getMetadataTheme('funding')}.200`,
-                  borderColor: `${getMetadataTheme('funding')}.200`,
-                },
-                td: {
-                  py: undefined,
+              thead: {
+                tr: {
+                  th: {
+                    borderBottom: '1px solid',
+                    borderBottomColor: `${getMetadataTheme('funding')}.200`,
+                  },
+                  td: {
+                    py: undefined,
+                  },
                 },
               },
             }}
