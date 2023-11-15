@@ -11,6 +11,8 @@ import {
   Tag,
   Text,
   UnorderedList,
+  Wrap,
+  WrapItem,
 } from 'nde-design-system';
 import {
   ResourceDates,
@@ -25,6 +27,7 @@ import FilesTable from './components/files-table';
 import FundingTable from './components/funding-table';
 import CitedByTable from './components/cited-by-table';
 import { DisplayHTMLContent } from '../html-content';
+import { CopyMetadata } from '../copy-metadata';
 import { DownloadMetadata } from '../download-metadata';
 import SoftwareInformation from './components/software-information';
 import ResourceStats from './components/stats';
@@ -249,15 +252,23 @@ const Sections = ({
             {/* Show raw metadata */}
             {section.hash === 'metadata' && data?.rawData && (
               <>
-                <Flex w='100%' justifyContent='flex-end' pb={4}>
-                  <DownloadMetadata
-                    buttonProps={{ colorScheme: 'secondary' }}
-                    exportName={data.rawData['_id']}
-                    params={{ q: `_id:"${data.rawData['_id']}"` }}
-                  >
-                    Download Metadata
-                  </DownloadMetadata>
-                </Flex>
+                <Wrap spacing='10px' justify='right' pb={4}>
+                  <WrapItem>
+                    <CopyMetadata
+                      buttonProps={{ colorScheme: 'secondary' }}
+                      metadataObject={JSON.stringify(data.rawData, null, 2)}
+                    />
+                  </WrapItem>
+                  <WrapItem>
+                    <DownloadMetadata
+                      buttonProps={{ colorScheme: 'secondary' }}
+                      exportName={data.rawData['_id']}
+                      params={{ q: `_id:"${data.rawData['_id']}"` }}
+                    >
+                      Download Metadata
+                    </DownloadMetadata>
+                  </WrapItem>
+                </Wrap>
                 <Box
                   maxHeight={500}
                   overflow='auto'
