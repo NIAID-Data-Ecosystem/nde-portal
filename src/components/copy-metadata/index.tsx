@@ -1,8 +1,6 @@
 import {
-  Box,
   Button,
   ButtonProps,
-  Flex,
   FlexProps,
   useClipboard,
 } from 'nde-design-system';
@@ -21,26 +19,20 @@ interface CopyMetadataProps extends FlexProps {
 export const CopyMetadata: React.FC<CopyMetadataProps> = ({
   metadataObject,
   buttonProps,
-  ...props
 }) => {
   const { onCopy, hasCopied } = useClipboard(metadataObject);
 
   return (
-    <Flex alignItems='flex-end' flexDirection='column' {...props}>
-      <Box position='relative' w='100%'>
-        {/* Simple button with */}
-        <Button
-          leftIcon={<FaCopy />}
-          colorScheme='primary'
-          onClick={onCopy}
-          variant='solid'
-          w='100%'
-          px={{ base: 4, md: 6 }}
-          {...buttonProps}
-        >
-          {hasCopied ? 'Metadata copied!' : 'Copy Metadata'}
-        </Button>
-      </Box>
-    </Flex>
+    <Button
+      variant='solid'
+      leftIcon={<FaCopy />}
+      colorScheme='primary'
+      onClick={onCopy}
+      w='100%'
+      px={{ base: 4, md: 6 }}
+      {...buttonProps}
+    >
+      {hasCopied ? 'Metadata copied!' : 'Copy Metadata'}
+    </Button>
   );
 };
