@@ -1,19 +1,22 @@
 import React from 'react';
 import {
   Box,
-  Heading,
+  Button,
+  Divider,
+  Flex,
+  FlexProps,
   Image,
   Link,
   Skeleton,
-  Stack,
-  StackDivider,
+  Tag,
   Text,
+  usePrefersReducedMotion,
 } from 'nde-design-system';
 import { FormattedResource } from 'src/utils/api/types';
 import { getRepositoryImage } from 'src/utils/helpers';
 import { formatDate } from 'src/utils/api/helpers';
-import StatField from '../overview/components/stat-field';
-import { ExternalSourceButton } from 'src/components/external-buttons/';
+import { FaArrowRight } from 'react-icons/fa6';
+import NextLink from 'next/link';
 
 interface Provenance {
   isLoading: boolean;
@@ -30,140 +33,249 @@ const Provenance: React.FC<Provenance> = ({
   sdPublisher,
   curatedBy,
 }) => {
-  return (
-    <Skeleton isLoaded={!isLoading} display='flex' flexWrap='wrap'>
-      <Stack spacing={2} alignItems='flex-start' m={4} w='100%'>
-        <Heading as='h3' size='xs' color='gray.700' lineHeight='short'>
-          Repository Information
-        </Heading>
+  const provenanceCatalogs =
+    !isLoading && includedInDataCatalog
+      ? Array.isArray(includedInDataCatalog)
+        ? includedInDataCatalog
+        : [includedInDataCatalog]
+      : [];
 
-        {includedInDataCatalog?.name ? (
-          <StatField label='' isLoading={isLoading}>
-            {/* Source where data is retrieved from */}
-            {includedInDataCatalog.url ? (
-              <ExternalSourceButton
-                w='100%'
-                alt='Data source name'
-                src={
-                  getRepositoryImage(includedInDataCatalog.name) || undefined
-                }
-                colorScheme='secondary'
-                href={url || undefined}
-                sourceHref={includedInDataCatalog?.url}
-                name='Access Data'
-              />
-            ) : (
-              <ExternalSourceButton
-                w='100%'
-                alt='Data source name'
-                src={
-                  getRepositoryImage(includedInDataCatalog.name) || undefined
-                }
-                colorScheme='secondary'
-                sourceHref={includedInDataCatalog?.url}
-                name='Access Data'
-              />
-            )}
-          </StatField>
-        ) : (
-          <Text>No data available.</Text>
+  const prefersReducedMotion = usePrefersReducedMotion();
+
+  interface BlockProps extends FlexProps {
+    children: React.ReactNode;
+    label?: string;
+    url?: string | null;
+  }
+
+  const Block = ({ children, label, url, ...props }: BlockProps) => {
+    return (
+      <Flex
+        border='1px solid'
+        borderColor='gray.200'
+        borderRadius='semi'
+        flexDirection='column'
+        minW='300px'
+        maxW='500px'
+        p={4}
+        mx={3}
+        {...props}
+      >
+        {label && (
+          <>
+            <Text fontSize='xs' fontWeight='semibold' lineHeight='tall'>
+              {label}
+            </Text>
+            <Divider />
+          </>
         )}
-
-        {includedInDataCatalog?.name && (
-          <StatField label='Name' isLoading={isLoading}>
-            {includedInDataCatalog.name}
-          </StatField>
-        )}
-
-        {/* Original publisher of data */}
-        {sdPublisher &&
-          sdPublisher.length > 0 &&
-          sdPublisher?.map((publisher, i) => {
-            if (
-              (!publisher.name && !publisher.url) ||
-              (publisher.name === 'N/A' && !publisher.url)
-            ) {
-              return <></>;
-            }
-            return (
-              <StatField key={i} label='Original Source' isLoading={isLoading}>
-                {publisher.url ? (
-                  <Link href={publisher.url} target='_blank' isExternal>
-                    {publisher.name || publisher.url}
-                  </Link>
-                ) : (
-                  <Text>{publisher.name || publisher.url}</Text>
-                )}
-              </StatField>
-            );
-          })}
-
-        {includedInDataCatalog?.versionDate && (
-          <StatField label='Version Date' isLoading={isLoading}>
-            {formatDate(includedInDataCatalog.versionDate)}
-          </StatField>
-        )}
-      </Stack>
-
-      {curatedBy && (
-        <Box m={4}>
-          <Heading as='h3' size='xs' color='gray.700' lineHeight='short'>
-            Curation Information
-          </Heading>
-          <Stack
-            direction={['column', 'row']}
-            divider={<StackDivider borderColor='gray.200' />}
+        <Box>{children}</Box>
+        {url ? (
+          <Flex
+            mt={2}
+            justifyContent='flex-end'
+            sx={{
+              svg: {
+                transform: 'translateX(-2px)',
+                transition: 'transform 0.2s ease-in-out',
+              },
+            }}
+            _hover={{
+              svg: prefersReducedMotion
+                ? {}
+                : {
+                    transform: 'translateX(4px)',
+                    transition: 'transform 0.2s ease-in-out',
+                  },
+            }}
           >
-            {(curatedBy?.name || curatedBy?.url) && (
-              <StatField label='Curated by' isLoading={isLoading}>
-                {curatedBy.url ? (
-                  <Link
-                    href={curatedBy.url}
-                    target='_blank'
-                    whiteSpace='nowrap'
-                  >
-                    {/* {curatedBy?.name || curatedBy.url} */}
+            <NextLink href={url} target='_blank'>
+              <Button
+                variant='outline'
+                size='sm'
+                rightIcon={<FaArrowRight />}
+                mt={2}
+              >
+                Access Data
+              </Button>
+            </NextLink>
+          </Flex>
+        ) : (
+          <></>
+        )}
+      </Flex>
+    );
+  };
+  const Field = ({
+    label,
+    children,
+  }: {
+    label: string;
+    children?: React.ReactNode;
+  }) => (
+    <>
+      <Text
+        as='dt'
+        fontSize='xs'
+        color='gray.600'
+        fontWeight='medium'
+        lineHeight='tall'
+        mt={2}
+      >
+        {label}
+      </Text>
 
-                    {curatedBy?.name && getRepositoryImage(curatedBy.name) ? (
-                      <Image
-                        w='auto'
-                        h='50px'
-                        objectFit='contain'
-                        my={[2, 4]}
-                        src={`${getRepositoryImage(curatedBy.name)}`}
-                        alt='Data source logo'
-                      />
-                    ) : (
-                      curatedBy?.name || curatedBy.url
-                    )}
-                  </Link>
+      <Text
+        as='dd'
+        fontSize='xs'
+        lineHeight='short'
+        whiteSpace='pre-wrap'
+        wordBreak='break-word'
+        fontWeight='normal'
+        mt={0.5}
+      >
+        {children ? (
+          children
+        ) : (
+          <Text as='span' fontStyle='italic' color='niaid.placeholder'>
+            No data
+          </Text>
+        )}
+      </Text>
+    </>
+  );
+
+  return (
+    <Skeleton isLoaded={!isLoading}>
+      <Flex
+        overflow='auto'
+        py={1}
+        sx={{
+          '&::-webkit-scrollbar': {
+            width: '7px',
+            height: '7px',
+          },
+          '&::-webkit-scrollbar-track': {
+            background: 'blackAlpha.100',
+            borderRadius: '10px',
+          },
+          '&::-webkit-scrollbar-thumb': {
+            background: 'gray.300',
+            borderRadius: '10px',
+          },
+          _hover: {
+            '&::-webkit-scrollbar-thumb': {
+              background: 'niaid.placeholder',
+            },
+          },
+        }}
+      >
+        {provenanceCatalogs.map(includedInDataCatalog => {
+          return (
+            <Block
+              key={includedInDataCatalog.name}
+              label='Provided By'
+              url={url}
+              mx={3}
+            >
+              <Flex minW='100px' mt={4}>
+                {includedInDataCatalog?.url ? (
+                  <a href={includedInDataCatalog?.url} target='_blank'>
+                    <Image
+                      width='auto'
+                      height='40px'
+                      maxH='40px'
+                      src={
+                        getRepositoryImage(includedInDataCatalog.name) ||
+                        undefined
+                      }
+                      alt={`Logo for ${includedInDataCatalog.name}`}
+                    />
+                  </a>
                 ) : (
-                  <>
-                    {curatedBy?.name && getRepositoryImage(curatedBy.name) ? (
-                      <Image
-                        w='auto'
-                        h='50px'
-                        objectFit='contain'
-                        my={[2, 4]}
-                        src={`${getRepositoryImage(curatedBy.name)}`}
-                        alt='Data source logo'
-                      />
-                    ) : (
-                      curatedBy?.name || curatedBy.url
-                    )}
-                  </>
+                  <Image
+                    width='auto'
+                    height='40px'
+                    maxH='40px'
+                    src={
+                      getRepositoryImage(includedInDataCatalog.name) ||
+                      undefined
+                    }
+                    alt={`Logo for ${includedInDataCatalog.name}`}
+                  />
                 )}
-              </StatField>
+              </Flex>
+
+              <Field label='Name'>{includedInDataCatalog.name}</Field>
+              <Field label='Version Date'>
+                {includedInDataCatalog.versionDate
+                  ? formatDate(includedInDataCatalog.versionDate)
+                  : undefined}
+              </Field>
+            </Block>
+          );
+        })}
+        {(curatedBy || sdPublisher) && (
+          <Block>
+            {curatedBy && curatedBy.name && (
+              <>
+                <Text fontSize='xs' fontWeight='semibold' lineHeight='tall'>
+                  Curated By
+                </Text>
+                <Divider />
+                <Field label='Name'>
+                  {curatedBy?.url ? (
+                    <Link isExternal>{curatedBy?.name}</Link>
+                  ) : (
+                    curatedBy?.name
+                  )}
+                </Field>
+                <Field label='Version Date'>
+                  {curatedBy.versionDate
+                    ? formatDate(curatedBy.versionDate)
+                    : undefined}
+                </Field>
+              </>
             )}
 
-            {curatedBy?.versionDate && (
-              <StatField label='Version date' isLoading={isLoading}>
-                {formatDate(curatedBy?.versionDate)}
-              </StatField>
+            {/* Original Publisher */}
+            {sdPublisher && (
+              <Box>
+                <Text fontSize='xs' fontWeight='semibold' lineHeight='tall'>
+                  Original Source
+                </Text>
+                <Divider />
+                {sdPublisher.map(publisher => {
+                  return (
+                    <Field
+                      key={publisher.identifier || publisher.name}
+                      label='Name/Identifier'
+                    >
+                      {(publisher.name || publisher.identifier) && (
+                        <>
+                          {publisher?.url ? (
+                            <Link href={publisher?.url} isExternal>
+                              {publisher?.name}
+                            </Link>
+                          ) : (
+                            publisher?.name
+                          )}
+                          <br />
+                          {publisher?.identifier && (
+                            <Tag size='sm' variant='subtle' my={0 / 5}>
+                              ID | {publisher.identifier}
+                            </Tag>
+                          )}
+                        </>
+                      )}
+                    </Field>
+                  );
+                })}
+              </Box>
             )}
-          </Stack>
-        </Box>
-      )}
+          </Block>
+        )}
+      </Flex>
     </Skeleton>
   );
 };

@@ -3,7 +3,7 @@ import { Flex, FlexProps, Icon, Link, Text } from 'nde-design-system';
 import { FaRegClock } from 'react-icons/fa';
 import TypeBanner from '../type-banner';
 import { FormattedResource } from 'src/utils/api/types';
-import { formatDOI } from 'src/utils/helpers';
+import { formatDOI, isSourceFundedByNiaid } from 'src/utils/helpers';
 
 /*
 [COMPONENT INFO]:
@@ -98,7 +98,7 @@ const ResourceDates: React.FC<ResourceDates> = ({ data }) => {
   return (
     <TypeBanner
       type={data?.type}
-      sourceName={data?.includedInDataCatalog?.name}
+      isNiaidFunded={isSourceFundedByNiaid(data.includedInDataCatalog)}
     >
       <Flex flexWrap='wrap' ml={[0, 0, 4]}>
         {date_data.map((date, i) => {

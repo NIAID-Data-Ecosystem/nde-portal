@@ -94,7 +94,7 @@ const RelatedDatasets: React.FC<RelatedDatasetsProps> = ({
                       ) : (
                         <>
                           {/* use identifier to find portal url. */}
-                          {data.identifier && includedInDataCatalog?.name ? (
+                          {data.identifier && includedInDataCatalog ? (
                             <NextLink
                               href={{
                                 pathname: '/resources/',

@@ -279,15 +279,7 @@ export const formatAPIResource = (data: any) => {
     funding: formatFunding(data.funding),
     hasPart: convertToArray(data.hasPart),
     healthCondition: convertToArray(data.healthCondition),
-    includedInDataCatalog: data.includedInDataCatalog
-      ? {
-          name: data.includedInDataCatalog.name || null,
-          url: data.includedInDataCatalog.url || null,
-          versionDate: data.includedInDataCatalog.versionDate || null,
-          image: data.image || null,
-          identifier: data.includedInDataCatalog.identifier || null,
-        }
-      : null,
+    includedInDataCatalog: data.includedInDataCatalog ?? null,
     infectiousAgent: convertToArray(data.infectiousAgent),
     input: convertToArray(data.input),
 

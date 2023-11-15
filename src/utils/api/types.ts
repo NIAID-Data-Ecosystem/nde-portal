@@ -152,11 +152,9 @@ export interface HasPart {
 
 export interface IncludedInDataCatalog {
   '@type'?: string | null;
-  name?: string | null;
+  name: string;
   url?: string | null; //source repo url
   versionDate?: string | null;
-  image?: string | null;
-  identifier?: string | null;
 }
 
 export interface InfectiousAgent extends PropertyWithPubtator {
@@ -317,7 +315,7 @@ export interface FormattedResource {
   funding: Funding[] | null;
   hasPart: HasPart[] | null;
   healthCondition: PropertyWithPubtator[] | null;
-  includedInDataCatalog: IncludedInDataCatalog | null;
+  includedInDataCatalog: IncludedInDataCatalog[] | IncludedInDataCatalog;
   infectiousAgent: InfectiousAgent[] | null;
   inLanguage: {
     alternateName: string | null;
