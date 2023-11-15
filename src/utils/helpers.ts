@@ -17,6 +17,31 @@ export const getRepositoryImage = (name: string) => {
   return imageURL;
 };
 
+export const isSourceFundedByNiaid = (
+  includedInDataCatalog?: FormattedResource['includedInDataCatalog'],
+) => {
+  if (!includedInDataCatalog) return false;
+  const repositories = REPOSITORIES.repositories as {
+    id: string;
+    label: string;
+    isNIAID?: boolean;
+  }[];
+
+  const sources = includedInDataCatalog
+    ? Array.isArray(includedInDataCatalog)
+      ? includedInDataCatalog
+      : [includedInDataCatalog]
+    : [];
+
+  const sources_names = sources.map(source => source.name);
+  const isNiaidFunded =
+    sources &&
+    repositories.filter(
+      ({ label, isNIAID }) => sources_names.includes(label) && isNIAID,
+    ).length > 0;
+
+  return isNiaidFunded;
+};
 // Format authors name string with a given separator
 export const formatAuthorsList2String = (
   authorsData: FormattedResource['author'],

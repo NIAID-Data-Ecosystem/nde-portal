@@ -59,7 +59,7 @@ const ResourceStats: React.FC<ResourceStatsProps> = props => {
           )}
           {/* {aggregateRating &&
               (aggregateRating.ratingValue || aggregateRating.ratingCount) &&
-              includedInDataCatalog?.name && (
+              includedInDataCatalog && (
                 <StatField
                   isLoading={false}
                   display='flex'
@@ -82,11 +82,11 @@ const ResourceStats: React.FC<ResourceStatsProps> = props => {
               )} */}
           {/* {interactionStatistics &&
               interactionStatistics.userInteractionCount &&
-              includedInDataCatalog?.name && (
+              includedInDataCatalog && (
                 <StatField
                   isLoading={false}
                   display='flex'
-                  label={`${includedInDataCatalog.name} User Interaction Metrics`}
+                  label={`${includedInDataCatalog} User Interaction Metrics`}
                   justifyContent='center'
                   mr={2}
                   flex={1}

@@ -29,6 +29,7 @@ import {
   formatAuthorsList2String,
   formatDOI,
   getRepositoryImage,
+  isSourceFundedByNiaid,
 } from 'src/utils/helpers';
 import { TypeBanner } from 'src/components/resource-sections/components';
 import NextLink from 'next/link';
@@ -67,9 +68,13 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
     citation,
   } = data || {};
 
-  const imageURL =
-    includedInDataCatalog?.name &&
-    getRepositoryImage(includedInDataCatalog.name);
+  const sources =
+    !isLoading && includedInDataCatalog
+      ? Array.isArray(includedInDataCatalog)
+        ? includedInDataCatalog
+        : [includedInDataCatalog]
+      : [];
+
   const paddingCard = [4, 6, 8, 10];
 
   const ConditionsOfAccess = (props: BoxProps) => {
@@ -123,7 +128,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
         pl={[2, 4, 6]}
         flexDirection={['column', 'row']}
         bg='niaid.color'
-        sourceName={includedInDataCatalog?.name}
+        isNiaidFunded={isSourceFundedByNiaid(includedInDataCatalog)}
       />
       {/* Card header where name of resource is a link to resource apge */}
 
@@ -266,121 +271,136 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
 
           <CardDetails data={data} />
           {/* Source Repository Link + Altmetric badge */}
-          {(doi || includedInDataCatalog?.name) && (
+          {(doi || sources.length > 0) && (
             <Flex
+              flexWrap='wrap'
+              alignItems='flex-end'
               px={paddingCard}
-              py={{ base: 2, md: 4 }}
+              py={2}
               my={0}
               flexDirection='row'
-              flexWrap={['wrap', 'nowrap', 'nowrap']}
-              alignItems='flex-end'
+              w='100%'
             >
               {/* Source repository */}
-              {(includedInDataCatalog?.name ||
+              {(sources.length > 0 ||
+                doi ||
                 (sdPublisher && sdPublisher.length > 0)) && (
-                <Flex
-                  minW={['250px']}
-                  maxW={['unset', '50%', 'unset']}
-                  alignItems='center'
-                  flexWrap='wrap'
-                  my={[4, 4, 0]}
-                >
-                  {imageURL ? (
-                    includedInDataCatalog.url ? (
-                      <NextLink
-                        target='_blank'
-                        href={includedInDataCatalog.url}
-                      >
-                        <Image
-                          mb={[2, 2, 0]}
-                          w='auto'
-                          h='40px'
-                          maxW='250px'
-                          mr={4}
-                          src={`${imageURL}`}
-                          alt='Data source name'
-                        />
-                      </NextLink>
-                    ) : (
-                      <Image
-                        w='auto'
-                        h='40px'
-                        maxW='250px'
-                        mr={4}
-                        mb={[2, 2, 0]}
-                        src={`${imageURL}`}
-                        alt='Data source name'
-                      />
-                    )
-                  ) : (
-                    <></>
-                  )}
-                  <Flex flexDirection='column'>
-                    {includedInDataCatalog?.name && (
-                      <>
-                        {url || includedInDataCatalog.url ? (
-                          <Link
-                            href={url! || includedInDataCatalog.url!}
-                            isExternal
-                          >
-                            <Text fontSize='xs'>
-                              Provided by {includedInDataCatalog.name}
-                            </Text>
-                          </Link>
-                        ) : (
-                          <Text fontSize='xs'>
-                            Provided by {includedInDataCatalog.name}
-                          </Text>
-                        )}
-                      </>
-                    )}
+                <>
+                  {sources.map(source => {
+                    const source_logo = getRepositoryImage(source.name);
 
-                    {/* original source */}
-                    {sdPublisher?.map((publisher, i) => {
-                      return publisher?.url ? (
-                        <Link key={i} href={publisher.url} isExternal>
-                          <Text fontSize='xs' as='i'>
-                            Original source {publisher.name}
-                          </Text>
-                        </Link>
-                      ) : publisher?.name ? (
-                        <Text key={i} fontSize='xs' as='i'>
-                          Original source {publisher.name}
+                    return (
+                      <Box key={source.name} pr={paddingCard} py={2}>
+                        {source_logo ? (
+                          source.url ? (
+                            <NextLink target='_blank' href={source.url}>
+                              <Image
+                                w='auto'
+                                h='40px'
+                                maxW='250px'
+                                mr={4}
+                                src={`${source_logo}`}
+                                alt='Data source name'
+                              />
+                            </NextLink>
+                          ) : (
+                            <Image
+                              w='auto'
+                              h='40px'
+                              maxW='250px'
+                              mr={4}
+                              src={`${source_logo}`}
+                              alt='Data source name'
+                            />
+                          )
+                        ) : (
+                          <></>
+                        )}
+                        <Flex>
+                          {url ? (
+                            <Link
+                              href={url! || source.url!}
+                              isExternal
+                              lineHeight='short'
+                            >
+                              <Text fontSize='xs' lineHeight='short'>
+                                Provided by {source.name}
+                              </Text>
+                            </Link>
+                          ) : (
+                            <Text fontSize='xs' lineHeight='short'>
+                              Provided by {source.name}
+                            </Text>
+                          )}
+                        </Flex>
+                      </Box>
+                    );
+                  })}
+
+                  {/* {sdPublisher && (
+                    <Box>
+                      <Text
+                        fontSize='xs'
+                        fontWeight='medium'
+                        lineHeight='short'
+                      >
+                        Original Source
+                        <br />
+                        <Text
+                          as='span'
+                          fontSize='xs'
+                          fontStyle='italic'
+                          lineHeight='short'
+                        >
+                          {sdPublisher?.map((publisher, i) => {
+                            return publisher?.url ? (
+                              <Link key={i} href={publisher.url} isExternal>
+                                {publisher.name}
+                              </Link>
+                            ) : (
+                              publisher.name || publisher.identifier
+                            );
+                          })}
                         </Text>
-                      ) : (
-                        <React.Fragment key={i}></React.Fragment>
-                      );
-                    })}
-                  </Flex>
-                </Flex>
-              )}
-              {doi && (
-                <Flex
-                  flex={1}
-                  mt={[4, 4, 0]}
-                  // minW='200px'
-                  flexDirection='column'
-                  alignItems={['flex-start', 'flex-end']}
-                >
-                  <Text fontSize='xs' my={0} fontWeight='medium' lineHeight={1}>
-                    Altmetric
-                  </Text>
-                  {/* Altmetric embed badges don't allow for adding aria-label so VisuallyHidden is a patch */}
-                  <VisuallyHidden>
-                    See more information about resource on Altmetric
-                  </VisuallyHidden>
-                  <div
-                    role='link'
-                    title='altmetric badge'
-                    data-badge-popover='left'
-                    data-badge-type='bar'
-                    data-doi={formatDOI(doi)}
-                    data-nct-id={nctid}
-                    data-pmid={citation?.[0].pmid}
-                    className='altmetric-embed'
-                    data-link-target='blank'
-                  ></div>
-                </Flex>
+                      </Text>
+                    </Box>
+                  )} */}
+
+                  {doi && (
+                    <Flex
+                      flex={1}
+                      mt={[4, 4, 0]}
+                      justifyContent='flex-end'
+                      // minW='200px'
+                      flexDirection='column'
+                      alignItems={['flex-start', 'flex-end']}
+                    >
+                      <Text
+                        fontSize='xs'
+                        my={0}
+                        fontWeight='medium'
+                        lineHeight={1}
+                      >
+                        Altmetric
+                      </Text>
+                      {/* Altmetric embed badges don't allow for adding aria-label so VisuallyHidden is a patch */}
+                      <VisuallyHidden>
+                        See more information about resource on Altmetric
+                      </VisuallyHidden>
+                      <div
+                        role='link'
+                        title='altmetric badge'
+                        data-badge-popover='left'
+                        data-badge-type='bar'
+                        data-doi={formatDOI(doi)}
+                        data-nct-id={nctid}
+                        data-pmid={citation?.[0].pmid}
+                        className='altmetric-embed'
+                        data-link-target='blank'
+                      ></div>
+                    </Flex>
+                  )}
+                </>
               )}
             </Flex>
           )}

@@ -42,19 +42,23 @@ const ExternalLinks: React.FC<ExternalLinks> = ({
   url,
   usageInfo,
 }) => {
-  const imageURL =
-    includedInDataCatalog?.name &&
-    getRepositoryImage(includedInDataCatalog.name);
-
   if (
     !isLoading &&
-    !includedInDataCatalog?.name &&
+    !includedInDataCatalog &&
     !mainEntityOfPage &&
     !codeRepository &&
     !showWorkspaceLink
   ) {
     return <></>;
   }
+
+  const sources =
+    !isLoading && includedInDataCatalog
+      ? Array.isArray(includedInDataCatalog)
+        ? includedInDataCatalog
+        : [includedInDataCatalog]
+      : [];
+
   return (
     <Skeleton
       isLoaded={!isLoading}
@@ -62,61 +66,66 @@ const ExternalLinks: React.FC<ExternalLinks> = ({
       borderColor='page.alt'
     >
       <Flex flexDirection='column' bg='secondary.50'>
-        <Box p={[0, 4]}>
-          {includedInDataCatalog?.name && (
-            <Flex
-              flexDirection='column'
-              alignItems='flex-start'
-              flexWrap='wrap'
-              minW='200px'
-              maxW={{ base: 'unset', lg: '350px' }}
-              p={[0, 2]}
-              flex={1}
-              w='100%'
-            >
-              <ExternalSourceButton
-                w='100%'
-                alt='Data source name'
-                src={imageURL || undefined}
-                colorScheme='secondary'
-                href={url || undefined}
-                sourceHref={includedInDataCatalog?.url}
-                name='Access Data'
-              />
-              {usageInfo?.url && (
-                <Flex mt={4}>
-                  <Tooltip
-                    aria-label={`Tooltip for usage information`}
-                    label={`${
-                      usageInfo?.description ||
-                      MetadataConfig?.find(d => d.property === 'usageInfo')
-                        ?.description['dataset'] ||
-                      ''
-                    }`}
-                    hasArrow
-                    placement='bottom'
-                    closeDelay={300}
-                  >
-                    <button aria-label='usage information description'>
-                      <Icon
-                        as={FaInfo}
-                        mx={2}
-                        color='gray.800'
-                        border='0.625px solid'
-                        borderRadius='100%'
-                        p={0.5}
-                        boxSize='0.85rem'
-                      />
-                    </button>
-                  </Tooltip>
-                  <Link href={usageInfo.url} fontSize='sm' isExternal>
-                    Usage Information
-                  </Link>
-                </Flex>
-              )}
+        {sources && (
+          <Flex
+            flexDirection='column'
+            alignItems='flex-start'
+            flexWrap='wrap'
+            minW='200px'
+            maxW={{ base: 'unset', lg: '350px' }}
+            p={[0, 2]}
+            flex={1}
+            w='100%'
+          >
+            <Flex flexWrap='wrap'>
+              {sources.map(source => {
+                return (
+                  <ExternalSourceButton
+                    key={source.name}
+                    w='100%'
+                    alt='Data source name'
+                    src={getRepositoryImage(source.name) || undefined}
+                    colorScheme='secondary'
+                    href={url || undefined}
+                    sourceHref={source?.url}
+                    name='Access Data'
+                  />
+                );
+              })}
             </Flex>
-          )}
-        </Box>
+            {usageInfo?.url && (
+              <Flex mt={4}>
+                <Tooltip
+                  aria-label={`Tooltip for usage information`}
+                  label={`${
+                    usageInfo?.description ||
+                    MetadataConfig?.find(d => d.property === 'usageInfo')
+                      ?.description['dataset'] ||
+                    ''
+                  }`}
+                  hasArrow
+                  placement='bottom'
+                  closeDelay={300}
+                >
+                  <button aria-label='usage information description'>
+                    <Icon
+                      as={FaInfo}
+                      mx={2}
+                      color='gray.800'
+                      border='0.625px solid'
+                      borderRadius='100%'
+                      p={0.5}
+                      boxSize='0.85rem'
+                    />
+                  </button>
+                </Tooltip>
+                <Link href={usageInfo.url} fontSize='sm' isExternal>
+                  Usage Information
+                </Link>
+              </Flex>
+            )}
+          </Flex>
+        )}
         {(children || mainEntityOfPage || hasPart || codeRepository) && (
           <Flex p={[4]} bg='#fff' alignItems='center' flexWrap='wrap'>
             {children}

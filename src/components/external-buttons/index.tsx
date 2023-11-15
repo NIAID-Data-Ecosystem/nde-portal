@@ -3,38 +3,37 @@ import {
   Box,
   Button,
   Flex,
-  Heading,
-  Icon,
   Image,
   ImageProps,
   LinkProps,
-  Stack,
+  usePrefersReducedMotion,
 } from 'nde-design-system';
 import { FaArrowRight } from 'react-icons/fa';
+import NextLink from 'next/link';
 
 interface ExternalButtonProps extends LinkProps {
   src?: string | null;
   alt: string;
   imageProps?: ImageProps;
-  ariaLabel?: string;
   name?: string;
   sourceHref?: string | null;
 }
 export const ExternalSourceButton: React.FC<ExternalButtonProps> = ({
-  name,
   href,
   src,
   alt,
-  ariaLabel,
   imageProps,
+  name,
   sourceHref,
   colorScheme = 'secondary',
 }) => {
+  const prefersReducedMotion = usePrefersReducedMotion();
+
   const SourceImage = (props: any) => (
     <Image
       width='auto'
-      height='50px'
-      maxH='50px'
+      height='40px'
+      maxH='40px'
       src={`${src}`}
       alt={alt}
       {...imageProps}
@@ -42,80 +41,50 @@ export const ExternalSourceButton: React.FC<ExternalButtonProps> = ({
     />
   );
   return (
-    <Stack
-      w='100%'
-      alignItems={['center', 'flex-start']}
-      justifyContent='space-between'
-      flexWrap='wrap'
-      flexDirection={{ base: 'column', sm: 'row', lg: 'column' }}
-    >
+    <Box p={4}>
       {/* Link to repository if url exists */}
       {src &&
         (sourceHref ? (
-          <Button
-            href={sourceHref}
-            target='_blank'
-            px={4}
-            py={4}
-            variant='none'
-          >
+          <NextLink href={sourceHref} target='_blank'>
             <SourceImage />
-          </Button>
+          </NextLink>
         ) : (
-          <Box p={2}>
+          <Box>
             <SourceImage />
           </Box>
         ))}
-      {href && (
-        <Flex minW={{ base: 'unset', sm: '260px' }} justifyContent='center'>
-          <Button
-            px={[0]}
-            py={[0]}
-            alignItems='center'
-            p={1}
-            colorScheme={colorScheme}
-            href={href}
-            target='_blank'
-            transition='0.2s linear'
-            sx={{
-              color: '#fff',
-              '.button-arrow': {
-                px: 4,
-                transition: '0.2s ease-in-out',
-              },
-            }}
-            _hover={{
-              color: 'whiteAlpha.900',
-              bg: 'secondary.600',
-              '.button-arrow': {
-                px: 8,
-                transition: '0.2s ease-in-out',
-              },
-            }}
-          >
-            <Heading
-              px={8}
-              py={[2, 0]}
-              color='inherit'
-              fontSize='md'
-              fontWeight='semibold'
-              letterSpacing='wide'
+      {href ? (
+        <Flex
+          mt={2}
+          sx={{
+            svg: {
+              transform: 'translateX(-2px)',
+              transition: 'transform 0.2s ease-in-out',
+            },
+          }}
+          _hover={{
+            svg: prefersReducedMotion
+              ? {}
+              : {
+                  transform: 'translateX(4px)',
+                  transition: 'transform 0.2s ease-in-out',
+                },
+          }}
+        >
+          <NextLink href={href} target='_blank'>
+            <Button
+              colorScheme={colorScheme}
+              size='md'
+              rightIcon={<FaArrowRight />}
+              mt={2}
             >
-              {name}
-            </Heading>
-            <Box
-              className='button-arrow'
-              bg='whiteAlpha.600'
-              borderRadius='semi'
-              px={2}
-              py={2}
-              display={{ base: 'none', sm: 'block' }}
-            >
-              <Icon as={FaArrowRight}></Icon>
-            </Box>
-          </Button>
+              {name || 'Access Data'}
+            </Button>
+          </NextLink>
         </Flex>
+      ) : (
+        <></>
       )}
-    </Stack>
+    </Box>
   );
 };

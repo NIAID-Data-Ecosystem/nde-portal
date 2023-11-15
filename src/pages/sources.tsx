@@ -50,7 +50,7 @@ const Sources: NextPage<SourcesProps> = ({ data, error }) => {
         });
 
         // in place for when we have a dateModified field in the API that is not in iso format.
-        const dateModified = source.version.includes('T')
+        const dateModified = source.version?.includes('T')
           ? source.version
           : /^\d+$/.test(source.version)
           ? `${source.version.substring(0, 4)}-${source.version.substring(
