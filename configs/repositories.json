@@ -53,6 +53,13 @@
       "type": "generalist"
     },
     {
+      "id": "Data Discovery Engine, NIAID Systems Biology",
+      "label": "Data Discovery Engine, NIAID Systems Biology",
+      "icon": "/assets/resources/niaid_sysbio.svg",
+      "imageURL": "/assets/resources/niaid-sysbio.svg",
+      "type": "generalist"
+    },
+    {
       "id": "Dockstore",
       "label": "Dockstore",
       "icon": "/assets/resources/dockstore.png",
@@ -64,6 +71,13 @@
       "label": "Dryad Digital Repository",
       "icon": "/assets/resources/dryad-icon.png",
       "imageURL": "/assets/resources/dryad.png",
+      "type": "generalist"
+    },
+    {
+      "id": "Flow Repository",
+      "label": "Flow Repository",
+      "icon": "/assets/resources/flow-icon.png",
+      "imageURL": "/assets/resources/flow.gif",
       "type": "generalist"
     },
     {
@@ -85,7 +99,7 @@
       "id": "Human Cell Atlas",
       "label": "Human Cell Atlas",
       "genre": ["physiology", "omics"],
-      "icon": "/assets/resources/hca.png",
+      "icon": "/assets/resources/hca-icon.png",
       "imageURL": "/assets/resources/hca.png",
       "type": "iid"
     },
@@ -145,11 +159,12 @@
       "imageURL": "/assets/resources/ncbi-sra.png",
       "type": "generalist"
     },
+
     {
-      "id": "Data Discovery Engine, NIAID Systems Biology",
-      "label": "Data Discovery Engine, NIAID Systems Biology",
-      "icon": "/assets/resources/niaid_sysbio.svg",
-      "imageURL": "/assets/resources/niaid-sysbio.svg",
+      "id": "NICHD DASH",
+      "label": "NICHD DASH",
+      "icon": "/assets/resources/niaid.png",
+      "imageURL": "/assets/resources/nichd-dash.png",
       "type": "generalist"
     },
     {
