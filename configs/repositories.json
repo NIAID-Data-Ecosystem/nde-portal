@@ -146,6 +146,13 @@
       "type": "generalist"
     },
     {
+      "id": "Data Discovery Engine, NIAID Systems Biology",
+      "label": "Data Discovery Engine, NIAID Systems Biology",
+      "icon": "/assets/resources/niaid_sysbio.svg",
+      "imageURL": "/assets/resources/niaid-sysbio.svg",
+      "type": "generalist"
+    },
+    {
       "id": "Omics Discovery Index (OmicsDI)",
       "label": "Omics Discovery Index (OmicsDI)",
       "genre": ["omics"],
@@ -169,6 +176,7 @@
       "imageURL": "/assets/resources/qiita.png",
       "type": "iid"
     },
+
     {
       "id": "ReframeDB",
       "label": "ReframeDB",
