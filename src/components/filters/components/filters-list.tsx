@@ -16,7 +16,6 @@ import { FilterTerm } from '../types';
 import { FiltersCheckbox } from './filters-checkbox';
 import REPOS from 'configs/repositories.json';
 import { FaArrowDown } from 'react-icons/fa';
-import { theme } from 'src/theme';
 
 /*
 [COMPONENT INFO]:
@@ -107,7 +106,6 @@ export const FiltersList: React.FC<FiltersList> = React.memo(
             .sort((a, b) => a.displayAs.localeCompare(b.displayAs))
             .sort((a, b) => b.count - a.count)
         : [];
-
     return (
       <>
         {/* Search through filter terms */}

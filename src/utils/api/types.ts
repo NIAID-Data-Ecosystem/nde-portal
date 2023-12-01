@@ -162,6 +162,11 @@ export interface InfectiousAgent extends PropertyWithPubtator {
   displayName: string;
 }
 
+export interface InfectiousAgent extends PropertyWithPubtator {
+  identifier?: string;
+  displayName: string;
+}
+
 export interface InteractionStatistics {
   '@type'?: string | null;
   userInteractionCount: number | null;
