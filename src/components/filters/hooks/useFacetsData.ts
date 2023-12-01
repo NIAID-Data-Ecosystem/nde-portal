@@ -166,6 +166,7 @@ export const useFacetsData = ({
       },
     },
   );
+
   // 2. Update counts on facet when filters are applied to searchquery from 1. Runs on load/new querystring and when filters are changed.
   const { isLoading: isUpdating, error: updatedFiltersError } = useQuery<
     { [key: string]: { terms: FacetTerm[] } } | undefined,
@@ -232,6 +233,7 @@ export const useFacetsData = ({
     },
   );
   const error = allFiltersError || updatedFiltersError;
+
   return [
     {
       data: facetTerms,

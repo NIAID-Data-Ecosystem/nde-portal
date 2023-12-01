@@ -82,13 +82,25 @@ export const FilterTags: React.FC<FilterTags> = ({
           let value = v || '';
           if (typeof v === 'object' && Object.keys(v)[0].includes('exists')) {
             value = 'Not Specified';
-          }
+          } else if (
+            typeof v === 'string' &&
+            v.includes(' | ') &&
+            (key === 'species.displayName' ||
+              key === 'infectiousAgent.displayName')
+          ) {
+            const [commonName, scientificName] = v.split(' | ');
 
+            value = `${
+              scientificName.charAt(0).toUpperCase() + scientificName.slice(1)
+            } ( ${commonName.charAt(0).toUpperCase() + commonName.slice(1)} )`;
+          }
           return (
             <Tag key={`${v}`} colorScheme='secondary' size='lg' m={1}>
               <TagLabel whiteSpace='break-spaces'>
                 {name}
-                {value ? `: ${value}` : ''}
+                {typeof value === 'string'
+                  ? `: ${value.charAt(0).toUpperCase() + value.slice(1)}`
+                  : ''}
               </TagLabel>
               <TagCloseButton onClick={() => removeSelectedFilter(key, v)} />
             </Tag>

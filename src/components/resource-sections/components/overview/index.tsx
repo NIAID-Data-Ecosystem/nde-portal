@@ -9,7 +9,7 @@ import {
   Text,
   UnorderedList,
 } from 'nde-design-system';
-import { FormattedResource } from 'src/utils/api/types';
+import { FormattedResource, Species } from 'src/utils/api/types';
 import { FaCalendarAlt, FaGlobeAmericas } from 'react-icons/fa';
 import { formatCitationString, formatLicense } from 'src/utils/helpers';
 import MetadataConfig from 'configs/resource-metadata.json';
@@ -18,6 +18,7 @@ import { IconProps, MetadataIcon } from 'src/components/icon';
 import { getMetadataColor } from 'src/components/icon/helpers';
 import { DisplayHTMLContent } from 'src/components/html-content';
 import { ResourceMetadata } from 'src/utils/schema-definitions/types';
+import Tooltip from 'src/components/tooltip';
 
 export interface OverviewProps extends Partial<FormattedResource> {
   isLoading: boolean;
@@ -47,16 +48,14 @@ const Overview: React.FC<OverviewProps> = ({
   ...data
 }) => {
   const StatIcon = ({ id, glyph, title }: IconProps) => (
-    <Box mr={2}>
-      <MetadataIcon
-        id={id}
-        boxSize={4}
-        glyph={glyph}
-        stroke='currentColor'
-        fill={getMetadataColor(glyph)}
-        title={title}
-      />
-    </Box>
+    <MetadataIcon
+      id={id}
+      boxSize={4}
+      glyph={glyph}
+      stroke='currentColor'
+      fill={getMetadataColor(glyph)}
+      title={title}
+    />
   );
 
   // get copy label from config for a given property.
@@ -107,15 +106,109 @@ const Overview: React.FC<OverviewProps> = ({
     content?: string | React.ReactNode | null;
     isExternal?: boolean;
   }) => {
-    if (url) {
+    if (!url && !content) {
+      return <Text color='niaid.placeholder'>None Specified</Text>;
+    }
+    return (
+      <Text>
+        {url ? (
+          <Link href={url} target={isExternal ? '_blank' : '_self'}>
+            {content}
+          </Link>
+        ) : (
+          <>{content}</>
+        )}
+      </Text>
+    );
+  };
+
+  const getBorderStyles = (property: string) => {
+    return {
+      py: 0.5,
+      ml: 1.5,
+      pl: 4,
+      borderLeft: '2px solid',
+      borderLeftColor: getMetadataColor(property),
+    };
+  };
+
+  const MetadataContent = ({
+    children,
+    curatedBy,
+    isCurated,
+    label,
+    metadataProperty,
+  }: {
+    children?: React.ReactNode;
+    curatedBy?: Species['curatedBy'];
+    isCurated?: FormattedResource['isCurated'];
+    label?: string;
+    metadataProperty: string;
+  }) => {
+    if (!children) {
       return (
-        <Link href={url} target={isExternal ? '_blank' : '_self'}>
-          {content}
-        </Link>
+        <Box {...getBorderStyles(metadataProperty)}>
+          <Text color='niaid.placeholder'>None Specified</Text>
+        </Box>
       );
     }
-    return <>{content || '-'}</>;
+    return (
+      <Box {...getBorderStyles(metadataProperty)}>
+        {children && (
+          <Flex>
+            {label ? (
+              <Tooltip label={label} hasArrow placement='top'>
+                <span
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    cursor: 'pointer',
+                  }}
+                >
+                  {children}
+                </span>
+              </Tooltip>
+            ) : (
+              <>{children}</>
+            )}
+            {/* <IconButton
+          as={Link}
+          href={`search?filters=(species.displayName:("${displayName}"))`}
+          icon={<Icon as={FaSearch} />}
+          aria-label={`Search for other datasets with ${displayName}`}
+          colorScheme='gray'
+          variant='ghost'
+          size='xs'
+          mx={1}
+        /> */}
+          </Flex>
+        )}
+        {isCurated && curatedBy ? (
+          <Text color='gray.600' fontStyle='italic' mt={1}>
+            Curated by:{' '}
+            {curatedBy.url ? (
+              <Link
+                fontStyle='inherit'
+                fontSize='inherit'
+                color='inherit'
+                href={curatedBy.url}
+                _hover={{ color: 'inherit' }}
+                _active={{ color: 'inherit' }}
+                isExternal
+              >
+                {curatedBy?.name || 'Curation information'}
+              </Link>
+            ) : (
+              curatedBy?.name
+            )}
+          </Text>
+        ) : (
+          <></>
+        )}
+      </Box>
+    );
   };
+
   return (
     <Flex p={[0, 4]} w='100%' flexWrap='wrap' flexDirection={['column', 'row']}>
       <Flex alignItems='center' w='100%'>
@@ -136,20 +229,22 @@ const Overview: React.FC<OverviewProps> = ({
               )}
               {...getStatInfo('license')}
             >
-              <>
-                {licenseInfo?.img && (
-                  <Image
-                    src={`${licenseInfo.img}`}
-                    alt={licenseInfo.type}
-                    width='auto'
-                    height='2rem'
+              <MetadataContent metadataProperty='license'>
+                <Box>
+                  {licenseInfo?.img && (
+                    <Image
+                      src={`${licenseInfo.img}`}
+                      alt={licenseInfo.type}
+                      width='auto'
+                      height='2rem'
+                    />
+                  )}
+                  <StatContent
+                    url={licenseInfo?.url}
+                    content={licenseInfo?.title}
                   />
-                )}
-                <StatContent
-                  url={licenseInfo?.url}
-                  content={licenseInfo?.title}
-                />
-              </>
+                </Box>
+              </MetadataContent>
             </StatField>
           }
 
@@ -164,31 +259,39 @@ const Overview: React.FC<OverviewProps> = ({
             {species ? (
               <UnorderedList ml={0}>
                 {species.map((s, i) => {
+                  const { displayName, isCurated, curatedBy } = s;
                   const name = Array.isArray(s.name)
                     ? s.name.join(', ')
                     : s.name;
 
-                  return (
-                    <React.Fragment key={`${name}-${i}`}>
-                      <ListItem>
-                        <StatContent url={s.url} content={name} isExternal />
-                      </ListItem>
+                  const url = displayName
+                    ? `/search?filters=(species.displayName:("${displayName.toLowerCase()}"))`
+                    : name
+                    ? `/search?filters=(species.name:("${name.toLowerCase()}"))`
+                    : '';
 
-                      {s.additionalType && (
-                        <ListItem>
-                          <StatContent
-                            url={s.additionalType?.url}
-                            content={s.additionalType?.name}
-                            isExternal
-                          />
-                        </ListItem>
-                      )}
-                    </React.Fragment>
+                  return (
+                    <ListItem key={`${name}-${i}`}>
+                      <MetadataContent
+                        label={`Search for other datasets with "${
+                          displayName || name
+                        }"`}
+                        metadataProperty='species'
+                        isCurated={isCurated}
+                        curatedBy={curatedBy}
+                      >
+                        <StatContent
+                          url={url}
+                          content={displayName || name}
+                          isExternal
+                        />
+                      </MetadataContent>
+                    </ListItem>
                   );
                 })}
               </UnorderedList>
             ) : (
-              '-'
+              <MetadataContent metadataProperty='species' />
             )}
           </StatField>
           {/* infectious agent involved */}
@@ -205,22 +308,47 @@ const Overview: React.FC<OverviewProps> = ({
           >
             {infectiousAgent ? (
               <UnorderedList ml={0}>
-                {infectiousAgent.map((m, i) => {
-                  const name = Array.isArray(m.name)
-                    ? m.name.join(', ')
-                    : m.name;
+                {infectiousAgent.map((pathogen, i) => {
+                  const { displayName, isCurated, curatedBy } = pathogen;
+
+                  const name = Array.isArray(pathogen.name)
+                    ? pathogen.name.join(', ')
+                    : pathogen.name;
+
+                  const url = displayName
+                    ? `/search?filters=(infectiousAgent.displayName:("${displayName.toLowerCase()}"))`
+                    : name
+                    ? `/search?filters=(infectiousAgent.name:("${name.toLowerCase()}"))`
+                    : '';
 
                   return (
-                    <ListItem key={`${name}-${i}`}>
-                      <StatContent url={m.url} content={name} isExternal />
+                    <ListItem
+                      key={`${displayName || name}-${i}`}
+                      mt={i === 0 ? 0 : 1}
+                    >
+                      <MetadataContent
+                        label={`Search for other datasets with "${
+                          displayName || name
+                        }"`}
+                        metadataProperty='infectiousAgent'
+                        isCurated={isCurated}
+                        curatedBy={curatedBy}
+                      >
+                        <StatContent
+                          url={url}
+                          content={displayName || name}
+                          isExternal
+                        />
+                      </MetadataContent>
                     </ListItem>
                   );
                 })}
               </UnorderedList>
             ) : (
-              '-'
+              <MetadataContent metadataProperty='infectiousAgent' />
             )}
           </StatField>
+
           {/* health condition covered */}
           <StatField
             isLoading={isLoading}
@@ -235,20 +363,30 @@ const Overview: React.FC<OverviewProps> = ({
           >
             {healthCondition ? (
               <UnorderedList ml={0}>
-                {healthCondition.map((m, i) => {
-                  const name = Array.isArray(m.name)
-                    ? m.name.join(', ')
-                    : m.name;
+                {healthCondition.map((condition, i) => {
+                  const { isCurated, curatedBy } = condition;
+                  const name = Array.isArray(condition.name)
+                    ? condition.name.join(', ')
+                    : condition.name;
+
+                  const url = `/search?filters=(healthCondition.name:("${name?.toLowerCase()}"))`;
 
                   return (
-                    <ListItem key={`${name}-${i}`}>
-                      <StatContent url={m.url} content={name} isExternal />
+                    <ListItem key={`${name}-${i}`} mt={i === 0 ? 0 : 1}>
+                      <MetadataContent
+                        label={`Search for other datasets with "${name}"`}
+                        metadataProperty='healthCondition'
+                        isCurated={isCurated}
+                        curatedBy={curatedBy}
+                      >
+                        <StatContent url={url} content={name} isExternal />
+                      </MetadataContent>
                     </ListItem>
                   );
                 })}
               </UnorderedList>
             ) : (
-              '-'
+              <MetadataContent metadataProperty='healthCondition' />
             )}
           </StatField>
           {/* variable measured, used in conjunction with measurement technique */}
@@ -263,8 +401,28 @@ const Overview: React.FC<OverviewProps> = ({
             )}
             {...getStatInfo('variableMeasured')}
           >
-            {variableMeasured?.join(', ')}
+            {variableMeasured ? (
+              <UnorderedList ml={0}>
+                {variableMeasured.map((name, i) => {
+                  const url = `/search?filters=(variableMeasured:("${name.toLowerCase()}"))`;
+
+                  return (
+                    <ListItem key={`${name}-${i}`} mt={i === 0 ? 0 : 1}>
+                      <MetadataContent
+                        label={`Search for other datasets with "${name}"`}
+                        metadataProperty='variableMeasured'
+                      >
+                        <StatContent url={url} content={name} isExternal />
+                      </MetadataContent>
+                    </ListItem>
+                  );
+                })}
+              </UnorderedList>
+            ) : (
+              <MetadataContent metadataProperty='variableMeasured' />
+            )}
           </StatField>
+
           {/* measurement technique */}
           <StatField
             isLoading={isLoading}
@@ -279,25 +437,135 @@ const Overview: React.FC<OverviewProps> = ({
           >
             {measurementTechnique ? (
               <UnorderedList ml={0}>
-                {measurementTechnique.map((m, i) => {
-                  const name = Array.isArray(m.name)
-                    ? m.name.join(', ')
-                    : m.name;
+                {measurementTechnique.map((technique, i) => {
+                  const name = Array.isArray(technique.name)
+                    ? technique.name.join(', ')
+                    : technique.name;
+
                   return (
-                    <ListItem key={`${name}-${i}`}>
-                      <StatContent url={m.url} content={name} isExternal />
+                    <ListItem key={`${name}-${i}`} mt={i === 0 ? 0 : 1}>
+                      <MetadataContent
+                        label={`Search for other datasets with "${name}"`}
+                        metadataProperty='measurementTechnique'
+                      >
+                        <StatContent
+                          url={`/search?filters=(measurementTechnique.name:("${name?.toLowerCase()}"))`}
+                          content={name}
+                          isExternal
+                        />
+                      </MetadataContent>
                     </ListItem>
                   );
                 })}
               </UnorderedList>
             ) : (
-              '-'
+              <MetadataContent metadataProperty='measurementTechnique' />
             )}
           </StatField>
+
+          {/* Related Ids */}
+          <StatField
+            isLoading={isLoading}
+            label='Related Identifiers'
+            icon={() => (
+              <StatIcon id='identifier' title='identifier' glyph='identifier' />
+            )}
+            description={
+              <p>
+                <strong>DOI: </strong>
+                {getStatInfo('doi').description}
+                <br />
+                <strong>PMID: </strong>
+                {
+                  getStatInfo('citation').items?.pmid?.description[
+                    data?.['@type']?.toLowerCase()
+                  ]
+                }
+                <br />
+                <strong>NCTID: </strong>
+                {getStatInfo('nctid').description}
+              </p>
+            }
+          >
+            <UnorderedList ml={0}>
+              {/* if no identifiers show a dash */}
+              <ListItem>
+                {!doi && !nctid && !citation && (
+                  <MetadataContent metadataProperty='' />
+                )}
+              </ListItem>
+
+              {/* DOI */}
+              {doi && (
+                <ListItem>
+                  <MetadataContent metadataProperty=''>
+                    <strong>DOI: </strong>
+                    <StatContent
+                      url={
+                        doi?.includes('http') || doi?.includes('doi.org')
+                          ? doi
+                          : ''
+                      }
+                      content={doi}
+                      isExternal
+                    />
+                  </MetadataContent>
+                </ListItem>
+              )}
+
+              {/* NCT ID */}
+              {nctid && (
+                <ListItem>
+                  <strong>NCTID: </strong>
+                  <StatContent
+                    url={nctid?.includes('http') ? nctid : ''}
+                    content={nctid}
+                    isExternal
+                  />
+                </ListItem>
+              )}
+
+              {/* PUBMED ID*/}
+              {citation && (
+                <>
+                  {citation?.map((c, i) => {
+                    if (!c.doi && !c.pmid) {
+                      return (
+                        <ListItem key={i}>
+                          <MetadataContent metadataProperty='' />
+                        </ListItem>
+                      );
+                    } else if (c.pmid) {
+                      return (
+                        <ListItem key={i}>
+                          <MetadataContent metadataProperty=''>
+                            <strong>PMID: </strong>
+                            <StatContent content={c.pmid} />
+                          </MetadataContent>
+                        </ListItem>
+                      );
+                    } else if (c.doi) {
+                      return (
+                        <ListItem key={i}>
+                          <MetadataContent metadataProperty=''>
+                            <strong>DOI: </strong>
+                            <StatContent content={c.doi} />
+                          </MetadataContent>
+                        </ListItem>
+                      );
+                    }
+                  })}
+                </>
+              )}
+            </UnorderedList>
+          </StatField>
+
           {/* language */}
           {inLanguage && inLanguage.name && (
             <StatField isLoading={isLoading} {...getStatInfo('inLanguage')}>
-              {languageName.of(inLanguage.name)}
+              <MetadataContent metadataProperty=''>
+                {languageName.of(inLanguage.name)}
+              </MetadataContent>
             </StatField>
           )}
           {/* geographic */}
@@ -307,7 +575,9 @@ const Overview: React.FC<OverviewProps> = ({
               isLoading={isLoading}
               {...getStatInfo('spatialCoverage')}
             >
-              {locationNames.join(', ')}
+              <MetadataContent metadataProperty='spatialCoverage'>
+                {locationNames.join(', ')}
+              </MetadataContent>
             </StatField>
           )}
           {/* period covered */}
@@ -368,7 +638,7 @@ const Overview: React.FC<OverviewProps> = ({
                   })}
                 </UnorderedList>
               ) : (
-                '-'
+                <MetadataContent metadataProperty='' />
               )}
             </StatField>
           )}
@@ -438,86 +708,6 @@ const Overview: React.FC<OverviewProps> = ({
               </StatField>
             </Box>
           )}
-          {/* Related Ids */}
-          <StatField
-            isLoading={isLoading}
-            label='Related Identifiers'
-            icon={() => (
-              <StatIcon id='identifier' title='identifier' glyph='identifier' />
-            )}
-            description={
-              <p>
-                <strong>DOI: </strong>
-                {getStatInfo('doi').description}
-                <br />
-                <strong>PMID: </strong>
-                {
-                  getStatInfo('citation').items?.pmid?.description[
-                    data?.['@type']?.toLowerCase()
-                  ]
-                }
-                <br />
-                <strong>NCTID: </strong>
-                {getStatInfo('nctid').description}
-              </p>
-            }
-          >
-            <UnorderedList>
-              {/* if no identifiers show a dash */}
-              <ListItem> {!doi && !nctid && !citation && '-'}</ListItem>
-
-              {/* DOI */}
-              {doi && (
-                <ListItem>
-                  <strong>DOI: </strong>
-                  <StatContent
-                    url={
-                      doi?.includes('http') || doi?.includes('doi.org')
-                        ? doi
-                        : ''
-                    }
-                    content={doi}
-                    isExternal
-                  />
-                </ListItem>
-              )}
-
-              {/* NCT ID */}
-              {nctid && (
-                <ListItem>
-                  <strong>NCTID: </strong>
-                  <StatContent
-                    url={nctid?.includes('http') ? nctid : ''}
-                    content={nctid}
-                    isExternal
-                  />
-                </ListItem>
-              )}
-
-              {/* PUBMED ID*/}
-              {citation && (
-                <>
-                  {citation?.map((c, i) => {
-                    if (!nctid && !doi && !c.pmid) {
-                      return <ListItem key={i}>-</ListItem>;
-                    }
-                    if (!c.pmid) {
-                      return null;
-                    }
-
-                    if (c.pmid) {
-                      return (
-                        <ListItem key={i}>
-                          <strong>PMID: </strong>
-                          <StatContent content={c.pmid} />
-                        </ListItem>
-                      );
-                    }
-                  })}
-                </>
-              )}
-            </UnorderedList>
-          </StatField>
           {/* Citation */}
           {citation && (
             <Box>

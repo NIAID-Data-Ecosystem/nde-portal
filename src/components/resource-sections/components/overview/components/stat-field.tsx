@@ -36,12 +36,11 @@ const StatField: React.FC<MetadataStatProps> = ({
   const StatText = () => {
     if (React.Children.count(children) > 1) {
       return <>{children}</>;
-    }
-    if (typeof children === 'number') {
-      return <Text size='sm'>{formatNumber(children)}</Text>;
+    } else if (typeof children === 'number') {
+      return <Text fontSize='sm'>{formatNumber(children)}</Text>;
     }
     return (
-      <Text as='div' fontSize='sm' lineHeight='short' mt={1}>
+      <Text as='div' fontSize='xs' lineHeight='short' color='text.body' mt={1}>
         {children || '-'}
       </Text>
     );
@@ -78,7 +77,11 @@ const StatField: React.FC<MetadataStatProps> = ({
                     cursor: description ? 'pointer' : 'default',
                   }}
                 >
-                  {icon && <Icon as={icon} color='gray.500' mx={1} />}
+                  {icon && (
+                    <Flex mr={2}>
+                      <Icon as={icon} color='gray.500' />
+                    </Flex>
+                  )}
                   {label}
                   {/* button used here to allow user to focus on tooltip*/}
                   {description && (
