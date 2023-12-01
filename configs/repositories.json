@@ -101,7 +101,7 @@
       "genre": ["physiology", "omics"],
       "icon": "/assets/resources/hca-icon.png",
       "imageURL": "/assets/resources/hca.png",
-      "type": "iid"
+      "type": "generalist"
     },
     {
       "id": "ImmPort",
