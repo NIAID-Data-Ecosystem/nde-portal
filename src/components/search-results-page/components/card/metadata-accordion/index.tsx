@@ -34,7 +34,16 @@ const MetadataAccordion: React.FC<MetadataAccordionProps> = ({ data }) => {
   const paddingCard = [4, 6, 8, 10];
 
   const id = data?.id;
-  const content = generateMetadataContent(data);
+  const content = generateMetadataContent({
+    id: data?.id,
+    healthCondition: data?.healthCondition,
+    infectiousAgent: data?.infectiousAgent,
+    license: data?.license,
+    measurementTechnique: data?.measurementTechnique,
+    species: data?.species,
+    usageInfo: data?.usageInfo,
+    variableMeasured: data?.variableMeasured,
+  });
   const sortedMetadataContent = sortMetadataArray(content);
   return (
     <>
@@ -155,7 +164,6 @@ const MetadataAccordion: React.FC<MetadataAccordionProps> = ({ data }) => {
                                         >
                                           <MetadataContent
                                             includeOntology
-                                            includeSearch
                                             {...item}
                                           />
                                         </MetadataListItem>

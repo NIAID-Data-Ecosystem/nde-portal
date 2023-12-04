@@ -1,11 +1,16 @@
 import React from 'react';
-import { ListItem, UnorderedList, ListIcon } from 'nde-design-system';
+import {
+  ListItem,
+  UnorderedList,
+  ListIcon,
+  ListProps,
+} from 'nde-design-system';
 import { FaCircle } from 'react-icons/fa';
 import { getMetadataTheme } from 'src/components/icon/helpers';
 
-export const MetadataList = ({ children }: { children: React.ReactNode }) => {
+export const MetadataList = ({ children, ...props }: ListProps) => {
   return (
-    <UnorderedList ml={0} display='flex' flexDirection='column'>
+    <UnorderedList ml={0} display='flex' flexDirection='column' {...props}>
       {children}
     </UnorderedList>
   );
