@@ -24,41 +24,7 @@ interface MetadataBlockProps {
 }
 
 // Themed block for metadata
-export const MetadataTooltip = ({
-  isDisabled,
-  property,
-  tooltipLabel,
-}: Pick<MetadataBlockProps, 'isDisabled' | 'property' | 'tooltipLabel'>) => {
-  return (
-    <Tooltip label={tooltipLabel}>
-      <Flex
-        minW={4}
-        minH={4}
-        ml={2}
-        p={1}
-        _hover={{
-          div: {
-            bg: 'gray.800',
-            borderColor: 'gray.800',
-            color: 'white',
-          },
-        }}
-      >
-        <IconButton
-          as='div'
-          cursor='pointer'
-          aria-label={`Tooltip for ${property}.`}
-          isRound
-          icon={<Icon as={FaInfo} boxSize='0.75rem' p={0.5} />}
-          variant='outline'
-          colorScheme='gray'
-          borderColor={isDisabled ? 'gray.500' : 'gray.600'}
-          color={isDisabled ? 'gray.500' : 'gray.600'}
-        />
-      </Flex>
-    </Tooltip>
-  );
-};
+
 export const MetadataBlock = ({
   isDisabled,
   id,
@@ -89,17 +55,7 @@ export const MetadataBlock = ({
             boxSize={4}
             mr={1}
           />
-          <Text
-            mx={1}
-            fontSize='13px'
-            fontWeight='medium'
-            letterSpacing='wide'
-            textTransform='uppercase'
-            color='inherit'
-            whiteSpace={['unset', 'nowrap']}
-          >
-            {label}
-          </Text>
+          <MetadataLabel label={label}></MetadataLabel>
         </Flex>
 
         {tooltipLabel && (
@@ -122,5 +78,58 @@ export const MetadataBlock = ({
         {isDisabled ? <></> : children}
       </Box>
     </Box>
+  );
+};
+
+export const MetadataLabel = ({ label }: Pick<MetadataBlockProps, 'label'>) => {
+  return (
+    <Text
+      mx={1}
+      fontSize='13px'
+      fontWeight='medium'
+      letterSpacing='wide'
+      textTransform='uppercase'
+      color='inherit'
+      whiteSpace={['unset', 'nowrap']}
+      lineHeight='inherit'
+    >
+      {label}
+    </Text>
+  );
+};
+
+// Tooltip for metadata usually for property definition
+export const MetadataTooltip = ({
+  isDisabled,
+  property,
+  tooltipLabel,
+}: Pick<MetadataBlockProps, 'isDisabled' | 'property' | 'tooltipLabel'>) => {
+  return (
+    <Tooltip label={tooltipLabel}>
+      <Flex
+        minW={4}
+        minH={4}
+        p={1}
+        _hover={{
+          div: {
+            bg: 'gray.800',
+            borderColor: 'gray.800',
+            color: 'white',
+          },
+        }}
+      >
+        <IconButton
+          as='div'
+          cursor='pointer'
+          aria-label={`Tooltip for ${property}.`}
+          isRound
+          icon={<Icon as={FaInfo} boxSize='0.75rem' p={0.5} />}
+          variant='outline'
+          colorScheme='gray'
+          borderColor={isDisabled ? 'gray.500' : 'gray.600'}
+          color={isDisabled ? 'gray.500' : 'gray.600'}
+        />
+      </Flex>
+    </Tooltip>
   );
 };

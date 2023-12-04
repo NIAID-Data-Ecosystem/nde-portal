@@ -1,8 +1,9 @@
 import { FormattedResource } from 'src/utils/api/types';
-import { Box, Flex, Link, Skeleton, Text } from 'nde-design-system';
+import { Flex, Link, Skeleton, Text } from 'nde-design-system';
 import { shouldAppendPunctuation } from 'src/utils/helpers';
 import { getCitationComponents } from './helpers';
 import {
+  MetadataLabel,
   MetadataTooltip,
   getMetadataDescription,
 } from 'src/components/metadata';
@@ -23,17 +24,12 @@ const ResourceCitations = ({
 
   return (
     <Skeleton isLoaded={!isLoading} mx={1} p={[0, 4]}>
-      <Flex alignItems='baseline'>
-        <Text
-          fontSize='13px'
-          fontWeight='medium'
-          letterSpacing='wide'
-          textTransform='uppercase'
-          color='inherit'
-          whiteSpace={['unset', 'nowrap']}
-        >
-          Citations {citations.length > 1 ? `(${citations.length})` : ''}
-        </Text>
+      <Flex alignItems='baseline' lineHeight='short' mb={1}>
+        <MetadataLabel
+          label={`Citation${
+            citations.length > 1 ? `s (${citations.length})` : ''
+          }`}
+        />
         <MetadataTooltip
           tooltipLabel={getMetadataDescription('citation', type)}
           property='citation'
@@ -45,6 +41,7 @@ const ResourceCitations = ({
         border='1px solid'
         borderColor='gray.100'
         borderRadius='semi'
+        m={2}
         py={2}
       >
         {citations.map((citation, idx) => {
@@ -77,8 +74,8 @@ const ResourceCitations = ({
               bg={idx % 2 ? 'tertiary.50' : 'transparent'}
               lineHeight='tall'
               fontSize='sm'
-              px={4}
-              py={2}
+              px={2}
+              py={citations.length > 1 ? 2 : 0}
             >
               {citationComponents.map((component, index) => (
                 <span key={index}>

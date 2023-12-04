@@ -69,7 +69,7 @@ const Overview: React.FC<OverviewProps> = ({
       <Flex alignItems='center' w='100%'>
         <SimpleGrid
           minChildWidth={['unset', '280px']}
-          spacingX={20}
+          spacingX={14}
           spacingY={10}
           p={4}
           border='1px solid'

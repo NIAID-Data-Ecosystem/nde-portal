@@ -29,6 +29,7 @@ import { DisplayHTMLContent } from '../html-content';
 import { DownloadMetadata } from '../download-metadata';
 import SoftwareInformation from './components/software-information';
 import ResourceStats from './components/stats';
+import ResourceIsPartOf from './components/is-part-of';
 
 // Metadata displayed in each section
 export const sectionMetadata: { [key: string]: (keyof FormattedResource)[] } = {
@@ -109,7 +110,10 @@ const Sections = ({
             {section.hash === 'overview' && (
               <>
                 <ResourceOverview isLoading={isLoading} {...data} />
-                {data?.isPartOf && <>hi</>}
+                <ResourceIsPartOf
+                  isLoading={isLoading}
+                  studies={data?.isPartOf}
+                />
                 <ResourceCitations
                   isLoading={isLoading}
                   type={data?.['@type']}
