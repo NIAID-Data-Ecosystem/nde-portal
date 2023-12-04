@@ -19,6 +19,7 @@ import {
   ResourceLinks,
   ResourceProvenance,
   Section,
+  ResourceCitations,
 } from './components';
 import { Route } from './helpers';
 import FilesTable from './components/files-table';
@@ -32,7 +33,6 @@ import ResourceStats from './components/stats';
 // Metadata displayed in each section
 export const sectionMetadata: { [key: string]: (keyof FormattedResource)[] } = {
   overview: [
-    'citation',
     'doi',
     'healthCondition',
     'infectiousAgent',
@@ -106,20 +106,19 @@ const Sections = ({
             isLoading={isLoading}
             isCollapsible={section.isCollapsible}
           >
-            {/* Only show here on small screens. */}
-            {/* <Box display={{ base: 'block', lg: 'none' }}>
-              <ResourceStats
-                includedInDataCatalog={data?.includedInDataCatalog}
-                citation={data?.citation}
-                doi={data?.doi}
-                nctid={data?.nctid}
-                aggregateRating={data?.aggregateRating}
-                interactionStatistics={data?.interactionStatistics}
-              />
-            </Box> */}
             {section.hash === 'overview' && (
-              <ResourceOverview isLoading={isLoading} {...data} />
+              <>
+                <ResourceOverview isLoading={isLoading} {...data} />
+                {data?.isPartOf && <>hi</>}
+                <ResourceCitations
+                  isLoading={isLoading}
+                  type={data?.['@type']}
+                  citations={data?.citation}
+                />
+              </>
             )}
+
+            {/* only display this on mobile */}
             {section.hash === 'overview' && (
               <Box display={{ base: 'block', lg: 'none' }}>
                 <ResourceLinks
@@ -141,7 +140,6 @@ const Sections = ({
                 </ResourceLinks>
               </Box>
             )}
-
             {/* Show keywords */}
             {section.hash === 'keywords' && (
               <Skeleton isLoaded={!isLoading}>
@@ -170,7 +168,6 @@ const Sections = ({
                 </Flex>
               </Skeleton>
             )}
-
             {section.hash === 'softwareInformation' && (
               <SoftwareInformation
                 keys={sectionMetadata[section.hash]}
@@ -178,7 +175,6 @@ const Sections = ({
                 {...data}
               />
             )}
-
             {/* Show description */}
             {section.hash === 'description' &&
               (data?.description || data?.abstract) && (
@@ -203,7 +199,6 @@ const Sections = ({
                   )}
                 </>
               )}
-
             {/* Show provenance */}
             {section.hash === 'provenance' && (
               <ResourceProvenance isLoading={isLoading} {...data} />
@@ -235,17 +230,14 @@ const Sections = ({
                 )}
               </>
             )}
-
             {/* Show funding */}
             {section.hash === 'funding' && (
               <FundingTable isLoading={isLoading} {...data} />
             )}
-
             {/* Show citedBy */}
             {section.hash === 'citedBy' && (
               <CitedByTable isLoading={isLoading} {...data} />
             )}
-
             {/* Show raw metadata */}
             {section.hash === 'metadata' && data?.rawData && (
               <>

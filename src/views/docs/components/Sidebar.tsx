@@ -24,6 +24,7 @@ import { FaAngleDoubleLeft, FaAngleDoubleRight } from 'react-icons/fa';
 import NextLink from 'next/link';
 import { FaAngleDown, FaAngleRight, FaArrowsUpDown } from 'react-icons/fa6';
 import LoadingSpinner from 'src/components/loading';
+import { ScrollContainer } from 'src/components/scroll-container';
 
 interface DocumentationSidebarProps extends FlexProps {
   children: React.ReactNode;
@@ -81,7 +82,7 @@ const SidebarContainer: React.FC<DocumentationSidebarProps> = ({
             >
               <Icon as={FaAngleDoubleLeft}></Icon>
             </Button>
-            <Box
+            <ScrollContainer
               as='nav'
               overflowX='hidden'
               overflowY='auto'
@@ -89,28 +90,9 @@ const SidebarContainer: React.FC<DocumentationSidebarProps> = ({
               borderY='1px solid'
               borderColor='gray.200'
               pb={4}
-              sx={{
-                '&::-webkit-scrollbar': {
-                  width: '7px',
-                  height: '7px',
-                },
-                '&::-webkit-scrollbar-track': {
-                  background: 'blackAlpha.100',
-                  borderRadius: '10px',
-                },
-                '&::-webkit-scrollbar-thumb': {
-                  background: 'gray.300',
-                  borderRadius: '10px',
-                },
-                _hover: {
-                  '&::-webkit-scrollbar-thumb': {
-                    background: 'niaid.placeholder',
-                  },
-                },
-              }}
             >
               {children}
-            </Box>
+            </ScrollContainer>
           </Flex>
         </Box>
       </Box>

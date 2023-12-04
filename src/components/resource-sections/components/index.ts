@@ -1,6 +1,7 @@
 import TypeBanner from './type-banner';
 import Navigation from './navigation';
 import Section from './section';
+import ResourceCitations from './citations';
 import RelatedDatasets from './related-datasets';
 import ResourceHeader from './header';
 import ResourceDates from './dates';
@@ -12,6 +13,7 @@ import ResourceLinks from './external-links';
 export {
   Navigation,
   Section,
+  ResourceCitations,
   RelatedDatasets,
   ResourceDates,
   ResourceOverview,

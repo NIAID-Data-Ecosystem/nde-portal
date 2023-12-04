@@ -19,6 +19,7 @@ import {
   getMetadataDescription,
   sortMetadataArray,
 } from 'src/components/metadata';
+import { ScrollContainer } from 'src/components/scroll-container';
 
 export interface OverviewProps extends Partial<FormattedResource> {
   isLoading: boolean;
@@ -113,29 +114,7 @@ const Overview: React.FC<OverviewProps> = ({
                     />
                   )}
                   {items && items.length > 0 && (
-                    <Box
-                      maxHeight='150px'
-                      overflow='auto'
-                      sx={{
-                        '&::-webkit-scrollbar': {
-                          width: '7px',
-                          height: '7px',
-                        },
-                        '&::-webkit-scrollbar-track': {
-                          background: 'blackAlpha.100',
-                          borderRadius: '10px',
-                        },
-                        '&::-webkit-scrollbar-thumb': {
-                          background: 'gray.300',
-                          borderRadius: '10px',
-                        },
-                        _hover: {
-                          '&::-webkit-scrollbar-thumb': {
-                            background: 'niaid.placeholder',
-                          },
-                        },
-                      }}
-                    >
+                    <ScrollContainer maxHeight='150px' overflow='auto'>
                       <MetadataList pr={2}>
                         {items.map(({ key, ...item }) => {
                           return (
@@ -152,7 +131,7 @@ const Overview: React.FC<OverviewProps> = ({
                           );
                         })}
                       </MetadataList>
-                    </Box>
+                    </ScrollContainer>
                   )}
                 </MetadataBlock>
               </Skeleton>

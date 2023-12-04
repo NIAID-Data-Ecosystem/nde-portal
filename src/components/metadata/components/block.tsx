@@ -16,7 +16,7 @@ interface MetadataBlockProps {
   id: string;
   label: string;
   property: string;
-  isDisabled: boolean;
+  isDisabled?: boolean;
   children?: React.ReactNode;
   bg?: string;
   colorScheme?: string;
@@ -24,6 +24,41 @@ interface MetadataBlockProps {
 }
 
 // Themed block for metadata
+export const MetadataTooltip = ({
+  isDisabled,
+  property,
+  tooltipLabel,
+}: Pick<MetadataBlockProps, 'isDisabled' | 'property' | 'tooltipLabel'>) => {
+  return (
+    <Tooltip label={tooltipLabel}>
+      <Flex
+        minW={4}
+        minH={4}
+        ml={2}
+        p={1}
+        _hover={{
+          div: {
+            bg: 'gray.800',
+            borderColor: 'gray.800',
+            color: 'white',
+          },
+        }}
+      >
+        <IconButton
+          as='div'
+          cursor='pointer'
+          aria-label={`Tooltip for ${property}.`}
+          isRound
+          icon={<Icon as={FaInfo} boxSize='0.75rem' p={0.5} />}
+          variant='outline'
+          colorScheme='gray'
+          borderColor={isDisabled ? 'gray.500' : 'gray.600'}
+          color={isDisabled ? 'gray.500' : 'gray.600'}
+        />
+      </Flex>
+    </Tooltip>
+  );
+};
 export const MetadataBlock = ({
   isDisabled,
   id,
@@ -68,33 +103,11 @@ export const MetadataBlock = ({
         </Flex>
 
         {tooltipLabel && (
-          <Tooltip label={tooltipLabel}>
-            <Flex
-              minW={4}
-              minH={4}
-              ml={2}
-              p={1}
-              _hover={{
-                div: {
-                  bg: 'gray.800',
-                  borderColor: 'gray.800',
-                  color: 'white',
-                },
-              }}
-            >
-              <IconButton
-                as='div'
-                cursor='pointer'
-                aria-label={`Tooltip for ${property}.`}
-                isRound
-                icon={<Icon as={FaInfo} boxSize='0.75rem' p={0.5} />}
-                variant='outline'
-                colorScheme='gray'
-                borderColor={isDisabled ? 'gray.500' : 'gray.600'}
-                color={isDisabled ? 'gray.500' : 'gray.600'}
-              />
-            </Flex>
-          </Tooltip>
+          <MetadataTooltip
+            tooltipLabel={tooltipLabel}
+            property={property}
+            isDisabled={isDisabled}
+          />
         )}
       </Flex>
 

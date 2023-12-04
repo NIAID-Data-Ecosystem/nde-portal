@@ -25,7 +25,7 @@ import {
 } from 'src/components/resource-sections/components';
 import { Error, ErrorCTA } from 'src/components/error';
 import Sections, { sectionMetadata } from 'src/components/resource-sections';
-import navigationData from 'configs/resource-sections.json';
+import navigationData from 'src/components/resource-sections/resource-sections.json';
 import { Route, showSection } from 'src/components/resource-sections/helpers';
 import { useLocalStorage } from 'usehooks-ts';
 import { CardContainer } from 'src/components/resource-sections/components/related-datasets';
