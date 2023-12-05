@@ -15,13 +15,11 @@ import {
   Text,
   ToggleContainer,
   VisuallyHidden,
-  BoxProps,
   Tooltip,
 } from 'nde-design-system';
 import {
   FaArrowAltCircleRight,
   FaChevronRight,
-  FaDollarSign,
   FaRegClock,
 } from 'react-icons/fa';
 import { FormattedResource } from 'src/utils/api/types';
@@ -35,11 +33,7 @@ import { TypeBanner } from 'src/components/resource-sections/components';
 import NextLink from 'next/link';
 import CardDetails from './details';
 import { DisplayHTMLContent } from 'src/components/html-content';
-import {
-  badgesConfig,
-  BadgeWithTooltip,
-  getBadgeIcon,
-} from 'src/components/badge-with-tooltip';
+import { AccessibleForFree, ConditionsOfAccess } from 'src/components/badges';
 
 interface SearchResultCardProps {
   isLoading?: boolean;
@@ -77,48 +71,6 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
 
   const paddingCard = [4, 6, 8, 10];
 
-  const ConditionsOfAccess = (props: BoxProps) => {
-    if (
-      !conditionsOfAccess &&
-      (isAccessibleForFree === null ||
-        typeof isAccessibleForFree === 'undefined')
-    ) {
-      return null;
-    }
-    return (
-      <Flex
-        justifyContent={['flex-end']}
-        alignItems='center'
-        w={['100%', 'unset']}
-        flex={[1, 'unset']}
-        p={[0.5, 2]}
-        {...props}
-      >
-        {isAccessibleForFree !== null &&
-          typeof isAccessibleForFree !== 'undefined' && (
-            <BadgeWithTooltip
-              mx={0.5}
-              icon={FaDollarSign}
-              {...badgesConfig['isAccessibleForFree'][`${isAccessibleForFree}`]}
-            >
-              {isAccessibleForFree ? 'Free Access' : 'Paid Access'}
-            </BadgeWithTooltip>
-          )}
-
-        {conditionsOfAccess && (
-          <BadgeWithTooltip
-            mx={0.5}
-            icon={getBadgeIcon({
-              conditionsOfAccess,
-            })}
-            {...badgesConfig['conditionsOfAccess'][conditionsOfAccess]}
-          >
-            {conditionsOfAccess}
-          </BadgeWithTooltip>
-        )}
-      </Flex>
-    );
-  };
   return (
     // {/* Banner with resource type + date of publication */}
     <Card variant='colorful'>
@@ -223,7 +175,27 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
               </Text>
             )}
           </ToggleContainer>
-          <ConditionsOfAccess />
+
+          {(isAccessibleForFree === true ||
+            isAccessibleForFree === false ||
+            conditionsOfAccess) && (
+            <Flex
+              justifyContent={['flex-end']}
+              alignItems='center'
+              w={['100%', 'unset']}
+              flex={[1, 'unset']}
+              p={[0.5, 2]}
+            >
+              <AccessibleForFree
+                isAccessibleForFree={isAccessibleForFree}
+                mx={1}
+              />
+              <ConditionsOfAccess
+                conditionsOfAccess={conditionsOfAccess}
+                mx={1}
+              />
+            </Flex>
+          )}
         </Flex>
 
         <CardBody p={0}>

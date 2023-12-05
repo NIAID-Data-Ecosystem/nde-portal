@@ -18,7 +18,6 @@ import {
   ResourceDates,
   ResourceHeader,
   ResourceOverview,
-  ResourceLinks,
   ResourceProvenance,
   Section,
 } from './components';
@@ -30,7 +29,7 @@ import { DisplayHTMLContent } from '../html-content';
 import { CopyMetadata } from '../copy-metadata';
 import { DownloadMetadata } from '../download-metadata';
 import SoftwareInformation from './components/software-information';
-import ResourceStats from './components/stats';
+import { External } from './components/sidebar/components/external';
 
 // Metadata displayed in each section
 export const sectionMetadata: { [key: string]: (keyof FormattedResource)[] } = {
@@ -90,11 +89,9 @@ const Sections = ({
       <Section id='header' p={0}>
         <ResourceHeader
           isLoading={isLoading}
-          conditionsOfAccess={data?.conditionsOfAccess}
           author={data?.author}
           name={data?.name}
           alternateName={data?.alternateName}
-          isAccessibleForFree={data?.isAccessibleForFree}
         />
         {/* Banner showing data type and publish date. */}
         <ResourceDates data={data} />
@@ -109,39 +106,13 @@ const Sections = ({
             isLoading={isLoading}
             isCollapsible={section.isCollapsible}
           >
-            {/* Only show here on small screens. */}
-            {/* <Box display={{ base: 'block', lg: 'none' }}>
-              <ResourceStats
-                includedInDataCatalog={data?.includedInDataCatalog}
-                citation={data?.citation}
-                doi={data?.doi}
-                nctid={data?.nctid}
-                aggregateRating={data?.aggregateRating}
-                interactionStatistics={data?.interactionStatistics}
-              />
-            </Box> */}
             {section.hash === 'overview' && (
               <ResourceOverview isLoading={isLoading} {...data} />
             )}
+            {/* for mobile viewing */}
             {section.hash === 'overview' && (
               <Box display={{ base: 'block', lg: 'none' }}>
-                <ResourceLinks
-                  isLoading={isLoading}
-                  url={data?.url}
-                  mainEntityOfPage={data?.mainEntityOfPage}
-                  codeRepository={data?.codeRepository}
-                  includedInDataCatalog={data?.includedInDataCatalog}
-                  usageInfo={data?.usageInfo}
-                >
-                  <ResourceStats
-                    includedInDataCatalog={data?.includedInDataCatalog}
-                    citation={data?.citation}
-                    doi={data?.doi}
-                    nctid={data?.nctid}
-                    aggregateRating={data?.aggregateRating}
-                    interactionStatistics={data?.interactionStatistics}
-                  />
-                </ResourceLinks>
+                <External data={data} isLoading={isLoading} />
               </Box>
             )}
 

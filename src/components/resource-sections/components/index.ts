@@ -7,7 +7,6 @@ import ResourceDates from './dates';
 import ResourceOverview from './overview';
 import ResourceFilesTable from './files-table';
 import ResourceProvenance from './provenance';
-import ResourceLinks from './external-links';
 
 export {
   Navigation,
@@ -17,7 +16,6 @@ export {
   ResourceOverview,
   ResourceFilesTable,
   ResourceHeader,
-  ResourceLinks,
   ResourceProvenance,
   TypeBanner,
 };

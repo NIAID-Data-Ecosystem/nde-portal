@@ -7838,10 +7838,10 @@ natural-compare@^1.4.0:
   resolved "https://registry.yarnpkg.com/natural-compare/-/natural-compare-1.4.0.tgz#4abebfeed7541f2c27acfb29bdbbd15c8d5ba4f7"
   integrity sha512-OWND8ei3VtNC9h7V60qff3SVobHr996CTwgxubgyQYEpg290h9J0buyECNNJexkFm5sOajh5G116RYA1c8ZMSw==
 
-nde-design-system@^1.0.18:
-  version "1.0.18"
-  resolved "https://registry.yarnpkg.com/nde-design-system/-/nde-design-system-1.0.18.tgz#7d6647b717f2ab33c9fd0aa8ac9afb51bec1a245"
-  integrity sha512-yHA5xlC/bodHyzM1d0X8ym1Kku/kTY3dvHU8rH7nnIWyPUxbqtMw2lFYxZa7Vf68Ov47n2NbsDEsmD6j1TgoVA==
+nde-design-system@^1.0.19:
+  version "1.0.19"
+  resolved "https://registry.yarnpkg.com/nde-design-system/-/nde-design-system-1.0.19.tgz#a5e03171e40d38c504686d445b1825197861aaf9"
+  integrity sha512-sXKNGoAXn7+aE7XO7xBdPOxro24ln4QLmuwn42Kl7x5UiSpnqyIB+r3eWZEovxOD+MmqyoxerNpYSsXRusGRQw==
   dependencies:
     "@chakra-ui/react" "^2.6.1"
     "@emotion/react" "^11.8.1"
