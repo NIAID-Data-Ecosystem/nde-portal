@@ -6,8 +6,8 @@ import {
   Card,
   Collapse,
   Flex,
+  Icon,
   Link,
-  ListIcon,
   ListItem,
   UnorderedList,
 } from 'nde-design-system';
@@ -20,6 +20,7 @@ import { useLocalStorage } from 'usehooks-ts';
 import { CardContainer } from 'src/components/resource-sections/components/related-datasets';
 import { FaSearch } from 'react-icons/fa';
 import { External } from './components/external';
+import { ScrollContainer } from 'src/components/scroll-container';
 
 export const Sidebar = ({
   data,
@@ -45,13 +46,7 @@ export const Sidebar = ({
       minW='350px'
       display={{ base: 'none', lg: 'block' }}
     >
-      <Box
-        className='sidebar'
-        position='sticky'
-        top='0px'
-        // w='100%'
-        // h='100%'
-      >
+      <Box className='sidebar' position='sticky' top='0px'>
         <Card flex={1} ml={[0, 0, 4]} my={[2, 2, 0]} sx={{ '>*': { p: 0 } }}>
           {/* External links to access data, documents or dataset at the source. */}
           <External data={data} isLoading={isLoading} />
@@ -80,28 +75,38 @@ export const Sidebar = ({
         {isMounted && (
           <Collapse in={!!searchHistory.length}>
             <CardContainer heading='Previous Searches'>
-              <UnorderedList ml={0}>
-                {searchHistory.map((search, idx) => (
-                  <ListItem key={idx} my={4} lineHeight='short'>
-                    <ListIcon
-                      as={FaSearch}
-                      color='link.color'
-                      boxSize={3}
-                      my={1}
-                    />
-                    <NextLink
-                      href={{
-                        pathname: '/search',
-                        query: { q: search },
-                      }}
+              <ScrollContainer maxH={250}>
+                <UnorderedList ml={0}>
+                  {searchHistory.slice(0, 3).map((search, idx) => (
+                    <ListItem
+                      key={idx}
+                      my={3}
+                      lineHeight='short'
+                      display='flex'
                     >
-                      <Link as='span' fontSize='sm'>
-                        {search}
-                      </Link>
-                    </NextLink>
-                  </ListItem>
-                ))}
-              </UnorderedList>
+                      <Icon
+                        as={FaSearch}
+                        color='link.color'
+                        boxSize={3}
+                        m={1}
+                        mr={1.5}
+                        mt={1.5}
+                        lineHeight='short'
+                      />
+                      <NextLink
+                        href={{
+                          pathname: '/search',
+                          query: { q: search },
+                        }}
+                      >
+                        <Link as='span' fontSize='sm'>
+                          {search}
+                        </Link>
+                      </NextLink>
+                    </ListItem>
+                  ))}
+                </UnorderedList>
+              </ScrollContainer>
             </CardContainer>
           </Collapse>
         )}

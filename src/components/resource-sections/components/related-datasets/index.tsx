@@ -13,6 +13,7 @@ import { FormattedResource } from 'src/utils/api/types';
 import NextLink from 'next/link';
 import { getTypeColor } from '../type-banner';
 import { formatType } from 'src/utils/api/helpers';
+import { ScrollContainer } from 'src/components/scroll-container';
 
 interface RelatedDatasetsProps {
   isRelatedTo: FormattedResource['isRelatedTo'];
@@ -61,7 +62,7 @@ const RelatedDatasets: React.FC<RelatedDatasetsProps> = ({
     <>
       <Collapse in={!isEmpty}>
         <CardContainer heading='Related Datasets'>
-          <Box overflow='auto'>
+          <ScrollContainer maxH={400}>
             {new Array(isRelatedTo?.length || 3).fill('').map((_, i) => {
               const data = isRelatedTo?.[i] || null;
               return (
@@ -124,7 +125,7 @@ const RelatedDatasets: React.FC<RelatedDatasetsProps> = ({
                 </SkeletonText>
               );
             })}
-          </Box>
+          </ScrollContainer>
         </CardContainer>
       </Collapse>
     </>
