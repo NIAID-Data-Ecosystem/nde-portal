@@ -12,7 +12,6 @@ export const AltmetricBadge: React.FC<{
   const { citation, doi, nctid } = props;
   // get pmid if it exists
   const pmid = citation?.find(c => !!c.pmid);
-  console.log(pmid);
   if (!citation && !doi && !nctid) {
     return <></>;
   }
