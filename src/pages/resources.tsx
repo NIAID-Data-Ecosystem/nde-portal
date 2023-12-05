@@ -166,17 +166,15 @@ const ResourcePage: NextPage = props => {
             <EmptyState />
           ) : (
             <Flex w='100%' h='100%' flexDirection='column' minW={150}>
-              <Flex
-                height='100%'
-                p={2}
-                flexDirection={['column', 'column', 'row']}
-              >
+              <Flex p={2} flexDirection={['column', 'column', 'row']}>
                 <Card
                   flex={3}
                   p={0}
                   width='100%'
                   sx={{ '>*': { p: 0 } }}
                   minW={150}
+                  flexDirection='column'
+                  overflow='unset'
                 >
                   <Sections
                     isLoading={isLoading}

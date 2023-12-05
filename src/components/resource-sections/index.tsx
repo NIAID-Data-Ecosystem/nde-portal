@@ -20,6 +20,7 @@ import {
   ResourceProvenance,
   Section,
   ResourceCitations,
+  ResourceAuthors,
 } from './components';
 import { Route } from './helpers';
 import FilesTable from './components/files-table';
@@ -85,19 +86,18 @@ const Sections = ({
   const router = useRouter();
   return (
     <>
-      <Section id='header' p={0}>
-        <ResourceHeader
-          isLoading={isLoading}
-          conditionsOfAccess={data?.conditionsOfAccess}
-          author={data?.author}
-          name={data?.name}
-          alternateName={data?.alternateName}
-          isAccessibleForFree={data?.isAccessibleForFree}
-        />
-        {/* Banner showing data type and publish date. */}
-        <ResourceDates data={data} />
-      </Section>
-
+      <ResourceHeader
+        isLoading={isLoading}
+        conditionsOfAccess={data?.conditionsOfAccess}
+        name={data?.name}
+        alternateName={data?.alternateName}
+        isAccessibleForFree={data?.isAccessibleForFree}
+        doi={data?.doi}
+        nctid={data?.nctid}
+      />
+      {data?.author && <ResourceAuthors authors={data.author} />}
+      {/* Banner showing data type and publish date. */}
+      <ResourceDates data={data} />
       {sections.map(section => {
         return (
           <Section
