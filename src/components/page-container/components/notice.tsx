@@ -51,11 +51,13 @@ const Notice = () => {
             Currently using the:{' '}
             <Link
               href={`${process.env.NEXT_PUBLIC_API_URL}/metadata`}
-              // target='_blank'
+              target='_blank'
             >
-              {process.env.NEXT_PUBLIC_API_URL?.includes('staging')
+              {process.env.NEXT_PUBLIC_API_URL?.includes('api-staging')
                 ? 'Staging'
-                : 'Production'}{' '}
+                : process.env.NEXT_PUBLIC_API_URL?.includes('api.data')
+                ? 'Production'
+                : 'Development'}{' '}
               API
             </Link>
           </Text>

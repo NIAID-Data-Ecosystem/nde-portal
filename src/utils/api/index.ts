@@ -86,7 +86,11 @@ export const fetchSearchResults = async (
 };
 
 // Fetches all search results for a given query
-export const fetchAllSearchResults = async (queryParams: Params) => {
+export const fetchAllSearchResults = async (
+  queryParams: Params,
+  signal?: AbortSignal,
+  updateProgress?: (pct: number) => void,
+) => {
   let total = 0;
   let allResults: any[] = [];
 
@@ -112,8 +116,15 @@ export const fetchAllSearchResults = async (queryParams: Params) => {
         params.scroll_id = scroll_id;
       }
 
-      const { data } = await axios.get(url, { params });
+      const { data } = await axios.get(url, { params, signal });
 
+      if (updateProgress) {
+        // Total number of pages to fetch is the total number of results divided by the page size (which defaults to 1000 when fetch_all is applied).
+        const totalPages = Math.ceil(total / 1000);
+        const percentComplete =
+          totalPages && Math.round((page / totalPages) * 100);
+        updateProgress(percentComplete);
+      }
       // if there are no more results to return, return all the results.
       if (!data.hits || !data._scroll_id || data?.success === false) {
         return { results: allResults, total };

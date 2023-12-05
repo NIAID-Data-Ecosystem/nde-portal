@@ -9,10 +9,7 @@ import {
   ListItem,
   Skeleton,
   Tag,
-  Text,
   UnorderedList,
-  Wrap,
-  WrapItem,
 } from 'nde-design-system';
 import {
   ResourceDates,
@@ -23,13 +20,13 @@ import {
 } from './components';
 import { Route } from './helpers';
 import FilesTable from './components/files-table';
-import FundingTable from './components/funding-table';
 import CitedByTable from './components/cited-by-table';
 import { DisplayHTMLContent } from '../html-content';
-import { CopyMetadata } from '../copy-metadata';
 import { DownloadMetadata } from '../download-metadata';
 import SoftwareInformation from './components/software-information';
 import { External } from './components/sidebar/components/external';
+import { Funding } from './components/funding';
+import { JsonViewer } from '../json-viewer';
 
 // Metadata displayed in each section
 export const sectionMetadata: { [key: string]: (keyof FormattedResource)[] } = {
@@ -211,10 +208,12 @@ const Sections = ({
             )}
 
             {/* Show funding */}
-            {section.hash === 'funding' && (
+            {/* {section.hash === 'funding' && (
               <FundingTable isLoading={isLoading} {...data} />
+            )} */}
+            {section.hash === 'funding' && (
+              <Funding isLoading={isLoading} data={data?.funding || []} />
             )}
-
             {/* Show citedBy */}
             {section.hash === 'citedBy' && (
               <CitedByTable isLoading={isLoading} {...data} />
@@ -223,42 +222,21 @@ const Sections = ({
             {/* Show raw metadata */}
             {section.hash === 'metadata' && data?.rawData && (
               <>
-                <Wrap spacing='10px' justify='right' pb={4}>
-                  <WrapItem>
-                    <CopyMetadata
-                      buttonProps={{ colorScheme: 'secondary' }}
-                      metadataObject={JSON.stringify(data.rawData, null, 2)}
-                    />
-                  </WrapItem>
-                  <WrapItem>
-                    <DownloadMetadata
-                      buttonProps={{ colorScheme: 'secondary' }}
-                      exportName={data.rawData['_id']}
-                      params={{ q: `_id:"${data.rawData['_id']}"` }}
-                    >
-                      Download Metadata
-                    </DownloadMetadata>
-                  </WrapItem>
-                </Wrap>
-                <Box
-                  maxHeight={500}
-                  overflow='auto'
-                  w='100%'
-                  tabIndex={0}
-                  borderY='2px solid'
-                  borderColor='page.alt'
-                >
-                  <pre
-                    style={{
-                      whiteSpace: 'pre-wrap',
-                      padding: '2rem',
+                <Flex w='100%' justifyContent='flex-end' pb={2}>
+                  <DownloadMetadata
+                    buttonProps={{
+                      colorScheme: 'primary',
+                      variant: 'outline',
+                      size: 'sm',
+                      mb: 1,
                     }}
+                    exportFileName={`nde-${data.rawData['_id']}`}
+                    params={{ q: `_id:"${data.rawData['_id']}"` }}
                   >
-                    <Text fontSize='10px'>
-                      {JSON.stringify(data.rawData, null, 2)}
-                    </Text>
-                  </pre>
-                </Box>
+                    Download Metadata
+                  </DownloadMetadata>
+                </Flex>
+                <JsonViewer data={data.rawData} />
               </>
             )}
           </Section>

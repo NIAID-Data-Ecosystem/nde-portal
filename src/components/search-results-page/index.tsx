@@ -324,7 +324,7 @@ const SearchResultsPage = () => {
           minW={{ md: 500 }}
         >
           <DownloadMetadata
-            exportName='nde-results'
+            exportFileName={`nde-results-${queryString.replaceAll(' ', '_')}`}
             params={params}
             buttonProps={{ variant: 'outline' }}
           >
