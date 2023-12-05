@@ -23,7 +23,7 @@
     "@testing-library/react-hooks": "^8.0.1",
     "@types/react-dom": "^18.2.4",
     "jest-environment-jsdom": "^29.5.0",
-    "nde-design-system": "^1.0.18",
+    "nde-design-system": "^1.0.19",
     "next": "^13.4.20-canary.13",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
@@ -70,6 +70,7 @@
     "puppeteer": "^19.9.0",
     "raw-loader": "^4.0.2",
     "react-icons": "^4.10.1",
+    "react-json-tree": "^0.18.0",
     "react-markdown": "^8.0.3",
     "react-query": "^3.39.3",
     "react-select": "^5.7.0",

@@ -9,6 +9,7 @@ import {
   getTableColumns,
 } from 'src/components/table/helpers';
 import { formatDate } from 'src/utils/api/helpers';
+import { uniqueId } from 'lodash';
 
 interface FilesTable {
   isLoading: boolean;
@@ -83,11 +84,13 @@ const FilesTable: React.FC<FilesTable> = ({ isLoading, distribution }) => {
         sortValue: typeof v === 'string' || typeof v === 'number' ? v : '',
       };
     });
+    obj['_key'] = uniqueId('files-row-');
     return obj;
   });
-
   return (
     <Table
+      id='files-download-table'
+      title='Files available for download'
       columns={columns}
       rowData={rows}
       caption='Files available for download.'

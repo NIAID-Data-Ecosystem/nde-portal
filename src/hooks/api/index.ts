@@ -24,6 +24,7 @@ export function useMetadata(options: UseQueryOptions<Metadata, Error> = {}) {
     ...options,
     queryKey: ['metadata'],
     queryFn: fetchMetadata,
+    refetchOnWindowFocus: false,
   });
 }
 

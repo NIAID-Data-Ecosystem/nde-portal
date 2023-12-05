@@ -131,7 +131,6 @@ export const RepositoryTable: React.FC<{
                   {Array.from(Array(TABLE_COLUMNS.length)).map((_, j) => {
                     if (TABLE_COLUMNS && rows) {
                       const row = rows[i];
-
                       let column = TABLE_COLUMNS[j];
                       let cell =
                         row?.[column.property as keyof Repository] || '';

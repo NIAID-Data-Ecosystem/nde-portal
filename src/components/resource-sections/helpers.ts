@@ -39,26 +39,19 @@ export const getSectionIcon = (sectionId: string) => {
   let icon;
   if (sectionId === 'description') {
     icon = FaAlignLeft;
-  }
-  if (sectionId === 'metadata') {
+  } else if (sectionId === 'metadata') {
     icon = VscJson;
-  }
-  if (sectionId === 'provenance') {
+  } else if (sectionId === 'provenance') {
     icon = FaDatabase;
-  }
-  if (sectionId === 'downloads') {
+  } else if (sectionId === 'downloads') {
     icon = FaDownload;
-  }
-  if (sectionId === 'funding') {
+  } else if (sectionId === 'funding') {
     icon = FaSearchDollar;
-  }
-  if (sectionId === 'citedBy') {
+  } else if (sectionId === 'citedBy') {
     icon = BsBlockquoteLeft;
-  }
-  if (sectionId === 'isBasedOn') {
+  } else if (sectionId === 'isBasedOn') {
     icon = FaThList;
-  }
-  if (sectionId === 'softwareInformation') {
+  } else if (sectionId === 'softwareInformation') {
     icon = FaTools;
   }
   return icon;

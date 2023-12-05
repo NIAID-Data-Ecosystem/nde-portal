@@ -1,92 +1,103 @@
 import React from 'react';
-import { Box, Flex, Heading, Skeleton } from 'nde-design-system';
+import { Flex, Heading, Link, Skeleton, Tag, Text } from 'nde-design-system';
 import { FormattedResource } from 'src/utils/api/types';
-import ResourceAuthors from './components/authors';
-import {
-  BadgeWithTooltip,
-  badgesConfig,
-  getBadgeIcon,
-} from 'src/components/badge-with-tooltip';
-import { FaDollarSign } from 'react-icons/fa';
 import { DisplayHTMLString } from 'src/components/html-content';
+import { formatDOI } from 'src/utils/helpers';
 
 interface HeaderProps {
   isLoading: boolean;
-  conditionsOfAccess?: FormattedResource['conditionsOfAccess'];
-  isAccessibleForFree?: FormattedResource['isAccessibleForFree'];
-  author?: FormattedResource['author'];
   name?: FormattedResource['name'];
   alternateName?: FormattedResource['alternateName'];
+  doi?: FormattedResource['doi'];
+  nctid?: FormattedResource['nctid'];
 }
 
 const Header: React.FC<HeaderProps> = ({
   isLoading,
-  conditionsOfAccess,
-  author,
   name,
   alternateName,
-  isAccessibleForFree,
+  doi,
+  nctid,
 }) => {
+  const IDTag = ({
+    label,
+    children,
+  }: {
+    label: string;
+    children: React.ReactNode;
+  }) => {
+    return (
+      <Tag size='sm' variant='subtle' colorScheme='secondary' px={0} py={0}>
+        <Text
+          bg='secondary.500'
+          color='white'
+          px={2}
+          py={1}
+          borderLeftRadius='inherit'
+        >
+          {label}
+        </Text>
+        <Text px={2} py={1} color='inherit'>
+          {children}
+        </Text>
+      </Tag>
+    );
+  };
   return (
-    <Flex flexDirection='column' w='100%'>
-      <Skeleton isLoaded={!isLoading} w='100%' p={2}>
-        {/* Level of access to resource from open to restricted*/}
-        {(conditionsOfAccess || isAccessibleForFree) && (
-          <Flex w='100%' justifyContent='flex-end'>
-            {isAccessibleForFree !== null &&
-              typeof isAccessibleForFree !== 'undefined' && (
-                <BadgeWithTooltip
-                  mx={1}
-                  icon={FaDollarSign}
-                  {...badgesConfig['isAccessibleForFree'][
-                    `${isAccessibleForFree}`
-                  ]}
-                >
-                  {isAccessibleForFree ? 'Free Access' : 'Paid Access'}
-                </BadgeWithTooltip>
-              )}
+    <>
+      <Skeleton
+        isLoaded={!isLoading}
+        w='100%'
+        overflow='unset'
+        position='sticky'
+        top='0px'
+        zIndex='banner'
+        bg='white'
+        borderBottom='1px solid'
+        borderBottomColor='gray.100'
+        px={6}
+        pt={4}
+        pb={2}
+      >
+        <Heading
+          as='h1'
+          fontSize='2xl'
+          fontWeight='semibold'
+          lineHeight={'short'}
+        >
+          <DisplayHTMLString>{name || alternateName}</DisplayHTMLString>
+          {!!name && alternateName && (
+            <Heading
+              as='h2'
+              size='sm'
+              color='gray.600'
+              fontWeight='normal'
+              wordBreak='break-word'
+              my={0}
+            >
+              Alternate name: {alternateName}
+            </Heading>
+          )}
+        </Heading>
 
-            {conditionsOfAccess && (
-              <BadgeWithTooltip
-                icon={getBadgeIcon({
-                  conditionsOfAccess,
-                })}
-                {...badgesConfig['conditionsOfAccess'][conditionsOfAccess]}
-              >
-                {conditionsOfAccess}
-              </BadgeWithTooltip>
+        {(nctid || doi) && (
+          <Flex mt={2}>
+            {nctid && <IDTag label='NCTID'>{nctid}</IDTag>}
+            {doi && (
+              <IDTag label='DOI'>
+                {doi.includes('http') || doi.includes('doi.org') ? (
+                  <Link href={doi} isExternal>
+                    {formatDOI(doi)}
+                  </Link>
+                ) : (
+                  formatDOI(doi)
+                )}
+              </IDTag>
             )}
           </Flex>
         )}
       </Skeleton>
-      <Flex>
-        <Skeleton isLoaded={!isLoading} w='100%'>
-          <Box m={[4, 6]}>
-            {/* Title of resource */}
-            <Heading as='h1' size='lg' fontFamily='body' wordBreak='break-word'>
-              <DisplayHTMLString>{name || alternateName}</DisplayHTMLString>
-            </Heading>
-            {/* Alternate name of resource if it exists */}
-            {!!name && alternateName && (
-              <Heading
-                as='h2'
-                size='sm'
-                fontFamily='body'
-                color='text.body'
-                fontWeight='semibold'
-                wordBreak='break-word'
-                mt={2}
-              >
-                <i>Alternate name: </i>
-                {alternateName}
-              </Heading>
-            )}
-          </Box>
-          {/* Authors of resource */}
-          {author && <ResourceAuthors authors={author} />}
-        </Skeleton>
-      </Flex>
-    </Flex>
+    </>
   );
 };
 

@@ -33,14 +33,15 @@ export const downloadAsCsv = (
   if (!dataObject || typeof dataObject !== 'object') {
     return {};
   }
+
   const data = Array.isArray(dataObject) ? dataObject : [dataObject];
   const headers = getColumnHeaders(data);
 
-  // replacer value for null/empty properties
-  const replacer = (_: string, value: any) => (value === null ? '' : value); // specify how you want to handle null values here
+  // Replacer value for null/empty properties
+  const replacer = (_: string, value: any) => (value === null ? '' : value);
 
   const csv = [
-    headers.join(','), // header row firstq
+    headers.join(','), // header row first
     ...data.map(row =>
       headers
         .map(fieldName => {
@@ -69,10 +70,17 @@ export const downloadAsCsv = (
     ),
   ].join('\r\n');
 
-  let href = 'data:text/csv;charset=utf-8,%EF%BB%BF' + encodeURIComponent(csv);
-  if (!href || !downloadName) {
+  // Check for data and downloadName validity
+  if (!csv || !downloadName) {
     return null;
   }
+
+  // Create a Blob from the CSV data
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+
+  // Create a URL for the Blob
+  let href = URL.createObjectURL(blob);
+
   return { href, download: `${downloadName}.csv` };
 };
 
@@ -85,7 +93,7 @@ export const downloadAsJson = (
     return {};
   }
 
-  // remove unwanted properties from object.
+  // remove unwanted properties from object
   const headers = getColumnHeaders(dataObject);
   dataObject.map((datum: { [key: string]: any }) => {
     Object.keys(datum).map(k => {
@@ -95,12 +103,18 @@ export const downloadAsJson = (
     });
   });
 
-  // add for array.
-  let href =
-    'data:text/json;charset=utf-8,' +
-    encodeURIComponent(JSON.stringify(dataObject, null, 2));
-  if (!href || !downloadName) {
+  // Check for data and downloadName validity
+  if (!dataObject || !downloadName) {
     return null;
   }
+
+  // Create a Blob from the JSON data
+  const blob = new Blob([JSON.stringify(dataObject, null, 2)], {
+    type: 'application/json',
+  });
+
+  // Create a URL for the Blob
+  let href = URL.createObjectURL(blob);
+
   return { href, download: `${downloadName}.json` };
 };

@@ -146,3 +146,21 @@ export const getTableColumns = (
     }, {} as { [key: string]: Column }),
   );
 };
+
+export const getTruncatedText = (
+  description?: string | null,
+  isOpen?: boolean,
+  MAX_CHARS = 144,
+) => {
+  if (!description) {
+    return { text: '', hasMore: false };
+  }
+
+  // truncate description if it's longer than 144 chars
+  const text =
+    description.length < MAX_CHARS
+      ? description
+      : description.substring(0, isOpen ? description.length : 144);
+
+  return { text, hasMore: description.length > MAX_CHARS };
+};

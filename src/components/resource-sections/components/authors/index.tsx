@@ -79,7 +79,7 @@ const ResourceAuthors = ({
 
   return (
     <Accordion allowToggle borderColor='gray.100'>
-      <AccordionItem>
+      <AccordionItem borderTopColor='transparent'>
         {({ isExpanded }) => (
           <>
             <AccordionButton px={[4, 6]} _hover={{ bg: 'page.alt' }}>
@@ -88,13 +88,8 @@ const ResourceAuthors = ({
                 direction={['column', 'column', 'row']}
                 justifyContent='space-between'
               >
-                <Box w='100%' flex='1' textAlign='left' mr={6} maxW={700}>
-                  <Heading
-                    size='sm'
-                    fontFamily='body'
-                    color='gray.700'
-                    fontWeight='semibold'
-                  >
+                <Box w='100%' flex='1' textAlign='left' mr={6}>
+                  <Heading size='sm' color='gray.700' fontWeight='semibold'>
                     {formatAuthorsList2String(authors, ',', 10)}
                     {authors.length === 1 ? '' : '.'}
                   </Heading>
