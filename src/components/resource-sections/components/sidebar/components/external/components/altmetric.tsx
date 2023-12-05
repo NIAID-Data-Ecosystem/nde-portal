@@ -10,18 +10,21 @@ export const AltmetricBadge: React.FC<{
   nctid: FormattedResource['nctid'];
 }> = props => {
   const { citation, doi, nctid } = props;
+  // get pmid if it exists
+  const pmid = citation?.find(c => !!c.pmid);
+  console.log(pmid);
   if (!citation && !doi && !nctid) {
     return <></>;
   }
   return (
     <Flex>
-      {(doi || nctid || citation?.[0]['pmid']) && (
+      {(doi || nctid || pmid) && (
         <Flex flexDirection='column' alignItems='center'>
           <HeadingWithTooltip
             label='Altmetric Rating'
             aria-label='Altmetic badge'
           ></HeadingWithTooltip>
-          {(doi || nctid || citation?.[0]['pmid']) && (
+          {(doi || nctid || pmid) && (
             <div
               role='link'
               aria-label={`altmetric badge for id ${doi || nctid}`}
@@ -29,7 +32,7 @@ export const AltmetricBadge: React.FC<{
               data-badge-type='donut'
               data-doi={doi && formatDOI(doi)}
               data-nct-id={nctid}
-              data-pmid={citation?.[0]['pmid']}
+              data-pmid={pmid}
               className='altmetric-embed'
               data-link-target='blank'
             ></div>
