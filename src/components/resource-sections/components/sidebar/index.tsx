@@ -5,6 +5,7 @@ import {
   Box,
   Card,
   Collapse,
+  Flex,
   Link,
   ListIcon,
   ListItem,
@@ -38,64 +39,73 @@ export const Sidebar = ({
   }, []);
 
   return (
-    <Box
-      className='sidebar'
+    <Flex
       flex={1}
-      position='sticky'
-      top='0px'
-      w='100%'
-      h='100%'
+      flexDirection='column'
       minW='350px'
       display={{ base: 'none', lg: 'block' }}
     >
-      <Card flex={1} ml={[0, 0, 4]} my={[2, 2, 0]} sx={{ '>*': { p: 0 } }}>
-        {/* External links to access data, documents or dataset at the source. */}
-        <External data={data} isLoading={isLoading} />
-      </Card>
-
-      {/* Local navigation for page */}
-      {sections.length > 0 && (
-        <Card flex={1} ml={[0, 0, 4]} my={2} sx={{ '>*': { p: [2, 4, 4, 6] } }}>
-          <Navigation routes={sections} />
+      <Box
+        className='sidebar'
+        position='sticky'
+        top='0px'
+        // w='100%'
+        // h='100%'
+      >
+        <Card flex={1} ml={[0, 0, 4]} my={[2, 2, 0]} sx={{ '>*': { p: 0 } }}>
+          {/* External links to access data, documents or dataset at the source. */}
+          <External data={data} isLoading={isLoading} />
         </Card>
-      )}
 
-      {/* Associated Resources with current page */}
-      <RelatedDatasets
-        isLoading={isLoading}
-        isRelatedTo={data?.isRelatedTo || null}
-        includedInDataCatalog={data?.includedInDataCatalog}
-      />
+        {/* Local navigation for page */}
+        {sections.length > 0 && (
+          <Card
+            flex={1}
+            ml={[0, 0, 4]}
+            my={2}
+            sx={{ '>*': { p: [2, 4, 4, 6] } }}
+          >
+            <Navigation routes={sections} />
+          </Card>
+        )}
 
-      {/* Search History links */}
-      {isMounted && (
-        <Collapse in={!!searchHistory.length}>
-          <CardContainer heading='Previous Searches'>
-            <UnorderedList ml={0}>
-              {searchHistory.map((search, idx) => (
-                <ListItem key={idx} my={4} lineHeight='short'>
-                  <ListIcon
-                    as={FaSearch}
-                    color='link.color'
-                    boxSize={3}
-                    my={1}
-                  />
-                  <NextLink
-                    href={{
-                      pathname: '/search',
-                      query: { q: search },
-                    }}
-                  >
-                    <Link as='span' fontSize='sm'>
-                      {search}
-                    </Link>
-                  </NextLink>
-                </ListItem>
-              ))}
-            </UnorderedList>
-          </CardContainer>
-        </Collapse>
-      )}
-    </Box>
+        {/* Associated Resources with current page */}
+        <RelatedDatasets
+          isLoading={isLoading}
+          isRelatedTo={data?.isRelatedTo || null}
+          includedInDataCatalog={data?.includedInDataCatalog}
+        />
+
+        {/* Search History links */}
+        {isMounted && (
+          <Collapse in={!!searchHistory.length}>
+            <CardContainer heading='Previous Searches'>
+              <UnorderedList ml={0}>
+                {searchHistory.map((search, idx) => (
+                  <ListItem key={idx} my={4} lineHeight='short'>
+                    <ListIcon
+                      as={FaSearch}
+                      color='link.color'
+                      boxSize={3}
+                      my={1}
+                    />
+                    <NextLink
+                      href={{
+                        pathname: '/search',
+                        query: { q: search },
+                      }}
+                    >
+                      <Link as='span' fontSize='sm'>
+                        {search}
+                      </Link>
+                    </NextLink>
+                  </ListItem>
+                ))}
+              </UnorderedList>
+            </CardContainer>
+          </Collapse>
+        )}
+      </Box>
+    </Flex>
   );
 };

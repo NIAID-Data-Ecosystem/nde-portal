@@ -1,5 +1,5 @@
 import React from 'react';
-import { Flex, FlexProps, Icon, Link, Text } from 'nde-design-system';
+import { Flex, FlexProps, Icon, Text } from 'nde-design-system';
 import { FaRegClock } from 'react-icons/fa';
 import TypeBanner from '../type-banner';
 import { FormattedResource } from 'src/utils/api/types';
@@ -33,32 +33,6 @@ export const DateTag: React.FC<DateTagProps> = ({ type, date, ...props }) => {
       <Text fontSize='xs'>
         {type && <strong>{type}</strong>} {date}
       </Text>
-    </Flex>
-  );
-};
-
-export const DOITag = ({ doi, ...props }: { doi: string }) => {
-  return (
-    <Flex
-      px={2}
-      m={1}
-      alignItems='center'
-      bg='secondary.50'
-      w={['100%', '100%', 'unset']}
-      whiteSpace='nowrap'
-      borderRadius='semi'
-      {...props}
-    >
-      <Text fontSize='xs' mr={2}>
-        <strong>DOI</strong>
-      </Text>{' '}
-      {doi.includes('http') || doi.includes('doi.org') ? (
-        <Link href={doi} isExternal>
-          <Text fontSize='xs'>{formatDOI(doi)}</Text>
-        </Link>
-      ) : (
-        <Text fontSize='xs'>{formatDOI(doi)}</Text>
-      )}
     </Flex>
   );
 };
@@ -104,7 +78,6 @@ const ResourceDates: React.FC<ResourceDates> = ({ data }) => {
         {date_data.map((date, i) => {
           return <DateTag key={i} type={date.name} date={date.value} />;
         })}
-        {data.doi && <DOITag doi={data.doi} />}
       </Flex>
     </TypeBanner>
   );

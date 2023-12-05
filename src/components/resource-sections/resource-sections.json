@@ -4,7 +4,6 @@
     {
       "title": "Overview",
       "hash": "overview",
-
       "showEmpty": true
     },
     {
@@ -27,6 +26,7 @@
       "showEmpty": true,
       "isCollapsible": true
     },
+
     {
       "title": "File Downloads",
       "hash": "downloads",

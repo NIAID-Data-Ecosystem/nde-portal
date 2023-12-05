@@ -1,10 +1,7 @@
 import React from 'react';
 import { Flex, Icon, IconProps as ChakraIconProps } from 'nde-design-system';
 import {
-  FaFlask,
   FaFingerprint,
-  FaSearchDollar,
-  FaFileSignature,
   FaQuoteLeft,
   FaInfo,
   FaRegCalendarAlt,
@@ -16,6 +13,7 @@ import Glyph from './components/glyph';
 import MetadataConfig from 'configs/resource-metadata.json';
 import Tooltip from 'src/components/tooltip';
 import { ResourceMetadata } from 'src/utils/schema-definitions/types';
+import { FaEarthAfrica, FaLanguage } from 'react-icons/fa6';
 
 // Metadata icon svg.
 export interface IconProps extends ChakraIconProps {
@@ -51,6 +49,10 @@ export const MetadataIcon = React.forwardRef<HTMLDivElement, IconProps>(
       FaIcon = FaQuoteLeft;
     } else if (glyph?.toLowerCase() === 'identifier') {
       FaIcon = FaFingerprint;
+    } else if (glyph?.toLowerCase() === 'inlanguage') {
+      FaIcon = FaLanguage;
+    } else if (glyph?.toLowerCase() === 'spatialcoverage') {
+      FaIcon = FaEarthAfrica;
     } else if (glyph?.toLowerCase() === 'applicationcategory') {
       FaIcon = FaLaptopCode;
     } else if (glyph?.toLowerCase() === 'programminglanguage') {

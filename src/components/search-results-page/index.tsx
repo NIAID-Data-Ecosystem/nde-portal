@@ -10,18 +10,12 @@ import {
 import {
   Box,
   Button,
-  Circle,
   Collapse,
   Flex,
-  FormControl,
-  FormLabel,
-  Icon,
   Link,
   ListItem,
   Stack,
-  Switch,
   Text,
-  Tooltip,
   UnorderedList,
 } from 'nde-design-system';
 import {
@@ -44,7 +38,6 @@ import { encodeString } from 'src/utils/querystring-helpers';
 import { SelectedFilterType } from '../filters/types';
 // import { AdvancedSearchWithModal } from '../advanced-search/AdvancedSearchWithModal';
 import { getQueryStatusError } from '../error/utils';
-import { FaInfo } from 'react-icons/fa';
 /*
 [COMPONENT INFO]:
  Search results pages displays the list of records returned by a search.

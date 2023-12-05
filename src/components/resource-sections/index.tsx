@@ -17,6 +17,8 @@ import {
   ResourceOverview,
   ResourceProvenance,
   Section,
+  ResourceCitations,
+  ResourceAuthors,
 } from './components';
 import { Route } from './helpers';
 import FilesTable from './components/files-table';
@@ -27,11 +29,11 @@ import SoftwareInformation from './components/software-information';
 import { External } from './components/sidebar/components/external';
 import { Funding } from './components/funding';
 import { JsonViewer } from '../json-viewer';
+import ResourceIsPartOf from './components/is-part-of';
 
 // Metadata displayed in each section
 export const sectionMetadata: { [key: string]: (keyof FormattedResource)[] } = {
   overview: [
-    'citation',
     'doi',
     'healthCondition',
     'infectiousAgent',
@@ -83,17 +85,16 @@ const Sections = ({
   const router = useRouter();
   return (
     <>
-      <Section id='header' p={0}>
-        <ResourceHeader
-          isLoading={isLoading}
-          author={data?.author}
-          name={data?.name}
-          alternateName={data?.alternateName}
-        />
-        {/* Banner showing data type and publish date. */}
-        <ResourceDates data={data} />
-      </Section>
-
+      <ResourceHeader
+        isLoading={isLoading}
+        name={data?.name}
+        alternateName={data?.alternateName}
+        doi={data?.doi}
+        nctid={data?.nctid}
+      />
+      {data?.author && <ResourceAuthors authors={data.author} />}
+      {/* Banner showing data type and publish date. */}
+      <ResourceDates data={data} />
       {sections.map(section => {
         return (
           <Section
@@ -104,7 +105,18 @@ const Sections = ({
             isCollapsible={section.isCollapsible}
           >
             {section.hash === 'overview' && (
-              <ResourceOverview isLoading={isLoading} {...data} />
+              <>
+                <ResourceOverview isLoading={isLoading} {...data} />
+                <ResourceIsPartOf
+                  isLoading={isLoading}
+                  studies={data?.isPartOf}
+                />
+                <ResourceCitations
+                  isLoading={isLoading}
+                  type={data?.['@type']}
+                  citations={data?.citation}
+                />
+              </>
             )}
             {/* for mobile viewing */}
             {section.hash === 'overview' && (
@@ -112,7 +124,6 @@ const Sections = ({
                 <External data={data} isLoading={isLoading} />
               </Box>
             )}
-
             {/* Show keywords */}
             {section.hash === 'keywords' && (
               <Skeleton isLoaded={!isLoading}>
@@ -141,7 +152,6 @@ const Sections = ({
                 </Flex>
               </Skeleton>
             )}
-
             {section.hash === 'softwareInformation' && (
               <SoftwareInformation
                 keys={sectionMetadata[section.hash]}
@@ -149,7 +159,6 @@ const Sections = ({
                 {...data}
               />
             )}
-
             {/* Show description */}
             {section.hash === 'description' &&
               (data?.description || data?.abstract) && (
@@ -174,7 +183,6 @@ const Sections = ({
                   )}
                 </>
               )}
-
             {/* Show provenance */}
             {section.hash === 'provenance' && (
               <ResourceProvenance isLoading={isLoading} {...data} />
@@ -206,7 +214,6 @@ const Sections = ({
                 )}
               </>
             )}
-
             {/* Show funding */}
             {/* {section.hash === 'funding' && (
               <FundingTable isLoading={isLoading} {...data} />
@@ -218,7 +225,6 @@ const Sections = ({
             {section.hash === 'citedBy' && (
               <CitedByTable isLoading={isLoading} {...data} />
             )}
-
             {/* Show raw metadata */}
             {section.hash === 'metadata' && data?.rawData && (
               <>

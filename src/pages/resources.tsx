@@ -10,7 +10,7 @@ import Empty from 'src/components/empty';
 import { Box, Button, Card, Flex, Link, Text } from 'nde-design-system';
 import { Error, ErrorCTA } from 'src/components/error';
 import Sections, { sectionMetadata } from 'src/components/resource-sections';
-import navigationData from 'configs/resource-sections.json';
+import navigationData from 'src/components/resource-sections/resource-sections.json';
 import { Route, showSection } from 'src/components/resource-sections/helpers';
 import { getQueryStatusError } from 'src/components/error/utils';
 import { Sidebar } from 'src/components/resource-sections/components/sidebar';
@@ -105,6 +105,7 @@ const ResourcePage: NextPage = () => {
       >
         <PageContent>
           <Flex
+            flexDirection='column'
             maxW={{ base: 'unset', xl: '2000px' }}
             margin='0 auto'
             p={{ base: 0, md: 4 }}
@@ -172,6 +173,7 @@ const ResourcePage: NextPage = () => {
                       width='100%'
                       sx={{ '>*': { p: 0 } }}
                       minW={150}
+                      overflow='unset'
                     >
                       <Sections
                         isLoading={isLoading}
@@ -179,6 +181,7 @@ const ResourcePage: NextPage = () => {
                         sections={sections}
                       />
                     </Card>
+
                     <Sidebar
                       data={data}
                       isLoading={isLoading}
