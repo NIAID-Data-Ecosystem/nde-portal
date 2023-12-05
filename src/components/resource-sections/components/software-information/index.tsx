@@ -12,15 +12,9 @@ import {
   UnorderedList,
 } from 'nde-design-system';
 import { FormattedResource } from 'src/utils/api/types';
-import BasedOn from '../based-on';
-import {
-  FaArrowAltCircleUp,
-  FaCheckCircle,
-  FaFileExport,
-  FaFileImport,
-  FaSitemap,
-} from 'react-icons/fa';
+import { FaFileExport, FaFileImport } from 'react-icons/fa';
 import InputOutput from './components/input-output';
+import BasedOnTable from '../based-on';
 
 interface SoftwareInformation {
   isLoading: boolean;
@@ -135,21 +129,6 @@ const SoftwareInformation: React.FC<SoftwareInformation> = ({
             </Stat>
           )}
 
-          {/* Software requirements to run software */}
-          {softwareRequirements && (
-            <Stat>
-              <StatLabel>Software Requirements</StatLabel>
-              <dd>
-                <BasedOn
-                  isLoading={isLoading}
-                  isBasedOn={softwareRequirements.map(identifier => ({
-                    identifier,
-                  }))}
-                  icon={FaCheckCircle}
-                />
-              </dd>
-            </Stat>
-          )}
           {/* Help / code examples or contact.*/}
           {softwareHelp && softwareHelp.filter(h => h.url).length > 0 && (
             <Stat>
@@ -193,46 +172,26 @@ const SoftwareInformation: React.FC<SoftwareInformation> = ({
             </Stat>
           )}
 
-          {/* Provides enhancement to the list of tools */}
-          {softwareAddOn && (
-            <Stat>
-              <StatLabel>Enhances</StatLabel>
-              <dd>
-                <BasedOn
-                  isLoading={isLoading}
-                  isBasedOn={softwareAddOn}
-                  icon={FaArrowAltCircleUp}
-                />
-              </dd>
-            </Stat>
-          )}
-
           {/* Libraries that the tool imports. */}
           {isBasedOn && (
-            <Stat w='100%'>
-              <StatLabel>Imports</StatLabel>
-              <dd>
-                <BasedOn
-                  isLoading={isLoading}
-                  isBasedOn={isBasedOn}
-                  icon={FaFileImport}
-                />
-              </dd>
-            </Stat>
+            <BasedOnTable
+              id='software-information-is-based-on'
+              title='Imports'
+              caption='Imports used by this dataset/tool.'
+              isLoading={isLoading}
+              items={isBasedOn}
+            />
           )}
 
           {/* Other tools which use this tool as import. */}
           {isBasisFor && (
-            <Stat>
-              <StatLabel>Dependency for</StatLabel>
-              <dd>
-                <BasedOn
-                  isLoading={isLoading}
-                  isBasedOn={isBasisFor}
-                  icon={FaSitemap}
-                />
-              </dd>
-            </Stat>
+            <BasedOnTable
+              id='software-information-dependency-for'
+              title='Dependency for'
+              caption='Datasets or tools that this dataset/tool is a dependency for.'
+              isLoading={isLoading}
+              items={isBasisFor}
+            />
           )}
 
           {/* Software input such as file or parameter. */}

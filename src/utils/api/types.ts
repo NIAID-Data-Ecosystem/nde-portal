@@ -186,10 +186,10 @@ export interface InteractionStatistics {
 
 export interface IsBasedOn {
   '@type'?: string;
-  _id?: string;
   abstract?: string;
   additionalType?: AdditionalType;
   citation?: string;
+  codeRepository?: string;
   datePublished?: string;
   description?: string;
   doi?: string;

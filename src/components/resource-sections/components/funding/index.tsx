@@ -7,7 +7,6 @@ import {
   Icon,
   Link,
   Table,
-  TableContainer,
   TablePagination,
   TableSortToggle,
   TableWrapper,
@@ -16,8 +15,6 @@ import {
   Text,
   useDisclosure,
   useTableSort,
-  Tbody,
-  Thead,
   VisuallyHidden,
   Heading,
   Skeleton,
@@ -25,9 +22,17 @@ import {
 import { Funding as FundingType } from 'src/utils/api/types';
 import { FaExternalLinkSquareAlt } from 'react-icons/fa';
 import { uniqueId } from 'lodash';
-import { Cell, Label, Content, EmptyCell } from './components/cell';
-import { Row, RowWithDrawer } from './components/row';
 import { getMetadataTheme } from 'src/components/icon/helpers';
+import {
+  Cell,
+  Label,
+  Content,
+  EmptyCell,
+  Th,
+} from 'src/components/table/components/cell';
+import { Row, RowWithDrawer } from 'src/components/table/components/row';
+import { TableContainer } from 'src/components/table/components/table-container';
+import { getTruncatedText } from 'src/components/table/helpers';
 
 // Constants for table configuration.
 // [ROW_SIZES]: num of rows per page
@@ -117,74 +122,53 @@ export const Funding: React.FC<FundingProps> = ({
           <Table
             role='table'
             aria-label='Grant and funding information'
-            aria-describedby='table-caption'
+            aria-describedby='funding-table-caption'
             aria-rowcount={rows.length}
-            sx={{
-              thead: {
-                tr: {
-                  th: {
-                    borderBottom: '1px solid',
-                    borderBottomColor: `${getMetadataTheme('funding')}.200`,
-                  },
-                  td: {
-                    py: undefined,
-                  },
-                },
-              },
-            }}
           >
             {/* Note: keep for accessibility */}
-            <VisuallyHidden as='caption'>
+            <VisuallyHidden id='funding-table-caption' as='caption'>
               Grant and funding information
             </VisuallyHidden>
-            <Thead>
+            <thead>
               <Tr role='row' flex='1' display='flex' w='100%'>
                 {COLUMNS.map(column => {
                   return (
-                    <React.Fragment key={`table-col-th-${column.key}`}>
-                      <Cell
-                        as='th'
-                        role='columnheader'
-                        scope='col'
-                        label={column.title}
-                        alignItems='center'
-                        fontWeight='bold'
-                        bg={column.key === orderBy ? 'page.alt' : 'transparent'}
-                        {...column.props}
-                      >
-                        {column.key && (
-                          <TableSortToggle
-                            isSelected={column.key === orderBy}
-                            sortBy={sortBy}
-                            handleToggle={(sortByAsc: boolean) => {
-                              updateSort(column.key, sortByAsc);
-                            }}
-                          />
-                        )}
-                      </Cell>
-                    </React.Fragment>
+                    <Th
+                      key={`table-col-th-${column.key}`}
+                      label={column.title}
+                      isSelected={column.key === orderBy}
+                      borderBottomColor={`${getMetadataTheme('funding')}.200`}
+                      {...column.props}
+                    >
+                      {column.key && (
+                        <TableSortToggle
+                          isSelected={column.key === orderBy}
+                          sortBy={sortBy}
+                          handleToggle={(sortByAsc: boolean) => {
+                            updateSort(column.key, sortByAsc);
+                          }}
+                        />
+                      )}
+                    </Th>
                   );
                 })}
               </Tr>
-            </Thead>
-            <Tbody
-              sx={{
-                tr: {
-                  td: {
-                    py: undefined,
-                  },
-                },
-              }}
-            >
+            </thead>
+            <tbody>
               {rows.map(funding => {
                 return (
-                  <React.Fragment key={`table-tr-${funding.key}`}>
-                    <Row>
+                  <Row
+                    as='tr'
+                    key={`table-tr-${funding.key}`}
+                    flexDirection='column'
+                    borderColor='gray.200'
+                  >
+                    <Flex as='td'>
                       {COLUMNS.map(column => {
                         return (
                           <Cell
                             key={`table-td-${funding.key}-${column.key}`}
-                            as='td'
+                            as='div'
                             role='cell'
                             {...column.props}
                           >
@@ -235,7 +219,7 @@ export const Funding: React.FC<FundingProps> = ({
                           </Cell>
                         );
                       })}
-                    </Row>
+                    </Flex>
                     {(funding.description ||
                       funding.keywords ||
                       (funding?.funder &&
@@ -255,7 +239,7 @@ export const Funding: React.FC<FundingProps> = ({
                                 key !== 'name' &&
                                 key !== 'identifier',
                             )))) && (
-                      <RowWithDrawer>
+                      <RowWithDrawer as='td'>
                         <FundingDrawerContent
                           id={funding.key}
                           description={funding.description}
@@ -264,10 +248,10 @@ export const Funding: React.FC<FundingProps> = ({
                         />
                       </RowWithDrawer>
                     )}
-                  </React.Fragment>
+                  </Row>
                 );
               })}
-            </Tbody>
+            </tbody>
           </Table>
         </TableContainer>
         <TablePagination
@@ -285,7 +269,7 @@ export const Funding: React.FC<FundingProps> = ({
   );
 };
 
-const ContentWithTag = React.memo(
+export const ContentWithTag = React.memo(
   ({
     url,
     identifier,
@@ -347,32 +331,10 @@ interface FundingDrawerContentProps extends FlexProps {
 }
 // FundingDrawerContent component - displays detailed information for a funding item.
 const FundingDrawerContent = React.memo(
-  ({
-    id,
-    description: fullDescription,
-    funder,
-    keywords,
-  }: FundingDrawerContentProps) => {
+  ({ id, description, funder, keywords }: FundingDrawerContentProps) => {
     const { isOpen, onToggle } = useDisclosure();
 
-    const getTruncatedDescription = (
-      description?: FundingType['description'],
-      MAX_CHARS = 144,
-    ) => {
-      if (!description) {
-        return { text: '', hasMore: false };
-      }
-
-      // truncate description if it's longer than 144 chars
-      const text =
-        description.length < MAX_CHARS
-          ? description
-          : description.substring(0, isOpen ? description.length : 144);
-
-      return { text, hasMore: description.length > MAX_CHARS };
-    };
-
-    const description = getTruncatedDescription(fullDescription);
+    const { text, hasMore } = getTruncatedText(description, isOpen);
 
     const funders = Array.isArray(funder) ? funder : [funder];
 
@@ -382,11 +344,11 @@ const FundingDrawerContent = React.memo(
           Description
         </Label>
         <Content as='dd'>
-          {description.text ? (
+          {text ? (
             <Text w='100%'>
-              {description.text}
-              {!isOpen && description.hasMore ? '...' : ''}
-              {description.hasMore ? (
+              {text}
+              {!isOpen && hasMore ? '...' : ''}
+              {hasMore ? (
                 <Button
                   variant='link'
                   textDecoration='underline'
@@ -458,7 +420,7 @@ const FundingDrawerContent = React.memo(
                     </Label>
                     {funder?.name && (
                       <Box px={4} py={1}>
-                        <Content as='dd' fontWeight='semibold'>
+                        <Content as='dd' fontWeight='semibold' my={0}>
                           {funder.name}
                           {alternateNames && (
                             <Text color='gray.800' fontWeight='normal'>
