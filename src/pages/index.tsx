@@ -345,12 +345,12 @@ const Home: NextPage<{
         body={[HOMEPAGE_COPY.sections.hero.body]}
       >
         <Flex w='100%' justifyContent='flex-end' mt={[15, 20, 24]} mb={2}>
-          <NextLink
-            href={{ pathname: '/advanced-search' }}
-            passHref
-            prefetch={false}
-          >
-            <Box>
+          <Box mb={2}>
+            <NextLink
+              href={{ pathname: '/advanced-search' }}
+              passHref
+              prefetch={false}
+            >
               <AdvancedSearchOpen
                 onClick={() => {}}
                 variant='outline'
@@ -358,8 +358,8 @@ const Home: NextPage<{
                 color='white'
                 _hover={{ bg: 'whiteAlpha.800', color: 'primary.600' }}
               />
-            </Box>
-          </NextLink>
+            </NextLink>
+          </Box>
         </Flex>
         <SearchBarWithDropdown
           placeholder='Search for datasets'
