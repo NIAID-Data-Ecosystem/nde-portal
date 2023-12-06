@@ -138,9 +138,7 @@ export const PageContainer: React.FC<PageContainerProps> = ({
             >
               <Flex w='100%' justifyContent='flex-end' mb={2}>
                 <NextLink href={{ pathname: 'advanced-search' }} passHref>
-                  <Box>
-                    <AdvancedSearchOpen onClick={() => {}} />
-                  </Box>
+                  <AdvancedSearchOpen onClick={() => {}} />
                 </NextLink>
               </Flex>
               <SearchBarWithDropdown

@@ -13,6 +13,7 @@ export const AdvancedSearchOpen: React.FC<AdvancedSearchButtonProps> = ({
   const { _hover, ...rest } = props;
   return (
     <Button
+      as='span'
       variant='outline'
       size='sm'
       transition='0.2s ease-in-out'

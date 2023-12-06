@@ -169,7 +169,7 @@ export const Pagination: React.FC<PaginationProps> = ({
                 </StyledPaginationButtonGroup>
                 {totalPages > 5 && selectedPage < totalPages - 1 && (
                   <>
-                    <Flex alignItems='flex-end' mx={4} color='gray.400'>
+                    <Flex alignItems='flex-end' mx={4} color='primary.600'>
                       ...
                     </Flex>
                     <PaginationButton

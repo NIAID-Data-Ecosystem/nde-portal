@@ -53,16 +53,15 @@ export const FiltersCheckbox: React.FC<FiltersCheckboxProps> = React.memo(
                         .reverse()
                         .map((term, i) => {
                           return (
-                            <>
+                            <React.Fragment key={`${term}-${i}`}>
                               <Text
-                                key={`${term}-${i}`}
                                 as='span'
                                 fontWeight={i === 0 ? 'semibold' : 'normal'}
                               >
                                 {term.charAt(0).toUpperCase() + term.slice(1)}
                               </Text>
                               <br />
-                            </>
+                            </React.Fragment>
                           );
                         })}
                     </>

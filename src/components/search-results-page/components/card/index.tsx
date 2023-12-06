@@ -105,9 +105,9 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                 flexWrap='nowrap'
                 alignItems='center'
                 color='link.color'
-                sx={{ h2: { textDecoration: 'underline' } }}
+                sx={{ h3: { textDecoration: 'underline' } }}
                 _hover={{
-                  h2: { textDecoration: 'none' },
+                  h3: { textDecoration: 'none' },
                   svg: {
                     transform: 'translate(0px)',
                     opacity: 0.9,
@@ -119,7 +119,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                   svg: { color: 'link.color' },
                 }}
               >
-                <CardTitle>
+                <CardTitle as='h3'>
                   <DisplayHTMLContent
                     content={name || alternateName || ''}
                     fontSize='lg'
@@ -406,6 +406,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
               passHref
             >
               <Button
+                as='span'
                 maxW={{ xl: '230px' }}
                 w='100%'
                 size='sm'

@@ -36,10 +36,7 @@ export const MetadataBlock = ({
   tooltipLabel,
 }: MetadataBlockProps) => {
   return (
-    <Box
-      flexDirection='column'
-      color={`${isDisabled ? 'niaid.placeholder' : 'text.body'}`}
-    >
+    <Box flexDirection='column' color={isDisabled ? 'gray.700' : 'text.body'}>
       <Flex alignItems='center'>
         <Flex alignItems='center' px={1} mb={0.5} flex={1}>
           <MetadataIcon

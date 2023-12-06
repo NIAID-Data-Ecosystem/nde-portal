@@ -2,6 +2,7 @@ import { FormattedResource, ResourceType } from 'src/utils/api/types';
 import { formatLicense } from 'src/utils/helpers';
 import { OntologyButtonProps, SearchButtonProps } from './components/buttons';
 import MetadataConfig from 'configs/resource-metadata.json';
+import { uniqueId } from 'lodash';
 
 // Sort [SORT_ORDER] based on: https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/214
 export const SORT_ORDER = [
@@ -164,7 +165,7 @@ const createFundingContent = (
           ? funding.funder.filter(funder => !!funder.name).join(', ')
           : funding?.funder?.name;
         return {
-          key: `${property}-${id}-${idx}`,
+          key: uniqueId(`${property}-${id}-${idx}`),
           name: name || '',
           scientificName: '',
           searchProps: {
@@ -208,7 +209,7 @@ const createHealthConditionContent = (
             : healthCondition.name;
 
           return {
-            key: `${property}-${id}-${idx}`,
+            key: uniqueId(`${property}-${id}-${idx}`),
             name,
             scientificName: '',
             searchProps: {
@@ -269,7 +270,7 @@ const createMeasurementTechniqueContent = (
             : measurementTechnique.name;
 
           return {
-            key: `mt-${id}-${idx}`,
+            key: uniqueId(`${property}-${id}-${idx}`),
             name,
             searchProps: {
               ['aria-label']: `Search for results with measurement technique "${name}"`,
@@ -310,7 +311,7 @@ const createInfectiousAgentContent = (
             : pathogen.commonName;
 
           return {
-            key: `${property}-${id}-${idx}`,
+            key: uniqueId(`${property}-${id}-${idx}`),
             name,
             scientificName,
             searchProps: {
@@ -353,7 +354,7 @@ const createSpeciesContent = (
             : species.commonName;
 
           return {
-            key: `${property}-${id}-${idx}`,
+            key: uniqueId(`${property}-${id}-${idx}`),
             name,
             scientificName,
             searchProps: {
@@ -404,7 +405,7 @@ const createVariableMeasuredContent = (
     items: variableMeasured
       ? variableMeasured.map((variable, idx) => {
           return {
-            key: `${property}-${id}-${idx}`,
+            key: uniqueId(`${property}-${id}-${idx}`),
             name: variable,
             searchProps: {
               ['aria-label']: `Search for results with variable measured "${variable}"`,

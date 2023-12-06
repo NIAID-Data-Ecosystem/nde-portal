@@ -4,9 +4,10 @@ export const ScrollContainer = ({ children, ...props }: BoxProps) => {
   return (
     <Box
       overflow='auto'
+      pr={2}
       sx={{
         '&::-webkit-scrollbar': {
-          width: '7px',
+          width: '10px',
           height: '7px',
         },
         '&::-webkit-scrollbar-track': {

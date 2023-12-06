@@ -5,6 +5,7 @@ import {
   Icon,
   IconButton,
   IconButtonProps,
+  Link,
   Text,
 } from 'nde-design-system';
 import Tooltip from 'src/components/tooltip';
@@ -40,21 +41,24 @@ export const OntologyButton = ({
     <Tooltip label={ariaLabel || 'See ontology information.'}>
       {inDefinedTermSet ? (
         <Button
-          as='a'
+          as={Link}
           href={value}
           target='_blank'
           variant='outline'
           colorScheme='gray'
           leftIcon={<Icon as={FaSitemap} />}
+          sx={{
+            borderBottomColor: 'inherit',
+            '.child-node': {
+              borderBottom: 'none',
+              display: 'inline-flex',
+              alignItems: 'center',
+            },
+            '.child-node p': { borderBottom: 'none' },
+          }}
+          _visited={{ _hover: { borderBottomColor: 'inherit' } }}
         >
-          <Text
-            fontSize='12px'
-            fontWeight='semibold'
-            lineHeight='short'
-            color='inherit'
-          >
-            {inDefinedTermSet}
-          </Text>
+          {inDefinedTermSet}
         </Button>
       ) : (
         <IconButton
