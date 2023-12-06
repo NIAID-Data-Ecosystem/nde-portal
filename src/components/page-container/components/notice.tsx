@@ -20,7 +20,7 @@ const Notice = () => {
     <Box
       w='100%'
       bg='status.warning_lt'
-      borderY='5px solid'
+      borderBottom='2px solid'
       borderColor='status.warning'
       zIndex='docked'
       __css={{
