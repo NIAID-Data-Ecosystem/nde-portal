@@ -25,6 +25,8 @@ import {
   Tab,
   Tag,
   Text,
+  TabPanels,
+  TabPanel,
 } from 'nde-design-system';
 import { theme } from 'src/theme';
 import {
@@ -269,7 +271,7 @@ export const RepositoryTabs: React.FC<{
           flexWrap={['wrap', 'nowrap']}
           justifyContent={['center', 'flex-start']}
         >
-          {types.map(type => (
+          {types.map((type, idx) => (
             <Tab
               key={type.property}
               w={['100%', 'unset']}
@@ -305,9 +307,8 @@ export const RepositoryTabs: React.FC<{
             </Tab>
           ))}
         </TabList>
+        <TabPanels>{children}</TabPanels>
       </Tabs>
-
-      {children}
     </Flex>
   );
 };
@@ -432,11 +433,20 @@ const Home: NextPage<{
                 repositories={repositories}
                 setSelectedType={setSelectedType}
               >
-                <RepositoryTable
-                  isLoading={isLoading}
-                  repositories={repositories}
-                  selectedType={selectedType}
-                />
+                <TabPanel id='iid'>
+                  <RepositoryTable
+                    isLoading={isLoading}
+                    repositories={repositories}
+                    selectedType='iid'
+                  />
+                </TabPanel>
+                <TabPanel id='generalist'>
+                  <RepositoryTable
+                    isLoading={isLoading}
+                    repositories={repositories}
+                    selectedType='generalist'
+                  />
+                </TabPanel>
               </RepositoryTabs>
               <ButtonGroup
                 spacing={[0, 2]}
