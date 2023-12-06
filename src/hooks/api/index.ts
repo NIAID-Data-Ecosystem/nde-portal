@@ -37,22 +37,20 @@ export function useRepoData(
     select: (data: Metadata) => {
       const sources = data?.src || [];
       const repositories = Object.values(sources).map(({ sourceInfo }) => {
-        const { identifier, name, url } = sourceInfo || {};
-
-        const data = {
-          identifier,
-          url,
-        };
+        const { identifier, abstract, description, name, url } =
+          sourceInfo || {};
 
         const repo = REPOSITORIES.repositories.find(
           ({ id }) => id === identifier,
         );
         return {
-          ...data,
+          identifier,
+          url,
+          abstract: abstract || '',
+          description,
           label: name || '',
           type: (repo?.type || 'generalist') as Repository['type'],
           icon: repo?.icon || '',
-          abstract: repo?.abstract || '',
         };
       });
 
