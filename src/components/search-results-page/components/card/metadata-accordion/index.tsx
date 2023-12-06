@@ -38,6 +38,7 @@ const MetadataAccordion: React.FC<MetadataAccordionProps> = ({ data }) => {
     id: data?.id,
     healthCondition: data?.healthCondition,
     infectiousAgent: data?.infectiousAgent,
+    funding: data?.funding,
     license: data?.license,
     measurementTechnique: data?.measurementTechnique,
     species: data?.species,

@@ -1,15 +1,11 @@
 import { FormattedResource } from 'src/utils/api/types';
 import {
-  Box,
   Flex,
   Link,
   ListItem,
   Skeleton,
-  Text,
   UnorderedList,
 } from 'nde-design-system';
-import { shouldAppendPunctuation } from 'src/utils/helpers';
-import { getCitationComponents } from './helpers';
 import {
   MetadataLabel,
   MetadataTooltip,
