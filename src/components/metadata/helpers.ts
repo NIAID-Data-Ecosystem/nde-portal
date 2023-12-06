@@ -160,15 +160,19 @@ const createFundingContent = (
     isDisabled: !fundingDetails || fundingDetails.length === 0,
     items:
       fundingDetails?.map((funding, idx) => {
-        const value = funding?.funder?.name;
+        const name = Array.isArray(funding.funder)
+          ? funding.funder.filter(funder => !!funder.name).join(', ')
+          : funding?.funder?.name;
         return {
           key: `${property}-${id}-${idx}`,
-          name: value || '',
+          name: name || '',
           scientificName: '',
           searchProps: {
-            ['aria-label']: `Search for results with funding "${value}"`,
+            ['aria-label']: `Search for results with funding "${name}"`,
             property: 'funding.funder.name',
-            value,
+            value: Array.isArray(funding.funder)
+              ? funding.funder.filter(funder => !!funder.name).join('" OR "')
+              : funding?.funder?.name,
           },
           tags:
             funding?.identifier || funding?.url
