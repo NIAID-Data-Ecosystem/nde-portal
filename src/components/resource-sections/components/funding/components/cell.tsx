@@ -67,7 +67,7 @@ export const Cell = React.memo(({ label, children, ...props }: CellProps) => {
 
 export const EmptyCell = React.memo(({ label }: { label?: string }) => {
   return (
-    <Text as='span' fontSize='xs' fontStyle='italic' color='niaid.placeholder'>
+    <Text as='span' fontSize='xs' fontStyle='italic' color='gray.800'>
       {label || 'No data'}
     </Text>
   );

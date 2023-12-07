@@ -3,10 +3,10 @@ import {
   ButtonGroup,
   ButtonGroupProps,
   Icon,
-  IconButton,
   IconButtonProps,
   Link,
   Text,
+  VisuallyHidden,
 } from 'nde-design-system';
 import Tooltip from 'src/components/tooltip';
 import { FaSearch, FaSitemap } from 'react-icons/fa';
@@ -47,6 +47,8 @@ export const OntologyButton = ({
           variant='outline'
           colorScheme='gray'
           leftIcon={<Icon as={FaSitemap} />}
+          fontSize='12px'
+          fontWeight='medium'
           sx={{
             borderBottomColor: 'inherit',
             '.child-node': {
@@ -58,19 +60,23 @@ export const OntologyButton = ({
           }}
           _visited={{ _hover: { borderBottomColor: 'inherit' } }}
         >
-          {inDefinedTermSet}
+          <Text pt={0.25}>{inDefinedTermSet}</Text>
         </Button>
       ) : (
-        <IconButton
+        <Button
           as='a'
           href={value}
           target='_blank'
-          aria-label={ariaLabel || 'View the ontology for this value.'}
           variant='outline'
           colorScheme='gray'
           fontSize='12px'
-          icon={<Icon as={FaSitemap} />}
-        />
+          px={0}
+        >
+          <VisuallyHidden>
+            {ariaLabel || 'View the ontology for this value.'}
+            <Icon as={FaSitemap} />
+          </VisuallyHidden>
+        </Button>
       )}
     </Tooltip>
   );
@@ -93,7 +99,7 @@ export const SearchButton = ({
 
   return (
     <Tooltip label={ariaLabel || `Search the NDE for this property value`}>
-      <IconButton
+      <Button
         as='a'
         cursor='pointer'
         onClick={() => {
@@ -105,12 +111,16 @@ export const SearchButton = ({
             },
           });
         }}
-        aria-label={ariaLabel || `Search the NDE for this property value`}
         colorScheme='gray'
         variant='outline'
-        icon={<Icon as={FaSearch} fontSize='12px' />}
+        px={0}
         {...props}
-      />
+      >
+        <VisuallyHidden>
+          {ariaLabel || `Search the NDE for this property value`}
+        </VisuallyHidden>
+        <Icon as={FaSearch} fontSize='12px' />
+      </Button>
     </Tooltip>
   );
 };

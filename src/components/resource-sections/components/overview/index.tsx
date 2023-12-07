@@ -115,7 +115,7 @@ const Overview: React.FC<OverviewProps> = ({
                   )}
                   {items && items.length > 0 && (
                     <ScrollContainer maxHeight='150px' overflow='auto'>
-                      <MetadataList pr={2}>
+                      <MetadataList>
                         {items.map(({ key, ...item }) => {
                           return (
                             <MetadataListItem
@@ -199,7 +199,7 @@ const SpatiotemporalCoverage: React.FC<SpatiotemporalCoverageProps> = ({
 
           {spatialInformation && (
             <Box>
-              <Text fontWeight='medium' color='gray.600'>
+              <Text fontWeight='medium' color='gray.800'>
                 Spatial Coverage
               </Text>
               <MetadataContent name={spatialInformation.join(', ')} />
@@ -209,7 +209,7 @@ const SpatiotemporalCoverage: React.FC<SpatiotemporalCoverageProps> = ({
           {/* Period information of dataset */}
           {temporalCoverage && (
             <Box>
-              <Text fontWeight='medium' color='gray.600'>
+              <Text fontWeight='medium' color='gray.800'>
                 Temporal Coverage
               </Text>
               {/* Start */}
@@ -245,7 +245,7 @@ const SpatiotemporalCoverage: React.FC<SpatiotemporalCoverageProps> = ({
           {/* Language of dataset */}
           {inLanguage?.name && (
             <Box>
-              <Text fontWeight='medium' color='gray.600'>
+              <Text fontWeight='medium' color='gray.800'>
                 Language
               </Text>
               <MetadataContent name={getLanguageDisplayName(inLanguage.name)} />

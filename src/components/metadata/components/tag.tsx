@@ -33,8 +33,22 @@ export const MetadataWithTag = ({
             {label} |
           </Text>
           {url ? (
-            <Link href={url} target='_blank' alignItems='center'>
-              <Text>{value}</Text>
+            <Link
+              href={url}
+              target='_blank'
+              alignItems='center'
+              borderBottom='none'
+              sx={{
+                color: 'inherit',
+                '#tag-value': { textDecoration: 'underline' },
+              }}
+              _visited={{ color: 'inherit' }}
+              _hover={{
+                color: 'inherit',
+                '#tag-value': { textDecoration: 'none' },
+              }}
+            >
+              <Text id='tag-value'>{value}</Text>
               <Icon
                 as={FaExternalLinkSquareAlt}
                 boxSize={2.5}

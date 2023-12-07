@@ -10,7 +10,7 @@ export default {
   base00: 'rgb(1, 22, 39)', //bg
   base01: '#073642',
   base02: '#586e75',
-  base03: '#657b83', // item string expanded
+  base03: '#adc8d1', // item string expanded
   base04: '#839496',
   base05: '#93a1a1',
   base06: '#eee8d5',

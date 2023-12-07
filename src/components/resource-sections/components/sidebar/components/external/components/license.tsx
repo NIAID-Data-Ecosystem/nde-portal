@@ -20,7 +20,6 @@ export const License: React.FC<LicenseProps> = ({ isLoading, license }) => {
     <Box>
       <HeadingWithTooltip
         label='License'
-        aria-label='Information about licensing'
         tooltipLabel={`${
           MetadataConfig?.find(d => d.property === 'license')?.description[
             'dataset'

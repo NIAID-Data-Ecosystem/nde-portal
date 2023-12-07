@@ -1,12 +1,5 @@
 import React from 'react';
-import {
-  Box,
-  Flex,
-  Icon,
-  IconButton,
-  Text,
-  TooltipProps,
-} from 'nde-design-system';
+import { Box, Button, Flex, Icon, Text, TooltipProps } from 'nde-design-system';
 import { MetadataIcon } from 'src/components/icon';
 import { getMetadataTheme } from 'src/components/icon/helpers';
 import Tooltip from 'src/components/tooltip';
@@ -58,7 +51,6 @@ export const MetadataBlock = ({
         {tooltipLabel && (
           <MetadataTooltip
             tooltipLabel={tooltipLabel}
-            property={property}
             isDisabled={isDisabled}
           />
         )}
@@ -71,7 +63,7 @@ export const MetadataBlock = ({
         borderRadius='semi'
       />
 
-      <Box px={0.5} fontSize='xs' mx={1} lineHeight='short'>
+      <Box fontSize='xs' mx={1} lineHeight='short'>
         {isDisabled ? <></> : children}
       </Box>
     </Box>
@@ -98,9 +90,8 @@ export const MetadataLabel = ({ label }: Pick<MetadataBlockProps, 'label'>) => {
 // Tooltip for metadata usually for property definition
 export const MetadataTooltip = ({
   isDisabled,
-  property,
   tooltipLabel,
-}: Pick<MetadataBlockProps, 'isDisabled' | 'property' | 'tooltipLabel'>) => {
+}: Pick<MetadataBlockProps, 'isDisabled' | 'tooltipLabel'>) => {
   return (
     <Tooltip label={tooltipLabel}>
       <Flex
@@ -115,17 +106,18 @@ export const MetadataTooltip = ({
           },
         }}
       >
-        <IconButton
+        <Button
           as='div'
           cursor='pointer'
-          aria-label={`Tooltip for ${property}.`}
-          isRound
-          icon={<Icon as={FaInfo} boxSize='0.75rem' p={0.5} />}
+          borderRadius='full'
           variant='outline'
           colorScheme='gray'
+          p={0}
           borderColor={isDisabled ? 'gray.500' : 'gray.600'}
           color={isDisabled ? 'gray.500' : 'gray.600'}
-        />
+        >
+          <Icon as={FaInfo} boxSize='0.75rem' p={0.5} />
+        </Button>
       </Flex>
     </Tooltip>
   );

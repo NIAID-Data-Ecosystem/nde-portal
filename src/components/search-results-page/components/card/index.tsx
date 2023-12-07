@@ -54,12 +54,10 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
     description,
     conditionsOfAccess,
     doi,
-    nctid,
     includedInDataCatalog,
     isAccessibleForFree,
     url,
     sdPublisher,
-    citation,
   } = data || {};
 
   const sources =
@@ -367,8 +365,6 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                         data-badge-popover='left'
                         data-badge-type='bar'
                         data-doi={formatDOI(doi)}
-                        data-nct-id={nctid}
-                        data-pmid={citation?.[0].pmid}
                         className='altmetric-embed'
                         data-link-target='blank'
                       ></div>

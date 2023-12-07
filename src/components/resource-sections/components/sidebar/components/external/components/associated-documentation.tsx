@@ -36,7 +36,6 @@ export const AssociatedDocumentation: React.FC<AssociatedDocumentation> = ({
         <Box>
           <HeadingWithTooltip
             label='Associated Documents'
-            aria-label='Information about documents associated with this resource.'
             tooltipLabel={`${
               MetadataConfig?.find(d => d.property === 'hasPart')?.description[
                 'dataset'
@@ -83,7 +82,6 @@ export const AssociatedDocumentation: React.FC<AssociatedDocumentation> = ({
         <Box>
           <HeadingWithTooltip
             label='Associated Website'
-            aria-label='Information about websites associated with this resource.'
             tooltipLabel={`${
               MetadataConfig?.find(d => d.property === 'mainEntityOfPage')
                 ?.description['dataset'] || ''
@@ -114,7 +112,6 @@ export const AssociatedDocumentation: React.FC<AssociatedDocumentation> = ({
         >
           <HeadingWithTooltip
             label='Associated Source Code'
-            aria-label='Information about code repositories associated with this resource.'
             tooltipLabel={`${
               MetadataConfig?.find(d => d.property === 'codeRepository')
                 ?.description['computationaltool'] || ''

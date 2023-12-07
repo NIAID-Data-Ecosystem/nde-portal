@@ -229,6 +229,7 @@ const MainContent = ({ slug, data: initialData }: MainContentProps) => {
                 }}
                 routes={tocSections}
                 itemProps={{
+                  color: 'primary.500',
                   borderLeftColor: 'primary.400',
                 }}
               />

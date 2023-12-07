@@ -524,6 +524,7 @@ const News: NextPage<NewsProps> = props => {
                 <Navigation
                   routes={sections}
                   itemProps={{
+                    color: 'primary.500',
                     borderLeftColor: 'primary.400',
                   }}
                 />

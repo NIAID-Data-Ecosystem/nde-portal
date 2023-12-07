@@ -68,9 +68,9 @@ const Header: React.FC<HeaderProps> = ({
           <DisplayHTMLString>{name || alternateName}</DisplayHTMLString>
           {!!name && alternateName && (
             <Heading
-              as='h2'
+              as='span'
               size='sm'
-              color='gray.600'
+              color='gray.800'
               fontWeight='normal'
               wordBreak='break-word'
               my={0}

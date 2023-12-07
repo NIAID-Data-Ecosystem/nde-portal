@@ -32,7 +32,6 @@ const ResourceCitations = ({
         />
         <MetadataTooltip
           tooltipLabel={getMetadataDescription('citation', type)}
-          property='citation'
         />
       </Flex>
       <ScrollContainer
@@ -45,9 +44,8 @@ const ResourceCitations = ({
         py={2}
       >
         {citations.map((citation, idx) => {
-          const citationComponents = getCitationComponents(citation)
-            .filter(item => !!item)
-            .map(component => {
+          const citationComponents = getCitationComponents(citation).map(
+            component => {
               // If the component is an object (journal details), format it into a string
               if (component && typeof component === 'object') {
                 const { key, name, volumeNumber, issueNumber, pagination } =
@@ -66,7 +64,8 @@ const ResourceCitations = ({
                 return shouldAppendPunctuation(component);
               }
               return component;
-            });
+            },
+          );
 
           return (
             <Text
@@ -77,21 +76,13 @@ const ResourceCitations = ({
               px={2}
               py={citations.length > 1 ? 2 : 0}
             >
-              {citationComponents.length ? (
-                <>
-                  {citationComponents.map((component, index) => {
-                    return (
-                      <span key={index}>
-                        {component}
-                        {index < citationComponents.length - 1 ? ' ' : ''}
-                      </span>
-                    );
-                  })}
-                  <br />
-                </>
-              ) : (
-                <></>
-              )}
+              {citationComponents.map((component, index) => (
+                <span key={index}>
+                  {component}
+                  {index < citationComponents.length - 1 ? ' ' : ''}
+                </span>
+              ))}
+              <br />
               {citation.url && (
                 <>
                   Available from:{' '}

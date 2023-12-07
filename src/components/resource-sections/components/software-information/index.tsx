@@ -22,7 +22,6 @@ interface SoftwareInformation {
   applicationCategory?: FormattedResource['applicationCategory'];
   discussionUrl?: FormattedResource['discussionUrl'];
   input?: FormattedResource['input'];
-  isBasedOn?: FormattedResource['isBasedOn'];
   isBasisFor?: FormattedResource['isBasisFor'];
   output?: FormattedResource['output'];
   processorRequirements?: FormattedResource['processorRequirements'];
@@ -44,7 +43,6 @@ const SoftwareInformation: React.FC<SoftwareInformation> = ({
     applicationCategory,
     discussionUrl,
     input,
-    isBasedOn,
     isBasisFor,
     output,
     processorRequirements,
@@ -170,17 +168,6 @@ const SoftwareInformation: React.FC<SoftwareInformation> = ({
                 </UnorderedList>
               </dd>
             </Stat>
-          )}
-
-          {/* Libraries that the tool imports. */}
-          {isBasedOn && (
-            <BasedOnTable
-              id='software-information-is-based-on'
-              title='Imports'
-              caption='Imports used by this dataset/tool.'
-              isLoading={isLoading}
-              items={isBasedOn}
-            />
           )}
 
           {/* Other tools which use this tool as import. */}

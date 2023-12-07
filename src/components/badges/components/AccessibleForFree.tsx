@@ -21,7 +21,7 @@ export const AccessibleForFree = ({
       <BadgeWithTooltip
         variant='solid'
         fontWeight='semibold'
-        colorScheme={isAccessibleForFree ? 'green' : 'gray'}
+        bg={isAccessibleForFree ? 'green.600' : 'gray.800'}
         value={isAccessibleForFree ? 'Free Access' : 'Paid  Access'}
         tooltipLabel={property?.description['dataset']}
         leftIcon={<Icon as={FaDollarSign}></Icon>}

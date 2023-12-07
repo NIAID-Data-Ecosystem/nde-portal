@@ -271,12 +271,11 @@ const BasedOnTable = ({
                       flexDirection='column'
                       py={1}
                     >
-                      <Flex as='td' alignItems='center'>
+                      <Flex as='td' role='cell' alignItems='center'>
                         {COLUMNS.map(column => {
                           return (
                             <Cell
                               key={`table-td-${item.key}-${column.key}`}
-                              role='cell'
                               sx={{ '>div': { my: 0 } }}
                               {...column.props}
                             >
@@ -350,7 +349,7 @@ const BasedOnTable = ({
                         })}
                       </Flex>
                       {(item.identifier || item.pmid || item.doi) && (
-                        <Flex as='td' px={3}>
+                        <Flex as='td' role='cell' px={3}>
                           {item.identifier && (
                             <TagWithUrl
                               // only add url here if there is no name (name field is default used for the link)
@@ -375,6 +374,7 @@ const BasedOnTable = ({
                       )}
                       <Box
                         as='td'
+                        role='cell'
                         px={3}
                         my={2}
                         fontSize='xs'

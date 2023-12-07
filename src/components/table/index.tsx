@@ -82,7 +82,7 @@ const Table: React.FC<TableProps> = ({
           <StyledTable
             role='table'
             aria-label={caption}
-            aria-describedby='table-caption'
+            aria-describedby={`${id}-caption`}
             aria-rowcount={rows.length}
           >
             {/* Note: keep for accessibility */}

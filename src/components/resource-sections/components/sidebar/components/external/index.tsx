@@ -23,20 +23,13 @@ export const External = ({
   isLoading: boolean;
   data?: FormattedResource;
 }) => {
-  const hasAltmetricBadge = !!(
-    data &&
-    (data?.citation?.some(c => c.pmid) || data.doi || data.nctid)
-  );
+  const hasAltmetricBadge = !!data?.doi;
   return (
     <>
       {/* altmetric divider */}
       {hasAltmetricBadge && (
         <Wrapper isLoading={isLoading} hasDivider={false}>
-          <AltmetricBadge
-            citation={data?.citation}
-            doi={data?.doi}
-            nctid={data?.nctid}
-          />
+          <AltmetricBadge doi={data.doi} />
         </Wrapper>
       )}
       {/* Source + data access info. */}
