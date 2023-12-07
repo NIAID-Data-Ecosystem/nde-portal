@@ -22,7 +22,7 @@ const hasColumnKey = (
 ) => {
   if (!distribution) return false;
   // Convert config keys to an array
-  const keys = Object.keys(config);
+  const keys = Object.keys(config) as (keyof Distribution)[];
 
   // Check if any object in the distribution array contains any of the keys
   return distribution.some(distributionObject =>
