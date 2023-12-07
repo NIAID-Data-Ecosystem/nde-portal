@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import {
-  Badge,
   Box,
   Button,
   Collapse,
@@ -149,13 +148,18 @@ const Main: React.FC<Main> = ({ data, isLoading, metadata }) => {
                 sx={{ '>*': { px: 4, mt: 4, mx: [0, 4, 8] } }}
               >
                 <Box mx={[0, 2, 6]}>
-                  <Badge bg='status.info' wordBreak='break-word' m={0.5}>
+                  <Tag
+                    bg='status.info'
+                    wordBreak='break-word'
+                    m={0.5}
+                    color='white'
+                  >
                     {sourceObj.name}
-                  </Badge>
+                  </Tag>
                   {sourceObj.isNiaidFunded && (
-                    <Badge bg='tertiary.700' m={0.5}>
+                    <Tag bg='tertiary.700' m={0.5} color='white'>
                       NIAID
-                    </Badge>
+                    </Tag>
                   )}
                 </Box>
                 <Box>
