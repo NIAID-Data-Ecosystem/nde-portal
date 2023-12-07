@@ -4,11 +4,12 @@
     {
       "title": "Overview",
       "hash": "overview",
-      "showEmpty": true
+      "showEmpty": true,
+      "isCollapsible": true
     },
     {
-      "title": "Software Information",
-      "hash": "softwareInformation",
+      "title": "Based On",
+      "hash": "isBasedOn",
       "isCollapsible": true
     },
     {

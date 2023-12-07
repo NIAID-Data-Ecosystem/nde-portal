@@ -26,7 +26,7 @@ export const MetadataContent = ({
       justifyContent='space-between'
       flexWrap='wrap'
     >
-      <Box flex={1} fontSize='xs' lineHeight='short' minW={130}>
+      <Box flex={1} fontSize='xs' lineHeight='short' minW={150}>
         {scientificName && <Text fontWeight='semibold'>{scientificName}</Text>}
         <Flex>
           {img && (

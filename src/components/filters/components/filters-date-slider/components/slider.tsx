@@ -1,11 +1,10 @@
 import React from 'react';
 import {
-  Box,
-  Heading,
   RangeSlider,
   RangeSliderFilledTrack,
   RangeSliderThumb,
   RangeSliderTrack,
+  Text,
 } from 'nde-design-system';
 import { useDateRangeContext } from '../hooks/useDateRangeContext';
 
@@ -70,17 +69,23 @@ export const Slider: React.FC<FiltersRangeSliderProps> = React.memo(
           boxSize={5}
           left='-0.625rem' // center by displacing by half the size of the thumb.
         >
-          <Heading
-            as='h5'
-            fontSize='0.85rem'
-            mt={2}
+          <Text
             position='absolute'
-            width='unset'
             top={4}
             right={thumbsSameValue ? 'unset' : 0}
+            bg='white'
+            border='0.5px solid'
+            borderColor='gray.200'
+            fontSize='0.85rem'
+            fontWeight='semibold'
+            lineHeight='shorter'
+            mt={2}
+            px={1}
+            py={0.5}
+            width='unset'
           >
             {dateRange?.[0] !== undefined ? data[dateRange[0]]?.displayAs : ''}
-          </Heading>
+          </Text>
         </RangeSliderThumb>
         <RangeSliderThumb
           id='thumb-slider-2'
@@ -89,17 +94,24 @@ export const Slider: React.FC<FiltersRangeSliderProps> = React.memo(
           boxSize={5}
           left='-0.625rem' // center by displacing by half the size of the thumb.
         >
-          <Heading
+          <Text
             position='absolute'
             top={4}
             left={thumbsSameValue ? 'unset' : 0}
-            as='h5'
+            bg='white'
+            border='0.5px solid'
+            borderColor='gray.200'
             fontSize='0.85rem'
+            fontWeight='semibold'
+            lineHeight='shorter'
             mt={2}
             opacity={thumbsSameValue ? 0 : 1}
+            px={1}
+            py={0.5}
+            width='unset'
           >
             {dateRange?.[1] !== undefined ? data[dateRange[1]]?.displayAs : ''}
-          </Heading>
+          </Text>
         </RangeSliderThumb>
       </RangeSlider>
     );

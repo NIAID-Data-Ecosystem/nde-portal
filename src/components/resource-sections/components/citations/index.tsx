@@ -32,7 +32,6 @@ const ResourceCitations = ({
         />
         <MetadataTooltip
           tooltipLabel={getMetadataDescription('citation', type)}
-          property='citation'
         />
       </Flex>
       <ScrollContainer

@@ -36,7 +36,6 @@ const ResourceIsPartOf = ({
         />
         <MetadataTooltip
           tooltipLabel={getMetadataDescription('isPartOf', type)}
-          property='isPartOf'
         />
       </Flex>
       <ScrollContainer overflow='auto' maxHeight='200px'>

@@ -1,5 +1,10 @@
 import React from 'react';
-import { Flex, Icon, IconProps as ChakraIconProps } from 'nde-design-system';
+import {
+  Flex,
+  Icon,
+  IconProps as ChakraIconProps,
+  VisuallyHidden,
+} from 'nde-design-system';
 import {
   FaFingerprint,
   FaQuoteLeft,
@@ -78,6 +83,9 @@ export const MetadataIcon = React.forwardRef<HTMLDivElement, IconProps>(
     }
     return (
       <Flex ref={ref}>
+        <VisuallyHidden>
+          <span id={id}>{title}</span>
+        </VisuallyHidden>
         {FaIcon ? (
           <Icon
             as={FaIcon}

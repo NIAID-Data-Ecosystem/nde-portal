@@ -22,7 +22,6 @@ export const DataUsage: React.FC<DataUsageProps> = ({
       <Box>
         <HeadingWithTooltip
           label='Usage Information'
-          aria-label='Information about data re-use'
           tooltipLabel={`${
             usageInfo?.description ||
             MetadataConfig?.find(d => d.property === 'usageInfo')?.description[

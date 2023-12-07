@@ -1,6 +1,7 @@
 import React from 'react';
 import {
   Box,
+  Flex,
   Card,
   Collapse,
   Heading,
@@ -62,7 +63,7 @@ const RelatedDatasets: React.FC<RelatedDatasetsProps> = ({
     <>
       <Collapse in={!isEmpty}>
         <CardContainer heading='Related Datasets'>
-          <ScrollContainer maxH={400}>
+          <ScrollContainer maxH={400} pr={4}>
             {new Array(isRelatedTo?.length || 3).fill('').map((_, i) => {
               const data = isRelatedTo?.[i] || null;
               return (
@@ -74,7 +75,7 @@ const RelatedDatasets: React.FC<RelatedDatasetsProps> = ({
                   mt={6}
                 >
                   {data && (
-                    <Box lineHeight='short'>
+                    <Flex lineHeight='short' flexDirection='column'>
                       {data['@type'] && (
                         <Tag bg={getTypeColor(data['@type'])} size='sm' mr={2}>
                           {formatType(data['@type'])}
@@ -120,7 +121,7 @@ const RelatedDatasets: React.FC<RelatedDatasetsProps> = ({
                           )}
                         </>
                       )}
-                    </Box>
+                    </Flex>
                   )}
                 </SkeletonText>
               );

@@ -119,14 +119,12 @@ export const NewsCarousel = ({ news: initialData }: NewsCarouselProps) => {
                       <NextLink href={`news/#${news.attributes.slug}`} passHref>
                         <Link
                           as='span'
-                          variant='unstyled'
                           fontSize='sm'
-                          color='gray.600'
                           bg='transparent'
                           lineHeight='tall'
+                          mx={1}
                         >
-                          {' '}
-                          Read more...
+                          (<Text>view full release</Text>)
                         </Link>
                       </NextLink>
                     </Text>
@@ -142,10 +140,10 @@ export const NewsCarousel = ({ news: initialData }: NewsCarouselProps) => {
           href={{
             pathname: `/news`,
           }}
-          passHref
           prefetch={false}
+          passHref
         >
-          <Button size='sm' rightIcon={<Icon as={FaChevronRight} />}>
+          <Button as='span' size='sm' rightIcon={<Icon as={FaChevronRight} />}>
             All news releases
           </Button>
         </NextLink>

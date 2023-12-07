@@ -163,13 +163,12 @@ export const Funding: React.FC<FundingProps> = ({
                     flexDirection='column'
                     borderColor='gray.200'
                   >
-                    <Flex as='td'>
+                    <Flex as='td' role='cell'>
                       {COLUMNS.map(column => {
                         return (
                           <Cell
                             key={`table-td-${funding.key}-${column.key}`}
                             as='div'
-                            role='cell'
                             {...column.props}
                           >
                             {column.key === 'name' && (
@@ -239,7 +238,7 @@ export const Funding: React.FC<FundingProps> = ({
                                 key !== 'name' &&
                                 key !== 'identifier',
                             )))) && (
-                      <RowWithDrawer as='td'>
+                      <RowWithDrawer as='td' role='cell'>
                         <FundingDrawerContent
                           id={funding.key}
                           description={funding.description}
@@ -269,7 +268,7 @@ export const Funding: React.FC<FundingProps> = ({
   );
 };
 
-export const ContentWithTag = React.memo(
+const ContentWithTag = React.memo(
   ({
     url,
     identifier,
@@ -300,10 +299,30 @@ export const ContentWithTag = React.memo(
             px={1.5}
             mt={0.5}
             fontSize='12px'
+            colorScheme='orange'
           >
             {url ? (
-              <Link href={url} target='_blank' alignItems='center'>
-                <b>ID</b> | {identifier}
+              <Link
+                href={url}
+                target='_blank'
+                alignItems='center'
+                fontWeight='semibold'
+                color='inherit'
+                _visited={{ color: 'inherit' }}
+                _hover={{
+                  color: 'inherit',
+                  '#tag-value': { textDecoration: 'none' },
+                }}
+              >
+                <span>ID</span> |{' '}
+                <Text
+                  id='tag-value'
+                  as='span'
+                  textDecoration='underline'
+                  color='inherit'
+                >
+                  {identifier}
+                </Text>
                 <Icon
                   as={FaExternalLinkSquareAlt}
                   boxSize={3}
@@ -339,58 +358,60 @@ const FundingDrawerContent = React.memo(
     const funders = Array.isArray(funder) ? funder : [funder];
 
     return (
-      <Flex as='dl' px={4} flexDirection='column'>
-        <Label as='dt' mt={2}>
-          Description
-        </Label>
-        <Content as='dd'>
-          {text ? (
-            <Text w='100%'>
-              {text}
-              {!isOpen && hasMore ? '...' : ''}
-              {hasMore ? (
-                <Button
-                  variant='link'
-                  textDecoration='underline'
-                  mx={1}
-                  onClick={onToggle}
+      <Flex px={4} flexDirection='column'>
+        <dl>
+          <Label as='dt' mt={2}>
+            Description
+          </Label>
+          <Content as='dd'>
+            {text ? (
+              <Text w='100%'>
+                {text}
+                {!isOpen && hasMore ? '...' : ''}
+                {hasMore ? (
+                  <Button
+                    variant='link'
+                    textDecoration='underline'
+                    mx={1}
+                    onClick={onToggle}
+                  >
+                    {isOpen ? 'read less' : 'read more'}
+                  </Button>
+                ) : (
+                  <></>
+                )}
+              </Text>
+            ) : (
+              <Text fontStyle='italic'>None available</Text>
+            )}
+          </Content>
+        </dl>
+        <dl>
+          <Label as='dt' mt={4}>
+            Project Terms
+          </Label>
+          <Content as='dd'>
+            {keywords && keywords?.length > 0 ? (
+              keywords.map((keyword, idx) => (
+                <Tag
+                  key={`table-drawer-content-keyword-${id}-${keyword}-${idx}`}
+                  size='sm'
+                  m={1}
+                  colorScheme='primary'
                 >
-                  {isOpen ? 'read less' : 'read more'}
-                </Button>
-              ) : (
-                <></>
-              )}
-            </Text>
-          ) : (
-            <Text fontStyle='italic'>None available</Text>
-          )}
-        </Content>
-
-        <Label as='dt' mt={4}>
-          Project Terms
-        </Label>
-        <Content as='dd'>
-          {keywords && keywords?.length > 0 ? (
-            keywords.map((keyword, idx) => (
-              <Tag
-                key={`table-drawer-content-keyword-${id}-${keyword}-${idx}`}
-                size='sm'
-                m={1}
-                colorScheme='primary'
+                  {keyword}
+                </Tag>
+              ))
+            ) : (
+              <Text
+                key={`table-drawer-content-keyword-${id}-none`}
+                fontStyle='italic'
               >
-                {keyword}
-              </Tag>
-            ))
-          ) : (
-            <Text
-              key={`table-drawer-content-keyword-${id}-none`}
-              fontStyle='italic'
-            >
-              None available
-            </Text>
-          )}
-        </Content>
-
+                None available
+              </Text>
+            )}
+          </Content>
+        </dl>
         {funders.length &&
           funders.some(
             funderItem =>
@@ -404,95 +425,99 @@ const FundingDrawerContent = React.memo(
               <Label as='dt' mb={2}>
                 About the Funder{funders.length > 1 ? 's' : ''}
               </Label>
-              {funders.map((funder, idx) => {
-                const alternateNames = funder?.alternateName
-                  ? Array.isArray(funder.alternateName)
-                    ? funder.alternateName
-                    : [funder.alternateName]
-                  : null;
+              <dd>
+                {funders.map((funder, idx) => {
+                  const alternateNames = funder?.alternateName
+                    ? Array.isArray(funder.alternateName)
+                      ? funder.alternateName
+                      : [funder.alternateName]
+                    : null;
 
-                return (
-                  <React.Fragment
-                    key={`table-drawer-content-funder-${funder?.identifier}-${funder?.name}-${idx}`}
-                  >
-                    <Label as='dt' textTransform='capitalize' px={2}>
-                      Funder
-                    </Label>
-                    {funder?.name && (
-                      <Box px={4} py={1}>
-                        <Content as='dd' fontWeight='semibold' my={0}>
-                          {funder.name}
-                          {alternateNames && (
-                            <Text color='gray.800' fontWeight='normal'>
-                              Alternate Name: {alternateNames.join(', ') || '-'}
-                            </Text>
+                  return (
+                    <Box
+                      as='dl'
+                      key={`table-drawer-content-funder-${funder?.identifier}-${funder?.name}-${idx}`}
+                    >
+                      <Label as='dt' textTransform='capitalize' px={2}>
+                        Funder
+                      </Label>
+                      {funder?.name && (
+                        <Box as='dd' px={4} py={1}>
+                          <Content fontWeight='semibold' my={0}>
+                            {funder.name}
+                            {alternateNames && (
+                              <Text color='gray.800' fontWeight='normal'>
+                                Alternate Name:{' '}
+                                {alternateNames.join(', ') || '-'}
+                              </Text>
+                            )}
+                          </Content>
+                        </Box>
+                      )}
+
+                      {(funder?.class ||
+                        funder?.role ||
+                        funder?.parentOrganization ||
+                        funder?.employee) && (
+                        <>
+                          {funder?.class && (
+                            <Box px={4} py={1}>
+                              <Label as='dt' textTransform='capitalize'>
+                                Class
+                              </Label>
+                              <Content as='dd' my={1}>
+                                {Array.isArray(funder.class)
+                                  ? funder.class.join(', ')
+                                  : funder.class}
+                              </Content>
+                            </Box>
                           )}
-                        </Content>
-                      </Box>
-                    )}
+                          {funder?.role && (
+                            <Box px={4} py={1}>
+                              <Label as='dt' textTransform='capitalize'>
+                                Role
+                              </Label>
+                              <Content as='dd' my={1}>
+                                {Array.isArray(funder.role)
+                                  ? funder.role.join(', ')
+                                  : funder.role}
+                              </Content>
+                            </Box>
+                          )}
 
-                    {(funder?.class ||
-                      funder?.role ||
-                      funder?.parentOrganization ||
-                      funder?.employee) && (
-                      <>
-                        {funder?.class && (
-                          <Box px={4} py={1}>
-                            <Label as='dt' textTransform='capitalize'>
-                              Class
-                            </Label>
-                            <Content as='dd' my={1}>
-                              {Array.isArray(funder.class)
-                                ? funder.class.join(', ')
-                                : funder.class}
-                            </Content>
-                          </Box>
-                        )}
-                        {funder?.role && (
-                          <Box px={4} py={1}>
-                            <Label as='dt' textTransform='capitalize'>
-                              Role
-                            </Label>
-                            <Content as='dd' my={1}>
-                              {Array.isArray(funder.role)
-                                ? funder.role.join(', ')
-                                : funder.role}
-                            </Content>
-                          </Box>
-                        )}
+                          {funder?.parentOrganization && (
+                            <Box px={4} py={1}>
+                              <Label as='dt' textTransform='capitalize'>
+                                Parent Organization
+                              </Label>
+                              <Content as='dd' my={1}>
+                                {Array.isArray(funder.parentOrganization)
+                                  ? funder.parentOrganization.join(', ')
+                                  : funder.parentOrganization}
+                              </Content>
+                            </Box>
+                          )}
 
-                        {funder?.parentOrganization && (
-                          <Box px={4} py={1}>
-                            <Label as='dt' textTransform='capitalize'>
-                              Parent Organization
-                            </Label>
-                            <Content as='dd' my={1}>
-                              {Array.isArray(funder.parentOrganization)
-                                ? funder.parentOrganization.join(', ')
-                                : funder.parentOrganization}
-                            </Content>
-                          </Box>
-                        )}
-
-                        {funder?.employee && (
-                          <Box px={4} py={1}>
-                            <Label as='dt' textTransform='capitalize'>
-                              Employee
-                            </Label>
-                            <Content as='dd' my={1}>
-                              {funder.employee.map(employee => {
-                                return Array.isArray(employee.name)
-                                  ? employee.name.join(', ')
-                                  : employee.name;
-                              })}
-                            </Content>
-                          </Box>
-                        )}
-                      </>
-                    )}
-                  </React.Fragment>
-                );
-              })}
+                          {funder?.employee && (
+                            <Box px={4} py={1}>
+                              <Label as='dt' textTransform='capitalize'>
+                                Employee
+                              </Label>
+                              <Content as='dd' my={1}>
+                                {funder.employee.map(employee => {
+                                  return Array.isArray(employee.name)
+                                    ? employee.name.join(', ')
+                                    : employee.name;
+                                })}
+                              </Content>
+                            </Box>
+                          )}
+                        </>
+                      )}
+                    </Box>
+                  );
+                })}
+              </dd>
             </Box>
           )}
       </Flex>

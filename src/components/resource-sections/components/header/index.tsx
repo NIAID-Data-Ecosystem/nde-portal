@@ -49,9 +49,9 @@ const Header: React.FC<HeaderProps> = ({
         isLoaded={!isLoading}
         w='100%'
         overflow='unset'
-        position='sticky'
+        position={['unset', 'unset', 'sticky']}
         top='0px'
-        zIndex='banner'
+        zIndex='docked'
         bg='white'
         borderBottom='2px solid'
         borderBottomColor='gray.100'
@@ -68,9 +68,9 @@ const Header: React.FC<HeaderProps> = ({
           <DisplayHTMLString>{name || alternateName}</DisplayHTMLString>
           {!!name && alternateName && (
             <Heading
-              as='h2'
+              as='span'
               size='sm'
-              color='gray.600'
+              color='gray.800'
               fontWeight='normal'
               wordBreak='break-word'
               my={0}

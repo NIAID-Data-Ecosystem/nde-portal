@@ -11,7 +11,9 @@ export const extractJournalDetails = (citation: Citation) => {
     ? citation.issueNumber.replace(/[,.]/g, '')
     : '';
   const pagination = citation.pagination || '';
-
+  if (!name && !volumeNumber && !issueNumber && !pagination) {
+    return null;
+  }
   return {
     key: uniqueId('journal'),
     name,

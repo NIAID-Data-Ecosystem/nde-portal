@@ -33,6 +33,7 @@ import { External } from './components/sidebar/components/external';
 import { Funding } from './components/funding';
 import { JsonViewer } from '../json-viewer';
 import ResourceIsPartOf from './components/is-part-of';
+import BasedOnTable from './components/based-on';
 
 // Metadata displayed in each section
 export const sectionMetadata: { [key: string]: (keyof FormattedResource)[] } = {
@@ -56,7 +57,6 @@ export const sectionMetadata: { [key: string]: (keyof FormattedResource)[] } = {
     'discussionUrl',
     'input',
     'output',
-    'isBasedOn',
     'isBasisFor',
     'processorRequirements',
     'programmingLanguage',
@@ -160,6 +160,15 @@ const Sections = ({
                 keys={sectionMetadata[section.hash]}
                 isLoading={isLoading}
                 {...data}
+              />
+            )}
+            {section.hash === 'isBasedOn' && data?.isBasedOn && (
+              <BasedOnTable
+                id='software-information-is-based-on'
+                title='Imports'
+                caption='Imports used by this dataset/tool.'
+                isLoading={isLoading}
+                items={data?.isBasedOn}
               />
             )}
             {/* Show description */}

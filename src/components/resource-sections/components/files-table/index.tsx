@@ -16,20 +16,22 @@ interface FilesTable {
   distribution?: FormattedResource['distribution'];
 }
 
+const hasColumnKey = (
+  distribution: FilesTable['distribution'],
+  config: Record<keyof Distribution, string>,
+) => {
+  if (!distribution) return false;
+  // Convert config keys to an array
+  const keys = Object.keys(config);
+
+  // Check if any object in the distribution array contains any of the keys
+  return distribution.some(distributionObject =>
+    keys.some(key => key in distributionObject && !!distributionObject[key]),
+  );
+};
+
 const FilesTable: React.FC<FilesTable> = ({ isLoading, distribution }) => {
   const accessorFn = useCallback((v: any) => v.sortValue, []);
-
-  if (isLoading) {
-    return <LoadingSpinner isLoading={isLoading} />;
-  }
-
-  if (!distribution || distribution.length === 0) {
-    return (
-      <Box overflow='auto'>
-        <Text>No data available.</Text>
-      </Box>
-    );
-  }
 
   const column_name_config = {
     '@id': 'id',
@@ -42,6 +44,22 @@ const FilesTable: React.FC<FilesTable> = ({ isLoading, distribution }) => {
     datePublished: 'Date Published',
     description: 'Description',
   } as Record<keyof Distribution, string>;
+
+  if (isLoading) {
+    return <LoadingSpinner isLoading={isLoading} />;
+  }
+
+  if (
+    !distribution ||
+    distribution.length === 0 ||
+    hasColumnKey(distribution, column_name_config) === false
+  ) {
+    return (
+      <Box overflow='auto'>
+        <Text>No data available.</Text>
+      </Box>
+    );
+  }
 
   const columns =
     distribution && getTableColumns(distribution!, column_name_config, false);

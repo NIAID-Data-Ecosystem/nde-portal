@@ -69,7 +69,7 @@ export const DataAccess: React.FC<DataAccessProps> = ({
                   alt={`Logo for ${source.name}`}
                 />
               )}
-              <Text fontStyle='italic' mt={1} color='niaid.placeholder'>
+              <Text fontStyle='italic' mt={1} color='primary.800'>
                 Provided by {source.name}
               </Text>
             </Flex>
