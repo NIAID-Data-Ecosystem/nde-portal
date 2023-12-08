@@ -133,7 +133,7 @@ export const FiltersList: React.FC<FiltersList> = React.memo(
             overflowY='auto'
           >
             {!isLoading && !isUpdating && !items.length && (
-              <ListItem p={2}>No available filters.</ListItem>
+              <Box p={2}>No available filters.</Box>
             )}
             <CheckboxGroup
               value={selectedFilters}
