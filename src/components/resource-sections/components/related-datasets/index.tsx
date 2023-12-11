@@ -59,7 +59,7 @@ const RelatedDatasets: React.FC<RelatedDatasetsProps> = ({
       <Collapse in={!isEmpty}>
         <CardContainer heading='Related Datasets'>
           <ScrollContainer maxH={400} pr={4} py={2}>
-            <Stack spacing={2}>
+            <Stack spacing={4}>
               {new Array(relatedDatasets?.length || 3)
                 .fill('')
                 .map((_, idx) => {
@@ -98,7 +98,7 @@ const RelatedDatasets: React.FC<RelatedDatasetsProps> = ({
                                 as='span'
                                 wordBreak='break-word'
                                 fontSize='xs'
-                                noOfLines={2}
+                                noOfLines={3}
                               >
                                 {dataset.name}
                               </Link>
@@ -107,7 +107,7 @@ const RelatedDatasets: React.FC<RelatedDatasetsProps> = ({
                             <Text
                               wordBreak='break-word'
                               fontSize='xs'
-                              noOfLines={2}
+                              noOfLines={3}
                             >
                               {dataset.name}
                             </Text>
