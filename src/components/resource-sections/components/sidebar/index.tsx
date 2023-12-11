@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react';
 import NextLink from 'next/link';
-import { FormattedResource } from 'src/utils/api/types';
 import {
   Box,
   Card,
@@ -21,6 +20,7 @@ import { CardContainer } from 'src/components/resource-sections/components/relat
 import { FaSearch } from 'react-icons/fa';
 import { External } from './components/external';
 import { ScrollContainer } from 'src/components/scroll-container';
+import { ResourceData } from 'src/pages/resources';
 
 export const Sidebar = ({
   data,
@@ -28,7 +28,7 @@ export const Sidebar = ({
   sections,
 }: {
   isLoading: boolean;
-  data?: FormattedResource;
+  data?: ResourceData;
   sections: Route[];
 }) => {
   const [searchHistory] = useLocalStorage<string[]>('basic-searches', []);
@@ -67,8 +67,7 @@ export const Sidebar = ({
         {/* Associated Resources with current page */}
         <RelatedDatasets
           isLoading={isLoading}
-          isRelatedTo={data?.isRelatedTo || null}
-          includedInDataCatalog={data?.includedInDataCatalog}
+          relatedDatasets={data?.relatedDatasets}
         />
 
         {/* Search History links */}

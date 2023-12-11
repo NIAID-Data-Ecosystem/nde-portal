@@ -69,7 +69,7 @@ export const usePredictiveSearch = (
               : `${queryString}`,
             // return flattened version of data.
             dotfield: true,
-            fields: ['name', '@type', searchField].join(','),
+            fields: ['name', '@type', searchField],
             sort: '_score',
           },
           signal, // used to detect if request has been cancelled.

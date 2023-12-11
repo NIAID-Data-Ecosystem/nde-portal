@@ -7,16 +7,16 @@ export const ScrollContainer = ({ children, ...props }: BoxProps) => {
       pr={2}
       sx={{
         '&::-webkit-scrollbar': {
-          width: '10px',
+          width: '8px',
           height: '7px',
         },
         '&::-webkit-scrollbar-track': {
           background: 'blackAlpha.100',
-          borderRadius: '10px',
+          borderRadius: '8px',
         },
         '&::-webkit-scrollbar-thumb': {
           background: 'gray.300',
-          borderRadius: '10px',
+          borderRadius: '8px',
         },
         _hover: {
           '&::-webkit-scrollbar-thumb': {

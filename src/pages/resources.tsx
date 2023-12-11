@@ -4,7 +4,7 @@ import NextLink from 'next/link';
 import { PageContainer, PageContent } from 'src/components/page-container';
 import { useRouter } from 'next/router';
 import { useQuery } from 'react-query';
-import { getResourceById } from 'src/utils/api';
+import { fetchSearchResults, getResourceById } from 'src/utils/api';
 import { FormattedResource } from 'src/utils/api/types';
 import Empty from 'src/components/empty';
 import { Box, Button, Card, Flex, Link, Text } from 'nde-design-system';
@@ -29,18 +29,52 @@ const EmptyState = () => {
   );
 };
 
+export interface ResourceData extends FormattedResource {
+  relatedDatasets?: {
+    _id: FormattedResource['id'];
+    '@type': FormattedResource['@type'];
+    name: FormattedResource['name'];
+  }[];
+}
+
 const ResourcePage: NextPage = () => {
   const router = useRouter();
   const { id } = router.query;
   // Access query client
-
   const {
     isLoading: loadingData,
     error,
     data,
-  } = useQuery<FormattedResource | undefined, Error>(
+  } = useQuery<ResourceData | undefined, Error>(
     ['search-result', { id }],
-    () => getResourceById(id),
+    async () => {
+      const data = await getResourceById(id);
+      // Get other datasets that have the same study identifier and data catalog name.
+      if (data?.isPartOf) {
+        const studyIds = data.isPartOf
+          .map(study => study.identifier)
+          .filter((item): item is string => !!item)
+          .join('" OR "');
+
+        const includedInDataCatalogNames = Array.isArray(
+          data.includedInDataCatalog,
+        )
+          ? data.includedInDataCatalog.map(({ name }) => name).join('" OR "')
+          : data.includedInDataCatalog.name;
+
+        const q = `isPartOf.identifier:("${studyIds}") AND includedInDataCatalog.name:("${includedInDataCatalogNames}")`;
+
+        const relatedDatasets = await fetchSearchResults({
+          q,
+          size: 10,
+          sort: 'name.raw',
+          fields: ['_id', '@type', 'name'],
+        }).then(data => data?.results);
+        return { ...data, relatedDatasets };
+      }
+
+      return data;
+    },
     {
       refetchOnWindowFocus: false,
     },

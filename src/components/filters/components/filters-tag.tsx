@@ -39,6 +39,7 @@ export const FilterTags: React.FC<FilterTags> = ({
       <Button
         m={1}
         variant='outline'
+        size='md'
         colorScheme='secondary'
         onClick={removeAllFilters}
       >
@@ -67,7 +68,7 @@ export const FilterTags: React.FC<FilterTags> = ({
           }
 
           return (
-            <Tag key={`${str}`} colorScheme='secondary' size='lg' m={1}>
+            <Tag key={`${str}`} colorScheme='secondary' size='md' m={1}>
               <TagLabel whiteSpace='break-spaces'>
                 {name}: {str}
               </TagLabel>
@@ -96,7 +97,7 @@ export const FilterTags: React.FC<FilterTags> = ({
             } ( ${commonName.charAt(0).toUpperCase() + commonName.slice(1)} )`;
           }
           return (
-            <Tag key={`${value}`} colorScheme='secondary' size='lg' m={1}>
+            <Tag key={`${value}`} colorScheme='secondary' size='md' m={1}>
               <TagLabel whiteSpace='break-spaces'>
                 {name}
                 {typeof value === 'string'

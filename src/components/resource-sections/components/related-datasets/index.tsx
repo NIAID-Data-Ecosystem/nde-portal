@@ -7,20 +7,12 @@ import {
   Heading,
   Link,
   SkeletonText,
-  Tag,
   Text,
+  Stack,
 } from 'nde-design-system';
-import { FormattedResource } from 'src/utils/api/types';
 import NextLink from 'next/link';
-import { getTypeColor } from '../type-banner';
-import { formatType } from 'src/utils/api/helpers';
 import { ScrollContainer } from 'src/components/scroll-container';
-
-interface RelatedDatasetsProps {
-  isRelatedTo: FormattedResource['isRelatedTo'];
-  includedInDataCatalog?: FormattedResource['includedInDataCatalog'];
-  isLoading: boolean;
-}
+import { ResourceData } from 'src/pages/resources';
 
 interface CardContainerProps {
   heading: string;
@@ -51,58 +43,54 @@ export const CardContainer: React.FC<CardContainerProps> = ({
   );
 };
 
+interface RelatedDatasetsProps {
+  isLoading: boolean;
+  relatedDatasets: ResourceData['relatedDatasets'];
+}
 const RelatedDatasets: React.FC<RelatedDatasetsProps> = ({
-  includedInDataCatalog,
   isLoading,
-  isRelatedTo,
+  relatedDatasets,
 }) => {
   /* Hide section if not loading and no data. */
-  const isEmpty = !isLoading && (!isRelatedTo || !isRelatedTo.length);
+  const isEmpty = !isLoading && (!relatedDatasets || !relatedDatasets.length);
 
   return (
     <>
       <Collapse in={!isEmpty}>
         <CardContainer heading='Related Datasets'>
-          <ScrollContainer maxH={400} pr={4}>
-            {new Array(isRelatedTo?.length || 3).fill('').map((_, i) => {
-              const data = isRelatedTo?.[i] || null;
-              return (
-                <SkeletonText
-                  key={i}
-                  isLoaded={!isLoading}
-                  color='white'
-                  fadeDuration={1}
-                  mt={6}
-                >
-                  {data && (
-                    <Flex lineHeight='short' flexDirection='column'>
-                      {data['@type'] && (
-                        <Tag bg={getTypeColor(data['@type'])} size='sm' mr={2}>
-                          {formatType(data['@type'])}
-                        </Tag>
-                      )}
-                      {data._id ? (
-                        <NextLink
-                          href={{
-                            pathname: '/resources/',
-                            query: { id: data._id },
-                          }}
-                          passHref
-                        >
-                          <Link as='span' wordBreak='break-word' fontSize='xs'>
-                            {data.name || data.identifier}
-                          </Link>
-                        </NextLink>
-                      ) : (
-                        <>
-                          {/* use identifier to find portal url. */}
-                          {data.identifier && includedInDataCatalog ? (
+          <ScrollContainer maxH={400} pr={4} py={2}>
+            <Stack spacing={2}>
+              {new Array(relatedDatasets?.length || 3)
+                .fill('')
+                .map((_, idx) => {
+                  const dataset = relatedDatasets?.[idx];
+                  return (
+                    <SkeletonText
+                      key={idx}
+                      isLoaded={!isLoading}
+                      color='white'
+                      fadeDuration={1}
+                    >
+                      {dataset && (
+                        <Flex lineHeight='short' flexDirection='column'>
+                          {/* {dataset['@type'] && (
+                            <Box>
+                              <Badge
+                                bg={getTypeColor(dataset['@type'])}
+                                color='white'
+                                size='sm'
+                                mr={2}
+                                mb={1}
+                              >
+                                {formatType(dataset['@type'])}
+                              </Badge>
+                            </Box>
+                          )} */}
+                          {dataset._id ? (
                             <NextLink
                               href={{
                                 pathname: '/resources/',
-                                query: {
-                                  id: `${data.identifier}`,
-                                },
+                                query: { id: dataset._id },
                               }}
                               passHref
                             >
@@ -110,22 +98,26 @@ const RelatedDatasets: React.FC<RelatedDatasetsProps> = ({
                                 as='span'
                                 wordBreak='break-word'
                                 fontSize='xs'
+                                noOfLines={2}
                               >
-                                {data.name || data.identifier}
+                                {dataset.name}
                               </Link>
                             </NextLink>
                           ) : (
-                            <Text wordBreak='break-word' fontSize='xs'>
-                              {data.name || data.identifier}
+                            <Text
+                              wordBreak='break-word'
+                              fontSize='xs'
+                              noOfLines={2}
+                            >
+                              {dataset.name}
                             </Text>
                           )}
-                        </>
+                        </Flex>
                       )}
-                    </Flex>
-                  )}
-                </SkeletonText>
-              );
-            })}
+                    </SkeletonText>
+                  );
+                })}
+            </Stack>
           </ScrollContainer>
         </CardContainer>
       </Collapse>

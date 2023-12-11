@@ -106,7 +106,7 @@ export const Filters: React.FC<FiltersProps> = ({
   const router = useRouter();
   const [{ data, error, isLoading, isUpdating }] = useFacetsData({
     queryParams,
-    facets,
+    facets: facets.filter(facet => facet !== 'date'),
   });
 
   const handleUpdate = useCallback(
