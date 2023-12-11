@@ -15,7 +15,7 @@ import {
 import React, { useCallback, useEffect, useState } from 'react';
 import { FaDownload, FaExclamationCircle } from 'react-icons/fa';
 import { useQuery } from 'react-query';
-import { fetchAllSearchResults } from 'src/utils/api';
+import { Params, fetchAllSearchResults } from 'src/utils/api';
 import { DownloadArgs, downloadAsCsv, downloadAsJson } from './helpers';
 import { Disclaimer } from './components/Disclaimer';
 import { MdClose } from 'react-icons/md';
@@ -26,7 +26,7 @@ import { MdClose } from 'react-icons/md';
 
 interface DownloadMetadataProps extends FlexProps {
   exportFileName: string;
-  params: any;
+  params: Params;
   buttonProps?: ButtonProps;
 }
 

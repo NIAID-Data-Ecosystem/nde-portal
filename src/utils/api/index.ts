@@ -32,7 +32,7 @@ export interface Params {
   sort?: string;
   scroll_id?: string;
   extra_filter?: string;
-  fields?: string;
+  fields?: string[];
   dotfield?: boolean;
   hist?: string;
   advancedSearch?: string;
@@ -56,7 +56,7 @@ export const fetchSearchResults = async (
     const { data } = await axios.get(
       `${process.env.NEXT_PUBLIC_API_URL}/query?`,
       {
-        params,
+        params: { ...params, fields: params?.fields?.join(',') },
         signal,
       },
     );

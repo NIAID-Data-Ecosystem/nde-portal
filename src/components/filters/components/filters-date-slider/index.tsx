@@ -8,18 +8,17 @@ import {
   Skeleton,
   Text,
 } from 'nde-design-system';
-import { theme } from 'src/theme';
-import { useFacetsData } from '../../hooks/useFacetsData';
+import { FiltersResponse, fetchFilters } from '../../hooks/useFacetsData';
 import { SelectedFilterType } from '../../types';
 import { Params } from 'src/utils/api';
 import { queryFilterObject2String } from '../../helpers';
 import { Slider } from './components/slider';
-// import { Histogram } from './components/histogram';
 import { FacetTerm } from 'src/utils/api/types';
 import { DatePicker } from './components/date-picker';
 import { formatNumber } from 'src/utils/helpers';
 import { DateRangeSlider } from './hooks/useDateRangeContext';
 import dynamic from 'next/dynamic';
+import { useQuery } from 'react-query';
 
 const Histogram = dynamic(() => import('./components/histogram'), {
   ssr: false,
@@ -56,11 +55,47 @@ export const FiltersDateSlider: React.FC<FiltersDateSliderProps> = ({
     ...params,
     extra_filter: queryFilterObject2String(omit(filters, ['date'])) ?? '',
   };
+
   // Initial data. Not impacted by date selection, used for default state of bars, input and slider.
-  const [{ data, error, isLoading, isUpdating }] = useFacetsData({
-    queryParams,
-    facets: ['date'],
-  });
+
+  const { isLoading, error, data } = useQuery<
+    { [key: string]: { terms: FacetTerm[] } } | undefined,
+    Error,
+    FiltersResponse
+  >(
+    [
+      'search-results',
+      {
+        q: queryParams.q,
+        facet_size: queryParams.facet_size,
+        facets: ['date'],
+      },
+    ],
+    () => {
+      return fetchFilters(
+        {
+          ...queryParams,
+          facets: 'date',
+        },
+        ['date'],
+      );
+    },
+    {
+      refetchOnWindowFocus: false,
+      select: data => {
+        const obj: FiltersResponse = {};
+        if (data) {
+          Object.keys(data).map(facet => {
+            // order facet terms according to number of resources.
+            obj[facet] = data[facet].terms.sort((a, b) => b.count - a.count);
+
+            return;
+          });
+        }
+        return obj;
+      },
+    },
+  );
 
   // [resourcesWithNoDate]: Data used for resources that do not have a date field.
   const resourcesWithNoDate = useMemo(
@@ -92,10 +127,10 @@ export const FiltersDateSlider: React.FC<FiltersDateSliderProps> = ({
       borderColor='primary.100'
     >
       <Skeleton isLoaded={!isLoading} w='100%' h={isLoading ? '4rem' : 'unset'}>
-        {!isLoading && data?.date?.length === 0 && (
+        {!isLoading && (!data?.date || data?.date?.length === 0) && (
           <Text>No available filters.</Text>
         )}
-        {!isLoading && !isUpdating && data?.date?.length > 0 ? (
+        {!isLoading && data?.date && data?.date?.length > 0 ? (
           <DateRangeSlider
             data={data}
             selectedDates={selectedDates}
@@ -116,7 +151,6 @@ export const FiltersDateSlider: React.FC<FiltersDateSliderProps> = ({
                   updatedData={selectedData}
                   handleClick={handleSelectedFilter}
                 >
-                  {/* Slider for choosing the date range. */}
                   <Slider onChangeEnd={handleSelectedFilter} />
                 </Histogram>
               </Flex>

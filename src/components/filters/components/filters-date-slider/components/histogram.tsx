@@ -145,7 +145,7 @@ const Histogram: React.FC<HistogramProps> = ({
 
   // "Fill in" the data where years are missing.
   const updatedCounts = useMemo(
-    () => addMissingYears(updatedData),
+    () => addMissingYears([...updatedData]),
     [updatedData],
   );
 
