@@ -17,11 +17,116 @@ export const formatFacetTermDisplay = (term: string, facet: string) => {
   return term;
 };
 
+export interface FiltersResponse {
+  [key: keyof FormattedResource]: {
+    term: string;
+    count: number;
+    updatedCount?: number;
+    name?: string;
+    displayAs: string;
+  }[];
+}
+// Retrieve all data and updated counts.
+export const fetchFilters = async (
+  params: Params,
+  facets: UseFilterDataProps['facets'],
+) => {
+  if (!params.q || typeof params.q !== 'string') {
+    return;
+  }
+  const data = await fetchSearchResults({
+    ...params,
+    q: params.advancedSearch === 'true' ? params.q : encodeString(params.q),
+    hist: 'date',
+    size: 0,
+  }).then(response => {
+    const facetsData = {} as { [key: string]: { terms: FacetTerm[] } };
+    if (response?.facets) {
+      Object.keys(response.facets).map(facet => {
+        if (facet === 'date') {
+          return;
+        }
+        let facetKey = facet === 'hist_dates' ? 'date' : facet;
+        facetsData[facetKey] = {
+          terms: response.facets[facet].terms.map((t: FacetTerm) => {
+            let term = t.term;
+            if (facet === 'hist_dates') {
+              term = formatISOString(t.term);
+            }
+
+            return {
+              ...t,
+              term,
+              displayAs: formatFacetTermDisplay(term, facetKey),
+              facet: facetKey,
+            };
+          }),
+        };
+      });
+    }
+    return facetsData;
+  });
+
+  // Data for missing datasets with no facet term. (aka. n/a value in filter).
+  await Promise.all(
+    facets.map(facet => {
+      /* Fetch facets using query params. Note that we also get the facets count where data is non-existent to be used as an "N/A" attribute. */
+      return fetchSearchResults({
+        q: params.advancedSearch === 'true' ? params.q : encodeString(params.q),
+
+        extra_filter: params?.extra_filter
+          ? `${params.extra_filter} AND -_exists_:${facet}`
+          : `-_exists_:${facet}`,
+        facet_size: 0, // just need the total
+        size: 0,
+      }).then(response => {
+        if (!data || !response?.total) return;
+
+        const empty = {
+          count: response?.total || 0,
+          term: '-_exists_',
+          displayAs: 'Not Specified',
+          facet,
+        };
+        // add facet term for "empty" property
+        data[facet].terms.unshift(empty);
+        return empty;
+      });
+    }),
+  );
+  await Promise.all(
+    facets.map(facet => {
+      /* Fetch facets using query params. Note that we also get the facets count where any data exists to be used as an any attribute. */
+      return fetchSearchResults({
+        q: params.advancedSearch === 'true' ? params.q : encodeString(params.q),
+
+        extra_filter: params?.extra_filter
+          ? `${params.extra_filter} AND _exists_:${facet}`
+          : `_exists_:${facet}`,
+        facet_size: 0, // just need the total
+        size: 0,
+      }).then(response => {
+        if (!data || !response?.total) return;
+
+        const any = {
+          count: response?.total || 0,
+          term: '_exists_',
+          displayAs: 'Any Specified',
+          facet,
+        };
+        // add facet term for "any" property
+        data[facet].terms.unshift(any);
+        return any;
+      });
+    }),
+  );
+  return data;
+};
+
 interface UseFilterDataProps {
   queryParams: Params;
   facets: string[];
 }
-
 export const useFacetsData = ({
   queryParams,
   facets,
@@ -35,119 +140,7 @@ export const useFacetsData = ({
 ] => {
   const [facetTerms, setFacetTerms] = useState<FacetTerms>({});
 
-  // Retrieve all data and updated counts.
-  const fetchFilters = async (params: Params) => {
-    if (!params.q || typeof params.q !== 'string') {
-      return;
-    }
-    const data = await fetchSearchResults({
-      ...params,
-      q:
-        queryParams.advancedSearch === 'true'
-          ? params.q
-          : encodeString(params.q),
-      hist: 'date',
-      size: 0,
-    }).then(response => {
-      const facetsData = {} as { [key: string]: { terms: FacetTerm[] } };
-      if (response?.facets) {
-        Object.keys(response.facets).map(facet => {
-          if (facet === 'date') {
-            return;
-          }
-          let facetKey = facet === 'hist_dates' ? 'date' : facet;
-          facetsData[facetKey] = {
-            terms: response.facets[facet].terms.map((t: FacetTerm) => {
-              let term = t.term;
-              if (facet === 'hist_dates') {
-                term = formatISOString(t.term);
-              }
-
-              return {
-                ...t,
-                term,
-                displayAs: formatFacetTermDisplay(term, facetKey),
-                facet: facetKey,
-              };
-            }),
-          };
-        });
-      }
-      return facetsData;
-    });
-
-    // Data for missing datasets with no facet term. (aka. n/a value in filter).
-    await Promise.all(
-      facets.map(facet => {
-        /* Fetch facets using query params. Note that we also get the facets count where data is non-existent to be used as an "N/A" attribute. */
-        return fetchSearchResults({
-          q:
-            queryParams.advancedSearch === 'true'
-              ? params.q
-              : encodeString(params.q),
-
-          extra_filter: params?.extra_filter
-            ? `${params.extra_filter} AND -_exists_:${facet}`
-            : `-_exists_:${facet}`,
-          facet_size: 0, // just need the total
-          size: 0,
-        }).then(response => {
-          if (!data || !response?.total) return;
-
-          const empty = {
-            count: response?.total || 0,
-            term: '-_exists_',
-            displayAs: 'Not Specified',
-            facet,
-          };
-          // add facet term for "empty" property
-          data[facet].terms.unshift(empty);
-          return empty;
-        });
-      }),
-    );
-    await Promise.all(
-      facets.map(facet => {
-        /* Fetch facets using query params. Note that we also get the facets count where data is non-existent to be used as an "N/A" attribute. */
-        return fetchSearchResults({
-          q:
-            queryParams.advancedSearch === 'true'
-              ? params.q
-              : encodeString(params.q),
-
-          extra_filter: params?.extra_filter
-            ? `${params.extra_filter} AND _exists_:${facet}`
-            : `_exists_:${facet}`,
-          facet_size: 0, // just need the total
-          size: 0,
-        }).then(response => {
-          if (!data || !response?.total) return;
-
-          const any = {
-            count: response?.total || 0,
-            term: '_exists_',
-            displayAs: 'Any Specified',
-            facet,
-          };
-          // add facet term for "any" property
-          data[facet].terms.unshift(any);
-          return any;
-        });
-      }),
-    );
-    return data;
-  };
-
   // We need 2 queries:
-  interface FiltersResponse {
-    [key: keyof FormattedResource]: {
-      term: string;
-      count: number;
-      updatedCount?: number;
-      name?: string;
-      displayAs: string;
-    }[];
-  }
   // 1. Shows all filters for a given search. (omit extra_filters). Runs on load/new querystring.
   const {
     isLoading,
@@ -167,13 +160,17 @@ export const useFacetsData = ({
       },
     ],
     () => {
-      return fetchFilters({
-        q: queryParams.q,
-        extra_filter: '',
-        facet_size: queryParams.facet_size,
-        facets: facets.filter(facet => facet !== 'date').join(','),
-        size: 0,
-      });
+      return fetchFilters(
+        {
+          ...queryParams,
+          q: queryParams.q,
+          extra_filter: '',
+          facet_size: queryParams.facet_size,
+          facets: facets.filter(facet => facet !== 'date').join(','),
+          size: 0,
+        },
+        facets,
+      );
     },
     {
       // enabled: !!hasMounted,
@@ -213,13 +210,17 @@ export const useFacetsData = ({
       },
     ],
     () => {
-      return fetchFilters({
-        q: queryParams.q,
-        facet_size: queryParams.facet_size,
-        extra_filter: queryParams.extra_filter,
-        facets: facets.join(','),
-        size: 0,
-      });
+      return fetchFilters(
+        {
+          ...queryParams,
+          q: queryParams.q,
+          facet_size: queryParams.facet_size,
+          extra_filter: queryParams.extra_filter,
+          facets: facets.join(','),
+          size: 0,
+        },
+        facets,
+      );
     },
     {
       refetchOnWindowFocus: false,
