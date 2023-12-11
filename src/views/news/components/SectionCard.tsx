@@ -46,7 +46,7 @@ const SectionCard = ({ attributes }: NewsOrEventsObject) => {
             fontWeight='medium'
             fontSize='sm'
             whiteSpace='nowrap'
-            color='gray.600'
+            color='gray.800'
           >
             {formatDate(attributes.publishedAt || attributes.updatedAt)}
           </Text>
