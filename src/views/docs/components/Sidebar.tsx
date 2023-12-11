@@ -83,7 +83,7 @@ const SidebarContainer: React.FC<DocumentationSidebarProps> = ({
               <Icon as={FaAngleDoubleLeft}></Icon>
             </Button>
             <ScrollContainer
-              as='nav'
+              as='aside'
               overflowX='hidden'
               overflowY='auto'
               h='100%'
@@ -169,11 +169,10 @@ export const SidebarMobile = ({
                   >
                     <MenuItem
                       pl={6}
-                      aria-selected={isSelected}
-                      _selected={{
-                        color: `${colorScheme}.600!important`,
-                        bg: `${colorScheme}.100`,
-                      }}
+                      color={
+                        isSelected ? `${colorScheme}.600!important` : 'inherit'
+                      }
+                      bg={isSelected ? `${colorScheme}.100` : 'transparent'}
                     >
                       <Text fontSize='sm' color='inherit'>
                         {item.name}
@@ -268,6 +267,14 @@ export const SidebarDesktop = ({
                     <UnorderedList ml={0}>
                       {category.items.map((item, i) => {
                         const isSelected = selectedSlug === item.slug;
+                        const bg = isSelected
+                          ? `${colorScheme}.100`
+                          : 'transparent';
+
+                        const color = isSelected
+                          ? `${colorScheme}.600!important`
+                          : 'text.body!important';
+
                         return (
                           <ListItem key={item.id} w='100%' display='flex'>
                             <NextLink
@@ -281,20 +288,13 @@ export const SidebarDesktop = ({
                                 fontSize='sm'
                                 px={8}
                                 py={1}
-                                aria-selected={isSelected}
-                                color='text.body!important'
-                                bg='transparent'
                                 lineHeight='tall'
-                                _selected={{
-                                  color: `${colorScheme}.600!important`,
-                                  bg: `${colorScheme}.100`,
-                                }}
+                                color={color}
+                                bg={bg}
                                 _hover={{
-                                  [`&[aria-selected=false]`]: {
-                                    bg: 'blackAlpha.50',
-                                    borderRadius: 'base',
-                                    transition: 'fast',
-                                  },
+                                  bg: isSelected ? bg : 'blackAlpha.50',
+                                  borderRadius: 'base',
+                                  transition: 'fast',
                                 }}
                               >
                                 <SkeletonText
