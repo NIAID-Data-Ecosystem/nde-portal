@@ -324,9 +324,7 @@ const Docs: NextPage<{
                                 >
                                   <Link
                                     as='span'
-                                    variant='unstyled'
                                     fontSize='sm'
-                                    color='gray.600'
                                     bg='transparent'
                                     lineHeight='tall'
                                   >

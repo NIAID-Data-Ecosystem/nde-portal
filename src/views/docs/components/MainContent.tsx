@@ -175,7 +175,7 @@ const MainContent = ({ slug, data: initialData }: MainContentProps) => {
               >
                 {data.attributes.name}
               </Heading>
-              <Text color='niaid.placeholder'>{data.attributes.subtitle}</Text>
+              <Text color='gray.700'>{data.attributes.subtitle}</Text>
             </Box>
             <ReactMarkdown
               rehypePlugins={[rehypeRaw, remarkGfm]}
@@ -187,7 +187,7 @@ const MainContent = ({ slug, data: initialData }: MainContentProps) => {
             <Text
               fontStyle='italic'
               fontSize='xs'
-              color='gray.600'
+              color='gray.800'
               textAlign='end'
             >
               Last updated on{' '}
