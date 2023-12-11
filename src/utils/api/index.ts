@@ -25,17 +25,17 @@ export const getResourceById = async (id?: string | string[]) => {
 // Get all resources where query term contains the search term.
 export interface Params {
   q: string;
-  size?: string | number;
-  from?: string;
-  facet_size?: number;
-  facets?: string;
-  sort?: string;
-  scroll_id?: string;
-  extra_filter?: string;
-  fields?: string[];
-  dotfield?: boolean;
-  hist?: string;
   advancedSearch?: string;
+  dotfield?: boolean;
+  extra_filter?: string;
+  facets?: string;
+  facet_size?: number;
+  fields?: string[];
+  hist?: string;
+  from?: string;
+  scroll_id?: string;
+  size?: string | number;
+  sort?: string;
   use_metadata_score?: string;
 }
 
