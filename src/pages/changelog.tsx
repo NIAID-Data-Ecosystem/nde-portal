@@ -36,7 +36,7 @@ const Changelog: NextPage<ChangelogProps> = () => {
               px={2}
               py={1}
             >
-              <Text fontSize='sm' fontWeight='semibold' color='#fff'>
+              <Text as='h2' fontSize='sm' fontWeight='semibold' color='#fff'>
                 V.{packageJsonData.version}
               </Text>
             </Badge>
