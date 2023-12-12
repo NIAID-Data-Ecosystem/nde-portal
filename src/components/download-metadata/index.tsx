@@ -26,7 +26,7 @@ import { MdClose } from 'react-icons/md';
 
 interface DownloadMetadataProps extends FlexProps {
   exportFileName: string;
-  params: any;
+  params: Params;
   buttonProps?: ButtonProps;
 }
 
