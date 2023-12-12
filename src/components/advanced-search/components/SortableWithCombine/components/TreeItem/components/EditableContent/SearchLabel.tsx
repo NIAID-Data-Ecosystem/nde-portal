@@ -40,9 +40,7 @@ export const SearchLabel = ({
   return (
     <>
       <VisuallyHidden>
-        <label id='field-select-label' fontWeight='medium' color='gray.600'>
-          Select field
-        </label>
+        <label id='field-select-label'>Select field</label>
       </VisuallyHidden>
       <Select
         aria-labelledby='field-select-label'
