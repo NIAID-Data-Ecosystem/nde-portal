@@ -119,8 +119,9 @@ export const fetchAllSearchResults = async (
       const { data } = await axios.get(url, { params, signal });
 
       if (updateProgress) {
-        // Total number of pages to fetch is the total number of results divided by the page size (which defaults to 1000 when fetch_all is applied).
-        const totalPages = Math.ceil(total / 1000);
+        const FETCH_ALL_COUNT = 250;
+        // Total number of pages to fetch is the total number of results divided by the page size (which defaults to FETCH_ALL_COUNT when fetch_all is applied).
+        const totalPages = Math.ceil(total / FETCH_ALL_COUNT);
         const percentComplete =
           totalPages && Math.round((page / totalPages) * 100);
         updateProgress(percentComplete);

@@ -14,8 +14,8 @@ import {
 } from 'nde-design-system';
 import React, { useCallback, useEffect, useState } from 'react';
 import { FaDownload, FaExclamationCircle } from 'react-icons/fa';
-import { useQuery } from 'react-query';
-import { Params, fetchAllSearchResults } from 'src/utils/api';
+import { useQuery, useQueryClient } from 'react-query';
+import { fetchAllSearchResults } from 'src/utils/api';
 import { DownloadArgs, downloadAsCsv, downloadAsJson } from './helpers';
 import { Disclaimer } from './components/Disclaimer';
 import { MdClose } from 'react-icons/md';
@@ -26,7 +26,7 @@ import { MdClose } from 'react-icons/md';
 
 interface DownloadMetadataProps extends FlexProps {
   exportFileName: string;
-  params: Params;
+  params: any;
   buttonProps?: ButtonProps;
 }
 
@@ -156,6 +156,8 @@ export const DownloadMetadata: React.FC<DownloadMetadataProps> = ({
     };
   }, [downloadFormat, exportFileName, fetchDownloadData, clearDownloadState]);
 
+  const queryClient = useQueryClient();
+
   return (
     <Flex alignItems='flex-end' flexDirection='column' {...props}>
       {/* Error */}
@@ -167,7 +169,7 @@ export const DownloadMetadata: React.FC<DownloadMetadataProps> = ({
       </Collapse>
 
       <Box maxW='300px'>
-        {/* {downloadFormat || percentComplete ? (
+        {downloadFormat || percentComplete ? (
           <Flex flexDirection='column'>
             <Flex w='200px' alignItems='center'>
               <Progress
@@ -191,14 +193,17 @@ export const DownloadMetadata: React.FC<DownloadMetadataProps> = ({
           </Flex>
         ) : (
           <></>
-        )} */}
+        )}
 
         {isFetching ? (
           // cancel query
           <Button
             leftIcon={<MdClose />}
             colorScheme='primary'
-            onClick={() => clearDownloadState()}
+            onClick={() => {
+              queryClient.cancelQueries(queryKey);
+              clearDownloadState();
+            }}
             variant='solid'
             size='xs'
             fontSize='12px'
