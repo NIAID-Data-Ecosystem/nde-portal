@@ -194,7 +194,7 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
             flex={1}
             size='sm'
             fontWeight='medium'
-            color={items.length ? 'text.heading' : 'gray.600'}
+            color={items.length ? 'text.heading' : 'gray.800'}
           >
             Query Builder
           </Heading>
@@ -213,7 +213,7 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
             Clear query
           </Button>
         </Flex>
-        <Text color={items.length ? 'text.body' : 'gray.600'} fontSize='sm'>
+        <Text color={items.length ? 'text.body' : 'gray.800'} fontSize='sm'>
           Re-order query terms by click and drag. Group items together by
           dragging an element over another.
         </Text>

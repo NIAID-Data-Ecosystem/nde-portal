@@ -4,14 +4,15 @@ import {
   EditablePreview,
   EditableTextarea,
   Flex,
-  Heading,
   Icon,
   IconButton,
   keyframes,
   Spinner,
+  Text,
   Textarea,
   Tooltip,
   useEditableControls,
+  VisuallyHidden,
 } from 'nde-design-system';
 import { theme } from 'src/theme';
 import { MouseEventHandler, useEffect, useState } from 'react';
@@ -257,7 +258,11 @@ export const EditableQueryText = ({
             }}
           />
         </Tooltip>
+        <VisuallyHidden>
+          <label id='editable-label'>Edit query input</label>
+        </VisuallyHidden>
         <Textarea
+          aria-labelledby='editable-label'
           py={2}
           px={4}
           fontSize='sm'
@@ -273,8 +278,7 @@ export const EditableQueryText = ({
         <Flex p={2} justifyContent='space-between' alignItems='center'>
           <Flex>
             {value && (
-              <Heading
-                as='h5'
+              <Text
                 fontSize='sm'
                 fontWeight='light'
                 fontStyle='italic'
@@ -296,7 +300,7 @@ export const EditableQueryText = ({
                     {data?.total === 1 ? '' : 's'}
                   </span>
                 )}
-              </Heading>
+              </Text>
             )}
           </Flex>
           <EditableControls />
