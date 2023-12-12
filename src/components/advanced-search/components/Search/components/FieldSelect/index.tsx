@@ -223,11 +223,12 @@ export const FieldSelect: React.FC<FieldSelectProps> = ({
       {fields ? (
         <>
           <VisuallyHidden>
-            <Text fontWeight='medium' color='gray.600'>
+            <Text id='field-select-label' fontWeight='medium' color='gray.600'>
               Select field
             </Text>
           </VisuallyHidden>
           <Select
+            aria-labelledby='field-select-label'
             instanceId='field-select'
             components={{ Control, Option }}
             value={
