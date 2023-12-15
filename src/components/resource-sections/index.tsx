@@ -31,6 +31,9 @@ import { Funding } from './components/funding';
 import { JsonViewer } from '../json-viewer';
 import ResourceIsPartOf from './components/is-part-of';
 import BasedOnTable from './components/based-on';
+import { CompletenessBadgeCircle } from '../completeness-badge';
+import { HeadingWithTooltip } from './components/sidebar/components/external/components/heading-with-tooltip';
+import { AltmetricBadge } from './components/sidebar/components/external/components/altmetric';
 
 // Metadata displayed in each section
 export const sectionMetadata: { [key: string]: (keyof FormattedResource)[] } = {
@@ -119,8 +122,35 @@ const Sections = ({
               </>
             )}
             {/* for mobile viewing */}
-            {section.hash === 'overview' && (
+            {section.hash === 'overview' && data && (
               <Box display={{ base: 'block', lg: 'none' }}>
+                {data && (
+                  <Flex p={4} flexWrap='wrap'>
+                    {data['_meta'] && (
+                      <Flex
+                        p={2}
+                        flex={1}
+                        justifyContent='center'
+                        alignItems='center'
+                        flexDirection='column'
+                      >
+                        <CompletenessBadgeCircle stats={data['_meta']} />
+                        <HeadingWithTooltip
+                          label='Metadata Completeness'
+                          tooltipLabel='Lorem Ipsum'
+                          pt={2}
+                          whiteSpace='nowrap'
+                        />
+                      </Flex>
+                    )}
+                    {data?.doi && (
+                      <Flex p={2} flex={1} justifyContent='center'>
+                        <AltmetricBadge doi={data.doi} />
+                      </Flex>
+                    )}
+                  </Flex>
+                )}
+                {/* External links to access data, documents or dataset at the source. */}
                 <External data={data} isLoading={isLoading} />
               </Box>
             )}

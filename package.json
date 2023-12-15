@@ -38,6 +38,7 @@
     "@mdx-js/loader": "^2.3.0",
     "@mdx-js/react": "^2.3.0",
     "@next/mdx": "^13.4.3",
+    "@react-spring/web": "^9.7.3",
     "@testing-library/dom": "^9.3.0",
     "@testing-library/user-event": "^14.4.3",
     "@types/d3": "^7.4.0",
