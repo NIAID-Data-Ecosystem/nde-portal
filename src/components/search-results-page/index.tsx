@@ -140,11 +140,13 @@ const SearchResultsPage = () => {
       return fetchSearchResults({
         q: params.q,
         extra_filter: params.extra_filter,
+        show_meta: true,
         size: params.size,
         from: params.from,
         sort: params.sort,
         use_metadata_score: params.use_metadata_score,
         fields: [
+          '_meta',
           '@type',
           'alternateName',
           'author',
@@ -181,7 +183,6 @@ const SearchResultsPage = () => {
       },
     },
   );
-
   // Set total results value
   useEffect(() => {
     setTotal(prev => {

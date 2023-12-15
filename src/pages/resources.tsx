@@ -48,7 +48,7 @@ const ResourcePage: NextPage = () => {
   } = useQuery<ResourceData | undefined, Error>(
     ['search-result', { id }],
     async () => {
-      const data = await getResourceById(id);
+      const data = await getResourceById(id, { show_meta: true });
       // Get other datasets that have the same study identifier and data catalog name.
       if (data?.isPartOf) {
         const studyIds = data.isPartOf

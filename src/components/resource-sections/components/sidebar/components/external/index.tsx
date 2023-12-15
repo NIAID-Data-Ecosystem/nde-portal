@@ -13,7 +13,6 @@ import { DataAccess } from './components/data-access';
 import { DataUsage } from './components/usage';
 import { License } from './components/license';
 import { AssociatedDocumentation } from './components/associated-documentation';
-import { AltmetricBadge } from './components/altmetric';
 import { AccessibleForFree, ConditionsOfAccess } from 'src/components/badges';
 
 export const External = ({
@@ -23,21 +22,10 @@ export const External = ({
   isLoading: boolean;
   data?: FormattedResource;
 }) => {
-  const hasAltmetricBadge = !!data?.doi;
   return (
     <>
-      {/* altmetric divider */}
-      {hasAltmetricBadge && (
-        <Wrapper isLoading={isLoading} hasDivider={false}>
-          <AltmetricBadge doi={data.doi} />
-        </Wrapper>
-      )}
       {/* Source + data access info. */}
-      <Wrapper
-        isLoading={isLoading}
-        label='Data Access'
-        hasDivider={hasAltmetricBadge}
-      >
+      <Wrapper isLoading={isLoading} label='Data Access'>
         {(data?.isAccessibleForFree === true ||
           data?.isAccessibleForFree === false ||
           data?.conditionsOfAccess) && (
@@ -84,7 +72,7 @@ export const External = ({
   );
 };
 
-const Wrapper = ({
+export const Wrapper = ({
   label,
   isLoading,
   children,
