@@ -61,34 +61,34 @@ export const CompletenessBadgeBar = ({
       };
     });
   return (
-    <Box position='relative'>
-      <Tooltip
-        label={
-          <TooltipContent
-            stats={{
-              required: {
-                label: 'Core fields',
-                max_score: required_max_score,
-                score: required_score,
-                fill: colors['required'],
-                augmented: stats.required_augmented_fields,
-              },
-              recommended: {
-                label: 'Recommended fields',
-                max_score: recommended_max_score,
-                score: recommended_score,
-                fill: colors['recommended'],
-                augmented: stats.recommended_augmented_fields,
-              },
-              total: {
-                label: 'Total Score',
-                max_score: total_max_score,
-                score: total_score,
-              },
-            }}
-          />
-        }
-      >
+    <Tooltip
+      label={
+        <TooltipContent
+          stats={{
+            required: {
+              label: 'Core fields',
+              max_score: required_max_score,
+              score: required_score,
+              fill: colors['required'],
+              augmented: stats.required_augmented_fields,
+            },
+            recommended: {
+              label: 'Recommended fields',
+              max_score: recommended_max_score,
+              score: recommended_score,
+              fill: colors['recommended'],
+              augmented: stats.recommended_augmented_fields,
+            },
+            total: {
+              label: 'Total Score',
+              max_score: total_max_score,
+              score: total_score,
+            },
+          }}
+        />
+      }
+    >
+      <Box position='relative'>
         <Flex as='span' alignItems='center'>
           <Box
             as='svg'
@@ -99,11 +99,17 @@ export const CompletenessBadgeBar = ({
               return <Box as='rect' key={key} {...props}></Box>;
             })}
           </Box>
-          <Text fontSize='12px' lineHeight='short' color='gray.800'>
+          <Text
+            fontSize='12px'
+            lineHeight='short'
+            color='gray.800'
+            fontWeight='semibold'
+            ml={2}
+          >
             {Math.round((total_score / total_max_score) * 100)}%
           </Text>
         </Flex>
-      </Tooltip>
-    </Box>
+      </Box>
+    </Tooltip>
   );
 };
