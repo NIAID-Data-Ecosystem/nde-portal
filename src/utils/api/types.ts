@@ -301,6 +301,25 @@ export interface OutputProperties {
 // Formatting standardized resource fields
 export interface FormattedResource {
   [key: string]: any;
+  _meta?: {
+    completeness: {
+      augmented_recommended_ratio: number;
+      augmented_required_ratio: number;
+      recommended_max_score: number;
+      recommended_score: number;
+      recommended_score_ratio: number;
+      required_max_score: number;
+      required_ratio: number;
+      required_score: number;
+      total_max_score: number;
+      total_recommended_augmented: number;
+      total_required_augmented: number;
+      total_score: number;
+      weighted_score: number;
+    };
+    recommended_augmented_fields: string[];
+    required_augmented_fields: string[];
+  };
   id: string;
   type: string | null; // "Dataset" | "ComputationalTool"
   name: string;

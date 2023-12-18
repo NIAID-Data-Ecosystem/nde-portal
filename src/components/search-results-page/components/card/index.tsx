@@ -16,6 +16,7 @@ import {
   ToggleContainer,
   VisuallyHidden,
   Tooltip,
+  Stack,
 } from 'nde-design-system';
 import {
   FaArrowAltCircleRight,
@@ -34,6 +35,8 @@ import NextLink from 'next/link';
 import MetadataAccordion from './metadata-accordion';
 import { DisplayHTMLContent } from 'src/components/html-content';
 import { AccessibleForFree, ConditionsOfAccess } from 'src/components/badges';
+import { CompletenessBadgeBar } from 'src/components/completeness-badge';
+import { HeadingWithTooltip } from 'src/components/resource-sections/components/sidebar/components/external/components/heading-with-tooltip';
 
 interface SearchResultCardProps {
   isLoading?: boolean;
@@ -246,7 +249,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
           {(doi || sources.length > 0) && (
             <Flex
               flexWrap='wrap'
-              alignItems='flex-end'
+              alignItems='center'
               px={paddingCard}
               py={2}
               my={0}
@@ -338,38 +341,62 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                     </Box>
                   )} */}
 
-                  {doi && (
-                    <Flex
-                      flex={1}
-                      mt={[4, 4, 0]}
-                      justifyContent='flex-end'
-                      // minW='200px'
-                      flexDirection='column'
-                      alignItems={['flex-start', 'flex-end']}
+                  <Flex
+                    flex={1}
+                    flexDirection='column'
+                    alignItems={{ base: 'flex-start', md: 'flex-end' }}
+                    py={{ base: 2, md: 2 }}
+                  >
+                    <Stack
+                      flexDirection={{ base: 'column', md: 'column' }}
+                      spacing={{ base: 2, md: 1 }}
                     >
-                      <Text
-                        fontSize='xs'
-                        my={0}
-                        fontWeight='medium'
-                        lineHeight={1}
-                      >
-                        Altmetric
-                      </Text>
-                      {/* Altmetric embed badges don't allow for adding aria-label so VisuallyHidden is a patch */}
-                      <VisuallyHidden>
-                        See more information about resource on Altmetric
-                      </VisuallyHidden>
-                      <div
-                        role='link'
-                        title='altmetric badge'
-                        data-badge-popover='left'
-                        data-badge-type='bar'
-                        data-doi={formatDOI(doi)}
-                        className='altmetric-embed'
-                        data-link-target='blank'
-                      ></div>
-                    </Flex>
-                  )}
+                      {doi && (
+                        <Flex
+                          flexDirection='column'
+                          justifyContent='flex-start'
+                        >
+                          <HeadingWithTooltip
+                            label='Altmetric Score'
+                            as='p'
+                            tooltipLabel='Score attributed to dataset based on relevant online attention.'
+                          />
+
+                          {/* Altmetric embed badges don't allow for adding aria-label so VisuallyHidden is a patch */}
+                          <VisuallyHidden>
+                            Embedded badge for Altmetric scoring. Clicking on
+                            the badge will take you to the Altmetric page for
+                            this resource.
+                          </VisuallyHidden>
+                          <div
+                            style={{
+                              transform: 'translate(0px, -6px)',
+                              height: '20px',
+                            }}
+                            role='link'
+                            data-badge-popover='left'
+                            data-badge-type='bar'
+                            data-doi={formatDOI(doi)}
+                            className='altmetric-embed'
+                            data-link-target='blank'
+                          ></div>
+                        </Flex>
+                      )}
+                      {data && data['_meta'] && (
+                        <Flex
+                          flexDirection='column'
+                          justifyContent='flex-start'
+                        >
+                          <HeadingWithTooltip
+                            label='Completeness Score'
+                            as='p'
+                            tooltipLabel='Lorem ipsum.'
+                          />
+                          <CompletenessBadgeBar stats={data['_meta']} />
+                        </Flex>
+                      )}
+                    </Stack>
+                  </Flex>
                 </>
               )}
             </Flex>
