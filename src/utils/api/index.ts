@@ -22,7 +22,7 @@ export interface Params {
 
 export const getResourceById = async (
   id?: string | string[],
-  params?: Params,
+  params?: Partial<Params>,
 ) => {
   if (!id) {
     return;
