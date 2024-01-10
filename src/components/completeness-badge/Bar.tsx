@@ -66,7 +66,7 @@ export const CompletenessBadgeBar = ({
         <TooltipContent
           stats={{
             required: {
-              label: 'Core fields',
+              label: 'Fundamental fields',
               max_score: required_max_score,
               score: required_score,
               fill: colors['required'],

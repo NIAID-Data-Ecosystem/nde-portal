@@ -10,8 +10,12 @@ import { animated, useTransition, to } from '@react-spring/web';
 
 export const CompletenessBadgeCircle = ({
   stats,
+  animate = true,
+  size = 'lg',
 }: {
   stats: FormattedResource['_meta'];
+  animate?: boolean;
+  size?: 'xs' | 'sm' | 'md' | 'lg';
 }) => {
   if (!stats) {
     return <></>;
@@ -32,18 +36,46 @@ export const CompletenessBadgeCircle = ({
   };
 
   const dimensions = {
-    width: 96,
-    height: 96,
-    margin: { top: 2, right: 2, bottom: 2, left: 2 },
+    xs: {
+      width: 48,
+      height: 48,
+      margin: { top: 1, right: 1, bottom: 1, left: 1 },
+      donutThickness: 4,
+      spacing: 3,
+      fontSize: 'xs',
+    },
+    sm: {
+      width: 64,
+      height: 64,
+      margin: { top: 1, right: 1, bottom: 1, left: 1 },
+      donutThickness: 6,
+      spacing: 4,
+      fontSize: 'sm',
+    },
+    md: {
+      width: 72,
+      height: 72,
+      margin: { top: 2, right: 2, bottom: 2, left: 2 },
+      donutThickness: 6.5,
+      spacing: 4,
+      fontSize: 'sm',
+    },
+    lg: {
+      width: 96,
+      height: 96,
+      margin: { top: 2, right: 2, bottom: 2, left: 2 },
+      donutThickness: 8,
+      spacing: 6,
+      fontSize: 'lg',
+    },
   };
 
-  const innerWidth =
-    dimensions.width - dimensions.margin.left - dimensions.margin.right;
-  const innerHeight =
-    dimensions.height - dimensions.margin.top - dimensions.margin.bottom;
+  const { donutThickness, fontSize, height, margin, spacing, width } =
+    dimensions[size];
 
-  const donutThickness = 8;
-  const spacing = 6;
+  const innerWidth = width - margin.left - margin.right;
+  const innerHeight = height - margin.top - margin.bottom;
+
   const radius = {
     required: Math.min(innerWidth, innerHeight) / 2 - donutThickness - spacing,
     recommended: Math.min(innerWidth, innerHeight) / 2,
@@ -91,7 +123,7 @@ export const CompletenessBadgeCircle = ({
           <TooltipContent
             stats={{
               required: {
-                label: 'Core fields',
+                label: 'Fundamental fields',
                 max_score: required_max_score,
                 score: required_score,
                 fill: colors['required'].dark,
@@ -116,24 +148,21 @@ export const CompletenessBadgeCircle = ({
         <span>
           <Text
             position='absolute'
-            left={`${centerX + dimensions.margin.left / 2}px`}
-            top={`${centerY + dimensions.margin.top / 2}px`}
+            left={`${centerX + margin.left / 2}px`}
+            top={`${centerY + margin.top / 2}px`}
             transform={`translate(-50%, -50%)`}
             fontWeight='bold'
-            fontSize='lg'
+            fontSize={fontSize}
             lineHeight='none'
             color='gray.800'
           >
             {total_score}
           </Text>
           <svg
-            width={`${dimensions.width}px`}
-            height={`${dimensions.height}px`}
+            width={`${dimensions[size].width}px`}
+            height={`${dimensions[size].height}px`}
           >
-            <Group
-              top={centerY + dimensions.margin.top}
-              left={centerX + dimensions.margin.left}
-            >
+            <Group top={centerY + margin.top} left={centerX + margin.left}>
               {/* Required */}
               {/* background circle for required pie */}
               {[requiredData, recommendedData].map((data, idx) => {
@@ -180,10 +209,10 @@ export const CompletenessBadgeCircle = ({
                             <>
                               {/* use this to apply a conic gradient */}
                               <foreignObject
-                                x={0 - dimensions.width / 2}
-                                y={0 - dimensions.height / 2}
-                                width={dimensions.width}
-                                height={dimensions.height}
+                                x={0 - width / 2}
+                                y={0 - height / 2}
+                                width={dimensions[size].width}
+                                height={dimensions[size].height}
                                 clipPath={`url(#${datum.id}-bg)`}
                               >
                                 <div
@@ -196,7 +225,11 @@ export const CompletenessBadgeCircle = ({
                               </foreignObject>
 
                               <clipPath id={`${datum.id}-bg`}>
-                                <AnimatedArc key='arc-required' {...pie} />
+                                <AnimatedArc
+                                  key='arc-required'
+                                  animate={animate}
+                                  {...pie}
+                                />
                               </clipPath>
                             </>
                           );

@@ -18,14 +18,20 @@ import { AccessibleForFree, ConditionsOfAccess } from 'src/components/badges';
 export const External = ({
   data,
   isLoading,
+  hasDivider = true,
 }: {
   isLoading: boolean;
   data?: FormattedResource;
+  hasDivider: boolean;
 }) => {
   return (
     <>
       {/* Source + data access info. */}
-      <Wrapper isLoading={isLoading} label='Data Access'>
+      <Wrapper
+        isLoading={isLoading}
+        label='Data Access'
+        hasDivider={hasDivider}
+      >
         {(data?.isAccessibleForFree === true ||
           data?.isAccessibleForFree === false ||
           data?.conditionsOfAccess) && (
@@ -85,15 +91,15 @@ export const Wrapper = ({
   headingProps?: HeadingProps;
   hasDivider?: boolean;
 }) => (
-  <Skeleton isLoaded={!isLoading} fontSize='xs'>
+  <Skeleton isLoaded={!isLoading} fontSize='xs' flex={1}>
     {hasDivider && <Divider borderColor='niaid.placeholder' />}
     {label && (
       <Heading
         as='h2'
-        size='sm'
-        p={[4, 6]}
-        pt={[4, 4]}
-        pb={[2, 2]}
+        size={{ base: 'xs', md: 'sm' }}
+        px={{ base: 4, md: 6 }}
+        pt={{ base: 2, md: 4 }}
+        pb={{ base: 1, md: 2 }}
         fontWeight='semibold'
         letterSpacing='wide'
         {...headingProps}
@@ -101,7 +107,12 @@ export const Wrapper = ({
         {label}
       </Heading>
     )}
-    <Stack p={6} pt={label ? 0 : 6} spacing={4} lineHeight='short'>
+    <Stack
+      p={{ base: 4, md: 6 }}
+      pt={{ base: 2, md: label ? 0 : 6 }}
+      spacing={{ base: 2, md: 4 }}
+      lineHeight='short'
+    >
       {children}
     </Stack>
   </Skeleton>

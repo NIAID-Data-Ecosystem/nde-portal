@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Flex } from 'nde-design-system';
+import { Flex } from 'nde-design-system';
 import { FormattedResource } from 'src/utils/api/types';
 import { formatDOI } from 'src/utils/helpers';
 import { HeadingWithTooltip } from './heading-with-tooltip';

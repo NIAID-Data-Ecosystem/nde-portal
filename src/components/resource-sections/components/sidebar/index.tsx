@@ -22,8 +22,7 @@ import { FaSearch } from 'react-icons/fa';
 import { External } from './components/external';
 import { ScrollContainer } from 'src/components/scroll-container';
 import { ResourceData } from 'src/pages/resources';
-import { AltmetricBadge } from './components/external/components/altmetric';
-import { CompletenessBadgeCircle } from 'src/components/completeness-badge';
+import { CompletenessBadgeCircle } from 'src/components/completeness-badge/Circular';
 import { HeadingWithTooltip } from './components/external/components/heading-with-tooltip';
 
 export const Sidebar = ({
@@ -43,7 +42,6 @@ export const Sidebar = ({
     setIsMounted(true);
   }, []);
 
-  const hasAltmetricBadge = !!data?.doi;
   return (
     <Flex
       flex={1}
@@ -66,15 +64,9 @@ export const Sidebar = ({
                   <CompletenessBadgeCircle stats={data['_meta']} />
                   <HeadingWithTooltip
                     label='Metadata Completeness'
-                    tooltipLabel='Lorem Ipsum'
                     pt={2}
                     whiteSpace='nowrap'
                   />
-                </Flex>
-              )}
-              {hasAltmetricBadge && (
-                <Flex p={2} flex={1} justifyContent='center'>
-                  <AltmetricBadge doi={data.doi} />
                 </Flex>
               )}
             </Flex>

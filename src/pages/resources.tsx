@@ -93,22 +93,6 @@ const ResourcePage: NextPage = () => {
     }
   }, [data]);
 
-  // embed altmetric data. For more information: https://api.altmetric.com/embeds.html
-  useEffect(() => {
-    // @ts-ignore
-    if (window._altmetric_embed_init) {
-      // @ts-ignore
-      window._altmetric_embed_init();
-    }
-    /* import altmetric script for badge embeds */
-    let altmetricsScript = document.createElement('script');
-    altmetricsScript.setAttribute(
-      'src',
-      'https://d1bxh8uas1mnw7.cloudfront.net/assets/embed.js',
-    );
-    document.body.appendChild(altmetricsScript);
-  }, [data]);
-
   const { routes } = navigationData as {
     title: string;
     routes: Route[];
