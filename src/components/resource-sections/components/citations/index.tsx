@@ -44,8 +44,8 @@ const ResourceCitations = ({
         py={2}
       >
         {citations.map((citation, idx) => {
-          const citationComponents = getCitationComponents(citation).map(
-            component => {
+          const citationComponents = getCitationComponents(citation)
+            .map(component => {
               // If the component is an object (journal details), format it into a string
               if (component && typeof component === 'object') {
                 const { key, name, volumeNumber, issueNumber, pagination } =
@@ -64,9 +64,8 @@ const ResourceCitations = ({
                 return shouldAppendPunctuation(component);
               }
               return component;
-            },
-          );
-
+            })
+            .filter(Boolean);
           return (
             <Text
               key={idx}
@@ -76,13 +75,13 @@ const ResourceCitations = ({
               px={2}
               py={citations.length > 1 ? 2 : 0}
             >
-              {citationComponents.map((component, index) => (
+              {citationComponents?.map((component, index) => (
                 <span key={index}>
                   {component}
                   {index < citationComponents.length - 1 ? ' ' : ''}
                 </span>
               ))}
-              <br />
+              {citationComponents.length > 0 && <br />}
               {citation.url && (
                 <>
                   Available from:{' '}
