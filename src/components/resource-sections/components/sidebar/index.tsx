@@ -5,6 +5,7 @@ import {
   Card,
   Collapse,
   Flex,
+  HStack,
   Icon,
   Link,
   ListItem,
@@ -21,6 +22,8 @@ import { FaSearch } from 'react-icons/fa';
 import { External } from './components/external';
 import { ScrollContainer } from 'src/components/scroll-container';
 import { ResourceData } from 'src/pages/resources';
+import { CompletenessBadgeCircle } from 'src/components/completeness-badge/Circular';
+import { HeadingWithTooltip } from './components/external/components/heading-with-tooltip';
 
 export const Sidebar = ({
   data,
@@ -48,6 +51,26 @@ export const Sidebar = ({
     >
       <Box className='sidebar' position='sticky' top='0px'>
         <Card flex={1} ml={[0, 0, 4]} my={[2, 2, 0]} sx={{ '>*': { p: 0 } }}>
+          {data && (
+            <Flex p={4} flexWrap='wrap'>
+              {data['_meta'] && (
+                <Flex
+                  p={2}
+                  flex={1}
+                  justifyContent='center'
+                  alignItems='center'
+                  flexDirection='column'
+                >
+                  <CompletenessBadgeCircle stats={data['_meta']} />
+                  <HeadingWithTooltip
+                    label='Metadata Completeness'
+                    pt={2}
+                    whiteSpace='nowrap'
+                  />
+                </Flex>
+              )}
+            </Flex>
+          )}
           {/* External links to access data, documents or dataset at the source. */}
           <External data={data} isLoading={isLoading} />
         </Card>

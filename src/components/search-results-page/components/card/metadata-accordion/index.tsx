@@ -49,7 +49,7 @@ const MetadataAccordion: React.FC<MetadataAccordionProps> = ({ data }) => {
   return (
     <>
       {/* Details expandable drawer */}
-      <Accordion allowToggle p={0} pt={1} my={0}>
+      <Accordion allowToggle p={0} my={0}>
         <AccordionItem>
           {({ isExpanded }) => (
             <>
@@ -58,6 +58,7 @@ const MetadataAccordion: React.FC<MetadataAccordionProps> = ({ data }) => {
                   px={paddingCard}
                   _hover={{ bg: 'page.alt' }}
                   aria-label={`show more details about dataset id ${id}`}
+                  flexDirection={{ base: 'column', md: 'row' }}
                 >
                   <Flex
                     flex='1'
@@ -117,7 +118,7 @@ const MetadataAccordion: React.FC<MetadataAccordionProps> = ({ data }) => {
                     )}
                   </Flex>
                   <Flex alignItems='center'>
-                    <Text mx={2} fontSize='xs'>
+                    <Text mx={2} my={[2, 0]} fontSize='xs'>
                       Show metadata
                     </Text>
                     <Icon

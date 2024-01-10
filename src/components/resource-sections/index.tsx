@@ -2,12 +2,12 @@ import React from 'react';
 import { useRouter } from 'next/router';
 import { FormattedResource } from 'src/utils/api/types';
 import {
-  Box,
   Divider,
   Flex,
   Link,
   ListItem,
   Skeleton,
+  Stack,
   Tag,
   UnorderedList,
 } from 'nde-design-system';
@@ -31,6 +31,8 @@ import { Funding } from './components/funding';
 import { JsonViewer } from '../json-viewer';
 import ResourceIsPartOf from './components/is-part-of';
 import BasedOnTable from './components/based-on';
+import { CompletenessBadgeCircle } from 'src/components/completeness-badge/Circular';
+import { HeadingWithTooltip } from './components/sidebar/components/external/components/heading-with-tooltip';
 
 // Metadata displayed in each section
 export const sectionMetadata: { [key: string]: (keyof FormattedResource)[] } = {
@@ -104,6 +106,51 @@ const Sections = ({
             isLoading={isLoading}
             isCollapsible={section.isCollapsible}
           >
+            {/* for mobile viewing */}
+            {section.hash === 'overview' && data && (
+              <Stack
+                display={{ base: 'flex', lg: 'none' }}
+                flexWrap='wrap'
+                flexDirection='column'
+                spacing={4}
+                px={{ base: 0, md: 4 }}
+                py={4}
+              >
+                {data && data['_meta'] && (
+                  <Flex
+                    flex={1}
+                    justifyContent='center'
+                    alignItems='center'
+                    flexDirection='column'
+                    border='1px'
+                    borderColor='gray.100'
+                    borderRadius='semi'
+                    p={4}
+                  >
+                    <CompletenessBadgeCircle stats={data['_meta']} size='md' />
+                    <HeadingWithTooltip
+                      label='Metadata Completeness'
+                      pt={2}
+                      whiteSpace='nowrap'
+                    />
+                  </Flex>
+                )}
+                {/* External links to access data, documents or dataset at the source. */}
+                <Flex
+                  flex={1}
+                  border='1px'
+                  borderColor='gray.100'
+                  borderRadius='semi'
+                  flexDirection='column'
+                >
+                  <External
+                    data={data}
+                    isLoading={isLoading}
+                    hasDivider={false}
+                  />
+                </Flex>
+              </Stack>
+            )}
             {section.hash === 'overview' && (
               <>
                 <ResourceOverview isLoading={isLoading} {...data} />
@@ -118,12 +165,7 @@ const Sections = ({
                 />
               </>
             )}
-            {/* for mobile viewing */}
-            {section.hash === 'overview' && (
-              <Box display={{ base: 'block', lg: 'none' }}>
-                <External data={data} isLoading={isLoading} />
-              </Box>
-            )}
+
             {/* Show keywords */}
             {section.hash === 'keywords' && (
               <Skeleton isLoaded={!isLoading}>

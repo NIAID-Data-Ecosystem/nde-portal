@@ -48,7 +48,7 @@ const ResourcePage: NextPage = () => {
   } = useQuery<ResourceData | undefined, Error>(
     ['search-result', { id }],
     async () => {
-      const data = await getResourceById(id);
+      const data = await getResourceById(id, { show_meta: true });
       // Get other datasets that have the same study identifier and data catalog name.
       if (data?.isPartOf) {
         const studyIds = data.isPartOf
@@ -91,22 +91,6 @@ const ResourcePage: NextPage = () => {
       script_tag.text = metadata;
       document.head.appendChild(script_tag);
     }
-  }, [data]);
-
-  // embed altmetric data. For more information: https://api.altmetric.com/embeds.html
-  useEffect(() => {
-    // @ts-ignore
-    if (window._altmetric_embed_init) {
-      // @ts-ignore
-      window._altmetric_embed_init();
-    }
-    /* import altmetric script for badge embeds */
-    let altmetricsScript = document.createElement('script');
-    altmetricsScript.setAttribute(
-      'src',
-      'https://d1bxh8uas1mnw7.cloudfront.net/assets/embed.js',
-    );
-    document.body.appendChild(altmetricsScript);
   }, [data]);
 
   const { routes } = navigationData as {

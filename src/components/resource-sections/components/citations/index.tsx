@@ -23,7 +23,7 @@ const ResourceCitations = ({
   if (!citations) return <></>;
 
   return (
-    <Skeleton isLoaded={!isLoading} mx={1} p={[0, 4]}>
+    <Skeleton isLoaded={!isLoading} mx={1} px={{ base: 0, md: 4 }} py={2}>
       <Flex alignItems='baseline' lineHeight='short' mb={1}>
         <MetadataLabel
           label={`Citation${

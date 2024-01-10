@@ -140,11 +140,13 @@ const SearchResultsPage = () => {
       return fetchSearchResults({
         q: params.q,
         extra_filter: params.extra_filter,
+        show_meta: true,
         size: params.size,
         from: params.from,
         sort: params.sort,
         use_metadata_score: params.use_metadata_score,
         fields: [
+          '_meta',
           '@type',
           'alternateName',
           'author',
@@ -181,7 +183,6 @@ const SearchResultsPage = () => {
       },
     },
   );
-
   // Set total results value
   useEffect(() => {
     setTotal(prev => {
@@ -236,23 +237,6 @@ const SearchResultsPage = () => {
       };
     });
   }, [defaultFilters, router]);
-
-  // embed altmetric data. For more information: https://api.altmetric.com/embeds.html
-  useEffect(() => {
-    // @ts-ignore
-    if (window._altmetric_embed_init) {
-      // @ts-ignore
-      window._altmetric_embed_init();
-    } else {
-      /* import altmetric script for badge embeds */
-      let altmetricsScript = document.createElement('script');
-      altmetricsScript.setAttribute(
-        'src',
-        'https://d1bxh8uas1mnw7.cloudfront.net/assets/embed.js',
-      );
-      document.body.appendChild(altmetricsScript);
-    }
-  }, [data]);
 
   // Update the route to reflect changes on page without re-render.
   const handleRouteUpdate = useCallback(
