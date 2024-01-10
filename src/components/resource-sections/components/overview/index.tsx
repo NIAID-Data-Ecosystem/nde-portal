@@ -65,13 +65,7 @@ const Overview: React.FC<OverviewProps> = ({
   );
 
   return (
-    <Flex
-      px={{ base: 0, md: 4 }}
-      py={2}
-      w='100%'
-      flexWrap='wrap'
-      flexDirection={['column', 'row']}
-    >
+    <Flex py={2} w='100%' flexWrap='wrap' flexDirection={['column', 'row']}>
       <Flex alignItems='center' w='100%'>
         <SimpleGrid
           minChildWidth={['unset', '280px']}

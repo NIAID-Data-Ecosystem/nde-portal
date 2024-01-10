@@ -74,7 +74,7 @@ export const SourceLogo = ({
                   ) : (
                     <></>
                   )}
-                  <Flex m={1} mx={1.5}>
+                  <Flex mx={1.5}>
                     {url ? (
                       <Link
                         href={url! || source.url!}
