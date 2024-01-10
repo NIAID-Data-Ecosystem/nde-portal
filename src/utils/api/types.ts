@@ -126,19 +126,35 @@ export interface Error {
 }
 
 export interface Funder {
-  name: string | null;
-  alternateName: string | string[] | null;
-  role: string | null;
-  description: string | null;
-  parentOrganization: string | null;
-  url: string | null;
+  '@type'?: string;
+  identifier?: string | null;
+  alternateName?: string | string[] | null;
+  class?: string | string[] | null;
+  description?: string | null;
+  employee?: {
+    givenName?: string | null;
+    familyName?: string | null;
+    name?: string | string[] | null;
+  }[];
+  name?: string | null;
+  parentOrganization?: string | string[] | null;
+  role?: string | string[] | null;
+  url?: string | null;
 }
 
 export interface Funding {
-  funder: Funder | null;
-  identifier: string | null;
-  url: string | null;
-  description: string | null;
+  '@type'?: string;
+  identifier?: string | null;
+  description?: string | null;
+  endDate?: string | null;
+  funder?: Funder | Funder[] | null;
+  isBasedOn?: {
+    identifier?: string | null;
+  };
+  keywords?: string[] | null;
+  name?: string | null;
+  startDate?: string | null;
+  url?: string | null;
 }
 
 export interface HasPart {
@@ -175,10 +191,10 @@ export interface InteractionStatistics {
 
 export interface IsBasedOn {
   '@type'?: string;
-  _id?: string;
   abstract?: string;
   additionalType?: AdditionalType;
   citation?: string;
+  codeRepository?: string;
   datePublished?: string;
   description?: string;
   doi?: string;
@@ -320,7 +336,7 @@ export interface FormattedResource {
   funding: Funding[] | null;
   hasPart: HasPart[] | null;
   healthCondition: PropertyWithPubtator[] | null;
-  includedInDataCatalog: IncludedInDataCatalog | null;
+  includedInDataCatalog: IncludedInDataCatalog[] | IncludedInDataCatalog;
   infectiousAgent: InfectiousAgent[] | null;
   inLanguage: {
     alternateName: string | null;

@@ -1,37 +1,38 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Box,
+  Heading,
   Table as StyledTable,
-  Thead,
-  Tbody,
-  Tr,
-  Th,
-  Td,
-  TableCaption,
-  TableContainer,
   TableWrapper,
   Tfoot,
+  Tr,
   useTableSort,
   TableSortToggle,
   TablePagination,
+  VisuallyHidden,
 } from 'nde-design-system';
+import { Th, Cell } from './components/cell';
 import { FormatLinkCell } from './helpers';
-import Tooltip from 'src/components/tooltip';
+import { Row } from './components/row';
+import { TableContainer } from './components/table-container';
 
 export interface Column {
   key: string;
   title: string;
 }
 
-export interface Row {
-  [key: Column['key']]: {
-    value: any;
-    props?: { styles?: Record<string, any>; tooltipText?: string };
-    sortValue: string | number;
-  };
-}
+type RowData = {
+  value: any; // Consider specifying a more precise type if possible
+  sortValue: string | number;
+};
+
+export type Row = {
+  _key: string;
+  styles?: Record<string, any>;
+} & Record<string, RowData>;
 
 interface TableProps {
+  id: string;
   rowData: Row[];
   columns: Column[];
   caption?: string;
@@ -39,15 +40,18 @@ interface TableProps {
   hasFooter?: boolean;
   accessor?: (...args: string[]) => void;
   colorScheme?: string;
+  title?: string;
 }
 
 const Table: React.FC<TableProps> = ({
+  id,
   caption,
-  colorScheme,
+  colorScheme = 'gray',
   columns,
   rowData,
   ROW_SIZE = 5,
   hasFooter = false,
+  title,
   accessor,
 }) => {
   // num of rows per page
@@ -56,26 +60,45 @@ const Table: React.FC<TableProps> = ({
   // current page
   const [from, setFrom] = useState(0);
 
-  const [{ data: tableData, orderBy, sortBy }, updateSort] = useTableSort(
+  const [{ data, orderBy, sortBy }, updateSort] = useTableSort(
     rowData,
     accessor,
   );
+  const [rows, setRows] = useState<Row[]>(data);
 
-  const rows = tableData || [];
+  useEffect(() => {
+    // update rows to display based on current page number and num of rows per page
+    setRows(data.slice(from * size, from * size + size));
+  }, [data, size, from]);
   return (
     <Box overflow='auto'>
+      {title && (
+        <Heading as='h4' fontSize='sm' mx={1} mb={4} fontWeight='semibold'>
+          {title}
+        </Heading>
+      )}
       <TableWrapper colorScheme={colorScheme}>
         <TableContainer>
-          <StyledTable variant='striped' colorScheme={colorScheme}>
-            {caption && (
-              <TableCaption color='text.body'>{caption}</TableCaption>
-            )}
-            <Thead>
-              <Tr>
+          <StyledTable
+            role='table'
+            aria-label={caption}
+            aria-describedby={`${id}-caption`}
+            aria-rowcount={rows.length}
+          >
+            {/* Note: keep for accessibility */}
+            <VisuallyHidden id={`${id}-caption`} as='caption'>
+              {caption}
+            </VisuallyHidden>
+            <thead>
+              <Tr role='row' flex='1' display='flex' w='100%'>
                 {columns.map(column => {
                   return (
-                    <Th key={column.key} role='columnheader' scope='col'>
-                      {column.title}
+                    <Th
+                      key={column.key}
+                      label={column.title}
+                      isSelected={column.key === orderBy}
+                      colorScheme={colorScheme}
+                    >
                       <TableSortToggle
                         isSelected={column.key === orderBy}
                         sortBy={sortBy}
@@ -87,57 +110,41 @@ const Table: React.FC<TableProps> = ({
                   );
                 })}
               </Tr>
-            </Thead>
+            </thead>
 
-            <Tbody>
-              {(rows as Row[])
-                .slice(from * size, from * size + size)
-                .map((row, i) => {
-                  return (
-                    <Tr key={i} id={`${i}`}>
-                      {columns.map((col, j) => {
-                        let cell = row[col.key];
-                        if (!cell) return <td key={`cell-${j}`}>-</td>;
-                        return (
-                          <Td
-                            role='cell'
-                            key={`${cell.value}-${i}-${j}`}
-                            id={`${cell.value}-${i}-${j}`}
-                            whiteSpace='break-spaces'
-                            minW='50px'
-                            isNumeric={typeof cell.value === 'number'}
-                            fontSize='xs'
-                            {...cell?.props?.styles}
-                          >
-                            <Tooltip
-                              aria-label={`Tooltip for ${col.key}, row ${i}`}
-                              label={cell?.props?.tooltipText}
-                              hasArrow
-                              placement='bottom'
-                              minWidth='50vw'
-                            >
-                              <span>
-                                <FormatLinkCell value={cell.value} />
-                              </span>
-                            </Tooltip>
-                          </Td>
-                        );
-                      })}
-                    </Tr>
-                  );
-                })}
-            </Tbody>
+            <tbody>
+              {(rows as Row[]).map((row, idx) => {
+                return (
+                  <Row key={row._key}>
+                    {columns.map(col => {
+                      let cell = row[col.key];
+                      if (!cell) return <td key={`td-${row._key}-none`}>-</td>;
+                      return (
+                        <Cell
+                          key={`td-${row._key}-${col.key}}}`}
+                          id={`td-${row._key}-${col.key}}}`}
+                          as='td'
+                          role='cell'
+                        >
+                          <FormatLinkCell value={cell.value} />
+                        </Cell>
+                      );
+                    })}
+                  </Row>
+                );
+              })}
+            </tbody>
             {hasFooter && (
               <Tfoot>
-                <Tr>
-                  {columns.map((column, i) => {
+                <Row>
+                  {columns.map(column => {
                     return (
                       <Th key={column.key} role='columnfooter' scope='col'>
                         {column.title}
                       </Th>
                     );
                   })}
-                </Tr>
+                </Row>
               </Tfoot>
             )}
           </StyledTable>

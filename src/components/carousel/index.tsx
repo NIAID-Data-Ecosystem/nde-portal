@@ -148,6 +148,7 @@ export const Carousel = ({
           alignItems='center'
         >
           <Button
+            aria-label='previous carousel item'
             onClick={handleDecrementClick}
             onFocus={handleFocus}
             isDisabled={
@@ -165,6 +166,7 @@ export const Carousel = ({
           </Button>
 
           <Progress
+            aria-label='carousel progress bar'
             value={100 / ((positions.length - constraint) / activeItem)}
             alignSelf='center'
             borderRadius='2px'
@@ -179,6 +181,7 @@ export const Carousel = ({
           />
 
           <Button
+            aria-label='next carousel item'
             onClick={handleIncrementClick}
             onFocus={handleFocus}
             isDisabled={

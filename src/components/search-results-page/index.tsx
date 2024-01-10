@@ -21,7 +21,6 @@ import {
   Stack,
   Switch,
   Text,
-  Tooltip,
   UnorderedList,
 } from 'nde-design-system';
 import {
@@ -44,6 +43,7 @@ import { encodeString } from 'src/utils/querystring-helpers';
 import { SelectedFilterType } from '../filters/types';
 // import { AdvancedSearchWithModal } from '../advanced-search/AdvancedSearchWithModal';
 import { getQueryStatusError } from '../error/utils';
+import Tooltip from '../tooltip';
 import { FaInfo } from 'react-icons/fa';
 /*
 [COMPONENT INFO]:
@@ -144,6 +144,28 @@ const SearchResultsPage = () => {
         from: params.from,
         sort: params.sort,
         use_metadata_score: params.use_metadata_score,
+        fields: [
+          '@type',
+          'alternateName',
+          'author',
+          'conditionsOfAccess',
+          'date',
+          'description',
+          'doi',
+          'funding',
+          'healthCondition',
+          'includedInDataCatalog',
+          'infectiousAgent',
+          'isAccessibleForFree',
+          'license',
+          'measurementTechnique',
+          'name',
+          'sdPublisher',
+          'species',
+          'url',
+          'usageInfo',
+          'variableMeasured',
+        ],
       });
     },
 
@@ -324,7 +346,7 @@ const SearchResultsPage = () => {
           minW={{ md: 500 }}
         >
           <DownloadMetadata
-            exportName='nde-results'
+            exportFileName={`nde-results-${queryString.replaceAll(' ', '_')}`}
             params={params}
             buttonProps={{ variant: 'outline' }}
           >

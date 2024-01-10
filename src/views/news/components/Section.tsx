@@ -80,7 +80,6 @@ export const Section = ({
         borderBottomColor='blackAlpha.200'
         position='sticky'
         top='0px'
-        zIndex='sticky'
       >
         {title}
       </Heading>

@@ -10,8 +10,8 @@ interface NavLinkProps extends LinkProps {
 
 export const NavLink: React.FC<NavLinkProps> = ({
   isSelected,
-  borderLeftColor = 'accent.bg',
-  color = 'text.body',
+  color = 'primary.500',
+  borderLeftColor = 'primary.300',
   ...props
 }) => {
   return (
@@ -20,6 +20,7 @@ export const NavLink: React.FC<NavLinkProps> = ({
       display='flex'
       lineHeight='short'
       pl={3}
+      py={0.5}
       borderBottom='none!important'
       borderLeft='3px solid'
       fontSize='sm'
@@ -27,23 +28,17 @@ export const NavLink: React.FC<NavLinkProps> = ({
       textDecoration={isSelected ? 'underline' : 'none'}
       borderLeftColor={isSelected ? borderLeftColor : 'transparent'}
       _visited={{
-        color: isSelected ? borderLeftColor : color,
+        color: isSelected ? color : 'text.body',
         borderLeftColor: isSelected ? borderLeftColor : 'transparent',
       }}
-      opacity={isSelected ? 1 : 0.7}
-      color={
-        isSelected
-          ? typeof borderLeftColor === 'string'
-            ? borderLeftColor
-            : color
-          : color
-      }
+      opacity={isSelected ? 1 : 0.8}
+      color={isSelected ? color : 'text.body'}
       {...props}
       _hover={{
         textDecoration: 'underline!important',
         borderBottom: 'none!important',
         '*': { borderBottom: 'none!important' },
-        color: isSelected ? borderLeftColor : color,
+        color: isSelected ? color : 'text.body',
         ...props._hover,
       }}
     >

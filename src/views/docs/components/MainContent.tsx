@@ -12,6 +12,7 @@ import mdxComponents from './mdx';
 import { transformString2Hash } from './helpers';
 import { Error } from 'src/components/error';
 import Empty from 'src/components/empty';
+import { ScrollContainer } from 'src/components/scroll-container';
 
 export interface DocumentationProps {
   id: number;
@@ -174,7 +175,7 @@ const MainContent = ({ slug, data: initialData }: MainContentProps) => {
               >
                 {data.attributes.name}
               </Heading>
-              <Text color='niaid.placeholder'>{data.attributes.subtitle}</Text>
+              <Text color='gray.700'>{data.attributes.subtitle}</Text>
             </Box>
             <ReactMarkdown
               rehypePlugins={[rehypeRaw, remarkGfm]}
@@ -186,7 +187,7 @@ const MainContent = ({ slug, data: initialData }: MainContentProps) => {
             <Text
               fontStyle='italic'
               fontSize='xs'
-              color='gray.600'
+              color='gray.800'
               textAlign='end'
             >
               Last updated on{' '}
@@ -213,31 +214,12 @@ const MainContent = ({ slug, data: initialData }: MainContentProps) => {
         px={2}
       >
         {tocSections.length > 1 || isLoading ? (
-          <Box
+          <ScrollContainer
             position='sticky'
             top='0px'
             px={4}
             overflow='auto'
             maxH='100%'
-            sx={{
-              '&::-webkit-scrollbar': {
-                width: '7px',
-                height: '7px',
-              },
-              '&::-webkit-scrollbar-track': {
-                background: 'blackAlpha.100',
-                borderRadius: '10px',
-              },
-              '&::-webkit-scrollbar-thumb': {
-                background: 'gray.300',
-                borderRadius: '10px',
-              },
-              _hover: {
-                '&::-webkit-scrollbar-thumb': {
-                  background: 'niaid.placeholder',
-                },
-              },
-            }}
           >
             {tocSections.length ? (
               <Navigation
@@ -247,13 +229,14 @@ const MainContent = ({ slug, data: initialData }: MainContentProps) => {
                 }}
                 routes={tocSections}
                 itemProps={{
+                  color: 'primary.500',
                   borderLeftColor: 'primary.400',
                 }}
               />
             ) : (
               <></>
             )}
-          </Box>
+          </ScrollContainer>
         ) : (
           <></>
         )}

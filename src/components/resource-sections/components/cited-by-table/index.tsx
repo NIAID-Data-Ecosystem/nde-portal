@@ -5,6 +5,7 @@ import Table, { Row } from 'src/components/table';
 import LoadingSpinner from 'src/components/loading';
 import { getTableColumns } from 'src/components/table/helpers';
 import { formatDate, formatType } from 'src/utils/api/helpers';
+import { uniqueId } from 'lodash';
 
 interface CitedByTable {
   isLoading: boolean;
@@ -47,11 +48,6 @@ const CitedByTable: React.FC<CitedByTable> = ({ isLoading, citedBy }) => {
     let obj = {} as Row;
     Object.entries(d).map(([k, v]) => {
       let value = v;
-      let props: { [key: string]: any } = { styles: {} };
-
-      if (k.toLowerCase().includes('name')) {
-        props.styles.minWidth = '400px';
-      }
 
       // Format date values.
       if (v && k.toLowerCase().includes('date')) {
@@ -65,18 +61,20 @@ const CitedByTable: React.FC<CitedByTable> = ({ isLoading, citedBy }) => {
       obj[k] = {
         value,
         sortValue: typeof v === 'string' || typeof v === 'number' ? v : '',
-        props,
       };
     });
+    obj['_key'] = uniqueId('cited-by-table-row-');
     return obj;
   });
 
   return (
     <Table
+      id='cited-by-table'
+      caption='Cited by information.'
+      title='Cited By'
       columns={columns}
       rowData={rows}
       accessor={accessorFn}
-      caption={'Cited by information.'}
     />
   );
 };

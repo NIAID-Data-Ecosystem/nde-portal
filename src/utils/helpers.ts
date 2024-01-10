@@ -1,5 +1,5 @@
 import REPOSITORIES from 'configs/repositories.json';
-import { Citation, FormattedResource } from './api/types';
+import { FormattedResource } from './api/types';
 
 // Get image for repo based on config.
 export const getRepositoryImage = (name: string) => {
@@ -105,40 +105,6 @@ export const shouldAppendPunctuation = (
   return str.slice(-1) === symbol ? str : str + symbol;
 };
 
-// Format citation string according to :
-// https://www.nlm.nih.gov/bsd/uniform_requirements.html
-export const formatCitationString = (
-  citation: Citation,
-  asMarkdown?: boolean,
-) => {
-  const authors = formatAuthorsList2String(citation.author, ',', 3);
-
-  const year = citation.datePublished
-    ? `${new Date(citation.datePublished).getUTCFullYear()}`
-    : '';
-
-  const journal = citation.journalName ? `*${formatJournal(citation)}*` : '';
-
-  const pmid = citation.pmid ? `PubMed PMID: ${citation.pmid}` : '';
-  const doi = citation.doi ? `DOI: ${citation.doi}` : '';
-
-  // Return the string as markdown
-
-  const citation_strings = [
-    shouldAppendPunctuation(authors),
-    shouldAppendPunctuation(citation.name),
-    shouldAppendPunctuation(journal),
-    shouldAppendPunctuation(year),
-    shouldAppendPunctuation(pmid),
-    shouldAppendPunctuation(doi),
-  ].filter(str => !!str);
-
-  if (asMarkdown) {
-    return citation_strings.join(' ');
-  }
-  return citation_strings.join(' ');
-};
-
 // Format DOI if url is included in string.
 export const formatDOI = (doi: FormattedResource['doi']) => {
   if (!doi) {
@@ -168,76 +134,62 @@ export const formatLicense = (license: string) => {
 
   if (license.includes('http')) {
     formattedLicense.url = license;
-    if (license.includes('by/4.0/')) {
-      formattedLicense.type = 'Attribution';
-      formattedLicense.title = 'Attribution 4.0 International (CC BY 4.0)';
-      formattedLicense.img = '/assets/copyright/by.png';
-    } else if (license.includes('by-sa/4.0/')) {
-      formattedLicense.type = 'Attribution-ShareAlike';
-      formattedLicense.title =
-        'Attribution-ShareAlike 4.0 International (CC BY-SA 4.0)';
-      formattedLicense.img = '/assets/copyright/by-sa.png';
-    } else if (license.includes('by-nd/4.0/')) {
-      formattedLicense.type = 'Attribution-NoDerivs';
-      formattedLicense.title =
-        'Attribution-NoDerivatives 4.0 International (CC BY-ND 4.0)';
-      formattedLicense.img = '/assets/copyright/by-nd.png';
-    } else if (license.includes('by-nc/4.0/')) {
-      formattedLicense.type = 'Attribution-NonCommercial';
-      formattedLicense.title =
-        'Attribution-NonCommercial 4.0 International (CC BY-NC 4.0)';
-      formattedLicense.img = '/assets/copyright/by-nc.png';
-    } else if (license.includes('by-nc-sa/4.0/')) {
-      formattedLicense.type = 'Attribution-NonCommercial-ShareAlike';
-      formattedLicense.title =
-        'Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)';
-      formattedLicense.img = '/assets/copyright/by-nc-sa.png';
-    } else if (license.includes('by-nc-nd/4.0/')) {
-      formattedLicense.type = 'Attribution-NonCommercial-NoDerivs';
-      formattedLicense.title =
-        'Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)';
-      formattedLicense.img = '/assets/copyright/by-nc-nd.png';
-    } else if (
-      license.includes('zero/1.0/') ||
-      license.includes('/public-domain/cc0/')
-    ) {
-      formattedLicense.type = 'Public Domain';
-      formattedLicense.title =
-        'CC0 1.0 Universal (CC0 1.0) Public Domain Dedication';
-      formattedLicense.img = '/assets/copyright/by-p.png';
-    } else if (license.includes('immport')) {
-      formattedLicense.type = 'Immport';
-      formattedLicense.title =
-        'User Agreement for the NIAID Immunology Database and Analysis Portal (ImmPort)';
-      formattedLicense.img = '/assets/resources/immport.png';
-    } else {
-      formattedLicense.title = license;
-      formattedLicense.url = license;
-      formattedLicense.type = license;
-    }
+    formattedLicense.title = 'License';
   } else {
     formattedLicense.title = license;
+  }
+
+  // Get image for license
+  if (license.includes('by/4.0/') || license.includes('CC-BY')) {
+    formattedLicense.type = 'Attribution';
+    formattedLicense.title = 'Attribution 4.0 International (CC BY 4.0)';
+    formattedLicense.img = '/assets/copyright/by.png';
+  } else if (license.includes('by-sa/4.0/')) {
+    formattedLicense.type = 'Attribution-ShareAlike';
+    formattedLicense.title =
+      'Attribution-ShareAlike 4.0 International (CC BY-SA 4.0)';
+    formattedLicense.img = '/assets/copyright/by-sa.png';
+  } else if (license.includes('by-nd/4.0/')) {
+    formattedLicense.type = 'Attribution-NoDerivs';
+    formattedLicense.title =
+      'Attribution-NoDerivatives 4.0 International (CC BY-ND 4.0)';
+    formattedLicense.img = '/assets/copyright/by-nd.png';
+  } else if (license.includes('by-nc/4.0/')) {
+    formattedLicense.type = 'Attribution-NonCommercial';
+    formattedLicense.title =
+      'Attribution-NonCommercial 4.0 International (CC BY-NC 4.0)';
+    formattedLicense.img = '/assets/copyright/by-nc.png';
+  } else if (license.includes('by-nc-sa/4.0/')) {
+    formattedLicense.type = 'Attribution-NonCommercial-ShareAlike';
+    formattedLicense.title =
+      'Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)';
+    formattedLicense.img = '/assets/copyright/by-nc-sa.png';
+  } else if (license.includes('by-nc-nd/4.0/')) {
+    formattedLicense.type = 'Attribution-NonCommercial-NoDerivs';
+    formattedLicense.title =
+      'Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)';
+    formattedLicense.img = '/assets/copyright/by-nc-nd.png';
+  } else if (
+    license.includes('zero/1.0/') ||
+    license.includes('/public-domain/cc0/')
+  ) {
+    formattedLicense.type = 'Public Domain';
+    formattedLicense.title =
+      'CC0 1.0 Universal (CC0 1.0) Public Domain Dedication';
+    formattedLicense.img = '/assets/copyright/by-p.png';
+  } else if (license.includes('immport')) {
+    formattedLicense.type = 'Immport';
+    formattedLicense.title =
+      'User Agreement for the NIAID Immunology Database and Analysis Portal (ImmPort)';
+    formattedLicense.img = '/assets/resources/immport-icon.jpg';
+  } else if (license.includes('dataverse.harvard')) {
+    formattedLicense.type = 'Harvard Dataverse';
+    formattedLicense.title = 'Harvard Dataverse Terms of Use';
+    formattedLicense.img = '/assets/resources/dataverse-icon.png';
+  } else {
+    formattedLicense.title = license || 'License';
     formattedLicense.type = license;
   }
+
   return formattedLicense;
-};
-
-export const formatJournal = (citation: Citation) => {
-  let name = '';
-  if (citation.journalName) {
-    name = citation.journalName;
-  } else if (citation.journalNameAbbrev) {
-    name = citation.journalNameAbbrev;
-  }
-
-  const { volumeNumber, issueNumber, pagination } = citation;
-
-  // Remove commas, periods.
-  const formatStr = (str: string) => str.replace(/[,.]/g, '');
-
-  return `${formatStr(name)}${
-    volumeNumber ? `, ${formatStr(volumeNumber)}` : ''
-  }${issueNumber ? `(${formatStr(issueNumber)})` : ''}${
-    pagination ? `: ${pagination}` : ''
-  }`;
 };

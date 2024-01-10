@@ -17,6 +17,7 @@ import { getRepositoryImage } from 'src/utils/helpers';
 import { formatDate } from 'src/utils/api/helpers';
 import { FaArrowRight } from 'react-icons/fa6';
 import NextLink from 'next/link';
+import { ScrollContainer } from 'src/components/scroll-container';
 
 interface Provenance {
   isLoading: boolean;
@@ -91,6 +92,7 @@ const Provenance: React.FC<Provenance> = ({
           >
             <NextLink href={url} target='_blank'>
               <Button
+                as='span'
                 variant='outline'
                 size='sm'
                 rightIcon={<FaArrowRight />}
@@ -117,7 +119,7 @@ const Provenance: React.FC<Provenance> = ({
       <Text
         as='dt'
         fontSize='xs'
-        color='gray.600'
+        color='text.body'
         fontWeight='medium'
         lineHeight='tall'
         mt={2}
@@ -137,7 +139,7 @@ const Provenance: React.FC<Provenance> = ({
         {children ? (
           children
         ) : (
-          <Text as='span' fontStyle='italic' color='niaid.placeholder'>
+          <Text as='span' fontStyle='italic' color='gray.800'>
             No data
           </Text>
         )}
@@ -147,29 +149,7 @@ const Provenance: React.FC<Provenance> = ({
 
   return (
     <Skeleton isLoaded={!isLoading}>
-      <Flex
-        overflow='auto'
-        py={1}
-        sx={{
-          '&::-webkit-scrollbar': {
-            width: '7px',
-            height: '7px',
-          },
-          '&::-webkit-scrollbar-track': {
-            background: 'blackAlpha.100',
-            borderRadius: '10px',
-          },
-          '&::-webkit-scrollbar-thumb': {
-            background: 'gray.300',
-            borderRadius: '10px',
-          },
-          _hover: {
-            '&::-webkit-scrollbar-thumb': {
-              background: 'niaid.placeholder',
-            },
-          },
-        }}
-      >
+      <ScrollContainer display='flex' py={2}>
         {provenanceCatalogs.map(includedInDataCatalog => {
           return (
             <Block
@@ -205,13 +185,14 @@ const Provenance: React.FC<Provenance> = ({
                   />
                 )}
               </Flex>
-
-              <Field label='Name'>{includedInDataCatalog.name}</Field>
-              <Field label='Version Date'>
-                {includedInDataCatalog.versionDate
-                  ? formatDate(includedInDataCatalog.versionDate)
-                  : undefined}
-              </Field>
+              <dl>
+                <Field label='Name'>{includedInDataCatalog.name}</Field>
+                <Field label='Version Date'>
+                  {includedInDataCatalog.versionDate
+                    ? formatDate(includedInDataCatalog.versionDate)
+                    : undefined}
+                </Field>
+              </dl>
             </Block>
           );
         })}
@@ -223,18 +204,20 @@ const Provenance: React.FC<Provenance> = ({
                   Curated By
                 </Text>
                 <Divider />
-                <Field label='Name'>
-                  {curatedBy?.url ? (
-                    <Link isExternal>{curatedBy?.name}</Link>
-                  ) : (
-                    curatedBy?.name
-                  )}
-                </Field>
-                <Field label='Version Date'>
-                  {curatedBy.versionDate
-                    ? formatDate(curatedBy.versionDate)
-                    : undefined}
-                </Field>
+                <dl>
+                  <Field label='Name'>
+                    {curatedBy?.url ? (
+                      <Link isExternal>{curatedBy?.name}</Link>
+                    ) : (
+                      curatedBy?.name
+                    )}
+                  </Field>
+                  <Field label='Version Date'>
+                    {curatedBy.versionDate
+                      ? formatDate(curatedBy.versionDate)
+                      : undefined}
+                  </Field>
+                </dl>
               </>
             )}
 
@@ -245,37 +228,39 @@ const Provenance: React.FC<Provenance> = ({
                   Original Source
                 </Text>
                 <Divider />
-                {sdPublisher.map(publisher => {
-                  return (
-                    <Field
-                      key={publisher.identifier || publisher.name}
-                      label='Name/Identifier'
-                    >
-                      {(publisher.name || publisher.identifier) && (
-                        <>
-                          {publisher?.url ? (
-                            <Link href={publisher?.url} isExternal>
-                              {publisher?.name}
-                            </Link>
-                          ) : (
-                            publisher?.name
-                          )}
-                          <br />
-                          {publisher?.identifier && (
-                            <Tag size='sm' variant='subtle' my={0 / 5}>
-                              ID | {publisher.identifier}
-                            </Tag>
-                          )}
-                        </>
-                      )}
-                    </Field>
-                  );
-                })}
+                <dl>
+                  {sdPublisher.map(publisher => {
+                    return (
+                      <Field
+                        key={publisher.identifier || publisher.name}
+                        label='Name/Identifier'
+                      >
+                        {(publisher.name || publisher.identifier) && (
+                          <>
+                            {publisher?.url ? (
+                              <Link href={publisher?.url} isExternal>
+                                {publisher?.name}
+                              </Link>
+                            ) : (
+                              publisher?.name
+                            )}
+                            <br />
+                            {publisher?.identifier && (
+                              <Tag size='sm' variant='subtle' my={0 / 5}>
+                                ID | {publisher.identifier}
+                              </Tag>
+                            )}
+                          </>
+                        )}
+                      </Field>
+                    );
+                  })}
+                </dl>
               </Box>
             )}
           </Block>
         )}
-      </Flex>
+      </ScrollContainer>
     </Skeleton>
   );
 };

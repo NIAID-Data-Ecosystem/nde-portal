@@ -15,13 +15,11 @@ import {
   Text,
   ToggleContainer,
   VisuallyHidden,
-  BoxProps,
   Tooltip,
 } from 'nde-design-system';
 import {
   FaArrowAltCircleRight,
   FaChevronRight,
-  FaDollarSign,
   FaRegClock,
 } from 'react-icons/fa';
 import { FormattedResource } from 'src/utils/api/types';
@@ -33,13 +31,9 @@ import {
 } from 'src/utils/helpers';
 import { TypeBanner } from 'src/components/resource-sections/components';
 import NextLink from 'next/link';
-import CardDetails from './details';
+import MetadataAccordion from './metadata-accordion';
 import { DisplayHTMLContent } from 'src/components/html-content';
-import {
-  badgesConfig,
-  BadgeWithTooltip,
-  getBadgeIcon,
-} from 'src/components/badge-with-tooltip';
+import { AccessibleForFree, ConditionsOfAccess } from 'src/components/badges';
 
 interface SearchResultCardProps {
   isLoading?: boolean;
@@ -60,12 +54,10 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
     description,
     conditionsOfAccess,
     doi,
-    nctid,
     includedInDataCatalog,
     isAccessibleForFree,
     url,
     sdPublisher,
-    citation,
   } = data || {};
 
   const sources =
@@ -77,48 +69,6 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
 
   const paddingCard = [4, 6, 8, 10];
 
-  const ConditionsOfAccess = (props: BoxProps) => {
-    if (
-      !conditionsOfAccess &&
-      (isAccessibleForFree === null ||
-        typeof isAccessibleForFree === 'undefined')
-    ) {
-      return null;
-    }
-    return (
-      <Flex
-        justifyContent={['flex-end']}
-        alignItems='center'
-        w={['100%', 'unset']}
-        flex={[1, 'unset']}
-        p={[0.5, 2]}
-        {...props}
-      >
-        {isAccessibleForFree !== null &&
-          typeof isAccessibleForFree !== 'undefined' && (
-            <BadgeWithTooltip
-              mx={0.5}
-              icon={FaDollarSign}
-              {...badgesConfig['isAccessibleForFree'][`${isAccessibleForFree}`]}
-            >
-              {isAccessibleForFree ? 'Free Access' : 'Paid Access'}
-            </BadgeWithTooltip>
-          )}
-
-        {conditionsOfAccess && (
-          <BadgeWithTooltip
-            mx={0.5}
-            icon={getBadgeIcon({
-              conditionsOfAccess,
-            })}
-            {...badgesConfig['conditionsOfAccess'][conditionsOfAccess]}
-          >
-            {conditionsOfAccess}
-          </BadgeWithTooltip>
-        )}
-      </Flex>
-    );
-  };
   return (
     // {/* Banner with resource type + date of publication */}
     <Card variant='colorful'>
@@ -153,9 +103,9 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                 flexWrap='nowrap'
                 alignItems='center'
                 color='link.color'
-                sx={{ h2: { textDecoration: 'underline' } }}
+                sx={{ h3: { textDecoration: 'underline' } }}
                 _hover={{
-                  h2: { textDecoration: 'none' },
+                  h3: { textDecoration: 'none' },
                   svg: {
                     transform: 'translate(0px)',
                     opacity: 0.9,
@@ -167,7 +117,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                   svg: { color: 'link.color' },
                 }}
               >
-                <CardTitle>
+                <CardTitle as='h3'>
                   <DisplayHTMLContent
                     content={name || alternateName || ''}
                     fontSize='lg'
@@ -199,32 +149,53 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
         startColor='page.alt'
         endColor='niaid.placeholder'
       >
-        <Flex
-          flexDirection={['column-reverse', 'row']}
-          flexWrap={['wrap-reverse', 'wrap']}
-          w='100%'
-          borderY='1px solid'
-          borderColor='gray.100'
-        >
-          <ToggleContainer
-            ariaLabel='Show all authors.'
-            noOfLines={1}
-            justifyContent='flex-start'
-            m={0}
-            px={paddingCard}
-            py={2}
-            flex={1}
+        {(author?.length || isAccessibleForFree || conditionsOfAccess) && (
+          <Flex
+            flexDirection={['column-reverse', 'row']}
+            flexWrap={['wrap-reverse', 'wrap']}
             w='100%'
-            _focus={{ outlineColor: 'transparent' }}
+            borderY='1px solid'
+            borderColor='gray.100'
           >
-            {author && (
-              <Text fontSize='xs' color='text.body'>
-                {formatAuthorsList2String(author, ',', 10)}.
-              </Text>
+            <ToggleContainer
+              ariaLabel='Show all authors.'
+              noOfLines={1}
+              justifyContent='flex-start'
+              m={0}
+              px={paddingCard}
+              py={2}
+              flex={1}
+              w='100%'
+              _focus={{ outlineColor: 'transparent' }}
+            >
+              {author && (
+                <Text fontSize='xs' color='text.body'>
+                  {formatAuthorsList2String(author, ',', 10)}.
+                </Text>
+              )}
+            </ToggleContainer>
+            {(isAccessibleForFree === true ||
+              isAccessibleForFree === false ||
+              conditionsOfAccess) && (
+              <Flex
+                justifyContent={['flex-end']}
+                alignItems='center'
+                w={['100%', 'unset']}
+                flex={[1, 'unset']}
+                p={[0.5, 2]}
+              >
+                <AccessibleForFree
+                  isAccessibleForFree={isAccessibleForFree}
+                  mx={1}
+                />
+                <ConditionsOfAccess
+                  conditionsOfAccess={conditionsOfAccess}
+                  mx={1}
+                />
+              </Flex>
             )}
-          </ToggleContainer>
-          <ConditionsOfAccess />
-        </Flex>
+          </Flex>
+        )}
 
         <CardBody p={0}>
           {date && (
@@ -254,22 +225,23 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
             </Flex>
           )}
           {/* Description Text */}
-          <ToggleContainer
-            ariaLabel='show more description'
-            noOfLines={[3, 10]}
-            px={paddingCard}
-            py={[2, 4, 6]}
-            my={0}
-            borderColor='transparent'
-            justifyContent='space-between'
-            _hover={{ bg: 'page.alt' }}
-            _focus={{ outlineColor: 'transparent', bg: 'white' }}
-            alignIcon='center'
-          >
-            <DisplayHTMLContent content={description || ''} />
-          </ToggleContainer>
-
-          <CardDetails data={data} />
+          {description && (
+            <ToggleContainer
+              ariaLabel='show more description'
+              noOfLines={[3, 10]}
+              px={paddingCard}
+              py={[2, 4, 6]}
+              my={0}
+              borderColor='transparent'
+              justifyContent='space-between'
+              _hover={{ bg: 'page.alt' }}
+              _focus={{ outlineColor: 'transparent', bg: 'white' }}
+              alignIcon='center'
+            >
+              <DisplayHTMLContent content={description || ''} />
+            </ToggleContainer>
+          )}
+          <MetadataAccordion data={data} />
           {/* Source Repository Link + Altmetric badge */}
           {(doi || sources.length > 0) && (
             <Flex
@@ -393,8 +365,6 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                         data-badge-popover='left'
                         data-badge-type='bar'
                         data-doi={formatDOI(doi)}
-                        data-nct-id={nctid}
-                        data-pmid={citation?.[0].pmid}
                         className='altmetric-embed'
                         data-link-target='blank'
                       ></div>
@@ -432,6 +402,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
               passHref
             >
               <Button
+                as='span'
                 maxW={{ xl: '230px' }}
                 w='100%'
                 size='sm'

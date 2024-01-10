@@ -5,7 +5,6 @@ import {
   AccordionPanel,
   Flex,
   Heading,
-  Box,
 } from 'nde-design-system';
 import { FaMinus, FaPlus } from 'react-icons/fa';
 import { MetadataIcon, MetadataToolTip } from 'src/components/icon';
@@ -30,7 +29,7 @@ export const FiltersSection: React.FC<FiltersSectionProps> = React.memo(
         {({ isExpanded }) => {
           return (
             <>
-              <h2>
+              <h3>
                 {/* Toggle expand panel open. */}
                 <AccordionButton
                   borderLeft='4px solid'
@@ -50,7 +49,7 @@ export const FiltersSection: React.FC<FiltersSectionProps> = React.memo(
                     justifyContent='space-between'
                     alignItems='center'
                   >
-                    <Heading size='sm' fontWeight='semibold'>
+                    <Heading as='span' size='sm' fontWeight='semibold'>
                       {name}
                     </Heading>
 
@@ -77,7 +76,7 @@ export const FiltersSection: React.FC<FiltersSectionProps> = React.memo(
                     <FaPlus fontSize='12px' />
                   )}
                 </AccordionButton>
-              </h2>
+              </h3>
               <AccordionPanel
                 p={4}
                 borderLeft='4px solid'

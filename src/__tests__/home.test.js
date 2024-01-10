@@ -162,8 +162,10 @@ describe('Home Page', () => {
   test('renders advanced search button', async () => {
     renderWithClient(<Home />);
 
-    const buttonEl = screen.getByRole('button', { name: /advanced search/i });
+    const linkEl = screen.getByRole('link', { name: /advanced search/i });
+    const spanEl = within(linkEl).getByText(/advanced search/i);
 
-    expect(buttonEl).toBeInTheDocument();
+    expect(linkEl).toBeInTheDocument();
+    expect(spanEl).toBeInTheDocument();
   });
 });

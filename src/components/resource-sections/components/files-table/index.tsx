@@ -9,26 +9,29 @@ import {
   getTableColumns,
 } from 'src/components/table/helpers';
 import { formatDate } from 'src/utils/api/helpers';
+import { uniqueId } from 'lodash';
 
 interface FilesTable {
   isLoading: boolean;
   distribution?: FormattedResource['distribution'];
 }
 
+const hasColumnKey = (
+  distribution: FilesTable['distribution'],
+  config: Record<keyof Distribution, string>,
+) => {
+  if (!distribution) return false;
+  // Convert config keys to an array
+  const keys = Object.keys(config) as (keyof Distribution)[];
+
+  // Check if any object in the distribution array contains any of the keys
+  return distribution.some(distributionObject =>
+    keys.some(key => key in distributionObject && !!distributionObject[key]),
+  );
+};
+
 const FilesTable: React.FC<FilesTable> = ({ isLoading, distribution }) => {
   const accessorFn = useCallback((v: any) => v.sortValue, []);
-
-  if (isLoading) {
-    return <LoadingSpinner isLoading={isLoading} />;
-  }
-
-  if (!distribution || distribution.length === 0) {
-    return (
-      <Box overflow='auto'>
-        <Text>No data available.</Text>
-      </Box>
-    );
-  }
 
   const column_name_config = {
     '@id': 'id',
@@ -41,6 +44,22 @@ const FilesTable: React.FC<FilesTable> = ({ isLoading, distribution }) => {
     datePublished: 'Date Published',
     description: 'Description',
   } as Record<keyof Distribution, string>;
+
+  if (isLoading) {
+    return <LoadingSpinner isLoading={isLoading} />;
+  }
+
+  if (
+    !distribution ||
+    distribution.length === 0 ||
+    hasColumnKey(distribution, column_name_config) === false
+  ) {
+    return (
+      <Box overflow='auto'>
+        <Text>No data available.</Text>
+      </Box>
+    );
+  }
 
   const columns =
     distribution && getTableColumns(distribution!, column_name_config, false);
@@ -83,11 +102,13 @@ const FilesTable: React.FC<FilesTable> = ({ isLoading, distribution }) => {
         sortValue: typeof v === 'string' || typeof v === 'number' ? v : '',
       };
     });
+    obj['_key'] = uniqueId('files-row-');
     return obj;
   });
-
   return (
     <Table
+      id='files-download-table'
+      title='Files available for download'
       columns={columns}
       rowData={rows}
       caption='Files available for download.'
