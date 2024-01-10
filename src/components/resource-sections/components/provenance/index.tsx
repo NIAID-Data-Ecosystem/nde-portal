@@ -156,7 +156,8 @@ const Provenance: React.FC<Provenance> = ({
               key={includedInDataCatalog.name}
               label='Provided By'
               url={url}
-              mx={3}
+              mr={3}
+              ml={0}
             >
               <Flex minW='100px' mt={4}>
                 {includedInDataCatalog?.url ? (

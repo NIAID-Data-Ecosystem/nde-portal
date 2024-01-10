@@ -74,8 +74,8 @@ export const OntologyButton = ({
         >
           <VisuallyHidden>
             {ariaLabel || 'View the ontology for this value.'}
-            <Icon as={FaSitemap} />
           </VisuallyHidden>
+          <Icon as={FaSitemap} />
         </Button>
       )}
     </Tooltip>

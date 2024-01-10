@@ -215,19 +215,19 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
 
           <Stack
             px={paddingCard}
-            py={[0, 2]}
-            my={2}
+            py={[0, 1]}
+            my={1}
             flexDirection={{ base: 'column', sm: 'row' }}
-            spacing={[1, 3, 4, 5]}
+            spacing={[1, 3, 4]}
           >
             <Flex
-              px={2}
+              px={1}
               py={{ base: 1, sm: 3 }}
-              flexDirection={{ base: 'row', sm: 'column' }}
-              alignItems='center'
               border={{ base: '1px', sm: 'none' }}
               borderColor='gray.100'
               borderRadius='semi'
+              alignItems='center'
+              justifyContent={{ base: 'center', sm: 'flex-start' }}
             >
               {data && (
                 <>
@@ -261,6 +261,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
               border={{ base: '1px', sm: 'none' }}
               borderColor='gray.100'
               borderRadius='semi'
+              justifyContent='center'
             >
               <SourceLogo
                 isLoading={isLoading}
@@ -270,72 +271,78 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
               />
             </Flex>
 
-            <Flex flexDirection='column' flex={1}>
-              {/* Description Text */}
-              {description && (
-                <ToggleContainer
-                  ariaLabel='show more description'
-                  noOfLines={[3, 10]}
-                  px={1}
-                  py={1}
-                  my={0}
-                  borderColor='transparent'
-                  justifyContent='space-between'
-                  _hover={{ bg: 'page.alt' }}
-                  _focus={{ outlineColor: 'transparent', bg: 'white' }}
-                  alignIcon='center'
-                >
-                  <DisplayHTMLContent content={description || ''} />
-                </ToggleContainer>
-              )}
-              <Stack
-                flex={1}
-                p={1}
-                flexDirection={{ base: 'column', sm: 'row' }}
-                alignItems={{ base: 'center', sm: 'flex-end' }}
-                flexWrap={'wrap'}
+            {description && (
+              <ToggleContainer
+                ariaLabel='show more description'
+                noOfLines={[3, 10]}
+                px={1}
+                py={1}
+                my={0}
+                borderColor='transparent'
+                justifyContent='space-between'
+                _hover={{ bg: 'page.alt' }}
+                _focus={{ outlineColor: 'transparent', bg: 'white' }}
+                alignIcon='center'
               >
-                <SourceLogo
-                  display={{ base: 'none', sm: 'flex' }}
-                  isLoading={isLoading}
-                  sdPublisher={sdPublisher}
-                  includedInDataCatalog={includedInDataCatalog}
-                  url={url}
-                  flex={1}
-                />
-                <Flex flex={[1, 'unset']} mt={[2, 0]}>
-                  {id && (
-                    <NextLink
-                      href={{
-                        pathname: '/resources/',
-                        query: { id },
-                      }}
-                      style={{ flex: 1 }}
-                      passHref
-                    >
-                      <Flex
-                        flex={1}
-                        justifyContent='flex-end'
-                        flexWrap='wrap'
-                        maxW={{ base: '100%', sm: '150px' }}
-                      >
-                        <Button
-                          as='span'
-                          flex={1}
-                          size={{ base: 'md', sm: 'sm' }}
-                          rightIcon={<FaArrowAltCircleRight />}
-                          aria-label={`Go to details about resource ${name}`}
-                        >
-                          View dataset
-                        </Button>
-                      </Flex>
-                    </NextLink>
-                  )}
-                </Flex>
-              </Stack>
-            </Flex>
+                <DisplayHTMLContent content={description || ''} />
+              </ToggleContainer>
+            )}
           </Stack>
           <MetadataAccordion data={data} />
+
+          <Stack
+            flex={1}
+            p={1}
+            flexDirection={{ base: 'column', sm: 'row' }}
+            alignItems={{ base: 'center', sm: 'flex-end' }}
+            flexWrap='wrap'
+            px={paddingCard}
+            pt={[0, 1, 2]}
+            pb={[2, 4]}
+            my={1}
+          >
+            <SourceLogo
+              display={{ base: 'none', sm: 'flex' }}
+              isLoading={isLoading}
+              sdPublisher={sdPublisher}
+              includedInDataCatalog={includedInDataCatalog}
+              url={url}
+              flex={1}
+            />
+            <Flex
+              flex={{ base: 1, sm: 'unset' }}
+              mt={[2, 0]}
+              w={{ base: '100%', sm: 'unset' }}
+            >
+              {id && (
+                <NextLink
+                  href={{
+                    pathname: '/resources/',
+                    query: { id },
+                  }}
+                  style={{ flex: 1 }}
+                  passHref
+                >
+                  <Flex
+                    flex={1}
+                    justifyContent='flex-end'
+                    flexWrap='wrap'
+                    maxW={{ base: '100%', sm: '150px' }}
+                  >
+                    <Button
+                      as='span'
+                      flex={1}
+                      size={{ base: 'md', sm: 'sm' }}
+                      rightIcon={<FaArrowAltCircleRight />}
+                      aria-label={`Go to details about resource ${name}`}
+                    >
+                      View dataset
+                    </Button>
+                  </Flex>
+                </NextLink>
+              )}
+            </Flex>
+          </Stack>
         </CardBody>
       </Skeleton>
     </Card>

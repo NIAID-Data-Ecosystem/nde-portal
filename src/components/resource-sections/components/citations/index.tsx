@@ -23,7 +23,7 @@ const ResourceCitations = ({
   if (!citations) return <></>;
 
   return (
-    <Skeleton isLoaded={!isLoading} mx={1} px={{ base: 0, md: 4 }} py={2}>
+    <Skeleton isLoaded={!isLoading} mx={1} py={2}>
       <Flex alignItems='baseline' lineHeight='short' mb={1}>
         <MetadataLabel
           label={`Citation${
@@ -40,7 +40,7 @@ const ResourceCitations = ({
         border='1px solid'
         borderColor='gray.100'
         borderRadius='semi'
-        m={2}
+        my={2}
         py={2}
       >
         {citations.map((citation, idx) => {

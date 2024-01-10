@@ -14,6 +14,7 @@ import navigationData from 'src/components/resource-sections/resource-sections.j
 import { Route, showSection } from 'src/components/resource-sections/helpers';
 import { getQueryStatusError } from 'src/components/error/utils';
 import { Sidebar } from 'src/components/resource-sections/components/sidebar';
+import { omit } from 'lodash';
 
 // Displays empty message when no data exists.
 const EmptyState = () => {
@@ -29,12 +30,19 @@ const EmptyState = () => {
   );
 };
 
-export interface ResourceData extends FormattedResource {
+interface ResourceQueryData extends FormattedResource {
   relatedDatasets?: {
     _id: FormattedResource['id'];
     '@type': FormattedResource['@type'];
     name: FormattedResource['name'];
   }[];
+}
+
+export interface ResourceData extends ResourceQueryData {
+  rawData: Omit<
+    FormattedResource['rawData'],
+    '_id' | '_ignored' | '_score' | '_meta'
+  >;
 }
 
 const ResourcePage: NextPage = () => {
@@ -45,7 +53,7 @@ const ResourcePage: NextPage = () => {
     isLoading: loadingData,
     error,
     data,
-  } = useQuery<ResourceData | undefined, Error>(
+  } = useQuery<ResourceQueryData | undefined, Error, ResourceData | undefined>(
     ['search-result', { id }],
     async () => {
       const data = await getResourceById(id, { show_meta: true });
@@ -77,6 +85,14 @@ const ResourcePage: NextPage = () => {
     },
     {
       refetchOnWindowFocus: false,
+      select: data => {
+        if (data) {
+          return {
+            ...data,
+            rawData: omit(data.rawData, ['_id', '_ignored', '_score', '_meta']),
+          };
+        }
+      },
     },
   );
 

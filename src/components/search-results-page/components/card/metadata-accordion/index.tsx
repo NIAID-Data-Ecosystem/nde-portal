@@ -117,8 +117,8 @@ const MetadataAccordion: React.FC<MetadataAccordionProps> = ({ data }) => {
                       },
                     )}
                   </Flex>
-                  <Flex alignItems='center'>
-                    <Text mx={2} my={[2, 0]} fontSize='xs'>
+                  <Flex alignItems='center' mt={[2, 2, 0]}>
+                    <Text mx={2} fontSize='xs'>
                       Show metadata
                     </Text>
                     <Icon
