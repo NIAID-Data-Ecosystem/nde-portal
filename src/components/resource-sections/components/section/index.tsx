@@ -38,7 +38,7 @@ const Section: React.FC<SectionProps> = ({
       <Skeleton
         isLoaded={!isLoading}
         height={isLoading ? '200px' : 'unset'}
-        p={{ base: 0, sm: 4 }}
+        p={4}
         {...props}
       >
         {children}
