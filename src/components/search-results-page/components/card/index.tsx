@@ -145,23 +145,25 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
             borderY='1px solid'
             borderColor='gray.100'
           >
-            <ToggleContainer
-              ariaLabel='Show all authors.'
-              noOfLines={1}
-              justifyContent='flex-start'
-              m={0}
-              px={paddingCard}
-              py={2}
-              flex={1}
-              w='100%'
-              _focus={{ outlineColor: 'transparent' }}
-            >
+            <Flex flex={1}>
               {author && (
-                <Text fontSize='xs' color='text.body'>
-                  {formatAuthorsList2String(author, ',', 10)}.
-                </Text>
+                <ToggleContainer
+                  ariaLabel=''
+                  noOfLines={1}
+                  justifyContent='flex-start'
+                  m={0}
+                  px={paddingCard}
+                  py={2}
+                  flex={1}
+                  w='100%'
+                  _focus={{ outlineColor: 'transparent' }}
+                >
+                  <Text fontSize='xs' color='text.body'>
+                    {formatAuthorsList2String(author, ',', 10)}.
+                  </Text>
+                </ToggleContainer>
               )}
-            </ToggleContainer>
+            </Flex>
             {(isAccessibleForFree === true ||
               isAccessibleForFree === false ||
               conditionsOfAccess) && (
@@ -273,7 +275,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
 
             {description && (
               <ToggleContainer
-                ariaLabel='show more description'
+                ariaLabel=''
                 noOfLines={[3, 10]}
                 px={1}
                 py={1}
@@ -284,7 +286,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                 _focus={{ outlineColor: 'transparent', bg: 'white' }}
                 alignIcon='center'
               >
-                <DisplayHTMLContent content={description || ''} />
+                <DisplayHTMLContent content={description} />
               </ToggleContainer>
             )}
           </Stack>
