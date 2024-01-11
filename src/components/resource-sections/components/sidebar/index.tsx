@@ -72,7 +72,7 @@ export const Sidebar = ({
             </Flex>
           )}
           {/* External links to access data, documents or dataset at the source. */}
-          <External data={data} isLoading={isLoading} />
+          <External data={data} isLoading={isLoading} hasDivider={true} />
         </Card>
 
         {/* Local navigation for page */}
