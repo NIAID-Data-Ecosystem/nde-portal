@@ -266,27 +266,29 @@ export const RepositoryTabs: React.FC<{
         onChange={index => {
           setSelectedType(types[index].property);
         }}
+        size='sm'
       >
         <TabList
           flexWrap={['wrap', 'nowrap']}
           justifyContent={['center', 'flex-start']}
+          mx={4}
         >
           {types.map((type, idx) => (
             <Tab
               key={type.property}
               w={['100%', 'unset']}
-              color='blackAlpha.500'
+              color='gray.800'
               _selected={{
-                borderBottom: '4px solid',
+                borderBottom: '2px solid',
                 borderBottomColor: 'primary.400',
                 color: 'text.heading',
                 ['.tag']: {
-                  opacity: 1,
+                  bg: 'primary.100',
                 },
               }}
               _focus={{ outline: 'none' }}
             >
-              <Heading as='h3' size='md' fontWeight='semibold' color='inherit'>
+              <Heading as='h3' size='sm' fontWeight='medium' color='inherit'>
                 {type.label}
               </Heading>
               <Tag
@@ -296,8 +298,9 @@ export const RepositoryTabs: React.FC<{
                 px={4}
                 my={[4, 0]}
                 size='sm'
-                opacity={0.25}
                 colorScheme='gray'
+                variant='subtle'
+                fontWeight='semibold'
               >
                 {
                   repositories.filter(({ type: t }) => t === type.property)
@@ -455,6 +458,7 @@ const Home: NextPage<{
                 display='flex'
                 justifyContent='flex-end'
                 mt={4}
+                px={4}
               >
                 {HOMEPAGE_COPY.sections.help.routes.map(
                   (

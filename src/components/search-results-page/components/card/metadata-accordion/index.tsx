@@ -57,7 +57,6 @@ const MetadataAccordion: React.FC<MetadataAccordionProps> = ({ data }) => {
                 <AccordionButton
                   px={paddingCard}
                   _hover={{ bg: 'page.alt' }}
-                  aria-label={`show more details about dataset id ${id}`}
                   flexDirection={{ base: 'column', md: 'row' }}
                 >
                   <Flex
@@ -84,6 +83,7 @@ const MetadataAccordion: React.FC<MetadataAccordionProps> = ({ data }) => {
                               property === 'variableMeasured' ? '900' : '700'
                             }`}
                             m={0.5}
+                            aria-disabled={isDisabled}
                             opacity={isDisabled ? 0.65 : 1}
                           >
                             <MetadataToolTip

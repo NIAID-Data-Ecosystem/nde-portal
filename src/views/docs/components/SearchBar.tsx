@@ -321,7 +321,7 @@ export const DocsSearchBar = (props: SearchBarWithDropdownProps) => {
             <Icon as={FaSearch} color='gray.200' />
           </InputLeftElement>
           <Input as='div' size={size} colorScheme={colorScheme}>
-            <Text textAlign='left' color='niaid.placeholder'>
+            <Text textAlign='left' color='gray.800'>
               {placeholder}
             </Text>
           </Input>
