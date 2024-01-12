@@ -1,6 +1,6 @@
 import React from 'react';
 import { Icon, Flex } from '@chakra-ui/react';
-import { FaChevronRight, FaGithub, FaRegEnvelope } from 'react-icons/fa';
+import { FaAngleRight, FaGithub, FaRegEnvelope } from 'react-icons/fa6';
 import { FooterProps } from '..';
 import { Link, LinkProps } from 'src/components/link';
 
@@ -35,7 +35,7 @@ export const FooterLink: React.FC<FooterLinkProps> = ({
       </StyledLink>
       {!isExternal && (
         <Icon
-          as={FaChevronRight}
+          as={FaAngleRight}
           boxSize={3}
           ml={2}
           color='accent.bg'

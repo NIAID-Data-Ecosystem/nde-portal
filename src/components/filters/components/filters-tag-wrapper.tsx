@@ -1,9 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import {
-  FaChevronDown,
-  FaChevronUp,
-  FaExclamationCircle,
-} from 'react-icons/fa';
+import { FaAngleDown, FaAngleUp, FaExclamationCircle } from 'react-icons/fa6';
 import {
   Box,
   Collapse,
@@ -95,7 +91,7 @@ export const FilterTagsWrapper: React.FC<FilterTagsWrapperProps> = ({
             <Icon as={FaExclamationCircle} mr={2} boxSize={4}></Icon>
             <Text>Click here to see all applied filters. </Text>
           </Flex>
-          <Icon as={isOpen ? FaChevronUp : FaChevronDown} mr={2}></Icon>
+          <Icon as={isOpen ? FaAngleUp : FaAngleDown} mr={2}></Icon>
         </Flex>
       )}
     </Box>

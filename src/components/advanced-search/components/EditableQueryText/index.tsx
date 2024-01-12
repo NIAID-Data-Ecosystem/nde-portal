@@ -16,8 +16,7 @@ import {
 } from '@chakra-ui/react';
 import { theme } from 'src/theme';
 import { MouseEventHandler, useEffect, useState } from 'react';
-import { FaCheck, FaRegEdit } from 'react-icons/fa';
-import { IoClose } from 'react-icons/io5';
+import { FaCheck, FaRegPenToSquare, FaXmark } from 'react-icons/fa6';
 import { useQuery } from 'react-query';
 import { getQueryStatusError } from 'src/components/error/utils';
 import { fetchSearchResults } from 'src/utils/api';
@@ -189,7 +188,7 @@ export const EditableQueryText = ({
           variant='solid'
           colorScheme='gray'
           color='text.body'
-          icon={<Icon as={IoClose} boxSize={6} />}
+          icon={<Icon as={FaXmark} boxSize={6} />}
           {...getCancelButtonProps()}
         />
         <IconButton
@@ -209,7 +208,7 @@ export const EditableQueryText = ({
             variant='solid'
             colorScheme='gray'
             color='text.body'
-            icon={<Icon as={FaRegEdit} boxSize={4} />}
+            icon={<Icon as={FaRegPenToSquare} boxSize={4} />}
             {...getEditButtonProps()}
           />
         </Tooltip>

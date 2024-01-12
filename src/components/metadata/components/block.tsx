@@ -3,7 +3,7 @@ import { Box, Button, Flex, Icon, Text, TooltipProps } from '@chakra-ui/react';
 import { MetadataIcon } from 'src/components/icon';
 import { getMetadataTheme } from 'src/components/icon/helpers';
 import Tooltip from 'src/components/tooltip';
-import { FaInfo } from 'react-icons/fa';
+import { FaInfo } from 'react-icons/fa6';
 
 interface MetadataBlockProps {
   id: string;

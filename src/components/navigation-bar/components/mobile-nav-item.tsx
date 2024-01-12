@@ -9,7 +9,7 @@ import {
   Icon,
   useDisclosure,
 } from '@chakra-ui/react';
-import { FaChevronRight, FaChevronDown } from 'react-icons/fa6';
+import { FaAngleRight, FaAngleDown } from 'react-icons/fa6';
 import { RouteProps } from '..';
 
 // Mobile Navigation link styles
@@ -52,7 +52,7 @@ export const MobileNavItem = ({
               }}
               w={3}
               h={3}
-              as={FaChevronRight}
+              as={FaAngleRight}
             />
           </Flex>
         </Link>
@@ -80,7 +80,7 @@ export const MobileNavItem = ({
               sx={{
                 '> *': { color: 'tertiary.700' },
               }}
-              as={FaChevronDown}
+              as={FaAngleDown}
               transition={'all .25s ease-in-out'}
               transform={
                 isOpen

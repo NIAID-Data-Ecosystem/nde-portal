@@ -3,7 +3,7 @@ import { useQuery } from 'react-query';
 import React, { useState } from 'react';
 import { NewsOrEventsObject } from 'src/pages/news';
 import { formatDate } from 'src/utils/api/helpers';
-import { FaChevronRight } from 'react-icons/fa';
+import { FaAngleRight } from 'react-icons/fa6';
 import {
   Box,
   Button,
@@ -148,7 +148,7 @@ export const NewsCarousel = ({ news: initialData }: NewsCarouselProps) => {
           prefetch={false}
           passHref
         >
-          <Button as='span' size='sm' rightIcon={<Icon as={FaChevronRight} />}>
+          <Button as='span' size='sm' rightIcon={<Icon as={FaAngleRight} />}>
             All news releases
           </Button>
         </NextLink>

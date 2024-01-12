@@ -16,7 +16,7 @@ import {
 import { Route } from 'src/components/resource-sections/helpers';
 import { useLocalStorage } from 'usehooks-ts';
 import { CardContainer } from 'src/components/resource-sections/components/related-datasets';
-import { FaSearch } from 'react-icons/fa';
+import { FaMagnifyingGlass } from 'react-icons/fa6';
 import { External } from './components/external';
 import { ScrollContainer } from 'src/components/scroll-container';
 import { ResourceData } from 'src/pages/resources';
@@ -106,7 +106,7 @@ export const Sidebar = ({
                       display='flex'
                     >
                       <Icon
-                        as={FaSearch}
+                        as={FaMagnifyingGlass}
                         color='link.color'
                         boxSize={3}
                         m={1}

@@ -13,7 +13,7 @@ import {
   PopoverContent,
   PopoverBody,
 } from '@chakra-ui/react';
-import { FaCaretDown, FaChevronRight } from 'react-icons/fa6';
+import { FaCaretDown, FaAngleRight } from 'react-icons/fa6';
 import { RouteProps } from '..';
 
 // Desktop Navigation link styles
@@ -152,7 +152,7 @@ const DesktopSubNav = ({ label, href, subLabel, isExternal }: RouteProps) => {
             }}
             w={3}
             h={3}
-            as={FaChevronRight}
+            as={FaAngleRight}
           />
         </Flex>
       </Flex>

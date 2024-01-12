@@ -13,13 +13,13 @@ import MetadataFields from 'configs/resource-fields.json';
 import { useAdvancedSearchContext } from '../AdvancedSearchFormContext';
 import Select, { components, OptionProps, ControlProps } from 'react-select';
 import {
+  FaFont,
   FaHashtag,
-  FaRegCalendarAlt,
-  FaRegCheckCircle,
-  FaSearch,
-  FaTh,
-} from 'react-icons/fa';
-import { MdTextFormat } from 'react-icons/md';
+  FaRegCalendarDays,
+  FaRegCircleCheck,
+  FaMagnifyingGlass,
+  FaListUl,
+} from 'react-icons/fa6';
 import { formatNumber } from 'src/utils/helpers';
 import { filterFields, transformFieldName } from './helpers';
 import Fuse from 'fuse.js';
@@ -35,12 +35,12 @@ const Option = (props: OptionProps<any>) => {
     let icon;
     let tooltipLabel = type;
     if (type === 'text' || type === 'keyword') {
-      icon = MdTextFormat;
+      icon = FaFont;
       if (data.enum) {
-        icon = FaTh;
+        icon = FaListUl;
       }
     } else if (type === 'date') {
-      icon = FaRegCalendarAlt;
+      icon = FaRegCalendarDays;
     } else if (
       type === 'unsigned_long' ||
       type === 'integer' ||
@@ -50,7 +50,7 @@ const Option = (props: OptionProps<any>) => {
       icon = FaHashtag;
       tooltipLabel = 'number';
     } else if (type === 'boolean') {
-      icon = FaRegCheckCircle;
+      icon = FaRegCircleCheck;
     }
 
     return { icon, tooltipLabel };
@@ -144,7 +144,7 @@ const Option = (props: OptionProps<any>) => {
 const Control = (props: ControlProps<any>) => {
   return (
     <components.Control {...props}>
-      <Icon as={FaSearch} ml={2} color='gray.300' />
+      <Icon as={FaMagnifyingGlass} ml={2} color='gray.300' />
       {props.children}
     </components.Control>
   );

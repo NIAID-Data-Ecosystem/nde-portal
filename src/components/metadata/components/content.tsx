@@ -2,7 +2,7 @@ import { Box, Flex, Icon, Image, Text } from '@chakra-ui/react';
 import { MetadataItem } from '../helpers';
 import { MetadataWithTag } from './tag';
 import { MetadataButtonGroup, OntologyButton, SearchButton } from './buttons';
-import { FaExternalLinkSquareAlt } from 'react-icons/fa';
+import { FaSquareArrowUpRight } from 'react-icons/fa6';
 import { Link } from 'src/components/link';
 
 interface MetadataContentProps extends Omit<MetadataItem, 'key'> {
@@ -45,7 +45,7 @@ export const MetadataContent = ({
               <Link href={url} target='_blank' alignItems='center'>
                 <Text>{name}</Text>
                 <Icon
-                  as={FaExternalLinkSquareAlt}
+                  as={FaSquareArrowUpRight}
                   boxSize={2.5}
                   ml={1}
                   color='gray.800'

@@ -11,7 +11,7 @@ import {
 import { FormattedResource } from 'src/utils/api/types';
 import { getRepositoryImage } from 'src/utils/helpers';
 import NextLink from 'next/link';
-import { FaArrowRight } from 'react-icons/fa';
+import { FaArrowRight } from 'react-icons/fa6';
 
 interface DataAccessProps {
   isLoading: boolean;

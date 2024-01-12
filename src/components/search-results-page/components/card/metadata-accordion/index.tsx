@@ -11,8 +11,8 @@ import {
   Text,
   SimpleGrid,
 } from '@chakra-ui/react';
+import { FaMinus, FaPlus } from 'react-icons/fa6';
 import { Link } from 'src/components/link';
-import { FaMinus, FaPlus } from 'react-icons/fa';
 import { FormattedResource } from 'src/utils/api/types';
 import { MetadataToolTip, MetadataIcon } from 'src/components/icon';
 import { getMetadataTheme } from 'src/components/icon/helpers';

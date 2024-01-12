@@ -14,9 +14,9 @@ import {
   Heading,
   Skeleton,
 } from '@chakra-ui/react';
+import { FaSquareArrowUpRight } from 'react-icons/fa6';
 import { Link } from 'src/components/link';
 import { Funding as FundingType } from 'src/utils/api/types';
-import { FaExternalLinkSquareAlt } from 'react-icons/fa';
 import { uniqueId } from 'lodash';
 import { getMetadataTheme } from 'src/components/icon/helpers';
 import {
@@ -324,7 +324,7 @@ const ContentWithTag = React.memo(
                   {identifier}
                 </Text>
                 <Icon
-                  as={FaExternalLinkSquareAlt}
+                  as={FaSquareArrowUpRight}
                   boxSize={3}
                   ml={1}
                   color='gray.800'

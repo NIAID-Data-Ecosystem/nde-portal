@@ -9,7 +9,7 @@ import {
   Skeleton,
 } from '@chakra-ui/react';
 import { StyledSectionHead, StyledSectionHeading } from './styles';
-import { FaMinus, FaPlus } from 'react-icons/fa';
+import { FaMinus, FaPlus } from 'react-icons/fa6';
 import { getSectionIcon } from '../../helpers';
 
 interface SectionProps extends BoxProps {

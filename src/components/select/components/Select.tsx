@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { FaChevronDown } from 'react-icons/fa';
+import { FaAngleDown } from 'react-icons/fa6';
 import {
   Box,
   Button,
@@ -21,7 +21,7 @@ export const SelectIcon = ({ size, onClick, ...rest }: IconButtonProps) => {
       onClick={onClick}
       variant='ghost'
       size={size}
-      icon={<FaChevronDown />}
+      icon={<FaAngleDown />}
       {...rest}
     />
   );
@@ -112,7 +112,7 @@ export const SelectWithInput: React.FC<SelectWithInputProps> = ({
               colorScheme={colorScheme}
               size={size}
               aria-label={ariaLabel}
-              icon={<FaChevronDown />}
+              icon={<FaAngleDown />}
             />
           )}
         </InputRightElement>
@@ -139,7 +139,7 @@ export const SelectWithButton: React.FC<SelectWithButtonProps> = ({
       onClose={onClose}
       renderList={() => children}
     >
-      <Button rightIcon={<FaChevronDown />} onClick={onToggle} {...props}>
+      <Button rightIcon={<FaAngleDown />} onClick={onToggle} {...props}>
         {name}
       </Button>
     </SelectWrapper>

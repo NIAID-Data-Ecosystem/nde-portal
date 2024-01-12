@@ -6,7 +6,7 @@ import {
   Flex,
   Heading,
 } from '@chakra-ui/react';
-import { FaMinus, FaPlus } from 'react-icons/fa';
+import { FaMinus, FaPlus } from 'react-icons/fa6';
 import { MetadataIcon, MetadataToolTip } from 'src/components/icon';
 import { getMetadataColor } from 'src/components/icon/helpers';
 

@@ -1,9 +1,9 @@
 import React from 'react';
 import { Flex, FlexProps, Icon, Text } from '@chakra-ui/react';
-import { FaRegClock } from 'react-icons/fa';
+import { FaRegClock } from 'react-icons/fa6';
 import TypeBanner from '../type-banner';
 import { FormattedResource } from 'src/utils/api/types';
-import { formatDOI, isSourceFundedByNiaid } from 'src/utils/helpers';
+import { isSourceFundedByNiaid } from 'src/utils/helpers';
 
 /*
 [COMPONENT INFO]:

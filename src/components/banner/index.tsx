@@ -2,10 +2,10 @@ import { Flex, Icon } from '@chakra-ui/react';
 import React from 'react';
 import {
   FaCheck,
-  FaExclamationTriangle,
-  FaTimes,
-  FaInfoCircle,
-} from 'react-icons/fa';
+  FaCircleExclamation,
+  FaTriangleExclamation,
+  FaXmark,
+} from 'react-icons/fa6';
 
 interface BannerProps {
   status?: 'info' | 'success' | 'warning' | 'error';
@@ -29,15 +29,15 @@ const Banner: React.FC<BannerProps> = ({ children, status }) => {
 
   const getIcon = (status: BannerProps['status']) => {
     if (status === 'error') {
-      return FaTimes;
+      return FaXmark;
     } else if (status === 'success') {
       return FaCheck;
     } else if (status === 'warning') {
-      return FaExclamationTriangle;
+      return FaTriangleExclamation;
     } else if (status === 'info') {
-      return FaInfoCircle;
+      return FaCircleExclamation;
     } else {
-      return FaInfoCircle;
+      return FaCircleExclamation;
     }
   };
 

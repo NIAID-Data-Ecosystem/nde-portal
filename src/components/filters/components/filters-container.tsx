@@ -17,7 +17,7 @@ import {
   useBreakpointValue,
   Icon,
 } from '@chakra-ui/react';
-import { FaFilter } from 'react-icons/fa';
+import { FaFilter } from 'react-icons/fa6';
 import { FiltersConfigProps, SelectedFilterType } from '../types';
 import { ScrollContainer } from 'src/components/scroll-container';
 

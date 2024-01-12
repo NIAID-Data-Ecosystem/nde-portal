@@ -13,12 +13,12 @@ import {
   useDisclosure,
 } from '@chakra-ui/react';
 import React, { useCallback, useEffect, useState } from 'react';
-import { FaDownload, FaExclamationCircle } from 'react-icons/fa';
+import { FaDownload, FaCircleExclamation } from 'react-icons/fa6';
 import { useQuery, useQueryClient } from 'react-query';
 import { Params, fetchAllSearchResults } from 'src/utils/api';
 import { DownloadArgs, downloadAsCsv, downloadAsJson } from './helpers';
 import { Disclaimer } from './components/Disclaimer';
-import { MdClose } from 'react-icons/md';
+import { FaXmark } from 'react-icons/fa6';
 
 /*
  [COMPONENT INFO]: Download data button that gives JSON or CSV download options.
@@ -163,7 +163,7 @@ export const DownloadMetadata: React.FC<DownloadMetadataProps> = ({
       {/* Error */}
       <Collapse in={!!error}>
         <Text fontSize='xs' fontStyle='italic' color='status.error'>
-          <Icon as={FaExclamationCircle} color='status.error' mr={1}></Icon>
+          <Icon as={FaCircleExclamation} color='status.error' mr={1}></Icon>
           Something went wrong with the metadata download. Please try again.
         </Text>
       </Collapse>
@@ -198,7 +198,7 @@ export const DownloadMetadata: React.FC<DownloadMetadataProps> = ({
         {isFetching ? (
           // cancel query
           <Button
-            leftIcon={<MdClose />}
+            leftIcon={<FaXmark />}
             colorScheme='primary'
             onClick={() => {
               queryClient.cancelQueries(queryKey);

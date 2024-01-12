@@ -12,7 +12,7 @@ import {
 } from '@chakra-ui/react';
 import { Link } from 'src/components/link';
 import { FormattedResource } from 'src/utils/api/types';
-import { FaFileExport, FaFileImport } from 'react-icons/fa';
+import { FaFileExport, FaFileImport } from 'react-icons/fa6';
 import InputOutput from './components/input-output';
 import BasedOnTable from '../based-on';
 

@@ -37,7 +37,7 @@ import HOME_QUERIES from 'configs/queries/home-queries.json';
 import NextLink from 'next/link';
 import { SearchBarWithDropdown } from 'src/components/search-bar';
 import { AdvancedSearchOpen } from 'src/components/advanced-search/components/buttons';
-import { FaChevronRight } from 'react-icons/fa';
+import { FaAngleRight } from 'react-icons/fa6';
 import { useRepoData } from 'src/hooks/api/useRepoData';
 import { queryFilterObject2String } from 'src/components/filters/helpers';
 import { FaRegEnvelope, FaGithub } from 'react-icons/fa';
@@ -401,7 +401,7 @@ const Home: NextPage<{
                 >
                   <Text color='inherit'>{query.title}</Text>
                   <Icon
-                    as={FaChevronRight}
+                    as={FaAngleRight}
                     ml={2}
                     boxSize={3}
                     transform='translateX(-5px)'

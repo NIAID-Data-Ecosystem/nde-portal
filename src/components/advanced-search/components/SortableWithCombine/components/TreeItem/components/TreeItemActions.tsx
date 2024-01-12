@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { Flex, Icon } from '@chakra-ui/react';
-import { FaChevronDown, FaRegEdit } from 'react-icons/fa';
+import { FaAngleDown, FaRegPenToSquare } from 'react-icons/fa6';
 import { Action, Handle, Remove } from './Actions';
 import { TreeItemComponentProps } from '..';
 import { UniqueIdentifier } from '@dnd-kit/core';
@@ -28,7 +28,7 @@ export const TreeItemActions = React.memo(
     const collapseIcon = useMemo(
       () => (
         <Icon
-          as={FaChevronDown}
+          as={FaAngleDown}
           boxSize={3}
           transition='transform 250ms ease'
           transform={collapsed ? `rotate(-90deg)` : `rotate(0deg)`}
@@ -72,7 +72,7 @@ export const TreeItemActions = React.memo(
             variant='ghost'
             color='niaid.placeholder'
             mx={1}
-            icon={<Icon as={FaRegEdit} />}
+            icon={<Icon as={FaRegPenToSquare} />}
           />
         )}
         {/* Button to delete item. */}
