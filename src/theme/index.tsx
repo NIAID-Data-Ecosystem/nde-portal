@@ -3,6 +3,7 @@ import foundations from './foundations';
 import styles from './styles';
 import { Badge } from './components/badge.theme';
 import { Button } from './components/button.theme';
+import Card from './components/card.theme';
 import { Input } from './components/input.theme';
 import { Link } from './components/link.theme';
 import { Heading } from './components/heading.theme';
@@ -32,7 +33,7 @@ const overrides = {
   components: {
     Badge,
     Button,
-    // Card,
+    Card,
     Heading,
     Input,
     Link,
