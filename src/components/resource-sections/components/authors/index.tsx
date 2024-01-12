@@ -5,18 +5,18 @@ import {
   AccordionButton,
   AccordionPanel,
   Box,
-  ChakraLink,
+  Link as ChakraLink,
   Flex,
   Heading,
   Icon,
-  Link,
   Text,
   UnorderedList,
   ListItem,
   Image,
   Tooltip,
   HStack,
-} from 'nde-design-system';
+} from '@chakra-ui/react';
+import { Link } from 'src/components/link';
 import { FormattedResource } from 'src/utils/api/types';
 import { formatAuthorsList2String } from 'src/utils/helpers';
 import {

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Flex, Icon, Text, TextProps } from 'nde-design-system';
+import { Box, Flex, Icon, Text, TextProps } from '@chakra-ui/react';
 import { InputProperties, OutputProperties } from 'src/utils/api/types';
 import { IconType } from 'react-icons';
 

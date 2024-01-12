@@ -1,8 +1,9 @@
 import React from 'react';
-import { Box, Link } from 'nde-design-system';
+import { Box } from '@chakra-ui/react';
 import { FormattedResource } from 'src/utils/api/types';
 import MetadataConfig from 'configs/resource-metadata.json';
 import { HeadingWithTooltip } from './heading-with-tooltip';
+import { Link } from 'src/components/link';
 
 interface DataUsageProps {
   isLoading: boolean;

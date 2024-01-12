@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Button, Flex, Icon, Text, TooltipProps } from 'nde-design-system';
+import { Box, Button, Flex, Icon, Text, TooltipProps } from '@chakra-ui/react';
 import { MetadataIcon } from 'src/components/icon';
 import { getMetadataTheme } from 'src/components/icon/helpers';
 import Tooltip from 'src/components/tooltip';

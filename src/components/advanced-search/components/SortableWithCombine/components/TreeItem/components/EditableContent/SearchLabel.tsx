@@ -1,4 +1,4 @@
-import { Select, VisuallyHidden } from 'nde-design-system';
+import { Select, VisuallyHidden } from '@chakra-ui/react';
 import { useCallback, useEffect, useState } from 'react';
 import { useAdvancedSearchContext } from 'src/components/advanced-search/components/Search';
 import { SearchTypesConfigProps } from 'src/components/advanced-search/components/Search/search-types-config';

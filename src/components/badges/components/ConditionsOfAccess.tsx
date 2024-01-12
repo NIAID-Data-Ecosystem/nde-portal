@@ -1,5 +1,5 @@
 import { FormattedResource } from 'src/utils/api/types';
-import { Icon } from 'nde-design-system';
+import { Icon } from '@chakra-ui/react';
 import { FaLock, FaUnlock } from 'react-icons/fa6';
 import { BadgeWithTooltip, BadgeWithTooltipProps } from 'src/components/badges';
 import MetadataConfig from 'configs/resource-metadata.json';

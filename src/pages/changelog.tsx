@@ -1,4 +1,4 @@
-import { Badge, Box, Flex, Heading, Text } from 'nde-design-system';
+import { Badge, Box, Flex, Heading, Text } from '@chakra-ui/react';
 import type { NextPage } from 'next';
 import { PageContainer, PageContent } from 'src/components/page-container';
 import ChangelogData from '../../CHANGELOG.md';

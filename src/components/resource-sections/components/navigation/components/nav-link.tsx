@@ -1,5 +1,6 @@
 import React from 'react';
-import { Link, LinkProps, Text } from 'nde-design-system';
+import { Text } from '@chakra-ui/react';
+import { Link, LinkProps } from 'src/components/link';
 
 interface NavLinkProps extends LinkProps {
   href: string;

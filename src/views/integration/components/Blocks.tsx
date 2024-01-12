@@ -11,7 +11,7 @@ import {
   OrderedList,
   Text,
   UnorderedList,
-} from 'nde-design-system';
+} from '@chakra-ui/react';
 import { useMDXComponents } from 'mdx-components';
 import type { SectionProps } from 'src/views/integration/types';
 import { HeadingWithLink } from 'src/components/heading-with-link/components/HeadingWithLink';

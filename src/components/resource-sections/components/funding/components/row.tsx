@@ -8,7 +8,7 @@ import {
   FlexProps,
   Icon,
   Text,
-} from 'nde-design-system';
+} from '@chakra-ui/react';
 import { FaMinus, FaPlus } from 'react-icons/fa';
 
 // Row component - represents a row in the table, containing multiple cells.

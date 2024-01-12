@@ -16,13 +16,13 @@ import {
   FormControl,
   FormLabel,
   Icon,
-  Link,
   ListItem,
   Stack,
   Switch,
   Text,
   UnorderedList,
-} from 'nde-design-system';
+} from '@chakra-ui/react';
+import { Link } from 'src/components/link';
 import {
   queryFilterObject2String,
   queryFilterString2Object,

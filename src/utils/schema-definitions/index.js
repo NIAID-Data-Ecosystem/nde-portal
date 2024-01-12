@@ -216,7 +216,7 @@ const fetchRepositoryInfo = async () => {
 };
 
 fetchRepositoryInfo().then(response => {
-  const file_path = './configs/footer.json';
+  const file_path = './src/components/footer/routes.json';
   let rawdata = fs.readFileSync(file_path);
   let properties = [];
   try {

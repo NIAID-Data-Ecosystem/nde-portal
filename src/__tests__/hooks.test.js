@@ -1,7 +1,7 @@
 import { rest } from 'msw';
 import { renderHook, waitFor } from '@testing-library/react';
 import { createWrapper } from './mocks/utils.tsx';
-import { useRepoData } from 'src/hooks/api';
+import { useRepoData } from 'src/hooks/api/useRepoData.ts';
 import { server } from '../../jest.setup.js';
 import RepositoryData from 'configs/repositories.json';
 

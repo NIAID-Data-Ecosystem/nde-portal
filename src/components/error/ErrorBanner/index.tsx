@@ -9,7 +9,7 @@ import {
   ListItem,
   Text,
   UnorderedList,
-} from 'nde-design-system';
+} from '@chakra-ui/react';
 import {
   FaExclamationCircle,
   FaInfoCircle,

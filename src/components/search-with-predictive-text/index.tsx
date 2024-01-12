@@ -1,5 +1,5 @@
 import React, { ReactElement } from 'react';
-import { InputProps } from 'nde-design-system';
+import { InputProps } from '@chakra-ui/react';
 import { FormattedResource } from 'src/utils/api/types';
 import { usePredictiveSearch } from './hooks/usePredictiveSearch';
 import { PredictiveSearch } from './components/PredictiveSearch';

@@ -1,4 +1,4 @@
-import { ListProps, UnorderedList } from 'nde-design-system';
+import { ListProps, UnorderedList } from '@chakra-ui/react';
 
 export const OptionsList: React.FC<ListProps> = ({ children, ...props }) => {
   return (

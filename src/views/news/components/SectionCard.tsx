@@ -3,12 +3,11 @@ import {
   Card,
   CardBody,
   CardFooter,
-  CardTitle,
   Flex,
   Heading,
   Tag,
   Text,
-} from 'nde-design-system';
+} from '@chakra-ui/react';
 import { NewsOrEventsObject } from 'src/pages/news';
 import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
@@ -52,7 +51,9 @@ const SectionCard = ({ attributes }: NewsOrEventsObject) => {
           </Text>
         )}
         <Box p={2}>
-          <CardTitle as='h3'>{attributes.name}</CardTitle>
+          <Heading as='h3' fontWeight='semibold'>
+            {attributes.name}
+          </Heading>
           {attributes.subtitle && (
             <Heading
               as='h4'

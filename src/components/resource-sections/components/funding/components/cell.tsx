@@ -7,7 +7,7 @@ import {
   Heading,
   HeadingProps,
   Text,
-} from 'nde-design-system';
+} from '@chakra-ui/react';
 
 // Label component - displays text in a specific style.
 export const Label = React.memo(({ children, ...props }: HeadingProps) => {

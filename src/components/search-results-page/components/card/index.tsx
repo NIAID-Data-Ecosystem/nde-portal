@@ -4,15 +4,13 @@ import {
   Card,
   CardHeader,
   CardBody,
-  CardTitle,
   Flex,
   Icon,
   Skeleton,
   Text,
-  ToggleContainer,
   Tooltip,
   Stack,
-} from 'nde-design-system';
+} from '@chakra-ui/react';
 import {
   FaArrowAltCircleRight,
   FaChevronRight,
@@ -30,6 +28,8 @@ import { DisplayHTMLContent } from 'src/components/html-content';
 import { AccessibleForFree, ConditionsOfAccess } from 'src/components/badges';
 import { SourceLogo } from './source-logo';
 import { CompletenessBadgeCircle } from 'src/components/completeness-badge/Circular';
+import { Heading } from '@chakra-ui/react';
+import { ToggleContainer } from 'src/components/toggle-container';
 
 interface SearchResultCardProps {
   isLoading?: boolean;
@@ -105,14 +105,19 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                   svg: { color: 'link.color' },
                 }}
               >
-                <CardTitle as='h3'>
+                <Heading
+                  as='h3'
+                  fontWeight='semibold'
+                  size='h3'
+                  color='inherit'
+                >
                   <DisplayHTMLContent
                     content={name || alternateName || ''}
                     fontSize='lg'
                     lineHeight='short'
                     fontWeight='semibold'
                   />
-                </CardTitle>
+                </Heading>
                 <Icon
                   as={FaChevronRight}
                   boxSize={4}

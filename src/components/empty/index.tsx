@@ -6,7 +6,7 @@ import {
   HeadingProps,
   Icon,
   IconProps,
-} from 'nde-design-system';
+} from '@chakra-ui/react';
 import Glyph from '../icon/components/glyph';
 
 interface EmptyProps extends FlexProps {

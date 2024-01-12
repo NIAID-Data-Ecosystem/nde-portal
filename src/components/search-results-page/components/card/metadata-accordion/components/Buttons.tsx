@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Flex, Icon } from 'nde-design-system';
+import { Box, Flex, Icon } from '@chakra-ui/react';
 import { FaFilter } from 'react-icons/fa6';
 import {
   queryFilterObject2String,

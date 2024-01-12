@@ -1,6 +1,6 @@
 import React from 'react';
 import { NextPage } from 'next';
-import { Button, Flex, Heading, Image, Text } from 'nde-design-system';
+import { Button, Flex, Heading, Image, Text } from '@chakra-ui/react';
 import { PageContainer, PageContent } from 'src/components/page-container';
 import NextLink from 'next/link';
 

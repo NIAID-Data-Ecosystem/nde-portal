@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Button, Flex, Icon, Link, Text } from 'nde-design-system';
+import { Box, Button, Flex, Icon, Text } from '@chakra-ui/react';
 import { IoIosWarning } from 'react-icons/io';
 import { useLocalStorage } from 'usehooks-ts';
+import { Link } from 'src/components/link';
 
 const Notice = () => {
   let niaid_help = 'NIAIDDataEcosystem@mail.nih.gov';

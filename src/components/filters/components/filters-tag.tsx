@@ -5,7 +5,7 @@ import {
   Tag,
   TagCloseButton,
   TagLabel,
-} from 'nde-design-system';
+} from '@chakra-ui/react';
 import { filtersConfig } from 'src/components/search-results-page/components/filters';
 import { SelectedFilterType, SelectedFilterTypeValue, ValueOf } from '../types';
 /*

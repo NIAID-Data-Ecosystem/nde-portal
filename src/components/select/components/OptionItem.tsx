@@ -4,7 +4,7 @@ import {
   ListItemProps,
   Text,
   useDisclosure,
-} from 'nde-design-system';
+} from '@chakra-ui/react';
 
 interface OptionProps extends ListItemProps {
   name: string;

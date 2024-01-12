@@ -1,13 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
-import {
-  Box,
-  Heading,
-  LinkProps,
-  ListItem,
-  UnorderedList,
-} from 'nde-design-system';
+import { Box, Heading, ListItem, UnorderedList } from '@chakra-ui/react';
 import { throttle } from 'lodash';
 import { NavLink } from './components/nav-link';
+import { LinkProps } from 'src/components/link';
 
 interface LocalNavigationProps {
   routes: { title: string; hash: string; depth?: number }[];

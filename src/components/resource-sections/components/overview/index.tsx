@@ -7,7 +7,7 @@ import {
   Skeleton,
   Text,
   VStack,
-} from 'nde-design-system';
+} from '@chakra-ui/react';
 import { FormattedResource } from 'src/utils/api/types';
 import {
   MetadataBlock,

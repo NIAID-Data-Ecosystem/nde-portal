@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Flex, Select, VisuallyHidden } from 'nde-design-system';
+import { Box, Flex, Select, VisuallyHidden } from '@chakra-ui/react';
 import { SortOptionsInterface } from 'src/components/search-results-page';
 
 /*

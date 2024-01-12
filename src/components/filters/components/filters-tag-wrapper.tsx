@@ -11,7 +11,7 @@ import {
   Icon,
   Text,
   useDisclosure,
-} from 'nde-design-system';
+} from '@chakra-ui/react';
 import { theme } from 'src/theme';
 import { SelectedFilterType } from '../types';
 

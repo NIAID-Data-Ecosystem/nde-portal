@@ -13,7 +13,7 @@ import {
   Tooltip,
   useEditableControls,
   VisuallyHidden,
-} from 'nde-design-system';
+} from '@chakra-ui/react';
 import { theme } from 'src/theme';
 import { MouseEventHandler, useEffect, useState } from 'react';
 import { FaCheck, FaRegEdit } from 'react-icons/fa';

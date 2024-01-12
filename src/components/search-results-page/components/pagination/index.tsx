@@ -1,23 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import {
-  Box,
   Flex,
   Icon,
-  Pagination as StyledPagination,
-  PaginationButton,
-  PaginationButton as StyledPaginationButton,
-  PaginationButtonGroup as StyledPaginationButtonGroup,
   ScaleFade,
   Select,
   useBreakpointValue,
   VisuallyHidden,
-} from 'nde-design-system';
+} from '@chakra-ui/react';
 import {
   FaAngleRight,
   FaAngleLeft,
-  FaAngleDoubleRight,
-  FaAngleDoubleLeft,
-} from 'react-icons/fa';
+  FaAnglesRight,
+  FaAnglesLeft,
+} from 'react-icons/fa6';
+import { PaginationButton, PaginationButtonGroup } from './components/buttons';
 
 /*
  [COMPONENT INFO]: Pagination
@@ -97,7 +93,10 @@ export const Pagination: React.FC<PaginationProps> = ({
     return null;
   }
   return (
-    <StyledPagination
+    <Flex
+      as='nav'
+      borderRadius='semi'
+      boxShadow='base'
       id={id}
       aria-label={ariaLabel}
       role='navigation'
@@ -110,6 +109,9 @@ export const Pagination: React.FC<PaginationProps> = ({
       alignItems='center'
       overflow='unset'
     >
+      <VisuallyHidden>
+        <h2>Pagination</h2>
+      </VisuallyHidden>
       {/* Sort component */}
       {children}
 
@@ -120,20 +122,20 @@ export const Pagination: React.FC<PaginationProps> = ({
           style={{ width: '100%', display: 'flex', justifyContent: 'center' }}
         >
           <Flex w={['100%', 'unset']} alignItems='center'>
-            <StyledPaginationButton
+            <PaginationButton
               isDisabled={selectedPage - 1 === 0}
               onClick={() => handleSelectedPage(1)}
             >
               <VisuallyHidden>First Page</VisuallyHidden>
-              <Icon as={FaAngleDoubleLeft} />
-            </StyledPaginationButton>
-            <StyledPaginationButton
+              <Icon as={FaAnglesLeft} />
+            </PaginationButton>
+            <PaginationButton
               isDisabled={selectedPage - 1 === 0}
               onClick={() => handleSelectedPage(selectedPage - 1)}
             >
               <VisuallyHidden>Previous page</VisuallyHidden>
               <Icon as={FaAngleLeft} />
-            </StyledPaginationButton>
+            </PaginationButton>
 
             {/* Mobile */}
             {showPageDropdown ? (
@@ -154,7 +156,7 @@ export const Pagination: React.FC<PaginationProps> = ({
               </Select>
             ) : (
               <Flex>
-                <StyledPaginationButtonGroup>
+                <PaginationButtonGroup>
                   {options.map((currentPage, i) => {
                     return (
                       <PaginationButton
@@ -166,7 +168,7 @@ export const Pagination: React.FC<PaginationProps> = ({
                       </PaginationButton>
                     );
                   })}
-                </StyledPaginationButtonGroup>
+                </PaginationButtonGroup>
                 {totalPages > 5 && selectedPage < totalPages - 1 && (
                   <>
                     <Flex alignItems='flex-end' mx={4} color='primary.600'>
@@ -184,23 +186,23 @@ export const Pagination: React.FC<PaginationProps> = ({
                 )}
               </Flex>
             )}
-            <StyledPaginationButton
+            <PaginationButton
               isDisabled={selectedPage === totalPages}
               onClick={() => handleSelectedPage(selectedPage + 1)}
             >
               <VisuallyHidden>Next Page</VisuallyHidden>
               <Icon as={FaAngleRight} />
-            </StyledPaginationButton>
-            <StyledPaginationButton
+            </PaginationButton>
+            <PaginationButton
               isDisabled={selectedPage === totalPages}
               onClick={() => handleSelectedPage(totalPages)}
             >
               <VisuallyHidden>Last Page</VisuallyHidden>
-              <Icon as={FaAngleDoubleRight} />
-            </StyledPaginationButton>
+              <Icon as={FaAnglesRight} />
+            </PaginationButton>
           </Flex>
         </ScaleFade>
       </Flex>
-    </StyledPagination>
+    </Flex>
   );
 };

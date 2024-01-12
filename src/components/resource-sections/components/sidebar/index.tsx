@@ -5,12 +5,10 @@ import {
   Card,
   Collapse,
   Flex,
-  HStack,
   Icon,
-  Link,
   ListItem,
   UnorderedList,
-} from 'nde-design-system';
+} from '@chakra-ui/react';
 import {
   Navigation,
   RelatedDatasets,
@@ -24,6 +22,7 @@ import { ScrollContainer } from 'src/components/scroll-container';
 import { ResourceData } from 'src/pages/resources';
 import { CompletenessBadgeCircle } from 'src/components/completeness-badge/Circular';
 import { HeadingWithTooltip } from './components/external/components/heading-with-tooltip';
+import { Link } from 'src/components/link';
 
 export const Sidebar = ({
   data,

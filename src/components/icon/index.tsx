@@ -4,7 +4,7 @@ import {
   Icon,
   IconProps as ChakraIconProps,
   VisuallyHidden,
-} from 'nde-design-system';
+} from '@chakra-ui/react';
 import {
   FaFingerprint,
   FaQuoteLeft,

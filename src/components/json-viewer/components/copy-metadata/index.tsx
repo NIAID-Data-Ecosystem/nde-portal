@@ -1,9 +1,4 @@
-import {
-  Button,
-  ButtonProps,
-  FlexProps,
-  useClipboard,
-} from 'nde-design-system';
+import { Button, ButtonProps, FlexProps, useClipboard } from '@chakra-ui/react';
 import React from 'react';
 import { FaCopy } from 'react-icons/fa';
 

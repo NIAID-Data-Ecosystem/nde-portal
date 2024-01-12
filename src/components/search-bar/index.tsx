@@ -11,7 +11,7 @@ import {
   IconButton,
   ListItem,
   Tooltip,
-} from 'nde-design-system';
+} from '@chakra-ui/react';
 import { useLocalStorage } from 'usehooks-ts';
 import {
   DropdownContent,

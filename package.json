@@ -18,12 +18,15 @@
     "test": "npx jest"
   },
   "dependencies": {
+    "@chakra-ui/react": "^2.8.2",
+    "@emotion/react": "^11.11.3",
+    "@emotion/styled": "^11.11.0",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^14.0.0",
     "@testing-library/react-hooks": "^8.0.1",
     "@types/react-dom": "^18.2.4",
+    "framer-motion": "^10.18.0",
     "jest-environment-jsdom": "^29.5.0",
-    "nde-design-system": "^1.0.19",
     "next": "^13.4.20-canary.13",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"

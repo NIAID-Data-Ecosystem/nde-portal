@@ -4,7 +4,7 @@ import {
   ButtonProps,
   ModalProps,
   useDisclosure,
-} from 'nde-design-system';
+} from '@chakra-ui/react';
 import { AdvancedSearchModal } from './components/Modal';
 import { AdvancedSearchOpen } from './components/buttons';
 import { AdvancedSearchProps } from '.';

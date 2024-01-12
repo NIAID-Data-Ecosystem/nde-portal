@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Flex, Heading, ListItem, Tag, Text } from 'nde-design-system';
+import { Box, Flex, Heading, ListItem, Tag, Text } from '@chakra-ui/react';
 import { formatDate } from 'src/utils/api/helpers';
 import type { SourceResponse } from 'src/pages/sources';
 

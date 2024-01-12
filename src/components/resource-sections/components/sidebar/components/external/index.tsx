@@ -8,7 +8,7 @@ import {
   HeadingProps,
   Skeleton,
   Stack,
-} from 'nde-design-system';
+} from '@chakra-ui/react';
 import { DataAccess } from './components/data-access';
 import { DataUsage } from './components/usage';
 import { License } from './components/license';

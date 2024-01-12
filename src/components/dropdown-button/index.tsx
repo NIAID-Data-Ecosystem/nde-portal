@@ -12,7 +12,7 @@ import {
   ListItem,
   ListItemProps,
   UnorderedList,
-} from 'nde-design-system';
+} from '@chakra-ui/react';
 import { UnionTypes } from 'src/components/advanced-search/types';
 
 export interface DropdownButtonProps extends ButtonGroupProps {

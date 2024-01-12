@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Button, Flex, Input, Text } from 'nde-design-system';
+import { Box, Button, Flex, Input, Text } from '@chakra-ui/react';
 import { useDateRangeContext } from '../hooks/useDateRangeContext';
 import { formatISOString } from 'src/utils/api/helpers';
 

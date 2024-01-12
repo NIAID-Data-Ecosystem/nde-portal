@@ -2,31 +2,7 @@ import axios from 'axios';
 import REPOSITORIES from 'configs/repositories.json';
 import { useQuery, UseQueryOptions } from 'react-query';
 import { Metadata, Repository } from './types';
-
-const fetchMetadata = async () => {
-  if (!`${process.env.NEXT_PUBLIC_API_URL}/metadata`) {
-    throw new Error('API url undefined');
-  }
-
-  try {
-    const { data } = (await axios.get(
-      `${process.env.NEXT_PUBLIC_API_URL}/metadata`,
-    )) as { data: Metadata };
-
-    return data;
-  } catch (err) {
-    throw err;
-  }
-};
-
-export function useMetadata(options: UseQueryOptions<Metadata, Error> = {}) {
-  return useQuery<Metadata, Error>({
-    ...options,
-    queryKey: ['metadata'],
-    queryFn: fetchMetadata,
-    refetchOnWindowFocus: false,
-  });
-}
+import { fetchMetadata } from './helpers';
 
 export function useRepoData(
   options: UseQueryOptions<Metadata, Error, Repository[]> = {},

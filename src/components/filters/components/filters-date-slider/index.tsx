@@ -1,13 +1,6 @@
 import React, { useMemo } from 'react';
 import { omit } from 'lodash';
-import {
-  Box,
-  Checkbox,
-  Flex,
-  Heading,
-  Skeleton,
-  Text,
-} from 'nde-design-system';
+import { Box, Checkbox, Flex, Heading, Skeleton, Text } from '@chakra-ui/react';
 import { useFacetsData } from '../../hooks/useFacetsData';
 import { SelectedFilterType } from '../../types';
 import { Params } from 'src/utils/api';

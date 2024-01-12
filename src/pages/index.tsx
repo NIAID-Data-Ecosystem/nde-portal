@@ -8,7 +8,6 @@ import {
   Heading,
   Icon,
   Image,
-  Link,
   SkeletonCircle,
   SkeletonText,
   Table as StyledTable,
@@ -18,8 +17,6 @@ import {
   Th,
   Td,
   TableContainer,
-  TableSortToggle,
-  TableWrapper,
   Tabs,
   TabList,
   Tab,
@@ -27,8 +24,9 @@ import {
   Text,
   TabPanels,
   TabPanel,
-} from 'nde-design-system';
+} from '@chakra-ui/react';
 import { theme } from 'src/theme';
+import { Link } from 'src/components/link';
 import {
   PageHeader,
   PageContainer,
@@ -40,7 +38,7 @@ import NextLink from 'next/link';
 import { SearchBarWithDropdown } from 'src/components/search-bar';
 import { AdvancedSearchOpen } from 'src/components/advanced-search/components/buttons';
 import { FaChevronRight } from 'react-icons/fa';
-import { useRepoData } from 'src/hooks/api';
+import { useRepoData } from 'src/hooks/api/useRepoData';
 import { queryFilterObject2String } from 'src/components/filters/helpers';
 import { FaRegEnvelope, FaGithub } from 'react-icons/fa';
 import { NewsOrEventsObject } from './news';
@@ -48,6 +46,8 @@ import {
   NewsCarousel,
   fetchNews,
 } from 'src/views/home/components/NewsCarousel';
+import { TableSortToggle } from 'src/components/table/components/sort-toggle';
+import { TableWrapper } from 'src/components/table/components/wrapper';
 
 interface Repository {
   identifier: string;

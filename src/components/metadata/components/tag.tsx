@@ -1,7 +1,8 @@
 import React from 'react';
-import { Icon, Link, Tag, Text, BoxProps, TagLabel } from 'nde-design-system';
+import { Icon, Tag, Text, BoxProps, TagLabel } from '@chakra-ui/react';
 import { FaExternalLinkSquareAlt } from 'react-icons/fa';
 import Tooltip from 'src/components/tooltip';
+import { Link } from 'src/components/link';
 
 interface MetadataWithTagProps extends BoxProps {
   label?: string;

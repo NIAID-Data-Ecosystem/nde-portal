@@ -5,7 +5,7 @@ import { useMDXComponents } from 'mdx-components';
 import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
 import remarkGfm from 'remark-gfm';
-import { Box, Divider, Flex, Heading, Text } from 'nde-design-system';
+import { Box, Divider, Flex, Heading, Text } from '@chakra-ui/react';
 import { remark } from 'remark';
 import Navigation from 'src/components/resource-sections/components/navigation';
 import mdxComponents from './mdx';

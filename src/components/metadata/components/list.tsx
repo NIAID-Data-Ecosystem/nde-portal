@@ -1,10 +1,5 @@
 import React from 'react';
-import {
-  ListItem,
-  UnorderedList,
-  ListIcon,
-  ListProps,
-} from 'nde-design-system';
+import { ListItem, UnorderedList, ListIcon, ListProps } from '@chakra-ui/react';
 import { FaCircle } from 'react-icons/fa';
 import { getMetadataTheme } from 'src/components/icon/helpers';
 

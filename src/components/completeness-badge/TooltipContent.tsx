@@ -1,4 +1,4 @@
-import { Box, Divider, Flex, Text } from 'nde-design-system';
+import { Box, Divider, Flex, Text } from '@chakra-ui/react';
 import { getMetadataNameByProperty } from 'src/components/advanced-search/utils/query-helpers';
 
 type statkey = 'required' | 'recommended' | 'total';

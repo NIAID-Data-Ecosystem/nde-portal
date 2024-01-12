@@ -5,7 +5,7 @@ import {
   Image,
   ImageProps,
   Text,
-} from 'nde-design-system';
+} from '@chakra-ui/react';
 import { transformString2Hash } from './helpers';
 import { HeadingWithLink } from 'src/components/heading-with-link/components/HeadingWithLink';
 

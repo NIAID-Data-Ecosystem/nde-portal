@@ -13,7 +13,7 @@ import {
   UseDisclosureProps,
   useOutsideClick,
   VisuallyHidden,
-} from 'nde-design-system';
+} from '@chakra-ui/react';
 
 export const SelectIcon = ({ size, onClick, ...rest }: IconButtonProps) => {
   return (

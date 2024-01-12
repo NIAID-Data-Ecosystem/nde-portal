@@ -7,7 +7,7 @@ import {
   BoxProps,
   Icon,
   Skeleton,
-} from 'nde-design-system';
+} from '@chakra-ui/react';
 import { StyledSectionHead, StyledSectionHeading } from './styles';
 import { FaMinus, FaPlus } from 'react-icons/fa';
 import { getSectionIcon } from '../../helpers';

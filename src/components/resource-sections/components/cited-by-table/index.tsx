@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import { Box, Text } from 'nde-design-system';
+import { Box, Text } from '@chakra-ui/react';
 import { CitedBy, FormattedResource } from 'src/utils/api/types';
 import Table, { Row } from 'src/components/table';
 import LoadingSpinner from 'src/components/loading';

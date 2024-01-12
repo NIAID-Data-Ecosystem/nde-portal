@@ -1,5 +1,5 @@
 import React from 'react';
-import { Flex, FlexProps, Icon, Text } from 'nde-design-system';
+import { Flex, FlexProps, Icon, Text } from '@chakra-ui/react';
 import { FaRegClock } from 'react-icons/fa';
 import TypeBanner from '../type-banner';
 import { FormattedResource } from 'src/utils/api/types';
