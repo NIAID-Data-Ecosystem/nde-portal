@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { FaAngleDown, FaAngleUp, FaExclamationCircle } from 'react-icons/fa6';
+import { FaAngleDown, FaAngleUp, FaCircleExclamation } from 'react-icons/fa6';
 import {
   Box,
   Collapse,
@@ -88,7 +88,7 @@ export const FilterTagsWrapper: React.FC<FilterTagsWrapperProps> = ({
             flex={1}
             opacity={isOpen ? 0.5 : 1}
           >
-            <Icon as={FaExclamationCircle} mr={2} boxSize={4}></Icon>
+            <Icon as={FaCircleExclamation} mr={2} boxSize={4}></Icon>
             <Text>Click here to see all applied filters. </Text>
           </Flex>
           <Icon as={isOpen ? FaAngleUp : FaAngleDown} mr={2}></Icon>
