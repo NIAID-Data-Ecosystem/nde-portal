@@ -1,4 +1,4 @@
-import { Box, Text } from 'nde-design-system';
+import { Box, Text } from '@chakra-ui/react';
 import { Group } from '@visx/group';
 import Pie, { PieArcDatum, ProvidedProps } from '@visx/shape/lib/shapes/Pie';
 import { TooltipContent } from './TooltipContent';

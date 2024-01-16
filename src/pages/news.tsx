@@ -6,13 +6,13 @@ import {
   Flex,
   Heading,
   Icon,
-  Link,
   SimpleGrid,
   Stack,
   StackDivider,
   Text,
   VisuallyHidden,
-} from 'nde-design-system';
+} from '@chakra-ui/react';
+import { Link } from 'src/components/link';
 import type { NextPage } from 'next';
 import {
   PageContainer,

@@ -1,5 +1,5 @@
 import React, { forwardRef } from 'react';
-import { IconButton } from 'nde-design-system';
+import { IconButton } from '@chakra-ui/react';
 
 export const Handle = React.memo(
   forwardRef<HTMLButtonElement, any>((props, ref) => {

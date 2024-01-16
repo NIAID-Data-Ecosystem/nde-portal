@@ -1,4 +1,4 @@
-import { Box, Flex, FlexProps, Heading } from 'nde-design-system';
+import { Box, Flex, FlexProps, Heading } from '@chakra-ui/react';
 import theme from './theme';
 import { JSONTree } from 'react-json-tree';
 import { CopyMetadata } from './components/copy-metadata';

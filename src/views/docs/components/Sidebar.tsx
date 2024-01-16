@@ -8,7 +8,6 @@ import {
   Flex,
   FlexProps,
   Icon,
-  Link,
   ListItem,
   Menu,
   MenuButton,
@@ -19,10 +18,16 @@ import {
   Text,
   UnorderedList,
   useDisclosure,
-} from 'nde-design-system';
-import { FaAngleDoubleLeft, FaAngleDoubleRight } from 'react-icons/fa';
+} from '@chakra-ui/react';
+import { Link } from 'src/components/link';
 import NextLink from 'next/link';
-import { FaAngleDown, FaAngleRight, FaArrowsUpDown } from 'react-icons/fa6';
+import {
+  FaAngleDown,
+  FaAnglesLeft,
+  FaAnglesRight,
+  FaAngleRight,
+  FaArrowsUpDown,
+} from 'react-icons/fa6';
 import LoadingSpinner from 'src/components/loading';
 import { ScrollContainer } from 'src/components/scroll-container';
 
@@ -52,7 +57,7 @@ const SidebarContainer: React.FC<DocumentationSidebarProps> = ({
           display='flex'
           alignItems='flex-start'
         >
-          <Icon as={FaAngleDoubleRight} position='sticky' top={4}></Icon>
+          <Icon as={FaAnglesRight} position='sticky' top={4}></Icon>
         </Button>
       )}
       <Box
@@ -80,7 +85,7 @@ const SidebarContainer: React.FC<DocumentationSidebarProps> = ({
               variant='ghost'
               borderRadius='none'
             >
-              <Icon as={FaAngleDoubleLeft}></Icon>
+              <Icon as={FaAnglesLeft}></Icon>
             </Button>
             <ScrollContainer
               as='aside'

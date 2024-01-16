@@ -1,5 +1,6 @@
 import { FormattedResource } from 'src/utils/api/types';
-import { Flex, Link, Skeleton, Text } from 'nde-design-system';
+import { Flex, Skeleton, Text } from '@chakra-ui/react';
+import { Link } from 'src/components/link';
 import { shouldAppendPunctuation } from 'src/utils/helpers';
 import { getCitationComponents } from './helpers';
 import {

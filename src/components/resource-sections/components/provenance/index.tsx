@@ -6,18 +6,18 @@ import {
   Flex,
   FlexProps,
   Image,
-  Link,
   Skeleton,
   Tag,
   Text,
   usePrefersReducedMotion,
-} from 'nde-design-system';
+} from '@chakra-ui/react';
 import { FormattedResource } from 'src/utils/api/types';
 import { getRepositoryImage } from 'src/utils/helpers';
 import { formatDate } from 'src/utils/api/helpers';
 import { FaArrowRight } from 'react-icons/fa6';
 import NextLink from 'next/link';
 import { ScrollContainer } from 'src/components/scroll-container';
+import { Link } from 'src/components/link';
 
 interface Provenance {
   isLoading: boolean;

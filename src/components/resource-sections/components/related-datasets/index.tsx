@@ -5,14 +5,14 @@ import {
   Card,
   Collapse,
   Heading,
-  Link,
   SkeletonText,
   Text,
   Stack,
-} from 'nde-design-system';
+} from '@chakra-ui/react';
 import NextLink from 'next/link';
 import { ScrollContainer } from 'src/components/scroll-container';
 import { ResourceData } from 'src/pages/resources';
+import { Link } from 'src/components/link';
 
 interface CardContainerProps {
   heading: string;
@@ -73,19 +73,6 @@ const RelatedDatasets: React.FC<RelatedDatasetsProps> = ({
                     >
                       {dataset && (
                         <Flex lineHeight='short' flexDirection='column'>
-                          {/* {dataset['@type'] && (
-                            <Box>
-                              <Badge
-                                bg={getTypeColor(dataset['@type'])}
-                                color='white'
-                                size='sm'
-                                mr={2}
-                                mb={1}
-                              >
-                                {formatType(dataset['@type'])}
-                              </Badge>
-                            </Box>
-                          )} */}
                           {dataset._id ? (
                             <NextLink
                               href={{

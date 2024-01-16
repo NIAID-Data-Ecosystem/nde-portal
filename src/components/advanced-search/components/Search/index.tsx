@@ -8,7 +8,7 @@ import {
   ListItem,
   Text,
   UnorderedList,
-} from 'nde-design-system';
+} from '@chakra-ui/react';
 import { QueryStringError } from '../../utils/validation-checks';
 import { TreeItem } from '../SortableWithCombine';
 import { useAdvancedSearchContext } from './components/AdvancedSearchFormContext';

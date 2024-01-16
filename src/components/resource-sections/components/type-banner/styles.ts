@@ -1,4 +1,4 @@
-import { Flex, FlexProps } from 'nde-design-system';
+import { Flex, FlexProps } from '@chakra-ui/react';
 import styled from '@emotion/styled';
 
 export const StyledLabel = styled(Flex)<FlexProps>`

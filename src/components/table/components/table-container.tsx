@@ -1,5 +1,5 @@
 import { TableContainerProps } from '@chakra-ui/table';
-import { TableContainer as NDETableContainer } from 'nde-design-system';
+import { TableContainer as NDETableContainer } from '@chakra-ui/react';
 
 export const TableContainer = (props: TableContainerProps) => {
   return (

@@ -2,7 +2,7 @@ import HOMEPAGE_COPY from 'configs/homepage.json';
 import HOME_QUERIES from 'configs/queries/home-queries.json';
 import Home, { RepositoryTable, RepositoryTabs } from 'src/pages/index';
 import { createWrapper } from './mocks/utils.tsx';
-import { useRepoData } from 'src/hooks/api';
+import { useRepoData } from 'src/hooks/api/useRepoData.ts';
 import {
   renderHook,
   screen,

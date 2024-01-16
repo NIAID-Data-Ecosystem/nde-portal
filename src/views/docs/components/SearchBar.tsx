@@ -17,7 +17,7 @@ import {
   useDisclosure,
   Text,
   UnorderedList,
-} from 'nde-design-system';
+} from '@chakra-ui/react';
 import {
   DropdownInput,
   Highlight,

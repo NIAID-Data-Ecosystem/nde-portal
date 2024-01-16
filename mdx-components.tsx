@@ -6,14 +6,14 @@ import {
   Flex,
   Heading,
   Image,
-  Link,
   Text,
   UnorderedList,
   OrderedList,
   ListItem,
   ImageProps,
   Icon,
-} from 'nde-design-system';
+} from '@chakra-ui/react';
+import { Link } from 'src/components/link';
 import { useState } from 'react';
 import { FaChevronDown } from 'react-icons/fa';
 

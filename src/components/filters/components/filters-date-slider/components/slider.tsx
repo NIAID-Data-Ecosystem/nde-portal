@@ -5,7 +5,7 @@ import {
   RangeSliderThumb,
   RangeSliderTrack,
   Text,
-} from 'nde-design-system';
+} from '@chakra-ui/react';
 import { useDateRangeContext } from '../hooks/useDateRangeContext';
 
 interface FiltersRangeSliderProps {

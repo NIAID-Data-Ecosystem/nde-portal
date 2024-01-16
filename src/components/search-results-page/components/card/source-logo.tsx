@@ -1,12 +1,5 @@
-import {
-  Box,
-  BoxProps,
-  Flex,
-  Image,
-  Link,
-  Stack,
-  Text,
-} from 'nde-design-system';
+import { Box, BoxProps, Flex, Image, Stack, Text } from '@chakra-ui/react';
+import { Link } from 'src/components/link';
 import { FormattedResource } from 'src/utils/api/types';
 import { getRepositoryImage } from 'src/utils/helpers';
 import NextLink from 'next/link';

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Flex } from 'nde-design-system';
+import { Flex } from '@chakra-ui/react';
 import { FormattedResource } from 'src/utils/api/types';
 import { formatDOI } from 'src/utils/helpers';
 import { HeadingWithTooltip } from './heading-with-tooltip';

@@ -1,5 +1,6 @@
 import React from 'react';
-import { Flex, Heading, Link, Skeleton, Tag, Text } from 'nde-design-system';
+import { Flex, Heading, Skeleton, Tag, Text } from '@chakra-ui/react';
+import { Link } from 'src/components/link';
 import { FormattedResource } from 'src/utils/api/types';
 import { DisplayHTMLString } from 'src/components/html-content';
 import { formatDOI } from 'src/utils/helpers';

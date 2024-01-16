@@ -8,7 +8,7 @@ import {
   Icon,
   InputProps,
   Text,
-} from 'nde-design-system';
+} from '@chakra-ui/react';
 import { FormattedResource } from 'src/utils/api/types';
 import { usePredictiveSearchResponse } from '../hooks/usePredictiveSearch';
 import {

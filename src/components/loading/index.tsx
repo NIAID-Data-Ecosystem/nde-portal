@@ -1,5 +1,5 @@
 import React from 'react';
-import { Flex, Spinner, SpinnerProps } from 'nde-design-system';
+import { Flex, Spinner, SpinnerProps } from '@chakra-ui/react';
 
 /**
  * Loading Spinner returns spinner when loading and returns the content otherwise.

@@ -4,13 +4,13 @@ import { FormattedResource } from 'src/utils/api/types';
 import {
   Divider,
   Flex,
-  Link,
   ListItem,
   Skeleton,
   Stack,
   Tag,
   UnorderedList,
-} from 'nde-design-system';
+} from '@chakra-ui/react';
+import { Link } from 'src/components/link';
 import {
   ResourceDates,
   ResourceHeader,

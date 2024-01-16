@@ -1,4 +1,4 @@
-import { Collapse, FlexProps, Text } from 'nde-design-system';
+import { Collapse, FlexProps, Text } from '@chakra-ui/react';
 import React, { useEffect, useState } from 'react';
 
 /*

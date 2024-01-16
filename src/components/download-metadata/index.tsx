@@ -11,7 +11,7 @@ import {
   Text,
   UnorderedList,
   useDisclosure,
-} from 'nde-design-system';
+} from '@chakra-ui/react';
 import React, { useCallback, useEffect, useState } from 'react';
 import { FaDownload, FaExclamationCircle } from 'react-icons/fa';
 import { useQuery, useQueryClient } from 'react-query';

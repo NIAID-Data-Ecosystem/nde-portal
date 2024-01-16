@@ -3,16 +3,16 @@ import {
   Box,
   Flex,
   Icon,
-  Link,
   Text,
   UnorderedList,
   ListItem,
-} from 'nde-design-system';
+} from '@chakra-ui/react';
 import { FormattedResource } from 'src/utils/api/types';
 import MetadataConfig from 'configs/resource-metadata.json';
 import { HeadingWithTooltip } from './heading-with-tooltip';
 import { DisplayHTMLContent } from 'src/components/html-content';
 import { FaGithub } from 'react-icons/fa';
+import { Link } from 'src/components/link';
 
 interface AssociatedDocumentation {
   isLoading: boolean;

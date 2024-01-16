@@ -1,14 +1,9 @@
 import React from 'react';
-import {
-  Link,
-  ListItem,
-  Text,
-  UnorderedList,
-  ListIcon,
-} from 'nde-design-system';
+import { ListItem, Text, UnorderedList, ListIcon } from '@chakra-ui/react';
 import { FaCircle } from 'react-icons/fa';
 import { getMetadataTheme } from 'src/components/icon/helpers';
 import NextLink from 'next/link';
+import { Link } from 'src/components/link';
 
 export const MetadataList = ({
   children,

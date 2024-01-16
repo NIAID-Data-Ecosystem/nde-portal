@@ -6,20 +6,16 @@ import {
   Flex,
   Heading,
   Icon,
-  Link,
   Skeleton,
   Table,
-  TablePagination,
-  TableSortToggle,
-  TableWrapper,
   Tag,
   Text,
   Tr,
-  useTableSort,
   VisuallyHidden,
   useDisclosure,
   Tooltip,
-} from 'nde-design-system';
+} from '@chakra-ui/react';
+import { Link } from 'src/components/link';
 import { IsBasedOn, IsBasisFor } from 'src/utils/api/types';
 import { FaExternalLinkSquareAlt } from 'react-icons/fa';
 import { uniqueId } from 'lodash';
@@ -27,6 +23,10 @@ import { Cell, EmptyCell, Th } from 'src/components/table/components/cell';
 import { Row } from 'src/components/table/components/row';
 import { TableContainer } from 'src/components/table/components/table-container';
 import { getTruncatedText } from 'src/components/table/helpers';
+import { useTableSort } from 'src/components/table/hooks/useTableSort';
+import { TableSortToggle } from 'src/components/table/components/sort-toggle';
+import { TableWrapper } from 'src/components/table/components/wrapper';
+import { TablePagination } from 'src/components/table/components/pagination';
 
 // StyledTag: Memoized component for displaying tags with certain styling
 const StyledTag = React.memo(

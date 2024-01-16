@@ -1,8 +1,9 @@
-import { Box, Flex, Icon, Image, Link, Text } from 'nde-design-system';
+import { Box, Flex, Icon, Image, Text } from '@chakra-ui/react';
 import { MetadataItem } from '../helpers';
 import { MetadataWithTag } from './tag';
 import { MetadataButtonGroup, OntologyButton, SearchButton } from './buttons';
 import { FaExternalLinkSquareAlt } from 'react-icons/fa';
+import { Link } from 'src/components/link';
 
 interface MetadataContentProps extends Omit<MetadataItem, 'key'> {
   includeSearch?: boolean;

@@ -5,7 +5,7 @@ import {
   Text,
   CheckboxProps,
   Skeleton,
-} from 'nde-design-system';
+} from '@chakra-ui/react';
 import { formatNumber } from 'src/utils/helpers';
 
 export interface FiltersCheckboxProps extends CheckboxProps {

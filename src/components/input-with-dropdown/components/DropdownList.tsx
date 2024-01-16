@@ -1,5 +1,5 @@
 import React from 'react';
-import { ListProps, UnorderedList } from 'nde-design-system';
+import { ListProps, UnorderedList } from '@chakra-ui/react';
 import { useDropdownContext } from '..';
 
 interface DropdownListProps extends ListProps {}

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Flex, Text } from 'nde-design-system';
+import { Box, Flex, Text } from '@chakra-ui/react';
 import { MetadataIcon } from 'src/components/icon';
 import { getMetadataTheme } from 'src/components/icon/helpers';
 

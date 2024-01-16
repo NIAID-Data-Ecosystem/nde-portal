@@ -8,7 +8,7 @@ import {
   HeadingProps,
   Text,
   TextProps,
-} from 'nde-design-system';
+} from '@chakra-ui/react';
 import { theme } from 'src/theme';
 import { StyledSection } from './styles';
 

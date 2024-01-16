@@ -5,20 +5,16 @@ import {
   Flex,
   FlexProps,
   Icon,
-  Link,
   Table,
-  TablePagination,
-  TableSortToggle,
-  TableWrapper,
   Tr,
   Tag,
   Text,
   useDisclosure,
-  useTableSort,
   VisuallyHidden,
   Heading,
   Skeleton,
-} from 'nde-design-system';
+} from '@chakra-ui/react';
+import { Link } from 'src/components/link';
 import { Funding as FundingType } from 'src/utils/api/types';
 import { FaExternalLinkSquareAlt } from 'react-icons/fa';
 import { uniqueId } from 'lodash';
@@ -33,6 +29,10 @@ import {
 import { Row, RowWithDrawer } from 'src/components/table/components/row';
 import { TableContainer } from 'src/components/table/components/table-container';
 import { getTruncatedText } from 'src/components/table/helpers';
+import { useTableSort } from 'src/components/table/hooks/useTableSort';
+import { TableSortToggle } from 'src/components/table/components/sort-toggle';
+import { TableWrapper } from 'src/components/table/components/wrapper';
+import { TablePagination } from 'src/components/table/components/pagination';
 
 // Constants for table configuration.
 // [ROW_SIZES]: num of rows per page

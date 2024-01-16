@@ -1,5 +1,5 @@
 import { FormattedResource } from 'src/utils/api/types';
-import { Box, Flex, Text } from 'nde-design-system';
+import { Box, Flex, Text } from '@chakra-ui/react';
 import { TooltipContent } from './TooltipContent';
 import Tooltip from 'src/components/tooltip';
 

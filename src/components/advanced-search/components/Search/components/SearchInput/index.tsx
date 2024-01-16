@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Flex } from 'nde-design-system';
+import { Flex } from '@chakra-ui/react';
 import { useAdvancedSearchContext } from '../AdvancedSearchFormContext';
 import {
   DateInputGroup,

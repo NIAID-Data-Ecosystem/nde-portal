@@ -13,12 +13,11 @@ import {
   Image,
   Text,
   Card,
-  CardTitle,
   CardBody,
-  Link,
-} from 'nde-design-system';
+} from '@chakra-ui/react';
 import { Carousel } from 'src/components/carousel';
 import NextLink from 'next/link';
+import { Link } from 'src/components/link';
 
 interface NewsCarouselProps {
   news: NewsOrEventsObject[];
@@ -104,9 +103,15 @@ export const NewsCarousel = ({ news: initialData }: NewsCarouselProps) => {
               </Flex>
 
               <Box p={4}>
-                <CardTitle p={0} fontSize='lg' lineHeight='short'>
+                <Heading
+                  p={0}
+                  fontSize='lg'
+                  fontWeight='semibold'
+                  lineHeight='short'
+                  size='h5'
+                >
                   {news.attributes.name}
-                </CardTitle>
+                </Heading>
                 <CardBody p={0}>
                   {
                     <Text as='span' mt={2} fontSize='sm' lineHeight='short'>

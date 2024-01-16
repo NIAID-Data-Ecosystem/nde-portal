@@ -10,7 +10,7 @@ import {
   keyframes,
   Text,
   TextProps,
-} from 'nde-design-system';
+} from '@chakra-ui/react';
 import styled from '@emotion/styled';
 
 // Styles for the home page

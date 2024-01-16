@@ -4,14 +4,14 @@ import {
   ButtonGroupProps,
   Icon,
   IconButtonProps,
-  Link,
   Text,
   VisuallyHidden,
-} from 'nde-design-system';
+} from '@chakra-ui/react';
 import Tooltip from 'src/components/tooltip';
 import { FaSearch, FaSitemap } from 'react-icons/fa';
 import { useRouter } from 'next/router';
 import { encodeString } from 'src/utils/querystring-helpers';
+import { Link } from 'src/components/link';
 
 export const MetadataButtonGroup = ({
   children,

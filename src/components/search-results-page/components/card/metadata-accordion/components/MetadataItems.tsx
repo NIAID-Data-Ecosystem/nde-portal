@@ -1,14 +1,14 @@
 import React from 'react';
 import {
+  BoxProps,
   Flex,
+  FlexProps,
   Icon,
   IconButton,
-  Link,
   Tag,
   Text,
-  FlexProps,
-  BoxProps,
-} from 'nde-design-system';
+} from '@chakra-ui/react';
+import { Link } from 'src/components/link';
 import Tooltip from 'src/components/tooltip';
 import { FaExternalLinkSquareAlt, FaSitemap } from 'react-icons/fa';
 

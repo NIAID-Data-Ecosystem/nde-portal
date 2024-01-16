@@ -7,19 +7,23 @@ import {
   Flex,
   Heading,
   Icon,
-  Link,
-  SearchInput,
   Skeleton,
   Tag,
   Text,
-} from 'nde-design-system';
+} from '@chakra-ui/react';
 import { DisplayHTMLContent } from 'src/components/html-content';
 import NextLink from 'next/link';
 import type { SourceResponse } from 'src/pages/sources';
 import { queryFilterObject2String } from 'src/components/filters/helpers';
 import { formatDate } from 'src/utils/api/helpers';
-import { FaMinus, FaPlus } from 'react-icons/fa6';
-import { FaExternalLinkAlt, FaSearch } from 'react-icons/fa';
+import {
+  FaMagnifyingGlass,
+  FaMinus,
+  FaPlus,
+  FaUpRightFromSquare,
+} from 'react-icons/fa6';
+import { SearchInput } from 'src/components/search-input';
+import { Link } from 'src/components/link';
 
 interface Main {
   data?: SourceResponse[];
@@ -66,13 +70,15 @@ const Main: React.FC<Main> = ({ data, isLoading, metadata }) => {
           </Heading>
 
           <Button
+            as='a'
             href='https://github.com/NIAID-Data-Ecosystem/nde-crawlers/issues/new?assignees=&labels=&template=suggest-a-new-resource.md&title=%5BSOURCE%5D'
-            isExternal
+            target='_blank'
             colorScheme='secondary'
             size='sm'
             variant='outline'
+            rightIcon={<Icon as={FaUpRightFromSquare} boxSize={3} />}
           >
-            Suggest a new Source
+            Suggest a new source
           </Button>
         </Flex>
         <Divider />
@@ -326,7 +332,7 @@ const Main: React.FC<Main> = ({ data, isLoading, metadata }) => {
                       flex={1}
                       size='sm'
                       colorScheme='primary'
-                      leftIcon={<Icon as={FaSearch} boxSize={3} />}
+                      leftIcon={<Icon as={FaMagnifyingGlass} boxSize={3} />}
                       variant='solid'
                       height='unset'
                       m={1}
@@ -350,7 +356,9 @@ const Main: React.FC<Main> = ({ data, isLoading, metadata }) => {
                         flex={1}
                         size='sm'
                         colorScheme='primary'
-                        rightIcon={<Icon as={FaExternalLinkAlt} boxSize={3} />}
+                        rightIcon={
+                          <Icon as={FaUpRightFromSquare} boxSize={3} />
+                        }
                         variant='outline'
                         height='unset'
                         m={1}

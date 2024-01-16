@@ -1,4 +1,4 @@
-import { Badge, BadgeProps, Box, Flex } from 'nde-design-system';
+import { Badge, BadgeProps, Flex } from '@chakra-ui/react';
 import React from 'react';
 import Tooltip from 'src/components/tooltip';
 

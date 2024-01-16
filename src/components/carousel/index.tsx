@@ -14,7 +14,7 @@ import {
   Progress,
   useMediaQuery,
   VStack,
-} from 'nde-design-system';
+} from '@chakra-ui/react';
 import { theme } from 'src/theme';
 import { useElementSize } from 'usehooks-ts';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';

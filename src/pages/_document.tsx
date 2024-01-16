@@ -7,7 +7,7 @@ import NextDocument, {
 } from 'next/document';
 import Script from 'next/script';
 import React from 'react';
-import { Box } from 'nde-design-system';
+import { Box } from '@chakra-ui/react';
 
 export const NAV_HEIGHT = { base: '105px', sm: '77px', md: '89px' };
 

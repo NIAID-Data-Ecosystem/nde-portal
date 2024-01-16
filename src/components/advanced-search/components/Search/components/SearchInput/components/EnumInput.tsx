@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import Select from 'react-select';
-import { Flex } from 'nde-design-system';
+import { Flex } from '@chakra-ui/react';
 import { AdvancedSearchInputProps } from '../types';
 import { customStyles } from '../../FieldSelect';
 import { theme } from 'src/theme';

@@ -1,6 +1,6 @@
 import type { NextPage } from 'next';
 import React, { useState } from 'react';
-import { Box, Button, Flex, Text, UnorderedList } from 'nde-design-system';
+import { Box, Button, Flex, Text, UnorderedList } from '@chakra-ui/react';
 import { PageContainer, PageContent } from 'src/components/page-container';
 import { Main, Sidebar } from 'src/components/sources';
 import { fetchMetadata } from 'src/utils/api';

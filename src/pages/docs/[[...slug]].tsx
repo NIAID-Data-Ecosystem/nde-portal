@@ -3,14 +3,14 @@ import {
   Box,
   Flex,
   Heading,
-  Link,
   ListItem,
   SimpleGrid,
   SkeletonText,
   Text,
   UnorderedList,
   useMediaQuery,
-} from 'nde-design-system';
+} from '@chakra-ui/react';
+import { Link } from 'src/components/link';
 import type { GetStaticProps, NextPage } from 'next';
 import {
   PageContainer,

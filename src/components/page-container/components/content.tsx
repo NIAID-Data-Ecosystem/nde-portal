@@ -1,4 +1,4 @@
-import { Flex, FlexProps } from 'nde-design-system';
+import { Flex, FlexProps } from '@chakra-ui/react';
 
 export const PageContent: React.FC<FlexProps> = ({ children, ...props }) => {
   return (

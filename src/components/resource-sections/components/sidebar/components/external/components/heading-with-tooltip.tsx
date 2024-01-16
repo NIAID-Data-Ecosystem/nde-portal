@@ -1,5 +1,5 @@
 import React from 'react';
-import { Flex, Heading, HeadingProps } from 'nde-design-system';
+import { Flex, Heading, HeadingProps } from '@chakra-ui/react';
 import { MetadataTooltip } from 'src/components/metadata';
 
 interface HeadingWithTooltip extends HeadingProps {

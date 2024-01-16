@@ -1,6 +1,6 @@
 import React from 'react';
 import { FaSearch } from 'react-icons/fa';
-import { Button, ButtonProps, Icon } from 'nde-design-system';
+import { Button, ButtonProps, Icon } from '@chakra-ui/react';
 
 export interface AdvancedSearchButtonProps extends ButtonProps {
   onClick: ButtonProps['onClick'];

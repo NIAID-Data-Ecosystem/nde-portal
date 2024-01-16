@@ -1,9 +1,10 @@
 import React from 'react';
-import { Box, Image, Link, Text } from 'nde-design-system';
+import { Box, Image, Text } from '@chakra-ui/react';
 import { FormattedResource } from 'src/utils/api/types';
 import MetadataConfig from 'configs/resource-metadata.json';
 import { formatLicense } from 'src/utils/helpers';
 import { HeadingWithTooltip } from './heading-with-tooltip';
+import { Link } from 'src/components/link';
 
 interface LicenseProps {
   isLoading: boolean;

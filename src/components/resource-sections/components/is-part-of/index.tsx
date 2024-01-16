@@ -1,11 +1,6 @@
 import { FormattedResource } from 'src/utils/api/types';
-import {
-  Flex,
-  Link,
-  ListItem,
-  Skeleton,
-  UnorderedList,
-} from 'nde-design-system';
+import { Flex, ListItem, Skeleton, UnorderedList } from '@chakra-ui/react';
+import { Link } from 'src/components/link';
 import {
   MetadataLabel,
   MetadataTooltip,

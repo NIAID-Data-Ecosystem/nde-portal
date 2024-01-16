@@ -1,4 +1,4 @@
-import { Box, BoxProps } from 'nde-design-system';
+import { Box, BoxProps } from '@chakra-ui/react';
 
 export const ScrollContainer = ({ children, ...props }: BoxProps) => {
   return (

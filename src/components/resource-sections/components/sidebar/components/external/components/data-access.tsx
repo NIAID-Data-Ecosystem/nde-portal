@@ -7,7 +7,7 @@ import {
   usePrefersReducedMotion,
   Text,
   ButtonProps,
-} from 'nde-design-system';
+} from '@chakra-ui/react';
 import { FormattedResource } from 'src/utils/api/types';
 import { getRepositoryImage } from 'src/utils/helpers';
 import NextLink from 'next/link';

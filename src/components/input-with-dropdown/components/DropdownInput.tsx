@@ -11,7 +11,7 @@ import {
   InputRightElement,
   Spinner,
   VisuallyHidden,
-} from 'nde-design-system';
+} from '@chakra-ui/react';
 import { theme } from 'src/theme';
 import { FaSearch } from 'react-icons/fa';
 import { useDropdownContext } from '..';

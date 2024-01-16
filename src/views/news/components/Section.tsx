@@ -1,4 +1,4 @@
-import { Box, Button, Flex, Heading, Stack } from 'nde-design-system';
+import { Box, Button, Flex, Heading, Stack } from '@chakra-ui/react';
 
 interface SectionList {
   id: string;

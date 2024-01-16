@@ -7,7 +7,7 @@ import {
   NumberInputField,
   NumberInputStepper,
   Select,
-} from 'nde-design-system';
+} from '@chakra-ui/react';
 
 import { AdvancedSearchInputProps } from '../types';
 import { formatNumber } from 'src/utils/helpers';
@@ -87,7 +87,7 @@ export const NumberInput: React.FC<NumberInputProps> = ({
         step={50}
         defaultValue={0}
         min={0}
-        size='lg' // [to do] - get this from the size prop and change size in nde-design-system
+        size='lg'
       >
         <NumberInputField />
         <NumberInputStepper>

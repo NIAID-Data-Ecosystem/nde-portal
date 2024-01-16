@@ -7,7 +7,7 @@ import {
   Tooltip,
   useDisclosure,
   VisuallyHidden,
-} from 'nde-design-system';
+} from '@chakra-ui/react';
 import { theme } from 'src/theme';
 import MetadataFields from 'configs/resource-fields.json';
 import { useAdvancedSearchContext } from '../AdvancedSearchFormContext';

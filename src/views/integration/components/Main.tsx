@@ -12,7 +12,7 @@ import {
   TabPanels,
   Tabs,
   Text,
-} from 'nde-design-system';
+} from '@chakra-ui/react';
 import type { NextPage } from 'next';
 import { useMDXComponents } from 'mdx-components';
 import LocalNavigation from 'src/components/resource-sections/components/navigation';

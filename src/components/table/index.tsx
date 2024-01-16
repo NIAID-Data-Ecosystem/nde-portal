@@ -2,19 +2,19 @@ import React, { useEffect, useState } from 'react';
 import {
   Box,
   Heading,
-  Table as StyledTable,
-  TableWrapper,
+  Table as ChakraTable,
   Tfoot,
   Tr,
-  useTableSort,
-  TableSortToggle,
-  TablePagination,
   VisuallyHidden,
-} from 'nde-design-system';
+} from '@chakra-ui/react';
 import { Th, Cell } from './components/cell';
 import { FormatLinkCell } from './helpers';
 import { Row } from './components/row';
 import { TableContainer } from './components/table-container';
+import { useTableSort } from './hooks/useTableSort';
+import { TableSortToggle } from 'src/components/table/components/sort-toggle';
+import { TableWrapper } from 'src/components/table/components/wrapper';
+import { TablePagination } from 'src/components/table/components/pagination';
 
 export interface Column {
   key: string;
@@ -79,7 +79,7 @@ const Table: React.FC<TableProps> = ({
       )}
       <TableWrapper colorScheme={colorScheme}>
         <TableContainer>
-          <StyledTable
+          <ChakraTable
             role='table'
             aria-label={caption}
             aria-describedby={`${id}-caption`}
@@ -147,7 +147,7 @@ const Table: React.FC<TableProps> = ({
                 </Row>
               </Tfoot>
             )}
-          </StyledTable>
+          </ChakraTable>
         </TableContainer>
         <TablePagination
           total={rowData.length}

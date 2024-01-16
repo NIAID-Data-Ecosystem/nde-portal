@@ -1,7 +1,6 @@
 import React from 'react';
 import {
   Flex,
-  Link,
   ListItem,
   SimpleGrid,
   Skeleton,
@@ -10,7 +9,8 @@ import {
   StatLabel,
   Text,
   UnorderedList,
-} from 'nde-design-system';
+} from '@chakra-ui/react';
+import { Link } from 'src/components/link';
 import { FormattedResource } from 'src/utils/api/types';
 import { FaFileExport, FaFileImport } from 'react-icons/fa';
 import InputOutput from './components/input-output';

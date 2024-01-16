@@ -5,13 +5,13 @@ import {
   Flex,
   Icon,
   keyframes,
-  SearchInput,
   UnorderedList,
   ListItem,
   CheckboxGroup,
   Text,
   usePrefersReducedMotion,
-} from 'nde-design-system';
+} from '@chakra-ui/react';
+import { SearchInput } from 'src/components/search-input';
 import { FilterTerm } from '../types';
 import { FiltersCheckbox } from './filters-checkbox';
 import REPOS from 'configs/repositories.json';
@@ -120,7 +120,6 @@ export const FiltersList: React.FC<FiltersList> = React.memo(
             value={searchTerm}
             handleChange={handleSearchChange}
             colorScheme={colorScheme}
-            pr='unset'
           />
         </Box>
         <Box w='100%' my={4}>
