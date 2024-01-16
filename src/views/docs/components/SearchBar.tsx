@@ -27,7 +27,7 @@ import {
 import axios from 'axios';
 import { useQuery } from 'react-query';
 import { debounce } from 'lodash';
-import { FaSearch } from 'react-icons/fa';
+import { FaMagnifyingGlass } from 'react-icons/fa6';
 import { remark } from 'remark';
 import { DocumentationProps } from './MainContent';
 
@@ -231,7 +231,12 @@ const SearchBar = ({
         <Box py={6}>
           {!searchTerm && (
             <Flex flexDirection='column' alignItems='center' margin='0 auto'>
-              <Icon as={FaSearch} boxSize={5} color='primary.400' mb={4} />
+              <Icon
+                as={FaMagnifyingGlass}
+                boxSize={5}
+                color='primary.400'
+                mb={4}
+              />
               <Text fontWeight='medium' color='gray.600'>
                 Start typing to search…
               </Text>
@@ -318,7 +323,7 @@ export const DocsSearchBar = (props: SearchBarWithDropdownProps) => {
       <Button w='350px' variant='unstyled' onClick={onOpen}>
         <InputGroup>
           <InputLeftElement>
-            <Icon as={FaSearch} color='gray.200' />
+            <Icon as={FaMagnifyingGlass} color='gray.200' />
           </InputLeftElement>
           <Input as='div' size={size} colorScheme={colorScheme}>
             <Text textAlign='left' color='gray.800'>

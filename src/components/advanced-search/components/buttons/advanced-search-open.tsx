@@ -1,5 +1,5 @@
 import React from 'react';
-import { FaSearch } from 'react-icons/fa';
+import { FaMagnifyingGlass } from 'react-icons/fa6';
 import { Button, ButtonProps, Icon } from '@chakra-ui/react';
 
 export interface AdvancedSearchButtonProps extends ButtonProps {
@@ -32,7 +32,7 @@ export const AdvancedSearchOpen: React.FC<AdvancedSearchButtonProps> = ({
       }}
       leftIcon={
         <Icon
-          as={FaSearch}
+          as={FaMagnifyingGlass}
           ml={2}
           boxSize={3}
           transform='translateX(-4px)'

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Button, Flex, Icon, SlideFade, Text } from '@chakra-ui/react';
 import { useAdvancedSearchContext } from '../AdvancedSearchFormContext';
 import { useLocalStorage } from 'usehooks-ts';
-import { IoWarningOutline } from 'react-icons/io5';
+import { FaTriangleExclamation } from 'react-icons/fa6';
 
 export const Disclaimer = () => {
   const { selectedSearchType } = useAdvancedSearchContext();
@@ -42,7 +42,7 @@ export const Disclaimer = () => {
             _focus={{ boxShadow: 'none' }}
           >
             <Flex mx={1}>
-              <Icon as={IoWarningOutline} color='inherit' />
+              <Icon as={FaTriangleExclamation} color='inherit' />
             </Flex>
             {isMinimized && (
               <Text fontSize='sm' color='inherit'>

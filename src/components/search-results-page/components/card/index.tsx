@@ -11,11 +11,7 @@ import {
   Tooltip,
   Stack,
 } from '@chakra-ui/react';
-import {
-  FaArrowAltCircleRight,
-  FaChevronRight,
-  FaRegClock,
-} from 'react-icons/fa';
+import { FaCircleArrowRight, FaAngleRight, FaRegClock } from 'react-icons/fa6';
 import { FormattedResource } from 'src/utils/api/types';
 import {
   formatAuthorsList2String,
@@ -119,7 +115,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                   />
                 </Heading>
                 <Icon
-                  as={FaChevronRight}
+                  as={FaAngleRight}
                   boxSize={4}
                   ml={4}
                   opacity={0.6}
@@ -340,7 +336,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                       as='span'
                       flex={1}
                       size={{ base: 'md', sm: 'sm' }}
-                      rightIcon={<FaArrowAltCircleRight />}
+                      rightIcon={<FaCircleArrowRight />}
                       aria-label={`Go to details about resource ${name}`}
                     >
                       View dataset

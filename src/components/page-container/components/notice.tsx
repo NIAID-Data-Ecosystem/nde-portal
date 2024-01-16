@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Button, Flex, Icon, Text } from '@chakra-ui/react';
-import { IoIosWarning } from 'react-icons/io';
+import { FaTriangleExclamation } from 'react-icons/fa6';
 import { useLocalStorage } from 'usehooks-ts';
 import { Link } from 'src/components/link';
 
@@ -38,7 +38,7 @@ const Notice = () => {
         flexDirection={['column', 'column', 'row']}
       >
         <Icon
-          as={IoIosWarning}
+          as={FaTriangleExclamation}
           bg='status.warning'
           color='blackAlpha.600'
           borderRadius='100%'

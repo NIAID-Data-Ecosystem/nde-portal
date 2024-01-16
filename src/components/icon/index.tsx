@@ -9,10 +9,10 @@ import {
   FaFingerprint,
   FaQuoteLeft,
   FaInfo,
-  FaRegCalendarAlt,
+  FaCalendarDays,
   FaLaptopCode,
   FaCode,
-} from 'react-icons/fa';
+} from 'react-icons/fa6';
 import { IconType } from 'react-icons';
 import Glyph from './components/glyph';
 import MetadataConfig from 'configs/resource-metadata.json';
@@ -63,7 +63,7 @@ export const MetadataIcon = React.forwardRef<HTMLDivElement, IconProps>(
     } else if (glyph?.toLowerCase() === 'programminglanguage') {
       FaIcon = FaCode;
     } else if (glyph?.toLowerCase() === 'date') {
-      FaIcon = FaRegCalendarAlt;
+      FaIcon = FaCalendarDays;
     } else if (glyph?.toLowerCase() === 'info') {
       FaIcon = () => (
         <Icon

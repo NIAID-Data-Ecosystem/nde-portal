@@ -1,16 +1,16 @@
 import { IconProps } from '@chakra-ui/react';
 import { Link, LinkProps } from 'src/components/link';
 import {
-  FaFileAlt,
-  FaFilePdf,
-  FaFileArchive,
   FaFileCode,
+  FaFileCsv,
   FaFileExcel,
   FaFileImage,
+  FaFileLines,
+  FaFilePdf,
   FaFilePowerpoint,
   FaFileWord,
-  FaFileCsv,
-} from 'react-icons/fa';
+  FaFileZipper,
+} from 'react-icons/fa6';
 import { Column } from '.';
 import { MetadataIcon } from '../icon';
 
@@ -65,7 +65,7 @@ export const getFileIcon = (value: string) => {
     value.toLowerCase().includes('.gzip')
   ) {
     // Archived file extensions
-    icon = FaFileArchive;
+    icon = FaFileZipper;
   } else if (
     value.toLowerCase().includes('.png') ||
     value.toLowerCase().includes('.jpeg') ||
@@ -102,7 +102,7 @@ export const getFileIcon = (value: string) => {
     icon = FaFilePdf;
     color = 'red.500';
   } else if (value.toLowerCase().includes('.txt')) {
-    icon = FaFileAlt;
+    icon = FaFileLines;
     color = 'gray.800';
   }
   return { icon, color };

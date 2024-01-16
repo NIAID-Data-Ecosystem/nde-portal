@@ -15,7 +15,7 @@ import { SearchInput } from 'src/components/search-input';
 import { FilterTerm } from '../types';
 import { FiltersCheckbox } from './filters-checkbox';
 import REPOS from 'configs/repositories.json';
-import { FaArrowDown } from 'react-icons/fa';
+import { FaArrowDown } from 'react-icons/fa6';
 import { ScrollContainer } from 'src/components/scroll-container';
 
 /*

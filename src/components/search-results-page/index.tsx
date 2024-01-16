@@ -22,6 +22,7 @@ import {
   Text,
   UnorderedList,
 } from '@chakra-ui/react';
+import { FaInfo } from 'react-icons/fa6';
 import { Link } from 'src/components/link';
 import {
   queryFilterObject2String,
@@ -44,7 +45,6 @@ import { SelectedFilterType } from '../filters/types';
 // import { AdvancedSearchWithModal } from '../advanced-search/AdvancedSearchWithModal';
 import { getQueryStatusError } from '../error/utils';
 import Tooltip from '../tooltip';
-import { FaInfo } from 'react-icons/fa';
 /*
 [COMPONENT INFO]:
  Search results pages displays the list of records returned by a search.

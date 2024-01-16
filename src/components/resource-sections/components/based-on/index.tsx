@@ -15,9 +15,9 @@ import {
   useDisclosure,
   Tooltip,
 } from '@chakra-ui/react';
+import { FaSquareArrowUpRight } from 'react-icons/fa6';
 import { Link } from 'src/components/link';
 import { IsBasedOn, IsBasisFor } from 'src/utils/api/types';
-import { FaExternalLinkSquareAlt } from 'react-icons/fa';
 import { uniqueId } from 'lodash';
 import { Cell, EmptyCell, Th } from 'src/components/table/components/cell';
 import { Row } from 'src/components/table/components/row';
@@ -81,7 +81,7 @@ const TagWithUrl = React.memo(
           >
             <Text color='inherit'>{children}</Text>
             <Icon
-              as={FaExternalLinkSquareAlt}
+              as={FaSquareArrowUpRight}
               boxSize={3}
               ml={1}
               color={'inherit'}

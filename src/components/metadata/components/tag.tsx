@@ -1,6 +1,6 @@
 import React from 'react';
 import { Icon, Tag, Text, BoxProps, TagLabel } from '@chakra-ui/react';
-import { FaExternalLinkSquareAlt } from 'react-icons/fa';
+import { FaSquareArrowUpRight } from 'react-icons/fa6';
 import Tooltip from 'src/components/tooltip';
 import { Link } from 'src/components/link';
 
@@ -51,7 +51,7 @@ export const MetadataWithTag = ({
             >
               <Text id='tag-value'>{value}</Text>
               <Icon
-                as={FaExternalLinkSquareAlt}
+                as={FaSquareArrowUpRight}
                 boxSize={2.5}
                 ml={1}
                 color='gray.800'

@@ -1,6 +1,6 @@
 import { Button, ButtonProps, FlexProps, useClipboard } from '@chakra-ui/react';
 import React from 'react';
-import { FaCopy } from 'react-icons/fa';
+import { FaCopy } from 'react-icons/fa6';
 
 /*
  [COMPONENT INFO]: Button that copies [metadataObject] as string to clipboard.

@@ -24,7 +24,7 @@ import {
   FaPlus,
   FaRegEnvelope,
   FaRegWindowMaximize,
-} from 'react-icons/fa';
+} from 'react-icons/fa6';
 
 // An accordion containing author details such as name and affiliation + link to their profile pages if available.
 const ResourceAuthors = ({

@@ -9,6 +9,7 @@ import {
   InputProps,
   Text,
 } from '@chakra-ui/react';
+import { FaInfo } from 'react-icons/fa6';
 import { FormattedResource } from 'src/utils/api/types';
 import { usePredictiveSearchResponse } from '../hooks/usePredictiveSearch';
 import {
@@ -18,7 +19,6 @@ import {
   DropdownListItem,
   DropdownContent,
 } from 'src/components/input-with-dropdown';
-import { FaInfo } from 'react-icons/fa';
 
 export interface SearchWithPredictiveTextProps
   extends usePredictiveSearchResponse {

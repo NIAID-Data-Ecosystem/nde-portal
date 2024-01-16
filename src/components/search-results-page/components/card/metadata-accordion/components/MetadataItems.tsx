@@ -8,9 +8,9 @@ import {
   Tag,
   Text,
 } from '@chakra-ui/react';
+import { FaSquareArrowUpRight, FaSitemap } from 'react-icons/fa6';
 import { Link } from 'src/components/link';
 import Tooltip from 'src/components/tooltip';
-import { FaExternalLinkSquareAlt, FaSitemap } from 'react-icons/fa';
 
 interface MetadataWithTagProps extends BoxProps {
   url?: string | null;
@@ -37,7 +37,7 @@ export const MetadataWithTag = ({
         <Link href={url} target='_blank' alignItems='center'>
           <Text>{value}</Text>
           <Icon
-            as={FaExternalLinkSquareAlt}
+            as={FaSquareArrowUpRight}
             boxSize={2.5}
             ml={1}
             color='gray.800'

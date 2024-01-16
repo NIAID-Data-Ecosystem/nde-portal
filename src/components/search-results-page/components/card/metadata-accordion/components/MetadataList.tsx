@@ -1,6 +1,6 @@
 import React from 'react';
 import { ListItem, Text, UnorderedList, ListIcon } from '@chakra-ui/react';
-import { FaCircle } from 'react-icons/fa';
+import { FaCircle } from 'react-icons/fa6';
 import { getMetadataTheme } from 'src/components/icon/helpers';
 import NextLink from 'next/link';
 import { Link } from 'src/components/link';

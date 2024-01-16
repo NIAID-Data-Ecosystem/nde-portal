@@ -7,11 +7,11 @@ import {
   UnorderedList,
   ListItem,
 } from '@chakra-ui/react';
+import { FaGithub } from 'react-icons/fa6';
 import { FormattedResource } from 'src/utils/api/types';
 import MetadataConfig from 'configs/resource-metadata.json';
 import { HeadingWithTooltip } from './heading-with-tooltip';
 import { DisplayHTMLContent } from 'src/components/html-content';
-import { FaGithub } from 'react-icons/fa';
 import { Link } from 'src/components/link';
 
 interface AssociatedDocumentation {

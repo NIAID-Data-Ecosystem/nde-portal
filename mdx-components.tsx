@@ -15,7 +15,7 @@ import {
 } from '@chakra-ui/react';
 import { Link } from 'src/components/link';
 import { useState } from 'react';
-import { FaChevronDown } from 'react-icons/fa';
+import { FaAngleDown } from 'react-icons/fa6';
 
 // This file allows you to provide custom React components
 // to be used in MDX files. You can import and use any
@@ -54,7 +54,7 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
             {children[summaryIndex]}
           </Heading>
           <Icon
-            as={FaChevronDown}
+            as={FaAngleDown}
             boxSize={4}
             color={isOpen ? 'secondary.600' : 'secondary.500'}
             transition='transform 250ms ease'

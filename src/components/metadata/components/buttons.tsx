@@ -8,7 +8,7 @@ import {
   VisuallyHidden,
 } from '@chakra-ui/react';
 import Tooltip from 'src/components/tooltip';
-import { FaSearch, FaSitemap } from 'react-icons/fa';
+import { FaMagnifyingGlass, FaSitemap } from 'react-icons/fa6';
 import { useRouter } from 'next/router';
 import { encodeString } from 'src/utils/querystring-helpers';
 import { Link } from 'src/components/link';
@@ -119,7 +119,7 @@ export const SearchButton = ({
         <VisuallyHidden>
           {ariaLabel || `Search the NDE for this property value`}
         </VisuallyHidden>
-        <Icon as={FaSearch} fontSize='12px' />
+        <Icon as={FaMagnifyingGlass} fontSize='12px' />
       </Button>
     </Tooltip>
   );

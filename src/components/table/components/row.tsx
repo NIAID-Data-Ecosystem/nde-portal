@@ -10,7 +10,7 @@ import {
   Icon,
   Text,
 } from '@chakra-ui/react';
-import { FaMinus, FaPlus } from 'react-icons/fa';
+import { FaMinus, FaPlus } from 'react-icons/fa6';
 
 // Row component - represents a row in the table, containing multiple cells.
 export const Row = React.memo(({ children, ...props }: FlexProps) => {
