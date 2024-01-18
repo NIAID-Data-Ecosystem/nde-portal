@@ -11,9 +11,9 @@ import {
   InputRightElement,
   Spinner,
   VisuallyHidden,
-} from 'nde-design-system';
+} from '@chakra-ui/react';
 import { theme } from 'src/theme';
-import { FaSearch } from 'react-icons/fa';
+import { FaMagnifyingGlass } from 'react-icons/fa6';
 import { useDropdownContext } from '..';
 import { ReactElement } from 'react-markdown/lib/react-markdown';
 
@@ -93,7 +93,7 @@ export const DropdownInput: React.FC<DropdownInputProps> = ({
                 size='sm'
               />
             ) : (
-              <Icon as={FaSearch} color='gray.300' />
+              <Icon as={FaMagnifyingGlass} color='gray.300' />
             )
           }
         />

@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { FaHistory, FaSearch } from 'react-icons/fa';
+import { FaClockRotateLeft, FaMagnifyingGlass } from 'react-icons/fa6';
 import { uniq } from 'lodash';
 import { useRouter } from 'next/router';
 import {
@@ -11,7 +11,7 @@ import {
   IconButton,
   ListItem,
   Tooltip,
-} from 'nde-design-system';
+} from '@chakra-ui/react';
 import { useLocalStorage } from 'usehooks-ts';
 import {
   DropdownContent,
@@ -22,7 +22,7 @@ import {
   InputWithDropdown,
   useDropdownContext,
 } from '../input-with-dropdown';
-import { IoMdClose } from 'react-icons/io';
+import { FaXmark } from 'react-icons/fa6';
 
 interface RecentItemProps {
   colorScheme: string;
@@ -62,7 +62,7 @@ const RecentItem = ({
         },
       })}
     >
-      <Icon as={FaSearch} mr={2} color='primary.500'></Icon>
+      <Icon as={FaMagnifyingGlass} mr={2} color='primary.500'></Icon>
       <Heading
         as='h4'
         size='sm'
@@ -114,7 +114,7 @@ const SearchInput = ({ ...inputProps }: DropdownInputProps) => {
                   aria-label='Toggle search history.'
                   icon={
                     <Flex px={2}>
-                      <Icon as={FaHistory} />
+                      <Icon as={FaClockRotateLeft} />
                     </Flex>
                   }
                   onClick={() => setIsOpen(!isOpen)}
@@ -221,7 +221,7 @@ const SearchBar = ({
             </Heading>
             <IconButton
               aria-label='Close search history.'
-              icon={<Icon as={IoMdClose} />}
+              icon={<Icon as={FaXmark} />}
               variant='ghost'
               size='sm'
               onClick={() => setIsOpen(false)}

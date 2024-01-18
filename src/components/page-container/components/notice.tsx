@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Button, Flex, Icon, Link, Text } from 'nde-design-system';
-import { IoIosWarning } from 'react-icons/io';
+import { Box, Button, Flex, Icon, Text } from '@chakra-ui/react';
+import { FaTriangleExclamation } from 'react-icons/fa6';
 import { useLocalStorage } from 'usehooks-ts';
+import { Link } from 'src/components/link';
 
 const Notice = () => {
   let niaid_help = 'NIAIDDataEcosystem@mail.nih.gov';
@@ -20,6 +21,8 @@ const Notice = () => {
     <Box
       w='100%'
       bg='status.warning_lt'
+      borderBottom='2px solid'
+      borderColor='status.warning'
       zIndex='docked'
       __css={{
         '>*': {
@@ -29,41 +32,43 @@ const Notice = () => {
     >
       <Flex
         w='100%'
-        bg='status.warning'
         alignItems='center'
         py={2}
         flexWrap='wrap'
+        flexDirection={['column', 'column', 'row']}
       >
         <Icon
-          as={IoIosWarning}
-          bg='status.warning_lt'
+          as={FaTriangleExclamation}
+          bg='status.warning'
+          color='blackAlpha.600'
           borderRadius='100%'
           boxSize={10}
-          p={1}
+          p={2}
           mr={4}
         />
         <Flex flex={1} flexWrap='wrap' py={[4, 0]}>
-          <Text fontWeight='semibold'>
+          <Text fontWeight='semibold' mx={1}>
             This is the alpha version of the NIAID Data Ecosystem Discovery
             Portal.
           </Text>
-          <Text px={[0, 2]} fontWeight='normal'>
+          <Text mx={1}>
             Currently using the:{' '}
             <Link
               href={`${process.env.NEXT_PUBLIC_API_URL}/metadata`}
-              // target='_blank'
+              target='_blank'
             >
-              {process.env.NEXT_PUBLIC_API_URL?.includes('staging')
+              {process.env.NEXT_PUBLIC_API_URL?.includes('api-staging')
                 ? 'Staging'
-                : 'Production'}{' '}
+                : process.env.NEXT_PUBLIC_API_URL?.includes('api.data')
+                ? 'Production'
+                : 'Development'}{' '}
               API
             </Link>
           </Text>
         </Flex>
         <Button
-          variant='ghost'
+          variant='solid'
           colorScheme='primary'
-          _hover={{ bg: 'status.warning_lt' }}
           size='sm'
           onClick={toggleWarning}
           w={['100%', 'unset']}
@@ -81,7 +86,12 @@ const Notice = () => {
             <Text>For any questions, contact {niaid_help}.</Text>
           </Link>
           <br />
-          <Button onClick={toggleWarning} colorScheme='primary' mt={2}>
+          <Button
+            onClick={toggleWarning}
+            colorScheme='primary'
+            mt={2}
+            size='sm'
+          >
             Got it
           </Button>
         </Box>

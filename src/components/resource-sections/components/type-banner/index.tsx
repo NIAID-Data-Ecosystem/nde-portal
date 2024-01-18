@@ -1,14 +1,14 @@
 import React from 'react';
-import { Flex, FlexProps, Icon, Text } from 'nde-design-system';
-import { FaRegClock } from 'react-icons/fa';
+import { Flex, FlexProps, Icon, Text } from '@chakra-ui/react';
+import { FaRegClock } from 'react-icons/fa6';
 import { FormattedResource } from 'src/utils/api/types';
 import { StyledLabel } from './styles';
-import REPOS from 'configs/repositories.json';
 
 interface TypeBannerProps extends FlexProps {
   type?: FormattedResource['type'];
   date?: FormattedResource['date'];
-  sourceName?: string | null;
+  sourceName?: string[] | null;
+  isNiaidFunded?: boolean;
 }
 
 export const getTypeColor = (type: FormattedResource['type']) => {
@@ -30,17 +30,9 @@ const TypeBanner: React.FC<TypeBannerProps> = ({
   date,
   children,
   pl,
-  sourceName,
+  isNiaidFunded,
   ...props
 }) => {
-  const repositories = REPOS.repositories as {
-    id: string;
-    isNIAID?: boolean;
-  }[];
-  const isNiaidFunded =
-    sourceName &&
-    repositories.filter(({ id, isNIAID }) => isNIAID && id === sourceName)
-      .length > 0;
   return (
     <Flex flexWrap='wrap' w='100%' bg={props.bg || 'status.info_lt'} {...props}>
       <Flex

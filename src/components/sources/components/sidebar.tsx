@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Flex, Heading, ListItem, Tag, Text } from 'nde-design-system';
+import { Box, Flex, Heading, ListItem, Tag, Text } from '@chakra-ui/react';
 import { formatDate } from 'src/utils/api/helpers';
 import type { SourceResponse } from 'src/pages/sources';
 
@@ -21,14 +21,7 @@ const Sidebar: React.FC<Sidebar> = ({ data }) => {
       {sourceNames.map(([name, id], index) => {
         return (
           <ListItem key={index} _hover={{ bg: 'gray.50' }} cursor='pointer'>
-            <Box
-              as='a'
-              display='block'
-              href={`#${name}`}
-              aria-label={`Go to ${name} section`}
-              px={[2, 4, 6]}
-              py={4}
-            >
+            <Box as='a' display='block' href={`#${name}`} px={[2, 4, 6]} py={4}>
               <Flex alignItems='center'>
                 <Heading size='h6' alignItems='center'>
                   {name}{' '}

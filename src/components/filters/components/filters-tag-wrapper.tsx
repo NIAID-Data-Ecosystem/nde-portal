@@ -1,9 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import {
-  FaChevronDown,
-  FaChevronUp,
-  FaExclamationCircle,
-} from 'react-icons/fa';
+import { FaAngleDown, FaAngleUp, FaCircleExclamation } from 'react-icons/fa6';
 import {
   Box,
   Collapse,
@@ -11,7 +7,7 @@ import {
   Icon,
   Text,
   useDisclosure,
-} from 'nde-design-system';
+} from '@chakra-ui/react';
 import { theme } from 'src/theme';
 import { SelectedFilterType } from '../types';
 
@@ -92,10 +88,10 @@ export const FilterTagsWrapper: React.FC<FilterTagsWrapperProps> = ({
             flex={1}
             opacity={isOpen ? 0.5 : 1}
           >
-            <Icon as={FaExclamationCircle} mr={2} boxSize={4}></Icon>
+            <Icon as={FaCircleExclamation} mr={2} boxSize={4}></Icon>
             <Text>Click here to see all applied filters. </Text>
           </Flex>
-          <Icon as={isOpen ? FaChevronUp : FaChevronDown} mr={2}></Icon>
+          <Icon as={isOpen ? FaAngleUp : FaAngleDown} mr={2}></Icon>
         </Flex>
       )}
     </Box>

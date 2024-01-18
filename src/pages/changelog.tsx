@@ -1,4 +1,4 @@
-import { Badge, Box, Flex, Heading, Text } from 'nde-design-system';
+import { Badge, Box, Flex, Heading, Text } from '@chakra-ui/react';
 import type { NextPage } from 'next';
 import { PageContainer, PageContent } from 'src/components/page-container';
 import ChangelogData from '../../CHANGELOG.md';
@@ -36,7 +36,7 @@ const Changelog: NextPage<ChangelogProps> = () => {
               px={2}
               py={1}
             >
-              <Text fontSize='sm' fontWeight='semibold' color='#fff'>
+              <Text as='h2' fontSize='sm' fontWeight='semibold' color='#fff'>
                 V.{packageJsonData.version}
               </Text>
             </Badge>

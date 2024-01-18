@@ -1,4 +1,4 @@
-import { Select } from 'nde-design-system';
+import { Select, VisuallyHidden } from '@chakra-ui/react';
 import { useCallback, useEffect, useState } from 'react';
 import { useAdvancedSearchContext } from 'src/components/advanced-search/components/Search';
 import { SearchTypesConfigProps } from 'src/components/advanced-search/components/Search/search-types-config';
@@ -38,32 +38,38 @@ export const SearchLabel = ({
   }, [searchOptions, setSelectedSearchType, queryValue]);
 
   return (
-    <Select
-      size='sm'
-      w='170px'
-      variant='outline'
-      borderRadius='semi'
-      mb={2}
-      _focus={{ borderColor: 'niaid.placeholder' }}
-      _hover={{ bg: 'page.alt' }}
-      value={selectedSearchType.id}
-      onChange={e => {
-        const searchType = searchOptions.find(
-          ({ id }) => id === e.target.value,
-        );
-        if (searchType) {
-          setSelectedSearchType(searchType);
-        }
-      }}
-    >
-      {/* <option value={'None'}>None</option> */}
-      {searchOptions.map((option, index) => {
-        return (
-          <option key={option.id} value={option.id}>
-            {option.label}
-          </option>
-        );
-      })}
-    </Select>
+    <>
+      <VisuallyHidden>
+        <label id='field-select-label'>Select field</label>
+      </VisuallyHidden>
+      <Select
+        aria-labelledby='field-select-label'
+        size='sm'
+        w='170px'
+        variant='outline'
+        borderRadius='semi'
+        mb={2}
+        _focus={{ borderColor: 'niaid.placeholder' }}
+        _hover={{ bg: 'page.alt' }}
+        value={selectedSearchType.id}
+        onChange={e => {
+          const searchType = searchOptions.find(
+            ({ id }) => id === e.target.value,
+          );
+          if (searchType) {
+            setSelectedSearchType(searchType);
+          }
+        }}
+      >
+        {/* <option value={'None'}>None</option> */}
+        {searchOptions.map(option => {
+          return (
+            <option key={option.id} value={option.id}>
+              {option.label}
+            </option>
+          );
+        })}
+      </Select>
+    </>
   );
 };

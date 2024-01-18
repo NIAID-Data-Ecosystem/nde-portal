@@ -6,12 +6,13 @@ import {
   Flex,
   Heading,
   Icon,
-  Link,
   SimpleGrid,
   Stack,
   StackDivider,
   Text,
-} from 'nde-design-system';
+  VisuallyHidden,
+} from '@chakra-ui/react';
+import { Link } from 'src/components/link';
 import type { NextPage } from 'next';
 import {
   PageContainer,
@@ -242,6 +243,7 @@ const News: NextPage<NewsProps> = props => {
         mb={32}
         flex={1}
       >
+        <VisuallyHidden as='h1'>News and Events </VisuallyHidden>
         {data ? (
           <>
             <Flex
@@ -332,7 +334,12 @@ const News: NextPage<NewsProps> = props => {
                       {/* Past events */}
                       {pastEvents.length > 0 && (
                         <>
-                          <Heading as='h3' size='sm' color='gray.600'>
+                          <Heading
+                            as='h3'
+                            size='sm'
+                            color='primary.600'
+                            fontWeight='semibold'
+                          >
                             Past events
                           </Heading>
                           {pastEvents
@@ -454,7 +461,7 @@ const News: NextPage<NewsProps> = props => {
                     <CardBody p={0} px={4} py={1}>
                       <Text
                         lineHeight='short'
-                        color='gray.600'
+                        color='gray.800'
                         fontWeight='medium'
                       >
                         Share your discovery Portal story with us by{' '}
@@ -470,7 +477,7 @@ const News: NextPage<NewsProps> = props => {
                       <CardBody px={4} py={1}>
                         <Text
                           lineHeight='short'
-                          color='gray.600'
+                          color='gray.800'
                           fontWeight='medium'
                         >
                           Join us on
@@ -489,6 +496,9 @@ const News: NextPage<NewsProps> = props => {
 
                               return (
                                 <Link key={platform} href={href}>
+                                  <VisuallyHidden>
+                                    {platform} link
+                                  </VisuallyHidden>
                                   <Icon
                                     as={icon}
                                     boxSize={6}
@@ -524,6 +534,7 @@ const News: NextPage<NewsProps> = props => {
                 <Navigation
                   routes={sections}
                   itemProps={{
+                    color: 'primary.500',
                     borderLeftColor: 'primary.400',
                   }}
                 />

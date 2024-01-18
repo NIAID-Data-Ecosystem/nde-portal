@@ -4,19 +4,19 @@ import {
   EditablePreview,
   EditableTextarea,
   Flex,
-  Heading,
   Icon,
   IconButton,
   keyframes,
   Spinner,
+  Text,
   Textarea,
   Tooltip,
   useEditableControls,
-} from 'nde-design-system';
+  VisuallyHidden,
+} from '@chakra-ui/react';
 import { theme } from 'src/theme';
 import { MouseEventHandler, useEffect, useState } from 'react';
-import { FaCheck, FaRegEdit } from 'react-icons/fa';
-import { IoClose } from 'react-icons/io5';
+import { FaCheck, FaRegPenToSquare, FaXmark } from 'react-icons/fa6';
 import { useQuery } from 'react-query';
 import { getQueryStatusError } from 'src/components/error/utils';
 import { fetchSearchResults } from 'src/utils/api';
@@ -188,7 +188,7 @@ export const EditableQueryText = ({
           variant='solid'
           colorScheme='gray'
           color='text.body'
-          icon={<Icon as={IoClose} boxSize={6} />}
+          icon={<Icon as={FaXmark} boxSize={6} />}
           {...getCancelButtonProps()}
         />
         <IconButton
@@ -208,7 +208,7 @@ export const EditableQueryText = ({
             variant='solid'
             colorScheme='gray'
             color='text.body'
-            icon={<Icon as={FaRegEdit} boxSize={4} />}
+            icon={<Icon as={FaRegPenToSquare} boxSize={4} />}
             {...getEditButtonProps()}
           />
         </Tooltip>
@@ -249,7 +249,7 @@ export const EditableQueryText = ({
             w='100%'
             py={2}
             px={4}
-            color={value ? 'text.body' : 'niaid.placeholder'}
+            color={value ? 'text.body' : 'gray.800'}
             fontSize='sm'
             fontStyle='italic'
             _hover={{
@@ -257,7 +257,11 @@ export const EditableQueryText = ({
             }}
           />
         </Tooltip>
+        <VisuallyHidden>
+          <label id='editable-label'>Edit query input</label>
+        </VisuallyHidden>
         <Textarea
+          aria-labelledby='editable-label'
           py={2}
           px={4}
           fontSize='sm'
@@ -273,8 +277,7 @@ export const EditableQueryText = ({
         <Flex p={2} justifyContent='space-between' alignItems='center'>
           <Flex>
             {value && (
-              <Heading
-                as='h5'
+              <Text
                 fontSize='sm'
                 fontWeight='light'
                 fontStyle='italic'
@@ -296,7 +299,7 @@ export const EditableQueryText = ({
                     {data?.total === 1 ? '' : 's'}
                   </span>
                 )}
-              </Heading>
+              </Text>
             )}
           </Flex>
           <EditableControls />

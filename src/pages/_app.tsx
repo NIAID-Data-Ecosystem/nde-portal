@@ -5,11 +5,8 @@ import Head from 'next/head';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { theme } from 'src/theme';
 import * as ga from 'lib/ga';
-import { ThemeProvider } from 'nde-design-system';
+import { ChakraProvider } from '@chakra-ui/react';
 
-// const ThemeProvider = dynamic(() =>
-//   import('nde-design-system').then(mod => mod.ThemeProvider),
-// );
 // Creates an instance of react-query for the app.
 const queryClient = new QueryClient();
 
@@ -41,10 +38,10 @@ function App({ Component, pageProps }: AppProps) {
       </Head>
 
       <QueryClientProvider client={queryClient}>
-        <ThemeProvider theme={theme}>
+        <ChakraProvider theme={theme}>
           {/* @ts-ignore */}
           <Component {...pageProps} />
-        </ThemeProvider>
+        </ChakraProvider>
       </QueryClientProvider>
     </>
   );

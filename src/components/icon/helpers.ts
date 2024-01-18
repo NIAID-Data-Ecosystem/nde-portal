@@ -13,10 +13,32 @@ export const getMetadataColor = (property?: string) => {
   } else if (property?.toLowerCase() === 'healthcondition') {
     return 'red.500';
   } else if (property?.toLowerCase() === 'funding') {
-    return 'tomato';
+    return 'orange.500';
   } else if (property?.toLowerCase() === 'species') {
     return 'green.500';
   } else {
     return 'gray.800';
+  }
+};
+
+export const getMetadataTheme = (property?: string) => {
+  if (property?.toLowerCase() === 'license') {
+    return 'blue';
+  } else if (property?.toLowerCase() === 'usageinfo') {
+    return 'blue';
+  } else if (property?.toLowerCase() === 'variablemeasured') {
+    return 'cyan';
+  } else if (property?.toLowerCase() === 'measurementtechnique') {
+    return 'purple';
+  } else if (property?.toLowerCase() === 'infectiousagent') {
+    return 'pink';
+  } else if (property?.toLowerCase() === 'healthcondition') {
+    return 'red';
+  } else if (property?.toLowerCase() === 'funding') {
+    return 'orange';
+  } else if (property?.toLowerCase() === 'species') {
+    return 'green';
+  } else {
+    return 'gray';
   }
 };

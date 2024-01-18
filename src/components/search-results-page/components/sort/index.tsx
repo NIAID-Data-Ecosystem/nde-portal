@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Flex, Select } from 'nde-design-system';
+import { Box, Flex, Select, VisuallyHidden } from '@chakra-ui/react';
 import { SortOptionsInterface } from 'src/components/search-results-page';
 
 /*
@@ -47,7 +47,11 @@ export const SortResults: React.FC<SortResultsProps> = ({
     <Flex flexDirection={['column', 'row']} flex={1} bg='white'>
       {/* Sort Order dropdown. */}
       <Box mr={[0, 2]}>
-        <label htmlFor='sorting-order-select' title='Sort order'></label>
+        <VisuallyHidden>
+          <label htmlFor='sorting-order-select' title='Sort order'>
+            Select sort order
+          </label>
+        </VisuallyHidden>
         <Select
           id='sorting-order-select'
           aria-label='Select sort order'
@@ -78,7 +82,11 @@ export const SortResults: React.FC<SortResultsProps> = ({
 
       {/* Show Per Page dropdown. */}
       <Box>
-        <label htmlFor='show-per-page-select' title='Show per page'></label>
+        <VisuallyHidden>
+          <label htmlFor='show-per-page-select' title='Show per page'>
+            Show per page
+          </label>
+        </VisuallyHidden>
         <Select
           id='show-per-page-select'
           aria-label='Select show items per page'

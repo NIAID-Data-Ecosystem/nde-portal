@@ -14,10 +14,10 @@ import {
   Progress,
   useMediaQuery,
   VStack,
-} from 'nde-design-system';
+} from '@chakra-ui/react';
 import { theme } from 'src/theme';
 import { useElementSize } from 'usehooks-ts';
-import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
+import { FaAngleLeft, FaAngleRight } from 'react-icons/fa6';
 
 const MotionFlex = motion(Flex);
 
@@ -148,6 +148,7 @@ export const Carousel = ({
           alignItems='center'
         >
           <Button
+            aria-label='previous carousel item'
             onClick={handleDecrementClick}
             onFocus={handleFocus}
             isDisabled={
@@ -161,10 +162,11 @@ export const Carousel = ({
             minW={0}
             size='sm'
           >
-            <Icon as={FaChevronLeft} boxSize={4} />
+            <Icon as={FaAngleLeft} boxSize={4} />
           </Button>
 
           <Progress
+            aria-label='carousel progress bar'
             value={100 / ((positions.length - constraint) / activeItem)}
             alignSelf='center'
             borderRadius='2px'
@@ -179,6 +181,7 @@ export const Carousel = ({
           />
 
           <Button
+            aria-label='next carousel item'
             onClick={handleIncrementClick}
             onFocus={handleFocus}
             isDisabled={
@@ -193,7 +196,7 @@ export const Carousel = ({
             minW={0}
             size='sm'
           >
-            <Icon as={FaChevronRight} boxSize={4} />
+            <Icon as={FaAngleRight} boxSize={4} />
           </Button>
         </Flex>
       </Box>

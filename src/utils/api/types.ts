@@ -126,19 +126,35 @@ export interface Error {
 }
 
 export interface Funder {
-  name: string | null;
-  alternateName: string | string[] | null;
-  role: string | null;
-  description: string | null;
-  parentOrganization: string | null;
-  url: string | null;
+  '@type'?: string;
+  identifier?: string | null;
+  alternateName?: string | string[] | null;
+  class?: string | string[] | null;
+  description?: string | null;
+  employee?: {
+    givenName?: string | null;
+    familyName?: string | null;
+    name?: string | string[] | null;
+  }[];
+  name?: string | null;
+  parentOrganization?: string | string[] | null;
+  role?: string | string[] | null;
+  url?: string | null;
 }
 
 export interface Funding {
-  funder: Funder | null;
-  identifier: string | null;
-  url: string | null;
-  description: string | null;
+  '@type'?: string;
+  identifier?: string | null;
+  description?: string | null;
+  endDate?: string | null;
+  funder?: Funder | Funder[] | null;
+  isBasedOn?: {
+    identifier?: string | null;
+  };
+  keywords?: string[] | null;
+  name?: string | null;
+  startDate?: string | null;
+  url?: string | null;
 }
 
 export interface HasPart {
@@ -152,11 +168,14 @@ export interface HasPart {
 
 export interface IncludedInDataCatalog {
   '@type'?: string | null;
-  name?: string | null;
+  name: string;
   url?: string | null; //source repo url
   versionDate?: string | null;
-  image?: string | null;
-  identifier?: string | null;
+}
+
+export interface InfectiousAgent extends PropertyWithPubtator {
+  identifier?: string;
+  displayName: string;
 }
 
 export interface InteractionStatistics {
@@ -167,10 +186,10 @@ export interface InteractionStatistics {
 
 export interface IsBasedOn {
   '@type'?: string;
-  _id?: string;
   abstract?: string;
   additionalType?: AdditionalType;
   citation?: string;
+  codeRepository?: string;
   datePublished?: string;
   description?: string;
   doi?: string;
@@ -229,9 +248,23 @@ interface SpatialCoverage {
   name?: string;
 }
 
-export interface Species extends PropertyNameWithURL {
+interface PropertyWithPubtator extends PropertyNameWithURL {
+  inDefinedTermSet?: string;
+  alternateName?: string[];
+  originalName?: string | string[];
+  commonName?: string | string[];
+  isCurated?: boolean;
+  curatedBy?: {
+    name?: string;
+    url?: string;
+    dateModified?: string;
+  };
+}
+
+export interface Species extends PropertyWithPubtator {
   additionalType?: AdditionalType;
   identifier?: string;
+  displayName: string;
 }
 
 interface TemporalCoverage {
@@ -268,6 +301,25 @@ export interface OutputProperties {
 // Formatting standardized resource fields
 export interface FormattedResource {
   [key: string]: any;
+  _meta?: {
+    completeness: {
+      augmented_recommended_ratio: number;
+      augmented_required_ratio: number;
+      recommended_max_score: number;
+      recommended_score: number;
+      recommended_score_ratio: number;
+      required_max_score: number;
+      required_ratio: number;
+      required_score: number;
+      total_max_score: number;
+      total_recommended_augmented: number;
+      total_required_augmented: number;
+      total_score: number;
+      weighted_score: number;
+    };
+    recommended_augmented_fields: string[];
+    required_augmented_fields: string[];
+  };
   id: string;
   type: string | null; // "Dataset" | "ComputationalTool"
   name: string;
@@ -297,9 +349,9 @@ export interface FormattedResource {
   downloadUrl: { name: string }[] | null;
   funding: Funding[] | null;
   hasPart: HasPart[] | null;
-  healthCondition: PropertyNameWithURL[] | null;
-  includedInDataCatalog: IncludedInDataCatalog | null;
-  infectiousAgent: PropertyNameWithURL[] | null;
+  healthCondition: PropertyWithPubtator[] | null;
+  includedInDataCatalog: IncludedInDataCatalog[] | IncludedInDataCatalog;
+  infectiousAgent: InfectiousAgent[] | null;
   inLanguage: {
     alternateName: string | null;
     name: string | null;

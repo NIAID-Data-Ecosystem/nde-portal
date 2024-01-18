@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import {
-  Badge,
   Box,
   Button,
   Collapse,
@@ -8,19 +7,23 @@ import {
   Flex,
   Heading,
   Icon,
-  Link,
-  SearchInput,
   Skeleton,
   Tag,
   Text,
-} from 'nde-design-system';
+} from '@chakra-ui/react';
 import { DisplayHTMLContent } from 'src/components/html-content';
 import NextLink from 'next/link';
 import type { SourceResponse } from 'src/pages/sources';
 import { queryFilterObject2String } from 'src/components/filters/helpers';
 import { formatDate } from 'src/utils/api/helpers';
-import { FaMinus, FaPlus } from 'react-icons/fa6';
-import { FaExternalLinkAlt, FaSearch } from 'react-icons/fa';
+import {
+  FaMagnifyingGlass,
+  FaMinus,
+  FaPlus,
+  FaUpRightFromSquare,
+} from 'react-icons/fa6';
+import { SearchInput } from 'src/components/search-input';
+import { Link } from 'src/components/link';
 
 interface Main {
   data?: SourceResponse[];
@@ -67,13 +70,15 @@ const Main: React.FC<Main> = ({ data, isLoading, metadata }) => {
           </Heading>
 
           <Button
+            as='a'
             href='https://github.com/NIAID-Data-Ecosystem/nde-crawlers/issues/new?assignees=&labels=&template=suggest-a-new-resource.md&title=%5BSOURCE%5D'
-            isExternal
+            target='_blank'
             colorScheme='secondary'
             size='sm'
             variant='outline'
+            rightIcon={<Icon as={FaUpRightFromSquare} boxSize={3} />}
           >
-            Suggest a new Source
+            Suggest a new source
           </Button>
         </Flex>
         <Divider />
@@ -83,7 +88,7 @@ const Main: React.FC<Main> = ({ data, isLoading, metadata }) => {
         <>
           <Flex justifyContent='space-between' flexWrap='wrap'>
             <Box minW='250px' m={2}>
-              <Text fontSize='xs' color='gray.600'>
+              <Text fontSize='xs' color='gray.800'>
                 API Version:
                 {metadata?.version && (
                   <Link
@@ -103,7 +108,7 @@ const Main: React.FC<Main> = ({ data, isLoading, metadata }) => {
                 )}
               </Text>
               {metadata?.date && (
-                <Text fontSize='xs' color='gray.600' fontWeight='medium'>
+                <Text fontSize='xs' color='gray.800' fontWeight='medium'>
                   Data last harvested: {formatDate(metadata?.date)}
                 </Text>
               )}
@@ -149,13 +154,18 @@ const Main: React.FC<Main> = ({ data, isLoading, metadata }) => {
                 sx={{ '>*': { px: 4, mt: 4, mx: [0, 4, 8] } }}
               >
                 <Box mx={[0, 2, 6]}>
-                  <Badge bg='status.info' wordBreak='break-word' m={0.5}>
+                  <Tag
+                    bg='status.info'
+                    wordBreak='break-word'
+                    m={0.5}
+                    color='white'
+                  >
                     {sourceObj.name}
-                  </Badge>
+                  </Tag>
                   {sourceObj.isNiaidFunded && (
-                    <Badge bg='tertiary.700' m={0.5}>
+                    <Tag bg='tertiary.700' m={0.5} color='white'>
                       NIAID
-                    </Badge>
+                    </Tag>
                   )}
                 </Box>
                 <Box>
@@ -181,14 +191,14 @@ const Main: React.FC<Main> = ({ data, isLoading, metadata }) => {
                       >
                         <Text
                           fontWeight='semibold'
-                          color='gray.600'
+                          color='gray.800'
                           textAlign={['center', 'left']}
                         >
                           Visualization of {sourceObj.name} properties
                           transformed to the NIAID Data Ecosystem
                         </Text>
                         <Flex alignItems='center'>
-                          <Text mx={2} fontSize='xs' color='gray.600'>
+                          <Text mx={2} fontSize='xs' color='gray.800'>
                             {schemaText.includes(sourceObj.name)
                               ? 'Hide'
                               : 'Show'}
@@ -199,7 +209,7 @@ const Main: React.FC<Main> = ({ data, isLoading, metadata }) => {
                                 ? FaMinus
                                 : FaPlus
                             }
-                            color='gray.600'
+                            color='gray.800'
                             boxSize={3}
                           />
                         </Flex>
@@ -270,12 +280,7 @@ const Main: React.FC<Main> = ({ data, isLoading, metadata }) => {
                   )}
                 </Box>
                 <Box>
-                  <Heading
-                    as='h3'
-                    fontSize='xs'
-                    fontWeight='semibold'
-                    color='text.body'
-                  >
+                  <Text fontSize='xs' fontWeight='semibold' color='text.body'>
                     Latest Release:{' '}
                     <Text as='span' fontWeight='normal'>
                       {sourceObj.dateModified
@@ -289,14 +294,8 @@ const Main: React.FC<Main> = ({ data, isLoading, metadata }) => {
                           )
                         : 'N/A'}
                     </Text>
-                  </Heading>
-                  <Heading
-                    as='h3'
-                    fontSize='xs'
-                    fontWeight='semibold'
-                    color='text.body'
-                    mt={2}
-                  >
+                  </Text>
+                  <Text fontSize='xs' fontWeight='semibold' color='text.body'>
                     First Released:{' '}
                     <Text as='span' fontWeight='normal'>
                       {sourceObj.dateCreated
@@ -310,7 +309,7 @@ const Main: React.FC<Main> = ({ data, isLoading, metadata }) => {
                           )
                         : 'N/A'}
                     </Text>
-                  </Heading>
+                  </Text>
                 </Box>
                 <Flex justifyContent={'space-between'} flexWrap='wrap'>
                   <NextLink
@@ -326,13 +325,14 @@ const Main: React.FC<Main> = ({ data, isLoading, metadata }) => {
                     passHref
                   >
                     <Button
+                      as='span'
                       wordBreak='break-word'
                       whiteSpace='normal'
                       textAlign='center'
                       flex={1}
                       size='sm'
                       colorScheme='primary'
-                      leftIcon={<Icon as={FaSearch} boxSize={3} />}
+                      leftIcon={<Icon as={FaMagnifyingGlass} boxSize={3} />}
                       variant='solid'
                       height='unset'
                       m={1}
@@ -349,13 +349,16 @@ const Main: React.FC<Main> = ({ data, isLoading, metadata }) => {
                       target='_blank'
                     >
                       <Button
+                        as='span'
                         wordBreak='break-word'
                         whiteSpace='normal'
                         textAlign='center'
                         flex={1}
                         size='sm'
                         colorScheme='primary'
-                        rightIcon={<Icon as={FaExternalLinkAlt} boxSize={3} />}
+                        rightIcon={
+                          <Icon as={FaUpRightFromSquare} boxSize={3} />
+                        }
                         variant='outline'
                         height='unset'
                         m={1}

@@ -1,4 +1,4 @@
-import { Flex, Radio, useDisclosure } from 'nde-design-system';
+import { Flex, Radio, VisuallyHidden, useDisclosure } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 import {
   OptionItem,
@@ -40,7 +40,11 @@ export const RadioSelect = ({
         }}
         mr={2}
         isDisabled={isDisabled}
-      />
+      >
+        <VisuallyHidden>
+          <label>{selected?.label}</label>
+        </VisuallyHidden>
+      </Radio>
 
       <SelectWithButton
         id='search-type'

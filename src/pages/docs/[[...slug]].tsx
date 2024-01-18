@@ -3,14 +3,14 @@ import {
   Box,
   Flex,
   Heading,
-  Link,
   ListItem,
   SimpleGrid,
   SkeletonText,
   Text,
   UnorderedList,
   useMediaQuery,
-} from 'nde-design-system';
+} from '@chakra-ui/react';
+import { Link } from 'src/components/link';
 import type { GetStaticProps, NextPage } from 'next';
 import {
   PageContainer,
@@ -324,9 +324,7 @@ const Docs: NextPage<{
                                 >
                                   <Link
                                     as='span'
-                                    variant='unstyled'
                                     fontSize='sm'
-                                    color='gray.600'
                                     bg='transparent'
                                     lineHeight='tall'
                                   >

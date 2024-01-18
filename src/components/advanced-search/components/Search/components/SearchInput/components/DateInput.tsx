@@ -1,4 +1,4 @@
-import { Box, Flex, Input, Text } from 'nde-design-system';
+import { Box, Flex, Input, Text } from '@chakra-ui/react';
 import { getDateQuerystring } from '../helpers';
 import { AdvancedSearchInputProps } from '../types';
 

@@ -1,15 +1,16 @@
-import { IconProps, Link, LinkProps } from 'nde-design-system';
+import { IconProps } from '@chakra-ui/react';
+import { Link, LinkProps } from 'src/components/link';
 import {
-  FaFileAlt,
-  FaFilePdf,
-  FaFileArchive,
   FaFileCode,
+  FaFileCsv,
   FaFileExcel,
   FaFileImage,
+  FaFileLines,
+  FaFilePdf,
   FaFilePowerpoint,
   FaFileWord,
-  FaFileCsv,
-} from 'react-icons/fa';
+  FaFileZipper,
+} from 'react-icons/fa6';
 import { Column } from '.';
 import { MetadataIcon } from '../icon';
 
@@ -64,7 +65,7 @@ export const getFileIcon = (value: string) => {
     value.toLowerCase().includes('.gzip')
   ) {
     // Archived file extensions
-    icon = FaFileArchive;
+    icon = FaFileZipper;
   } else if (
     value.toLowerCase().includes('.png') ||
     value.toLowerCase().includes('.jpeg') ||
@@ -101,7 +102,7 @@ export const getFileIcon = (value: string) => {
     icon = FaFilePdf;
     color = 'red.500';
   } else if (value.toLowerCase().includes('.txt')) {
-    icon = FaFileAlt;
+    icon = FaFileLines;
     color = 'gray.800';
   }
   return { icon, color };
@@ -145,4 +146,22 @@ export const getTableColumns = (
       return r;
     }, {} as { [key: string]: Column }),
   );
+};
+
+export const getTruncatedText = (
+  description?: string | null,
+  isOpen?: boolean,
+  MAX_CHARS = 144,
+) => {
+  if (!description) {
+    return { text: '', hasMore: false };
+  }
+
+  // truncate description if it's longer than 144 chars
+  const text =
+    description.length < MAX_CHARS
+      ? description
+      : description.substring(0, isOpen ? description.length : 144);
+
+  return { text, hasMore: description.length > MAX_CHARS };
 };

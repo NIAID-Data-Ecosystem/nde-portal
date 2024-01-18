@@ -1,4 +1,4 @@
-import { Box, Button, Collapse, Flex, Text } from 'nde-design-system';
+import { Box, Button, Collapse, Flex, Text } from '@chakra-ui/react';
 import { useState } from 'react';
 import {
   AdvancedSearchFormContext,

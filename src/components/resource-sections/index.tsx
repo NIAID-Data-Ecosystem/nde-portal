@@ -2,37 +2,41 @@ import React from 'react';
 import { useRouter } from 'next/router';
 import { FormattedResource } from 'src/utils/api/types';
 import {
-  Box,
   Divider,
   Flex,
-  Link,
   ListItem,
   Skeleton,
+  Stack,
   Tag,
-  Text,
   UnorderedList,
-} from 'nde-design-system';
+} from '@chakra-ui/react';
+import { Link } from 'src/components/link';
 import {
   ResourceDates,
   ResourceHeader,
   ResourceOverview,
-  ResourceLinks,
   ResourceProvenance,
   Section,
+  ResourceCitations,
+  ResourceAuthors,
 } from './components';
 import { Route } from './helpers';
 import FilesTable from './components/files-table';
-import FundingTable from './components/funding-table';
 import CitedByTable from './components/cited-by-table';
 import { DisplayHTMLContent } from '../html-content';
 import { DownloadMetadata } from '../download-metadata';
 import SoftwareInformation from './components/software-information';
-import ResourceStats from './components/stats';
+import { External } from './components/sidebar/components/external';
+import { Funding } from './components/funding';
+import { JsonViewer } from '../json-viewer';
+import ResourceIsPartOf from './components/is-part-of';
+import BasedOnTable from './components/based-on';
+import { CompletenessBadgeCircle } from 'src/components/completeness-badge/Circular';
+import { HeadingWithTooltip } from './components/sidebar/components/external/components/heading-with-tooltip';
 
 // Metadata displayed in each section
 export const sectionMetadata: { [key: string]: (keyof FormattedResource)[] } = {
   overview: [
-    'citation',
     'doi',
     'healthCondition',
     'infectiousAgent',
@@ -52,7 +56,6 @@ export const sectionMetadata: { [key: string]: (keyof FormattedResource)[] } = {
     'discussionUrl',
     'input',
     'output',
-    'isBasedOn',
     'isBasisFor',
     'processorRequirements',
     'programmingLanguage',
@@ -84,19 +87,16 @@ const Sections = ({
   const router = useRouter();
   return (
     <>
-      <Section id='header' p={0}>
-        <ResourceHeader
-          isLoading={isLoading}
-          conditionsOfAccess={data?.conditionsOfAccess}
-          author={data?.author}
-          name={data?.name}
-          alternateName={data?.alternateName}
-          isAccessibleForFree={data?.isAccessibleForFree}
-        />
-        {/* Banner showing data type and publish date. */}
-        <ResourceDates data={data} />
-      </Section>
-
+      <ResourceHeader
+        isLoading={isLoading}
+        name={data?.name}
+        alternateName={data?.alternateName}
+        doi={data?.doi}
+        nctid={data?.nctid}
+      />
+      {data?.author && <ResourceAuthors authors={data.author} />}
+      {/* Banner showing data type and publish date. */}
+      <ResourceDates data={data} />
       {sections.map(section => {
         return (
           <Section
@@ -106,40 +106,64 @@ const Sections = ({
             isLoading={isLoading}
             isCollapsible={section.isCollapsible}
           >
-            {/* Only show here on small screens. */}
-            {/* <Box display={{ base: 'block', lg: 'none' }}>
-              <ResourceStats
-                includedInDataCatalog={data?.includedInDataCatalog}
-                citation={data?.citation}
-                doi={data?.doi}
-                nctid={data?.nctid}
-                aggregateRating={data?.aggregateRating}
-                interactionStatistics={data?.interactionStatistics}
-              />
-            </Box> */}
-            {section.hash === 'overview' && (
-              <ResourceOverview isLoading={isLoading} {...data} />
+            {/* for mobile viewing */}
+            {section.hash === 'overview' && data && (
+              <Stack
+                display={{ base: 'flex', lg: 'none' }}
+                flexWrap='wrap'
+                flexDirection='column'
+                spacing={4}
+                px={{ base: 0, md: 4 }}
+                py={4}
+              >
+                {data && data['_meta'] && (
+                  <Flex
+                    flex={1}
+                    justifyContent='center'
+                    alignItems='center'
+                    flexDirection='column'
+                    border='1px'
+                    borderColor='gray.100'
+                    borderRadius='semi'
+                    p={4}
+                  >
+                    <CompletenessBadgeCircle stats={data['_meta']} size='md' />
+                    <HeadingWithTooltip
+                      label='Metadata Completeness'
+                      pt={2}
+                      whiteSpace='nowrap'
+                    />
+                  </Flex>
+                )}
+                {/* External links to access data, documents or dataset at the source. */}
+                <Flex
+                  flex={1}
+                  border='1px'
+                  borderColor='gray.100'
+                  borderRadius='semi'
+                  flexDirection='column'
+                >
+                  <External
+                    data={data}
+                    isLoading={isLoading}
+                    hasDivider={false}
+                  />
+                </Flex>
+              </Stack>
             )}
             {section.hash === 'overview' && (
-              <Box display={{ base: 'block', lg: 'none' }}>
-                <ResourceLinks
+              <>
+                <ResourceOverview isLoading={isLoading} {...data} />
+                <ResourceIsPartOf
                   isLoading={isLoading}
-                  url={data?.url}
-                  mainEntityOfPage={data?.mainEntityOfPage}
-                  codeRepository={data?.codeRepository}
-                  includedInDataCatalog={data?.includedInDataCatalog}
-                  usageInfo={data?.usageInfo}
-                >
-                  <ResourceStats
-                    includedInDataCatalog={data?.includedInDataCatalog}
-                    citation={data?.citation}
-                    doi={data?.doi}
-                    nctid={data?.nctid}
-                    aggregateRating={data?.aggregateRating}
-                    interactionStatistics={data?.interactionStatistics}
-                  />
-                </ResourceLinks>
-              </Box>
+                  studies={data?.isPartOf}
+                />
+                <ResourceCitations
+                  isLoading={isLoading}
+                  type={data?.['@type']}
+                  citations={data?.citation}
+                />
+              </>
             )}
 
             {/* Show keywords */}
@@ -170,7 +194,6 @@ const Sections = ({
                 </Flex>
               </Skeleton>
             )}
-
             {section.hash === 'softwareInformation' && (
               <SoftwareInformation
                 keys={sectionMetadata[section.hash]}
@@ -178,7 +201,15 @@ const Sections = ({
                 {...data}
               />
             )}
-
+            {section.hash === 'isBasedOn' && data?.isBasedOn && (
+              <BasedOnTable
+                id='software-information-is-based-on'
+                title='Imports'
+                caption='Imports used by this dataset/tool.'
+                isLoading={isLoading}
+                items={data?.isBasedOn}
+              />
+            )}
             {/* Show description */}
             {section.hash === 'description' &&
               (data?.description || data?.abstract) && (
@@ -203,7 +234,6 @@ const Sections = ({
                   )}
                 </>
               )}
-
             {/* Show provenance */}
             {section.hash === 'provenance' && (
               <ResourceProvenance isLoading={isLoading} {...data} />
@@ -235,48 +265,35 @@ const Sections = ({
                 )}
               </>
             )}
-
             {/* Show funding */}
-            {section.hash === 'funding' && (
+            {/* {section.hash === 'funding' && (
               <FundingTable isLoading={isLoading} {...data} />
+            )} */}
+            {section.hash === 'funding' && (
+              <Funding isLoading={isLoading} data={data?.funding || []} />
             )}
-
             {/* Show citedBy */}
             {section.hash === 'citedBy' && (
               <CitedByTable isLoading={isLoading} {...data} />
             )}
-
             {/* Show raw metadata */}
             {section.hash === 'metadata' && data?.rawData && (
               <>
-                <Flex w='100%' justifyContent='flex-end' pb={4}>
+                <Flex w='100%' justifyContent='flex-end' pb={2}>
                   <DownloadMetadata
-                    buttonProps={{ colorScheme: 'secondary' }}
-                    exportName={data.rawData['_id']}
+                    buttonProps={{
+                      colorScheme: 'primary',
+                      variant: 'outline',
+                      size: 'sm',
+                      mb: 1,
+                    }}
+                    exportFileName={`nde-${data.rawData['_id']}`}
                     params={{ q: `_id:"${data.rawData['_id']}"` }}
                   >
                     Download Metadata
                   </DownloadMetadata>
                 </Flex>
-                <Box
-                  maxHeight={500}
-                  overflow='auto'
-                  w='100%'
-                  tabIndex={0}
-                  borderY='2px solid'
-                  borderColor='page.alt'
-                >
-                  <pre
-                    style={{
-                      whiteSpace: 'pre-wrap',
-                      padding: '2rem',
-                    }}
-                  >
-                    <Text fontSize='10px'>
-                      {JSON.stringify(data.rawData, null, 2)}
-                    </Text>
-                  </pre>
-                </Box>
+                <JsonViewer data={data.rawData} />
               </>
             )}
           </Section>

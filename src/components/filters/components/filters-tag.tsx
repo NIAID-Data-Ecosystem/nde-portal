@@ -5,7 +5,7 @@ import {
   Tag,
   TagCloseButton,
   TagLabel,
-} from 'nde-design-system';
+} from '@chakra-ui/react';
 import { filtersConfig } from 'src/components/search-results-page/components/filters';
 import { SelectedFilterType, SelectedFilterTypeValue, ValueOf } from '../types';
 /*
@@ -39,6 +39,7 @@ export const FilterTags: React.FC<FilterTags> = ({
       <Button
         m={1}
         variant='outline'
+        size='md'
         colorScheme='secondary'
         onClick={removeAllFilters}
       >
@@ -67,7 +68,7 @@ export const FilterTags: React.FC<FilterTags> = ({
           }
 
           return (
-            <Tag key={`${str}`} colorScheme='secondary' size='lg' m={1}>
+            <Tag key={`${str}`} colorScheme='secondary' size='md' m={1}>
               <TagLabel whiteSpace='break-spaces'>
                 {name}: {str}
               </TagLabel>
@@ -81,14 +82,27 @@ export const FilterTags: React.FC<FilterTags> = ({
         return values.map(v => {
           let value = v || '';
           if (typeof v === 'object' && Object.keys(v)[0].includes('exists')) {
-            value = 'Not Specified';
-          }
+            value =
+              Object.keys(v)[0] === '-_exists_' ? 'Not Specified' : 'Specified';
+          } else if (
+            typeof v === 'string' &&
+            v.includes(' | ') &&
+            (key === 'species.displayName' ||
+              key === 'infectiousAgent.displayName')
+          ) {
+            const [commonName, scientificName] = v.split(' | ');
 
+            value = `${
+              scientificName.charAt(0).toUpperCase() + scientificName.slice(1)
+            } ( ${commonName.charAt(0).toUpperCase() + commonName.slice(1)} )`;
+          }
           return (
-            <Tag key={`${v}`} colorScheme='secondary' size='lg' m={1}>
+            <Tag key={`${value}`} colorScheme='secondary' size='md' m={1}>
               <TagLabel whiteSpace='break-spaces'>
                 {name}
-                {value ? `: ${value}` : ''}
+                {typeof value === 'string'
+                  ? `: ${value.charAt(0).toUpperCase() + value.slice(1)}`
+                  : ''}
               </TagLabel>
               <TagCloseButton onClick={() => removeSelectedFilter(key, v)} />
             </Tag>

@@ -13,7 +13,6 @@
     {
       "id": "AccessClinicalData@NIAID",
       "label": "AccessClinicalData@NIAID",
-      "abstract": "Enables access to NIAID-sponsored clinical trial records",
       "genre": ["clinical"],
       "icon": "/assets/NIH-logo.png",
       "imageURL": "/assets/resources/access-clinical.png",
@@ -44,7 +43,6 @@
     {
       "id": "ClinEpiDB",
       "label": "ClinEpiDB",
-      "abstract": "Integrates data from epidemiological studies",
       "genre": ["clinical", "epidemiology"],
       "icon": "/assets/resources/clinepi.jpeg",
       "imageURL": "/assets/resources/clinepi.jpeg",
@@ -54,9 +52,15 @@
     {
       "id": "Data Discovery Engine",
       "label": "Data Discovery Engine",
-      "abstract": "Harvests metadata from CTSA Program hubs & other biomedical data providers",
       "icon": "/assets/resources/dde.svg",
       "imageURL": "/assets/resources/dde_full.svg",
+      "type": "generalist"
+    },
+    {
+      "id": "Data Discovery Engine, NIAID Systems Biology",
+      "label": "Data Discovery Engine, NIAID Systems Biology",
+      "icon": "/assets/resources/niaid_sysbio.svg",
+      "imageURL": "/assets/resources/niaid-sysbio.svg",
       "type": "generalist"
     },
     {
@@ -69,15 +73,20 @@
     {
       "id": "Dryad Digital Repository",
       "label": "Dryad Digital Repository",
-      "abstract": "Multidisciplinary open data publishing platform",
       "icon": "/assets/resources/dryad-icon.png",
       "imageURL": "/assets/resources/dryad.png",
       "type": "generalist"
     },
     {
+      "id": "Flow Repository",
+      "label": "Flow Repository",
+      "icon": "/assets/resources/flow-icon.png",
+      "imageURL": "/assets/resources/flow.gif",
+      "type": "generalist"
+    },
+    {
       "id": "Harvard Dataverse",
       "label": "Harvard Dataverse",
-      "abstract": "Multidisciplinary research data repository",
       "icon": "/assets/resources/dataverse-icon.png",
       "imageURL": "/assets/resources/harvard-dataverse.png",
       "type": "generalist"
@@ -85,7 +94,6 @@
     {
       "id": "HuBMAP",
       "label": "HuBMAP",
-      "abstract": "Single-cell tissue data repository",
       "genre": ["physiology", "imaging", "omics", "spectrometry"],
       "icon": "/assets/resources/hubmap-icon.jpg",
       "imageURL": "/assets/resources/hubmap.png",
@@ -94,16 +102,14 @@
     {
       "id": "Human Cell Atlas",
       "label": "Human Cell Atlas",
-      "abstract": "Single-cell data repository",
       "genre": ["physiology", "omics"],
-      "icon": "/assets/resources/hca.png",
+      "icon": "/assets/resources/hca-icon.png",
       "imageURL": "/assets/resources/hca.png",
-      "type": "iid"
+      "type": "generalist"
     },
     {
       "id": "ImmPort",
       "label": "ImmPort",
-      "abstract": "Hosts immunology data from basic science and clinical studies",
       "genre": ["omics", "clinical", "imaging", "immunology", "molecular"],
       "icon": "/assets/resources/immport-icon.jpg",
       "imageURL": "/assets/resources/immport.png",
@@ -113,7 +119,6 @@
     {
       "id": "LINCS",
       "label": "BD2K-LINCS DCIC",
-      "abstract": "Catalogs changes in gene expression and other cellular processes",
       "genre": ["imaging", "omics", "molecular"],
       "icon": "/assets/resources/lincs-icon.jpg",
       "imageURL": "/assets/resources/lincs.png",
@@ -122,7 +127,6 @@
     {
       "id": "Mendeley",
       "label": "Mendeley",
-      "abstract": "Multidisciplinary research data repository",
       "icon": "/assets/resources/mendeley-icon.png",
       "imageURL": "/assets/resources/mendeley.svg",
       "type": "generalist"
@@ -130,7 +134,6 @@
     {
       "id": "MicrobiomeDB",
       "label": "MicrobiomeDB",
-      "abstract": "Systems biology platform for exploring microbiome experiments",
       "genre": ["omics"],
       "icon": "/assets/resources/microbiome.png",
       "imageURL": "/assets/resources/microbiome.png",
@@ -140,7 +143,6 @@
     {
       "id": "NCBI GEO",
       "label": "NCBI GEO",
-      "abstract": "Repository of microarray, next-generation sequencing, & other high-throughput functional genomic data",
       "genre": ["omics"],
       "icon": "/assets/resources/geo.gif",
       "imageURL": "/assets/resources/geo.gif",
@@ -156,7 +158,6 @@
     {
       "id": "NCBI SRA",
       "label": "NCBI Sequence Read Archive",
-      "abstract": "Largest public repository of high throughput sequencing data",
       "genre": ["omics"],
       "icon": "/assets/resources/ncbi-sra.png",
       "imageURL": "/assets/resources/ncbi-sra.png",
@@ -179,18 +180,40 @@
       "type": "generalist"
     },
     {
+      "id": "NICHD DASH",
+      "label": "NICHD DASH",
+      "icon": "/assets/resources/niaid.png",
+      "imageURL": "/assets/resources/nichd-dash.png",
+      "type": "generalist"
+    },
+    {
+      "id": "Omics Discovery Index (OmicsDI)",
+      "label": "Omics Discovery Index (OmicsDI)",
+      "genre": ["omics"],
+      "icon": "/assets/resources/omics.png",
+      "imageURL": "/assets/resources/omics.png",
+      "type": "generalist"
+    },
+    {
+      "id": "PublicApps@SevenBridges",
+      "label": "Seven Bridges Public Apps Gallery",
+      "icon": "/assets/resources/sb.png",
+      "imageURL": "/assets/resources/sb.png",
+      "type": "generalist"
+    },
+
+    {
       "id": "Qiita",
       "label": "Qiita",
-      "abstract": "Allows scientists to share multi-omics records as studies",
       "genre": ["omics"],
       "icon": "/assets/resources/qiita.png",
       "imageURL": "/assets/resources/qiita.png",
       "type": "iid"
     },
+
     {
       "id": "ReframeDB",
       "label": "ReframeDB",
-      "abstract": "Screening library of 12,000 molecules",
       "genre": ["molecular"],
       "icon": "/assets/resources/reframedb.png",
       "imageURL": "/assets/resources/reframedb.png",
@@ -199,7 +222,6 @@
     {
       "id": "VDJServer",
       "label": "VDJServer",
-      "abstract": "Data commons for immune repertoire sequences and rearrangements",
       "genre": ["omics"],
       "icon": "/assets/resources/vdjserver.png",
       "imageURL": "/assets/resources/vdjserver.png",
@@ -209,7 +231,6 @@
     {
       "id": "VEuPathDB",
       "label": "VEuPathDB",
-      "abstract": "Database of genome-scale research data for vectors, parasites, and fungi",
       "genre": ["omics"],
       "icon": "/assets/resources/veupathdb-icon.jpg",
       "imageURL": "/assets/resources/VEuPathDB.png",
@@ -219,7 +240,6 @@
     {
       "id": "Vivli",
       "label": "Vivli",
-      "abstract": "Global clinical research data sharing platform",
       "genre": ["clinical"],
       "icon": "/assets/resources/vivli-icon.jpeg",
       "imageURL": "/assets/resources/vivli.png",
@@ -235,7 +255,6 @@
     {
       "id": "Zenodo",
       "label": "Zenodo",
-      "abstract": "Multi-disciplinary open repository",
       "icon": "/assets/resources/zenodo-icon.jpg",
       "imageURL": "/assets/resources/zenodo.svg",
       "type": "generalist"

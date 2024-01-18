@@ -16,9 +16,10 @@ import {
   useDisclosure,
   useBreakpointValue,
   Icon,
-} from 'nde-design-system';
-import { FaFilter } from 'react-icons/fa';
+} from '@chakra-ui/react';
+import { FaFilter } from 'react-icons/fa6';
 import { FiltersConfigProps, SelectedFilterType } from '../types';
+import { ScrollContainer } from 'src/components/scroll-container';
 
 /*
 [COMPONENT INFO]:
@@ -189,12 +190,12 @@ export const FiltersContainer: React.FC<FiltersContainerProps> = ({
         size={screenSize === 'mobile' ? 'full' : 'md'}
       >
         <DrawerOverlay />
-        <DrawerContent overflow='auto' height={`${innerHeight}px`}>
+        <DrawerContent height={`${innerHeight}px`}>
           <DrawerCloseButton />
           <DrawerHeader borderBottomWidth='1px'>Filters</DrawerHeader>
-
-          <DrawerBody>{content}</DrawerBody>
-
+          <ScrollContainer>
+            <DrawerBody>{content}</DrawerBody>
+          </ScrollContainer>
           <DrawerFooter borderTopWidth='1px'>
             <Button onClick={onClose} colorScheme='secondary' size='md'>
               Submit and Close
@@ -204,7 +205,7 @@ export const FiltersContainer: React.FC<FiltersContainerProps> = ({
       </Drawer>
     </>
   ) : (
-    <Box
+    <ScrollContainer
       flex={1}
       minW='270px'
       maxW='400px'
@@ -219,6 +220,6 @@ export const FiltersContainer: React.FC<FiltersContainerProps> = ({
       overflowY='auto'
     >
       {content}
-    </Box>
+    </ScrollContainer>
   );
 };

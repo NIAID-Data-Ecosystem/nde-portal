@@ -15,7 +15,7 @@ import {
   Text,
   UnorderedList,
   useDisclosure,
-} from 'nde-design-system';
+} from '@chakra-ui/react';
 import { useRouter } from 'next/router';
 import {
   buildTree,
@@ -28,13 +28,13 @@ import {
   convertQueryString2Object,
 } from './utils/query-helpers';
 import {
-  FaChevronDown,
-  FaChevronUp,
+  FaAngleDown,
+  FaAngleUp,
   FaEye,
   FaEyeSlash,
-  FaHistory,
-  FaUndoAlt,
-} from 'react-icons/fa';
+  FaClockRotateLeft,
+  FaArrowRotateLeft,
+} from 'react-icons/fa6';
 import { AdvancedSearchFormContext, Search } from './components/Search';
 import { ResultsCount } from './components/ResultsCount';
 import SampleQueriesData from 'configs/sample-queries.json';
@@ -194,14 +194,14 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
             flex={1}
             size='sm'
             fontWeight='medium'
-            color={items.length ? 'text.heading' : 'gray.600'}
+            color={items.length ? 'text.heading' : 'gray.800'}
           >
             Query Builder
           </Heading>
           <Button
             colorScheme='primary'
             size='sm'
-            leftIcon={<FaUndoAlt />}
+            leftIcon={<FaArrowRotateLeft />}
             variant='outline'
             isDisabled={!items.length}
             onClick={() => {
@@ -213,7 +213,7 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
             Clear query
           </Button>
         </Flex>
-        <Text color={items.length ? 'text.body' : 'gray.600'} fontSize='sm'>
+        <Text color={items.length ? 'text.body' : 'gray.800'} fontSize='sm'>
           Re-order query terms by click and drag. Group items together by
           dragging an element over another.
         </Text>
@@ -246,7 +246,7 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
 
           <Button
             isDisabled={items.length === 0}
-            rightIcon={showRawQuery ? <FaChevronUp /> : <FaChevronDown />}
+            rightIcon={showRawQuery ? <FaAngleUp /> : <FaAngleDown />}
             onClick={toggleShowRawQuery}
             colorScheme='gray'
             color='text.body'
@@ -292,7 +292,11 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
                   alignItems='center'
                   flex={1}
                 >
-                  <Icon as={FaHistory} mx={2} color='status.info'></Icon>
+                  <Icon
+                    as={FaClockRotateLeft}
+                    mx={2}
+                    color='status.info'
+                  ></Icon>
                   Search History
                 </Text>
                 <AccordionIcon />

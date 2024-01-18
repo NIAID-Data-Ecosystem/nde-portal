@@ -3,12 +3,11 @@ import {
   Card,
   CardBody,
   CardFooter,
-  CardTitle,
   Flex,
   Heading,
   Tag,
   Text,
-} from 'nde-design-system';
+} from '@chakra-ui/react';
 import { NewsOrEventsObject } from 'src/pages/news';
 import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
@@ -46,13 +45,15 @@ const SectionCard = ({ attributes }: NewsOrEventsObject) => {
             fontWeight='medium'
             fontSize='sm'
             whiteSpace='nowrap'
-            color='gray.600'
+            color='gray.800'
           >
             {formatDate(attributes.publishedAt || attributes.updatedAt)}
           </Text>
         )}
         <Box p={2}>
-          <CardTitle as='h3'>{attributes.name}</CardTitle>
+          <Heading as='h3' fontWeight='semibold'>
+            {attributes.name}
+          </Heading>
           {attributes.subtitle && (
             <Heading
               as='h4'

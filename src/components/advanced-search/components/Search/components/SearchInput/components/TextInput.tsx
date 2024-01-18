@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Box } from 'nde-design-system';
+import { Box } from '@chakra-ui/react';
 import { PredictiveSearch } from 'src/components/search-with-predictive-text/components/PredictiveSearch';
 import { useAdvancedSearchContext } from '../../AdvancedSearchFormContext';
 import { wildcardQueryString } from 'src/components/advanced-search/utils/query-helpers';
@@ -55,7 +55,7 @@ export const TextInput: React.FC<TextInputProps> = ({
     <Box width='100%'>
       {/* Input field with suggestions matching the search term. */}
       <PredictiveSearch
-        ariaLabel='Search for datasets'
+        ariaLabel='Add'
         placeholder='Search for datasets'
         colorScheme={colorScheme}
         size={size}

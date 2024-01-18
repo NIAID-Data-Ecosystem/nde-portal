@@ -4,7 +4,7 @@ import {
   ListItem as NDEListItem,
   ListItemProps as ChakraListItemProps,
   Text,
-} from 'nde-design-system';
+} from '@chakra-ui/react';
 import { FormattedResource } from 'src/utils/api/types';
 import { useDropdownContext } from '..';
 

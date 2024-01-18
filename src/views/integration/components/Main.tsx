@@ -12,7 +12,7 @@ import {
   TabPanels,
   Tabs,
   Text,
-} from 'nde-design-system';
+} from '@chakra-ui/react';
 import type { NextPage } from 'next';
 import { useMDXComponents } from 'mdx-components';
 import LocalNavigation from 'src/components/resource-sections/components/navigation';
@@ -30,7 +30,6 @@ import {
 } from 'src/views/integration/components/Blocks';
 import { StepCard } from 'src/views/integration/components/Card';
 import { FaLightbulb } from 'react-icons/fa6';
-import { useRouter } from 'next/router';
 import Loading from 'src/components/loading';
 
 interface IntegrationProps {
@@ -269,16 +268,7 @@ const IntegrationMain: NextPage<IntegrationProps> = props => {
       >
         {sections?.length || isLoading ? (
           <Box position='sticky' top='0px'>
-            {sections?.length ? (
-              <LocalNavigation
-                routes={sections}
-                itemProps={{
-                  borderLeftColor: 'primary.400',
-                }}
-              />
-            ) : (
-              <></>
-            )}
+            {sections?.length ? <LocalNavigation routes={sections} /> : <></>}
           </Box>
         ) : (
           <></>

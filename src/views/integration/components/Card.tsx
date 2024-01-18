@@ -10,7 +10,7 @@ import {
   TabPanels,
   Tabs,
   Text,
-} from 'nde-design-system';
+} from '@chakra-ui/react';
 import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
 import remarkGfm from 'remark-gfm';

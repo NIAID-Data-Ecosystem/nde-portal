@@ -1,4 +1,4 @@
-import { Heading, Text, HeadingProps } from 'nde-design-system';
+import { Heading, Text, HeadingProps } from '@chakra-ui/react';
 
 /*
 [COMPONENT INFO]:

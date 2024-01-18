@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FaChevronDown } from 'react-icons/fa';
+import { FaAngleDown } from 'react-icons/fa6';
 import {
   Box,
   Button,
@@ -12,7 +12,7 @@ import {
   ListItem,
   ListItemProps,
   UnorderedList,
-} from 'nde-design-system';
+} from '@chakra-ui/react';
 import { UnionTypes } from 'src/components/advanced-search/types';
 
 export interface DropdownButtonProps extends ButtonGroupProps {
@@ -68,7 +68,7 @@ export const DropdownButton: React.FC<DropdownButtonProps> = ({
             height={height}
             aria-label={ariaLabel}
             alignItems='center'
-            icon={<Icon as={FaChevronDown} />}
+            icon={<Icon as={FaAngleDown} />}
             onClick={() => setOptionsOpen(!optionsOpen)}
             onMouseEnter={() => setOptionsOpen(true)}
             bg={`${colorScheme}.400`}

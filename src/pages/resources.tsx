@@ -4,33 +4,17 @@ import NextLink from 'next/link';
 import { PageContainer, PageContent } from 'src/components/page-container';
 import { useRouter } from 'next/router';
 import { useQuery } from 'react-query';
-import { getResourceById } from 'src/utils/api';
+import { fetchSearchResults, getResourceById } from 'src/utils/api';
 import { FormattedResource } from 'src/utils/api/types';
 import Empty from 'src/components/empty';
-import {
-  Box,
-  Button,
-  Card,
-  Collapse,
-  Flex,
-  Link,
-  ListItem,
-  Text,
-  UnorderedList,
-} from 'nde-design-system';
-import {
-  Navigation,
-  RelatedDatasets,
-  ResourceLinks,
-} from 'src/components/resource-sections/components';
+import { Box, Button, Card, Flex, Link, Text } from '@chakra-ui/react';
 import { Error, ErrorCTA } from 'src/components/error';
 import Sections, { sectionMetadata } from 'src/components/resource-sections';
-import navigationData from 'configs/resource-sections.json';
+import navigationData from 'src/components/resource-sections/resource-sections.json';
 import { Route, showSection } from 'src/components/resource-sections/helpers';
-import { useLocalStorage } from 'usehooks-ts';
-import { CardContainer } from 'src/components/resource-sections/components/related-datasets';
-import ResourceStats from 'src/components/resource-sections/components/stats';
 import { getQueryStatusError } from 'src/components/error/utils';
+import { Sidebar } from 'src/components/resource-sections/components/sidebar';
+import { omit } from 'lodash';
 
 // Displays empty message when no data exists.
 const EmptyState = () => {
@@ -46,21 +30,69 @@ const EmptyState = () => {
   );
 };
 
-const ResourcePage: NextPage = props => {
+interface ResourceQueryData extends FormattedResource {
+  relatedDatasets?: {
+    _id: FormattedResource['id'];
+    '@type': FormattedResource['@type'];
+    name: FormattedResource['name'];
+  }[];
+}
+
+export interface ResourceData extends ResourceQueryData {
+  rawData: Omit<
+    FormattedResource['rawData'],
+    '_id' | '_ignored' | '_score' | '_meta'
+  >;
+}
+
+const ResourcePage: NextPage = () => {
   const router = useRouter();
   const { id } = router.query;
-  const [searchHistory] = useLocalStorage<string[]>('basic-searches', []);
   // Access query client
-
   const {
     isLoading: loadingData,
     error,
     data,
-  } = useQuery<FormattedResource | undefined, Error>(
+  } = useQuery<ResourceQueryData | undefined, Error, ResourceData | undefined>(
     ['search-result', { id }],
-    () => getResourceById(id),
+    async () => {
+      const data = await getResourceById(id, { show_meta: true });
+      // Get other datasets that have the same study identifier and data catalog name.
+      if (data?.isPartOf) {
+        const studyIds = data.isPartOf
+          .map(study => study.identifier)
+          .filter((item): item is string => !!item)
+          .join('" OR "');
+
+        const includedInDataCatalogNames = Array.isArray(
+          data.includedInDataCatalog,
+        )
+          ? data.includedInDataCatalog.map(({ name }) => name).join('" OR "')
+          : data.includedInDataCatalog.name;
+
+        const q = `isPartOf.identifier:("${studyIds}") AND includedInDataCatalog.name:("${includedInDataCatalogNames}")`;
+
+        const relatedDatasets = await fetchSearchResults({
+          q,
+          size: 10,
+          sort: 'name.raw',
+          fields: ['_id', '@type', 'name'],
+        }).then(data => data?.results);
+        return { ...data, relatedDatasets };
+      }
+
+      return data;
+    },
     {
       refetchOnWindowFocus: false,
+      select: data => {
+        if (data) {
+          return {
+            ...data,
+            rawData: omit(data.rawData, ['_id', '_ignored', '_score', '_meta']),
+          };
+        }
+      },
     },
   );
 
@@ -75,22 +107,6 @@ const ResourcePage: NextPage = props => {
       script_tag.text = metadata;
       document.head.appendChild(script_tag);
     }
-  }, [data]);
-
-  // embed altmetric data. For more information: https://api.altmetric.com/embeds.html
-  useEffect(() => {
-    // @ts-ignore
-    if (window._altmetric_embed_init) {
-      // @ts-ignore
-      window._altmetric_embed_init();
-    }
-    /* import altmetric script for badge embeds */
-    let altmetricsScript = document.createElement('script');
-    altmetricsScript.setAttribute(
-      'src',
-      'https://d1bxh8uas1mnw7.cloudfront.net/assets/embed.js',
-    );
-    document.body.appendChild(altmetricsScript);
   }, [data]);
 
   const { routes } = navigationData as {
@@ -109,12 +125,6 @@ const ResourcePage: NextPage = props => {
   const errorResponse =
     error && getQueryStatusError(error as unknown as { status: string });
 
-  const [isMounted, setIsMounted] = React.useState(false);
-
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
   if (!isLoading && !id) {
     router.push('/404');
     return <></>;
@@ -128,150 +138,94 @@ const ResourcePage: NextPage = props => {
         metaDescription='NDE Discovery Portal - Detailed resource information.'
       >
         <PageContent>
-          {error ? (
-            // [ERROR STATE]: API response error
-            <Error>
-              <Flex flexDirection='column' alignItems='center'>
-                <Text>
-                  {errorResponse?.message ||
-                    'It’s possible that the server is experiencing some issues.'}{' '}
-                  {errorResponse?.relatedLinks &&
-                    errorResponse?.relatedLinks?.length > 0 &&
-                    errorResponse.relatedLinks.map(
-                      ({ label, href, isExternal }, idx) => {
-                        return (
-                          <Link
-                            key={`${label}-${idx}`}
-                            href={href}
-                            isExternal={isExternal}
-                          >
-                            {label}
-                          </Link>
-                        );
-                      },
-                    )}
-                </Text>
+          <Flex
+            flexDirection='column'
+            maxW={{ base: 'unset', xl: '2000px' }}
+            margin='0 auto'
+            p={{ base: 0, md: 4 }}
+            justifyContent='center'
+            mb={32}
+            flex={1}
+            w='100%'
+          >
+            {error ? (
+              // [ERROR STATE]: API response error
+              <Error>
+                <Flex flexDirection='column' alignItems='center'>
+                  <Text>
+                    {errorResponse?.message ||
+                      'It’s possible that the server is experiencing some issues.'}{' '}
+                    {errorResponse?.relatedLinks &&
+                      errorResponse?.relatedLinks?.length > 0 &&
+                      errorResponse.relatedLinks.map(
+                        ({ label, href, isExternal }, idx) => {
+                          return (
+                            <Link
+                              key={`${label}-${idx}`}
+                              href={href}
+                              isExternal={isExternal}
+                            >
+                              {label}
+                            </Link>
+                          );
+                        },
+                      )}
+                  </Text>
 
-                <Box mt={4}>
-                  <ErrorCTA>
-                    <Button onClick={() => router.reload()} variant='outline'>
-                      Retry
-                    </Button>
-                  </ErrorCTA>
-                </Box>
-              </Flex>
-            </Error>
-          ) : !isLoading && !data ? (
-            // [EMPTY STATE]: No Results
-            <EmptyState />
-          ) : (
-            <Flex w='100%' h='100%' flexDirection='column' minW={150}>
+                  <Box mt={4}>
+                    <ErrorCTA>
+                      <Button onClick={() => router.reload()} variant='outline'>
+                        Retry
+                      </Button>
+                    </ErrorCTA>
+                  </Box>
+                </Flex>
+              </Error>
+            ) : !isLoading && !data ? (
+              // [EMPTY STATE]: No Results
+              <EmptyState />
+            ) : (
               <Flex
-                height='100%'
-                p={2}
-                flexDirection={['column', 'column', 'row']}
+                className='page-content'
+                flexDirection='column'
+                flex={1}
+                pb={32}
+                width='100%'
+                alignItems='center'
+                m='0 auto'
               >
-                <Card
-                  flex={3}
-                  p={0}
-                  width='100%'
-                  sx={{ '>*': { p: 0 } }}
-                  minW={150}
-                >
-                  <Sections
-                    isLoading={isLoading}
-                    data={data}
-                    sections={sections}
-                  />
-                </Card>
-                <Box
-                  flex={1}
-                  position='sticky'
-                  top='0px'
-                  w='100%'
-                  h='100%'
-                  minW='350px'
-                  display={{ base: 'none', lg: 'block' }}
-                >
-                  <Card
-                    flex={1}
-                    ml={[0, 0, 4]}
-                    my={[2, 2, 0]}
-                    sx={{ '>*': { p: 0 } }}
+                <Flex w='100%' h='100%' flexDirection='column' minW={150}>
+                  <Flex
+                    height='100%'
+                    p={{ sm: 0, md: 2 }}
+                    flexDirection={['column', 'column', 'row']}
                   >
-                    {data && (data.citation || data.doi || data.nctid) ? (
-                      <ResourceStats
-                        includedInDataCatalog={data?.includedInDataCatalog}
-                        citation={data?.citation}
-                        doi={data?.doi}
-                        nctid={data?.nctid}
-                        aggregateRating={data?.aggregateRating}
-                        interactionStatistics={data?.interactionStatistics}
-                      />
-                    ) : null}
-                    {/* Show external links such as source url, in header when on mobile */}
-                    <ResourceLinks
-                      isLoading={isLoading}
-                      includedInDataCatalog={data?.includedInDataCatalog}
-                      mainEntityOfPage={data?.mainEntityOfPage}
-                      codeRepository={data?.codeRepository}
-                      hasPart={data?.hasPart}
-                      url={data?.url}
-                      usageInfo={data?.usageInfo}
-                    />
-                  </Card>
-
-                  {/* Local navigation for page */}
-                  {sections.length > 0 && (
                     <Card
-                      flex={1}
-                      ml={[0, 0, 4]}
-                      my={2}
-                      sx={{ '>*': { p: [2, 4, 4, 6] } }}
+                      className='main-content'
+                      flex={3}
+                      p={0}
+                      width='100%'
+                      sx={{ '>*': { p: 0 } }}
+                      minW={150}
+                      overflow='unset'
                     >
-                      <Navigation routes={sections} />
+                      <Sections
+                        isLoading={isLoading}
+                        data={data}
+                        sections={sections}
+                      />
                     </Card>
-                  )}
 
-                  {/* Associated Resources with current page */}
-                  <RelatedDatasets
-                    isLoading={isLoading}
-                    isRelatedTo={data?.isRelatedTo || null}
-                    includedInDataCatalog={data?.includedInDataCatalog}
-                  />
-
-                  {/* Search History links */}
-                  {isMounted && (
-                    <Collapse in={!!searchHistory.length}>
-                      <CardContainer heading='Previous Searches'>
-                        <UnorderedList ml={0}>
-                          {searchHistory.map((search, index) => (
-                            <ListItem key={index}>
-                              <NextLink
-                                href={{
-                                  pathname: '/search',
-                                  query: { q: search },
-                                }}
-                                passHref
-                              >
-                                <Link
-                                  as='span'
-                                  wordBreak='break-word'
-                                  fontSize='xs'
-                                >
-                                  {search}
-                                </Link>
-                              </NextLink>
-                            </ListItem>
-                          ))}
-                        </UnorderedList>
-                      </CardContainer>
-                    </Collapse>
-                  )}
-                </Box>
+                    <Sidebar
+                      data={data}
+                      isLoading={isLoading}
+                      sections={sections}
+                    />
+                  </Flex>
+                </Flex>
               </Flex>
-            </Flex>
-          )}
+            )}
+          </Flex>
         </PageContent>
       </PageContainer>
     </>

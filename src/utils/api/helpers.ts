@@ -99,35 +99,6 @@ export const formatCitation = (
   }
 };
 
-// Format funding fields.
-interface APIFunding {
-  '@type'?: string;
-  funder?: Funder;
-  identifier?: string | null;
-  description?: string | null;
-  url?: string | null;
-}
-
-export const formatFunding = (fundingData?: APIFunding | APIFunding[]) => {
-  if (!fundingData) {
-    return null;
-  }
-
-  const getFundingFields = (data: APIFunding) => {
-    return {
-      funder: data.funder,
-      identifier: data.identifier || null,
-      description: data.description || null,
-      url: data.url || null,
-    };
-  };
-  if (Array.isArray(fundingData)) {
-    return fundingData.map(data => getFundingFields(data));
-  } else {
-    return [getFundingFields(fundingData)];
-  }
-};
-
 // Format distribution fields.
 interface APIDistribution {
   '@id'?: string | null;
@@ -150,6 +121,7 @@ export const formatDistribution = (
 
   const getDistributionFields = (data: APIDistribution) => {
     return {
+      ...data,
       encodingFormat: data.encodingFormat || null,
       contentUrl: data.contentUrl || null,
       dateCreated: data.dateCreated || null,
@@ -275,18 +247,10 @@ export const formatAPIResource = (data: any) => {
     distribution: formatDistribution(data.distribution),
     doi: data['doi'] || data['@id'] || null,
     downloadUrl: convertToArray(data.downloadUrl),
-    funding: formatFunding(data.funding),
+    funding: convertToArray(data.funding),
     hasPart: convertToArray(data.hasPart),
     healthCondition: convertToArray(data.healthCondition),
-    includedInDataCatalog: data.includedInDataCatalog
-      ? {
-          name: data.includedInDataCatalog.name || null,
-          url: data.includedInDataCatalog.url || null,
-          versionDate: data.includedInDataCatalog.versionDate || null,
-          image: data.image || null,
-          identifier: data.includedInDataCatalog.identifier || null,
-        }
-      : null,
+    includedInDataCatalog: data.includedInDataCatalog ?? null,
     infectiousAgent: convertToArray(data.infectiousAgent),
     input: convertToArray(data.input),
 

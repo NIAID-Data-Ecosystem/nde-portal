@@ -7,9 +7,9 @@ import {
   BoxProps,
   Icon,
   Skeleton,
-} from 'nde-design-system';
+} from '@chakra-ui/react';
 import { StyledSectionHead, StyledSectionHeading } from './styles';
-import { FaMinus, FaPlus } from 'react-icons/fa';
+import { FaMinus, FaPlus } from 'react-icons/fa6';
 import { getSectionIcon } from '../../helpers';
 
 interface SectionProps extends BoxProps {
@@ -38,7 +38,7 @@ const Section: React.FC<SectionProps> = ({
       <Skeleton
         isLoaded={!isLoading}
         height={isLoading ? '200px' : 'unset'}
-        p={4}
+        p={{ base: 0, sm: 4 }}
         {...props}
       >
         {children}

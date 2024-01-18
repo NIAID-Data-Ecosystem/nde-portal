@@ -3,7 +3,7 @@ import { useQuery } from 'react-query';
 import React, { useState } from 'react';
 import { NewsOrEventsObject } from 'src/pages/news';
 import { formatDate } from 'src/utils/api/helpers';
-import { FaChevronRight } from 'react-icons/fa';
+import { FaAngleRight } from 'react-icons/fa6';
 import {
   Box,
   Button,
@@ -13,12 +13,11 @@ import {
   Image,
   Text,
   Card,
-  CardTitle,
   CardBody,
-  Link,
-} from 'nde-design-system';
+} from '@chakra-ui/react';
 import { Carousel } from 'src/components/carousel';
 import NextLink from 'next/link';
+import { Link } from 'src/components/link';
 
 interface NewsCarouselProps {
   news: NewsOrEventsObject[];
@@ -104,9 +103,15 @@ export const NewsCarousel = ({ news: initialData }: NewsCarouselProps) => {
               </Flex>
 
               <Box p={4}>
-                <CardTitle p={0} fontSize='lg' lineHeight='short'>
+                <Heading
+                  p={0}
+                  fontSize='lg'
+                  fontWeight='semibold'
+                  lineHeight='short'
+                  size='h5'
+                >
                   {news.attributes.name}
-                </CardTitle>
+                </Heading>
                 <CardBody p={0}>
                   {
                     <Text as='span' mt={2} fontSize='sm' lineHeight='short'>
@@ -119,14 +124,12 @@ export const NewsCarousel = ({ news: initialData }: NewsCarouselProps) => {
                       <NextLink href={`news/#${news.attributes.slug}`} passHref>
                         <Link
                           as='span'
-                          variant='unstyled'
                           fontSize='sm'
-                          color='gray.600'
                           bg='transparent'
                           lineHeight='tall'
+                          mx={1}
                         >
-                          {' '}
-                          Read more...
+                          (<Text>view full release</Text>)
                         </Link>
                       </NextLink>
                     </Text>
@@ -142,10 +145,10 @@ export const NewsCarousel = ({ news: initialData }: NewsCarouselProps) => {
           href={{
             pathname: `/news`,
           }}
-          passHref
           prefetch={false}
+          passHref
         >
-          <Button size='sm' rightIcon={<Icon as={FaChevronRight} />}>
+          <Button as='span' size='sm' rightIcon={<Icon as={FaAngleRight} />}>
             All news releases
           </Button>
         </NextLink>

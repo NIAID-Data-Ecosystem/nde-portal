@@ -8,7 +8,6 @@ import {
   Flex,
   FlexProps,
   Icon,
-  Link,
   ListItem,
   Menu,
   MenuButton,
@@ -19,11 +18,18 @@ import {
   Text,
   UnorderedList,
   useDisclosure,
-} from 'nde-design-system';
-import { FaAngleDoubleLeft, FaAngleDoubleRight } from 'react-icons/fa';
+} from '@chakra-ui/react';
+import { Link } from 'src/components/link';
 import NextLink from 'next/link';
-import { FaAngleDown, FaAngleRight, FaArrowsUpDown } from 'react-icons/fa6';
+import {
+  FaAngleDown,
+  FaAnglesLeft,
+  FaAnglesRight,
+  FaAngleRight,
+  FaArrowsUpDown,
+} from 'react-icons/fa6';
 import LoadingSpinner from 'src/components/loading';
+import { ScrollContainer } from 'src/components/scroll-container';
 
 interface DocumentationSidebarProps extends FlexProps {
   children: React.ReactNode;
@@ -51,7 +57,7 @@ const SidebarContainer: React.FC<DocumentationSidebarProps> = ({
           display='flex'
           alignItems='flex-start'
         >
-          <Icon as={FaAngleDoubleRight} position='sticky' top={4}></Icon>
+          <Icon as={FaAnglesRight} position='sticky' top={4}></Icon>
         </Button>
       )}
       <Box
@@ -79,38 +85,19 @@ const SidebarContainer: React.FC<DocumentationSidebarProps> = ({
               variant='ghost'
               borderRadius='none'
             >
-              <Icon as={FaAngleDoubleLeft}></Icon>
+              <Icon as={FaAnglesLeft}></Icon>
             </Button>
-            <Box
-              as='nav'
+            <ScrollContainer
+              as='aside'
               overflowX='hidden'
               overflowY='auto'
               h='100%'
               borderY='1px solid'
               borderColor='gray.200'
               pb={4}
-              sx={{
-                '&::-webkit-scrollbar': {
-                  width: '7px',
-                  height: '7px',
-                },
-                '&::-webkit-scrollbar-track': {
-                  background: 'blackAlpha.100',
-                  borderRadius: '10px',
-                },
-                '&::-webkit-scrollbar-thumb': {
-                  background: 'gray.300',
-                  borderRadius: '10px',
-                },
-                _hover: {
-                  '&::-webkit-scrollbar-thumb': {
-                    background: 'niaid.placeholder',
-                  },
-                },
-              }}
             >
               {children}
-            </Box>
+            </ScrollContainer>
           </Flex>
         </Box>
       </Box>
@@ -187,11 +174,10 @@ export const SidebarMobile = ({
                   >
                     <MenuItem
                       pl={6}
-                      aria-selected={isSelected}
-                      _selected={{
-                        color: `${colorScheme}.600!important`,
-                        bg: `${colorScheme}.100`,
-                      }}
+                      color={
+                        isSelected ? `${colorScheme}.600!important` : 'inherit'
+                      }
+                      bg={isSelected ? `${colorScheme}.100` : 'transparent'}
                     >
                       <Text fontSize='sm' color='inherit'>
                         {item.name}
@@ -286,6 +272,14 @@ export const SidebarDesktop = ({
                     <UnorderedList ml={0}>
                       {category.items.map((item, i) => {
                         const isSelected = selectedSlug === item.slug;
+                        const bg = isSelected
+                          ? `${colorScheme}.100`
+                          : 'transparent';
+
+                        const color = isSelected
+                          ? `${colorScheme}.600!important`
+                          : 'text.body!important';
+
                         return (
                           <ListItem key={item.id} w='100%' display='flex'>
                             <NextLink
@@ -299,20 +293,13 @@ export const SidebarDesktop = ({
                                 fontSize='sm'
                                 px={8}
                                 py={1}
-                                aria-selected={isSelected}
-                                color='text.body!important'
-                                bg='transparent'
                                 lineHeight='tall'
-                                _selected={{
-                                  color: `${colorScheme}.600!important`,
-                                  bg: `${colorScheme}.100`,
-                                }}
+                                color={color}
+                                bg={bg}
                                 _hover={{
-                                  [`&[aria-selected=false]`]: {
-                                    bg: 'blackAlpha.50',
-                                    borderRadius: 'base',
-                                    transition: 'fast',
-                                  },
+                                  bg: isSelected ? bg : 'blackAlpha.50',
+                                  borderRadius: 'base',
+                                  transition: 'fast',
                                 }}
                               >
                                 <SkeletonText

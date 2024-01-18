@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo } from 'react';
-import { Box, Flex } from 'nde-design-system';
+import { Box, Flex } from '@chakra-ui/react';
 import { theme } from 'src/theme';
 import { Bar } from '@visx/shape';
 import { Group } from '@visx/group';
@@ -145,7 +145,7 @@ const Histogram: React.FC<HistogramProps> = ({
 
   // "Fill in" the data where years are missing.
   const updatedCounts = useMemo(
-    () => addMissingYears(updatedData),
+    () => addMissingYears([...updatedData]),
     [updatedData],
   );
 

@@ -2,7 +2,7 @@ import type { NextPage } from 'next';
 import { PageContainer, PageContent } from 'src/components/page-container';
 import { MDXProvider } from '@mdx-js/react';
 import AboutContent from 'content/about.mdx';
-import { Box } from 'nde-design-system';
+import { Box, VisuallyHidden } from '@chakra-ui/react';
 import { useMDXComponents } from 'mdx-components';
 
 const About: NextPage = () => {
@@ -23,6 +23,7 @@ const About: NextPage = () => {
         bg='#fff'
       >
         <Box w='100%' maxW='1000px' mb={32}>
+          <VisuallyHidden as='h1'>About</VisuallyHidden>
           <MDXProvider components={MDXComponents}>
             <AboutContent />
           </MDXProvider>

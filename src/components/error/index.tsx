@@ -6,7 +6,7 @@ import {
   Heading,
   HeadingProps,
   Text,
-} from 'nde-design-system';
+} from '@chakra-ui/react';
 import { PageContent } from 'src/components/page-container';
 
 interface Error extends FlexProps {

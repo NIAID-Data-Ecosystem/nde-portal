@@ -1,8 +1,7 @@
 import React from 'react';
-import { Box, Flex, Icon } from 'nde-design-system';
+import { Box, Flex, Icon, Text, TextProps } from '@chakra-ui/react';
 import { InputProperties, OutputProperties } from 'src/utils/api/types';
 import { IconType } from 'react-icons';
-import { StyledText } from '../../based-on';
 
 interface InputOutputProps extends InputProperties, OutputProperties {
   icon: IconType;
@@ -31,6 +30,22 @@ const InputOutput: React.FC<InputOutputProps> = ({
         )}
       </Box>
     </Flex>
+  );
+};
+
+interface StyledText extends TextProps {
+  title?: string;
+}
+const StyledText = ({ title, children, ...props }: StyledText) => {
+  return (
+    <Text fontSize='sm' lineHeight='short' wordBreak='break-all' {...props}>
+      {title && (
+        <Text as='span' fontSize='xs' fontWeight='semibold' color='gray.700'>
+          {title}
+        </Text>
+      )}{' '}
+      {children || '-'}
+    </Text>
   );
 };
 

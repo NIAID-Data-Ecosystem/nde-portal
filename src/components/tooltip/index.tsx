@@ -2,7 +2,7 @@ import React from 'react';
 import {
   Tooltip as ChakraTooltip,
   TooltipProps as ChakraTooltipProps,
-} from 'nde-design-system';
+} from '@chakra-ui/react';
 
 interface TooltipProps extends ChakraTooltipProps {}
 
@@ -12,7 +12,7 @@ const Tooltip: React.FC<TooltipProps> = ({ label, children, ...props }) => {
       label={label}
       bg='white'
       color='text.body'
-      fontSize='xs'
+      fontSize='13px'
       fontWeight='normal'
       lineHeight='short'
       border='1px solid'

@@ -1,44 +1,31 @@
 import React from 'react';
 import {
-  Box,
   Button,
   Card,
   CardHeader,
   CardBody,
-  CardFooter,
-  CardTitle,
   Flex,
   Icon,
-  Image,
-  Link,
   Skeleton,
   Text,
-  ToggleContainer,
-  VisuallyHidden,
-  BoxProps,
   Tooltip,
-} from 'nde-design-system';
-import {
-  FaArrowAltCircleRight,
-  FaChevronRight,
-  FaDollarSign,
-  FaRegClock,
-} from 'react-icons/fa';
+  Stack,
+} from '@chakra-ui/react';
+import { FaCircleArrowRight, FaAngleRight, FaRegClock } from 'react-icons/fa6';
 import { FormattedResource } from 'src/utils/api/types';
 import {
   formatAuthorsList2String,
-  formatDOI,
-  getRepositoryImage,
+  isSourceFundedByNiaid,
 } from 'src/utils/helpers';
 import { TypeBanner } from 'src/components/resource-sections/components';
 import NextLink from 'next/link';
-import CardDetails from './details';
+import MetadataAccordion from './metadata-accordion';
 import { DisplayHTMLContent } from 'src/components/html-content';
-import {
-  badgesConfig,
-  BadgeWithTooltip,
-  getBadgeIcon,
-} from 'src/components/badge-with-tooltip';
+import { AccessibleForFree, ConditionsOfAccess } from 'src/components/badges';
+import { SourceLogo } from './source-logo';
+import { CompletenessBadgeCircle } from 'src/components/completeness-badge/Circular';
+import { Heading } from '@chakra-ui/react';
+import { ToggleContainer } from 'src/components/toggle-container';
 
 interface SearchResultCardProps {
   isLoading?: boolean;
@@ -58,62 +45,14 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
     author,
     description,
     conditionsOfAccess,
-    doi,
-    nctid,
     includedInDataCatalog,
     isAccessibleForFree,
     url,
     sdPublisher,
-    citation,
   } = data || {};
 
-  const imageURL =
-    includedInDataCatalog?.name &&
-    getRepositoryImage(includedInDataCatalog.name);
   const paddingCard = [4, 6, 8, 10];
 
-  const ConditionsOfAccess = (props: BoxProps) => {
-    if (
-      !conditionsOfAccess &&
-      (isAccessibleForFree === null ||
-        typeof isAccessibleForFree === 'undefined')
-    ) {
-      return null;
-    }
-    return (
-      <Flex
-        justifyContent={['flex-end']}
-        alignItems='center'
-        w={['100%', 'unset']}
-        flex={[1, 'unset']}
-        p={[0.5, 2]}
-        {...props}
-      >
-        {isAccessibleForFree !== null &&
-          typeof isAccessibleForFree !== 'undefined' && (
-            <BadgeWithTooltip
-              mx={0.5}
-              icon={FaDollarSign}
-              {...badgesConfig['isAccessibleForFree'][`${isAccessibleForFree}`]}
-            >
-              {isAccessibleForFree ? 'Free Access' : 'Paid Access'}
-            </BadgeWithTooltip>
-          )}
-
-        {conditionsOfAccess && (
-          <BadgeWithTooltip
-            mx={0.5}
-            icon={getBadgeIcon({
-              conditionsOfAccess,
-            })}
-            {...badgesConfig['conditionsOfAccess'][conditionsOfAccess]}
-          >
-            {conditionsOfAccess}
-          </BadgeWithTooltip>
-        )}
-      </Flex>
-    );
-  };
   return (
     // {/* Banner with resource type + date of publication */}
     <Card variant='colorful'>
@@ -123,7 +62,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
         pl={[2, 4, 6]}
         flexDirection={['column', 'row']}
         bg='niaid.color'
-        sourceName={includedInDataCatalog?.name}
+        isNiaidFunded={isSourceFundedByNiaid(includedInDataCatalog)}
       />
       {/* Card header where name of resource is a link to resource apge */}
 
@@ -148,9 +87,9 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                 flexWrap='nowrap'
                 alignItems='center'
                 color='link.color'
-                sx={{ h2: { textDecoration: 'underline' } }}
+                sx={{ h3: { textDecoration: 'underline' } }}
                 _hover={{
-                  h2: { textDecoration: 'none' },
+                  h3: { textDecoration: 'none' },
                   svg: {
                     transform: 'translate(0px)',
                     opacity: 0.9,
@@ -162,16 +101,21 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                   svg: { color: 'link.color' },
                 }}
               >
-                <CardTitle>
+                <Heading
+                  as='h3'
+                  fontWeight='semibold'
+                  size='h3'
+                  color='inherit'
+                >
                   <DisplayHTMLContent
                     content={name || alternateName || ''}
                     fontSize='lg'
                     lineHeight='short'
                     fontWeight='semibold'
                   />
-                </CardTitle>
+                </Heading>
                 <Icon
-                  as={FaChevronRight}
+                  as={FaAngleRight}
                   boxSize={4}
                   ml={4}
                   opacity={0.6}
@@ -194,32 +138,55 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
         startColor='page.alt'
         endColor='niaid.placeholder'
       >
-        <Flex
-          flexDirection={['column-reverse', 'row']}
-          flexWrap={['wrap-reverse', 'wrap']}
-          w='100%'
-          borderY='1px solid'
-          borderColor='gray.100'
-        >
-          <ToggleContainer
-            ariaLabel='Show all authors.'
-            noOfLines={1}
-            justifyContent='flex-start'
-            m={0}
-            px={paddingCard}
-            py={2}
-            flex={1}
+        {(author?.length || isAccessibleForFree || conditionsOfAccess) && (
+          <Flex
+            flexDirection={['column-reverse', 'row']}
+            flexWrap={['wrap-reverse', 'wrap']}
             w='100%'
-            _focus={{ outlineColor: 'transparent' }}
+            borderY='1px solid'
+            borderColor='gray.100'
           >
-            {author && (
-              <Text fontSize='xs' color='text.body'>
-                {formatAuthorsList2String(author, ',', 10)}.
-              </Text>
+            <Flex flex={1}>
+              {author && (
+                <ToggleContainer
+                  ariaLabel=''
+                  noOfLines={1}
+                  justifyContent='flex-start'
+                  m={0}
+                  px={paddingCard}
+                  py={2}
+                  flex={1}
+                  w='100%'
+                  _focus={{ outlineColor: 'transparent' }}
+                >
+                  <Text fontSize='xs' color='text.body'>
+                    {formatAuthorsList2String(author, ',', 10)}.
+                  </Text>
+                </ToggleContainer>
+              )}
+            </Flex>
+            {(isAccessibleForFree === true ||
+              isAccessibleForFree === false ||
+              conditionsOfAccess) && (
+              <Flex
+                justifyContent={['flex-end']}
+                alignItems='center'
+                w={['100%', 'unset']}
+                flex={[1, 'unset']}
+                p={[0.5, 2]}
+              >
+                <AccessibleForFree
+                  isAccessibleForFree={isAccessibleForFree}
+                  mx={1}
+                />
+                <ConditionsOfAccess
+                  conditionsOfAccess={conditionsOfAccess}
+                  mx={1}
+                />
+              </Flex>
             )}
-          </ToggleContainer>
-          <ConditionsOfAccess />
-        </Flex>
+          </Flex>
+        )}
 
         <CardBody p={0}>
           {date && (
@@ -248,182 +215,138 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
               </Tooltip>
             </Flex>
           )}
-          {/* Description Text */}
-          <ToggleContainer
-            ariaLabel='show more description'
-            noOfLines={[3, 10]}
+
+          <Stack
             px={paddingCard}
-            py={[2, 4, 6]}
-            my={0}
-            borderColor='transparent'
-            justifyContent='space-between'
-            _hover={{ bg: 'page.alt' }}
-            _focus={{ outlineColor: 'transparent', bg: 'white' }}
-            alignIcon='center'
+            py={[0, 1]}
+            my={1}
+            flexDirection={{ base: 'column', sm: 'row' }}
+            spacing={[1, 3, 4]}
           >
-            <DisplayHTMLContent content={description || ''} />
-          </ToggleContainer>
-
-          <CardDetails data={data} />
-          {/* Source Repository Link + Altmetric badge */}
-          {(doi || includedInDataCatalog?.name) && (
             <Flex
-              px={paddingCard}
-              py={{ base: 2, md: 4 }}
-              my={0}
-              flexDirection='row'
-              flexWrap={['wrap', 'nowrap', 'nowrap']}
-              alignItems='flex-end'
+              px={1}
+              py={{ base: 1, sm: 3 }}
+              border={{ base: '1px', sm: 'none' }}
+              borderColor='gray.100'
+              borderRadius='semi'
+              alignItems='center'
+              justifyContent={{ base: 'center', sm: 'flex-start' }}
             >
-              {/* Source repository */}
-              {(includedInDataCatalog?.name ||
-                (sdPublisher && sdPublisher.length > 0)) && (
-                <Flex
-                  minW={['250px']}
-                  maxW={['unset', '50%', 'unset']}
-                  alignItems='center'
-                  flexWrap='wrap'
-                  my={[4, 4, 0]}
-                >
-                  {imageURL ? (
-                    includedInDataCatalog.url ? (
-                      <NextLink
-                        target='_blank'
-                        href={includedInDataCatalog.url}
-                      >
-                        <Image
-                          mb={[2, 2, 0]}
-                          w='auto'
-                          h='40px'
-                          maxW='250px'
-                          mr={4}
-                          src={`${imageURL}`}
-                          alt='Data source name'
-                        />
-                      </NextLink>
-                    ) : (
-                      <Image
-                        w='auto'
-                        h='40px'
-                        maxW='250px'
-                        mr={4}
-                        mb={[2, 2, 0]}
-                        src={`${imageURL}`}
-                        alt='Data source name'
-                      />
-                    )
-                  ) : (
-                    <></>
-                  )}
-                  <Flex flexDirection='column'>
-                    {includedInDataCatalog?.name && (
-                      <>
-                        {url || includedInDataCatalog.url ? (
-                          <Link
-                            href={url! || includedInDataCatalog.url!}
-                            isExternal
-                          >
-                            <Text fontSize='xs'>
-                              Provided by {includedInDataCatalog.name}
-                            </Text>
-                          </Link>
-                        ) : (
-                          <Text fontSize='xs'>
-                            Provided by {includedInDataCatalog.name}
-                          </Text>
-                        )}
-                      </>
-                    )}
+              {data && (
+                <>
+                  <CompletenessBadgeCircle
+                    stats={data['_meta']}
+                    animate={false}
+                    size='md'
+                  />
 
-                    {/* original source */}
-                    {sdPublisher?.map((publisher, i) => {
-                      return publisher?.url ? (
-                        <Link key={i} href={publisher.url} isExternal>
-                          <Text fontSize='xs' as='i'>
-                            Original source {publisher.name}
-                          </Text>
-                        </Link>
-                      ) : publisher?.name ? (
-                        <Text key={i} fontSize='xs' as='i'>
-                          Original source {publisher.name}
-                        </Text>
-                      ) : (
-                        <React.Fragment key={i}></React.Fragment>
-                      );
-                    })}
-                  </Flex>
-                </Flex>
-              )}
-              {doi && (
-                <Flex
-                  flex={1}
-                  mt={[4, 4, 0]}
-                  // minW='200px'
-                  flexDirection='column'
-                  alignItems={['flex-start', 'flex-end']}
-                >
-                  <Text fontSize='xs' my={0} fontWeight='medium' lineHeight={1}>
-                    Altmetric
+                  {/* label for mobile */}
+                  <Text
+                    display={{ base: 'block', sm: 'none' }}
+                    color='gray.800'
+                    fontSize='xs'
+                    fontWeight='normal'
+                    lineHeight='shorter'
+                    mx={3}
+                  >
+                    Metadata Completeness
                   </Text>
-                  {/* Altmetric embed badges don't allow for adding aria-label so VisuallyHidden is a patch */}
-                  <VisuallyHidden>
-                    See more information about resource on Altmetric
-                  </VisuallyHidden>
-                  <div
-                    role='link'
-                    title='altmetric badge'
-                    data-badge-popover='left'
-                    data-badge-type='bar'
-                    data-doi={formatDOI(doi)}
-                    data-nct-id={nctid}
-                    data-pmid={citation?.[0].pmid}
-                    className='altmetric-embed'
-                    data-link-target='blank'
-                  ></div>
-                </Flex>
+                </>
               )}
             </Flex>
-          )}
-        </CardBody>
-      </Skeleton>
-      <Skeleton
-        isLoaded={!isLoading}
-        height={isLoading ? '50px' : 'unset'}
-        p={0}
-        m={isLoading ? 4 : 0}
-        startColor='page.alt'
-        endColor='niaid.placeholder'
-      >
-        <CardFooter
-          alignItems='center'
-          flexWrap='wrap'
-          bg='page.alt'
-          px={paddingCard}
-          py={2}
-          w='100%'
-          justifyContent='flex-end'
-        >
-          {id && (
-            <NextLink
-              href={{
-                pathname: '/resources/',
-                query: { id },
-              }}
-              passHref
+            {/* display source here on mobile. */}
+            <Flex
+              display={{ base: 'block', sm: 'none' }}
+              px={2}
+              py={{ base: 1, sm: 3 }}
+              flexDirection={{ base: 'row', sm: 'column' }}
+              alignItems='center'
+              border={{ base: '1px', sm: 'none' }}
+              borderColor='gray.100'
+              borderRadius='semi'
+              justifyContent='center'
             >
-              <Button
-                maxW={{ xl: '230px' }}
-                w='100%'
-                size='sm'
-                rightIcon={<FaArrowAltCircleRight />}
-                aria-label={`Go to details about resource ${name}`}
+              <SourceLogo
+                isLoading={isLoading}
+                sdPublisher={sdPublisher}
+                includedInDataCatalog={includedInDataCatalog}
+                url={url}
+              />
+            </Flex>
+
+            {description && (
+              <ToggleContainer
+                ariaLabel=''
+                noOfLines={[3, 10]}
+                px={1}
+                py={1}
+                my={0}
+                borderColor='transparent'
+                justifyContent='space-between'
+                _hover={{ bg: 'page.alt' }}
+                _focus={{ outlineColor: 'transparent', bg: 'white' }}
+                alignIcon='center'
               >
-                See more
-                <VisuallyHidden> details about the dataset</VisuallyHidden>
-              </Button>
-            </NextLink>
-          )}
-        </CardFooter>
+                <DisplayHTMLContent content={description} />
+              </ToggleContainer>
+            )}
+          </Stack>
+          <MetadataAccordion data={data} />
+
+          <Stack
+            flex={1}
+            p={1}
+            flexDirection={{ base: 'column', sm: 'row' }}
+            alignItems={{ base: 'center', sm: 'flex-end' }}
+            flexWrap='wrap'
+            px={paddingCard}
+            pt={[0, 1, 2]}
+            pb={[2, 4]}
+            my={1}
+          >
+            <SourceLogo
+              display={{ base: 'none', sm: 'flex' }}
+              isLoading={isLoading}
+              sdPublisher={sdPublisher}
+              includedInDataCatalog={includedInDataCatalog}
+              url={url}
+              flex={1}
+            />
+            <Flex
+              flex={{ base: 1, sm: 'unset' }}
+              mt={[2, 0]}
+              w={{ base: '100%', sm: 'unset' }}
+            >
+              {id && (
+                <NextLink
+                  href={{
+                    pathname: '/resources/',
+                    query: { id },
+                  }}
+                  style={{ flex: 1 }}
+                  passHref
+                >
+                  <Flex
+                    flex={1}
+                    justifyContent='flex-end'
+                    flexWrap='wrap'
+                    maxW={{ base: '100%', sm: '150px' }}
+                  >
+                    <Button
+                      as='span'
+                      flex={1}
+                      size={{ base: 'md', sm: 'sm' }}
+                      rightIcon={<FaCircleArrowRight />}
+                      aria-label={`Go to details about resource ${name}`}
+                    >
+                      View dataset
+                    </Button>
+                  </Flex>
+                </NextLink>
+              )}
+            </Flex>
+          </Stack>
+        </CardBody>
       </Skeleton>
     </Card>
   );

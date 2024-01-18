@@ -16,14 +16,14 @@ import {
   FormControl,
   FormLabel,
   Icon,
-  Link,
   ListItem,
   Stack,
   Switch,
   Text,
-  Tooltip,
   UnorderedList,
-} from 'nde-design-system';
+} from '@chakra-ui/react';
+import { FaInfo } from 'react-icons/fa6';
+import { Link } from 'src/components/link';
 import {
   queryFilterObject2String,
   queryFilterString2Object,
@@ -44,7 +44,7 @@ import { encodeString } from 'src/utils/querystring-helpers';
 import { SelectedFilterType } from '../filters/types';
 // import { AdvancedSearchWithModal } from '../advanced-search/AdvancedSearchWithModal';
 import { getQueryStatusError } from '../error/utils';
-import { FaInfo } from 'react-icons/fa';
+import Tooltip from '../tooltip';
 /*
 [COMPONENT INFO]:
  Search results pages displays the list of records returned by a search.
@@ -77,7 +77,7 @@ export const defaultQuery = {
 };
 
 const SearchResultsPage = () => {
-  // const [useMetadataScore, setUseMetadataScore] = useState(true);
+  const [useMetadataScore, setUseMetadataScore] = useState(true);
 
   const [total, setTotal] = useState(0);
 
@@ -115,7 +115,7 @@ const SearchResultsPage = () => {
     size: `${selectedPerPage}`,
     from: `${(selectedPage - 1) * selectedPerPage}`,
     sort: sortOrder,
-    // use_metadata_score: useMetadataScore ? 'true' : 'false',
+    use_metadata_score: useMetadataScore ? 'true' : 'false',
   };
 
   const { isLoading, error, data } = useQuery<
@@ -140,10 +140,34 @@ const SearchResultsPage = () => {
       return fetchSearchResults({
         q: params.q,
         extra_filter: params.extra_filter,
+        show_meta: true,
         size: params.size,
         from: params.from,
         sort: params.sort,
-        // use_metadata_score: params.use_metadata_score,
+        use_metadata_score: params.use_metadata_score,
+        fields: [
+          '_meta',
+          '@type',
+          'alternateName',
+          'author',
+          'conditionsOfAccess',
+          'date',
+          'description',
+          'doi',
+          'funding',
+          'healthCondition',
+          'includedInDataCatalog',
+          'infectiousAgent',
+          'isAccessibleForFree',
+          'license',
+          'measurementTechnique',
+          'name',
+          'sdPublisher',
+          'species',
+          'url',
+          'usageInfo',
+          'variableMeasured',
+        ],
       });
     },
 
@@ -159,7 +183,6 @@ const SearchResultsPage = () => {
       },
     },
   );
-
   // Set total results value
   useEffect(() => {
     setTotal(prev => {
@@ -214,23 +237,6 @@ const SearchResultsPage = () => {
       };
     });
   }, [defaultFilters, router]);
-
-  // embed altmetric data. For more information: https://api.altmetric.com/embeds.html
-  useEffect(() => {
-    // @ts-ignore
-    if (window._altmetric_embed_init) {
-      // @ts-ignore
-      window._altmetric_embed_init();
-    } else {
-      /* import altmetric script for badge embeds */
-      let altmetricsScript = document.createElement('script');
-      altmetricsScript.setAttribute(
-        'src',
-        'https://d1bxh8uas1mnw7.cloudfront.net/assets/embed.js',
-      );
-      document.body.appendChild(altmetricsScript);
-    }
-  }, [data]);
 
   // Update the route to reflect changes on page without re-render.
   const handleRouteUpdate = useCallback(
@@ -324,7 +330,7 @@ const SearchResultsPage = () => {
           minW={{ md: 500 }}
         >
           <DownloadMetadata
-            exportName='nde-results'
+            exportFileName={`nde-results-${queryString.replaceAll(' ', '_')}`}
             params={params}
             buttonProps={{ variant: 'outline' }}
           >
@@ -351,7 +357,7 @@ const SearchResultsPage = () => {
                 handleRouteUpdate({ from: 1, size: v })
               }
             />
-            {/* <FormControl display='flex' alignItems='center' mx={1} my={2}>
+            <FormControl display='flex' alignItems='center' mx={1} my={2}>
               <Tooltip
                 bg='white'
                 isDisabled={sortOrder !== '_score'}
@@ -399,7 +405,7 @@ const SearchResultsPage = () => {
                 colorScheme='secondary'
                 isDisabled={sortOrder !== '_score'}
               />
-            </FormControl> */}
+            </FormControl>
           </Box>
         </Flex>
       </Pagination>

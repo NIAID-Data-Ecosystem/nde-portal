@@ -1,14 +1,14 @@
 import { FormattedResource } from 'src/utils/api/types';
-import { VscJson } from 'react-icons/vsc';
 import {
   FaAlignLeft,
+  FaClipboardList,
+  FaComputer,
   FaDatabase,
   FaDownload,
-  FaSearchDollar,
-  FaThList,
-  FaTools,
-} from 'react-icons/fa';
-import { BsBlockquoteLeft } from 'react-icons/bs';
+  FaIndent,
+  FaMagnifyingGlassDollar,
+  FaRegFile,
+} from 'react-icons/fa6';
 
 export interface Route {
   title: string;
@@ -39,27 +39,20 @@ export const getSectionIcon = (sectionId: string) => {
   let icon;
   if (sectionId === 'description') {
     icon = FaAlignLeft;
-  }
-  if (sectionId === 'metadata') {
-    icon = VscJson;
-  }
-  if (sectionId === 'provenance') {
+  } else if (sectionId === 'metadata') {
+    icon = FaRegFile;
+  } else if (sectionId === 'provenance') {
     icon = FaDatabase;
-  }
-  if (sectionId === 'downloads') {
+  } else if (sectionId === 'downloads') {
     icon = FaDownload;
-  }
-  if (sectionId === 'funding') {
-    icon = FaSearchDollar;
-  }
-  if (sectionId === 'citedBy') {
-    icon = BsBlockquoteLeft;
-  }
-  if (sectionId === 'isBasedOn') {
-    icon = FaThList;
-  }
-  if (sectionId === 'softwareInformation') {
-    icon = FaTools;
+  } else if (sectionId === 'funding') {
+    icon = FaMagnifyingGlassDollar;
+  } else if (sectionId === 'citedBy') {
+    icon = FaIndent;
+  } else if (sectionId === 'isBasedOn') {
+    icon = FaClipboardList;
+  } else if (sectionId === 'softwareInformation') {
+    icon = FaComputer;
   }
   return icon;
 };

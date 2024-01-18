@@ -9,12 +9,12 @@ import {
   ListItem,
   Text,
   UnorderedList,
-} from 'nde-design-system';
+} from '@chakra-ui/react';
 import {
-  FaExclamationCircle,
-  FaInfoCircle,
-  FaTimesCircle,
-} from 'react-icons/fa';
+  FaCircleExclamation,
+  FaCircleInfo,
+  FaCircleXmark,
+} from 'react-icons/fa6';
 import { QueryStringError } from 'src/components/advanced-search/utils/validation-checks';
 
 interface EditableQueryTextProps {
@@ -32,13 +32,13 @@ export const StatusIcon = ({
   props: IconProps;
 }) => {
   if (status === 'error') {
-    return <Icon as={FaTimesCircle} color={`status.${status}`} {...props} />;
+    return <Icon as={FaCircleXmark} color={`status.${status}`} {...props} />;
   } else if (status === 'warning') {
     return (
-      <Icon as={FaExclamationCircle} color={`status.${status}`} {...props} />
+      <Icon as={FaCircleExclamation} color={`status.${status}`} {...props} />
     );
   } else if (status === 'info') {
-    return <Icon as={FaInfoCircle} color={`status.${status}`} {...props} />;
+    return <Icon as={FaCircleInfo} color={`status.${status}`} {...props} />;
   }
   return <></>;
 };
@@ -76,7 +76,7 @@ export const MessageBlock = ({
             return (
               <ListItem key={index} display='flex' p={1}>
                 <ListIcon
-                  as={FaTimesCircle}
+                  as={FaCircleXmark}
                   color={`status.${status}`}
                 ></ListIcon>
                 <Box>

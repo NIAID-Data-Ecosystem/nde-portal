@@ -1,4 +1,4 @@
-import { Box, Button, Flex, Heading, Stack } from 'nde-design-system';
+import { Box, Button, Flex, Heading, Stack } from '@chakra-ui/react';
 
 interface SectionList {
   id: string;
@@ -80,7 +80,6 @@ export const Section = ({
         borderBottomColor='blackAlpha.200'
         position='sticky'
         top='0px'
-        zIndex='sticky'
       >
         {title}
       </Heading>

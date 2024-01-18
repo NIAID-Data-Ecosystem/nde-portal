@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { InputProps } from 'nde-design-system';
+import { InputProps } from '@chakra-ui/react';
 import { DropdownButton } from 'src/components/dropdown-button';
 import { TreeItem } from 'src/components/advanced-search/components/SortableWithCombine';
 import {

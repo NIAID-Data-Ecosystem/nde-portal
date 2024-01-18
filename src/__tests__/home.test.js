@@ -2,7 +2,7 @@ import HOMEPAGE_COPY from 'configs/homepage.json';
 import HOME_QUERIES from 'configs/queries/home-queries.json';
 import Home, { RepositoryTable, RepositoryTabs } from 'src/pages/index';
 import { createWrapper } from './mocks/utils.tsx';
-import { useRepoData } from 'src/hooks/api';
+import { useRepoData } from 'src/hooks/api/useRepoData.ts';
 import {
   renderHook,
   screen,
@@ -162,8 +162,10 @@ describe('Home Page', () => {
   test('renders advanced search button', async () => {
     renderWithClient(<Home />);
 
-    const buttonEl = screen.getByRole('button', { name: /advanced search/i });
+    const linkEl = screen.getByRole('link', { name: /advanced search/i });
+    const spanEl = within(linkEl).getByText(/advanced search/i);
 
-    expect(buttonEl).toBeInTheDocument();
+    expect(linkEl).toBeInTheDocument();
+    expect(spanEl).toBeInTheDocument();
   });
 });

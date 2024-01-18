@@ -5,7 +5,7 @@ import {
   Text,
   CheckboxProps,
   Skeleton,
-} from 'nde-design-system';
+} from '@chakra-ui/react';
 import { formatNumber } from 'src/utils/helpers';
 
 export interface FiltersCheckboxProps extends CheckboxProps {
@@ -13,11 +13,12 @@ export interface FiltersCheckboxProps extends CheckboxProps {
   value: string; // unique checkbox value.
   count?: number;
   isLoading: boolean;
+  property?: string;
   isCountUpdating?: boolean;
 }
 
 export const FiltersCheckbox: React.FC<FiltersCheckboxProps> = React.memo(
-  ({ displayTerm, count, value, isCountUpdating, isLoading }) => {
+  ({ displayTerm, count, value, isCountUpdating, isLoading, property }) => {
     return (
       <Checkbox
         w='100%'
@@ -34,15 +35,45 @@ export const FiltersCheckbox: React.FC<FiltersCheckboxProps> = React.memo(
           flex={1}
         >
           <Flex width='100%' alignItems='center'>
-            <Text
-              fontSize='xs'
-              lineHeight={1.5}
-              opacity={count ? 1 : 0.7}
-              display='flex'
+            <Flex
               w='100%'
               justifyContent='space-between'
+              alignItems='center'
+              opacity={count ? 1 : 0.7}
+              fontSize='xs'
+              lineHeight={1.5}
             >
-              {displayTerm}
+              {displayTerm && (
+                <Text fontSize='xs' lineHeight={1.5}>
+                  {(property === 'infectiousAgent' || property === 'species') &&
+                  displayTerm?.includes('|') ? (
+                    <>
+                      {displayTerm
+                        .split(' | ')
+                        .reverse()
+                        .map((term, i) => {
+                          return (
+                            <React.Fragment key={`${term}-${i}`}>
+                              <Text
+                                as='span'
+                                fontWeight={i === 0 ? 'semibold' : 'normal'}
+                              >
+                                {term.charAt(0).toUpperCase() + term.slice(1)}
+                              </Text>
+                              <br />
+                            </React.Fragment>
+                          );
+                        })}
+                    </>
+                  ) : (
+                    <>
+                      {displayTerm.charAt(0).toUpperCase() +
+                        displayTerm.slice(1)}
+                    </>
+                  )}
+                </Text>
+              )}
+
               {typeof count !== 'undefined' && (
                 <Skeleton
                   as='span'
@@ -55,7 +86,7 @@ export const FiltersCheckbox: React.FC<FiltersCheckboxProps> = React.memo(
                   </Text>
                 </Skeleton>
               )}
-            </Text>
+            </Flex>
           </Flex>
         </Skeleton>
       </Checkbox>

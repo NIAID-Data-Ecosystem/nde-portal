@@ -1,21 +1,24 @@
 import React from 'react';
-import { Flex, Icon, IconProps as ChakraIconProps } from 'nde-design-system';
 import {
-  FaFlask,
+  Flex,
+  Icon,
+  IconProps as ChakraIconProps,
+  VisuallyHidden,
+} from '@chakra-ui/react';
+import {
   FaFingerprint,
-  FaSearchDollar,
-  FaFileSignature,
   FaQuoteLeft,
   FaInfo,
-  FaRegCalendarAlt,
+  FaCalendarDays,
   FaLaptopCode,
   FaCode,
-} from 'react-icons/fa';
+} from 'react-icons/fa6';
 import { IconType } from 'react-icons';
 import Glyph from './components/glyph';
 import MetadataConfig from 'configs/resource-metadata.json';
 import Tooltip from 'src/components/tooltip';
 import { ResourceMetadata } from 'src/utils/schema-definitions/types';
+import { FaEarthAfrica, FaLanguage } from 'react-icons/fa6';
 
 // Metadata icon svg.
 export interface IconProps extends ChakraIconProps {
@@ -23,34 +26,44 @@ export interface IconProps extends ChakraIconProps {
   glyph?: string;
   label?: string; // label for icon for accessibility
   title?: string; // title for svg (accessibility)
+  isDisabled?: boolean; // if true, icon is displayed as disable (with bar through it)
 }
 
 // Icon displaying symbol
 export const MetadataIcon = React.forwardRef<HTMLDivElement, IconProps>(
   (
-    { id, glyph, title, color, fill, boxSize, viewBox, ...props }: IconProps,
+    {
+      id,
+      glyph,
+      title,
+      color,
+      fill,
+      isDisabled,
+      boxSize,
+      viewBox,
+      ...props
+    }: IconProps,
     ref,
   ) => {
     if (!glyph) {
       return <></>;
     }
     let FaIcon = null as IconType | null;
-    if (glyph?.toLowerCase() === 'funding') {
-      FaIcon = FaSearchDollar;
-    } else if (glyph?.toLowerCase() === 'variablemeasured') {
-      FaIcon = FaFlask;
-    } else if (glyph?.toLowerCase() === 'usageinfo') {
-      FaIcon = FaFileSignature;
-    } else if (glyph?.toLowerCase() === 'citation') {
+
+    if (glyph?.toLowerCase() === 'citation') {
       FaIcon = FaQuoteLeft;
     } else if (glyph?.toLowerCase() === 'identifier') {
       FaIcon = FaFingerprint;
+    } else if (glyph?.toLowerCase() === 'inlanguage') {
+      FaIcon = FaLanguage;
+    } else if (glyph?.toLowerCase() === 'spatialcoverage') {
+      FaIcon = FaEarthAfrica;
     } else if (glyph?.toLowerCase() === 'applicationcategory') {
       FaIcon = FaLaptopCode;
     } else if (glyph?.toLowerCase() === 'programminglanguage') {
       FaIcon = FaCode;
     } else if (glyph?.toLowerCase() === 'date') {
-      FaIcon = FaRegCalendarAlt;
+      FaIcon = FaCalendarDays;
     } else if (glyph?.toLowerCase() === 'info') {
       FaIcon = () => (
         <Icon
@@ -70,6 +83,9 @@ export const MetadataIcon = React.forwardRef<HTMLDivElement, IconProps>(
     }
     return (
       <Flex ref={ref}>
+        <VisuallyHidden>
+          <span id={id}>{title}</span>
+        </VisuallyHidden>
         {FaIcon ? (
           <Icon
             as={FaIcon}
@@ -93,7 +109,12 @@ export const MetadataIcon = React.forwardRef<HTMLDivElement, IconProps>(
             aria-label={title}
             {...props}
           >
-            <Glyph id={id} glyph={glyph} title={title} />
+            <Glyph
+              id={id}
+              glyph={glyph}
+              title={title}
+              isDisabled={isDisabled}
+            />
           </Icon>
         )}
       </Flex>

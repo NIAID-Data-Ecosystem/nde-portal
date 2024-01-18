@@ -5,7 +5,7 @@ import {
   Image,
   ImageProps,
   Text,
-} from 'nde-design-system';
+} from '@chakra-ui/react';
 import { transformString2Hash } from './helpers';
 import { HeadingWithLink } from 'src/components/heading-with-link/components/HeadingWithLink';
 
@@ -204,7 +204,7 @@ export default {
       borderRadius='base'
       border='0.1rem solid'
       borderColor='primary.100'
-      color='primary.500'
+      color='primary.600'
       px={1.5}
       py={0.5}
       fontWeight='medium'

@@ -2,7 +2,7 @@ import React from 'react';
 import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
 import remarkGfm from 'remark-gfm';
-import { Box, BoxProps } from 'nde-design-system';
+import { Box, BoxProps } from '@chakra-ui/react';
 /**
  * Displays + formats HTML block content.
  */

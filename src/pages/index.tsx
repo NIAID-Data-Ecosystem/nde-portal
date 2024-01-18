@@ -8,7 +8,6 @@ import {
   Heading,
   Icon,
   Image,
-  Link,
   SkeletonCircle,
   SkeletonText,
   Table as StyledTable,
@@ -18,15 +17,16 @@ import {
   Th,
   Td,
   TableContainer,
-  TableSortToggle,
-  TableWrapper,
   Tabs,
   TabList,
   Tab,
   Tag,
   Text,
-} from 'nde-design-system';
+  TabPanels,
+  TabPanel,
+} from '@chakra-ui/react';
 import { theme } from 'src/theme';
+import { Link } from 'src/components/link';
 import {
   PageHeader,
   PageContainer,
@@ -37,8 +37,8 @@ import HOME_QUERIES from 'configs/queries/home-queries.json';
 import NextLink from 'next/link';
 import { SearchBarWithDropdown } from 'src/components/search-bar';
 import { AdvancedSearchOpen } from 'src/components/advanced-search/components/buttons';
-import { FaChevronRight } from 'react-icons/fa';
-import { useRepoData } from 'src/hooks/api';
+import { FaAngleRight } from 'react-icons/fa6';
+import { useRepoData } from 'src/hooks/api/useRepoData';
 import { queryFilterObject2String } from 'src/components/filters/helpers';
 import { FaRegEnvelope, FaGithub } from 'react-icons/fa';
 import { NewsOrEventsObject } from './news';
@@ -46,6 +46,8 @@ import {
   NewsCarousel,
   fetchNews,
 } from 'src/views/home/components/NewsCarousel';
+import { TableSortToggle } from 'src/components/table/components/sort-toggle';
+import { TableWrapper } from 'src/components/table/components/wrapper';
 
 interface Repository {
   identifier: string;
@@ -131,7 +133,6 @@ export const RepositoryTable: React.FC<{
                   {Array.from(Array(TABLE_COLUMNS.length)).map((_, j) => {
                     if (TABLE_COLUMNS && rows) {
                       const row = rows[i];
-
                       let column = TABLE_COLUMNS[j];
                       let cell =
                         row?.[column.property as keyof Repository] || '';
@@ -148,6 +149,9 @@ export const RepositoryTable: React.FC<{
                             px: `${theme.space[4]} !important`,
                             py: `${theme.space[2]} !important`,
                           }}
+                          verticalAlign={
+                            column.property === 'label' ? 'top' : 'middle'
+                          }
                         >
                           <Flex
                             alignItems={['flex-start', 'center']}
@@ -262,27 +266,29 @@ export const RepositoryTabs: React.FC<{
         onChange={index => {
           setSelectedType(types[index].property);
         }}
+        size='sm'
       >
         <TabList
           flexWrap={['wrap', 'nowrap']}
           justifyContent={['center', 'flex-start']}
+          mx={4}
         >
-          {types.map(type => (
+          {types.map((type, idx) => (
             <Tab
               key={type.property}
               w={['100%', 'unset']}
-              color='blackAlpha.500'
+              color='gray.800'
               _selected={{
-                borderBottom: '4px solid',
+                borderBottom: '2px solid',
                 borderBottomColor: 'primary.400',
                 color: 'text.heading',
                 ['.tag']: {
-                  opacity: 1,
+                  bg: 'primary.100',
                 },
               }}
               _focus={{ outline: 'none' }}
             >
-              <Heading as='h3' size='md' fontWeight='semibold' color='inherit'>
+              <Heading as='h3' size='sm' fontWeight='medium' color='inherit'>
                 {type.label}
               </Heading>
               <Tag
@@ -292,8 +298,9 @@ export const RepositoryTabs: React.FC<{
                 px={4}
                 my={[4, 0]}
                 size='sm'
-                opacity={0.25}
                 colorScheme='gray'
+                variant='subtle'
+                fontWeight='semibold'
               >
                 {
                   repositories.filter(({ type: t }) => t === type.property)
@@ -303,9 +310,8 @@ export const RepositoryTabs: React.FC<{
             </Tab>
           ))}
         </TabList>
+        <TabPanels>{children}</TabPanels>
       </Tabs>
-
-      {children}
     </Flex>
   );
 };
@@ -342,12 +348,12 @@ const Home: NextPage<{
         body={[HOMEPAGE_COPY.sections.hero.body]}
       >
         <Flex w='100%' justifyContent='flex-end' mt={[15, 20, 24]} mb={2}>
-          <NextLink
-            href={{ pathname: '/advanced-search' }}
-            passHref
-            prefetch={false}
-          >
-            <Box>
+          <Box mb={2}>
+            <NextLink
+              href={{ pathname: '/advanced-search' }}
+              passHref
+              prefetch={false}
+            >
               <AdvancedSearchOpen
                 onClick={() => {}}
                 variant='outline'
@@ -355,8 +361,8 @@ const Home: NextPage<{
                 color='white'
                 _hover={{ bg: 'whiteAlpha.800', color: 'primary.600' }}
               />
-            </Box>
-          </NextLink>
+            </NextLink>
+          </Box>
         </Flex>
         <SearchBarWithDropdown
           placeholder='Search for datasets'
@@ -395,7 +401,7 @@ const Home: NextPage<{
                 >
                   <Text color='inherit'>{query.title}</Text>
                   <Icon
-                    as={FaChevronRight}
+                    as={FaAngleRight}
                     ml={2}
                     boxSize={3}
                     transform='translateX(-5px)'
@@ -430,11 +436,20 @@ const Home: NextPage<{
                 repositories={repositories}
                 setSelectedType={setSelectedType}
               >
-                <RepositoryTable
-                  isLoading={isLoading}
-                  repositories={repositories}
-                  selectedType={selectedType}
-                />
+                <TabPanel id='iid'>
+                  <RepositoryTable
+                    isLoading={isLoading}
+                    repositories={repositories}
+                    selectedType='iid'
+                  />
+                </TabPanel>
+                <TabPanel id='generalist'>
+                  <RepositoryTable
+                    isLoading={isLoading}
+                    repositories={repositories}
+                    selectedType='generalist'
+                  />
+                </TabPanel>
               </RepositoryTabs>
               <ButtonGroup
                 spacing={[0, 2]}
@@ -443,6 +458,7 @@ const Home: NextPage<{
                 display='flex'
                 justifyContent='flex-end'
                 mt={4}
+                px={4}
               >
                 {HOMEPAGE_COPY.sections.help.routes.map(
                   (

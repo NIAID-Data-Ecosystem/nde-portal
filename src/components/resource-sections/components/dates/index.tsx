@@ -1,9 +1,9 @@
 import React from 'react';
-import { Flex, FlexProps, Icon, Link, Text } from 'nde-design-system';
-import { FaRegClock } from 'react-icons/fa';
+import { Flex, FlexProps, Icon, Text } from '@chakra-ui/react';
+import { FaRegClock } from 'react-icons/fa6';
 import TypeBanner from '../type-banner';
 import { FormattedResource } from 'src/utils/api/types';
-import { formatDOI } from 'src/utils/helpers';
+import { isSourceFundedByNiaid } from 'src/utils/helpers';
 
 /*
 [COMPONENT INFO]:
@@ -33,32 +33,6 @@ export const DateTag: React.FC<DateTagProps> = ({ type, date, ...props }) => {
       <Text fontSize='xs'>
         {type && <strong>{type}</strong>} {date}
       </Text>
-    </Flex>
-  );
-};
-
-export const DOITag = ({ doi, ...props }: { doi: string }) => {
-  return (
-    <Flex
-      px={2}
-      m={1}
-      alignItems='center'
-      bg='secondary.50'
-      w={['100%', '100%', 'unset']}
-      whiteSpace='nowrap'
-      borderRadius='semi'
-      {...props}
-    >
-      <Text fontSize='xs' mr={2}>
-        <strong>DOI</strong>
-      </Text>{' '}
-      {doi.includes('http') || doi.includes('doi.org') ? (
-        <Link href={doi} isExternal>
-          <Text fontSize='xs'>{formatDOI(doi)}</Text>
-        </Link>
-      ) : (
-        <Text fontSize='xs'>{formatDOI(doi)}</Text>
-      )}
     </Flex>
   );
 };
@@ -98,13 +72,12 @@ const ResourceDates: React.FC<ResourceDates> = ({ data }) => {
   return (
     <TypeBanner
       type={data?.type}
-      sourceName={data?.includedInDataCatalog?.name}
+      isNiaidFunded={isSourceFundedByNiaid(data.includedInDataCatalog)}
     >
       <Flex flexWrap='wrap' ml={[0, 0, 4]}>
         {date_data.map((date, i) => {
           return <DateTag key={i} type={date.name} date={date.value} />;
         })}
-        {data.doi && <DOITag doi={data.doi} />}
       </Flex>
     </TypeBanner>
   );

@@ -1,20 +1,11 @@
 import React, { useMemo } from 'react';
 import { omit } from 'lodash';
-import {
-  Box,
-  Checkbox,
-  Flex,
-  Heading,
-  Skeleton,
-  Text,
-} from 'nde-design-system';
-import { theme } from 'src/theme';
+import { Box, Checkbox, Flex, Heading, Skeleton, Text } from '@chakra-ui/react';
 import { useFacetsData } from '../../hooks/useFacetsData';
 import { SelectedFilterType } from '../../types';
 import { Params } from 'src/utils/api';
 import { queryFilterObject2String } from '../../helpers';
 import { Slider } from './components/slider';
-// import { Histogram } from './components/histogram';
 import { FacetTerm } from 'src/utils/api/types';
 import { DatePicker } from './components/date-picker';
 import { formatNumber } from 'src/utils/helpers';

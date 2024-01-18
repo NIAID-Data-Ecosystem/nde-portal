@@ -1,22 +1,13 @@
-import {
-  Box,
-  Flex,
-  Footer,
-  FlexProps,
-  Navigation,
-  FooterItem,
-  FooterProps,
-  NavigationProps,
-} from 'nde-design-system';
-import navConfig from 'configs/nav.json';
-import footerConfig from 'configs/footer.json';
+import { Box, Button, Flex, FlexProps, Icon } from '@chakra-ui/react';
 import Head from 'next/head';
-// import Notice from './notice';
+import { Footer } from 'src/components/footer';
+import { Navigation } from 'src/components/navigation-bar';
 import { SearchBarWithDropdown } from 'src/components/search-bar';
-import { PageContent } from './content';
-import { AdvancedSearchOpen } from 'src/components/advanced-search/components/buttons';
 import NextLink from 'next/link';
-import { useMetadata } from 'src/hooks/api';
+import { FaMagnifyingGlass } from 'react-icons/fa6';
+import Notice from './notice';
+
+// import Notice from './notice';
 
 interface PageContainerProps extends FlexProps {
   hasNavigation?: boolean;
@@ -33,42 +24,6 @@ export const PageContainer: React.FC<PageContainerProps> = ({
   metaDescription,
   disableSearchBar,
 }) => {
-  const topNavigation = navConfig as NavigationProps['navigation'];
-  const footerNavigation = footerConfig as FooterProps['navigation'];
-
-  const prefixPortalRoutes = (routes: FooterItem[]): FooterItem[] => {
-    return routes.map(r => {
-      if (r?.routes) {
-        return { ...r, routes: prefixPortalRoutes(r.routes) };
-      }
-      if (!r['href']) {
-        return r;
-      }
-      // if relative link, prefix with backslash
-      if (r['href'].charAt(0) === '/') {
-        return {
-          ...r,
-          href: `${r['href']}${r['href'].slice(-1) === '/' ? '' : '/'}`,
-        };
-      }
-
-      return {
-        ...r,
-        href: r['href'],
-      };
-    });
-  };
-
-  const { data } = useMetadata();
-  const lastDataUpdate = data?.build_date
-    ? [
-        {
-          label: `Data harvested: ${data?.build_date.split('T')[0]}`,
-          href: '/sources/',
-        },
-      ]
-    : [];
-
   return (
     <>
       <Head>
@@ -111,43 +66,58 @@ export const PageContainer: React.FC<PageContainerProps> = ({
         />
       </Head>
 
-      <Flex
-        as='main'
-        w='100%'
-        flexDirection='column'
-        minW={300}
-        minHeight='100vh'
-      >
-        {topNavigation && hasNavigation && (
-          // Sticky Nav Bar.
-          <Box id='nav-wrapper' w='100%' minW={300} zIndex='banner'>
-            <Navigation
-              navigation={{
-                ...topNavigation,
-                routes: [...prefixPortalRoutes(topNavigation.routes)],
-              }}
-            />
-          </Box>
-        )}
+      <Flex as='main' w='100%' flexDirection='column' minW={300}>
+        <Navigation />
 
         {/*Page content has margin-top to compensate for fixed nav bar. */}
-        <Flex id='pagebody' position='relative' flexDirection='column' flex={1}>
-          {/* <Notice /> */}
+        <Box id='pagebody' position='relative'>
+          <Notice />
+
           {!disableSearchBar && (
-            <PageContent
+            <Flex
               bg='#fff'
-              minH='unset'
               borderBottom='1px solid'
               borderColor='gray.100'
               flexDirection='column'
+              px={{ base: 4, sm: 6, lg: 10, xl: '5vw' }}
               py={4}
               flex={1}
             >
               <Flex w='100%' justifyContent='flex-end' mb={2}>
-                <NextLink href={{ pathname: 'advanced-search' }} passHref>
-                  <Box>
-                    <AdvancedSearchOpen onClick={() => {}} />
-                  </Box>
+                <NextLink
+                  href={{ pathname: 'advanced-search' }}
+                  passHref
+                  prefetch={false}
+                >
+                  <Button
+                    as='span'
+                    variant='outline'
+                    size='sm'
+                    transition='0.2s ease-in-out'
+                    colorScheme='primary'
+                    fontWeight='semibold'
+                    _hover={{
+                      bg: 'primary.600',
+                      color: 'white',
+                      transition: '0.2s ease-in-out',
+
+                      svg: {
+                        transform: 'translateX(-8px)',
+                        transition: '0.2s transform ease-in-out',
+                      },
+                    }}
+                    leftIcon={
+                      <Icon
+                        as={FaMagnifyingGlass}
+                        ml={2}
+                        boxSize={3}
+                        transform='translateX(-4px)'
+                        transition='0.2s transform ease-in-out'
+                      />
+                    }
+                  >
+                    Advanced Search
+                  </Button>
                 </NextLink>
               </Flex>
               <SearchBarWithDropdown
@@ -155,23 +125,12 @@ export const PageContainer: React.FC<PageContainerProps> = ({
                 placeholder='Search for datasets'
                 size='md'
               />
-            </PageContent>
+            </Flex>
           )}
+
           {children}
-          <Footer
-            navigation={{
-              ...footerNavigation,
-              routes: [...prefixPortalRoutes(footerConfig.routes)],
-              lastUpdate:
-                footerNavigation.lastUpdate || lastDataUpdate.length
-                  ? [
-                      ...(lastDataUpdate || []),
-                      ...(footerNavigation.lastUpdate || []),
-                    ]
-                  : [],
-            }}
-          />
-        </Flex>
+          <Footer />
+        </Box>
       </Flex>
     </>
   );

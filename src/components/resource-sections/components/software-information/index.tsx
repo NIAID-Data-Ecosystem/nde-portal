@@ -1,7 +1,6 @@
 import React from 'react';
 import {
   Flex,
-  Link,
   ListItem,
   SimpleGrid,
   Skeleton,
@@ -10,17 +9,12 @@ import {
   StatLabel,
   Text,
   UnorderedList,
-} from 'nde-design-system';
+} from '@chakra-ui/react';
+import { Link } from 'src/components/link';
 import { FormattedResource } from 'src/utils/api/types';
-import BasedOn from '../based-on';
-import {
-  FaArrowAltCircleUp,
-  FaCheckCircle,
-  FaFileExport,
-  FaFileImport,
-  FaSitemap,
-} from 'react-icons/fa';
+import { FaFileExport, FaFileImport } from 'react-icons/fa6';
 import InputOutput from './components/input-output';
+import BasedOnTable from '../based-on';
 
 interface SoftwareInformation {
   isLoading: boolean;
@@ -28,7 +22,6 @@ interface SoftwareInformation {
   applicationCategory?: FormattedResource['applicationCategory'];
   discussionUrl?: FormattedResource['discussionUrl'];
   input?: FormattedResource['input'];
-  isBasedOn?: FormattedResource['isBasedOn'];
   isBasisFor?: FormattedResource['isBasisFor'];
   output?: FormattedResource['output'];
   processorRequirements?: FormattedResource['processorRequirements'];
@@ -50,7 +43,6 @@ const SoftwareInformation: React.FC<SoftwareInformation> = ({
     applicationCategory,
     discussionUrl,
     input,
-    isBasedOn,
     isBasisFor,
     output,
     processorRequirements,
@@ -135,21 +127,6 @@ const SoftwareInformation: React.FC<SoftwareInformation> = ({
             </Stat>
           )}
 
-          {/* Software requirements to run software */}
-          {softwareRequirements && (
-            <Stat>
-              <StatLabel>Software Requirements</StatLabel>
-              <dd>
-                <BasedOn
-                  isLoading={isLoading}
-                  isBasedOn={softwareRequirements.map(identifier => ({
-                    identifier,
-                  }))}
-                  icon={FaCheckCircle}
-                />
-              </dd>
-            </Stat>
-          )}
           {/* Help / code examples or contact.*/}
           {softwareHelp && softwareHelp.filter(h => h.url).length > 0 && (
             <Stat>
@@ -193,46 +170,15 @@ const SoftwareInformation: React.FC<SoftwareInformation> = ({
             </Stat>
           )}
 
-          {/* Provides enhancement to the list of tools */}
-          {softwareAddOn && (
-            <Stat>
-              <StatLabel>Enhances</StatLabel>
-              <dd>
-                <BasedOn
-                  isLoading={isLoading}
-                  isBasedOn={softwareAddOn}
-                  icon={FaArrowAltCircleUp}
-                />
-              </dd>
-            </Stat>
-          )}
-
-          {/* Libraries that the tool imports. */}
-          {isBasedOn && (
-            <Stat w='100%'>
-              <StatLabel>Imports</StatLabel>
-              <dd>
-                <BasedOn
-                  isLoading={isLoading}
-                  isBasedOn={isBasedOn}
-                  icon={FaFileImport}
-                />
-              </dd>
-            </Stat>
-          )}
-
           {/* Other tools which use this tool as import. */}
           {isBasisFor && (
-            <Stat>
-              <StatLabel>Dependency for</StatLabel>
-              <dd>
-                <BasedOn
-                  isLoading={isLoading}
-                  isBasedOn={isBasisFor}
-                  icon={FaSitemap}
-                />
-              </dd>
-            </Stat>
+            <BasedOnTable
+              id='software-information-dependency-for'
+              title='Dependency for'
+              caption='Datasets or tools that this dataset/tool is a dependency for.'
+              isLoading={isLoading}
+              items={isBasisFor}
+            />
           )}
 
           {/* Software input such as file or parameter. */}
