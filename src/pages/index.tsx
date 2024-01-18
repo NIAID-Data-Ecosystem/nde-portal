@@ -37,10 +37,9 @@ import HOME_QUERIES from 'configs/queries/home-queries.json';
 import NextLink from 'next/link';
 import { SearchBarWithDropdown } from 'src/components/search-bar';
 import { AdvancedSearchOpen } from 'src/components/advanced-search/components/buttons';
-import { FaAngleRight } from 'react-icons/fa6';
+import { FaAngleRight, FaRegEnvelope, FaGithub } from 'react-icons/fa6';
 import { useRepoData } from 'src/hooks/api/useRepoData';
 import { queryFilterObject2String } from 'src/components/filters/helpers';
-import { FaRegEnvelope, FaGithub } from 'react-icons/fa';
 import { NewsOrEventsObject } from './news';
 import {
   NewsCarousel,

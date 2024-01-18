@@ -10,19 +10,13 @@ import {
 import {
   Box,
   Button,
-  Circle,
   Collapse,
   Flex,
-  FormControl,
-  FormLabel,
-  Icon,
   ListItem,
   Stack,
-  Switch,
   Text,
   UnorderedList,
 } from '@chakra-ui/react';
-import { FaInfo } from 'react-icons/fa6';
 import { Link } from 'src/components/link';
 import {
   queryFilterObject2String,
@@ -44,7 +38,6 @@ import { encodeString } from 'src/utils/querystring-helpers';
 import { SelectedFilterType } from '../filters/types';
 // import { AdvancedSearchWithModal } from '../advanced-search/AdvancedSearchWithModal';
 import { getQueryStatusError } from '../error/utils';
-import Tooltip from '../tooltip';
 /*
 [COMPONENT INFO]:
  Search results pages displays the list of records returned by a search.
@@ -357,7 +350,7 @@ const SearchResultsPage = () => {
                 handleRouteUpdate({ from: 1, size: v })
               }
             />
-            <FormControl display='flex' alignItems='center' mx={1} my={2}>
+            {/* <FormControl display='flex' alignItems='center' mx={1} my={2}>
               <Tooltip
                 bg='white'
                 isDisabled={sortOrder !== '_score'}
@@ -405,7 +398,7 @@ const SearchResultsPage = () => {
                 colorScheme='secondary'
                 isDisabled={sortOrder !== '_score'}
               />
-            </FormControl>
+            </FormControl> */}
           </Box>
         </Flex>
       </Pagination>

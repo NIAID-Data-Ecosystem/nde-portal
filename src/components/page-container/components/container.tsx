@@ -71,7 +71,7 @@ export const PageContainer: React.FC<PageContainerProps> = ({
 
         {/*Page content has margin-top to compensate for fixed nav bar. */}
         <Box id='pagebody' position='relative'>
-          <Notice />
+          {/* <Notice /> */}
 
           {!disableSearchBar && (
             <Flex
