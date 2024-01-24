@@ -207,13 +207,16 @@ const SpatiotemporalCoverage: React.FC<SpatiotemporalCoverageProps> = ({
           )}
 
           {/* Period information of dataset */}
-          {temporalCoverage && (
+          {temporalCoverage?.temporalInterval && (
             <Box>
               <Text fontWeight='medium' color='gray.800'>
                 Temporal Coverage
               </Text>
               {/* Start */}
-              {temporalCoverage.temporalInterval.startDate && (
+              {temporalCoverage?.temporalInterval?.name && (
+                <Text>{temporalCoverage?.temporalInterval?.name}</Text>
+              )}
+              {temporalCoverage?.temporalInterval?.startDate && (
                 <Text>
                   <Text as='span' fontWeight='medium'>
                     Start Date:
@@ -222,7 +225,7 @@ const SpatiotemporalCoverage: React.FC<SpatiotemporalCoverageProps> = ({
                 </Text>
               )}
               {/* End */}
-              {temporalCoverage.temporalInterval.endDate && (
+              {temporalCoverage?.temporalInterval?.endDate && (
                 <Text>
                   <Text as='span' fontWeight='medium'>
                     End Date:
@@ -231,7 +234,7 @@ const SpatiotemporalCoverage: React.FC<SpatiotemporalCoverageProps> = ({
                 </Text>
               )}
               {/* Duration */}
-              {temporalCoverage.temporalInterval.duration && (
+              {temporalCoverage?.temporalInterval?.duration && (
                 <Text>
                   <Text as='span' fontWeight='medium'>
                     Duration:
