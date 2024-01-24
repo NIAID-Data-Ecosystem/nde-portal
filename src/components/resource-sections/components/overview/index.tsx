@@ -207,7 +207,7 @@ const SpatiotemporalCoverage: React.FC<SpatiotemporalCoverageProps> = ({
           )}
 
           {/* Period information of dataset */}
-          {temporalCoverage && (
+          {temporalCoverage?.temporalInterval && (
             <Box>
               <Text fontWeight='medium' color='gray.800'>
                 Temporal Coverage
