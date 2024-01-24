@@ -213,7 +213,9 @@ const SpatiotemporalCoverage: React.FC<SpatiotemporalCoverageProps> = ({
                 Temporal Coverage
               </Text>
               {/* Start */}
-              {temporalCoverage?.name && <Text>{temporalCoverage.name}</Text>}
+              {temporalCoverage?.temporalInterval?.name && (
+                <Text>{temporalCoverage?.temporalInterval?.name}</Text>
+              )}
               {temporalCoverage?.temporalInterval?.startDate && (
                 <Text>
                   <Text as='span' fontWeight='medium'>
