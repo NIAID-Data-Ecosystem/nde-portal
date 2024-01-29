@@ -65,12 +65,13 @@ const extractMarkdownHeadings = (
           //ignore headings within <details> html tag
           if (ignoreDetailsContent && isInsideDetailsTag) return;
 
-          if (child.type === 'heading' && child.depth <= maxDepth)
+          if (child.type === 'heading' && child.depth <= maxDepth) {
             headings.push({
-              title: child.children[0].value.replace(/[^a-zA-Z\s]/g, '') || '',
+              title: child.children[0].value?.replace(/[^a-zA-Z\s]/g, '') || '',
               hash: transformString2Hash(child.children[0].value) || '',
               depth: child.depth,
             });
+          }
         });
       };
     })
@@ -93,8 +94,14 @@ const MainContent = ({ slug, data: initialData }: MainContentProps) => {
   // Fetch documentation from API.
   const fetchDocumentation = async () => {
     try {
+      const isProd =
+        process.env.NEXT_PUBLIC_BASE_URL === 'https://data.niaid.nih.gov';
       const docs = await axios.get(
-        `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/api/docs?populate=*&filters[$and][0][slug][$eqi]=${slug}`,
+        `${
+          process.env.NEXT_PUBLIC_STRAPI_API_URL
+        }/api/docs?populate=*&filters[$and][0][slug][$eqi]=${slug}&publicationState=${
+          isProd ? 'live' : 'preview'
+        }`,
       );
 
       return docs.data.data as DocumentationProps[];
