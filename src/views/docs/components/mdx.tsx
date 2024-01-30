@@ -80,6 +80,7 @@ export default {
   img: (props: ImageProps) => {
     return (
       <Box
+        className='img-border'
         // minH={{ base: '100px', md: '200px', lg: '300px' }}
         minW={{ base: '200px', md: '400px', lg: '600px' }}
         mx={{ base: 0, lg: 2 }}

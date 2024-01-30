@@ -5,8 +5,6 @@ import { Navigation } from 'src/components/navigation-bar';
 import { SearchBarWithDropdown } from 'src/components/search-bar';
 import NextLink from 'next/link';
 import { FaMagnifyingGlass } from 'react-icons/fa6';
-import Notice from './notice';
-
 // import Notice from './notice';
 
 interface PageContainerProps extends FlexProps {
@@ -19,7 +17,6 @@ interface PageContainerProps extends FlexProps {
 
 export const PageContainer: React.FC<PageContainerProps> = ({
   children,
-  hasNavigation,
   title,
   metaDescription,
   disableSearchBar,

@@ -182,7 +182,32 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
         />
       );
     },
-    Box: (props: any) => <Box {...props} />,
+    section: (props: any) => {
+      const classNames = props.className.split(' ');
+      if (classNames?.includes('rightImage')) {
+        return (
+          <Flex
+            display='flex'
+            flexDirection={{ base: 'column', xl: 'row' }}
+            __css={{
+              span: { mt: 0 },
+              '.img-border': {
+                minW: 'unset',
+                minWidth: { base: '200px', xl: '300px' },
+                maxWidth: '400px',
+                flex: 1,
+                m: 4,
+                ml: [0, 0, 6],
+                mt: [4, 4, 0],
+              },
+            }}
+            {...props}
+          ></Flex>
+        );
+      }
+      return <Box {...props} bg='red' />;
+    },
+
     details: props => {
       return <Details {...props} />;
     },
