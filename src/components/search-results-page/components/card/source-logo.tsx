@@ -41,7 +41,7 @@ export const SourceLogo = ({
               const source_logo = getRepositoryImage(source.name);
 
               return (
-                <Box key={source.name} maxW='300px'>
+                <Box key={source.name} maxW='400px'>
                   {source_logo ? (
                     source.url ? (
                       <NextLink target='_blank' href={source.url}>
