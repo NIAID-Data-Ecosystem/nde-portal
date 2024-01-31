@@ -45,6 +45,7 @@ body:
     attributes:
       label: Related WBS task
       description: Please provide links to any relevant tasks/issues in the WBS/Roadmap repository https://github.com/NIAID-Data-Ecosystem/nde-roadmap/issues). 
+      placeholder: https://github.com/NIAID-Data-Ecosystem/nde-roadmap/issues/45
     validations:
       required: false     
   - type: markdown
