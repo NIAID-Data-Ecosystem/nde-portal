@@ -1,0 +1,104 @@
+name: User Testing
+description: Issue form for UI/UX Testing
+title: "[UX Test]: "
+labels: ["ui"]
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        This form is meant for UI/UX tests to be conducted.         
+  - type: input
+    id: uxIssueName
+    attributes:
+      label: Issue Name
+      description: Provide a name for UI/UX test to be conducted
+      placeholder: ex. Metadata badges test
+    validations:
+      required: True
+  - type: textarea
+    id: uxIssuePurpose
+    attributes:
+      label: Test Purpose
+      description: Please describe the purpose of the UX/UI test
+      placeholder: ex- The test will determine the interpretability of three terms that will potentially be used on...
+    validations:
+      required: true   
+  - type: textarea
+    id: uxIssueApproach
+    attributes:
+      label: Test Approach
+      description: Please describe how the UI/UX test will be conducted
+      placeholder: ex- The test will be conducted with 25 users on Lyssna
+    validations:
+      required: true 
+  - type: input
+    id: uxIssueCost
+    attributes:
+      label: Test Cost
+      description: Please describe how much the test UI/UX test is expected to cost
+      placeholder: ex- $25
+    validations:
+      required: true
+  - type: textarea
+    id: uxIssueTime
+    attributes:
+      label: Test Time
+      description: Please describe how long the test is expected to take to be conducted, and how long it will take to analyze the results
+      placeholder: ex. The test is expected to take 2-3 days for set up, 1 day for data collection and 1 day for analysis
+    validations:
+      required: true 
+  - type: input
+    id: uxMaterialURL
+    attributes:
+      label: Writeup URL
+      description: If a write up of the test has been drafted, please include the link to the write up
+      placeholder: ex. https://docs.google.com/spreadsheets/[...]
+    validations:
+      required: false
+  - type: input
+    id: WBSlink
+    attributes:
+      label: Related WBS task
+      description: Please provide links to any relevant tasks/issues in the WBS/Roadmap repository https://github.com/NIAID-Data-Ecosystem/nde-roadmap/issues). 
+      placeholder: ex. https://github.com/NIAID-Data-Ecosystem/nde-roadmap/issues/51
+    validations:
+      required: false     
+  - type: markdown
+    attributes:
+      value: |
+        "## Additional Notes for internal use only." 
+  - type: markdown
+    attributes:
+      value: |
+        Submitter, ignore everything below this point.
+  - type: checkboxes
+    id: uxIssueStatus
+    attributes:
+      label: For internal use only. Assignee, please select the status of this issue
+      options:
+        - label: Not yet started
+        - label: In progress
+        - label: Blocked
+        - label: Will not address
+    validations:
+      required: false
+  - type: textarea
+    id: uxIssueStatusDescription
+    attributes:
+      label: Status Description
+      description: If the status of this issue is BLOCKED or WILL NOT ADDRESS, please provide more details. Update with links to related GitHub issues here or in comments.
+    validations:
+      required: false
+  - type: checkboxes
+    id: uxIssueTaskList
+    attributes:
+       label: Test status check list
+       description: For internal use only. Use the checklist to provide updates on the status of the request
+       options:
+         - label: This test has yet to be discussed between NIAID, Scripps, Leidos
+         - label: This test has been discussed/reported between NIAID, Scripps, Leidos
+         - label: This test has been scoped out
+         - label: This test has been drafted in the platform in which it will be conducted
+         - label: This test has been conducted
+         - label: The results of this test have been analyzed
