@@ -77,7 +77,7 @@ body:
   - type: checkboxes
     id: strapiIssueTaskList
     attributes:
-       label: Request status check list
+       label: STRAPI page status check list
        description: For internal use only. Use the checklist to provide updates on the status of the request
        options:
          - label: This page/documentation/change has yet to be discussed between NIAID, Scripps, Leidos
