@@ -1,7 +1,7 @@
 name: User Testing
 description: Issue form for UI/UX Testing
 title: "[UX Test]: "
-labels: ["ui"]
+labels: ["ux"]
 
 body:
   - type: markdown
