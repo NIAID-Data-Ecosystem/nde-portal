@@ -2,7 +2,33 @@ import React from 'react';
 import { Flex, FlexProps, Icon, Text } from '@chakra-ui/react';
 import { FaRegClock } from 'react-icons/fa6';
 import { FormattedResource } from 'src/utils/api/types';
-import { StyledLabel } from './styles';
+
+const StyledLabel = ({ children, ...props }: FlexProps) => {
+  return (
+    <Flex
+      lineHeight={1.5}
+      position='relative'
+      zIndex={0}
+      mx={2}
+      p={2}
+      _before={{
+        content: '""',
+        bg: props?._before?.bg ? props?._before?.bg : 'status.info',
+        boxShadow: '0 0 0 5px #fff',
+        display: 'block',
+        height: '2.5rem',
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        transform: 'skew(-12deg)',
+        width: '100%',
+        zIndex: -4,
+      }}
+    >
+      {children}
+    </Flex>
+  );
+};
 
 interface TypeBannerProps extends FlexProps {
   type?: FormattedResource['type'];
@@ -34,7 +60,13 @@ const TypeBanner: React.FC<TypeBannerProps> = ({
   ...props
 }) => {
   return (
-    <Flex flexWrap='wrap' w='100%' bg={props.bg || 'status.info_lt'} {...props}>
+    <Flex
+      className='type-banner'
+      flexWrap='wrap'
+      w='100%'
+      bg={props.bg || 'status.info_lt'}
+      {...props}
+    >
       <Flex
         bg={props.bg || 'status.info_lt'}
         px={{ base: 2, lg: 4 }}

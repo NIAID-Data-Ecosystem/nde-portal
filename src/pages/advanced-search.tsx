@@ -6,7 +6,6 @@ import { AdvancedSearch } from 'src/components/advanced-search';
 const AdvancedSearchPage: NextPage = () => {
   return (
     <PageContainer
-      hasNavigation
       title='Advanced Search'
       metaDescription='Advanced Search page.'
       px={0}

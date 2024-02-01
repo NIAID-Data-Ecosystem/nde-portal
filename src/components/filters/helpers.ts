@@ -1,5 +1,4 @@
 import { NextRouter } from 'next/router';
-import { formatDate, formatType } from 'src/utils/api/helpers';
 
 // Given a query object, update the route to reflect the change.
 export const updateRoute = (update: {}, router: NextRouter) => {

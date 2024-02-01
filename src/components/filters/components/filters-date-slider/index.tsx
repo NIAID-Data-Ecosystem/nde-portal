@@ -20,8 +20,7 @@ interface FiltersDateSliderProps {
   colorScheme: string;
   // Params used in query.
   queryParams: Params;
-  // Selected resourcesWithDate [min, max] from router.
-  selectedDates: string[];
+  facet: string;
   filters: SelectedFilterType;
   selectedData: FacetTerm[];
   // fn to update filter selection
@@ -33,12 +32,20 @@ interface FiltersDateSliderProps {
 export const FiltersDateSlider: React.FC<FiltersDateSliderProps> = ({
   colorScheme,
   queryParams: params,
+  facet,
   filters,
-  selectedDates,
   selectedData,
   handleSelectedFilter,
   resetFilter,
 }) => {
+  const selectedDates =
+    filters?.[facet]?.map(filter => {
+      if (typeof filter === 'object') {
+        return Object.keys(filter)[0];
+      } else {
+        return filter;
+      }
+    }) || [];
   /*
   RETRIEVE DATES DATA
     [resourcesWithDate] The data for the date slider updates with filters and querystring changes but we omit the date filter from updating the data for the appearance of this filter.

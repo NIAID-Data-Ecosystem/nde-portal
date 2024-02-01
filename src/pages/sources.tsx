@@ -89,7 +89,6 @@ const Sources: NextPage<SourcesProps> = ({ data, error }) => {
   return (
     <PageContainer
       id='sources-page'
-      hasNavigation
       title='Sources'
       metaDescription='NDE Discovery Portal - API data sources.'
       px={0}

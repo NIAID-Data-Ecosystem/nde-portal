@@ -1,3 +1,4 @@
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   Box,
   Button,
@@ -5,223 +6,205 @@ import {
   Collapse,
   Flex,
   FlexProps,
-  Icon,
   ListItem,
-  Progress,
   Text,
   UnorderedList,
   useDisclosure,
 } from '@chakra-ui/react';
-import React, { useCallback, useEffect, useState } from 'react';
-import { FaDownload, FaCircleExclamation } from 'react-icons/fa6';
+import { FaDownload } from 'react-icons/fa6';
 import { useQuery, useQueryClient } from 'react-query';
 import { Params, fetchAllSearchResults } from 'src/utils/api';
 import { DownloadArgs, downloadAsCsv, downloadAsJson } from './helpers';
-import { Disclaimer } from './components/Disclaimer';
-import { FaXmark } from 'react-icons/fa6';
+import dynamic from 'next/dynamic';
+
+const DownloadMetadataProgress = dynamic(() =>
+  import('./components/DownloadProgress').then(
+    mod => mod.DownloadMetadataProgress,
+  ),
+);
+
+// Options for download format and corresponding formatting functions.
+export interface DownloadOption {
+  name: string;
+  format: string;
+  fn: (
+    data: DownloadArgs['dataObject'],
+    exportFileName: DownloadArgs['downloadName'],
+  ) => { href?: string; download?: string } | null;
+}
 
 /*
  [COMPONENT INFO]: Download data button that gives JSON or CSV download options.
 */
-
 interface DownloadMetadataProps extends FlexProps {
   exportFileName: string;
-  params: Params;
+  getQueryParams: () => Params;
   buttonProps?: ButtonProps;
 }
 
-export const DownloadMetadata: React.FC<DownloadMetadataProps> = ({
-  params,
-  exportFileName,
-  children,
-  buttonProps,
-  ...props
-}) => {
-  // Toggle open/close a download format list.
-  const { isOpen, onToggle, onClose } = useDisclosure();
-
-  // Options for download format and corresponding formatting functions.
-  const [downloadFormat, setDownloadFormat] = useState<any | null>(null);
-
-  const options = [
-    {
-      name: 'JSON Format',
-      format: 'json',
-      fn: (
-        data: DownloadArgs['dataObject'],
-        exportFileName: DownloadArgs['downloadName'],
-      ) => downloadAsJson(data, exportFileName),
-    },
-    {
-      name: 'CSV Format',
-      format: 'csv',
-      fn: (
-        data: DownloadArgs['dataObject'],
-        exportFileName: DownloadArgs['downloadName'],
-      ) => downloadAsCsv(data, exportFileName),
-    },
-  ];
-
-  // Detect if query has change by using the stringified params as a query key.
-  const [queryKey, setQueryKey] = useState(['all-search-results', params]);
-
-  useEffect(() => {
-    const newKey = ['all-search-results', params];
-    if (JSON.stringify(newKey) !== JSON.stringify(queryKey)) {
-      setQueryKey(newKey);
-    }
-  }, [queryKey, params]);
-
-  const {
-    error,
-    refetch: fetchDownloadData,
-    isFetching,
-  } = useQuery<any | undefined, Error>(
-    queryKey,
-    ({ signal }) => {
-      return fetchAllSearchResults(
+export const DownloadMetadataButton: React.FC<DownloadMetadataProps> =
+  React.memo(
+    ({ getQueryParams, exportFileName, children, buttonProps, ...props }) => {
+      // Toggle open/close a download format list.
+      const options = [
         {
-          q: params.q,
-          extra_filter: params.extra_filter,
-          sort: params.sort,
-          fields: params.fields,
-          advancedSearch: params.advancedSearch,
-          use_metadata_score: params.use_metadata_score,
-          // creates a column for each nested field for csv.
-          dotfield:
-            downloadFormat && downloadFormat?.format === 'csv' ? true : false,
+          name: 'JSON Format',
+          format: 'json',
+          fn: (
+            data: DownloadArgs['dataObject'],
+            exportFileName: DownloadArgs['downloadName'],
+          ) => downloadAsJson(data, exportFileName),
         },
-        signal,
-        setPercentComplete,
-      );
-    },
-    // Don't refresh everytime window is touched.
-    {
-      refetchOnWindowFocus: false,
-      // cancel query when download format is not specified.
-      enabled: !!downloadFormat,
-      retry: false,
-    },
-  );
-  // Percent complete for download progress bar.
-  const [percentComplete, setPercentComplete] = useState(0);
+        {
+          name: 'CSV Format',
+          format: 'csv',
+          fn: (
+            data: DownloadArgs['dataObject'],
+            exportFileName: DownloadArgs['downloadName'],
+          ) => downloadAsCsv(data, exportFileName),
+        },
+      ] as DownloadOption[];
+      const {
+        isOpen: showOptions,
+        onToggle: toggleOptions,
+        onClose: closeOptions,
+      } = useDisclosure();
+      const params = getQueryParams();
 
-  const clearDownloadState = useCallback(() => {
-    setPercentComplete(0);
-    setDownloadFormat(null);
-  }, []);
+      // Options for download format and corresponding formatting functions.
+      const [downloadFormat, setDownloadFormat] =
+        useState<DownloadOption | null>(null);
 
-  useEffect(() => {
-    let downloadTimeoutId: NodeJS.Timeout;
+      // Detect if query has change by using the stringified params as a query key.
+      const [queryKey, setQueryKey] = useState(['all-search-results', params]);
 
-    // Function to trigger the download process.
-    const initiateDownload = ({
-      href,
-      download,
-    }: {
-      href: string;
-      download: string;
-    }) => {
-      const downloadLink = document.createElement('a');
-      downloadLink.href = href;
-      downloadLink.setAttribute('download', download);
-      document.body.appendChild(downloadLink);
-      downloadLink.click();
-      document.body.removeChild(downloadLink);
-
-      downloadTimeoutId = setTimeout(clearDownloadState, 2000);
-    };
-
-    // Function to retrieve data and process it for downloading.
-    const processDownloadData = async (): Promise<void> => {
-      if (!downloadFormat?.fn) return;
-
-      try {
-        const response = await fetchDownloadData();
-        const results = response.data?.results;
-        if (results) {
-          const downloadDetails = downloadFormat.fn(results, exportFileName);
-          initiateDownload(downloadDetails);
+      useEffect(() => {
+        const newKey = ['all-search-results', params];
+        if (JSON.stringify(newKey) !== JSON.stringify(queryKey)) {
+          setQueryKey(newKey);
         }
-      } catch (error) {
-        console.error('Error in data fetching for download:', error);
-      }
-    };
+      }, [queryKey, params]);
 
-    processDownloadData();
+      const {
+        error,
+        refetch: fetchDownloadData,
+        isFetching,
+      } = useQuery<any | undefined, Error>(
+        queryKey,
+        ({ signal }) => {
+          return fetchAllSearchResults(
+            {
+              q: params.q,
+              extra_filter: params.extra_filter,
+              sort: params.sort,
+              fields: params.fields,
+              advancedSearch: params.advancedSearch,
+              use_metadata_score: params.use_metadata_score,
+              // creates a column for each nested field for csv.
+              dotfield:
+                downloadFormat && downloadFormat?.format === 'csv'
+                  ? true
+                  : false,
+            },
+            signal,
+            setPercentComplete,
+          );
+        },
+        // Don't refresh everytime window is touched.
+        {
+          refetchOnWindowFocus: false,
+          // cancel query when download format is not specified.
+          enabled: !!downloadFormat,
+          retry: false,
+        },
+      );
+      // Percent complete for download progress bar.
+      const [percentComplete, setPercentComplete] = useState(0);
 
-    // Cleanup function to clear the download timeout.
-    return () => {
-      if (downloadTimeoutId) clearTimeout(downloadTimeoutId);
-    };
-  }, [downloadFormat, exportFileName, fetchDownloadData, clearDownloadState]);
+      const clearDownloadState = useCallback(() => {
+        setPercentComplete(0);
+        setDownloadFormat(null);
+      }, []);
 
-  const queryClient = useQueryClient();
+      useEffect(() => {
+        let downloadTimeoutId: NodeJS.Timeout;
 
-  return (
-    <Flex alignItems='flex-end' flexDirection='column' {...props}>
-      {/* Error */}
-      <Collapse in={!!error}>
-        <Text fontSize='xs' fontStyle='italic' color='status.error'>
-          <Icon as={FaCircleExclamation} color='status.error' mr={1}></Icon>
-          Something went wrong with the metadata download. Please try again.
-        </Text>
-      </Collapse>
+        // Function to trigger the download process.
+        const initiateDownload = ({
+          href,
+          download,
+        }: {
+          href?: string;
+          download?: string;
+        }) => {
+          if (!href || !download) return;
+          const downloadLink = document.createElement('a');
+          downloadLink.href = href;
+          downloadLink.setAttribute('download', download);
+          document.body.appendChild(downloadLink);
+          downloadLink.click();
+          document.body.removeChild(downloadLink);
 
-      <Box maxW='300px'>
-        {downloadFormat || percentComplete ? (
-          <Flex flexDirection='column'>
-            <Flex w='200px' alignItems='center'>
-              <Progress
-                w='100%'
-                hasStripe
-                value={percentComplete}
-                colorScheme='primary'
-                isIndeterminate={percentComplete === 0}
-                isAnimated
-              />
-              <Text
-                fontSize='xs'
-                color='niaid.placeholder'
-                textAlign='end'
-                fontWeight='medium'
-                ml={1}
-              >
-                {percentComplete}%
-              </Text>
-            </Flex>
-          </Flex>
-        ) : (
-          <></>
-        )}
+          downloadTimeoutId = setTimeout(clearDownloadState, 2000);
+        };
 
-        {isFetching ? (
-          // cancel query
-          <Button
-            leftIcon={<FaXmark />}
-            colorScheme='primary'
-            onClick={() => {
-              queryClient.cancelQueries(queryKey);
-              clearDownloadState();
-            }}
-            variant='solid'
-            size='xs'
-            fontSize='12px'
-            {...buttonProps}
-          >
-            cancel
-          </Button>
-        ) : (
+        // Function to retrieve data and process it for downloading.
+        const processDownloadData = async (): Promise<void> => {
+          if (!downloadFormat?.fn) return;
+
+          try {
+            const response = await fetchDownloadData();
+            const results = response.data?.results;
+            if (results) {
+              const downloadDetails = downloadFormat.fn(
+                results,
+                exportFileName,
+              );
+              downloadDetails && initiateDownload(downloadDetails);
+            }
+          } catch (error) {
+            console.error('Error in data fetching for download:', error);
+          }
+        };
+
+        processDownloadData();
+
+        // Cleanup function to clear the download timeout.
+        return () => {
+          if (downloadTimeoutId) clearTimeout(downloadTimeoutId);
+        };
+      }, [
+        downloadFormat,
+        exportFileName,
+        fetchDownloadData,
+        clearDownloadState,
+      ]);
+
+      const queryClient = useQueryClient();
+
+      return (
+        <Flex alignItems='flex-end' flexDirection='column' {...props}>
+          {downloadFormat && (
+            <DownloadMetadataProgress
+              cancelQuery={() => {
+                queryClient.cancelQueries(queryKey);
+                clearDownloadState();
+              }}
+              downloadFormat={downloadFormat}
+              error={error}
+              isFetching={isFetching}
+              percentComplete={percentComplete}
+            />
+          )}
           <Box position='relative'>
             <Button
               leftIcon={<FaDownload />}
               colorScheme='primary'
-              onClick={onToggle}
-              variant='solid'
+              onClick={toggleOptions}
+              variant='outline'
               size='sm'
-              isLoading={isFetching}
-              loadingText='Downloading'
               w='100%'
+              display={!!downloadFormat ? 'none' : 'flex'}
               {...buttonProps}
             >
               {children}
@@ -234,45 +217,44 @@ export const DownloadMetadata: React.FC<DownloadMetadataProps> = ({
               borderRadius='semi'
               bg='white'
             >
-              <Collapse in={isOpen} animateOpacity>
+              <Collapse in={showOptions}>
                 <UnorderedList ml={0}>
-                  {options.map((option, idx) => {
-                    return (
-                      <ListItem
-                        key={option.name}
-                        borderBottom={
-                          idx < options.length - 1 ? '1px solid' : 'none'
-                        }
-                        borderColor='page.alt'
-                      >
-                        <Box
-                          as='a'
-                          w='100%'
-                          display='block'
-                          px={4}
-                          py={2}
-                          cursor='pointer'
-                          _hover={{
-                            bg: `${buttonProps?.colorScheme || 'primary'}.50`,
-                          }}
-                          onClick={async () => {
-                            onClose();
-                            setPercentComplete(0);
-                            setDownloadFormat(option);
-                          }}
+                  {showOptions &&
+                    options.map((option, idx) => {
+                      return (
+                        <ListItem
+                          key={option.name}
+                          borderBottom={
+                            idx < options.length - 1 ? '1px solid' : 'none'
+                          }
+                          borderColor='page.alt'
                         >
-                          <Text fontWeight='semibold'>{option.name}</Text>
-                        </Box>
-                      </ListItem>
-                    );
-                  })}
+                          <Box
+                            as='a'
+                            w='100%'
+                            display='block'
+                            px={4}
+                            py={2}
+                            cursor='pointer'
+                            _hover={{
+                              bg: `${buttonProps?.colorScheme || 'primary'}.50`,
+                            }}
+                            onClick={async () => {
+                              closeOptions();
+                              setPercentComplete(0);
+                              setDownloadFormat(option);
+                            }}
+                          >
+                            <Text fontWeight='semibold'>{option.name}</Text>
+                          </Box>
+                        </ListItem>
+                      );
+                    })}
                 </UnorderedList>
               </Collapse>
             </Box>
           </Box>
-        )}
-      </Box>
-      <Disclaimer isFetching={isFetching} />
-    </Flex>
+        </Flex>
+      );
+    },
   );
-};

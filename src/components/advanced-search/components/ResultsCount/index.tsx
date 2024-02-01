@@ -4,7 +4,7 @@ import { getQueryStatusError } from 'src/components/error/utils';
 import { fetchSearchResults } from 'src/utils/api';
 import { FetchSearchResultsResponse } from 'src/utils/api/types';
 import { formatNumber } from 'src/utils/helpers';
-import { QueryStringError } from '../../utils/validation-checks';
+import { QueryStringError } from 'src/components/error/types';
 
 interface ResultsCountProps {
   queryString: string;

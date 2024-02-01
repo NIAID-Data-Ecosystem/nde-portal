@@ -74,6 +74,7 @@ interface Data extends Partial<FormattedResource> {}
 // This function generates metadata content based on the provided data.
 export const generateMetadataContent = (
   data?: Data | null,
+  showItems = true,
 ): MetadataContentProps[] => {
   if (!data) {
     return [];
@@ -87,36 +88,40 @@ export const generateMetadataContent = (
   ): MetadataContentProps | undefined => {
     switch (property) {
       case 'funding':
-        return createFundingContent(id, property, data?.funding);
+        return createFundingContent(id, property, data?.funding, showItems);
       case 'healthCondition':
         return createHealthConditionContent(
           id,
           property,
           data?.healthCondition,
+          showItems,
         );
       case 'license':
-        return createLicenseContent(id, property, data?.license);
+        return createLicenseContent(id, property, data?.license, showItems);
       case 'measurementTechnique':
         return createMeasurementTechniqueContent(
           id,
           property,
           data?.measurementTechnique,
+          showItems,
         );
       case 'infectiousAgent':
         return createInfectiousAgentContent(
           id,
           property,
           data?.infectiousAgent,
+          showItems,
         );
       case 'species':
-        return createSpeciesContent(id, property, data?.species);
+        return createSpeciesContent(id, property, data?.species, showItems);
       case 'usageInfo':
-        return createUsageInfoContent(id, property, data?.usageInfo);
+        return createUsageInfoContent(id, property, data?.usageInfo, showItems);
       case 'variableMeasured':
         return createVariableMeasuredContent(
           id,
           property,
           data?.variableMeasured,
+          showItems,
         );
       default:
         return undefined;
@@ -138,6 +143,7 @@ const createFundingContent = (
   id: FormattedResource['id'],
   property: string,
   funding?: FormattedResource['funding'],
+  showItems = true,
 ) => {
   const getFundingDetails = (funding?: FormattedResource['funding']) => {
     if (!funding) return null;
@@ -160,34 +166,36 @@ const createFundingContent = (
     property,
     isDisabled: !fundingDetails || fundingDetails.length === 0,
     items:
-      fundingDetails?.map((funding, idx) => {
-        const name = Array.isArray(funding.funder)
-          ? funding.funder.filter(funder => !!funder.name).join(', ')
-          : funding?.funder?.name;
-        return {
-          key: uniqueId(`${property}-${id}-${idx}`),
-          name: name || '',
-          scientificName: '',
-          searchProps: {
-            ['aria-label']: `Search for results with funding "${name}"`,
-            property: 'funding.funder.name',
-            value: Array.isArray(funding.funder)
-              ? funding.funder.filter(funder => !!funder.name).join('" OR "')
-              : funding?.funder?.name,
-          },
-          tags:
-            funding?.identifier || funding?.url
-              ? [
-                  {
-                    label: 'ID',
-                    value: funding?.identifier || 'Funding ID',
-                    url: funding?.url,
-                    tooltipLabel: funding?.identifier || '',
-                  },
-                ]
-              : [],
-        };
-      }) || [],
+      (showItems &&
+        fundingDetails?.map((funding, idx) => {
+          const name = Array.isArray(funding.funder)
+            ? funding.funder.filter(funder => !!funder.name).join(', ')
+            : funding?.funder?.name;
+          return {
+            key: uniqueId(`${property}-${id}-${idx}`),
+            name: name || '',
+            scientificName: '',
+            searchProps: {
+              ['aria-label']: `Search for results with funding "${name}"`,
+              property: 'funding.funder.name',
+              value: Array.isArray(funding.funder)
+                ? funding.funder.filter(funder => !!funder.name).join('" OR "')
+                : funding?.funder?.name,
+            },
+            tags:
+              funding?.identifier || funding?.url
+                ? [
+                    {
+                      label: 'ID',
+                      value: funding?.identifier || 'Funding ID',
+                      url: funding?.url,
+                      tooltipLabel: funding?.identifier || '',
+                    },
+                  ]
+                : [],
+          };
+        })) ||
+      [],
   };
 };
 
@@ -196,37 +204,39 @@ const createHealthConditionContent = (
   id: FormattedResource['id'],
   property: string,
   healthCondition?: FormattedResource['healthCondition'],
+  showItems = true,
 ) => {
   return {
     id: `${property}-${id}`,
     label: 'Health Condition',
     property,
     isDisabled: !healthCondition,
-    items: healthCondition
-      ? healthCondition.map((healthCondition, idx) => {
-          const name = Array.isArray(healthCondition.name)
-            ? healthCondition.name.join(', ')
-            : healthCondition.name;
+    items:
+      showItems && healthCondition
+        ? healthCondition.map((healthCondition, idx) => {
+            const name = Array.isArray(healthCondition.name)
+              ? healthCondition.name.join(', ')
+              : healthCondition.name;
 
-          return {
-            key: uniqueId(`${property}-${id}-${idx}`),
-            name,
-            scientificName: '',
-            searchProps: {
-              ['aria-label']: `Search for results with health condition "${name}"`,
-              property: 'healthCondition.name',
-              value: Array.isArray(healthCondition.name)
-                ? healthCondition.name.join('" OR "')
-                : healthCondition.name,
-            },
-            ontologyProps: {
-              ['aria-label']: 'See ontology information.',
-              value: healthCondition?.url,
-              inDefinedTermSet: healthCondition?.inDefinedTermSet,
-            },
-          };
-        })
-      : [],
+            return {
+              key: uniqueId(`${property}-${id}-${idx}`),
+              name,
+              scientificName: '',
+              searchProps: {
+                ['aria-label']: `Search for results with health condition "${name}"`,
+                property: 'healthCondition.name',
+                value: Array.isArray(healthCondition.name)
+                  ? healthCondition.name.join('" OR "')
+                  : healthCondition.name,
+              },
+              ontologyProps: {
+                ['aria-label']: 'See ontology information.',
+                value: healthCondition?.url,
+                inDefinedTermSet: healthCondition?.inDefinedTermSet,
+              },
+            };
+          })
+        : [],
   };
 };
 
@@ -235,6 +245,7 @@ const createLicenseContent = (
   id: FormattedResource['id'],
   property: string,
   licenseData?: FormattedResource['license'],
+  showItems = true,
 ) => {
   const license = licenseData ? formatLicense(licenseData) : null;
 
@@ -246,7 +257,7 @@ const createLicenseContent = (
     name: license?.title,
     url: license?.url,
     img:
-      license?.img && license?.type
+      showItems && license?.img && license?.type
         ? { src: license?.img, alt: license?.type }
         : undefined,
   };
@@ -257,35 +268,37 @@ const createMeasurementTechniqueContent = (
   id: FormattedResource['id'],
   property: string,
   measurementTechnique?: FormattedResource['measurementTechnique'],
+  showItems = true,
 ) => {
   return {
     id: `${property}-${id}`,
     label: 'Measurement Technique',
     property,
     isDisabled: !measurementTechnique,
-    items: measurementTechnique
-      ? measurementTechnique.map((measurementTechnique, idx) => {
-          const name = Array.isArray(measurementTechnique.name)
-            ? measurementTechnique.name.join(', ')
-            : measurementTechnique.name;
+    items:
+      showItems && measurementTechnique
+        ? measurementTechnique.map((measurementTechnique, idx) => {
+            const name = Array.isArray(measurementTechnique.name)
+              ? measurementTechnique.name.join(', ')
+              : measurementTechnique.name;
 
-          return {
-            key: uniqueId(`${property}-${id}-${idx}`),
-            name,
-            searchProps: {
-              ['aria-label']: `Search for results with measurement technique "${name}"`,
-              property: 'measurementTechnique.name',
-              value: Array.isArray(measurementTechnique.name)
-                ? measurementTechnique.name.join('" OR "')
-                : measurementTechnique.name,
-            },
-            ontologyProps: {
-              ['aria-label']: 'See ontology information.',
-              value: measurementTechnique?.url,
-            },
-          };
-        })
-      : [],
+            return {
+              key: uniqueId(`${property}-${id}-${idx}`),
+              name,
+              searchProps: {
+                ['aria-label']: `Search for results with measurement technique "${name}"`,
+                property: 'measurementTechnique.name',
+                value: Array.isArray(measurementTechnique.name)
+                  ? measurementTechnique.name.join('" OR "')
+                  : measurementTechnique.name,
+              },
+              ontologyProps: {
+                ['aria-label']: 'See ontology information.',
+                value: measurementTechnique?.url,
+              },
+            };
+          })
+        : [],
   };
 };
 
@@ -294,41 +307,43 @@ const createInfectiousAgentContent = (
   id: FormattedResource['id'],
   property: string,
   infectiousAgent?: FormattedResource['infectiousAgent'],
+  showItems = true,
 ) => {
   return {
     id: `${property}-${id}`,
     label: 'Pathogen',
     property,
     isDisabled: !infectiousAgent,
-    items: infectiousAgent
-      ? infectiousAgent.map((pathogen, idx) => {
-          const scientificName = Array.isArray(pathogen.name)
-            ? pathogen.name.join(', ')
-            : pathogen.name;
+    items:
+      showItems && infectiousAgent
+        ? infectiousAgent.map((pathogen, idx) => {
+            const scientificName = Array.isArray(pathogen.name)
+              ? pathogen.name.join(', ')
+              : pathogen.name;
 
-          const name = Array.isArray(pathogen.commonName)
-            ? pathogen.commonName.join(', ')
-            : pathogen.commonName;
+            const name = Array.isArray(pathogen.commonName)
+              ? pathogen.commonName.join(', ')
+              : pathogen.commonName;
 
-          return {
-            key: uniqueId(`${property}-${id}-${idx}`),
-            name,
-            scientificName,
-            searchProps: {
-              ['aria-label']: `Search for results with pathogen "${scientificName}"`,
-              property: 'infectiousAgent.name',
-              value: Array.isArray(pathogen.name)
-                ? pathogen.name.join('" OR "')
-                : pathogen.name,
-            },
-            ontologyProps: {
-              ['aria-label']: 'See ontology information.',
-              value: pathogen?.url,
-              inDefinedTermSet: pathogen?.inDefinedTermSet,
-            },
-          };
-        })
-      : [],
+            return {
+              key: uniqueId(`${property}-${id}-${idx}`),
+              name,
+              scientificName,
+              searchProps: {
+                ['aria-label']: `Search for results with pathogen "${scientificName}"`,
+                property: 'infectiousAgent.name',
+                value: Array.isArray(pathogen.name)
+                  ? pathogen.name.join('" OR "')
+                  : pathogen.name,
+              },
+              ontologyProps: {
+                ['aria-label']: 'See ontology information.',
+                value: pathogen?.url,
+                inDefinedTermSet: pathogen?.inDefinedTermSet,
+              },
+            };
+          })
+        : [],
   };
 };
 
@@ -337,41 +352,43 @@ const createSpeciesContent = (
   id: FormattedResource['id'],
   property: string,
   species?: FormattedResource['species'],
+  showItems = true,
 ) => {
   return {
     id: `${property}-${id}`,
     label: 'Species',
     property,
     isDisabled: !species,
-    items: species
-      ? species.map((species, idx) => {
-          const scientificName = Array.isArray(species.name)
-            ? species.name.join(', ')
-            : species.name;
+    items:
+      showItems && species
+        ? species.map((species, idx) => {
+            const scientificName = Array.isArray(species.name)
+              ? species.name.join(', ')
+              : species.name;
 
-          const name = Array.isArray(species.commonName)
-            ? species.commonName.join(', ')
-            : species.commonName;
+            const name = Array.isArray(species.commonName)
+              ? species.commonName.join(', ')
+              : species.commonName;
 
-          return {
-            key: uniqueId(`${property}-${id}-${idx}`),
-            name,
-            scientificName,
-            searchProps: {
-              ['aria-label']: `Search for results with species "${scientificName}"`,
-              property: 'species.name',
-              value: Array.isArray(species.name)
-                ? species.name.join('" OR "')
-                : species.name,
-            },
-            ontologyProps: {
-              ['aria-label']: 'See ontology information.',
-              value: species?.url,
-              inDefinedTermSet: species?.inDefinedTermSet,
-            },
-          };
-        })
-      : [],
+            return {
+              key: uniqueId(`${property}-${id}-${idx}`),
+              name,
+              scientificName,
+              searchProps: {
+                ['aria-label']: `Search for results with species "${scientificName}"`,
+                property: 'species.name',
+                value: Array.isArray(species.name)
+                  ? species.name.join('" OR "')
+                  : species.name,
+              },
+              ontologyProps: {
+                ['aria-label']: 'See ontology information.',
+                value: species?.url,
+                inDefinedTermSet: species?.inDefinedTermSet,
+              },
+            };
+          })
+        : [],
   };
 };
 
@@ -380,6 +397,7 @@ const createUsageInfoContent = (
   id: FormattedResource['id'],
   property: string,
   usageInfo?: FormattedResource['usageInfo'],
+  showItems = true,
 ) => {
   return {
     id: `${property}-${id}`,
@@ -396,25 +414,27 @@ const createVariableMeasuredContent = (
   id: FormattedResource['id'],
   property: string,
   variableMeasured?: FormattedResource['variableMeasured'],
+  showItems = true,
 ) => {
   return {
     id: `${property}-${id}`,
     label: 'Variable Measured',
     property,
     isDisabled: !variableMeasured,
-    items: variableMeasured
-      ? variableMeasured.map((variable, idx) => {
-          return {
-            key: uniqueId(`${property}-${id}-${idx}`),
-            name: variable,
-            searchProps: {
-              ['aria-label']: `Search for results with variable measured "${variable}"`,
-              property,
-              value: variable,
-            },
-          };
-        })
-      : [],
+    items:
+      showItems && variableMeasured
+        ? variableMeasured.map((variable, idx) => {
+            return {
+              key: uniqueId(`${property}-${id}-${idx}`),
+              name: variable,
+              searchProps: {
+                ['aria-label']: `Search for results with variable measured "${variable}"`,
+                property,
+                value: variable,
+              },
+            };
+          })
+        : [],
   };
 };
 

@@ -12,7 +12,7 @@ import {
   usePrefersReducedMotion,
 } from '@chakra-ui/react';
 import { SearchInput } from 'src/components/search-input';
-import { FilterTerm } from '../types';
+import { FilterTerm, SelectedFilterType } from '../types';
 import { FiltersCheckbox } from './filters-checkbox';
 import REPOS from 'configs/repositories.json';
 import { FaArrowDown } from 'react-icons/fa6';
@@ -31,12 +31,12 @@ interface FiltersList {
   // Search input placeholder text -- also used for aris-label.
   searchPlaceholder: string;
   // Currently selected filters
-  selectedFilters: string[];
+  selectedFilters: SelectedFilterType;
+  facet: keyof SelectedFilterType;
   // fn to update filter selection
   handleSelectedFilters: (arg: string[]) => void;
   // data loading states
   isLoading: boolean;
-  isUpdating?: boolean;
   property: string;
 }
 const bounce = keyframes`
@@ -54,13 +54,21 @@ export const FiltersList: React.FC<FiltersList> = React.memo(
   ({
     colorScheme,
     searchPlaceholder,
-    selectedFilters,
+    selectedFilters: selected,
+    facet,
     terms,
     handleSelectedFilters,
     isLoading,
-    isUpdating,
     property,
   }) => {
+    const selectedFilters = selected?.[facet]?.map(filter => {
+      if (typeof filter === 'object') {
+        return Object.keys(filter)[0];
+      } else {
+        return filter;
+      }
+    });
+
     const prefersReducedMotion = usePrefersReducedMotion();
 
     const animation = prefersReducedMotion
@@ -79,9 +87,11 @@ export const FiltersList: React.FC<FiltersList> = React.memo(
 
     const items: FilterTerm[] =
       terms?.length > 0
-        ? terms.filter(t =>
-            t.displayAs.toLowerCase().includes(searchTerm.toLowerCase()),
-          )
+        ? terms
+            .filter(t =>
+              t.displayAs.toLowerCase().includes(searchTerm.toLowerCase()),
+            )
+            .sort((a, b) => b.count - a.count)
         : isLoading
         ? Array(NUM_ITEMS_MIN).fill('') // for loading skeleton purposes
         : [];
@@ -107,6 +117,7 @@ export const FiltersList: React.FC<FiltersList> = React.memo(
             .sort((a, b) => a.displayAs.localeCompare(b.displayAs))
             .sort((a, b) => b.count - a.count)
         : [];
+
     return (
       <>
         {/* Search through filter terms */}
@@ -121,8 +132,6 @@ export const FiltersList: React.FC<FiltersList> = React.memo(
             handleChange={handleSearchChange}
             colorScheme={colorScheme}
           />
-        </Box>
-        <Box w='100%' my={4}>
           {/* List of filters available narrowed based on search and expansion toggle */}
           <ScrollContainer
             flexDirection='column'
@@ -131,7 +140,7 @@ export const FiltersList: React.FC<FiltersList> = React.memo(
             maxH={showFullList ? 460 : 400}
             overflowY='auto'
           >
-            {!isLoading && !isUpdating && !items.length && (
+            {!isLoading && !items.length && (
               <Box p={2}>No available filters.</Box>
             )}
             <CheckboxGroup
@@ -165,7 +174,6 @@ export const FiltersList: React.FC<FiltersList> = React.memo(
                                 displayTerm={item.displayAs}
                                 count={item.count}
                                 isLoading={isLoading}
-                                isCountUpdating={isUpdating}
                               />
                             </ListItem>
                           );
@@ -199,7 +207,6 @@ export const FiltersList: React.FC<FiltersList> = React.memo(
                                   displayTerm={item.displayAs}
                                   count={item.count}
                                   isLoading={isLoading}
-                                  isCountUpdating={isUpdating}
                                 />
                               </ListItem>
                             );
@@ -209,33 +216,29 @@ export const FiltersList: React.FC<FiltersList> = React.memo(
                   )}
                 </>
               ) : (
-                <>
-                  <UnorderedList>
-                    {items
-                      .sort((a, b) => b.count - a.count)
-                      .slice(0, showFullList ? items.length : 5)
-                      .map((item, i) => {
-                        return (
-                          <ListItem
-                            key={i}
-                            p={2}
-                            py={0}
-                            my={0}
-                            _hover={{ bg: `${colorScheme}.50` }}
-                          >
-                            <FiltersCheckbox
-                              value={item.term}
-                              displayTerm={item.displayAs}
-                              count={item.count}
-                              isLoading={isLoading}
-                              isCountUpdating={isUpdating}
-                              property={property}
-                            />
-                          </ListItem>
-                        );
-                      })}
-                  </UnorderedList>
-                </>
+                <UnorderedList>
+                  {items
+                    .slice(0, showFullList ? items.length : 5)
+                    .map((item, idx) => {
+                      return (
+                        <ListItem
+                          key={idx}
+                          p={2}
+                          py={0}
+                          my={0}
+                          _hover={{ bg: `${colorScheme}.50` }}
+                        >
+                          <FiltersCheckbox
+                            value={item.term}
+                            displayTerm={item.displayAs}
+                            count={item.count}
+                            isLoading={isLoading}
+                            property={property}
+                          />
+                        </ListItem>
+                      );
+                    })}
+                </UnorderedList>
               )}
             </CheckboxGroup>
           </ScrollContainer>

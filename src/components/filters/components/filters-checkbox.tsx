@@ -1,12 +1,7 @@
 import React from 'react';
-import {
-  Checkbox,
-  Flex,
-  Text,
-  CheckboxProps,
-  Skeleton,
-} from '@chakra-ui/react';
+import { Checkbox, Flex, Text, CheckboxProps } from '@chakra-ui/react';
 import { formatNumber } from 'src/utils/helpers';
+import { Skeleton } from 'src/components/skeleton';
 
 export interface FiltersCheckboxProps extends CheckboxProps {
   displayTerm: string; // term used for display
@@ -14,11 +9,10 @@ export interface FiltersCheckboxProps extends CheckboxProps {
   count?: number;
   isLoading: boolean;
   property?: string;
-  isCountUpdating?: boolean;
 }
 
 export const FiltersCheckbox: React.FC<FiltersCheckboxProps> = React.memo(
-  ({ displayTerm, count, value, isCountUpdating, isLoading, property }) => {
+  ({ displayTerm, count, value, isLoading, property }) => {
     return (
       <Checkbox
         w='100%'
@@ -75,16 +69,9 @@ export const FiltersCheckbox: React.FC<FiltersCheckboxProps> = React.memo(
               )}
 
               {typeof count !== 'undefined' && (
-                <Skeleton
-                  as='span'
-                  px={isCountUpdating ? 3 : 'unset'}
-                  isLoaded={!isCountUpdating}
-                  ml={1}
-                >
-                  <Text as='span' fontWeight='semibold'>
-                    {count ? `${formatNumber(count)}` : '0 '}
-                  </Text>
-                </Skeleton>
+                <Text as='span' fontWeight='semibold'>
+                  {count ? `${formatNumber(count)}` : '0'}
+                </Text>
               )}
             </Flex>
           </Flex>

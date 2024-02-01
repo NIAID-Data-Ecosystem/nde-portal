@@ -3,9 +3,6 @@ export const Card = {
   boxShadow: 'base',
   borderRadius: 'semi',
   overflow: 'hidden',
-  '>*': {
-    p: [6, 8, 10],
-  },
 };
 
 export const CardHeader = {
@@ -45,7 +42,7 @@ const baseStyle = {
 };
 
 const variants = {
-  colorful: {
+  niaid: {
     container: {},
     header: { bg: 'niaid.color', color: 'white' },
     footer: { bg: 'page.alt' },

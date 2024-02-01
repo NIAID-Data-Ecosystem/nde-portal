@@ -1,6 +1,9 @@
 import { theme } from 'src/theme';
 
 export const Badge = {
+  baseStyle: () => ({
+    lineHeight: 'short',
+  }),
   variants: {
     solid: ({ colorScheme }: { colorScheme: string }) => {
       let bg;
@@ -92,7 +95,6 @@ export const Badge = {
 
   defaultProps: {
     variant: 'subtle',
-    lineHeight: 'short',
     fontWeight: 'semibold',
     fontSize: '13px',
   },

@@ -1,9 +1,7 @@
-import React, { useCallback } from 'react';
-import { Params } from 'src/utils/api';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useFacetsData } from 'src/components/filters/hooks/useFacetsData';
 import { FiltersContainer } from 'src/components/filters/components/filters-container';
 import { FiltersList } from 'src/components/filters/components/filters-list';
-import { FiltersSection } from 'src/components/filters/components/filters-section';
 import {
   queryFilterObject2String,
   updateRoute,
@@ -13,8 +11,23 @@ import {
   SelectedFilterType,
 } from 'src/components/filters/types';
 import { useRouter } from 'next/router';
-import { FiltersDateSlider } from 'src/components/filters/components/filters-date-slider/';
-import { theme } from 'src/theme';
+// import { FiltersDateSlider } from 'src/components/filters/components/filters-date-slider/';
+import { FILTERS_CONFIG } from './helpers';
+import {
+  Accordion,
+  AccordionItem,
+  AccordionButton,
+  AccordionPanel,
+  Button,
+  Flex,
+  Heading,
+} from '@chakra-ui/react';
+import { FaMinus, FaPlus } from 'react-icons/fa6';
+import { MetadataIcon, MetadataToolTip } from 'src/components/icon';
+import { getMetadataColor } from 'src/components/icon/helpers';
+import { useHasMounted } from 'src/hooks/useHasMounted';
+import { Params } from 'src/utils/api';
+import { FiltersDateSlider } from 'src/components/filters/components/filters-date-slider';
 
 /*
 [COMPONENT INFO]:
@@ -88,9 +101,7 @@ export const filtersConfig: FiltersConfigProps = {
 
 interface FiltersProps {
   colorScheme?: string;
-  // Params used in query.
   queryParams: Params;
-  // Currently selected filters
   selectedFilters: SelectedFilterType;
   // fn to remove all selected filters
   removeAllFilters?: () => void;
@@ -99,12 +110,13 @@ interface FiltersProps {
 export const Filters: React.FC<FiltersProps> = ({
   colorScheme = 'primary',
   queryParams,
-  removeAllFilters,
   selectedFilters,
+  removeAllFilters,
 }) => {
   const facets = Object.keys(filtersConfig);
   const router = useRouter();
-  const [{ data, error, isLoading, isUpdating }] = useFacetsData({
+
+  const [{ data, error, isLoading }] = useFacetsData({
     queryParams,
     facets: facets.filter(facet => facet !== 'date'),
   });
@@ -114,84 +126,205 @@ export const Filters: React.FC<FiltersProps> = ({
     [router],
   );
 
-  const handleSelectedFilters = (values: string[], facet: string) => {
-    const updatedValues = values.map(value => {
-      // return object with inverted facet + key for exists values
-      if (value === '-_exists_' || value === '_exists_') {
-        return { [value]: [facet] };
-      }
-      return value;
-    });
+  const handleSelectedFilters = useCallback(
+    (values: string[], facet: string) => {
+      const updatedValues = values.map(value => {
+        // return object with inverted facet + key for exists values
+        if (value === '-_exists_' || value === '_exists_') {
+          return { [value]: [facet] };
+        }
+        return value;
+      });
 
-    let updatedFilterString = queryFilterObject2String({
-      ...selectedFilters,
-      ...{ [facet]: updatedValues },
-    });
+      let updatedFilterString = queryFilterObject2String({
+        ...selectedFilters,
+        ...{ [facet]: updatedValues },
+      });
 
-    handleUpdate({
-      from: 1,
-      filters: updatedFilterString,
-    });
-  };
+      handleUpdate({
+        from: 1,
+        filters: updatedFilterString,
+      });
+    },
+    [selectedFilters, handleUpdate],
+  );
 
-  return (
-    <FiltersContainer
-      title='Filters'
-      error={error}
-      filtersConfig={filtersConfig}
-      selectedFilters={selectedFilters}
-      removeAllFilters={removeAllFilters}
-    >
-      {facets.map(facet => {
-        const { name, glyph, property } = filtersConfig[facet];
-        const facetTerms = data[facet]?.sort((a, b) => b.count - a.count);
-        const selected = selectedFilters?.[facet]?.map(filter => {
-          if (typeof filter === 'object') {
-            return Object.keys(filter)[0];
-          } else {
-            return filter;
+  const [openAccordionIndices, setOpenAccordionIndices] = useState<number[]>(
+    [],
+  );
+
+  useEffect(() => {
+    setOpenAccordionIndices(prev => {
+      // 1. If filter is selected, default to an open accordion panel.
+      let selectedKeys =
+        selectedFilters &&
+        Object.entries(selectedFilters)
+          .filter(([_, v]) => v.length > 0)
+          .map(o =>
+            Object.keys(FILTERS_CONFIG)
+              .filter(key => key !== 'date')
+              .indexOf(o[0]),
+          );
+      // 2. The filter config specifies that this filter should be open by default.
+      Object.values(FILTERS_CONFIG)
+        .filter(item => item.property !== 'date')
+        .forEach((v, i) => {
+          if (v.isDefaultOpen && !selectedKeys.includes(i)) {
+            selectedKeys.push(i);
           }
         });
+      return selectedKeys;
+    });
+    // Only run on mount.
+  }, [selectedFilters]);
+  const hasMounted = useHasMounted();
+  if (!hasMounted || !router.isReady) {
+    return <></>;
+  }
 
-        if (facet === 'date') {
-          return (
-            <FiltersDateSlider
-              key={facet}
-              colorScheme={colorScheme}
-              queryParams={queryParams}
-              filters={selectedFilters}
-              selectedData={data?.date || []}
-              selectedDates={selected || []}
-              handleSelectedFilter={values =>
-                handleSelectedFilters(values, facet)
-              }
-              resetFilter={() => handleSelectedFilters([], facet)}
-            />
-          );
-        }
+  return (
+    <FiltersContainer title='Filters'>
+      <Flex
+        justifyContent='space-between'
+        px={{ base: 0, md: 4 }}
+        py={{ base: 2, md: 4 }}
+        alignItems='center'
+      >
+        <Heading size='sm' fontWeight='semibold'>
+          Filters {`${openAccordionIndices}`}
+        </Heading>
+        {/* Clear all currently selected filters */}
+        <Button
+          colorScheme='secondary'
+          variant='outline'
+          size='sm'
+          onClick={removeAllFilters}
+          isDisabled={!removeAllFilters}
+        >
+          Clear All
+        </Button>
+      </Flex>
 
-        return (
-          <FiltersSection
-            key={facet}
-            name={name}
-            icon={glyph}
-            property={property || ''}
-          >
-            <FiltersList
-              colorScheme={colorScheme}
-              searchPlaceholder={`Search ${name.toLowerCase()} filters`}
-              terms={facetTerms}
-              property={property}
-              selectedFilters={selected || []}
-              handleSelectedFilters={values =>
-                handleSelectedFilters(values, facet)
-              }
-              isLoading={isLoading}
-              isUpdating={isUpdating}
-            />
-          </FiltersSection>
-        );
-      })}
+      {error ? (
+        // Error message.
+        <Flex p={4} bg='status.error'>
+          <Heading size='sm' color='white' fontWeight='semibold'>
+            Something went wrong, unable to load filters. <br />
+            Try reloading the page.
+          </Heading>
+        </Flex>
+      ) : (
+        <Accordion bg='white' allowMultiple defaultIndex={openAccordionIndices}>
+          {facets.map(facet => {
+            const { name, glyph, property } = FILTERS_CONFIG[facet];
+
+            if (facet === 'date') {
+              return (
+                <FiltersDateSlider
+                  key={facet}
+                  facet={facet}
+                  colorScheme={colorScheme}
+                  queryParams={queryParams}
+                  filters={selectedFilters}
+                  selectedData={data?.date || []}
+                  handleSelectedFilter={values =>
+                    handleSelectedFilters(values, facet)
+                  }
+                  resetFilter={() => handleSelectedFilters([], facet)}
+                />
+              );
+            }
+
+            return (
+              <AccordionItem
+                key={facet}
+                borderColor='page.alt'
+                borderTopWidth='2px'
+                className={`${openAccordionIndices}`}
+              >
+                {({ isExpanded }) => {
+                  return (
+                    <>
+                      <h2
+                        className={`${
+                          isExpanded ? 'expanded' : 'not-expanded'
+                        }`}
+                      >
+                        {/* Toggle expand panel open. */}
+                        <AccordionButton
+                          borderLeft='4px solid'
+                          borderColor='gray.200'
+                          py={4}
+                          transition='all 0.2s linear'
+                          _expanded={{
+                            borderColor: 'accent.bg',
+                            py: 2,
+                            transition: 'all 0.2s linear',
+                          }}
+                        >
+                          {/* Filter Name */}
+                          <Flex
+                            flex='1'
+                            textAlign='left'
+                            justifyContent='space-between'
+                            alignItems='center'
+                          >
+                            <Heading as='span' size='sm' fontWeight='semibold'>
+                              {name}
+                            </Heading>
+
+                            {/* Icon tooltip with property definition. */}
+                            {glyph && (
+                              <MetadataToolTip
+                                propertyName={property}
+                                recordType='Dataset' // [NOTE]: Choosing dataset for general definition.
+                                showAbstract
+                              >
+                                <MetadataIcon
+                                  id={`filter-${property}`}
+                                  glyph={glyph}
+                                  title={property}
+                                  fill={getMetadataColor(glyph)}
+                                  mx={2}
+                                />
+                              </MetadataToolTip>
+                            )}
+                          </Flex>
+                          {isExpanded ? (
+                            <FaMinus fontSize='12px' />
+                          ) : (
+                            <FaPlus fontSize='12px' />
+                          )}
+                        </AccordionButton>
+                      </h2>
+                      <AccordionPanel
+                        p={4}
+                        borderLeft='4px solid'
+                        borderColor='accent.bg'
+                      >
+                        {isExpanded && (
+                          <FiltersList
+                            colorScheme={colorScheme}
+                            facet={facet}
+                            selectedFilters={selectedFilters}
+                            searchPlaceholder={`Search ${name.toLowerCase()} filters`}
+                            terms={data[facet]}
+                            property={property}
+                            handleSelectedFilters={values =>
+                              handleSelectedFilters(values, facet)
+                            }
+                            isLoading={isLoading}
+                          />
+                        )}
+                      </AccordionPanel>
+                    </>
+                  );
+                }}
+              </AccordionItem>
+            );
+          })}
+        </Accordion>
+      )}
     </FiltersContainer>
   );
 };

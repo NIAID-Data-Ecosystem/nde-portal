@@ -27,16 +27,14 @@ import {
   convertObject2QueryString,
   convertQueryString2Object,
 } from '../../utils/query-helpers';
-import {
-  QueryStringError,
-  removeDuplicateErrors,
-} from '../../utils/validation-checks';
+import { removeDuplicateErrors } from '../../utils/validation-checks';
 import { TreeItem } from '../SortableWithCombine';
 import {
   formatQueryString,
   removeUnnecessaryParentheses,
   validateQueryString,
 } from './utils';
+import { QueryStringError } from 'src/components/error/types';
 
 interface EditableQueryTextProps {
   queryObj: TreeItem[];

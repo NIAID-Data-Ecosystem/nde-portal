@@ -1,5 +1,5 @@
 import { Box, Divider, Flex, Text } from '@chakra-ui/react';
-import { getMetadataNameByProperty } from 'src/components/advanced-search/utils/query-helpers';
+import { getMetadataNameByProperty } from 'src/utils/helpers/metadata';
 
 type statkey = 'required' | 'recommended' | 'total';
 interface Stat {

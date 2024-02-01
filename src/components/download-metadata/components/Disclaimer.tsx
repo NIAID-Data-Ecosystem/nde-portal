@@ -1,5 +1,5 @@
-import { Collapse, FlexProps, Text } from '@chakra-ui/react';
 import React, { useEffect, useState } from 'react';
+import { Collapse, FlexProps, Text } from '@chakra-ui/react';
 
 /*
  [COMPONENT INFO]: Disclaimer for large dataset downloads when a certain about of [timeDelay] has passed.
@@ -34,7 +34,7 @@ export const Disclaimer: React.FC<DisclaimerProps> = ({
 
   return (
     <Collapse in={isFetching && showDisclaimer}>
-      <Text fontSize='xs' fontStyle='italic'>
+      <Text fontSize='xs' fontStyle='italic' lineHeight='short'>
         Note: Large sets of metadata may take a long time to download.
       </Text>
     </Collapse>

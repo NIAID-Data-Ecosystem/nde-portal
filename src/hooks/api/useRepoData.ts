@@ -1,4 +1,3 @@
-import axios from 'axios';
 import REPOSITORIES from 'configs/repositories.json';
 import { useQuery, UseQueryOptions } from 'react-query';
 import { Metadata, Repository } from './types';

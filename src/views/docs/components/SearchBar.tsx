@@ -20,10 +20,10 @@ import {
 } from '@chakra-ui/react';
 import {
   DropdownInput,
-  Highlight,
   InputWithDropdown,
   useDropdownContext,
 } from 'src/components/input-with-dropdown';
+import { Highlight } from 'src/components/input-with-dropdown/components/Highlight';
 import axios from 'axios';
 import { useQuery } from 'react-query';
 import { debounce } from 'lodash';

@@ -12,11 +12,8 @@ import {
 } from '@chakra-ui/react';
 import { Link } from 'src/components/link';
 import type { GetStaticProps, NextPage } from 'next';
-import {
-  PageContainer,
-  PageContent,
-  PageHeader,
-} from 'src/components/page-container';
+import { PageContainer, PageContent } from 'src/components/page-container';
+import { PageHeader } from 'src/components/page-header';
 import DOCUMENTATION_COPY from 'configs/docs.json';
 import { Error } from 'src/components/error';
 import axios from 'axios';
@@ -130,7 +127,6 @@ const Docs: NextPage<{
   const MAX_PAGES_PER_SECTION = 3;
   return (
     <PageContainer
-      hasNavigation
       title='Documentation'
       metaDescription='Documentation for the portal.'
       px={0}

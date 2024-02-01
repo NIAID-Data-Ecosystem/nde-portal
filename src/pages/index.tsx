@@ -27,11 +27,7 @@ import {
 } from '@chakra-ui/react';
 import { theme } from 'src/theme';
 import { Link } from 'src/components/link';
-import {
-  PageHeader,
-  PageContainer,
-  PageContent,
-} from 'src/components/page-container';
+import { PageContainer, PageContent } from 'src/components/page-container';
 import HOMEPAGE_COPY from 'configs/homepage.json';
 import HOME_QUERIES from 'configs/queries/home-queries.json';
 import NextLink from 'next/link';
@@ -47,6 +43,7 @@ import {
 } from 'src/views/home/components/NewsCarousel';
 import { TableSortToggle } from 'src/components/table/components/sort-toggle';
 import { TableWrapper } from 'src/components/table/components/wrapper';
+import { PageHeader } from 'src/components/page-header';
 
 interface Repository {
   identifier: string;
@@ -334,7 +331,6 @@ const Home: NextPage<{
 
   return (
     <PageContainer
-      hasNavigation
       title='Home'
       metaDescription='Find and access allergic, infectious and immune-mediated disease data by searching across biomedical data repositories with the NIAID Data Discovery Portal'
       keywords='omics, data, infectious disease, epidemiology, clinical trial, immunology, bioinformatics, surveillance, search, repository'

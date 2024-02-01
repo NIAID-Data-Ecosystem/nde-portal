@@ -7,7 +7,6 @@ import NextLink from 'next/link';
 const NotFoundPage: NextPage = () => {
   return (
     <PageContainer
-      hasNavigation
       title='Page Not Found'
       metaDescription='404 Error: Page Not Found.'
     >

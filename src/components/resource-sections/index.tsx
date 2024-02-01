@@ -24,7 +24,7 @@ import { Route } from './helpers';
 import FilesTable from './components/files-table';
 import CitedByTable from './components/cited-by-table';
 import { DisplayHTMLContent } from '../html-content';
-import { DownloadMetadata } from '../download-metadata';
+import { DownloadMetadataButton } from '../download-metadata';
 import SoftwareInformation from './components/software-information';
 import { External } from './components/sidebar/components/external';
 import { Funding } from './components/funding';
@@ -280,7 +280,7 @@ const Sections = ({
             {section.hash === 'metadata' && data?.rawData && (
               <>
                 <Flex w='100%' justifyContent='flex-end' pb={2}>
-                  <DownloadMetadata
+                  <DownloadMetadataButton
                     buttonProps={{
                       colorScheme: 'primary',
                       variant: 'outline',
@@ -288,10 +288,12 @@ const Sections = ({
                       mb: 1,
                     }}
                     exportFileName={`nde-${data.rawData['_id']}`}
-                    params={{ q: `_id:"${data.rawData['_id']}"` }}
+                    getQueryParams={() => ({
+                      q: `_id:"${data.rawData['_id']}"`,
+                    })}
                   >
                     Download Metadata
-                  </DownloadMetadata>
+                  </DownloadMetadataButton>
                 </Flex>
                 <JsonViewer data={data.rawData} />
               </>
