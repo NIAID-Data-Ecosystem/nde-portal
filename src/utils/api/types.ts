@@ -35,6 +35,7 @@ export interface FacetTerm {
 // Type of resource.
 export type ResourceType =
   | 'Dataset'
+  | 'Resource Catalog'
   | 'Computational Tool'
   | 'Software'
   | 'Scholarly Article'
@@ -293,6 +294,13 @@ export interface InputProperties {
   encodingFormat?: string;
 }
 
+export interface CollectionSize {
+  maxValue?: number;
+  minValue?: number;
+  unitText?: string;
+  value?: number;
+}
+
 export interface OutputProperties {
   identifier?: string;
   name?: string;
@@ -334,6 +342,8 @@ export interface FormattedResource {
   citation: Citation[] | null;
   citedBy: CitedBy[] | null;
   codeRepository: string[] | string | null;
+  collectionSize?: CollectionSize[];
+  collectionType?: string;
   condition: string | null;
   conditionsOfAccess: AccessTypes | null;
   curatedBy: CuratedBy | null;

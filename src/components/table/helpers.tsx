@@ -131,7 +131,7 @@ export const getTableColumns = (
   showEmptyColumns: boolean = true,
 ): Column[] => {
   return Object.values(
-    data.reduce((r, d, i) => {
+    data?.reduce((r, d, i) => {
       Object.entries(d).map(([k, v]) => {
         // When showEmptyColumns is selected, we show the property even if there is associated value, otherwise we chack taht there is an associated value.
         if (config[k]) {

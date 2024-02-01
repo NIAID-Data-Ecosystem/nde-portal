@@ -33,6 +33,7 @@ import ResourceIsPartOf from './components/is-part-of';
 import BasedOnTable from './components/based-on';
 import { CompletenessBadgeCircle } from 'src/components/completeness-badge/Circular';
 import { HeadingWithTooltip } from './components/sidebar/components/external/components/heading-with-tooltip';
+import { ResourceCatalogCollection } from './components/collection-information';
 
 // Metadata displayed in each section
 export const sectionMetadata: { [key: string]: (keyof FormattedResource)[] } = {
@@ -162,6 +163,10 @@ const Sections = ({
                   isLoading={isLoading}
                   type={data?.['@type']}
                   citations={data?.citation}
+                />
+                <ResourceCatalogCollection
+                  isLoading={isLoading}
+                  collectionSize={data?.collectionSize}
                 />
               </>
             )}

@@ -39,6 +39,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
   const {
     id,
     alternateName,
+    collectionType,
     name,
     type,
     date,
@@ -55,13 +56,13 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
 
   return (
     // {/* Banner with resource type + date of publication */}
-    <Card variant='colorful'>
+    <Card variant='niaid'>
       <TypeBanner
         type={type}
         p={0}
         pl={[2, 4, 6]}
         flexDirection={['column', 'row']}
-        bg='niaid.color'
+        subType={collectionType}
         isNiaidFunded={isSourceFundedByNiaid(includedInDataCatalog)}
       />
       {/* Card header where name of resource is a link to resource apge */}

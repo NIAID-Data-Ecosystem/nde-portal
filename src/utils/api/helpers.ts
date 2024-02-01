@@ -150,6 +150,8 @@ export const formatDistribution = (
 export const formatType = (type: string): ResourceType => {
   if (type.toLowerCase() === 'dataset') {
     return 'Dataset';
+  } else if (type.toLowerCase() === 'resourcecatalog') {
+    return 'Resource Catalog';
   } else if (type.toLowerCase() === 'computationaltool') {
     return 'Software';
   } else if (type.toLowerCase() === 'scholarlyarticle') {
@@ -229,8 +231,9 @@ export const formatAPIResource = (data: any) => {
     availableOnDevice: data.availableOnDevice || null,
     author: formatAuthor(data.author),
     citation: formatCitation(data.citation),
-    citedBy: data.citedBy || null,
+    citedBy: convertToArray(data.citedBy) || null,
     codeRepository: data.codeRepository || null,
+    collectionSize: convertToArray(data.collectionSize) || null,
     condition: data.condition || null,
     conditionsOfAccess:
       formatConditionsOfAccess(data.conditionsOfAccess) || null,
