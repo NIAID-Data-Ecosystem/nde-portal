@@ -51,7 +51,7 @@ export const formatAuthor = (
   }
 };
 
-interface APICitation {
+export interface APICitation {
   url?: string;
   name?: string;
   author?: Author[] | null;
@@ -290,7 +290,7 @@ export const formatAPIResource = (data: any) => {
     softwareVersion: convertToArray(data.softwareVersion),
     spatialCoverage: convertToArray(data.spatialCoverage),
     species: convertToArray(data.species),
-    temporalCoverage: data.temporalCoverage || null,
+    temporalCoverage: convertToArray(data.temporalCoverage) || null,
     topicCategory: convertToArray(data.topicCategory),
     url: data.url || null,
     usageInfo: data.usageInfo || null,

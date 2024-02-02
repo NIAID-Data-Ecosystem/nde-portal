@@ -22,7 +22,7 @@ import {
 } from './components';
 import { Route } from './helpers';
 import FilesTable from './components/files-table';
-import CitedByTable from './components/cited-by-table';
+import { CitedByTable } from './components/cited-by-table';
 import { DisplayHTMLContent } from '../html-content';
 import { DownloadMetadata } from '../download-metadata';
 import SoftwareInformation from './components/software-information';
@@ -279,7 +279,7 @@ const Sections = ({
             )}
             {/* Show citedBy */}
             {section.hash === 'citedBy' && (
-              <CitedByTable isLoading={isLoading} {...data} />
+              <CitedByTable isLoading={isLoading} data={data?.citedBy || []} />
             )}
             {/* Show raw metadata */}
             {section.hash === 'metadata' && data?.rawData && (

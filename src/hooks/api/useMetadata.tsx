@@ -1,5 +1,5 @@
 import { useQuery, UseQueryOptions } from 'react-query';
-import { Metadata } from './types';
+import { Metadata } from 'src/utils/api/types';
 import { fetchMetadata } from './helpers';
 
 export function useMetadata(options: UseQueryOptions<Metadata, Error> = {}) {

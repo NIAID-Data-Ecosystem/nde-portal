@@ -327,12 +327,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                   style={{ flex: 1 }}
                   passHref
                 >
-                  <Flex
-                    flex={1}
-                    justifyContent='flex-end'
-                    flexWrap='wrap'
-                    maxW={{ base: '100%', sm: '150px' }}
-                  >
+                  <Flex flex={1} justifyContent='flex-end' flexWrap='wrap'>
                     <Button
                       as='span'
                       flex={1}
@@ -340,7 +335,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                       rightIcon={<FaCircleArrowRight />}
                       aria-label={`Go to details about resource ${name}`}
                     >
-                      View dataset
+                      View {type}
                     </Button>
                   </Flex>
                 </NextLink>

@@ -28,6 +28,7 @@ export const ResourceCatalogCollection = ({
         borderRadius='semi'
         my={2}
         py={2}
+        px={0}
       >
         {collectionSize.map((collection, idx) => {
           if (collection?.value) {

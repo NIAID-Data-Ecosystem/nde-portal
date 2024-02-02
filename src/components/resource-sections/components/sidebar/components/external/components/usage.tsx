@@ -33,9 +33,10 @@ export const DataUsage: React.FC<DataUsageProps> = ({
         }`}
       />
       {usageAgreement.map((usageInfo, idx) => {
-        if (!usageInfo?.url) return <></>;
+        if (!usageInfo?.url)
+          return <React.Fragment key={'ua' + idx}></React.Fragment>;
         return (
-          <Link key={idx} href={usageInfo?.url} fontSize='xs' isExternal>
+          <Link key={'ua' + idx} href={usageInfo?.url} fontSize='xs' isExternal>
             {usageInfo?.name || 'View usage agreement'}
           </Link>
         );

@@ -38,7 +38,7 @@ import NextLink from 'next/link';
 import { SearchBarWithDropdown } from 'src/components/search-bar';
 import { AdvancedSearchOpen } from 'src/components/advanced-search/components/buttons';
 import { FaRegEnvelope, FaGithub, FaAngleRight } from 'react-icons/fa6';
-import { useRepoData } from 'src/hooks/api/useRepoData';
+import { Repository, useRepoData } from 'src/hooks/api/useRepoData';
 import { queryFilterObject2String } from 'src/components/filters/helpers';
 import { NewsOrEventsObject } from './news';
 import {
@@ -47,15 +47,6 @@ import {
 } from 'src/views/home/components/NewsCarousel';
 import { TableSortToggle } from 'src/components/table/components/sort-toggle';
 import { TableWrapper } from 'src/components/table/components/wrapper';
-
-interface Repository {
-  identifier: string;
-  label: string;
-  type: 'generalist' | 'iid';
-  url?: string;
-  abstract?: string;
-  icon?: string;
-}
 
 export const RepositoryTable: React.FC<{
   isLoading: boolean;

@@ -102,6 +102,9 @@ export interface CitedBy {
   name: string | null;
   pmid: string | null;
   url: string | null;
+  journalName: string | null;
+  journalNameAbbrev: string | null;
+  issueNumber: string | null;
 }
 
 interface CuratedBy {
@@ -146,13 +149,11 @@ export interface Funder {
 export interface Funding {
   '@type'?: string;
   identifier?: string | null;
-  description?: string | null;
   endDate?: string | null;
   funder?: Funder | Funder[] | null;
   isBasedOn?: {
     identifier?: string | null;
   };
-  keywords?: string[] | null;
   name?: string | null;
   startDate?: string | null;
   url?: string | null;
@@ -391,7 +392,7 @@ export interface FormattedResource {
   sdPublisher: SdPublisher[] | null;
   spatialCoverage: SpatialCoverage[] | null;
   species: Species[] | null;
-  temporalCoverage: TemporalCoverage | null;
+  temporalCoverage: TemporalCoverage[] | null;
   topicCategory: TopicCategory[] | null;
   url: string | null; // link to dataset in the source repo.
   usageInfo?:
@@ -419,6 +420,7 @@ export interface MetadataSource {
   };
   sourceInfo: {
     name: string;
+    abstract: string;
     description: string;
     schema: Object | null;
     url: string;
