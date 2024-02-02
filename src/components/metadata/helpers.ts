@@ -386,8 +386,17 @@ const createUsageInfoContent = (
     label: 'Usage Info',
     property,
     isDisabled: !usageInfo,
-    name: usageInfo?.name || 'Usage Agreement',
-    url: usageInfo?.url || '',
+    items: Array.isArray(usageInfo)
+      ? usageInfo?.map(usage => ({
+          name: usage?.name || 'Usage Agreement',
+          url: usage?.url || '',
+        }))
+      : [
+          {
+            name: usageInfo?.name || 'Usage Agreement',
+            url: usageInfo?.url || '',
+          },
+        ],
   };
 };
 

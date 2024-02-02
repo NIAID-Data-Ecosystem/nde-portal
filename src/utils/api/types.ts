@@ -394,11 +394,17 @@ export interface FormattedResource {
   temporalCoverage: TemporalCoverage | null;
   topicCategory: TopicCategory[] | null;
   url: string | null; // link to dataset in the source repo.
-  usageInfo: {
-    name?: string | null;
-    url?: string | null;
-    description?: string | null;
-  };
+  usageInfo?:
+    | {
+        name?: string | null;
+        url?: string | null;
+        description?: string | null;
+      }
+    | {
+        name?: string | null;
+        url?: string | null;
+        description?: string | null;
+      }[];
   variableMeasured: string[] | null;
   version: number | null;
 }

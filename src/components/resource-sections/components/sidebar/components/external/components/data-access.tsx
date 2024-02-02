@@ -17,7 +17,6 @@ interface DataAccessProps {
   isLoading: boolean;
   includedInDataCatalog?: FormattedResource['includedInDataCatalog'];
   url?: FormattedResource['url'];
-  usageInfo?: FormattedResource['usageInfo'];
   children?: React.ReactNode;
   colorScheme?: ButtonProps['colorScheme'];
 }
