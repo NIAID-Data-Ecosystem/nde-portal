@@ -25,13 +25,16 @@ export const TooltipContent = ({ stats }: TooltipContentProps) => {
     return (
       <Box my={1.5}>
         <Flex color='black'>
-          <Flex alignItems='center' flex={1}>
+          <Flex alignItems='center' flex={1} mr={1}>
             {fill && <Box w={1} h={3} bg={fill} mr={1.5}></Box>}
             {label && <Text color='inherit'>{label}</Text>}
           </Flex>
 
-          <Text mx={1} color='inherit'>
+          <Text mx={1} color='inherit' fontWeight='medium'>
             {score}
+            <Text as='span' mx={1} color='gray.800'>
+              / {max_score}
+            </Text>
           </Text>
         </Flex>
         {augmented_fields && augmented_fields.length > 0 && (
