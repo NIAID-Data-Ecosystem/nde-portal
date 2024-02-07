@@ -31,7 +31,7 @@ Config for the naming/text of a filter.
 */
 export const filtersConfig: FiltersConfigProps = {
   date: { name: 'Date ', glyph: 'date', property: 'date', isDefaultOpen: true },
-  // '@type': { name: 'Type', isDefaultOpen: true },
+  '@type': { name: 'Type', property: '@type' },
   'includedInDataCatalog.name': {
     name: 'Repository',
     glyph: 'info',

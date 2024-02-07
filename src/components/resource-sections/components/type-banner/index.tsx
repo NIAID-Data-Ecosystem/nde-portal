@@ -6,37 +6,48 @@ import { StyledLabel } from './styles';
 
 interface TypeBannerProps extends FlexProps {
   type?: FormattedResource['type'];
+  subType?: FormattedResource['collectionType'];
   date?: FormattedResource['date'];
   sourceName?: string[] | null;
   isNiaidFunded?: boolean;
 }
 
-export const getTypeColor = (type: FormattedResource['type']) => {
-  if (!type) {
-    return;
-  } else if (type.toLowerCase() === 'dataset') {
-    return 'status.info';
-  } else if (
-    type.toLowerCase().includes('tool') ||
-    type.toLowerCase().includes('software')
-  ) {
-    return 'primary.800';
+export const getTypeColor = (type?: FormattedResource['type']) => {
+  const typeLower = type?.toLowerCase();
+  let lt = 'status.info';
+  let dk = 'niaid.color';
+
+  if (typeLower === 'dataset') {
+    lt = 'status.info';
+    dk = 'niaid.color';
+  } else if (typeLower === 'resource catalog') {
+    lt = 'primary.500';
+    dk = 'primary.700';
+  } else if (typeLower?.includes('tool') || typeLower?.includes('software')) {
+    lt = 'primary.800';
   }
-  return 'niaid.color';
+  return { lt, dk };
 };
 
 const TypeBanner: React.FC<TypeBannerProps> = ({
   type,
+  subType,
   date,
   children,
   pl,
   isNiaidFunded,
   ...props
 }) => {
+  const colorScheme = getTypeColor(type);
   return (
-    <Flex flexWrap='wrap' w='100%' bg={props.bg || 'status.info_lt'} {...props}>
+    <Flex
+      flexWrap='wrap'
+      w='100%'
+      bg={props.bg || colorScheme['dk']}
+      {...props}
+    >
       <Flex
-        bg={props.bg || 'status.info_lt'}
+        bg={props.bg || colorScheme['dk']}
         px={{ base: 2, lg: 4 }}
         pl={pl}
         py={0}
@@ -46,7 +57,7 @@ const TypeBanner: React.FC<TypeBannerProps> = ({
         {type && (
           <StyledLabel
             _before={{
-              bg: getTypeColor(type),
+              bg: colorScheme['lt'],
             }}
           >
             <Text
@@ -60,10 +71,27 @@ const TypeBanner: React.FC<TypeBannerProps> = ({
             </Text>
           </StyledLabel>
         )}
+        {subType && (
+          <StyledLabel
+            _before={{
+              bg: colorScheme['lt'],
+            }}
+          >
+            <Text
+              fontSize='xs'
+              color='white'
+              px={2}
+              fontWeight='semibold'
+              whiteSpace='nowrap'
+            >
+              {subType.toUpperCase()}
+            </Text>
+          </StyledLabel>
+        )}
         {isNiaidFunded && (
           <StyledLabel
             _before={{
-              bg: 'niaid.color',
+              bg: colorScheme['dk'],
             }}
           >
             <Text
@@ -79,7 +107,7 @@ const TypeBanner: React.FC<TypeBannerProps> = ({
         )}
       </Flex>
       <Flex
-        bg={props.bg || 'status.info_lt'}
+        bg={props.bg || colorScheme['dk']}
         overflow='hidden'
         flex={1}
         minW='250px'

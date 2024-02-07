@@ -22,7 +22,7 @@ import {
 } from './components';
 import { Route } from './helpers';
 import FilesTable from './components/files-table';
-import CitedByTable from './components/cited-by-table';
+import { CitedByTable } from './components/cited-by-table';
 import { DisplayHTMLContent } from '../html-content';
 import { DownloadMetadata } from '../download-metadata';
 import SoftwareInformation from './components/software-information';
@@ -33,6 +33,7 @@ import ResourceIsPartOf from './components/is-part-of';
 import BasedOnTable from './components/based-on';
 import { CompletenessBadgeCircle } from 'src/components/completeness-badge/Circular';
 import { HeadingWithTooltip } from './components/sidebar/components/external/components/heading-with-tooltip';
+import { ResourceCatalogCollection } from './components/collection-information';
 
 // Metadata displayed in each section
 export const sectionMetadata: { [key: string]: (keyof FormattedResource)[] } = {
@@ -163,6 +164,10 @@ const Sections = ({
                   type={data?.['@type']}
                   citations={data?.citation}
                 />
+                <ResourceCatalogCollection
+                  isLoading={isLoading}
+                  collectionSize={data?.collectionSize}
+                />
               </>
             )}
 
@@ -274,7 +279,7 @@ const Sections = ({
             )}
             {/* Show citedBy */}
             {section.hash === 'citedBy' && (
-              <CitedByTable isLoading={isLoading} {...data} />
+              <CitedByTable isLoading={isLoading} data={data?.citedBy || []} />
             )}
             {/* Show raw metadata */}
             {section.hash === 'metadata' && data?.rawData && (

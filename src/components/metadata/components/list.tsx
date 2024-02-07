@@ -5,7 +5,13 @@ import { getMetadataTheme } from 'src/components/icon/helpers';
 
 export const MetadataList = ({ children, ...props }: ListProps) => {
   return (
-    <UnorderedList ml={0} display='flex' flexDirection='column' {...props}>
+    <UnorderedList
+      ml={0}
+      my={1.5}
+      display='flex'
+      flexDirection='column'
+      {...props}
+    >
       {children}
     </UnorderedList>
   );
@@ -19,7 +25,7 @@ export const MetadataListItem = ({
   property: string;
 }) => {
   return (
-    <ListItem my={1.5} display='flex' fontSize='xs' lineHeight='short'>
+    <ListItem mb={3} display='flex' fontSize='xs' lineHeight='short' w='100%'>
       <ListIcon
         as={FaCircle}
         m={2}

@@ -45,7 +45,7 @@ const baseStyle = {
 };
 
 const variants = {
-  colorful: {
+  niaid: {
     container: {},
     header: { bg: 'niaid.color', color: 'white' },
     footer: { bg: 'page.alt' },

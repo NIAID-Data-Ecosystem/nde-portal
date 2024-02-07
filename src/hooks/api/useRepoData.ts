@@ -1,7 +1,16 @@
 import REPOSITORIES from 'configs/repositories.json';
 import { useQuery, UseQueryOptions } from 'react-query';
-import { Metadata, Repository } from './types';
 import { fetchMetadata } from './helpers';
+import { Metadata } from 'src/utils/api/types';
+
+export interface Repository {
+  identifier: string;
+  label: string;
+  type: 'generalist' | 'iid';
+  url?: string;
+  abstract?: string;
+  icon?: string;
+}
 
 export function useRepoData(
   options: UseQueryOptions<Metadata, Error, Repository[]> = {},

@@ -72,7 +72,9 @@ const ResourceDates: React.FC<ResourceDates> = ({ data }) => {
   return (
     <TypeBanner
       type={data?.type}
+      bg='status.info_lt'
       isNiaidFunded={isSourceFundedByNiaid(data.includedInDataCatalog)}
+      subType={data?.collectionType}
     >
       <Flex flexWrap='wrap' ml={[0, 0, 4]}>
         {date_data.map((date, i) => {

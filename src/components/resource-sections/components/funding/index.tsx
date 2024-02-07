@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   Box,
-  Button,
   Flex,
   FlexProps,
   Icon,
@@ -9,7 +8,6 @@ import {
   Tr,
   Tag,
   Text,
-  useDisclosure,
   VisuallyHidden,
   Heading,
   Skeleton,
@@ -28,11 +26,10 @@ import {
 } from 'src/components/table/components/cell';
 import { Row, RowWithDrawer } from 'src/components/table/components/row';
 import { TableContainer } from 'src/components/table/components/table-container';
-import { getTruncatedText } from 'src/components/table/helpers';
-import { useTableSort } from 'src/components/table/hooks/useTableSort';
 import { TableSortToggle } from 'src/components/table/components/sort-toggle';
 import { TableWrapper } from 'src/components/table/components/wrapper';
 import { TablePagination } from 'src/components/table/components/pagination';
+import { useTableSort } from 'src/components/table/hooks/useTableSort';
 
 // Constants for table configuration.
 // [ROW_SIZES]: num of rows per page
@@ -219,34 +216,30 @@ export const Funding: React.FC<FundingProps> = ({
                         );
                       })}
                     </Flex>
-                    {(funding.description ||
-                      funding.keywords ||
-                      (funding?.funder &&
-                        // check that funder has additional fields than @type, name, and identifier
-                        (Array.isArray(funding.funder)
-                          ? funding.funder.some(funderItem =>
-                              Object.keys(funderItem).some(
-                                key =>
-                                  key !== '@type' &&
-                                  key !== 'name' &&
-                                  key !== 'identifier',
-                              ),
-                            )
-                          : Object.keys(funding.funder).some(
+                    {funding?.funder &&
+                      // check that funder has additional fields than @type, name, and identifier
+                      (Array.isArray(funding.funder)
+                        ? funding.funder.some(funderItem =>
+                            Object.keys(funderItem).some(
                               key =>
                                 key !== '@type' &&
                                 key !== 'name' &&
                                 key !== 'identifier',
-                            )))) && (
-                      <RowWithDrawer as='td' role='cell'>
-                        <FundingDrawerContent
-                          id={funding.key}
-                          description={funding.description}
-                          keywords={funding.keywords}
-                          funder={funding.funder}
-                        />
-                      </RowWithDrawer>
-                    )}
+                            ),
+                          )
+                        : Object.keys(funding.funder).some(
+                            key =>
+                              key !== '@type' &&
+                              key !== 'name' &&
+                              key !== 'identifier',
+                          )) && (
+                        <RowWithDrawer as='td' role='cell'>
+                          <FundingDrawerContent
+                            id={funding.key}
+                            funder={funding.funder}
+                          />
+                        </RowWithDrawer>
+                      )}
                   </Row>
                 );
               })}
@@ -344,22 +337,20 @@ const ContentWithTag = React.memo(
 
 interface FundingDrawerContentProps extends FlexProps {
   id: string;
-  description: FundingType['description'];
   funder: FundingType['funder'];
-  keywords: FundingType['keywords'];
 }
 // FundingDrawerContent component - displays detailed information for a funding item.
 const FundingDrawerContent = React.memo(
-  ({ id, description, funder, keywords }: FundingDrawerContentProps) => {
-    const { isOpen, onToggle } = useDisclosure();
+  ({ funder }: FundingDrawerContentProps) => {
+    // const { isOpen } = useDisclosure();
 
-    const { text, hasMore } = getTruncatedText(description, isOpen);
+    // const { text, hasMore } = getTruncatedText(description, isOpen);
 
     const funders = Array.isArray(funder) ? funder : [funder];
 
     return (
       <Flex px={4} flexDirection='column'>
-        <dl>
+        {/* <dl>
           <Label as='dt' mt={2}>
             Description
           </Label>
@@ -385,33 +376,7 @@ const FundingDrawerContent = React.memo(
               <Text fontStyle='italic'>None available</Text>
             )}
           </Content>
-        </dl>
-        <dl>
-          <Label as='dt' mt={4}>
-            Project Terms
-          </Label>
-          <Content as='dd'>
-            {keywords && keywords?.length > 0 ? (
-              keywords.map((keyword, idx) => (
-                <Tag
-                  key={`table-drawer-content-keyword-${id}-${keyword}-${idx}`}
-                  size='sm'
-                  m={1}
-                  colorScheme='primary'
-                >
-                  {keyword}
-                </Tag>
-              ))
-            ) : (
-              <Text
-                key={`table-drawer-content-keyword-${id}-none`}
-                fontStyle='italic'
-              >
-                None available
-              </Text>
-            )}
-          </Content>
-        </dl>
+        </dl> */}
         {funders.length &&
           funders.some(
             funderItem =>

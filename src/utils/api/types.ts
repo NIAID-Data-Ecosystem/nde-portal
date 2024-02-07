@@ -35,6 +35,7 @@ export interface FacetTerm {
 // Type of resource.
 export type ResourceType =
   | 'Dataset'
+  | 'Resource Catalog'
   | 'Computational Tool'
   | 'Software'
   | 'Scholarly Article'
@@ -101,6 +102,9 @@ export interface CitedBy {
   name: string | null;
   pmid: string | null;
   url: string | null;
+  journalName: string | null;
+  journalNameAbbrev: string | null;
+  issueNumber: string | null;
 }
 
 interface CuratedBy {
@@ -145,13 +149,11 @@ export interface Funder {
 export interface Funding {
   '@type'?: string;
   identifier?: string | null;
-  description?: string | null;
   endDate?: string | null;
   funder?: Funder | Funder[] | null;
   isBasedOn?: {
     identifier?: string | null;
   };
-  keywords?: string[] | null;
   name?: string | null;
   startDate?: string | null;
   url?: string | null;
@@ -293,6 +295,13 @@ export interface InputProperties {
   encodingFormat?: string;
 }
 
+export interface CollectionSize {
+  maxValue?: number;
+  minValue?: number;
+  unitText?: string;
+  value?: number;
+}
+
 export interface OutputProperties {
   identifier?: string;
   name?: string;
@@ -334,6 +343,8 @@ export interface FormattedResource {
   citation: Citation[] | null;
   citedBy: CitedBy[] | null;
   codeRepository: string[] | string | null;
+  collectionSize?: CollectionSize[];
+  collectionType?: string;
   condition: string | null;
   conditionsOfAccess: AccessTypes | null;
   curatedBy: CuratedBy | null;
@@ -381,14 +392,20 @@ export interface FormattedResource {
   sdPublisher: SdPublisher[] | null;
   spatialCoverage: SpatialCoverage[] | null;
   species: Species[] | null;
-  temporalCoverage: TemporalCoverage | null;
+  temporalCoverage: TemporalCoverage[] | null;
   topicCategory: TopicCategory[] | null;
   url: string | null; // link to dataset in the source repo.
-  usageInfo: {
-    name?: string | null;
-    url?: string | null;
-    description?: string | null;
-  };
+  usageInfo?:
+    | {
+        name?: string | null;
+        url?: string | null;
+        description?: string | null;
+      }
+    | {
+        name?: string | null;
+        url?: string | null;
+        description?: string | null;
+      }[];
   variableMeasured: string[] | null;
   version: number | null;
 }
@@ -403,6 +420,7 @@ export interface MetadataSource {
   };
   sourceInfo: {
     name: string;
+    abstract: string;
     description: string;
     schema: Object | null;
     url: string;
