@@ -26,6 +26,7 @@ export const MetadataContent = ({
       alignItems='flex-start'
       justifyContent='space-between'
       flexWrap='wrap'
+      w='100%'
     >
       <Box flex={1} fontSize='xs' lineHeight='short' minW='130px'>
         {scientificName && <Text fontWeight='semibold'>{scientificName}</Text>}
@@ -43,7 +44,9 @@ export const MetadataContent = ({
           {name &&
             (url ? (
               <Link href={url} target='_blank' alignItems='center'>
-                <Text>{name}</Text>
+                <Text wordBreak='break-word' w='100%'>
+                  {name}
+                </Text>
                 <Icon
                   as={FaSquareArrowUpRight}
                   boxSize={2.5}
@@ -52,7 +55,9 @@ export const MetadataContent = ({
                 />
               </Link>
             ) : (
-              <Text fontWeight='normal'>{name}</Text>
+              <Text fontWeight='normal' wordBreak='break-word' w='100%'>
+                {name}
+              </Text>
             ))}
         </Flex>
         {tags && tags.map((tag, idx) => <MetadataWithTag key={idx} {...tag} />)}
