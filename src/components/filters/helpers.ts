@@ -1,5 +1,4 @@
 import { NextRouter } from 'next/router';
-import { formatDate, formatType } from 'src/utils/api/helpers';
 
 // Given a query object, update the route to reflect the change.
 export const updateRoute = (update: {}, router: NextRouter) => {
@@ -80,6 +79,9 @@ export const queryFilterString2Object = (str?: string | string[]) => {
 
     // split on first occurence of ":" to retrieve [key, value] pair
     let filterKeyValue = filter_string.split(/:(.*)/s);
+    if (filterKeyValue.length < 2) {
+      return r;
+    }
     let name = filterKeyValue[0].replaceAll('("', '').replaceAll('")', '');
 
     let value = filterKeyValue[1]
