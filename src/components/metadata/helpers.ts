@@ -162,8 +162,12 @@ const createFundingContent = (
     items:
       fundingDetails?.map((funding, idx) => {
         const name = Array.isArray(funding.funder)
-          ? funding.funder.filter(funder => !!funder.name).join(', ')
+          ? funding.funder
+              .filter(funder => !!funder.name)
+              .map(funder => funder.name)
+              .join(', ')
           : funding?.funder?.name;
+
         return {
           key: uniqueId(`${property}-${id}-${idx}`),
           name: name || '',
@@ -386,8 +390,19 @@ const createUsageInfoContent = (
     label: 'Usage Info',
     property,
     isDisabled: !usageInfo,
-    name: usageInfo?.name || 'Usage Agreement',
-    url: usageInfo?.url || '',
+    items: Array.isArray(usageInfo)
+      ? usageInfo?.map((usage, idx) => ({
+          key: uniqueId(`${property}-${id}-${idx}`),
+          name: usage?.name || 'Usage Agreement',
+          url: usage?.url || '',
+        }))
+      : [
+          {
+            key: uniqueId(`${property}-${id}`),
+            name: usageInfo?.name || 'Usage Agreement',
+            url: usageInfo?.url || '',
+          },
+        ],
   };
 };
 

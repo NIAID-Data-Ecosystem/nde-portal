@@ -56,7 +56,7 @@ const Overview: React.FC<OverviewProps> = ({
         property: 'spatialCoverage',
         isDisabled: !(
           spatialCoverage ||
-          temporalCoverage?.temporalInterval ||
+          !temporalCoverage?.some(coverage => coverage.temporalInterval) ||
           inLanguage
         ),
       },
@@ -163,9 +163,11 @@ const SpatiotemporalCoverage: React.FC<SpatiotemporalCoverageProps> = ({
   type,
 }) => {
   const getLanguageDisplayName = (languageCode: string) => {
-    return new Intl.DisplayNames(['en'], {
+    const language = new Intl.DisplayNames(['en'], {
       type: 'language',
     }).of(languageCode);
+    if (!language) return languageCode;
+    return language.charAt(0).toUpperCase() + language.slice(1);
   };
 
   const spatialInformation = spatialCoverage
@@ -181,7 +183,7 @@ const SpatiotemporalCoverage: React.FC<SpatiotemporalCoverageProps> = ({
         isDisabled={isDisabled}
         bg='gray.900'
         tooltipLabel={
-          <Box>
+          <>
             <Box>
               Spatial Coverage:{' '}
               {getMetadataDescription('spatialCoverage', type)}.
@@ -191,68 +193,76 @@ const SpatiotemporalCoverage: React.FC<SpatiotemporalCoverageProps> = ({
               {getMetadataDescription('temporalCoverage', type)}.
             </Box>
             <Box>Language: {getMetadataDescription('inLanguage', type)}.</Box>
-          </Box>
+          </>
         }
       >
         <VStack alignItems='flex-start' divider={<Divider />}>
           {/* Geographic information of dataset */}
 
           {spatialInformation && (
-            <Box>
+            <>
               <Text fontWeight='medium' color='gray.800'>
                 Spatial Coverage
               </Text>
               <MetadataContent name={spatialInformation.join(', ')} />
-            </Box>
+            </>
           )}
 
           {/* Period information of dataset */}
-          {temporalCoverage?.temporalInterval && (
-            <Box>
-              <Text fontWeight='medium' color='gray.800'>
-                Temporal Coverage
-              </Text>
-              {/* Start */}
-              {temporalCoverage?.temporalInterval?.name && (
-                <Text>{temporalCoverage?.temporalInterval?.name}</Text>
-              )}
-              {temporalCoverage?.temporalInterval?.startDate && (
-                <Text>
-                  <Text as='span' fontWeight='medium'>
-                    Start Date:
-                  </Text>{' '}
-                  {temporalCoverage.temporalInterval.startDate}
-                </Text>
-              )}
-              {/* End */}
-              {temporalCoverage?.temporalInterval?.endDate && (
-                <Text>
-                  <Text as='span' fontWeight='medium'>
-                    End Date:
-                  </Text>{' '}
-                  {temporalCoverage.temporalInterval.endDate}
-                </Text>
-              )}
-              {/* Duration */}
-              {temporalCoverage?.temporalInterval?.duration && (
-                <Text>
-                  <Text as='span' fontWeight='medium'>
-                    Duration:
-                  </Text>{' '}
-                  {temporalCoverage.temporalInterval.duration}
-                </Text>
-              )}
-            </Box>
-          )}
+          {temporalCoverage &&
+            temporalCoverage.map((coverage, idx) => {
+              if (!coverage.temporalInterval) {
+                return (
+                  <React.Fragment key={'temporal' + idx}> </React.Fragment>
+                );
+              }
+              return (
+                <React.Fragment key={'temporal' + idx}>
+                  <Text fontWeight='medium' color='gray.800'>
+                    Temporal Coverage
+                  </Text>
+                  {/* Start */}
+                  {coverage?.temporalInterval?.name && (
+                    <Text>{coverage?.temporalInterval?.name}</Text>
+                  )}
+                  {coverage?.temporalInterval?.startDate && (
+                    <Text>
+                      <Text as='span' fontWeight='medium'>
+                        Start Date:
+                      </Text>{' '}
+                      {coverage.temporalInterval.startDate}
+                    </Text>
+                  )}
+                  {/* End */}
+                  {coverage?.temporalInterval?.endDate && (
+                    <Text>
+                      <Text as='span' fontWeight='medium'>
+                        End Date:
+                      </Text>{' '}
+                      {coverage.temporalInterval.endDate}
+                    </Text>
+                  )}
+                  {/* Duration */}
+                  {coverage?.temporalInterval?.duration && (
+                    <Text>
+                      <Text as='span' fontWeight='medium'>
+                        Duration:
+                      </Text>{' '}
+                      {coverage.temporalInterval.duration}
+                    </Text>
+                  )}
+                </React.Fragment>
+              );
+            })}
 
           {/* Language of dataset */}
           {inLanguage?.name && (
-            <Box>
+            <>
               <Text fontWeight='medium' color='gray.800'>
                 Language
               </Text>
               <MetadataContent name={getLanguageDisplayName(inLanguage.name)} />
-            </Box>
+            </>
           )}
         </VStack>
       </MetadataBlock>
