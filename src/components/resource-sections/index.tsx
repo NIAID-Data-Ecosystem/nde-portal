@@ -292,8 +292,8 @@ const Sections = ({
                       size: 'sm',
                       mb: 1,
                     }}
-                    exportFileName={`nde-${data.rawData['_id']}`}
-                    params={{ q: `_id:"${data.rawData['_id']}"` }}
+                    exportFileName={`nde-${data['_id']}`}
+                    params={{ q: `_id:"${data['_id']}"` }}
                   >
                     Download Metadata
                   </DownloadMetadata>
