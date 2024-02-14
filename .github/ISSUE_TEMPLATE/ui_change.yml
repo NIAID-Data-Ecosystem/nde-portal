@@ -7,7 +7,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        This form is meant for pages to be created or updated via STRAPI (usually static pages).         
+        This form is meant for pages that cannot be be created or updated via STRAPI.         
   - type: input
     id: uiIssueName
     attributes:
