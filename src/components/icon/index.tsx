@@ -154,7 +154,7 @@ export const MetadataToolTip: React.FC<MetadataToolTipProps> = ({
   if (!tooltip_description) {
     let type = recordType?.toLowerCase();
     // if showAbstract is true we show a brief description where available.
-    if (showAbstract && property.abstract) {
+    if (showAbstract && property?.abstract) {
       if (type && property.abstract?.[type]) {
         // if record type exists use it to get a more specific definition if available.
         tooltip_description = property.abstract[type];

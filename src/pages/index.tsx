@@ -48,15 +48,6 @@ import {
 import { TableSortToggle } from 'src/components/table/components/sort-toggle';
 import { TableWrapper } from 'src/components/table/components/wrapper';
 
-interface Repository {
-  identifier: string;
-  label: string;
-  type: 'generalist' | 'iid';
-  url?: string;
-  abstract?: string;
-  icon?: string;
-}
-
 export const RepositoryTable: React.FC<{
   isLoading: boolean;
   repositories: Repository[];

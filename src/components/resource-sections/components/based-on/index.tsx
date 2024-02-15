@@ -2,20 +2,16 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   Box,
   Button,
-  ButtonProps,
   Flex,
   Heading,
-  Icon,
   Skeleton,
   Table,
-  Tag,
   Text,
   Tr,
   VisuallyHidden,
   useDisclosure,
   Tooltip,
 } from '@chakra-ui/react';
-import { FaSquareArrowUpRight } from 'react-icons/fa6';
 import { Link } from 'src/components/link';
 import { IsBasedOn, IsBasisFor } from 'src/utils/api/types';
 import { uniqueId } from 'lodash';
@@ -27,73 +23,7 @@ import { useTableSort } from 'src/components/table/hooks/useTableSort';
 import { TableSortToggle } from 'src/components/table/components/sort-toggle';
 import { TableWrapper } from 'src/components/table/components/wrapper';
 import { TablePagination } from 'src/components/table/components/pagination';
-
-// StyledTag: Memoized component for displaying tags with certain styling
-const StyledTag = React.memo(
-  ({ children, colorScheme, ...props }: ButtonProps) => {
-    return (
-      <Tag
-        size='sm'
-        variant='subtle'
-        colorScheme={colorScheme}
-        alignItems='center'
-        fontSize='12px'
-        {...props}
-      >
-        {children}
-      </Tag>
-    );
-  },
-);
-
-interface TagWithUrlProps extends ButtonProps {
-  colorScheme?: string;
-  url?: string;
-  value?: string;
-  label?: string;
-}
-
-// TagWithUrl: Memoized component for displaying tags with optional URLs
-const TagWithUrl = React.memo(
-  ({ children, colorScheme, label, url, ...props }: TagWithUrlProps) => {
-    return (
-      <StyledTag colorScheme={colorScheme} {...props}>
-        {label && (
-          <Text
-            as='span'
-            mr={1}
-            fontWeight='bold'
-            lineHeight='short'
-            fontSize='inherit'
-          >
-            {label}
-          </Text>
-        )}
-        {url ? (
-          <Link
-            href={url}
-            target='_blank'
-            alignItems='center'
-            color={colorScheme ? `${colorScheme}.600` : 'link.color'}
-            _hover={{
-              color: colorScheme ? `${colorScheme}.600` : 'link.color',
-            }}
-          >
-            <Text color='inherit'>{children}</Text>
-            <Icon
-              as={FaSquareArrowUpRight}
-              boxSize={3}
-              ml={1}
-              color={'inherit'}
-            />
-          </Link>
-        ) : (
-          <>{children}</>
-        )}
-      </StyledTag>
-    );
-  },
-);
+import { TagWithUrl } from 'src/components/tag-with-url';
 
 // TruncatedDescription: Component for displaying truncated text with 'read more/less' option
 const TruncatedDescription = React.memo(
@@ -139,7 +69,7 @@ const COLUMNS = [
   },
   {
     key: 'datePublished',
-    title: 'Publish Date',
+    title: 'Date Published',
     props: { w: '200px', maxW: '200px', minW: 'unset' },
   },
 ];
