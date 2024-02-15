@@ -1,18 +1,22 @@
 name: User Interface Redesign
-description: Issue form for tracking changes to the user interface including the incorporation of new UI features and elements
-title: "[User Interface: Redesign]: "
-labels: ["ui"]
+description:
+  Issue form for tracking changes to the user interface including the
+  incorporation of new UI features and elements
+title: '[User Interface: Redesign]: '
+labels: ['ui']
 
 body:
   - type: markdown
     attributes:
       value: |
-        This form is meant for pages to be created or updated via STRAPI (usually static pages).         
+        This form is meant for pages that cannot be be created or updated via STRAPI.
   - type: input
     id: uiIssueName
     attributes:
       label: Issue Name
-      description: Provide a name for the page or documentation meant to be generated in STRAPI
+      description:
+        Provide a name for the page or documentation meant to be generated in
+        STRAPI
       placeholder: ex. Featured Page
     validations:
       required: True
@@ -20,23 +24,31 @@ body:
     id: uiIssueDescription
     attributes:
       label: Issue Description
-      description: Please describe the page or documentation to be generated in STRAPI
-      placeholder: ex- The featured page will highligh NIAID priority repositories
+      description:
+        Please describe the page or documentation to be generated in STRAPI
+      placeholder:
+        ex- The featured page will highligh NIAID priority repositories
     validations:
-      required: true      
+      required: true
   - type: textarea
     id: uiIssueDiscussion
     attributes:
       label: Issue Discussion
-      description: Please provide information on when this issue was (or is expected to be) discussed between NIAID, Leidos, and Scripps
-      placeholder: ex. The page was discussed at the bi-weekly meeting dated 2023-03-14. It was included in the Technical Report dated 2023-04-10
+      description:
+        Please provide information on when this issue was (or is expected to be)
+        discussed between NIAID, Leidos, and Scripps
+      placeholder:
+        ex. The page was discussed at the bi-weekly meeting dated 2023-03-14. It
+        was included in the Technical Report dated 2023-04-10
     validations:
-      required: false 
+      required: false
   - type: input
     id: uiMaterialURL
     attributes:
       label: Mockup URL
-      description: If a mock up has been generated for the page, please provide the url of the mockup
+      description:
+        If a mock up has been generated for the page, please provide the url of
+        the mockup
       placeholder: ex. https://docs.google.com/spreadsheets/[...]
     validations:
       required: false
@@ -44,11 +56,19 @@ body:
     id: WCAGCheck
     attributes:
       label: WCAG Compliance Check
-      description: Please select one of the options below to describe how the ui change may affect WCAG compliance 
+      description:
+        Please select one of the options below to describe how the ui change may
+        affect WCAG compliance
       options:
-        - label: The ui changes are not expected to significantly affect WCAG compliance (ex- wording changes)
-        - label: The ui changes have visual elements which have yet to be tested for WCAG compliance
-        - label: The ui changes have visual elements which have been tested for WCAG compliance
+        - label:
+            The ui changes are not expected to significantly affect WCAG
+            compliance (ex- wording changes)
+        - label:
+            The ui changes have visual elements which have yet to be tested for
+            WCAG compliance
+        - label:
+            The ui changes have visual elements which have been tested for WCAG
+            compliance
         - label: The ui changes have passed all checks for WCAG compliance
     validations:
       required: false
@@ -56,17 +76,25 @@ body:
     id: WBSlink
     attributes:
       label: Related WBS task
-      description: Please provide links to any relevant tasks/issues in the WBS/Roadmap repository https://github.com/NIAID-Data-Ecosystem/nde-roadmap/issues). 
+      description:
+        Please provide links to any relevant tasks/issues in the WBS/Roadmap
+        repository https://github.com/NIAID-Data-Ecosystem/nde-roadmap/issues).
       options:
-        - label: Check here if the ui change is centered on the look and feel (https://github.com/NIAID-Data-Ecosystem/nde-roadmap/issues/52)
-        - label: Check here if the ui change includes new features (https://github.com/NIAID-Data-Ecosystem/nde-roadmap/issues/53)
-        - label: Check here if the ui change was suggested by the NIAID team (https://github.com/NIAID-Data-Ecosystem/nde-roadmap/issues/2)
+        - label:
+            Check here if the ui change is centered on the look and feel
+            (https://github.com/NIAID-Data-Ecosystem/nde-roadmap/issues/52)
+        - label:
+            Check here if the ui change includes new features
+            (https://github.com/NIAID-Data-Ecosystem/nde-roadmap/issues/53)
+        - label:
+            Check here if the ui change was suggested by the NIAID team
+            (https://github.com/NIAID-Data-Ecosystem/nde-roadmap/issues/2)
     validations:
-      required: false     
+      required: false
   - type: markdown
     attributes:
       value: |
-        "## Additional Notes for internal use only." 
+        "## Additional Notes for internal use only."
   - type: markdown
     attributes:
       value: |
@@ -74,7 +102,8 @@ body:
   - type: checkboxes
     id: uiIssueStatus
     attributes:
-      label: For internal use only. Assignee, please select the status of this issue
+      label:
+        For internal use only. Assignee, please select the status of this issue
       options:
         - label: Not yet started
         - label: In progress
@@ -86,20 +115,29 @@ body:
     id: uiIssueStatusDescription
     attributes:
       label: Status Description
-      description: If the status of this issue is BLOCKED or WILL NOT ADDRESS, please provide more details. Update with links to related GitHub issues here or in comments.
+      description:
+        If the status of this issue is BLOCKED or WILL NOT ADDRESS, please
+        provide more details. Update with links to related GitHub issues here or
+        in comments.
     validations:
       required: false
   - type: checkboxes
     id: uiIssueTaskList
     attributes:
-       label: UI change status check list
-       description: For internal use only. Use the checklist to provide updates on the status of the request
-       options:
-         - label: This ui change has yet to be discussed between NIAID, Scripps, Leidos
-         - label: This ui change has been discussed/reported between NIAID, Scripps, Leidos
-         - label: This ui change has been mocked up
-         - label: This ui change has been implemented on Dev
-         - label: This ui change has been approved for Staging
-         - label: This ui change has been implemented on Staging
-         - label: This ui change has been approved for Production
-         - label: This ui change has been implemented on Production
+      label: UI change status check list
+      description:
+        For internal use only. Use the checklist to provide updates on the
+        status of the request
+      options:
+        - label:
+            This ui change has yet to be discussed between NIAID, Scripps,
+            Leidos
+        - label:
+            This ui change has been discussed/reported between NIAID, Scripps,
+            Leidos
+        - label: This ui change has been mocked up
+        - label: This ui change has been implemented on Dev
+        - label: This ui change has been approved for Staging
+        - label: This ui change has been implemented on Staging
+        - label: This ui change has been approved for Production
+        - label: This ui change has been implemented on Production
