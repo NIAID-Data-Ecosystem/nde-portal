@@ -56,7 +56,8 @@ const Overview: React.FC<OverviewProps> = ({
         property: 'spatialCoverage',
         isDisabled: !(
           spatialCoverage ||
-          !temporalCoverage?.some(coverage => coverage.temporalInterval) ||
+          temporalCoverage?.some(coverage => coverage.temporalInterval) ===
+            true ||
           inLanguage
         ),
       },
