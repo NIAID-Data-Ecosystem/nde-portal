@@ -38,7 +38,7 @@ import NextLink from 'next/link';
 import { SearchBarWithDropdown } from 'src/components/search-bar';
 import { AdvancedSearchOpen } from 'src/components/advanced-search/components/buttons';
 import { FaAngleRight, FaRegEnvelope, FaGithub } from 'react-icons/fa6';
-import { useRepoData } from 'src/hooks/api/useRepoData';
+import { Repository, useRepoData } from 'src/hooks/api/useRepoData';
 import { queryFilterObject2String } from 'src/components/filters/helpers';
 import { NewsOrEventsObject } from './news';
 import {
