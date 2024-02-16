@@ -1,4 +1,4 @@
-import MetadataFieldsConfig from 'configs/resource-fields.json';
+import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
 
 export type UnionTypes = 'AND' | 'OR' | 'NOT';
 
@@ -10,9 +10,10 @@ export type UnionTypes = 'AND' | 'OR' | 'NOT';
  * @field The field to search for the term in.
  * @union The union type to use for the term.
  */
+
 export interface QueryValue {
   term: string;
   querystring: string;
-  field: (typeof MetadataFieldsConfig)[number]['property'];
+  field: keyof typeof SCHEMA_DEFINITIONS | '_exists_' | '-_exists_' | '';
   union: UnionTypes | '';
 }

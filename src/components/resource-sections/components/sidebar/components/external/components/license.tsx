@@ -1,18 +1,23 @@
 import React from 'react';
 import { Box, Image, Text } from '@chakra-ui/react';
 import { FormattedResource } from 'src/utils/api/types';
-import MetadataConfig from 'configs/resource-metadata.json';
 import { formatLicense } from 'src/utils/helpers';
 import { HeadingWithTooltip } from './heading-with-tooltip';
 import { Link } from 'src/components/link';
+import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
 
 interface LicenseProps {
   isLoading: boolean;
   license?: FormattedResource['license'];
+  type?: FormattedResource['@type'];
 }
 
-export const License: React.FC<LicenseProps> = ({ isLoading, license }) => {
-  if (!isLoading && !license) {
+export const License: React.FC<LicenseProps> = ({
+  isLoading,
+  license,
+  type,
+}) => {
+  if (!isLoading && !(license || type)) {
     return <></>;
   }
   const licenseInfo = license ? formatLicense(license) : null;
@@ -22,9 +27,7 @@ export const License: React.FC<LicenseProps> = ({ isLoading, license }) => {
       <HeadingWithTooltip
         label='License'
         tooltipLabel={`${
-          MetadataConfig?.find(d => d.property === 'license')?.description[
-            'dataset'
-          ] || ''
+          SCHEMA_DEFINITIONS['license']?.description?.[type || 'Dataset'] || ''
         }`}
       />
 

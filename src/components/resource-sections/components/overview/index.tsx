@@ -151,7 +151,7 @@ interface SpatiotemporalCoverageProps
     OverviewProps,
     'isLoading' | 'id' | 'inLanguage' | 'spatialCoverage' | 'temporalCoverage'
   > {
-  type: FormattedResource['@type'];
+  type?: FormattedResource['@type'];
   isDisabled: boolean;
 }
 const SpatiotemporalCoverage: React.FC<SpatiotemporalCoverageProps> = ({
@@ -187,13 +187,13 @@ const SpatiotemporalCoverage: React.FC<SpatiotemporalCoverageProps> = ({
           <>
             <Box>
               Spatial Coverage:{' '}
-              {getMetadataDescription('spatialCoverage', type)}.
+              {getMetadataDescription('spatialCoverage', type)}
             </Box>
             <Box>
               Temporal Coverage:{' '}
-              {getMetadataDescription('temporalCoverage', type)}.
+              {getMetadataDescription('temporalCoverage', type)}
             </Box>
-            <Box>Language: {getMetadataDescription('inLanguage', type)}.</Box>
+            <Box>Language: {getMetadataDescription('inLanguage', type)}</Box>
           </>
         }
       >

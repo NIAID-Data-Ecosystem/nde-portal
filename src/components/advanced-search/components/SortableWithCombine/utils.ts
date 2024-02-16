@@ -1,8 +1,8 @@
 import { uniqueId } from 'lodash';
 import type { UniqueIdentifier } from '@dnd-kit/core';
 import { arrayMove } from '@dnd-kit/sortable';
-import MetadataFieldsConfig from 'configs/resource-fields.json';
 import type { FlattenedItem, TreeItem, TreeItems } from './types';
+import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
 
 export function findItem(items: TreeItems, itemId: UniqueIdentifier) {
   return items.find(({ id }) => id === itemId);
@@ -415,7 +415,6 @@ export const getItemsByParentId = (
 /**
  * [transformTermString4Display]: [TO DO]
  */
-type MetadataField = (typeof MetadataFieldsConfig)[number];
 
 export const transformField4Display = (field: TreeItem['value']['field']) => {
   if (!field) {
@@ -427,12 +426,7 @@ export const transformField4Display = (field: TreeItem['value']['field']) => {
     return '';
     // return 'Must not contain';
   } else {
-    const metadataField = MetadataFieldsConfig.find(
-      metadata => metadata.property === field,
-    ) as MetadataField;
-
-    const field_name = metadataField?.name || '';
-    return field_name;
+    return SCHEMA_DEFINITIONS[field]?.name || '';
   }
 };
 
@@ -446,7 +440,10 @@ export const transformTerm4Display = (
   field: TreeItem['value']['field'],
 ) => {
   if (field === '_exists_' || field === '-_exists_') {
-    const field_name = transformField4Display(term);
+    // when the field is _exists_ or -_exists_, the term is the field.
+    const field_name = transformField4Display(
+      term as TreeItem['value']['field'],
+    );
     if (field === '_exists_') {
       return `Must contain: ${field_name}`;
     } else {

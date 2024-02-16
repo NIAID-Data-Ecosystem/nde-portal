@@ -3,8 +3,6 @@ import {
   Citation,
   Distribution,
   FormattedResource,
-  ResourceType,
-  Funder,
   AccessTypes,
 } from './types';
 
@@ -54,6 +52,7 @@ export const formatAuthor = (
 export interface APICitation {
   url?: string;
   name?: string;
+  citation?: string;
   author?: Author[] | null;
   journalName?: string;
   journalNameAbbrev?: string;
@@ -80,6 +79,7 @@ export const formatCitation = (
       url: data?.url || null,
       name: data?.name || null,
       author: data?.author || null,
+      citation: data?.citation || null,
       journalName: data?.journalName || null,
       journalNameAbbrev: data?.journalNameAbbrev || null,
       date: data?.date || null,
@@ -146,21 +146,6 @@ export const formatDistribution = (
   }
 };
 
-// Format the "type" of resource for display purposes.
-export const formatType = (type: string): ResourceType => {
-  if (type.toLowerCase() === 'dataset') {
-    return 'Dataset';
-  } else if (type.toLowerCase() === 'resourcecatalog') {
-    return 'Resource Catalog';
-  } else if (type.toLowerCase() === 'computationaltool') {
-    return 'Software';
-  } else if (type.toLowerCase() === 'scholarlyarticle') {
-    return 'Scholarly Article';
-  } else {
-    return 'Other';
-  }
-};
-
 // Convert ISO date to format YYYY-MM-DD
 export const formatISOString = (date: string) => {
   return date.substring(0, 10);
@@ -222,7 +207,6 @@ export const formatAPIResource = (data: any) => {
   const formattedResource: FormattedResource = {
     ...data,
     id: data._id || null,
-    type: data['@type'] ? formatType(data['@type']) : null,
     name: data.name || null,
     aggregateRating: data.aggregateRating || null,
     applicationCategory: convertToArray(data.applicationCategory),

@@ -2,24 +2,24 @@ import { FormattedResource } from 'src/utils/api/types';
 import { Icon } from '@chakra-ui/react';
 import { FaLock, FaUnlock } from 'react-icons/fa6';
 import { BadgeWithTooltip, BadgeWithTooltipProps } from 'src/components/badges';
-import MetadataConfig from 'configs/resource-metadata.json';
+import SchemaDefinitions from 'configs/schema-definitions.json';
 
 interface ConditionsOfAccessProps extends Omit<BadgeWithTooltipProps, 'value'> {
   conditionsOfAccess?: FormattedResource['conditionsOfAccess'];
+  type?: FormattedResource['@type'];
   tooltipLabel?: string;
 }
 
 export const ConditionsOfAccess = ({
   conditionsOfAccess,
+  type,
   ...props
 }: ConditionsOfAccessProps) => {
-  if (!conditionsOfAccess) {
+  if (!conditionsOfAccess || !type) {
     return <></>;
   }
 
-  const property = MetadataConfig.find(
-    d => d.property === 'conditionsOfAccess',
-  );
+  const property = SchemaDefinitions['conditionsOfAccess'];
 
   const getColorScheme = (
     conditionsOfAccess: ConditionsOfAccessProps['conditionsOfAccess'],
@@ -54,7 +54,7 @@ export const ConditionsOfAccess = ({
     <BadgeWithTooltip
       colorScheme={getColorScheme(conditionsOfAccess)}
       value={conditionsOfAccess}
-      tooltipLabel={property?.description['dataset']}
+      tooltipLabel={property?.description[type]}
       leftIcon={<Icon as={getIcon(conditionsOfAccess)}></Icon>}
       {...props}
     />
