@@ -3,7 +3,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "env-cmd -f .env.production yarn run generate-schema-definitions && yarn run generate-footer-content && next build",
+    "build": "env-cmd -f .env.production yarn run generate-footer-content && next build",
     "build:staging": "env-cmd -f .env.staging yarn build",
     "build:dev": "env-cmd -f .env.dev yarn build",
     "start": "next start",
