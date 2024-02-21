@@ -26,6 +26,7 @@ import { SourceLogo } from './source-logo';
 import { CompletenessBadgeCircle } from 'src/components/completeness-badge/Circular';
 import { Heading } from '@chakra-ui/react';
 import { ToggleContainer } from 'src/components/toggle-container';
+import { formatResourceTypeForDisplay } from 'src/utils/formatting/formatResourceType';
 
 interface SearchResultCardProps {
   isLoading?: boolean;
@@ -37,11 +38,11 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
   data,
 }) => {
   const {
+    ['@type']: type,
     id,
     alternateName,
     collectionType,
     name,
-    type,
     date,
     author,
     description,
@@ -53,7 +54,6 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
   } = data || {};
 
   const paddingCard = [4, 6, 8, 10];
-
   return (
     // {/* Banner with resource type + date of publication */}
     <Card variant='niaid'>
@@ -177,10 +177,12 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                 p={[0.5, 2]}
               >
                 <AccessibleForFree
+                  type={type}
                   isAccessibleForFree={isAccessibleForFree}
                   mx={1}
                 />
                 <ConditionsOfAccess
+                  type={type}
                   conditionsOfAccess={conditionsOfAccess}
                   mx={1}
                 />
@@ -335,7 +337,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                       rightIcon={<FaCircleArrowRight />}
                       aria-label={`Go to details about resource ${name}`}
                     >
-                      View {type}
+                      View {type && formatResourceTypeForDisplay(type)}
                     </Button>
                   </Flex>
                 </NextLink>

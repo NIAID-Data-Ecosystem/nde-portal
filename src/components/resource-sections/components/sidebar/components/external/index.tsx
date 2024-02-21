@@ -38,9 +38,11 @@ export const External = ({
           <Flex>
             <AccessibleForFree
               isAccessibleForFree={data?.isAccessibleForFree}
+              type={data?.['@type']}
               mx={1}
             />
             <ConditionsOfAccess
+              type={data?.['@type']}
               conditionsOfAccess={data?.conditionsOfAccess}
               mx={1}
             />
@@ -57,8 +59,16 @@ export const External = ({
         {(data?.usageInfo || data?.license) && (
           <Wrapper isLoading={isLoading} label='Usage and Licensing'>
             <>
-              <DataUsage isLoading={isLoading} usageInfo={data?.usageInfo} />
-              <License isLoading={isLoading} license={data?.license} />
+              <DataUsage
+                isLoading={isLoading}
+                type={data?.['@type']}
+                usageInfo={data?.usageInfo}
+              />
+              <License
+                isLoading={isLoading}
+                type={data?.['@type']}
+                license={data?.license}
+              />
             </>
           </Wrapper>
         )}
@@ -68,6 +78,7 @@ export const External = ({
             <AssociatedDocumentation
               isLoading={isLoading}
               hasPart={data?.hasPart}
+              type={data?.['@type']}
               mainEntityOfPage={data?.mainEntityOfPage}
               codeRepository={data?.codeRepository}
             />

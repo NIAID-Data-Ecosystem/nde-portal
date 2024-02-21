@@ -1,6 +1,6 @@
 import { QueryValue } from 'src/components/advanced-search/types';
 import { SearchTypesConfigProps } from '../../../Search/search-types-config';
-import MetadataFieldsConfig from 'configs/resource-fields.json';
+import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
 
 /**
  * [getFieldDetails] Returns the metadata field config object for a given field property
@@ -11,13 +11,12 @@ import MetadataFieldsConfig from 'configs/resource-fields.json';
 export const getFieldDetails = (
   field: QueryValue['field'],
   term: QueryValue['term'],
-) =>
-  MetadataFieldsConfig.find(info => {
-    if (field === '_exists_' || field === '-_exists_') {
-      return info.property === term;
-    }
-    return info.property === field;
-  }) as (typeof MetadataFieldsConfig)[number];
+) => {
+  const dotfield = (
+    field === '_exists_' || field === '-_exists_' ? term : field
+  ) as keyof typeof SCHEMA_DEFINITIONS;
+  return SCHEMA_DEFINITIONS[dotfield];
+};
 
 /**
  * [stripSearchTerm] Strips wildcards and quotes from a string

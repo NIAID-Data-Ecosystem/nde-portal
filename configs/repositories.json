@@ -57,17 +57,18 @@
       "type": "generalist"
     },
     {
-      "id": "Data Discovery Engine, NDE Systems Biology",
-      "label": "Data Discovery Engine, NDE Systems Biology",
-      "icon": "/assets/resources/niaid_sysbio.svg",
-      "imageURL": "/assets/resources/niaid-sysbio.svg",
+      "id": "Data Discovery Engine, NIAID Systems Biology",
+      "label": "Data Discovery Engine, NIAID Systems Biology",
+      "icon": "/assets/resources/dde_niaid-sysbio.svg",
+      "imageURL": "/assets/resources/dde_niaid-sysbio.svg",
       "type": "generalist"
     },
+
     {
       "id": "Data Discovery Engine, NIAID Data Ecosystem",
       "label": "Data Discovery Engine, NIAID Data Ecosystem",
-      "icon": "/assets/resources/nde-sysbio.svg",
-      "imageURL": "/assets/resources/nde-sysbio.svg",
+      "icon": "/assets/resources/dde_nde.svg",
+      "imageURL": "/assets/resources/dde_nde.svg",
       "type": "generalist"
     },
     {

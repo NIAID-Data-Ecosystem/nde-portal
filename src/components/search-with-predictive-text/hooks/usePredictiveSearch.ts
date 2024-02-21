@@ -7,7 +7,7 @@ import {
   FormattedResource,
 } from 'src/utils/api/types';
 import { encodeString } from 'src/utils/querystring-helpers';
-import MetadataFieldsConfig from 'configs/resource-fields.json';
+import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
 
 export interface usePredictiveSearchResponse {
   isLoading: boolean;
@@ -31,7 +31,7 @@ export const usePredictiveSearch = (
   const queryClient = useQueryClient();
 
   const selectedFieldDetails = useMemo(
-    () => MetadataFieldsConfig.find(f => f.property === searchField),
+    () => SCHEMA_DEFINITIONS[searchField as keyof typeof SCHEMA_DEFINITIONS],
     [searchField],
   );
   // Run query every time search trm changes.

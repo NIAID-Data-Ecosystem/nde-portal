@@ -5,7 +5,7 @@ import {
   useAdvancedSearchContext,
 } from 'src/components/advanced-search/components/Search';
 import { SearchTypesConfigProps } from 'src/components/advanced-search/components/Search/search-types-config';
-import { UnionTypes } from 'src/components/advanced-search/types';
+import { QueryValue, UnionTypes } from 'src/components/advanced-search/types';
 import {
   checkBalancedPunctuation,
   QueryStringError,
@@ -174,7 +174,7 @@ interface EditableContentProps extends Value, Omit<ItemContentProps, 'value'> {
 export const EditableContent = (props: EditableContentProps) => {
   const { searchOptions } = props;
   const query = {
-    field: props.field || '',
+    field: (props.field || '') as QueryValue['field'],
     union: props?.union || ('' as UnionTypes),
     term: stripSearchTerm(props?.term || ''),
     querystring: (props.querystring ? props.querystring : props.term) || '',

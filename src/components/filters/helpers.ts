@@ -1,4 +1,5 @@
 import { NextRouter } from 'next/router';
+import { formatResourceTypeForAPI } from 'src/utils/formatting/formatResourceType';
 
 // Given a query object, update the route to reflect the change.
 export const updateRoute = (update: {}, router: NextRouter) => {
@@ -34,8 +35,10 @@ export const queryFilterObject2String = (selectedFilters: any) => {
 
       let values = '';
       if (filter_strings.length > 0 && filterName === '@type') {
-        // check if filter string exists and format the @type value if needed.
-        values = `("${formatTypeForAPI(filter_strings).join('" OR "')}")`;
+        // check if filter string exists and format the @type value for API if needed.
+        values = `("${filter_strings
+          .map((type: string) => formatResourceTypeForAPI(type))
+          .join('" OR "')}")`;
       } else if (filter_strings.length > 0 && filterName === 'date') {
         // if type is date we join with "TO"
         values = `["${filter_strings.join('" TO "')}"]`;
@@ -98,30 +101,8 @@ export const queryFilterString2Object = (str?: string | string[]) => {
         return v;
       });
 
-    // if (name === '@type') {
-    //   value = value.map(v => formatType(v));
-    // }
-
     r[name] = value;
     return r;
   }, {});
   return queryObject;
-};
-
-/////////////////////////////////////////////////////
-/////// Format Terms (for display purposes) /////////
-/////////////////////////////////////////////////////
-
-// Format the dataset type(if changed for display) to the @type accepted in the API.
-export const formatTypeForAPI = (types: string[]) => {
-  return types.map(type => {
-    let t = type.toLowerCase().replace(/ /g, '');
-    if (t === 'dataset') {
-      return 'Dataset';
-    } else if (t === 'computationaltool') {
-      return 'ComputationalTool';
-    } else {
-      return type;
-    }
-  });
 };

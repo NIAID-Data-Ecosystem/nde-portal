@@ -3,16 +3,19 @@ import { Flex, FlexProps, Icon, Text } from '@chakra-ui/react';
 import { FaRegClock } from 'react-icons/fa6';
 import { FormattedResource } from 'src/utils/api/types';
 import { StyledLabel } from './styles';
+import { formatResourceTypeForDisplay } from 'src/utils/formatting/formatResourceType';
+import Tooltip from 'src/components/tooltip';
+import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
 
 interface TypeBannerProps extends FlexProps {
-  type?: FormattedResource['type'];
+  type?: FormattedResource['@type'];
   subType?: FormattedResource['collectionType'];
   date?: FormattedResource['date'];
   sourceName?: string[] | null;
   isNiaidFunded?: boolean;
 }
 
-export const getTypeColor = (type?: FormattedResource['type']) => {
+export const getTypeColor = (type?: FormattedResource['@type']) => {
   const typeLower = type?.toLowerCase();
   let lt = 'status.info';
   let dk = 'niaid.color';
@@ -20,7 +23,7 @@ export const getTypeColor = (type?: FormattedResource['type']) => {
   if (typeLower === 'dataset') {
     lt = 'status.info';
     dk = 'niaid.color';
-  } else if (typeLower === 'resource catalog') {
+  } else if (typeLower === 'resourcecatalog') {
     lt = 'primary.500';
     dk = 'primary.700';
   } else if (typeLower?.includes('tool') || typeLower?.includes('software')) {
@@ -60,6 +63,25 @@ const TypeBanner: React.FC<TypeBannerProps> = ({
               bg: colorScheme['lt'],
             }}
           >
+            <Tooltip label={SCHEMA_DEFINITIONS['@type']['abstract'][type]}>
+              <Text
+                fontSize='xs'
+                color='white'
+                px={2}
+                fontWeight='semibold'
+                whiteSpace='nowrap'
+              >
+                {formatResourceTypeForDisplay(type).toUpperCase()}
+              </Text>
+            </Tooltip>
+          </StyledLabel>
+        )}
+        {subType && (
+          <StyledLabel
+            _before={{
+              bg: colorScheme['lt'],
+            }}
+          >
             <Text
               fontSize='xs'
               color='white'
@@ -67,7 +89,7 @@ const TypeBanner: React.FC<TypeBannerProps> = ({
               fontWeight='semibold'
               whiteSpace='nowrap'
             >
-              {type.toUpperCase()}
+              {subType.toUpperCase()}
             </Text>
           </StyledLabel>
         )}

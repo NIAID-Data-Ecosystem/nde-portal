@@ -8,8 +8,11 @@ import {
   TextInput,
 } from './components/';
 import { QueryValue } from 'src/components/advanced-search/types';
-import { formatType } from 'src/utils/api/helpers';
 import { SearchInputProps } from './types';
+import {
+  APIResourceType,
+  formatResourceTypeForDisplay,
+} from 'src/utils/formatting/formatResourceType';
 
 export const SearchInput: React.FC<SearchInputProps> = ({
   defaultInputValue = '',
@@ -75,7 +78,7 @@ export const SearchInput: React.FC<SearchInputProps> = ({
         return 'enum';
       } else if (selectedFieldDetails?.type === 'boolean') {
         return 'boolean';
-      } else if (selectedFieldDetails?.format === 'date') {
+      } else if (selectedFieldDetails?.type === 'date') {
         return 'date';
       } else if (
         selectedFieldDetails?.type === 'unsigned_long' ||
@@ -120,7 +123,6 @@ export const SearchInput: React.FC<SearchInputProps> = ({
     handleClick: handleSubmit,
     renderSubmitButton,
   };
-
   return (
     <Flex w='100%' flexDirection='column' flex={1}>
       {/* [date]: Two date type inputs. */}
@@ -128,10 +130,11 @@ export const SearchInput: React.FC<SearchInputProps> = ({
       {/* [enum]: Select/Option Component. */}
       {inputType === 'enum' ? (
         <EnumInput
-          options={selectedFieldDetails?.enum?.map(value => {
+          options={selectedFieldDetails?.enum?.map((value: string) => {
             // [@type] needs to be formatted to the terms we use in the UI.
             if (selectedFieldDetails.property === '@type') {
-              return { label: formatType(value), value };
+              const type = value as APIResourceType;
+              return { label: formatResourceTypeForDisplay(type), value };
             }
             return { label: value, value };
           })}

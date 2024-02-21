@@ -71,7 +71,7 @@ const ResourceDates: React.FC<ResourceDates> = ({ data }) => {
 
   return (
     <TypeBanner
-      type={data?.type}
+      type={data?.['@type']}
       bg='status.info_lt'
       isNiaidFunded={isSourceFundedByNiaid(data.includedInDataCatalog)}
       subType={data?.collectionType}

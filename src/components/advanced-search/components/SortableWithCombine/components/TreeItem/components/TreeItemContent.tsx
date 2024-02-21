@@ -7,7 +7,6 @@ import {
 } from '../helpers';
 import { SearchTypesConfigProps } from 'src/components/advanced-search/components/Search/search-types-config';
 import { Value } from '../../../types';
-import { transformFieldName } from 'src/components/advanced-search/components/Search/components/FieldSelect/helpers';
 import { getUnionTheme } from 'src/components/advanced-search/utils/query-helpers';
 
 interface TreeItemContentProps extends Value {
@@ -49,7 +48,7 @@ export const TreeItemContent = React.memo((props: TreeItemContentProps) => {
       return (
         <Text as='span'>
           <Text as='span' fontWeight='bold'>{`${
-            fieldDetails ? transformFieldName(fieldDetails) : field
+            fieldDetails ? fieldDetails.name : field
           }`}</Text>{' '}
           exists
         </Text>
@@ -58,7 +57,7 @@ export const TreeItemContent = React.memo((props: TreeItemContentProps) => {
       return (
         <Text as='span'>
           <Text as='span' fontWeight='bold'>{`${
-            fieldDetails ? transformFieldName(fieldDetails) : field
+            fieldDetails ? fieldDetails.name : field
           }`}</Text>{' '}
           {`doesn't
         exist`}

@@ -1,14 +1,18 @@
 import { useState } from 'react';
 import { useQuery } from 'react-query';
 import { fetchSearchResults, Params } from 'src/utils/api';
-import { formatDate, formatISOString, formatType } from 'src/utils/api/helpers';
+import { formatDate, formatISOString } from 'src/utils/api/helpers';
 import { Facet, FacetTerm, FormattedResource } from 'src/utils/api/types';
 import { encodeString } from 'src/utils/querystring-helpers';
 import { FacetTerms } from '../types';
+import {
+  APIResourceType,
+  formatResourceTypeForDisplay,
+} from 'src/utils/formatting/formatResourceType';
 
 export const formatFacetTermDisplay = (term: string, facet: string) => {
   if (facet === '@type') {
-    return formatType(term);
+    return formatResourceTypeForDisplay(term as APIResourceType);
   } else if (facet === 'date') {
     return formatDate(term)?.split('-')[0];
   } else if (facet === 'date') {

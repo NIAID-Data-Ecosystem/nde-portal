@@ -9,13 +9,15 @@ import {
 } from '@chakra-ui/react';
 import { FaGithub } from 'react-icons/fa6';
 import { FormattedResource } from 'src/utils/api/types';
-import MetadataConfig from 'configs/resource-metadata.json';
 import { HeadingWithTooltip } from './heading-with-tooltip';
 import { DisplayHTMLContent } from 'src/components/html-content';
 import { Link } from 'src/components/link';
+import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
+import { SchemaDefinitions } from 'scripts/generate-schema-definitions/types';
 
 interface AssociatedDocumentation {
   isLoading: boolean;
+  type?: FormattedResource['@type'];
   hasPart?: FormattedResource['hasPart'];
   mainEntityOfPage?: FormattedResource['mainEntityOfPage'];
   codeRepository?: FormattedResource['codeRepository'];
@@ -26,10 +28,12 @@ export const AssociatedDocumentation: React.FC<AssociatedDocumentation> = ({
   codeRepository,
   hasPart,
   mainEntityOfPage,
+  type,
 }) => {
-  if (!isLoading && !(hasPart || mainEntityOfPage || codeRepository)) {
+  if (!isLoading && !(hasPart || mainEntityOfPage || codeRepository || type)) {
     return <></>;
   }
+  const schema = SCHEMA_DEFINITIONS as SchemaDefinitions;
   return (
     <>
       {hasPart && (
@@ -37,9 +41,7 @@ export const AssociatedDocumentation: React.FC<AssociatedDocumentation> = ({
           <HeadingWithTooltip
             label='Associated Documents'
             tooltipLabel={`${
-              MetadataConfig?.find(d => d.property === 'hasPart')?.description[
-                'dataset'
-              ] || ''
+              schema?.['hasPart']?.description?.[type || 'Dataset'] ?? ''
             }`}
           />
           <Flex flexDirection='column'>
@@ -83,8 +85,8 @@ export const AssociatedDocumentation: React.FC<AssociatedDocumentation> = ({
           <HeadingWithTooltip
             label='Associated Website'
             tooltipLabel={`${
-              MetadataConfig?.find(d => d.property === 'mainEntityOfPage')
-                ?.description['dataset'] || ''
+              schema?.['mainEntityOfPage']?.description?.[type || 'Dataset'] ??
+              ''
             }`}
           />
           {mainEntityOfPage && (
@@ -113,8 +115,7 @@ export const AssociatedDocumentation: React.FC<AssociatedDocumentation> = ({
           <HeadingWithTooltip
             label='Associated Source Code'
             tooltipLabel={`${
-              MetadataConfig?.find(d => d.property === 'codeRepository')
-                ?.description['computationaltool'] || ''
+              schema?.['coreRepository']?.description?.[type || 'Dataset'] ?? ''
             }`}
           />
           <UnorderedList alignItems='center' ml={0}>

@@ -6,6 +6,7 @@ import { wildcardQueryString } from 'src/components/advanced-search/utils/query-
 import { usePredictiveSearch } from 'src/components/search-with-predictive-text';
 import { checkBalancedPunctuation } from 'src/components/advanced-search/utils/validation-checks';
 import { AdvancedSearchInputProps } from '../types';
+import { QueryValue } from 'src/components/advanced-search/types';
 
 interface TextInputProps extends AdvancedSearchInputProps {
   hideSuggestions?: boolean;
@@ -108,7 +109,11 @@ export const TextInput: React.FC<TextInputProps> = ({
         }}
         onClick={(term, field) => {
           // if a suggestion is clicked, we exact term that search.
-          handleClick({ querystring: `"${term}"`, term: `"${term}"`, field });
+          handleClick({
+            querystring: `"${term}"`,
+            term: `"${term}"`,
+            field: field as QueryValue['field'],
+          });
         }}
         handleSubmit={(term, field) => {
           const input_string = Array.isArray(term) ? term.join(' ') : term;
@@ -127,7 +132,11 @@ export const TextInput: React.FC<TextInputProps> = ({
                   term,
                   querystring: term,
                 })
-              : { querystring: term, term, field };
+              : {
+                  querystring: term,
+                  term,
+                  field: field as QueryValue['field'],
+                };
             handleSubmit(result);
           }
         }}
