@@ -93,23 +93,6 @@ const TypeBanner: React.FC<TypeBannerProps> = ({
             </Text>
           </StyledLabel>
         )}
-        {subType && (
-          <StyledLabel
-            _before={{
-              bg: colorScheme['lt'],
-            }}
-          >
-            <Text
-              fontSize='xs'
-              color='white'
-              px={2}
-              fontWeight='semibold'
-              whiteSpace='nowrap'
-            >
-              {subType.toUpperCase()}
-            </Text>
-          </StyledLabel>
-        )}
         {isNiaidFunded && (
           <StyledLabel
             _before={{
