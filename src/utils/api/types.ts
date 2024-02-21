@@ -353,6 +353,12 @@ export interface FormattedResource {
   doi: string | null;
   downloadUrl: { name: string }[] | null;
   funding: Funding[] | null;
+  hasAPI: boolean | null;
+  hasDownload:
+    | 'All content'
+    | 'Partial content'
+    | 'Record-level'
+    | 'no downloads';
   hasPart: HasPart[] | null;
   healthCondition: PropertyWithPubtator[] | null;
   includedInDataCatalog: IncludedInDataCatalog[] | IncludedInDataCatalog;
