@@ -114,9 +114,6 @@ export const Search = ({
                       },
                       children: [],
                       collapsed: false,
-                      // parentId: null,
-                      // depth: 0,
-                      // index: items.length + i,
                     });
                   });
 

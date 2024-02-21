@@ -32,5 +32,5 @@ export const getCitationComponents = (citation: Citation) => {
   const pmid = citation.pmid ? `PubMed PMID: ${citation.pmid}` : '';
   const doi = citation.doi ? `DOI: ${citation.doi}` : '';
 
-  return [authors, citation.name, journal, year, pmid, doi];
+  return [authors, citation.name, citation?.citation, journal, year, pmid, doi];
 };

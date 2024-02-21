@@ -11,10 +11,12 @@ import {
   Text,
   SimpleGrid,
 } from '@chakra-ui/react';
+import NextLink from 'next/link';
 import { FaMinus, FaPlus } from 'react-icons/fa6';
 import { Link } from 'src/components/link';
 import { FormattedResource } from 'src/utils/api/types';
-import { MetadataToolTip, MetadataIcon } from 'src/components/icon';
+import { MetadataIcon } from 'src/components/icon';
+import Tooltip from 'src/components/tooltip';
 import { getMetadataTheme } from 'src/components/icon/helpers';
 import {
   MetadataBlock,
@@ -24,7 +26,8 @@ import {
   generateMetadataContent,
   sortMetadataArray,
 } from 'src/components/metadata';
-import NextLink from 'next/link';
+import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
+import { SchemaDefinitions } from 'scripts/generate-schema-definitions/types';
 
 interface MetadataAccordionProps {
   data?: FormattedResource | null;
@@ -46,6 +49,9 @@ const MetadataAccordion: React.FC<MetadataAccordionProps> = ({ data }) => {
     variableMeasured: data?.variableMeasured,
   });
   const sortedMetadataContent = sortMetadataArray(content);
+
+  const schema = SCHEMA_DEFINITIONS as SchemaDefinitions;
+  const type = data?.['@type'] || 'Dataset';
   return (
     <>
       {/* Details expandable drawer */}
@@ -70,7 +76,13 @@ const MetadataAccordion: React.FC<MetadataAccordionProps> = ({ data }) => {
                         const color = isDisabled
                           ? 'gray'
                           : getMetadataTheme(property);
-
+                        const schemaProperty = schema[property];
+                        // Get the description for the specific type, if available. Otherwise, use the abstract. If neither, use the dataset description.
+                        const description =
+                          schemaProperty?.description?.[type] ||
+                          schemaProperty?.abstract?.[type] ||
+                          schemaProperty?.description?.['Dataset'] ||
+                          '';
                         return (
                           <Tag
                             key={`tag-${id}-${label}`}
@@ -86,14 +98,12 @@ const MetadataAccordion: React.FC<MetadataAccordionProps> = ({ data }) => {
                             aria-disabled={isDisabled}
                             opacity={isDisabled ? 0.65 : 1}
                           >
-                            <MetadataToolTip
-                              propertyName={property}
-                              description={
+                            <Tooltip
+                              label={
                                 isDisabled
                                   ? `No ${label.toLocaleLowerCase()} data.`
-                                  : undefined
+                                  : description
                               }
-                              recordType={data?.['@type']}
                             >
                               <Flex alignItems='center'>
                                 <MetadataIcon
@@ -111,7 +121,7 @@ const MetadataAccordion: React.FC<MetadataAccordionProps> = ({ data }) => {
                                   </Text>
                                 </TagLabel>
                               </Flex>
-                            </MetadataToolTip>
+                            </Tooltip>
                           </Tag>
                         );
                       },

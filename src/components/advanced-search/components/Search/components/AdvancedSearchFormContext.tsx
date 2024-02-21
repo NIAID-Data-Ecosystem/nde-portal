@@ -1,8 +1,9 @@
 import React, { ReactNode, useCallback, useEffect, useState } from 'react';
-import MetadataFieldsConfig from 'configs/resource-fields.json';
 import { SearchTypesConfigProps } from '../search-types-config';
 import { QueryValue } from 'src/components/advanced-search/types';
 import { filterSearchTypes } from './SearchOptions/utils';
+import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
+import { SchemaDefinition } from 'scripts/generate-schema-definitions/types';
 
 /**
  * @interface AdvancedSearchContextProps:
@@ -19,7 +20,7 @@ import { filterSearchTypes } from './SearchOptions/utils';
 export interface AdvancedSearchContextProps {
   queryValue: QueryValue;
   searchTypeOptions: SearchTypesConfigProps[];
-  selectedFieldDetails?: (typeof MetadataFieldsConfig)[number];
+  selectedFieldDetails?: any;
   selectedSearchType: SearchTypesConfigProps;
   setSelectedSearchType: (
     arg: AdvancedSearchContextProps['selectedSearchType'],
@@ -55,13 +56,13 @@ export const AdvancedSearchFormContext = ({
     },
   );
 
-  const selectedFieldDetails = MetadataFieldsConfig.find(f => {
-    if (queryValue.field === '_exists_' || queryValue.field === '-_exists_') {
-      return f.property === queryValue.querystring;
-    }
+  const field =
+    queryValue.field === '_exists_' || queryValue.field === '-_exists_'
+      ? queryValue.querystring
+      : queryValue.field;
 
-    return f.property === queryValue.field;
-  });
+  const selectedFieldDetails =
+    SCHEMA_DEFINITIONS[field as keyof typeof SCHEMA_DEFINITIONS];
 
   // Get default search type for the field type.
   const getDefaultSearchOption: any = useCallback(

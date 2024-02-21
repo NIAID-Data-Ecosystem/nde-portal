@@ -4,9 +4,7 @@ import {
   FlattenedItem,
   TreeItem,
 } from '../components/SortableWithCombine';
-import MetadataConfig from 'configs/resource-metadata.json';
-import SchemaFields from 'configs/resource-fields.json';
-import MetadataNames from 'configs/metadata-standard-names.json';
+import SchemaDefinitions from 'configs/schema-definitions.json';
 import { encodeString } from 'src/utils/querystring-helpers';
 import { QueryValue, UnionTypes } from '../types';
 
@@ -41,35 +39,16 @@ export const getUnionTheme = (term: UnionTypes) => {
 };
 
 /**
- * [getMetadataNameByProperty]: Given a metadata property retrieves the associated display name.
+ * [getMetadataNameByDotfield]: Given a metadata property retrieves the associated display name.
  * Searches for name in standard config, followed by transformed API config, followed by basic formatting.
  */
 
-const MetadataNamesConfig = MetadataNames as {
-  property: string;
-  name: string;
-}[];
+export const getMetadataNameByDotfield = (dotfield: string) => {
+  const { name } = Object.values(SchemaDefinitions).find(
+    item => item.dotfield === dotfield,
+  ) || { name: '' };
 
-export const getMetadataNameByProperty = (property: string) => {
-  const standardized_name = MetadataNamesConfig.find(
-    item => item.property === property,
-  );
-  const config_name = MetadataConfig.find(item => item.property === property);
-  let name = '';
-  if (standardized_name) {
-    name = standardized_name.name;
-  } else if (config_name) {
-    name = config_name.title;
-  } else {
-    // apply some basic formatting.
-    name = property
-      .split('.')
-      .join(' ')
-      .split(/(?=[A-Z])/)
-      .join(' ');
-  }
-
-  return name.charAt(0).toUpperCase() + name.slice(1);
+  return name;
 };
 
 export const wildcardQueryString = ({
@@ -243,7 +222,7 @@ export const convertQueryString2Object = (str: string) => {
             term: term.trim(),
             querystring: querystring.trim(),
             union: union,
-            field: (node_field || field).trim(),
+            field: (node_field || field).trim() as QueryValue['field'],
           },
           children: Array.isArray(node)
             ? getNestedItems(node, id, newDepth)
@@ -264,7 +243,7 @@ const handleValue = (value: string): Partial<QueryValue> => {
   const str = value.trim();
   const fieldColonIndex = str.indexOf(':');
   if (fieldColonIndex > -1 && str[fieldColonIndex - 1] !== '\\') {
-    const field = str.substring(0, fieldColonIndex);
+    const field = str.substring(0, fieldColonIndex) as QueryValue['field'];
 
     // Check if the string that is separated by a colon is an actual field in the API.
     if (isValidField(field)) {
@@ -294,8 +273,8 @@ const handleValue = (value: string): Partial<QueryValue> => {
  * @returns boolean - whether the field is valid or not.
  */
 const isValidField = (field: string) => {
-  const fieldInSchemaIndex = SchemaFields.findIndex(
-    item => item.property === field,
+  const fieldInSchemaIndex = Object.keys(SchemaDefinitions).findIndex(
+    schemaField => schemaField === field,
   );
 
   return (

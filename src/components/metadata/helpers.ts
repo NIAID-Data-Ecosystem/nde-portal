@@ -1,8 +1,13 @@
-import { FormattedResource, ResourceType } from 'src/utils/api/types';
+import { FormattedResource } from 'src/utils/api/types';
 import { formatLicense } from 'src/utils/helpers';
 import { OntologyButtonProps, SearchButtonProps } from './components/buttons';
-import MetadataConfig from 'configs/resource-metadata.json';
 import { uniqueId } from 'lodash';
+import { APIResourceType } from 'src/utils/formatting/formatResourceType';
+import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
+import {
+  SchemaDefinition,
+  SchemaDefinitions,
+} from 'scripts/generate-schema-definitions/types';
 
 // Sort [SORT_ORDER] based on: https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/214
 export const SORT_ORDER = [
@@ -434,19 +439,19 @@ const createVariableMeasuredContent = (
 };
 
 export const getMetadataDescription = (
-  property: keyof FormattedResource,
-  resourceType?: ResourceType,
+  property: string,
+  type?: APIResourceType,
   accessor?: () => {},
 ) => {
-  const metadata = accessor
-    ? MetadataConfig.find(accessor)
-    : MetadataConfig.find(d => d.property === property);
-  const { description } = metadata || {};
-  if (description) {
-    let type = resourceType?.toLowerCase() as
-      | keyof typeof description
-      | undefined;
+  const schema = SCHEMA_DEFINITIONS as SchemaDefinitions;
 
+  const metadata = (
+    accessor ? Object.values(schema).find(accessor) : schema[property]
+  ) as SchemaDefinition | undefined;
+
+  const description = metadata?.description || '';
+
+  if (description) {
     if (type && description?.[type]) {
       // if record type exists use it to get a more specific definition if available.
       return description?.[type];

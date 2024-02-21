@@ -1,6 +1,7 @@
 import { wildcardQueryString } from '../../utils/query-helpers';
-import MetadataFieldsConfig from 'configs/resource-fields.json';
 import { QueryValue } from '../../types';
+import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
+import { SchemaDefinitions } from 'scripts/generate-schema-definitions/types';
 
 /**
  * @interface SearchTypesConfigProps:
@@ -31,10 +32,8 @@ export interface SearchTypesConfigProps {
 }
 
 // remove any symbols that could impact the transformation
-// const stripQuerystring = (str: string) => {
 
-//   if(str)
-// }
+const metadataFields = SCHEMA_DEFINITIONS as SchemaDefinitions;
 
 export const SEARCH_TYPES_CONFIG: SearchTypesConfigProps[] = [
   {
@@ -100,17 +99,17 @@ export const SEARCH_TYPES_CONFIG: SearchTypesConfigProps[] = [
       if (!queryValue.field) {
         return true;
       }
-      const fieldDetails = MetadataFieldsConfig.find(f => {
+      const fieldDetails = Object.values(metadataFields).find(field => {
         if (
           queryValue.field === '_exists_' ||
           queryValue.field === '-_exists_'
         ) {
-          return f.property === queryValue.querystring;
+          return field.dotfield === queryValue.querystring;
         }
-        return f.property === queryValue.field;
+        return field.dotfield === queryValue.field;
       });
 
-      if (fieldDetails?.format === 'enum' || fieldDetails?.format === 'date') {
+      if (fieldDetails?.enum || fieldDetails?.type === 'date') {
         return false;
       }
       return fieldDetails?.type === 'keyword' || fieldDetails?.type === 'text';
@@ -120,7 +119,7 @@ export const SEARCH_TYPES_CONFIG: SearchTypesConfigProps[] = [
       if (query.field === '_exists_' || query.field === '-_exists_') {
         return {
           ...query,
-          field: query.term,
+          field: query.term as keyof typeof SCHEMA_DEFINITIONS,
         };
       }
       return query;
@@ -134,19 +133,19 @@ export const SEARCH_TYPES_CONFIG: SearchTypesConfigProps[] = [
       if (!queryValue.field) {
         return false;
       }
-      const fieldDetails = MetadataFieldsConfig.find(f => {
+      const fieldDetails = Object.values(metadataFields).find(field => {
         if (
           queryValue.field === '_exists_' ||
           queryValue.field === '-_exists_'
         ) {
-          return f.property === queryValue.querystring;
+          return field.dotfield === queryValue.querystring;
         }
-        return f.property === queryValue.field;
+        return field.dotfield === queryValue.field;
       });
 
       return (
-        fieldDetails?.format === 'enum' ||
-        fieldDetails?.format === 'date' ||
+        !!fieldDetails?.enum?.length ||
+        fieldDetails?.type === 'date' ||
         fieldDetails?.type === 'boolean' ||
         fieldDetails?.type === 'unsigned_long' ||
         fieldDetails?.type === 'integer' ||
@@ -177,19 +176,19 @@ export const SEARCH_TYPES_CONFIG: SearchTypesConfigProps[] = [
           if (!queryValue.field) {
             return false;
           }
-          const fieldDetails = MetadataFieldsConfig.find(f => {
+          const fieldDetails = Object.values(metadataFields).find(field => {
             if (
               queryValue.field === '_exists_' ||
               queryValue.field === '-_exists_'
             ) {
-              return f.property === queryValue.querystring;
+              return field.dotfield === queryValue.querystring;
             }
-            return f.property === queryValue.field;
+            return field.dotfield === queryValue.field;
           });
 
           return (
-            fieldDetails?.format === 'enum' ||
-            fieldDetails?.format === 'date' ||
+            !!fieldDetails?.enum?.length ||
+            fieldDetails?.type === 'date' ||
             fieldDetails?.type === 'boolean' ||
             fieldDetails?.type === 'unsigned_long' ||
             fieldDetails?.type === 'integer' ||
@@ -223,19 +222,19 @@ export const SEARCH_TYPES_CONFIG: SearchTypesConfigProps[] = [
           if (!queryValue.field) {
             return false;
           }
-          const fieldDetails = MetadataFieldsConfig.find(f => {
+          const fieldDetails = Object.values(metadataFields).find(field => {
             if (
               queryValue.field === '_exists_' ||
               queryValue.field === '-_exists_'
             ) {
-              return f.property === queryValue.querystring;
+              return field.dotfield === queryValue.querystring;
             }
-            return f.property === queryValue.field;
+            return field.dotfield === queryValue.field;
           });
 
           return (
-            fieldDetails?.format === 'enum' ||
-            fieldDetails?.format === 'date' ||
+            !!fieldDetails?.enum?.length ||
+            fieldDetails?.type === 'date' ||
             fieldDetails?.type === 'boolean' ||
             fieldDetails?.type === 'unsigned_long' ||
             fieldDetails?.type === 'integer' ||
@@ -265,19 +264,19 @@ export const SEARCH_TYPES_CONFIG: SearchTypesConfigProps[] = [
           if (!queryValue.field) {
             return false;
           }
-          const fieldDetails = MetadataFieldsConfig.find(f => {
+
+          const fieldDetails = Object.values(metadataFields).find(field => {
             if (
               queryValue.field === '_exists_' ||
               queryValue.field === '-_exists_'
             ) {
-              return f.property === queryValue.querystring;
+              return field.dotfield === queryValue.querystring;
             }
-            return f.property === queryValue.field;
+            return field.dotfield === queryValue.field;
           });
-
           return (
-            fieldDetails?.format === 'enum' ||
-            fieldDetails?.format === 'date' ||
+            !!fieldDetails?.enum?.length ||
+            fieldDetails?.type === 'date' ||
             fieldDetails?.type === 'boolean' ||
             fieldDetails?.type === 'unsigned_long' ||
             fieldDetails?.type === 'integer' ||
@@ -307,19 +306,19 @@ export const SEARCH_TYPES_CONFIG: SearchTypesConfigProps[] = [
           if (!queryValue.field) {
             return false;
           }
-          const fieldDetails = MetadataFieldsConfig.find(f => {
+          const fieldDetails = Object.values(metadataFields).find(field => {
             if (
               queryValue.field === '_exists_' ||
               queryValue.field === '-_exists_'
             ) {
-              return f.property === queryValue.querystring;
+              return field.dotfield === queryValue.querystring;
             }
-            return f.property === queryValue.field;
+            return field.dotfield === queryValue.field;
           });
 
           return (
-            fieldDetails?.format === 'enum' ||
-            fieldDetails?.format === 'date' ||
+            !!fieldDetails?.enum?.length ||
+            fieldDetails?.type === 'date' ||
             fieldDetails?.type === 'boolean' ||
             fieldDetails?.type === 'unsigned_long' ||
             fieldDetails?.type === 'integer' ||

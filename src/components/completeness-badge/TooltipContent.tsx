@@ -1,5 +1,5 @@
 import { Box, Divider, Flex, Text } from '@chakra-ui/react';
-import { getMetadataNameByProperty } from 'src/components/advanced-search/utils/query-helpers';
+import { getMetadataNameByDotfield } from 'src/components/advanced-search/utils/query-helpers';
 
 type statkey = 'required' | 'recommended' | 'total';
 interface Stat {
@@ -20,8 +20,9 @@ export const TooltipContent = ({ stats }: TooltipContentProps) => {
 
   const Score = ({ fill, label, score, max_score, augmented }: Stat) => {
     const augmented_fields = augmented?.map(property =>
-      getMetadataNameByProperty(property),
+      getMetadataNameByDotfield(property),
     );
+
     return (
       <Box my={1.5}>
         <Flex color='black'>

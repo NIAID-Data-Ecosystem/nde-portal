@@ -3,16 +3,17 @@ import { Flex, FlexProps, Icon, Text } from '@chakra-ui/react';
 import { FaRegClock } from 'react-icons/fa6';
 import { FormattedResource } from 'src/utils/api/types';
 import { StyledLabel } from './styles';
+import { formatResourceTypeForDisplay } from 'src/utils/formatting/formatResourceType';
 
 interface TypeBannerProps extends FlexProps {
-  type?: FormattedResource['type'];
+  type?: FormattedResource['@type'];
   subType?: FormattedResource['collectionType'];
   date?: FormattedResource['date'];
   sourceName?: string[] | null;
   isNiaidFunded?: boolean;
 }
 
-export const getTypeColor = (type?: FormattedResource['type']) => {
+export const getTypeColor = (type?: FormattedResource['@type']) => {
   const typeLower = type?.toLowerCase();
   let lt = 'status.info';
   let dk = 'niaid.color';
@@ -20,7 +21,7 @@ export const getTypeColor = (type?: FormattedResource['type']) => {
   if (typeLower === 'dataset') {
     lt = 'status.info';
     dk = 'niaid.color';
-  } else if (typeLower === 'resource catalog') {
+  } else if (typeLower === 'resourcecatalog') {
     lt = 'primary.500';
     dk = 'primary.700';
   } else if (typeLower?.includes('tool') || typeLower?.includes('software')) {
@@ -67,7 +68,7 @@ const TypeBanner: React.FC<TypeBannerProps> = ({
               fontWeight='semibold'
               whiteSpace='nowrap'
             >
-              {type.toUpperCase()}
+              {formatResourceTypeForDisplay(type).toUpperCase()}
             </Text>
           </StyledLabel>
         )}

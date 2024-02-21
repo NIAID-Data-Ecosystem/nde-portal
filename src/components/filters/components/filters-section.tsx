@@ -7,9 +7,11 @@ import {
   Heading,
 } from '@chakra-ui/react';
 import { FaMinus, FaPlus } from 'react-icons/fa6';
-import { MetadataIcon, MetadataToolTip } from 'src/components/icon';
+import { MetadataIcon } from 'src/components/icon';
 import { getMetadataColor } from 'src/components/icon/helpers';
-
+import Tooltip from 'src/components/tooltip';
+import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
+import { SchemaDefinitions } from 'scripts/generate-schema-definitions/types';
 /*
 [COMPONENT INFO]:
 Filter drawer corresponding to a filter facet.
@@ -24,6 +26,13 @@ interface FiltersSectionProps {
 
 export const FiltersSection: React.FC<FiltersSectionProps> = React.memo(
   ({ name, icon, property, children }) => {
+    const schema = SCHEMA_DEFINITIONS as SchemaDefinitions;
+    const schemaProperty = schema[property];
+    const description =
+      schemaProperty?.abstract?.['Dataset'] ||
+      schemaProperty?.description?.['Dataset'] ||
+      '';
+
     return (
       <AccordionItem borderColor='page.alt' borderTopWidth='2px'>
         {({ isExpanded }) => {
@@ -55,10 +64,13 @@ export const FiltersSection: React.FC<FiltersSectionProps> = React.memo(
 
                     {/* Icon tooltip with property definition. */}
                     {icon && (
-                      <MetadataToolTip
-                        propertyName={property}
-                        recordType='Dataset' // [NOTE]: Choosing dataset for general definition.
-                        showAbstract
+                      <Tooltip
+                        label={`${schemaProperty.name}${
+                          description &&
+                          `: ${description
+                            .charAt(0)
+                            .toUpperCase()}${description.slice(1)}`
+                        }`}
                       >
                         <MetadataIcon
                           id={`filter-${property}`}
@@ -67,7 +79,7 @@ export const FiltersSection: React.FC<FiltersSectionProps> = React.memo(
                           fill={getMetadataColor(icon)}
                           mx={2}
                         />
-                      </MetadataToolTip>
+                      </Tooltip>
                     )}
                   </Flex>
                   {isExpanded ? (

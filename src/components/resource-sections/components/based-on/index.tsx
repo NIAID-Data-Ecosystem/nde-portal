@@ -63,7 +63,7 @@ const ROW_SIZES = [5, 10, 50, 100];
 const COLUMNS = [
   { key: 'name', title: 'Name' },
   {
-    key: 'typeName',
+    key: 'type',
     title: 'Type',
     props: { w: '200px', maxW: '200px', minW: 'unset' },
   },
@@ -79,10 +79,9 @@ type Items = Item[];
 
 interface Row extends Item {
   key: string;
-
-  typeName: string;
-  typeUrl: string;
+  type: { name?: string; url?: string }[];
 }
+
 type Rows = Row[];
 // BasedOnTable: Main component for rendering a paginated and sortable table
 const BasedOnTable = ({
@@ -111,13 +110,16 @@ const BasedOnTable = ({
         if (name?.includes('http') && !url) {
           url = name;
         }
+        const additionalType = Array.isArray(item.additionalType)
+          ? item.additionalType
+          : [item.additionalType];
+        const type = item['@type'];
         return {
           ...item,
           key: uniqueId(`list-item-${item.identifier || idx}`),
           name,
           url,
-          typeName: item.additionalType?.name || '',
-          typeUrl: item.additionalType?.url || '',
+          type: [{ name: type }, ...additionalType].filter(Boolean),
         };
       }),
     [items],
@@ -233,27 +235,41 @@ const BasedOnTable = ({
                               )}
 
                               {/* type */}
-                              {column.key === 'typeName' &&
-                                (item.typeName ? (
+                              {column.key === 'type' &&
+                                (item.type.length > 0 &&
+                                item.type.some(type => {
+                                  return type.name || type.url;
+                                }) ? (
                                   <>
-                                    <Tooltip
-                                      label='show ontology information'
-                                      hasArrow
-                                      bg='white'
-                                      color='text.body'
-                                      fontWeight='normal'
-                                      fontSize='12px'
-                                      boxShadow='base'
-                                    >
-                                      <span>
-                                        <TagWithUrl
-                                          url={item.typeUrl}
-                                          colorScheme='primary'
+                                    {item.type.map((type, idx) => {
+                                      if (!type?.name && !type?.url)
+                                        return <React.Fragment key={idx} />;
+                                      return (
+                                        <Tooltip
+                                          key={idx}
+                                          label={
+                                            type?.url
+                                              ? 'show ontology information'
+                                              : ''
+                                          }
+                                          hasArrow
+                                          bg='white'
+                                          color='text.body'
+                                          fontWeight='normal'
+                                          fontSize='12px'
+                                          boxShadow='base'
                                         >
-                                          {item.typeName}
-                                        </TagWithUrl>
-                                      </span>
-                                    </Tooltip>
+                                          <span>
+                                            <TagWithUrl
+                                              url={type?.url}
+                                              colorScheme='primary'
+                                            >
+                                              {type?.name || type?.url}
+                                            </TagWithUrl>
+                                          </span>
+                                        </Tooltip>
+                                      );
+                                    })}
                                   </>
                                 ) : (
                                   <EmptyCell />

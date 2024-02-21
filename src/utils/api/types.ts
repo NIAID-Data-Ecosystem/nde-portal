@@ -1,3 +1,5 @@
+import { APIResourceType } from '../formatting/formatResourceType';
+
 export interface FetchSearchResultsResponse {
   results: FormattedResource[];
   total: number;
@@ -31,15 +33,6 @@ export interface FacetTerm {
   displayAs: string;
   [key: string]: NestedFacet;
 }
-
-// Type of resource.
-export type ResourceType =
-  | 'Dataset'
-  | 'Resource Catalog'
-  | 'Computational Tool'
-  | 'Software'
-  | 'Scholarly Article'
-  | 'Other';
 
 // Conditions of access for dataset or tool.
 export type AccessTypes = 'Open' | 'Controlled' | 'Embargoed' | 'Restricted';
@@ -79,6 +72,7 @@ export interface Citation {
   id: string | null;
   url: string | null;
   name: string | null;
+  citation?: string | null;
   author: Author[] | null;
   journalName: string | null;
   journalNameAbbrev: string | null;
@@ -330,7 +324,7 @@ export interface FormattedResource {
     required_augmented_fields: string[];
   };
   id: string;
-  type: string | null; // "Dataset" | "ComputationalTool"
+  '@type': APIResourceType; // "Dataset" | "ComputationalTool" | "Resource Catalog"
   name: string;
   abstract: string | null;
   aggregateRating: AggregateRating | null;
