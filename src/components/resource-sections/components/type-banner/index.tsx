@@ -4,6 +4,8 @@ import { FaRegClock } from 'react-icons/fa6';
 import { FormattedResource } from 'src/utils/api/types';
 import { StyledLabel } from './styles';
 import { formatResourceTypeForDisplay } from 'src/utils/formatting/formatResourceType';
+import Tooltip from 'src/components/tooltip';
+import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
 
 interface TypeBannerProps extends FlexProps {
   type?: FormattedResource['@type'];
@@ -61,15 +63,17 @@ const TypeBanner: React.FC<TypeBannerProps> = ({
               bg: colorScheme['lt'],
             }}
           >
-            <Text
-              fontSize='xs'
-              color='white'
-              px={2}
-              fontWeight='semibold'
-              whiteSpace='nowrap'
-            >
-              {formatResourceTypeForDisplay(type).toUpperCase()}
-            </Text>
+            <Tooltip label={SCHEMA_DEFINITIONS['@type']['abstract'][type]}>
+              <Text
+                fontSize='xs'
+                color='white'
+                px={2}
+                fontWeight='semibold'
+                whiteSpace='nowrap'
+              >
+                {formatResourceTypeForDisplay(type).toUpperCase()}
+              </Text>
+            </Tooltip>
           </StyledLabel>
         )}
         {subType && (
