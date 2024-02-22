@@ -2,7 +2,7 @@
 module.exports = {
   siteUrl: process.env.BASE_URL,
   generateRobotsTxt: true,
-  generateIndexSitemap: false,
+  exclude: ['/sitemap-datasets.xml'],
   robotsTxtOptions: {
     policies: [
       { userAgent: '*', disallow: '/' },
@@ -12,5 +12,6 @@ module.exports = {
       },
       { userAgent: 'bingbot', allow: '/' },
     ],
+    additionalSitemaps: [`${process.env.BASE_URL}sitemap-datasets.xml`],
   },
 };

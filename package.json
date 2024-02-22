@@ -10,6 +10,7 @@
     "start": "next start",
     "lint": "next lint",
     "generate-schema-definitions": "env-cmd -f .env.production tsx scripts/generate-schema-definitions/index.ts",
+    "generate-datasets-sitemap": "env-cmd -f .env.production tsx scripts/generate-sitemap.ts",
     "generate-footer-content": "tsx scripts/generate-footer-content.ts",
     "prepare": "husky install",
     "release": "standard-version",
