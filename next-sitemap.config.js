@@ -12,6 +12,6 @@ module.exports = {
       },
       { userAgent: 'bingbot', allow: '/' },
     ],
-    additionalSitemaps: [`${process.env.BASE_URL}sitemap-datasets.xml`],
+    additionalSitemaps: [`${process.env.BASE_URL}/sitemap-datasets.xml`],
   },
 };

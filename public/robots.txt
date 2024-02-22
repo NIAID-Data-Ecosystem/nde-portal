@@ -11,8 +11,8 @@ User-agent: bingbot
 Allow: /
 
 # Host
-Host: http://localhost:3000/
+Host: https://data.niaid.nih.gov
 
 # Sitemaps
-Sitemap: http://localhost:3000/sitemap.xml
-Sitemap: http://localhost:3000/sitemap-datasets.xml
+Sitemap: https://data.niaid.nih.gov/sitemap.xml
+Sitemap: https://data.niaid.nih.gov/sitemap-datasets.xml
