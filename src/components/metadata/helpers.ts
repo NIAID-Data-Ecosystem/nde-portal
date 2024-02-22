@@ -229,8 +229,9 @@ const createHealthConditionContent = (
                 : healthCondition.name,
             },
             ontologyProps: {
-              ['aria-label']: 'See ontology information.',
+              ['aria-label']: `See ${healthCondition?.inDefinedTermSet} ontology information.`,
               value: healthCondition?.url,
+              label: `${healthCondition?.inDefinedTermSet}`,
               inDefinedTermSet: healthCondition?.inDefinedTermSet,
             },
           };
@@ -331,9 +332,14 @@ const createInfectiousAgentContent = (
                 : pathogen.name,
             },
             ontologyProps: {
-              ['aria-label']: 'See ontology information.',
-              value: pathogen?.url,
+              ['aria-label']: `See ${pathogen?.inDefinedTermSet} taxonomy information.`,
               inDefinedTermSet: pathogen?.inDefinedTermSet,
+              label: `${pathogen?.inDefinedTermSet}${
+                pathogen?.inDefinedTermSet?.toLowerCase() === 'uniprot'
+                  ? ' Taxon'
+                  : ''
+              }`,
+              value: pathogen?.url,
             },
           };
         })
@@ -374,9 +380,14 @@ const createSpeciesContent = (
                 : species.name,
             },
             ontologyProps: {
-              ['aria-label']: 'See ontology information.',
-              value: species?.url,
+              ['aria-label']: `See ${species?.inDefinedTermSet} taxonomy information.`,
+              label: `${species?.inDefinedTermSet}${
+                species?.inDefinedTermSet?.toLowerCase() === 'uniprot'
+                  ? ' Taxon'
+                  : ''
+              }`,
               inDefinedTermSet: species?.inDefinedTermSet,
+              value: species?.url,
             },
           };
         })

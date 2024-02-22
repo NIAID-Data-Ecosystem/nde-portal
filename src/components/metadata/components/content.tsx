@@ -28,7 +28,7 @@ export const MetadataContent = ({
       flexWrap='wrap'
       w='100%'
     >
-      <Box flex={1} fontSize='xs' lineHeight='short' minW='130px'>
+      <Box flex={1} fontSize='xs' lineHeight='short' minW='130px' mx={0.5}>
         {scientificName && <Text fontWeight='semibold'>{scientificName}</Text>}
         <Flex>
           {img && (
@@ -64,7 +64,7 @@ export const MetadataContent = ({
       </Box>
       {((includeSearch && searchProps) ||
         (includeOntology && ontologyProps)) && (
-        <MetadataButtonGroup mx={1}>
+        <MetadataButtonGroup>
           {includeSearch && searchProps && <SearchButton {...searchProps} />}
           {includeOntology && ontologyProps && (
             <OntologyButton {...ontologyProps} />

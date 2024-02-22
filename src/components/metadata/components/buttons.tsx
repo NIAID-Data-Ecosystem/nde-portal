@@ -27,11 +27,13 @@ export const MetadataButtonGroup = ({
 export interface OntologyButtonProps extends Omit<IconButtonProps, 'value'> {
   value?: string;
   inDefinedTermSet?: string;
+  label?: string;
 }
 export const OntologyButton = ({
   'aria-label': ariaLabel,
   value,
   inDefinedTermSet,
+  label,
 }: OntologyButtonProps) => {
   if (!value) {
     return <></>;
@@ -39,7 +41,7 @@ export const OntologyButton = ({
 
   return (
     <Tooltip label={ariaLabel || 'See ontology information.'}>
-      {inDefinedTermSet ? (
+      {label || inDefinedTermSet ? (
         <Button
           as={Link}
           href={value}
@@ -60,7 +62,7 @@ export const OntologyButton = ({
           }}
           _visited={{ _hover: { borderBottomColor: 'inherit' } }}
         >
-          <Text pt={0.25}>{inDefinedTermSet}</Text>
+          <Text pt={0.25}>{label || inDefinedTermSet} </Text>
         </Button>
       ) : (
         <Button
