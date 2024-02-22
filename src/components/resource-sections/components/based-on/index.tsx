@@ -90,12 +90,14 @@ const BasedOnTable = ({
   caption,
   title,
   items,
+  columns = COLUMNS,
 }: {
   id: string;
   isLoading: boolean;
   caption: string;
   title?: string;
   items: Items;
+  columns?: { key: string; title: string; props?: any }[];
 }) => {
   // State and memoization hooks for handling unique IDs, sorting, and pagination
   const itemsWithUniqueId = useMemo(
@@ -171,7 +173,7 @@ const BasedOnTable = ({
             </VisuallyHidden>
             <thead>
               <Tr role='row' flex='1' display='flex' w='100%'>
-                {COLUMNS.map(column => {
+                {columns.map(column => {
                   return (
                     <Th
                       key={`table-col-th-${column.key}`}
@@ -204,7 +206,7 @@ const BasedOnTable = ({
                       py={1}
                     >
                       <Flex as='td' role='cell' alignItems='center'>
-                        {COLUMNS.map(column => {
+                        {columns.map(column => {
                           return (
                             <Cell
                               key={`table-td-${item.key}-${column.key}`}
