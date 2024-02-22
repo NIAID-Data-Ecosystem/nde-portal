@@ -10,8 +10,6 @@ const SOURCES = [
   'AccessClinicalData@NIAID',
   'ClinEpiDB',
   'VDJServer',
-  'ReframeDB',
-  'Qiita',
   'ImmPort',
   'VEuPathDB',
 ];
