@@ -24,9 +24,9 @@ interface Bins {
   bins: Bin[];
 }
 const primary1 = theme.colors.primary[100];
-const primary2 = theme.colors.primary[500];
+const primary2 = theme.colors.primary[600];
 const secondary1 = theme.colors.secondary[100];
-const secondary2 = theme.colors.secondary[500];
+const secondary2 = theme.colors.secondary[600];
 const bg = '#fff';
 
 function max<Datum>(data: Datum[], value: (d: Datum) => number): number {
@@ -42,7 +42,7 @@ const bins = (d: Bins) => d.bins;
 const count = (d: Bin) => d.count;
 
 const colorMax = (binData: Bins[]) => max(binData, d => max(bins(d), count));
-const bucketSizeMax = (binData: Bins[]) => max(binData, d => bins(d).length);
+// const bucketSizeMax = (binData: Bins[]) => max(binData, d => bins(d).length);
 
 const rectColorScale = (data: Bins[], type?: string) => {
   const colorScheme = !type
@@ -73,11 +73,10 @@ export type HeatmapProps = {
 };
 
 const defaultMargin = { top: 10, left: 10, right: 10, bottom: 10 };
-const NUM_ROWS = 6;
 
-const getBinsData = (fields: Omit<Bin, 'bin'>[]) => {
+const getBinsData = (fields: Omit<Bin, 'bin'>[], numRows = 2) => {
   return fields.reduce((bins, { field, count, type }, idx) => {
-    const col = idx % NUM_ROWS;
+    const col = idx % numRows;
     const column = bins.find(c => c.bin === col);
     if (column) {
       column.bins.push({ bin: col, count, field, type });
@@ -88,12 +87,14 @@ const getBinsData = (fields: Omit<Bin, 'bin'>[]) => {
     return bins;
   }, [] as Bins[]);
 };
+
 let tooltipTimeout: number;
 
 interface ToolTipData extends Bin {
   percent: string;
   theme: string;
 }
+const separation = 4;
 const BarChartHeatMap = ({
   width,
   height,
@@ -120,46 +121,61 @@ const BarChartHeatMap = ({
   // data
   const required = Object.entries(
     data?.sourceInfo?.metadata_completeness?.required_fields || {},
-  ).map(([field, count]) => ({ field, count, type: 'required' }));
+  )
+    .map(([field, count]) => ({ field, count, type: 'required' }))
+    .sort((a, b) => a.count - b.count);
 
-  const recommended_fields = Object.entries(
+  const recommended = Object.entries(
     data?.sourceInfo?.metadata_completeness?.recommended_fields || {},
-  ).map(([field, count]) => ({ field, count, type: 'recommended' }));
-
+  )
+    .map(([field, count]) => ({ field, count, type: 'recommended' }))
+    .sort((a, b) => a.count - b.count);
   // Fields sorted alphabetically
-  const fields = [...required, ...recommended_fields].sort((a, b) =>
-    b.field.localeCompare(a.field),
-  );
-  const BIN_DATA = getBinsData(fields).reverse();
+  const NUM_BARS = 21;
+  const ALL_DATA = getBinsData([...required, ...recommended], NUM_BARS);
+
+  const REQUIRED_DATA = getBinsData(required, NUM_BARS).reverse();
+
+  const RECOMMENDED_DATA = getBinsData(recommended, NUM_BARS).reverse();
 
   // bounds
   const size =
     width > margin.left + margin.right
       ? width - margin.left - margin.right
       : width;
+
   const xMax = size;
-  const yMax = height - margin.bottom - margin.top;
-  const binWidth = xMax / BIN_DATA.length;
-  const binHeight = yMax / bucketSizeMax(BIN_DATA);
-  const radius = min([binWidth, binHeight], d => d) / 8;
+  const yMax = height / 2 - margin.bottom - margin.top;
+
+  const binWidth = xMax / NUM_BARS;
+  // const bucketSizeMax = Math.max(
+  //   max(REQUIRED_DATA, d => bins(d).length),
+  //   max(RECOMMENDED_DATA, d => bins(d).length),
+  // );
+  const bucketSizeMax = 2;
+  const binHeight = yMax / bucketSizeMax;
+
+  // const radius = min([binWidth, binHeight], d => d) / 8;
 
   // scales
   const xScale = useMemo(
     () =>
       scaleLinear<number>({
-        domain: [0, BIN_DATA.length],
+        domain: [0, NUM_BARS],
         range: [0, xMax],
       }),
-    [BIN_DATA, xMax],
+    [NUM_BARS, xMax],
   );
+
+  console.log(xScale.domain(), xScale.range());
 
   const yScale = useMemo(
     () =>
       scaleLinear<number>({
-        domain: [0, bucketSizeMax(BIN_DATA)],
+        domain: [0, bucketSizeMax],
         range: [yMax, 0],
       }),
-    [BIN_DATA, yMax],
+    [bucketSizeMax, yMax],
   );
 
   // event handlers
@@ -177,11 +193,11 @@ const BarChartHeatMap = ({
           ...data,
           percent: `${Math.round(data.count * 100)}%`,
           type: data.type === 'required' ? 'Fundamental' : 'Recommended',
-          theme: isMonoChromatic ? 'primary' : theme,
+          theme,
         },
       });
     },
-    [showTooltip, isMonoChromatic],
+    [showTooltip],
   );
 
   const handleMouseLeave = useCallback(() => {
@@ -221,30 +237,26 @@ const BarChartHeatMap = ({
           orientation={['diagonal']}
         />
         <rect x={0} y={0} width={width} height={height} rx={14} fill={bg} />
-        <Group top={margin.top - binHeight} left={margin.left}>
+        <Group left={margin.left} top={yMax - margin.top}>
           <HeatmapRect
-            data={BIN_DATA}
+            data={RECOMMENDED_DATA}
             xScale={d => xScale(d) ?? 0}
             yScale={d => yScale(d) ?? 0}
-            opacityScale={opacityScale(BIN_DATA)}
-            colorScale={isMonoChromatic ? rectColorScale(BIN_DATA) : undefined}
+            opacityScale={opacityScale(RECOMMENDED_DATA)}
+            colorScale={
+              isMonoChromatic
+                ? rectColorScale(RECOMMENDED_DATA, 'recommended')
+                : undefined
+            }
             binWidth={binWidth}
             binHeight={binHeight}
-            gap={3}
+            gap={1}
           >
             {heatmap =>
               heatmap.map(heatmapBins => {
                 return heatmapBins.map(bin => {
                   const data = bin.bin as Bin;
-                  const color = isMonoChromatic
-                    ? bin.color
-                    : rectColorScale(BIN_DATA, data.type)(data.count);
-
-                  const pattern = isMonoChromatic
-                    ? 'url(#primary-lines)'
-                    : data.type === 'required'
-                    ? 'url(#primary-lines)'
-                    : 'url(#secondary-lines)';
+                  const pattern = 'url(#secondary-lines)';
                   return (
                     <rect
                       key={`heatmap-rect-${bin.row}-${bin.column}`}
@@ -253,10 +265,57 @@ const BarChartHeatMap = ({
                       height={bin.height}
                       x={bin.x}
                       y={bin.y}
-                      rx={radius}
-                      ry={radius}
                       strokeWidth={2}
-                      fill={bin.count ? color : pattern}
+                      fill={bin.count ? bin.color : pattern}
+                      fillOpacity={bin.count ? bin.opacity : '1'}
+                      onMouseMove={e =>
+                        handleMouseMove(e, { x: bin.x, y: bin.y, data })
+                      }
+                      onTouchMove={e =>
+                        handleMouseMove(e, { x: bin.x, y: bin.y, data })
+                      }
+                      onMouseLeave={handleMouseLeave}
+                    />
+                  );
+                });
+              })
+            }
+          </HeatmapRect>
+        </Group>
+        <Group
+          top={yMax - margin.top - binHeight - separation}
+          left={margin.left}
+        >
+          <HeatmapRect
+            data={REQUIRED_DATA}
+            xScale={d => xScale(d) ?? 0}
+            yScale={d => yScale(d) ?? 0}
+            opacityScale={opacityScale(REQUIRED_DATA)}
+            colorScale={
+              isMonoChromatic ? rectColorScale(REQUIRED_DATA) : undefined
+            }
+            binWidth={binWidth}
+            binHeight={binHeight}
+            gap={1}
+          >
+            {heatmap =>
+              heatmap.map(heatmapBins => {
+                return heatmapBins.map(bin => {
+                  console.log(bin.width);
+                  const data = bin.bin as Bin;
+                  const pattern = 'url(#primary-lines)';
+                  return (
+                    <rect
+                      key={`heatmap-rect-${bin.row}-${bin.column}`}
+                      className='visx-heatmap-rect'
+                      width={bin.width}
+                      height={bin.height}
+                      x={bin.x}
+                      y={bin.y}
+                      // rx={radius}
+                      // ry={radius}
+                      strokeWidth={2}
+                      fill={bin.count ? bin.color : pattern}
                       fillOpacity={bin.count ? bin.opacity : '1'}
                       onMouseMove={e =>
                         handleMouseMove(e, { x: bin.x, y: bin.y, data })

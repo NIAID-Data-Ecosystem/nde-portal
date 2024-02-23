@@ -124,14 +124,15 @@ export const CompatibilityBadge = () => {
                       flexDirection='column'
                       alignItems='center'
                     >
-                      <Box w='150px' h='100px'>
+                      {/* <Box w='100px' h='200px'> */}
+                      <Box w='300px' h='100px'>
                         <ParentSize>
                           {({ width, height }) => (
                             <BarChartHeatMap
                               width={width}
                               height={height}
                               data={source}
-                              isMonoChromatic={false}
+                              isMonoChromatic={true}
                             />
                           )}
                         </ParentSize>
