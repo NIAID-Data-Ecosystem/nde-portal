@@ -94,7 +94,7 @@ interface ToolTipData extends Bin {
   percent: string;
   theme: string;
 }
-const separation = 4;
+const separation = 14;
 const BarChartHeatMap = ({
   width,
   height,
@@ -148,14 +148,11 @@ const BarChartHeatMap = ({
   const yMax = height / 2 - margin.bottom - margin.top;
 
   const binWidth = xMax / NUM_BARS;
-  // const bucketSizeMax = Math.max(
-  //   max(REQUIRED_DATA, d => bins(d).length),
-  //   max(RECOMMENDED_DATA, d => bins(d).length),
-  // );
+
   const bucketSizeMax = 2;
   const binHeight = yMax / bucketSizeMax;
 
-  // const radius = min([binWidth, binHeight], d => d) / 8;
+  const radius = 2;
 
   // scales
   const xScale = useMemo(
@@ -166,8 +163,6 @@ const BarChartHeatMap = ({
       }),
     [NUM_BARS, xMax],
   );
-
-  console.log(xScale.domain(), xScale.range());
 
   const yScale = useMemo(
     () =>
@@ -238,6 +233,17 @@ const BarChartHeatMap = ({
         />
         <rect x={0} y={0} width={width} height={height} rx={14} fill={bg} />
         <Group left={margin.left} top={yMax - margin.top}>
+          <Box
+            as='text'
+            x={0}
+            y={yScale(0)}
+            dy={-0.75}
+            fontSize='10px'
+            style={{ fill: 'gray' }}
+          >
+            Required
+          </Box>
+
           <HeatmapRect
             data={RECOMMENDED_DATA}
             xScale={d => xScale(d) ?? 0}
@@ -249,8 +255,8 @@ const BarChartHeatMap = ({
                 : undefined
             }
             binWidth={binWidth}
-            binHeight={binHeight}
-            gap={1}
+            binHeight={binWidth}
+            gap={2}
           >
             {heatmap =>
               heatmap.map(heatmapBins => {
@@ -265,6 +271,8 @@ const BarChartHeatMap = ({
                       height={bin.height}
                       x={bin.x}
                       y={bin.y}
+                      rx={radius}
+                      ry={radius}
                       strokeWidth={2}
                       fill={bin.count ? bin.color : pattern}
                       fillOpacity={bin.count ? bin.opacity : '1'}
@@ -286,6 +294,17 @@ const BarChartHeatMap = ({
           top={yMax - margin.top - binHeight - separation}
           left={margin.left}
         >
+          <Box
+            as='text'
+            x={0}
+            y={yScale(0)}
+            dy={-0.75}
+            fontSize='10px'
+            style={{ fill: 'gray' }}
+          >
+            Fundamental
+          </Box>
+
           <HeatmapRect
             data={REQUIRED_DATA}
             xScale={d => xScale(d) ?? 0}
@@ -295,13 +314,12 @@ const BarChartHeatMap = ({
               isMonoChromatic ? rectColorScale(REQUIRED_DATA) : undefined
             }
             binWidth={binWidth}
-            binHeight={binHeight}
-            gap={1}
+            binHeight={binWidth}
+            gap={2}
           >
             {heatmap =>
               heatmap.map(heatmapBins => {
                 return heatmapBins.map(bin => {
-                  console.log(bin.width);
                   const data = bin.bin as Bin;
                   const pattern = 'url(#primary-lines)';
                   return (
@@ -312,8 +330,8 @@ const BarChartHeatMap = ({
                       height={bin.height}
                       x={bin.x}
                       y={bin.y}
-                      // rx={radius}
-                      // ry={radius}
+                      rx={radius}
+                      ry={radius}
                       strokeWidth={2}
                       fill={bin.count ? bin.color : pattern}
                       fillOpacity={bin.count ? bin.opacity : '1'}
