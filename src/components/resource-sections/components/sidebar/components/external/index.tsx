@@ -3,7 +3,6 @@ import { FormattedResource } from 'src/utils/api/types';
 import {
   Box,
   Divider,
-  Flex,
   Heading,
   HeadingProps,
   Skeleton,
@@ -14,6 +13,8 @@ import { DataUsage } from './components/usage';
 import { License } from './components/license';
 import { AssociatedDocumentation } from './components/associated-documentation';
 import { AccessibleForFree, ConditionsOfAccess } from 'src/components/badges';
+import { HasDownload } from 'src/components/badges/components/HasDownload';
+import { HasAPI } from 'src/components/badges/components/HasAPI';
 
 export const External = ({
   data,
@@ -35,18 +36,26 @@ export const External = ({
         {(data?.isAccessibleForFree === true ||
           data?.isAccessibleForFree === false ||
           data?.conditionsOfAccess) && (
-          <Flex>
+          <Stack flexWrap='wrap' flexDirection='row'>
             <AccessibleForFree
               isAccessibleForFree={data?.isAccessibleForFree}
               type={data?.['@type']}
-              mx={1}
             />
             <ConditionsOfAccess
               type={data?.['@type']}
               conditionsOfAccess={data?.conditionsOfAccess}
-              mx={1}
             />
-          </Flex>
+
+            {data?.hasAPI !== undefined && data?.hasAPI !== null && (
+              <HasAPI type={data?.['@type']} hasAPI={data?.hasAPI} />
+            )}
+            {data?.hasDownload && (
+              <HasDownload
+                type={data?.['@type']}
+                hasDownload={data?.hasDownload}
+              />
+            )}
+          </Stack>
         )}
         <DataAccess
           isLoading={isLoading}

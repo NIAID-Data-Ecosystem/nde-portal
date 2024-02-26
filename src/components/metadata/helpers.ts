@@ -229,8 +229,12 @@ const createHealthConditionContent = (
                 : healthCondition.name,
             },
             ontologyProps: {
-              ['aria-label']: 'See ontology information.',
+              ['aria-label']:
+                healthCondition?.inDefinedTermSet?.toLowerCase() === 'other'
+                  ? 'See term information in OLS.'
+                  : `See ${healthCondition?.inDefinedTermSet} ontology information.`,
               value: healthCondition?.url,
+              label: `${healthCondition?.inDefinedTermSet}`,
               inDefinedTermSet: healthCondition?.inDefinedTermSet,
             },
           };
@@ -319,6 +323,11 @@ const createInfectiousAgentContent = (
             ? pathogen.commonName.join(', ')
             : pathogen.commonName;
 
+          const ontologyLabel = `${pathogen?.inDefinedTermSet}${
+            pathogen?.inDefinedTermSet?.toLowerCase() === 'uniprot'
+              ? ' Taxon'
+              : ''
+          }`;
           return {
             key: uniqueId(`${property}-${id}-${idx}`),
             name,
@@ -331,9 +340,10 @@ const createInfectiousAgentContent = (
                 : pathogen.name,
             },
             ontologyProps: {
-              ['aria-label']: 'See ontology information.',
-              value: pathogen?.url,
+              ['aria-label']: `See ${pathogen?.inDefinedTermSet} taxonomy information.`,
               inDefinedTermSet: pathogen?.inDefinedTermSet,
+              label: ontologyLabel,
+              value: pathogen?.url,
             },
           };
         })
@@ -362,6 +372,12 @@ const createSpeciesContent = (
             ? species.commonName.join(', ')
             : species.commonName;
 
+          const ontologyLabel = `${species?.inDefinedTermSet}${
+            species?.inDefinedTermSet?.toLowerCase() === 'uniprot'
+              ? ' Taxon'
+              : ''
+          }`;
+
           return {
             key: uniqueId(`${property}-${id}-${idx}`),
             name,
@@ -374,9 +390,10 @@ const createSpeciesContent = (
                 : species.name,
             },
             ontologyProps: {
-              ['aria-label']: 'See ontology information.',
-              value: species?.url,
+              ['aria-label']: `See ${species?.inDefinedTermSet} taxonomy information.`,
+              label: ontologyLabel,
               inDefinedTermSet: species?.inDefinedTermSet,
+              value: species?.url,
             },
           };
         })

@@ -152,6 +152,7 @@ export const NewsCarousel = ({
                       bg='status.info'
                       size='xs'
                       fontSize='12px'
+                      mx={1}
                     >
                       Event
                     </Badge>
