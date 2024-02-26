@@ -10,8 +10,6 @@ import {
 } from '@chakra-ui/react';
 import { NewsOrEventsObject } from 'src/pages/news';
 import ReactMarkdown from 'react-markdown';
-import rehypeRaw from 'rehype-raw';
-import remarkGfm from 'remark-gfm';
 import { useMDXComponents } from 'mdx-components';
 import { formatDate } from 'src/utils/api/helpers';
 
@@ -69,11 +67,7 @@ const SectionCard = ({ attributes }: NewsOrEventsObject) => {
           )}
           <CardBody p={0}>
             {/* useful for client-side fetch mdx handling */}
-            <ReactMarkdown
-              rehypePlugins={[rehypeRaw, remarkGfm]}
-              linkTarget='_blank'
-              components={MDXComponents}
-            >
+            <ReactMarkdown linkTarget='_blank' components={MDXComponents}>
               {`${attributes.description}`}
             </ReactMarkdown>
           </CardBody>
