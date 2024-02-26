@@ -98,6 +98,17 @@ export const NewsCarousel = ({
 
       <Carousel>
         {newsAndEvents.slice(0, 5).map((news, idx) => {
+          const image = news.attributes?.image?.data
+            ? Array.isArray(news.attributes.image.data)
+              ? `${process.env.NEXT_PUBLIC_STRAPI_API_URL}${news.attributes.image.data[0].attributes.url}`
+              : `${process.env.NEXT_PUBLIC_STRAPI_API_URL}${news.attributes.image.data.attributes.url}`
+            : '/assets/news-thumbnail.png';
+
+          const image_alt_text = news.attributes?.image?.data
+            ? Array.isArray(news.attributes.image.data)
+              ? `${news.attributes.image.data[0].attributes.alternativeText}`
+              : `${news.attributes.image.data.attributes.alternativeText}`
+            : 'News Thumbnail Image';
           return (
             <Card key={news.id + idx} overflow='hidden' flex={1}>
               <Flex
@@ -117,22 +128,15 @@ export const NewsCarousel = ({
                   alignItems='flex-start'
                   justifyContent='center'
                 >
-                  <Image
-                    objectFit='contain'
-                    w='100%'
-                    maxHeight='100%'
-                    src={
-                      news.attributes?.image?.data
-                        ? `${process.env.NEXT_PUBLIC_STRAPI_API_URL}${news.attributes.image.data[0].attributes.url}`
-                        : `/assets/news-thumbnail.png`
-                    }
-                    alt={
-                      news.attributes?.image?.data
-                        ? news.attributes.image.data[0].attributes
-                            .alternativeText
-                        : 'Generic image'
-                    }
-                  />
+                  {image && (
+                    <Image
+                      objectFit='contain'
+                      w='100%'
+                      maxHeight='100%'
+                      src={image}
+                      alt={image_alt_text}
+                    />
+                  )}
                 </Flex>
               </Flex>
 

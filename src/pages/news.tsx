@@ -41,7 +41,10 @@ export interface NewsOrEventsObject {
     description: string | null;
     shortDescription: string | null;
     image: {
-      data: null | { attributes: { url: string; alternativeText: string } }[];
+      data:
+        | null
+        | { attributes: { url: string; alternativeText: string } }
+        | { attributes: { url: string; alternativeText: string } }[];
     };
     eventDate?: string;
     slug: string;
@@ -526,6 +529,9 @@ export const fetchEvents = async (
           publicationState: isProd ? 'live' : 'preview',
           populate: {
             fields: ['*'],
+            image: {
+              fields: ['url', 'alternativeText'],
+            },
           },
           sort: { publishedAt: 'desc', updatedAt: 'desc' },
           paginate: { page: 1, pageSize: 100 },
