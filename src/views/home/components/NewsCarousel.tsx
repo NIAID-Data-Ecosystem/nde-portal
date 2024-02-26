@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { useQuery } from 'react-query';
 import React, { useState } from 'react';
-import { NewsOrEventsObject } from 'src/pages/news';
+import { NewsOrEventsObject, fetchEvents } from 'src/pages/news';
 import { formatDate } from 'src/utils/api/helpers';
 import { FaAngleRight } from 'react-icons/fa6';
 import {
@@ -14,6 +14,7 @@ import {
   Text,
   Card,
   CardBody,
+  Badge,
 } from '@chakra-ui/react';
 import { Carousel } from 'src/components/carousel';
 import NextLink from 'next/link';
@@ -21,27 +22,60 @@ import { Link } from 'src/components/link';
 
 interface NewsCarouselProps {
   news: NewsOrEventsObject[];
+  events: NewsOrEventsObject[];
 }
 
-export const NewsCarousel = ({ news: initialData }: NewsCarouselProps) => {
-  const [news, setNews] = useState(initialData);
-
+export const NewsCarousel = ({
+  news: initialNews,
+  events: initialEvents,
+}: NewsCarouselProps) => {
+  const [newsAndEvents, setNewsAndEvents] = useState([
+    ...initialNews,
+    ...initialEvents,
+  ]);
   useQuery<
     {
       news: NewsOrEventsObject[];
+      events: NewsOrEventsObject[];
     },
     any,
-    { news: NewsOrEventsObject[] }
-  >(['news'], () => fetchNews({ paginate: { page: 1, pageSize: 5 } }), {
-    onSuccess(data) {
-      if (!data || !data.news) {
-        return [];
-      }
-      setNews(data.news);
-    },
-  });
+    { news: NewsOrEventsObject[]; events: NewsOrEventsObject[] }
+  >(
+    ['news', 'events'],
+    async () => {
+      const newsData = await fetchNews({ paginate: { page: 1, pageSize: 5 } });
+      const events = await fetchEvents({ paginate: { page: 1, pageSize: 100 } })
+        .then(res => ({ data: res.events, error: null }))
+        .catch(err => {
+          return {
+            data: [],
+            error: {
+              message: `${err.response.status} : ${err.response.statusText}`,
+              status: err.response.status,
+            },
+          };
+        });
 
-  return news.length > 0 ? (
+      return { news: newsData.news, events: events.data };
+    },
+    {
+      onSuccess(data) {
+        if (!data || !(data.news || data.events)) {
+          return [];
+        }
+        const newsAndEvents = [...data.news, ...data.events].sort((a, b) => {
+          // Use publishedAt if available, otherwise fallback to updatedAt
+          let dateA = a.attributes.publishedAt || a.attributes.updatedAt;
+          let dateB = b.attributes.publishedAt || b.attributes.updatedAt;
+
+          return Number(new Date(dateB)) - Number(new Date(dateA));
+        });
+
+        setNewsAndEvents(newsAndEvents);
+      },
+    },
+  );
+  return newsAndEvents.length > 0 ? (
     <Box
       mt={{ base: 8, sm: 20 }}
       p={{ base: 0, sm: 6 }}
@@ -63,9 +97,9 @@ export const NewsCarousel = ({ news: initialData }: NewsCarouselProps) => {
       </Heading>
 
       <Carousel>
-        {news.slice(0, 5).map(news => {
+        {newsAndEvents.slice(0, 5).map((news, idx) => {
           return (
-            <Card key={news.id} overflow='hidden'>
+            <Card key={news.id + idx} overflow='hidden' flex={1}>
               <Flex
                 w='100%'
                 p={0}
@@ -90,7 +124,7 @@ export const NewsCarousel = ({ news: initialData }: NewsCarouselProps) => {
                     src={
                       news.attributes?.image?.data
                         ? `${process.env.NEXT_PUBLIC_STRAPI_API_URL}${news.attributes.image.data[0].attributes.url}`
-                        : `/assets/home-bg.webp`
+                        : `/assets/news-thumbnail.png`
                     }
                     alt={
                       news.attributes?.image?.data
@@ -111,6 +145,17 @@ export const NewsCarousel = ({ news: initialData }: NewsCarouselProps) => {
                   size='h5'
                 >
                   {news.attributes.name}
+                  {news.attributes.eventDate && (
+                    <Badge
+                      colorScheme='primary'
+                      variant='solid'
+                      bg='status.info'
+                      size='xs'
+                      fontSize='12px'
+                    >
+                      Event
+                    </Badge>
+                  )}
                 </Heading>
                 <CardBody p={0}>
                   {

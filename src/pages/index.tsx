@@ -40,7 +40,7 @@ import { AdvancedSearchOpen } from 'src/components/advanced-search/components/bu
 import { FaRegEnvelope, FaGithub, FaAngleRight } from 'react-icons/fa6';
 import { Repository, useRepoData } from 'src/hooks/api/useRepoData';
 import { queryFilterObject2String } from 'src/components/filters/helpers';
-import { NewsOrEventsObject } from './news';
+import { NewsOrEventsObject, fetchEvents } from './news';
 import {
   NewsCarousel,
   fetchNews,
@@ -309,6 +309,7 @@ export const RepositoryTabs: React.FC<{
 const Home: NextPage<{
   data: {
     news: NewsOrEventsObject[];
+    events: NewsOrEventsObject[];
   };
   error?: { message: string };
 }> = props => {
@@ -489,7 +490,10 @@ const Home: NextPage<{
               </ButtonGroup>
               {/* NEWS */}
               {!props?.error?.message && props.data?.news && (
-                <NewsCarousel news={props.data.news} />
+                <NewsCarousel
+                  news={props.data.news}
+                  events={props.data.events}
+                />
               )}
             </Box>
           </PageContent>
@@ -502,7 +506,20 @@ const Home: NextPage<{
 export async function getStaticProps() {
   try {
     const { news } = await fetchNews({ paginate: { page: 1, pageSize: 5 } });
-    return { props: { data: { news } } };
+
+    const events = await fetchEvents({ paginate: { page: 1, pageSize: 100 } })
+      .then(res => ({ data: res.events, error: null }))
+      .catch(err => {
+        return {
+          data: [],
+          error: {
+            message: `${err.response.status} : ${err.response.statusText}`,
+            status: err.response.status,
+          },
+        };
+      });
+
+    return { props: { data: { news, events: events.data } } };
   } catch (err: any) {
     return {
       props: {

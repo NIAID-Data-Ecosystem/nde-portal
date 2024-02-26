@@ -357,58 +357,6 @@ const News: NextPage<NewsProps> = props => {
                 </SectionList>
               </Section>
 
-              {/* Webinars */}
-              {/* [TO DO]: add webinarsto strapi cms */}
-              {/* {webinars.data.length > 0 && (
-                <Section id='webinars' title='Webinar Recordings'>
-                  <SectionList
-                    id='webinars'
-                    numItems={webinars.data.length}
-                    sections={sections}
-                    setSections={setSections}
-                  >
-                    {!webinars.data.length ? (
-                      <Empty
-                        message='No webinar recordings to display'
-                        color='niaid.placeholder'
-                        headingProps={{ size: 'sm' }}
-                        iconProps={{ color: 'niaid.placeholder', opacity: 0.7 }}
-                      />
-                    ) : (
-                      <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
-                        {webinars.data.map((webinar: NewsOrEventsObject) => {
-                          return (
-                            <Card key={webinar.id}>
-                              <Box w='100%' height='250px' bg='gray.100'></Box>
-                              <CardBody flexDirection='row' p={2}>
-                                {webinar.attributes.publishedAt && (
-                                  <Text
-                                    m={1}
-                                    mr={2}
-                                    fontWeight='medium'
-                                    fontSize='sm'
-                                    whiteSpace='nowrap'
-                                    color='gray.600'
-                                  >
-                                    {formatDate(webinar.attributes.publishedAt)}
-                                  </Text>
-                                )}
-                                <Box m={2}>
-                                  <Heading as='h3' size='md'>
-                                    Title
-                                  </Heading>
-                                  <Text>Description</Text>
-                                </Box>
-                              </CardBody>
-                            </Card>
-                          );
-                        })}
-                      </SimpleGrid>
-                    )}
-                  </SectionList>
-                </Section>
-              )} */}
-
               {/* Additional Resources */}
               <Section id='resources' title='Additional Resources'>
                 <Stack
@@ -562,7 +510,7 @@ interface QueryParams {
   sort?: string;
   paginate?: { page?: number; pageSize?: number };
 }
-const fetchEvents = async (
+export const fetchEvents = async (
   params: QueryParams,
 ): Promise<{
   events: NewsOrEventsObject[];

@@ -41,7 +41,9 @@ const SectionCard = ({ attributes }: NewsOrEventsObject) => {
       <Flex p={2} flexWrap={['wrap', 'nowrap']}>
         {(attributes.publishedAt || attributes.updatedAt) && (
           <Text
-            p={[2, 4]}
+            px={[2, 4]}
+            pb={[2, 4]}
+            pt={1.5}
             fontWeight='medium'
             fontSize='sm'
             whiteSpace='nowrap'
@@ -51,7 +53,7 @@ const SectionCard = ({ attributes }: NewsOrEventsObject) => {
           </Text>
         )}
         <Box p={2}>
-          <Heading as='h3' fontWeight='semibold'>
+          <Heading as='h3' fontWeight='semibold' fontSize='xl'>
             {attributes.name}
           </Heading>
           {attributes.subtitle && (
