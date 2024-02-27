@@ -4,6 +4,7 @@ import HeatMap from './components/heatmap';
 import { Box, Flex, Stack, Text } from '@chakra-ui/react';
 import { ScrollContainer } from '../scroll-container';
 import BarChartHeatMap from './components/barchart-heatmap';
+import { ArcSegments } from './components/arc-segments';
 
 export const CompatibilityBadge = () => {
   const { data } = useMetadata();
@@ -21,6 +22,49 @@ export const CompatibilityBadge = () => {
 
   return (
     <Stack spacing={6}>
+      <Box>
+        <Text color='gray.600' fontSize='sm'>
+          Arcs
+        </Text>
+        <ScrollContainer>
+          <Stack w='100%' flexDirection='row' spacing={4}>
+            <Flex>
+              {sources.length > 0 &&
+                sources.map((source, idx) => {
+                  return (
+                    <Flex
+                      key={source.sourceInfo.name}
+                      flexDirection='column'
+                      alignItems='center'
+                    >
+                      <Box w='150px' mb={1}>
+                        <ParentSize>
+                          {({ width, height }) => (
+                            <ArcSegments
+                              width={width}
+                              height={height}
+                              data={source}
+                            />
+                          )}
+                        </ParentSize>
+                      </Box>
+                      <Text
+                        color='gray.600'
+                        fontSize='xs'
+                        lineHeight='shorter'
+                        maxW='150px'
+                        px={2}
+                        textAlign='center'
+                      >
+                        {source.sourceInfo.name}
+                      </Text>
+                    </Flex>
+                  );
+                })}
+            </Flex>
+          </Stack>
+        </ScrollContainer>
+      </Box>
       <Box>
         <Text color='gray.600' fontSize='sm'>
           Monochrome GridPlot

@@ -6,9 +6,11 @@ import { MetadataSource } from 'src/utils/api/types';
 import { theme } from 'src/theme';
 import { PatternLines } from '@visx/pattern';
 import { useTooltip, useTooltipInPortal } from '@visx/tooltip';
-import { Box, Flex, Stack, Text } from '@chakra-ui/react';
+import { Box, Flex, Icon, Stack, Text } from '@chakra-ui/react';
 import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
 import { SchemaDefinitions } from 'scripts/generate-schema-definitions/types';
+import Tooltip from 'src/components/tooltip';
+import { FaInfo } from 'react-icons/fa6';
 
 const schema = SCHEMA_DEFINITIONS as SchemaDefinitions;
 
@@ -23,8 +25,8 @@ interface Bins {
   bin: number;
   bins: Bin[];
 }
-const primary1 = theme.colors.primary[100];
-const primary2 = theme.colors.primary[600];
+const primary1 = theme.colors.pink[100];
+const primary2 = theme.colors.pink[600];
 const secondary1 = theme.colors.secondary[100];
 const secondary2 = theme.colors.secondary[600];
 const bg = '#fff';
@@ -94,7 +96,7 @@ interface ToolTipData extends Bin {
   percent: string;
   theme: string;
 }
-const separation = 14;
+const separation = 16;
 const BarChartHeatMap = ({
   width,
   height,
@@ -117,20 +119,21 @@ const BarChartHeatMap = ({
     // when tooltip containers are scrolled, this will correctly update the Tooltip position
     scroll: true,
   });
-
   // data
   const required = Object.entries(
     data?.sourceInfo?.metadata_completeness?.required_fields || {},
   )
     .map(([field, count]) => ({ field, count, type: 'required' }))
-    .sort((a, b) => a.count - b.count);
+    .sort((a, b) => {
+      return a.count - b.count;
+    });
 
   const recommended = Object.entries(
     data?.sourceInfo?.metadata_completeness?.recommended_fields || {},
   )
     .map(([field, count]) => ({ field, count, type: 'recommended' }))
     .sort((a, b) => a.count - b.count);
-  // Fields sorted alphabetically
+
   const NUM_BARS = 21;
   const ALL_DATA = getBinsData([...required, ...recommended], NUM_BARS);
 
@@ -180,7 +183,7 @@ const BarChartHeatMap = ({
       { x, y, data }: { x: number; y: number; data: Bin },
     ) => {
       if (tooltipTimeout) clearTimeout(tooltipTimeout);
-      const theme = data.type === 'required' ? 'primary' : 'secondary';
+      const theme = data.type === 'required' ? 'pink' : 'secondary';
       showTooltip({
         tooltipLeft: x,
         tooltipTop: y,
@@ -216,10 +219,10 @@ const BarChartHeatMap = ({
     >
       <svg ref={containerRef} width={width} height={height}>
         <PatternLines
-          id='primary-lines'
+          id='fundamental-lines'
           height={5}
           width={5}
-          stroke={theme.colors.primary[400]}
+          stroke={theme.colors.pink[400]}
           strokeWidth={1}
           orientation={['diagonal']}
         />
@@ -233,16 +236,30 @@ const BarChartHeatMap = ({
         />
         <rect x={0} y={0} width={width} height={height} rx={14} fill={bg} />
         <Group left={margin.left} top={yMax - margin.top}>
-          <Box
-            as='text'
-            x={0}
-            y={yScale(0)}
-            dy={-0.75}
-            fontSize='10px'
-            style={{ fill: 'gray' }}
+          <Tooltip
+            label='Average coverage recommended fields.'
+            position='absolute'
+            left={0}
+            top={0}
           >
-            Required
-          </Box>
+            <Box
+              as='text'
+              x={0}
+              y={yScale(0)}
+              dy={-0.75}
+              fontSize='11px'
+              style={{ fill: 'gray' }}
+            >
+              Recommended{' | '}{' '}
+              {Math.round(
+                (data.sourceInfo.metadata_completeness
+                  .sum_recommended_coverage /
+                  recommended.length) *
+                  100,
+              )}
+              %
+            </Box>
+          </Tooltip>
 
           <HeatmapRect
             data={RECOMMENDED_DATA}
@@ -294,16 +311,29 @@ const BarChartHeatMap = ({
           top={yMax - margin.top - binHeight - separation}
           left={margin.left}
         >
-          <Box
-            as='text'
-            x={0}
-            y={yScale(0)}
-            dy={-0.75}
-            fontSize='10px'
-            style={{ fill: 'gray' }}
+          <Tooltip
+            label='Average coverage  fundamental fields.'
+            position='absolute'
+            left={0}
+            top={0}
           >
-            Fundamental
-          </Box>
+            <Box
+              as='text'
+              x={0}
+              y={yScale(0)}
+              dy={-0.75}
+              fontSize='11px'
+              style={{ fill: 'gray' }}
+            >
+              Fundamental{' | '}
+              {Math.round(
+                (data.sourceInfo.metadata_completeness.sum_required_coverage /
+                  required.length) *
+                  100,
+              )}
+              %
+            </Box>
+          </Tooltip>
 
           <HeatmapRect
             data={REQUIRED_DATA}
@@ -321,7 +351,7 @@ const BarChartHeatMap = ({
               heatmap.map(heatmapBins => {
                 return heatmapBins.map(bin => {
                   const data = bin.bin as Bin;
-                  const pattern = 'url(#primary-lines)';
+                  const pattern = 'url(#fundamental-lines)';
                   return (
                     <rect
                       key={`heatmap-rect-${bin.row}-${bin.column}`}
@@ -356,8 +386,8 @@ const BarChartHeatMap = ({
         tooltipTop != null && (
           <TooltipInPortal
             key={Math.random()}
-            left={tooltipLeft + 10}
-            top={tooltipTop + 10}
+            left={tooltipLeft - 10}
+            top={tooltipTop + 30}
           >
             <Box borderRadius='semi' minW='100px' maxW='200px'>
               <Text
@@ -374,8 +404,8 @@ const BarChartHeatMap = ({
                 <Text>
                   <strong>{schema[tooltipData.field].name}</strong> is{' '}
                   <Text as='span' bg={`${tooltipData.theme}.100`}>
-                    {tooltipData.percent}{' '}
-                  </Text>
+                    {tooltipData.percent}
+                  </Text>{' '}
                   compatible.
                 </Text>
               </Stack>

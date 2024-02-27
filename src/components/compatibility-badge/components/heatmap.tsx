@@ -23,8 +23,8 @@ interface Bins {
   bin: number;
   bins: Bin[];
 }
-const primary1 = theme.colors.primary[100];
-const primary2 = theme.colors.primary[500];
+const primary1 = theme.colors.pink[100];
+const primary2 = theme.colors.pink[500];
 const secondary1 = theme.colors.secondary[100];
 const secondary2 = theme.colors.secondary[500];
 const bg = '#fff';
@@ -169,7 +169,7 @@ const HeatMap = ({
       { x, y, data }: { x: number; y: number; data: Bin },
     ) => {
       if (tooltipTimeout) clearTimeout(tooltipTimeout);
-      const theme = data.type === 'required' ? 'primary' : 'secondary';
+      const theme = data.type === 'required' ? 'pink' : 'secondary';
       showTooltip({
         tooltipLeft: x,
         tooltipTop: y,
@@ -177,7 +177,7 @@ const HeatMap = ({
           ...data,
           percent: `${Math.round(data.count * 100)}%`,
           type: data.type === 'required' ? 'Fundamental' : 'Recommended',
-          theme: isMonoChromatic ? 'primary' : theme,
+          theme: isMonoChromatic ? 'pink' : theme,
         },
       });
     },
@@ -205,15 +205,15 @@ const HeatMap = ({
     >
       <svg ref={containerRef} width={width} height={height}>
         <PatternLines
-          id='primary-lines'
+          id='fundamental-lines'
           height={5}
           width={5}
-          stroke={theme.colors.primary[400]}
+          stroke={theme.colors.pink[400]}
           strokeWidth={1}
           orientation={['diagonal']}
         />
         <PatternLines
-          id='secondary-lines'
+          id='recommended-lines'
           height={5}
           width={5}
           stroke={theme.colors.secondary[300]}
@@ -241,10 +241,10 @@ const HeatMap = ({
                     : rectColorScale(BIN_DATA, data.type)(data.count);
 
                   const pattern = isMonoChromatic
-                    ? 'url(#primary-lines)'
+                    ? 'url(#fundamental-lines)'
                     : data.type === 'required'
-                    ? 'url(#primary-lines)'
-                    : 'url(#secondary-lines)';
+                    ? 'url(#fundamental-lines)'
+                    : 'url(#recommended-lines)';
                   return (
                     <rect
                       key={`heatmap-rect-${bin.row}-${bin.column}`}
@@ -297,8 +297,8 @@ const HeatMap = ({
                 <Text>
                   <strong>{schema[tooltipData.field].name}</strong> is{' '}
                   <Text as='span' bg={`${tooltipData.theme}.100`}>
-                    {tooltipData.percent}{' '}
-                  </Text>
+                    {tooltipData.percent}
+                  </Text>{' '}
                   compatible.
                 </Text>
               </Stack>
