@@ -11,7 +11,7 @@ import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
 import { SchemaDefinitions } from 'scripts/generate-schema-definitions/types';
 import { Arc } from '@visx/shape';
 import Tooltip from 'src/components/tooltip';
-import { f } from 'msw/lib/glossary-de6278a9';
+
 const schema = SCHEMA_DEFINITIONS as SchemaDefinitions;
 
 export type ArcSegmentsProps = {
@@ -34,7 +34,7 @@ const arcsData = segments.map((_, idx) => {
   return { startAngle, endAngle };
 });
 
-const defaultMargin = { top: 10, left: 10, right: 10, bottom: 10 };
+const defaultMargin = { top: 10, left: 10, right: 10, bottom: 15 };
 
 export const ArcSegments = ({
   width,
@@ -199,8 +199,8 @@ export const ArcSegments = ({
               endAngle={arcsData[getBackgroundArcIndex()].endAngle}
               innerRadius={(SIZE_WIDTH - 0 * (SIZE_WIDTH / NUM_RINGS)) / 2}
               outerRadius={(SIZE_WIDTH - 3 * (SIZE_WIDTH / NUM_RINGS)) / 2}
-              fill={theme.colors.orange[50]}
               onMouseLeave={handleMouseLeave}
+              fill={theme.colors.orange[50]}
             />
           )}
           {rings.map((ring, idx) => {
@@ -364,7 +364,7 @@ const Ring = ({
                     }
                     position='absolute'
                     left={path.centroid(path)[0] + 10}
-                    top={path.centroid(path)[1] + 30}
+                    top={path.centroid(path)[1] - 60}
                   >
                     <Box
                       id={field.type}
