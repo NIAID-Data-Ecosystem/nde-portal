@@ -142,7 +142,7 @@ const MetadataAccordion: React.FC<MetadataAccordionProps> = ({ data }) => {
               <AccordionPanel w='100%' px={paddingCard} my={2} py={4}>
                 {isExpanded ? (
                   <SimpleGrid
-                    minChildWidth='250px'
+                    minChildWidth={{ base: 'unset', sm: '280px', xl: '300px' }}
                     spacingX={20}
                     spacingY={10}
                     px={4}
