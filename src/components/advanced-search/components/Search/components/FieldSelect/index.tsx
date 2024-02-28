@@ -33,15 +33,10 @@ import ADVANCED_SEARCH from 'configs/advanced-search-fields.json';
  */
 
 // Minimum amount of records a field must have to be included in field select.
-const MIN_FIELD_RECORDS = 100;
+const MIN_FIELD_RECORDS = 5;
 // Filter out fields we want to remove from field select.
 export const filterFields = (field: SchemaDefinition) => {
   return (
-    !field.property.toLowerCase().includes('haspart') &&
-    !field.property.toLowerCase().includes('email') &&
-    !field.property.toLowerCase().includes('url') &&
-    !field.property.toLowerCase().includes('mainEntityOfPage') &&
-    !(field.property.includes('@') && field.property !== '@type') &&
     field.type !== 'object' &&
     field.count >= MIN_FIELD_RECORDS &&
     !!ADVANCED_SEARCH.fields.includes(field.property)
@@ -365,7 +360,6 @@ export const FieldSelectWithContext = () => {
     },
     ...Object.values(schema).filter(item => !!item.isAdvancedSearchField),
   ] as SchemaDefinition[];
-
   return (
     <FieldSelect
       selectedField={queryValue.field}

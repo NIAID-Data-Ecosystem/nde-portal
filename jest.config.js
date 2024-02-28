@@ -15,6 +15,11 @@ const customJestConfig = {
     '<rootDir>/node_modules/',
     '<rootDir>/src/__tests__/mocks/',
   ],
+  moduleNameMapper: {
+    'react-markdown':
+      '<rootDir>/node_modules/react-markdown/react-markdown.min.js',
+  },
+  transformIgnorePatterns: ['node_modules/(?!react-markdown/)'],
   globals: {
     window: {},
   },

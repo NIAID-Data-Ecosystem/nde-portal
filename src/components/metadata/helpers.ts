@@ -229,7 +229,10 @@ const createHealthConditionContent = (
                 : healthCondition.name,
             },
             ontologyProps: {
-              ['aria-label']: `See ${healthCondition?.inDefinedTermSet} ontology information.`,
+              ['aria-label']:
+                healthCondition?.inDefinedTermSet?.toLowerCase() === 'other'
+                  ? 'See term information in OLS.'
+                  : `See ${healthCondition?.inDefinedTermSet} ontology information.`,
               value: healthCondition?.url,
               label: `${healthCondition?.inDefinedTermSet}`,
               inDefinedTermSet: healthCondition?.inDefinedTermSet,
@@ -320,6 +323,11 @@ const createInfectiousAgentContent = (
             ? pathogen.commonName.join(', ')
             : pathogen.commonName;
 
+          const ontologyLabel = `${pathogen?.inDefinedTermSet}${
+            pathogen?.inDefinedTermSet?.toLowerCase() === 'uniprot'
+              ? ' Taxon'
+              : ''
+          }`;
           return {
             key: uniqueId(`${property}-${id}-${idx}`),
             name,
@@ -367,6 +375,12 @@ const createSpeciesContent = (
           const name = Array.isArray(species.commonName)
             ? species.commonName.join(', ')
             : species.commonName;
+
+          const ontologyLabel = `${species?.inDefinedTermSet}${
+            species?.inDefinedTermSet?.toLowerCase() === 'uniprot'
+              ? ' Taxon'
+              : ''
+          }`;
 
           return {
             key: uniqueId(`${property}-${id}-${idx}`),
