@@ -94,7 +94,7 @@ export const ArcSegmentsTwo = ({
   // The width of each ring is calculated based on the width of the svg and the number of rings
   const SIZE_WIDTH = width - margin.left - margin.right; // add margins here
 
-  const SIZE_INNER = SIZE_WIDTH / 4;
+  const SIZE_INNER = SIZE_WIDTH / 2;
   const RING_WIDTH = useMemo(
     () => (SIZE_WIDTH - SIZE_INNER) / NUM_RINGS,
     [SIZE_INNER, SIZE_WIDTH],
@@ -209,7 +209,8 @@ export const ArcSegmentsTwo = ({
           {FIELD_TYPES.map((typeDetails, idx) => {
             const { type } = FIELD_TYPES[idx];
             const outerRadius = (SIZE_WIDTH - idx * RING_WIDTH) / 2;
-            const RINGS_SPACING = type === 'recommended' ? 0.75 : 0.5;
+            const RINGS_SPACING =
+              hoveredType && type === 'recommended' ? 0.75 : 0.5;
 
             return (
               <g key={type}>
@@ -240,6 +241,7 @@ export const ArcSegmentsTwo = ({
                   outerRadius={outerRadius}
                   showDetails={showDetails}
                   setHoveredType={setHoveredType}
+                  totalPercentage={getCoveragePercentage(hoveredType)}
                   {...typeDetails}
                 />
               </g>
@@ -272,7 +274,7 @@ export const ArcSegmentsTwo = ({
                 <Text>
                   <strong>{schema[tooltipData.field].name}</strong> is{' '}
                   <Text as='span' bg={`${tooltipData.colorScheme}.100`}>
-                    {tooltipData.value}
+                    {Math.round(tooltipData.value * 100)}%{' '}
                   </Text>{' '}
                   compatible.
                 </Text>
@@ -300,7 +302,7 @@ export const ArcSegmentsTwo = ({
           display='flex'
           flexDirection='column'
         >
-          <Text as='span'>
+          <Text as='span' color='inherit'>
             {getCoveragePercentage(hoveredType)}
             <Text as='span' fontSize='8px' color='inherit' position='absolute'>
               %
@@ -354,6 +356,7 @@ export const FieldsArc = ({
   label,
   outerRadius,
   showDetails,
+  totalPercentage,
   type,
 }: {
   colorScheme: string;
@@ -364,6 +367,7 @@ export const FieldsArc = ({
   outerRadius: number;
   setHoveredType: (type: FieldDatum['type']) => void;
   showDetails: boolean;
+  totalPercentage: number;
   type: FieldDatum['type'];
   showTooltip: (arg: any) => void;
   hideTooltip: () => void;
@@ -394,6 +398,20 @@ export const FieldsArc = ({
         className={'wheel-' + type}
         opacity={hoveredType !== null && hoveredType !== type ? 0.4 : 1}
       >
+        {!isHovered && (
+          <Arc
+            id={'bg-arc-' + label}
+            startAngle={nonEmptyArcData[0].startAngle}
+            endAngle={ARC_PI * (totalPercentage / 100)}
+            fill={theme.colors.gray[100]}
+            padAngle={ARCS_SPACING}
+            cornerRadius={4}
+            innerRadius={outerRadius}
+            outerRadius={0}
+            opacity={0.4}
+            pointerEvents='none'
+          />
+        )}
         {/* arc in background */}
         <Arc
           id={'total-bg-arc-' + label}
@@ -421,21 +439,26 @@ export const FieldsArc = ({
           opacity={showDetails || isHovered ? 0 : 1}
           pointerEvents='none'
         />
+
         {(showDetails || isHovered) && (
           <g>
             {/* arc fill */}
-            <Arc
-              id={'bg-arc-' + label}
-              startAngle={nonEmptyArcData[0].startAngle}
-              endAngle={nonEmptyArcData[nonEmptyArcData.length - 1].endAngle}
-              fill={theme.colors[colorScheme][100]}
-              padAngle={ARCS_SPACING}
-              cornerRadius={4}
-              innerRadius={outerRadius}
-              outerRadius={0}
-              opacity={0.4}
-              pointerEvents='none'
-            />
+            {isHovered && (
+              <Arc
+                id={'bg-arc-' + label}
+                startAngle={nonEmptyArcData[0].startAngle}
+                endAngle={ARC_PI * (totalPercentage / 100)}
+                fill={
+                  isHovered ? theme.colors[colorScheme][100] : 'transparent'
+                }
+                padAngle={ARCS_SPACING}
+                cornerRadius={4}
+                innerRadius={outerRadius}
+                outerRadius={0}
+                opacity={0.4}
+                pointerEvents='none'
+              />
+            )}
             {arcsData.map(({ data, startAngle, endAngle }) => {
               const fill =
                 data.value === 0

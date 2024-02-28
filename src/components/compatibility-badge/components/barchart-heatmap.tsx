@@ -237,7 +237,7 @@ const BarChartHeatMap = ({
         <rect x={0} y={0} width={width} height={height} rx={14} fill={bg} />
         <Group left={margin.left} top={yMax - margin.top}>
           <Tooltip
-            label='Average coverage recommended fields.'
+            label='Recommended fields coverage.'
             position='absolute'
             left={0}
             top={0}
@@ -312,7 +312,7 @@ const BarChartHeatMap = ({
           left={margin.left}
         >
           <Tooltip
-            label='Average coverage  fundamental fields.'
+            label='Fundemental fields coverage.'
             position='absolute'
             left={0}
             top={0}

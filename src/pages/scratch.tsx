@@ -7,8 +7,8 @@ const ScratchPad: NextPage = () => {
   return (
     <PageContainer
       hasNavigation
-      title='About'
-      metaDescription='About page.'
+      title='Scratch Pad'
+      metaDescription='Scratch Pad page.'
       px={0}
       py={0}
       disableSearchBar
@@ -19,7 +19,7 @@ const ScratchPad: NextPage = () => {
         alignItems='center'
         bg='#fff'
       >
-        <Box w='100%' maxW='1000px' mb={32}>
+        <Box w='100%' maxW='1600px' mb={32}>
           <CompatibilityBadge />
         </Box>
       </PageContent>

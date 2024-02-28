@@ -23,7 +23,8 @@ export type ArcSegmentsProps = {
 
 // number of pie segments.
 const NUM_SEGMENTS = 10;
-const ARC_STARTING_ANGLE = (2 * Math.PI) / 2 / NUM_SEGMENTS;
+const ARC_PI = (2 * Math.PI) / 2;
+const ARC_STARTING_ANGLE = ARC_PI / NUM_SEGMENTS;
 const RINGS_SPACING = 0.5;
 const ARCS_SPACING = 0.03;
 
@@ -196,11 +197,11 @@ export const ArcSegments = ({
           {!selectedType && (
             <Arc
               startAngle={arcsData[0].startAngle}
-              endAngle={arcsData[getBackgroundArcIndex()].endAngle}
+              endAngle={ARC_PI * (getCoveragePercentage(selectedType) / 100)}
               innerRadius={(SIZE_WIDTH - 0 * (SIZE_WIDTH / NUM_RINGS)) / 2}
               outerRadius={(SIZE_WIDTH - 3 * (SIZE_WIDTH / NUM_RINGS)) / 2}
               onMouseLeave={handleMouseLeave}
-              fill={theme.colors.orange[50]}
+              fill={theme.colors.gray[100]}
             />
           )}
           {rings.map((ring, idx) => {
@@ -228,7 +229,7 @@ export const ArcSegments = ({
         position='absolute'
         left={`${width / 2}px`}
         top={`${width / 2 - width / 2 / 4}px`}
-        transform='translate(-50%,0 )'
+        transform='translate(-55%,0 )'
         textAlign='center'
       >
         <Text
@@ -239,19 +240,21 @@ export const ArcSegments = ({
               ? selectedType === 'required'
                 ? 'pink.500'
                 : 'secondary.500'
-              : 'text.heading'
+              : 'gray.800'
           }
           fontSize='lg'
         >
           {getCoveragePercentage(selectedType)}
-          <Text as='span' fontSize='11px' mx={0.5} color='inherit'>
+          <Text as='span' fontSize='8px' color='inherit' position='absolute'>
             %
           </Text>
-          {selectedType && (
-            <Text lineHeight='shorter' fontSize='11px' mt={1} color='inherit'>
-              {selectedType === 'required' ? 'Fundamental' : 'Recommended'}
-            </Text>
-          )}
+          <Text lineHeight='shorter' fontSize='11px' mt={1} color='inherit'>
+            {selectedType
+              ? selectedType === 'required'
+                ? 'Fundamental'
+                : 'Recommended'
+              : 'Coverage'}
+          </Text>
         </Text>
       </Box>
     </Box>
