@@ -221,7 +221,7 @@ const Sections = ({
               <Box mt={4}>
                 <BasedOnTable
                   id='software-information-dependency-for'
-                  title='Dependesncy for'
+                  title='Dependency for'
                   caption='Datasets or tools that this dataset/tool is a dependency for.'
                   isLoading={isLoading}
                   items={data.isBasisFor}
