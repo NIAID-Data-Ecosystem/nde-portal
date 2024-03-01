@@ -86,16 +86,13 @@ export const Input = {
 
       return {
         field: {
-          boxShadow: 'low',
           borderRadius: 'semi',
           border: '.0625rem solid',
-          borderColor: 'transparent',
-          _hover: {
-            boxShadow: 'md',
-          },
+          borderColor: 'gray.200',
+          _hover: {},
           _focus: {
             borderColor,
-            boxShadow: `0 0 0 0.0625rem ${borderColor}, 0px 5px 5px -3px rgb(0 0 0 / 20%), 0px 8px 10px 1px rgb(0 0 0 / 14%), 0px 3px 14px 2px rgb(0 0 0 / 12%)`,
+            boxShadow: 'sm',
           },
         },
       };

@@ -104,10 +104,11 @@ interface APIDistribution {
   '@id'?: string | null;
   '@type'?: string;
   encodingFormat?: string | null;
+  contentSize?: number | null;
   contentUrl?: string | null;
-  dateCreated?: Date | string | null;
-  dateModified?: Date | string | null;
-  datePublished?: Date | string | null;
+  dateCreated?: string | null;
+  dateModified?: string | null;
+  datePublished?: string | null;
   description?: string | null;
   name?: string | null;
 }
@@ -124,6 +125,7 @@ export const formatDistribution = (
       ...data,
       encodingFormat: data.encodingFormat || null,
       contentUrl: data.contentUrl || null,
+      contentSize: data.contentSize || null,
       dateCreated: data.dateCreated || null,
       dateModified: data.dateModified || null,
       datePublished: data.datePublished || null,

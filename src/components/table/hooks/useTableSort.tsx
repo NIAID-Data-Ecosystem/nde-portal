@@ -5,26 +5,30 @@ interface DataObject {
   [key: string]: any;
 }
 
-export const useTableSort = (
+interface TableSortProps {
   /**
    * Table data
    */
-  data: DataObject[],
+  data: DataObject[];
   /**
    * Function to access the order value in data. Defaults to (v) => v. Must wrap in callback.
    */
-  accessor: (arg: any) => any = v => v,
-
+  accessor?: (arg: any) => any;
   /**
    * Initial order by value.
    */
-  orderByInitial?: string,
-
+  orderBy?: string;
   /**
    * Initial sort by boolean where Ascending[true] or descending[false]
    */
-  isSortAscending?: boolean,
-): any => {
+  isSortAscending?: boolean;
+}
+export const useTableSort = ({
+  data,
+  accessor = v => v,
+  orderBy: orderByInitial,
+  isSortAscending,
+}: TableSortProps): any => {
   const accessorFn = useCallback(accessor, [accessor]);
 
   const [orderBy, setOrderBy] = useState<string | null>(orderByInitial || null);
@@ -34,17 +38,20 @@ export const useTableSort = (
     if (!data) {
       return [];
     }
+
     const d = [...data].sort((a, b) => {
       if (!orderBy) {
-        return 1;
+        return 0; // Return 0 for no change in order when orderBy is not set
       }
-      const value_a = accessorFn(a[orderBy]);
-      const value_b = accessorFn(b[orderBy]);
+      // Access values and treat nulls as empty strings
+      let value_a = accessorFn(a[orderBy]);
+      let value_b = accessorFn(b[orderBy]);
 
-      if (typeof value_a !== 'string' || typeof value_b !== 'string') {
-        return 1;
-      }
+      // Treat null values as empty strings
+      value_a = value_a === null ? '' : value_a;
+      value_b = value_b === null ? '' : value_b;
 
+      // No need to check if values are strings, as we are treating them as strings by default
       if (sortByAsc) {
         return value_a.toLowerCase().localeCompare(value_b.toLowerCase());
       } else {

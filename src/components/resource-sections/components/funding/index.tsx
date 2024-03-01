@@ -26,7 +26,6 @@ import {
 } from 'src/components/table/components/cell';
 import { Row, RowWithDrawer } from 'src/components/table/components/row';
 import { TableContainer } from 'src/components/table/components/table-container';
-import { TableSortToggle } from 'src/components/table/components/sort-toggle';
 import { TableWrapper } from 'src/components/table/components/wrapper';
 import { TablePagination } from 'src/components/table/components/pagination';
 import { useTableSort } from 'src/components/table/hooks/useTableSort';
@@ -86,10 +85,10 @@ export const Funding: React.FC<FundingProps> = ({
     return v;
   }, []);
 
-  const [{ data, orderBy, sortBy }, updateSort] = useTableSort(
-    funding,
+  const [{ data, orderBy, sortBy }, updateSort] = useTableSort({
+    data: funding,
     accessor,
-  );
+  });
   // [size]: num of rows per page
   const [size, setSize] = useState(ROW_SIZES[0]);
 
@@ -135,18 +134,16 @@ export const Funding: React.FC<FundingProps> = ({
                       label={column.title}
                       isSelected={column.key === orderBy}
                       borderBottomColor={`${getMetadataTheme('funding')}.200`}
+                      isSortable={true}
+                      tableSortToggleProps={{
+                        isSelected: column.key === orderBy,
+                        sortBy,
+                        handleToggle: (sortByAsc: boolean) => {
+                          updateSort(column.key, sortByAsc);
+                        },
+                      }}
                       {...column.props}
-                    >
-                      {column.key && (
-                        <TableSortToggle
-                          isSelected={column.key === orderBy}
-                          sortBy={sortBy}
-                          handleToggle={(sortByAsc: boolean) => {
-                            updateSort(column.key, sortByAsc);
-                          }}
-                        />
-                      )}
-                    </Th>
+                    />
                   );
                 })}
               </Tr>
