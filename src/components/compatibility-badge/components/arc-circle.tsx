@@ -254,8 +254,8 @@ export const ArcCircle = ({
         tooltipTop != null && (
           <TooltipInPortal
             key={Math.random()}
-            left={tooltipLeft + 50}
-            top={tooltipTop - 30}
+            left={tooltipLeft + width / 2}
+            top={tooltipTop + width / 2}
           >
             <Box borderRadius='semi' minW='100px' maxW='200px'>
               <Text
@@ -308,19 +308,6 @@ export const ArcCircle = ({
               %
             </Text>
           </Text>
-          {/* <Text
-            as='span'
-            lineHeight='shorter'
-            fontSize='6px'
-            mt={1}
-            color='inherit'
-          >
-            {hoveredType
-              ? hoveredType === 'required'
-                ? 'Fundamental'
-                : 'Recommended'
-              : 'field coverage'}
-          </Text> */}
         </Text>
       </Box>
     </Box>

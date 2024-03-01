@@ -377,8 +377,10 @@ const Ring = ({
                       </Box>
                     }
                     position='absolute'
-                    left={path.centroid(path)[0] + 10}
-                    top={path.centroid(path)[1] - 60}
+                    top={0}
+                    left={0}
+                    // left={path.centroid(path)[0] + 10}
+                    // top={path.centroid(path)[1] + 60}
                   >
                     <Box
                       id={field.type}
@@ -394,7 +396,6 @@ const Ring = ({
                       onMouseMove={(e: React.MouseEvent) => {
                         handleMouseMove(e, field.type);
                       }}
-                      // onMouseLeave={handleMouseLeave}
                     />
                   </Tooltip>
                 </>

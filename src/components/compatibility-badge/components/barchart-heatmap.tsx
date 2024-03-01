@@ -294,10 +294,18 @@ const BarChartHeatMap = ({
                       fill={bin.count ? bin.color : pattern}
                       fillOpacity={bin.count ? bin.opacity : '1'}
                       onMouseMove={e =>
-                        handleMouseMove(e, { x: bin.x, y: bin.y, data })
+                        handleMouseMove(e, {
+                          x: bin.x,
+                          y: bin.y + bin.height * 2,
+                          data,
+                        })
                       }
                       onTouchMove={e =>
-                        handleMouseMove(e, { x: bin.x, y: bin.y, data })
+                        handleMouseMove(e, {
+                          x: bin.x,
+                          y: bin.y + bin.height * 2,
+                          data,
+                        })
                       }
                       onMouseLeave={handleMouseLeave}
                     />
@@ -366,10 +374,18 @@ const BarChartHeatMap = ({
                       fill={bin.count ? bin.color : pattern}
                       fillOpacity={bin.count ? bin.opacity : '1'}
                       onMouseMove={e =>
-                        handleMouseMove(e, { x: bin.x, y: bin.y, data })
+                        handleMouseMove(e, {
+                          x: bin.x,
+                          y: bin.y + bin.height,
+                          data,
+                        })
                       }
                       onTouchMove={e =>
-                        handleMouseMove(e, { x: bin.x, y: bin.y, data })
+                        handleMouseMove(e, {
+                          x: bin.x,
+                          y: bin.y + bin.height,
+                          data,
+                        })
                       }
                       onMouseLeave={handleMouseLeave}
                     />
@@ -387,7 +403,7 @@ const BarChartHeatMap = ({
           <TooltipInPortal
             key={Math.random()}
             left={tooltipLeft - 10}
-            top={tooltipTop + 30}
+            top={tooltipTop}
           >
             <Box borderRadius='semi' minW='100px' maxW='200px'>
               <Text

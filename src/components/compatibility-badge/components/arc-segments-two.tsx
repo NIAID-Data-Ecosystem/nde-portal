@@ -257,7 +257,7 @@ export const ArcSegmentsTwo = ({
           <TooltipInPortal
             key={Math.random()}
             left={0 + margin.left}
-            top={SIZE_WIDTH / 2 + margin.bottom}
+            top={width + 20}
           >
             <Box borderRadius='semi' minW='100px' maxW='200px'>
               <Text
