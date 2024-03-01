@@ -294,12 +294,13 @@ const HeatMap = ({
                   tooltipData.type.slice(1)}
               </Text>
               <Stack mt={2} spacing={2} fontSize='xs'>
-                <Text>
-                  <strong>{schema[tooltipData.field].name}</strong> is{' '}
+                <Text lineHeight='shorter'>
+                  Coverage of <strong>{schema[tooltipData.field].name}</strong>{' '}
+                  is{' '}
                   <Text as='span' bg={`${tooltipData.theme}.100`}>
                     {tooltipData.percent}
-                  </Text>{' '}
-                  compatible.
+                  </Text>
+                  .
                 </Text>
               </Stack>
             </Box>

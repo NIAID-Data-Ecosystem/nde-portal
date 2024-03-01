@@ -272,11 +272,12 @@ export const ArcSegmentsTwo = ({
               </Text>
               <Stack mt={2} spacing={2} fontSize='xs'>
                 <Text>
-                  <strong>{schema[tooltipData.field].name}</strong> is{' '}
+                  Coverage of <strong>{schema[tooltipData.field].name}</strong>{' '}
+                  is{' '}
                   <Text as='span' bg={`${tooltipData.colorScheme}.100`}>
-                    {Math.round(tooltipData.value * 100)}%{' '}
-                  </Text>{' '}
-                  compatible.
+                    {Math.round(tooltipData.value * 100)}%
+                  </Text>
+                  .
                 </Text>
               </Stack>
             </Box>
