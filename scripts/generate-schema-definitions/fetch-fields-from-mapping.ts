@@ -12,7 +12,6 @@ export const fetchFieldsFromMapping = async (): Promise<MappedFields[]> => {
     const response = await axios.get(
       `${process.env.NEXT_PUBLIC_API_URL}/metadata/fields`,
     );
-    console.log(process.env.NEXT_PUBLIC_API_URL);
     if (response.status !== 200) {
       throw new Error(
         'Failed to fetch fields: Server responded with a non-200 status code',
