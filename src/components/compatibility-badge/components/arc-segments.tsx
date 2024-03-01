@@ -243,12 +243,22 @@ export const ArcSegments = ({
               : 'gray.800'
           }
           fontSize='lg'
+          display='flex'
+          flexDirection='column'
         >
-          {getCoveragePercentage(selectedType)}
-          <Text as='span' fontSize='8px' color='inherit' position='absolute'>
-            %
+          <Text as='span'>
+            {getCoveragePercentage(selectedType)}
+            <Text as='span' fontSize='8px' color='inherit' position='absolute'>
+              %
+            </Text>
           </Text>
-          <Text lineHeight='shorter' fontSize='11px' mt={1} color='inherit'>
+          <Text
+            as='span'
+            lineHeight='shorter'
+            fontSize='11px'
+            mt={1}
+            color='inherit'
+          >
             {selectedType
               ? selectedType === 'required'
                 ? 'Fundamental'
@@ -356,18 +366,21 @@ const Ring = ({
                         </Text>
                         <Stack mt={2} spacing={2} fontSize='xs'>
                           <Text lineHeight='shorter'>
+                            Coverage of{' '}
                             <strong>{schema[field.field].name}</strong> is{' '}
                             <Text as='span' bg={`${typeTheme}.100`}>
                               {Math.round(field.value * 100)}%
-                            </Text>{' '}
-                            compatible.
+                            </Text>
+                            .
                           </Text>
                         </Stack>
                       </Box>
                     }
                     position='absolute'
-                    left={path.centroid(path)[0] + 10}
-                    top={path.centroid(path)[1] - 60}
+                    top={0}
+                    left={0}
+                    // left={path.centroid(path)[0] + 10}
+                    // top={path.centroid(path)[1] + 60}
                   >
                     <Box
                       id={field.type}
@@ -383,7 +396,6 @@ const Ring = ({
                       onMouseMove={(e: React.MouseEvent) => {
                         handleMouseMove(e, field.type);
                       }}
-                      // onMouseLeave={handleMouseLeave}
                     />
                   </Tooltip>
                 </>

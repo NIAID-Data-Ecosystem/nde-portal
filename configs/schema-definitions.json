@@ -21,10 +21,7 @@
     "property": "@type",
     "count": 2921373,
     "type": "keyword",
-    "enum": [
-      "Dataset",
-      "ResourceCatalog"
-    ],
+    "enum": ["Dataset", "ResourceCatalog"],
     "description": {
       "Dataset": "Datasets contained in the NIAID Data Ecosystem. A dataset is a collection of data of a particular experimental type. The NIAID Data Ecosystem is an environment to find and access and infectious and immune-mediated disease data and computational tools to speed the development of diagnostics, therapeutics, and vaccines. The NIAID Data Ecosystem Discovery Portal harvests metadata from dataset repository and harmonizes them to this schema to enable easy cross-platform dataset searching and filtering.",
       "ResourceCatalog": "ResourceCatalogs (collections of scientific information or research outputs) contained in the NIAID Data Ecosystem. Resource catalogs include databases, repositories, knowledge bases, citation indices, software indices, browser-based data portals (web portals), etc. The NIAID Data Ecosystem is an environment to find and access and infectious and immune-mediated disease data, resources and computational tools to speed the development of diagnostics, therapeutics, and vaccines. The NIAID Data Ecosystem Discovery Portal harvests metadata from dataset repository and harmonizes them to this schema to enable easy cross-platform dataset searching and filtering."
@@ -1036,12 +1033,7 @@
     "count": 376786,
     "type": "keyword",
     "schemaType": "string",
-    "enum": [
-      "Closed",
-      "Open",
-      "Restricted",
-      "Embargoed"
-    ],
+    "enum": ["Closed", "Open", "Restricted", "Embargoed"],
     "description": {
       "Dataset": "Conditions that affect the availability of, or method(s) of access to, the work. Options include open (freely available), restricted (may include restrictions such as on use), closed (requires registration to access), or embargoed (unpublished).",
       "ResourceCatalog": "Conditions that affect the availability of, or method(s) of access to, the work. Options include open (freely available), restricted (may include restrictions such as on use), closed (requires registration to access), or embargoed (unpublished)."
@@ -1096,7 +1088,7 @@
     "name": "Contributor Affiliation",
     "dotfield": "contributor.affiliation",
     "property": "affiliation",
-    "count": 21,
+    "count": 0,
     "type": "text",
     "isAdvancedSearchField": false
   },
@@ -1104,7 +1096,7 @@
     "name": "Contributor Email",
     "dotfield": "contributor.email",
     "property": "email",
-    "count": 20,
+    "count": 0,
     "type": "text",
     "isAdvancedSearchField": false
   },
@@ -1464,7 +1456,7 @@
     "name": "File Date Published",
     "dotfield": "distribution.datePublished",
     "property": "datePublished",
-    "count": 21,
+    "count": 0,
     "type": "date",
     "isAdvancedSearchField": false
   },
@@ -1472,7 +1464,7 @@
     "name": "File Description",
     "dotfield": "distribution.description",
     "property": "description",
-    "count": 57125,
+    "count": 54857,
     "type": "text",
     "isAdvancedSearchField": false
   },
@@ -1493,7 +1485,7 @@
     "name": "File Name",
     "dotfield": "distribution.name",
     "property": "name",
-    "count": 137305,
+    "count": 135643,
     "type": "keyword",
     "isAdvancedSearchField": true
   },
@@ -1558,7 +1550,7 @@
     "name": "Funding Description",
     "dotfield": "funding.description",
     "property": "description",
-    "count": 523,
+    "count": 20,
     "type": "text",
     "schemaType": "string",
     "description": {
@@ -1763,7 +1755,7 @@
     "name": "Has Part",
     "dotfield": "hasPart",
     "property": "hasPart",
-    "count": 52417,
+    "count": 40994,
     "type": "object",
     "description": {
       "Dataset": "Associated materials for the dataset, including data dictionaries and data limitation descriptions",
@@ -1795,7 +1787,7 @@
     "name": "Has Part Additional Type",
     "dotfield": "hasPart.additionalType",
     "property": "additionalType",
-    "count": 11423,
+    "count": 0,
     "type": "object",
     "isAdvancedSearchField": false
   },
@@ -1803,7 +1795,7 @@
     "name": "Has Part Additional Type Name",
     "dotfield": "hasPart.additionalType.name",
     "property": "name",
-    "count": 11423,
+    "count": 0,
     "type": "keyword",
     "isAdvancedSearchField": false
   },
@@ -1827,7 +1819,7 @@
     "name": "Has Part Name",
     "dotfield": "hasPart.name",
     "property": "name",
-    "count": 52417,
+    "count": 40994,
     "type": "text",
     "schemaType": "string",
     "description": {
@@ -1840,7 +1832,7 @@
     "name": "Has Part URL",
     "dotfield": "hasPart.url",
     "property": "url",
-    "count": 11429,
+    "count": 6,
     "type": "text",
     "schemaType": "string",
     "description": {
@@ -2462,7 +2454,7 @@
     "name": "Is Based On Additional Type",
     "dotfield": "isBasedOn.additionalType",
     "property": "additionalType",
-    "count": 351132,
+    "count": 339709,
     "type": "object",
     "isAdvancedSearchField": false
   },
@@ -2470,7 +2462,7 @@
     "name": "Is Based On Additional Type Name",
     "dotfield": "isBasedOn.additionalType.name",
     "property": "name",
-    "count": 351132,
+    "count": 339709,
     "type": "keyword",
     "isAdvancedSearchField": true
   },
@@ -2649,7 +2641,7 @@
     "name": "Is Part Of",
     "dotfield": "isPartOf",
     "property": "isPartOf",
-    "count": 11432,
+    "count": 4,
     "type": "object",
     "description": {
       "Dataset": "Indicates a broader study, project, or collection the work is part of.",
@@ -2681,7 +2673,7 @@
     "name": "Is Part Of Alternate Name",
     "dotfield": "isPartOf.alternateName",
     "property": "alternateName",
-    "count": 5,
+    "count": 0,
     "type": "text",
     "isAdvancedSearchField": false
   },
@@ -2689,7 +2681,7 @@
     "name": "Is Part Of Identifier",
     "dotfield": "isPartOf.identifier",
     "property": "identifier",
-    "count": 11427,
+    "count": 4,
     "type": "keyword",
     "schemaType": "string",
     "description": {
@@ -2702,7 +2694,7 @@
     "name": "Is Part Of Name",
     "dotfield": "isPartOf.name",
     "property": "name",
-    "count": 11432,
+    "count": 4,
     "type": "text",
     "schemaType": "string",
     "description": {
@@ -2715,7 +2707,7 @@
     "name": "Is Part Of URL",
     "dotfield": "isPartOf.url",
     "property": "url",
-    "count": 11427,
+    "count": 4,
     "type": "text",
     "schemaType": "string",
     "description": {
@@ -2752,7 +2744,7 @@
     "name": "Is Related To Citation",
     "dotfield": "isRelatedTo.citation",
     "property": "citation",
-    "count": 5,
+    "count": 0,
     "type": "object",
     "schemaType": "string",
     "description": {
@@ -2765,7 +2757,7 @@
     "name": "Is Related To Citation PMID",
     "dotfield": "isRelatedTo.citation.pmid",
     "property": "pmid",
-    "count": 5,
+    "count": 0,
     "type": "text",
     "isAdvancedSearchField": false
   },
@@ -2773,7 +2765,7 @@
     "name": "Is Related To Citation URL",
     "dotfield": "isRelatedTo.citation.url",
     "property": "url",
-    "count": 5,
+    "count": 0,
     "type": "text",
     "isAdvancedSearchField": false
   },
@@ -3185,7 +3177,7 @@
     "name": "Nctid",
     "dotfield": "nctid",
     "property": "nctid",
-    "count": 7943,
+    "count": 7,
     "type": "keyword",
     "schemaType": "string",
     "description": {

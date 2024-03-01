@@ -1,15 +1,12 @@
-import React, { use, useCallback, useMemo, useState } from 'react';
-import { Group } from '@visx/group';
+import React, { useCallback, useMemo, useState } from 'react';
 import { scaleLinear, scaleOrdinal } from '@visx/scale';
-import { HeatmapRect } from '@visx/heatmap';
 import { MetadataSource } from 'src/utils/api/types';
 import { theme } from 'src/theme';
 import { PatternLines } from '@visx/pattern';
-import { Box, Flex, Stack, Text, ring } from '@chakra-ui/react';
+import { Box, Stack, Text } from '@chakra-ui/react';
 import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
 import { SchemaDefinitions } from 'scripts/generate-schema-definitions/types';
 import { Arc } from '@visx/shape';
-import Tooltip from 'src/components/tooltip';
 import { useTooltip, useTooltipInPortal } from '@visx/tooltip';
 
 const schema = SCHEMA_DEFINITIONS as SchemaDefinitions;
@@ -254,8 +251,8 @@ export const ArcCircle = ({
         tooltipTop != null && (
           <TooltipInPortal
             key={Math.random()}
-            left={tooltipLeft + 50}
-            top={tooltipTop - 30}
+            left={tooltipLeft + width / 2}
+            top={tooltipTop + width / 2}
           >
             <Box borderRadius='semi' minW='100px' maxW='200px'>
               <Text
@@ -270,11 +267,12 @@ export const ArcCircle = ({
               </Text>
               <Stack mt={2} spacing={2} fontSize='xs'>
                 <Text>
-                  <strong>{schema[tooltipData.field].name}</strong> is{' '}
+                  Coverage of <strong>{schema[tooltipData.field].name}</strong>{' '}
+                  is{' '}
                   <Text as='span' bg={`${tooltipData.colorScheme}.100`}>
                     {Math.round(tooltipData.value * 100)}%
-                  </Text>{' '}
-                  compatible.
+                  </Text>
+                  .
                 </Text>
               </Stack>
             </Box>
@@ -307,19 +305,6 @@ export const ArcCircle = ({
               %
             </Text>
           </Text>
-          {/* <Text
-            as='span'
-            lineHeight='shorter'
-            fontSize='6px'
-            mt={1}
-            color='inherit'
-          >
-            {hoveredType
-              ? hoveredType === 'required'
-                ? 'Fundamental'
-                : 'Recommended'
-              : 'field coverage'}
-          </Text> */}
         </Text>
       </Box>
     </Box>

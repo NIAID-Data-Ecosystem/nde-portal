@@ -6,11 +6,10 @@ import { MetadataSource } from 'src/utils/api/types';
 import { theme } from 'src/theme';
 import { PatternLines } from '@visx/pattern';
 import { useTooltip, useTooltipInPortal } from '@visx/tooltip';
-import { Box, Flex, Icon, Stack, Text } from '@chakra-ui/react';
+import { Box, Stack, Text } from '@chakra-ui/react';
 import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
 import { SchemaDefinitions } from 'scripts/generate-schema-definitions/types';
 import Tooltip from 'src/components/tooltip';
-import { FaInfo } from 'react-icons/fa6';
 
 const schema = SCHEMA_DEFINITIONS as SchemaDefinitions;
 
@@ -294,10 +293,18 @@ const BarChartHeatMap = ({
                       fill={bin.count ? bin.color : pattern}
                       fillOpacity={bin.count ? bin.opacity : '1'}
                       onMouseMove={e =>
-                        handleMouseMove(e, { x: bin.x, y: bin.y, data })
+                        handleMouseMove(e, {
+                          x: bin.x,
+                          y: bin.y + bin.height * 2,
+                          data,
+                        })
                       }
                       onTouchMove={e =>
-                        handleMouseMove(e, { x: bin.x, y: bin.y, data })
+                        handleMouseMove(e, {
+                          x: bin.x,
+                          y: bin.y + bin.height * 2,
+                          data,
+                        })
                       }
                       onMouseLeave={handleMouseLeave}
                     />
@@ -366,10 +373,18 @@ const BarChartHeatMap = ({
                       fill={bin.count ? bin.color : pattern}
                       fillOpacity={bin.count ? bin.opacity : '1'}
                       onMouseMove={e =>
-                        handleMouseMove(e, { x: bin.x, y: bin.y, data })
+                        handleMouseMove(e, {
+                          x: bin.x,
+                          y: bin.y + bin.height,
+                          data,
+                        })
                       }
                       onTouchMove={e =>
-                        handleMouseMove(e, { x: bin.x, y: bin.y, data })
+                        handleMouseMove(e, {
+                          x: bin.x,
+                          y: bin.y + bin.height,
+                          data,
+                        })
                       }
                       onMouseLeave={handleMouseLeave}
                     />
@@ -387,7 +402,7 @@ const BarChartHeatMap = ({
           <TooltipInPortal
             key={Math.random()}
             left={tooltipLeft - 10}
-            top={tooltipTop + 30}
+            top={tooltipTop}
           >
             <Box borderRadius='semi' minW='100px' maxW='200px'>
               <Text
@@ -401,12 +416,13 @@ const BarChartHeatMap = ({
                   tooltipData.type.slice(1)}
               </Text>
               <Stack mt={2} spacing={2} fontSize='xs'>
-                <Text>
-                  <strong>{schema[tooltipData.field].name}</strong> is{' '}
+                <Text lineHeight='shorter'>
+                  Coverage of <strong>{schema[tooltipData.field].name}</strong>{' '}
+                  is{' '}
                   <Text as='span' bg={`${tooltipData.theme}.100`}>
                     {tooltipData.percent}
-                  </Text>{' '}
-                  compatible.
+                  </Text>
+                  .
                 </Text>
               </Stack>
             </Box>

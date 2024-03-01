@@ -1,15 +1,12 @@
 import React, { use, useCallback, useMemo, useState } from 'react';
-import { Group } from '@visx/group';
 import { scaleLinear, scaleOrdinal } from '@visx/scale';
-import { HeatmapRect } from '@visx/heatmap';
 import { MetadataSource } from 'src/utils/api/types';
 import { theme } from 'src/theme';
 import { PatternLines } from '@visx/pattern';
-import { Box, Flex, Stack, Text, ring } from '@chakra-ui/react';
+import { Box, Stack, Text } from '@chakra-ui/react';
 import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
 import { SchemaDefinitions } from 'scripts/generate-schema-definitions/types';
 import { Arc } from '@visx/shape';
-import Tooltip from 'src/components/tooltip';
 import { useTooltip, useTooltipInPortal } from '@visx/tooltip';
 
 const schema = SCHEMA_DEFINITIONS as SchemaDefinitions;
@@ -257,7 +254,7 @@ export const ArcSegmentsTwo = ({
           <TooltipInPortal
             key={Math.random()}
             left={0 + margin.left}
-            top={SIZE_WIDTH / 2 + margin.bottom}
+            top={width + 20}
           >
             <Box borderRadius='semi' minW='100px' maxW='200px'>
               <Text
@@ -272,11 +269,12 @@ export const ArcSegmentsTwo = ({
               </Text>
               <Stack mt={2} spacing={2} fontSize='xs'>
                 <Text>
-                  <strong>{schema[tooltipData.field].name}</strong> is{' '}
+                  Coverage of <strong>{schema[tooltipData.field].name}</strong>{' '}
+                  is{' '}
                   <Text as='span' bg={`${tooltipData.colorScheme}.100`}>
-                    {Math.round(tooltipData.value * 100)}%{' '}
-                  </Text>{' '}
-                  compatible.
+                    {Math.round(tooltipData.value * 100)}%
+                  </Text>
+                  .
                 </Text>
               </Stack>
             </Box>
