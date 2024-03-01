@@ -1,31 +1,19 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import type { NextPage } from 'next';
 import {
   Box,
   Button,
   ButtonGroup,
   Flex,
-  Heading,
   Icon,
-  Image,
-  SkeletonCircle,
-  SkeletonText,
-  Table as StyledTable,
-  Thead,
-  Tbody,
-  Tr,
-  Th,
-  Td,
-  TableContainer,
+  Tab,
   Tabs,
   TabList,
-  Tab,
-  Tag,
-  Text,
   TabPanels,
+  Text,
   TabPanel,
+  Heading,
 } from '@chakra-ui/react';
-import { theme } from 'src/theme';
 import { Link } from 'src/components/link';
 import {
   PageHeader,
@@ -39,272 +27,18 @@ import { SearchBarWithDropdown } from 'src/components/search-bar';
 import { AdvancedSearchOpen } from 'src/components/advanced-search/components/buttons';
 import { FaRegEnvelope, FaGithub, FaAngleRight } from 'react-icons/fa6';
 import { Repository, useRepoData } from 'src/hooks/api/useRepoData';
-import { queryFilterObject2String } from 'src/components/filters/helpers';
-import { NewsOrEventsObject, fetchEvents } from './news';
 import {
   NewsCarousel,
   fetchNews,
 } from 'src/views/home/components/NewsCarousel';
-import { TableSortToggle } from 'src/components/table/components/sort-toggle';
-import { TableWrapper } from 'src/components/table/components/wrapper';
-
-export const RepositoryTable: React.FC<{
-  isLoading: boolean;
-  repositories: Repository[];
-  selectedType: Repository['type'];
-}> = ({ repositories, isLoading, selectedType }) => {
-  const [sortOrder, setSortOrder] = useState<'ASC' | 'DESC'>('ASC');
-
-  const TABLE_COLUMNS = [
-    { title: 'name', property: 'label', isSortable: true },
-    { title: 'description', property: 'abstract' },
-  ];
-
-  const rowsByType = useMemo(
-    () => repositories.filter(({ type }) => type === selectedType),
-    [repositories, selectedType],
-  );
-
-  const rows = useMemo(
-    () =>
-      rowsByType.sort((a, b) =>
-        sortOrder === 'ASC'
-          ? a.label.localeCompare(b.label)
-          : b.label.localeCompare(a.label),
-      ),
-    [rowsByType, sortOrder],
-  );
-
-  return (
-    <TableWrapper colorScheme='gray' w='100%'>
-      <TableContainer>
-        <StyledTable
-          variant='simple'
-          bg='white'
-          colorScheme='gray'
-          role='table'
-        >
-          {TABLE_COLUMNS && (
-            <Thead>
-              <Tr>
-                {TABLE_COLUMNS.map(column => {
-                  return (
-                    <Th
-                      key={column.property}
-                      role='columnheader'
-                      scope='col'
-                      bg='page.alt'
-                      px={4}
-                      borderBottom='1px solid !important'
-                      borderBottomColor={`${theme.colors.gray[200]} !important`}
-                      minW='250px'
-                      w={column.property === 'label' ? '40%' : 'unset'}
-                    >
-                      {column.title}
-                      {column.isSortable && (
-                        <TableSortToggle
-                          isSelected
-                          sortBy={sortOrder}
-                          handleToggle={isAsc => {
-                            setSortOrder(isAsc ? 'ASC' : 'DESC');
-                          }}
-                        />
-                      )}
-                    </Th>
-                  );
-                })}
-              </Tr>
-            </Thead>
-          )}
-          <Tbody>
-            {(rows.length ? rows : Array.from(Array(10))).map((_, i) => {
-              return (
-                <Tr key={i} id={`${i}`}>
-                  {Array.from(Array(TABLE_COLUMNS.length)).map((_, j) => {
-                    if (TABLE_COLUMNS && rows) {
-                      const row = rows[i];
-                      let column = TABLE_COLUMNS[j];
-                      let cell =
-                        row?.[column.property as keyof Repository] || '';
-                      return (
-                        <Td
-                          role='cell'
-                          key={`${cell}-${i}-${j}`}
-                          id={`${cell}-${i}-${j}`}
-                          whiteSpace='break-spaces'
-                          minW='250px'
-                          w={column.property === 'label' ? '30%' : 'unset'}
-                          isNumeric={typeof cell === 'number'}
-                          sx={{
-                            px: `${theme.space[4]} !important`,
-                            py: `${theme.space[2]} !important`,
-                          }}
-                          verticalAlign={
-                            column.property === 'label' ? 'top' : 'middle'
-                          }
-                        >
-                          <Flex
-                            alignItems={['flex-start', 'center']}
-                            flexDirection={['column', 'row']}
-                            justifyContent='flex-start'
-                          >
-                            {column.property === 'label' && (
-                              <SkeletonCircle
-                                data-testid={isLoading ? 'loading' : 'loaded'}
-                                isLoaded={!isLoading && rows.length > 0}
-                                h='30px'
-                                w='30px'
-                                m={2}
-                                ml={0}
-                              >
-                                {row?.icon && (
-                                  <>
-                                    {row?.url ? (
-                                      <Link
-                                        href={row.url}
-                                        fontWeight='medium'
-                                        target='_blank'
-                                        _focus={{
-                                          boxShadow: 'none',
-                                        }}
-                                      >
-                                        <Image
-                                          src={`${row.icon}`}
-                                          alt={`Logo for data source ${row.label}`}
-                                          objectFit='contain'
-                                          width='30px'
-                                          height='30px'
-                                        />
-                                      </Link>
-                                    ) : (
-                                      <Image
-                                        src={`${row.icon}`}
-                                        alt={`Logo for data source ${row.label}`}
-                                        objectFit='contain'
-                                        width='30px'
-                                        height='30px'
-                                      />
-                                    )}
-                                  </>
-                                )}
-                              </SkeletonCircle>
-                            )}
-                            <SkeletonText
-                              data-testid={isLoading ? 'loading' : 'loaded'}
-                              isLoaded={!isLoading && rows.length > 0}
-                              noOfLines={2}
-                              spacing='2'
-                              w='100%'
-                              ml={[0, 2]}
-                            >
-                              {row?.identifier &&
-                              column.property === 'label' ? (
-                                <NextLink
-                                  href={{
-                                    pathname: `/search`,
-                                    query: {
-                                      q: '',
-                                      filters: queryFilterObject2String({
-                                        'includedInDataCatalog.name': [
-                                          row.identifier,
-                                        ],
-                                      }),
-                                    },
-                                  }}
-                                  passHref
-                                  prefetch={false}
-                                >
-                                  <Link as='div' fontWeight='medium'>
-                                    {cell}
-                                  </Link>
-                                </NextLink>
-                              ) : (
-                                <Text fontSize='sm'>{cell}</Text>
-                              )}
-                            </SkeletonText>
-                          </Flex>
-                        </Td>
-                      );
-                    }
-                  })}
-                </Tr>
-              );
-            })}
-          </Tbody>
-        </StyledTable>
-      </TableContainer>
-    </TableWrapper>
-  );
-};
-
-export const RepositoryTabs: React.FC<{
-  children: React.ReactNode;
-  repositories: Repository[];
-  setSelectedType: React.Dispatch<React.SetStateAction<Repository['type']>>;
-}> = ({ children, repositories, setSelectedType }) => {
-  const types: { property: Repository['type']; label: string }[] = [
-    { property: 'iid', label: 'IID Domain Repositories' },
-    { property: 'generalist', label: 'Generalist Repositories' },
-  ];
-
-  return (
-    <Flex flexDirection='column'>
-      <Tabs
-        w='100%'
-        colorScheme='primary'
-        mb={4}
-        onChange={index => {
-          setSelectedType(types[index].property);
-        }}
-        size='sm'
-      >
-        <TabList
-          flexWrap={['wrap', 'nowrap']}
-          justifyContent={['center', 'flex-start']}
-          mx={4}
-        >
-          {types.map((type, idx) => (
-            <Tab
-              key={type.property}
-              w={['100%', 'unset']}
-              color='gray.800'
-              _selected={{
-                borderBottom: '2px solid',
-                borderBottomColor: 'primary.400',
-                color: 'text.heading',
-                ['.tag']: {
-                  bg: 'primary.100',
-                },
-              }}
-              _focus={{ outline: 'none' }}
-            >
-              <Heading as='h3' size='sm' fontWeight='medium' color='inherit'>
-                {type.label}
-              </Heading>
-              <Tag
-                className='tag'
-                borderRadius='full'
-                ml={2}
-                px={4}
-                my={[4, 0]}
-                size='sm'
-                colorScheme='gray'
-                variant='subtle'
-                fontWeight='semibold'
-              >
-                {
-                  repositories.filter(({ type: t }) => t === type.property)
-                    .length
-                }
-              </Tag>
-            </Tab>
-          ))}
-        </TabList>
-        <TabPanels>{children}</TabPanels>
-      </Tabs>
-    </Flex>
-  );
-};
+import { NewsOrEventsObject, fetchEvents } from './news';
+import { TableWithSearch } from 'src/views/home/components/TableWithSearch';
+import { RepositoryTabs } from 'src/views/home/components/RepositoryTabs';
+import { ResourceCatalogsTable } from 'src/views/home/components/ResourceCatalogsTable';
+import { fetchSearchResults } from 'src/utils/api';
+import { FetchSearchResultsResponse } from 'src/utils/api/types';
+import { useQuery } from 'react-query';
+import { SearchInput } from 'src/components/search-input';
 
 const Home: NextPage<{
   data: {
@@ -313,16 +47,81 @@ const Home: NextPage<{
   };
   error?: { message: string };
 }> = props => {
-  // For repositories table
-  const [repositories, setRepositories] = useState<Repository[]>([]);
+  const [selectedTab, setSelectedTab] = useState(
+    'iid' as Repository['type'] | 'resourceCatalog',
+  );
+  /****** Handle Search ******/
+  const [searchTerm, setSearchTerm] = useState('');
+  const handleSearchChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>): void =>
+      setSearchTerm(e.target.value),
+    [],
+  );
 
-  const [selectedType, setSelectedType] = useState<Repository['type']>('iid');
+  /****** Resource Catalogs Data ******/
+  const {
+    isLoading: resourceCatalogsLoading,
+    error: resourceCatalogsError,
+    data: resourceCatalogsData,
+  } = useQuery<FetchSearchResultsResponse | undefined, Error>(
+    [
+      'resource-catalogs',
+      {
+        queryString: '@type:"ResourceCatalog"',
+        fields: ['collectionType', 'name'],
+      },
+    ],
+    () => {
+      return fetchSearchResults({
+        q: '@type:"ResourceCatalog"',
+        fields: ['collectionType', 'name'],
+        size: 100,
+      });
+    },
+    {
+      refetchOnWindowFocus: false,
+    },
+  );
+  /****** Repository Data ******/
+  const { isLoading, data: repositories, error } = useRepoData();
 
-  const { isLoading, data, error } = useRepoData();
+  // Defer filtering to the useMemo hook
+  const filteredRepositories = useMemo(() => {
+    return (
+      repositories?.filter(
+        repo =>
+          repo.label.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          repo.abstract?.toLowerCase().includes(searchTerm.toLowerCase()),
+      ) || []
+    );
+  }, [searchTerm, repositories]);
 
-  useEffect(() => {
-    data && setRepositories([...data]);
-  }, [data]);
+  // Split repositories by type using useMemo to avoid unnecessary computations
+  const { iid_repositories, generalist_repositories } = useMemo(() => {
+    const iid = filteredRepositories.filter(repo => repo.type === 'iid');
+    const generalist = filteredRepositories.filter(
+      repo => repo.type === 'generalist',
+    );
+    return { iid_repositories: iid, generalist_repositories: generalist };
+  }, [filteredRepositories]);
+
+  const repositoryTabs = useMemo(
+    () => [
+      {
+        type: 'iid' as Repository['type'],
+        label: 'IID Domain Repositories',
+        count: iid_repositories.length,
+        data: iid_repositories,
+      },
+      {
+        type: 'generalist' as Repository['type'],
+        label: 'Generalist Repositories',
+        count: generalist_repositories.length,
+        data: generalist_repositories,
+      },
+    ],
+    [iid_repositories, generalist_repositories],
+  );
 
   return (
     <PageContainer
@@ -406,88 +205,201 @@ const Home: NextPage<{
       </PageHeader>
       <>
         {/**** Repositories Table section *****/}
-        {!error && (
+        {!(error || resourceCatalogsError) && (
           <PageContent
             flexDirection='column'
             bg='#fff'
             mb={20}
             alignItems='center'
           >
-            <Box maxW='1200px' width='100%'>
-              <Heading
-                pb={[4, 4, 8]}
-                as='h2'
-                fontWeight='semibold'
-                size='lg'
-                textAlign={['center', 'left']}
-              >
-                {HOMEPAGE_COPY.sections.repositories.heading}
-              </Heading>
-              <RepositoryTabs
-                repositories={repositories}
-                setSelectedType={setSelectedType}
-              >
-                <TabPanel id='iid'>
-                  <RepositoryTable
-                    isLoading={isLoading}
-                    repositories={repositories}
-                    selectedType='iid'
-                  />
-                </TabPanel>
-                <TabPanel id='generalist'>
-                  <RepositoryTable
-                    isLoading={isLoading}
-                    repositories={repositories}
-                    selectedType='generalist'
-                  />
-                </TabPanel>
-              </RepositoryTabs>
-              <ButtonGroup
-                spacing={[0, 2]}
-                flexWrap={['wrap', 'nowrap']}
-                w='100%'
-                display='flex'
-                justifyContent='flex-end'
-                mt={4}
-                px={4}
-              >
-                {HOMEPAGE_COPY.sections.help.routes.map(
-                  (
-                    route: {
-                      title: string;
-                      path: string;
-                      isExternal?: boolean;
-                    },
-                    index,
-                  ) => {
-                    const icon = route.title.includes('question')
-                      ? FaRegEnvelope
-                      : FaGithub;
-                    return (
-                      <Box key={route.title} w={['100%', 'unset']}>
-                        <NextLink
-                          href={route.path}
-                          passHref
-                          target={route.isExternal ? '_blank' : '_self'}
-                        >
-                          <Button
-                            w='100%'
-                            minWidth='200px'
-                            fontSize='sm'
-                            variant={index % 2 ? 'solid' : 'outline'}
-                            m={[0, 0, 0]}
-                            my={[1, 2, 0]}
-                            maxWidth={['unset', '250px']}
-                            leftIcon={<Icon as={icon} />}
-                          >
-                            {route.title}
-                          </Button>
-                        </NextLink>
-                      </Box>
+            <Box maxW='1300px' width='100%'>
+              <Box px={{ base: 0, sm: 4 }}>
+                <Tabs
+                  variant='soft-rounded'
+                  colorScheme='primary'
+                  onChange={index => {
+                    setSearchTerm('');
+                    setSelectedTab(() =>
+                      index === 1 ? 'resourceCatalog' : 'iid',
                     );
-                  },
-                )}
-              </ButtonGroup>
+                  }}
+                >
+                  <TabList border='1px solid' borderColor='gray.100'>
+                    <Tab
+                      borderRadius='none'
+                      borderRight='1px solid'
+                      borderColor='gray.100'
+                      color='gray.800'
+                      _selected={{
+                        color: 'white',
+                        bg: 'primary.500',
+                        borderColor: 'primary.500',
+                      }}
+                    >
+                      <Heading
+                        as='h2'
+                        size='inherit'
+                        fontWeight='inherit'
+                        color='inherit'
+                      >
+                        Currently included repositories
+                      </Heading>
+                    </Tab>
+                    {resourceCatalogsData?.results &&
+                      resourceCatalogsData?.results?.length > 0 && (
+                        <Tab
+                          borderRadius='none'
+                          borderRight='1px solid'
+                          borderColor='gray.100'
+                          color='gray.800'
+                          _selected={{
+                            color: 'white',
+                            bg: 'primary.500',
+                            borderColor: 'primary.500',
+                          }}
+                        >
+                          <Heading
+                            as='h2'
+                            size='inherit'
+                            fontWeight='inherit'
+                            color='inherit'
+                          >
+                            Resource index
+                          </Heading>
+                        </Tab>
+                      )}
+                  </TabList>
+                  <TabPanels
+                    borderRadius='semi'
+                    border='1px solid'
+                    borderColor='page.alt'
+                  >
+                    <TabPanel>
+                      <>
+                        <Flex justifyContent='flex-end' mb={2}>
+                          <SearchInput
+                            size='sm'
+                            placeholder='Search in repositories'
+                            ariaLabel='Search in repositories'
+                            value={searchTerm}
+                            handleChange={handleSearchChange}
+                            isResponsive={false}
+                          />
+                        </Flex>
+                        <RepositoryTabs
+                          tabs={repositoryTabs}
+                          onChange={index => {
+                            setSelectedTab(
+                              repositoryTabs[index as unknown as number].type,
+                            );
+                          }}
+                        >
+                          {repositoryTabs.map(tab => (
+                            <TabPanel key={tab.type} id={tab.type} px={0}>
+                              <TableWithSearch
+                                ariaLabel='Currently included repositories'
+                                caption='Currently included repositories'
+                                data={tab.data}
+                                isLoading={isLoading}
+                                columns={[
+                                  {
+                                    title: 'name',
+                                    property: 'label',
+                                    isSortable: true,
+                                    props: { maxW: '400px' },
+                                  },
+                                  {
+                                    title: 'description',
+                                    property: 'abstract',
+                                  },
+                                ]}
+                              />
+                            </TabPanel>
+                          ))}
+                        </RepositoryTabs>
+                      </>
+                    </TabPanel>
+                    {selectedTab === 'resourceCatalog' &&
+                      resourceCatalogsData?.results &&
+                      resourceCatalogsData?.results?.length > 0 && (
+                        <TabPanel>
+                          <Flex justifyContent='flex-end' mb={2}>
+                            <SearchInput
+                              size='sm'
+                              placeholder='Search in resource index'
+                              ariaLabel='Search in resource index'
+                              value={searchTerm}
+                              handleChange={handleSearchChange}
+                              isResponsive={false}
+                            />
+                          </Flex>
+                          <ResourceCatalogsTable
+                            ariaLabel='Resource index table'
+                            caption='Resource index table'
+                            isLoading={resourceCatalogsLoading}
+                            data={resourceCatalogsData?.results.filter(
+                              resource =>
+                                resource.collectionType
+                                  ?.toLowerCase()
+                                  .includes(searchTerm.toLowerCase()) ||
+                                resource.name
+                                  ?.toLowerCase()
+                                  .includes(searchTerm.toLowerCase()),
+                            )}
+                          />
+                        </TabPanel>
+                      )}
+                  </TabPanels>
+                </Tabs>
+
+                <ButtonGroup
+                  spacing={[0, 2]}
+                  flexWrap={['wrap', 'nowrap']}
+                  w='100%'
+                  display='flex'
+                  justifyContent='flex-end'
+                  mt={4}
+                  px={4}
+                >
+                  {HOMEPAGE_COPY.sections.help.routes.map(
+                    (
+                      route: {
+                        title: string;
+                        path: string;
+                        isExternal?: boolean;
+                      },
+                      index,
+                    ) => {
+                      const icon = route.title.includes('question')
+                        ? FaRegEnvelope
+                        : FaGithub;
+                      return (
+                        <Box key={route.title} w={['100%', 'unset']}>
+                          <NextLink
+                            href={route.path}
+                            passHref
+                            target={route.isExternal ? '_blank' : '_self'}
+                          >
+                            <Button
+                              w='100%'
+                              minWidth='200px'
+                              fontSize='sm'
+                              variant={index % 2 ? 'solid' : 'outline'}
+                              m={[0, 0, 0]}
+                              my={[1, 2, 0]}
+                              maxWidth={['unset', '250px']}
+                              leftIcon={<Icon as={icon} />}
+                            >
+                              {route.title}
+                            </Button>
+                          </NextLink>
+                        </Box>
+                      );
+                    },
+                  )}
+                </ButtonGroup>
+              </Box>
+
               {/* NEWS */}
               {!props?.error?.message && props.data?.news && (
                 <NewsCarousel

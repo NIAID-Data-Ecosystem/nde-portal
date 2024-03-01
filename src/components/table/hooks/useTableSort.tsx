@@ -5,26 +5,30 @@ interface DataObject {
   [key: string]: any;
 }
 
-export const useTableSort = (
+interface TableSortProps {
   /**
    * Table data
    */
-  data: DataObject[],
+  data: DataObject[];
   /**
    * Function to access the order value in data. Defaults to (v) => v. Must wrap in callback.
    */
-  accessor: (arg: any) => any = v => v,
-
+  accessor?: (arg: any) => any;
   /**
    * Initial order by value.
    */
-  orderByInitial?: string,
-
+  orderBy?: string;
   /**
    * Initial sort by boolean where Ascending[true] or descending[false]
    */
-  isSortAscending?: boolean,
-): any => {
+  isSortAscending?: boolean;
+}
+export const useTableSort = ({
+  data,
+  accessor = v => v,
+  orderBy: orderByInitial,
+  isSortAscending,
+}: TableSortProps): any => {
   const accessorFn = useCallback(accessor, [accessor]);
 
   const [orderBy, setOrderBy] = useState<string | null>(orderByInitial || null);

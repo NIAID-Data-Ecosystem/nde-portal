@@ -1,166 +1,191 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { uniqueId } from 'lodash';
 import {
   Box,
-  Heading,
+  Flex,
+  Skeleton,
   Table as ChakraTable,
-  Tfoot,
   Tr,
   VisuallyHidden,
+  HTMLChakraProps,
+  TableContainerProps,
 } from '@chakra-ui/react';
-import { Th, Cell } from './components/cell';
-import { FormatLinkCell } from './helpers';
-import { Row } from './components/row';
-import { TableContainer } from './components/table-container';
-import { useTableSort } from './hooks/useTableSort';
+import { TableContainer } from 'src/components/table/components/table-container';
 import { TableSortToggle } from 'src/components/table/components/sort-toggle';
 import { TableWrapper } from 'src/components/table/components/wrapper';
 import { TablePagination } from 'src/components/table/components/pagination';
+import { useTableSort } from 'src/components/table/hooks/useTableSort';
+import { Row } from 'src/components/table/components/row';
+import { Cell, Th } from 'src/components/table/components/cell';
 
-export interface Column {
-  key: string;
+interface Column {
   title: string;
+  property: string;
+  isSortable?: boolean;
+  props?: any;
 }
 
-type RowData = {
-  value: any; // Consider specifying a more precise type if possible
-  sortValue: string | number;
-};
-
-export type Row = {
-  _key: string;
-  styles?: Record<string, any>;
-} & Record<string, RowData>;
-
-interface TableProps {
-  id: string;
-  rowData: Row[];
+interface TableProps<TData extends Record<string, string | number>> {
+  ariaLabel: string;
+  caption: string;
   columns: Column[];
-  caption?: string;
-  ROW_SIZE?: number;
-  hasFooter?: boolean;
-  accessor?: (...args: string[]) => void;
+  data: TData[];
+  getCells: (props: {
+    column: Column;
+    data: TData;
+    isLoading?: boolean;
+  }) => React.ReactNode;
   colorScheme?: string;
-  title?: string;
+  isLoading?: boolean;
+  numRows?: number[];
+  hasPagination?: boolean;
+  tableBodyProps?: HTMLChakraProps<'tbody'>;
+  tableHeadProps?: HTMLChakraProps<'thead'>;
+  tableContainerProps?: TableContainerProps;
 }
+// Constants for table configuration.
+// [NUM_ROWS]: num of rows per page
+const NUM_ROWS = [5, 10, 50, 100];
 
-const Table: React.FC<TableProps> = ({
-  id,
+export const Table: React.FC<TableProps<any>> = ({
+  ariaLabel,
   caption,
   colorScheme = 'gray',
   columns,
-  rowData,
-  ROW_SIZE = 5,
-  hasFooter = false,
-  title,
-  accessor,
+  data,
+  getCells,
+  hasPagination,
+  isLoading,
+  numRows = NUM_ROWS,
+  tableHeadProps,
+  tableBodyProps,
+  tableContainerProps,
 }) => {
-  // num of rows per page
-  const [size, setSize] = useState(ROW_SIZE);
+  // create unique id for each row
+  const dataWithUniqueID = useMemo(
+    () =>
+      data?.map((item, idx) => {
+        return {
+          ...item,
+          key: uniqueId(`row-${item?.identifier || idx}`),
+        };
+      }),
+    [data],
+  );
 
-  // current page
+  // sort data based on column sorting
+  const accessor = useCallback((v: any) => {
+    return v;
+  }, []);
+
+  const [{ data: tableData, orderBy, sortBy }, updateSort] = useTableSort({
+    data: dataWithUniqueID,
+    accessor,
+    orderBy: 'label',
+    isSortAscending: true,
+  });
+  // [size]: num of rows per page
+  const [size, setSize] = useState(hasPagination ? numRows[0] : data.length);
+
+  // [from]: current page number
   const [from, setFrom] = useState(0);
 
-  const [{ data, orderBy, sortBy }, updateSort] = useTableSort(
-    rowData,
-    accessor,
-  );
-  const [rows, setRows] = useState<Row[]>(data);
+  // [rows]: all rows to display
+  const [rows, setRows] = useState(tableData);
 
   useEffect(() => {
+    setSize(hasPagination ? numRows[0] : data.length);
     // update rows to display based on current page number and num of rows per page
-    setRows(data.slice(from * size, from * size + size));
-  }, [data, size, from]);
+    setRows(tableData.slice(from * size, from * size + size));
+  }, [tableData, size, from, data.length, hasPagination, numRows]);
+
   return (
-    <Box overflow='auto'>
-      {title && (
-        <Heading as='h4' fontSize='sm' mx={1} mb={4} fontWeight='semibold'>
-          {title}
-        </Heading>
-      )}
+    <Skeleton
+      isLoaded={!isLoading}
+      overflow='auto'
+      minH={isLoading ? '500px' : 'unset'}
+    >
       <TableWrapper colorScheme={colorScheme}>
-        <TableContainer>
+        <TableContainer {...tableContainerProps}>
           <ChakraTable
             role='table'
-            aria-label={caption}
-            aria-describedby={`${id}-caption`}
+            aria-label={ariaLabel}
+            aria-describedby='table-caption'
             aria-rowcount={rows.length}
           >
             {/* Note: keep for accessibility */}
-            <VisuallyHidden id={`${id}-caption`} as='caption'>
+            <VisuallyHidden id='table-caption' as='caption'>
               {caption}
             </VisuallyHidden>
-            <thead>
+            <Box as='thead' {...tableHeadProps}>
               <Tr role='row' flex='1' display='flex' w='100%'>
                 {columns.map(column => {
                   return (
                     <Th
-                      key={column.key}
+                      key={`table-col-th-${column.property}`}
                       label={column.title}
-                      isSelected={column.key === orderBy}
-                      colorScheme={colorScheme}
+                      isSelected={column.property === orderBy}
+                      borderBottomColor={`${colorScheme}.200`}
+                      {...column.props}
                     >
-                      <TableSortToggle
-                        isSelected={column.key === orderBy}
-                        sortBy={sortBy}
-                        handleToggle={(sortByAsc: boolean) => {
-                          updateSort(column.key, sortByAsc);
-                        }}
-                      />
+                      {column.property && column.isSortable && (
+                        <TableSortToggle
+                          isSelected={column.property === orderBy}
+                          sortBy={sortBy}
+                          handleToggle={(sortByAsc: boolean) => {
+                            updateSort(column.property, sortByAsc);
+                          }}
+                        />
+                      )}
                     </Th>
                   );
                 })}
               </Tr>
-            </thead>
-
-            <tbody>
-              {(rows as Row[]).map((row, idx) => {
+            </Box>
+            <Box as='tbody' {...tableBodyProps}>
+              {rows.map((row: any) => {
                 return (
-                  <Row key={row._key}>
-                    {columns.map(col => {
-                      let cell = row[col.key];
-                      if (!cell) return <td key={`td-${row._key}-none`}>-</td>;
-                      return (
-                        <Cell
-                          key={`td-${row._key}-${col.key}}}`}
-                          id={`td-${row._key}-${col.key}}}`}
-                          as='td'
-                          role='cell'
-                        >
-                          <FormatLinkCell value={cell.value} />
-                        </Cell>
-                      );
-                    })}
+                  <Row
+                    as='tr'
+                    key={`table-tr-${row.key}`}
+                    flexDirection='column'
+                    borderColor='gray.100'
+                  >
+                    <Flex as='td' role='cell'>
+                      {columns.map(column => {
+                        return (
+                          <Cell
+                            key={`table-td-${row.key}-${column.property}`}
+                            as='div'
+                            alignItems='center'
+                            sx={{ '>div': { my: 0 } }}
+                            {...column.props}
+                          >
+                            {/* generate the cells */}
+                            {getCells({ column, data: row, isLoading })}
+                          </Cell>
+                        );
+                      })}
+                    </Flex>
                   </Row>
                 );
               })}
-            </tbody>
-            {hasFooter && (
-              <Tfoot>
-                <Row>
-                  {columns.map(column => {
-                    return (
-                      <Th key={column.key} role='columnfooter' scope='col'>
-                        {column.title}
-                      </Th>
-                    );
-                  })}
-                </Row>
-              </Tfoot>
-            )}
+            </Box>
           </ChakraTable>
         </TableContainer>
-        <TablePagination
-          total={rowData.length}
-          size={size}
-          setSize={setSize}
-          from={from}
-          setFrom={setFrom}
-          pageSizeOptions={[5, 10, 50, 100]}
-          colorScheme='gray'
-        ></TablePagination>
+        {hasPagination && numRows && (
+          <TablePagination
+            total={dataWithUniqueID.length}
+            size={size}
+            setSize={setSize}
+            from={from}
+            setFrom={setFrom}
+            pageSizeOptions={numRows}
+            colorScheme='gray'
+            __css={{ '>div': { py: 1 } }}
+          />
+        )}
       </TableWrapper>
-    </Box>
+    </Skeleton>
   );
 };
-
-export default Table;

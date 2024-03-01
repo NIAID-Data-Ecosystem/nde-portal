@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react';
 import { Box, Flex, Icon, Text } from '@chakra-ui/react';
 import { Distribution, FormattedResource } from 'src/utils/api/types';
-import Table, { Row } from 'src/components/table';
+import Table, { Row } from 'src/components/table/old-table';
 import LoadingSpinner from 'src/components/loading';
 import {
   FormatLinkCell,

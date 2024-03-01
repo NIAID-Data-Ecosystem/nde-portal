@@ -132,10 +132,10 @@ const BasedOnTable = ({
   }, []);
 
   // Hook for sorting table data
-  const [{ data, orderBy, sortBy }, updateSort] = useTableSort(
-    itemsWithUniqueId,
+  const [{ data, orderBy, sortBy }, updateSort] = useTableSort({
+    data: itemsWithUniqueId,
     accessor,
-  );
+  });
   // [size]: num of rows per page
   const [size, setSize] = useState(ROW_SIZES[0]);
 

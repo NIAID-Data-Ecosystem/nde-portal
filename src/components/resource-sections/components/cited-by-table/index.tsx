@@ -65,10 +65,10 @@ export const CitedByTable: React.FC<CitedByTable> = ({
     return v;
   }, []);
 
-  const [{ data, orderBy, sortBy }, updateSort] = useTableSort(
-    citedBy,
+  const [{ data, orderBy, sortBy }, updateSort] = useTableSort({
+    data: citedBy,
     accessor,
-  );
+  });
   // [size]: num of rows per page
   const [size, setSize] = useState(ROW_SIZES[0]);
 

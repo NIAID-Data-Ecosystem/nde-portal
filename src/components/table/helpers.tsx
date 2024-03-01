@@ -11,7 +11,7 @@ import {
   FaFileWord,
   FaFileZipper,
 } from 'react-icons/fa6';
-import { Column } from '.';
+import { Column } from './old-table';
 import { MetadataIcon } from '../icon';
 
 // Checks if string is a valid url.

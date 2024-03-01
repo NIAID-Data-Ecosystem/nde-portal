@@ -86,10 +86,10 @@ export const Funding: React.FC<FundingProps> = ({
     return v;
   }, []);
 
-  const [{ data, orderBy, sortBy }, updateSort] = useTableSort(
-    funding,
+  const [{ data, orderBy, sortBy }, updateSort] = useTableSort({
+    data: funding,
     accessor,
-  );
+  });
   // [size]: num of rows per page
   const [size, setSize] = useState(ROW_SIZES[0]);
 
