@@ -2,6 +2,7 @@ import React from 'react';
 import { useRouter } from 'next/router';
 import { FormattedResource } from 'src/utils/api/types';
 import {
+  Box,
   Divider,
   Flex,
   ListItem,
@@ -214,6 +215,26 @@ const Sections = ({
                 isLoading={isLoading}
                 items={data?.isBasedOn}
               />
+            )}
+
+            {section.hash === 'isBasedOn' && data?.isBasisFor && (
+              <Box mt={4}>
+                <BasedOnTable
+                  id='software-information-dependency-for'
+                  title='Dependency for'
+                  caption='Datasets or tools that this dataset/tool is a dependency for.'
+                  isLoading={isLoading}
+                  items={data.isBasisFor}
+                  columns={[
+                    { key: 'name', title: 'Name', props: { maxW: '50%' } },
+                    {
+                      key: 'type',
+                      title: 'Type',
+                      props: { w: '200px' },
+                    },
+                  ]}
+                />
+              </Box>
             )}
             {/* Show description */}
             {section.hash === 'description' &&

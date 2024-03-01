@@ -1122,7 +1122,7 @@
     "description": {
       "ResourceCatalog": "The type of resource/resource catalog that best describes the work"
     },
-    "isAdvancedSearchField": false
+    "isAdvancedSearchField": true
   },
   "conditionsOfAccess": {
     "name": "Conditions Of Access",
@@ -1826,7 +1826,7 @@
     "property": "name",
     "count": 115322,
     "type": "keyword",
-    "isAdvancedSearchField": false
+    "isAdvancedSearchField": true
   },
   "funding.startDate": {
     "name": "Funding Start Date",

@@ -28,15 +28,13 @@ const Changelog: NextPage<ChangelogProps> = () => {
             Changelog
           </Heading>
           <Box>
-            <Badge
-              variant='subtle'
-              bg='status.info'
-              size='sm'
-              mt={2}
-              px={2}
-              py={1}
-            >
-              <Text as='h2' fontSize='sm' fontWeight='semibold' color='#fff'>
+            <Badge variant='subtle' bg='status.info' size='sm' mt={2}>
+              <Text
+                fontSize='sm'
+                fontWeight='semibold'
+                color='#fff'
+                lineHeight='inherit'
+              >
                 V.{packageJsonData.version}
               </Text>
             </Badge>
