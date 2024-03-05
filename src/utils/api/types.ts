@@ -464,6 +464,8 @@ export interface MetadataSource {
         usageInfo: number;
         interactionStatistic: number;
       };
+      recommended_augmented_fields_coverage?: { [key: string]: number };
+      required_augmented_fields_coverage?: { [key: string]: number };
       sum_required_coverage: number;
       sum_recommended_coverage: number;
     };

@@ -1,12 +1,9 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import { Group } from '@visx/group';
 import { scaleLinear, scaleOrdinal } from '@visx/scale';
-import { HeatmapRect } from '@visx/heatmap';
 import { MetadataSource } from 'src/utils/api/types';
 import { theme } from 'src/theme';
 import { PatternLines } from '@visx/pattern';
-import { useTooltip, useTooltipInPortal } from '@visx/tooltip';
-import { Box, Flex, Stack, Text, ring } from '@chakra-ui/react';
+import { Box, Stack, Text } from '@chakra-ui/react';
 import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
 import { SchemaDefinitions } from 'scripts/generate-schema-definitions/types';
 import { Arc } from '@visx/shape';
@@ -39,7 +36,6 @@ const defaultMargin = { top: 10, left: 10, right: 10, bottom: 15 };
 
 export const ArcSegments = ({
   width,
-  height,
   data,
   margin = defaultMargin,
 }: ArcSegmentsProps) => {
@@ -47,23 +43,42 @@ export const ArcSegments = ({
     () =>
       Object.entries(
         data.sourceInfo.metadata_completeness?.required_fields,
-      ).map(([field, value]) => ({
-        field,
-        value: value < 0.1 ? Math.round(value) : value,
-        type: 'required' as FieldDatum['type'],
-      })),
-    [data.sourceInfo.metadata_completeness?.required_fields],
+      ).map(([field, value]) => {
+        const augmented =
+          data?.sourceInfo?.metadata_completeness
+            ?.required_augmented_fields_coverage?.[field] || null;
+        return {
+          augmented,
+          field,
+          value: value < 0.1 ? Math.round(value) : value,
+          type: 'required' as FieldDatum['type'],
+        };
+      }),
+    [
+      data.sourceInfo.metadata_completeness?.required_augmented_fields_coverage,
+      data.sourceInfo.metadata_completeness?.required_fields,
+    ],
   );
   const recommended = useMemo(
     () =>
       Object.entries(
         data.sourceInfo.metadata_completeness?.recommended_fields,
-      ).map(([field, value]) => ({
-        field,
-        value: value < 0.1 ? Math.round(value) : value,
-        type: 'recommended' as FieldDatum['type'],
-      })),
-    [data.sourceInfo.metadata_completeness?.recommended_fields],
+      ).map(([field, value]) => {
+        const augmented =
+          data?.sourceInfo?.metadata_completeness
+            ?.recommended_augmented_fields_coverage?.[field] || null;
+        return {
+          augmented,
+          field,
+          value: value < 0.1 ? Math.round(value) : value,
+          type: 'recommended' as FieldDatum['type'],
+        };
+      }),
+    [
+      data.sourceInfo.metadata_completeness
+        ?.recommended_augmented_fields_coverage,
+      data.sourceInfo.metadata_completeness?.recommended_fields,
+    ],
   );
 
   const fields = useMemo(
@@ -275,6 +290,7 @@ interface FieldDatum {
   value: number;
   field: string;
   type: 'required' | 'recommended';
+  augmented: number | null;
 }
 type Fields = FieldDatum[];
 
@@ -334,74 +350,99 @@ const Ring = ({
             ? `url(#${selectedType}-lines)`
             : theme.colors.gray[300];
         return (
-          <Arc
-            className={'arc-' + idx}
-            key={idx}
-            startAngle={startAngle}
-            endAngle={endAngle}
-            innerRadius={innerRadius}
-            outerRadius={outerRadius}
-            padAngle={ARCS_SPACING}
-            // cornerRadius={3}
-          >
-            {({ path }) => {
-              return (
-                <>
-                  <Tooltip
-                    borderRadius='semi'
-                    border='none'
-                    minW='100px'
-                    maxW='200px'
-                    py={1}
-                    label={
-                      <Box>
-                        <Text
-                          bg={`${typeTheme}.500`}
-                          color='white'
-                          px={1}
-                          py={1}
-                          fontSize='sm'
-                        >
-                          {type}
-                        </Text>
-                        <Stack mt={2} spacing={2} fontSize='xs'>
-                          <Text lineHeight='shorter'>
-                            Coverage of{' '}
-                            <strong>{schema[field.field].name}</strong> is{' '}
-                            <Text as='span' bg={`${typeTheme}.100`}>
-                              {Math.round(field.value * 100)}%
-                            </Text>
-                            .
+          <>
+            <Arc
+              key={idx}
+              className={'arc-' + idx}
+              startAngle={startAngle}
+              endAngle={endAngle}
+              innerRadius={innerRadius}
+              outerRadius={outerRadius}
+              padAngle={ARCS_SPACING}
+            >
+              {({ path }) => {
+                return (
+                  <>
+                    <Tooltip
+                      borderRadius='semi'
+                      border='none'
+                      minW='100px'
+                      maxW='200px'
+                      py={1}
+                      label={
+                        <Box>
+                          <Text
+                            bg={`${typeTheme}.500`}
+                            color='white'
+                            px={1}
+                            py={1}
+                            fontSize='sm'
+                          >
+                            {type}
                           </Text>
-                        </Stack>
-                      </Box>
-                    }
-                    position='absolute'
-                    top={0}
-                    left={0}
-                    // left={path.centroid(path)[0] + 10}
-                    // top={path.centroid(path)[1] + 60}
-                  >
-                    <Box
-                      id={field.type}
-                      className='arc-segment'
-                      strokeWidth={2}
-                      strokeOpacity={1}
-                      as='path'
-                      d={path(field) || ''}
-                      fill={
-                        field.value === 0 ? pattern : colorScale(field.type)
+                          <Stack mt={2} spacing={1} fontSize='xs'>
+                            <Text lineHeight='shorter'>
+                              Coverage of{' '}
+                              <strong>{schema[field.field].name}</strong> is{' '}
+                              <Text as='span' bg={`${typeTheme}.100`}>
+                                {Math.round(field.value * 100)}%
+                              </Text>
+                              .
+                            </Text>
+                            {field.augmented && (
+                              <Text lineHeight='shorter'>
+                                Augmented coverage of{' '}
+                                <strong>{schema[field.field].name}</strong> is{' '}
+                                <Text as='span' bg={`${typeTheme}.100`}>
+                                  {Math.round(field.augmented * 100)}%
+                                </Text>
+                                .
+                              </Text>
+                            )}
+                          </Stack>
+                        </Box>
                       }
-                      opacity={getOpacity()}
-                      onMouseMove={(e: React.MouseEvent) => {
-                        handleMouseMove(e, field.type);
-                      }}
-                    />
-                  </Tooltip>
-                </>
-              );
-            }}
-          </Arc>
+                      position='absolute'
+                      top={0}
+                      left={0}
+                    >
+                      <Box
+                        as='g'
+                        className='arc-segment'
+                        onMouseMove={(e: React.MouseEvent) => {
+                          handleMouseMove(e, field.type);
+                        }}
+                      >
+                        <Box
+                          as='path'
+                          id={field.type}
+                          strokeWidth={2}
+                          strokeOpacity={1}
+                          d={path(field) || ''}
+                          fill={
+                            field.value === 0 ? pattern : colorScale(field.type)
+                          }
+                          opacity={getOpacity()}
+                        />
+                        {field.augmented && (
+                          <Box
+                            as='circle'
+                            r={1.5}
+                            cx={path.centroid(path)[0]}
+                            cy={path.centroid(path)[1]}
+                            fill='whiteAlpha.800'
+                            stroke='white'
+                            strokeWidth={1}
+                            userSelect='none'
+                          />
+                        )}
+                      </Box>
+                    </Tooltip>
+                  </>
+                );
+              }}
+            </Arc>
+          </>
         );
       })}
     </>

@@ -44,12 +44,18 @@ export const ArcCircle = ({
   const required = useMemo(
     () =>
       Object.entries(data.sourceInfo.metadata_completeness?.required_fields)
-        .map(([field, value]) => ({
-          field,
-          name: schema[field].name,
-          value: value < 0.1 ? Math.round(value) : value,
-          type: 'required' as FieldDatum['type'],
-        }))
+        .map(([field, value]) => {
+          const augmented =
+            data?.sourceInfo?.metadata_completeness
+              ?.required_augmented_fields_coverage?.[field] || null;
+          return {
+            field,
+            augmented,
+            name: schema[field].name,
+            value: value < 0.1 ? Math.round(value) : value,
+            type: 'required' as FieldDatum['type'],
+          };
+        })
         .sort((a, b) => {
           // First, sort by whether value is greater than 0 (descending, so items > 0 come first)
           if (a.value > 0 && b.value === 0) return -1;
@@ -62,17 +68,26 @@ export const ArcCircle = ({
           // sort by value in descending order within the same type
           return b.value - a.value;
         }),
-    [data.sourceInfo.metadata_completeness?.required_fields],
+    [
+      data.sourceInfo.metadata_completeness?.required_augmented_fields_coverage,
+      data.sourceInfo.metadata_completeness?.required_fields,
+    ],
   );
   const recommended = useMemo(
     () =>
       Object.entries(data.sourceInfo.metadata_completeness?.recommended_fields)
-        .map(([field, value]) => ({
-          field,
-          name: schema[field].name,
-          value: value < 0.1 ? Math.round(value) : value,
-          type: 'recommended' as FieldDatum['type'],
-        }))
+        .map(([field, value]) => {
+          const augmented =
+            data?.sourceInfo?.metadata_completeness
+              ?.recommended_augmented_fields_coverage?.[field] || null;
+          return {
+            field,
+            augmented,
+            name: schema[field].name,
+            value: value < 0.1 ? Math.round(value) : value,
+            type: 'recommended' as FieldDatum['type'],
+          };
+        })
         .sort((a, b) => {
           // First, sort by whether value is greater than 0 (descending, so items > 0 come first)
           if (a.value > 0 && b.value === 0) return -1;
@@ -85,7 +100,11 @@ export const ArcCircle = ({
           // sort by value in descending order within the same type
           return b.value - a.value;
         }),
-    [data.sourceInfo.metadata_completeness?.recommended_fields],
+    [
+      data.sourceInfo.metadata_completeness
+        ?.recommended_augmented_fields_coverage,
+      data.sourceInfo.metadata_completeness?.recommended_fields,
+    ],
   );
 
   // The width of each ring is calculated based on the width of the svg and the number of rings
@@ -265,7 +284,7 @@ export const ArcCircle = ({
                 {tooltipData.type.charAt(0).toUpperCase() +
                   tooltipData.type.slice(1)}
               </Text>
-              <Stack mt={2} spacing={2} fontSize='xs'>
+              <Stack mt={2} spacing={1} fontSize='xs'>
                 <Text>
                   Coverage of <strong>{schema[tooltipData.field].name}</strong>{' '}
                   is{' '}
@@ -273,7 +292,17 @@ export const ArcCircle = ({
                     {Math.round(tooltipData.value * 100)}%
                   </Text>
                   .
-                </Text>
+                </Text>{' '}
+                {tooltipData.augmented && (
+                  <Text lineHeight='shorter'>
+                    Augmented coverage of{' '}
+                    <strong>{schema[tooltipData.field].name}</strong> is{' '}
+                    <Text as='span' bg={`${tooltipData.theme}.100`}>
+                      {Math.round(tooltipData.augmented * 100)}%
+                    </Text>
+                    .
+                  </Text>
+                )}
               </Stack>
             </Box>
           </TooltipInPortal>
@@ -326,6 +355,7 @@ interface FieldDatum {
   value: number;
   field: string;
   type: 'required' | 'recommended';
+  augmented: number | null;
 }
 type Fields = FieldDatum[];
 let tooltipTimeout: number;
@@ -443,12 +473,10 @@ export const FieldsArc = ({
                   >
                     {({ path }) => {
                       return (
-                        <path
+                        <Box
+                          as='g'
                           className='arc-segment'
-                          d={path(data) || ''}
-                          fill={fill}
-                          opacity={opacity}
-                          onMouseOver={e => {
+                          onMouseOver={(e: React.MouseEvent) => {
                             setHoveredType(type);
 
                             if (tooltipTimeout) clearTimeout(tooltipTimeout);
@@ -463,10 +491,28 @@ export const FieldsArc = ({
                               },
                             });
                           }}
-                          onMouseLeave={e => {
+                          onMouseLeave={(e: React.MouseEvent) => {
                             handleMouseLeave();
                           }}
-                        />
+                        >
+                          <path
+                            d={path(data) || ''}
+                            fill={fill}
+                            opacity={opacity}
+                          />
+                          {data.augmented && (
+                            <Box
+                              as='circle'
+                              r={1.5}
+                              cx={path.centroid(path)[0]}
+                              cy={path.centroid(path)[1]}
+                              fill='whiteAlpha.900'
+                              stroke='white'
+                              strokeWidth={1}
+                              userSelect='none'
+                            />
+                          )}
+                        </Box>
                       );
                     }}
                   </Arc>
