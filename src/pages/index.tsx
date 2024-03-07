@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import type { NextPage } from 'next';
 import {
   Box,
@@ -7,7 +7,6 @@ import {
   Flex,
   Icon,
   Text,
-  TabPanel,
   Heading,
 } from '@chakra-ui/react';
 import { Link } from 'src/components/link';
@@ -22,15 +21,15 @@ import NextLink from 'next/link';
 import { SearchBarWithDropdown } from 'src/components/search-bar';
 import { AdvancedSearchOpen } from 'src/components/advanced-search/components/buttons';
 import { FaRegEnvelope, FaGithub, FaAngleRight } from 'react-icons/fa6';
-import { Repository, useRepoData } from 'src/hooks/api/useRepoData';
+import { useRepoData } from 'src/hooks/api/useRepoData';
 import {
   NewsCarousel,
   fetchNews,
 } from 'src/views/home/components/NewsCarousel';
 import { NewsOrEventsObject, fetchEvents } from './news';
-import { TableWithSearch } from 'src/views/home/components/TableWithSearch';
-import { RepositoryTabs } from 'src/views/home/components/RepositoryTabs';
+import { TableWithSearch } from 'src/views/home/components/TableWithSearch/';
 import { SearchInput } from 'src/components/search-input';
+import { useResourceCatalogs } from 'src/hooks/api/useResourceCatalogs';
 
 const Home: NextPage<{
   data: {
@@ -39,54 +38,32 @@ const Home: NextPage<{
   };
   error?: { message: string };
 }> = props => {
-  /****** Handle Search ******/
-  const [searchTerm, setSearchTerm] = useState('');
-  const handleSearchChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>): void =>
-      setSearchTerm(e.target.value),
-    [],
-  );
+  /****** Resource Catalogs Data ******/
+  const {
+    isLoading: resourceCatalogsIsLoading,
+    data: resourceCatalogs,
+    error: resourceCatalogsError,
+  } = useResourceCatalogs();
 
   /****** Repository Data ******/
-  const { isLoading, data: repositories, error } = useRepoData();
+  const {
+    isLoading: repositoriesIsLoading,
+    data: repositories,
+    error: repositoriesCatalogsError,
+  } = useRepoData();
 
-  // Defer filtering to the useMemo hook
-  const filteredRepositories = useMemo(() => {
-    return (
-      repositories?.filter(
-        repo =>
-          repo.label.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          repo.abstract?.toLowerCase().includes(searchTerm.toLowerCase()),
-      ) || []
-    );
-  }, [searchTerm, repositories]);
-
-  // Split repositories by type using useMemo to avoid unnecessary computations
-  const { iid_repositories, generalist_repositories } = useMemo(() => {
-    const iid = filteredRepositories.filter(repo => repo.type === 'iid');
-    const generalist = filteredRepositories.filter(
-      repo => repo.type === 'generalist',
-    );
-    return { iid_repositories: iid, generalist_repositories: generalist };
-  }, [filteredRepositories]);
-
-  const repositoryTabs = useMemo(
-    () => [
-      {
-        type: 'iid' as Repository['type'],
-        label: 'IID Domain Repositories',
-        count: iid_repositories.length,
-        data: iid_repositories,
-      },
-      {
-        type: 'generalist' as Repository['type'],
-        label: 'Generalist Repositories',
-        count: generalist_repositories.length,
-        data: generalist_repositories,
-      },
-    ],
-    [iid_repositories, generalist_repositories],
-  );
+  const data = useMemo(() => {
+    return [...(resourceCatalogs || []), ...(repositories || [])].map(item => {
+      return {
+        ...item,
+        conditionsOfAccess:
+          item['dataType'] === 'ResourceCatalog'
+            ? item['conditionsOfAccess']
+            : undefined,
+        icon: item['dataType'] === 'Repository' ? item['icon'] : undefined,
+      };
+    });
+  }, [repositories, resourceCatalogs]);
 
   return (
     <PageContainer
@@ -170,7 +147,7 @@ const Home: NextPage<{
       </PageHeader>
       <>
         {/**** Repositories Table section *****/}
-        {!error && (
+        {!(repositoriesCatalogsError || resourceCatalogsError) && (
           <PageContent
             flexDirection='column'
             bg='#fff'
@@ -183,39 +160,47 @@ const Home: NextPage<{
               </Heading>
               <Box px={{ base: 0, sm: 4 }}>
                 <Flex justifyContent='flex-end' mb={2}>
-                  <SearchInput
+                  {/* <SearchInput
                     size='sm'
                     placeholder='Search in repositories'
                     ariaLabel='Search in repositories'
                     value={searchTerm}
                     handleChange={handleSearchChange}
                     isResponsive={false}
-                  />
+                  /> */}
                 </Flex>
-                <RepositoryTabs tabs={repositoryTabs}>
-                  {repositoryTabs.map(tab => (
-                    <TabPanel key={tab.type} id={tab.type} px={0}>
-                      <TableWithSearch
-                        ariaLabel='Currently included repositories'
-                        caption='Currently included repositories'
-                        data={tab.data}
-                        isLoading={isLoading}
-                        columns={[
-                          {
-                            title: 'name',
-                            property: 'label',
-                            isSortable: true,
-                            props: { maxW: '400px' },
-                          },
-                          {
-                            title: 'description',
-                            property: 'abstract',
-                          },
-                        ]}
-                      />
-                    </TabPanel>
-                  ))}
-                </RepositoryTabs>
+                <TableWithSearch
+                  ariaLabel='List of repositories and resource catalogs'
+                  caption='List of repositories and resource catalogs'
+                  data={data}
+                  isLoading={repositoriesIsLoading || resourceCatalogsIsLoading}
+                  columns={[
+                    {
+                      title: 'name',
+                      property: 'name',
+                      isSortable: true,
+                      props: { maxW: '300px', minW: '300px' },
+                    },
+
+                    {
+                      title: 'description',
+                      property: 'abstract',
+                    },
+                    {
+                      title: 'Type',
+                      property: 'dataType',
+                      fields: ['dataType', 'type'],
+                      isSortable: true,
+                      props: { maxW: '200px', minW: '200px' },
+                    },
+                    {
+                      title: 'Access',
+                      property: 'conditionsOfAccess',
+                      props: { maxW: '150px', minW: '150px' },
+                      isSortable: true,
+                    },
+                  ]}
+                />
 
                 <ButtonGroup
                   spacing={[0, 2]}

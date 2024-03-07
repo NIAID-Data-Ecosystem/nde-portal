@@ -1,4 +1,7 @@
-import { APIResourceType } from '../formatting/formatResourceType';
+import {
+  APIResourceType,
+  CollectionType,
+} from '../formatting/formatResourceType';
 
 export interface FetchSearchResultsResponse {
   results: FormattedResource[];
@@ -339,7 +342,7 @@ export interface FormattedResource {
   citedBy: CitedBy[] | null;
   codeRepository: string[] | string | null;
   collectionSize?: CollectionSize[];
-  collectionType?: string;
+  collectionType?: CollectionType | null;
   condition: string | null;
   conditionsOfAccess: AccessTypes | null;
   curatedBy: CuratedBy | null;

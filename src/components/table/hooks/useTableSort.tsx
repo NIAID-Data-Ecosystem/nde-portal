@@ -48,8 +48,8 @@ export const useTableSort = ({
       let value_b = accessorFn(b[orderBy]);
 
       // Treat null values as empty strings
-      value_a = value_a === null ? '' : value_a;
-      value_b = value_b === null ? '' : value_b;
+      value_a = !value_a ? '' : value_a;
+      value_b = !value_b ? '' : value_b;
 
       // No need to check if values are strings, as we are treating them as strings by default
       if (sortByAsc) {
