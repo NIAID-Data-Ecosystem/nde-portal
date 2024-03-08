@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import NextLink from 'next/link';
 import {
   Flex,
@@ -11,7 +11,7 @@ import {
 import { Repository } from 'src/hooks/api/useRepoData';
 import { Link } from 'src/components/link';
 import { Table } from 'src/components/table';
-import { SearchInputProps } from 'src/components/search-input';
+import { SearchInput, SearchInputProps } from 'src/components/search-input';
 import { ResourceCatalog } from 'src/hooks/api/useResourceCatalogs';
 import { ConditionsOfAccess } from 'src/components/badges';
 import {
@@ -19,6 +19,8 @@ import {
   getDataTypeName,
   getRepositoryTypeName,
 } from './helpers';
+import { Filters } from './filters/';
+import { useDebounce } from 'usehooks-ts';
 
 export interface TableData
   extends Omit<ResourceCatalog, 'dataType' | 'type'>,
@@ -41,8 +43,16 @@ interface TableWithSearchProps {
   searchInputProps?: Partial<SearchInputProps>;
 }
 
+export const SEARCH_FIELDS = [
+  'name',
+  'abstract',
+  'dataType',
+  'conditionsOfAccess',
+  'type',
+] as (keyof TableData)[];
+
 export const TableWithSearch: React.FC<TableWithSearchProps> = ({
-  data,
+  data = [],
   isLoading,
   columns,
   getCells,
@@ -50,12 +60,56 @@ export const TableWithSearch: React.FC<TableWithSearchProps> = ({
   ...props
 }) => {
   /****** Handle Search ******/
-  // const [searchTerm, setSearchTerm] = useState('');
-  // const handleSearchChange = useCallback(
-  //   (e: React.ChangeEvent<HTMLInputElement>): void =>
-  //     setSearchTerm(e.target.value),
-  //   [],
-  // );
+  const [searchTerm, setSearchTerm] = useState('');
+  const handleSearchChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>): void =>
+      setSearchTerm(e.target.value),
+    [],
+  );
+
+  // debounce the search term
+  const debouncedSearchTerm = useDebounce(searchTerm, 250);
+
+  // filter the table data based on the search term
+  const filteredTableData = useMemo(() => {
+    return (
+      data?.filter(row => {
+        return SEARCH_FIELDS.some(field => {
+          const value = row[field];
+          if (Array.isArray(value)) {
+            return value.some(v =>
+              v.toLowerCase().includes(debouncedSearchTerm.toLowerCase()),
+            );
+          }
+          return value
+            ?.toLowerCase()
+            .includes(debouncedSearchTerm.toLowerCase());
+        });
+      }) || []
+    );
+  }, [data, debouncedSearchTerm]);
+
+  /****** Handle Filters ******/
+  const [filters, setFilters] = useState<
+    Record<keyof TableData, string[]> | {}
+  >({});
+
+  // filter the table data based on the filters
+  const filteredTableDataWithFilters = useMemo(() => {
+    return (
+      filteredTableData?.filter(row => {
+        return Object.entries(filters).every(([key, values]) => {
+          if (!values.length) return true;
+          if (Array.isArray(values)) {
+            const item = row[key as keyof TableData];
+            return item && values.includes(item);
+          }
+          return row[key as keyof TableData] === values;
+        });
+      }) || []
+    );
+  }, [filteredTableData, filters]);
+
   return (
     <>
       {!isLoading && !data?.length ? (
@@ -63,18 +117,40 @@ export const TableWithSearch: React.FC<TableWithSearchProps> = ({
           <Text py={2}>No results found.</Text>
         </Flex>
       ) : (
-        <Table
-          hasPagination
-          data={data || []}
-          tableHeadProps={{ bg: 'page.alt' }}
-          tableContainerProps={{ overflowY: 'auto' }}
-          getCells={props =>
-            getCells ? getCells(props) : <RepositoryCells {...props} />
-          }
-          isLoading={isLoading}
-          columns={columns}
-          {...props}
-        />
+        <>
+          {/* filter the table */}
+          <Flex mb={4} justifyContent='space-between'>
+            <Filters
+              data={data}
+              updateFilter={filter =>
+                setFilters({
+                  ...filters,
+                  ...filter,
+                })
+              }
+            />
+            <SearchInput
+              size='sm'
+              placeholder='Search table'
+              ariaLabel='Search table'
+              value={searchTerm}
+              handleChange={handleSearchChange}
+              isResponsive={false}
+            />
+          </Flex>
+          <Table
+            hasPagination
+            data={filteredTableDataWithFilters || []}
+            tableHeadProps={{ bg: 'page.alt' }}
+            tableContainerProps={{ overflowY: 'auto' }}
+            getCells={props =>
+              getCells ? getCells(props) : <RepositoryCells {...props} />
+            }
+            isLoading={isLoading}
+            columns={columns}
+            {...props}
+          />
+        </>
       )}
     </>
   );

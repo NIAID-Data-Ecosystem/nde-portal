@@ -8,6 +8,7 @@ import {
   Icon,
   Text,
   Heading,
+  Divider,
 } from '@chakra-ui/react';
 import { Link } from 'src/components/link';
 import {
@@ -28,7 +29,6 @@ import {
 } from 'src/views/home/components/NewsCarousel';
 import { NewsOrEventsObject, fetchEvents } from './news';
 import { TableWithSearch } from 'src/views/home/components/TableWithSearch/';
-import { SearchInput } from 'src/components/search-input';
 import { useResourceCatalogs } from 'src/hooks/api/useResourceCatalogs';
 
 const Home: NextPage<{
@@ -155,20 +155,18 @@ const Home: NextPage<{
             alignItems='center'
           >
             <Box maxW='1300px' width='100%'>
-              <Heading as='h2' size='lg' mb={4} fontWeight='semibold'>
-                Currently included repositories
-              </Heading>
               <Box px={{ base: 0, sm: 4 }}>
-                <Flex justifyContent='flex-end' mb={2}>
-                  {/* <SearchInput
-                    size='sm'
-                    placeholder='Search in repositories'
-                    ariaLabel='Search in repositories'
-                    value={searchTerm}
-                    handleChange={handleSearchChange}
-                    isResponsive={false}
-                  /> */}
-                </Flex>
+                <Heading as='h2' fontSize='lg' fontWeight='semibold' mb={4}>
+                  Currently included repositories
+                </Heading>
+                <Text lineHeight='short'>
+                  Consequatur perspiciatis, enim aliquid eligendi laboriosam
+                  maiores. Distinctio possimus ullam molestias, temporibus eum
+                  ea cupiditate rerum, dicta esse illum officia.
+                </Text>
+                <Flex justifyContent='flex-end' fontSize='sm' />
+                <Divider my={4} />
+
                 <TableWithSearch
                   ariaLabel='List of repositories and resource catalogs'
                   caption='List of repositories and resource catalogs'
@@ -209,7 +207,6 @@ const Home: NextPage<{
                   display='flex'
                   justifyContent='flex-end'
                   mt={4}
-                  px={4}
                 >
                   {HOMEPAGE_COPY.sections.help.routes.map(
                     (
@@ -237,6 +234,7 @@ const Home: NextPage<{
                               variant={index % 2 ? 'solid' : 'outline'}
                               m={[0, 0, 0]}
                               my={[1, 2, 0]}
+                              size='md'
                               maxWidth={['unset', '250px']}
                               leftIcon={<Icon as={icon} />}
                             >
