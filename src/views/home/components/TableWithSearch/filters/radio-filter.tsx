@@ -47,17 +47,12 @@ export const RadioFilter = ({
               py: 2,
               borderRadius: 'semi',
               fontSize: 'sm',
+              fontWeight: 'medium',
+              lineHeight: 'shorter',
             })}
           >
-            <Text lineHeight='shorter' fontWeight='medium'>
-              {label}
-            </Text>
-            <Text
-              fontSize='xs'
-              lineHeight='shorter'
-              color='gray.800'
-              opacity='0.9'
-            >
+            <Text fontWeight='medium'>{label}</Text>
+            <Text fontSize='xs' color='gray.800' opacity='0.9'>
               {count}
             </Text>
           </HStack>
@@ -73,11 +68,11 @@ export const RadioFilter = ({
 
   return (
     <HStack
-      id='stackie'
       bg='blackAlpha.50'
       borderRadius='semi'
       alignItems='unset'
       spacing={0}
+      p={0.25}
       divider={
         <StackDivider
           borderColor='gray.200'

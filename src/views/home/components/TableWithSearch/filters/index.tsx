@@ -1,38 +1,40 @@
-import { Flex } from '@chakra-ui/react';
+import { Stack } from '@chakra-ui/react';
 import { RadioFilter } from './radio-filter';
 import { TableData } from '..';
-import { getDataTypeName } from '../helpers';
 import { useMemo } from 'react';
+import {
+  getCollectionTypes,
+  getConditionsOfAccess,
+  getDataTypes,
+} from './helpers';
+import { CheckboxList } from './checkbox-list';
 
 interface TableFiltersProps {
   data: TableData[];
+  filters: {} | Record<keyof TableData, string[]>;
   updateFilter: (filter: { [key: string]: string[] }) => void;
 }
-export const Filters = ({ data, updateFilter }: TableFiltersProps) => {
-  // For dataType, get all unique values and their counts
-  const dataTypes = useMemo(
-    () =>
-      data.reduce((acc, d) => {
-        if (!acc.find(a => a.name === 'All')) {
-          acc.push({ name: 'All', value: 'all', count: 0 });
-        }
-        if (!acc.find(a => a.value === d.dataType)) {
-          acc.push({
-            name: getDataTypeName(d.dataType),
-            value: d.dataType,
-            count: 1,
-          });
-        } else {
-          acc.find(a => a.value === d.dataType)!.count++;
-        }
-        acc.find(a => a.name === 'All')!.count++;
-        return acc;
-      }, [] as { name: string; value: string; count: number }[]),
+export const Filters = ({ data, filters, updateFilter }: TableFiltersProps) => {
+  // Data types: ResourceCatalog, Repository
+  const dataTypes = useMemo(() => getDataTypes({ data }), [data]);
+
+  // Collection corresponds to data['type] field: iid, generalist, other CollectionType
+  const collections = useMemo(() => getCollectionTypes({ data }), [data]);
+
+  // Conditions of access: Open, Restricted, Closed, Embargoed
+  const conditionsOfAccess = useMemo(
+    () => getConditionsOfAccess({ data }),
     [data],
   );
 
   return (
-    <Flex>
+    <Stack
+      direction='row'
+      spacing={4}
+      flex={1}
+      alignItems='center'
+      flexWrap='wrap'
+    >
       {/* Data type radio */}
       {dataTypes.length > 0 && (
         <RadioFilter
@@ -43,6 +45,29 @@ export const Filters = ({ data, updateFilter }: TableFiltersProps) => {
           }}
         />
       )}
-    </Flex>
+      {/* Collection types checkboxes */}
+      {collections.length > 0 && (
+        <CheckboxList
+          label='Collection Type'
+          property='type'
+          options={collections}
+          selectedOptions={filters?.['type' as keyof typeof filters] || []}
+          handleChange={updateFilter}
+        />
+      )}
+
+      {/* Conditions of Access types checkboxes */}
+      {conditionsOfAccess.length > 0 && (
+        <CheckboxList
+          label='Conditions of Access'
+          property='conditionsOfAccess'
+          options={conditionsOfAccess}
+          selectedOptions={
+            filters?.['conditionsOfAccess' as keyof typeof filters] || []
+          }
+          handleChange={updateFilter}
+        />
+      )}
+    </Stack>
   );
 };

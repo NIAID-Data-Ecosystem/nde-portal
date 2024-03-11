@@ -185,17 +185,15 @@ const Home: NextPage<{
                       property: 'abstract',
                     },
                     {
-                      title: 'Type',
-                      property: 'dataType',
-                      fields: ['dataType', 'type'],
-                      isSortable: true,
-                      props: { maxW: '200px', minW: '200px' },
-                    },
-                    {
                       title: 'Access',
                       property: 'conditionsOfAccess',
                       props: { maxW: '150px', minW: '150px' },
-                      isSortable: true,
+                    },
+                    {
+                      title: 'Type',
+                      property: 'dataType',
+                      fields: ['dataType', 'type'],
+                      props: { maxW: '200px', minW: '200px' },
                     },
                   ]}
                 />

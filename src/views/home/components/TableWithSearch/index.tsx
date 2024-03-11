@@ -1,11 +1,14 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import NextLink from 'next/link';
 import {
   Flex,
   Image,
   SkeletonCircle,
   SkeletonText,
+  Stack,
   Tag,
+  TagLabel,
+  TagCloseButton,
   Text,
 } from '@chakra-ui/react';
 import { Repository } from 'src/hooks/api/useRepoData';
@@ -20,7 +23,7 @@ import {
   getRepositoryTypeName,
 } from './helpers';
 import { Filters } from './filters/';
-import { useDebounce } from 'usehooks-ts';
+import useFilteredData from './filters/useFilteredData';
 
 export interface TableData
   extends Omit<ResourceCatalog, 'dataType' | 'type'>,
@@ -59,6 +62,10 @@ export const TableWithSearch: React.FC<TableWithSearchProps> = ({
   searchInputProps,
   ...props
 }) => {
+  /****** Handle Filters ******/
+  const [filters, setFilters] = useState<
+    Record<keyof TableData, string[]> | {}
+  >({});
   /****** Handle Search ******/
   const [searchTerm, setSearchTerm] = useState('');
   const handleSearchChange = useCallback(
@@ -67,48 +74,14 @@ export const TableWithSearch: React.FC<TableWithSearchProps> = ({
     [],
   );
 
-  // debounce the search term
-  const debouncedSearchTerm = useDebounce(searchTerm, 250);
+  const filteredData = useFilteredData(data, searchTerm, filters);
 
-  // filter the table data based on the search term
-  const filteredTableData = useMemo(() => {
-    return (
-      data?.filter(row => {
-        return SEARCH_FIELDS.some(field => {
-          const value = row[field];
-          if (Array.isArray(value)) {
-            return value.some(v =>
-              v.toLowerCase().includes(debouncedSearchTerm.toLowerCase()),
-            );
-          }
-          return value
-            ?.toLowerCase()
-            .includes(debouncedSearchTerm.toLowerCase());
-        });
-      }) || []
-    );
-  }, [data, debouncedSearchTerm]);
-
-  /****** Handle Filters ******/
-  const [filters, setFilters] = useState<
-    Record<keyof TableData, string[]> | {}
-  >({});
-
-  // filter the table data based on the filters
-  const filteredTableDataWithFilters = useMemo(() => {
-    return (
-      filteredTableData?.filter(row => {
-        return Object.entries(filters).every(([key, values]) => {
-          if (!values.length) return true;
-          if (Array.isArray(values)) {
-            const item = row[key as keyof TableData];
-            return item && values.includes(item);
-          }
-          return row[key as keyof TableData] === values;
-        });
-      }) || []
-    );
-  }, [filteredTableData, filters]);
+  const updateFilters = useCallback((filter: { [key: string]: string[] }) => {
+    setFilters(prevFilters => ({
+      ...prevFilters,
+      ...filter,
+    }));
+  }, []);
 
   return (
     <>
@@ -119,28 +92,55 @@ export const TableWithSearch: React.FC<TableWithSearchProps> = ({
       ) : (
         <>
           {/* filter the table */}
-          <Flex mb={4} justifyContent='space-between'>
+          <Stack
+            direction='row'
+            spacing={2}
+            mb={2}
+            justifyContent='space-between'
+            flexWrap='wrap'
+          >
             <Filters
               data={data}
-              updateFilter={filter =>
-                setFilters({
-                  ...filters,
-                  ...filter,
-                })
-              }
+              filters={filters}
+              updateFilter={updateFilters}
             />
             <SearchInput
-              size='sm'
+              size='md'
               placeholder='Search table'
               ariaLabel='Search table'
               value={searchTerm}
               handleChange={handleSearchChange}
               isResponsive={false}
             />
-          </Flex>
+          </Stack>
+          <Stack direction='row' spacing={2} mb={4}>
+            {Object.entries(filters).map(([key, values]) => {
+              if (key === 'dataType') return null;
+              return values.map(value => {
+                return (
+                  <Tag
+                    key={`${key}-${value}`}
+                    size='sm'
+                    variant='subtle'
+                    borderRadius='full'
+                    colorScheme='gray'
+                  >
+                    <TagLabel fontWeight='medium'>{value}</TagLabel>
+                    <TagCloseButton
+                      onClick={() => {
+                        updateFilters({
+                          [key]: values.filter(v => v !== value),
+                        });
+                      }}
+                    />
+                  </Tag>
+                );
+              });
+            })}
+          </Stack>
           <Table
             hasPagination
-            data={filteredTableDataWithFilters || []}
+            data={filteredData || []}
             tableHeadProps={{ bg: 'page.alt' }}
             tableContainerProps={{ overflowY: 'auto' }}
             getCells={props =>
