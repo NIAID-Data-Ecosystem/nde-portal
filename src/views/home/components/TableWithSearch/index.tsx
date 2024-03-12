@@ -66,6 +66,7 @@ export const TableWithSearch: React.FC<TableWithSearchProps> = ({
   const [filters, setFilters] = useState<
     Record<keyof TableData, string[]> | {}
   >({});
+
   /****** Handle Search ******/
   const [searchTerm, setSearchTerm] = useState('');
   const handleSearchChange = useCallback(
@@ -82,7 +83,6 @@ export const TableWithSearch: React.FC<TableWithSearchProps> = ({
       ...filter,
     }));
   }, []);
-
   return (
     <>
       {!isLoading && !data?.length ? (
@@ -113,19 +113,24 @@ export const TableWithSearch: React.FC<TableWithSearchProps> = ({
               isResponsive={false}
             />
           </Stack>
+          {/* Filter tags */}
           <Stack direction='row' spacing={2} mb={4}>
             {Object.entries(filters).map(([key, values]) => {
               if (key === 'dataType') return null;
               return values.map(value => {
+                let name = value;
+                if (key === 'type') {
+                  name = getRepositoryTypeName(value);
+                }
                 return (
                   <Tag
                     key={`${key}-${value}`}
                     size='sm'
                     variant='subtle'
                     borderRadius='full'
-                    colorScheme='gray'
+                    colorScheme='primary'
                   >
-                    <TagLabel fontWeight='medium'>{value}</TagLabel>
+                    <TagLabel fontWeight='medium'>{name}</TagLabel>
                     <TagCloseButton
                       onClick={() => {
                         updateFilters({
@@ -142,7 +147,7 @@ export const TableWithSearch: React.FC<TableWithSearchProps> = ({
             hasPagination
             data={filteredData || []}
             tableHeadProps={{ bg: 'page.alt' }}
-            tableContainerProps={{ overflowY: 'auto' }}
+            tableContainerProps={{ overflowY: 'auto', maxHeight: '500px' }}
             getCells={props =>
               getCells ? getCells(props) : <RepositoryCells {...props} />
             }
@@ -268,8 +273,7 @@ export const RepositoryCells = ({
           {column.fields?.map(field => {
             let colorScheme = 'gray';
             let variant = 'outline';
-            let label = data[field];
-            const tag = data[field];
+            let label = data[field] ?? '';
             if (field === 'dataType') {
               colorScheme = getColorSchemeForDataType(data[field]);
               variant = 'solid';
@@ -278,13 +282,13 @@ export const RepositoryCells = ({
               colorScheme = getColorSchemeForDataType(data.dataType);
               variant = 'subtle';
               if (data.dataType === 'Repository') {
-                label = getRepositoryTypeName(data[field]);
+                label = data[field] ? getRepositoryTypeName(label) : '';
               }
             }
 
             return (
               <Tag
-                key={data._id + tag}
+                key={data._id + label}
                 mr={2}
                 mb={2}
                 size='sm'

@@ -55,12 +55,12 @@ export const getDataTypeName = (type: TableData['dataType']) => {
   }
 };
 
-export const getRepositoryTypeName = (type: TableData['type']) => {
+export const getRepositoryTypeName = (type: string) => {
   if (type === 'iid') {
     return 'IID';
   } else if (type === 'generalist') {
     return 'Generalist';
   } else {
-    return 'Other';
+    return type;
   }
 };
