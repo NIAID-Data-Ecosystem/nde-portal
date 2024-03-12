@@ -157,7 +157,7 @@ const Home: NextPage<{
             <Box maxW='1300px' width='100%'>
               <Box px={{ base: 0, sm: 4 }}>
                 <Heading as='h2' fontSize='lg' fontWeight='semibold' mb={4}>
-                  Currently included repositories
+                  Currently included resources
                 </Heading>
                 <Text lineHeight='short'>
                   Consequatur perspiciatis, enim aliquid eligendi laboriosam

@@ -167,7 +167,7 @@ export const TableWithSearch: React.FC<TableWithSearchProps> = ({
 
           {/* <!-- Table --> */}
           <Table
-            hasPagination
+            // hasPagination
             data={filteredData || []}
             tableHeadProps={{ bg: 'page.alt' }}
             tableContainerProps={{ overflowY: 'auto', maxHeight: '500px' }}
