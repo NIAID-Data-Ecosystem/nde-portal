@@ -51,7 +51,7 @@ export const getDataTypeName = (type: TableData['dataType']) => {
   if (type === 'ResourceCatalog') {
     return 'Resource Catalog';
   } else {
-    return 'Repository';
+    return 'Dataset Repository';
   }
 };
 
