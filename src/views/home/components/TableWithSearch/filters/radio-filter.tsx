@@ -2,6 +2,7 @@ import {
   chakra,
   Flex,
   HStack,
+  Stack,
   StackDivider,
   Text,
   useRadio,
@@ -37,18 +38,19 @@ export const RadioFilter = ({
         >
           <HStack
             {...getLabelProps({
-              display: 'flex',
               alignItems: 'center',
               bg: state.isChecked ? 'white' : 'transparent',
               border: '1px',
               borderColor: state.isChecked ? 'gray.100' : 'transparent',
               boxShadow: state.isChecked ? 'sm' : 'none',
-              px: 4,
-              py: 2,
               borderRadius: 'semi',
+              display: 'flex',
+              flex: 1,
               fontSize: 'sm',
               fontWeight: 'medium',
               lineHeight: 'shorter',
+              px: 4,
+              py: 2,
             })}
           >
             <Text fontWeight='medium'>{label}</Text>
@@ -67,12 +69,12 @@ export const RadioFilter = ({
   });
 
   return (
-    <HStack
+    <Stack
+      id='table-radio'
+      alignItems='unset'
       bg='blackAlpha.50'
       borderRadius='semi'
-      alignItems='unset'
-      spacing={0}
-      p={0.25}
+      direction={{ base: 'column', sm: 'row' }}
       divider={
         <StackDivider
           borderColor='gray.200'
@@ -81,6 +83,9 @@ export const RadioFilter = ({
           alignSelf='center'
         />
       }
+      spacing={0}
+      p={0.25}
+      width={{ base: '100%', sm: 'unset' }}
       {...getRootProps}
     >
       {options.map(option => {
@@ -93,6 +98,6 @@ export const RadioFilter = ({
           />
         );
       })}
-    </HStack>
+    </Stack>
   );
 };

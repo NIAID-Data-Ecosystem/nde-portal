@@ -30,19 +30,19 @@ export const CheckboxList = ({
   selectedOptions,
 }: CheckboxListProps) => {
   return (
-    <Flex h='100%'>
+    <Flex flex={{ base: 1, sm: 'unset' }} height={{ base: 'unset' }}>
       <Popover>
         <PopoverTrigger>
           <Button
-            variant='outline'
-            size='sm'
             colorScheme='gray'
-            rightIcon={<FaCaretDown />}
-            h='100%'
-            py={1}
-            px={3}
-            lineHeight={'shorter'}
+            flex={1}
             fontWeight='medium'
+            h='100%'
+            lineHeight='shorter'
+            size='sm'
+            rightIcon={<FaCaretDown />}
+            variant='outline'
+            justifyContent='space-between'
           >
             {label}
           </Button>

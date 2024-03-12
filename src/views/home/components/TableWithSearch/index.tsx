@@ -91,7 +91,7 @@ export const TableWithSearch: React.FC<TableWithSearchProps> = ({
         </Flex>
       ) : (
         <>
-          {/* filter the table */}
+          {/* <!-- Filters --> */}
           <Stack
             direction='row'
             spacing={2}
@@ -104,45 +104,68 @@ export const TableWithSearch: React.FC<TableWithSearchProps> = ({
               filters={filters}
               updateFilter={updateFilters}
             />
-            <SearchInput
-              size='md'
-              placeholder='Search table'
-              ariaLabel='Search table'
-              value={searchTerm}
-              handleChange={handleSearchChange}
-              isResponsive={false}
-            />
           </Stack>
-          {/* Filter tags */}
-          <Stack direction='row' spacing={2} mb={4}>
-            {Object.entries(filters).map(([key, values]) => {
-              if (key === 'dataType') return null;
-              return values.map(value => {
-                let name = value;
-                if (key === 'type') {
-                  name = getRepositoryTypeName(value);
-                }
-                return (
-                  <Tag
-                    key={`${key}-${value}`}
-                    size='sm'
-                    variant='subtle'
-                    borderRadius='full'
-                    colorScheme='primary'
-                  >
-                    <TagLabel fontWeight='medium'>{name}</TagLabel>
-                    <TagCloseButton
-                      onClick={() => {
-                        updateFilters({
-                          [key]: values.filter(v => v !== value),
-                        });
-                      }}
-                    />
-                  </Tag>
-                );
-              });
-            })}
+
+          <Stack
+            direction={{ base: 'column', sm: 'row' }}
+            flexWrap='wrap'
+            pb={2}
+          >
+            {/* <!-- Filter Tags--> */}
+            <Stack
+              direction='row'
+              spacing={2}
+              flex={1}
+              flexWrap='wrap'
+              minW='300px'
+            >
+              {Object.entries(filters).map(([key, values]) => {
+                if (key === 'dataType') return null;
+                return values.map(value => {
+                  let name = value;
+                  if (key === 'type') {
+                    name = getRepositoryTypeName(value);
+                  }
+                  return (
+                    <Tag
+                      key={`${key}-${value}`}
+                      size='sm'
+                      variant='subtle'
+                      borderRadius='full'
+                      colorScheme='primary'
+                    >
+                      <TagLabel fontWeight='medium'>{name}</TagLabel>
+                      <TagCloseButton
+                        onClick={() => {
+                          updateFilters({
+                            [key]: values.filter(v => v !== value),
+                          });
+                        }}
+                      />
+                    </Tag>
+                  );
+                });
+              })}
+            </Stack>
+            {/* <!-- Search table --> */}
+            <Flex
+              justifyContent='flex-end'
+              width={{ base: '100%', md: 'unset' }}
+            >
+              <SearchInput
+                size='sm'
+                placeholder='Search table'
+                ariaLabel='Search table'
+                value={searchTerm}
+                handleChange={handleSearchChange}
+                isResponsive={false}
+                alignItems='flex-end'
+                flex={1}
+              />
+            </Flex>
           </Stack>
+
+          {/* <!-- Table --> */}
           <Table
             hasPagination
             data={filteredData || []}
