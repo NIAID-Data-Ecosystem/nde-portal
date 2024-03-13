@@ -160,9 +160,10 @@ const Home: NextPage<{
                   Currently included resources
                 </Heading>
                 <Text lineHeight='short'>
-                  Consequatur perspiciatis, enim aliquid eligendi laboriosam
-                  maiores. Distinctio possimus ullam molestias, temporibus eum
-                  ea cupiditate rerum, dicta esse illum officia.
+                  The following Resource Catalogs (collections of scientific
+                  information or research outputs) and Dataset Repositories
+                  (collections of data of a particular experimental type) are
+                  currently included in the NIAID Data Ecosystem
                 </Text>
                 <Flex justifyContent='flex-end' fontSize='sm' />
                 <Divider my={4} />
@@ -185,15 +186,10 @@ const Home: NextPage<{
                       property: 'abstract',
                     },
                     {
-                      title: 'Access',
-                      property: 'conditionsOfAccess',
-                      props: { maxW: '150px', minW: '150px' },
-                    },
-                    {
                       title: 'Type',
                       property: 'dataType',
                       fields: ['dataType', 'type'],
-                      props: { maxW: '200px', minW: '200px' },
+                      props: { maxW: '300px', minW: '300px' },
                     },
                   ]}
                 />

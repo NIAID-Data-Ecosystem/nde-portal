@@ -282,6 +282,16 @@ export const RepositoryCells = ({
           fontSize='sm'
         >
           <Text noOfLines={3}>{data[column.property]}</Text>
+          {data['conditionsOfAccess'] && (
+            <Flex mt={1}>
+              <ConditionsOfAccess
+                conditionsOfAccess={data['conditionsOfAccess']}
+                type={
+                  data.dataType === 'Repository' ? 'Dataset' : 'ResourceCatalog'
+                }
+              />
+            </Flex>
+          )}
         </SkeletonText>
       )}
       {column.property === 'dataType' && (
@@ -322,24 +332,6 @@ export const RepositoryCells = ({
               </Tag>
             );
           })}
-        </SkeletonText>
-      )}
-      {column.property === 'conditionsOfAccess' && (
-        <SkeletonText
-          data-testid={isLoading ? 'loading' : 'loaded'}
-          isLoaded={!isLoading && !!data}
-          noOfLines={2}
-          spacing='2'
-          w='100%'
-          fontSize='sm'
-          display='flex'
-        >
-          <ConditionsOfAccess
-            conditionsOfAccess={data[column.property]}
-            type={
-              data.dataType === 'Repository' ? 'Dataset' : 'ResourceCatalog'
-            }
-          />
         </SkeletonText>
       )}
     </Flex>
