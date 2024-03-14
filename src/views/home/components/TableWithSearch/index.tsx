@@ -213,11 +213,11 @@ export const RepositoryCells = ({
           isLoaded={!isLoading && !!data}
           w={isLoading ? '30px' : 'unset'}
           h={isLoading ? '30px' : 'unset'}
-          mr={isLoading || data?.icon ? 2 : 0}
+          mr={2}
           my={2}
           ml={0}
         >
-          {data?.icon && (
+          {data?.icon ? (
             <Flex alignItems='center'>
               {data?.url ? (
                 <Link
@@ -248,6 +248,15 @@ export const RepositoryCells = ({
                 />
               )}
             </Flex>
+          ) : (
+            <Image
+              src='/assets/collection.svg'
+              alt='Logo for data source resource catalogs'
+              objectFit='contain'
+              width='30px'
+              minWidth='30px'
+              height='30px'
+            />
           )}
         </SkeletonCircle>
       )}
