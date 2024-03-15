@@ -11,7 +11,6 @@ import {
   TableContainerProps,
 } from '@chakra-ui/react';
 import { TableContainer } from 'src/components/table/components/table-container';
-import { TableSortToggle } from 'src/components/table/components/sort-toggle';
 import { TableWrapper } from 'src/components/table/components/wrapper';
 import { TablePagination } from 'src/components/table/components/pagination';
 import { useTableSort } from 'src/components/table/hooks/useTableSort';
@@ -81,11 +80,13 @@ export const Table: React.FC<TableProps<any>> = ({
   const [{ data: tableData, orderBy, sortBy }, updateSort] = useTableSort({
     data: dataWithUniqueID,
     accessor,
-    orderBy: 'label',
+    orderBy: columns[0].property,
     isSortAscending: true,
   });
   // [size]: num of rows per page
-  const [size, setSize] = useState(hasPagination ? numRows[0] : data.length);
+  const [size, setSize] = useState(() =>
+    hasPagination ? numRows[0] : data.length,
+  );
 
   // [from]: current page number
   const [from, setFrom] = useState(0);
@@ -96,7 +97,11 @@ export const Table: React.FC<TableProps<any>> = ({
   useEffect(() => {
     setSize(hasPagination ? numRows[0] : data.length);
     // update rows to display based on current page number and num of rows per page
-    setRows(tableData.slice(from * size, from * size + size));
+    setRows(
+      hasPagination
+        ? tableData.slice(from * size, from * size + size)
+        : tableData,
+    );
   }, [tableData, size, from, data.length, hasPagination, numRows]);
 
   return (
@@ -126,18 +131,16 @@ export const Table: React.FC<TableProps<any>> = ({
                       label={column.title}
                       isSelected={column.property === orderBy}
                       borderBottomColor={`${colorScheme}.200`}
+                      isSortable={column.isSortable}
+                      tableSortToggleProps={{
+                        isSelected: column.property === orderBy,
+                        sortBy,
+                        handleToggle: (sortByAsc: boolean) => {
+                          updateSort(column.property, sortByAsc);
+                        },
+                      }}
                       {...column.props}
-                    >
-                      {column.property && column.isSortable && (
-                        <TableSortToggle
-                          isSelected={column.property === orderBy}
-                          sortBy={sortBy}
-                          handleToggle={(sortByAsc: boolean) => {
-                            updateSort(column.property, sortByAsc);
-                          }}
-                        />
-                      )}
-                    </Th>
+                    ></Th>
                   );
                 })}
               </Tr>
@@ -148,25 +151,24 @@ export const Table: React.FC<TableProps<any>> = ({
                   <Row
                     as='tr'
                     key={`table-tr-${row.key}`}
-                    flexDirection='column'
+                    flexDirection='row'
                     borderColor='gray.100'
                   >
-                    <Flex as='td' role='cell'>
-                      {columns.map(column => {
-                        return (
-                          <Cell
-                            key={`table-td-${row.key}-${column.property}`}
-                            as='div'
-                            alignItems='center'
-                            sx={{ '>div': { my: 0 } }}
-                            {...column.props}
-                          >
-                            {/* generate the cells */}
-                            {getCells({ column, data: row, isLoading })}
-                          </Cell>
-                        );
-                      })}
-                    </Flex>
+                    {columns.map(column => {
+                      return (
+                        <Cell
+                          key={`table-td-${row.key}-${column.property}`}
+                          as='td'
+                          role='cell'
+                          alignItems='center'
+                          sx={{ '>div': { my: 0 } }}
+                          {...column.props}
+                        >
+                          {/* generate the cells */}
+                          {getCells({ column, data: row, isLoading })}
+                        </Cell>
+                      );
+                    })}
                   </Row>
                 );
               })}

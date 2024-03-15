@@ -292,9 +292,7 @@ const Sections = ({
               </>
             )}
             {/* Show funding */}
-            {/* {section.hash === 'funding' && (
-              <FundingTable isLoading={isLoading} {...data} />
-            )} */}
+
             {section.hash === 'funding' && (
               <Funding isLoading={isLoading} data={data?.funding || []} />
             )}

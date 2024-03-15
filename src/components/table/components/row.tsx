@@ -30,7 +30,7 @@ export const Row = React.memo(({ children, ...props }: FlexProps) => {
 
 export const RowWithDrawer = React.memo(({ children, ...props }: FlexProps) => {
   return (
-    <Flex as='tr' role='row' flex={1} {...props}>
+    <Flex flex={1} {...props}>
       <Flex py={0} flexDirection='column' flex={1}>
         <Accordion allowToggle>
           <AccordionItem border='none'>

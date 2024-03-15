@@ -7,7 +7,6 @@ import {
   Tab,
   Tag,
   TabPanels,
-  TabProps,
 } from '@chakra-ui/react';
 import { Repository } from 'src/hooks/api/useRepoData';
 
@@ -18,23 +17,15 @@ interface RepositoryTabsProps {
     label: string;
     count: number;
   }[];
-  onChange: (index: number) => void;
 }
 export const RepositoryTabs: React.FC<RepositoryTabsProps> = ({
   children,
   tabs,
-  onChange,
   ...props
 }) => {
   return (
     <Flex flexDirection='column'>
-      <Tabs
-        w='100%'
-        colorScheme='primary'
-        size='sm'
-        onChange={onChange}
-        {...props}
-      >
+      <Tabs w='100%' colorScheme='primary' size='sm' {...props}>
         <TabList
           flexWrap={['wrap', 'nowrap']}
           justifyContent={['center', 'flex-start']}

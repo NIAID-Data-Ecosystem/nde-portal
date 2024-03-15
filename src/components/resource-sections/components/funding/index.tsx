@@ -26,7 +26,6 @@ import {
 } from 'src/components/table/components/cell';
 import { Row, RowWithDrawer } from 'src/components/table/components/row';
 import { TableContainer } from 'src/components/table/components/table-container';
-import { TableSortToggle } from 'src/components/table/components/sort-toggle';
 import { TableWrapper } from 'src/components/table/components/wrapper';
 import { TablePagination } from 'src/components/table/components/pagination';
 import { useTableSort } from 'src/components/table/hooks/useTableSort';
@@ -53,6 +52,7 @@ const COLUMNS = [
 
 interface Row extends FundingType {
   key: string;
+  hasRowDrawer: boolean;
 }
 interface FundingProps {
   isLoading: boolean;
@@ -76,6 +76,19 @@ export const Funding: React.FC<FundingProps> = ({
           key: uniqueId(`funding-${funding.identifier || idx}`),
           name: funding.name || '',
           funderName,
+          hasRowDrawer: funding.funder
+            ? Array.isArray(funding.funder)
+              ? funding.funder.some(funderItem =>
+                  Object.keys(funderItem).some(
+                    key =>
+                      key !== '@type' && key !== 'name' && key !== 'identifier',
+                  ),
+                )
+              : Object.keys(funding.funder).some(
+                  key =>
+                    key !== '@type' && key !== 'name' && key !== 'identifier',
+                )
+            : false,
         };
       }),
     [fundingData],
@@ -108,7 +121,6 @@ export const Funding: React.FC<FundingProps> = ({
   if (!isLoading && funding?.length === 0) {
     return <Text>No funding data available.</Text>;
   }
-
   return (
     <Skeleton isLoaded={!isLoading} overflow='auto'>
       <Heading as='h4' fontSize='sm' mx={1} mb={4} fontWeight='semibold'>
@@ -135,37 +147,37 @@ export const Funding: React.FC<FundingProps> = ({
                       label={column.title}
                       isSelected={column.key === orderBy}
                       borderBottomColor={`${getMetadataTheme('funding')}.200`}
+                      isSortable={true}
+                      tableSortToggleProps={{
+                        isSelected: column.key === orderBy,
+                        sortBy,
+                        handleToggle: (sortByAsc: boolean) => {
+                          updateSort(column.key, sortByAsc);
+                        },
+                      }}
                       {...column.props}
-                    >
-                      {column.key && (
-                        <TableSortToggle
-                          isSelected={column.key === orderBy}
-                          sortBy={sortBy}
-                          handleToggle={(sortByAsc: boolean) => {
-                            updateSort(column.key, sortByAsc);
-                          }}
-                        />
-                      )}
-                    </Th>
+                    />
                   );
                 })}
               </Tr>
             </thead>
-            <tbody>
+            <Flex as='tbody' flexDirection='column'>
               {rows.map(funding => {
                 return (
-                  <Row
-                    as='tr'
-                    key={`table-tr-${funding.key}`}
-                    flexDirection='column'
-                    borderColor='gray.200'
-                  >
-                    <Flex as='td' role='cell'>
+                  <React.Fragment key={`table-tr-${funding.key}`}>
+                    <Row
+                      as='tr'
+                      flexDirection='row'
+                      borderTop='1px solid'
+                      borderTopColor='gray.200'
+                      borderBottom='none'
+                    >
                       {COLUMNS.map(column => {
                         return (
                           <Cell
                             key={`table-td-${funding.key}-${column.key}`}
-                            as='div'
+                            as='td'
+                            role='cell'
                             {...column.props}
                           >
                             {column.key === 'name' && (
@@ -179,10 +191,10 @@ export const Funding: React.FC<FundingProps> = ({
                               (Array.isArray(funding?.funder)
                                 ? funding.funder
                                 : [funding.funder]
-                              ).map(funder => {
+                              ).map((funder, idx) => {
                                 return (
                                   <Box
-                                    key={`table-td-funder-${funding.key}-${funder?.identifier}-${funder?.name}`}
+                                    key={`table-td-funder-${funding.key}-${funder?.identifier}-${funder?.name}-${idx}`}
                                     as='span'
                                     display='block'
                                     mb={Array.isArray(funding?.funder) ? 4 : 0}
@@ -215,35 +227,22 @@ export const Funding: React.FC<FundingProps> = ({
                           </Cell>
                         );
                       })}
-                    </Flex>
-                    {funding?.funder &&
-                      // check that funder has additional fields than @type, name, and identifier
-                      (Array.isArray(funding.funder)
-                        ? funding.funder.some(funderItem =>
-                            Object.keys(funderItem).some(
-                              key =>
-                                key !== '@type' &&
-                                key !== 'name' &&
-                                key !== 'identifier',
-                            ),
-                          )
-                        : Object.keys(funding.funder).some(
-                            key =>
-                              key !== '@type' &&
-                              key !== 'name' &&
-                              key !== 'identifier',
-                          )) && (
+                    </Row>
+
+                    {funding?.hasRowDrawer && (
+                      <Row className='row-drawer' border='none'>
                         <RowWithDrawer as='td' role='cell'>
                           <FundingDrawerContent
                             id={funding.key}
                             funder={funding.funder}
                           />
                         </RowWithDrawer>
-                      )}
-                  </Row>
+                      </Row>
+                    )}
+                  </React.Fragment>
                 );
               })}
-            </tbody>
+            </Flex>
           </Table>
         </TableContainer>
         <TablePagination

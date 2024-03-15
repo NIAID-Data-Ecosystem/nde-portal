@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import type { NextPage } from 'next';
 import {
   Box,
@@ -6,10 +6,6 @@ import {
   ButtonGroup,
   Flex,
   Icon,
-  Tab,
-  Tabs,
-  TabList,
-  TabPanels,
   Text,
   TabPanel,
   Heading,
@@ -34,10 +30,6 @@ import {
 import { NewsOrEventsObject, fetchEvents } from './news';
 import { TableWithSearch } from 'src/views/home/components/TableWithSearch';
 import { RepositoryTabs } from 'src/views/home/components/RepositoryTabs';
-import { ResourceCatalogsTable } from 'src/views/home/components/ResourceCatalogsTable';
-import { fetchSearchResults } from 'src/utils/api';
-import { FetchSearchResultsResponse } from 'src/utils/api/types';
-import { useQuery } from 'react-query';
 import { SearchInput } from 'src/components/search-input';
 
 const Home: NextPage<{
@@ -47,9 +39,6 @@ const Home: NextPage<{
   };
   error?: { message: string };
 }> = props => {
-  const [selectedTab, setSelectedTab] = useState(
-    'iid' as Repository['type'] | 'resourceCatalog',
-  );
   /****** Handle Search ******/
   const [searchTerm, setSearchTerm] = useState('');
   const handleSearchChange = useCallback(
@@ -58,30 +47,6 @@ const Home: NextPage<{
     [],
   );
 
-  /****** Resource Catalogs Data ******/
-  const {
-    isLoading: resourceCatalogsLoading,
-    error: resourceCatalogsError,
-    data: resourceCatalogsData,
-  } = useQuery<FetchSearchResultsResponse | undefined, Error>(
-    [
-      'resource-catalogs',
-      {
-        queryString: '@type:"ResourceCatalog"',
-        fields: ['collectionType', 'name'],
-      },
-    ],
-    () => {
-      return fetchSearchResults({
-        q: '@type:"ResourceCatalog"',
-        fields: ['collectionType', 'name'],
-        size: 100,
-      });
-    },
-    {
-      refetchOnWindowFocus: false,
-    },
-  );
   /****** Repository Data ******/
   const { isLoading, data: repositories, error } = useRepoData();
 
@@ -205,7 +170,7 @@ const Home: NextPage<{
       </PageHeader>
       <>
         {/**** Repositories Table section *****/}
-        {!(error || resourceCatalogsError) && (
+        {!error && (
           <PageContent
             flexDirection='column'
             bg='#fff'
@@ -213,144 +178,44 @@ const Home: NextPage<{
             alignItems='center'
           >
             <Box maxW='1300px' width='100%'>
+              <Heading as='h2' size='lg' mb={4} fontWeight='semibold'>
+                Currently included repositories
+              </Heading>
               <Box px={{ base: 0, sm: 4 }}>
-                <Tabs
-                  variant='soft-rounded'
-                  colorScheme='primary'
-                  onChange={index => {
-                    setSearchTerm('');
-                    setSelectedTab(() =>
-                      index === 1 ? 'resourceCatalog' : 'iid',
-                    );
-                  }}
-                >
-                  <TabList border='1px solid' borderColor='gray.100'>
-                    <Tab
-                      borderRadius='none'
-                      borderRight='1px solid'
-                      borderColor='gray.100'
-                      color='gray.800'
-                      _selected={{
-                        color: 'white',
-                        bg: 'primary.500',
-                        borderColor: 'primary.500',
-                      }}
-                    >
-                      <Heading
-                        as='h2'
-                        size='inherit'
-                        fontWeight='inherit'
-                        color='inherit'
-                      >
-                        Currently included repositories
-                      </Heading>
-                    </Tab>
-                    {resourceCatalogsData?.results &&
-                      resourceCatalogsData?.results?.length > 0 && (
-                        <Tab
-                          borderRadius='none'
-                          borderRight='1px solid'
-                          borderColor='gray.100'
-                          color='gray.800'
-                          _selected={{
-                            color: 'white',
-                            bg: 'primary.500',
-                            borderColor: 'primary.500',
-                          }}
-                        >
-                          <Heading
-                            as='h2'
-                            size='inherit'
-                            fontWeight='inherit'
-                            color='inherit'
-                          >
-                            Resource index
-                          </Heading>
-                        </Tab>
-                      )}
-                  </TabList>
-                  <TabPanels
-                    borderRadius='semi'
-                    border='1px solid'
-                    borderColor='page.alt'
-                  >
-                    <TabPanel>
-                      <>
-                        <Flex justifyContent='flex-end' mb={2}>
-                          <SearchInput
-                            size='sm'
-                            placeholder='Search in repositories'
-                            ariaLabel='Search in repositories'
-                            value={searchTerm}
-                            handleChange={handleSearchChange}
-                            isResponsive={false}
-                          />
-                        </Flex>
-                        <RepositoryTabs
-                          tabs={repositoryTabs}
-                          onChange={index => {
-                            setSelectedTab(
-                              repositoryTabs[index as unknown as number].type,
-                            );
-                          }}
-                        >
-                          {repositoryTabs.map(tab => (
-                            <TabPanel key={tab.type} id={tab.type} px={0}>
-                              <TableWithSearch
-                                ariaLabel='Currently included repositories'
-                                caption='Currently included repositories'
-                                data={tab.data}
-                                isLoading={isLoading}
-                                columns={[
-                                  {
-                                    title: 'name',
-                                    property: 'label',
-                                    isSortable: true,
-                                    props: { maxW: '400px' },
-                                  },
-                                  {
-                                    title: 'description',
-                                    property: 'abstract',
-                                  },
-                                ]}
-                              />
-                            </TabPanel>
-                          ))}
-                        </RepositoryTabs>
-                      </>
+                <Flex justifyContent='flex-end' mb={2}>
+                  <SearchInput
+                    size='sm'
+                    placeholder='Search in repositories'
+                    ariaLabel='Search in repositories'
+                    value={searchTerm}
+                    handleChange={handleSearchChange}
+                    isResponsive={false}
+                  />
+                </Flex>
+                <RepositoryTabs tabs={repositoryTabs}>
+                  {repositoryTabs.map(tab => (
+                    <TabPanel key={tab.type} id={tab.type} px={0}>
+                      <TableWithSearch
+                        ariaLabel='Currently included repositories'
+                        caption='Currently included repositories'
+                        data={tab.data}
+                        isLoading={isLoading}
+                        columns={[
+                          {
+                            title: 'name',
+                            property: 'label',
+                            isSortable: true,
+                            props: { maxW: '400px' },
+                          },
+                          {
+                            title: 'description',
+                            property: 'abstract',
+                          },
+                        ]}
+                      />
                     </TabPanel>
-                    {selectedTab === 'resourceCatalog' &&
-                      resourceCatalogsData?.results &&
-                      resourceCatalogsData?.results?.length > 0 && (
-                        <TabPanel>
-                          <Flex justifyContent='flex-end' mb={2}>
-                            <SearchInput
-                              size='sm'
-                              placeholder='Search in resource index'
-                              ariaLabel='Search in resource index'
-                              value={searchTerm}
-                              handleChange={handleSearchChange}
-                              isResponsive={false}
-                            />
-                          </Flex>
-                          <ResourceCatalogsTable
-                            ariaLabel='Resource index table'
-                            caption='Resource index table'
-                            isLoading={resourceCatalogsLoading}
-                            data={resourceCatalogsData?.results.filter(
-                              resource =>
-                                resource.collectionType
-                                  ?.toLowerCase()
-                                  .includes(searchTerm.toLowerCase()) ||
-                                resource.name
-                                  ?.toLowerCase()
-                                  .includes(searchTerm.toLowerCase()),
-                            )}
-                          />
-                        </TabPanel>
-                      )}
-                  </TabPanels>
-                </Tabs>
+                  ))}
+                </RepositoryTabs>
 
                 <ButtonGroup
                   spacing={[0, 2]}

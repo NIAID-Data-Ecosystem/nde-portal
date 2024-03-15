@@ -109,10 +109,11 @@ interface CuratedBy {
 
 export interface Distribution {
   encodingFormat: string | null;
+  contentSize: number | null;
   contentUrl: string | null;
-  dateCreated: Date | string | null;
-  dateModified: Date | string | null;
-  datePublished: Date | string | null;
+  dateCreated: string | null;
+  dateModified: string | null;
+  datePublished: string | null;
   description: string | null;
   name: string | null;
   '@id': string | null;

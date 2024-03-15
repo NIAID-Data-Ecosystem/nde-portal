@@ -1,5 +1,4 @@
 import { IconProps } from '@chakra-ui/react';
-import { Link, LinkProps } from 'src/components/link';
 import {
   FaFileCode,
   FaFileCsv,
@@ -11,15 +10,7 @@ import {
   FaFileWord,
   FaFileZipper,
 } from 'react-icons/fa6';
-import { Column } from './old-table';
 import { MetadataIcon } from '../icon';
-
-// Checks if string is a valid url.
-export const isValidUrl = (str: string) => {
-  var regexp =
-    /(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/;
-  return regexp.test(str);
-};
 
 export const getFileIcon = (value: string) => {
   if (!value) {
@@ -108,49 +99,9 @@ export const getFileIcon = (value: string) => {
   return { icon, color };
 };
 
-interface CellProps extends LinkProps {
-  value: any;
-}
-// Format table cells with links if needed
-export const FormatLinkCell = ({ value, ...props }: CellProps) => {
-  if (isValidUrl(value)) {
-    return (
-      <Link href={value} isExternal {...props}>
-        {value}
-      </Link>
-    );
-  } else {
-    return <>{Array.isArray(value) ? value.join(',') : value || '-'}</>;
-  }
-};
-
-// Format table columns with a config file. The [showEmptyColumns] flag decides whether columns without data should still be displayed.
-export const getTableColumns = (
-  data: { [key: string]: any }[],
-  config: { [key: string]: string },
-  showEmptyColumns: boolean = true,
-): Column[] => {
-  return Object.values(
-    data?.reduce((r, d, i) => {
-      Object.entries(d).map(([k, v]) => {
-        // When showEmptyColumns is selected, we show the property even if there is associated value, otherwise we chack taht there is an associated value.
-        if (config[k]) {
-          if (
-            (showEmptyColumns && !r[k]) ||
-            (!showEmptyColumns && v && !r[k])
-          ) {
-            r[k] = { key: k, title: config[k] };
-          }
-        }
-      });
-      return r;
-    }, {} as { [key: string]: Column }),
-  );
-};
-
 export const getTruncatedText = (
   description?: string | null,
-  isOpen?: boolean,
+  showFullDescription?: boolean,
   MAX_CHARS = 144,
 ) => {
   if (!description) {
@@ -161,7 +112,12 @@ export const getTruncatedText = (
   const text =
     description.length < MAX_CHARS
       ? description
-      : description.substring(0, isOpen ? description.length : 144);
-
-  return { text, hasMore: description.length > MAX_CHARS };
+      : description.substring(
+          0,
+          showFullDescription ? description.length : MAX_CHARS,
+        );
+  return {
+    text,
+    hasMore: showFullDescription ? false : description.length > MAX_CHARS,
+  };
 };
