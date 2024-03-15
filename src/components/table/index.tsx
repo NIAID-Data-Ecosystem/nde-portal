@@ -95,6 +95,7 @@ export const Table: React.FC<TableProps<any>> = ({
   const [rows, setRows] = useState(tableData);
 
   useEffect(() => {
+    setSize(hasPagination ? numRows[0] : data.length);
     // update rows to display based on current page number and num of rows per page
     setRows(
       hasPagination
@@ -150,25 +151,24 @@ export const Table: React.FC<TableProps<any>> = ({
                   <Row
                     as='tr'
                     key={`table-tr-${row.key}`}
-                    flexDirection='column'
+                    flexDirection='row'
                     borderColor='gray.100'
                   >
-                    <Flex as='td' role='cell'>
-                      {columns.map(column => {
-                        return (
-                          <Cell
-                            key={`table-td-${row.key}-${column.property}`}
-                            as='div'
-                            alignItems='center'
-                            sx={{ '>div': { my: 0 } }}
-                            {...column.props}
-                          >
-                            {/* generate the cells */}
-                            {getCells({ column, data: row, isLoading })}
-                          </Cell>
-                        );
-                      })}
-                    </Flex>
+                    {columns.map(column => {
+                      return (
+                        <Cell
+                          key={`table-td-${row.key}-${column.property}`}
+                          as='td'
+                          role='cell'
+                          alignItems='center'
+                          sx={{ '>div': { my: 0 } }}
+                          {...column.props}
+                        >
+                          {/* generate the cells */}
+                          {getCells({ column, data: row, isLoading })}
+                        </Cell>
+                      );
+                    })}
                   </Row>
                 );
               })}

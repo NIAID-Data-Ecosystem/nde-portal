@@ -27,39 +27,36 @@ export const useTableSort = ({
   data,
   accessor = v => v,
   orderBy: orderByInitial,
-  isSortAscending,
+  isSortAscending = true,
 }: TableSortProps): any => {
   const accessorFn = useCallback(accessor, [accessor]);
-
   const [orderBy, setOrderBy] = useState<string | null>(orderByInitial || null);
   const [sortByAsc, setSortByAsc] = useState(isSortAscending);
 
   const items = useMemo(() => {
-    if (!data) {
-      return [];
+    if (!data || !orderBy) {
+      return data;
     }
 
-    const d = [...data].sort((a, b) => {
-      if (!orderBy) {
-        return 0; // Return 0 for no change in order when orderBy is not set
-      }
-      // Access values and treat nulls as empty strings
-      let value_a = accessorFn(a[orderBy]);
-      let value_b = accessorFn(b[orderBy]);
+    const sorted = [...data].sort((a, b) => {
+      let valueA = accessorFn(a[orderBy]);
+      let valueB = accessorFn(b[orderBy]);
 
-      // Treat null values as empty strings
-      value_a = !value_a ? '' : value_a;
-      value_b = !value_b ? '' : value_b;
-
-      // No need to check if values are strings, as we are treating them as strings by default
-      if (sortByAsc) {
-        return value_a.toLowerCase().localeCompare(value_b.toLowerCase());
-      } else {
-        return value_b.toLowerCase().localeCompare(value_a.toLowerCase());
-      }
+      // Normalize null or undefined to either 0 or '' depending on type (number vs. otherwise)
+      valueA = valueA ?? (typeof valueA === 'number' ? 0 : '');
+      valueB = valueB ?? (typeof valueB === 'number' ? 0 : '');
+      // Check if values are numeric and use appropriate comparison
+      const comparisonResult =
+        typeof valueA === 'number' && typeof valueB === 'number'
+          ? valueA - valueB
+          : String(valueA).localeCompare(String(valueB), undefined, {
+              sensitivity: 'base',
+              numeric: true,
+            });
+      return sortByAsc ? comparisonResult : -comparisonResult;
     });
 
-    return d;
+    return sorted;
   }, [accessorFn, data, orderBy, sortByAsc]);
 
   const handleSortOrder = useCallback(

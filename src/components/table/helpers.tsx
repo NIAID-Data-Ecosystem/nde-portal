@@ -101,7 +101,7 @@ export const getFileIcon = (value: string) => {
 
 export const getTruncatedText = (
   description?: string | null,
-  isOpen?: boolean,
+  showFullDescription?: boolean,
   MAX_CHARS = 144,
 ) => {
   if (!description) {
@@ -112,7 +112,12 @@ export const getTruncatedText = (
   const text =
     description.length < MAX_CHARS
       ? description
-      : description.substring(0, isOpen ? description.length : 144);
-
-  return { text, hasMore: description.length > MAX_CHARS };
+      : description.substring(
+          0,
+          showFullDescription ? description.length : MAX_CHARS,
+        );
+  return {
+    text,
+    hasMore: showFullDescription ? false : description.length > MAX_CHARS,
+  };
 };

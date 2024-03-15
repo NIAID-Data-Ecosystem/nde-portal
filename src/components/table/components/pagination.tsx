@@ -139,7 +139,7 @@ export const TablePagination: React.FC<TablePaginationProps> = ({
             mx={[0, 2]}
             cursor='pointer'
             bg='white'
-            aria-label={'Select number of rows per page'}
+            aria-label='Select number of rows per page'
           >
             {pageSizeOptions.map((pageSizeOption, i) => {
               return (
@@ -174,7 +174,7 @@ export const TablePagination: React.FC<TablePaginationProps> = ({
             my={[2, 0]}
             cursor='pointer'
             bg='white'
-            aria-label={'Select page'}
+            aria-label='Select page'
           >
             {Array.from(Array(numPages)).map((_, i) => {
               return (

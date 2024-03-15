@@ -99,6 +99,8 @@ export const Th = React.memo(
     tableSortToggleProps,
     ...props
   }: ThProps) => {
+    const bg = isSelected ? 'page.alt' : 'transparent';
+    const py = isSortable ? 1 : 2;
     return (
       <Flex
         as='th'
@@ -107,13 +109,13 @@ export const Th = React.memo(
         label={label}
         alignItems='center'
         fontWeight='bold'
-        bg={isSelected ? 'page.alt' : 'transparent'}
+        bg={bg}
         borderBottom='1px solid'
         borderBottomColor={`${colorScheme}.200`}
         overflow='hidden'
         flex={1}
         px={4}
-        py={isSortable ? 1 : 2}
+        py={py}
         minW='280px'
         fontSize='xs'
         lineHeight='short'

@@ -62,7 +62,7 @@ const ROW_SIZES = [5, 10, 50, 100];
 const COLUMNS = [
   { key: 'name', title: 'Name' },
   {
-    key: 'type',
+    key: '@type',
     title: 'Type',
     props: { w: '200px', maxW: '200px', minW: 'unset' },
   },
@@ -234,7 +234,7 @@ const BasedOnTable = ({
                               )}
 
                               {/* type */}
-                              {column.key === 'type' &&
+                              {column.key === '@type' &&
                                 (item.type.length > 0 &&
                                 item.type.some(type => {
                                   return type.name || type.url;

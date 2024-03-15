@@ -1,15 +1,5 @@
 import React from 'react';
-import NextLink from 'next/link';
-import {
-  Box,
-  Flex,
-  Icon,
-  Image,
-  SkeletonCircle,
-  SkeletonText,
-  Tag,
-  Text,
-} from '@chakra-ui/react';
+import { Box, Flex, Icon, Tag, Text } from '@chakra-ui/react';
 import { Distribution, FormattedResource } from 'src/utils/api/types';
 import { Table } from 'src/components/table';
 import { Link } from 'src/components/link';
@@ -115,7 +105,7 @@ export const DistributionCells = ({
       >
         {column.property === 'contentUrl' && (
           <Link href={data?.[column.property] || ''} isExternal noOfLines={2}>
-            {data?.[column.property]}``
+            {data?.[column.property]}
           </Link>
         )}
         {(column.property === 'name' ||
