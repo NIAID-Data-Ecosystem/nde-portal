@@ -24,13 +24,13 @@ export const CompatibilityBadge = () => {
 
   return (
     <Stack spacing={8}>
-      <Box>
+      {/* <Box>
         <Text color='gray.600' fontSize='sm'>
           Monochrome GridPlot
         </Text>
         <Flex alignItems='center'>
           <Image
-            mr={20}
+            mr={10}
             src='/assets/temp/monochrome-gridplot-legend.png'
             alt='monochrome-gridplot-legend'
           />
@@ -74,16 +74,34 @@ export const CompatibilityBadge = () => {
             </Stack>
           </ScrollContainer>
         </Flex>
+      </Box> */}
+      <Box position='sticky' top={0} bg='white' zIndex='10000'>
+        <Text color='gray.600' fontSize='sm'>
+          Legend
+        </Text>
+        <Image
+          src='/assets/temp/viz-legend.png'
+          alt='viz-legend'
+          border='1px solid'
+          borderColor='gray.200'
+          borderRadius='semi'
+          mb={2}
+        />
       </Box>
       <Box>
         <Text color='gray.600' fontSize='sm'>
           Duochrome GridPlot
         </Text>
+
+        <Flex></Flex>
         <Flex alignItems='center'>
           <Image
-            mr={20}
-            src='/assets/temp/duochrome-gridplot-legend.png'
+            src='/assets/temp/02.png'
             alt='duochrome-gridplot-legend'
+            border='1px solid'
+            borderColor='gray.200'
+            borderRadius='semi'
+            mr={10}
           />
           <ScrollContainer>
             <Stack w='100%' flexDirection='row' spacing={4}>
@@ -130,11 +148,15 @@ export const CompatibilityBadge = () => {
         <Text color='gray.600' fontSize='sm'>
           BarChart GridPlot Hybrid
         </Text>
+        <Flex></Flex>
         <Flex alignItems='center'>
           <Image
-            mr={20}
-            src='/assets/temp/BarChart-GridPlot-Hybrid.png'
+            src='/assets/temp/03.png'
             alt='BarChart-GridPlot-Hybrid'
+            border='1px solid'
+            borderColor='gray.200'
+            borderRadius='semi'
+            mr={10}
           />
           <ScrollContainer>
             <Stack w='100%' flexDirection='row' spacing={4}>
@@ -183,7 +205,14 @@ export const CompatibilityBadge = () => {
           Arcs
         </Text>
         <Flex alignItems='center'>
-          <Image src='/assets/temp/Arcs.png' alt='Arcs' mr={20} />
+          <Image
+            src='/assets/temp/04.png'
+            alt='Arcs'
+            border='1px solid'
+            borderColor='gray.200'
+            borderRadius='semi'
+            mr={10}
+          />
           <ScrollContainer>
             <Stack w='100%' flexDirection='row' spacing={4}>
               <Flex>
@@ -228,11 +257,15 @@ export const CompatibilityBadge = () => {
         <Text color='gray.600' fontSize='sm'>
           Arcs 2
         </Text>
+        <Flex></Flex>
         <Flex alignItems='center'>
           <Image
-            mr={20}
-            src='/assets/temp/arc-segments-two.png'
+            src='/assets/temp/05.png'
             alt='arc-segments-two'
+            border='1px solid'
+            borderColor='gray.200'
+            borderRadius='semi'
+            mr={10}
           />
           <ScrollContainer>
             <Stack w='100%' flexDirection='row' spacing={4}>
@@ -278,44 +311,55 @@ export const CompatibilityBadge = () => {
         <Text color='gray.600' fontSize='sm'>
           Circular
         </Text>
-        <ScrollContainer>
-          <Stack w='100%' flexDirection='row' spacing={4}>
-            <Flex>
-              {sources.length > 0 &&
-                sources.map((source, idx) => {
-                  return (
-                    <Flex
-                      key={source.sourceInfo.name}
-                      flexDirection='column'
-                      alignItems='center'
-                    >
-                      <Box w='100px' mb={1}>
-                        <ParentSize>
-                          {({ width, height }) => (
-                            <ArcCircle
-                              width={width}
-                              height={height}
-                              data={source}
-                            />
-                          )}
-                        </ParentSize>
-                      </Box>
-                      <Text
-                        color='gray.600'
-                        fontSize='xs'
-                        lineHeight='shorter'
-                        maxW='150px'
-                        px={2}
-                        textAlign='center'
+        <Flex></Flex>
+        <Flex alignItems='center'>
+          <Image
+            src='/assets/temp/06.png'
+            alt='circular'
+            border='1px solid'
+            borderColor='gray.200'
+            borderRadius='semi'
+            mr={10}
+          />
+          <ScrollContainer>
+            <Stack w='100%' flexDirection='row' spacing={4}>
+              <Flex>
+                {sources.length > 0 &&
+                  sources.map((source, idx) => {
+                    return (
+                      <Flex
+                        key={source.sourceInfo.name}
+                        flexDirection='column'
+                        alignItems='center'
                       >
-                        {source.sourceInfo.name}
-                      </Text>
-                    </Flex>
-                  );
-                })}
-            </Flex>
-          </Stack>
-        </ScrollContainer>
+                        <Box w='100px' mb={1}>
+                          <ParentSize>
+                            {({ width, height }) => (
+                              <ArcCircle
+                                width={width}
+                                height={height}
+                                data={source}
+                              />
+                            )}
+                          </ParentSize>
+                        </Box>
+                        <Text
+                          color='gray.600'
+                          fontSize='xs'
+                          lineHeight='shorter'
+                          maxW='150px'
+                          px={2}
+                          textAlign='center'
+                        >
+                          {source.sourceInfo.name}
+                        </Text>
+                      </Flex>
+                    );
+                  })}
+              </Flex>
+            </Stack>
+          </ScrollContainer>
+        </Flex>
       </Box>
       <Text color='gray.600' fontSize='sm'>
         Data From:{' '}
