@@ -6,11 +6,10 @@ import { MetadataSource } from 'src/utils/api/types';
 import { theme } from 'src/theme';
 import { PatternLines } from '@visx/pattern';
 import { useTooltip, useTooltipInPortal } from '@visx/tooltip';
-import { Box, Flex, Icon, Stack, Text } from '@chakra-ui/react';
+import { Box, Stack, Text } from '@chakra-ui/react';
 import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
 import { SchemaDefinitions } from 'scripts/generate-schema-definitions/types';
 import Tooltip from 'src/components/tooltip';
-import { FaInfo } from 'react-icons/fa6';
 
 const schema = SCHEMA_DEFINITIONS as SchemaDefinitions;
 
@@ -19,6 +18,7 @@ interface Bin {
   count: number;
   field: string;
   type: string;
+  augmented: number | null;
 }
 
 interface Bins {
@@ -77,13 +77,16 @@ export type HeatmapProps = {
 const defaultMargin = { top: 10, left: 10, right: 10, bottom: 10 };
 
 const getBinsData = (fields: Omit<Bin, 'bin'>[], numRows = 2) => {
-  return fields.reduce((bins, { field, count, type }, idx) => {
+  return fields.reduce((bins, { field, count, type, augmented }, idx) => {
     const col = idx % numRows;
     const column = bins.find(c => c.bin === col);
     if (column) {
-      column.bins.push({ bin: col, count, field, type });
+      column.bins.push({ bin: col, count, field, type, augmented });
     } else {
-      bins.push({ bin: col, bins: [{ bin: col, count, field, type }] });
+      bins.push({
+        bin: col,
+        bins: [{ bin: col, count, field, type, augmented }],
+      });
     }
 
     return bins;
@@ -115,7 +118,7 @@ const BarChartHeatMap = ({
 
   const { containerRef, TooltipInPortal } = useTooltipInPortal({
     // use TooltipWithBounds
-    detectBounds: true,
+    detectBounds: false,
     // when tooltip containers are scrolled, this will correctly update the Tooltip position
     scroll: true,
   });
@@ -123,7 +126,12 @@ const BarChartHeatMap = ({
   const required = Object.entries(
     data?.sourceInfo?.metadata_completeness?.required_fields || {},
   )
-    .map(([field, count]) => ({ field, count, type: 'required' }))
+    .map(([field, count]) => {
+      const augmented =
+        data?.sourceInfo?.metadata_completeness
+          ?.required_augmented_fields_coverage?.[field] || null;
+      return { field, count, augmented, type: 'required' };
+    })
     .sort((a, b) => {
       return a.count - b.count;
     });
@@ -131,11 +139,15 @@ const BarChartHeatMap = ({
   const recommended = Object.entries(
     data?.sourceInfo?.metadata_completeness?.recommended_fields || {},
   )
-    .map(([field, count]) => ({ field, count, type: 'recommended' }))
+    .map(([field, count]) => {
+      const augmented =
+        data?.sourceInfo?.metadata_completeness
+          ?.recommended_augmented_fields_coverage?.[field] || null;
+      return { field, count, augmented, type: 'recommended' };
+    })
     .sort((a, b) => a.count - b.count);
 
   const NUM_BARS = 21;
-  const ALL_DATA = getBinsData([...required, ...recommended], NUM_BARS);
 
   const REQUIRED_DATA = getBinsData(required, NUM_BARS).reverse();
 
@@ -281,26 +293,18 @@ const BarChartHeatMap = ({
                   const data = bin.bin as Bin;
                   const pattern = 'url(#secondary-lines)';
                   return (
-                    <rect
-                      key={`heatmap-rect-${bin.row}-${bin.column}`}
+                    <Box
+                      as='g'
                       className='visx-heatmap-rect'
-                      width={bin.width}
-                      height={bin.height}
-                      x={bin.x}
-                      y={bin.y}
-                      rx={radius}
-                      ry={radius}
-                      strokeWidth={2}
-                      fill={bin.count ? bin.color : pattern}
-                      fillOpacity={bin.count ? bin.opacity : '1'}
-                      onMouseMove={e =>
+                      key={`heatmap-rect-${bin.row}-${bin.column}`}
+                      onMouseMove={(e: React.MouseEvent | React.TouchEvent) =>
                         handleMouseMove(e, {
                           x: bin.x,
                           y: bin.y + bin.height * 2,
                           data,
                         })
                       }
-                      onTouchMove={e =>
+                      onTouchMove={(e: React.MouseEvent | React.TouchEvent) =>
                         handleMouseMove(e, {
                           x: bin.x,
                           y: bin.y + bin.height * 2,
@@ -308,7 +312,32 @@ const BarChartHeatMap = ({
                         })
                       }
                       onMouseLeave={handleMouseLeave}
-                    />
+                      rx={radius}
+                      ry={radius}
+                    >
+                      <rect
+                        width={bin.width}
+                        height={bin.height}
+                        x={bin.x}
+                        y={bin.y}
+                        rx={radius}
+                        ry={radius}
+                        strokeWidth={2}
+                        fill={bin.count ? bin.color : pattern}
+                        fillOpacity={bin.count ? bin.opacity : '1'}
+                      />
+                      {data.augmented && (
+                        <Box
+                          as='circle'
+                          r={2}
+                          cx={bin.x + bin.width / 2}
+                          cy={bin.y + bin.height / 2}
+                          fill='whiteAlpha.900'
+                          stroke='white'
+                          strokeWidth={1}
+                        />
+                      )}{' '}
+                    </Box>
                   );
                 });
               })
@@ -361,26 +390,18 @@ const BarChartHeatMap = ({
                   const data = bin.bin as Bin;
                   const pattern = 'url(#fundamental-lines)';
                   return (
-                    <rect
+                    <Box
+                      as='g'
                       key={`heatmap-rect-${bin.row}-${bin.column}`}
                       className='visx-heatmap-rect'
-                      width={bin.width}
-                      height={bin.height}
-                      x={bin.x}
-                      y={bin.y}
-                      rx={radius}
-                      ry={radius}
-                      strokeWidth={2}
-                      fill={bin.count ? bin.color : pattern}
-                      fillOpacity={bin.count ? bin.opacity : '1'}
-                      onMouseMove={e =>
+                      onMouseMove={(e: React.MouseEvent | React.TouchEvent) =>
                         handleMouseMove(e, {
                           x: bin.x,
                           y: bin.y + bin.height,
                           data,
                         })
                       }
-                      onTouchMove={e =>
+                      onTouchMove={(e: React.MouseEvent | React.TouchEvent) =>
                         handleMouseMove(e, {
                           x: bin.x,
                           y: bin.y + bin.height,
@@ -388,7 +409,33 @@ const BarChartHeatMap = ({
                         })
                       }
                       onMouseLeave={handleMouseLeave}
-                    />
+                      rx={radius}
+                      ry={radius}
+                    >
+                      <rect
+                        className='visx-heatmap-rect'
+                        width={bin.width}
+                        height={bin.height}
+                        x={bin.x}
+                        y={bin.y}
+                        rx={radius}
+                        ry={radius}
+                        strokeWidth={2}
+                        fill={bin.count ? bin.color : pattern}
+                        fillOpacity={bin.count ? bin.opacity : '1'}
+                      />
+                      {data.augmented && (
+                        <Box
+                          as='circle'
+                          r={2}
+                          cx={bin.x + bin.width / 2}
+                          cy={bin.y + bin.height / 2}
+                          fill='whiteAlpha.900'
+                          stroke='white'
+                          strokeWidth={1}
+                        />
+                      )}
+                    </Box>
                   );
                 });
               })
@@ -425,6 +472,16 @@ const BarChartHeatMap = ({
                   </Text>
                   .
                 </Text>
+                {tooltipData.augmented && (
+                  <Text lineHeight='shorter'>
+                    Augmented coverage of{' '}
+                    <strong>{schema[tooltipData.field].name}</strong> is{' '}
+                    <Text as='span' bg={`${tooltipData.theme}.100`}>
+                      {Math.round(tooltipData.augmented * 100)}%
+                    </Text>
+                    .
+                  </Text>
+                )}
               </Stack>
             </Box>
           </TooltipInPortal>
