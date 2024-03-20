@@ -10,6 +10,7 @@ import { FaMagnifyingGlass } from 'react-icons/fa6';
 interface PageContainerProps extends FlexProps {
   hasNavigation?: boolean;
   title: string;
+  metaCanonical?: string;
   metaDescription: string;
   keywords?: string;
   disableSearchBar?: boolean;
@@ -18,6 +19,7 @@ interface PageContainerProps extends FlexProps {
 export const PageContainer: React.FC<PageContainerProps> = ({
   children,
   title,
+  metaCanonical,
   metaDescription,
   disableSearchBar,
 }) => {
@@ -33,6 +35,7 @@ export const PageContainer: React.FC<PageContainerProps> = ({
           name='keywords'
           content='omics, data, infectious disease, epidemiology, clinical trial, immunology, bioinformatics, surveillance, search, repository'
         />
+        {metaCanonical && <link rel='canonical' href={metaCanonical} />}
 
         {/* og meta */}
         <meta
