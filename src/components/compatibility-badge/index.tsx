@@ -75,21 +75,34 @@ export const CompatibilityBadge = () => {
           </ScrollContainer>
         </Flex>
       </Box> */}
+      <Box position='sticky' top={0} bg='white' zIndex='10000'>
+        <Text color='gray.600' fontSize='sm'>
+          Legend
+        </Text>
+        <Image
+          src='/assets/temp/viz-legend.png'
+          alt='viz-legend'
+          border='1px solid'
+          borderColor='gray.200'
+          borderRadius='semi'
+        />
+        <Text
+          fontStyle='italic'
+          fontSize='12px'
+          maxW='500px'
+          lineHeight='shorter'
+          my={2}
+        >
+          Note: Augmentation dots only appear on AccessClinicalData to allow
+          testers to determine whether they prefer the visualizations with or
+          without the dots.
+        </Text>
+      </Box>
       <Box>
         <Text color='gray.600' fontSize='sm'>
           Duochrome GridPlot
         </Text>
 
-        <Flex>
-          <Image
-            src='/assets/temp/viz-legend.png'
-            alt='viz-legend'
-            border='1px solid'
-            borderColor='gray.200'
-            borderRadius='semi'
-            mb={2}
-          />
-        </Flex>
         <Flex alignItems='center'>
           <Image
             src='/assets/temp/02.png'
@@ -144,16 +157,7 @@ export const CompatibilityBadge = () => {
         <Text color='gray.600' fontSize='sm'>
           BarChart GridPlot Hybrid
         </Text>
-        <Flex>
-          <Image
-            src='/assets/temp/viz-legend.png'
-            alt='viz-legend'
-            border='1px solid'
-            borderColor='gray.200'
-            borderRadius='semi'
-            mb={2}
-          />
-        </Flex>
+
         <Flex alignItems='center'>
           <Image
             src='/assets/temp/03.png'
@@ -209,14 +213,6 @@ export const CompatibilityBadge = () => {
         <Text color='gray.600' fontSize='sm'>
           Arcs
         </Text>
-        <Image
-          src='/assets/temp/viz-legend.png'
-          alt='viz-legend'
-          border='1px solid'
-          borderColor='gray.200'
-          borderRadius='semi'
-          mb={2}
-        />
         <Flex alignItems='center'>
           <Image
             src='/assets/temp/04.png'
@@ -270,16 +266,7 @@ export const CompatibilityBadge = () => {
         <Text color='gray.600' fontSize='sm'>
           Arcs 2
         </Text>
-        <Flex>
-          <Image
-            src='/assets/temp/viz-legend.png'
-            alt='viz-legend'
-            border='1px solid'
-            borderColor='gray.200'
-            borderRadius='semi'
-            mb={2}
-          />
-        </Flex>
+
         <Flex alignItems='center'>
           <Image
             src='/assets/temp/05.png'
@@ -333,16 +320,7 @@ export const CompatibilityBadge = () => {
         <Text color='gray.600' fontSize='sm'>
           Circular
         </Text>
-        <Flex>
-          <Image
-            src='/assets/temp/viz-legend.png'
-            alt='viz-legend'
-            border='1px solid'
-            borderColor='gray.200'
-            borderRadius='semi'
-            mb={2}
-          />
-        </Flex>
+
         <Flex alignItems='center'>
           <Image
             src='/assets/temp/06.png'
