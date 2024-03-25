@@ -135,7 +135,7 @@ const ResourcePage: NextPage = () => {
       <PageContainer
         hasNavigation
         title={`${data?.name ? data?.name : isLoading ? '' : 'Resource'}`}
-        metaCanonical={`${process.env.NEXT_PUBLIC_BASE_URL}/resources/${id}`}
+        metaCanonical={`${process.env.NEXT_PUBLIC_BASE_URL}/resources?id=${id}`}
         metaDescription='NDE Discovery Portal - Detailed resource information.'
       >
         <PageContent>
