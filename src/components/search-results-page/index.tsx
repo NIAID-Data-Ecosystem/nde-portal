@@ -3,6 +3,7 @@ import { useRouter } from 'next/router';
 import {
   Box,
   Button,
+  Collapse,
   Flex,
   Link,
   ListItem,
@@ -14,7 +15,7 @@ import {
   queryFilterString2Object,
   updateRoute,
 } from 'src/components/filters/helpers';
-import { Pagination } from './components/pagination';
+import { MAX_PAGES, Pagination } from './components/pagination';
 import { useHasMounted } from 'src/hooks/useHasMounted';
 import { SortDropdown } from './components/sort';
 import { encodeString } from 'src/utils/querystring-helpers';
@@ -30,7 +31,10 @@ import { ErrorCTA } from '../error';
 import { Error } from 'src/components/error';
 import { getQueryStatusError } from '../error/utils';
 import { DownloadMetadata } from '../download-metadata';
-
+import Empty from 'src/components/empty';
+import NextLink from 'next/link';
+import Banner from '../banner';
+import { formatNumber } from 'src/utils/helpers';
 /*
 [COMPONENT INFO]:
  Search results pages displays the list of records returned by a search.
@@ -177,10 +181,13 @@ const SearchResultsPage = ({
     [],
   );
 
-  // number of cards to show on the page
   const numCards = useMemo(
-    () => Math.min(data?.results.length || selectedPerPage, selectedPerPage),
-    [data?.results.length, selectedPerPage],
+    () =>
+      Math.min(
+        isLoading ? selectedPerPage : data?.results.length || 0,
+        selectedPerPage,
+      ),
+    [isLoading, data?.results.length, selectedPerPage],
   );
 
   if (error) {
@@ -238,66 +245,99 @@ const SearchResultsPage = ({
       </Flex>
 
       {/* Search results controls */}
-      <Box borderRadius='semi' boxShadow='base' bg='white' px={4} py={2}>
-        <MetadataScoreToggle
-          isChecked={shouldUseMetadataScore}
-          isDisabled={sortOrder !== '_score'}
-          handleToggle={handleMetadataScoreToggle}
-        />
-        <Flex
-          borderBottom={{ base: '1px solid' }}
-          borderColor={{ base: 'page.alt' }}
-          flexDirection={{ base: 'column-reverse', md: 'row' }}
-          alignItems={{ base: 'unset', md: 'center' }}
-        >
-          <SortDropdown
-            sortOrder={sortOrder}
-            handleSortOrder={sort => {
-              handleRouteUpdate({
-                sort,
-                from: defaultQuery.selectedPage,
-              });
-            }}
-            selectedPerPage={selectedPerPage}
-            handleSelectedPerPage={v => handleRouteUpdate({ from: 1, size: v })}
+      {numCards > 0 && (
+        <Box borderRadius='semi' boxShadow='base' bg='white' px={4} py={2}>
+          <MetadataScoreToggle
+            isChecked={shouldUseMetadataScore}
+            isDisabled={sortOrder !== '_score'}
+            handleToggle={handleMetadataScoreToggle}
           />
-          <DownloadMetadata
-            flex={1}
-            exportFileName={`nde-results-${querystring.replaceAll(' ', '_')}`}
-            params={params}
-            buttonProps={{ variant: 'outline' }}
+          <Flex
+            borderBottom={{ base: '1px solid' }}
+            borderColor={{ base: 'page.alt' }}
+            flexDirection={{ base: 'column-reverse', md: 'row' }}
+            alignItems={{ base: 'unset', md: 'center' }}
           >
-            Download Metadata
-          </DownloadMetadata>
-        </Flex>
+            <SortDropdown
+              sortOrder={sortOrder}
+              handleSortOrder={sort => {
+                handleRouteUpdate({
+                  sort,
+                  from: defaultQuery.selectedPage,
+                });
+              }}
+              selectedPerPage={selectedPerPage}
+              handleSelectedPerPage={v =>
+                handleRouteUpdate({ from: 1, size: v })
+              }
+            />
+            <DownloadMetadata
+              flex={1}
+              exportFileName={`nde-results-${querystring.replaceAll(' ', '_')}`}
+              params={params}
+              buttonProps={{ variant: 'outline' }}
+            >
+              Download Metadata
+            </DownloadMetadata>
+          </Flex>
 
-        <Pagination
-          id='pagination-top'
-          ariaLabel='paginate through resources top bar'
-          handleSelectedPage={from => {
-            handleRouteUpdate({ from });
-          }}
-          isLoading={isLoading}
-          selectedPage={selectedPage}
-          selectedPerPage={selectedPerPage}
-          total={total}
-        />
-      </Box>
+          <Pagination
+            id='pagination-top'
+            ariaLabel='paginate through resources top bar'
+            handleSelectedPage={from => {
+              handleRouteUpdate({ from });
+            }}
+            isLoading={isLoading}
+            selectedPage={selectedPage}
+            selectedPerPage={selectedPerPage}
+            total={total}
+          />
+        </Box>
+      )}
+
+      {/* Display banner on last page if results exceed amount allotted by API */}
+      <Collapse
+        in={selectedPage === Math.floor(MAX_PAGES / selectedPerPage)}
+        animateOpacity
+      >
+        <Banner status='info'>
+          Only the first {formatNumber(10000)} results are displayed, please
+          limit your query to get better results or use our API to download all
+          results.
+        </Banner>
+      </Collapse>
+      {/* Empty state if no results found */}
+      {!isLoading && (!data || data.results.length === 0) && (
+        <Empty message='No results found.' alignSelf='center' h='50vh'>
+          <Text>Search yielded no results, please try again.</Text>
+          <NextLink href={{ pathname: '/search' }}>
+            <Button mt={4}>Go to search</Button>
+          </NextLink>
+        </Empty>
+      )}
+
       {/* Results Cards */}
-      <UnorderedList className='search-results-cards' ml={0} flex={3} w='100%'>
-        {Array(numCards)
-          .fill(null)
-          .map((_, idx) => {
-            return (
-              <ListItem key={idx} my={4} mb={8}>
-                <Card
-                  isLoading={!router.isReady || isLoading || isRefetching}
-                  data={data?.results[idx]}
-                />
-              </ListItem>
-            );
-          })}
-      </UnorderedList>
+      {numCards > 0 && (
+        <UnorderedList
+          className='search-results-cards'
+          ml={0}
+          flex={3}
+          w='100%'
+        >
+          {Array(numCards)
+            .fill(null)
+            .map((_, idx) => {
+              return (
+                <ListItem key={idx} my={4} mb={8}>
+                  <Card
+                    isLoading={!router.isReady || isLoading || isRefetching}
+                    data={data?.results[idx]}
+                  />
+                </ListItem>
+              );
+            })}
+        </UnorderedList>
+      )}
     </Flex>
   );
 };
