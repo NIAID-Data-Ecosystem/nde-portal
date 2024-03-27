@@ -1,6 +1,6 @@
 import { render } from '@testing-library/react';
-import Notice from '../components/notice';
 import userEvent from '@testing-library/user-event';
+import Notice from 'src/components/notice';
 
 describe('Notice component', () => {
   afterEach(() => {

@@ -12,11 +12,12 @@ jest.mock('next/router', () => require('next-router-mock'));
 export const server = setupServer(...handlers);
 
 // Establish API mocking before all tests.
-beforeAll(() =>
+beforeAll(() => {
   server.listen({
     onUnhandledRequest: 'bypass',
-  }),
-);
+  });
+  process.env.NEXT_PUBLIC_API_URL = 'https://api.data.niaid.nih.gov/v1';
+});
 // Reset any request handlers that we may add during the tests,
 // so they don't affect other tests.
 afterEach(() => server.resetHandlers());

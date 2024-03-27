@@ -5,7 +5,7 @@ import { Navigation } from 'src/components/navigation-bar';
 import { SearchBarWithDropdown } from 'src/components/search-bar';
 import NextLink from 'next/link';
 import { FaMagnifyingGlass } from 'react-icons/fa6';
-// import Notice from 'src/components/notice';
+import Notice from 'src/components/notice';
 
 interface PageContainerProps extends FlexProps {
   title: string;
@@ -67,7 +67,7 @@ export const PageContainer: React.FC<PageContainerProps> = ({
 
         {/*Page content has margin-top to compensate for fixed nav bar. */}
         <Box id='pagebody' position='relative'>
-          {/* <Notice /> */}
+          <Notice />
 
           {!disableSearchBar && (
             <Flex
