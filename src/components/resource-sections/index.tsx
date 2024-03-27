@@ -25,7 +25,6 @@ import { Route } from './helpers';
 import FilesTable from './components/files-table';
 import { CitedByTable } from './components/cited-by-table';
 import { DisplayHTMLContent } from '../html-content';
-import { DownloadMetadata } from '../download-metadata';
 import SoftwareInformation from './components/software-information';
 import { External } from './components/sidebar/components/external';
 import { Funding } from './components/funding';
@@ -35,6 +34,7 @@ import BasedOnTable from './components/based-on';
 import { CompletenessBadgeCircle } from 'src/components/completeness-badge/Circular';
 import { HeadingWithTooltip } from './components/sidebar/components/external/components/heading-with-tooltip';
 import { ResourceCatalogCollection } from './components/collection-information';
+import { DownloadMetadata } from '../download-metadata';
 
 // Metadata displayed in each section
 export const sectionMetadata: { [key: string]: (keyof FormattedResource)[] } = {

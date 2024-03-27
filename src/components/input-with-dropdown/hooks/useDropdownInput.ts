@@ -73,7 +73,7 @@ export const useDropdownInput = ({
     ...props
   }: DropdownInputProps) => ({
     colorScheme: props.isInvalid ? 'red' : colorScheme,
-    borderColor: props.isInvalid ? 'status.error' : 'inherit',
+    borderColor: props.isInvalid ? 'status.error' : 'gray.200',
     _focus: { borderColor: props.isInvalid ? 'status.error' : 'inherit' },
     bg: 'white',
     type: 'search',
@@ -86,9 +86,6 @@ export const useDropdownInput = ({
   /* [Dropdown List Item Component]: props + handlers */
   const handleListItemClick = (value: DropdownListItemProps['value']) => {
     setIsOpen(false);
-    // if (typeof value === 'string') {
-    //   setInputValue(value);
-    // }
   };
 
   const getListItemProps = ({

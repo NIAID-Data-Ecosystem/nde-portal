@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
-import { useDropdownInput } from './hooks/useDropdownInput';
 import { Box, ListItemProps, useOutsideClick } from '@chakra-ui/react';
+import { useDropdownInput } from './hooks/useDropdownInput';
 
 interface DropdownListItemProps extends ListItemProps {
   index: number;

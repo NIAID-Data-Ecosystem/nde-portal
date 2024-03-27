@@ -1,16 +1,16 @@
 import type { NextPage } from 'next';
-import React, { useState } from 'react';
+import React from 'react';
+import { useQuery } from 'react-query';
+import { useRouter } from 'next/router';
 import { Box, Button, Flex, Text, UnorderedList } from '@chakra-ui/react';
 import { PageContainer, PageContent } from 'src/components/page-container';
 import { Main, Sidebar } from 'src/components/sources';
-import { fetchMetadata } from 'src/utils/api';
 import { Error, ErrorCTA } from 'src/components/error';
 import axios from 'axios';
-import { MetadataSource } from 'src/utils/api/types';
-import { useQuery } from 'react-query';
+import { MetadataSource } from 'src/hooks/api/types';
 import { getQueryStatusError } from 'src/components/error/utils';
-import { useRouter } from 'next/router';
 import REPOSITORIESDETAILS from 'configs/repositories.json';
+import { fetchMetadata } from 'src/hooks/api/helpers';
 
 export interface SourceResponse {
   dateCreated?: string;
@@ -89,7 +89,6 @@ const Sources: NextPage<SourcesProps> = ({ data, error }) => {
   return (
     <PageContainer
       id='sources-page'
-      hasNavigation
       title='Sources'
       metaDescription='NDE Discovery Portal - API data sources.'
       px={0}

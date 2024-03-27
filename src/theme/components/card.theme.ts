@@ -3,9 +3,6 @@ export const Card = {
   boxShadow: 'base',
   borderRadius: 'semi',
   overflow: 'hidden',
-  '>*': {
-    p: [6, 8, 10],
-  },
 };
 
 export const CardHeader = {

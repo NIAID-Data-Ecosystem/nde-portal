@@ -6,9 +6,9 @@ import {
 } from 'src/components/advanced-search/components/Search';
 import { getDateQuerystring } from 'src/components/advanced-search/components/Search/components/SearchInput/helpers';
 import { SearchInputProps } from 'src/components/advanced-search/components/Search/components/SearchInput/types';
-import { QueryStringError } from 'src/components/advanced-search/utils/validation-checks';
 import { ItemContentProps } from '.';
 import { transformQueryString } from '../../helpers';
+import { QueryStringError } from 'src/components/error/types';
 
 export const TermLabel = React.memo(
   ({

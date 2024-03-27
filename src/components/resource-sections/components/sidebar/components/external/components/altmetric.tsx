@@ -35,20 +35,6 @@ export const AltmetricBadge: React.FC<{
             tooltipLabel='Score attributed to dataset based on relevant online attention.'
             whiteSpace='nowrap'
           ></HeadingWithTooltip>
-          {/* <Flex alignItems='center' pt={2}>
-            <Link
-              px={2}
-              fontSize='xs'
-              href={
-                'https://help.altmetric.com/support/solutions/articles/6000233311-how-is-the-altmetric-attention-score-calculated'
-              }
-              isExternal
-              whiteSpace='nowrap'
-              lineHeight='short'
-            >
-              Altmetric Rating
-            </Link>
-          </Flex> */}
         </Flex>
       )}
     </Flex>

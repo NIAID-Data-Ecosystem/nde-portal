@@ -10,14 +10,6 @@ import { Heading } from './components/heading.theme';
 import { Text } from './components/text.theme';
 import { Table } from './components/table.theme';
 import { Tag } from './components/tag.theme';
-import { Public_Sans } from 'next/font/google';
-
-// Import the weights and subsets, add any other config here as well
-export const public_sans_font = Public_Sans({
-  subsets: ['latin'],
-  display: 'swap',
-  fallback: ['arial', 'system-ui'],
-});
 
 interface ThemeConfig {
   cssVarPrefix?: string;
@@ -43,8 +35,8 @@ const overrides = {
   },
   config,
   fonts: {
-    body: public_sans_font.style.fontFamily,
-    heading: public_sans_font.style.fontFamily,
+    heading: 'var(--font-public-sans)',
+    body: 'var(--font-public-sans)',
   },
   styles,
 };

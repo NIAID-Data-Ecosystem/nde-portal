@@ -2,28 +2,36 @@ import { Box, BoxProps, Flex, Image, Stack, Text } from '@chakra-ui/react';
 import { Link } from 'src/components/link';
 import { FormattedResource } from 'src/utils/api/types';
 import { getRepositoryImage } from 'src/utils/helpers';
-import NextLink from 'next/link';
 
 interface SourceLogoProps extends BoxProps {
-  isLoading?: boolean;
-  sdPublisher?: FormattedResource['sdPublisher'];
-  includedInDataCatalog?: FormattedResource['includedInDataCatalog'];
+  // sdPublisher?: FormattedResource['sdPublisher'];
+  sources: {
+    logo: string | null;
+    '@type'?: string | null | undefined;
+    name: string;
+    url?: string | null | undefined;
+    versionDate?: string | null | undefined;
+  }[];
   url?: FormattedResource['url'];
 }
-export const SourceLogo = ({
-  isLoading,
-  sdPublisher,
-  includedInDataCatalog,
-  url,
-  ...props
-}: SourceLogoProps) => {
-  const sources =
-    !isLoading && includedInDataCatalog
-      ? Array.isArray(includedInDataCatalog)
-        ? includedInDataCatalog
-        : [includedInDataCatalog]
-      : [];
+
+export const getSourceDetails = (
+  sources: FormattedResource['includedInDataCatalog'],
+) => {
+  const sources2Array = sources
+    ? Array.isArray(sources)
+      ? sources
+      : [sources]
+    : [];
+  return sources2Array.map(source => ({
+    ...source,
+    logo: getRepositoryImage(source.name),
+  }));
+};
+
+export const SourceLogo = ({ sources, url, ...props }: SourceLogoProps) => {
   return (
+    sources &&
     sources.length > 0 && (
       <Stack
         alignItems='flex-start'
@@ -34,61 +42,58 @@ export const SourceLogo = ({
         py={[2, 0]}
         {...props}
       >
-        {/* Source repository */}
-        {(sources.length > 0 || (sdPublisher && sdPublisher.length > 0)) && (
-          <>
-            {sources.map(source => {
-              const source_logo = getRepositoryImage(source.name);
+        {sources.map(source => {
+          const source_logo = getRepositoryImage(source.name);
 
-              return (
-                <Box key={source.name} maxW='400px'>
-                  {source_logo ? (
-                    source.url ? (
-                      <NextLink target='_blank' href={source.url}>
-                        <Image
-                          w='auto'
-                          h='40px'
-                          maxW={{ base: '200px', sm: '250px' }}
-                          mr={4}
-                          src={`${source_logo}`}
-                          alt='Data source name'
-                        />
-                      </NextLink>
-                    ) : (
-                      <Image
-                        w='auto'
-                        h='40px'
-                        maxW={{ base: '200px', sm: '250px' }}
-                        mr={4}
-                        src={`${source_logo}`}
-                        alt='Data source name'
-                      />
-                    )
-                  ) : (
-                    <></>
-                  )}
-                  <Flex mx={1.5}>
-                    {url ? (
-                      <Link
-                        href={url! || source.url!}
-                        isExternal
-                        lineHeight='short'
-                      >
-                        <Text fontSize='12px' lineHeight='short'>
-                          Provided by {source.name}
-                        </Text>
-                      </Link>
-                    ) : (
-                      <Text fontSize='12px' lineHeight='short'>
-                        Provided by {source.name}
-                      </Text>
-                    )}
-                  </Flex>
-                </Box>
-              );
-            })}
+          return (
+            <Box key={source.name} maxW='300px'>
+              {source_logo ? (
+                source.url ? (
+                  <Link target='_blank' href={source.url}>
+                    <Image
+                      w='auto'
+                      h='40px'
+                      maxW={{ base: '200px', sm: '250px' }}
+                      mr={4}
+                      src={source_logo}
+                      alt='Data source name'
+                    />
+                  </Link>
+                ) : (
+                  <Image
+                    w='auto'
+                    h='40px'
+                    maxW={{ base: '200px', sm: '250px' }}
+                    mr={4}
+                    src={source_logo}
+                    alt='Data source name'
+                  />
+                )
+              ) : (
+                <></>
+              )}
+              <Flex mx={1.5}>
+                {url ? (
+                  <Link
+                    href={url! || source.url!}
+                    isExternal
+                    lineHeight='short'
+                  >
+                    <Text fontSize='12px' lineHeight='short'>
+                      Provided by {source.name}
+                    </Text>
+                  </Link>
+                ) : (
+                  <Text fontSize='12px' lineHeight='short'>
+                    Provided by {source.name}
+                  </Text>
+                )}
+              </Flex>
+            </Box>
+          );
+        })}
 
-            {/* {sdPublisher && (
+        {/* {sdPublisher && (
               <Box>
                 <Text
                   fontSize='xs'
@@ -116,8 +121,6 @@ export const SourceLogo = ({
                 </Text>
               </Box>
             )} */}
-          </>
-        )}
       </Stack>
     )
   );

@@ -9,7 +9,6 @@ import {
   Text,
   UnorderedList,
 } from '@chakra-ui/react';
-import { QueryStringError } from '../../utils/validation-checks';
 import { TreeItem } from '../SortableWithCombine';
 import { useAdvancedSearchContext } from './components/AdvancedSearchFormContext';
 import { Disclaimer } from './components/Disclaimer';
@@ -20,6 +19,7 @@ import {
   InputSubmitButton,
   InputSubmitButtonProps,
 } from './components/SearchInput/components';
+import { QueryStringError } from 'src/components/error/types';
 
 interface SearchProps {
   items: TreeItem[];

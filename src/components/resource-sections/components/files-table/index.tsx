@@ -131,7 +131,9 @@ export const DistributionCells = ({
                   {data[column.property]}
                 </Tag>
               )}
-              {formatIcon && <Icon as={formatIcon} color={color} ml={2} />}
+              {formatIcon && (
+                <Icon as={formatIcon} color={color || undefined} ml={2} />
+              )}
             </Flex>
             {data?.['contentSize'] && (
               <Tag

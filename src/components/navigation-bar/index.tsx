@@ -5,21 +5,21 @@ import {
   IconButton,
   FlexProps,
   Stack,
-  Collapse,
   Icon,
   useDisclosure,
+  useMediaQuery,
 } from '@chakra-ui/react';
 import { FaBars, FaXmark } from 'react-icons/fa6';
 import dynamic from 'next/dynamic';
 import NAVIGATION from './routes.json';
 import { Logo } from 'src/components/logos';
+import { DesktopNavItem } from './components/desktop-nav-item';
 
-const MobileNavItem = dynamic(() =>
-  import('./components/mobile-nav-item').then(mod => mod.MobileNavItem),
-);
-
-const DesktopNavItem = dynamic(() =>
-  import('./components/desktop-nav-item').then(mod => mod.DesktopNavItem),
+const MobileSubMenu = dynamic(
+  () => import('./components/menu-mobile').then(mod => mod.MobileSubMenu),
+  {
+    loading: () => <p></p>,
+  },
 );
 
 export interface RouteProps {
@@ -32,11 +32,15 @@ export interface RouteProps {
 
 export const Navigation: React.FC<FlexProps> = props => {
   const { isOpen, onToggle } = useDisclosure();
+  const [isLargerThanMd] = useMediaQuery('(min-width: 48em)', {
+    ssr: true,
+    fallback: false,
+  });
 
   return (
     <Box
-      as='nav'
       id='nde-navigation'
+      as='nav'
       w='100%'
       minW={300}
       zIndex='banner'
@@ -58,19 +62,21 @@ export const Navigation: React.FC<FlexProps> = props => {
           <Flex flex={1} justifyContent='flex-start'>
             <Logo href={NAVIGATION?.href} />
             {/* For desktop */}
-            <Flex
-              display={{ base: 'none', md: 'flex' }}
-              ml={{ base: 6, lg: 10 }}
-              flex={1}
-              justifyContent='flex-end'
-            >
-              <Stack direction='row' spacing={{ base: 2, lg: 4 }}>
-                {NAVIGATION.routes &&
-                  NAVIGATION.routes.map(navItem => (
-                    <DesktopNavItem key={navItem.label} {...navItem} />
-                  ))}
-              </Stack>
-            </Flex>
+            {isLargerThanMd && (
+              <Flex
+                display={{ base: 'none', md: 'flex' }}
+                ml={{ base: 6, lg: 10 }}
+                flex={1}
+                justifyContent='flex-end'
+              >
+                <Stack direction='row' spacing={{ base: 2, lg: 4 }}>
+                  {NAVIGATION.routes &&
+                    NAVIGATION.routes.map(navItem => (
+                      <DesktopNavItem key={navItem.label} {...navItem} />
+                    ))}
+                </Stack>
+              </Flex>
+            )}
           </Flex>
 
           {/* For mobile / tablet */}
@@ -97,22 +103,9 @@ export const Navigation: React.FC<FlexProps> = props => {
           )}
         </Flex>
       </Flex>
+
       {/* Popout navigation in mobile mode */}
-      <Box
-        borderRadius='semi'
-        boxShadow='base'
-        overflow='hidden'
-        display={{ base: 'block', md: 'none' }}
-      >
-        <Collapse in={isOpen} animateOpacity>
-          <Stack bg='white' p={2} alignItems='end'>
-            {NAVIGATION.routes &&
-              NAVIGATION.routes.map(navItem => (
-                <MobileNavItem key={navItem.label} {...navItem} />
-              ))}
-          </Stack>
-        </Collapse>
-      </Box>
+      {isOpen && <MobileSubMenu isOpen={isOpen} />}
     </Box>
   );
 };

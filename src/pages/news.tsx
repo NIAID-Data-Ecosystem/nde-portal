@@ -14,11 +14,8 @@ import {
 } from '@chakra-ui/react';
 import { Link } from 'src/components/link';
 import type { NextPage } from 'next';
-import {
-  PageContainer,
-  PageContent,
-  PageHeader,
-} from 'src/components/page-container';
+import { PageContainer, PageContent } from 'src/components/page-container';
+import { PageHeader } from 'src/components/page-header';
 import { MDXRemoteSerializeResult } from 'next-mdx-remote';
 import { Error } from 'src/components/error';
 import axios from 'axios';
@@ -211,7 +208,6 @@ const News: NextPage<NewsProps> = props => {
 
   return (
     <PageContainer
-      hasNavigation
       title='News'
       metaDescription='Latest news releases for the NIAID Data Discovery Portal.'
       px={0}

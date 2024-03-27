@@ -133,7 +133,6 @@ const ResourcePage: NextPage = () => {
   return (
     <>
       <PageContainer
-        hasNavigation
         title={`${data?.name ? data?.name : isLoading ? '' : 'Resource'}`}
         metaDescription='NDE Discovery Portal - Detailed resource information.'
       >

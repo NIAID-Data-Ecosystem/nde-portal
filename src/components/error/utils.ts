@@ -1,7 +1,4 @@
-import {
-  ErrorType,
-  QueryStringError,
-} from '../advanced-search/utils/validation-checks';
+import { ErrorType, QueryStringError } from 'src/components/error/types';
 
 interface StatusError extends QueryStringError {
   relatedLinks?: {
