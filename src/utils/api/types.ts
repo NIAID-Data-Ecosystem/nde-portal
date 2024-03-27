@@ -38,7 +38,13 @@ export interface FacetTerm {
 }
 
 // Conditions of access for dataset or tool.
-export type AccessTypes = 'Open' | 'Controlled' | 'Embargoed' | 'Restricted';
+export type AccessTypes =
+  | 'Open'
+  | 'Controlled'
+  | 'Embargoed'
+  | 'Restricted'
+  | 'Varied'
+  | 'Unknown';
 
 export interface AdditionalType {
   name?: string;
@@ -425,6 +431,7 @@ export interface MetadataSource {
   sourceInfo: {
     name: string;
     abstract: string;
+    conditionsOfAccess: string;
     description: string;
     schema: Object | null;
     url: string;

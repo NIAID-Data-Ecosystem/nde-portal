@@ -11,7 +11,7 @@ import {
   PopoverHeader,
   PopoverBody,
 } from '@chakra-ui/react';
-import { FaCaretDown } from 'react-icons/fa6';
+import { FaCaretDown, FaFilter } from 'react-icons/fa6';
 import { ScrollContainer } from 'src/components/scroll-container';
 
 interface CheckboxListProps {

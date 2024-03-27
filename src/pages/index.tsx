@@ -56,10 +56,10 @@ const Home: NextPage<{
     return [...(resourceCatalogs || []), ...(repositories || [])].map(item => {
       return {
         ...item,
-        conditionsOfAccess:
-          item['dataType'] === 'ResourceCatalog'
-            ? item['conditionsOfAccess']
-            : undefined,
+        // conditionsOfAccess:
+        //   item['dataType'] === 'ResourceCatalog'
+        //     ? item['conditionsOfAccess']
+        //     : undefined,
         icon: item['dataType'] === 'Repository' ? item['icon'] : undefined,
       };
     });
@@ -160,10 +160,11 @@ const Home: NextPage<{
                   Currently included resources
                 </Heading>
                 <Text lineHeight='short'>
-                  The following Resource Catalogs (collections of scientific
-                  information or research outputs) and Dataset Repositories
-                  (collections of data of a particular experimental type) are
-                  currently included in the NIAID Data Ecosystem
+                  The following <strong>Resource Catalogs</strong> (collections
+                  of scientific information or research outputs) and{' '}
+                  <strong>Dataset Repositories</strong> (collections of data of
+                  a particular experimental type) are currently included in the
+                  NIAID Data Ecosystem
                 </Text>
                 <Flex justifyContent='flex-end' fontSize='sm' />
                 <Divider my={4} />
@@ -180,16 +181,29 @@ const Home: NextPage<{
                       isSortable: true,
                       props: { maxW: '300px', minW: '300px' },
                     },
-
                     {
                       title: 'description',
                       property: 'abstract',
                     },
                     {
+                      title: 'access',
+                      property: 'conditionsOfAccess',
+                      isSortable: true,
+                      props: { maxW: '150px', minW: '150px' },
+                    },
+                    {
                       title: 'Type',
                       property: 'dataType',
-                      fields: ['dataType', 'type'],
-                      props: { maxW: '300px', minW: '300px' },
+                      fields: ['dataType'],
+                      isSortable: true,
+                      props: { maxW: '200px', minW: '200px' },
+                    },
+                    {
+                      title: 'Collection Type',
+                      property: 'type',
+                      fields: ['type'],
+                      isSortable: true,
+                      props: { maxW: '200px', minW: '200px' },
                     },
                   ]}
                 />

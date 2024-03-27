@@ -96,7 +96,7 @@ export const TableWithSearch: React.FC<TableWithSearchProps> = ({
             direction='row'
             spacing={2}
             mb={2}
-            justifyContent='space-between'
+            // justifyContent='space-between'
             flexWrap='wrap'
           >
             <Filters
@@ -104,6 +104,21 @@ export const TableWithSearch: React.FC<TableWithSearchProps> = ({
               filters={filters}
               updateFilter={updateFilters}
             />
+            <Flex
+              justifyContent='flex-end'
+              width={{ base: '100%', md: 'unset' }}
+            >
+              <SearchInput
+                size='md'
+                placeholder='Search table'
+                ariaLabel='Search table'
+                value={searchTerm}
+                handleChange={handleSearchChange}
+                isResponsive={false}
+                alignItems='flex-end'
+                // flex={1}
+              />
+            </Flex>
           </Stack>
 
           <Stack
@@ -147,22 +162,6 @@ export const TableWithSearch: React.FC<TableWithSearchProps> = ({
                 });
               })}
             </Stack>
-            {/* <!-- Search table --> */}
-            <Flex
-              justifyContent='flex-end'
-              width={{ base: '100%', md: 'unset' }}
-            >
-              <SearchInput
-                size='sm'
-                placeholder='Search table'
-                ariaLabel='Search table'
-                value={searchTerm}
-                handleChange={handleSearchChange}
-                isResponsive={false}
-                alignItems='flex-end'
-                flex={1}
-              />
-            </Flex>
           </Stack>
 
           {/* <!-- Table --> */}
@@ -291,18 +290,20 @@ export const RepositoryCells = ({
           fontSize='sm'
         >
           <Text noOfLines={3}>{data[column.property]}</Text>
-          {data['conditionsOfAccess'] && (
-            <Flex mt={1}>
-              <ConditionsOfAccess
-                conditionsOfAccess={data['conditionsOfAccess']}
-                type={
-                  data.dataType === 'Repository' ? 'Dataset' : 'ResourceCatalog'
-                }
-              />
-            </Flex>
-          )}
         </SkeletonText>
       )}
+
+      {column.property === 'conditionsOfAccess' &&
+        data['conditionsOfAccess'] && (
+          <Flex mt={1}>
+            <ConditionsOfAccess
+              conditionsOfAccess={data['conditionsOfAccess']}
+              type={
+                data.dataType === 'Repository' ? 'Dataset' : 'ResourceCatalog'
+              }
+            />
+          </Flex>
+        )}
       {column.property === 'dataType' && (
         <SkeletonText
           data-testid={isLoading ? 'loading' : 'loaded'}
@@ -331,8 +332,41 @@ export const RepositoryCells = ({
             return (
               <Tag
                 key={data._id + label}
-                mr={2}
-                mb={2}
+                size='sm'
+                colorScheme={colorScheme}
+                variant={variant}
+              >
+                {label}
+              </Tag>
+            );
+          })}
+        </SkeletonText>
+      )}
+
+      {column.property === 'type' && (
+        <SkeletonText
+          data-testid={isLoading ? 'loading' : 'loaded'}
+          isLoaded={!isLoading && !!data}
+          w='100%'
+          h='100%'
+          fontSize='sm'
+          noOfLines={2}
+        >
+          {column.fields?.map(field => {
+            let colorScheme = 'gray';
+            let variant = 'outline';
+            let label = data[field] ?? '';
+            if (field === 'type') {
+              colorScheme = getColorSchemeForDataType(data.dataType);
+              variant = 'subtle';
+              if (data.dataType === 'Repository') {
+                label = data[field] ? getRepositoryTypeName(label) : '';
+              }
+            }
+
+            return (
+              <Tag
+                key={data._id + label}
                 size='sm'
                 colorScheme={colorScheme}
                 variant={variant}

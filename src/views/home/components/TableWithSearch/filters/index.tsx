@@ -37,7 +37,7 @@ export const Filters = ({ data, filters, updateFilter }: TableFiltersProps) => {
       minW={{ base: 'unset', sm: '420px' }}
     >
       {/* <!-- Data type radio  --> */}
-      {dataTypes.length > 0 && (
+      {/* {dataTypes.length > 0 && (
         <RadioFilter
           defaultValue={dataTypes[0].value}
           options={dataTypes}
@@ -45,7 +45,7 @@ export const Filters = ({ data, filters, updateFilter }: TableFiltersProps) => {
             updateFilter({ dataType: value === 'all' ? [] : [value] });
           }}
         />
-      )}
+      )} */}
 
       {/* <!-- Collection types checkboxes --> */}
       {collections.length > 0 && (

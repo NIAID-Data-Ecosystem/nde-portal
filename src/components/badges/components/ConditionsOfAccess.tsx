@@ -30,7 +30,10 @@ export const ConditionsOfAccess = ({
       return 'red';
     } else if (conditionsOfAccess === 'Controlled') {
       return 'gray';
-    } else if (conditionsOfAccess === 'Embargoed') {
+    } else if (
+      conditionsOfAccess === 'Embargoed' ||
+      conditionsOfAccess === 'Varied'
+    ) {
       return 'orange';
     } else {
       return 'gray';
@@ -41,13 +44,15 @@ export const ConditionsOfAccess = ({
     conditionsOfAccess: ConditionsOfAccessProps['conditionsOfAccess'],
   ) => {
     if (conditionsOfAccess === 'Open') {
-      return FaUnlock;
+      return <Icon as={FaUnlock}></Icon>;
     } else if (
       conditionsOfAccess === 'Restricted' ||
       conditionsOfAccess === 'Controlled' ||
       conditionsOfAccess === 'Embargoed'
     ) {
-      return FaLock;
+      return <Icon as={FaLock}></Icon>;
+    } else if (conditionsOfAccess === 'Varied') {
+      return <Icon as={FaUnlock}></Icon>;
     }
   };
   return (
@@ -55,7 +60,7 @@ export const ConditionsOfAccess = ({
       colorScheme={getColorScheme(conditionsOfAccess)}
       value={conditionsOfAccess}
       tooltipLabel={property?.description[type]}
-      leftIcon={<Icon as={getIcon(conditionsOfAccess)}></Icon>}
+      leftIcon={getIcon(conditionsOfAccess)}
       {...props}
     />
   );
