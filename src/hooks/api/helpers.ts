@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { Metadata } from 'src/utils/api/types';
+import { Metadata } from './types';
 
 export const fetchMetadata = async () => {
   if (!process.env.NEXT_PUBLIC_API_URL) {
