@@ -199,7 +199,7 @@ const Home: NextPage<{
                       props: { maxW: '200px', minW: '200px' },
                     },
                     {
-                      title: 'Collection Type',
+                      title: 'Research Domain',
                       property: 'type',
                       fields: ['type'],
                       isSortable: true,

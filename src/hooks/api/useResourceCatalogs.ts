@@ -63,7 +63,7 @@ export function useResourceCatalogs({
           dataType: catalog['@type'],
           name: catalog.name,
           portalURL: `/resources?id=${catalog._id}`,
-          type: catalog.collectionType,
+          type: 'IID',
           url: catalog.url,
         }));
       },

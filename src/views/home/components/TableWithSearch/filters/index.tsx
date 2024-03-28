@@ -50,7 +50,7 @@ export const Filters = ({ data, filters, updateFilter }: TableFiltersProps) => {
       {/* <!-- Collection types checkboxes --> */}
       {collections.length > 0 && (
         <CheckboxList
-          label='Collection Type'
+          label='Research Domain'
           property='type'
           options={collections}
           selectedOptions={filters?.['type' as keyof typeof filters] || []}
