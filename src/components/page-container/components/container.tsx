@@ -1,4 +1,4 @@
-import { Box, Button, Flex, FlexProps, Icon } from '@chakra-ui/react';
+import { Box, Button, Flex, FlexProps, Icon, Stack } from '@chakra-ui/react';
 import Head from 'next/head';
 import { Footer } from 'src/components/footer';
 import { Navigation } from 'src/components/navigation-bar';
@@ -19,6 +19,7 @@ export const PageContainer: React.FC<PageContainerProps> = ({
   title,
   metaDescription,
   disableSearchBar,
+  ...props
 }) => {
   return (
     <>
@@ -66,11 +67,11 @@ export const PageContainer: React.FC<PageContainerProps> = ({
         <Navigation />
 
         {/*Page content has margin-top to compensate for fixed nav bar. */}
-        <Box id='pagebody' position='relative'>
+        <Box id='pagebody' position='relative' {...props}>
           <Notice />
 
           {!disableSearchBar && (
-            <Flex
+            <Stack
               bg='#fff'
               borderBottom='1px solid'
               borderColor='gray.100'
@@ -78,49 +79,52 @@ export const PageContainer: React.FC<PageContainerProps> = ({
               px={{ base: 4, sm: 6, lg: 10, xl: '5vw' }}
               py={4}
             >
-              <Flex w='100%' justifyContent='flex-end' mb={2}>
-                <NextLink
-                  href={{ pathname: 'advanced-search' }}
-                  passHref
-                  prefetch={false}
-                >
-                  <Button
-                    as='span'
-                    variant='outline'
-                    size='sm'
-                    transition='0.2s ease-in-out'
-                    colorScheme='primary'
-                    fontWeight='semibold'
-                    _hover={{
-                      bg: 'primary.600',
-                      color: 'white',
-                      transition: '0.2s ease-in-out',
+              <NextLink
+                href={{ pathname: 'advanced-search' }}
+                passHref
+                prefetch={false}
+                style={{
+                  width: '100%',
+                  display: 'flex',
+                  justifyContent: 'flex-end',
+                }}
+              >
+                <Button
+                  as='span'
+                  variant='outline'
+                  size='sm'
+                  transition='0.2s ease-in-out'
+                  colorScheme='primary'
+                  fontWeight='semibold'
+                  _hover={{
+                    bg: 'primary.600',
+                    color: 'white',
+                    transition: '0.2s ease-in-out',
 
-                      svg: {
-                        transform: 'translateX(-8px)',
-                        transition: '0.2s transform ease-in-out',
-                      },
-                    }}
-                    leftIcon={
-                      <Icon
-                        as={FaMagnifyingGlass}
-                        ml={2}
-                        boxSize={3}
-                        transform='translateX(-4px)'
-                        transition='0.2s transform ease-in-out'
-                      />
-                    }
-                  >
-                    Advanced Search
-                  </Button>
-                </NextLink>
-              </Flex>
+                    svg: {
+                      transform: 'translateX(-8px)',
+                      transition: '0.2s transform ease-in-out',
+                    },
+                  }}
+                  leftIcon={
+                    <Icon
+                      as={FaMagnifyingGlass}
+                      ml={2}
+                      boxSize={3}
+                      transform='translateX(-4px)'
+                      transition='0.2s transform ease-in-out'
+                    />
+                  }
+                >
+                  Advanced Search
+                </Button>
+              </NextLink>
               <SearchBarWithDropdown
                 ariaLabel='Search for datasets'
                 placeholder='Search for datasets'
                 size='md'
               />
-            </Flex>
+            </Stack>
           )}
 
           {children}

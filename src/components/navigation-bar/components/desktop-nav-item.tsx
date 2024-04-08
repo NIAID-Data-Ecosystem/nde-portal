@@ -1,15 +1,8 @@
 import React from 'react';
-import dynamic from 'next/dynamic';
 import { FaCaretDown } from 'react-icons/fa6';
 import { Button, Link, Icon, Popover, PopoverTrigger } from '@chakra-ui/react';
 import { RouteProps } from '..';
-
-const DesktopSubNav = dynamic(
-  () => import('./menu-desktop').then(mod => mod.DesktopSubNav),
-  {
-    loading: () => <p></p>,
-  },
-);
+import { DesktopSubNav } from './menu-desktop';
 
 // Desktop Navigation link styles
 export const DesktopNavItem = ({

@@ -46,14 +46,15 @@ export const SourceLogo = ({ sources, url, ...props }: SourceLogoProps) => {
           const source_logo = getRepositoryImage(source.name);
 
           return (
-            <Box key={source.name} maxW='300px'>
+            <Box key={source.name} maxW={{ base: '200px', sm: '250px' }}>
               {source_logo ? (
                 source.url ? (
                   <Link target='_blank' href={source.url}>
                     <Image
-                      w='auto'
+                      objectFit='contain'
+                      objectPosition='left'
+                      w='100%'
                       h='40px'
-                      maxW={{ base: '200px', sm: '250px' }}
                       mr={4}
                       src={source_logo}
                       alt='Data source name'
@@ -61,9 +62,10 @@ export const SourceLogo = ({ sources, url, ...props }: SourceLogoProps) => {
                   </Link>
                 ) : (
                   <Image
-                    w='auto'
+                    objectFit='contain'
+                    objectPosition='left'
+                    w='100%'
                     h='40px'
-                    maxW={{ base: '200px', sm: '250px' }}
                     mr={4}
                     src={source_logo}
                     alt='Data source name'
@@ -72,7 +74,7 @@ export const SourceLogo = ({ sources, url, ...props }: SourceLogoProps) => {
               ) : (
                 <></>
               )}
-              <Flex mx={1.5}>
+              <Flex>
                 {url ? (
                   <Link
                     href={url! || source.url!}

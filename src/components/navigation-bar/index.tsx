@@ -56,52 +56,49 @@ export const Navigation: React.FC<FlexProps> = props => {
         borderBottom={1}
         borderStyle='solid'
         borderColor='gray.200'
-        align='center'
+        flex={{ base: 1, md: 'auto' }}
+        alignItems='center'
       >
-        <Flex flex={{ base: 1, md: 'auto' }} alignItems='center'>
-          <Flex flex={1} justifyContent='flex-start'>
-            <Logo href={NAVIGATION?.href} />
-            {/* For desktop */}
-            {isLargerThanMd && (
-              <Flex
-                display={{ base: 'none', md: 'flex' }}
-                ml={{ base: 6, lg: 10 }}
-                flex={1}
-                justifyContent='flex-end'
-              >
-                <Stack direction='row' spacing={{ base: 2, lg: 4 }}>
-                  {NAVIGATION.routes &&
-                    NAVIGATION.routes.map(navItem => (
-                      <DesktopNavItem key={navItem.label} {...navItem} />
-                    ))}
-                </Stack>
-              </Flex>
-            )}
-          </Flex>
+        <Logo href={NAVIGATION?.href} />
+        {/* For desktop */}
+        {isLargerThanMd && (
+          <Stack
+            direction='row'
+            spacing={{ base: 2, lg: 4 }}
+            display={{ base: 'none', md: 'flex' }}
+            ml={{ base: 6, lg: 10 }}
+            flex={1}
+            justifyContent='flex-end'
+          >
+            {NAVIGATION.routes &&
+              NAVIGATION.routes.map(navItem => (
+                <DesktopNavItem key={navItem.label} {...navItem} />
+              ))}
+          </Stack>
+        )}
 
-          {/* For mobile / tablet */}
-          {NAVIGATION.routes && (
-            <IconButton
-              display={{ base: 'flex', md: 'none' }}
-              aria-label={
-                isOpen ? 'Toggle Navigation closed.' : 'Toggle Navigation open.'
-              }
-              icon={
-                isOpen ? (
-                  <Icon as={FaXmark} w={5} h={5} />
-                ) : (
-                  <Icon as={FaBars} w={4} h={4} />
-                )
-              }
-              onClick={onToggle}
-              colorScheme='tertiary'
-              color='#fff'
-              _hover={{ bg: 'whiteAlpha.500' }}
-              variant='ghost'
-              size='md'
-            />
-          )}
-        </Flex>
+        {/* For mobile / tablet */}
+        {NAVIGATION.routes && (
+          <IconButton
+            display={{ base: 'flex', md: 'none' }}
+            aria-label={
+              isOpen ? 'Toggle Navigation closed.' : 'Toggle Navigation open.'
+            }
+            icon={
+              isOpen ? (
+                <Icon as={FaXmark} w={5} h={5} />
+              ) : (
+                <Icon as={FaBars} w={4} h={4} />
+              )
+            }
+            onClick={onToggle}
+            colorScheme='tertiary'
+            color='#fff'
+            _hover={{ bg: 'whiteAlpha.500' }}
+            variant='ghost'
+            size='md'
+          />
+        )}
       </Flex>
 
       {/* Popout navigation in mobile mode */}

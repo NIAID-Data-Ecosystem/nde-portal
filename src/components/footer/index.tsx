@@ -136,7 +136,7 @@ export const Footer = () => {
     >
       <Stack p={6} alignItems={{ base: 'center', md: 'start' }} margin='0 auto'>
         <Box w='100%'>
-          <Logo href={NAVIGATION?.href} />
+          <Logo href={NAVIGATION?.href} isLazy={true} />
           <SimpleGrid
             minChildWidth={{
               base: '100%',

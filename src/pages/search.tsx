@@ -32,21 +32,17 @@ const Search: NextPage<{
   const hasMounted = useHasMounted();
   const router = useRouter();
 
-  const queryString = Array.isArray(router.query.q)
-    ? router.query.q.map(s => s.trim()).join('+')
-    : router.query.q || defaultParams.q;
+  const queryString = useMemo(
+    () =>
+      Array.isArray(router.query.q)
+        ? router.query.q.map(s => s.trim()).join('+')
+        : router.query.q || defaultParams.q,
+    [router.query.q],
+  );
 
   ////////////////////////////////////////////////////
   ////////////////// Update Router ///////////////////
   ////////////////////////////////////////////////////
-  const queryParams = {
-    ...defaultParams,
-    ...router.query,
-    q: queryString,
-    extra_filter: Array.isArray(router.query.filters)
-      ? router.query.filters.join('')
-      : router.query.filters || '',
-  };
 
   const selectedFilters: SelectedFilterType = useMemo(() => {
     const queryFilters = router.query.filters;
@@ -65,17 +61,6 @@ const Search: NextPage<{
     [selectedFilters],
   );
 
-  // Filter out date tags that have a single value such as "exists" and not "exists"
-  const tags = applied_filters.filter(
-    tag =>
-      !(
-        tag[0] === 'date' &&
-        tag[1].length === 1 &&
-        (Object.keys(tag[1][0]).includes('_exists_') ||
-          Object.keys(tag[1][0]).includes('-_exists_'))
-      ),
-  );
-
   // Default filters list.
   const defaultFilters = useMemo(
     () => Object.keys(FILTERS_CONFIG).reduce((r, k) => ({ ...r, [k]: [] }), {}),
@@ -83,14 +68,6 @@ const Search: NextPage<{
   );
 
   /*** Router handlers ***/
-  // Reset the filters to the default.
-  const removeAllFilters = () => {
-    return handleRouteUpdate({
-      from: defaultQuery.selectedPage,
-      filters: defaultFilters,
-    });
-  };
-
   // Update the route to reflect changes on page without re-render.
   const handleRouteUpdate = useCallback(
     (update: Record<string, any>) => {
@@ -101,9 +78,13 @@ const Search: NextPage<{
     [router],
   );
 
-  // if (!hasMounted || !router.isReady) {
-  //   return null;
-  // }
+  // Reset the filters to the default.
+  const removeAllFilters = useCallback(() => {
+    return handleRouteUpdate({
+      from: defaultQuery.selectedPage,
+      filters: defaultFilters,
+    });
+  }, [handleRouteUpdate, defaultFilters]);
   return (
     <PageContainer
       title='Search'
@@ -111,66 +92,71 @@ const Search: NextPage<{
       px={0}
       py={0}
     >
-      <Box w='100%'>
-        <Flex w='100%'>
-          <PageContent w='100%' flexDirection='column'>
-            <Heading
-              as='h1'
-              size='sm'
-              color='text.body'
-              fontWeight='semibold'
-              mb={4}
-            >
-              {queryString === '__all__'
-                ? `Showing all results`
-                : `Showing results for`}
-
-              {queryString !== '__all__' && (
-                <Heading as='span' ml={2} fontWeight='bold' size='sm' w='100%'>
-                  {queryString.replaceAll('\\', '')}
-                </Heading>
-              )}
+      <PageContent w='100%' flexDirection='column'>
+        {/* Search query */}
+        <Heading
+          as='h1'
+          fontSize='sm'
+          color='gray.800'
+          fontWeight='normal'
+          lineHeight='short'
+          mb={4}
+        >
+          {queryString === '__all__'
+            ? `Showing all results`
+            : `Showing results for`}
+          <br />
+          {queryString !== '__all__' && (
+            <Heading as='span' fontWeight='bold' fontSize='inherit'>
+              {queryString.replaceAll('\\', '')}
             </Heading>
+          )}
+        </Heading>
 
-            {/* Tags with the names of the currently selected filters */}
-            {Object.values(selectedFilters).length > 0 && (
-              <FilterTags
+        {/* Tags with the names of the currently selected filters */}
+        {Object.values(selectedFilters).length > 0 && (
+          <FilterTags
+            selectedFilters={selectedFilters}
+            handleRouteUpdate={handleRouteUpdate}
+            removeAllFilters={removeAllFilters}
+          />
+        )}
+        <Flex w='100%'>
+          {/* Filters sidebar */}
+          <ScrollContainer
+            flex={{ base: 0, md: 1 }}
+            minW={{ base: 'unset', md: '270px' }}
+            maxW={{ base: 'unset', md: '400px' }}
+            position={{ base: 'unset', md: 'sticky' }}
+            h='100vh'
+            top='0px'
+            boxShadow={{ base: 'unset', md: 'base' }}
+            bg={{ base: 'unset', md: 'white' }}
+            borderRadius='semi'
+            overflowY='auto'
+          >
+            {router.isReady && hasMounted && (
+              <Filters
+                colorScheme='secondary'
+                queryParams={{
+                  ...defaultParams,
+                  ...router.query,
+                  q: queryString,
+                  extra_filter: Array.isArray(router.query.filters)
+                    ? router.query.filters.join('')
+                    : router.query.filters || '',
+                }}
                 selectedFilters={selectedFilters}
-                handleRouteUpdate={handleRouteUpdate}
-                removeAllFilters={removeAllFilters}
+                removeAllFilters={
+                  applied_filters.length > 0 ? removeAllFilters : undefined
+                }
               />
             )}
-            <Flex w='100%'>
-              {/* Filters sidebar */}
-              <ScrollContainer
-                flex={{ base: 0, md: 1 }}
-                minW={{ base: 'unset', md: '270px' }}
-                maxW={{ base: 'unset', md: '400px' }}
-                position={{ base: 'unset', md: 'sticky' }}
-                h='100vh'
-                top='0px'
-                boxShadow={{ base: 'unset', md: 'base' }}
-                bg={{ base: 'unset', md: 'white' }}
-                borderRadius='semi'
-                overflowY='auto'
-              >
-                {router.isReady && hasMounted && (
-                  <Filters
-                    colorScheme='secondary'
-                    queryParams={queryParams}
-                    selectedFilters={selectedFilters}
-                    removeAllFilters={
-                      applied_filters.length > 0 ? removeAllFilters : undefined
-                    }
-                  />
-                )}
-              </ScrollContainer>
-              {/* Result cards */}
-              <SearchResultsPage results={results} total={total} />
-            </Flex>
-          </PageContent>
+          </ScrollContainer>
+          {/* Result cards */}
+          <SearchResultsPage results={results} total={total} />
         </Flex>
-      </Box>
+      </PageContent>
     </PageContainer>
   );
 };

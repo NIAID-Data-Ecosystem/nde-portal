@@ -7,6 +7,7 @@ import {
   Flex,
   Link,
   ListItem,
+  Stack,
   Text,
   UnorderedList,
 } from '@chakra-ui/react';
@@ -16,7 +17,6 @@ import {
   updateRoute,
 } from 'src/components/filters/helpers';
 import { MAX_PAGES, Pagination } from './components/pagination';
-import { useHasMounted } from 'src/hooks/useHasMounted';
 import { SortDropdown } from './components/sort';
 import { encodeString } from 'src/utils/querystring-helpers';
 import { SelectedFilterType } from '../filters/types';
@@ -50,7 +50,6 @@ const SearchResultsPage = ({
 }) => {
   const [shouldUseMetadataScore, setShouldUseMetadataScore] = useState(true);
 
-  const hasMounted = useHasMounted();
   const router = useRouter();
 
   // Currently selected filters.
@@ -71,9 +70,6 @@ const SearchResultsPage = ({
   const [selectedPerPage, setSelectedPerPage] = useState(
     defaultQuery.selectedPerPage,
   );
-
-  // Query Parameters
-  const filter_string = queryFilterObject2String(selectedFilters);
 
   // Set initial state based on route params.
   useEffect(() => {
@@ -104,7 +100,7 @@ const SearchResultsPage = ({
     });
   }, [defaultFilters, router]);
 
-  const getQueryString = () => {
+  const getQueryString = useCallback(() => {
     let querystring = router.query.q;
 
     if (!querystring) {
@@ -117,43 +113,55 @@ const SearchResultsPage = ({
     return router.query.advancedSearch
       ? querystring
       : encodeString(querystring);
-  };
-  const querystring = getQueryString();
+  }, [router]);
 
-  const params = {
-    // don't escape parenthesis or colons when its an advanced search
-    q: router.query.advancedSearch ? querystring : encodeString(querystring),
-    extra_filter: filter_string || '', // extra filter updates aggregate fields
-    size: `${selectedPerPage}`,
-    from: `${(selectedPage - 1) * selectedPerPage}`,
-    sort: sortOrder,
-    use_metadata_score: shouldUseMetadataScore ? 'true' : 'false',
-    show_meta: true,
-    fields: [
-      '_meta',
-      '@type',
-      'alternateName',
-      'author',
-      'collectionType',
-      'conditionsOfAccess',
-      'date',
-      'description',
-      'doi',
-      'funding',
-      'healthCondition',
-      'includedInDataCatalog',
-      'infectiousAgent',
-      'isAccessibleForFree',
-      'license',
-      'measurementTechnique',
-      'name',
-      'sdPublisher',
-      'species',
-      'url',
-      'usageInfo',
-      'variableMeasured',
+  const querystring = useMemo(() => getQueryString(), [getQueryString]);
+
+  const params = useMemo(
+    () => ({
+      // don't escape parenthesis or colons when its an advanced search
+      q: router.query.advancedSearch ? querystring : encodeString(querystring),
+      extra_filter: queryFilterObject2String(selectedFilters) || '', // extra filter updates aggregate fields
+      size: `${selectedPerPage}`,
+      from: `${(selectedPage - 1) * selectedPerPage}`,
+      sort: sortOrder,
+      use_metadata_score: shouldUseMetadataScore ? 'true' : 'false',
+      show_meta: true,
+      fields: [
+        '_meta',
+        '@type',
+        'alternateName',
+        'author',
+        'collectionType',
+        'conditionsOfAccess',
+        'date',
+        'description',
+        'doi',
+        'funding',
+        'healthCondition',
+        'includedInDataCatalog',
+        'infectiousAgent',
+        'isAccessibleForFree',
+        'license',
+        'measurementTechnique',
+        'name',
+        'sdPublisher',
+        'species',
+        'url',
+        'usageInfo',
+        'variableMeasured',
+      ],
+    }),
+    [
+      router.query.advancedSearch,
+      querystring,
+      selectedFilters,
+      selectedPerPage,
+      selectedPage,
+      sortOrder,
+      shouldUseMetadataScore,
     ],
-  };
+  );
 
   const [total, setTotal] = useState<number>(initialTotal);
 
@@ -230,23 +238,15 @@ const SearchResultsPage = ({
   }
   return (
     <Flex w='100%' flexDirection='column' mx={[0, 0, 4]} flex={[1, 2]}>
-      <Flex
-        w='100%'
-        borderBottom='2px solid'
-        borderColor='gray.700'
-        flexWrap={{ base: 'wrap-reverse', sm: 'wrap' }}
-        justifyContent='space-between'
-        alignItems='center'
-      >
-        <ResultsCount
-          isLoading={isLoading || isRefetching || !router.isReady}
-          total={total}
-        />
-      </Flex>
+      {/* Number of search results */}
+      <ResultsCount
+        isLoading={isLoading || isRefetching || !router.isReady}
+        total={total}
+      />
 
       {/* Search results controls */}
       {numCards > 0 && (
-        <Box borderRadius='semi' boxShadow='base' bg='white' px={4} py={2}>
+        <Stack borderRadius='semi' boxShadow='base' bg='white' px={4} py={2}>
           <MetadataScoreToggle
             isChecked={shouldUseMetadataScore}
             isDisabled={sortOrder !== '_score'}
@@ -257,6 +257,7 @@ const SearchResultsPage = ({
             borderColor={{ base: 'page.alt' }}
             flexDirection={{ base: 'column-reverse', md: 'row' }}
             alignItems={{ base: 'unset', md: 'center' }}
+            pb={2}
           >
             <SortDropdown
               sortOrder={sortOrder}
@@ -273,6 +274,7 @@ const SearchResultsPage = ({
             />
             <DownloadMetadata
               flex={1}
+              pb={{ base: 2, md: 0 }}
               exportFileName={`nde-results-${querystring.replaceAll(' ', '_')}`}
               params={params}
               buttonProps={{ variant: 'outline' }}
@@ -292,7 +294,7 @@ const SearchResultsPage = ({
             selectedPerPage={selectedPerPage}
             total={total}
           />
-        </Box>
+        </Stack>
       )}
 
       {/* Display banner on last page if results exceed amount allotted by API */}
@@ -306,6 +308,7 @@ const SearchResultsPage = ({
           results.
         </Banner>
       </Collapse>
+
       {/* Empty state if no results found */}
       {!isLoading && (!data || data.results.length === 0) && (
         <Empty message='No results found.' alignSelf='center' h='50vh'>

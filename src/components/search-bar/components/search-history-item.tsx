@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
-import { Heading, Icon, ListItem } from '@chakra-ui/react';
-import dynamic from 'next/dynamic';
 import { FaMagnifyingGlass } from 'react-icons/fa6';
+import { Icon, ListItem, Text } from '@chakra-ui/react';
+import dynamic from 'next/dynamic';
 import { useDropdownContext } from '../../input-with-dropdown';
 
 const Highlight = dynamic(() =>
@@ -29,7 +29,7 @@ export const SearchHistoryItem = React.memo(
     return (
       <ListItem
         display='flex'
-        alignItems='center'
+        alignItems='flex-start'
         borderRadius='base'
         cursor='pointer'
         px={2}
@@ -46,10 +46,15 @@ export const SearchHistoryItem = React.memo(
           },
         })}
       >
-        <Icon as={FaMagnifyingGlass} mr={2} color='primary.500'></Icon>
-        <Heading
-          as='h4'
-          size='sm'
+        <Icon
+          as={FaMagnifyingGlass}
+          mr={2}
+          mt={1.5}
+          color='primary.400'
+          boxSize={3}
+        />
+        <Text
+          fontSize='sm'
           lineHeight='short'
           color='text.body'
           wordBreak='break-word'
@@ -65,7 +70,7 @@ export const SearchHistoryItem = React.memo(
           }}
         >
           <Highlight tags={searchTerm.split(' ')}>{value}</Highlight>
-        </Heading>
+        </Text>
       </ListItem>
     );
   },

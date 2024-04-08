@@ -1,10 +1,10 @@
 import React from 'react';
-import { Flex, Heading, HeadingProps, Spinner } from '@chakra-ui/react';
+import { Flex, Spinner, Text, TextProps } from '@chakra-ui/react';
 import { formatNumber } from 'src/utils/helpers';
 
 // [COMPONENT INFO]: Displays total results count
 
-interface ResultsCount extends HeadingProps {
+interface ResultsCount extends TextProps {
   // Total number of results
   total: number;
   // Data loading mechanism
@@ -18,6 +18,10 @@ const ResultsCount: React.FC<ResultsCount> = ({
 }) => {
   return (
     <Flex
+      w='100%'
+      borderBottom='2px solid'
+      borderColor='gray.700'
+      flexWrap={{ base: 'wrap-reverse', sm: 'wrap' }}
       alignItems='baseline'
       fontSize='md'
       fontWeight='semibold'
@@ -30,12 +34,12 @@ const ResultsCount: React.FC<ResultsCount> = ({
           size='md'
           speed='0.5s'
           thickness='1px'
-          mr={1}
+          mr={2}
         />
       ) : (
-        <Heading as='h2' mr={1} fontSize='2xl' fontWeight='inherit' {...props}>
+        <Text mr={1} fontSize='2xl' fontWeight='inherit' {...props}>
           {formatNumber(total)}
-        </Heading>
+        </Text>
       )}
       Result{total !== 1 ? 's' : ' '}
     </Flex>

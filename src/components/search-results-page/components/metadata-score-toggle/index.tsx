@@ -1,10 +1,10 @@
 import React from 'react';
 import {
-  Box,
   Circle,
   FormControl,
   FormLabel,
   Icon,
+  Stack,
   Switch,
   Text,
 } from '@chakra-ui/react';
@@ -22,23 +22,23 @@ export const MetadataScoreToggle = React.memo(
     handleToggle: () => void;
   }) => {
     return (
-      <FormControl display='flex' alignItems='center' mx={1} my={2}>
+      <FormControl display='flex' alignItems='center'>
         <Tooltip
           bg='white'
           isDisabled={isDisabled}
           label={
-            <Box color='text.body' lineHeight='shorter' p={1}>
-              <Text color='inherit' pb={1.5}>
+            <Stack color='text.body' lineHeight='shorter' p={1}>
+              <Text color='inherit'>
                 Ranks results based on the presence of unique fields.
               </Text>
-              <Text color='inherit' pb={1.5}>
+              <Text color='inherit'>
                 First scores by query, then refines rankings with an additional
                 function score.
               </Text>
-              <Text color='inherit' pb={1.5}>
+              <Text color='inherit'>
                 Adjusts results based on a calculated metadata score.
               </Text>
-            </Box>
+            </Stack>
           }
           hasArrow
           gutter={2}

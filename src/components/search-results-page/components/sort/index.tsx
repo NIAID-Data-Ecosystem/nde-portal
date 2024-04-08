@@ -45,11 +45,7 @@ export const SortDropdown: React.FC<SortDropdownProps> = React.memo(
       return '';
     };
     return (
-      <Stack
-        flexDirection={{ base: 'column', sm: 'row' }}
-        spacing={[0.5, 4]}
-        py={1}
-      >
+      <Stack flexDirection={{ base: 'column', sm: 'row' }} spacing={[1, 4]}>
         {/* Sort Order dropdown. */}
         <VisuallyHidden>
           <label htmlFor='sorting-order-select' title='Sort order'>
@@ -64,7 +60,6 @@ export const SortDropdown: React.FC<SortDropdownProps> = React.memo(
           borderRadius='semi'
           cursor='pointer'
           _hover={{ boxShadow: 'low' }}
-          my={1}
           onChange={e => {
             handleSortOrder(e.target.value);
           }}
@@ -99,7 +94,6 @@ export const SortDropdown: React.FC<SortDropdownProps> = React.memo(
           borderColor='gray.200'
           borderRadius='semi'
           cursor='pointer'
-          my={1}
           onChange={e => handleSelectedPerPage(+e.target.value)}
           size={size}
           value={selectedPerPage}

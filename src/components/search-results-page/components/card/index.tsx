@@ -47,7 +47,6 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
     includedInDataCatalog,
     isAccessibleForFree,
     url,
-    sdPublisher,
   } = data || {};
 
   const paddingCard = [4, 6, 8, 10];

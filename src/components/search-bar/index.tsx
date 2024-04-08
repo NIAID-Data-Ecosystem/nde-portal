@@ -7,11 +7,12 @@ import {
   Button,
   Divider,
   Flex,
-  Heading,
   Icon,
   IconButton,
   ListItem,
+  Text,
   Tooltip,
+  UnorderedList,
 } from '@chakra-ui/react';
 import { useLocalStorage } from 'usehooks-ts';
 import {
@@ -27,49 +28,43 @@ const DropdownContent = dynamic(() =>
     mod => mod.DropdownContent,
   ),
 );
-const DropdownList = dynamic(() =>
-  import('src/components/input-with-dropdown/components/DropdownList').then(
-    mod => mod.DropdownList,
-  ),
-);
 
 const SearchInput = (inputProps: DropdownInputProps) => {
   const { isOpen, setIsOpen } = useDropdownContext();
   return (
-    <Flex w='100%' alignItems='center'>
-      <DropdownInput
-        {...inputProps}
-        renderSubmitButton={() => {
-          return (
-            <>
-              <Button
-                colorScheme={inputProps.colorScheme}
-                aria-label={inputProps.ariaLabel}
-                size={inputProps.size}
-                type='submit'
-              >
-                Search
-              </Button>
-              <Divider orientation='vertical' borderColor='gray.200' m={1} />
+    <DropdownInput
+      {...inputProps}
+      renderSubmitButton={() => {
+        return (
+          <>
+            <Button
+              colorScheme={inputProps.colorScheme}
+              aria-label={inputProps.ariaLabel}
+              size={inputProps.size}
+              type='submit'
+              display={{ base: 'none', md: 'flex' }}
+            >
+              Search
+            </Button>
+            <Divider orientation='vertical' borderColor='gray.200' m={1} />
 
-              <Tooltip label='Toggle search history.'>
-                <IconButton
-                  variant='ghost'
-                  size={inputProps.size}
-                  aria-label='Toggle search history.'
-                  icon={
-                    <Flex px={2}>
-                      <Icon as={FaClockRotateLeft} />
-                    </Flex>
-                  }
-                  onClick={() => setIsOpen(!isOpen)}
-                />
-              </Tooltip>
-            </>
-          );
-        }}
-      />
-    </Flex>
+            <Tooltip label='Toggle search history.'>
+              <IconButton
+                variant='ghost'
+                size={inputProps.size}
+                aria-label='Toggle search history.'
+                icon={
+                  <Flex px={2}>
+                    <Icon as={FaClockRotateLeft} />
+                  </Flex>
+                }
+                onClick={() => setIsOpen(!isOpen)}
+              />
+            </Tooltip>
+          </>
+        );
+      }}
+    />
   );
 };
 
@@ -145,25 +140,25 @@ const SearchBar = ({
 
       {isOpen && (
         <DropdownContent>
-          <DropdownList>
+          <UnorderedList ml={0}>
             <ListItem
               px={2}
               mx={2}
               my={1}
               display='flex'
               justifyContent='space-between'
+              alignItems='center'
             >
-              <Heading
-                as='h3'
-                size='xs'
+              <Text
+                fontSize='xs'
                 fontStyle='italic'
-                color={searchHistory.length ? 'primary.600' : 'gray.700'}
+                color='primary.600'
                 fontWeight='medium'
               >
                 {searchHistory.length
                   ? 'Previous searches'
                   : 'No previous searches.'}
-              </Heading>
+              </Text>
               <IconButton
                 aria-label='Close search history.'
                 icon={<Icon as={FaXmark} />}
@@ -184,7 +179,7 @@ const SearchBar = ({
                 />
               );
             })}
-          </DropdownList>
+          </UnorderedList>
         </DropdownContent>
       )}
     </>
