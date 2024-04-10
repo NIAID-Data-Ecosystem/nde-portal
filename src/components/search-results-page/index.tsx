@@ -23,7 +23,6 @@ import { SelectedFilterType } from '../filters/types';
 import { defaultQuery } from './helpers';
 import { MetadataScoreToggle } from './components/metadata-score-toggle';
 import { useQuerySearchResults } from './hooks/useSearchResults';
-import ResultsCount from 'src/components/search-results-page/components/count';
 import { FILTERS_CONFIG } from './components/filters/helpers';
 import Card from './components/card';
 import { FormattedResource } from 'src/utils/api/types';
@@ -35,6 +34,8 @@ import Empty from 'src/components/empty';
 import NextLink from 'next/link';
 import Banner from '../banner';
 import { formatNumber } from 'src/utils/helpers';
+import { Params } from 'src/utils/api';
+
 /*
 [COMPONENT INFO]:
  Search results pages displays the list of records returned by a search.
@@ -44,9 +45,11 @@ import { formatNumber } from 'src/utils/helpers';
 const SearchResultsPage = ({
   results,
   total: initialTotal,
+  queryParams,
 }: {
   results: FormattedResource[];
   total: number;
+  queryParams: Params;
 }) => {
   const [shouldUseMetadataScore, setShouldUseMetadataScore] = useState(true);
 
@@ -239,10 +242,10 @@ const SearchResultsPage = ({
   return (
     <Flex w='100%' flexDirection='column' mx={[0, 0, 4]} flex={[1, 2]}>
       {/* Number of search results */}
-      <ResultsCount
+      {/* <ResultsCount
         isLoading={isLoading || isRefetching || !router.isReady}
         total={total}
-      />
+      /> */}
 
       {/* Search results controls */}
       {numCards > 0 && (
