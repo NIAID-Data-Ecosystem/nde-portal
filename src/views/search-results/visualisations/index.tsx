@@ -13,11 +13,10 @@ interface SearchResultsVisualizationsProps {
 
 const facets = [
   'healthCondition.name',
-  'infectiousAgent.name',
+  'infectiousAgent.displayName',
   'species.displayName',
   'funding.funder.name',
   'conditionsOfAccess',
-  // 'variableMeasured',
   'measurementTechnique.name',
 ];
 export const SearchResultsVisualizations = ({
@@ -39,11 +38,11 @@ export const SearchResultsVisualizations = ({
           key,
           name: FILTERS_CONFIG[key]?.name || key,
           count,
-          // frequency: count,
-          frequency: Math.round((count / total) * 100),
+          frequency: count,
         };
-      });
-  }, [data, total]);
+      })
+      .sort((a, b) => a.name.localeCompare(b.name));
+  }, [data]);
 
   return (
     <Stack spacing={4} flexDirection='row' sx={{ '>*': { minWidth: '300px' } }}>
@@ -64,9 +63,12 @@ export const SearchResultsVisualizations = ({
         </Text>
       </Box>
       {/* Radar */}
-      <Flex bg='white' boxShadow='sm' mb={6} borderRadius='semi' py={2} px={4}>
+      <Box bg='white' boxShadow='sm' mb={6} borderRadius='semi' py={4} px={4}>
+        <Heading as='h3' size='sm'>
+          Metadata Coverage
+        </Heading>
         {!isLoading && <Radar width={400} height={400} data={RADAR_DATA} />}
-      </Flex>
+      </Box>
     </Stack>
   );
 };
