@@ -128,7 +128,7 @@ const Search: NextPage<{
 
         <Flex w='100%'>
           {/* Filters sidebar */}
-          <ScrollContainer
+          {/* <ScrollContainer
             flex={{ base: 0, md: 1 }}
             minW={{ base: 'unset', md: '270px' }}
             maxW={{ base: 'unset', md: '400px' }}
@@ -157,9 +157,9 @@ const Search: NextPage<{
                 }
               />
             )}
-          </ScrollContainer>
+          </ScrollContainer> */}
           {/* Result cards */}
-          <SearchResultsPage
+          {/* <SearchResultsPage
             results={results}
             total={total}
             queryParams={{
@@ -170,7 +170,7 @@ const Search: NextPage<{
                 ? router.query.filters.join('')
                 : router.query.filters || '',
             }}
-          />
+          /> */}
         </Flex>
       </PageContent>
     </PageContainer>

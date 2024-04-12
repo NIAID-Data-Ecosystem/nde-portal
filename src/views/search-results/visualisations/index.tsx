@@ -3,8 +3,9 @@ import { Box, Flex, Heading, Stack, Text } from '@chakra-ui/react';
 import { useFacetsData } from 'src/components/filters/hooks/useFacetsData';
 import { Params } from 'src/utils/api';
 import { formatNumber } from 'src/utils/helpers';
-import { Radar } from './radar';
+import { Radar } from './components/radar';
 import { FILTERS_CONFIG } from 'src/components/search-results-page/components/filters/helpers';
+import { BrushChart } from './components/area-chart';
 
 interface SearchResultsVisualizationsProps {
   queryParams: Params;
@@ -45,8 +46,8 @@ export const SearchResultsVisualizations = ({
   }, [data]);
 
   return (
-    <Stack spacing={4} flexDirection='row' sx={{ '>*': { minWidth: '300px' } }}>
-      <Box
+    <>
+      <Flex
         bg='white'
         border='1px solid'
         borderColor='gray.100'
@@ -54,6 +55,7 @@ export const SearchResultsVisualizations = ({
         borderRadius='semi'
         py={2}
         px={4}
+        flexDirection='column'
       >
         <Text fontSize='xs' fontWeight='normal' color='gray.800'>
           Results
@@ -61,14 +63,30 @@ export const SearchResultsVisualizations = ({
         <Text fontSize='md' fontWeight='bold'>
           {formatNumber(total)}
         </Text>
-      </Box>
-      {/* Radar */}
-      <Box bg='white' boxShadow='sm' mb={6} borderRadius='semi' py={4} px={4}>
-        <Heading as='h3' size='sm'>
-          Metadata Coverage
-        </Heading>
-        {!isLoading && <Radar width={400} height={400} data={RADAR_DATA} />}
-      </Box>
-    </Stack>
+      </Flex>
+      <Stack
+        spacing={4}
+        flexDirection='row'
+        sx={{ '>*': { minWidth: '300px' } }}
+        flexWrap='wrap'
+      >
+        {/* Radar */}
+        <Box bg='white' boxShadow='sm' mb={6} borderRadius='semi' py={4} px={4}>
+          <Heading as='h3' size='sm'>
+            Metadata Coverage
+          </Heading>
+          {!isLoading && <Radar width={400} height={400} data={RADAR_DATA} />}
+        </Box>
+
+        <Box bg='white' boxShadow='sm' mb={6} borderRadius='semi' py={4} px={4}>
+          <Heading as='h3' size='sm'>
+            Release Dates
+          </Heading>
+          {!isLoading && (
+            <BrushChart width={400} height={400} params={queryParams} />
+          )}
+        </Box>
+      </Stack>
+    </>
   );
 };

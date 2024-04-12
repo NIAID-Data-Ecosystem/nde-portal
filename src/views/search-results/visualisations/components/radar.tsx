@@ -5,7 +5,7 @@ import { scaleLinear } from '@visx/scale';
 import { Point } from '@visx/point';
 import { Line, LineRadial } from '@visx/shape';
 import { Text } from '@visx/text';
-import { roundSvgPath } from './helpers';
+import { roundSvgPath } from '../helpers';
 import { theme } from 'src/theme';
 
 export const dots = '#503ADE';
