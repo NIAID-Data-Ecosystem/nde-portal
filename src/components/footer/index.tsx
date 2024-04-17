@@ -129,7 +129,7 @@ export const Footer = () => {
       bg='gray.900'
       color='white'
       borderTop='0.25rem solid'
-      borderColor='accent.bg'
+      borderColor='accent.400'
       minW='300px'
       display={{ base: 'block', lg: 'flex' }}
       flexDirection='column'

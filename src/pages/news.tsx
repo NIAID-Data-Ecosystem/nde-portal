@@ -32,6 +32,7 @@ export interface NewsOrEventsObject {
   compiledMDX: MDXRemoteSerializeResult;
   id: number;
   mdx: { [key: string]: MDXRemoteSerializeResult };
+  type?: string;
   attributes: {
     name: string | null;
     subtitle: string | null;
@@ -393,7 +394,7 @@ const News: NextPage<NewsProps> = props => {
                       },
                       _after: {
                         content: "''",
-                        bgGradient: 'linear(to-r, primary.200, accent.bg)',
+                        bgGradient: 'linear(to-r, primary.200, accent.400)',
                         position: 'absolute',
                         top: 0,
                         left: 0,

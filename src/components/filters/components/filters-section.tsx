@@ -46,7 +46,7 @@ export const FiltersSection: React.FC<FiltersSectionProps> = React.memo(
                   py={4}
                   transition='all 0.2s linear'
                   _expanded={{
-                    borderColor: 'accent.bg',
+                    borderColor: 'acccent.400',
                     py: 2,
                     transition: 'all 0.2s linear',
                   }}
@@ -92,7 +92,7 @@ export const FiltersSection: React.FC<FiltersSectionProps> = React.memo(
               <AccordionPanel
                 p={4}
                 borderLeft='4px solid'
-                borderColor='accent.bg'
+                borderColor='accent.400'
               >
                 {isExpanded ? children : <></>}
               </AccordionPanel>

@@ -150,7 +150,7 @@ export const FiltersContainer: React.FC<FiltersContainerProps> = ({
       <Button
         ref={btnRef}
         variant='solid'
-        bg='accent.bg'
+        bg='accent.400'
         onClick={onOpen}
         position='fixed'
         zIndex='docked'
