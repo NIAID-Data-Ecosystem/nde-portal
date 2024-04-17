@@ -1,6 +1,6 @@
 import React from 'react';
 import { useQuery } from 'react-query';
-import { Box, Flex, Text } from '@chakra-ui/react';
+import { Flex, Skeleton, Text } from '@chakra-ui/react';
 import type { GetStaticProps, NextPage } from 'next';
 import { PageContainer, PageContent } from 'src/components/page-container';
 import axios from 'axios';
@@ -29,7 +29,6 @@ const fetchFeaturedContent = async (slug: string | string[]) => {
 };
 const FeaturedPage: NextPage<{
   slug: string[];
-  data: FeaturedPageProps;
 }> = props => {
   // Fetch documentation from API.
 
@@ -41,9 +40,8 @@ const FeaturedPage: NextPage<{
     ['featured', { slug: props.slug }],
     () => fetchFeaturedContent(props.slug),
     {
-      refetchOnWindowFocus: false,
-      refetchOnMount: false,
-      initialData: props.data,
+      refetchOnWindowFocus: true,
+      refetchOnMount: true,
     },
   );
   return (
@@ -56,15 +54,16 @@ const FeaturedPage: NextPage<{
     >
       <Flex>
         {/* Banner img */}
-        {data?.attributes?.banner?.data && (
-          <Box
-            position='relative'
+        {(isLoading || data?.attributes?.banner?.data) && (
+          <Skeleton
+            isLoaded={!isLoading}
             backgroundImage={`${process.env.NEXT_PUBLIC_STRAPI_API_URL}${data?.attributes.banner.data?.attributes.url}`}
             backgroundSize='cover'
             display={{ base: 'none', sm: 'flex' }}
             width={{ base: 'none', sm: '50px', md: '150px', lg: '300px' }}
-          />
+          ></Skeleton>
         )}
+
         <Flex
           justifyContent='center'
           bg='whiteAlpha.900'
@@ -110,7 +109,7 @@ export const getStaticProps: GetStaticProps = async context => {
 
   // Fetch documentation from API.
   const data = await fetchFeaturedContent(slug);
-  return { props: { slug, data } };
+  return { props: { slug } };
 };
 
 export async function getStaticPaths() {
