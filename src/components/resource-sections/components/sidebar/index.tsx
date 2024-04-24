@@ -24,6 +24,44 @@ import { CompletenessBadgeCircle } from 'src/components/completeness-badge/Circu
 import { HeadingWithTooltip } from './components/external/components/heading-with-tooltip';
 import { Link } from 'src/components/link';
 
+const REQUIRED_FIELDS = [
+  'author',
+  'date',
+  'description',
+  'distribution',
+  'funding',
+  'includedInDataCatalog',
+  'measurementTechnique',
+  'name',
+  'url',
+];
+
+const RECOMMENDED_FIELDS = [
+  'citation',
+  'citedBy',
+  'collectionSize',
+  'conditionsOfAccess',
+  'dateCreated',
+  'dateModified',
+  'datePublished',
+  'doi',
+  'hasAPI',
+  'hasDownload',
+  'healthCondition',
+  'identifier',
+  'infectiousAgent',
+  'interactionStatistic',
+  'isBasedOn',
+  'keywords',
+  'license',
+  'sdPublisher',
+  'spatialCoverage',
+  'species',
+  'temporalCoverage',
+  'topicCategory',
+  'usageInfo',
+  'variableMeasured',
+];
 export const Sidebar = ({
   data,
   isLoading,
@@ -40,6 +78,15 @@ export const Sidebar = ({
   useEffect(() => {
     setIsMounted(true);
   }, []);
+
+  const completenessData = data && {
+    required: REQUIRED_FIELDS.map(field => ({
+      [field]: !!data[field],
+    })),
+    recommended: RECOMMENDED_FIELDS.map(field => ({
+      [field]: !!data[field],
+    })),
+  };
 
   return (
     <Flex
@@ -60,7 +107,10 @@ export const Sidebar = ({
                   alignItems='center'
                   flexDirection='column'
                 >
-                  <CompletenessBadgeCircle stats={data['_meta']} />
+                  <CompletenessBadgeCircle
+                    stats={data['_meta']}
+                    data={completenessData}
+                  />
                   <HeadingWithTooltip
                     label='Metadata Completeness'
                     pt={2}

@@ -9,6 +9,9 @@ import {
   Skeleton,
   Stack,
   Tag,
+  TagLabel,
+  TagLeftIcon,
+  Tooltip,
   UnorderedList,
 } from '@chakra-ui/react';
 import { Link } from 'src/components/link';
@@ -35,6 +38,7 @@ import { CompletenessBadgeCircle } from 'src/components/completeness-badge/Circu
 import { HeadingWithTooltip } from './components/sidebar/components/external/components/heading-with-tooltip';
 import { ResourceCatalogCollection } from './components/collection-information';
 import { DownloadMetadata } from '../download-metadata';
+import { FaMagnifyingGlass } from 'react-icons/fa6';
 
 // Metadata displayed in each section
 export const sectionMetadata: { [key: string]: (keyof FormattedResource)[] } = {
@@ -76,6 +80,45 @@ export const sectionMetadata: { [key: string]: (keyof FormattedResource)[] } = {
   metadata: ['rawData'],
 };
 
+const REQUIRED_FIELDS = [
+  'author',
+  'date',
+  'description',
+  'distribution',
+  'funding',
+  'includedInDataCatalog',
+  'measurementTechnique',
+  'name',
+  'url',
+];
+
+const RECOMMENDED_FIELDS = [
+  'citation',
+  'citedBy',
+  'collectionSize',
+  'conditionsOfAccess',
+  'dateCreated',
+  'dateModified',
+  'datePublished',
+  'doi',
+  'hasAPI',
+  'hasDownload',
+  'healthCondition',
+  'identifier',
+  'infectiousAgent',
+  'interactionStatistic',
+  'isBasedOn',
+  'keywords',
+  'license',
+  'sdPublisher',
+  'spatialCoverage',
+  'species',
+  'temporalCoverage',
+  'topicCategory',
+  'usageInfo',
+  'variableMeasured',
+];
+
 // use config file to show content in sections.
 const Sections = ({
   isLoading,
@@ -87,6 +130,16 @@ const Sections = ({
   sections: Route[];
 }) => {
   const router = useRouter();
+
+  const completenessData = data && {
+    required: REQUIRED_FIELDS.map(field => ({
+      [field]: !!data[field],
+    })),
+    recommended: RECOMMENDED_FIELDS.map(field => ({
+      [field]: !!data[field],
+    })),
+  };
+
   return (
     <>
       <ResourceHeader
@@ -129,7 +182,11 @@ const Sections = ({
                     borderRadius='semi'
                     p={4}
                   >
-                    <CompletenessBadgeCircle stats={data['_meta']} size='md' />
+                    <CompletenessBadgeCircle
+                      stats={data['_meta']}
+                      size='md'
+                      data={completenessData}
+                    />
                     <HeadingWithTooltip
                       label='Metadata Completeness'
                       pt={2}
@@ -179,22 +236,33 @@ const Sections = ({
                   {data?.keywords &&
                     data.keywords.map((keyword, i) => {
                       return (
-                        <Tag
+                        <Tooltip
                           key={`${keyword}-${i}`}
-                          as='a'
-                          m={2}
-                          colorScheme='primary'
-                          cursor='pointer'
-                          onClick={e => {
-                            e.preventDefault();
-                            router.push({
-                              pathname: `/search`,
-                              query: { q: keyword.trim() },
-                            });
-                          }}
+                          label={`Search for ${keyword}`}
+                          hasArrow
                         >
-                          {keyword}
-                        </Tag>
+                          <span>
+                            <Tag
+                              as='a'
+                              m={2}
+                              colorScheme='primary'
+                              cursor='pointer'
+                              onClick={e => {
+                                e.preventDefault();
+                                router.push({
+                                  pathname: `/search`,
+                                  query: { q: keyword.trim() },
+                                });
+                              }}
+                            >
+                              <TagLeftIcon
+                                boxSize='12px'
+                                as={FaMagnifyingGlass}
+                              />
+                              <TagLabel>{keyword}</TagLabel>
+                            </Tag>
+                          </span>
+                        </Tooltip>
                       );
                     })}
                 </Flex>

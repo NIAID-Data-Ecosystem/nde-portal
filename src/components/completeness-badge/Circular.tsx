@@ -12,10 +12,12 @@ export const CompletenessBadgeCircle = ({
   stats,
   animate = true,
   size = 'lg',
+  data,
 }: {
   stats: FormattedResource['_meta'];
   animate?: boolean;
   size?: 'xs' | 'sm' | 'md' | 'lg';
+  data?: { [key: string]: { [key: string]: boolean }[] };
 }) => {
   if (!stats) {
     return <></>;
@@ -119,8 +121,10 @@ export const CompletenessBadgeCircle = ({
   return (
     <Box position='relative'>
       <Tooltip
+        maxWidth='unset'
         label={
           <TooltipContent
+            data={data}
             stats={{
               required: {
                 label: 'Fundamental fields',
