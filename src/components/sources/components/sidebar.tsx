@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Flex, Heading, ListItem, Tag, Text } from '@chakra-ui/react';
+import { Badge, Box, Heading, HStack, ListItem, Text } from '@chakra-ui/react';
 import { formatDate } from 'src/utils/api/helpers';
 import type { SourceResponse } from 'src/pages/sources';
 
@@ -22,16 +22,16 @@ const Sidebar: React.FC<Sidebar> = ({ data }) => {
         return (
           <ListItem key={index} _hover={{ bg: 'gray.50' }} cursor='pointer'>
             <Box as='a' display='block' href={`#${name}`} px={[2, 4, 6]} py={4}>
-              <Flex alignItems='center'>
+              <HStack alignItems='center'>
                 <Heading size='h6' alignItems='center'>
                   {name}{' '}
                 </Heading>
                 {data[+id].isNiaidFunded && (
-                  <Tag size='sm' bg='tertiary.700' mx={2}>
+                  <Badge colorScheme='blue' variant='subtle'>
                     NIAID
-                  </Tag>
+                  </Badge>
                 )}
-              </Flex>
+              </HStack>
               {data[+id].dateModified ? (
                 <Text fontWeight='medium' fontSize='sm'>
                   Latest Release {formatDate(data[+id].dateModified)}
