@@ -34,6 +34,9 @@ const SearchInput = (inputProps: DropdownInputProps) => {
   return (
     <DropdownInput
       {...inputProps}
+      onClose={() => {
+        setIsOpen(false);
+      }}
       renderSubmitButton={() => {
         return (
           <>
@@ -159,13 +162,13 @@ const SearchBar = ({
                   ? 'Previous searches'
                   : 'No previous searches.'}
               </Text>
-              <IconButton
+              {/* <IconButton
                 aria-label='Close search history.'
                 icon={<Icon as={FaXmark} />}
                 variant='ghost'
                 size='sm'
                 onClick={() => setIsOpen(false)}
-              />
+              /> */}
             </ListItem>
             {searchHistory.map((str, index) => {
               return (
