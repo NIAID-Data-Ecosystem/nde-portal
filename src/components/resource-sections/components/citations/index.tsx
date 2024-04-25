@@ -1,7 +1,7 @@
 import { FormattedResource } from 'src/utils/api/types';
 import { Flex, Skeleton, Text } from '@chakra-ui/react';
 import { Link } from 'src/components/link';
-import { shouldAppendPunctuation } from 'src/utils/helpers';
+import { shouldAppendPunctuation } from 'src/utils/helpers/authors';
 import { getCitationComponents } from './helpers';
 import {
   MetadataLabel,

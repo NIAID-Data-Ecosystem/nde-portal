@@ -3,12 +3,14 @@ import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
 import remarkGfm from 'remark-gfm';
 import { Box, BoxProps } from '@chakra-ui/react';
+import { ReactMarkdownOptions } from 'react-markdown/lib/react-markdown';
 /**
  * Displays + formats HTML block content.
  */
 
 interface DisplayHTMLContentProps extends BoxProps {
   content: string;
+  reactMarkdownProps?: Partial<ReactMarkdownOptions>;
 }
 
 export const DisplayHTMLString: React.FC<{ children: React.ReactNode }> = ({
@@ -32,6 +34,7 @@ export const DisplayHTMLString: React.FC<{ children: React.ReactNode }> = ({
 
 export const DisplayHTMLContent: React.FC<DisplayHTMLContentProps> = ({
   content,
+  reactMarkdownProps,
   ...props
 }) => {
   if (!content || typeof content !== 'string') {
@@ -67,7 +70,10 @@ export const DisplayHTMLContent: React.FC<DisplayHTMLContentProps> = ({
       }}
       {...props}
     >
-      <ReactMarkdown rehypePlugins={[rehypeRaw, remarkGfm]} linkTarget='_blank'>
+      <ReactMarkdown
+        rehypePlugins={[rehypeRaw, remarkGfm]}
+        {...reactMarkdownProps}
+      >
         {formatContent(content)}
       </ReactMarkdown>
     </Box>

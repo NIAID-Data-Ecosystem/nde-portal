@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Button, Flex, Icon, Text } from '@chakra-ui/react';
-import { FaTriangleExclamation } from 'react-icons/fa6';
 import { useLocalStorage } from 'usehooks-ts';
+import { FaTriangleExclamation } from 'react-icons/fa6';
 import { Link } from 'src/components/link';
+
+// To do : dyniamic react icons
 
 const Notice = () => {
   let niaid_help = 'NIAIDDataEcosystem@mail.nih.gov';

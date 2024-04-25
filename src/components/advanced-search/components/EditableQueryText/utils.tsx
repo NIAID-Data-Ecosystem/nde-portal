@@ -2,11 +2,10 @@ import { convertQueryString2Object } from '../../utils/query-helpers';
 import {
   checkBalancedPunctuation,
   checkMissingUnion,
-  ErrorType,
-  QueryStringError,
   startsOrEndsWithUnion,
 } from '../../utils/validation-checks';
 import { flattenTree, TreeItem } from '../SortableWithCombine';
+import { ErrorType, QueryStringError } from 'src/components/error/types';
 
 export const formatQueryString = (str: string): string => {
   // Condense too much spacing between words and trim all extra spaces.

@@ -9,7 +9,6 @@ const About: NextPage = () => {
   const MDXComponents = useMDXComponents({});
   return (
     <PageContainer
-      hasNavigation
       title='About'
       metaDescription='About page.'
       px={0}

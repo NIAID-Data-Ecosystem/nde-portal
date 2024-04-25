@@ -22,21 +22,19 @@ import { getQueryStatusError } from 'src/components/error/utils';
 import { fetchSearchResults } from 'src/utils/api';
 import { FetchSearchResultsResponse } from 'src/utils/api/types';
 import { formatNumber } from 'src/utils/helpers';
-import { useDebounce } from 'usehooks-ts';
+import { useDebounceValue } from 'usehooks-ts';
 import {
   convertObject2QueryString,
   convertQueryString2Object,
 } from '../../utils/query-helpers';
-import {
-  QueryStringError,
-  removeDuplicateErrors,
-} from '../../utils/validation-checks';
+import { removeDuplicateErrors } from '../../utils/validation-checks';
 import { TreeItem } from '../SortableWithCombine';
 import {
   formatQueryString,
   removeUnnecessaryParentheses,
   validateQueryString,
 } from './utils';
+import { QueryStringError } from 'src/components/error/types';
 
 interface EditableQueryTextProps {
   queryObj: TreeItem[];
@@ -64,7 +62,8 @@ export const EditableQueryText = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // expected count for query.
-  const debouncedQueryString = useDebounce(value, 1000);
+  const [debouncedQueryString] = useDebounceValue(value, 1000);
+
   const { isLoading, error, data, refetch } = useQuery<
     FetchSearchResultsResponse | undefined,
     Error

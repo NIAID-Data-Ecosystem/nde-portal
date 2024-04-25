@@ -162,13 +162,6 @@ export const formatDate = (date?: string | Date) => {
   return new Date(date.replace(/-/g, '/').replace(/T.+/, ''))
     .toISOString()
     .split('T')[0];
-
-  // If the desired format is: Aug 03 2020. Change to:
-  // return new Date(date.replace(/-/g, '/').replace(/T.+/, ''))
-  //   .toDateString()
-  //   .split(' ')
-  //   .slice(1)
-  //   .join(' ');
 };
 
 // Standardizes value to be an array.
@@ -244,7 +237,7 @@ export const formatAPIResource = (data: any) => {
     input: convertToArray(data.input),
 
     interactionStatistics: data.interactionStatistics || null,
-    isAccessibleForFree: data.isAccessibleForFree,
+    isAccessibleForFree: data.isAccessibleForFree || null,
     isBasedOn: convertToArray(data.isBasedOn),
     isBasisFor: convertToArray(data.isBasisFor),
     isPartOf: convertToArray(data.isPartOf),

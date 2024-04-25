@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import type { NextPage } from 'next';
 import {
   Box,
@@ -11,11 +11,7 @@ import {
   Divider,
 } from '@chakra-ui/react';
 import { Link } from 'src/components/link';
-import {
-  PageHeader,
-  PageContainer,
-  PageContent,
-} from 'src/components/page-container';
+import { PageContainer, PageContent } from 'src/components/page-container';
 import HOMEPAGE_COPY from 'configs/homepage.json';
 import HOME_QUERIES from 'configs/queries/home-queries.json';
 import NextLink from 'next/link';
@@ -30,11 +26,14 @@ import {
 import { NewsOrEventsObject, fetchEvents } from './news';
 import { TableWithSearch } from 'src/views/home/components/TableWithSearch/';
 import { useResourceCatalogs } from 'src/hooks/api/useResourceCatalogs';
+import { PageHeader } from 'src/components/page-header';
+import { fetchAllFeaturedPages } from 'src/views/features/helpers';
 
 const Home: NextPage<{
   data: {
     news: NewsOrEventsObject[];
     events: NewsOrEventsObject[];
+    features: NewsOrEventsObject[];
   };
   error?: { message: string };
 }> = props => {
@@ -67,7 +66,6 @@ const Home: NextPage<{
 
   return (
     <PageContainer
-      hasNavigation
       title='Home'
       metaDescription='Find and access allergic, infectious and immune-mediated disease data by searching across biomedical data repositories with the NIAID Data Discovery Portal'
       keywords='omics, data, infectious disease, epidemiology, clinical trial, immunology, bioinformatics, surveillance, search, repository'
@@ -261,6 +259,7 @@ const Home: NextPage<{
                 <NewsCarousel
                   news={props.data.news}
                   events={props.data.events}
+                  features={props.data.features}
                 />
               )}
             </Box>
@@ -274,7 +273,38 @@ const Home: NextPage<{
 export async function getStaticProps() {
   try {
     const { news } = await fetchNews({ paginate: { page: 1, pageSize: 5 } });
-
+    const features = await fetchAllFeaturedPages({
+      populate: {
+        fields: ['title', 'slug', 'subtitle', 'publishedAt', 'updatedAt'],
+        thumbnail: {
+          fields: ['url', 'alternativeText'],
+        },
+      },
+      sort: { publishedAt: 'desc', updatedAt: 'desc' },
+      paginate: { page: 1, pageSize: 5 },
+    })
+      .then(res => {
+        return {
+          data: res.data.map(item => ({
+            ...item,
+            type: 'feature',
+            attributes: {
+              name: item.attributes.title,
+              image: item.attributes.thumbnail,
+              slug: item.attributes.slug,
+              shortDescription: item.attributes.subtitle,
+            },
+          })) as NewsOrEventsObject[],
+          error: null,
+        };
+      })
+      .catch(err => ({
+        data: [],
+        error: {
+          message: `${err.response.status} : ${err.response.statusText}`,
+          status: err.response.status,
+        },
+      }));
     const events = await fetchEvents({ paginate: { page: 1, pageSize: 100 } })
       .then(res => ({ data: res.events, error: null }))
       .catch(err => {
@@ -287,7 +317,9 @@ export async function getStaticProps() {
         };
       });
 
-    return { props: { data: { news, events: events.data } } };
+    return {
+      props: { data: { news, events: events.data, features: features.data } },
+    };
   } catch (err: any) {
     return {
       props: {

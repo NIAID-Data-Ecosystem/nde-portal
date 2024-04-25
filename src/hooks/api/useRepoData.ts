@@ -1,8 +1,9 @@
 import REPOSITORIES from 'configs/repositories.json';
-import { useQuery, UseQueryOptions } from 'react-query';
+import { useQuery } from 'react-query';
 import { fetchMetadata } from './helpers';
-import { Metadata } from 'src/utils/api/types';
+import { Metadata } from './types';
 import { FormattedResource } from 'src/utils/api/types';
+
 export interface Repository {
   _id: string;
   abstract?: string;

@@ -16,7 +16,7 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import { theme } from 'src/theme';
-import { useElementSize } from 'usehooks-ts';
+import { useResizeObserver } from 'usehooks-ts';
 import { FaAngleLeft, FaAngleRight } from 'react-icons/fa6';
 
 const MotionFlex = motion(Flex);
@@ -39,7 +39,12 @@ export const Carousel = ({
   colorScheme = 'primary',
   gap = 32,
 }: CarouselProps) => {
-  const [ref, { width }] = useElementSize();
+  const ref = useRef<HTMLDivElement>(null);
+  const { width = 0, height = 0 } = useResizeObserver({
+    ref,
+    box: 'border-box',
+  });
+
   const [itemWidth, setItemWidth] = useState(0);
   const [activeItem, setActiveItem] = useState(0);
   const [trackIsActive, setTrackIsActive] = useState(false);

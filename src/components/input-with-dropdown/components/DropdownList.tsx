@@ -10,7 +10,6 @@ export const DropdownList: React.FC<DropdownListProps> = ({
   ...props
 }) => {
   const { isOpen } = useDropdownContext();
-
   if (!isOpen || !React.Children.count(children)) {
     return <></>;
   }

@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { formatAPIResource, formatISOString } from './helpers';
-import { FetchSearchResultsResponse, Metadata } from './types';
+import { FetchSearchResultsResponse } from './types';
+import { Metadata } from 'src/hooks/api/types';
 
 // Get all resources where query term contains the search term.
 export interface Params {
@@ -149,23 +150,6 @@ export const fetchAllSearchResults = async (
   };
 
   return await fetchSinglePageSearchResults(queryParams);
-};
-
-// get metadata
-export const fetchMetadata = async () => {
-  if (!process.env.NEXT_PUBLIC_API_URL) {
-    throw new Error('API url undefined');
-  }
-
-  try {
-    const { data } = (await axios.get(
-      `${process.env.NEXT_PUBLIC_API_URL}/metadata`,
-    )) as { data: Metadata };
-
-    return data;
-  } catch (err) {
-    throw err;
-  }
 };
 
 // get metadata fields

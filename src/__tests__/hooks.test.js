@@ -30,6 +30,10 @@ describe('use query hook', () => {
   });
 
   test('failure query hook', async () => {
+    // Mock console.error before the test
+    const originalConsoleError = console.error;
+    console.error = jest.fn();
+
     server.use(
       rest.get('*', (_, res, ctx) => {
         return res(ctx.status(500));
@@ -42,5 +46,6 @@ describe('use query hook', () => {
     await waitFor(() => expect(result.current.isError).toBe(true));
 
     expect(result.current.error).toBeDefined();
+    console.error = originalConsoleError;
   });
 });

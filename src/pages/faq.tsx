@@ -31,7 +31,6 @@ const FrequentlyAsked: NextPage<FrequentlyAskedProps> = props => {
   const MDXComponents = useMDXComponents({});
   return (
     <PageContainer
-      hasNavigation
       title='FAQ'
       metaDescription='Frequenty asked questions.'
       px={0}

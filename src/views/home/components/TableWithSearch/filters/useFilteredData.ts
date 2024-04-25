@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
-import { useDebounce } from 'usehooks-ts';
 import { TableData } from '..';
+import { useDebounceValue } from 'usehooks-ts';
 
 export const SEARCH_FIELDS = [
   'name',
@@ -17,7 +17,7 @@ function useFilteredData(
   filters: {} | Record<keyof TableData, string[]>,
 ) {
   // Debounce the search term to reduce the number of times filtering is applied as the user types
-  const debouncedSearchTerm = useDebounce(searchTerm, 250);
+  const [debouncedSearchTerm] = useDebounceValue(searchTerm, 250);
 
   const filteredData = useMemo(() => {
     return data.filter(item => {

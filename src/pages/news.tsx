@@ -14,11 +14,8 @@ import {
 } from '@chakra-ui/react';
 import { Link } from 'src/components/link';
 import type { NextPage } from 'next';
-import {
-  PageContainer,
-  PageContent,
-  PageHeader,
-} from 'src/components/page-container';
+import { PageContainer, PageContent } from 'src/components/page-container';
+import { PageHeader } from 'src/components/page-header';
 import { MDXRemoteSerializeResult } from 'next-mdx-remote';
 import { Error } from 'src/components/error';
 import axios from 'axios';
@@ -35,6 +32,7 @@ export interface NewsOrEventsObject {
   compiledMDX: MDXRemoteSerializeResult;
   id: number;
   mdx: { [key: string]: MDXRemoteSerializeResult };
+  type?: string;
   attributes: {
     name: string | null;
     subtitle: string | null;
@@ -211,7 +209,6 @@ const News: NextPage<NewsProps> = props => {
 
   return (
     <PageContainer
-      hasNavigation
       title='News'
       metaDescription='Latest news releases for the NIAID Data Discovery Portal.'
       px={0}
@@ -397,7 +394,7 @@ const News: NextPage<NewsProps> = props => {
                       },
                       _after: {
                         content: "''",
-                        bgGradient: 'linear(to-r, primary.200, accent.bg)',
+                        bgGradient: 'linear(to-r, primary.200, accent.400)',
                         position: 'absolute',
                         top: 0,
                         left: 0,
