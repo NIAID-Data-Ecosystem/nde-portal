@@ -119,12 +119,7 @@ export const MobileNavItem = ({
 
 export const MobileSubMenu = ({ isOpen }: { isOpen: boolean }) => {
   return (
-    <Box
-      borderRadius='semi'
-      boxShadow='base'
-      overflow='hidden'
-      display={{ base: 'block', md: 'none' }}
-    >
+    <Box borderRadius='semi' boxShadow='base' overflow='hidden'>
       <Collapse in={isOpen} animateOpacity>
         <Stack bg='white' p={2} alignItems='end'>
           {NAVIGATION.routes &&
