@@ -32,7 +32,6 @@ export const FiltersSection: React.FC<FiltersSectionProps> = React.memo(
       schemaProperty?.abstract?.['Dataset'] ||
       schemaProperty?.description?.['Dataset'] ||
       '';
-    console.log(description);
 
     return (
       <AccordionItem borderColor='page.alt' borderTopWidth='2px'>
