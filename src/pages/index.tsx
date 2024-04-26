@@ -154,8 +154,8 @@ const Home: NextPage<{
           >
             <Box maxW='1300px' width='100%'>
               <Box px={{ base: 0, sm: 4 }}>
-                <Heading as='h2' fontSize='lg' fontWeight='semibold' mb={4}>
-                  Currently included resources
+                <Heading as='h2' fontSize='2xl' fontWeight='semibold' mb={4}>
+                  Explore All Included Resources
                 </Heading>
                 <Text lineHeight='short'>
                   The following <strong>Resource Catalogs</strong> (collections
@@ -184,12 +184,6 @@ const Home: NextPage<{
                       property: 'abstract',
                     },
                     {
-                      title: 'access',
-                      property: 'conditionsOfAccess',
-                      isSortable: true,
-                      props: { maxW: '150px', minW: '150px' },
-                    },
-                    {
                       title: 'Type',
                       property: 'dataType',
                       fields: ['dataType'],
@@ -202,6 +196,12 @@ const Home: NextPage<{
                       fields: ['type'],
                       isSortable: true,
                       props: { maxW: '200px', minW: '200px' },
+                    },
+                    {
+                      title: 'access',
+                      property: 'conditionsOfAccess',
+                      isSortable: true,
+                      props: { maxW: '150px', minW: '150px' },
                     },
                   ]}
                 />

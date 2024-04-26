@@ -96,29 +96,24 @@ export const TableWithSearch: React.FC<TableWithSearchProps> = ({
             direction='row'
             spacing={2}
             mb={2}
-            // justifyContent='space-between'
             flexWrap='wrap'
+            alignItems='center'
           >
+            <SearchInput
+              size='md'
+              placeholder='Search table'
+              ariaLabel='Search table'
+              value={searchTerm}
+              handleChange={handleSearchChange}
+              isResponsive={false}
+              alignItems='flex-end'
+              onClose={() => setSearchTerm('')}
+            />
             <Filters
               data={data}
               filters={filters}
               updateFilter={updateFilters}
             />
-            <Flex
-              justifyContent='flex-end'
-              width={{ base: '100%', md: 'unset' }}
-            >
-              <SearchInput
-                size='md'
-                placeholder='Search table'
-                ariaLabel='Search table'
-                value={searchTerm}
-                handleChange={handleSearchChange}
-                isResponsive={false}
-                alignItems='flex-end'
-                // flex={1}
-              />
-            </Flex>
           </Stack>
 
           <Stack
@@ -169,6 +164,9 @@ export const TableWithSearch: React.FC<TableWithSearchProps> = ({
             // hasPagination
             data={filteredData || []}
             tableHeadProps={{ bg: 'page.alt' }}
+            getTableRowProps={(_, idx: number) => ({
+              bg: idx % 2 ? 'page.alt' : 'white',
+            })}
             tableContainerProps={{ overflowY: 'auto', maxHeight: '500px' }}
             getCells={props =>
               getCells ? getCells(props) : <RepositoryCells {...props} />
@@ -207,73 +205,17 @@ export const RepositoryCells = ({
       py={1}
     >
       {column.property === 'name' && (
-        <SkeletonCircle
-          data-testid={isLoading ? 'loading' : 'loaded'}
-          isLoaded={!isLoading && !!data}
-          w={isLoading ? '30px' : 'unset'}
-          h={isLoading ? '30px' : 'unset'}
-          mr={2}
-          my={2}
-          ml={0}
-        >
-          {data?.icon ? (
-            <Flex alignItems='center'>
-              {data?.url ? (
-                <Link
-                  href={data.url}
-                  fontWeight='medium'
-                  target='_blank'
-                  _focus={{
-                    boxShadow: 'none',
-                  }}
-                >
-                  <Image
-                    src={`${data.icon}`}
-                    alt={`Logo for data source ${data.name}`}
-                    objectFit='contain'
-                    width='30px'
-                    minWidth='30px'
-                    height='30px'
-                  />
-                </Link>
-              ) : (
-                <Image
-                  src={`${data.icon}`}
-                  alt={`Logo for data source ${data.name}`}
-                  objectFit='contain'
-                  width='30px'
-                  minWidth='30px'
-                  height='30px'
-                />
-              )}
-            </Flex>
-          ) : (
-            <Image
-              src='/assets/collection.svg'
-              alt='Logo for data source resource catalogs'
-              objectFit='contain'
-              width='30px'
-              minWidth='30px'
-              height='30px'
-            />
-          )}
-        </SkeletonCircle>
-      )}
-
-      {column.property === 'name' && (
         <SkeletonText
           data-testid={isLoading ? 'loading' : 'loaded'}
           isLoaded={!isLoading && !!data}
           noOfLines={2}
-          spacing='2'
+          // spacing='2'
           w='100%'
           fontSize='sm'
         >
           {column.property === 'name' && data.portalURL ? (
             <NextLink href={data.portalURL} passHref prefetch={false}>
-              <Link as='div' fontWeight='medium'>
-                {data[column.property]}
-              </Link>
+              <Link as='div'>{data[column.property]}</Link>
             </NextLink>
           ) : (
             <Text>{data[column.property]}</Text>
@@ -295,17 +237,19 @@ export const RepositoryCells = ({
 
       {column.property === 'conditionsOfAccess' &&
         data['conditionsOfAccess'] && (
-          <Flex mt={1}>
-            <ConditionsOfAccess
+          <Flex mt={1} fontWeight='semibold'>
+            {data['conditionsOfAccess']} Access
+            {/* <ConditionsOfAccess
               conditionsOfAccess={data['conditionsOfAccess']}
               type={
                 data.dataType === 'Repository' ? 'Dataset' : 'ResourceCatalog'
               }
-            />
+            /> */}
           </Flex>
         )}
       {column.property === 'dataType' && (
         <SkeletonText
+          fontWeight='semibold'
           data-testid={isLoading ? 'loading' : 'loaded'}
           isLoaded={!isLoading && !!data}
           w='100%'
@@ -329,22 +273,14 @@ export const RepositoryCells = ({
               }
             }
 
-            return (
-              <Tag
-                key={data._id + label}
-                size='sm'
-                colorScheme={colorScheme}
-                variant={variant}
-              >
-                {label}
-              </Tag>
-            );
+            return <>{label}</>;
           })}
         </SkeletonText>
       )}
 
       {column.property === 'type' && (
         <SkeletonText
+          fontWeight='semibold'
           data-testid={isLoading ? 'loading' : 'loaded'}
           isLoaded={!isLoading && !!data}
           w='100%'
@@ -364,16 +300,7 @@ export const RepositoryCells = ({
               }
             }
 
-            return (
-              <Tag
-                key={data._id + label}
-                size='sm'
-                colorScheme={colorScheme}
-                variant={variant}
-              >
-                {label}
-              </Tag>
-            );
+            return <>{label}</>;
           })}
         </SkeletonText>
       )}

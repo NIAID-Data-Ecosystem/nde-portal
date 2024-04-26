@@ -1,4 +1,5 @@
 import {
+  Box,
   Button,
   CheckboxGroup,
   Checkbox,
@@ -10,6 +11,8 @@ import {
   PopoverCloseButton,
   PopoverHeader,
   PopoverBody,
+  PopoverArrow,
+  Text,
 } from '@chakra-ui/react';
 import { FaCaretDown, FaFilter } from 'react-icons/fa6';
 import { ScrollContainer } from 'src/components/scroll-container';
@@ -37,9 +40,9 @@ export const CheckboxList = ({
             colorScheme='gray'
             flex={1}
             fontWeight='medium'
-            h='100%'
             lineHeight='shorter'
-            size='sm'
+            size='md'
+            px={4}
             rightIcon={<FaCaretDown />}
             variant='outline'
             justifyContent='space-between'
@@ -48,8 +51,21 @@ export const CheckboxList = ({
           </Button>
         </PopoverTrigger>
         <PopoverContent>
+          <PopoverArrow />
           <PopoverCloseButton m={2} />
-          <PopoverHeader fontWeight='semibold'>{label}</PopoverHeader>
+          <PopoverHeader>
+            <Text fontWeight='semibold' lineHeight='normal'>
+              {label}
+            </Text>
+            <Text
+              color='niaid.placeholder'
+              fontStyle='italic'
+              lineHeight='normal'
+              mt={1}
+            >
+              Accessibility of the work.
+            </Text>
+          </PopoverHeader>
           <PopoverBody>
             <ScrollContainer maxHeight='300px'>
               <CheckboxGroup colorScheme='blue' value={selectedOptions}>

@@ -28,14 +28,7 @@ export const Filters = ({ data, filters, updateFilter }: TableFiltersProps) => {
   );
 
   return (
-    <Stack
-      direction='row'
-      spacing={{ base: 1, lg: 4 }}
-      flex={1}
-      alignItems='center'
-      flexWrap='wrap'
-      minW={{ base: 'unset', sm: '420px' }}
-    >
+    <>
       {/* <!-- Data type radio  --> */}
       {/* {dataTypes.length > 0 && (
         <RadioFilter
@@ -46,7 +39,15 @@ export const Filters = ({ data, filters, updateFilter }: TableFiltersProps) => {
           }}
         />
       )} */}
-
+      {collections.length > 0 && (
+        <CheckboxList
+          label='Type'
+          property='type'
+          options={collections}
+          selectedOptions={filters?.['type' as keyof typeof filters] || []}
+          handleChange={updateFilter}
+        />
+      )}
       {/* <!-- Collection types checkboxes --> */}
       {collections.length > 0 && (
         <CheckboxList
@@ -61,7 +62,7 @@ export const Filters = ({ data, filters, updateFilter }: TableFiltersProps) => {
       {/* <!-- Conditions of Access types checkboxes --> */}
       {conditionsOfAccess.length > 0 && (
         <CheckboxList
-          label='Conditions of Access'
+          label='Access'
           property='conditionsOfAccess'
           options={conditionsOfAccess}
           selectedOptions={
@@ -70,6 +71,6 @@ export const Filters = ({ data, filters, updateFilter }: TableFiltersProps) => {
           handleChange={updateFilter}
         />
       )}
-    </Stack>
+    </>
   );
 };
