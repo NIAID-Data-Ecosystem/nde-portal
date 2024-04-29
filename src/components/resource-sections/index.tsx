@@ -35,6 +35,7 @@ import { CompletenessBadgeCircle } from 'src/components/completeness-badge/Circu
 import { HeadingWithTooltip } from './components/sidebar/components/external/components/heading-with-tooltip';
 import { ResourceCatalogCollection } from './components/collection-information';
 import { DownloadMetadata } from '../download-metadata';
+import { Keywords } from './components/keywords';
 
 // Metadata displayed in each section
 export const sectionMetadata: { [key: string]: (keyof FormattedResource)[] } = {
@@ -175,29 +176,7 @@ const Sections = ({
             {/* Show keywords */}
             {section.hash === 'keywords' && (
               <Skeleton isLoaded={!isLoading}>
-                <Flex flexWrap='wrap'>
-                  {data?.keywords &&
-                    data.keywords.map((keyword, i) => {
-                      return (
-                        <Tag
-                          key={`${keyword}-${i}`}
-                          as='a'
-                          m={2}
-                          colorScheme='primary'
-                          cursor='pointer'
-                          onClick={e => {
-                            e.preventDefault();
-                            router.push({
-                              pathname: `/search`,
-                              query: { q: keyword.trim() },
-                            });
-                          }}
-                        >
-                          {keyword}
-                        </Tag>
-                      );
-                    })}
-                </Flex>
+                {data?.keywords && <Keywords keywords={data.keywords} />}
               </Skeleton>
             )}
             {section.hash === 'softwareInformation' && (
