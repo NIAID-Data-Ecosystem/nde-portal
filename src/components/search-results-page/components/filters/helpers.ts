@@ -11,7 +11,7 @@ export const FILTERS_CONFIG: FiltersConfigProps = {
   date: { name: 'Date ', glyph: 'date', property: 'date', isDefaultOpen: true },
   '@type': { name: 'Type', property: '@type' },
   'includedInDataCatalog.name': {
-    name: 'Repository',
+    name: 'Sources',
     glyph: 'info',
     property: 'includedInDataCatalog',
   },
