@@ -129,14 +129,14 @@ export const Footer = () => {
       bg='gray.900'
       color='white'
       borderTop='0.25rem solid'
-      borderColor='accent.bg'
+      borderColor='accent.400'
       minW='300px'
       display={{ base: 'block', lg: 'flex' }}
       flexDirection='column'
     >
       <Stack p={6} alignItems={{ base: 'center', md: 'start' }} margin='0 auto'>
         <Box w='100%'>
-          <Logo href={NAVIGATION?.href} />
+          <Logo href={NAVIGATION?.href} isLazy={true} />
           <SimpleGrid
             minChildWidth={{
               base: '100%',

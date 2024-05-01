@@ -9,6 +9,7 @@ import {
   HeadingProps,
   Text,
 } from '@chakra-ui/react';
+import { TableSortToggle } from './sort-toggle';
 
 // Label component - displays text in a specific style.
 export const Label = React.memo(({ children, ...props }: HeadingProps) => {
@@ -36,6 +37,7 @@ export const Content = React.memo(({ children, ...props }: BoxProps) => {
       whiteSpace='pre-wrap'
       wordBreak='break-word'
       fontWeight='normal'
+      w='100%'
       {...props}
     >
       {children}
@@ -76,27 +78,62 @@ export const EmptyCell = React.memo(({ label }: { label?: string }) => {
 });
 
 interface ThProps extends CellProps {
-  isSelected?: boolean;
   colorScheme?: ButtonProps['colorScheme'];
+  isSelected?: boolean;
+  isSortable?: boolean;
+  tableSortToggleProps?: {
+    isSelected: boolean;
+    sortBy: 'ASC' | 'DESC';
+    handleToggle: (sortByAsc: boolean) => void;
+  };
 }
 
 export const Th = React.memo(
-  ({ children, colorScheme, isSelected, label, ...props }: ThProps) => {
+  ({
+    children,
+    colorScheme,
+    isSelected,
+    label,
+    isSortable,
+    tableSortToggleProps,
+    ...props
+  }: ThProps) => {
+    const bg = isSelected ? 'page.alt' : 'transparent';
+    const py = isSortable ? 1 : 2;
     return (
-      <Cell
+      <Flex
         as='th'
         role='columnheader'
         scope='col'
         label={label}
         alignItems='center'
         fontWeight='bold'
-        bg={isSelected ? 'page.alt' : 'transparent'}
+        bg={bg}
         borderBottom='1px solid'
         borderBottomColor={`${colorScheme}.200`}
+        overflow='hidden'
+        flex={1}
+        px={4}
+        py={py}
+        minW='280px'
+        fontSize='xs'
+        lineHeight='short'
         {...props}
       >
-        {children}
-      </Cell>
+        {label && <Label>{label}</Label>}
+        {isSortable && tableSortToggleProps && (
+          <Box
+            my={1}
+            fontSize='xs'
+            lineHeight='short'
+            whiteSpace='pre-wrap'
+            wordBreak='break-word'
+            fontWeight='normal'
+          >
+            <TableSortToggle {...tableSortToggleProps} />
+          </Box>
+        )}
+      </Flex>
     );
   },
 );

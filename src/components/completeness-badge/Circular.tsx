@@ -1,12 +1,12 @@
-import { Box, Text } from '@chakra-ui/react';
-import { Group } from '@visx/group';
-import Pie, { PieArcDatum, ProvidedProps } from '@visx/shape/lib/shapes/Pie';
-import { TooltipContent } from './TooltipContent';
-import Tooltip from 'src/components/tooltip';
-import { FormattedResource } from 'src/utils/api/types';
 import React from 'react';
 import { uniqueId } from 'lodash';
 import { animated, useTransition, to } from '@react-spring/web';
+import { Box, Text } from '@chakra-ui/react';
+import { Group } from '@visx/group';
+import Pie, { PieArcDatum, ProvidedProps } from '@visx/shape/lib/shapes/Pie';
+import Tooltip from 'src/components/tooltip';
+import { TooltipContent } from './TooltipContent';
+import { FormattedResource } from 'src/utils/api/types';
 
 export const CompletenessBadgeCircle = ({
   stats,

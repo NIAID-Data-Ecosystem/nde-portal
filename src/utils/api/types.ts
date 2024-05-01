@@ -109,10 +109,11 @@ interface CuratedBy {
 
 export interface Distribution {
   encodingFormat: string | null;
+  contentSize: number | null;
   contentUrl: string | null;
-  dateCreated: Date | string | null;
-  dateModified: Date | string | null;
-  datePublished: Date | string | null;
+  dateCreated: string | null;
+  dateModified: string | null;
+  datePublished: string | null;
   description: string | null;
   name: string | null;
   '@id': string | null;
@@ -408,33 +409,4 @@ export interface FormattedResource {
       }[];
   variableMeasured: string[] | null;
   version: number | null;
-}
-
-export interface MetadataSource {
-  code: {
-    file: string;
-    repo: string;
-    commit: string;
-    branch: string;
-    url: string;
-  };
-  sourceInfo: {
-    name: string;
-    abstract: string;
-    description: string;
-    schema: Object | null;
-    url: string;
-    identifier: string;
-  };
-  stats: { [key: string]: number };
-  version: string;
-}
-
-export interface Metadata {
-  biothing_type: string;
-  build_date: string;
-  build_version: string;
-  src: {
-    [key: string]: MetadataSource;
-  };
 }

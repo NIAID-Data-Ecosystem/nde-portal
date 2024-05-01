@@ -1,130 +1,70 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { FaClockRotateLeft, FaMagnifyingGlass } from 'react-icons/fa6';
+import React, { useEffect, useState } from 'react';
+import { FaClockRotateLeft, FaXmark } from 'react-icons/fa6';
 import { uniq } from 'lodash';
+import dynamic from 'next/dynamic';
 import { useRouter } from 'next/router';
 import {
   Button,
   Divider,
   Flex,
-  Heading,
   Icon,
   IconButton,
   ListItem,
+  Text,
   Tooltip,
+  UnorderedList,
 } from '@chakra-ui/react';
 import { useLocalStorage } from 'usehooks-ts';
 import {
-  DropdownContent,
   DropdownInput,
   DropdownInputProps,
-  DropdownList,
-  Highlight,
   InputWithDropdown,
   useDropdownContext,
 } from '../input-with-dropdown';
-import { FaXmark } from 'react-icons/fa6';
+import { SearchHistoryItem } from './components/search-history-item';
 
-interface RecentItemProps {
-  colorScheme: string;
-  index: number;
-  searchTerm: string;
-  value: string;
-  onClick?: (arg: string) => void | undefined;
-}
-const RecentItem = ({
-  colorScheme,
-  index,
-  searchTerm,
-  value,
-  onClick,
-}: RecentItemProps) => {
-  const { cursor, getListItemProps, setInputValue } = useDropdownContext();
+const DropdownContent = dynamic(() =>
+  import('src/components/input-with-dropdown/components/DropdownContent').then(
+    mod => mod.DropdownContent,
+  ),
+);
 
-  const isSelected = useMemo(() => cursor === index, [index, cursor]);
-
-  return (
-    <ListItem
-      display='flex'
-      alignItems='center'
-      borderRadius='base'
-      cursor='pointer'
-      px={2}
-      py={1}
-      m={2}
-      my={1}
-      {...getListItemProps({
-        index,
-        value,
-        isSelected,
-        onClick: () => {
-          setInputValue(value);
-          onClick && onClick(value);
-        },
-      })}
-    >
-      <Icon as={FaMagnifyingGlass} mr={2} color='primary.500'></Icon>
-      <Heading
-        as='h4'
-        size='sm'
-        lineHeight='short'
-        color='text.body'
-        wordBreak='break-word'
-        fontWeight='normal'
-        textAlign='left'
-        sx={{
-          '* > .search-term': {
-            fontWeight: 'bold',
-            textDecoration: 'underline',
-            color: `${colorScheme}.400`,
-            bg: 'transparent',
-          },
-        }}
-      >
-        <Highlight tags={searchTerm.split(' ')}>{value}</Highlight>
-      </Heading>
-    </ListItem>
-  );
-};
-
-const SearchInput = ({ ...inputProps }: DropdownInputProps) => {
+const SearchInput = (inputProps: DropdownInputProps) => {
   const { isOpen, setIsOpen } = useDropdownContext();
-
   return (
-    <Flex w='100%' alignItems='center'>
-      <DropdownInput
-        {...inputProps}
-        renderSubmitButton={() => {
-          return (
-            <>
-              <Button
-                colorScheme={inputProps.colorScheme}
-                aria-label={inputProps.ariaLabel}
-                size={inputProps.size}
-                type='submit'
-                // onClick={inputProps.onSubmit}
-              >
-                Search
-              </Button>
-              <Divider orientation='vertical' borderColor='gray.200' m={1} />
+    <DropdownInput
+      {...inputProps}
+      renderSubmitButton={() => {
+        return (
+          <>
+            <Button
+              colorScheme={inputProps.colorScheme}
+              aria-label={inputProps.ariaLabel}
+              size={inputProps.size}
+              type='submit'
+              display={{ base: 'none', md: 'flex' }}
+            >
+              Search
+            </Button>
+            <Divider orientation='vertical' borderColor='gray.200' m={1} />
 
-              <Tooltip label='Toggle search history.'>
-                <IconButton
-                  variant='ghost'
-                  size={inputProps.size}
-                  aria-label='Toggle search history.'
-                  icon={
-                    <Flex px={2}>
-                      <Icon as={FaClockRotateLeft} />
-                    </Flex>
-                  }
-                  onClick={() => setIsOpen(!isOpen)}
-                />
-              </Tooltip>
-            </>
-          );
-        }}
-      />
-    </Flex>
+            <Tooltip label='Toggle search history.'>
+              <IconButton
+                variant='ghost'
+                size={inputProps.size}
+                aria-label='Toggle search history.'
+                icon={
+                  <Flex px={2}>
+                    <Icon as={FaClockRotateLeft} />
+                  </Flex>
+                }
+                onClick={() => setIsOpen(!isOpen)}
+              />
+            </Tooltip>
+          </>
+        );
+      }}
+    />
   );
 };
 
@@ -147,8 +87,7 @@ const SearchBar = ({
   setSearchHistory,
 }: SearchBarProps) => {
   const router = useRouter();
-  const { setIsOpen } = useDropdownContext();
-
+  const { isOpen, setIsOpen } = useDropdownContext();
   // Search term entered in search bar.
   const [searchTerm, setSearchTerm] = useState<string>('');
 
@@ -199,48 +138,50 @@ const SearchBar = ({
         }}
       />
 
-      <DropdownContent bg='#fff'>
-        <DropdownList>
-          <ListItem
-            px={2}
-            mx={2}
-            my={1}
-            display='flex'
-            justifyContent='space-between'
-          >
-            <Heading
-              as='h3'
-              size='xs'
-              fontStyle='italic'
-              color={searchHistory.length ? 'primary.600' : 'gray.700'}
-              fontWeight='medium'
+      {isOpen && (
+        <DropdownContent>
+          <UnorderedList ml={0}>
+            <ListItem
+              px={2}
+              mx={2}
+              my={1}
+              display='flex'
+              justifyContent='space-between'
+              alignItems='center'
             >
-              {searchHistory.length
-                ? 'Previous searches'
-                : 'No previous searches.'}
-            </Heading>
-            <IconButton
-              aria-label='Close search history.'
-              icon={<Icon as={FaXmark} />}
-              variant='ghost'
-              size='sm'
-              onClick={() => setIsOpen(false)}
-            />
-          </ListItem>
-          {searchHistory.map((recentSearch, i) => {
-            return (
-              <RecentItem
-                key={i}
-                index={i}
-                colorScheme={colorScheme}
-                searchTerm={searchTerm}
-                value={recentSearch}
-                onClick={value => handleSubmit(value)}
+              <Text
+                fontSize='xs'
+                fontStyle='italic'
+                color='primary.600'
+                fontWeight='medium'
+              >
+                {searchHistory.length
+                  ? 'Previous searches'
+                  : 'No previous searches.'}
+              </Text>
+              <IconButton
+                aria-label='Close search history.'
+                icon={<Icon as={FaXmark} />}
+                variant='ghost'
+                size='sm'
+                onClick={() => setIsOpen(false)}
               />
-            );
-          })}
-        </DropdownList>
-      </DropdownContent>
+            </ListItem>
+            {searchHistory.map((str, index) => {
+              return (
+                <SearchHistoryItem
+                  key={str}
+                  index={index}
+                  colorScheme={colorScheme}
+                  searchTerm={searchTerm}
+                  value={str}
+                  onClick={value => handleSubmit(value)}
+                />
+              );
+            })}
+          </UnorderedList>
+        </DropdownContent>
+      )}
     </>
   );
 };

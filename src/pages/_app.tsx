@@ -1,33 +1,15 @@
-import { useEffect } from 'react';
 import type { AppProps } from 'next/app';
-import { useRouter } from 'next/router';
 import Head from 'next/head';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { theme } from 'src/theme';
-import * as ga from 'lib/ga';
-import { ChakraProvider } from '@chakra-ui/react';
+import { ChakraProvider } from '@chakra-ui/provider';
+import { GoogleTagManager } from '@next/third-parties/google';
+import { fonts } from 'lib/fonts';
 
 // Creates an instance of react-query for the app.
 const queryClient = new QueryClient();
 
 function App({ Component, pageProps }: AppProps) {
-  const router = useRouter();
-  useEffect(() => {
-    const handleRouteChange = (url: string) => {
-      ga.pageview(url);
-    };
-    handleRouteChange(router.pathname);
-  }, [router]);
-
-  useEffect(() => {
-    if (router.query && router.query.q) {
-      ga.event({
-        action: 'search',
-        params: { search_term: router.query.q },
-      });
-    }
-  }, [router, pageProps]);
-
   return (
     <>
       <Head>
@@ -36,6 +18,13 @@ function App({ Component, pageProps }: AppProps) {
           content='width=device-width, initial-scale=1.0'
         ></meta>
       </Head>
+      <style jsx global>
+        {`
+          :root {
+            --font-public-sans: ${fonts.public_sans_font.style.fontFamily};
+          }
+        `}
+      </style>
 
       <QueryClientProvider client={queryClient}>
         <ChakraProvider theme={theme}>
@@ -43,6 +32,9 @@ function App({ Component, pageProps }: AppProps) {
           <Component {...pageProps} />
         </ChakraProvider>
       </QueryClientProvider>
+      <GoogleTagManager
+        gtmId={process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS || ''}
+      />
     </>
   );
 }

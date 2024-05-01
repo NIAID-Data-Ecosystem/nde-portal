@@ -38,7 +38,7 @@ export const FooterLink: React.FC<FooterLinkProps> = ({
           as={FaAngleRight}
           boxSize={3}
           ml={2}
-          color='accent.bg'
+          color='accent.400'
           transform='translate(-5px)'
           transition='all .3s ease'
         />

@@ -14,7 +14,6 @@ import { uniqueId } from 'lodash';
 import { Cell, EmptyCell, Th } from 'src/components/table/components/cell';
 import { Row } from 'src/components/table/components/row';
 import { TableContainer } from 'src/components/table/components/table-container';
-import { TableSortToggle } from 'src/components/table/components/sort-toggle';
 import { TableWrapper } from 'src/components/table/components/wrapper';
 import { TablePagination } from 'src/components/table/components/pagination';
 import { useTableSort } from 'src/components/table/hooks/useTableSort';
@@ -65,10 +64,10 @@ export const CitedByTable: React.FC<CitedByTable> = ({
     return v;
   }, []);
 
-  const [{ data, orderBy, sortBy }, updateSort] = useTableSort(
-    citedBy,
+  const [{ data, orderBy, sortBy }, updateSort] = useTableSort({
+    data: citedBy,
     accessor,
-  );
+  });
   // [size]: num of rows per page
   const [size, setSize] = useState(ROW_SIZES[0]);
 
@@ -114,18 +113,16 @@ export const CitedByTable: React.FC<CitedByTable> = ({
                       label={column.title}
                       isSelected={column.key === orderBy}
                       borderBottomColor='primary.200'
+                      isSortable={true}
+                      tableSortToggleProps={{
+                        isSelected: column.key === orderBy,
+                        sortBy,
+                        handleToggle: (sortByAsc: boolean) => {
+                          updateSort(column.key, sortByAsc);
+                        },
+                      }}
                       {...column.props}
-                    >
-                      {column.key && (
-                        <TableSortToggle
-                          isSelected={column.key === orderBy}
-                          sortBy={sortBy}
-                          handleToggle={(sortByAsc: boolean) => {
-                            updateSort(column.key, sortByAsc);
-                          }}
-                        />
-                      )}
-                    </Th>
+                    ></Th>
                   );
                 })}
               </Tr>

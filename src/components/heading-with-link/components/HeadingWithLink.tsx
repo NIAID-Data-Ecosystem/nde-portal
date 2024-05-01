@@ -34,7 +34,7 @@ export const HeadingWithLink = (props: HeadingWithLinkProps) => {
           {...props}
         >
           {props.children}
-          <Text as='span' fontWeight='bold'>
+          <Text as='span' fontWeight='bold' fontSize='lg'>
             #
           </Text>
         </Heading>

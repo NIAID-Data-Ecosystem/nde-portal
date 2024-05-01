@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {
   Accordion,
-  Box,
   Button,
   Drawer,
   DrawerHeader,
@@ -151,7 +150,7 @@ export const FiltersContainer: React.FC<FiltersContainerProps> = ({
       <Button
         ref={btnRef}
         variant='solid'
-        bg='accent.bg'
+        bg='accent.400'
         onClick={onOpen}
         position='fixed'
         zIndex='docked'
@@ -205,21 +204,6 @@ export const FiltersContainer: React.FC<FiltersContainerProps> = ({
       </Drawer>
     </>
   ) : (
-    <ScrollContainer
-      flex={1}
-      minW='270px'
-      maxW='400px'
-      position='sticky'
-      h='100vh'
-      top='0px'
-      // h={[`calc(100vh - ${NAV_HEIGHT.sm})`, `calc(100vh - ${NAV_HEIGHT.md})`]}
-      // top={NAV_HEIGHT}
-      boxShadow='base'
-      background='white'
-      borderRadius='semi'
-      overflowY='auto'
-    >
-      {content}
-    </ScrollContainer>
+    <>{content}</>
   );
 };

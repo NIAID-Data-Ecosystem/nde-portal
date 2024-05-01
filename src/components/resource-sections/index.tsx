@@ -25,7 +25,6 @@ import { Route } from './helpers';
 import FilesTable from './components/files-table';
 import { CitedByTable } from './components/cited-by-table';
 import { DisplayHTMLContent } from '../html-content';
-import { DownloadMetadata } from '../download-metadata';
 import SoftwareInformation from './components/software-information';
 import { External } from './components/sidebar/components/external';
 import { Funding } from './components/funding';
@@ -35,6 +34,8 @@ import BasedOnTable from './components/based-on';
 import { CompletenessBadgeCircle } from 'src/components/completeness-badge/Circular';
 import { HeadingWithTooltip } from './components/sidebar/components/external/components/heading-with-tooltip';
 import { ResourceCatalogCollection } from './components/collection-information';
+import { DownloadMetadata } from '../download-metadata';
+import { Keywords } from './components/keywords';
 
 // Metadata displayed in each section
 export const sectionMetadata: { [key: string]: (keyof FormattedResource)[] } = {
@@ -175,29 +176,7 @@ const Sections = ({
             {/* Show keywords */}
             {section.hash === 'keywords' && (
               <Skeleton isLoaded={!isLoading}>
-                <Flex flexWrap='wrap'>
-                  {data?.keywords &&
-                    data.keywords.map((keyword, i) => {
-                      return (
-                        <Tag
-                          key={`${keyword}-${i}`}
-                          as='a'
-                          m={2}
-                          colorScheme='primary'
-                          cursor='pointer'
-                          onClick={e => {
-                            e.preventDefault();
-                            router.push({
-                              pathname: `/search`,
-                              query: { q: keyword.trim() },
-                            });
-                          }}
-                        >
-                          {keyword}
-                        </Tag>
-                      );
-                    })}
-                </Flex>
+                {data?.keywords && <Keywords keywords={data.keywords} />}
               </Skeleton>
             )}
             {section.hash === 'softwareInformation' && (
@@ -292,9 +271,7 @@ const Sections = ({
               </>
             )}
             {/* Show funding */}
-            {/* {section.hash === 'funding' && (
-              <FundingTable isLoading={isLoading} {...data} />
-            )} */}
+
             {section.hash === 'funding' && (
               <Funding isLoading={isLoading} data={data?.funding || []} />
             )}

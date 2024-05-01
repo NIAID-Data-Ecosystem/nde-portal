@@ -1,4 +1,5 @@
 import { Box, Button, Flex, Heading, Stack } from '@chakra-ui/react';
+import { ScrollContainer } from 'src/components/scroll-container';
 
 interface SectionList {
   id: string;
@@ -32,7 +33,9 @@ export const SectionList = ({
 
   return (
     <Stack flex={1}>
-      {children}
+      <ScrollContainer maxHeight='1400px'>
+        <Stack flex={1}>{children}</Stack>
+      </ScrollContainer>
       {typeof showMax === 'number' && showMax < numItems && (
         <Flex justifyContent='center' my={4}>
           <Button
@@ -80,6 +83,7 @@ export const Section = ({
         borderBottomColor='blackAlpha.200'
         position='sticky'
         top='0px'
+        zIndex={1000}
       >
         {title}
       </Heading>

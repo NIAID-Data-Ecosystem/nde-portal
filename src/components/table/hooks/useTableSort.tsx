@@ -5,54 +5,58 @@ interface DataObject {
   [key: string]: any;
 }
 
-export const useTableSort = (
+interface TableSortProps {
   /**
    * Table data
    */
-  data: DataObject[],
+  data: DataObject[];
   /**
    * Function to access the order value in data. Defaults to (v) => v. Must wrap in callback.
    */
-  accessor: (arg: any) => any = v => v,
-
+  accessor?: (arg: any) => any;
   /**
    * Initial order by value.
    */
-  orderByInitial?: string,
-
+  orderBy?: string;
   /**
    * Initial sort by boolean where Ascending[true] or descending[false]
    */
-  isSortAscending?: boolean,
-): any => {
+  isSortAscending?: boolean;
+}
+export const useTableSort = ({
+  data,
+  accessor = v => v,
+  orderBy: orderByInitial,
+  isSortAscending = true,
+}: TableSortProps): any => {
   const accessorFn = useCallback(accessor, [accessor]);
-
   const [orderBy, setOrderBy] = useState<string | null>(orderByInitial || null);
   const [sortByAsc, setSortByAsc] = useState(isSortAscending);
 
   const items = useMemo(() => {
-    if (!data) {
-      return [];
+    if (!data || !orderBy) {
+      return data;
     }
-    const d = [...data].sort((a, b) => {
-      if (!orderBy) {
-        return 1;
-      }
-      const value_a = accessorFn(a[orderBy]);
-      const value_b = accessorFn(b[orderBy]);
 
-      if (typeof value_a !== 'string' || typeof value_b !== 'string') {
-        return 1;
-      }
+    const sorted = [...data].sort((a, b) => {
+      let valueA = accessorFn(a[orderBy]);
+      let valueB = accessorFn(b[orderBy]);
 
-      if (sortByAsc) {
-        return value_a.toLowerCase().localeCompare(value_b.toLowerCase());
-      } else {
-        return value_b.toLowerCase().localeCompare(value_a.toLowerCase());
-      }
+      // Normalize null or undefined to either 0 or '' depending on type (number vs. otherwise)
+      valueA = valueA ?? (typeof valueA === 'number' ? 0 : '');
+      valueB = valueB ?? (typeof valueB === 'number' ? 0 : '');
+      // Check if values are numeric and use appropriate comparison
+      const comparisonResult =
+        typeof valueA === 'number' && typeof valueB === 'number'
+          ? valueA - valueB
+          : String(valueA).localeCompare(String(valueB), undefined, {
+              sensitivity: 'base',
+              numeric: true,
+            });
+      return sortByAsc ? comparisonResult : -comparisonResult;
     });
 
-    return d;
+    return sorted;
   }, [accessorFn, data, orderBy, sortByAsc]);
 
   const handleSortOrder = useCallback(
