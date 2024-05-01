@@ -138,23 +138,23 @@ const News: NextPage<NewsProps> = props => {
 
         // Mapping data to the expected structure
         const news = newsResponse.news;
-        const features = featuresResponse.data.map(item => ({
-          ...item,
-          type: 'feature',
-          attributes: {
-            name: item.attributes.title,
-            image: item.attributes.thumbnail,
-            slug: item.attributes.slug,
-            description: `[Read full feature](/features/${item.attributes.slug})`,
-            subtitle: item.attributes.subtitle,
-          },
-        })) as NewsOrEventsObject[];
+        // const features = featuresResponse.data.map(item => ({
+        //   ...item,
+        //   type: 'feature',
+        //   attributes: {
+        //     name: item.attributes.title,
+        //     image: item.attributes.thumbnail,
+        //     slug: item.attributes.slug,
+        //     description: `[Read full feature](/features/${item.attributes.slug})`,
+        //     subtitle: item.attributes.subtitle,
+        //   },
+        // })) as NewsOrEventsObject[];
         const events = eventsResponse.events;
 
         return {
           news,
           events,
-          features,
+          features: [],
         };
       } catch (error: any) {
         // Assuming error is of type any, we throw as type Error for useQuery to handle
@@ -184,11 +184,11 @@ const News: NextPage<NewsProps> = props => {
       hash: 'events',
       showMax: 5,
     },
-    {
-      title: 'Features',
-      hash: 'features',
-      showMax: 5,
-    },
+    // {
+    //   title: 'Features',
+    //   hash: 'features',
+    //   showMax: 5,
+    // },
     // {
     //   title: 'Webinar Recordings',
     //   hash: 'webinars',
@@ -403,7 +403,7 @@ const News: NextPage<NewsProps> = props => {
               </Section>
 
               {/* Features */}
-              <Section id='features' title='Features'>
+              {/* <Section id='features' title='Features'>
                 <SectionList
                   id='features'
                   numItems={response?.features?.length || 0}
@@ -457,7 +457,7 @@ const News: NextPage<NewsProps> = props => {
                     </>
                   )}
                 </SectionList>
-              </Section>
+              </Section> */}
 
               {/* Additional Resources */}
               <Section id='resources' title='Additional Resources'>
