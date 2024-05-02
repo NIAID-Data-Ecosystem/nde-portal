@@ -14,7 +14,8 @@
     },
     {
       "title": "Keywords",
-      "hash": "keywords"
+      "hash": "keywords",
+      "isCollapsible": true
     },
     {
       "title": "Description",

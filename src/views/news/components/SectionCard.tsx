@@ -5,6 +5,7 @@ import {
   CardFooter,
   Flex,
   Heading,
+  Image,
   Tag,
   Text,
 } from '@chakra-ui/react';
@@ -12,8 +13,13 @@ import { NewsOrEventsObject } from 'src/pages/news';
 import ReactMarkdown from 'react-markdown';
 import { useMDXComponents } from 'mdx-components';
 import { formatDate } from 'src/utils/api/helpers';
+import { Link } from 'src/components/link';
 
-const SectionCard = ({ attributes }: NewsOrEventsObject) => {
+interface SectionCardProps extends NewsOrEventsObject {
+  image?: { url: string; alternativeText: string } | null;
+}
+
+const SectionCard = ({ attributes, image }: SectionCardProps) => {
   const categoryColors = [
     'gray',
     'blue',
@@ -27,7 +33,27 @@ const SectionCard = ({ attributes }: NewsOrEventsObject) => {
     'yellow',
     'cyan',
   ];
-  const MDXComponents = useMDXComponents({});
+  const MDXComponents = useMDXComponents({
+    a: (props: any) => {
+      return (
+        <Link
+          href={props.href}
+          // External links should open in a new tab if not on the same domain.
+          isExternal={
+            (props.href.startsWith('/') ||
+              props.href.startsWith(process.env.NEXT_PUBLIC_BASE_URL)) &&
+            props.target !== '_blank'
+              ? false
+              : true
+          }
+          textDecoration='underline'
+          _hover={{ textDecoration: 'none' }}
+        >
+          {props.children}
+        </Link>
+      );
+    },
+  });
 
   return (
     <Card
@@ -37,6 +63,15 @@ const SectionCard = ({ attributes }: NewsOrEventsObject) => {
       boxShadow='none'
     >
       <Flex p={2} flexWrap={['wrap', 'nowrap']}>
+        {image && (
+          <Image
+            objectFit='contain'
+            w='200px'
+            px={4}
+            src={`${process.env.NEXT_PUBLIC_STRAPI_API_URL}${image.url}`}
+            alt={image.alternativeText}
+          />
+        )}
         {(attributes.publishedAt || attributes.updatedAt) && (
           <Text
             px={[2, 4]}
@@ -61,16 +96,20 @@ const SectionCard = ({ attributes }: NewsOrEventsObject) => {
               size='sm'
               color='gray.700'
               my={0}
+              mt={1}
+              lineHeight='short'
             >
               {attributes.subtitle}
             </Heading>
           )}
-          <CardBody p={0}>
-            {/* useful for client-side fetch mdx handling */}
-            <ReactMarkdown linkTarget='_blank' components={MDXComponents}>
-              {`${attributes.description}`}
-            </ReactMarkdown>
-          </CardBody>
+          {attributes.description && (
+            <CardBody p={0} lineHeight='short'>
+              {/* useful for client-side fetch mdx handling */}
+              <ReactMarkdown components={MDXComponents}>
+                {attributes.description}
+              </ReactMarkdown>
+            </CardBody>
+          )}
           {attributes.categories && attributes.categories.data.length > 0 && (
             <CardFooter p={0} mt={2}>
               {attributes.categories.data.map((category, i) => {

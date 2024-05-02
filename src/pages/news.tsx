@@ -7,6 +7,7 @@ import {
   Heading,
   Icon,
   SimpleGrid,
+  SkeletonText,
   Stack,
   StackDivider,
   Text,
@@ -27,6 +28,7 @@ import { FaLinkedinIn, FaSquareFacebook, FaTwitter } from 'react-icons/fa6';
 import { fetchNews } from 'src/views/home/components/NewsCarousel';
 import { useQuery } from 'react-query';
 import SectionCard from 'src/views/news/components/SectionCard';
+import { fetchAllFeaturedPages } from 'src/views/features/helpers';
 
 export interface NewsOrEventsObject {
   compiledMDX: MDXRemoteSerializeResult;
@@ -73,7 +75,11 @@ export interface NewsProps {
       data: NewsOrEventsObject[];
       error?: { message: string };
     };
-    webinars: {
+    // webinars: {
+    //   data: NewsOrEventsObject[];
+    //   error?: { message: string };
+    // };
+    features: {
       data: NewsOrEventsObject[];
       error?: { message: string };
     };
@@ -83,82 +89,89 @@ export interface NewsProps {
 
 const News: NextPage<NewsProps> = props => {
   const { data } = props;
-  const [news, setNews] = useState<NewsProps['data']['news']>(data.news);
-  // const [webinars, setWebinars] = useState<NewsProps['data']['webinars']>(
-  //   data.webinars,
-  // );
-  const [events, setEvents] = useState<NewsProps['data']['events']>(
-    data.events,
-  );
 
-  useQuery<
+  // Fetch features from Strapi API.
+  const {
+    data: response,
+    error,
+    isLoading,
+    isRefetching,
+  } = useQuery<
+    | {
+        news: NewsOrEventsObject[];
+        events: NewsOrEventsObject[];
+        features: NewsOrEventsObject[];
+      }
+    | undefined,
+    Error,
     {
       news: NewsOrEventsObject[];
-    },
-    any,
-    { news: NewsOrEventsObject[] }
-  >(['news'], () => fetchNews({ paginate: { page: 1, pageSize: 100 } }), {
-    onSuccess(data) {
-      if (!data || !data.news) {
-        return [];
-      }
-      setNews({ data: data.news });
-    },
-    onError(err) {
-      setNews({
-        data: [],
-        error: { message: err.message },
-      });
-    },
-    refetchOnWindowFocus: false,
-    // refetchOnMount: false,
-  });
-
-  useQuery<
-    {
       events: NewsOrEventsObject[];
-    },
-    any,
-    { events: NewsOrEventsObject[] }
-  >(['events'], () => fetchEvents({ paginate: { page: 1, pageSize: 100 } }), {
-    onSuccess(data) {
-      if (!data || !data.events) {
-        return [];
-      }
-      setEvents({ data: data.events });
-    },
-    onError(err) {
-      setEvents({
-        data: [],
-        error: { message: err.message },
-      });
-    },
-    refetchOnWindowFocus: false,
-    // refetchOnMount: false,
-  });
+      features: NewsOrEventsObject[];
+    }
+  >(
+    ['news', 'events', 'features'],
+    async () => {
+      try {
+        // Parallel fetching of news, events, and features using Promise.all
+        const [newsResponse, featuresResponse, eventsResponse] =
+          await Promise.all([
+            fetchNews({ paginate: { page: 1, pageSize: 100 } }),
+            fetchAllFeaturedPages({
+              populate: {
+                fields: [
+                  'title',
+                  'slug',
+                  'subtitle',
+                  'publishedAt',
+                  'updatedAt',
+                ],
+                thumbnail: {
+                  fields: ['url', 'alternativeText'],
+                },
+              },
+              sort: { publishedAt: 'desc', updatedAt: 'desc' },
+              paginate: { page: 1, pageSize: 100 },
+            }),
+            fetchEvents({ paginate: { page: 1, pageSize: 100 } }),
+          ]);
 
-  // useQuery<
-  //   {
-  //     webinars: NewsOrEventsObject[];
-  //   },
-  //   any,
-  //   { webinars: NewsOrEventsObject[] }
-  // >(['webinars'], () => fetchWebinars({ paginate: { page: 1, pageSize: 100 } }), {
-  //   onSuccess(data) {
-  //     if (!data || !data.webinars) {
-  //       return [];
-  //     }
-  //     setWebinars({ data: data.webinars });
-  //   },
-  //   onError(err) {
-  //     setWebinars({
-  //       data: [],
-  //       error: { message: err.message },
-  //     });
-  //   },
-  //   refetchOnWindowFocus: false,
-  //   refetchOnMount: false,
-  // });
+        // Mapping data to the expected structure
+        const news = newsResponse.news;
+        const features = featuresResponse.data.map(item => ({
+          ...item,
+          type: 'feature',
+          attributes: {
+            name: item.attributes.title,
+            image: item.attributes.thumbnail,
+            slug: item.attributes.slug,
+            description: `[Read full feature](/features/${item.attributes.slug})`,
+            subtitle: item.attributes.subtitle,
+          },
+        })) as NewsOrEventsObject[];
+        const events = eventsResponse.events;
+
+        return {
+          news,
+          events,
+          features,
+        };
+      } catch (error: any) {
+        // Assuming error is of type any, we throw as type Error for useQuery to handle
+        throw `Data fetching error: ${
+          error.message || 'An unknown error occurred'
+        }`;
+      }
+    },
+    {
+      initialData: {
+        news: data?.news?.data || [],
+        events: data?.events?.data || [],
+        features: [],
+      },
+      refetchOnWindowFocus: false,
+    },
+  );
 
   const [sections, setSections] = useState([
     {
@@ -169,6 +182,11 @@ const News: NextPage<NewsProps> = props => {
     {
       title: 'Events',
       hash: 'events',
+      showMax: 5,
+    },
+    {
+      title: 'Features',
+      hash: 'features',
       showMax: 5,
     },
     // {
@@ -185,14 +203,14 @@ const News: NextPage<NewsProps> = props => {
     },
   ]);
 
-  const upcomingEvents = events.data.filter(
+  const upcomingEvents = response?.events?.filter(
     event =>
       event.attributes.eventDate &&
       new Date(Date.parse(event.attributes.eventDate.replace(/-/g, ' '))) >=
         new Date(),
   );
 
-  const pastEvents = events.data.filter(
+  const pastEvents = response?.events?.filter(
     event =>
       event.attributes.eventDate &&
       new Date(Date.parse(event.attributes.eventDate.replace(/-/g, ' '))) <
@@ -244,7 +262,7 @@ const News: NextPage<NewsProps> = props => {
         flex={1}
       >
         <VisuallyHidden as='h1'>News and Events </VisuallyHidden>
-        {data ? (
+        {response ? (
           <>
             <Flex
               flexDirection='column'
@@ -259,32 +277,44 @@ const News: NextPage<NewsProps> = props => {
               <Section id='news' title='News'>
                 <SectionList
                   id='news'
-                  numItems={news.data.length}
+                  numItems={response?.news?.length || 0}
                   sections={sections}
                   setSections={setSections}
                 >
-                  {!news.data.length ? (
-                    news.error?.message ? (
-                      <Error
-                        minHeight='unset'
-                        bg='#fff'
-                        message={news.error.message}
-                        headingProps={{ fontSize: 'md' }}
-                      />
-                    ) : (
-                      <Empty
-                        message='No news to display'
-                        color='niaid.placeholder'
-                        headingProps={{ size: 'sm' }}
-                        iconProps={{ color: 'niaid.placeholder', opacity: 0.7 }}
-                      />
-                    )
+                  {isLoading || isRefetching ? (
+                    <SkeletonText />
                   ) : (
-                    news.data
-                      .slice(0, sections.find(s => s.hash === 'news')?.showMax)
-                      .map((news: NewsOrEventsObject) => {
-                        return <SectionCard key={news.id} {...news} />;
-                      })
+                    <>
+                      {!response?.news?.length ? (
+                        error?.message ? (
+                          <Error
+                            minHeight='unset'
+                            bg='#fff'
+                            message={error.message}
+                            headingProps={{ fontSize: 'md' }}
+                          />
+                        ) : (
+                          <Empty
+                            message='No news to display'
+                            color='niaid.placeholder'
+                            headingProps={{ size: 'sm' }}
+                            iconProps={{
+                              color: 'niaid.placeholder',
+                              opacity: 0.7,
+                            }}
+                          />
+                        )
+                      ) : (
+                        response?.news
+                          ?.slice(
+                            0,
+                            sections.find(s => s.hash === 'news')?.showMax,
+                          )
+                          .map((news: NewsOrEventsObject) => {
+                            return <SectionCard key={news.id} {...news} />;
+                          })
+                      )}
+                    </>
                   )}
                 </SectionList>
               </Section>
@@ -293,64 +323,136 @@ const News: NextPage<NewsProps> = props => {
               <Section id='events' title='Events'>
                 <SectionList
                   id='events'
-                  numItems={events.data.length}
+                  numItems={response?.events?.length || 0}
                   sections={sections}
                   setSections={setSections}
                 >
-                  {!events.data.length ? (
-                    events.error?.message ? (
-                      <Error
-                        minHeight='unset'
-                        bg='#fff'
-                        message={events.error.message}
-                        headingProps={{ fontSize: 'md' }}
-                      />
-                    ) : (
-                      <Empty
-                        message='No events to display'
-                        color='niaid.placeholder'
-                        headingProps={{ size: 'sm' }}
-                        iconProps={{ color: 'niaid.placeholder', opacity: 0.7 }}
-                      />
-                    )
+                  {isLoading || isRefetching ? (
+                    <SkeletonText />
                   ) : (
                     <>
-                      {/* Upcoming events */}
-                      {upcomingEvents.length > 0 && (
+                      {!response?.events?.length ? (
+                        error?.message ? (
+                          <Error
+                            minHeight='unset'
+                            bg='#fff'
+                            message={error.message}
+                            headingProps={{ fontSize: 'md' }}
+                          />
+                        ) : (
+                          <Empty
+                            message='No events to display'
+                            color='niaid.placeholder'
+                            headingProps={{ size: 'sm' }}
+                            iconProps={{
+                              color: 'niaid.placeholder',
+                              opacity: 0.7,
+                            }}
+                          />
+                        )
+                      ) : (
                         <>
-                          <Heading as='h3' size='sm' color='gray.600'>
-                            Upcoming
-                          </Heading>
-                          {upcomingEvents
-                            .slice(
-                              0,
-                              sections.find(s => s.hash === 'events')?.showMax,
-                            )
-                            .map((event: NewsOrEventsObject) => {
-                              return <SectionCard key={event.id} {...event} />;
-                            })}
+                          {/* Upcoming events */}
+                          {upcomingEvents && upcomingEvents?.length > 0 && (
+                            <>
+                              <Heading as='h3' size='sm' color='gray.600'>
+                                Upcoming
+                              </Heading>
+                              {upcomingEvents
+                                .slice(
+                                  0,
+                                  sections.find(s => s.hash === 'events')
+                                    ?.showMax,
+                                )
+                                .map((event: NewsOrEventsObject) => {
+                                  return (
+                                    <SectionCard key={event.id} {...event} />
+                                  );
+                                })}
+                            </>
+                          )}
+                          {/* Past events */}
+                          {pastEvents && pastEvents?.length > 0 && (
+                            <>
+                              <Heading
+                                as='h3'
+                                size='sm'
+                                color='primary.600'
+                                fontWeight='semibold'
+                              >
+                                Past events
+                              </Heading>
+                              {pastEvents
+                                .slice(
+                                  0,
+                                  sections.find(s => s.hash === 'events')
+                                    ?.showMax,
+                                )
+                                .map((event: NewsOrEventsObject) => {
+                                  return (
+                                    <SectionCard key={event.id} {...event} />
+                                  );
+                                })}
+                            </>
+                          )}
                         </>
                       )}
-                      {/* Past events */}
-                      {pastEvents.length > 0 && (
-                        <>
-                          <Heading
-                            as='h3'
-                            size='sm'
-                            color='primary.600'
-                            fontWeight='semibold'
-                          >
-                            Past events
-                          </Heading>
-                          {pastEvents
-                            .slice(
-                              0,
-                              sections.find(s => s.hash === 'events')?.showMax,
+                    </>
+                  )}
+                </SectionList>
+              </Section>
+
+              {/* Features */}
+              <Section id='features' title='Features'>
+                <SectionList
+                  id='features'
+                  numItems={response?.features?.length || 0}
+                  sections={sections}
+                  setSections={setSections}
+                >
+                  {isLoading || isRefetching ? (
+                    <SkeletonText />
+                  ) : (
+                    <>
+                      {!response?.features?.length ? (
+                        error?.message ? (
+                          <Error
+                            minHeight='unset'
+                            bg='#fff'
+                            message={error.message}
+                            headingProps={{ fontSize: 'md' }}
+                          />
+                        ) : (
+                          <Empty
+                            message='No featured content to display'
+                            color='niaid.placeholder'
+                            headingProps={{ size: 'sm' }}
+                            iconProps={{
+                              color: 'niaid.placeholder',
+                              opacity: 0.7,
+                            }}
+                          />
+                        )
+                      ) : (
+                        response?.features
+                          ?.slice(
+                            0,
+                            sections.find(s => s.hash === 'features')?.showMax,
+                          )
+                          .map((feature: NewsOrEventsObject) => {
+                            const image = Array.isArray(
+                              feature.attributes.image.data,
                             )
-                            .map((event: NewsOrEventsObject) => {
-                              return <SectionCard key={event.id} {...event} />;
-                            })}
-                        </>
+                              ? feature.attributes.image.data[0]?.attributes
+                              : feature.attributes.image.data?.attributes;
+                            return (
+                              <SectionCard
+                                key={feature.id}
+                                {...feature}
+                                image={image}
+                              />
+                            );
+                          })
                       )}
                     </>
                   )}

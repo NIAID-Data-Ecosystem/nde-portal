@@ -1,17 +1,31 @@
 import { Box, Button, Flex, FlexProps, Icon, Stack } from '@chakra-ui/react';
 import Head from 'next/head';
+import axios from 'axios';
+import { useQuery } from 'react-query';
 import { Footer } from 'src/components/footer';
 import { Navigation } from 'src/components/navigation-bar';
 import { SearchBarWithDropdown } from 'src/components/search-bar';
 import NextLink from 'next/link';
 import { FaMagnifyingGlass } from 'react-icons/fa6';
-import Notice from 'src/components/notice';
+import { Banner } from './banner';
 
 interface PageContainerProps extends FlexProps {
   title: string;
   metaDescription: string;
   keywords?: string;
   disableSearchBar?: boolean;
+}
+
+export interface NoticeProps {
+  id: number | string;
+  heading: string;
+  description?: string | null;
+  status: 'INFO' | 'WARNING' | 'ERROR' | 'SUCCESS';
+  affectedRepository?: string | null;
+  createdAt: string;
+  updatedAt: string;
+  publishedAt?: string | null;
+  isActive: boolean;
 }
 
 export const PageContainer: React.FC<PageContainerProps> = ({
@@ -21,6 +35,41 @@ export const PageContainer: React.FC<PageContainerProps> = ({
   disableSearchBar,
   ...props
 }) => {
+  // Fetch Notices from STRAPI API.
+  const isProd =
+    process.env.NEXT_PUBLIC_BASE_URL === 'https://data.niaid.nih.gov';
+  const { data: notices } = useQuery<NoticeProps[] | undefined, any>(
+    ['notices'],
+    async () => {
+      try {
+        const notices = await axios
+          .get(
+            `${
+              process.env.NEXT_PUBLIC_STRAPI_API_URL
+            }/api/notices?populate=*&publicationState=${
+              isProd ? 'live' : 'preview'
+            }`,
+          )
+          .then(res => res.data);
+        return notices.data
+          .filter(
+            (datum: { id: number; attributes: NoticeProps }) =>
+              datum.attributes.isActive === true,
+          )
+          .map((datum: { id: number; attributes: NoticeProps }) => ({
+            ...datum.attributes,
+            id: datum.id,
+          }));
+      } catch (err: any) {
+        throw err.response;
+      }
+    },
+    {
+      refetchOnWindowFocus: false,
+      refetchOnMount: false,
+    },
+  );
+
   return (
     <>
       <Head>
@@ -68,8 +117,35 @@ export const PageContainer: React.FC<PageContainerProps> = ({
 
         {/*Page content has margin-top to compensate for fixed nav bar. */}
         <Box id='pagebody' position='relative' {...props}>
-          <Notice />
-
+          <Stack spacing='1px' bg='gray.100'>
+            {!isProd && (
+              <Banner
+                id='banner-environment-notice'
+                heading='This is the alpha version of the NIAID Data Ecosystem Discovery
+            Portal.'
+                description={`Currently using the: <a href="${
+                  process.env.NEXT_PUBLIC_API_URL
+                }/metadata" target="_blank">${
+                  process.env.NEXT_PUBLIC_API_URL?.includes('api-staging')
+                    ? 'Staging'
+                    : process.env.NEXT_PUBLIC_API_URL?.includes('api.data')
+                    ? 'Production'
+                    : 'Development'
+                } API </a>.`}
+                status='INFO'
+              />
+            )}
+            {notices &&
+              notices.map(notice => (
+                <Banner
+                  key={notice.id}
+                  id={`banner-${notice.id}-notice`}
+                  heading={notice.heading}
+                  description={notice.description}
+                  status={notice.status}
+                />
+              ))}
+          </Stack>
           {!disableSearchBar && (
             <Stack
               bg='#fff'

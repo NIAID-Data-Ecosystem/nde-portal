@@ -38,7 +38,7 @@ import { CompletenessBadgeCircle } from 'src/components/completeness-badge/Circu
 import { HeadingWithTooltip } from './components/sidebar/components/external/components/heading-with-tooltip';
 import { ResourceCatalogCollection } from './components/collection-information';
 import { DownloadMetadata } from '../download-metadata';
-import { FaMagnifyingGlass } from 'react-icons/fa6';
+import { Keywords } from './components/keywords';
 
 // Metadata displayed in each section
 export const sectionMetadata: { [key: string]: (keyof FormattedResource)[] } = {
@@ -232,40 +232,7 @@ const Sections = ({
             {/* Show keywords */}
             {section.hash === 'keywords' && (
               <Skeleton isLoaded={!isLoading}>
-                <Flex flexWrap='wrap'>
-                  {data?.keywords &&
-                    data.keywords.map((keyword, i) => {
-                      return (
-                        <Tooltip
-                          key={`${keyword}-${i}`}
-                          label={`Search for ${keyword}`}
-                          hasArrow
-                        >
-                          <span>
-                            <Tag
-                              as='a'
-                              m={2}
-                              colorScheme='primary'
-                              cursor='pointer'
-                              onClick={e => {
-                                e.preventDefault();
-                                router.push({
-                                  pathname: `/search`,
-                                  query: { q: keyword.trim() },
-                                });
-                              }}
-                            >
-                              <TagLeftIcon
-                                boxSize='12px'
-                                as={FaMagnifyingGlass}
-                              />
-                              <TagLabel>{keyword}</TagLabel>
-                            </Tag>
-                          </span>
-                        </Tooltip>
-                      );
-                    })}
-                </Flex>
+                {data?.keywords && <Keywords keywords={data.keywords} />}
               </Skeleton>
             )}
             {section.hash === 'softwareInformation' && (

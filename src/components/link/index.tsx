@@ -41,27 +41,3 @@ export const Link = forwardRef<LinkProps, 'a'>((props, ref) => {
     </ChakraLink>
   );
 });
-
-// component for link theme using text-decoration
-// export const Link = forwardRef<LinkProps, 'a'>((props, ref) => {
-//   const { variant, children, isExternal, ...rest } = props;
-
-//   // Get computed styles from theme.
-//   const styles = useStyleConfig('Link', { variant });
-
-//   // Pass the computed styles into the `__css` prop
-//   return (
-//     <ChakraLink
-//       isExternal={isExternal}
-//       __css={styles}
-//       variant={variant}
-//       ref={ref}
-//       {...rest}
-//     >
-//       {children}
-
-//       {/* Show external icon when [isExternal] prop is true */}
-//       {isExternal && <Icon as={FaArrowUpRightFromSquare} boxSize={3} ml={2} />}
-//     </ChakraLink>
-//   );
-// });

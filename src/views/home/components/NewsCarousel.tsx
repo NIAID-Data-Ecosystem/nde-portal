@@ -68,7 +68,7 @@ export const NewsCarousel = ({
               sort: { publishedAt: 'desc', updatedAt: 'desc' },
               paginate: { page: 1, pageSize: 5 },
             }),
-            fetchEvents({ paginate: { page: 1, pageSize: 100 } }),
+            fetchEvents({ paginate: { page: 1, pageSize: 5 } }),
           ]);
 
         // Mapping data to the expected structure
@@ -237,7 +237,7 @@ export const NewsCarousel = ({
                       {carouselCard.attributes.shortDescription}
                       {carouselCard.type === 'feature' ? (
                         <NextLink
-                          href={`featured/${carouselCard.attributes.slug}`}
+                          href={`features/${carouselCard.attributes.slug}`}
                           passHref
                         >
                           <Link
@@ -306,6 +306,7 @@ interface NewsQueryParams {
   sort?: string;
   paginate?: { page?: number; pageSize?: number };
 }
+
 export const fetchNews = async (
   params?: NewsQueryParams,
 ): Promise<{
@@ -339,7 +340,7 @@ export const fetchNews = async (
       },
     );
     return { news: news.data.data };
-  } catch (err) {
-    throw err;
+  } catch (err: any) {
+    throw err.response;
   }
 };
