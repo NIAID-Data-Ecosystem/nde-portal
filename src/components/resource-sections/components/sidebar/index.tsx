@@ -21,47 +21,8 @@ import { External } from './components/external';
 import { ScrollContainer } from 'src/components/scroll-container';
 import { ResourceData } from 'src/pages/resources';
 import { CompletenessBadgeCircle } from 'src/components/completeness-badge/Circular';
-import { HeadingWithTooltip } from './components/external/components/heading-with-tooltip';
 import { Link } from 'src/components/link';
 
-const REQUIRED_FIELDS = [
-  'author',
-  'date',
-  'description',
-  'distribution',
-  'funding',
-  'includedInDataCatalog',
-  'measurementTechnique',
-  'name',
-  'url',
-];
-
-const RECOMMENDED_FIELDS = [
-  'citation',
-  'citedBy',
-  'collectionSize',
-  'conditionsOfAccess',
-  'dateCreated',
-  'dateModified',
-  'datePublished',
-  'doi',
-  'hasAPI',
-  'hasDownload',
-  'healthCondition',
-  'identifier',
-  'infectiousAgent',
-  'interactionStatistic',
-  'isBasedOn',
-  'keywords',
-  'license',
-  'sdPublisher',
-  'spatialCoverage',
-  'species',
-  'temporalCoverage',
-  'topicCategory',
-  'usageInfo',
-  'variableMeasured',
-];
 export const Sidebar = ({
   data,
   isLoading,
@@ -79,15 +40,6 @@ export const Sidebar = ({
     setIsMounted(true);
   }, []);
 
-  const completenessData = data && {
-    required: REQUIRED_FIELDS.map(field => ({
-      [field]: !!data[field],
-    })),
-    recommended: RECOMMENDED_FIELDS.map(field => ({
-      [field]: !!data[field],
-    })),
-  };
-
   return (
     <Flex
       flex={1}
@@ -97,28 +49,12 @@ export const Sidebar = ({
     >
       <Box className='sidebar' position='sticky' top='0px'>
         <Card flex={1} ml={[0, 0, 4]} my={[2, 2, 0]} sx={{ '>*': { p: 0 } }}>
-          {data && (
-            <Flex p={4} flexWrap='wrap'>
-              {data['_meta'] && (
-                <Flex
-                  p={2}
-                  flex={1}
-                  justifyContent='center'
-                  alignItems='center'
-                  flexDirection='column'
-                >
-                  <CompletenessBadgeCircle
-                    stats={data['_meta']}
-                    data={completenessData}
-                  />
-                  <HeadingWithTooltip
-                    label='Metadata Completeness'
-                    pt={2}
-                    whiteSpace='nowrap'
-                  />
-                </Flex>
-              )}
-            </Flex>
+          {data && data['_meta'] && (
+            <CompletenessBadgeCircle
+              type={data['@type']}
+              stats={data['_meta']}
+              p={6}
+            />
           )}
           {/* External links to access data, documents or dataset at the source. */}
           <External data={data} isLoading={isLoading} hasDivider={true} />

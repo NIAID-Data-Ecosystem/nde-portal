@@ -323,6 +323,8 @@ export interface FormattedResource {
     };
     recommended_augmented_fields: string[];
     required_augmented_fields: string[];
+    recommended_fields: string[];
+    required_fields: string[];
   };
   id: string;
   '@type': APIResourceType; // "Dataset" | "ComputationalTool" | "Resource Catalog"

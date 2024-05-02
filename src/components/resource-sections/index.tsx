@@ -1,5 +1,4 @@
 import React from 'react';
-import { useRouter } from 'next/router';
 import { FormattedResource } from 'src/utils/api/types';
 import {
   Box,
@@ -8,10 +7,6 @@ import {
   ListItem,
   Skeleton,
   Stack,
-  Tag,
-  TagLabel,
-  TagLeftIcon,
-  Tooltip,
   UnorderedList,
 } from '@chakra-ui/react';
 import { Link } from 'src/components/link';
@@ -80,45 +75,6 @@ export const sectionMetadata: { [key: string]: (keyof FormattedResource)[] } = {
   metadata: ['rawData'],
 };
 
-const REQUIRED_FIELDS = [
-  'author',
-  'date',
-  'description',
-  'distribution',
-  'funding',
-  'includedInDataCatalog',
-  'measurementTechnique',
-  'name',
-  'url',
-];
-
-const RECOMMENDED_FIELDS = [
-  'citation',
-  'citedBy',
-  'collectionSize',
-  'conditionsOfAccess',
-  'dateCreated',
-  'dateModified',
-  'datePublished',
-  'doi',
-  'hasAPI',
-  'hasDownload',
-  'healthCondition',
-  'identifier',
-  'infectiousAgent',
-  'interactionStatistic',
-  'isBasedOn',
-  'keywords',
-  'license',
-  'sdPublisher',
-  'spatialCoverage',
-  'species',
-  'temporalCoverage',
-  'topicCategory',
-  'usageInfo',
-  'variableMeasured',
-];
-
 // use config file to show content in sections.
 const Sections = ({
   isLoading,
@@ -129,17 +85,6 @@ const Sections = ({
   data?: FormattedResource;
   sections: Route[];
 }) => {
-  const router = useRouter();
-
-  const completenessData = data && {
-    required: REQUIRED_FIELDS.map(field => ({
-      [field]: !!data[field],
-    })),
-    recommended: RECOMMENDED_FIELDS.map(field => ({
-      [field]: !!data[field],
-    })),
-  };
-
   return (
     <>
       <ResourceHeader
@@ -166,7 +111,7 @@ const Sections = ({
               <Stack
                 display={{ base: 'flex', lg: 'none' }}
                 flexWrap='wrap'
-                flexDirection='column'
+                flexDirection='row'
                 spacing={4}
                 px={{ base: 0, md: 4 }}
                 py={4}
@@ -181,16 +126,12 @@ const Sections = ({
                     borderColor='gray.100'
                     borderRadius='semi'
                     p={4}
+                    minWidth='250px'
                   >
                     <CompletenessBadgeCircle
+                      type={data['@type']}
                       stats={data['_meta']}
-                      size='md'
-                      data={completenessData}
-                    />
-                    <HeadingWithTooltip
-                      label='Metadata Completeness'
-                      pt={2}
-                      whiteSpace='nowrap'
+                      size='lg'
                     />
                   </Flex>
                 )}
@@ -201,6 +142,7 @@ const Sections = ({
                   borderColor='gray.100'
                   borderRadius='semi'
                   flexDirection='column'
+                  minWidth='300px'
                 >
                   <External
                     data={data}
