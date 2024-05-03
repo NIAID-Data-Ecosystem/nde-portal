@@ -102,11 +102,12 @@ export const FiltersList: React.FC<FiltersList> = React.memo(
         ? items
             .filter(item => {
               const repo = REPOS.repositories.find(r => r.id === item.term);
-              return repo && repo.type === 'generalist';
+              return (repo && repo.type === 'generalist') || !repo;
             })
             .sort((a, b) => a.displayAs.localeCompare(b.displayAs))
             .sort((a, b) => b.count - a.count)
         : [];
+
     return (
       <>
         {/* Search through filter terms */}
