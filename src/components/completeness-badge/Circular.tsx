@@ -121,12 +121,13 @@ export const CompletenessBadgeCircle = ({
       fill: colors.required,
       radius: radius.required,
     },
+
     {
       score:
         (metadataList.required.length - required_score) /
         metadataList.required.length,
       fill: 'transparent',
-      radius: 0,
+      radius: radius.required,
     },
   ];
 
@@ -143,7 +144,7 @@ export const CompletenessBadgeCircle = ({
         (metadataList.recommended.length - recommended_score) /
         metadataList.recommended.length,
       fill: 'transparent',
-      radius: 0,
+      radius: radius.recommended,
     },
   ];
 
@@ -196,6 +197,7 @@ export const CompletenessBadgeCircle = ({
             <svg
               width={`${dimensions[size].width}px`}
               height={`${dimensions[size].height}px`}
+              viewBox={`0 0 ${dimensions[size].width} ${dimensions[size].height}`}
             >
               <Group top={centerY + margin.top} left={centerX + margin.left}>
                 {/* Required */}
@@ -207,8 +209,9 @@ export const CompletenessBadgeCircle = ({
                     }
                     const { id, radius } = datum;
                     return (
-                      <Group key={id} id={id}>
+                      <Group key={id}>
                         <circle
+                          className={id + '-circle'}
                           cx='0'
                           cy='0'
                           r={radius - donutThickness / 2}
@@ -217,7 +220,9 @@ export const CompletenessBadgeCircle = ({
                           stroke={datum.fill.bg}
                           opacity={0.2}
                         />
+
                         <Pie
+                          className={id + '-Pie'}
                           data={data}
                           pieValue={d => d.score}
                           pieSort={(a, b) =>
@@ -230,10 +235,8 @@ export const CompletenessBadgeCircle = ({
                         >
                           {pie => {
                             const arc = pie.arcs[0];
-
                             const startDeg = arc.startAngle * (180 / Math.PI);
                             const endDeg = arc.endAngle * (180 / Math.PI);
-
                             //  use the radius of the arc to get the correct conic gradient
                             const background = `conic-gradient(${
                               datum.fill.dark
@@ -242,7 +245,6 @@ export const CompletenessBadgeCircle = ({
                             }deg, ${datum.fill.light} ${endDeg}deg)`;
                             return (
                               <>
-                                {/* use this to apply a conic gradient */}
                                 <foreignObject
                                   x={0 - width / 2}
                                   y={0 - height / 2}
@@ -258,14 +260,11 @@ export const CompletenessBadgeCircle = ({
                                     }}
                                   />
                                 </foreignObject>
-
-                                <clipPath id={`${datum.id}-bg`}>
-                                  <AnimatedArc
-                                    key='arc-required'
-                                    animate={animate}
-                                    {...pie}
-                                  />
-                                </clipPath>
+                                <AnimatedArc
+                                  animate={animate}
+                                  size={size}
+                                  {...pie}
+                                />
                               </>
                             );
                           }}
@@ -306,10 +305,6 @@ export const CompletenessBadgeCircle = ({
 };
 
 type AnimatedStyles = { startAngle: number; endAngle: number; opacity: number };
-type AnimatedPieProps<Datum> = ProvidedProps<Datum> & {
-  animate?: boolean;
-  delay?: number;
-};
 
 const fromLeaveTransition = () => ({
   startAngle: 0,
@@ -322,7 +317,19 @@ const enterUpdateTransition = ({ startAngle, endAngle }: PieArcDatum<any>) => ({
   opacity: 1,
 });
 
-const AnimatedArc = ({ animate = true, arcs, path }: AnimatedPieProps<any>) => {
+type AnimatedPieProps<Datum> = ProvidedProps<Datum> & {
+  animate?: boolean;
+  delay?: number;
+  size: 'xs' | 'sm' | 'md' | 'lg'; // Add the 'size' property to the type definition
+};
+
+const AnimatedArc = ({
+  animate = true,
+  arcs,
+  path,
+  size,
+  ...rest
+}: AnimatedPieProps<any>) => {
   const transitions = useTransition<PieArcDatum<any>, AnimatedStyles>(arcs, {
     from: animate ? fromLeaveTransition : enterUpdateTransition,
     enter: enterUpdateTransition,
@@ -331,18 +338,32 @@ const AnimatedArc = ({ animate = true, arcs, path }: AnimatedPieProps<any>) => {
   });
 
   return transitions((props, arc, { key }) => {
-    return (
-      <animated.path
-        key={key}
-        // compute interpolated path d attribute from intermediate angle values
-        d={to([props.startAngle, props.endAngle], (startAngle, endAngle) =>
-          path({
-            ...arc,
-            startAngle,
-            endAngle,
-          }),
-        )}
-      />
-    );
+    if (arc.index === 0) {
+      // Using clipPathUnits='objectBoundingBox' to scale the clip path to the size of the object bounding box for mobile.
+      // https://meyerweb.com/eric/thoughts/2017/02/24/scaling-svg-clipping-paths-for-css-use/
+      return (
+        <clipPath
+          id={`${arc.data.id}-bg`}
+          clipPathUnits='objectBoundingBox'
+          transform={`scale(${1 / dimensions[size].width} ${
+            1 / dimensions[size].height
+          })`}
+        >
+          <animated.path
+            key={key}
+            // compute interpolated path d attribute from intermediate angle values
+            d={to([props.startAngle, props.endAngle], (startAngle, endAngle) =>
+              path({
+                ...arc,
+                startAngle,
+                endAngle,
+              }),
+            )}
+            {...rest}
+          />
+        </clipPath>
+      );
+    }
+    return <path key={key} fill='transparent' d={path(arc) || ''} {...rest} />;
   });
 };
