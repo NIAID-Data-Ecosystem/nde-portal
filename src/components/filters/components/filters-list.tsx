@@ -102,7 +102,7 @@ export const FiltersList: React.FC<FiltersList> = React.memo(
         ? items
             .filter(item => {
               const repo = REPOS.repositories.find(r => r.id === item.term);
-              return (repo && repo.type === 'generalist') || !repo;
+              return repo && repo.type === 'generalist';
             })
             .sort((a, b) => a.displayAs.localeCompare(b.displayAs))
             .sort((a, b) => b.count - a.count)
