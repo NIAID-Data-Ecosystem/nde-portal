@@ -2,7 +2,6 @@ import {
   Breadcrumb,
   BreadcrumbItem as ChakraBreadcrumbItem,
   BreadcrumbLink,
-  BreadcrumbSeparator,
   Icon,
   Flex,
   HStack,
@@ -10,13 +9,9 @@ import {
 } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
 import { usePathname } from 'next/navigation';
-import {
-  FaAngleLeft,
-  FaAngleRight,
-  FaC,
-  FaCaretLeft,
-  FaHouse,
-} from 'react-icons/fa6';
+import { FaAngleRight, FaHouse } from 'react-icons/fa6';
+import { IconType } from 'react-icons';
+
 interface BreadcrumbsProps {}
 
 interface BreadcrumbItemProps {
@@ -75,19 +70,18 @@ export const Breadcrumbs: React.FC<BreadcrumbsProps> = () => {
   });
 
   if (!pathSegments.length) return null;
+
   if (pathname === '/resources') {
-    return (
-      <Flex px={4} py={2}>
-        <button type='button' onClick={() => router.back()}>
-          <BreadcrumbItem
-            path={{
-              name: 'Go Back',
-              icon: FaAngleLeft,
-            }}
-          />
-        </button>
-      </Flex>
-    );
+    // Since `/resources` is not nested within `/search` in the route, we need to hardcode the search breadcrumb.
+    // We leverage the router query field to determine the referrer path (which is set in the search results page). If the user is not coming from the search results page, we default to `/search`.
+
+    pathSegments.unshift({
+      name: 'Search',
+      route:
+        typeof router.query.referrerPath === 'string'
+          ? router.query.referrerPath
+          : '/search',
+    });
   }
   return (
     <Flex px={4} py={2}>
