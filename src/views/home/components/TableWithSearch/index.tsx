@@ -30,6 +30,7 @@ export interface TableData
     Omit<Repository, 'dataType' | 'type'> {
   dataType: ResourceCatalog['dataType'] | Repository['dataType'];
   type: ResourceCatalog['type'] | Repository['type'];
+  key: string;
 }
 
 interface TableWithSearchProps {
@@ -199,6 +200,7 @@ export const RepositoryCells = ({
 }) => {
   return (
     <Flex
+      id={`cell-${data.key}-${column.property}`}
       alignItems={['flex-start', 'center']}
       flexDirection={['column', 'row']}
       justifyContent='flex-start'
@@ -234,20 +236,9 @@ export const RepositoryCells = ({
           <Text noOfLines={3}>{data[column.property]}</Text>
         </SkeletonText>
       )}
-
-      {column.property === 'conditionsOfAccess' &&
-        data['conditionsOfAccess'] && (
-          <Flex mt={1} fontWeight='semibold'>
-            {data['conditionsOfAccess']} Access
-            {/* <ConditionsOfAccess
-              conditionsOfAccess={data['conditionsOfAccess']}
-              type={
-                data.dataType === 'Repository' ? 'Dataset' : 'ResourceCatalog'
-              }
-            /> */}
-          </Flex>
-        )}
-      {column.property === 'dataType' && (
+      {(column.property === 'type' ||
+        column.property === 'dataType' ||
+        column.property === 'conditionsOfAccess') && (
         <SkeletonText
           fontWeight='semibold'
           data-testid={isLoading ? 'loading' : 'loaded'}
@@ -257,51 +248,14 @@ export const RepositoryCells = ({
           fontSize='sm'
           noOfLines={2}
         >
-          {column.fields?.map(field => {
-            let colorScheme = 'gray';
-            let variant = 'outline';
-            let label = data[field] ?? '';
-            if (field === 'dataType') {
-              colorScheme = getColorSchemeForDataType(data[field]);
-              variant = 'solid';
-              label = getDataTypeName(data[field]);
-            } else if (field === 'type') {
-              colorScheme = getColorSchemeForDataType(data.dataType);
-              variant = 'subtle';
-              if (data.dataType === 'Repository') {
-                label = data[field] ? getRepositoryTypeName(label) : '';
-              }
-            }
-
-            return <>{label}</>;
-          })}
-        </SkeletonText>
-      )}
-
-      {column.property === 'type' && (
-        <SkeletonText
-          fontWeight='semibold'
-          data-testid={isLoading ? 'loading' : 'loaded'}
-          isLoaded={!isLoading && !!data}
-          w='100%'
-          h='100%'
-          fontSize='sm'
-          noOfLines={2}
-        >
-          {column.fields?.map(field => {
-            let colorScheme = 'gray';
-            let variant = 'outline';
-            let label = data[field] ?? '';
-            if (field === 'type') {
-              colorScheme = getColorSchemeForDataType(data.dataType);
-              variant = 'subtle';
-              if (data.dataType === 'Repository') {
-                label = data[field] ? getRepositoryTypeName(label) : '';
-              }
-            }
-
-            return <>{label}</>;
-          })}
+          {column.property === 'dataType' &&
+            (data.dataType ? getDataTypeName(data.dataType) : '-')}
+          {column.property === 'type' &&
+            (data.type ? getRepositoryTypeName(data.type) : '-')}
+          {column.property === 'conditionsOfAccess' &&
+            (data['conditionsOfAccess']
+              ? `${data['conditionsOfAccess']} Access`
+              : '-')}
         </SkeletonText>
       )}
     </Flex>
