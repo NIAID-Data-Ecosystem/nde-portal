@@ -107,6 +107,7 @@ export const FiltersList: React.FC<FiltersList> = React.memo(
             .sort((a, b) => a.displayAs.localeCompare(b.displayAs))
             .sort((a, b) => b.count - a.count)
         : [];
+
     return (
       <>
         {/* Search through filter terms */}
