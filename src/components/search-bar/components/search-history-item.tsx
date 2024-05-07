@@ -1,14 +1,8 @@
 import React, { useMemo } from 'react';
 import { FaMagnifyingGlass } from 'react-icons/fa6';
-import { Icon, ListItem, Text } from '@chakra-ui/react';
-import dynamic from 'next/dynamic';
+import { Highlight, Icon, ListItem, Text } from '@chakra-ui/react';
 import { useDropdownContext } from '../../input-with-dropdown';
 
-const Highlight = dynamic(() =>
-  import('src/components/input-with-dropdown/components/Highlight').then(
-    mod => mod.Highlight,
-  ),
-);
 interface SearchHistoryItemProps {
   colorScheme: string;
   index: number;
@@ -69,7 +63,17 @@ export const SearchHistoryItem = React.memo(
             },
           }}
         >
-          <Highlight tags={searchTerm.split(' ')}>{value}</Highlight>
+          <Highlight
+            query={searchTerm.split(' ')}
+            styles={{
+              fontWeight: 'bold',
+              textDecoration: 'underline',
+              color: `${colorScheme}.400`,
+              bg: 'transparent',
+            }}
+          >
+            {value}
+          </Highlight>
         </Text>
       </ListItem>
     );

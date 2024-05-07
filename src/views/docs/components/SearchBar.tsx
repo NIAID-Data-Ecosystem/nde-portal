@@ -5,6 +5,7 @@ import {
   Button,
   Flex,
   Heading,
+  Highlight,
   Icon,
   Input,
   InputGroup,
@@ -23,7 +24,6 @@ import {
   InputWithDropdown,
   useDropdownContext,
 } from 'src/components/input-with-dropdown';
-import { Highlight } from 'src/components/input-with-dropdown/components/Highlight';
 import axios from 'axios';
 import { useQuery } from 'react-query';
 import { debounce } from 'lodash';
@@ -227,7 +227,11 @@ const SearchBar = ({
         />
       </Flex>
 
-      <Flex minHeight='400px' flexDirection='column' justifyContent='center'>
+      <Flex
+        minHeight='400px'
+        flexDirection='column'
+        justifyContent='flex-start'
+      >
         <Box py={6}>
           {!searchTerm && (
             <Flex flexDirection='column' alignItems='center' margin='0 auto'>
@@ -251,6 +255,7 @@ const SearchBar = ({
           <UnorderedList ml={0} w='100%' maxHeight='500px' overflow='auto'>
             {results?.map((result, index) => {
               const isSelected = cursor === index;
+
               return (
                 <ListItem
                   key={result.id}
@@ -266,14 +271,6 @@ const SearchBar = ({
                       handleClose();
                     },
                   })}
-                  sx={{
-                    '* > .search-term': {
-                      fontWeight: 'bold',
-                      textDecoration: 'underline',
-                      color: `${colorScheme}.400`,
-                      bg: 'transparent',
-                    },
-                  }}
                 >
                   <Heading
                     as='h4'
@@ -283,15 +280,35 @@ const SearchBar = ({
                     wordBreak='break-word'
                     textAlign='left'
                   >
-                    <Highlight tags={searchTerm.split(' ')}>
-                      {result.name}
-                    </Highlight>
+                    {result.name && (
+                      <Highlight
+                        query={searchTerm.split(' ')}
+                        styles={{
+                          fontWeight: 'bold',
+                          textDecoration: 'underline',
+                          color: `${colorScheme}.400`,
+                          bg: 'transparent',
+                        }}
+                      >
+                        {result.name}
+                      </Highlight>
+                    )}
                   </Heading>
-                  <Text color='gray.600' fontSize='sm'>
-                    <Highlight tags={searchTerm.split(' ')}>
-                      {result.description}
-                    </Highlight>
-                  </Text>
+                  {result.description && (
+                    <Text color='gray.600' fontSize='sm'>
+                      <Highlight
+                        query={searchTerm.split(' ')}
+                        styles={{
+                          fontWeight: 'bold',
+                          textDecoration: 'underline',
+                          color: `${colorScheme}.400`,
+                          bg: 'transparent',
+                        }}
+                      >
+                        {result.description}
+                      </Highlight>
+                    </Text>
+                  )}
                 </ListItem>
               );
             })}
