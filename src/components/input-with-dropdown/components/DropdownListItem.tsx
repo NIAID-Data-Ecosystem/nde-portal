@@ -1,19 +1,13 @@
 import React, { useMemo } from 'react';
 import {
   Heading,
+  Highlight,
   ListItem as NDEListItem,
   ListItemProps as ChakraListItemProps,
   Text,
 } from '@chakra-ui/react';
 import { FormattedResource } from 'src/utils/api/types';
 import { useDropdownContext } from '..';
-import dynamic from 'next/dynamic';
-
-const Highlight = dynamic(() =>
-  import('src/components/input-with-dropdown/components/Highlight').then(
-    mod => mod.Highlight,
-  ),
-);
 
 interface DropdownListItemProps extends ChakraListItemProps {
   searchTerm: string;
@@ -66,16 +60,18 @@ export const DropdownListItem: React.FC<DropdownListItemProps> = React.memo(
           wordBreak='break-word'
           fontWeight='normal'
           textAlign='left'
-          sx={{
-            '* > .search-term': {
+        >
+          <Highlight
+            query={searchTerm.split(' ')}
+            styles={{
               fontWeight: 'bold',
               textDecoration: 'underline',
               color: `${colorScheme}.400`,
               bg: 'transparent',
-            },
-          }}
-        >
-          <Highlight tags={searchTerm.split(' ')}>{displayValue}</Highlight>
+            }}
+          >
+            {displayValue}
+          </Highlight>
         </Heading>
       </NDEListItem>
     );

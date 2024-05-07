@@ -2,7 +2,6 @@ import { Button, Tag, TagLabel, TagLeftIcon } from '@chakra-ui/react';
 import React, { useState } from 'react';
 import { FaMagnifyingGlass } from 'react-icons/fa6';
 import NextLink from 'next/link';
-import { encodeString } from 'src/utils/querystring-helpers';
 import { formatNumber } from 'src/utils/helpers';
 import { ScrollContainer } from 'src/components/scroll-container';
 
@@ -28,10 +27,7 @@ export const Keywords: React.FC<KeywordsProps> = ({ keywords }) => {
                 href={{
                   pathname: '/search',
                   query: {
-                    q: `keywords:"${encodeString(
-                      keyword.trim().toLowerCase(),
-                    )}"`,
-                    advancedSearch: true,
+                    q: `keywords:"${keyword.trim().toLowerCase()}"`,
                   },
                 }}
               >

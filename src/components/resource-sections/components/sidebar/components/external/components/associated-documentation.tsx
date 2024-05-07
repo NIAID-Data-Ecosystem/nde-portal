@@ -23,6 +23,8 @@ interface AssociatedDocumentation {
   codeRepository?: FormattedResource['codeRepository'];
 }
 
+const schema = SCHEMA_DEFINITIONS as SchemaDefinitions;
+
 export const AssociatedDocumentation: React.FC<AssociatedDocumentation> = ({
   isLoading,
   codeRepository,
@@ -33,7 +35,6 @@ export const AssociatedDocumentation: React.FC<AssociatedDocumentation> = ({
   if (!isLoading && !(hasPart || mainEntityOfPage || codeRepository || type)) {
     return <></>;
   }
-  const schema = SCHEMA_DEFINITIONS as SchemaDefinitions;
   return (
     <>
       {hasPart && (

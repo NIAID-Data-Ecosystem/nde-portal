@@ -120,7 +120,7 @@ const SearchResultsPage = ({
   const params = useMemo(
     () => ({
       // don't escape parenthesis or colons when its an advanced search
-      q: router.query.advancedSearch ? querystring : encodeString(querystring),
+      q: querystring,
       extra_filter: queryFilterObject2String(selectedFilters) || '', // extra filter updates aggregate fields
       size: `${selectedPerPage}`,
       from: `${(selectedPage - 1) * selectedPerPage}`,
@@ -153,7 +153,6 @@ const SearchResultsPage = ({
       ],
     }),
     [
-      router.query.advancedSearch,
       querystring,
       selectedFilters,
       selectedPerPage,
@@ -335,6 +334,7 @@ const SearchResultsPage = ({
                   <Card
                     isLoading={!router.isReady || isLoading || isRefetching}
                     data={data?.results[idx]}
+                    querystring={querystring}
                   />
                 </ListItem>
               );

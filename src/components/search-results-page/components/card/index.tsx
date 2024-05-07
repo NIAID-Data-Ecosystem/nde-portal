@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import {
   Button,
   Card,
@@ -9,6 +9,7 @@ import {
   Text,
   Tooltip,
   Stack,
+  Highlight,
 } from '@chakra-ui/react';
 import { useInView } from '@react-spring/web';
 import NextLink from 'next/link';
@@ -24,15 +25,18 @@ import { ToggleContainer } from 'src/components/toggle-container';
 import { formatAuthorsList2String } from 'src/utils/helpers/authors';
 import { isSourceFundedByNiaid } from 'src/utils/helpers/sources';
 import { Skeleton } from 'src/components/skeleton';
+import { filterWords } from './helpers';
 
 interface SearchResultCardProps {
   isLoading?: boolean;
   data?: FormattedResource | null;
+  querystring: string;
 }
 
 const SearchResultCard: React.FC<SearchResultCardProps> = ({
   isLoading,
   data,
+  querystring,
 }) => {
   const {
     ['@type']: type,
@@ -57,6 +61,22 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
     isLoading || !includedInDataCatalog
       ? []
       : getSourceDetails(includedInDataCatalog);
+
+  const highlightProps = useMemo(
+    () =>
+      querystring === '__all__'
+        ? { query: '' }
+        : {
+            query: filterWords(querystring),
+            styles: {
+              px: '0.5',
+              py: '0.75',
+              bg: 'orange.100',
+              color: 'inherit',
+            },
+          },
+    [querystring],
+  );
 
   return (
     // {/* Banner with resource type + date of publication */}
@@ -125,6 +145,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                 linkTarget: '_blank',
                 disallowedElements: ['a'],
               }}
+              highlightProps={highlightProps}
             />
             <Icon
               as={FaAngleRight}
@@ -167,10 +188,15 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                     flex={1}
                     w='100%'
                     _focus={{ outlineColor: 'transparent' }}
+                    fontSize='xs'
+                    color='text.body'
                   >
-                    <Text fontSize='xs' color='text.body'>
-                      {formatAuthorsList2String(author, ',', 10)}.
-                    </Text>
+                    <Highlight
+                      query={highlightProps.query}
+                      styles={highlightProps.styles}
+                    >
+                      {formatAuthorsList2String(author, ',', 10) || ''}
+                    </Highlight>
                   </ToggleContainer>
                 )}
                 {(typeof isAccessibleForFree !== undefined ||
@@ -288,7 +314,10 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                     _focus={{ outlineColor: 'transparent', bg: 'white' }}
                     alignIcon='center'
                   >
-                    <DisplayHTMLContent content={description} />
+                    <DisplayHTMLContent
+                      content={description}
+                      highlightProps={highlightProps}
+                    />
                   </ToggleContainer>
                 )}
               </Stack>
