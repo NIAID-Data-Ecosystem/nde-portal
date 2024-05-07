@@ -48,7 +48,7 @@ const SearchResultsPage = ({
   results: FormattedResource[];
   total: number;
 }) => {
-  const [shouldUseMetadataScore, setShouldUseMetadataScore] = useState(true);
+  const [shouldUseMetadataScore, setShouldUseMetadataScore] = useState(false);
 
   const router = useRouter();
 
