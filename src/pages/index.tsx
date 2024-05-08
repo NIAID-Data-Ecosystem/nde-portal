@@ -6,8 +6,8 @@ import {
   ButtonGroup,
   Flex,
   Icon,
-  Text,
   TabPanel,
+  Text,
   Heading,
 } from '@chakra-ui/react';
 import { Link } from 'src/components/link';
@@ -24,11 +24,11 @@ import {
   fetchNews,
 } from 'src/views/home/components/NewsCarousel';
 import { NewsOrEventsObject, fetchEvents } from './news';
-import { TableWithSearch } from 'src/views/home/components/TableWithSearch';
-import { RepositoryTabs } from 'src/views/home/components/RepositoryTabs';
-import { SearchInput } from 'src/components/search-input';
+import { TableWithSearch } from 'src/views/home/components/TableWithSearch/';
 import { PageHeader } from 'src/components/page-header';
 import { fetchAllFeaturedPages } from 'src/views/features/helpers';
+import { SearchInput } from 'src/components/search-input';
+import { RepositoryTabs } from 'src/views/home/components/RepositoryTabs';
 
 const Home: NextPage<{
   data: {
@@ -54,7 +54,7 @@ const Home: NextPage<{
     return (
       repositories?.filter(
         repo =>
-          repo.label.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          repo.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
           repo.abstract?.toLowerCase().includes(searchTerm.toLowerCase()),
       ) || []
     );
@@ -86,7 +86,6 @@ const Home: NextPage<{
     ],
     [iid_repositories, generalist_repositories],
   );
-
   return (
     <PageContainer
       title='Home'
@@ -201,9 +200,9 @@ const Home: NextPage<{
                         columns={[
                           {
                             title: 'name',
-                            property: 'label',
+                            property: 'name',
                             isSortable: true,
-                            props: { maxW: '400px' },
+                            props: { maxW: '300px' },
                           },
                           {
                             title: 'description',
@@ -222,7 +221,7 @@ const Home: NextPage<{
                   display='flex'
                   justifyContent='flex-end'
                   mt={4}
-                  px={4}
+                  px={[0, 4]}
                 >
                   {HOMEPAGE_COPY.sections.help.routes.map(
                     (
@@ -245,10 +244,10 @@ const Home: NextPage<{
                           >
                             <Button
                               w='100%'
-                              minWidth='200px'
+                              minWidth='150px'
                               fontSize='sm'
+                              size='sm'
                               variant={index % 2 ? 'solid' : 'outline'}
-                              m={[0, 0, 0]}
                               my={[1, 2, 0]}
                               maxWidth={['unset', '250px']}
                               leftIcon={<Icon as={icon} />}

@@ -39,6 +39,7 @@ interface TableProps<TData extends Record<string, string | number>> {
   numRows?: number[];
   hasPagination?: boolean;
   tableBodyProps?: HTMLChakraProps<'tbody'>;
+  getTableRowProps?: (row: any, idx: number) => any;
   tableHeadProps?: HTMLChakraProps<'thead'>;
   tableContainerProps?: TableContainerProps;
 }
@@ -58,6 +59,7 @@ export const Table: React.FC<TableProps<any>> = ({
   numRows = NUM_ROWS,
   tableHeadProps,
   tableBodyProps,
+  getTableRowProps,
   tableContainerProps,
 }) => {
   // create unique id for each row
@@ -146,13 +148,14 @@ export const Table: React.FC<TableProps<any>> = ({
               </Tr>
             </Box>
             <Box as='tbody' {...tableBodyProps}>
-              {rows.map((row: any) => {
+              {rows.map((row: any, idx: number) => {
                 return (
                   <Row
                     as='tr'
                     key={`table-tr-${row.key}`}
                     flexDirection='row'
                     borderColor='gray.100'
+                    {...(getTableRowProps && getTableRowProps(row, idx))}
                   >
                     {columns.map(column => {
                       return (

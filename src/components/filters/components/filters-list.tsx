@@ -117,10 +117,11 @@ export const FiltersList: React.FC<FiltersList> = React.memo(
             ariaLabel={`Search filter ${searchPlaceholder} terms`}
             placeholder={searchPlaceholder}
             maxW='unset'
-            size='md'
+            size='sm'
             value={searchTerm}
             handleChange={handleSearchChange}
             colorScheme={colorScheme}
+            onClose={() => setSearchTerm('')}
           />
         </Box>
         <Box w='100%' my={4}>
@@ -151,7 +152,7 @@ export const FiltersList: React.FC<FiltersList> = React.memo(
                           )?.label
                         }
                       </Text>
-                      <UnorderedList>
+                      <UnorderedList ml={0}>
                         {iid_sources.map((item, i) => {
                           return (
                             <ListItem
@@ -183,7 +184,7 @@ export const FiltersList: React.FC<FiltersList> = React.memo(
                           )?.label
                         }
                       </Text>
-                      <UnorderedList>
+                      <UnorderedList ml={0}>
                         {generalist_sources
                           .slice(0, showFullList ? items.length : 5)
                           .map((item, i) => {
@@ -211,7 +212,7 @@ export const FiltersList: React.FC<FiltersList> = React.memo(
                 </>
               ) : (
                 <>
-                  <UnorderedList>
+                  <UnorderedList ml={0}>
                     {items
                       .sort((a, b) => b.count - a.count)
                       .slice(0, showFullList ? items.length : 5)

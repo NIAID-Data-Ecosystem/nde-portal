@@ -51,19 +51,17 @@ export const TermLabel = React.memo(
       ) {
         if (typeof inputValue === 'string') {
           const updatedQuery = {
-            term: inputTerm || inputValue,
+            term: inputValue || inputTerm,
             querystring: inputValue,
           };
           updateQueryValue({
             ...updatedQuery,
-            field: selectedFieldDetails?.property,
           });
         } else if (typeof inputValue === 'object') {
           const { term, querystring } = getDateQuerystring(inputValue);
           updateQueryValue({
             term,
             querystring,
-            field: selectedFieldDetails?.property,
           });
         }
       }

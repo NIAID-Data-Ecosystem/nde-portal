@@ -108,7 +108,7 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
     ),
 
     h2: (props: any) => (
-      <Heading as='h2' size='h2' mt={8} fontSize='3xl' {...props} />
+      <Heading as='h2' size='h2' mt={8} fontSize='2xl' {...props} />
     ),
     h3: (props: any) => (
       <Heading as='h3' fontSize='lg' mt={6} mb={2} {...props} />

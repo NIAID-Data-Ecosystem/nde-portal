@@ -38,6 +38,7 @@ export const Content = React.memo(({ children, ...props }: BoxProps) => {
       wordBreak='break-word'
       fontWeight='normal'
       w='100%'
+      h='100%'
       {...props}
     >
       {children}

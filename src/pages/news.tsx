@@ -403,19 +403,19 @@ const News: NextPage<NewsProps> = props => {
               </Section>
 
               {/* Features */}
-              {/* <Section id='features' title='Features'>
-                <SectionList
-                  id='features'
-                  numItems={response?.features?.length || 0}
-                  sections={sections}
-                  setSections={setSections}
-                >
-                  {isLoading || isRefetching ? (
-                    <SkeletonText />
-                  ) : (
-                    <>
-                      {!response?.features?.length ? (
-                        error?.message ? (
+              {response?.features.length && (
+                <Section id='features' title='Features'>
+                  <SectionList
+                    id='features'
+                    numItems={response?.features?.length || 0}
+                    sections={sections}
+                    setSections={setSections}
+                  >
+                    {isLoading || isRefetching ? (
+                      <SkeletonText />
+                    ) : (
+                      <>
+                        {error?.message ? (
                           <Error
                             minHeight='unset'
                             bg='#fff'
@@ -423,41 +423,32 @@ const News: NextPage<NewsProps> = props => {
                             headingProps={{ fontSize: 'md' }}
                           />
                         ) : (
-                          <Empty
-                            message='No featured content to display'
-                            color='niaid.placeholder'
-                            headingProps={{ size: 'sm' }}
-                            iconProps={{
-                              color: 'niaid.placeholder',
-                              opacity: 0.7,
-                            }}
-                          />
-                        )
-                      ) : (
-                        response?.features
-                          ?.slice(
-                            0,
-                            sections.find(s => s.hash === 'features')?.showMax,
-                          )
-                          .map((feature: NewsOrEventsObject) => {
-                            const image = Array.isArray(
-                              feature.attributes.image.data,
+                          response?.features
+                            ?.slice(
+                              0,
+                              sections.find(s => s.hash === 'features')
+                                ?.showMax,
                             )
-                              ? feature.attributes.image.data[0]?.attributes
-                              : feature.attributes.image.data?.attributes;
-                            return (
-                              <SectionCard
-                                key={feature.id}
-                                {...feature}
-                                image={image}
-                              />
-                            );
-                          })
-                      )}
-                    </>
-                  )}
-                </SectionList>
-              </Section> */}
+                            .map((feature: NewsOrEventsObject) => {
+                              const image = Array.isArray(
+                                feature.attributes.image.data,
+                              )
+                                ? feature.attributes.image.data[0]?.attributes
+                                : feature.attributes.image.data?.attributes;
+                              return (
+                                <SectionCard
+                                  key={feature.id}
+                                  {...feature}
+                                  image={image}
+                                />
+                              );
+                            })
+                        )}
+                      </>
+                    )}
+                  </SectionList>
+                </Section>
+              )}
 
               {/* Additional Resources */}
               <Section id='resources' title='Additional Resources'>

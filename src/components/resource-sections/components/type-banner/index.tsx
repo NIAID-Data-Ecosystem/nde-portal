@@ -9,7 +9,6 @@ import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
 
 interface TypeBannerProps extends FlexProps {
   type?: FormattedResource['@type'];
-  subType?: FormattedResource['collectionType'];
   date?: FormattedResource['date'];
   sourceName?: string[] | null;
   isNiaidFunded?: boolean;
@@ -34,7 +33,6 @@ export const getTypeColor = (type?: FormattedResource['@type']) => {
 
 const TypeBanner: React.FC<TypeBannerProps> = ({
   type,
-  subType,
   date,
   children,
   pl,
@@ -76,23 +74,7 @@ const TypeBanner: React.FC<TypeBannerProps> = ({
             </Tooltip>
           </StyledLabel>
         )}
-        {subType && (
-          <StyledLabel
-            _before={{
-              bg: colorScheme['lt'],
-            }}
-          >
-            <Text
-              fontSize='xs'
-              color='white'
-              px={2}
-              fontWeight='semibold'
-              whiteSpace='nowrap'
-            >
-              {subType.toUpperCase()}
-            </Text>
-          </StyledLabel>
-        )}
+
         {isNiaidFunded && (
           <StyledLabel
             _before={{

@@ -132,7 +132,6 @@ const SearchResultsPage = ({
         '@type',
         'alternateName',
         'author',
-        'collectionType',
         'conditionsOfAccess',
         'date',
         'description',
@@ -335,6 +334,7 @@ const SearchResultsPage = ({
                   <Card
                     isLoading={!router.isReady || isLoading || isRefetching}
                     data={data?.results[idx]}
+                    referrerPath={router.asPath}
                   />
                 </ListItem>
               );
