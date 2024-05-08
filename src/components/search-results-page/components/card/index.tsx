@@ -41,7 +41,6 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
     ['@type']: type,
     id,
     alternateName,
-    collectionType,
     name,
     date,
     author,
@@ -69,7 +68,6 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
         p={0}
         pl={[2, 4, 6]}
         flexDirection={['column', 'row']}
-        subType={collectionType}
         isNiaidFunded={isSourceFundedByNiaid(includedInDataCatalog)}
       />
 

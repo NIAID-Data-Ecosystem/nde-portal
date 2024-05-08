@@ -132,7 +132,6 @@ const SearchResultsPage = ({
         '@type',
         'alternateName',
         'author',
-        'collectionType',
         'conditionsOfAccess',
         'date',
         'description',
