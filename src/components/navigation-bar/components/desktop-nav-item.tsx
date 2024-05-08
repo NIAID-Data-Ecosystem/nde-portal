@@ -3,14 +3,13 @@ import { FaCaretDown } from 'react-icons/fa6';
 import {
   Box,
   Button,
-  Link,
   Icon,
+  Link,
   Popover,
   PopoverTrigger,
 } from '@chakra-ui/react';
 import { RouteProps } from '..';
 import { DesktopSubNav } from './menu-desktop';
-
 // Desktop Navigation link styles
 export const DesktopNavItem = ({
   label,
@@ -23,20 +22,21 @@ export const DesktopNavItem = ({
     return (
       <Link
         href={href ?? '#'}
+        color='white'
         fontSize='md'
         fontWeight={500}
-        color='white'
         _visited={{ color: 'white', _hover: { color: 'white' } }}
         _hover={{
           bg: 'whiteAlpha.300',
+          color: 'white',
         }}
         variant='unstyled'
         cursor='pointer'
         whiteSpace='nowrap'
-        display='flex'
-        flexDirection='column'
         w='auto'
         h='100%'
+        display='flex'
+        flexDirection='column'
         justifyContent='center'
         alignItems='center'
         textAlign='center'
