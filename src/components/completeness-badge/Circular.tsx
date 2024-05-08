@@ -159,6 +159,7 @@ export const CompletenessBadgeCircle = ({
       <Box position='relative' cursor='default'>
         <Tooltip
           maxWidth='unset'
+          maxW='90vw'
           label={
             <TooltipContent
               type={type}

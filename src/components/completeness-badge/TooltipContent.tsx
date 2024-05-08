@@ -74,7 +74,9 @@ export const TooltipContent = ({ data }: TooltipContentProps) => {
         </Text>
       </Flex>
       <Divider></Divider>
-      <Stack direction='row'>
+
+      {/* Rows of included and augmented fields */}
+      <Stack direction='row' flexWrap='wrap'>
         {data.map(item => (
           <Box key={item.label} my={1} minWidth='200px' flex={1}>
             <Score {...item} />
