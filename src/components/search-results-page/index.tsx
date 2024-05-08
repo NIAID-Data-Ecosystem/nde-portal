@@ -335,6 +335,7 @@ const SearchResultsPage = ({
                   <Card
                     isLoading={!router.isReady || isLoading || isRefetching}
                     data={data?.results[idx]}
+                    referrerPath={router.asPath}
                   />
                 </ListItem>
               );

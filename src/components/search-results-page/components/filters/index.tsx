@@ -107,8 +107,7 @@ export const Filters: React.FC<FiltersProps> = ({
           <FiltersSection
             key={facet}
             name={name}
-            icon={glyph}
-            property={property || ''}
+            description={FILTERS_CONFIG[facet]['description']}
           >
             <FiltersList
               colorScheme={colorScheme}

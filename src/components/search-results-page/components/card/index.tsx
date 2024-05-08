@@ -24,15 +24,18 @@ import { ToggleContainer } from 'src/components/toggle-container';
 import { formatAuthorsList2String } from 'src/utils/helpers/authors';
 import { isSourceFundedByNiaid } from 'src/utils/helpers/sources';
 import { Skeleton } from 'src/components/skeleton';
+import { useRouter } from 'next/router';
 
 interface SearchResultCardProps {
   isLoading?: boolean;
   data?: FormattedResource | null;
+  referrerPath?: string;
 }
 
 const SearchResultCard: React.FC<SearchResultCardProps> = ({
   isLoading,
   data,
+  referrerPath,
 }) => {
   const {
     ['@type']: type,
@@ -57,7 +60,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
     isLoading || !includedInDataCatalog
       ? []
       : getSourceDetails(includedInDataCatalog);
-
+  const router = useRouter();
   return (
     // {/* Banner with resource type + date of publication */}
     <Card ref={cardRef} variant='niaid' my={4} mb={8}>
@@ -96,10 +99,12 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
           minHeight={isLoading ? '81px' : 'unset'}
         >
           <NextLink
+            // referrerPath is the current path of the page - used for breadcrumbs in resources page
             href={{
               pathname: '/resources/',
-              query: { id },
+              query: { id, referrerPath },
             }}
+            as={`/resources?id=${id}`}
             passHref
             prefetch={false}
             style={{
@@ -318,10 +323,12 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                 >
                   {id && (
                     <NextLink
+                      // referrerPath is the current path of the page - used for breadcrumbs in resources page
                       href={{
                         pathname: '/resources/',
-                        query: { id },
+                        query: { id, referrerPath },
                       }}
+                      as={`/resources?id=${id}`}
                       style={{ flex: 1 }}
                       passHref
                       prefetch={false}

@@ -1,4 +1,7 @@
-import { APIResourceType } from '../formatting/formatResourceType';
+import {
+  APIResourceType,
+  CollectionType,
+} from '../formatting/formatResourceType';
 
 export interface FetchSearchResultsResponse {
   results: FormattedResource[];
@@ -35,7 +38,13 @@ export interface FacetTerm {
 }
 
 // Conditions of access for dataset or tool.
-export type AccessTypes = 'Open' | 'Controlled' | 'Embargoed' | 'Restricted';
+export type AccessTypes =
+  | 'Open'
+  | 'Controlled'
+  | 'Embargoed'
+  | 'Restricted'
+  | 'Varied'
+  | 'Unknown';
 
 export interface AdditionalType {
   name?: string;
@@ -339,7 +348,7 @@ export interface FormattedResource {
   citedBy: CitedBy[] | null;
   codeRepository: string[] | string | null;
   collectionSize?: CollectionSize[];
-  collectionType?: string;
+  collectionType?: CollectionType | null;
   condition: string | null;
   conditionsOfAccess: AccessTypes | null;
   curatedBy: CuratedBy | null;
