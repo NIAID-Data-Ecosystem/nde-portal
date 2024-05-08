@@ -19,7 +19,10 @@ interface BreadcrumbItemProps {
   isCurrentPage?: boolean;
 }
 
-const BreadcrumbItem = ({ isCurrentPage, path }: BreadcrumbItemProps) => {
+export const BreadcrumbItem = ({
+  isCurrentPage,
+  path,
+}: BreadcrumbItemProps) => {
   return (
     <HStack
       cursor={isCurrentPage ? 'default' : 'pointer'}
