@@ -231,39 +231,19 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                 px={paddingCard}
                 py={[0, 1]}
                 my={1}
-                flexDirection={{ base: 'column', sm: 'row' }}
+                flexDirection={{ base: 'column', md: 'row' }}
                 spacing={[1, 3, 4]}
               >
-                <Flex
-                  px={1}
-                  py={{ base: 1, sm: 3 }}
-                  border={{ base: '1px', sm: 'none' }}
-                  borderColor='gray.100'
-                  borderRadius='semi'
-                  alignItems='center'
-                  justifyContent={{ base: 'center', sm: 'flex-start' }}
-                >
-                  {data && (
-                    <>
-                      <CompletenessBadgeCircle
-                        stats={data['_meta']}
-                        animate={false}
-                        size='md'
-                      />
-
-                      <Text
-                        display={{ base: 'block', sm: 'none' }}
-                        color='gray.800'
-                        fontSize='xs'
-                        fontWeight='normal'
-                        lineHeight='shorter'
-                        mx={3}
-                      >
-                        Metadata Completeness
-                      </Text>
-                    </>
-                  )}
-                </Flex>
+                {data && (
+                  <CompletenessBadgeCircle
+                    type={data['@type']}
+                    stats={data['_meta']}
+                    animate={false}
+                    size='md'
+                    minWidth='176px'
+                    p={0}
+                  />
+                )}
                 <Flex
                   display={{ base: 'block', sm: 'none' }}
                   px={2}
@@ -282,14 +262,15 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                   <ToggleContainer
                     ariaLabel=''
                     noOfLines={[3, 10]}
-                    px={1}
-                    py={1}
+                    px={4}
+                    py={2}
                     my={0}
                     borderColor='transparent'
                     justifyContent='space-between'
                     _hover={{ bg: 'page.alt' }}
                     _focus={{ outlineColor: 'transparent', bg: 'white' }}
                     alignIcon='center'
+                    borderRadius='semi'
                   >
                     <DisplayHTMLContent content={description} />
                   </ToggleContainer>

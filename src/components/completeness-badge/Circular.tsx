@@ -1,13 +1,29 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { uniqueId } from 'lodash';
 import { animated, useTransition, to } from '@react-spring/web';
-import { Box, Text } from '@chakra-ui/react';
+import {
+  Box,
+  Flex,
+  FlexProps,
+  Icon,
+  Link,
+  LinkProps,
+  Text,
+} from '@chakra-ui/react';
 import { Group } from '@visx/group';
 import Pie, { PieArcDatum, ProvidedProps } from '@visx/shape/lib/shapes/Pie';
 import Tooltip from 'src/components/tooltip';
 import { TooltipContent } from './TooltipContent';
 import { FormattedResource } from 'src/utils/api/types';
+import { getMetadataListByType } from './helpers';
+import { FaInfo } from 'react-icons/fa6';
 
+const colors = {
+  required: { light: '#ffc678', dark: '#e05e8f', bg: '#F2BED2' },
+  recommended: { light: '#ff8bff', dark: '#321eb5', bg: '#b8b3f4' },
+};
+
+// Dimensions for the different sizes of the badge
 const dimensions = {
   xs: {
     width: 48,
@@ -42,59 +58,74 @@ const dimensions = {
     fontSize: 'lg',
   },
 };
-export const CompletenessBadgeCircle = ({
-  stats,
-  animate = true,
-  size = 'lg',
-}: {
+
+interface CompletenessBadgeCircleProps extends FlexProps {
+  type: FormattedResource['@type'];
   stats: FormattedResource['_meta'];
   animate?: boolean;
   size?: 'xs' | 'sm' | 'md' | 'lg';
-}) => {
+  labelProps?: LinkProps;
+}
+
+export const CompletenessBadgeCircle = ({
+  type,
+  stats,
+  animate = true,
+  size = 'lg',
+  labelProps,
+  ...props
+}: CompletenessBadgeCircleProps) => {
+  const { donutThickness, fontSize, height, margin, spacing, width } = useMemo(
+    () => dimensions[size],
+    [size],
+  );
+
+  const innerWidth = useMemo(
+    () => width - margin.left - margin.right,
+    [width, margin.left, margin.right],
+  );
+  const innerHeight = useMemo(
+    () => height - margin.top - margin.bottom,
+    [height, margin.top, margin.bottom],
+  );
+
+  const radius = useMemo(
+    () => ({
+      required:
+        Math.min(innerWidth, innerHeight) / 2 - donutThickness - spacing,
+      recommended: Math.min(innerWidth, innerHeight) / 2,
+    }),
+    [innerWidth, innerHeight, donutThickness, spacing],
+  );
+
+  const centerY = useMemo(() => innerHeight / 2, [innerHeight]);
+  const centerX = useMemo(() => innerWidth / 2, [innerWidth]);
+  const metadataList = useMemo(() => getMetadataListByType(type), [type]);
+
+  // Data Transformation. Required and Recommended are the only two categories.
   if (!stats) {
     return <></>;
   }
 
   const {
-    required_max_score,
-    required_score,
-    recommended_max_score,
-    recommended_score,
-    total_max_score,
+    required_score, // can change to length of required fields when available in api
+    recommended_score, // can change to length of recommended fields when available in api
     total_score,
   } = stats.completeness;
-
-  const colors = {
-    required: { light: '#ffc678', dark: '#e05e8f', bg: '#F2BED2' },
-    recommended: { light: '#ff8bff', dark: '#321eb5', bg: '#b8b3f4' },
-  };
-
-  const { donutThickness, fontSize, height, margin, spacing, width } =
-    dimensions[size];
-
-  const innerWidth = width - margin.left - margin.right;
-  const innerHeight = height - margin.top - margin.bottom;
-
-  const radius = {
-    required: Math.min(innerWidth, innerHeight) / 2 - donutThickness - spacing,
-    recommended: Math.min(innerWidth, innerHeight) / 2,
-  };
-  const centerY = innerHeight / 2;
-  const centerX = innerWidth / 2;
-
-  // Data Transformation
 
   const requiredData = [
     {
       id: uniqueId('required'),
       label: 'Required',
-      score: required_score / required_max_score,
+      score: required_score / metadataList.required.length,
       fill: colors.required,
       radius: radius.required,
     },
 
     {
-      score: (required_max_score - required_score) / required_max_score,
+      score:
+        (metadataList.required.length - required_score) /
+        metadataList.required.length,
       fill: 'transparent',
       radius: radius.required,
     },
@@ -104,144 +135,173 @@ export const CompletenessBadgeCircle = ({
     {
       id: uniqueId('recommended'),
       label: 'Recommended',
-      score: recommended_score / recommended_max_score,
+      score: recommended_score / metadataList.recommended.length,
       fill: colors.recommended,
       radius: radius.recommended,
     },
     {
       score:
-        (recommended_max_score - recommended_score) / recommended_max_score,
+        (metadataList.recommended.length - recommended_score) /
+        metadataList.recommended.length,
       fill: 'transparent',
       radius: radius.recommended,
     },
   ];
 
   return (
-    <Box position='relative'>
-      <Tooltip
-        label={
-          <TooltipContent
-            stats={{
-              required: {
-                label: 'Fundamental fields',
-                max_score: required_max_score,
-                score: required_score,
-                fill: colors['required'].dark,
-                augmented: stats.required_augmented_fields,
-              },
-              recommended: {
-                label: 'Recommended fields',
-                max_score: recommended_max_score,
-                score: recommended_score,
-                fill: colors['recommended'].dark,
-                augmented: stats.recommended_augmented_fields,
-              },
-              total: {
-                label: 'Total Score',
-                max_score: total_max_score,
-                score: total_score,
-              },
-            }}
-          />
-        }
-      >
-        <span>
-          <Text
-            position='absolute'
-            left={`${centerX + margin.left / 2}px`}
-            top={`${centerY + margin.top / 2}px`}
-            transform={`translate(-50%, -50%)`}
-            fontWeight='bold'
-            fontSize={fontSize}
-            lineHeight='none'
-            color='gray.800'
-          >
-            {total_score}
-          </Text>
-          <svg
-            width={`${dimensions[size].width}px`}
-            height={`${dimensions[size].height}px`}
-            viewBox={`0 0 ${dimensions[size].width} ${dimensions[size].height}`}
-          >
-            <Group top={centerY + margin.top} left={centerX + margin.left}>
-              {/* Required */}
-              {/* background circle for required pie */}
-              {[requiredData, recommendedData].map((data, idx) => {
-                return data.map(datum => {
-                  if (!datum || !datum?.label || !datum.radius) {
-                    return <React.Fragment key={idx}></React.Fragment>;
-                  }
-                  const { id, radius } = datum;
-                  return (
-                    <Group key={id}>
-                      <circle
-                        className={id + '-circle'}
-                        cx='0'
-                        cy='0'
-                        r={radius - donutThickness / 2}
-                        fill='transparent'
-                        strokeWidth={donutThickness}
-                        stroke={datum.fill.bg}
-                        opacity={0.2}
-                      />
+    <Flex
+      p={2}
+      justifyContent='center'
+      alignItems='center'
+      flexDirection='column'
+      {...props}
+    >
+      <Box position='relative' cursor='default'>
+        <Tooltip
+          maxWidth='unset'
+          maxW='90vw'
+          label={
+            <TooltipContent
+              type={type}
+              data={[
+                {
+                  label: 'Fundamental fields',
+                  fields: metadataList.required,
+                  included: stats?.required_fields || [],
+                  augmented: stats.required_augmented_fields,
+                  fill: colors['required'].dark,
+                },
+                {
+                  label: 'Recommended fields',
+                  fields: metadataList.recommended,
+                  included: stats?.recommended_fields || [],
+                  augmented: stats.recommended_augmented_fields,
+                  fill: colors['recommended'].dark,
+                },
+              ]}
+            />
+          }
+        >
+          <span>
+            <Text
+              position='absolute'
+              left={`${centerX + margin.left / 2}px`}
+              top={`${centerY + margin.top / 2}px`}
+              transform='translate(-50%, -50%)'
+              fontWeight='bold'
+              fontSize={fontSize}
+              lineHeight='none'
+              color='gray.800'
+            >
+              {total_score}
+            </Text>
+            <svg
+              width={`${dimensions[size].width}px`}
+              height={`${dimensions[size].height}px`}
+              viewBox={`0 0 ${dimensions[size].width} ${dimensions[size].height}`}
+            >
+              <Group top={centerY + margin.top} left={centerX + margin.left}>
+                {/* Required */}
+                {/* background circle for required pie */}
+                {[requiredData, recommendedData].map((data, idx) => {
+                  return data.map(datum => {
+                    if (!datum || !datum?.label || !datum.radius) {
+                      return <React.Fragment key={idx}></React.Fragment>;
+                    }
+                    const { id, radius } = datum;
+                    return (
+                      <Group key={id}>
+                        <circle
+                          className={id + '-circle'}
+                          cx='0'
+                          cy='0'
+                          r={radius - donutThickness / 2}
+                          fill='transparent'
+                          strokeWidth={donutThickness}
+                          stroke={datum.fill.bg}
+                          opacity={0.2}
+                        />
 
-                      <Pie
-                        className={id + '-Pie'}
-                        data={data}
-                        pieValue={d => d.score}
-                        pieSort={(a, b) =>
-                          (b.label ? 1 : 0) - (a.label ? 1 : 0)
-                        }
-                        outerRadius={d => d.data.radius}
-                        innerRadius={d => d.data.radius - donutThickness}
-                        padAngle={0.001}
-                        cornerRadius={5}
-                      >
-                        {pie => {
-                          const arc = pie.arcs[0];
-                          const startDeg = arc.startAngle * (180 / Math.PI);
-                          const endDeg = arc.endAngle * (180 / Math.PI);
-                          //  use the radius of the arc to get the correct conic gradient
-                          const background = `conic-gradient(${
-                            datum.fill.dark
-                          } ${startDeg}deg, ${datum.fill.dark} ${
-                            (startDeg + endDeg) / 2
-                          }deg, ${datum.fill.light} ${endDeg}deg)`;
-                          return (
-                            <>
-                              <foreignObject
-                                x={0 - width / 2}
-                                y={0 - height / 2}
-                                width={dimensions[size].width}
-                                height={dimensions[size].height}
-                                clipPath={`url(#${datum.id}-bg)`}
-                              >
-                                <div
-                                  style={{
-                                    width: '100%',
-                                    height: '100%',
-                                    background,
-                                  }}
+                        <Pie
+                          className={id + '-Pie'}
+                          data={data}
+                          pieValue={d => d.score}
+                          pieSort={(a, b) =>
+                            (b.label ? 1 : 0) - (a.label ? 1 : 0)
+                          }
+                          outerRadius={d => d.data.radius}
+                          innerRadius={d => d.data.radius - donutThickness}
+                          padAngle={0.001}
+                          cornerRadius={5}
+                        >
+                          {pie => {
+                            const arc = pie.arcs[0];
+                            const startDeg = arc.startAngle * (180 / Math.PI);
+                            const endDeg = arc.endAngle * (180 / Math.PI);
+                            //  use the radius of the arc to get the correct conic gradient
+                            const background = `conic-gradient(${
+                              datum.fill.dark
+                            } ${startDeg}deg, ${datum.fill.dark} ${
+                              (startDeg + endDeg) / 2
+                            }deg, ${datum.fill.light} ${endDeg}deg)`;
+                            return (
+                              <>
+                                <foreignObject
+                                  x={0 - width / 2}
+                                  y={0 - height / 2}
+                                  width={dimensions[size].width}
+                                  height={dimensions[size].height}
+                                  clipPath={`url(#${datum.id}-bg)`}
+                                >
+                                  <div
+                                    style={{
+                                      width: '100%',
+                                      height: '100%',
+                                      background,
+                                    }}
+                                  />
+                                </foreignObject>
+                                <AnimatedArc
+                                  animate={animate}
+                                  size={size}
+                                  {...pie}
                                 />
-                              </foreignObject>
-                              <AnimatedArc
-                                animate={animate}
-                                size={size}
-                                {...pie}
-                              />
-                            </>
-                          );
-                        }}
-                      </Pie>
-                    </Group>
-                  );
-                });
-              })}
-            </Group>
-          </svg>
-        </span>
+                              </>
+                            );
+                          }}
+                        </Pie>
+                      </Group>
+                    );
+                  });
+                })}
+              </Group>
+            </svg>
+          </span>
+        </Tooltip>
+      </Box>
+      <Tooltip label='See metadata completeness documentation.'>
+        <Link
+          href='/docs/metadata-completeness-score'
+          mt={2}
+          textDecoration='underline'
+          lineHeight='shorter'
+          color='gray.800!important'
+          fontSize='xs'
+          textAlign='center'
+          _hover={{ textDecoration: 'none' }}
+        >
+          Metadata Completeness{' '}
+          <Icon
+            as={FaInfo}
+            boxSize={3.5}
+            border='1px solid'
+            borderRadius='full'
+            p={0.5}
+            color='gray.800!important'
+          />
+        </Link>
       </Tooltip>
-    </Box>
+    </Flex>
   );
 };
 
@@ -269,6 +329,7 @@ const AnimatedArc = ({
   arcs,
   path,
   size,
+  ...rest
 }: AnimatedPieProps<any>) => {
   const transitions = useTransition<PieArcDatum<any>, AnimatedStyles>(arcs, {
     from: animate ? fromLeaveTransition : enterUpdateTransition,
@@ -299,10 +360,11 @@ const AnimatedArc = ({
                 endAngle,
               }),
             )}
+            {...rest}
           />
         </clipPath>
       );
     }
-    return <path key={key} fill='transparent' d={path(arc) || ''} />;
+    return <path key={key} fill='transparent' d={path(arc) || ''} {...rest} />;
   });
 };

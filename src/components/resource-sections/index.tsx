@@ -1,5 +1,4 @@
 import React from 'react';
-import { useRouter } from 'next/router';
 import { FormattedResource } from 'src/utils/api/types';
 import {
   Box,
@@ -8,7 +7,6 @@ import {
   ListItem,
   Skeleton,
   Stack,
-  Tag,
   UnorderedList,
 } from '@chakra-ui/react';
 import { Link } from 'src/components/link';
@@ -87,7 +85,6 @@ const Sections = ({
   data?: FormattedResource;
   sections: Route[];
 }) => {
-  const router = useRouter();
   return (
     <>
       <ResourceHeader
@@ -114,7 +111,7 @@ const Sections = ({
               <Stack
                 display={{ base: 'flex', lg: 'none' }}
                 flexWrap='wrap'
-                flexDirection='column'
+                flexDirection='row'
                 spacing={4}
                 px={{ base: 0, md: 4 }}
                 py={4}
@@ -129,12 +126,12 @@ const Sections = ({
                     borderColor='gray.100'
                     borderRadius='semi'
                     p={4}
+                    minWidth='250px'
                   >
-                    <CompletenessBadgeCircle stats={data['_meta']} size='md' />
-                    <HeadingWithTooltip
-                      label='Metadata Completeness'
-                      pt={2}
-                      whiteSpace='nowrap'
+                    <CompletenessBadgeCircle
+                      type={data['@type']}
+                      stats={data['_meta']}
+                      size='lg'
                     />
                   </Flex>
                 )}
@@ -145,6 +142,7 @@ const Sections = ({
                   borderColor='gray.100'
                   borderRadius='semi'
                   flexDirection='column'
+                  minWidth='300px'
                 >
                   <External
                     data={data}

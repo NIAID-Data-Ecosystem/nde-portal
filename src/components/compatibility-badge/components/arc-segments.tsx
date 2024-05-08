@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { scaleLinear, scaleOrdinal } from '@visx/scale';
-import { MetadataSource } from 'src/utils/api/types';
+import { MetadataSource } from 'src/hooks/api/types';
 import { theme } from 'src/theme';
 import { PatternLines } from '@visx/pattern';
 import { Box, Stack, Text } from '@chakra-ui/react';
