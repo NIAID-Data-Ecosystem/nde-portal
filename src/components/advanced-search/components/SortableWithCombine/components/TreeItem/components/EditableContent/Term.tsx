@@ -6,9 +6,9 @@ import {
 } from 'src/components/advanced-search/components/Search';
 import { getDateQuerystring } from 'src/components/advanced-search/components/Search/components/SearchInput/helpers';
 import { SearchInputProps } from 'src/components/advanced-search/components/Search/components/SearchInput/types';
-import { QueryStringError } from 'src/components/advanced-search/utils/validation-checks';
 import { ItemContentProps } from '.';
 import { transformQueryString } from '../../helpers';
+import { QueryStringError } from 'src/components/error/types';
 
 export const TermLabel = React.memo(
   ({
@@ -51,19 +51,17 @@ export const TermLabel = React.memo(
       ) {
         if (typeof inputValue === 'string') {
           const updatedQuery = {
-            term: inputTerm || inputValue,
+            term: inputValue || inputTerm,
             querystring: inputValue,
           };
           updateQueryValue({
             ...updatedQuery,
-            field: selectedFieldDetails?.property,
           });
         } else if (typeof inputValue === 'object') {
           const { term, querystring } = getDateQuerystring(inputValue);
           updateQueryValue({
             term,
             querystring,
-            field: selectedFieldDetails?.property,
           });
         }
       }

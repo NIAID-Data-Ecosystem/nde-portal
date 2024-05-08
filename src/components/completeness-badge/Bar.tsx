@@ -31,7 +31,7 @@ export const CompletenessBadgeBar = ({
   };
 
   const colors = {
-    required: 'accent.bg',
+    required: 'accent.400',
     recommended: 'secondary.500',
     default: 'gray.300',
   };

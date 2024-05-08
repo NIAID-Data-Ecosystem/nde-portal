@@ -8,82 +8,16 @@ import {
   queryFilterObject2String,
   updateRoute,
 } from 'src/components/filters/helpers';
-import {
-  FiltersConfigProps,
-  SelectedFilterType,
-} from 'src/components/filters/types';
+import { SelectedFilterType } from 'src/components/filters/types';
 import { useRouter } from 'next/router';
 import { FiltersDateSlider } from 'src/components/filters/components/filters-date-slider/';
+import { FILTERS_CONFIG } from './helpers';
 
 /*
 [COMPONENT INFO]:
   Fetches all filters based on initial query string.
   Note: only the counts are updated when the user toggles a filter.
 */
-
-// Default facet size
-export const FACET_SIZE = 1000;
-
-/*
-Config for the naming/text of a filter.
-[NOTE]: Order matters here as the filters will be rendered in the order of the keys.
-*/
-export const filtersConfig: FiltersConfigProps = {
-  date: { name: 'Date ', glyph: 'date', property: 'date', isDefaultOpen: true },
-  '@type': { name: 'Type', property: '@type' },
-  'includedInDataCatalog.name': {
-    name: 'Repository',
-    glyph: 'info',
-    property: 'includedInDataCatalog',
-  },
-  'healthCondition.name': {
-    name: 'Health Condition',
-    glyph: 'healthCondition',
-    property: 'healthCondition',
-  },
-
-  'infectiousAgent.displayName': {
-    name: 'Pathogen Species',
-    glyph: 'infectiousAgent',
-    property: 'infectiousAgent',
-  },
-
-  'species.displayName': {
-    name: 'Host Species',
-    glyph: 'species',
-    property: 'species',
-  },
-  // applicationCategory: {
-  //   name: 'Software Category',
-  //   glyph: 'applicationCategory',
-  //   property: 'applicationCategory',
-  // },
-  // programmingLanguage: {
-  //   name: 'Programming Language',
-  //   glyph: 'programmingLanguage',
-  //   property: 'programmingLanguage',
-  // },
-  'funding.funder.name': {
-    name: 'Funding',
-    glyph: 'funding',
-    property: 'funding',
-  },
-  conditionsOfAccess: {
-    name: 'Conditions of Access',
-    glyph: 'info',
-    property: 'conditionsOfAccess',
-  },
-  variableMeasured: {
-    name: 'Variable Measured',
-    glyph: 'variableMeasured',
-    property: 'variableMeasured',
-  },
-  'measurementTechnique.name': {
-    name: 'Measurement Technique',
-    glyph: 'measurementTechnique',
-    property: 'measurementTechnique',
-  },
-};
 
 interface FiltersProps {
   colorScheme?: string;
@@ -101,7 +35,7 @@ export const Filters: React.FC<FiltersProps> = ({
   removeAllFilters,
   selectedFilters,
 }) => {
-  const facets = Object.keys(filtersConfig);
+  const facets = Object.keys(FILTERS_CONFIG);
   const router = useRouter();
   const [{ data, error, isLoading, isUpdating }] = useFacetsData({
     queryParams,
@@ -137,12 +71,12 @@ export const Filters: React.FC<FiltersProps> = ({
     <FiltersContainer
       title='Filters'
       error={error}
-      filtersConfig={filtersConfig}
+      filtersConfig={FILTERS_CONFIG}
       selectedFilters={selectedFilters}
       removeAllFilters={removeAllFilters}
     >
       {facets.map(facet => {
-        const { name, glyph, property } = filtersConfig[facet];
+        const { name, glyph, property } = FILTERS_CONFIG[facet];
         const facetTerms = data[facet]?.sort((a, b) => b.count - a.count);
         const selected = selectedFilters?.[facet]?.map(filter => {
           if (typeof filter === 'object') {
@@ -173,8 +107,7 @@ export const Filters: React.FC<FiltersProps> = ({
           <FiltersSection
             key={facet}
             name={name}
-            icon={glyph}
-            property={property || ''}
+            description={FILTERS_CONFIG[facet]['description']}
           >
             <FiltersList
               colorScheme={colorScheme}

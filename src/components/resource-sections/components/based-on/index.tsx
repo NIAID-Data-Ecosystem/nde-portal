@@ -20,7 +20,6 @@ import { Row } from 'src/components/table/components/row';
 import { TableContainer } from 'src/components/table/components/table-container';
 import { getTruncatedText } from 'src/components/table/helpers';
 import { useTableSort } from 'src/components/table/hooks/useTableSort';
-import { TableSortToggle } from 'src/components/table/components/sort-toggle';
 import { TableWrapper } from 'src/components/table/components/wrapper';
 import { TablePagination } from 'src/components/table/components/pagination';
 import { TagWithUrl } from 'src/components/tag-with-url';
@@ -63,7 +62,7 @@ const ROW_SIZES = [5, 10, 50, 100];
 const COLUMNS = [
   { key: 'name', title: 'Name' },
   {
-    key: 'type',
+    key: '@type',
     title: 'Type',
     props: { w: '200px', maxW: '200px', minW: 'unset' },
   },
@@ -132,10 +131,10 @@ const BasedOnTable = ({
   }, []);
 
   // Hook for sorting table data
-  const [{ data, orderBy, sortBy }, updateSort] = useTableSort(
-    itemsWithUniqueId,
+  const [{ data, orderBy, sortBy }, updateSort] = useTableSort({
+    data: itemsWithUniqueId,
     accessor,
-  );
+  });
   // [size]: num of rows per page
   const [size, setSize] = useState(ROW_SIZES[0]);
 
@@ -180,18 +179,16 @@ const BasedOnTable = ({
                       label={column.title}
                       isSelected={column.key === orderBy}
                       borderBottomColor='primary.200'
+                      isSortable={true}
+                      tableSortToggleProps={{
+                        isSelected: column.key === orderBy,
+                        sortBy,
+                        handleToggle: (sortByAsc: boolean) => {
+                          updateSort(column.key, sortByAsc);
+                        },
+                      }}
                       {...column.props}
-                    >
-                      {column.key && (
-                        <TableSortToggle
-                          isSelected={column.key === orderBy}
-                          sortBy={sortBy}
-                          handleToggle={(sortByAsc: boolean) => {
-                            updateSort(column.key, sortByAsc);
-                          }}
-                        />
-                      )}
-                    </Th>
+                    ></Th>
                   );
                 })}
               </Tr>
@@ -237,7 +234,7 @@ const BasedOnTable = ({
                               )}
 
                               {/* type */}
-                              {column.key === 'type' &&
+                              {column.key === '@type' &&
                                 (item.type.length > 0 &&
                                 item.type.some(type => {
                                   return type.name || type.url;

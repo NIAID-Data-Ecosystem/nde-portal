@@ -15,7 +15,7 @@ import {
   FaCircleInfo,
   FaCircleXmark,
 } from 'react-icons/fa6';
-import { QueryStringError } from 'src/components/advanced-search/utils/validation-checks';
+import { QueryStringError } from 'src/components/error/types';
 
 interface EditableQueryTextProps {
   errors: QueryStringError[];

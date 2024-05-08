@@ -1,13 +1,47 @@
-import { Box, Text } from '@chakra-ui/react';
-import { Group } from '@visx/group';
-import Pie, { PieArcDatum, ProvidedProps } from '@visx/shape/lib/shapes/Pie';
-import { TooltipContent } from './TooltipContent';
-import Tooltip from 'src/components/tooltip';
-import { FormattedResource } from 'src/utils/api/types';
 import React from 'react';
 import { uniqueId } from 'lodash';
 import { animated, useTransition, to } from '@react-spring/web';
+import { Box, Text } from '@chakra-ui/react';
+import { Group } from '@visx/group';
+import Pie, { PieArcDatum, ProvidedProps } from '@visx/shape/lib/shapes/Pie';
+import Tooltip from 'src/components/tooltip';
+import { TooltipContent } from './TooltipContent';
+import { FormattedResource } from 'src/utils/api/types';
 
+const dimensions = {
+  xs: {
+    width: 48,
+    height: 48,
+    margin: { top: 1, right: 1, bottom: 1, left: 1 },
+    donutThickness: 4,
+    spacing: 3,
+    fontSize: 'xs',
+  },
+  sm: {
+    width: 64,
+    height: 64,
+    margin: { top: 1, right: 1, bottom: 1, left: 1 },
+    donutThickness: 6,
+    spacing: 4,
+    fontSize: 'sm',
+  },
+  md: {
+    width: 72,
+    height: 72,
+    margin: { top: 2, right: 2, bottom: 2, left: 2 },
+    donutThickness: 6.5,
+    spacing: 4,
+    fontSize: 'sm',
+  },
+  lg: {
+    width: 96,
+    height: 96,
+    margin: { top: 2, right: 2, bottom: 2, left: 2 },
+    donutThickness: 8,
+    spacing: 6,
+    fontSize: 'lg',
+  },
+};
 export const CompletenessBadgeCircle = ({
   stats,
   animate = true,
@@ -35,41 +69,6 @@ export const CompletenessBadgeCircle = ({
     recommended: { light: '#ff8bff', dark: '#321eb5', bg: '#b8b3f4' },
   };
 
-  const dimensions = {
-    xs: {
-      width: 48,
-      height: 48,
-      margin: { top: 1, right: 1, bottom: 1, left: 1 },
-      donutThickness: 4,
-      spacing: 3,
-      fontSize: 'xs',
-    },
-    sm: {
-      width: 64,
-      height: 64,
-      margin: { top: 1, right: 1, bottom: 1, left: 1 },
-      donutThickness: 6,
-      spacing: 4,
-      fontSize: 'sm',
-    },
-    md: {
-      width: 72,
-      height: 72,
-      margin: { top: 2, right: 2, bottom: 2, left: 2 },
-      donutThickness: 6.5,
-      spacing: 4,
-      fontSize: 'sm',
-    },
-    lg: {
-      width: 96,
-      height: 96,
-      margin: { top: 2, right: 2, bottom: 2, left: 2 },
-      donutThickness: 8,
-      spacing: 6,
-      fontSize: 'lg',
-    },
-  };
-
   const { donutThickness, fontSize, height, margin, spacing, width } =
     dimensions[size];
 
@@ -93,10 +92,11 @@ export const CompletenessBadgeCircle = ({
       fill: colors.required,
       radius: radius.required,
     },
+
     {
       score: (required_max_score - required_score) / required_max_score,
       fill: 'transparent',
-      radius: 0,
+      radius: radius.required,
     },
   ];
 
@@ -112,7 +112,7 @@ export const CompletenessBadgeCircle = ({
       score:
         (recommended_max_score - recommended_score) / recommended_max_score,
       fill: 'transparent',
-      radius: 0,
+      radius: radius.recommended,
     },
   ];
 
@@ -161,6 +161,7 @@ export const CompletenessBadgeCircle = ({
           <svg
             width={`${dimensions[size].width}px`}
             height={`${dimensions[size].height}px`}
+            viewBox={`0 0 ${dimensions[size].width} ${dimensions[size].height}`}
           >
             <Group top={centerY + margin.top} left={centerX + margin.left}>
               {/* Required */}
@@ -172,8 +173,9 @@ export const CompletenessBadgeCircle = ({
                   }
                   const { id, radius } = datum;
                   return (
-                    <Group key={id} id={id}>
+                    <Group key={id}>
                       <circle
+                        className={id + '-circle'}
                         cx='0'
                         cy='0'
                         r={radius - donutThickness / 2}
@@ -182,7 +184,9 @@ export const CompletenessBadgeCircle = ({
                         stroke={datum.fill.bg}
                         opacity={0.2}
                       />
+
                       <Pie
+                        className={id + '-Pie'}
                         data={data}
                         pieValue={d => d.score}
                         pieSort={(a, b) =>
@@ -195,10 +199,8 @@ export const CompletenessBadgeCircle = ({
                       >
                         {pie => {
                           const arc = pie.arcs[0];
-
                           const startDeg = arc.startAngle * (180 / Math.PI);
                           const endDeg = arc.endAngle * (180 / Math.PI);
-
                           //  use the radius of the arc to get the correct conic gradient
                           const background = `conic-gradient(${
                             datum.fill.dark
@@ -207,7 +209,6 @@ export const CompletenessBadgeCircle = ({
                           }deg, ${datum.fill.light} ${endDeg}deg)`;
                           return (
                             <>
-                              {/* use this to apply a conic gradient */}
                               <foreignObject
                                 x={0 - width / 2}
                                 y={0 - height / 2}
@@ -223,14 +224,11 @@ export const CompletenessBadgeCircle = ({
                                   }}
                                 />
                               </foreignObject>
-
-                              <clipPath id={`${datum.id}-bg`}>
-                                <AnimatedArc
-                                  key='arc-required'
-                                  animate={animate}
-                                  {...pie}
-                                />
-                              </clipPath>
+                              <AnimatedArc
+                                animate={animate}
+                                size={size}
+                                {...pie}
+                              />
                             </>
                           );
                         }}
@@ -248,10 +246,6 @@ export const CompletenessBadgeCircle = ({
 };
 
 type AnimatedStyles = { startAngle: number; endAngle: number; opacity: number };
-type AnimatedPieProps<Datum> = ProvidedProps<Datum> & {
-  animate?: boolean;
-  delay?: number;
-};
 
 const fromLeaveTransition = () => ({
   startAngle: 0,
@@ -264,7 +258,18 @@ const enterUpdateTransition = ({ startAngle, endAngle }: PieArcDatum<any>) => ({
   opacity: 1,
 });
 
-const AnimatedArc = ({ animate = true, arcs, path }: AnimatedPieProps<any>) => {
+type AnimatedPieProps<Datum> = ProvidedProps<Datum> & {
+  animate?: boolean;
+  delay?: number;
+  size: 'xs' | 'sm' | 'md' | 'lg'; // Add the 'size' property to the type definition
+};
+
+const AnimatedArc = ({
+  animate = true,
+  arcs,
+  path,
+  size,
+}: AnimatedPieProps<any>) => {
   const transitions = useTransition<PieArcDatum<any>, AnimatedStyles>(arcs, {
     from: animate ? fromLeaveTransition : enterUpdateTransition,
     enter: enterUpdateTransition,
@@ -273,18 +278,31 @@ const AnimatedArc = ({ animate = true, arcs, path }: AnimatedPieProps<any>) => {
   });
 
   return transitions((props, arc, { key }) => {
-    return (
-      <animated.path
-        key={key}
-        // compute interpolated path d attribute from intermediate angle values
-        d={to([props.startAngle, props.endAngle], (startAngle, endAngle) =>
-          path({
-            ...arc,
-            startAngle,
-            endAngle,
-          }),
-        )}
-      />
-    );
+    if (arc.index === 0) {
+      // Using clipPathUnits='objectBoundingBox' to scale the clip path to the size of the object bounding box for mobile.
+      // https://meyerweb.com/eric/thoughts/2017/02/24/scaling-svg-clipping-paths-for-css-use/
+      return (
+        <clipPath
+          id={`${arc.data.id}-bg`}
+          clipPathUnits='objectBoundingBox'
+          transform={`scale(${1 / dimensions[size].width} ${
+            1 / dimensions[size].height
+          })`}
+        >
+          <animated.path
+            key={key}
+            // compute interpolated path d attribute from intermediate angle values
+            d={to([props.startAngle, props.endAngle], (startAngle, endAngle) =>
+              path({
+                ...arc,
+                startAngle,
+                endAngle,
+              }),
+            )}
+          />
+        </clipPath>
+      );
+    }
+    return <path key={key} fill='transparent' d={path(arc) || ''} />;
   });
 };

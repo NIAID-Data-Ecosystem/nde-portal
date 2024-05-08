@@ -15,7 +15,6 @@ const Changelog: NextPage<ChangelogProps> = () => {
   const MDXComponents = useMDXComponents({});
   return (
     <PageContainer
-      hasNavigation
       title='Changelog'
       metaDescription='Log of changes to the NDE System.'
       px={0}

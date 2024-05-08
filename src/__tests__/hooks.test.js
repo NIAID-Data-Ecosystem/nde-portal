@@ -16,20 +16,24 @@ describe('use query hook', () => {
       ({ type }) => type === 'generalist',
     );
 
-    const { identifier, description } = result.current.data[0];
-    const { type, icon } = repos.find(({ id }) => identifier === id);
+    const { _id, abstract } = result.current.data[0];
+    const { type, icon } = repos.find(({ id }) => _id === id);
     expect(result.current.data).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
           type,
           icon,
-          description,
+          abstract,
         }),
       ]),
     );
   });
 
   test('failure query hook', async () => {
+    // Mock console.error before the test
+    const originalConsoleError = console.error;
+    console.error = jest.fn();
+
     server.use(
       rest.get('*', (_, res, ctx) => {
         return res(ctx.status(500));
@@ -42,5 +46,6 @@ describe('use query hook', () => {
     await waitFor(() => expect(result.current.isError).toBe(true));
 
     expect(result.current.error).toBeDefined();
+    console.error = originalConsoleError;
   });
 });

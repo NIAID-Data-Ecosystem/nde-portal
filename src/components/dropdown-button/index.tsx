@@ -28,6 +28,7 @@ export interface DropdownButtonProps extends ButtonGroupProps {
     props: ListItemProps;
   }[];
   iconButtonProps?: IconButtonProps;
+  placeholder?: string;
 }
 
 export const DropdownButton: React.FC<DropdownButtonProps> = ({

@@ -1,4 +1,7 @@
-import { APIResourceType } from '../formatting/formatResourceType';
+import {
+  APIResourceType,
+  CollectionType,
+} from '../formatting/formatResourceType';
 
 export interface FetchSearchResultsResponse {
   results: FormattedResource[];
@@ -35,7 +38,13 @@ export interface FacetTerm {
 }
 
 // Conditions of access for dataset or tool.
-export type AccessTypes = 'Open' | 'Controlled' | 'Embargoed' | 'Restricted';
+export type AccessTypes =
+  | 'Open'
+  | 'Controlled'
+  | 'Embargoed'
+  | 'Restricted'
+  | 'Varied'
+  | 'Unknown';
 
 export interface AdditionalType {
   name?: string;
@@ -109,10 +118,11 @@ interface CuratedBy {
 
 export interface Distribution {
   encodingFormat: string | null;
+  contentSize: number | null;
   contentUrl: string | null;
-  dateCreated: Date | string | null;
-  dateModified: Date | string | null;
-  datePublished: Date | string | null;
+  dateCreated: string | null;
+  dateModified: string | null;
+  datePublished: string | null;
   description: string | null;
   name: string | null;
   '@id': string | null;
@@ -338,7 +348,7 @@ export interface FormattedResource {
   citedBy: CitedBy[] | null;
   codeRepository: string[] | string | null;
   collectionSize?: CollectionSize[];
-  collectionType?: string;
+  collectionType?: CollectionType | null;
   condition: string | null;
   conditionsOfAccess: AccessTypes | null;
   curatedBy: CuratedBy | null;
@@ -408,77 +418,4 @@ export interface FormattedResource {
       }[];
   variableMeasured: string[] | null;
   version: number | null;
-}
-
-export interface MetadataSource {
-  code: {
-    file: string;
-    repo: string;
-    commit: string;
-    branch: string;
-    url: string;
-  };
-  sourceInfo: {
-    name: string;
-    abstract: string;
-    description: string;
-    schema: Object | null;
-    url: string;
-    identifier: string;
-    metadata_completeness: {
-      avg_augmented_recommended_ratio: number;
-      avg_augmented_required_ratio: number;
-      avg_recommended_score_ratio: number;
-      avg_required_ratio: number;
-      required_fields: {
-        name: number;
-        description: number;
-        author: number;
-        url: number;
-        measurementTechnique: number;
-        includedInDataCatalog: number;
-        distribution: number;
-        funding: number;
-        date: number;
-      };
-      recommended_fields: {
-        dateCreated: number;
-        dateModified: number;
-        datePublished: number;
-        citedBy: number;
-        doi: number;
-        infectiousAgent: number;
-        healthCondition: number;
-        species: number;
-        variableMeasured: number;
-        citation: number;
-        conditionsOfAccess: number;
-        isBasedOn: number;
-        keywords: number;
-        license: number;
-        sdPublisher: number;
-        spatialCoverage: number;
-        temporalCoverage: number;
-        topicCategory: number;
-        identifier: number;
-        usageInfo: number;
-        interactionStatistic: number;
-      };
-      recommended_augmented_fields_coverage?: { [key: string]: number };
-      required_augmented_fields_coverage?: { [key: string]: number };
-      sum_required_coverage: number;
-      sum_recommended_coverage: number;
-    };
-  };
-  stats: { [key: string]: number };
-  version: string;
-}
-
-export interface Metadata {
-  biothing_type: string;
-  build_date: string;
-  build_version: string;
-  src: {
-    [key: string]: MetadataSource;
-  };
 }

@@ -19,15 +19,40 @@ import { MetadataIcon } from 'src/components/icon';
 import Tooltip from 'src/components/tooltip';
 import { getMetadataTheme } from 'src/components/icon/helpers';
 import {
-  MetadataBlock,
-  MetadataContent,
-  MetadataList,
-  MetadataListItem,
   generateMetadataContent,
   sortMetadataArray,
 } from 'src/components/metadata';
 import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
 import { SchemaDefinitions } from 'scripts/generate-schema-definitions/types';
+import dynamic from 'next/dynamic';
+
+const MetadataBlock = dynamic(
+  () => import('src/components/metadata').then(mod => mod.MetadataBlock),
+  {
+    loading: () => <p></p>,
+  },
+);
+
+const MetadataContent = dynamic(
+  () => import('src/components/metadata').then(mod => mod.MetadataContent),
+  {
+    loading: () => <p></p>,
+  },
+);
+
+const MetadataList = dynamic(
+  () => import('src/components/metadata').then(mod => mod.MetadataList),
+  {
+    loading: () => <p></p>,
+  },
+);
+
+const MetadataListItem = dynamic(
+  () => import('src/components/metadata').then(mod => mod.MetadataListItem),
+  {
+    loading: () => <p></p>,
+  },
+);
 
 interface MetadataAccordionProps {
   data?: FormattedResource | null;

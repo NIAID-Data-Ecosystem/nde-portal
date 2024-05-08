@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import {
   Heading,
+  Highlight,
   ListItem as NDEListItem,
   ListItemProps as ChakraListItemProps,
   Text,
@@ -14,49 +15,6 @@ interface DropdownListItemProps extends ChakraListItemProps {
   value: FormattedResource['name'];
   index: number;
 }
-
-// Highlights the words in a text given a set of words to match.
-// See example: https://codesandbox.io/s/text-highlighting-vk1hj?file=/src/App.js
-interface HighlightProps {
-  tags: string[];
-  children: React.ReactNode;
-}
-export const Highlight: React.FC<HighlightProps> = ({
-  children: text = '',
-  tags = [],
-}) => {
-  if (typeof text !== 'string' || !tags?.length) return <>{text}</>;
-
-  const matches = [
-    ...text.matchAll(
-      new RegExp(
-        // escape characters tha timpact regex.
-        tags.join('|').replace(/[\[\]\(\)\/\\/\{\}\*]/g, '\\$&'),
-        'ig',
-      ),
-    ),
-  ];
-
-  const startText = text.slice(0, matches[0]?.index);
-  return (
-    <>
-      {startText}
-      {matches.map((match, i) => {
-        const startIndex = match.index || 0;
-        const currentText = match[0];
-        const endIndex = startIndex + currentText.length;
-        const nextIndex = matches[i + 1]?.index;
-        const untilNextText = text.slice(endIndex, nextIndex);
-        return (
-          <span key={i}>
-            <mark className='search-term'>{currentText}</mark>
-            {untilNextText}
-          </span>
-        );
-      })}
-    </>
-  );
-};
 
 export const DropdownListItem: React.FC<DropdownListItemProps> = React.memo(
   ({ name, searchTerm, value, index, onMouseOver, onClick, ...props }) => {
@@ -102,16 +60,18 @@ export const DropdownListItem: React.FC<DropdownListItemProps> = React.memo(
           wordBreak='break-word'
           fontWeight='normal'
           textAlign='left'
-          sx={{
-            '* > .search-term': {
+        >
+          <Highlight
+            query={searchTerm.split(' ')}
+            styles={{
               fontWeight: 'bold',
               textDecoration: 'underline',
               color: `${colorScheme}.400`,
               bg: 'transparent',
-            },
-          }}
-        >
-          <Highlight tags={searchTerm.split(' ')}>{displayValue}</Highlight>
+            }}
+          >
+            {displayValue}
+          </Highlight>
         </Heading>
       </NDEListItem>
     );

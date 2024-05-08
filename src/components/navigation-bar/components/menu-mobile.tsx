@@ -1,14 +1,15 @@
 import React from 'react';
 import {
   Box,
-  Flex,
-  Link,
-  Text,
-  Stack,
   Collapse,
+  Flex,
   Icon,
+  Link,
+  Stack,
+  Text,
   useDisclosure,
 } from '@chakra-ui/react';
+import NAVIGATION from '../routes.json';
 import { FaAngleRight, FaAngleDown } from 'react-icons/fa6';
 import { RouteProps } from '..';
 
@@ -43,6 +44,7 @@ export const MobileNavItem = ({
           <Flex opacity={1} justify='space-between' align='center'>
             <Text fontWeight={600}>{label}</Text>
             <Icon
+              as={FaAngleRight}
               className='icon'
               ml='10px'
               transform='translateX(-10px)'
@@ -52,7 +54,6 @@ export const MobileNavItem = ({
               }}
               w={3}
               h={3}
-              as={FaAngleRight}
             />
           </Flex>
         </Link>
@@ -113,5 +114,20 @@ export const MobileNavItem = ({
         </Collapse>
       </Box>
     </Stack>
+  );
+};
+
+export const MobileSubMenu = ({ isOpen }: { isOpen: boolean }) => {
+  return (
+    <Box borderRadius='semi' boxShadow='base' overflow='hidden'>
+      <Collapse in={isOpen} animateOpacity>
+        <Stack bg='white' p={2} alignItems='end'>
+          {NAVIGATION.routes &&
+            NAVIGATION.routes.map(navItem => (
+              <MobileNavItem key={navItem.label} {...navItem} />
+            ))}
+        </Stack>
+      </Collapse>
+    </Box>
   );
 };

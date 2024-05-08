@@ -1,10 +1,10 @@
-import { Box, Heading, HeadingProps, Spinner } from '@chakra-ui/react';
 import React from 'react';
+import { Flex, Spinner, Text, TextProps } from '@chakra-ui/react';
 import { formatNumber } from 'src/utils/helpers';
 
 // [COMPONENT INFO]: Displays total results count
 
-interface ResultsCount extends HeadingProps {
+interface ResultsCount extends TextProps {
   // Total number of results
   total: number;
   // Data loading mechanism
@@ -17,31 +17,32 @@ const ResultsCount: React.FC<ResultsCount> = ({
   ...props
 }) => {
   return (
-    <Heading
-      as='h2'
-      size='h6'
-      display='flex'
+    <Flex
+      w='100%'
+      borderBottom='2px solid'
+      borderColor='gray.700'
+      flexWrap={{ base: 'wrap-reverse', sm: 'wrap' }}
       alignItems='baseline'
+      fontSize='md'
       fontWeight='semibold'
-      mr={2}
-      fontSize='1.5rem'
-      {...props}
+      lineHeight='short'
     >
       {isLoading ? (
         <Spinner
-          thickness='1px'
-          speed='0.5s'
-          emptyColor='gray.200'
           color='primary.500'
+          emptyColor='gray.200'
           size='md'
+          speed='0.5s'
+          thickness='1px'
+          mr={2}
         />
       ) : (
-        formatNumber(total)
-      )}{' '}
-      <span style={{ fontSize: '1rem', marginLeft: '0.5rem' }}>
-        Result{total !== 1 ? 's' : ''}
-      </span>
-    </Heading>
+        <Text mr={1} fontSize='2xl' fontWeight='inherit' {...props}>
+          {formatNumber(total)}
+        </Text>
+      )}
+      Result{total !== 1 ? 's' : ' '}
+    </Flex>
   );
 };
 

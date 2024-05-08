@@ -3,7 +3,7 @@ import { Flex, FlexProps, Icon, Text } from '@chakra-ui/react';
 import { FaRegClock } from 'react-icons/fa6';
 import TypeBanner from '../type-banner';
 import { FormattedResource } from 'src/utils/api/types';
-import { isSourceFundedByNiaid } from 'src/utils/helpers';
+import { isSourceFundedByNiaid } from 'src/utils/helpers/sources';
 
 /*
 [COMPONENT INFO]:
@@ -74,7 +74,6 @@ const ResourceDates: React.FC<ResourceDates> = ({ data }) => {
       type={data?.['@type']}
       bg='status.info_lt'
       isNiaidFunded={isSourceFundedByNiaid(data.includedInDataCatalog)}
-      subType={data?.collectionType}
     >
       <Flex flexWrap='wrap' ml={[0, 0, 4]}>
         {date_data.map((date, i) => {

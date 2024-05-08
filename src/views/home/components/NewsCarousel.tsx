@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { useQuery } from 'react-query';
-import React, { useState } from 'react';
+import React from 'react';
 import { NewsOrEventsObject, fetchEvents } from 'src/pages/news';
 import { formatDate } from 'src/utils/api/helpers';
 import { FaAngleRight } from 'react-icons/fa6';
@@ -19,51 +19,100 @@ import {
 import { Carousel } from 'src/components/carousel';
 import NextLink from 'next/link';
 import { Link } from 'src/components/link';
+import { fetchAllFeaturedPages } from 'src/views/features/helpers';
 
 interface NewsCarouselProps {
   news: NewsOrEventsObject[];
   events: NewsOrEventsObject[];
+  features: NewsOrEventsObject[];
 }
 
 export const NewsCarousel = ({
   news: initialNews,
   events: initialEvents,
+  features: initialFeatures,
 }: NewsCarouselProps) => {
-  const [newsAndEvents, setNewsAndEvents] = useState([
-    ...initialNews,
-    ...initialEvents,
-  ]);
-  useQuery<
+  const {
+    data: carouselCards,
+    error,
+    isError,
+  } = useQuery<
     {
       news: NewsOrEventsObject[];
       events: NewsOrEventsObject[];
+      features: NewsOrEventsObject[];
     },
-    any,
-    { news: NewsOrEventsObject[]; events: NewsOrEventsObject[] }
+    Error,
+    NewsOrEventsObject[]
   >(
-    ['news', 'events'],
+    ['news', 'events', 'features'],
     async () => {
-      const newsData = await fetchNews({ paginate: { page: 1, pageSize: 5 } });
-      const events = await fetchEvents({ paginate: { page: 1, pageSize: 100 } })
-        .then(res => ({ data: res.events, error: null }))
-        .catch(err => {
-          return {
-            data: [],
-            error: {
-              message: `${err.response.status} : ${err.response.statusText}`,
-              status: err.response.status,
-            },
-          };
-        });
+      try {
+        // Parallel fetching of news, events, and features using Promise.all
+        const [newsResponse, featuresResponse, eventsResponse] =
+          await Promise.all([
+            fetchNews({ paginate: { page: 1, pageSize: 5 } }),
+            fetchAllFeaturedPages({
+              populate: {
+                fields: [
+                  'title',
+                  'slug',
+                  'subtitle',
+                  'publishedAt',
+                  'updatedAt',
+                ],
+                thumbnail: {
+                  fields: ['url', 'alternativeText'],
+                },
+              },
+              sort: { publishedAt: 'desc', updatedAt: 'desc' },
+              paginate: { page: 1, pageSize: 5 },
+            }),
+            fetchEvents({ paginate: { page: 1, pageSize: 5 } }),
+          ]);
 
-      return { news: newsData.news, events: events.data };
+        // Mapping data to the expected structure
+        const news = newsResponse.news;
+        const features = featuresResponse.data.map(item => ({
+          ...item,
+          type: 'feature',
+          attributes: {
+            name: item.attributes.title,
+            image: item.attributes.thumbnail,
+            slug: item.attributes.slug,
+            shortDescription: item.attributes.subtitle,
+          },
+        })) as NewsOrEventsObject[];
+        const events = eventsResponse.events;
+
+        return {
+          news,
+          events,
+          features,
+        };
+      } catch (error: any) {
+        // Assuming error is of type any, we throw as type Error for useQuery to handle
+        throw new Error(
+          `Data fetching error: ${
+            error.message || 'An unknown error occurred'
+          }`,
+        );
+      }
     },
     {
-      onSuccess(data) {
-        if (!data || !(data.news || data.events)) {
-          return [];
-        }
-        const newsAndEvents = [...data.news, ...data.events].sort((a, b) => {
+      initialData: {
+        news: initialNews,
+        events: initialEvents,
+        features: initialFeatures,
+      },
+      select: data => {
+        if (!data) return [];
+        // Combine and sort data from most recent to least recent
+        const sortedResults = [
+          ...(data?.features || []),
+          ...(data?.news || []),
+          ...(data?.events || []),
+        ].sort((a, b) => {
           // Use publishedAt if available, otherwise fallback to updatedAt
           let dateA = a.attributes.publishedAt || a.attributes.updatedAt;
           let dateB = b.attributes.publishedAt || b.attributes.updatedAt;
@@ -71,11 +120,15 @@ export const NewsCarousel = ({
           return Number(new Date(dateB)) - Number(new Date(dateA));
         });
 
-        setNewsAndEvents(newsAndEvents);
+        return sortedResults;
       },
     },
   );
-  return newsAndEvents.length > 0 ? (
+
+  if (isError && !carouselCards) {
+    return <></>;
+  }
+  return carouselCards && carouselCards.length > 0 ? (
     <Box
       mt={{ base: 8, sm: 20 }}
       p={{ base: 0, sm: 6 }}
@@ -97,20 +150,20 @@ export const NewsCarousel = ({
       </Heading>
 
       <Carousel>
-        {newsAndEvents.slice(0, 5).map((news, idx) => {
-          const image = news.attributes?.image?.data
-            ? Array.isArray(news.attributes.image.data)
-              ? `${process.env.NEXT_PUBLIC_STRAPI_API_URL}${news.attributes.image.data[0].attributes.url}`
-              : `${process.env.NEXT_PUBLIC_STRAPI_API_URL}${news.attributes.image.data.attributes.url}`
+        {carouselCards.slice(0, 5).map((carouselCard, idx) => {
+          const image = carouselCard.attributes?.image?.data
+            ? Array.isArray(carouselCard.attributes.image.data)
+              ? `${process.env.NEXT_PUBLIC_STRAPI_API_URL}${carouselCard.attributes.image.data[0].attributes.url}`
+              : `${process.env.NEXT_PUBLIC_STRAPI_API_URL}${carouselCard.attributes.image.data.attributes.url}`
             : '/assets/news-thumbnail.png';
 
-          const image_alt_text = news.attributes?.image?.data
-            ? Array.isArray(news.attributes.image.data)
-              ? `${news.attributes.image.data[0].attributes.alternativeText}`
-              : `${news.attributes.image.data.attributes.alternativeText}`
+          const image_alt_text = carouselCard.attributes?.image?.data
+            ? Array.isArray(carouselCard.attributes.image.data)
+              ? `${carouselCard.attributes.image.data[0].attributes.alternativeText}`
+              : `${carouselCard.attributes.image.data.attributes.alternativeText}`
             : 'News Thumbnail Image';
           return (
-            <Card key={news.id + idx} overflow='hidden' flex={1}>
+            <Card key={carouselCard.id + idx} overflow='hidden' flex={1}>
               <Flex
                 w='100%'
                 p={0}
@@ -148,8 +201,8 @@ export const NewsCarousel = ({
                   lineHeight='short'
                   size='h5'
                 >
-                  {news.attributes.name}
-                  {news.attributes.eventDate && (
+                  {carouselCard.attributes.name}
+                  {carouselCard.attributes.eventDate && (
                     <Badge
                       colorScheme='primary'
                       variant='solid'
@@ -161,27 +214,58 @@ export const NewsCarousel = ({
                       Event
                     </Badge>
                   )}
+                  {carouselCard.type === 'feature' && (
+                    <Badge
+                      colorScheme='accent'
+                      variant='solid'
+                      size='xs'
+                      fontSize='12px'
+                      mx={1}
+                    >
+                      Feature
+                    </Badge>
+                  )}
                 </Heading>
                 <CardBody p={0}>
                   {
                     <Text as='span' mt={2} fontSize='sm' lineHeight='short'>
                       {formatDate(
-                        news.attributes.publishedAt ||
-                          news.attributes.updatedAt,
+                        carouselCard.attributes.publishedAt ||
+                          carouselCard.attributes.updatedAt,
                       )}{' '}
                       &mdash;
-                      {news.attributes.shortDescription}
-                      <NextLink href={`news/#${news.attributes.slug}`} passHref>
-                        <Link
-                          as='span'
-                          fontSize='sm'
-                          bg='transparent'
-                          lineHeight='tall'
-                          mx={1}
+                      {carouselCard.attributes.shortDescription}
+                      {carouselCard.type === 'feature' ? (
+                        <NextLink
+                          href={`features/${carouselCard.attributes.slug}`}
+                          passHref
                         >
-                          (<Text>view full release</Text>)
-                        </Link>
-                      </NextLink>
+                          <Link
+                            as='span'
+                            fontSize='sm'
+                            bg='transparent'
+                            lineHeight='tall'
+                            mx={1}
+                          >
+                            (<Text>view featured page</Text>)
+                          </Link>
+                        </NextLink>
+                      ) : (
+                        <NextLink
+                          href={`news/#${carouselCard.attributes.slug}`}
+                          passHref
+                        >
+                          <Link
+                            as='span'
+                            fontSize='sm'
+                            bg='transparent'
+                            lineHeight='tall'
+                            mx={1}
+                          >
+                            (<Text>view full release</Text>)
+                          </Link>
+                        </NextLink>
+                      )}
                     </Text>
                   }
                 </CardBody>
@@ -222,6 +306,7 @@ interface NewsQueryParams {
   sort?: string;
   paginate?: { page?: number; pageSize?: number };
 }
+
 export const fetchNews = async (
   params?: NewsQueryParams,
 ): Promise<{
@@ -255,7 +340,7 @@ export const fetchNews = async (
       },
     );
     return { news: news.data.data };
-  } catch (err) {
-    throw err;
+  } catch (err: any) {
+    throw err.response;
   }
 };

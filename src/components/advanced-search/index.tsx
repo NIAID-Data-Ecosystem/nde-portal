@@ -40,10 +40,8 @@ import { ResultsCount } from './components/ResultsCount';
 import SampleQueriesData from 'configs/sample-queries.json';
 import { EditableQueryText } from './components/EditableQueryText';
 import { SEARCH_TYPES_CONFIG } from './components/Search/search-types-config';
-import {
-  QueryStringError,
-  removeDuplicateErrors,
-} from './utils/validation-checks';
+import { removeDuplicateErrors } from './utils/validation-checks';
+import { QueryStringError } from 'src/components/error/types';
 import { validateQueryString } from './components/EditableQueryText/utils';
 import { useLocalStorage } from 'usehooks-ts';
 import { formatNumber } from 'src/utils/helpers';
@@ -147,8 +145,8 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
   return (
     <>
       {/* Search For Query Term */}
-      <Box w='100%' p={2}>
-        <Heading size='sm' fontWeight='medium'>
+      <Box w='100%'>
+        <Heading size='sm' fontWeight='medium' color='gray.800'>
           Add terms to the query builder.
         </Heading>
         <Flex

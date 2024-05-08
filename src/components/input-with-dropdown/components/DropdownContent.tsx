@@ -1,6 +1,7 @@
 import React from 'react';
 import { Box, BoxProps } from '@chakra-ui/react';
 import { useDropdownContext } from '..';
+import { ScrollContainer } from 'src/components/scroll-container';
 
 interface DropdownContentProps extends BoxProps {}
 
@@ -18,21 +19,20 @@ export const DropdownContent: React.FC<DropdownContentProps> = ({
 
   return (
     <Box position='relative'>
-      <Box
+      <ScrollContainer
         position='absolute'
         w='100%'
         zIndex='dropdown'
         boxShadow='lg'
         bg='white'
         borderRadius='base'
-        overflow='hidden'
+        overflow='auto'
+        maxHeight='500px'
         left={0}
         {...props}
       >
-        <Box overflow='auto' maxHeight='500px'>
-          {children}
-        </Box>
-      </Box>
+        {children}
+      </ScrollContainer>
     </Box>
   );
 };

@@ -1,7 +1,7 @@
 import React from 'react';
 import { ButtonProps, InputProps } from '@chakra-ui/react';
 import { QueryValue } from 'src/components/advanced-search/types';
-import { QueryStringError } from 'src/components/advanced-search/utils/validation-checks';
+import { QueryStringError } from 'src/components/error/types';
 
 /**
  * The [SearchInput] component renders different inputs based on the selected field.

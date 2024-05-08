@@ -6,7 +6,6 @@ import { AdvancedSearch } from 'src/components/advanced-search';
 const AdvancedSearchPage: NextPage = () => {
   return (
     <PageContainer
-      hasNavigation
       title='Advanced Search'
       metaDescription='Advanced Search page.'
       px={0}
@@ -21,7 +20,7 @@ const AdvancedSearchPage: NextPage = () => {
         px={{ base: 1, sm: 6, lg: 10, xl: '5%' }}
       >
         <Box w='100%' maxW='1000px' mb={32}>
-          <Heading as='h1' size='h6' textAlign='left' p={2}>
+          <Heading as='h1' fontSize='4xl' textAlign='left'>
             Advanced Search
           </Heading>
           <AdvancedSearch />
