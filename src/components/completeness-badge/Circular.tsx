@@ -360,11 +360,10 @@ const AnimatedArc = ({
                 endAngle,
               }),
             )}
-            {...rest}
           />
         </clipPath>
       );
     }
-    return <path key={key} fill='transparent' d={path(arc) || ''} {...rest} />;
+    return <path key={key} fill='transparent' d={path(arc) || ''} />;
   });
 };
