@@ -9,10 +9,10 @@ export interface ResourceCatalog {
   _id: string;
   abstract?: string;
   conditionsOfAccess?: FormattedResource['conditionsOfAccess'];
-  dataType: 'ResourceCatalog';
+  type: 'ResourceCatalog';
   name: FormattedResource['name'];
   portalURL: string;
-  type: FormattedResource['collectionType'];
+  domain: 'generalist' | 'iid';
   url?: FormattedResource['url'];
 }
 
@@ -54,16 +54,17 @@ export function useResourceCatalogs({
     {
       ...options,
       refetchOnWindowFocus: false,
+      refetchOnMount: false,
       select: data => {
         const catalogs = data?.results || [];
         return catalogs.map(catalog => ({
           _id: catalog._id,
           abstract: catalog.abstract,
           conditionsOfAccess: catalog.conditionsOfAccess,
-          dataType: catalog['@type'],
+          type: catalog['@type'],
           name: catalog.name,
           portalURL: `/resources?id=${catalog._id}`,
-          type: 'IID',
+          domain: 'iid',
           url: catalog.url,
         }));
       },

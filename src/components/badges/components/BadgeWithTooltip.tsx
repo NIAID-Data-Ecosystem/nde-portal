@@ -16,7 +16,14 @@ export const BadgeWithTooltip = ({
 }: BadgeWithTooltipProps) => {
   return (
     <Tooltip label={tooltipLabel}>
-      <Badge size='xs' display='flex' alignItems='center' {...props}>
+      <Badge
+        size='xs'
+        display='flex'
+        alignItems='center'
+        px={2}
+        py={0.5}
+        {...props}
+      >
         {leftIcon && (
           <Flex
             alignItems='center'

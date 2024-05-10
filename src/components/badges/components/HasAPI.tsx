@@ -1,8 +1,8 @@
 import { FormattedResource } from 'src/utils/api/types';
 import { Icon } from '@chakra-ui/react';
 import { BadgeWithTooltip, BadgeWithTooltipProps } from 'src/components/badges';
+import { FaCircleCheck, FaCircleXmark } from 'react-icons/fa6';
 import SchemaDefinitions from 'configs/schema-definitions.json';
-import { FaCircleCheck, FaCircleXmark, FaDownload } from 'react-icons/fa6';
 import { SchemaDefinition } from 'scripts/generate-schema-definitions/types';
 
 interface HasDownloadProps extends Omit<BadgeWithTooltipProps, 'value'> {

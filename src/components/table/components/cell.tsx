@@ -5,24 +5,24 @@ import {
   ButtonProps,
   Flex,
   FlexProps,
-  Heading,
-  HeadingProps,
   Text,
+  TextProps,
 } from '@chakra-ui/react';
 import { TableSortToggle } from './sort-toggle';
 
 // Label component - displays text in a specific style.
-export const Label = React.memo(({ children, ...props }: HeadingProps) => {
+export const Label = React.memo(({ children, ...props }: TextProps) => {
   return (
-    <Heading
-      as='h4'
+    <Text
       fontSize='13px'
       color='gray.800'
       textTransform='uppercase'
+      lineHeight='short'
+      textAlign='start'
       {...props}
     >
       {children}
-    </Heading>
+    </Text>
   );
 });
 
@@ -108,17 +108,19 @@ export const Th = React.memo(
         scope='col'
         label={label}
         alignItems='center'
-        fontWeight='bold'
         bg={bg}
         borderBottom='1px solid'
         borderBottomColor={`${colorScheme}.200`}
-        overflow='hidden'
         flex={1}
+        fontSize='xs'
+        fontWeight='bold'
+        justifyContent='flex-start'
+        lineHeight='short'
+        minW='280px'
+        overflow='hidden'
         px={4}
         py={py}
-        minW='280px'
-        fontSize='xs'
-        lineHeight='short'
+        whiteSpace='pre-wrap'
         {...props}
       >
         {label && <Label>{label}</Label>}

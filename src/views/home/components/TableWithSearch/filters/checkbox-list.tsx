@@ -1,5 +1,4 @@
 import {
-  Box,
   Button,
   CheckboxGroup,
   Checkbox,
@@ -14,21 +13,27 @@ import {
   PopoverArrow,
   Text,
 } from '@chakra-ui/react';
-import { FaCaretDown, FaFilter } from 'react-icons/fa6';
+import { FaCaretDown } from 'react-icons/fa6';
 import { ScrollContainer } from 'src/components/scroll-container';
 
 interface CheckboxListProps {
   property: string;
+  description?: string;
   options: { name: string; value: string; count: number }[];
   label: string;
-  selectedOptions: string[];
-  handleChange: (filter: { [key: string]: string[] }) => void;
+  selectedOptions: { name: string; value: string; property: string }[];
+  handleChange: (filters: {
+    name: string;
+    value: string;
+    property: string;
+  }) => void;
 }
 
 export const CheckboxList = ({
   label,
   options,
   property,
+  description,
   handleChange,
   selectedOptions,
 }: CheckboxListProps) => {
@@ -52,41 +57,47 @@ export const CheckboxList = ({
         </PopoverTrigger>
         <PopoverContent>
           <PopoverArrow />
-          <PopoverCloseButton m={2} />
+          <PopoverCloseButton />
           <PopoverHeader>
-            <Text fontWeight='semibold' lineHeight='normal'>
+            <Text fontWeight='semibold' lineHeight='normal' my={1}>
               {label}
             </Text>
-            <Text
-              color='niaid.placeholder'
-              fontStyle='italic'
-              lineHeight='normal'
-              mt={1}
-            >
-              Accessibility of the work.
-            </Text>
+            {description && (
+              <Text
+                color='niaid.placeholder'
+                fontSize='sm'
+                fontStyle='italic'
+                fontWeight='normal'
+                lineHeight='short'
+                mt={1.5}
+              >
+                {description}
+              </Text>
+            )}
           </PopoverHeader>
           <PopoverBody>
             <ScrollContainer maxHeight='300px'>
-              <CheckboxGroup colorScheme='blue' value={selectedOptions}>
-                <Stack spacing={1} direction={['column']} mx={1}>
+              <CheckboxGroup
+                colorScheme='blue'
+                value={selectedOptions.map(item => item.value)}
+              >
+                <Stack spacing={1} direction='column'>
                   {options.map(option => {
                     return (
                       <Checkbox
                         key={option.value}
                         value={option.value}
                         onChange={e => {
-                          const options = [...selectedOptions];
-                          if (e.target.checked) {
-                            options.push(e.target.value);
-                          } else {
-                            const index = options.indexOf(e.target.value);
-                            options.splice(index, 1);
-                          }
-                          handleChange({ [property]: options });
+                          handleChange({
+                            name: option.name,
+                            property,
+                            value: e.target.value,
+                          });
                         }}
+                        px={1}
+                        _hover={{ bg: 'tertiary.50' }}
                       >
-                        {option.name}
+                        <Text fontSize='sm'>{option.name}</Text>
                       </Checkbox>
                     );
                   })}

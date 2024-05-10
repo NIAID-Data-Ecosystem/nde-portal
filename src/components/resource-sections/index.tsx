@@ -108,26 +108,19 @@ const Sections = ({
           >
             {/* for mobile viewing */}
             {section.hash === 'overview' && data && (
-              <Stack
+              <Flex
                 display={{ base: 'flex', lg: 'none' }}
-                flexWrap='wrap'
-                flexDirection='row'
-                spacing={4}
-                px={{ base: 0, md: 4 }}
-                py={4}
+                flex={1}
+                width='100%'
+                border='1px'
+                borderColor='gray.100'
+                borderRadius='semi'
+                flexDirection='column'
+                minWidth='250px'
               >
+                {/* Badge indicating completeness of metadata */}
                 {data && data['_meta'] && (
-                  <Flex
-                    flex={1}
-                    justifyContent='center'
-                    alignItems='center'
-                    flexDirection='column'
-                    border='1px'
-                    borderColor='gray.100'
-                    borderRadius='semi'
-                    p={4}
-                    minWidth='250px'
-                  >
+                  <Flex px={4} py={4} justifyContent='center'>
                     <CompletenessBadgeCircle
                       type={data['@type']}
                       stats={data['_meta']}
@@ -135,22 +128,14 @@ const Sections = ({
                     />
                   </Flex>
                 )}
+
                 {/* External links to access data, documents or dataset at the source. */}
-                <Flex
-                  flex={1}
-                  border='1px'
-                  borderColor='gray.100'
-                  borderRadius='semi'
-                  flexDirection='column'
-                  minWidth='300px'
-                >
-                  <External
-                    data={data}
-                    isLoading={isLoading}
-                    hasDivider={false}
-                  />
-                </Flex>
-              </Stack>
+                <External
+                  data={data}
+                  isLoading={isLoading}
+                  hasDivider={false}
+                />
+              </Flex>
             )}
             {section.hash === 'overview' && (
               <>
