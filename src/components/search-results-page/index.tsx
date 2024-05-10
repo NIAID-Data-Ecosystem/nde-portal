@@ -147,6 +147,7 @@ const SearchResultsPage = ({
         'name',
         'sdPublisher',
         'species',
+        'topicCategory',
         'url',
         'usageInfo',
         'variableMeasured',

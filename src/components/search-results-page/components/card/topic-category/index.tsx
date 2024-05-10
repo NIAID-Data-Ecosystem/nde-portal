@@ -1,15 +1,15 @@
 import React from 'react';
 import { Stack, Flex, Tag, TagLabel, Text } from '@chakra-ui/react';
+import { FormattedResource } from 'src/utils/api/types';
 
-interface TopicCategoriesProps {
-  topicCategories: object[];
+interface TopicCategoryProps {
+  data?: FormattedResource | null;
 }
 
-const TopicCategories: React.FC<TopicCategoriesProps> = ({
-  topicCategories,
-}) => {
-  const topicCategoryNames = topicCategories
-    .map(element => element.name)
+const TopicCategories: React.FC<TopicCategoryProps> = ({ data }) => {
+  const topicCategoryData = data?.topicCategory;
+  const topicCategoryNames = topicCategoryData
+    ?.map(element => element.name)
     .sort();
   const paddingCard = [4, 6, 8, 10];
   return (
@@ -21,7 +21,7 @@ const TopicCategories: React.FC<TopicCategoriesProps> = ({
       borderBottomColor='gray.200'
     >
       <Flex flexWrap='wrap'>
-        {topicCategoryNames.map(name => {
+        {topicCategoryNames?.map(name => {
           return (
             <Tag
               key={`${name}`}
