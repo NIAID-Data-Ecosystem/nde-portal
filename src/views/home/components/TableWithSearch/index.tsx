@@ -1,20 +1,29 @@
-import React from 'react';
+import React, { useCallback, useState } from 'react';
 import NextLink from 'next/link';
-import { Flex, SkeletonText, Text } from '@chakra-ui/react';
+import {
+  Box,
+  Flex,
+  SkeletonText,
+  Stack,
+  Tag,
+  TagLabel,
+  TagCloseButton,
+  Text,
+} from '@chakra-ui/react';
 import { Repository } from 'src/hooks/api/useRepoData';
 import { Link } from 'src/components/link';
 import { Table } from 'src/components/table';
-import { SearchInputProps } from 'src/components/search-input';
+import { SearchInput, SearchInputProps } from 'src/components/search-input';
 import { ResourceCatalog } from 'src/hooks/api/useResourceCatalogs';
-import { getDataTypeName, getRepositoryTypeName } from './helpers';
 import { queryFilterObject2String } from 'src/components/filters/helpers';
+import { formatDomainName, formatTypeName } from './helpers';
+import { Filters } from './filters/';
+import useFilteredData from './hooks/useFilteredData';
 
 export interface TableData
-  extends Omit<ResourceCatalog, 'dataType' | 'type'>,
-    Omit<Repository, 'dataType' | 'type'> {
-  dataType: ResourceCatalog['dataType'] | Repository['dataType'];
+  extends Omit<ResourceCatalog, 'type'>,
+    Omit<Repository, 'type'> {
   type: ResourceCatalog['type'] | Repository['type'];
-  // key: string;
 }
 
 interface TableWithSearchProps {
@@ -34,7 +43,7 @@ interface TableWithSearchProps {
 export const SEARCH_FIELDS = [
   'name',
   'abstract',
-  'dataType',
+  'domain',
   'conditionsOfAccess',
   'type',
 ] as (keyof TableData)[];
@@ -43,10 +52,42 @@ export const TableWithSearch: React.FC<TableWithSearchProps> = ({
   data = [],
   isLoading,
   columns,
-  getCells,
   searchInputProps,
   ...props
 }) => {
+  /****** Handle Filters ******/
+  const [filters, setFilters] = useState<
+    { name: string; value: string; property: string }[]
+  >([]);
+
+  /****** Handle Search ******/
+  const [searchTerm, setSearchTerm] = useState('');
+  const handleSearchChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>): void =>
+      setSearchTerm(e.target.value),
+    [],
+  );
+  /****** Handle filtering and search on data ******/
+  const filteredData = useFilteredData(data, searchTerm, filters);
+
+  const updateFilters = useCallback(
+    (newFilter: { name: string; value: string; property: string }) => {
+      setFilters(prevFilters => {
+        // Check if filter is already added
+        const index = prevFilters.findIndex(
+          f => f.property === newFilter.property && f.value === newFilter.value,
+        );
+        if (index === -1) {
+          // Add new filter
+          return [...prevFilters, newFilter];
+        } else {
+          // Remove filter if it's already there
+          return prevFilters.filter((_, i) => i !== index);
+        }
+      });
+    },
+    [],
+  );
   return (
     <>
       {!isLoading && !data?.length ? (
@@ -54,15 +95,15 @@ export const TableWithSearch: React.FC<TableWithSearchProps> = ({
           <Text py={2}>No results found.</Text>
         </Flex>
       ) : (
-        <>
-          {/* <!-- Filters --> */}
-          {/* <Stack
+        <Flex flexDirection='column'>
+          <Stack
             direction='row'
             spacing={2}
             mb={2}
             flexWrap='wrap'
             alignItems='center'
           >
+            {/* <!-- Search Bar --> */}
             <SearchInput
               size='md'
               placeholder='Search table'
@@ -73,19 +114,26 @@ export const TableWithSearch: React.FC<TableWithSearchProps> = ({
               alignItems='flex-end'
               onClose={() => setSearchTerm('')}
             />
+            {/* <!-- Filters --> */}
             <Filters
               data={data}
               filters={filters}
               updateFilter={updateFilters}
             />
-          </Stack> */}
+          </Stack>
 
-          {/* <!-- Filter Tags--> */}
-          {/* <Stack
-            direction={{ base: 'column', sm: 'row' }}
-            flexWrap='wrap'
-            pb={2}
-          >
+          <Stack direction='column' flexWrap='wrap' py={2} spacing={2}>
+            <Box>
+              {/* <!-- Number of results --> */}
+              <Text fontSize='sm' fontWeight='semibold' lineHeight='normal'>
+                {filteredData.length} results
+              </Text>
+              <Text fontSize='xs' lineHeight='normal'>
+                {filters.length > 0 ? 'Showing results filtered by:' : ''}
+              </Text>
+            </Box>
+
+            {/* <!-- Filter Tags--> */}
             <Stack
               direction='row'
               spacing={2}
@@ -93,53 +141,52 @@ export const TableWithSearch: React.FC<TableWithSearchProps> = ({
               flexWrap='wrap'
               minW='300px'
             >
-              {Object.entries(filters).map(([key, values]) => {
-                if (key === 'dataType') return null;
-                return values.map(value => {
-                  let name = value;
-                  if (key === 'type') {
-                    name = getRepositoryTypeName(value);
-                  }
-                  return (
-                    <Tag
-                      key={`${key}-${value}`}
-                      size='sm'
-                      variant='subtle'
-                      borderRadius='full'
-                      colorScheme='primary'
-                    >
-                      <TagLabel fontWeight='medium'>{name}</TagLabel>
-                      <TagCloseButton
-                        onClick={() => {
-                          updateFilters({
-                            [key]: values.filter(v => v !== value),
-                          });
-                        }}
-                      />
-                    </Tag>
-                  );
-                });
+              {filters.length > 0 && (
+                <Tag
+                  key='clear'
+                  size='sm'
+                  variant='outline'
+                  borderRadius='full'
+                  colorScheme='primary'
+                  borderColor='primary.100'
+                >
+                  <TagLabel fontWeight='medium'>Clear all</TagLabel>
+                  <TagCloseButton onClick={() => setFilters([])} />
+                </Tag>
+              )}
+              {filters.map(filter => {
+                const { name, property, value } = filter;
+                return (
+                  <Tag
+                    key={property + '-' + value}
+                    size='sm'
+                    variant='subtle'
+                    borderRadius='full'
+                    colorScheme='primary'
+                  >
+                    <TagLabel fontWeight='medium'>{name}</TagLabel>
+                    <TagCloseButton onClick={() => updateFilters(filter)} />
+                  </Tag>
+                );
               })}
             </Stack>
-          </Stack> */}
+          </Stack>
 
           {/* <!-- Table --> */}
           <Table
-            // hasPagination
-            data={data || []}
+            data={isLoading ? Array(10).fill({}) : filteredData}
             tableHeadProps={{ bg: 'page.alt' }}
             getTableRowProps={(_, idx: number) => ({
               bg: idx % 2 ? 'page.alt' : 'white',
             })}
             tableContainerProps={{ overflowY: 'auto', maxHeight: '500px' }}
-            getCells={props =>
-              getCells ? getCells(props) : <RepositoryCells {...props} />
-            }
-            isLoading={isLoading}
+            getCells={props => (
+              <RepositoryCells {...props} isLoading={isLoading} />
+            )}
             columns={columns}
             {...props}
           />
-        </>
+        </Flex>
       )}
     </>
   );
@@ -179,13 +226,7 @@ export const RepositoryCells = ({
           },
         };
   return (
-    <Flex
-      id={`cell-${data._id}-${column.property}`}
-      alignItems={['flex-start', 'center']}
-      flexDirection={['column', 'row']}
-      justifyContent='flex-start'
-      py={1}
-    >
+    <Flex id={`cell-${data._id}-${column.property}`} py={1}>
       {/* Repository/Resource Catalog name */}
       {column.property === 'name' && (
         <SkeletonText
@@ -205,10 +246,11 @@ export const RepositoryCells = ({
         </SkeletonText>
       )}
 
+      {/* Repository/Resource Catalog brief description */}
       {column.property === 'abstract' && (
         <SkeletonText
           data-testid={isLoading ? 'loading' : 'loaded'}
-          isLoaded={!isLoading && !!data}
+          isLoaded={Boolean(!isLoading && data._id)}
           spacing='2'
           w='100%'
           fontSize='sm'
@@ -216,25 +258,30 @@ export const RepositoryCells = ({
           <Text noOfLines={3}>{data[column.property]}</Text>
         </SkeletonText>
       )}
+
+      {/* Repository/Resource Catalog type, domain and conditions of access */}
       {(column.property === 'type' ||
-        column.property === 'dataType' ||
+        column.property === 'domain' ||
         column.property === 'conditionsOfAccess') && (
         <SkeletonText
           fontWeight='semibold'
           data-testid={isLoading ? 'loading' : 'loaded'}
-          isLoaded={!isLoading && !!data}
+          isLoaded={Boolean(!isLoading && data._id)}
           w='100%'
           h='100%'
           fontSize='sm'
           noOfLines={2}
         >
-          {column.property === 'dataType' &&
-            (data.dataType ? getDataTypeName(data.dataType) : '-')}
           {column.property === 'type' &&
-            (data.type ? getRepositoryTypeName(data.type) : '-')}
+            (data.type ? formatTypeName(data.type) : '-')}
+          {column.property === 'domain' &&
+            (data.domain ? formatDomainName(data.domain) : '-')}
           {column.property === 'conditionsOfAccess' &&
             (data['conditionsOfAccess']
-              ? `${data['conditionsOfAccess']} Access`
+              ? `${
+                  data['conditionsOfAccess'].charAt(0) +
+                  data['conditionsOfAccess'].slice(1)
+                } Access`
               : '-')}
         </SkeletonText>
       )}

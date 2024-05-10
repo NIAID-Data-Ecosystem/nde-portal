@@ -20,7 +20,7 @@ export const TableSortToggle = ({
       <IconButton
         icon={<FaCaretUp />}
         aria-label='sort table column ascending'
-        ml={1}
+        ml={0.5}
         colorScheme='gray'
         variant='ghost'
         size='xs'
@@ -30,7 +30,7 @@ export const TableSortToggle = ({
       <IconButton
         icon={<FaCaretDown />}
         aria-label='sort table column descending'
-        ml={1}
+        ml={0.5}
         colorScheme='gray'
         size='xs'
         variant='ghost'

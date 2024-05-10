@@ -1,53 +1,6 @@
 import { TableData } from '.';
-import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
-import { SchemaDefinitions } from 'scripts/generate-schema-definitions/types';
 
-const schema = SCHEMA_DEFINITIONS as SchemaDefinitions;
-
-export const getColorSchemeForCollectionType = (
-  collectionType: TableData['type'],
-) => {
-  if (!collectionType) {
-    return '';
-  }
-
-  const types = [
-    ...(schema['collectionType']['enum'] || []),
-    'iid',
-    'generalist',
-  ];
-
-  const themes = [
-    'gray',
-    'red',
-    'orange',
-    'yellow',
-    'green',
-    'teal',
-    'blue',
-    'cyan',
-    'purple',
-    'pink',
-    'primary',
-    'tertiary',
-    'secondary',
-  ];
-
-  const idx = types.indexOf(collectionType);
-  const theme = themes[idx % themes.length];
-
-  return theme;
-};
-
-export const getColorSchemeForDataType = (type: TableData['dataType']) => {
-  if (type === 'ResourceCatalog') {
-    return 'primary';
-  } else {
-    return 'blue';
-  }
-};
-
-export const getDataTypeName = (type: TableData['dataType']) => {
+export const formatTypeName = (type: TableData['type']) => {
   if (type === 'ResourceCatalog') {
     return 'Resource Catalog';
   } else {
@@ -55,7 +8,7 @@ export const getDataTypeName = (type: TableData['dataType']) => {
   }
 };
 
-export const getRepositoryTypeName = (type: string) => {
+export const formatDomainName = (type: TableData['domain']) => {
   if (type === 'iid') {
     return 'IID';
   } else if (type === 'generalist') {
@@ -63,4 +16,36 @@ export const getRepositoryTypeName = (type: string) => {
   } else {
     return type;
   }
+};
+
+export const getFilterData = <T extends keyof TableData>({
+  data,
+  property,
+  formatName,
+}: {
+  data: TableData[];
+  property: T;
+  formatName: (value: TableData[T]) => string;
+}) => {
+  return data.reduce((acc, item) => {
+    const value = item[property];
+    if (value) {
+      // Check if this value is already accounted for
+      const existingEntry = acc.find(
+        a => a.value.toLowerCase() === value.toLowerCase(),
+      );
+      if (!existingEntry) {
+        // Add new entry for this unique value
+        acc.push({
+          name: formatName(value),
+          value: value,
+          count: 1,
+        });
+      } else {
+        // Increment count for existing entry
+        existingEntry!.count++;
+      }
+    }
+    return acc;
+  }, [] as { name: string; value: string; count: number }[]);
 };

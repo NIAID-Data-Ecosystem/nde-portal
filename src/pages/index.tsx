@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React from 'react';
 import type { NextPage } from 'next';
 import {
   Box,
@@ -6,9 +6,9 @@ import {
   ButtonGroup,
   Flex,
   Icon,
-  TabPanel,
   Text,
   Heading,
+  Divider,
 } from '@chakra-ui/react';
 import { Link } from 'src/components/link';
 import { PageContainer, PageContent } from 'src/components/page-container';
@@ -18,17 +18,16 @@ import NextLink from 'next/link';
 import { SearchBarWithDropdown } from 'src/components/search-bar';
 import { AdvancedSearchOpen } from 'src/components/advanced-search/components/buttons';
 import { FaRegEnvelope, FaGithub, FaAngleRight } from 'react-icons/fa6';
-import { Repository, useRepoData } from 'src/hooks/api/useRepoData';
+import { useRepoData } from 'src/hooks/api/useRepoData';
 import {
   NewsCarousel,
   fetchNews,
 } from 'src/views/home/components/NewsCarousel';
 import { NewsOrEventsObject, fetchEvents } from './news';
 import { TableWithSearch } from 'src/views/home/components/TableWithSearch/';
+import { useResourceCatalogs } from 'src/hooks/api/useResourceCatalogs';
 import { PageHeader } from 'src/components/page-header';
 import { fetchAllFeaturedPages } from 'src/views/features/helpers';
-import { SearchInput } from 'src/components/search-input';
-import { RepositoryTabs } from 'src/views/home/components/RepositoryTabs';
 
 const Home: NextPage<{
   data: {
@@ -38,54 +37,20 @@ const Home: NextPage<{
   };
   error?: { message: string };
 }> = props => {
-  /****** Handle Search ******/
-  const [searchTerm, setSearchTerm] = useState('');
-  const handleSearchChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>): void =>
-      setSearchTerm(e.target.value),
-    [],
-  );
+  /****** Resource Catalogs Data ******/
+  const {
+    isLoading: resourceCatalogsIsLoading,
+    data: resourceCatalogs,
+    error: resourceCatalogsError,
+  } = useResourceCatalogs();
 
   /****** Repository Data ******/
-  const { isLoading, data: repositories, error } = useRepoData();
+  const {
+    isLoading: repositoriesIsLoading,
+    data: repositories,
+    error: repositoriesCatalogsError,
+  } = useRepoData({ refetchOnWindowFocus: false, refetchOnMount: false });
 
-  // Defer filtering to the useMemo hook
-  const filteredRepositories = useMemo(() => {
-    return (
-      repositories?.filter(
-        repo =>
-          repo.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          repo.abstract?.toLowerCase().includes(searchTerm.toLowerCase()),
-      ) || []
-    );
-  }, [searchTerm, repositories]);
-
-  // Split repositories by type using useMemo to avoid unnecessary computations
-  const { iid_repositories, generalist_repositories } = useMemo(() => {
-    const iid = filteredRepositories.filter(repo => repo.type === 'iid');
-    const generalist = filteredRepositories.filter(
-      repo => repo.type === 'generalist',
-    );
-    return { iid_repositories: iid, generalist_repositories: generalist };
-  }, [filteredRepositories]);
-
-  const repositoryTabs = useMemo(
-    () => [
-      {
-        type: 'iid' as Repository['type'],
-        label: 'IID Domain Repositories',
-        count: iid_repositories.length,
-        data: iid_repositories,
-      },
-      {
-        type: 'generalist' as Repository['type'],
-        label: 'Generalist Repositories',
-        count: generalist_repositories.length,
-        data: generalist_repositories,
-      },
-    ],
-    [iid_repositories, generalist_repositories],
-  );
   return (
     <PageContainer
       title='Home'
@@ -167,7 +132,7 @@ const Home: NextPage<{
       </PageHeader>
       <>
         {/**** Repositories Table section *****/}
-        {!error && (
+        {!(repositoriesCatalogsError || resourceCatalogsError) && (
           <PageContent
             flexDirection='column'
             bg='#fff'
@@ -175,44 +140,56 @@ const Home: NextPage<{
             alignItems='center'
           >
             <Box maxW='1300px' width='100%'>
-              <Heading as='h2' size='lg' mb={4} fontWeight='semibold'>
-                Currently included repositories
-              </Heading>
               <Box px={{ base: 0, sm: 4 }}>
-                <Flex justifyContent='flex-end' mb={2}>
-                  <SearchInput
-                    size='sm'
-                    placeholder='Search in repositories'
-                    ariaLabel='Search in repositories'
-                    value={searchTerm}
-                    handleChange={handleSearchChange}
-                    isResponsive={false}
-                  />
-                </Flex>
-                <RepositoryTabs tabs={repositoryTabs}>
-                  {repositoryTabs.map(tab => (
-                    <TabPanel key={tab.type} id={tab.type} px={0}>
-                      <TableWithSearch
-                        ariaLabel='Currently included repositories'
-                        caption='Currently included repositories'
-                        data={tab.data}
-                        isLoading={isLoading}
-                        columns={[
-                          {
-                            title: 'name',
-                            property: 'name',
-                            isSortable: true,
-                            props: { maxW: '300px' },
-                          },
-                          {
-                            title: 'description',
-                            property: 'abstract',
-                          },
-                        ]}
-                      />
-                    </TabPanel>
-                  ))}
-                </RepositoryTabs>
+                <Heading as='h2' fontSize='2xl' fontWeight='semibold' mb={4}>
+                  Explore All Included Resources
+                </Heading>
+                <Text lineHeight='short'>
+                  The following <strong>Resource Catalogs</strong> (collections
+                  of scientific information or research outputs) and{' '}
+                  <strong>Dataset Repositories</strong> (collections of data of
+                  a particular experimental type) are currently included in the
+                  NIAID Data Ecosystem
+                </Text>
+                <Flex justifyContent='flex-end' fontSize='sm' />
+                <Divider my={4} />
+
+                <TableWithSearch
+                  ariaLabel='List of repositories and resource catalogs'
+                  caption='List of repositories and resource catalogs'
+                  data={[...(resourceCatalogs || []), ...(repositories || [])]}
+                  isLoading={repositoriesIsLoading || resourceCatalogsIsLoading}
+                  columns={[
+                    {
+                      title: 'name',
+                      property: 'name',
+                      isSortable: true,
+                      props: { maxW: '280px', minW: '280px' },
+                    },
+                    {
+                      title: 'description',
+                      property: 'abstract',
+                    },
+                    {
+                      title: 'Type',
+                      property: 'type',
+                      isSortable: true,
+                      props: { maxW: '180px', minW: '180px' },
+                    },
+                    {
+                      title: 'Research Domain',
+                      property: 'domain',
+                      isSortable: true,
+                      props: { maxW: '225px', minW: '225px' },
+                    },
+                    {
+                      title: 'access',
+                      property: 'conditionsOfAccess',
+                      isSortable: true,
+                      props: { maxW: '150px', minW: '150px' },
+                    },
+                  ]}
+                />
 
                 <ButtonGroup
                   spacing={[0, 2]}
@@ -221,7 +198,6 @@ const Home: NextPage<{
                   display='flex'
                   justifyContent='flex-end'
                   mt={4}
-                  px={[0, 4]}
                 >
                   {HOMEPAGE_COPY.sections.help.routes.map(
                     (
@@ -246,7 +222,7 @@ const Home: NextPage<{
                               w='100%'
                               minWidth='150px'
                               fontSize='sm'
-                              size='sm'
+                              size='md'
                               variant={index % 2 ? 'solid' : 'outline'}
                               my={[1, 2, 0]}
                               maxWidth={['unset', '250px']}

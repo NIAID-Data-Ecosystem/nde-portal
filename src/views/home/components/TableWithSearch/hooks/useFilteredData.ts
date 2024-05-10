@@ -5,7 +5,7 @@ import { useDebounceValue } from 'usehooks-ts';
 export const SEARCH_FIELDS = [
   'name',
   'abstract',
-  'dataType',
+  'domain',
   'conditionsOfAccess',
   'type',
 ] as (keyof TableData)[];
@@ -14,7 +14,7 @@ export const SEARCH_FIELDS = [
 function useFilteredData(
   data: TableData[],
   searchTerm: string,
-  filters: {} | Record<keyof TableData, string[]>,
+  filters: { name: string; value: string; property: string }[],
 ) {
   // Debounce the search term to reduce the number of times filtering is applied as the user types
   const [debouncedSearchTerm] = useDebounceValue(searchTerm, 250);
@@ -35,15 +35,28 @@ function useFilteredData(
           .includes(debouncedSearchTerm.toLowerCase());
       });
 
-      // Apply additional filters
-      const filtersMatch = Object.entries(filters).every(([key, values]) => {
-        if (!values.length) return true; // No filter selected for this category
-        const itemValue = item[key as keyof TableData];
-        if (Array.isArray(itemValue)) {
-          return itemValue.some(iv => values.includes(iv));
+      // Organize filters by property
+      const propertyGroups = filters.reduce((acc, filter) => {
+        if (!acc[filter.property]) {
+          acc[filter.property] = [];
         }
-        return itemValue ? values.includes(itemValue) : false;
-      });
+        acc[filter.property].push(filter.value);
+        return acc;
+      }, {} as Record<string, string[]>);
+
+      // Apply additional filters with "AND" between properties and "OR" within properties
+      const filtersMatch = Object.entries(propertyGroups).every(
+        ([key, values]) => {
+          const itemValue = item[key as keyof TableData];
+          if (!itemValue) return false;
+          if (Array.isArray(itemValue)) {
+            // "OR" logic within properties for array values
+            return itemValue.some(iv => values.includes(iv.toString()));
+          }
+          // "OR" logic within properties for scalar values
+          return values.includes(itemValue?.toString());
+        },
+      );
 
       return searchTermMatch && filtersMatch;
     });
