@@ -121,7 +121,7 @@ export const PageContainer: React.FC<PageContainerProps> = ({
         />
       </Head>
 
-      <Flex as='main' w='100%' flexDirection='column' minW={300}>
+      <Flex as='main' w='100%' flexDirection='column' minW='300px'>
         <Navigation />
         <Breadcrumbs />
 
