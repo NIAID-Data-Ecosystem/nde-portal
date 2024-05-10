@@ -116,7 +116,7 @@ export const PageContainer: React.FC<PageContainerProps> = ({
         />
       </Head>
 
-      <Flex as='main' w='100%' flexDirection='column' minW={300}>
+      <Flex as='main' w='100%' flexDirection='column' minW='300px'>
         <Navigation />
 
         {/*Page content has margin-top to compensate for fixed nav bar. */}
