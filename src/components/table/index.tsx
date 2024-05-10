@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { uniqueId } from 'lodash';
 import {
   Box,
-  Flex,
   Skeleton,
   Table as ChakraTable,
   Tr,

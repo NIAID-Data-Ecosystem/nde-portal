@@ -8,11 +8,11 @@ export interface Repository {
   _id: string;
   abstract?: string;
   conditionsOfAccess?: FormattedResource['conditionsOfAccess'];
-  dataType: 'Repository';
+  type: 'Repository';
   icon?: string;
   name: string;
   portalURL: string;
-  type: 'generalist' | 'iid';
+  domain: 'generalist' | 'iid';
   url?: string | null;
 }
 
@@ -33,11 +33,12 @@ export function useRepoData(options: any = {}) {
         return {
           _id: identifier,
           abstract: abstract || '',
-          dataType: 'Repository' as Repository['dataType'],
+          type: 'Repository' as Repository['type'],
           icon: repo?.icon || '',
           name: name || '',
           portalURL: `/search?q=&filters=includedInDataCatalog.name:"${identifier}"`,
-          type: (repo?.type || 'generalist') as Repository['type'],
+          domain: (repo?.type.toLowerCase() ||
+            'generalist') as Repository['domain'],
           url,
           conditionsOfAccess: conditionsOfAccess || '',
         };

@@ -21,7 +21,7 @@ describe('use query hook', () => {
     expect(result.current.data).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
-          type,
+          domain: type,
           icon,
           abstract,
         }),

@@ -1,60 +1,83 @@
-import { Stack } from '@chakra-ui/react';
-import { RadioFilter } from './radio-filter';
 import { TableData } from '..';
 import { useMemo } from 'react';
-import {
-  getCollectionTypes,
-  getConditionsOfAccess,
-  getDataTypes,
-} from './helpers';
+import { getFilterData } from '../helpers';
 import { CheckboxList } from './checkbox-list';
+import { formatDomainName, formatTypeName } from '../helpers';
+import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
 
 interface TableFiltersProps {
   data: TableData[];
-  filters: {} | Record<keyof TableData, string[]>;
-  updateFilter: (filter: { [key: string]: string[] }) => void;
+  filters: { name: string; value: string; property: string }[];
+  updateFilter: (filters: {
+    name: string;
+    value: string;
+    property: string;
+  }) => void;
 }
+
 export const Filters = ({ data, filters, updateFilter }: TableFiltersProps) => {
   // Data types: ResourceCatalog, Repository
-  const dataTypes = useMemo(() => getDataTypes({ data }), [data]);
+  const types = useMemo(
+    () =>
+      getFilterData({
+        data,
+        property: 'type',
+        formatName: (str: TableData['type']) =>
+          str ? formatTypeName(str) : '',
+      }),
+    [data],
+  );
 
-  // Collection corresponds to data['type] field: iid, generalist, other CollectionType
-  const collections = useMemo(() => getCollectionTypes({ data }), [data]);
+  // Data domains: data['domain'] field: iid, generalist, other CollectionType
+  const domains = useMemo(
+    () =>
+      getFilterData({
+        data,
+        property: 'domain',
+        formatName: (str: TableData['domain']) =>
+          str ? formatDomainName(str) : '',
+      }),
+    [data],
+  );
 
   // Conditions of access: Open, Restricted, Closed, Embargoed
   const conditionsOfAccess = useMemo(
-    () => getConditionsOfAccess({ data }),
+    () =>
+      getFilterData({
+        data,
+        property: 'conditionsOfAccess',
+        formatName: (str: TableData['conditionsOfAccess']) =>
+          str ? str?.charAt(0).toUpperCase() + str?.slice(1) : '',
+      }),
     [data],
   );
 
   return (
     <>
-      {/* <!-- Data type radio  --> */}
-      {/* {dataTypes.length > 0 && (
-        <RadioFilter
-          defaultValue={dataTypes[0].value}
-          options={dataTypes}
-          handleChange={value => {
-            updateFilter({ dataType: value === 'all' ? [] : [value] });
-          }}
-        />
-      )} */}
-      {collections.length > 0 && (
+      {/* <!-- Types checkboxes --> */}
+      {types.length > 0 && (
         <CheckboxList
           label='Type'
           property='type'
-          options={collections}
-          selectedOptions={filters?.['type' as keyof typeof filters] || []}
+          description={SCHEMA_DEFINITIONS['type'].abstract['Dataset']}
+          options={types}
+          selectedOptions={
+            filters.filter(item => item.property === 'type') || []
+          }
           handleChange={updateFilter}
         />
       )}
-      {/* <!-- Collection types checkboxes --> */}
-      {collections.length > 0 && (
+
+      {/* <!-- Domains checkboxes --> */}
+      {domains.length > 0 && (
         <CheckboxList
           label='Research Domain'
-          property='type'
-          options={collections}
-          selectedOptions={filters?.['type' as keyof typeof filters] || []}
+          property='domain'
+          description={SCHEMA_DEFINITIONS['domain'].abstract['Dataset']}
+          options={domains}
+          selectedOptions={
+            filters.filter(item => item.property === 'domain') || []
+          }
           handleChange={updateFilter}
         />
       )}
@@ -64,9 +87,18 @@ export const Filters = ({ data, filters, updateFilter }: TableFiltersProps) => {
         <CheckboxList
           label='Access'
           property='conditionsOfAccess'
+          description={
+            SCHEMA_DEFINITIONS['conditionsOfAccess'].abstract['Dataset']
+              .charAt(0)
+              .toUpperCase() +
+            SCHEMA_DEFINITIONS['conditionsOfAccess'].abstract['Dataset'].slice(
+              1,
+            ) +
+            '.'
+          }
           options={conditionsOfAccess}
           selectedOptions={
-            filters?.['conditionsOfAccess' as keyof typeof filters] || []
+            filters.filter(item => item.property === 'conditionsOfAccess') || []
           }
           handleChange={updateFilter}
         />

@@ -98,7 +98,7 @@ export const SearchInput: React.FC<SearchInputProps> = ({
           svg: { color: `${colorScheme}.500` },
         }}
       >
-        <InputLeftElement pointerEvents='none'>
+        <InputLeftElement pointerEvents='none' height={sizeConfig[size].height}>
           <Icon as={FaMagnifyingGlass} color='niaid.placeholder' boxSize={4} />
         </InputLeftElement>
         <Input
@@ -110,12 +110,13 @@ export const SearchInput: React.FC<SearchInputProps> = ({
           colorScheme={colorScheme}
           pr={handleSubmit ? sizeConfig[size].width : 0}
           bg={bg}
+          height={sizeConfig[size].height}
           {...props}
         />
 
         {/* If handle submit function is provided we show a button. */}
         {(onClose || handleSubmit) && (
-          <InputRightElement p={1}>
+          <InputRightElement p={1} height={sizeConfig[size].height}>
             {onClose && props.value && (
               <CloseButton
                 onClick={() => {
