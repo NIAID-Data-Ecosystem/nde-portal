@@ -94,8 +94,8 @@ export const TooltipContent = ({ data }: TooltipContentProps) => {
                       bg={idx % 2 ? 'page.alt' : 'white'}
                     >
                       <GridItem
-                        px={2}
-                        py={1}
+                        px={1}
+                        py={0.5}
                         colSpan={3}
                         fontWeight='medium'
                         color='gray.800'
