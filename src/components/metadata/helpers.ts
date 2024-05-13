@@ -19,6 +19,7 @@ export const SORT_ORDER = [
   'funding',
   'license',
   'usageInfo',
+  'topicCategory',
 ];
 
 // Sorts an array of metadata objects based on the [SORT_ORDER] defined above. Prioritizes the enabled items over the disabled items.
@@ -119,6 +120,13 @@ export const generateMetadataContent = (
         );
       case 'species':
         return createSpeciesContent(id, property, data?.species, showItems);
+      case 'topicCategory':
+        return createTopicCategoryContent(
+          id,
+          property,
+          data?.topicCategory,
+          showItems,
+        );
       case 'usageInfo':
         return createUsageInfoContent(id, property, data?.usageInfo, showItems);
       case 'variableMeasured':
@@ -411,6 +419,45 @@ const createSpeciesContent = (
                 label: ontologyLabel,
                 inDefinedTermSet: species?.inDefinedTermSet,
                 value: species?.url,
+              },
+            };
+          })
+        : [],
+  };
+};
+
+// Generates content specific to topic categories.
+const createTopicCategoryContent = (
+  id: FormattedResource['id'],
+  property: string,
+  topicCategory?: FormattedResource['topicCategory'],
+  showItems = true,
+) => {
+  return {
+    id: `${property}-${id}`,
+    label: 'Topic Category',
+    property,
+    isDisabled: !topicCategory,
+    items:
+      showItems && topicCategory
+        ? topicCategory.map((topicCategory, idx) => {
+            const name = Array.isArray(topicCategory.name)
+              ? topicCategory.name.join(', ')
+              : topicCategory.name;
+
+            return {
+              key: uniqueId(`${property}-${id}-${idx}`),
+              name,
+              searchProps: {
+                ['aria-label']: `Search for results with topic category "${name}"`,
+                property: 'topicCategory.name',
+                value: Array.isArray(topicCategory.name)
+                  ? topicCategory.name.join('" OR "')
+                  : topicCategory.name,
+              },
+              ontologyProps: {
+                ['aria-label']: 'See ontology information.',
+                value: topicCategory?.url,
               },
             };
           })
