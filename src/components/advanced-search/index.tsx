@@ -127,7 +127,7 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
     if (validation.isValid) {
       router.push({
         pathname: `/search`,
-        query: { q: `${querystring}`, advancedSearch: true },
+        query: { q: `${querystring}` },
       });
       onValidSubmit && onValidSubmit();
 

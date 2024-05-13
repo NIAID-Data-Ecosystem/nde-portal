@@ -16,7 +16,7 @@ export const formatAuthorsList2String = (
   authorsData: FormattedResource['author'],
   separator: string = ',',
   maxLength?: number,
-) => {
+): string => {
   if (!authorsData) {
     return '';
   }

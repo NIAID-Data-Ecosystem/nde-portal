@@ -10,7 +10,6 @@ import {
 import Tooltip from 'src/components/tooltip';
 import { FaMagnifyingGlass, FaSitemap } from 'react-icons/fa6';
 import { useRouter } from 'next/router';
-import { encodeString } from 'src/utils/querystring-helpers';
 import { Link } from 'src/components/link';
 
 export const MetadataButtonGroup = ({
@@ -108,8 +107,7 @@ export const SearchButton = ({
           router.push({
             pathname: `/search`,
             query: {
-              q: `${property}:"${encodeString(value)}"`,
-              advancedSearch: true,
+              q: `${property}:"${value}"`,
             },
           });
         }}
