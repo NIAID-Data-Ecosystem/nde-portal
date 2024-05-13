@@ -193,7 +193,7 @@ const SearchResultsPage = ({
         isLoading ? selectedPerPage : data?.results.length || 0,
         selectedPerPage,
       ),
-    [isLoading, data?.results.length, selectedPerPage],
+    [isLoading, data?.results?.length, selectedPerPage],
   );
 
   if (error) {
