@@ -38,6 +38,8 @@ export const getMetadataTheme = (property?: string) => {
     return 'orange';
   } else if (property?.toLowerCase() === 'species') {
     return 'green';
+  } else if (property?.toLowerCase() === 'topiccategory') {
+    return 'teal';
   } else {
     return 'gray';
   }

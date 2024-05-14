@@ -29,7 +29,7 @@ const TopicCategories: React.FC<TopicCategoryProps> = ({ data }) => {
               variant='subtle'
               borderRadius='full'
               m='0.5'
-              colorScheme='primary'
+              colorScheme='teal'
             >
               <TagLabel>
                 <Text fontSize='xs' m='0.5'>
