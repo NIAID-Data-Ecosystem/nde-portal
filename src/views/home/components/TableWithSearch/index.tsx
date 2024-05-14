@@ -15,10 +15,10 @@ import { Link } from 'src/components/link';
 import { Table } from 'src/components/table';
 import { SearchInput, SearchInputProps } from 'src/components/search-input';
 import { ResourceCatalog } from 'src/hooks/api/useResourceCatalogs';
-import { queryFilterObject2String } from 'src/components/filters/helpers';
 import { formatDomainName, formatTypeName } from './helpers';
 import { Filters } from './filters/';
 import useFilteredData from './hooks/useFilteredData';
+import { queryFilterObject2String } from 'src/components/filters/helpers';
 
 export interface TableData
   extends Omit<ResourceCatalog, 'type'>,
@@ -209,7 +209,7 @@ export const RepositoryCells = ({
   isLoading?: boolean;
 }) => {
   const href =
-    data.dataType === 'Repository'
+    data.type === 'Repository'
       ? {
           pathname: `/search`,
           query: {

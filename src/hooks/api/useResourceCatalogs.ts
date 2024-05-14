@@ -11,7 +11,6 @@ export interface ResourceCatalog {
   conditionsOfAccess?: FormattedResource['conditionsOfAccess'];
   type: 'ResourceCatalog';
   name: FormattedResource['name'];
-  portalURL: string;
   domain: 'generalist' | 'iid';
   url?: FormattedResource['url'];
 }
@@ -63,7 +62,6 @@ export function useResourceCatalogs({
           conditionsOfAccess: catalog.conditionsOfAccess,
           type: catalog['@type'],
           name: catalog.name,
-          portalURL: `/resources?id=${catalog._id}`,
           domain: 'iid',
           url: catalog.url,
         }));

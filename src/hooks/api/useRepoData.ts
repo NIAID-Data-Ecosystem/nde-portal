@@ -11,7 +11,6 @@ export interface Repository {
   type: 'Repository';
   icon?: string;
   name: string;
-  portalURL: string;
   domain: 'generalist' | 'iid';
   url?: string | null;
 }
@@ -36,7 +35,6 @@ export function useRepoData(options: any = {}) {
           type: 'Repository' as Repository['type'],
           icon: repo?.icon || '',
           name: name || '',
-          portalURL: `/search?q=&filters=includedInDataCatalog.name:"${identifier}"`,
           domain: (repo?.type.toLowerCase() ||
             'generalist') as Repository['domain'],
           url,
