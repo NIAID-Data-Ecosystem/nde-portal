@@ -7,6 +7,7 @@ import { Table } from 'src/components/table';
 import { SearchInputProps } from 'src/components/search-input';
 import { ResourceCatalog } from 'src/hooks/api/useResourceCatalogs';
 import { getDataTypeName, getRepositoryTypeName } from './helpers';
+import { queryFilterObject2String } from 'src/components/filters/helpers';
 
 export interface TableData
   extends Omit<ResourceCatalog, 'dataType' | 'type'>,
@@ -160,6 +161,23 @@ export const RepositoryCells = ({
   data: TableData;
   isLoading?: boolean;
 }) => {
+  const href =
+    data.dataType === 'Repository'
+      ? {
+          pathname: `/search`,
+          query: {
+            q: '',
+            filters: queryFilterObject2String({
+              'includedInDataCatalog.name': [data._id],
+            }),
+          },
+        }
+      : {
+          pathname: `/resources`,
+          query: {
+            id: data._id,
+          },
+        };
   return (
     <Flex
       id={`cell-${data._id}-${column.property}`}
@@ -168,17 +186,17 @@ export const RepositoryCells = ({
       justifyContent='flex-start'
       py={1}
     >
+      {/* Repository/Resource Catalog name */}
       {column.property === 'name' && (
         <SkeletonText
           data-testid={isLoading ? 'loading' : 'loaded'}
-          isLoaded={!isLoading && !!data}
+          isLoaded={Boolean(!isLoading && data._id)}
           noOfLines={2}
-          // spacing='2'
           w='100%'
           fontSize='sm'
         >
-          {column.property === 'name' && data.portalURL ? (
-            <NextLink href={data.portalURL} passHref prefetch={false}>
+          {data._id ? (
+            <NextLink href={href} prefetch={false} passHref>
               <Link as='div'>{data[column.property]}</Link>
             </NextLink>
           ) : (
