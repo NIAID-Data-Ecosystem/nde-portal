@@ -12,7 +12,6 @@ const mockData = [
     domain: 'iid',
     conditionsOfAccess: 'Open',
     type: 'ResourceCatalog',
-    portalURL: '',
   },
   {
     _id: 'source_02',
@@ -21,7 +20,6 @@ const mockData = [
     domain: 'generalist',
     conditionsOfAccess: 'Open',
     type: 'Repository',
-    portalURL: '',
   },
   {
     _id: 'source_03',
@@ -30,7 +28,6 @@ const mockData = [
     domain: 'iid',
     conditionsOfAccess: 'Restricted',
     type: 'ResourceCatalog',
-    portalURL: '',
   },
   {
     _id: '04',
@@ -39,7 +36,6 @@ const mockData = [
     domain: 'Biology',
     conditionsOfAccess: 'Unknown',
     type: 'Article',
-    portalURL: 'http://example.com',
   },
 ] as TableData[];
 const mockColumns = [
