@@ -97,7 +97,7 @@ const MetadataAccordion: React.FC<MetadataAccordionProps> = ({ data }) => {
                     alignItems='center'
                   >
                     {sortedMetadataContent.map(
-                      ({ label, property, isDisabled }) => {
+                      ({ label, property, glyph, isDisabled }) => {
                         const color = isDisabled
                           ? 'gray'
                           : getMetadataTheme(property);
@@ -134,7 +134,7 @@ const MetadataAccordion: React.FC<MetadataAccordionProps> = ({ data }) => {
                                 <MetadataIcon
                                   id={`indicator-${property}-${id}`}
                                   title={property}
-                                  glyph={property}
+                                  glyph={glyph}
                                   fill={`${color}.600`}
                                   m={0.5}
                                   boxSize={4}

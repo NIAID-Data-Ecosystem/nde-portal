@@ -67,6 +67,7 @@ export interface MetadataContentProps {
   id: string;
   label: string;
   property: string;
+  glyph?: string;
   isDisabled: boolean;
   name?: string;
   img?: { src: string; alt: string };
@@ -168,6 +169,7 @@ const createFundingContent = (
   return {
     id: `${property}-${id}`,
     label: 'Funding',
+    glyph: property,
     property,
     isDisabled: !fundingDetails || fundingDetails.length === 0,
     items:
@@ -219,6 +221,7 @@ const createHealthConditionContent = (
     id: `${property}-${id}`,
     label: 'Health Condition',
     property,
+    glyph: property,
     isDisabled: !healthCondition,
     items:
       showItems && healthCondition
@@ -266,6 +269,7 @@ const createLicenseContent = (
     id: `${property}-${id}`,
     label: 'License',
     property,
+    glyph: property,
     isDisabled: !license,
     name: license?.title,
     url: license?.url,
@@ -287,6 +291,7 @@ const createMeasurementTechniqueContent = (
     id: `${property}-${id}`,
     label: 'Measurement Technique',
     property,
+    glyph: property,
     isDisabled: !measurementTechnique,
     items:
       showItems && measurementTechnique
@@ -326,6 +331,7 @@ const createInfectiousAgentContent = (
     id: `${property}-${id}`,
     label: 'Pathogen',
     property,
+    glyph: property,
     isDisabled: !infectiousAgent,
     items:
       showItems && infectiousAgent
@@ -377,6 +383,7 @@ const createSpeciesContent = (
     id: `${property}-${id}`,
     label: 'Species',
     property,
+    glyph: property,
     isDisabled: !species,
     items:
       showItems && species
@@ -429,6 +436,7 @@ const createUsageInfoContent = (
     id: `${property}-${id}`,
     label: 'Usage Info',
     property,
+    glyph: property,
     isDisabled: !usageInfo,
     items: Array.isArray(usageInfo)
       ? usageInfo?.map((usage, idx) => ({
@@ -457,6 +465,7 @@ const createVariableMeasuredContent = (
     id: `${property}-${id}`,
     label: 'Variable Measured',
     property,
+    glyph: property,
     isDisabled: !variableMeasured,
     items:
       showItems && variableMeasured
