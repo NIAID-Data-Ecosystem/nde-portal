@@ -2,7 +2,7 @@ import React from 'react';
 import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
 import remarkGfm from 'remark-gfm';
-import { Box, BoxProps, Highlight, HighlightProps } from '@chakra-ui/react';
+import { Box, BoxProps, HighlightProps, useHighlight } from '@chakra-ui/react';
 import { ReactMarkdownOptions } from 'react-markdown/lib/react-markdown';
 
 /**
@@ -48,6 +48,17 @@ export const DisplayHTMLContent: React.FC<DisplayHTMLContentProps> = ({
   highlightProps,
   ...props
 }) => {
+  // Highlight search query in content.
+  const chunks = useHighlight({
+    text: formatContent(content),
+    query: highlightProps?.query || [],
+  }).map(chunk => {
+    if (chunk.match) {
+      return `<mark>${chunk.text}</mark>`;
+    }
+    return chunk.text;
+  });
+
   if (!content || typeof content !== 'string') {
     return <></>;
   }
@@ -71,34 +82,20 @@ export const DisplayHTMLContent: React.FC<DisplayHTMLContentProps> = ({
           whiteSpace: 'pre-wrap',
           wordBreak: 'break-word',
         },
+        mark: {
+          px: 0.5,
+          bg: 'orange.100',
+          color: 'inherit',
+          ...highlightProps?.styles,
+        },
       }}
       {...props}
     >
       <ReactMarkdown
         rehypePlugins={[rehypeRaw, remarkGfm]}
         {...reactMarkdownProps}
-        components={{
-          p: ({ children }) => {
-            return highlightProps?.query ? (
-              <Highlight
-                {...highlightProps}
-                styles={{
-                  px: '0.5',
-                  py: '1',
-                  bg: 'orange.100',
-                  color: 'inherit',
-                  ...highlightProps.styles,
-                }}
-              >
-                {children.join('')}
-              </Highlight>
-            ) : (
-              children
-            );
-          },
-        }}
       >
-        {formatContent(content)}
+        {chunks.join('')}
       </ReactMarkdown>
     </Box>
   );

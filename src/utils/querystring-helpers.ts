@@ -1,13 +1,36 @@
+import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
+
 // /*
 // Escape elastic search reserved characters.
 // https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-query-string-query.html#_reserved_characters
 // str.replace(/([\-\=\!\*\+\&\|\(\)\[\]\{\}\^\~\?\:\/])/g, '\\$1'),
 // */
 
-import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
+export const RESERVED_CHARS = [
+  '+',
+  '=',
+  '&',
+  '&&',
+  '||',
+  '>',
+  '<',
+  '!',
+  '{',
+  '}',
+  '[',
+  ']',
+  '^',
+  '~',
+  '?',
+  '/',
+];
 
 const schemaProperties = new Set(
-  Object.values(SCHEMA_DEFINITIONS).map(definition => {
+  [
+    ...Object.values(SCHEMA_DEFINITIONS),
+    { dotfield: '_exists_' },
+    { dotfield: '-_exists_' },
+  ].map(definition => {
     if (definition.dotfield === '@id') {
       return '_id';
     }
@@ -17,10 +40,20 @@ const schemaProperties = new Set(
 
 export const encodeString = (str: string) => {
   // List of special characters that need to be escaped, excluding colon
-  const escapeRegex = /(?<!\\)([|[\]/])/g;
+  const escapeRegex = new RegExp(
+    `(?<!\\\\)([${RESERVED_CHARS.map(char => '\\' + char).join('')}])`,
+    'g',
+  );
 
   // Function to escape necessary characters
-  const escapeSpecialChars = (s: string) => s.replace(escapeRegex, '\\$1');
+  const escapeSpecialChars = (s: string) => {
+    const escaped = s.replace(escapeRegex, '\\$1');
+    // If the string doesn't include "AND" "OR" or "NOT" operators, escape parens.
+    if (!str.includes('AND') && !str.includes('OR') && !str.includes('NOT')) {
+      return escaped.replace(/(?<!\\)([\(\)])/g, '\\$1');
+    }
+    return escaped;
+  };
 
   // Identify parts that could be field queries
   return str.split(':').reduce((acc, part, index, parts) => {

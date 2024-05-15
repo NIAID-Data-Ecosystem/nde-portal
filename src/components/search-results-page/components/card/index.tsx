@@ -71,12 +71,6 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
         ? { query: '' }
         : {
             query: filterWords(querystring),
-            styles: {
-              px: '0.5',
-              py: '0.75',
-              bg: 'orange.100',
-              color: 'inherit',
-            },
           },
     [querystring],
   );
@@ -195,10 +189,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                     fontSize='xs'
                     color='text.body'
                   >
-                    <Highlight
-                      query={highlightProps.query}
-                      styles={highlightProps.styles}
-                    >
+                    <Highlight query={highlightProps.query}>
                       {formatAuthorsList2String(author, ',', 10) || ''}
                     </Highlight>
                   </ToggleContainer>

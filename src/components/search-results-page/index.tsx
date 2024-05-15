@@ -1,11 +1,10 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/router';
 import {
   Box,
   Button,
   Collapse,
   Flex,
-  Link,
   ListItem,
   Stack,
   Text,
@@ -27,14 +26,14 @@ import ResultsCount from 'src/components/search-results-page/components/count';
 import { FILTERS_CONFIG } from './components/filters/helpers';
 import Card from './components/card';
 import { FormattedResource } from 'src/utils/api/types';
-import { ErrorCTA } from '../error';
-import { Error } from 'src/components/error';
-import { getQueryStatusError } from '../error/utils';
 import { DownloadMetadata } from '../download-metadata';
 import Empty from 'src/components/empty';
 import NextLink from 'next/link';
 import Banner from '../banner';
 import { formatNumber } from 'src/utils/helpers';
+import { ErrorMessage } from './components/error';
+import { Link } from 'src/components/link';
+
 /*
 [COMPONENT INFO]:
  Search results pages displays the list of records returned by a search.
@@ -197,42 +196,7 @@ const SearchResultsPage = ({
   );
 
   if (error) {
-    const errorMessage =
-      error && getQueryStatusError(error as unknown as { status: string });
-    return (
-      // [ERROR STATE]: API response error
-      <Error>
-        <Flex flexDirection='column' alignItems='center'>
-          <Text>
-            {errorMessage?.message ||
-              'It’s possible that the server is experiencing some issues.'}{' '}
-            {errorMessage?.relatedLinks &&
-              errorMessage?.relatedLinks?.length > 0 &&
-              errorMessage.relatedLinks.map(
-                ({ label, href, isExternal }, idx) => {
-                  return (
-                    <Link
-                      key={`${label}-${idx}`}
-                      href={href}
-                      isExternal={isExternal}
-                    >
-                      {label}
-                    </Link>
-                  );
-                },
-              )}
-          </Text>
-
-          <Box mt={4}>
-            <ErrorCTA>
-              <Button onClick={() => router.reload()} variant='outline'>
-                Retry
-              </Button>
-            </ErrorCTA>
-          </Box>
-        </Flex>
-      </Error>
-    );
+    return <ErrorMessage error={error} querystring={querystring} />;
   }
   return (
     <Flex w='100%' flexDirection='column' mx={[0, 0, 4]} flex={[1, 2]}>
@@ -310,7 +274,37 @@ const SearchResultsPage = ({
       {/* Empty state if no results found */}
       {!isLoading && (!data || data.results.length === 0) && (
         <Empty message='No results found.' alignSelf='center' h='50vh'>
-          <Text>Search yielded no results, please try again.</Text>
+          <Text>No results found. Please try again.</Text>
+          <Box
+            p={4}
+            m={4}
+            border='1px solid'
+            borderRadius='semi'
+            borderColor='niaid.placeholder'
+            bg='tertiary.50'
+          >
+            <Text fontWeight='medium'>Suggestions:</Text>
+            <UnorderedList styleType='disc' spacing={1} lineHeight='short'>
+              <ListItem listStyleType='inherit'>
+                Try using more general keywords.
+              </ListItem>
+              <ListItem listStyleType='inherit'>
+                Use different or fewer keywords.
+              </ListItem>
+              <ListItem listStyleType='inherit'>
+                Ensure that the use of reserved fields in fielded queries are
+                intentional and followed by a colon.
+              </ListItem>
+              <ListItem listStyleType='inherit'>
+                Ensure reserved characters are preceded by a backslash (\).
+              </ListItem>
+              <ListItem>
+                <Link href={'/docs/advanced-searching'} isExternal>
+                  For more information, see the documentation.
+                </Link>
+              </ListItem>
+            </UnorderedList>
+          </Box>
           <NextLink href={{ pathname: '/search' }}>
             <Button mt={4}>Go to search</Button>
           </NextLink>
