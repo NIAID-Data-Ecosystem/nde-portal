@@ -178,6 +178,7 @@ const MetadataAccordion: React.FC<MetadataAccordionProps> = ({ data }) => {
                         return (
                           <MetadataBlock
                             key={`property-${props.id}`}
+                            glyph={props.property}
                             {...props}
                           >
                             {name && (
