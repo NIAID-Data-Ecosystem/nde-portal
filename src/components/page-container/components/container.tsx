@@ -177,7 +177,7 @@ export const PageContainer: React.FC<PageContainerProps> = ({
               flex={1}
             >
               <NextLink
-                href={{ pathname: 'advanced-search' }}
+                href={{ pathname: '/advanced-search' }}
                 passHref
                 prefetch={false}
                 style={{
