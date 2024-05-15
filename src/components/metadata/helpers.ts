@@ -433,6 +433,15 @@ const createTopicCategoryContent = (
   topicCategory?: FormattedResource['topicCategory'],
   showItems = true,
 ) => {
+  // Sorts topic categories alphabetically
+  if (
+    topicCategory != null &&
+    topicCategory.every(item => typeof item.name === 'string')
+  )
+    topicCategory.sort((a, b) =>
+      (a.name as string).localeCompare(b.name as string),
+    );
+
   return {
     id: `${property}-${id}`,
     label: 'Topic Category',
