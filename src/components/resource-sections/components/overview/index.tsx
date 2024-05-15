@@ -106,6 +106,7 @@ const Overview: React.FC<OverviewProps> = ({
                     props.property,
                     data['@type'],
                   )}
+                  glyph={props.property}
                   {...props}
                 >
                   {name && (
@@ -183,6 +184,7 @@ const SpatiotemporalCoverage: React.FC<SpatiotemporalCoverageProps> = ({
         id={`${id}-spatialCoverage`}
         label='Spatiotemporal Coverage'
         property='spatialCoverage'
+        glyph='spatialCoverage'
         isDisabled={isDisabled}
         bg='gray.900'
         tooltipLabel={
@@ -201,7 +203,6 @@ const SpatiotemporalCoverage: React.FC<SpatiotemporalCoverageProps> = ({
       >
         <VStack alignItems='flex-start' divider={<Divider />}>
           {/* Geographic information of dataset */}
-
           {spatialInformation && (
             <>
               <Text fontWeight='medium' color='gray.800'>
