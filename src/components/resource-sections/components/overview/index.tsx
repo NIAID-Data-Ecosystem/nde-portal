@@ -78,67 +78,69 @@ const Overview: React.FC<OverviewProps> = ({
           borderRadius='semi'
           w='100%'
         >
-          {sortedMetadataContent.map(({ img, items, name, url, ...props }) => {
-            if (props.property === 'spatialCoverage') {
-              return (
-                <SpatiotemporalCoverage
-                  key={`block-${props.id}`}
-                  id={props.id}
-                  isDisabled={props.isDisabled}
-                  isLoading={isLoading}
-                  inLanguage={inLanguage}
-                  spatialCoverage={spatialCoverage}
-                  temporalCoverage={temporalCoverage}
-                  type={data['@type']}
-                />
-              );
-            }
+          {sortedMetadataContent.map(
+            ({ img, items, name, glyph, url, ...props }) => {
+              if (props.property === 'spatialCoverage') {
+                return (
+                  <SpatiotemporalCoverage
+                    key={`block-${props.id}`}
+                    id={props.id}
+                    isDisabled={props.isDisabled}
+                    isLoading={isLoading}
+                    inLanguage={inLanguage}
+                    spatialCoverage={spatialCoverage}
+                    temporalCoverage={temporalCoverage}
+                    type={data['@type']}
+                  />
+                );
+              }
 
-            return (
-              <Skeleton
-                key={`block-${props.id}-${props.property}`}
-                isLoaded={!isLoading}
-              >
-                <MetadataBlock
-                  tooltipLabel={getMetadataDescription(
-                    props.property,
-                    data['@type'],
-                  )}
-                  glyph={props.property}
-                  {...props}
+              return (
+                <Skeleton
+                  key={`block-${props.id}-${props.property}`}
+                  isLoaded={!isLoading}
                 >
-                  {name && (
-                    <MetadataContent
-                      name={name}
-                      img={img}
-                      url={url}
-                      {...content}
-                    />
-                  )}
-                  {items && items.length > 0 && (
-                    <ScrollContainer maxHeight='150px' overflow='auto'>
-                      <MetadataList>
-                        {items.map(({ key, ...item }) => {
-                          return (
-                            <MetadataListItem
-                              key={key}
-                              property={props.property}
-                            >
-                              <MetadataContent
-                                includeOntology
-                                includeSearch
-                                {...item}
-                              />
-                            </MetadataListItem>
-                          );
-                        })}
-                      </MetadataList>
-                    </ScrollContainer>
-                  )}
-                </MetadataBlock>
-              </Skeleton>
-            );
-          })}
+                  <MetadataBlock
+                    tooltipLabel={getMetadataDescription(
+                      props.property,
+                      data['@type'],
+                    )}
+                    glyph={glyph}
+                    {...props}
+                  >
+                    {name && (
+                      <MetadataContent
+                        name={name}
+                        img={img}
+                        url={url}
+                        {...content}
+                      />
+                    )}
+                    {items && items.length > 0 && (
+                      <ScrollContainer maxHeight='150px' overflow='auto'>
+                        <MetadataList>
+                          {items.map(({ key, ...item }) => {
+                            return (
+                              <MetadataListItem
+                                key={key}
+                                property={props.property}
+                              >
+                                <MetadataContent
+                                  includeOntology
+                                  includeSearch
+                                  {...item}
+                                />
+                              </MetadataListItem>
+                            );
+                          })}
+                        </MetadataList>
+                      </ScrollContainer>
+                    )}
+                  </MetadataBlock>
+                </Skeleton>
+              );
+            },
+          )}
         </SimpleGrid>
       </Flex>
     </Flex>
