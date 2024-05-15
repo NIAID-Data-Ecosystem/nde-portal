@@ -93,7 +93,6 @@ const Sources: NextPage<SourcesProps> = ({ data, error }) => {
       metaDescription='NDE Discovery Portal - API data sources.'
       px={0}
       py={0}
-      disableSearchBar
     >
       <Flex>
         {error || metadataError ? (

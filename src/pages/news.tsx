@@ -231,7 +231,6 @@ const News: NextPage<NewsProps> = props => {
       metaDescription='Latest news releases for the NIAID Data Discovery Portal.'
       px={0}
       py={0}
-      disableSearchBar
     >
       <PageHeader
         title='News Releases'
