@@ -18,6 +18,7 @@ import { ResourceCatalog } from 'src/hooks/api/useResourceCatalogs';
 import { formatDomainName, formatTypeName } from './helpers';
 import { Filters } from './filters/';
 import useFilteredData from './hooks/useFilteredData';
+import { queryFilterObject2String } from 'src/components/filters/helpers';
 
 export interface TableData
   extends Omit<ResourceCatalog, 'type'>,
@@ -207,6 +208,24 @@ export const RepositoryCells = ({
   data: TableData;
   isLoading?: boolean;
 }) => {
+  const href =
+    data.type === 'Repository'
+      ? {
+          pathname: `/search`,
+          query: {
+            q: '',
+            filters: queryFilterObject2String({
+              'includedInDataCatalog.name': [data._id],
+            }),
+          },
+        }
+      : {
+          pathname: `/resources`,
+          query: {
+            id: data._id,
+          },
+        };
+
   return (
     <Flex id={`cell-${data._id}-${column.property}`} py={1}>
       {/* Repository/Resource Catalog name */}
@@ -218,8 +237,8 @@ export const RepositoryCells = ({
           w='100%'
           fontSize='sm'
         >
-          {column.property === 'name' && data.portalURL ? (
-            <NextLink href={data.portalURL} passHref prefetch={false}>
+          {data._id ? (
+            <NextLink href={href} prefetch={false} passHref>
               <Link as='div'>{data[column.property]}</Link>
             </NextLink>
           ) : (

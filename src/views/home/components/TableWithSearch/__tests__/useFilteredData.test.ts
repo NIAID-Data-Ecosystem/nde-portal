@@ -11,7 +11,6 @@ describe('useFilteredData', () => {
         domain: 'iid',
         conditionsOfAccess: 'Open',
         type: 'ResourceCatalog',
-        portalURL: '',
       },
       {
         _id: 'source_02',
@@ -21,7 +20,6 @@ describe('useFilteredData', () => {
         domain: 'generalist',
         conditionsOfAccess: 'Restricted',
         type: 'Repository',
-        portalURL: '',
       },
     ] as any[];
 
@@ -49,7 +47,6 @@ describe('useFilteredData', () => {
         domain: 'iid',
         conditionsOfAccess: 'Open',
         type: 'ResourceCatalog',
-        portalURL: '',
       },
       {
         _id: 'source_02',
@@ -59,7 +56,6 @@ describe('useFilteredData', () => {
         domain: 'generalist',
         conditionsOfAccess: 'Restricted',
         type: 'Repository',
-        portalURL: '',
       },
       {
         _id: 'source_03',
@@ -68,7 +64,6 @@ describe('useFilteredData', () => {
         domain: 'iid',
         conditionsOfAccess: 'Restricted',
         type: 'ResourceCatalog',
-        portalURL: '',
       },
     ] as any[];
 
@@ -103,7 +98,6 @@ describe('useFilteredData', () => {
         domain: 'iid',
         conditionsOfAccess: ['Open', 'Restricted'],
         type: 'ResourceCatalog',
-        portalURL: '',
       },
       {
         _id: 'source_02',
@@ -113,7 +107,6 @@ describe('useFilteredData', () => {
         domain: 'generalist',
         conditionsOfAccess: 'Open',
         type: 'Repository',
-        portalURL: '',
       },
       {
         _id: 'source_03',
@@ -122,7 +115,6 @@ describe('useFilteredData', () => {
         domain: 'iid',
         conditionsOfAccess: 'Restricted',
         type: 'ResourceCatalog',
-        portalURL: '',
       },
     ] as any[];
 
@@ -149,39 +141,36 @@ describe('useFilteredData', () => {
     const initialData = [
       {
         _id: 'source_01',
-        name: 'Source 1',
+        name: '',
         abstract: 'Lorem ipsum dolor sit amet',
         domain: 'iid',
         conditionsOfAccess: ['Open', 'Restricted'],
         type: 'ResourceCatalog',
-        portalURL: '',
       },
       {
         _id: 'source_02',
-        name: 'Source 2',
+        name: '',
         abstract:
           'Orci varius natoque penatibus et magnis dis parturient montes',
         domain: 'generalist',
         conditionsOfAccess: 'Open',
         type: 'Repository',
-        portalURL: '',
       },
       {
         _id: 'source_03',
-        name: 'Source 3',
+        name: '',
         abstract: 'Lorem ipsum dolor sit amet',
         domain: 'iid',
         conditionsOfAccess: 'Restricted',
         type: 'ResourceCatalog',
-        portalURL: '',
       },
     ] as any[];
 
     const access_filters = [
       {
-        name: 'Portal URL',
-        value: '#',
-        property: 'portalURL',
+        name: 'Name',
+        value: '',
+        property: 'name',
       },
     ];
 

@@ -12,7 +12,6 @@ describe('Landing Table Filters Component', () => {
       domain: 'iid',
       conditionsOfAccess: 'Open',
       type: 'ResourceCatalog',
-      portalURL: '',
     },
     {
       _id: 'source_02',
@@ -21,7 +20,6 @@ describe('Landing Table Filters Component', () => {
       domain: 'generalist',
       conditionsOfAccess: 'Open',
       type: 'Repository',
-      portalURL: '',
     },
     {
       _id: 'source_03',
@@ -30,7 +28,6 @@ describe('Landing Table Filters Component', () => {
       domain: 'iid',
       conditionsOfAccess: 'Restricted',
       type: 'ResourceCatalog',
-      portalURL: '',
     },
   ] as any[];
 
