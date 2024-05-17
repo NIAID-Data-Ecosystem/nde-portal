@@ -34,6 +34,7 @@ import { HeadingWithTooltip } from './components/sidebar/components/external/com
 import { ResourceCatalogCollection } from './components/collection-information';
 import { DownloadMetadata } from '../download-metadata';
 import { Keywords } from './components/keywords';
+import { TopicDisplay } from './components/topics';
 
 // Metadata displayed in each section
 export const sectionMetadata: { [key: string]: (keyof FormattedResource)[] } = {
@@ -66,6 +67,7 @@ export const sectionMetadata: { [key: string]: (keyof FormattedResource)[] } = {
     'softwareVersion',
   ],
   keywords: ['keywords'],
+  topicCategories: ['topicCategory'],
   description: ['description'],
   provenance: ['includedInDataCatalog', 'url', 'sdPublisher', 'curatedBy'],
   downloads: ['distribution', 'downloadUrl'],
@@ -137,7 +139,7 @@ const Sections = ({
                 />
               </Flex>
             )}
-            {section.hash === 'overview' && (
+            {/* {section.hash === 'overview' && (
               <>
                 <ResourceOverview isLoading={isLoading} {...data} />
                 <ResourceIsPartOf
@@ -154,8 +156,16 @@ const Sections = ({
                   collectionSize={data?.collectionSize}
                 />
               </>
-            )}
+            )} */}
 
+            {/* Show topic categories */}
+            {section.hash === 'topicCategories' && (
+              <Skeleton isLoaded={!isLoading}>
+                {data?.topicCategory && (
+                  <TopicDisplay topics={data.topicCategory} />
+                )}
+              </Skeleton>
+            )}
             {/* Show keywords */}
             {section.hash === 'keywords' && (
               <Skeleton isLoaded={!isLoading}>

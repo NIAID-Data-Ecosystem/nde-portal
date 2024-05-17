@@ -284,6 +284,7 @@ interface TemporalCoverage {
 
 interface TopicCategory {
   description?: string;
+  identifier?: string;
   name?: string;
   url?: string;
   curatedBy?: {
