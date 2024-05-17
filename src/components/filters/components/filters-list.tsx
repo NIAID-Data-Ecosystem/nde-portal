@@ -102,6 +102,10 @@ export const FiltersList: React.FC<FiltersList> = React.memo(
         ? items
             .filter(item => {
               const repo = REPOS.repositories.find(r => r.id === item.term);
+              // if repo is undefined, show the item as a generalist
+              if (repo === undefined) {
+                return item;
+              }
               return repo && repo.type === 'generalist';
             })
             .sort((a, b) => a.displayAs.localeCompare(b.displayAs))
