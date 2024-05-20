@@ -103,7 +103,7 @@ export const FiltersList: React.FC<FiltersList> = React.memo(
             .filter(item => {
               const repo = REPOS.repositories.find(r => r.id === item.term);
               // if repo is undefined, show the item as a generalist
-              if (repo === undefined) {
+              if (repo === undefined && !item?.term?.includes('_exists_')) {
                 return item;
               }
               return repo && repo.type === 'generalist';
@@ -111,7 +111,6 @@ export const FiltersList: React.FC<FiltersList> = React.memo(
             .sort((a, b) => a.displayAs.localeCompare(b.displayAs))
             .sort((a, b) => b.count - a.count)
         : [];
-
     return (
       <>
         {/* Search through filter terms */}
