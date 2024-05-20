@@ -53,7 +53,7 @@ export const TopicBrowser = ({
               ))}
 
               {tree.descendants().map((node, key) => {
-                const width = 40;
+                const width = node.data.name.length * 8;
                 const height = 20;
 
                 let top = node.x;
@@ -93,7 +93,7 @@ export const TopicBrowser = ({
                     )}
                     <text
                       dy='.33em'
-                      fontSize={9}
+                      fontSize={10}
                       fontFamily='Arial'
                       textAnchor='middle'
                       style={{ pointerEvents: 'none' }}
