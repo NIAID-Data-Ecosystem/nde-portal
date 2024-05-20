@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import { Zoom } from '@visx/zoom';
 import { localPoint } from '@visx/event';
 import { RectClipPath } from '@visx/clip-path';
+import { TransformMatrix } from '@visx/zoom/lib/types';
 
-const initialTransform = {
+const initialTransformDefault = {
   scaleX: 1,
   scaleY: 1,
   translateX: 0,
@@ -18,6 +19,7 @@ export interface ZoomProps {
   children: React.ReactNode;
   includeMiniMap?: boolean;
   bg?: string;
+  initialTransform?: TransformMatrix;
 }
 
 export const ZoomContainer = ({
@@ -26,6 +28,7 @@ export const ZoomContainer = ({
   children,
   includeMiniMap = false,
   bg = '#0a0a0a',
+  initialTransform = initialTransformDefault,
 }: ZoomProps) => {
   const [showMiniMap, setShowMiniMap] = useState<boolean>(includeMiniMap);
   return (
@@ -39,106 +42,116 @@ export const ZoomContainer = ({
         scaleYMax={4}
         initialTransformMatrix={initialTransform}
       >
-        {zoom => (
-          <div className='relative'>
-            <svg
-              width={width}
-              height={height}
-              style={{
-                cursor: zoom.isDragging ? 'grabbing' : 'grab',
-                touchAction: 'none',
-              }}
-              ref={zoom.containerRef}
-            >
-              <RectClipPath id='zoom-clip' width={width} height={height} />
-              <rect width={width} height={height} rx={14} fill={bg} />
-              <g transform={zoom.toString()}>{children}</g>
-              <rect
+        {zoom => {
+          return (
+            <div className='relative'>
+              <svg
                 width={width}
                 height={height}
-                rx={14}
-                fill='transparent'
-                onTouchStart={zoom.dragStart}
-                onTouchMove={zoom.dragMove}
-                onTouchEnd={zoom.dragEnd}
-                onMouseDown={zoom.dragStart}
-                onMouseMove={zoom.dragMove}
-                onMouseUp={zoom.dragEnd}
-                onMouseLeave={() => {
-                  if (zoom.isDragging) zoom.dragEnd();
+                style={{
+                  cursor: zoom.isDragging ? 'grabbing' : 'grab',
+                  touchAction: 'none',
                 }}
-                onDoubleClick={event => {
-                  const point = localPoint(event) || { x: 0, y: 0 };
-                  zoom.scale({ scaleX: 1.1, scaleY: 1.1, point });
-                }}
-              />
-              {includeMiniMap && showMiniMap && (
-                <g
-                  clipPath='url(#zoom-clip)'
-                  transform={`
+                ref={zoom.containerRef}
+              >
+                <RectClipPath id='zoom-clip' width={width} height={height} />
+                <rect width={width} height={height} rx={14} fill={bg} />
+                <g transform={zoom.toString()}>{children}</g>
+                <rect
+                  width={width}
+                  height={height}
+                  rx={14}
+                  fill='transparent'
+                  onTouchStart={zoom.dragStart}
+                  onTouchMove={zoom.dragMove}
+                  onTouchEnd={zoom.dragEnd}
+                  onMouseDown={zoom.dragStart}
+                  onMouseMove={zoom.dragMove}
+                  onMouseUp={zoom.dragEnd}
+                  onMouseLeave={() => {
+                    if (zoom.isDragging) zoom.dragEnd();
+                  }}
+                  onDoubleClick={event => {
+                    const point = localPoint(event) || { x: 0, y: 0 };
+                    zoom.scale({ scaleX: 1.1, scaleY: 1.1, point });
+                  }}
+                />
+                {includeMiniMap && showMiniMap && (
+                  <g
+                    clipPath='url(#zoom-clip)'
+                    transform={`
                     scale(0.25)
                     translate(${width * 4 - width - 60}, ${
-                    height * 4 - height - 60
-                  })
+                      height * 4 - height - 60
+                    })
                   `}
-                >
-                  <rect width={width} height={height} fill='#1a1a1a' />
-                  {children}
+                  >
+                    <rect width={width} height={height} fill='#1a1a1a' />
+                    {children}
 
-                  <rect
-                    width={width}
-                    height={height}
-                    fill='white'
-                    fillOpacity={0.2}
-                    stroke='white'
-                    strokeWidth={4}
-                    transform={zoom.toStringInvert()}
-                  />
-                </g>
-              )}
-            </svg>
-            <div className='controls'>
-              <button
-                type='button'
-                className='btn btn-zoom'
-                onClick={() => zoom.scale({ scaleX: 1.2, scaleY: 1.2 })}
-              >
-                +
-              </button>
-              <button
-                type='button'
-                className='btn btn-zoom btn-bottom'
-                onClick={() => zoom.scale({ scaleX: 0.8, scaleY: 0.8 })}
-              >
-                -
-              </button>
-              <button
-                type='button'
-                className='btn btn-lg'
-                onClick={zoom.center}
-              >
-                Center
-              </button>
-              <button type='button' className='btn btn-lg' onClick={zoom.reset}>
-                Reset
-              </button>
-              <button type='button' className='btn btn-lg' onClick={zoom.clear}>
-                Clear
-              </button>
-            </div>
-            {includeMiniMap && (
-              <div className='mini-map'>
+                    <rect
+                      width={width}
+                      height={height}
+                      fill='white'
+                      fillOpacity={0.2}
+                      stroke='white'
+                      strokeWidth={4}
+                      transform={zoom.toStringInvert()}
+                    />
+                  </g>
+                )}
+              </svg>
+              <div className='controls'>
+                <button
+                  type='button'
+                  className='btn btn-zoom'
+                  onClick={() => zoom.scale({ scaleX: 1.2, scaleY: 1.2 })}
+                >
+                  +
+                </button>
+                <button
+                  type='button'
+                  className='btn btn-zoom btn-bottom'
+                  onClick={() => zoom.scale({ scaleX: 0.8, scaleY: 0.8 })}
+                >
+                  -
+                </button>
                 <button
                   type='button'
                   className='btn btn-lg'
-                  onClick={() => setShowMiniMap(!showMiniMap)}
+                  onClick={zoom.center}
                 >
-                  {showMiniMap ? 'Hide' : 'Show'} Mini Map
+                  Center
+                </button>
+                <button
+                  type='button'
+                  className='btn btn-lg'
+                  onClick={zoom.reset}
+                >
+                  Reset
+                </button>
+                <button
+                  type='button'
+                  className='btn btn-lg'
+                  onClick={zoom.clear}
+                >
+                  Clear
                 </button>
               </div>
-            )}
-          </div>
-        )}
+              {includeMiniMap && (
+                <div className='mini-map'>
+                  <button
+                    type='button'
+                    className='btn btn-lg'
+                    onClick={() => setShowMiniMap(!showMiniMap)}
+                  >
+                    {showMiniMap ? 'Hide' : 'Show'} Mini Map
+                  </button>
+                </div>
+              )}
+            </div>
+          );
+        }}
       </Zoom>
       <style jsx>{`
         .btn {

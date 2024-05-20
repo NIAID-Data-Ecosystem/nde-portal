@@ -5,7 +5,6 @@ import { Group } from '@visx/group';
 import { hierarchy, Tree } from '@visx/hierarchy';
 import { LinkHorizontal } from '@visx/shape';
 
-// For Zoom component: https://airbnb.io/visx/zoom-i
 const defaultMargin = { top: 50, left: 80, right: 100, bottom: 50 };
 
 export const TopicBrowser = ({
@@ -38,7 +37,7 @@ export const TopicBrowser = ({
         <Tree
           root={hierarchy(data, d => (d.isExpanded ? null : d.children))}
           size={[sizeWidth, sizeHeight]}
-          separation={(a, b) => (a.parent === b.parent ? 1 : 0.5) / a.depth}
+          separation={(a, b) => (a.parent == b.parent ? 1 : 2) / a.depth}
         >
           {tree => (
             <Group top={origin.y} left={origin.x}>
@@ -53,7 +52,7 @@ export const TopicBrowser = ({
               ))}
 
               {tree.descendants().map((node, key) => {
-                const width = node.data.name.length * 8;
+                const width = node.data.name.length * 6 + 2;
                 const height = 20;
 
                 let top = node.x;

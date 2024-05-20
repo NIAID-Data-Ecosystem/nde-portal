@@ -8,6 +8,7 @@ import { FILTERS_CONFIG } from 'src/components/search-results-page/components/fi
 import { BrushChart } from './components/area-chart';
 import { BadgeWithTooltip } from 'src/components/badges';
 import { SourcesChartHorizontal } from './components/sources-chart';
+import { TopicDisplay } from 'src/components/resource-sections/components/topics';
 
 interface SearchResultsVisualizationsProps {
   queryParams: Params;
@@ -23,6 +24,7 @@ const facets = [
   'funding.funder.name',
   'conditionsOfAccess',
   'measurementTechnique.name',
+  'topicCategory.url',
 ];
 export const SearchResultsVisualizations = ({
   queryParams,
@@ -38,7 +40,8 @@ export const SearchResultsVisualizations = ({
         ([key]) =>
           key !== 'date' &&
           key !== 'includedInDataCatalog.name' &&
-          key !== '@type',
+          key !== '@type' &&
+          key !== 'topicCategory.url',
       )
       .map(([key, values]) => {
         const exists = values.find(({ term }) => term === '_exists_');
@@ -75,6 +78,25 @@ export const SearchResultsVisualizations = ({
           };
         })
         .sort((a, b) => b.count - a.count)
+    );
+  }, [data]);
+
+  const topics = useMemo(() => {
+    return (
+      (data &&
+        data?.['topicCategory.url']
+          ?.filter(
+            item =>
+              !item.term.includes('_exists_') &&
+              item.term.startsWith('http://edamontology.org/'),
+          )
+          .slice(0, 20)
+          .map(({ term, count, displayAs }) => ({
+            url: term,
+            count,
+            displayAs,
+          }))) ||
+      []
     );
   }, [data]);
 
@@ -141,19 +163,39 @@ export const SearchResultsVisualizations = ({
           <Heading as='h3' size='sm'>
             Metadata Coverage
           </Heading>
-          {!isLoading && <Radar width={400} height={400} data={RADAR_DATA} />}
+          {!isLoading && <Radar width={300} height={300} data={RADAR_DATA} />}
         </Box>
 
-        {/* <!--  Release Dates --> */}
-        {/* <Box bg='white' boxShadow='sm' mb={6} borderRadius='semi' py={4} px={4}>
+        {/* <!-- Topics --> */}
+        <Box
+          bg='white'
+          boxShadow='sm'
+          mb={6}
+          borderRadius='semi'
+          py={4}
+          px={4}
+          flex={1}
+          minWidth='500px'
+          maxWidth='650px'
+        >
           <Heading as='h3' size='sm'>
-            Release Dates
+            Topics
           </Heading>
           {!isLoading && (
-            <BrushChart width={400} height={400} params={queryParams} />
+            <TopicDisplay
+              topics={topics.slice(0, 5)}
+              margin={{ top: 20, left: 20, right: 80, bottom: 20 }}
+              initialZoom={{
+                scaleX: 0.8,
+                scaleY: 0.8,
+                translateX: 61.79999999999998,
+                translateY: 32.135999999999996,
+                skewX: 0,
+                skewY: 0,
+              }}
+            />
           )}
         </Box>
-        */}
 
         {/* <!-- Sources --> */}
         <Box bg='white' boxShadow='sm' mb={6} borderRadius='semi' py={4} px={4}>
@@ -169,6 +211,17 @@ export const SearchResultsVisualizations = ({
             />
           )}
         </Box>
+
+        {/* <!--  Release Dates --> */}
+        {/* <Box bg='white' boxShadow='sm' mb={6} borderRadius='semi' py={4} px={4}>
+          <Heading as='h3' size='sm'>
+            Release Dates
+          </Heading>
+          {!isLoading && (
+            <BrushChart width={400} height={400} params={queryParams} />
+          )}
+        </Box>
+        */}
       </Stack>
     </>
   );
