@@ -8,13 +8,7 @@ import { useMDXComponents } from 'mdx-components';
 const About: NextPage = () => {
   const MDXComponents = useMDXComponents({});
   return (
-    <PageContainer
-      title='About'
-      metaDescription='About page.'
-      px={0}
-      py={0}
-      disableSearchBar
-    >
+    <PageContainer title='About' metaDescription='About page.' px={0} py={0}>
       <PageContent
         w='100%'
         flexDirection='column'

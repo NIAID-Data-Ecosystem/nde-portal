@@ -172,7 +172,7 @@ export const PageContainer: React.FC<PageContainerProps> = ({
               py={4}
             >
               <NextLink
-                href={{ pathname: 'advanced-search' }}
+                href={{ pathname: '/advanced-search' }}
                 passHref
                 prefetch={false}
                 style={{

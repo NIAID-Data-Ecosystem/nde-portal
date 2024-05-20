@@ -32,10 +32,11 @@ export const getResourceById = async (
     throw new Error('API url undefined');
   }
   try {
+    const _id = Array.isArray(id) ? id.join('') : id;
     const { data } = await axios.get(
       `${process.env.NEXT_PUBLIC_API_URL}/query?`,
       {
-        params: { ...params, q: `_id:"${id}"` },
+        params: { ...params, q: `_id:"${_id.toLowerCase()}"` },
       },
     );
 
