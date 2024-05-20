@@ -139,7 +139,7 @@ const Sections = ({
                 />
               </Flex>
             )}
-            {/* {section.hash === 'overview' && (
+            {section.hash === 'overview' && (
               <>
                 <ResourceOverview isLoading={isLoading} {...data} />
                 <ResourceIsPartOf
@@ -156,7 +156,7 @@ const Sections = ({
                   collectionSize={data?.collectionSize}
                 />
               </>
-            )} */}
+            )}
 
             {/* Show topic categories */}
             {section.hash === 'topicCategories' && (

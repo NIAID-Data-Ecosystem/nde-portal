@@ -17,7 +17,11 @@ export const TopicDisplay = ({ topics }: TopicDisplayProps) => {
       <ParentSize>
         {parent => {
           return (
-            <ZoomContainer width={parent.width} height={parent.width * 0.52}>
+            <ZoomContainer
+              width={parent.width}
+              height={parent.width * 0.52}
+              bg='#272b4d'
+            >
               <TopicBrowser
                 data={tree}
                 width={parent.width}
