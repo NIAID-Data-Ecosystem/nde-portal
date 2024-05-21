@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { formatAPIResource, formatISOString } from './helpers';
-import { FetchSearchResultsResponse } from './types';
+import { FetchSearchResultsResponse, FormattedResource } from './types';
 import { Metadata } from 'src/hooks/api/types';
 
 // Get all resources where query term contains the search term.
@@ -24,27 +24,35 @@ export interface Params {
 export const getResourceById = async (
   id?: string | string[],
   params?: Partial<Params>,
-) => {
+): Promise<FormattedResource | undefined> => {
   if (!id) {
-    return;
+    return undefined;
   }
-  if (!process.env.NEXT_PUBLIC_API_URL) {
-    throw new Error('API url undefined');
+
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+  if (!apiUrl) {
+    throw new Error('API URL is undefined');
   }
+
   try {
     const _id = Array.isArray(id) ? id.join('') : id;
-    const { data } = await axios.get(
-      `${process.env.NEXT_PUBLIC_API_URL}/query?`,
-      {
-        params: { ...params, q: `_id:"${_id.toLowerCase()}"` },
-      },
-    );
+    const query = { ...params, q: `_id:"${_id.toLowerCase()}"` };
+
+    const response = await axios.get(`${apiUrl}/query`, { params: query });
+    const { data } = response;
+
+    if (!data.hits || data.hits.length === 0) {
+      return undefined;
+    }
 
     const formattedData = await formatAPIResource(data.hits[0]);
+    if (!formattedData) {
+      return undefined;
+    }
 
-    return formattedData;
-  } catch (err: any) {
-    throw err.response;
+    return { ...formattedData, rawData: data.hits[0] } as FormattedResource;
+  } catch (error: any) {
+    throw error.response ?? error;
   }
 };
 
