@@ -136,6 +136,12 @@
       "type": "generalist"
     },
     {
+      "id": "MalariaGEN",
+      "label": "MalariaGEN",
+      "imageURL": "/assets/resources/malariagen.svg",
+      "type": "generalist"
+    },
+    {
       "id": "Mendeley",
       "label": "Mendeley",
       "icon": "/assets/resources/mendeley-icon.png",

@@ -25,6 +25,7 @@ const facets = [
   'conditionsOfAccess',
   'measurementTechnique.name',
   'topicCategory.url',
+  'topicCategory.name',
 ];
 export const SearchResultsVisualizations = ({
   queryParams,
@@ -41,6 +42,7 @@ export const SearchResultsVisualizations = ({
           key !== 'date' &&
           key !== 'includedInDataCatalog.name' &&
           key !== '@type' &&
+          key !== 'topicCategory.name' &&
           key !== 'topicCategory.url',
       )
       .map(([key, values]) => {
@@ -93,6 +95,21 @@ export const SearchResultsVisualizations = ({
           .slice(0, 20)
           .map(({ term, count, displayAs }) => ({
             url: term,
+            count,
+            displayAs,
+          }))) ||
+      []
+    );
+  }, [data]);
+
+  const topic_names = useMemo(() => {
+    return (
+      (data &&
+        data?.['topicCategory.name']
+          ?.filter(item => !item.term.includes('_exists_'))
+          .slice(0, 20)
+          .map(({ term, count, displayAs }) => ({
+            term,
             count,
             displayAs,
           }))) ||
@@ -176,14 +193,15 @@ export const SearchResultsVisualizations = ({
           px={4}
           flex={1}
           minWidth='500px'
-          maxWidth='650px'
+          maxWidth='850px'
         >
           <Heading as='h3' size='sm'>
             Topics
           </Heading>
           {!isLoading && (
             <TopicDisplay
-              topics={topics.slice(0, 5)}
+              topics={topics.slice(0, 10)}
+              topTopics={topic_names.slice(0, 5)}
               margin={{ top: 20, left: 20, right: 80, bottom: 20 }}
               initialZoom={{
                 scaleX: 0.8,
@@ -193,6 +211,7 @@ export const SearchResultsVisualizations = ({
                 skewX: 0,
                 skewY: 0,
               }}
+              zoomFactor={2}
             />
           )}
         </Box>

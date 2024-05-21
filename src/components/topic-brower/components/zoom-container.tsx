@@ -3,6 +3,7 @@ import { Zoom } from '@visx/zoom';
 import { localPoint } from '@visx/event';
 import { RectClipPath } from '@visx/clip-path';
 import { TransformMatrix } from '@visx/zoom/lib/types';
+import { Box } from '@chakra-ui/react';
 
 const initialTransformDefault = {
   scaleX: 1,
@@ -34,12 +35,12 @@ export const ZoomContainer = ({
   return (
     <>
       <Zoom<SVGSVGElement>
-        width={width}
-        height={height}
-        scaleXMin={1 / 2}
-        scaleXMax={4}
-        scaleYMin={1 / 2}
-        scaleYMax={4}
+        width={width * 2}
+        height={height * 2}
+        // scaleXMin={1 / 2}
+        // scaleXMax={4}
+        // scaleYMin={1 / 2}
+        // scaleYMax={4}
         initialTransformMatrix={initialTransform}
       >
         {zoom => {
@@ -57,7 +58,7 @@ export const ZoomContainer = ({
                 <RectClipPath id='zoom-clip' width={width} height={height} />
                 <rect width={width} height={height} rx={14} fill={bg} />
                 <g transform={zoom.toString()}>{children}</g>
-                <rect
+                {/* <rect
                   width={width}
                   height={height}
                   rx={14}
@@ -75,7 +76,7 @@ export const ZoomContainer = ({
                     const point = localPoint(event) || { x: 0, y: 0 };
                     zoom.scale({ scaleX: 1.1, scaleY: 1.1, point });
                   }}
-                />
+                /> */}
                 {includeMiniMap && showMiniMap && (
                   <g
                     clipPath='url(#zoom-clip)'
@@ -130,13 +131,13 @@ export const ZoomContainer = ({
                 >
                   Reset
                 </button>
-                <button
+                {/* <button
                   type='button'
                   className='btn btn-lg'
                   onClick={zoom.clear}
                 >
                   Clear
-                </button>
+                </button> */}
               </div>
               {includeMiniMap && (
                 <div className='mini-map'>
@@ -153,13 +154,14 @@ export const ZoomContainer = ({
           );
         }}
       </Zoom>
+
       <style jsx>{`
         .btn {
           margin: 0;
           text-align: center;
           border: none;
           background: #2f2f2f;
-          color: #888;
+          color: #999;
           padding: 0 4px;
           border-top: 1px solid #0a0a0a;
         }

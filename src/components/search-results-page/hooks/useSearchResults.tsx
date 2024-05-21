@@ -5,7 +5,7 @@ import { FetchSearchResultsResponse } from 'src/utils/api/types';
 //useGetSearchResults
 export function useQuerySearchResults(
   params: Params,
-  options?: UseQueryOptions<FetchSearchResultsResponse | undefined, Error>,
+  options?: UseQueryOptions<FetchSearchResultsResponse | undefined, Error, any>,
 ) {
   return useQuery<FetchSearchResultsResponse | undefined, Error>(
     ['search-results', params],

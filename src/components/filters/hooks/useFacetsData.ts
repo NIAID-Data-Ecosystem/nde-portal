@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useQuery } from 'react-query';
 import { fetchSearchResults, Params } from 'src/utils/api';
 import { formatDate, formatISOString } from 'src/utils/api/helpers';
-import { FacetTerm, FormattedResource } from 'src/utils/api/types';
+import { Facet, FacetTerm, FormattedResource } from 'src/utils/api/types';
 import { encodeString } from 'src/utils/querystring-helpers';
 import { FacetTerms } from '../types';
 import {
@@ -38,14 +38,12 @@ export const fetchFilters = async (
   if (!params.q || typeof params.q !== 'string') {
     return;
   }
-  let total = 0;
   const data = await fetchSearchResults({
     ...params,
     q: params.advancedSearch === 'true' ? params.q : encodeString(params.q),
     hist: 'date',
     size: 0,
   }).then(response => {
-    total = response?.total || 0;
     const facetsData = {} as { [key: string]: { terms: FacetTerm[] } };
     if (response?.facets) {
       Object.keys(response.facets).map(facet => {
@@ -126,7 +124,7 @@ export const fetchFilters = async (
       });
     }),
   );
-  return { data, total };
+  return data;
 };
 
 interface UseFilterDataProps {
@@ -138,7 +136,6 @@ export const useFacetsData = ({
   facets,
 }: UseFilterDataProps): [
   {
-    total: number;
     data: FacetTerms;
     error: Error | null;
     isLoading: boolean;
@@ -154,7 +151,7 @@ export const useFacetsData = ({
     error: allFiltersError,
     data: initialData,
   } = useQuery<
-    { data: { [key: string]: { terms: FacetTerm[] } } } | undefined,
+    { [key: string]: { terms: FacetTerm[] } } | undefined,
     Error,
     FiltersResponse
   >(
@@ -171,7 +168,7 @@ export const useFacetsData = ({
         {
           ...queryParams,
           q: queryParams.q,
-          extra_filter: queryParams.extra_filter || '',
+          extra_filter: '',
           facet_size: queryParams.facet_size,
           facets: facets.filter(facet => facet !== 'date').join(','),
           size: 0,
@@ -182,10 +179,9 @@ export const useFacetsData = ({
     {
       // enabled: !!hasMounted,
       refetchOnWindowFocus: false,
-      select: response => {
+      select: data => {
         const obj: FiltersResponse = {};
-        if (response) {
-          const data = response.data;
+        if (data) {
           Object.keys(data).map(facet => {
             // order facet terms according to number of resources.
             obj[facet] = data[facet].terms.sort((a, b) => b.count - a.count);
@@ -202,15 +198,10 @@ export const useFacetsData = ({
   );
 
   // 2. Update counts on facet when filters are applied to searchquery from 1. Runs on load/new querystring and when filters are changed.
-  const {
-    isLoading: isUpdating,
-    error: updatedFiltersError,
-    data,
-  } = useQuery<
-    | { total: number; data: { [key: string]: { terms: FacetTerm[] } } }
-    | undefined,
+  const { isLoading: isUpdating, error: updatedFiltersError } = useQuery<
+    { [key: string]: { terms: FacetTerm[] } } | undefined,
     Error,
-    { total: number; data: { [key: string]: { terms: FacetTerm[] } } }
+    Facet
   >(
     [
       'search-results',
@@ -240,7 +231,7 @@ export const useFacetsData = ({
       // Only run if there is data to update.
       enabled: !!(initialData && Object.values(initialData).length > 0),
 
-      onSuccess(response) {
+      onSuccess(data) {
         /*
         Note that the enabled parameter prevent the query from running but if cached data is available, onSuccess will use that data so we need to check again and return if the same requirements for enabled are false.
         See here: https://tanstack.com/query/v4/docs/guides/disabling-queries
@@ -252,7 +243,6 @@ export const useFacetsData = ({
             Object.keys(facetTermsData).map(facet => {
               const updatedTerms = facetTermsData[facet].map(facetTerm => {
                 const updateFacetTerm = { ...facetTerm };
-                const { data } = response;
                 // Check if element is in updated data.
                 const updatedItem = data[facet].terms.find(
                   el => el.term === facetTerm.term,
@@ -277,9 +267,9 @@ export const useFacetsData = ({
     },
   );
   const error = allFiltersError || updatedFiltersError;
+
   return [
     {
-      total: data?.total || 0,
       data: facetTerms,
       error,
       isLoading,

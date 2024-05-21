@@ -13,17 +13,14 @@ import {
 } from '@chakra-ui/react';
 import {
   queryFilterObject2String,
-  queryFilterString2Object,
   updateRoute,
 } from 'src/components/filters/helpers';
 import { MAX_PAGES, Pagination } from './components/pagination';
 import { SortDropdown } from './components/sort';
-import { encodeString } from 'src/utils/querystring-helpers';
 import { SelectedFilterType } from '../filters/types';
 import { defaultQuery } from './helpers';
 import { MetadataScoreToggle } from './components/metadata-score-toggle';
 import { useQuerySearchResults } from './hooks/useSearchResults';
-import { FILTERS_CONFIG } from './components/filters/helpers';
 import Card from './components/card';
 import { FormattedResource } from 'src/utils/api/types';
 import { ErrorCTA } from '../error';
@@ -34,7 +31,7 @@ import Empty from 'src/components/empty';
 import NextLink from 'next/link';
 import Banner from '../banner';
 import { formatNumber } from 'src/utils/helpers';
-import { Params } from 'src/utils/api';
+import ResultsCount from 'src/components/search-results-page/components/count';
 
 /*
 [COMPONENT INFO]:
@@ -45,24 +42,17 @@ import { Params } from 'src/utils/api';
 const SearchResultsPage = ({
   results,
   total: initialTotal,
-  queryParams,
+  selectedFilters,
+  querystring,
 }: {
   results: FormattedResource[];
   total: number;
-  queryParams: Params;
+  selectedFilters: SelectedFilterType;
+  querystring: string;
 }) => {
   const [shouldUseMetadataScore, setShouldUseMetadataScore] = useState(true);
 
   const router = useRouter();
-
-  // Currently selected filters.
-  const defaultFilters = useMemo(
-    () => Object.keys(FILTERS_CONFIG).reduce((r, k) => ({ ...r, [k]: [] }), {}),
-    [],
-  );
-
-  const [selectedFilters, setSelectedFilters] =
-    useState<SelectedFilterType>(defaultFilters);
 
   // Currently selected page.
   const [selectedPage, setSelectedPage] = useState(defaultQuery.selectedPage);
@@ -76,7 +66,7 @@ const SearchResultsPage = ({
 
   // Set initial state based on route params.
   useEffect(() => {
-    const { size, filters, from, sort } = router.query;
+    const { size, from, sort } = router.query;
 
     setSelectedPage(() => {
       if (!from) {
@@ -92,38 +82,12 @@ const SearchResultsPage = ({
     setSortOrder(prev =>
       sort ? (Array.isArray(sort) ? sort[0] : sort) : prev,
     );
-
-    setSelectedFilters(() => {
-      // convert url string to query object
-      let queryObject = queryFilterString2Object(filters);
-      return {
-        ...defaultFilters,
-        ...queryObject,
-      };
-    });
-  }, [defaultFilters, router]);
-
-  const getQueryString = useCallback(() => {
-    let querystring = router.query.q;
-
-    if (!querystring) {
-      querystring = defaultQuery.queryString;
-    } else {
-      querystring = Array.isArray(querystring)
-        ? `${querystring.map(s => s.trim()).join('+')}`
-        : `${querystring.trim()}`;
-    }
-    return router.query.advancedSearch
-      ? querystring
-      : encodeString(querystring);
   }, [router]);
-
-  const querystring = useMemo(() => getQueryString(), [getQueryString]);
 
   const params = useMemo(
     () => ({
       // don't escape parenthesis or colons when its an advanced search
-      q: router.query.advancedSearch ? querystring : encodeString(querystring),
+      q: querystring,
       extra_filter: queryFilterObject2String(selectedFilters) || '', // extra filter updates aggregate fields
       size: `${selectedPerPage}`,
       from: `${(selectedPage - 1) * selectedPerPage}`,
@@ -155,7 +119,6 @@ const SearchResultsPage = ({
       ],
     }),
     [
-      router.query.advancedSearch,
       querystring,
       selectedFilters,
       selectedPerPage,
@@ -165,17 +128,12 @@ const SearchResultsPage = ({
     ],
   );
 
-  const [total, setTotal] = useState<number>(initialTotal);
-
   const { isLoading, isRefetching, error, data } = useQuerySearchResults(
     params,
     {
       // Don't refresh everytime window is touched.
       refetchOnWindowFocus: false,
       enabled: router.isReady,
-      onSuccess: data => {
-        setTotal(data?.total || 0);
-      },
       initialData: { results, total: initialTotal, facets: {} },
     },
   );
@@ -239,13 +197,24 @@ const SearchResultsPage = ({
     );
   }
   return (
-    <Flex w='100%' flexDirection='column' mx={[0, 0, 4]} flex={[1, 2]}>
-      {/* Number of search results */}
-      {/* <ResultsCount
-        isLoading={isLoading || isRefetching || !router.isReady}
-        total={total}
-      /> */}
-
+    <Flex w='100%' flexDirection='column' flex={[1, 2]}>
+      {/* <Flex
+        bg='white'
+        border='1px solid'
+        borderColor='gray.100'
+        mb={1}
+        borderRadius='semi'
+        py={2}
+        px={4}
+        flexDirection='column'
+      >
+        <ResultsCount
+          total={initialTotal}
+          querystring={querystring}
+          selectedFilters={selectedFilters}
+          isEnabled={router.isReady}
+        />
+      </Flex> */}
       {/* Search results controls */}
       {numCards > 0 && (
         <Stack borderRadius='semi' boxShadow='base' bg='white' px={4} py={2}>
@@ -294,7 +263,7 @@ const SearchResultsPage = ({
             isLoading={isLoading}
             selectedPage={selectedPage}
             selectedPerPage={selectedPerPage}
-            total={total}
+            total={data?.total || initialTotal || 0}
           />
         </Stack>
       )}

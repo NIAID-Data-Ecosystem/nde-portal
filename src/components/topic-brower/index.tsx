@@ -4,6 +4,8 @@ import { LinearGradient } from '@visx/gradient';
 import { Group } from '@visx/group';
 import { hierarchy, Tree } from '@visx/hierarchy';
 import { LinkHorizontal } from '@visx/shape';
+import { HtmlLabel } from '@visx/annotation';
+import { Flex, Text } from '@chakra-ui/react';
 
 const defaultMargin = { top: 50, left: 80, right: 100, bottom: 50 };
 
@@ -12,14 +14,15 @@ export const TopicBrowser = ({
   width: totalWidth = 800,
   height: totalHeight = 480,
   margin = defaultMargin,
+  setSelectedTopic,
 }: {
   data: TreeNode;
   margin?: { top: number; right: number; bottom: number; left: number };
   width?: number;
   height?: number;
+  setSelectedTopic: (topic: TreeNode) => void;
 }) => {
   const data = tree?.children?.[0];
-
   // const forceUpdate = useForceUpdate();
 
   const innerWidth = totalWidth - margin.left - margin.right;
@@ -32,7 +35,6 @@ export const TopicBrowser = ({
   return !data || totalWidth < 10 ? null : (
     <svg width={totalWidth} height={totalHeight}>
       <LinearGradient id='links-gradient' from='#fd9b93' to='#fe6e9e' />
-      <rect width={totalWidth} height={totalHeight} rx={14} fill='#272b4d' />
       <Group top={margin.top} left={margin.left}>
         <Tree
           root={hierarchy(data, d => (d.isExpanded ? null : d.children))}
@@ -51,13 +53,72 @@ export const TopicBrowser = ({
                 />
               ))}
 
+              {/* {tree.descendants().map((node, key) => {
+                const maxWidth = innerWidth / tree.height;
+                let top = node.x;
+                let left = node.y;
+                const width = node.data.name.length * 6 + 2;
+                const height = 20;
+                return (
+                  <Group key={key} top={top} left={left}>
+                    {node.depth !== 0 && (
+                      <rect
+                        height={height}
+                        width={width}
+                        y={-height / 2}
+                        x={-width / 2}
+                        fill='#272b4d'
+                        stroke={node.data.children ? '#03c0dc' : '#26deb0'}
+                        strokeWidth={1}
+                        strokeDasharray={node.data.children ? '0' : '2,2'}
+                        strokeOpacity={node.data.children ? 1 : 0.6}
+                        rx={node.data.children ? 0 : 10}
+                        onClick={() => {
+                          // node.data.isExpanded = !node.data.isExpanded;
+                          console.log(node);
+                          // forceUpdate();
+                        }}
+                      />
+                    )}
+                    <HtmlLabel
+                      showAnchorLine={false}
+                      verticalAnchor='middle'
+                      horizontalAnchor='middle'
+                      containerStyle={{
+                        padding: '0.25rem',
+                        border: '1px solid',
+                        borderColor: node.data.children ? '#03c0dc' : '#26deb0',
+                        background: bg,
+                        maxWidth: maxWidth + 'px',
+                      }}
+                    >
+                      <Flex
+                        cursor='pointer'
+                        onClick={() => {
+                          console.log('HEEE');
+                        }}
+                      >
+                        <Text
+                          lineHeight='none'
+                          color='white'
+                          fontSize='sm'
+                          fontWeight='medium'
+                          noOfLines={2}
+                        >
+                          {node.data.name}
+                        </Text>
+                      </Flex>
+                    </HtmlLabel>
+                  </Group>
+                );
+              })} */}
+
               {tree.descendants().map((node, key) => {
                 const width = node.data.name.length * 6 + 2;
                 const height = 20;
 
                 let top = node.x;
                 let left = node.y;
-
                 return (
                   <Group top={top} left={left} key={key}>
                     {node.depth === 0 && (
@@ -83,11 +144,10 @@ export const TopicBrowser = ({
                         strokeDasharray={node.data.children ? '0' : '2,2'}
                         strokeOpacity={node.data.children ? 1 : 0.6}
                         rx={node.data.children ? 0 : 10}
-                        // onClick={() => {
-                        //   node.data.isExpanded = !node.data.isExpanded;
-                        //   // console.log(node);
-                        //   // forceUpdate();
-                        // }}
+                        cursor='pointer'
+                        onClick={() => {
+                          setSelectedTopic(node.data);
+                        }}
                       />
                     )}
                     <text

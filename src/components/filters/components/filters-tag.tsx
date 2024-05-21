@@ -1,18 +1,19 @@
 import { useMemo } from 'react';
 import {
   Button,
-  Flex,
+  HStack,
+  StackProps,
   Tag,
   TagCloseButton,
   TagLabel,
-  FlexProps,
+  Text,
 } from '@chakra-ui/react';
 import { queryFilterObject2String } from 'src/components/filters/helpers';
 import { defaultQuery } from 'src/components/search-results-page/helpers';
 import { FILTERS_CONFIG } from 'src/components/search-results-page/components/filters/helpers';
 import { SelectedFilterType, SelectedFilterTypeValue } from '../types';
 
-interface FilterTagsProps extends FlexProps {
+interface FilterTagsProps extends StackProps {
   selectedFilters: SelectedFilterType;
   handleRouteUpdate: (update: Record<string, any>) => void;
   removeAllFilters: () => void;
@@ -112,32 +113,30 @@ export const FilterTags: React.FC<FilterTagsProps> = ({
   if (!tags.length) return null;
 
   return (
-    <Flex pb={[4, 6]} flexWrap='wrap' {...props}>
+    <HStack flexWrap='wrap' spacing={1} {...props}>
       <Button
-        m={1}
         variant='outline'
-        size='md'
-        px={3}
-        py={2}
-        fontSize='sm'
-        fontWeight='medium'
+        fontSize='xs'
+        fontWeight='semibold'
         colorScheme='secondary'
         onClick={removeAllFilters}
+        py={1}
       >
         Clear All
       </Button>
       {tags.map(({ key, name, value, displayValue, filterKey }) => (
-        <Tag key={key} colorScheme='secondary' size='md' m={1}>
-          <TagLabel>{`${name}: ${
-            typeof displayValue === 'string'
+        <Tag key={key} colorScheme='secondary' size='sm'>
+          <TagLabel color='white'>
+            {name} :{' '}
+            {typeof displayValue === 'string'
               ? displayValue
-              : JSON.stringify(displayValue)
-          }`}</TagLabel>
+              : JSON.stringify(displayValue)}
+          </TagLabel>
           <TagCloseButton
             onClick={() => removeSelectedFilter(filterKey, value)}
           />
         </Tag>
       ))}
-    </Flex>
+    </HStack>
   );
 };

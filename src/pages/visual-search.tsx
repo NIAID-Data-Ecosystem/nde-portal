@@ -1,7 +1,7 @@
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import { PageContainer, PageContent } from 'src/components/page-container';
-import { Flex, Heading } from '@chakra-ui/react';
+import { Divider, Flex, Heading, Stack, Text } from '@chakra-ui/react';
 import { useHasMounted } from 'src/hooks/useHasMounted';
 import SearchResultsPage from 'src/components/search-results-page';
 import { queryFilterString2Object } from 'src/components/filters/helpers';
@@ -17,6 +17,7 @@ import { fetchSearchResults } from 'src/utils/api';
 import { Filters } from 'src/components/search-results-page/components/filters';
 import { FormattedResource } from 'src/utils/api/types';
 import { ScrollContainer } from 'src/components/scroll-container';
+import ResultsCount from 'src/components/search-results-page/components/count';
 import { encodeString } from 'src/utils/querystring-helpers';
 
 const FilterTags = dynamic(() =>
@@ -99,7 +100,6 @@ const Search: NextPage<{
       filters: defaultFilters,
     });
   }, [handleRouteUpdate, defaultFilters]);
-
   return (
     <PageContainer
       title='Search'
@@ -108,35 +108,66 @@ const Search: NextPage<{
       py={0}
     >
       <PageContent w='100%' flexDirection='column'>
-        {/* Search query */}
-        <Heading
-          as='h1'
-          fontSize='sm'
-          color='gray.800'
-          fontWeight='normal'
-          lineHeight='short'
-          mb={4}
+        {/*  Results count */}
+        <Stack
+          bg='white'
+          border='1px solid'
+          borderColor='gray.100'
+          borderRadius='semi'
+          flexDirection='column'
+          mb={2}
+          py={2}
+          px={4}
+          spacing={2}
         >
-          {querystring === '__all__'
-            ? `Showing all results`
-            : `Showing results for`}
-          <br />
-          {querystring !== '__all__' && (
-            <Heading as='span' fontWeight='bold' fontSize='inherit'>
-              {querystring.replaceAll('\\', '')}
-            </Heading>
-          )}
-        </Heading>
+          {/* Search query */}
 
-        {/* Tags with the names of the currently selected filters */}
-        {Object.values(applied_filters).length > 0 && (
-          <FilterTags
+          <Heading
+            as='h1'
+            fontSize='sm'
+            fontWeight='medium'
+            lineHeight='shorter'
+            color='black'
+            p={1}
+          >
+            <Text as='span' color='gray.800' fontSize='xs' fontWeight='normal'>
+              {querystring === '__all__'
+                ? 'Showing all results'
+                : 'Showing results for:'}
+            </Text>
+            {querystring !== '__all__' &&
+              ' ' + querystring.replaceAll('\\', '')}
+          </Heading>
+
+          <ResultsCount
+            total={total}
+            querystring={querystring}
             selectedFilters={selectedFilters}
-            handleRouteUpdate={handleRouteUpdate}
-            removeAllFilters={removeAllFilters}
           />
-        )}
-        <Flex w='100%'>
+
+          {/* Tags with the names of the currently selected filters */}
+          {Object.values(applied_filters).length > 0 && (
+            <>
+              <Divider />
+              <Text
+                color='gray.800'
+                fontSize='xs'
+                fontWeight='normal'
+                lineHeight='short'
+              >
+                Filter results by:
+              </Text>
+              <FilterTags
+                selectedFilters={selectedFilters}
+                handleRouteUpdate={handleRouteUpdate}
+                removeAllFilters={removeAllFilters}
+              />
+            </>
+          )}
+          {/* TO DO: Visual summary in collapsible */}
+        </Stack>
+
+        <Stack flexDirection='row' w='100%' spacing={{ base: 0, md: 2 }}>
           {/* Filters sidebar */}
           <ScrollContainer
             flex={{ base: 0, md: 1 }}
@@ -149,6 +180,7 @@ const Search: NextPage<{
             bg={{ base: 'unset', md: 'white' }}
             borderRadius='semi'
             overflowY='auto'
+            pr={{ base: 0, md: 2 }}
           >
             {router.isReady && hasMounted && (
               <Filters
@@ -175,7 +207,7 @@ const Search: NextPage<{
             querystring={querystring}
             selectedFilters={selectedFilters}
           />
-        </Flex>
+        </Stack>
       </PageContent>
     </PageContainer>
   );

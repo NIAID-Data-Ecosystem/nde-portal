@@ -53,8 +53,6 @@ export const MetadataIcon = React.forwardRef<HTMLDivElement, IconProps>(
       FaIcon = FaFingerprint;
     } else if (glyph?.toLowerCase() === 'inlanguage') {
       FaIcon = FaLanguage;
-    } else if (glyph?.toLowerCase() === 'spatialcoverage') {
-      FaIcon = FaEarthAfrica;
     } else if (glyph?.toLowerCase() === 'applicationcategory') {
       FaIcon = FaLaptopCode;
     } else if (glyph?.toLowerCase() === 'programminglanguage') {
