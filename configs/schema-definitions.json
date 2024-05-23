@@ -4006,6 +4006,19 @@
     },
     "isAdvancedSearchField": true
   },
+  "topicCategory.inDefinedTermSet": {
+    "name": "Topic Category In Defined Term Set",
+    "dotfield": "topicCategory",
+    "property": "inDefinedTermSet",
+    "count": 225997,
+    "type": "text",
+    "schemaType": "string",
+    "description": {
+      "Dataset": "A DefinedTermSet that contains this term.",
+      "ResourceCatalog": "A DefinedTermSet that contains this term."
+    },
+    "isAdvancedSearchField": false
+  },
   "topicCategory.name": {
     "name": "Topic Category Name",
     "dotfield": "topicCategory.name",

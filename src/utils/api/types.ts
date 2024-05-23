@@ -281,6 +281,7 @@ interface TopicCategory {
     name?: string;
     url?: string;
   };
+  inDefinedTermSet?: string;
 }
 
 export interface InputProperties {

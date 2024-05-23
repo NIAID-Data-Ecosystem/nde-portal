@@ -472,7 +472,9 @@ const createTopicCategoryContent = (
                   : topicCategory.name,
               },
               ontologyProps: {
-                ['aria-label']: 'See ontology information.',
+                ['aria-label']: `See ${topicCategory?.inDefinedTermSet} ontology information.`,
+                label: `${topicCategory?.inDefinedTermSet}`,
+                inDefinedTermSet: topicCategory?.inDefinedTermSet,
                 value: topicCategory?.url,
               },
             };
