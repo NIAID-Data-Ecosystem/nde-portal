@@ -27,20 +27,20 @@ import NextLink from 'next/link';
 import { encodeString } from 'src/utils/querystring-helpers';
 
 interface TopicDisplayProps {
-  topics: FacetTerm[];
+  facetTerms: FacetTerm[];
   initialZoom?: ZoomProps['initialTransform'];
   margin?: { top: number; right: number; bottom: number; left: number };
   zoomFactor?: number;
 }
 
 export const TopicDisplay = ({
-  topics,
+  facetTerms,
   initialZoom,
   margin,
   zoomFactor = 1,
 }: TopicDisplayProps) => {
   const [selectedTopic, setSelectedTopic] = useState<TreeNode | null>(null);
-  const { data } = useOntologyPaths2Root(topics);
+  const { data } = useOntologyPaths2Root(facetTerms);
   const tree = data && transformPathArraysToTree(data);
   const initialTransform = initialZoom
     ? {

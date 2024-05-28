@@ -1,10 +1,11 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import {
   Accordion,
   AccordionButton,
   AccordionItem,
   AccordionPanel,
   Icon,
+  Select,
   Text,
 } from '@chakra-ui/react';
 import { useFacetsData } from 'src/components/filters/hooks/useFacetsData';
@@ -28,38 +29,44 @@ const facets = [
   'topicCategory.url',
   'topicCategory.name',
 ];
+const getTopics = () => {};
 export const SearchResultsVisualizations = ({
   queryParams,
 }: SearchResultsVisualizationsProps) => {
+  const [selectedFacet, setSelectedFacet] = useState('topicCategory.url');
   const [{ data, error, isLoading }] = useFacetsData({
     queryParams,
     facets,
   });
 
-  const topics = useMemo(() => {
-    return (
-      (data &&
-        data?.['topicCategory.url']?.filter(
+  const options = [
+    { value: 'topicCategory.url', label: 'Topics' },
+    { value: 'species.identifier', label: 'Species' },
+    { value: 'infectiousAgent.identifier', label: 'Pathogen' },
+  ];
+
+  const facetTerms = useMemo(() => {
+    const aggregatedData = data && data?.[selectedFacet];
+
+    if (selectedFacet === 'topicCategory.url') {
+      return (
+        aggregatedData?.filter(
           item =>
             !item.term.includes('_exists_') &&
             item.term.startsWith('http://edamontology.org/'),
-        )) ||
-      []
-    );
-  }, [data]);
-
-  const species = useMemo(() => {
-    return (
-      (data &&
-        data?.['species.name']
+        ) || []
+      );
+    } else {
+      return (
+        aggregatedData
           ?.filter(item => !item.term.includes('_exists_'))
           .map(item => ({
             ...item,
             term: `http://purl.bioontology.org/ontology/NCBITAXON/${item.term}"`,
-          }))) ||
-      []
-    );
-  }, [data]);
+          })) || []
+      );
+    }
+  }, [data, selectedFacet]);
 
   return (
     <>
@@ -85,9 +92,28 @@ export const SearchResultsVisualizations = ({
               </h2>
               <AccordionPanel w='100%' px={2} my={2} py={4}>
                 <>
+                  <Select
+                    id='sorting-order-select'
+                    value={selectedFacet}
+                    onChange={e => {
+                      setSelectedFacet(e.target.value);
+                    }}
+                    size='sm'
+                    aria-label='Select data to display in the visual summary'
+                    maxWidth='200px'
+                    borderRadius='md'
+                    cursor='pointer'
+                    mb={2}
+                  >
+                    {options.map(option => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </Select>
                   {!isLoading && (
                     <TopicDisplay
-                      topics={topics.slice(0, 10)}
+                      facetTerms={facetTerms.slice(0, 10)}
                       margin={{ top: 20, left: 20, right: 80, bottom: 20 }}
                       initialZoom={{
                         scaleX: 0.8,
