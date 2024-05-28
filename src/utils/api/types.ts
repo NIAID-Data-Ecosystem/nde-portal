@@ -395,7 +395,7 @@ export interface FormattedResource {
   processorRequirements: string[] | null;
   programmingLanguage: string[] | null;
   publisher: Publisher | null;
-  rawData: any;
+  rawData?: any;
   sameAs: string | null;
   softwareAddOn: { identifier: string }[] | null;
   softwareHelp: { name?: string; url: string }[] | null;
