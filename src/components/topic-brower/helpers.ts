@@ -1,3 +1,5 @@
+import { OntologyPathsResponse } from './hooks';
+
 interface PathItem {
   '@id': string;
   prefLabel: string;
@@ -6,9 +8,11 @@ interface PathItem {
 
 export interface TreeNode {
   id: string;
-  name: string;
-  definition: string;
   children: TreeNode[];
+  count?: number;
+  definition: string;
+  name: string;
+  term?: string;
   url: string;
 }
 
@@ -23,8 +27,9 @@ const findOrCreateNode = (root: TreeNode, node: TreeNode): TreeNode => {
   }
 };
 export const transformPathArraysToTree = (
-  dataArrays: PathItem[][],
+  pathArray: OntologyPathsResponse[],
 ): TreeNode => {
+  const flattened = pathArray.map(item => item.paths2Root).flat();
   const root: TreeNode = {
     id: 'root',
     name: 'root',
@@ -33,14 +38,17 @@ export const transformPathArraysToTree = (
     children: [],
   };
 
-  dataArrays.forEach(dataArray => {
+  flattened.forEach(flatArray => {
     let currentNode = root;
-    dataArray.forEach(item => {
+    flatArray.forEach(item => {
+      const item_data = pathArray.find(path => path.id === item['@id']);
       const newNode: TreeNode = {
+        ...item_data,
         id: item['@id'].split('http://edamontology.org/')[1],
         name: item.prefLabel,
         definition: item.definition[0],
         url: item['@id'],
+
         children: [],
       };
       currentNode = findOrCreateNode(currentNode, newNode);

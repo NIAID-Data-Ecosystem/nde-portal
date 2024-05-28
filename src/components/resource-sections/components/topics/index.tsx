@@ -7,14 +7,13 @@ import {
   TreeNode,
   transformPathArraysToTree,
 } from 'src/components/topic-brower/helpers';
-import { useEDAMPaths2Root } from 'src/components/topic-brower/hooks';
-import { FormattedResource } from 'src/utils/api/types';
+import { useOntologyPaths2Root } from 'src/components/topic-brower/hooks';
+import { FacetTerm } from 'src/utils/api/types';
 import { ParentSize } from '@visx/responsive';
 import {
   Box,
   Flex,
   ListItem,
-  UnorderedList,
   Stack,
   Text,
   Tag,
@@ -26,9 +25,9 @@ import { useState } from 'react';
 import { FaMagnifyingGlass } from 'react-icons/fa6';
 import NextLink from 'next/link';
 import { encodeString } from 'src/utils/querystring-helpers';
+
 interface TopicDisplayProps {
-  topics: FormattedResource['topicCategory'];
-  topTopics: FormattedResource['topicCategory'];
+  topics: FacetTerm[];
   initialZoom?: ZoomProps['initialTransform'];
   margin?: { top: number; right: number; bottom: number; left: number };
   zoomFactor?: number;
@@ -39,11 +38,10 @@ export const TopicDisplay = ({
   initialZoom,
   margin,
   zoomFactor = 1,
-  topTopics,
 }: TopicDisplayProps) => {
   const [selectedTopic, setSelectedTopic] = useState<TreeNode | null>(null);
-  const { data } = useEDAMPaths2Root(topics);
-  const tree = data && transformPathArraysToTree(data.flat());
+  const { data } = useOntologyPaths2Root(topics);
+  const tree = data && transformPathArraysToTree(data);
   const initialTransform = initialZoom
     ? {
         scaleX: initialZoom.scaleX * (1 / zoomFactor),
@@ -117,7 +115,7 @@ export const TopicDisplay = ({
             </Tag>
           </NextLink>
         </Stack>
-      ) : topTopics && topTopics?.length > 0 ? (
+      ) : data && data?.length > 0 ? (
         <Box minWidth='230px' px={{ base: 2, lg: 4 }} py={{ base: 2, lg: 0 }}>
           <Text
             color='tertiary.800'
@@ -128,16 +126,16 @@ export const TopicDisplay = ({
             Most popular topics
           </Text>
           <OrderedList spacing={2} mx={4} my={2}>
-            {topTopics.map(({ term, count }) => {
+            {data.map(({ id, name, count }) => {
               return (
                 <ListItem
-                  key={term}
+                  key={id}
                   listStyleType='inherit'
                   color='gray.700'
                   fontSize='xs'
                   lineHeight='short'
                 >
-                  <Text>{term}</Text>
+                  <Text>{name}</Text>
                   <Text fontStyle='italic'>{count} results</Text>
                 </ListItem>
               );

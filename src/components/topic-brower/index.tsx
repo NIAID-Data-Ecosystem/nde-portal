@@ -16,7 +16,7 @@ export const TopicBrowser = ({
   margin = defaultMargin,
   setSelectedTopic,
 }: {
-  data: TreeNode;
+  data?: TreeNode;
   margin?: { top: number; right: number; bottom: number; left: number };
   width?: number;
   height?: number;
@@ -114,7 +114,14 @@ export const TopicBrowser = ({
               })} */}
 
               {tree.descendants().map((node, key) => {
-                const width = node.data.name.length * 6 + 2;
+                const averageCharWidth = 0.55; // Average character width as a fraction of font size
+                const padding = 5; // Additional padding
+                const fontSize = 10;
+                const label = `${node.data.name} ${
+                  node.data.count ? ` | ${node.data.count}` : ''
+                }`;
+                const width =
+                  fontSize * label.length * averageCharWidth + padding;
                 const height = 20;
 
                 let top = node.x;
@@ -152,7 +159,7 @@ export const TopicBrowser = ({
                     )}
                     <text
                       dy='.33em'
-                      fontSize={10}
+                      fontSize={fontSize}
                       fontFamily='Arial'
                       textAnchor='middle'
                       style={{ pointerEvents: 'none' }}
@@ -164,7 +171,7 @@ export const TopicBrowser = ({
                           : '#26deb0'
                       }
                     >
-                      {node.data.name}
+                      {label}
                     </text>
                   </Group>
                 );

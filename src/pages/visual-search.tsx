@@ -1,7 +1,7 @@
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import { PageContainer, PageContent } from 'src/components/page-container';
-import { Divider, Flex, Heading, Stack, Text } from '@chakra-ui/react';
+import { Divider, Heading, Stack, Text } from '@chakra-ui/react';
 import { useHasMounted } from 'src/hooks/useHasMounted';
 import SearchResultsPage from 'src/components/search-results-page';
 import { queryFilterString2Object } from 'src/components/filters/helpers';
@@ -19,6 +19,7 @@ import { FormattedResource } from 'src/utils/api/types';
 import { ScrollContainer } from 'src/components/scroll-container';
 import ResultsCount from 'src/components/search-results-page/components/count';
 import { encodeString } from 'src/utils/querystring-helpers';
+import { SearchResultsVisualizations } from 'src/views/visual-search/visualisations';
 
 const FilterTags = dynamic(() =>
   import('src/components/filters/components/filters-tag').then(
@@ -143,6 +144,16 @@ const Search: NextPage<{
             total={total}
             querystring={querystring}
             selectedFilters={selectedFilters}
+          />
+          <SearchResultsVisualizations
+            queryParams={{
+              ...defaultParams,
+              ...router.query,
+              q: querystring,
+              extra_filter: Array.isArray(router.query.filters)
+                ? router.query.filters.join('')
+                : router.query.filters || '',
+            }}
           />
 
           {/* Tags with the names of the currently selected filters */}
