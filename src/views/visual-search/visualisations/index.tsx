@@ -18,16 +18,10 @@ interface SearchResultsVisualizationsProps {
 }
 
 const facets = [
-  '@type',
-  'healthCondition.name',
-  'includedInDataCatalog.name',
-  'infectiousAgent.displayName',
-  'species.displayName',
-  'funding.funder.name',
-  'conditionsOfAccess',
-  'measurementTechnique.name',
   'topicCategory.url',
   'topicCategory.name',
+  'species.identifier',
+  'infectiousAgent.identifier',
 ];
 const getTopics = () => {};
 export const SearchResultsVisualizations = ({
@@ -35,7 +29,7 @@ export const SearchResultsVisualizations = ({
 }: SearchResultsVisualizationsProps) => {
   const [selectedFacet, setSelectedFacet] = useState('topicCategory.url');
   const [{ data, error, isLoading }] = useFacetsData({
-    queryParams,
+    queryParams: { ...queryParams, facet_size: 20 },
     facets,
   });
 
