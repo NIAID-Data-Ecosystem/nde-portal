@@ -1,5 +1,8 @@
 // Type of resource.
-export type APIResourceType = 'Dataset' | 'ResourceCatalog';
+export type APIResourceType =
+  | 'Dataset'
+  | 'ResourceCatalog'
+  | 'ComputationalTool';
 // | 'ComputationalTool'
 // | 'Software'
 // | 'ScholarlyArticle'

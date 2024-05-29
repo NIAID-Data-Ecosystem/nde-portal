@@ -1,4 +1,7 @@
-import { FiltersConfigProps } from 'src/components/filters/types';
+import {
+  FiltersConfigProps,
+  SelectedFilterTypeValue,
+} from 'src/components/filters/types';
 import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
 import { SchemaDefinitions } from 'scripts/generate-schema-definitions/types';
 
@@ -19,7 +22,6 @@ const getSchemaDescription = (property: string) => {
 Config for the naming/text of a filter.
 [NOTE]: Order matters here as the filters will be rendered in the order of the keys.
 */
-
 export const FILTERS_CONFIG: FiltersConfigProps = {
   date: {
     name: 'Date ',
@@ -84,4 +86,41 @@ export const FILTERS_CONFIG: FiltersConfigProps = {
     property: 'measurementTechnique',
     description: getSchemaDescription('measurementTechnique'),
   },
+  programmingLanguage: {
+    name: 'Programming Language',
+    glyph: 'programmingLanguage',
+    property: 'programmingLanguage',
+    description: getSchemaDescription('programmingLanguage'),
+    '@type': ['ComputationalTool'],
+  },
+};
+
+/**
+ * Function to filter the configuration based on the selected types.
+ * @param {FiltersConfigProps} config - The full configuration object.
+ * @param {SelectedFilterTypeValue[]} selectedTypes - Array of selected types to filter by.
+ * @returns {FiltersConfigProps} - The filtered configuration object.
+ */
+export const filterConfigByType = (
+  config: FiltersConfigProps,
+  selectedTypes?: SelectedFilterTypeValue[],
+) => {
+  const filteredConfig: FiltersConfigProps = {};
+
+  for (const key in config) {
+    const item = config[key];
+
+    if (!selectedTypes || !selectedTypes.length) {
+      if (!item['@type']) {
+        filteredConfig[key] = item;
+      }
+    } else if (
+      !item['@type'] ||
+      item['@type'].some(type => selectedTypes.includes(type))
+    ) {
+      filteredConfig[key] = item;
+    }
+  }
+
+  return filteredConfig;
 };

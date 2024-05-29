@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { Params } from 'src/utils/api';
 import { useFacetsData } from 'src/components/filters/hooks/useFacetsData';
 import { FiltersContainer } from 'src/components/filters/components/filters-container';
@@ -11,7 +11,7 @@ import {
 import { SelectedFilterType } from 'src/components/filters/types';
 import { useRouter } from 'next/router';
 import { FiltersDateSlider } from 'src/components/filters/components/filters-date-slider/';
-import { FILTERS_CONFIG } from './helpers';
+import { FILTERS_CONFIG, filterConfigByType } from './helpers';
 
 /*
 [COMPONENT INFO]:
@@ -35,7 +35,13 @@ export const Filters: React.FC<FiltersProps> = ({
   removeAllFilters,
   selectedFilters,
 }) => {
-  const facets = Object.keys(FILTERS_CONFIG);
+  const filteredConfig = useMemo(
+    () => filterConfigByType(FILTERS_CONFIG, selectedFilters['@type']),
+    [selectedFilters],
+  );
+
+  const facets = useMemo(() => Object.keys(filteredConfig), [filteredConfig]);
+
   const router = useRouter();
   const [{ data, error, isLoading, isUpdating }] = useFacetsData({
     queryParams,

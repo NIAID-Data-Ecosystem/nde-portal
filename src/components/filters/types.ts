@@ -1,4 +1,5 @@
 import { FacetTerm } from 'src/utils/api/types';
+import { APIResourceType } from 'src/utils/formatting/formatResourceType';
 
 export type FacetTerms = {
   [key: string]: FacetTerm[];
@@ -17,6 +18,7 @@ export interface FiltersConfigProps {
     property: string;
     description: string;
     isDefaultOpen?: boolean;
+    '@type'?: APIResourceType[];
   };
 }
 

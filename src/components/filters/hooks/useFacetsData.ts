@@ -244,7 +244,7 @@ export const useFacetsData = ({
               const updatedTerms = facetTermsData[facet].map(facetTerm => {
                 const updateFacetTerm = { ...facetTerm };
                 // Check if element is in updated data.
-                const updatedItem = data[facet].terms.find(
+                const updatedItem = data?.[facet]?.terms.find(
                   el => el.term === facetTerm.term,
                 );
                 // if item count has changed, update state with new count.
