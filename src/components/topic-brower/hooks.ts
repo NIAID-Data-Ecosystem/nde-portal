@@ -70,7 +70,7 @@ const fetchPaths2Root = async (
           ...topic,
           paths2Root: paths2Root,
           count: topic.count,
-          id: topicInfo['@id'],
+          id: topicInfo['@id'].split('/').pop(),
           name: topicInfo.prefLabel,
           definition: topicInfo.definition[0],
         };

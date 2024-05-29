@@ -23,7 +23,7 @@ const facets = [
   'species.identifier',
   'infectiousAgent.identifier',
 ];
-const getTopics = () => {};
+
 export const SearchResultsVisualizations = ({
   queryParams,
 }: SearchResultsVisualizationsProps) => {
@@ -38,7 +38,7 @@ export const SearchResultsVisualizations = ({
     { value: 'species.identifier', label: 'Species' },
     { value: 'infectiousAgent.identifier', label: 'Pathogen' },
   ];
-
+  console.log('h', encodeURI('http://purl.obolibrary.org/obo/NCBITaxon_11652'));
   const facetTerms = useMemo(() => {
     const aggregatedData = data && data?.[selectedFacet];
 
@@ -56,7 +56,7 @@ export const SearchResultsVisualizations = ({
           ?.filter(item => !item.term.includes('_exists_'))
           .map(item => ({
             ...item,
-            term: `http://purl.bioontology.org/ontology/NCBITAXON/${item.term}"`,
+            term: `http://purl.obolibrary.org/obo/NCBITAXON_${item.term}`,
           })) || []
       );
     }
@@ -107,6 +107,7 @@ export const SearchResultsVisualizations = ({
                   </Select>
                   {!isLoading && (
                     <TopicDisplay
+                      facet={selectedFacet}
                       facetTerms={facetTerms.slice(0, 10)}
                       margin={{ top: 20, left: 20, right: 80, bottom: 20 }}
                       initialZoom={{

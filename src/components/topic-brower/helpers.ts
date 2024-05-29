@@ -41,14 +41,13 @@ export const transformPathArraysToTree = (
   flattened.forEach(flatArray => {
     let currentNode = root;
     flatArray.forEach(item => {
-      const item_data = pathArray.find(path => path.id === item['@id']);
+      const id = item['@id'].split('/').pop();
+      const item_data = pathArray.find(path => path.id === id);
       const newNode: TreeNode = {
         ...item_data,
-        id: item['@id'].split('http://edamontology.org/')[1],
         name: item.prefLabel,
         definition: item.definition[0],
         url: item['@id'],
-
         children: [],
       };
       currentNode = findOrCreateNode(currentNode, newNode);

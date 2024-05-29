@@ -94,9 +94,7 @@ export const TopicBrowser = ({
                     >
                       <Flex
                         cursor='pointer'
-                        onClick={() => {
-                          console.log('HEEE');
-                        }}
+
                       >
                         <Text
                           lineHeight='none'

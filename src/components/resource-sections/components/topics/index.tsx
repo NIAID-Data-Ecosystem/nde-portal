@@ -1,3 +1,18 @@
+import { useMemo, useState } from 'react';
+import {
+  Box,
+  Flex,
+  ListItem,
+  Stack,
+  Text,
+  Tag,
+  TagLeftIcon,
+  TagLabel,
+  OrderedList,
+} from '@chakra-ui/react';
+import { FaMagnifyingGlass } from 'react-icons/fa6';
+import NextLink from 'next/link';
+import { encodeString } from 'src/utils/querystring-helpers';
 import { TopicBrowser } from 'src/components/topic-brower';
 import {
   ZoomContainer,
@@ -10,37 +25,28 @@ import {
 import { useOntologyPaths2Root } from 'src/components/topic-brower/hooks';
 import { FacetTerm } from 'src/utils/api/types';
 import { ParentSize } from '@visx/responsive';
-import {
-  Box,
-  Flex,
-  ListItem,
-  Stack,
-  Text,
-  Tag,
-  TagLeftIcon,
-  TagLabel,
-  OrderedList,
-} from '@chakra-ui/react';
-import { useState } from 'react';
-import { FaMagnifyingGlass } from 'react-icons/fa6';
-import NextLink from 'next/link';
-import { encodeString } from 'src/utils/querystring-helpers';
 
 interface TopicDisplayProps {
   facetTerms: FacetTerm[];
   initialZoom?: ZoomProps['initialTransform'];
   margin?: { top: number; right: number; bottom: number; left: number };
   zoomFactor?: number;
+  facet: string;
 }
 
 export const TopicDisplay = ({
+  facet,
   facetTerms,
   initialZoom,
   margin,
   zoomFactor = 1,
 }: TopicDisplayProps) => {
+  const ontology = useMemo(
+    () => (facet === 'topicCategory.url' ? 'EDAM' : 'NCBITAXON'),
+    [facet],
+  );
   const [selectedTopic, setSelectedTopic] = useState<TreeNode | null>(null);
-  const { data } = useOntologyPaths2Root(facetTerms);
+  const { data } = useOntologyPaths2Root(facetTerms, ontology);
   const tree = data && transformPathArraysToTree(data);
   const initialTransform = initialZoom
     ? {
@@ -52,10 +58,10 @@ export const TopicDisplay = ({
         skewY: initialZoom.skewY,
       }
     : undefined;
-
+  console.log('data', tree, selectedTopic);
   return (
     <Flex flexWrap='wrap'>
-      <Flex minWidth='500px' flex={1}>
+      <Flex minWidth='500px' maxWidth='700px' flex={1}>
         <ParentSize>
           {parent => {
             return (
@@ -95,9 +101,11 @@ export const TopicDisplay = ({
 
           <NextLink
             href={{
-              pathname: '/search',
+              pathname: '/visual-search',
               query: {
-                q: `topic.identifier:"${encodeString(selectedTopic.id)}"`,
+                q: selectedTopic.id
+                  ? `${facet}:"${encodeString(selectedTopic.id)}"`
+                  : '',
                 advancedSearch: true,
               },
             }}
