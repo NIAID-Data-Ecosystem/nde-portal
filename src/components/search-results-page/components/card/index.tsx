@@ -16,7 +16,6 @@ import { FaCircleArrowRight, FaAngleRight, FaRegClock } from 'react-icons/fa6';
 import { FormattedResource } from 'src/utils/api/types';
 import { TypeBanner } from 'src/components/resource-sections/components';
 import MetadataAccordion from './metadata-accordion';
-import TopicCategories from './topic-categories';
 import TopicCategory from './topic-category';
 import { DisplayHTMLContent } from 'src/components/html-content';
 import { AccessibleForFree, ConditionsOfAccess } from 'src/components/badges';
@@ -296,10 +295,6 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
               </Stack>
 
               <MetadataAccordion data={data} />
-
-              {data?.topicCategory && (
-                <TopicCategories topicCategories={data.topicCategory} />
-              )}
 
               {data?.topicCategory && data?.topicCategory.length > 0 && (
                 <TopicCategory data={data} />
