@@ -335,7 +335,7 @@ const Main: React.FC<Main> = ({ data, isLoading, metadata }) => {
                       height='unset'
                       m={1}
                     >
-                      Search for {sourceObj.name} records
+                      Search for {sourceObj.name} resources
                     </Button>
                   </NextLink>
                   {sourceObj.url && (
