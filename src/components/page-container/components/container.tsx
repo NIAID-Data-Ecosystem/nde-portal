@@ -1,12 +1,4 @@
-import {
-  Box,
-  Breadcrumb,
-  Button,
-  Flex,
-  FlexProps,
-  Icon,
-  Stack,
-} from '@chakra-ui/react';
+import { Box, Button, Flex, FlexProps, Icon, Stack } from '@chakra-ui/react';
 import Head from 'next/head';
 import axios from 'axios';
 import { useQuery } from 'react-query';
@@ -126,7 +118,6 @@ export const PageContainer: React.FC<PageContainerProps> = ({
 
       <Flex as='main' w='100%' flexDirection='column' minW={300}>
         <Navigation />
-        <Breadcrumbs />
 
         {/*Page content has margin-top to compensate for fixed nav bar. */}
         <Box id='pagebody' position='relative' {...props}>
