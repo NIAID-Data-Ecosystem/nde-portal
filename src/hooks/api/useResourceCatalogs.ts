@@ -69,7 +69,7 @@ export function useResourceCatalogs({
           conditionsOfAccess: catalog.conditionsOfAccess,
           type: catalog['@type'],
           name: catalog.name,
-          domain: catalog.genre.toLowerCase() as ResourceCatalog['domain'],
+          domain: catalog?.genre ? catalog.genre.toLowerCase() : 'other',
           url: catalog.url,
         }));
       },
