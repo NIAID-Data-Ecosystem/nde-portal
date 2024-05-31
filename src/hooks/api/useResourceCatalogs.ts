@@ -11,7 +11,13 @@ export interface ResourceCatalog {
   conditionsOfAccess?: FormattedResource['conditionsOfAccess'];
   type: 'ResourceCatalog';
   name: FormattedResource['name'];
-  domain: 'generalist' | 'iid';
+  domain:
+    | 'generalist'
+    | 'iid'
+    | 'basic science'
+    | 'biomedical'
+    | 'other'
+    | 'metadata';
   url?: FormattedResource['url'];
 }
 
@@ -27,6 +33,7 @@ export function useResourceCatalogs({
     'abstract',
     'collectionType',
     'conditionsOfAccess',
+    'genre',
     'name',
     'url',
   ],
@@ -62,7 +69,7 @@ export function useResourceCatalogs({
           conditionsOfAccess: catalog.conditionsOfAccess,
           type: catalog['@type'],
           name: catalog.name,
-          domain: 'iid',
+          domain: catalog?.genre ? catalog.genre.toLowerCase() : 'other',
           url: catalog.url,
         }));
       },
