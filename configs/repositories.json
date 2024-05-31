@@ -139,7 +139,7 @@
       "id": "MalariaGEN",
       "label": "MalariaGEN",
       "imageURL": "/assets/resources/malariagen.svg",
-      "type": "generalist"
+      "type": "iid"
     },
     {
       "id": "Mendeley",
