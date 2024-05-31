@@ -365,6 +365,7 @@ export interface FormattedResource {
   doi: string | null;
   downloadUrl: { name: string }[] | null;
   funding: Funding[] | null;
+  genre: string | null;
   hasAPI: boolean | null;
   hasDownload:
     | 'All content'
