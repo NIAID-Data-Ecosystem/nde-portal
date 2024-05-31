@@ -11,7 +11,13 @@ export interface Repository {
   type: 'Repository';
   icon?: string;
   name: string;
-  domain: 'generalist' | 'iid';
+  domain:
+    | 'generalist'
+    | 'iid'
+    | 'basic science'
+    | 'biomedical'
+    | 'other'
+    | 'metadata';
   url?: string | null;
 }
 
