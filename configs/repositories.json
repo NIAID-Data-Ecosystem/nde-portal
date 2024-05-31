@@ -7,7 +7,7 @@
     {
       "id": "AccessClinicalData@NIAID",
       "label": "AccessClinicalData@NIAID",
-      "genre": ["clinical"],
+
       "icon": "/assets/NIH-logo.png",
       "imageURL": "/assets/resources/access-clinical.png",
       "isNIAID": true,
@@ -39,7 +39,7 @@
     {
       "id": "ClinEpiDB",
       "label": "ClinEpiDB",
-      "genre": ["clinical", "epidemiology"],
+
       "icon": "/assets/resources/clinepi.jpeg",
       "imageURL": "/assets/resources/clinepi.jpeg",
       "isNIAID": true,
@@ -105,7 +105,7 @@
     {
       "id": "HuBMAP",
       "label": "HuBMAP",
-      "genre": ["physiology", "imaging", "omics", "spectrometry"],
+
       "icon": "/assets/resources/hubmap-icon.jpg",
       "imageURL": "/assets/resources/hubmap.png",
       "type": "generalist"
@@ -113,7 +113,7 @@
     {
       "id": "Human Cell Atlas",
       "label": "Human Cell Atlas",
-      "genre": ["physiology", "omics"],
+
       "icon": "/assets/resources/hca-icon.png",
       "imageURL": "/assets/resources/hca.png",
       "type": "generalist"
@@ -121,7 +121,7 @@
     {
       "id": "ImmPort",
       "label": "ImmPort",
-      "genre": ["omics", "clinical", "imaging", "immunology", "molecular"],
+
       "icon": "/assets/resources/immport-icon.jpg",
       "imageURL": "/assets/resources/immport.png",
       "isNIAID": true,
@@ -130,7 +130,7 @@
     {
       "id": "LINCS",
       "label": "BD2K-LINCS DCIC",
-      "genre": ["imaging", "omics", "molecular"],
+
       "icon": "/assets/resources/lincs-icon.jpg",
       "imageURL": "/assets/resources/lincs.png",
       "type": "generalist"
@@ -151,7 +151,7 @@
     {
       "id": "MicrobiomeDB",
       "label": "MicrobiomeDB",
-      "genre": ["omics"],
+
       "icon": "/assets/resources/microbiome.png",
       "imageURL": "/assets/resources/microbiome.png",
       "isNIAID": true,
@@ -160,7 +160,7 @@
     {
       "id": "NCBI GEO",
       "label": "NCBI GEO",
-      "genre": ["omics"],
+
       "icon": "/assets/resources/geo.gif",
       "imageURL": "/assets/resources/geo.gif",
       "type": "generalist"
@@ -175,7 +175,7 @@
     {
       "id": "NCBI SRA",
       "label": "NCBI Sequence Read Archive",
-      "genre": ["omics"],
+
       "icon": "/assets/resources/ncbi-sra.png",
       "imageURL": "/assets/resources/ncbi-sra.png",
       "type": "generalist"
@@ -191,7 +191,7 @@
     {
       "id": "Omics Discovery Index (OmicsDI)",
       "label": "Omics Discovery Index (OmicsDI)",
-      "genre": ["omics"],
+
       "icon": "/assets/resources/omics.png",
       "imageURL": "/assets/resources/omics.png",
       "type": "generalist"
@@ -207,7 +207,7 @@
     {
       "id": "Qiita",
       "label": "Qiita",
-      "genre": ["omics"],
+
       "icon": "/assets/resources/qiita.png",
       "imageURL": "/assets/resources/qiita.png",
       "type": "iid"
@@ -216,7 +216,7 @@
     {
       "id": "ReframeDB",
       "label": "ReframeDB",
-      "genre": ["molecular"],
+
       "icon": "/assets/resources/reframedb.png",
       "imageURL": "/assets/resources/reframedb.png",
       "type": "iid"
@@ -224,7 +224,7 @@
     {
       "id": "VDJServer",
       "label": "VDJServer",
-      "genre": ["omics"],
+
       "icon": "/assets/resources/vdjserver.png",
       "imageURL": "/assets/resources/vdjserver.png",
       "isNIAID": true,
@@ -233,7 +233,7 @@
     {
       "id": "VEuPathDB",
       "label": "VEuPathDB",
-      "genre": ["omics"],
+
       "icon": "/assets/resources/veupathdb-icon.jpg",
       "imageURL": "/assets/resources/VEuPathDB.png",
       "isNIAID": true,
@@ -242,7 +242,7 @@
     {
       "id": "Vivli",
       "label": "Vivli",
-      "genre": ["clinical"],
+
       "icon": "/assets/resources/vivli-icon.jpeg",
       "imageURL": "/assets/resources/vivli.png",
       "type": "generalist"

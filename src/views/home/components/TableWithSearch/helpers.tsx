@@ -14,7 +14,7 @@ export const formatDomainName = (type: TableData['domain']) => {
   } else if (type === 'generalist') {
     return 'Generalist';
   } else {
-    return type;
+    return type.charAt(0).toUpperCase() + type.slice(1);
   }
 };
 
