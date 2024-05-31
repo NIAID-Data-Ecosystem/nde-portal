@@ -346,7 +346,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                           rightIcon={<FaCircleArrowRight />}
                           aria-label={`Go to details about resource ${name}`}
                         >
-                          View dataset
+                          View resource
                         </Button>
                       </Flex>
                     </NextLink>

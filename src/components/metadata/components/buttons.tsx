@@ -50,6 +50,7 @@ export const OntologyButton = ({
           leftIcon={<Icon as={FaSitemap} />}
           fontSize='12px'
           fontWeight='medium'
+          color='gray.800'
           sx={{
             borderBottomColor: 'inherit',
             '.child-node': {
@@ -59,7 +60,13 @@ export const OntologyButton = ({
             },
             '.child-node p': { borderBottom: 'none' },
           }}
-          _visited={{ _hover: { borderBottomColor: 'inherit' } }}
+          _visited={{
+            '.child-node p, .child-node svg': {
+              borderBottom: 'none',
+              color: 'inherit',
+            },
+            _hover: { borderBottomColor: 'inherit' },
+          }}
         >
           <Text pt={0.25}>{label || inDefinedTermSet} </Text>
         </Button>

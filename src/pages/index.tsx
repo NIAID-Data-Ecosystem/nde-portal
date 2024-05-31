@@ -221,8 +221,7 @@ const Home: NextPage<{
                             <Button
                               w='100%'
                               minWidth='150px'
-                              fontSize='sm'
-                              size='md'
+                              size='sm'
                               variant={index % 2 ? 'solid' : 'outline'}
                               my={[1, 2, 0]}
                               maxWidth={['unset', '250px']}
