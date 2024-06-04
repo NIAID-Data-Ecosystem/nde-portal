@@ -7,7 +7,10 @@ interface TopicCategoryProps {
 }
 
 const TopicCategories: React.FC<TopicCategoryProps> = ({ data }) => {
-  const topicCategoryNames = data?.map(element => element.name).sort();
+  const topicCategoryNames = data
+    ?.filter(element => element.name !== undefined)
+    .map(element => element.name!)
+    .sort();
   const paddingCard = [4, 6, 8, 10];
   return (
     <Stack
