@@ -273,7 +273,7 @@ interface TemporalCoverage {
   };
 }
 
-interface TopicCategory {
+export interface TopicCategory {
   description?: string;
   name?: string;
   url?: string;

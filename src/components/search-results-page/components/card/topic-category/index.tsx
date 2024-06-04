@@ -1,16 +1,13 @@
 import React from 'react';
 import { Stack, Flex, Tag, TagLabel, Text } from '@chakra-ui/react';
-import { FormattedResource } from 'src/utils/api/types';
+import { TopicCategory } from 'src/utils/api/types';
 
 interface TopicCategoryProps {
-  data?: FormattedResource | null;
+  data?: TopicCategory[] | null;
 }
 
 const TopicCategories: React.FC<TopicCategoryProps> = ({ data }) => {
-  const topicCategoryData = data?.topicCategory;
-  const topicCategoryNames = topicCategoryData
-    ?.map(element => element.name)
-    .sort();
+  const topicCategoryNames = data?.map(element => element.name).sort();
   const paddingCard = [4, 6, 8, 10];
   return (
     <Stack

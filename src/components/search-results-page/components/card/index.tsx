@@ -297,7 +297,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
               <MetadataAccordion data={data} />
 
               {data?.topicCategory && data?.topicCategory.length > 0 && (
-                <TopicCategory data={data} />
+                <TopicCategory data={data.topicCategory} />
               )}
 
               <Stack
