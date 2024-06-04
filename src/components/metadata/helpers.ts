@@ -230,13 +230,15 @@ const createHealthConditionContent = (
     label: 'Health Condition',
     property,
     glyph: property,
-    isDisabled: !healthCondition,
+    isDisabled: !healthCondition || healthCondition.every(item => !item.name),
     items:
       showItems && healthCondition
         ? healthCondition.map((healthCondition, idx) => {
             const name = Array.isArray(healthCondition.name)
               ? healthCondition.name.join(', ')
               : healthCondition.name;
+
+            const termSet = healthCondition?.inDefinedTermSet?.toLowerCase();
 
             return {
               key: uniqueId(`${property}-${id}-${idx}`),
@@ -250,12 +252,13 @@ const createHealthConditionContent = (
                   : healthCondition.name,
               },
               ontologyProps: {
-                ['aria-label']:
-                  healthCondition?.inDefinedTermSet?.toLowerCase() === 'other'
+                ['aria-label']: termSet
+                  ? termSet === 'other'
                     ? 'See term information in OLS.'
-                    : `See ${healthCondition?.inDefinedTermSet} ontology information.`,
+                    : `See ${healthCondition.inDefinedTermSet} ontology information.`
+                  : 'See taxonomy information.',
                 value: healthCondition?.url,
-                label: `${healthCondition?.inDefinedTermSet}`,
+                label: healthCondition?.inDefinedTermSet,
                 inDefinedTermSet: healthCondition?.inDefinedTermSet,
               },
             };
@@ -300,7 +303,8 @@ const createMeasurementTechniqueContent = (
     label: 'Measurement Technique',
     property,
     glyph: property,
-    isDisabled: !measurementTechnique,
+    isDisabled:
+      !measurementTechnique || measurementTechnique.every(item => !item.name),
     items:
       showItems && measurementTechnique
         ? measurementTechnique.map((measurementTechnique, idx) => {
@@ -340,7 +344,7 @@ const createInfectiousAgentContent = (
     label: 'Pathogen',
     property,
     glyph: property,
-    isDisabled: !infectiousAgent,
+    isDisabled: !infectiousAgent || infectiousAgent.every(item => !item.name),
     items:
       showItems && infectiousAgent
         ? infectiousAgent.map((pathogen, idx) => {
@@ -352,11 +356,14 @@ const createInfectiousAgentContent = (
               ? pathogen.commonName.join(', ')
               : pathogen.commonName;
 
-            const ontologyLabel = `${pathogen?.inDefinedTermSet}${
-              pathogen?.inDefinedTermSet?.toLowerCase() === 'uniprot'
-                ? ' Taxon'
-                : ''
-            }`;
+            const termSet = pathogen?.inDefinedTermSet;
+
+            const ontologyLabel = termSet
+              ? `${pathogen?.inDefinedTermSet}${
+                  termSet?.toLowerCase() === 'uniprot' ? ' Taxon' : ''
+                }`
+              : '';
+
             return {
               key: uniqueId(`${property}-${id}-${idx}`),
               name,
@@ -369,7 +376,9 @@ const createInfectiousAgentContent = (
                   : pathogen.name,
               },
               ontologyProps: {
-                ['aria-label']: `See ${pathogen?.inDefinedTermSet} taxonomy information.`,
+                ['aria-label']: termSet
+                  ? `See ${pathogen?.inDefinedTermSet} taxonomy information.`
+                  : 'See taxonomy information.',
                 inDefinedTermSet: pathogen?.inDefinedTermSet,
                 label: ontologyLabel,
                 value: pathogen?.url,
@@ -392,7 +401,7 @@ const createSpeciesContent = (
     label: 'Species',
     property,
     glyph: property,
-    isDisabled: !species,
+    isDisabled: !species || species.every(item => !item.name),
     items:
       showItems && species
         ? species.map((species, idx) => {
@@ -404,11 +413,14 @@ const createSpeciesContent = (
               ? species.commonName.join(', ')
               : species.commonName;
 
-            const ontologyLabel = `${species?.inDefinedTermSet}${
-              species?.inDefinedTermSet?.toLowerCase() === 'uniprot'
-                ? ' Taxon'
-                : ''
-            }`;
+            const termSet = species?.inDefinedTermSet;
+            const ontologyLabel = termSet
+              ? `${species?.inDefinedTermSet}${
+                  species?.inDefinedTermSet?.toLowerCase() === 'uniprot'
+                    ? ' Taxon'
+                    : ''
+                }`
+              : '';
 
             return {
               key: uniqueId(`${property}-${id}-${idx}`),
@@ -422,7 +434,9 @@ const createSpeciesContent = (
                   : species.name,
               },
               ontologyProps: {
-                ['aria-label']: `See ${species?.inDefinedTermSet} taxonomy information.`,
+                ['aria-label']: termSet
+                  ? `See ${species?.inDefinedTermSet} taxonomy information.`
+                  : 'See taxonomy information.',
                 label: ontologyLabel,
                 inDefinedTermSet: species?.inDefinedTermSet,
                 value: species?.url,
@@ -455,13 +469,14 @@ const createTopicCategoryContent = (
     id: `${property}-${id}`,
     label: 'Topic Category',
     property,
-    isDisabled: !topicCategory,
+    isDisabled: !topicCategory || topicCategory.every(item => !item.name),
     items:
       showItems && topicCategory
         ? topicCategory.map((topicCategory, idx) => {
             const name = Array.isArray(topicCategory.name)
               ? topicCategory.name.join(', ')
               : topicCategory.name;
+            const termSet = topicCategory?.inDefinedTermSet;
 
             return {
               key: uniqueId(`${property}-${id}-${idx}`),
@@ -474,8 +489,10 @@ const createTopicCategoryContent = (
                   : topicCategory.name,
               },
               ontologyProps: {
-                ['aria-label']: `See ${topicCategory?.inDefinedTermSet} ontology information.`,
-                label: `${topicCategory?.inDefinedTermSet}`,
+                ['aria-label']: termSet
+                  ? `See ${topicCategory?.inDefinedTermSet} taxonomy information.`
+                  : 'See taxonomy information.',
+                label: topicCategory?.inDefinedTermSet,
                 inDefinedTermSet: topicCategory?.inDefinedTermSet,
                 value: topicCategory?.url,
               },
