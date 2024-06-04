@@ -13,6 +13,7 @@ export interface MetadataSource {
     schema: Object | null;
     url: string;
     identifier: string;
+    conditionsOfAccess?: string;
   };
   stats: { [key: string]: number };
   version: string;

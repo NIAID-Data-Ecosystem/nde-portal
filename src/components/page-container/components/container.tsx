@@ -1,4 +1,12 @@
-import { Box, Button, Flex, FlexProps, Icon, Stack } from '@chakra-ui/react';
+import {
+  Box,
+  Breadcrumb,
+  Button,
+  Flex,
+  FlexProps,
+  Icon,
+  Stack,
+} from '@chakra-ui/react';
 import Head from 'next/head';
 import axios from 'axios';
 import { useQuery } from 'react-query';
@@ -7,6 +15,7 @@ import { Navigation } from 'src/components/navigation-bar';
 import { SearchBarWithDropdown } from 'src/components/search-bar';
 import NextLink from 'next/link';
 import { FaMagnifyingGlass } from 'react-icons/fa6';
+import { Breadcrumbs } from './breadcrumbs';
 import { Banner } from './banner';
 
 interface PageContainerProps extends FlexProps {
@@ -112,12 +121,13 @@ export const PageContainer: React.FC<PageContainerProps> = ({
         />
       </Head>
 
-      <Flex as='main' w='100%' flexDirection='column' minW={300}>
+      <Flex as='main' w='100%' flexDirection='column' minW='300px'>
         <Navigation />
 
         {/*Page content has margin-top to compensate for fixed nav bar. */}
         <Box id='pagebody' position='relative' {...props}>
           <Stack spacing='1px' bg='gray.100'>
+            {/* <!-- Banner for dev and staging instance --> */}
             {!isProd && (
               <Banner
                 id='banner-environment-notice'
@@ -135,6 +145,7 @@ export const PageContainer: React.FC<PageContainerProps> = ({
                 status='INFO'
               />
             )}
+            {/* <!-- Banner for service warnings and notices --> */}
             {notices &&
               notices.map(notice => (
                 <Banner
@@ -146,6 +157,11 @@ export const PageContainer: React.FC<PageContainerProps> = ({
                 />
               ))}
           </Stack>
+
+          {/* <!-- Breadcrumbs --> */}
+          <Breadcrumbs />
+
+          {/* <!-- Search bar for datasets across site --> */}
           {!disableSearchBar && (
             <Stack
               bg='#fff'
@@ -156,7 +172,7 @@ export const PageContainer: React.FC<PageContainerProps> = ({
               py={4}
             >
               <NextLink
-                href={{ pathname: 'advanced-search' }}
+                href={{ pathname: '/advanced-search' }}
                 passHref
                 prefetch={false}
                 style={{

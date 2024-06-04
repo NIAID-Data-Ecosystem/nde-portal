@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import {
+  Badge,
   Box,
   Button,
   Collapse,
   Divider,
   Flex,
   Heading,
+  HStack,
   Icon,
   Skeleton,
   Tag,
@@ -153,23 +155,18 @@ const Main: React.FC<Main> = ({ data, isLoading, metadata }) => {
                 py={6}
                 sx={{ '>*': { px: 4, mt: 4, mx: [0, 4, 8] } }}
               >
-                <Box mx={[0, 2, 6]}>
-                  <Tag
-                    bg='status.info'
-                    wordBreak='break-word'
-                    m={0.5}
-                    color='white'
-                  >
+                <HStack spacing={2}>
+                  <Text fontWeight='bold' color='text.heading' fontSize='xl'>
                     {sourceObj.name}
-                  </Tag>
+                  </Text>
                   {sourceObj.isNiaidFunded && (
-                    <Tag bg='tertiary.700' m={0.5} color='white'>
+                    <Badge colorScheme='blue' variant='subtle'>
                       NIAID
-                    </Tag>
+                    </Badge>
                   )}
-                </Box>
-                <Box>
-                  <Text fontWeight='bold' fontSize='sm'>
+                </HStack>
+                <Box mt={2}>
+                  <Text fontWeight='semibold' fontSize='sm'>
                     {sourceObj.numberOfRecords.toLocaleString()} Records
                     Available
                   </Text>
@@ -193,6 +190,7 @@ const Main: React.FC<Main> = ({ data, isLoading, metadata }) => {
                           fontWeight='semibold'
                           color='gray.800'
                           textAlign={['center', 'left']}
+                          lineHeight='short'
                         >
                           Visualization of {sourceObj.name} properties
                           transformed to the NIAID Data Ecosystem
@@ -337,7 +335,7 @@ const Main: React.FC<Main> = ({ data, isLoading, metadata }) => {
                       height='unset'
                       m={1}
                     >
-                      Search for {sourceObj.name} records
+                      Search for {sourceObj.name} resources
                     </Button>
                   </NextLink>
                   {sourceObj.url && (

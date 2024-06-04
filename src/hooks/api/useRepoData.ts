@@ -1,45 +1,54 @@
 import REPOSITORIES from 'configs/repositories.json';
-import { useQuery, UseQueryOptions } from 'react-query';
+import { useQuery } from 'react-query';
 import { fetchMetadata } from './helpers';
 import { Metadata } from './types';
+import { FormattedResource } from 'src/utils/api/types';
 
 export interface Repository {
-  identifier: string;
-  label: string;
-  type: 'generalist' | 'iid';
-  url?: string;
+  _id: string;
   abstract?: string;
+  conditionsOfAccess?: FormattedResource['conditionsOfAccess'];
+  type: 'Repository';
   icon?: string;
+  name: string;
+  domain:
+    | 'generalist'
+    | 'iid'
+    | 'basic science'
+    | 'biomedical'
+    | 'other'
+    | 'metadata';
+  url?: string | null;
 }
 
-export function useRepoData(
-  options: UseQueryOptions<Metadata, Error, Repository[]> = {},
-) {
-  return useQuery<Metadata, Error, Repository[]>({
+export function useRepoData(options: any = {}) {
+  return useQuery<Metadata | undefined, Error, Repository[]>({
     ...options,
     queryKey: ['metadata'],
     queryFn: fetchMetadata,
-    select: (data: Metadata) => {
+    select: (data: Metadata | undefined) => {
       const sources = data?.src || [];
       const repositories = Object.values(sources).map(({ sourceInfo }) => {
-        const { identifier, abstract, description, name, url } =
+        const { identifier, abstract, conditionsOfAccess, name, url } =
           sourceInfo || {};
 
         const repo = REPOSITORIES.repositories.find(
           ({ id }) => id === identifier,
         );
         return {
-          identifier,
-          url,
+          _id: identifier,
           abstract: abstract || '',
-          description,
-          label: name || '',
-          type: (repo?.type || 'generalist') as Repository['type'],
+          type: 'Repository' as Repository['type'],
           icon: repo?.icon || '',
+          name: name || '',
+          domain: (repo?.type.toLowerCase() ||
+            'generalist') as Repository['domain'],
+          url,
+          conditionsOfAccess: conditionsOfAccess || '',
         };
       });
 
-      return repositories as Repository[];
+      return repositories;
     },
   });
 }

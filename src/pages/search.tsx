@@ -1,7 +1,7 @@
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import { PageContainer, PageContent } from 'src/components/page-container';
-import { Box, Flex, Heading } from '@chakra-ui/react';
+import { Flex, Heading } from '@chakra-ui/react';
 import { useHasMounted } from 'src/hooks/useHasMounted';
 import SearchResultsPage from 'src/components/search-results-page';
 import { queryFilterString2Object } from 'src/components/filters/helpers';
@@ -177,7 +177,6 @@ export async function getStaticProps() {
         '@type',
         'alternateName',
         'author',
-        'collectionType',
         'conditionsOfAccess',
         'date',
         'description',

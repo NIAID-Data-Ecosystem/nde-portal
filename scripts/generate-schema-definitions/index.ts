@@ -18,6 +18,50 @@ export enum ResourceType {
 // Array of supported resource types.
 export const RESOURCE_TYPES = Object.values(ResourceType);
 
+const getCustomFields = () => {
+  // Hardcoded additional custom fields
+  // [type]: A general type definition
+  const type = {
+    name: 'Type',
+    dotfield: 'type',
+    property: 'type',
+    count: 0,
+    type: 'text',
+    description: {
+      Dataset:
+        'Type is used to categorize the nature or genre of the content of the resource.',
+      ResourceCatalog:
+        'Type is used to categorize the nature or genre of the content of the resource.',
+    },
+    abstract: {
+      Dataset:
+        'Type is used to categorize the nature or genre of the content of the resource.',
+      ResourceCatalog:
+        'Type is used to categorize the nature or genre of the content of the resource.',
+    },
+    isAdvancedSearchField: false,
+  };
+
+  // [domain]: "generalist"/"iid" domain definition from NCIT
+  const domain = {
+    name: 'Domain',
+    dotfield: 'domain',
+    property: 'domain',
+    count: 0,
+    type: 'text',
+    description: {
+      Dataset: 'An area of knowledge or field(s) of study.',
+      ResourceCatalog: 'An area of knowledge or field(s) of study.',
+    },
+    abstract: {
+      Dataset: 'An area of knowledge or field(s) of study.',
+      ResourceCatalog: 'An area of knowledge or field(s) of study.',
+    },
+    isAdvancedSearchField: false,
+  };
+  return { type, domain };
+};
+
 const generateSchemaDefinitions = async () => {
   try {
     console.log('Updating schema definitions + counts...');
@@ -36,7 +80,10 @@ const generateSchemaDefinitions = async () => {
       fieldsInMappingWithCounts,
       fieldsDetailsFromSchema,
     );
-    return matchedFields;
+
+    const additionalFields = getCustomFields();
+
+    return { ...matchedFields, ...additionalFields };
   } catch (error: any) {
     console.error('Error generating schema definitions:', error.message);
     throw error;

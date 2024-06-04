@@ -16,14 +16,14 @@ describe('use query hook', () => {
       ({ type }) => type === 'generalist',
     );
 
-    const { identifier, description } = result.current.data[0];
-    const { type, icon } = repos.find(({ id }) => identifier === id);
+    const { _id, abstract } = result.current.data[0];
+    const { type, icon } = repos.find(({ id }) => _id === id);
     expect(result.current.data).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
-          type,
+          domain: type,
           icon,
-          description,
+          abstract,
         }),
       ]),
     );

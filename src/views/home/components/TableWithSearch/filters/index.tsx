@@ -1,0 +1,108 @@
+import { TableData } from '..';
+import { useMemo } from 'react';
+import { getFilterData } from '../helpers';
+import { CheckboxList } from './checkbox-list';
+import { formatDomainName, formatTypeName } from '../helpers';
+import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
+
+interface TableFiltersProps {
+  data: TableData[];
+  filters: { name: string; value: string; property: string }[];
+  updateFilter: (filters: {
+    name: string;
+    value: string;
+    property: string;
+  }) => void;
+}
+
+export const Filters = ({ data, filters, updateFilter }: TableFiltersProps) => {
+  // Data types: ResourceCatalog, Repository
+  const types = useMemo(
+    () =>
+      getFilterData({
+        data,
+        property: 'type',
+        formatName: (str: TableData['type']) =>
+          str ? formatTypeName(str) : '',
+      }),
+    [data],
+  );
+
+  // Data domains: data['domain'] field: iid, generalist, other CollectionType
+  const domains = useMemo(
+    () =>
+      getFilterData({
+        data,
+        property: 'domain',
+        formatName: (str: TableData['domain']) =>
+          str ? formatDomainName(str) : '',
+      }),
+    [data],
+  );
+
+  // Conditions of access: Open, Restricted, Closed, Embargoed
+  const conditionsOfAccess = useMemo(
+    () =>
+      getFilterData({
+        data,
+        property: 'conditionsOfAccess',
+        formatName: (str: TableData['conditionsOfAccess']) =>
+          str ? str?.charAt(0).toUpperCase() + str?.slice(1) : '',
+      }),
+    [data],
+  );
+
+  return (
+    <>
+      {/* <!-- Types checkboxes --> */}
+      {types.length > 0 && (
+        <CheckboxList
+          label='Type'
+          property='type'
+          description={SCHEMA_DEFINITIONS['type'].abstract['Dataset']}
+          options={types}
+          selectedOptions={
+            filters.filter(item => item.property === 'type') || []
+          }
+          handleChange={updateFilter}
+        />
+      )}
+
+      {/* <!-- Domains checkboxes --> */}
+      {domains.length > 0 && (
+        <CheckboxList
+          label='Research Domain'
+          property='domain'
+          description={SCHEMA_DEFINITIONS['domain'].abstract['Dataset']}
+          options={domains}
+          selectedOptions={
+            filters.filter(item => item.property === 'domain') || []
+          }
+          handleChange={updateFilter}
+        />
+      )}
+
+      {/* <!-- Conditions of Access types checkboxes --> */}
+      {conditionsOfAccess.length > 0 && (
+        <CheckboxList
+          label='Access'
+          property='conditionsOfAccess'
+          description={
+            SCHEMA_DEFINITIONS['conditionsOfAccess'].abstract['Dataset']
+              .charAt(0)
+              .toUpperCase() +
+            SCHEMA_DEFINITIONS['conditionsOfAccess'].abstract['Dataset'].slice(
+              1,
+            ) +
+            '.'
+          }
+          options={conditionsOfAccess}
+          selectedOptions={
+            filters.filter(item => item.property === 'conditionsOfAccess') || []
+          }
+          handleChange={updateFilter}
+        />
+      )}
+    </>
+  );
+};

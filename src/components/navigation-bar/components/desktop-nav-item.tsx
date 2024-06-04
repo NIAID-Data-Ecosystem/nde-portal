@@ -1,41 +1,49 @@
 import React from 'react';
 import { FaCaretDown } from 'react-icons/fa6';
-import { Button, Link, Icon, Popover, PopoverTrigger } from '@chakra-ui/react';
+import {
+  Box,
+  Button,
+  Icon,
+  Link,
+  Popover,
+  PopoverTrigger,
+} from '@chakra-ui/react';
 import { RouteProps } from '..';
 import { DesktopSubNav } from './menu-desktop';
-
 // Desktop Navigation link styles
 export const DesktopNavItem = ({
   label,
   routes,
   href,
   isExternal,
+  isActive,
 }: RouteProps) => {
   if (!routes) {
     return (
       <Link
         href={href ?? '#'}
-        px={2}
+        color='white'
         fontSize='md'
         fontWeight={500}
-        color='white'
         _visited={{ color: 'white', _hover: { color: 'white' } }}
         _hover={{
-          opacity: 0.85,
+          bg: 'whiteAlpha.300',
           color: 'white',
         }}
         variant='unstyled'
         cursor='pointer'
         whiteSpace='nowrap'
-        display='flex'
         w='auto'
         h='100%'
+        display='flex'
+        flexDirection='column'
         justifyContent='center'
         alignItems='center'
         textAlign='center'
         target={isExternal ? '_blank' : '_self'}
       >
         {label}
+        {isActive && <Box bg='white' width={8} height={0.5} />}
       </Link>
     );
   }
@@ -55,7 +63,6 @@ export const DesktopNavItem = ({
               <Button
                 as='a'
                 __css={{ padding: 0 }}
-                px={2}
                 display='flex'
                 href={href ?? '#'}
                 fontSize='md'
@@ -63,8 +70,7 @@ export const DesktopNavItem = ({
                 color='white'
                 _visited={{ color: 'white' }}
                 _hover={{
-                  opacity: 0.85,
-                  color: 'white',
+                  bg: 'whiteAlpha.300',
                 }}
                 variant='unstyled'
                 cursor='pointer'
@@ -73,6 +79,7 @@ export const DesktopNavItem = ({
                 h='100%'
               >
                 {label}
+
                 {routes && <Icon as={FaCaretDown} ml={1} w={4} h={4} />}
               </Button>
             </PopoverTrigger>

@@ -1,4 +1,7 @@
-import { APIResourceType } from '../formatting/formatResourceType';
+import {
+  APIResourceType,
+  CollectionType,
+} from '../formatting/formatResourceType';
 
 export interface FetchSearchResultsResponse {
   results: FormattedResource[];
@@ -35,7 +38,13 @@ export interface FacetTerm {
 }
 
 // Conditions of access for dataset or tool.
-export type AccessTypes = 'Open' | 'Controlled' | 'Embargoed' | 'Restricted';
+export type AccessTypes =
+  | 'Open'
+  | 'Controlled'
+  | 'Embargoed'
+  | 'Restricted'
+  | 'Varied'
+  | 'Unknown';
 
 export interface AdditionalType {
   name?: string;
@@ -324,6 +333,8 @@ export interface FormattedResource {
     };
     recommended_augmented_fields: string[];
     required_augmented_fields: string[];
+    recommended_fields: string[];
+    required_fields: string[];
   };
   id: string;
   '@type': APIResourceType; // "Dataset" | "ComputationalTool" | "Resource Catalog"
@@ -340,7 +351,7 @@ export interface FormattedResource {
   citedBy: CitedBy[] | null;
   codeRepository: string[] | string | null;
   collectionSize?: CollectionSize[];
-  collectionType?: string;
+  collectionType?: CollectionType | null;
   condition: string | null;
   conditionsOfAccess: AccessTypes | null;
   curatedBy: CuratedBy | null;
@@ -355,6 +366,7 @@ export interface FormattedResource {
   doi: string | null;
   downloadUrl: { name: string }[] | null;
   funding: Funding[] | null;
+  genre: string | null;
   hasAPI: boolean | null;
   hasDownload:
     | 'All content'
@@ -385,7 +397,7 @@ export interface FormattedResource {
   processorRequirements: string[] | null;
   programmingLanguage: string[] | null;
   publisher: Publisher | null;
-  rawData: any;
+  rawData?: any;
   sameAs: string | null;
   softwareAddOn: { identifier: string }[] | null;
   softwareHelp: { name?: string; url: string }[] | null;

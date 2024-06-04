@@ -260,7 +260,6 @@ export const formatAPIResource = (data: any) => {
     processorRequirements: convertToArray(data.processorRequirements),
     programmingLanguage: convertToArray(data.programmingLanguage),
     publisher: data.publisher || null,
-    rawData: data,
     sameAs: data.sameAs || null,
     sdPublisher: convertToArray(data.sdPublisher),
     softwareAddOn: convertToArray(data.softwareAddOn),

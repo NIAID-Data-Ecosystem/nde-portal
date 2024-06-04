@@ -25,21 +25,23 @@ import { ToggleContainer } from 'src/components/toggle-container';
 import { formatAuthorsList2String } from 'src/utils/helpers/authors';
 import { isSourceFundedByNiaid } from 'src/utils/helpers/sources';
 import { Skeleton } from 'src/components/skeleton';
+import { useRouter } from 'next/router';
 
 interface SearchResultCardProps {
   isLoading?: boolean;
   data?: FormattedResource | null;
+  referrerPath?: string;
 }
 
 const SearchResultCard: React.FC<SearchResultCardProps> = ({
   isLoading,
   data,
+  referrerPath,
 }) => {
   const {
     ['@type']: type,
     id,
     alternateName,
-    collectionType,
     name,
     date,
     author,
@@ -58,7 +60,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
     isLoading || !includedInDataCatalog
       ? []
       : getSourceDetails(includedInDataCatalog);
-
+  const router = useRouter();
   return (
     // {/* Banner with resource type + date of publication */}
     <Card ref={cardRef} variant='niaid' my={4} mb={8}>
@@ -67,7 +69,6 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
         p={0}
         pl={[2, 4, 6]}
         flexDirection={['column', 'row']}
-        subType={collectionType}
         isNiaidFunded={isSourceFundedByNiaid(includedInDataCatalog)}
       />
 
@@ -97,10 +98,12 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
           minHeight={isLoading ? '81px' : 'unset'}
         >
           <NextLink
+            // referrerPath is the current path of the page - used for breadcrumbs in resources page
             href={{
               pathname: '/resources/',
-              query: { id },
+              query: { id, referrerPath },
             }}
+            as={`/resources?id=${id}`}
             passHref
             prefetch={false}
             style={{
@@ -229,39 +232,19 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                 px={paddingCard}
                 py={[0, 1]}
                 my={1}
-                flexDirection={{ base: 'column', sm: 'row' }}
+                flexDirection={{ base: 'column', md: 'row' }}
                 spacing={[1, 3, 4]}
               >
-                <Flex
-                  px={1}
-                  py={{ base: 1, sm: 3 }}
-                  border={{ base: '1px', sm: 'none' }}
-                  borderColor='gray.100'
-                  borderRadius='semi'
-                  alignItems='center'
-                  justifyContent={{ base: 'center', sm: 'flex-start' }}
-                >
-                  {data && (
-                    <>
-                      <CompletenessBadgeCircle
-                        stats={data['_meta']}
-                        animate={false}
-                        size='md'
-                      />
-
-                      <Text
-                        display={{ base: 'block', sm: 'none' }}
-                        color='gray.800'
-                        fontSize='xs'
-                        fontWeight='normal'
-                        lineHeight='shorter'
-                        mx={3}
-                      >
-                        Metadata Completeness
-                      </Text>
-                    </>
-                  )}
-                </Flex>
+                {data && (
+                  <CompletenessBadgeCircle
+                    type={data['@type']}
+                    stats={data['_meta']}
+                    animate={false}
+                    size='md'
+                    minWidth='176px'
+                    p={0}
+                  />
+                )}
                 <Flex
                   display={{ base: 'block', sm: 'none' }}
                   px={2}
@@ -280,14 +263,15 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                   <ToggleContainer
                     ariaLabel=''
                     noOfLines={[3, 10]}
-                    px={1}
-                    py={1}
+                    px={4}
+                    py={2}
                     my={0}
                     borderColor='transparent'
                     justifyContent='space-between'
                     _hover={{ bg: 'page.alt' }}
                     _focus={{ outlineColor: 'transparent', bg: 'white' }}
                     alignIcon='center'
+                    borderRadius='semi'
                   >
                     <DisplayHTMLContent content={description} />
                   </ToggleContainer>
@@ -324,10 +308,12 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                 >
                   {id && (
                     <NextLink
+                      // referrerPath is the current path of the page - used for breadcrumbs in resources page
                       href={{
                         pathname: '/resources/',
-                        query: { id },
+                        query: { id, referrerPath },
                       }}
+                      as={`/resources?id=${id}`}
                       style={{ flex: 1 }}
                       passHref
                       prefetch={false}
@@ -345,7 +331,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                           rightIcon={<FaCircleArrowRight />}
                           aria-label={`Go to details about resource ${name}`}
                         >
-                          View dataset
+                          View resource
                         </Button>
                       </Flex>
                     </NextLink>

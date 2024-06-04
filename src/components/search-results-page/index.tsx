@@ -35,6 +35,7 @@ import Empty from 'src/components/empty';
 import NextLink from 'next/link';
 import Banner from '../banner';
 import { formatNumber } from 'src/utils/helpers';
+
 /*
 [COMPONENT INFO]:
  Search results pages displays the list of records returned by a search.
@@ -132,7 +133,6 @@ const SearchResultsPage = ({
         '@type',
         'alternateName',
         'author',
-        'collectionType',
         'conditionsOfAccess',
         'date',
         'description',
@@ -196,7 +196,7 @@ const SearchResultsPage = ({
         isLoading ? selectedPerPage : data?.results.length || 0,
         selectedPerPage,
       ),
-    [isLoading, data?.results.length, selectedPerPage],
+    [isLoading, data?.results?.length, selectedPerPage],
   );
 
   if (error) {
@@ -336,6 +336,7 @@ const SearchResultsPage = ({
                   <Card
                     isLoading={!router.isReady || isLoading || isRefetching}
                     data={data?.results[idx]}
+                    referrerPath={router.asPath}
                   />
                 </ListItem>
               );
