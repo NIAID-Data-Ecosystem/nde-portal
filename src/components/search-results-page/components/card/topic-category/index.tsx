@@ -1,6 +1,9 @@
 import React from 'react';
-import { Stack, Flex, Tag, TagLabel, Text } from '@chakra-ui/react';
+import NextLink from 'next/link';
+import { Stack, Flex, Tag, TagLabel, TagLeftIcon } from '@chakra-ui/react';
 import { TopicCategory } from 'src/utils/api/types';
+import { encodeString } from 'src/utils/querystring-helpers';
+import { FaMagnifyingGlass } from 'react-icons/fa6';
 
 interface TopicCategoryProps {
   data?: TopicCategory[] | null;
@@ -12,6 +15,7 @@ const TopicCategories: React.FC<TopicCategoryProps> = ({ data }) => {
     .map(element => element.name!)
     .sort();
   const paddingCard = [4, 6, 8, 10];
+  if (topicCategoryNames?.length === 0) return null;
   return (
     <Stack
       my='0'
@@ -23,20 +27,28 @@ const TopicCategories: React.FC<TopicCategoryProps> = ({ data }) => {
       <Flex flexWrap='wrap'>
         {topicCategoryNames?.map(name => {
           return (
-            <Tag
-              key={`${name}`}
-              size='sm'
-              variant='subtle'
-              borderRadius='full'
-              m='0.5'
-              colorScheme='teal'
+            <NextLink
+              key={name}
+              href={{
+                pathname: '/search',
+                query: {
+                  q: `topicCategory.name:"${encodeString(name.trim())}"`,
+                  advancedSearch: true,
+                },
+              }}
             >
-              <TagLabel>
-                <Text fontSize='xs' m='0.5'>
-                  {name}
-                </Text>
-              </TagLabel>
-            </Tag>
+              <Tag
+                size='sm'
+                variant='subtle'
+                m='0.5'
+                colorScheme='primary'
+                cursor='pointer'
+                _hover={{ textDecoration: 'underline' }}
+              >
+                <TagLeftIcon as={FaMagnifyingGlass} />
+                <TagLabel>{name}</TagLabel>
+              </Tag>
+            </NextLink>
           );
         })}
       </Flex>
