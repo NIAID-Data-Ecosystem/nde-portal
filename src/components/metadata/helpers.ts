@@ -443,7 +443,9 @@ const createTopicCategoryContent = (
   // Sorts topic categories alphabetically
   if (
     topicCategory != null &&
-    topicCategory.every(item => typeof item.name === 'string')
+    topicCategory
+      ?.filter(item => item.name !== undefined)
+      .every(item => typeof item.name === 'string')
   )
     topicCategory.sort((a, b) =>
       (a.name as string).localeCompare(b.name as string),
