@@ -35,6 +35,7 @@ const Overview: React.FC<OverviewProps> = ({
   measurementTechnique,
   spatialCoverage,
   species,
+  topicCategory,
   temporalCoverage,
   variableMeasured,
   ...data
@@ -46,6 +47,7 @@ const Overview: React.FC<OverviewProps> = ({
     healthCondition,
     variableMeasured,
     measurementTechnique,
+    topicCategory,
   });
   const sortedMetadataContent = sortMetadataArray(
     [
