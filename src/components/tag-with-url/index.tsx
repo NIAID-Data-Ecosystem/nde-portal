@@ -1,71 +1,90 @@
 import React from 'react';
-import { ButtonProps, Icon, Tag, Text } from '@chakra-ui/react';
 import { FaSquareArrowUpRight } from 'react-icons/fa6';
-import { Link } from 'src/components/link';
+import {
+  Tag,
+  TagLabel,
+  TagLeftIcon,
+  TagProps,
+  TagRightIcon,
+  Text,
+} from '@chakra-ui/react';
+import NextLink from 'next/link';
+import type { UrlObject } from 'url';
+import { IconType } from 'react-icons';
 
-interface TagWithUrlProps extends ButtonProps {
-  colorScheme?: string;
-  url?: string;
-  value?: string;
+interface TagWithUrlProps extends TagProps {
+  href?: string | UrlObject | null;
   label?: string;
+  isExternal?: boolean;
+  leftIcon?: IconType;
 }
 
-// StyledTag: Memoized component for displaying tags with certain styling
-const StyledTag = React.memo(
-  ({ children, colorScheme, ...props }: ButtonProps) => {
+/**
+ * TagWithUrl is a component that wraps a Tag component with a URL.
+ * It allows the user to click on the tag and navigate to the URL.
+ * @param {TagWithUrlProps} props
+ * @param {string | UrlObject} props.href - The URL to navigate to.
+ * @param {string} props.label - The (optional) label to display before the tag.
+ * @param {boolean} props.isExternal - Whether the URL is external.
+ */
+
+export const TagWithUrl = ({
+  children,
+  label,
+  href,
+  leftIcon,
+  ...props
+}: TagWithUrlProps) => {
+  const Label = () =>
+    label ? (
+      <Text
+        as='span'
+        mr={1}
+        fontWeight='semibold'
+        fontSize='inherit'
+        color='inherit'
+        lineHeight='inherit'
+      >
+        {label}
+      </Text>
+    ) : (
+      <></>
+    );
+
+  // Note: Show as plain text when there is no associated url
+  // See issue: https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/245
+  if (!href)
     return (
+      <Text fontSize={props.fontSize || 'xs'} {...props}>
+        <Label />
+        {children}
+      </Text>
+    );
+  return (
+    <NextLink href={href} target={props.isExternal ? '_blank' : '_self'}>
       <Tag
         size='sm'
         variant='subtle'
-        colorScheme={colorScheme}
         alignItems='center'
-        fontSize='12px'
+        _hover={{
+          '>*': {
+            textDecoration: 'none',
+          },
+        }}
+        lineHeight='shorter'
         {...props}
       >
-        {children}
+        {leftIcon && <TagLeftIcon as={leftIcon} />}
+        <Label />
+        <TagLabel
+          textDecoration='underline'
+          fontSize='inherit'
+          lineHeight='inherit'
+        >
+          {children}
+        </TagLabel>
+        {props.isExternal && <TagRightIcon as={FaSquareArrowUpRight} ml={1} />}
       </Tag>
-    );
-  },
-);
-
-// TagWithUrl: Memoized component for displaying tags with optional URLs
-export const TagWithUrl = React.memo(
-  ({ children, colorScheme, label, url, ...props }: TagWithUrlProps) => {
-    return (
-      <StyledTag colorScheme={colorScheme} {...props}>
-        {label && (
-          <Text
-            as='span'
-            mr={1}
-            fontWeight='bold'
-            lineHeight='short'
-            fontSize='inherit'
-          >
-            {label}
-          </Text>
-        )}
-        {url ? (
-          <Link
-            href={url}
-            target='_blank'
-            alignItems='center'
-            color={colorScheme ? `${colorScheme}.600` : 'link.color'}
-            _hover={{
-              color: colorScheme ? `${colorScheme}.600` : 'link.color',
-            }}
-          >
-            <Text color='inherit'>{children}</Text>
-            <Icon
-              as={FaSquareArrowUpRight}
-              boxSize={3}
-              ml={1}
-              color={'inherit'}
-            />
-          </Link>
-        ) : (
-          <>{children}</>
-        )}
-      </StyledTag>
-    );
-  },
-);
+    </NextLink>
+  );
+};

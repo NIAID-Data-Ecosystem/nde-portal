@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Flex, Icon, Tag, Text } from '@chakra-ui/react';
+import { Box, Flex, Icon, Text } from '@chakra-ui/react';
 import { Distribution, FormattedResource } from 'src/utils/api/types';
 import { Table } from 'src/components/table';
 import { Link } from 'src/components/link';
@@ -119,32 +119,18 @@ export const DistributionCells = ({
         )}
         {column.property === 'encodingFormat' && (
           <Box>
-            <Flex>
-              {column.property === 'encodingFormat' && (
-                <Tag
-                  size='sm'
-                  fontSize='xs'
-                  colorScheme='primary'
-                  variant='subtle'
-                  mb={1}
-                >
-                  {data[column.property]}
-                </Tag>
-              )}
-              {formatIcon && (
-                <Icon as={formatIcon} color={color || undefined} ml={2} />
-              )}
-            </Flex>
+            {column.property === 'encodingFormat' && (
+              <Text size='sm' fontSize='xs' mb={1}>
+                {data[column.property]}
+                {formatIcon && (
+                  <Icon as={formatIcon} color={color || undefined} ml={2} />
+                )}
+              </Text>
+            )}
             {data?.['contentSize'] && (
-              <Tag
-                size='sm'
-                fontSize='xs'
-                colorScheme='gray'
-                mb={1}
-                variant='subtle'
-              >
+              <Text size='sm' fontSize='xs' mb={1}>
                 <strong>size: </strong> {formatNumber(data['contentSize'])}
-              </Tag>
+              </Text>
             )}
           </Box>
         )}

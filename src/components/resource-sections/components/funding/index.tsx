@@ -3,16 +3,13 @@ import {
   Box,
   Flex,
   FlexProps,
-  Icon,
   Table,
   Tr,
-  Tag,
   Text,
   VisuallyHidden,
   Heading,
   Skeleton,
 } from '@chakra-ui/react';
-import { FaSquareArrowUpRight } from 'react-icons/fa6';
 import { Link } from 'src/components/link';
 import { Funding as FundingType } from 'src/utils/api/types';
 import { uniqueId } from 'lodash';
@@ -29,6 +26,7 @@ import { TableContainer } from 'src/components/table/components/table-container'
 import { TableWrapper } from 'src/components/table/components/wrapper';
 import { TablePagination } from 'src/components/table/components/pagination';
 import { useTableSort } from 'src/components/table/hooks/useTableSort';
+import { TagWithUrl } from 'src/components/tag-with-url';
 
 // Constants for table configuration.
 // [ROW_SIZES]: num of rows per page
@@ -182,6 +180,7 @@ export const Funding: React.FC<FundingProps> = ({
                           >
                             {column.key === 'name' && (
                               <ContentWithTag
+                                label='Funding ID |'
                                 identifier={funding.identifier}
                                 url={funding.url}
                                 name={funding.name}
@@ -200,6 +199,7 @@ export const Funding: React.FC<FundingProps> = ({
                                     mb={Array.isArray(funding?.funder) ? 4 : 0}
                                   >
                                     <ContentWithTag
+                                      label='Funder ID |'
                                       identifier={funder?.identifier}
                                       url={funder?.url}
                                       name={funder?.name}
@@ -263,12 +263,14 @@ export const Funding: React.FC<FundingProps> = ({
 const ContentWithTag = React.memo(
   ({
     url,
+    label,
     identifier,
     name,
   }: {
-    url?: string | null;
     identifier?: string | null;
+    label?: string;
     name?: string | null;
+    url?: string | null;
   }) => {
     if (!url && !identifier && !name) {
       return <EmptyCell />;
@@ -280,54 +282,21 @@ const ContentWithTag = React.memo(
             <Text fontSize='inherit'>{name || 'Funding Information'}</Text>
           </Link>
         ) : (
-          <Text fontWeight='medium'>{name}</Text>
+          <Text fontWeight='medium' fontStyle={!name ? 'italic' : 'normal'}>
+            {name || 'No name provided'}
+          </Text>
         )}
 
         {identifier && (
-          <Tag
-            size='sm'
-            variant='subtle'
-            alignItems='center'
-            px={1.5}
-            mt={0.5}
-            fontSize='12px'
+          <TagWithUrl
             colorScheme='orange'
+            href={url || ''}
+            label={label}
+            isExternal
+            mt={0.5}
           >
-            {url ? (
-              <Link
-                href={url}
-                target='_blank'
-                alignItems='center'
-                fontWeight='semibold'
-                color='inherit'
-                _visited={{ color: 'inherit' }}
-                _hover={{
-                  color: 'inherit',
-                  '#tag-value': { textDecoration: 'none' },
-                }}
-              >
-                <span>ID</span> |{' '}
-                <Text
-                  id='tag-value'
-                  as='span'
-                  textDecoration='underline'
-                  color='inherit'
-                >
-                  {identifier}
-                </Text>
-                <Icon
-                  as={FaSquareArrowUpRight}
-                  boxSize={3}
-                  ml={1}
-                  color='gray.800'
-                />
-              </Link>
-            ) : (
-              <>
-                <b>ID</b> | {identifier}
-              </>
-            )}
-          </Tag>
+            {identifier}
+          </TagWithUrl>
         )}
       </>
     );
@@ -341,41 +310,10 @@ interface FundingDrawerContentProps extends FlexProps {
 // FundingDrawerContent component - displays detailed information for a funding item.
 const FundingDrawerContent = React.memo(
   ({ funder }: FundingDrawerContentProps) => {
-    // const { isOpen } = useDisclosure();
-
-    // const { text, hasMore } = getTruncatedText(description, isOpen);
-
     const funders = Array.isArray(funder) ? funder : [funder];
 
     return (
       <Flex px={4} flexDirection='column'>
-        {/* <dl>
-          <Label as='dt' mt={2}>
-            Description
-          </Label>
-          <Content as='dd'>
-            {text ? (
-              <Text w='100%'>
-                {text}
-                {!isOpen && hasMore ? '...' : ''}
-                {hasMore ? (
-                  <Button
-                    variant='link'
-                    textDecoration='underline'
-                    mx={1}
-                    onClick={onToggle}
-                  >
-                    {isOpen ? 'read less' : 'read more'}
-                  </Button>
-                ) : (
-                  <></>
-                )}
-              </Text>
-            ) : (
-              <Text fontStyle='italic'>None available</Text>
-            )}
-          </Content>
-        </dl> */}
         {funders.length &&
           funders.some(
             funderItem =>
