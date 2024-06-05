@@ -101,11 +101,6 @@ export const formatLicense = (license: string) => {
     formattedLicense.title =
       'CC0 1.0 Universal (CC0 1.0) Public Domain Dedication';
     formattedLicense.img = '/assets/copyright/by-p.png';
-  } else if (license.includes('immport')) {
-    formattedLicense.type = 'Immport';
-    formattedLicense.title =
-      'User Agreement for the NIAID Immunology Database and Analysis Portal (ImmPort)';
-    formattedLicense.img = '/assets/resources/immport-icon.jpg';
   } else if (license.includes('dataverse.harvard')) {
     formattedLicense.type = 'Harvard Dataverse';
     formattedLicense.title = 'Harvard Dataverse Terms of Use';

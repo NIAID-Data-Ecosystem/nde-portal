@@ -3,6 +3,7 @@ import {
   Box,
   Flex,
   Icon,
+  Stack,
   Text,
   UnorderedList,
   ListItem,
@@ -82,7 +83,7 @@ export const AssociatedDocumentation: React.FC<AssociatedDocumentation> = ({
       )}
       {/* mainEntityOfPage refers to a website for the resource. */}
       {mainEntityOfPage && (
-        <Box>
+        <Stack spacing={1}>
           <HeadingWithTooltip
             label='Associated Website'
             tooltipLabel={`${
@@ -90,17 +91,32 @@ export const AssociatedDocumentation: React.FC<AssociatedDocumentation> = ({
               ''
             }`}
           />
-          {mainEntityOfPage && (
-            <Link
-              href={mainEntityOfPage}
-              isExternal
-              wordBreak='break-word'
-              fontSize='xs'
-            >
-              {mainEntityOfPage}
-            </Link>
-          )}
-        </Box>
+          {mainEntityOfPage &&
+            (Array.isArray(mainEntityOfPage) ? (
+              mainEntityOfPage.map(href => {
+                return (
+                  <Link
+                    key={href}
+                    href={href}
+                    isExternal
+                    wordBreak='break-word'
+                    fontSize='xs'
+                  >
+                    {href}
+                  </Link>
+                );
+              })
+            ) : (
+              <Link
+                href={mainEntityOfPage}
+                isExternal
+                wordBreak='break-word'
+                fontSize='xs'
+              >
+                {mainEntityOfPage}
+              </Link>
+            ))}
+        </Stack>
       )}
 
       {/* Links to the source code of the tool  */}

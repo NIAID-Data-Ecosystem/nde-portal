@@ -1,9 +1,8 @@
 import React from 'react';
-import { Flex, Heading, Skeleton, Tag, Text } from '@chakra-ui/react';
-import { Link } from 'src/components/link';
+import { Flex, Heading, Skeleton } from '@chakra-ui/react';
 import { FormattedResource } from 'src/utils/api/types';
 import { DisplayHTMLString } from 'src/components/html-content';
-import { formatDOI } from 'src/utils/helpers';
+import { TagWithUrl } from 'src/components/tag-with-url';
 
 interface HeaderProps {
   isLoading: boolean;
@@ -20,30 +19,6 @@ const Header: React.FC<HeaderProps> = ({
   doi,
   nctid,
 }) => {
-  const IDTag = ({
-    label,
-    children,
-  }: {
-    label: string;
-    children: React.ReactNode;
-  }) => {
-    return (
-      <Tag size='sm' variant='subtle' colorScheme='secondary' px={0} py={0}>
-        <Text
-          bg='secondary.500'
-          color='white'
-          px={2}
-          py={1}
-          borderLeftRadius='inherit'
-        >
-          {label}
-        </Text>
-        <Text px={2} py={1} color='inherit'>
-          {children}
-        </Text>
-      </Tag>
-    );
-  };
   return (
     <>
       <Skeleton
@@ -83,17 +58,18 @@ const Header: React.FC<HeaderProps> = ({
 
         {(nctid || doi) && (
           <Flex mt={2}>
-            {nctid && <IDTag label='NCTID'>{nctid}</IDTag>}
+            {nctid && <TagWithUrl label='NCTID |'>{nctid}</TagWithUrl>}
             {doi && (
-              <IDTag label='DOI'>
-                {doi.includes('http') || doi.includes('doi.org') ? (
-                  <Link href={doi} isExternal>
-                    {formatDOI(doi)}
-                  </Link>
-                ) : (
-                  formatDOI(doi)
-                )}
-              </IDTag>
+              <TagWithUrl
+                colorScheme='secondary'
+                label='DOI |'
+                href={
+                  doi.includes('http') || doi.includes('doi.org') ? doi : ''
+                }
+                isExternal
+              >
+                {doi}
+              </TagWithUrl>
             )}
           </Flex>
         )}

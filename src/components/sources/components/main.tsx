@@ -10,7 +10,6 @@ import {
   HStack,
   Icon,
   Skeleton,
-  Tag,
   Text,
 } from '@chakra-ui/react';
 import { DisplayHTMLContent } from 'src/components/html-content';
@@ -25,7 +24,7 @@ import {
   FaUpRightFromSquare,
 } from 'react-icons/fa6';
 import { SearchInput } from 'src/components/search-input';
-import { Link } from 'src/components/link';
+import { TagWithUrl } from 'src/components/tag-with-url';
 
 interface Main {
   data?: SourceResponse[];
@@ -93,20 +92,15 @@ const Main: React.FC<Main> = ({ data, isLoading, metadata }) => {
               <Text fontSize='xs' color='gray.800'>
                 API Version:
                 {metadata?.version && (
-                  <Link
+                  <TagWithUrl
+                    bg='status.info_lt'
                     href={`${process.env.NEXT_PUBLIC_API_URL}/metadata`}
-                    target='_blank'
+                    isExternal
+                    fontWeight='semibold'
+                    mx={1}
                   >
-                    <Tag
-                      bg='status.info_lt'
-                      variant='subtle'
-                      size='sm'
-                      fontWeight='semibold'
-                      mx={1}
-                    >
-                      V.{metadata.version}
-                    </Tag>
-                  </Link>
+                    V.{metadata.version}
+                  </TagWithUrl>
                 )}
               </Text>
               {metadata?.date && (

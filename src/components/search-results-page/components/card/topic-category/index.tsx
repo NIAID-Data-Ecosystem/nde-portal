@@ -1,9 +1,8 @@
 import React from 'react';
-import NextLink from 'next/link';
-import { Stack, Flex, Tag, TagLabel, TagLeftIcon } from '@chakra-ui/react';
+import { Stack, Flex } from '@chakra-ui/react';
 import { TopicCategory } from 'src/utils/api/types';
-import { encodeString } from 'src/utils/querystring-helpers';
 import { FaMagnifyingGlass } from 'react-icons/fa6';
+import { TagWithUrl } from 'src/components/tag-with-url';
 
 interface TopicCategoryProps {
   data?: TopicCategory[] | null;
@@ -27,28 +26,20 @@ const TopicCategories: React.FC<TopicCategoryProps> = ({ data }) => {
       <Flex flexWrap='wrap'>
         {topicCategoryNames?.map(name => {
           return (
-            <NextLink
+            <TagWithUrl
               key={name}
+              colorScheme='primary'
               href={{
                 pathname: '/search',
                 query: {
-                  q: `topicCategory.name:"${encodeString(name.trim())}"`,
-                  advancedSearch: true,
+                  q: `topicCategory.name:"${name.trim()}"`,
                 },
               }}
+              m={0.5}
+              leftIcon={FaMagnifyingGlass}
             >
-              <Tag
-                size='sm'
-                variant='subtle'
-                m='0.5'
-                colorScheme='primary'
-                cursor='pointer'
-                _hover={{ textDecoration: 'underline' }}
-              >
-                <TagLeftIcon as={FaMagnifyingGlass} />
-                <TagLabel>{name}</TagLabel>
-              </Tag>
-            </NextLink>
+              {name}
+            </TagWithUrl>
           );
         })}
       </Flex>

@@ -1,9 +1,9 @@
-import { Button, Tag, TagLabel, TagLeftIcon } from '@chakra-ui/react';
 import React, { useState } from 'react';
 import { FaMagnifyingGlass } from 'react-icons/fa6';
-import NextLink from 'next/link';
+import { Button } from '@chakra-ui/react';
 import { formatNumber } from 'src/utils/helpers';
 import { ScrollContainer } from 'src/components/scroll-container';
+import { TagWithUrl } from 'src/components/tag-with-url';
 
 interface KeywordsProps {
   keywords: string[];
@@ -22,30 +22,22 @@ export const Keywords: React.FC<KeywordsProps> = ({ keywords }) => {
         {keywords &&
           keywords.slice(0, limit).map((keyword, idx) => {
             return (
-              <NextLink
-                key={idx}
+              <TagWithUrl
+                key={idx + keyword}
+                colorScheme='primary'
                 href={{
                   pathname: '/search',
                   query: {
                     q: `keywords:"${keyword.trim().toLowerCase()}"`,
                   },
                 }}
+                m={0.5}
+                leftIcon={FaMagnifyingGlass}
               >
-                <Tag
-                  m={1}
-                  colorScheme='primary'
-                  variant='subtle'
-                  size='sm'
-                  cursor='pointer'
-                  _hover={{ textDecoration: 'underline' }}
-                >
-                  <TagLeftIcon as={FaMagnifyingGlass} />
-                  <TagLabel>{keyword}</TagLabel>
-                </Tag>
-              </NextLink>
+                {keyword}
+              </TagWithUrl>
             );
           })}
-
         {keywords && keywords?.length > DEFAULT_LIMIT && (
           <Button
             size='xs'

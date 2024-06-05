@@ -83,14 +83,9 @@ export const Sidebar = ({
           <Collapse in={!!searchHistory.length}>
             <CardContainer heading='Previous Searches'>
               <ScrollContainer maxH={250}>
-                <UnorderedList ml={0}>
+                <UnorderedList ml={0} spacing={2} my={2}>
                   {searchHistory.slice(0, 3).map((search, idx) => (
-                    <ListItem
-                      key={idx}
-                      my={3}
-                      lineHeight='short'
-                      display='flex'
-                    >
+                    <ListItem key={idx} lineHeight='short' display='flex'>
                       <Icon
                         as={FaMagnifyingGlass}
                         color='link.color'

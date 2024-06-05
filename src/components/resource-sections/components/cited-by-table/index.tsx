@@ -7,6 +7,7 @@ import {
   VisuallyHidden,
   Heading,
   Skeleton,
+  Stack,
 } from '@chakra-ui/react';
 import { Link } from 'src/components/link';
 import { CitedBy as CitedByType } from 'src/utils/api/types';
@@ -163,32 +164,30 @@ export const CitedByTable: React.FC<CitedByTable> = ({
                                     {item.name || '[No title provided]'}
                                   </Text>
                                 )}
-                                {item.identifier && (
-                                  <TagWithUrl m={0.5} label='ID |'>
-                                    {item.identifier}
-                                  </TagWithUrl>
-                                )}
-                                {item.pmid && (
-                                  <TagWithUrl m={0.5} label='PMID |'>
-                                    {item.pmid}
-                                  </TagWithUrl>
-                                )}
-                                {item.doi && (
-                                  <TagWithUrl m={0.5} label='DOI |'>
-                                    {item.doi}
-                                  </TagWithUrl>
-                                )}
+                                <Stack spacing={1} mt={1}>
+                                  {item.identifier && (
+                                    <TagWithUrl label='ID |'>
+                                      {item.identifier}
+                                    </TagWithUrl>
+                                  )}
+                                  {item.pmid && (
+                                    <TagWithUrl label='PMID |'>
+                                      {item.pmid}
+                                    </TagWithUrl>
+                                  )}
+                                  {item.doi && (
+                                    <TagWithUrl label='DOI |'>
+                                      {item.doi}
+                                    </TagWithUrl>
+                                  )}
+                                </Stack>
                               </>
                             )}
 
                             {column.key === '@type' &&
                               (item['@type'] ? (
                                 <>
-                                  <TagWithUrl
-                                    mx={0.5}
-                                    label=''
-                                    colorScheme='primary'
-                                  >
+                                  <TagWithUrl colorScheme='primary'>
                                     {item['@type']}
                                   </TagWithUrl>
                                 </>
