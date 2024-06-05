@@ -98,7 +98,7 @@ const MetadataAccordion: React.FC<MetadataAccordionProps> = ({ data }) => {
                   >
                     {sortedMetadataContent.map(
                       ({ label, property, glyph, isDisabled }) => {
-                        const color = isDisabled
+                        const colorScheme = isDisabled
                           ? 'gray'
                           : getMetadataTheme(property);
                         const schemaProperty = schema[property];
@@ -114,9 +114,9 @@ const MetadataAccordion: React.FC<MetadataAccordionProps> = ({ data }) => {
                             size='sm'
                             variant='subtle'
                             borderRadius='full'
-                            colorScheme={color}
+                            colorScheme={colorScheme}
                             // darker for variableMeasured
-                            color={`${color}.${
+                            color={`${colorScheme}.${
                               property === 'variableMeasured' ? '900' : '700'
                             }`}
                             m={0.5}
@@ -135,7 +135,7 @@ const MetadataAccordion: React.FC<MetadataAccordionProps> = ({ data }) => {
                                   id={`indicator-${property}-${id}`}
                                   title={property}
                                   glyph={glyph}
-                                  fill={`${color}.600`}
+                                  fill={`${colorScheme}.600`}
                                   m={0.5}
                                   boxSize={4}
                                   isDisabled={isDisabled}
@@ -202,6 +202,9 @@ const MetadataAccordion: React.FC<MetadataAccordionProps> = ({ data }) => {
                                         >
                                           <MetadataContent
                                             includeOntology
+                                            colorScheme={getMetadataTheme(
+                                              props.property,
+                                            )}
                                             {...item}
                                           />
                                         </MetadataListItem>

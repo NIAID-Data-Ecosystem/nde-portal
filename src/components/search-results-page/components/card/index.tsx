@@ -290,6 +290,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                     _focus={{ outlineColor: 'transparent', bg: 'white' }}
                     alignIcon='center'
                     borderRadius='semi'
+                    flex={1}
                   >
                     <DisplayHTMLContent
                       content={description}

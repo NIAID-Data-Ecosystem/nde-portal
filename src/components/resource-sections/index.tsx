@@ -6,7 +6,6 @@ import {
   Flex,
   ListItem,
   Skeleton,
-  Stack,
   UnorderedList,
 } from '@chakra-ui/react';
 import { Link } from 'src/components/link';
@@ -30,7 +29,6 @@ import { JsonViewer } from '../json-viewer';
 import ResourceIsPartOf from './components/is-part-of';
 import BasedOnTable from './components/based-on';
 import { CompletenessBadgeCircle } from 'src/components/completeness-badge/Circular';
-import { HeadingWithTooltip } from './components/sidebar/components/external/components/heading-with-tooltip';
 import { ResourceCatalogCollection } from './components/collection-information';
 import { DownloadMetadata } from '../download-metadata';
 import { Keywords } from './components/keywords';

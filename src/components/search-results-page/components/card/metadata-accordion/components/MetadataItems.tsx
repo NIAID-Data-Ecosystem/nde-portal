@@ -1,54 +1,7 @@
 import React from 'react';
-import {
-  BoxProps,
-  Flex,
-  FlexProps,
-  Icon,
-  IconButton,
-  Tag,
-  Text,
-} from '@chakra-ui/react';
-import { FaSquareArrowUpRight, FaSitemap } from 'react-icons/fa6';
-import { Link } from 'src/components/link';
+import { Flex, FlexProps, Icon, IconButton, Text } from '@chakra-ui/react';
+import { FaSitemap } from 'react-icons/fa6';
 import Tooltip from 'src/components/tooltip';
-
-interface MetadataWithTagProps extends BoxProps {
-  url?: string | null;
-  value: string;
-  colorScheme?: string;
-}
-
-export const MetadataWithTag = ({
-  url,
-  value,
-  colorScheme = 'gray',
-}: MetadataWithTagProps) => {
-  return (
-    <Tag
-      size='sm'
-      variant='subtle'
-      alignItems='center'
-      px={1.5}
-      fontSize='13px'
-      colorScheme={colorScheme}
-      lineHeight='shorter'
-    >
-      {url ? (
-        <Link href={url} target='_blank' alignItems='center'>
-          <Text>{value}</Text>
-          <Icon
-            as={FaSquareArrowUpRight}
-            boxSize={2.5}
-            ml={1}
-            color='gray.800'
-          />
-        </Link>
-      ) : (
-        value
-      )}
-    </Tag>
-  );
-};
 
 interface MetadataWithTaxonomyProps extends FlexProps {
   url?: string | null;

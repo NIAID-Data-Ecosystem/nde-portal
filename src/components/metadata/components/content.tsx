@@ -8,9 +8,11 @@ import { Link } from 'src/components/link';
 interface MetadataContentProps extends Omit<MetadataItem, 'key'> {
   includeSearch?: boolean;
   includeOntology?: boolean;
+  colorScheme?: string;
 }
 export const MetadataContent = ({
   name,
+  colorScheme,
   img,
   scientificName,
   tags,
@@ -60,7 +62,10 @@ export const MetadataContent = ({
               </Text>
             ))}
         </Flex>
-        {tags && tags.map((tag, idx) => <MetadataWithTag key={idx} {...tag} />)}
+        {tags &&
+          tags.map((tag, idx) => (
+            <MetadataWithTag key={idx} colorScheme={colorScheme} {...tag} />
+          ))}
       </Box>
       {((includeSearch && searchProps) ||
         (includeOntology && ontologyProps)) && (

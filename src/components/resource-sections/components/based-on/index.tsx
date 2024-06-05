@@ -5,6 +5,7 @@ import {
   Flex,
   Heading,
   Skeleton,
+  Stack,
   Table,
   Text,
   Tr,
@@ -230,6 +231,36 @@ const BasedOnTable = ({
                                       <EmptyCell label='No name provided' />
                                     )}
                                   </Text>
+                                  {(item.identifier ||
+                                    item.pmid ||
+                                    item.doi) && (
+                                    <Stack spacing={1} mt={1}>
+                                      {item.identifier && (
+                                        <TagWithUrl
+                                          // only add url here if there is no name (name field is default used for the link)
+                                          href={
+                                            !item.name && item.url
+                                              ? item.url
+                                              : ''
+                                          }
+                                          label='ID |'
+                                          isExternal
+                                        >
+                                          {item.identifier}
+                                        </TagWithUrl>
+                                      )}
+                                      {item.pmid && (
+                                        <TagWithUrl label='PMID |' isExternal>
+                                          {item.pmid}
+                                        </TagWithUrl>
+                                      )}
+                                      {item.doi && (
+                                        <TagWithUrl label='DOI |' isExternal>
+                                          {item.doi}
+                                        </TagWithUrl>
+                                      )}
+                                    </Stack>
+                                  )}
                                 </Box>
                               )}
 
@@ -248,7 +279,7 @@ const BasedOnTable = ({
                                           key={idx}
                                           label={
                                             type?.url
-                                              ? 'show ontology information'
+                                              ? 'Show ontology information.'
                                               : ''
                                           }
                                           hasArrow
@@ -260,10 +291,13 @@ const BasedOnTable = ({
                                         >
                                           <span>
                                             <TagWithUrl
-                                              url={type?.url}
+                                              href={type?.url || ''}
                                               colorScheme='primary'
+                                              isExternal
                                             >
-                                              {type?.name || type?.url}
+                                              {type?.name ||
+                                                type?.url ||
+                                                'No type provided'}
                                             </TagWithUrl>
                                           </span>
                                         </Tooltip>
@@ -293,47 +327,24 @@ const BasedOnTable = ({
                           );
                         })}
                       </Flex>
-                      {(item.identifier || item.pmid || item.doi) && (
-                        <Flex as='td' role='cell' px={3}>
-                          {item.identifier && (
-                            <TagWithUrl
-                              // only add url here if there is no name (name field is default used for the link)
-                              url={!item.name && item.url ? item.url : ''}
-                              mx={0.5}
-                              label='ID |'
-                            >
-                              {item.identifier}
-                            </TagWithUrl>
-                          )}
-                          {item.pmid && (
-                            <TagWithUrl mx={0.5} label='PMID |'>
-                              {item.pmid}
-                            </TagWithUrl>
-                          )}
-                          {item.doi && (
-                            <TagWithUrl mx={0.5} label='DOI |'>
-                              {item.doi}
-                            </TagWithUrl>
-                          )}
-                        </Flex>
-                      )}
-                      <Box
-                        as='td'
-                        role='cell'
-                        px={3}
-                        my={2}
-                        fontSize='xs'
-                        lineHeight='short'
-                        whiteSpace='pre-wrap'
-                        wordBreak='break-word'
-                        fontWeight='normal'
-                      >
-                        {item.description && (
+
+                      {item.description && (
+                        <Box
+                          as='td'
+                          role='cell'
+                          px={3}
+                          my={2}
+                          fontSize='xs'
+                          lineHeight='short'
+                          whiteSpace='pre-wrap'
+                          wordBreak='break-word'
+                          fontWeight='normal'
+                        >
                           <TruncatedDescription
                             description={item.description}
                           />
-                        )}
-                      </Box>
+                        </Box>
+                      )}
                     </Row>
                   </React.Fragment>
                 );
