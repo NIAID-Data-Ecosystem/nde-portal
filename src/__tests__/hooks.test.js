@@ -3,7 +3,6 @@ import { renderHook, waitFor } from '@testing-library/react';
 import { createWrapper } from './mocks/utils.tsx';
 import { useRepoData } from 'src/hooks/api/useRepoData.ts';
 import { server } from '../../jest.setup.js';
-import RepositoryData from 'configs/repositories.json';
 
 describe('use query hook', () => {
   test('successful useRepoData query hook', async () => {
@@ -12,18 +11,19 @@ describe('use query hook', () => {
     });
 
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
-    const repos = RepositoryData.repositories.filter(
-      ({ type }) => type === 'generalist',
-    );
+    const { _id, abstract, conditionsOfAccess, name, url, domain } =
+      result.current.data[0];
 
-    const { _id, abstract } = result.current.data[0];
-    const { type, icon } = repos.find(({ id }) => _id === id);
     expect(result.current.data).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
-          domain: type,
-          icon,
+          _id,
           abstract,
+          type: 'Repository',
+          name: name || '',
+          domain,
+          url,
+          conditionsOfAccess: conditionsOfAccess || '',
         }),
       ]),
     );

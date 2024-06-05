@@ -57,7 +57,7 @@ export const SourceLogo = ({ sources, url, ...props }: SourceLogoProps) => {
                       h='40px'
                       mr={4}
                       src={source_logo}
-                      alt='Data source name'
+                      alt='Data source logo'
                     />
                   </Link>
                 ) : (
@@ -68,7 +68,7 @@ export const SourceLogo = ({ sources, url, ...props }: SourceLogoProps) => {
                     h='40px'
                     mr={4}
                     src={source_logo}
-                    alt='Data source name'
+                    alt='Data source logo'
                   />
                 )
               ) : (
