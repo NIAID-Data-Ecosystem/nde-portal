@@ -8,13 +8,17 @@ export const formatTypeName = (type: TableData['type']) => {
   }
 };
 
-export const formatDomainName = (type: TableData['domain']) => {
-  if (type === 'iid') {
+export const formatDomainName = (domain: TableData['domain']) => {
+  if (!domain) {
+    return '';
+  }
+  const type_lower = domain.toLowerCase();
+  if (type_lower === 'iid') {
     return 'IID';
-  } else if (type === 'generalist') {
+  } else if (type_lower === 'generalist') {
     return 'Generalist';
   } else {
-    return type.charAt(0).toUpperCase() + type.slice(1);
+    return type_lower.charAt(0).toUpperCase() + type_lower.slice(1);
   }
 };
 

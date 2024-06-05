@@ -1,4 +1,3 @@
-import REPOSITORIES from 'configs/repositories.json';
 import { FormattedResource } from './api/types';
 
 // Get image for repo based on config.
@@ -6,15 +5,28 @@ export const getRepositoryImage = (name: string) => {
   if (!name) {
     return null;
   }
-  const { repositories } = REPOSITORIES;
-  const sourceRepoIndex = repositories.findIndex(repo => {
-    return repo.id === name;
-  });
+  const path = '/assets/resources/';
+  const identifier = name
+    .toLowerCase()
+    .replace(/\s+/g, '-')
+    .replace(/[^a-z-]/g, '');
 
-  const imageURL =
-    sourceRepoIndex >= 0 ? repositories[sourceRepoIndex].imageURL : null;
+  return path + identifier + '.png';
+};
 
-  return imageURL;
+export const getFundedByNIAID = (name: string) => {
+  if (!name) {
+    return false;
+  }
+  const FUNDED_REPOS = [
+    'AccessClinicalData@NIAID',
+    'ClinEpiDB',
+    'ImmPort',
+    'MicrobiomeDB',
+    'VDJServer',
+    'VEuPathDB',
+  ];
+  return FUNDED_REPOS.includes(name);
 };
 
 // Format DOI if url is included in string.

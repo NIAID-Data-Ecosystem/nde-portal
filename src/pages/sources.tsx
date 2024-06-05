@@ -9,8 +9,8 @@ import { Error, ErrorCTA } from 'src/components/error';
 import axios from 'axios';
 import { MetadataSource } from 'src/hooks/api/types';
 import { getQueryStatusError } from 'src/components/error/utils';
-import REPOSITORIESDETAILS from 'configs/repositories.json';
 import { fetchMetadata } from 'src/hooks/api/helpers';
+import { getFundedByNIAID } from 'src/utils/helpers';
 
 export interface SourceResponse {
   dateCreated?: string;
@@ -59,10 +59,6 @@ const Sources: NextPage<SourcesProps> = ({ data, error }) => {
             )}-${source.version.substring(6, 8)}T00:00:00`
           : '';
 
-        const isNiaidFunded = REPOSITORIESDETAILS['repositories'].find(
-          repo => repo.id === id,
-        )?.isNIAID;
-
         return {
           ...githubInfo,
           id,
@@ -73,7 +69,7 @@ const Sources: NextPage<SourcesProps> = ({ data, error }) => {
           numberOfRecords: source.stats[key] || 0,
           schema: (source.sourceInfo && source.sourceInfo.schema) || null,
           url: (source.sourceInfo && source.sourceInfo.url) || '',
-          isNiaidFunded,
+          isNiaidFunded: getFundedByNIAID(source.sourceInfo?.name),
         };
       });
       return {

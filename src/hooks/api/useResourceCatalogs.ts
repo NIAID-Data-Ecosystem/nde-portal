@@ -1,6 +1,7 @@
 import { useQuery } from 'react-query';
 import { fetchSearchResults } from 'src/utils/api';
 import {
+  Domain,
   FetchSearchResultsResponse,
   FormattedResource,
 } from 'src/utils/api/types';
@@ -11,13 +12,7 @@ export interface ResourceCatalog {
   conditionsOfAccess?: FormattedResource['conditionsOfAccess'];
   type: 'ResourceCatalog';
   name: FormattedResource['name'];
-  domain:
-    | 'generalist'
-    | 'iid'
-    | 'basic science'
-    | 'biomedical'
-    | 'other'
-    | 'metadata';
+  domain?: Domain;
   url?: FormattedResource['url'];
 }
 
@@ -69,7 +64,7 @@ export function useResourceCatalogs({
           conditionsOfAccess: catalog.conditionsOfAccess,
           type: catalog['@type'],
           name: catalog.name,
-          domain: catalog?.genre ? catalog.genre.toLowerCase() : 'other',
+          domain: catalog.genre,
           url: catalog.url,
         }));
       },

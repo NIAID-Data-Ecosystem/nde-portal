@@ -230,12 +230,12 @@ export const formatAPIResource = (data: any) => {
     doi: data['doi'] || data['@id'] || null,
     downloadUrl: convertToArray(data.downloadUrl),
     funding: convertToArray(data.funding),
+    genre: data.genre || null,
     hasPart: convertToArray(data.hasPart),
     healthCondition: convertToArray(data.healthCondition),
     includedInDataCatalog: data.includedInDataCatalog ?? null,
     infectiousAgent: convertToArray(data.infectiousAgent),
     input: convertToArray(data.input),
-
     interactionStatistics: data.interactionStatistics || null,
     isAccessibleForFree: data.isAccessibleForFree || null,
     isBasedOn: convertToArray(data.isBasedOn),

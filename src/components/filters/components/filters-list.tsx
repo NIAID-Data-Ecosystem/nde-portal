@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   Box,
   Button,
@@ -14,9 +14,10 @@ import {
 import { SearchInput } from 'src/components/search-input';
 import { FilterTerm } from '../types';
 import { FiltersCheckbox } from './filters-checkbox';
-import REPOS from 'configs/repositories.json';
 import { FaArrowDown } from 'react-icons/fa6';
 import { ScrollContainer } from 'src/components/scroll-container';
+import { useRepoData } from 'src/hooks/api/useRepoData';
+import { Domain } from 'src/utils/api/types';
 
 /*
 [COMPONENT INFO]:
@@ -61,6 +62,12 @@ export const FiltersList: React.FC<FiltersList> = React.memo(
     isUpdating,
     property,
   }) => {
+    const { data: repositories } = useRepoData({
+      refetchOnWindowFocus: false,
+      refetchOnMount: false,
+      enable: property === 'includedInDataCatalog',
+    });
+
     const prefersReducedMotion = usePrefersReducedMotion();
 
     const animation = prefersReducedMotion
@@ -77,40 +84,37 @@ export const FiltersList: React.FC<FiltersList> = React.memo(
     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>): void =>
       setSearchTerm(e.target.value);
 
-    const items: FilterTerm[] =
-      terms?.length > 0
-        ? terms.filter(t =>
-            t.displayAs.toLowerCase().includes(searchTerm.toLowerCase()),
-          )
-        : isLoading
-        ? Array(NUM_ITEMS_MIN).fill('') // for loading skeleton purposes
-        : [];
+    const items: FilterTerm[] = useMemo(
+      () =>
+        terms?.length > 0
+          ? terms.filter(t =>
+              t.displayAs.toLowerCase().includes(searchTerm.toLowerCase()),
+            )
+          : isLoading
+          ? Array(NUM_ITEMS_MIN).fill('') // for loading skeleton purposes
+          : [],
+      [terms, searchTerm, isLoading],
+    );
 
-    const iid_sources =
-      property === 'includedInDataCatalog'
-        ? items
-            .filter(item => {
-              const repo = REPOS.repositories.find(r => r.id === item.term);
-              return repo && repo.type === 'iid';
-            })
-            .sort((a, b) => a.displayAs.localeCompare(b.displayAs))
-            .sort((a, b) => b.count - a.count)
-        : [];
+    /****** Special case for sources where items are grouped by their domain ******/
+    const sources = useMemo(
+      () =>
+        items.reduce((acc, item) => {
+          if (item.term === '_exists_') {
+            return acc;
+          }
+          const domain =
+            repositories?.find(r => r._id === item.term)?.domain || 'Other';
 
-    const generalist_sources =
-      property === 'includedInDataCatalog'
-        ? items
-            .filter(item => {
-              const repo = REPOS.repositories.find(r => r.id === item.term);
-              // if repo is undefined, show the item as a generalist
-              if (repo === undefined && !item?.term?.includes('_exists_')) {
-                return item;
-              }
-              return repo && repo.type === 'generalist';
-            })
-            .sort((a, b) => a.displayAs.localeCompare(b.displayAs))
-            .sort((a, b) => b.count - a.count)
-        : [];
+          if (!acc[domain]) {
+            acc[domain] = [];
+          }
+          acc[domain].push(item);
+          return acc;
+        }, {} as { [key in Domain]: FilterTerm[] }),
+      [items, repositories],
+    );
+
     return (
       <>
         {/* Search through filter terms */}
@@ -144,131 +148,109 @@ export const FiltersList: React.FC<FiltersList> = React.memo(
               onChange={handleSelectedFilters}
             >
               {property === 'includedInDataCatalog' ? (
-                <>
-                  {/* IID repos */}
-                  {iid_sources.length > 0 && (
-                    <Box>
-                      <Text fontSize='sm' fontWeight='semibold' my={1}>
-                        {
-                          REPOS.repositoryTypes.find(
-                            repo => repo.type === 'iid',
-                          )?.label
-                        }
-                      </Text>
-                      <UnorderedList ml={0}>
-                        {iid_sources.map((item, i) => {
-                          return (
-                            <ListItem
-                              key={i}
-                              p={2}
-                              py={0}
-                              my={0}
-                              _hover={{ bg: `${colorScheme}.50` }}
-                            >
-                              <FiltersCheckbox
-                                value={item.term}
-                                displayTerm={item.displayAs}
-                                count={item.count}
-                                isLoading={isLoading}
-                                isCountUpdating={isUpdating}
-                              />
-                            </ListItem>
-                          );
-                        })}
-                      </UnorderedList>
-                    </Box>
-                  )}
-                  {generalist_sources.length > 0 && (
-                    <>
-                      <Text fontSize='sm' fontWeight='semibold' my={1}>
-                        {
-                          REPOS.repositoryTypes.find(
-                            repo => repo.type === 'generalist',
-                          )?.label
-                        }
-                      </Text>
-                      <UnorderedList ml={0}>
-                        {generalist_sources
-                          .slice(0, showFullList ? items.length : 5)
-                          .map((item, i) => {
-                            return (
-                              <ListItem
-                                key={i}
-                                p={2}
-                                py={0}
-                                my={0}
-                                _hover={{ bg: `${colorScheme}.50` }}
-                              >
-                                <FiltersCheckbox
-                                  value={item.term}
-                                  displayTerm={item.displayAs}
-                                  count={item.count}
-                                  isLoading={isLoading}
-                                  isCountUpdating={isUpdating}
-                                />
-                              </ListItem>
-                            );
-                          })}
-                      </UnorderedList>
-                    </>
-                  )}
-                </>
+                <Box>
+                  {Object.entries(sources)
+                    ?.sort((a, b) => {
+                      // IID should always be first, NIAID request
+                      if (a[0] == 'IID') return -1;
+                      if (b[0] == 'IID') return 1;
+                      return a[0].localeCompare(b[0]);
+                    })
+
+                    .map(([domain, repos]) => {
+                      const label =
+                        domain === 'iid'
+                          ? 'IID Domain Repositories'
+                          : domain.charAt(0).toUpperCase() +
+                            domain.slice(1) +
+                            ' Repositories';
+                      return (
+                        <React.Fragment key={domain}>
+                          <Text fontSize='sm' fontWeight='semibold' my={1}>
+                            {label}
+                          </Text>
+                          <UnorderedList ml={0}>
+                            {repos
+                              .sort((a, b) => b.count - a.count)
+                              .map((item, i) => {
+                                return (
+                                  <ListItem
+                                    key={item.term}
+                                    p={2}
+                                    py={0}
+                                    my={0}
+                                    _hover={{ bg: `${colorScheme}.50` }}
+                                  >
+                                    <FiltersCheckbox
+                                      value={item.term}
+                                      displayTerm={item.displayAs}
+                                      count={item.count}
+                                      isLoading={isLoading}
+                                      isCountUpdating={isUpdating}
+                                    />
+                                  </ListItem>
+                                );
+                              })}
+                          </UnorderedList>
+                        </React.Fragment>
+                      );
+                    })}
+                </Box>
               ) : (
-                <>
-                  <UnorderedList ml={0}>
-                    {items
-                      .sort((a, b) => b.count - a.count)
-                      .slice(0, showFullList ? items.length : 5)
-                      .map((item, i) => {
-                        return (
-                          <ListItem
-                            key={i}
-                            p={2}
-                            py={0}
-                            my={0}
-                            _hover={{ bg: `${colorScheme}.50` }}
-                          >
-                            <FiltersCheckbox
-                              value={item.term}
-                              displayTerm={item.displayAs}
-                              count={item.count}
-                              isLoading={isLoading}
-                              isCountUpdating={isUpdating}
-                              property={property}
-                            />
-                          </ListItem>
-                        );
-                      })}
-                  </UnorderedList>
-                </>
+                <UnorderedList ml={0}>
+                  {items
+                    .sort((a, b) => b.count - a.count)
+                    .slice(0, showFullList ? items.length : 5)
+                    .map((item, i) => {
+                      return (
+                        <ListItem
+                          key={i}
+                          p={2}
+                          py={0}
+                          my={0}
+                          _hover={{ bg: `${colorScheme}.50` }}
+                        >
+                          <FiltersCheckbox
+                            value={item.term}
+                            displayTerm={item.displayAs}
+                            count={item.count}
+                            isLoading={isLoading}
+                            isCountUpdating={isUpdating}
+                            property={property}
+                          />
+                        </ListItem>
+                      );
+                    })}
+                </UnorderedList>
               )}
             </CheckboxGroup>
           </ScrollContainer>
         </Box>
         {/* Show more expansion button. */}
-        {items.length > NUM_ITEMS_MIN && (
-          <Flex
-            w='100%'
-            justifyContent='space-between'
-            borderColor='gray.200'
-            alignItems='center'
-          >
-            <Button
-              variant='link'
-              color='link.color'
-              size='sm'
-              padding={2}
-              onClick={() => setShowFullList(!showFullList)}
+        {items.length > NUM_ITEMS_MIN &&
+          property !== 'includedInDataCatalog' && (
+            <Flex
+              w='100%'
+              justifyContent='space-between'
+              borderColor='gray.200'
+              alignItems='center'
             >
-              {showFullList ? 'Show less' : 'Show all'}
-            </Button>
-            <Icon
-              as={FaArrowDown}
-              animation={showFullList ? animation : undefined}
-              color={showFullList ? 'gray.800' : 'gray.400'}
-            />
-          </Flex>
-        )}
+              <Button
+                variant='link'
+                color='link.color'
+                size='sm'
+                padding={2}
+                onClick={() => setShowFullList(!showFullList)}
+              >
+                {showFullList ? 'Show less' : 'Show all'}
+              </Button>
+              <Icon
+                as={FaArrowDown}
+                animation={showFullList ? animation : undefined}
+                color={showFullList ? 'gray.800' : 'gray.400'}
+              />
+            </Flex>
+          )}
       </>
     );
   },

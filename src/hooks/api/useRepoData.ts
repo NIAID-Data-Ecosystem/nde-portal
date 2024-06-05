@@ -1,8 +1,7 @@
-import REPOSITORIES from 'configs/repositories.json';
 import { useQuery } from 'react-query';
 import { fetchMetadata } from './helpers';
 import { Metadata } from './types';
-import { FormattedResource } from 'src/utils/api/types';
+import { Domain, FormattedResource } from 'src/utils/api/types';
 
 export interface Repository {
   _id: string;
@@ -11,38 +10,26 @@ export interface Repository {
   type: 'Repository';
   icon?: string;
   name: string;
-  domain:
-    | 'generalist'
-    | 'iid'
-    | 'basic science'
-    | 'biomedical'
-    | 'other'
-    | 'metadata';
+  domain?: Domain;
   url?: string | null;
 }
 
 export function useRepoData(options: any = {}) {
   return useQuery<Metadata | undefined, Error, Repository[]>({
-    ...options,
     queryKey: ['metadata'],
     queryFn: fetchMetadata,
     select: (data: Metadata | undefined) => {
       const sources = data?.src || [];
       const repositories = Object.values(sources).map(({ sourceInfo }) => {
-        const { identifier, abstract, conditionsOfAccess, name, url } =
+        const { identifier, abstract, conditionsOfAccess, name, url, genre } =
           sourceInfo || {};
 
-        const repo = REPOSITORIES.repositories.find(
-          ({ id }) => id === identifier,
-        );
         return {
           _id: identifier,
           abstract: abstract || '',
           type: 'Repository' as Repository['type'],
-          icon: repo?.icon || '',
           name: name || '',
-          domain: (repo?.type.toLowerCase() ||
-            'generalist') as Repository['domain'],
+          domain: genre,
           url,
           conditionsOfAccess: conditionsOfAccess || '',
         };
@@ -50,5 +37,6 @@ export function useRepoData(options: any = {}) {
 
       return repositories;
     },
+    ...options,
   });
 }

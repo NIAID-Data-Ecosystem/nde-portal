@@ -1,3 +1,5 @@
+import { Domain } from 'src/utils/api/types';
+
 export interface MetadataSource {
   code: {
     file: string;
@@ -14,6 +16,7 @@ export interface MetadataSource {
     url: string;
     identifier: string;
     conditionsOfAccess?: string;
+    genre?: Domain;
   };
   stats: { [key: string]: number };
   version: string;
