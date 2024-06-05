@@ -290,7 +290,7 @@ interface TemporalCoverage {
   };
 }
 
-interface TopicCategory {
+export interface TopicCategory {
   description?: string;
   name?: string;
   url?: string;
@@ -298,6 +298,7 @@ interface TopicCategory {
     name?: string;
     url?: string;
   };
+  inDefinedTermSet?: string;
 }
 
 export interface InputProperties {
