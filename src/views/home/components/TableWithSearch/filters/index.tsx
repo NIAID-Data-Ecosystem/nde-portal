@@ -60,7 +60,7 @@ export const Filters = ({ data, filters, updateFilter }: TableFiltersProps) => {
           label='Type'
           property='type'
           description={SCHEMA_DEFINITIONS['type'].abstract['Dataset']}
-          options={types}
+          options={types.sort((a, b) => a.name.localeCompare(b.name))}
           selectedOptions={
             filters.filter(item => item.property === 'type') || []
           }
@@ -74,7 +74,7 @@ export const Filters = ({ data, filters, updateFilter }: TableFiltersProps) => {
           label='Research Domain'
           property='domain'
           description={SCHEMA_DEFINITIONS['domain'].abstract['Dataset']}
-          options={domains}
+          options={domains.sort((a, b) => a.name.localeCompare(b.name))}
           selectedOptions={
             filters.filter(item => item.property === 'domain') || []
           }
@@ -96,7 +96,9 @@ export const Filters = ({ data, filters, updateFilter }: TableFiltersProps) => {
             ) +
             '.'
           }
-          options={conditionsOfAccess}
+          options={conditionsOfAccess.sort((a, b) =>
+            a.name.localeCompare(b.name),
+          )}
           selectedOptions={
             filters.filter(item => item.property === 'conditionsOfAccess') || []
           }

@@ -1,3 +1,5 @@
+import { Domain } from 'src/utils/api/types';
+
 export interface MetadataSource {
   code: {
     file: string;
@@ -10,7 +12,6 @@ export interface MetadataSource {
     name: string;
     abstract: string;
     description: string;
-    conditionsOfAccess?: string;
     schema: Object | null;
     url: string;
     identifier: string;
@@ -58,6 +59,8 @@ export interface MetadataSource {
       sum_required_coverage: number;
       sum_recommended_coverage: number;
     };
+    conditionsOfAccess?: string;
+    genre?: Domain;
   };
   stats: { [key: string]: number };
   version: string;

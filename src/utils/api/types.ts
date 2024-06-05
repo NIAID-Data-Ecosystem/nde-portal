@@ -128,6 +128,14 @@ export interface Distribution {
   '@id': string | null;
 }
 
+export type Domain =
+  | 'Generalist'
+  | 'IID'
+  | 'Basic science'
+  | 'Biomedical'
+  | 'Other'
+  | 'Metadata';
+
 export interface Error {
   status: string;
   message: string;
@@ -282,7 +290,7 @@ interface TemporalCoverage {
   };
 }
 
-interface TopicCategory {
+export interface TopicCategory {
   description?: string;
   name?: string;
   url?: string;
@@ -290,6 +298,7 @@ interface TopicCategory {
     name?: string;
     url?: string;
   };
+  inDefinedTermSet?: string;
 }
 
 export interface InputProperties {
@@ -365,7 +374,7 @@ export interface FormattedResource {
   doi: string | null;
   downloadUrl: { name: string }[] | null;
   funding: Funding[] | null;
-  genre: string | null;
+  genre: Domain | null;
   hasAPI: boolean | null;
   hasDownload:
     | 'All content'
