@@ -76,46 +76,77 @@ const checkQuery = (tree: TreeItem[]): QueryStringError[] => {
  * [removeUnnecessaryParentheses]:
  * Removes unnecessary wrapping parentheses from a query string.
  *  */
-export const removeUnnecessaryParentheses = (str: string): string => {
-  // From: https://stackoverflow.com/questions/57410831/how-to-remove-unnecessary-parenthesis
-  function tokenize(str: string) {
-    return str.match(/[()]|[^()]+/g);
-  }
 
-  function parse(toks: any, depth = 0): any {
-    let ast = [];
+export function removeUnnecessaryParentheses(text: string): string {
+  const pairs: { [key: string]: string } = { '(': ')', '[': ']', '{': '}' };
+  const openers = new Set(Object.keys(pairs));
+  const closers = new Set(Object.values(pairs));
+  const stack: number[] = [];
+  const toRemove = new Set<number>();
 
-    while (toks.length) {
-      let t = toks.shift();
-
-      switch (t) {
-        case '(':
-          ast.push(parse(toks, depth + 1));
-          break;
-        case ')':
-          if (!depth) throw new SyntaxError('mismatched )');
-          return ast;
-        default:
-          ast.push(t);
+  for (let i = 0; i < text.length; i++) {
+    const char = text[i];
+    if (openers.has(char)) {
+      stack.push(i);
+    } else if (closers.has(char)) {
+      if (stack.length > 0 && pairs[text[stack[stack.length - 1]]] === char) {
+        stack.pop();
+      } else {
+        toRemove.add(i);
       }
     }
-
-    if (depth) {
-      throw new SyntaxError('premature EOF');
-    }
-    return ast;
   }
 
-  function generate(el: string[] | string) {
-    if (!Array.isArray(el)) return el;
-
-    while (el.length === 1 && Array.isArray(el[0])) el = el[0];
-    // @ts-ignore
-    return '(' + el.map(generate).join('') + ')';
+  while (stack.length > 0) {
+    toRemove.add(stack.pop()!);
   }
 
-  const parsed_string = generate(parse(tokenize(`(${str})`)));
+  return text
+    .split('')
+    .filter((_, i) => !toRemove.has(i))
+    .join('');
+}
 
-  // remove the first and last parentheses that we added ^
-  return parsed_string.substring(1, parsed_string.length - 1);
-};
+// export const removeUnnecessaryParentheses = (str: string): string => {
+//   // From: https://stackoverflow.com/questions/57410831/how-to-remove-unnecessary-parenthesis
+//   function tokenize(str: string) {
+//     return str.match(/[()]|[^()]+/g);
+//   }
+
+//   function parse(toks: any, depth = 0): any {
+//     let ast = [];
+
+//     while (toks.length) {
+//       let t = toks.shift();
+
+//       switch (t) {
+//         case '(':
+//           ast.push(parse(toks, depth + 1));
+//           break;
+//         case ')':
+//           if (!depth) throw new SyntaxError('mismatched )');
+//           return ast;
+//         default:
+//           ast.push(t);
+//       }
+//     }
+
+//     if (depth) {
+//       throw new SyntaxError('premature EOF');
+//     }
+//     return ast;
+//   }
+
+//   function generate(el: string[] | string) {
+//     if (!Array.isArray(el)) return el;
+
+//     while (el.length === 1 && Array.isArray(el[0])) el = el[0];
+//     // @ts-ignore
+//     return '(' + el.map(generate).join('') + ')';
+//   }
+
+//   const parsed_string = generate(parse(tokenize(`(${str})`)));
+
+//   // remove the first and last parentheses that we added ^
+//   return parsed_string.substring(1, parsed_string.length - 1);
+// };

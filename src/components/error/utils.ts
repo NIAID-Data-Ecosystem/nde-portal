@@ -18,7 +18,7 @@ export const getQueryStatusError = (error: {
         id: 'bad-request',
         type: 'error' as ErrorType,
         title: 'Bad Request',
-        message: `Check that your query is formatted properly. For more information, see the documentation.`,
+        message: 'Check that your query is formatted properly.',
         relatedLinks: [
           {
             label: 'For more information, see the documentation.',
@@ -51,7 +51,7 @@ export const getQueryStatusError = (error: {
         type: 'error' as ErrorType,
         title: 'Too many requests',
         message:
-          'Check that your query is formatted properly. For more information, see the documentation.',
+          "We're sorry, but you've exceeded the number of requests allowed. Please try again later.",
         relatedLinks: [
           {
             label: 'See documentation',
@@ -61,6 +61,7 @@ export const getQueryStatusError = (error: {
         ],
       };
     }
+
     if (+errorStatus === 500) {
       return {
         id: 'internal-server-error',

@@ -2,8 +2,9 @@ import React from 'react';
 import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
 import remarkGfm from 'remark-gfm';
-import { Box, BoxProps } from '@chakra-ui/react';
+import { Box, BoxProps, HighlightProps, useHighlight } from '@chakra-ui/react';
 import { ReactMarkdownOptions } from 'react-markdown/lib/react-markdown';
+
 /**
  * Displays + formats HTML block content.
  */
@@ -11,6 +12,7 @@ import { ReactMarkdownOptions } from 'react-markdown/lib/react-markdown';
 interface DisplayHTMLContentProps extends BoxProps {
   content: string;
   reactMarkdownProps?: Partial<ReactMarkdownOptions>;
+  highlightProps?: Omit<HighlightProps, 'children'>;
 }
 
 export const DisplayHTMLString: React.FC<{ children: React.ReactNode }> = ({
@@ -32,22 +34,35 @@ export const DisplayHTMLString: React.FC<{ children: React.ReactNode }> = ({
   );
 };
 
+const formatContent = (contentString: DisplayHTMLContentProps['content']) => {
+  // replace no break space with breaking space.
+  let formattedContent = contentString
+    .replace(/\u00a0/g, ' ')
+    .replace(`&emsp;`, ' ');
+  return formattedContent;
+};
+
 export const DisplayHTMLContent: React.FC<DisplayHTMLContentProps> = ({
   content,
   reactMarkdownProps,
+  highlightProps,
   ...props
 }) => {
+  // Highlight search query in content.
+  const chunks = useHighlight({
+    text: formatContent(content),
+    query: highlightProps?.query || [],
+  }).map(chunk => {
+    if (chunk.match) {
+      return `<mark>${chunk.text}</mark>`;
+    }
+    return chunk.text;
+  });
+
   if (!content || typeof content !== 'string') {
     return <></>;
   }
 
-  const formatContent = (contentString: DisplayHTMLContentProps['content']) => {
-    // replace no break space with breaking space.
-    let formattedContent = contentString
-      .replace(/\u00a0/g, ' ')
-      .replace(`&emsp;`, ' ');
-    return formattedContent;
-  };
   return (
     <Box
       w='100%'
@@ -67,6 +82,12 @@ export const DisplayHTMLContent: React.FC<DisplayHTMLContentProps> = ({
           whiteSpace: 'pre-wrap',
           wordBreak: 'break-word',
         },
+        mark: {
+          px: 0.5,
+          bg: 'orange.100',
+          color: 'inherit',
+          ...highlightProps?.styles,
+        },
       }}
       {...props}
     >
@@ -74,7 +95,7 @@ export const DisplayHTMLContent: React.FC<DisplayHTMLContentProps> = ({
         rehypePlugins={[rehypeRaw, remarkGfm]}
         {...reactMarkdownProps}
       >
-        {formatContent(content)}
+        {chunks.join('')}
       </ReactMarkdown>
     </Box>
   );
