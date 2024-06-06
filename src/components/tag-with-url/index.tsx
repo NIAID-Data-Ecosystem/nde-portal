@@ -32,6 +32,7 @@ export const TagWithUrl = ({
   children,
   label,
   href,
+  isExternal,
   leftIcon,
   ...props
 }: TagWithUrlProps) => {
@@ -55,19 +56,19 @@ export const TagWithUrl = ({
   // See issue: https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/245
   if (!href)
     return (
-      <Text fontSize={props.fontSize || 'xs'} {...props}>
+      <Text fontSize={props.fontSize || 'xs'} whiteSpace='nowrap' {...props}>
         <Label />
         {children}
       </Text>
     );
   return (
-    <NextLink href={href} target={props.isExternal ? '_blank' : '_self'}>
+    <NextLink href={href} target={isExternal ? '_blank' : '_self'}>
       <Tag
         size='sm'
         variant='subtle'
         alignItems='center'
         _hover={{
-          '>*': {
+          '.tag-text': {
             textDecoration: 'none',
           },
         }}
@@ -75,15 +76,21 @@ export const TagWithUrl = ({
         {...props}
       >
         {leftIcon && <TagLeftIcon as={leftIcon} />}
-        <Label />
-        <TagLabel
-          textDecoration='underline'
-          fontSize='inherit'
-          lineHeight='inherit'
-        >
-          {children}
+
+        <TagLabel fontSize='inherit' lineHeight='inherit'>
+          <Label />
+          <Text
+            as='span'
+            className='tag-text'
+            textDecoration='underline'
+            fontSize='inherit'
+            lineHeight='inherit'
+            color='inherit'
+          >
+            {children}
+          </Text>
         </TagLabel>
-        {props.isExternal && <TagRightIcon as={FaSquareArrowUpRight} ml={1} />}
+        {isExternal && <TagRightIcon as={FaSquareArrowUpRight} ml={1} />}
       </Tag>
     </NextLink>
   );
