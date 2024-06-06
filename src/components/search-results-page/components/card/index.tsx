@@ -24,7 +24,6 @@ import { ToggleContainer } from 'src/components/toggle-container';
 import { formatAuthorsList2String } from 'src/utils/helpers/authors';
 import { isSourceFundedByNiaid } from 'src/utils/helpers/sources';
 import { Skeleton } from 'src/components/skeleton';
-import { useRouter } from 'next/router';
 
 interface SearchResultCardProps {
   isLoading?: boolean;
@@ -59,7 +58,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
     isLoading || !includedInDataCatalog
       ? []
       : getSourceDetails(includedInDataCatalog);
-  const router = useRouter();
+
   return (
     // {/* Banner with resource type + date of publication */}
     <Card ref={cardRef} variant='niaid' my={4} mb={8}>

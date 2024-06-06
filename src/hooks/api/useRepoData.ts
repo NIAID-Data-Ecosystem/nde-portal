@@ -29,6 +29,10 @@ export function useRepoData(options: any = {}) {
     select: (data: Metadata | undefined) => {
       const sources = data?.src || [];
       const repositories = Object.values(sources).map(({ sourceInfo }) => {
+        // [NOTE]: This is a temporary fix to handle the case where sourceInfo is an array (i.e. VeuPathCatalogs), pending further discussions with NIAID .
+        if (Array.isArray(sourceInfo)) {
+          return {};
+        }
         const { identifier, abstract, conditionsOfAccess, name, url } =
           sourceInfo || {};
 
