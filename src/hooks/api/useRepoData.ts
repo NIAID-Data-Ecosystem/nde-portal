@@ -24,6 +24,10 @@ export function useRepoData(options: any = {}) {
         const { identifier, abstract, conditionsOfAccess, name, url, genre } =
           sourceInfo || {};
 
+        // [NOTE]: This is a temporary fix to handle the case where sourceInfo is an array (i.e. VeuPathCatalogs), pending further discussions with NIAID .
+        if (Array.isArray(sourceInfo)) {
+          return {};
+        }
         return {
           _id: identifier,
           abstract: abstract || '',

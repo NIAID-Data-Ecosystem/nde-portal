@@ -26,7 +26,6 @@ import { ToggleContainer } from 'src/components/toggle-container';
 import { formatAuthorsList2String } from 'src/utils/helpers/authors';
 import { isSourceFundedByNiaid } from 'src/utils/helpers/sources';
 import { Skeleton } from 'src/components/skeleton';
-import { useRouter } from 'next/router';
 import { filterWords } from './helpers';
 
 interface SearchResultCardProps {
@@ -64,7 +63,6 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
     isLoading || !includedInDataCatalog
       ? []
       : getSourceDetails(includedInDataCatalog);
-  const router = useRouter();
 
   const highlightProps = useMemo(
     () =>

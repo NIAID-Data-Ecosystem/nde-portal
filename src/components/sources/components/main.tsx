@@ -137,11 +137,12 @@ const Main: React.FC<Main> = ({ data, isLoading, metadata }) => {
             </Flex>
           </Flex>
           {sources.map((sourceObj: SourceResponse, i: number) => {
+            const id = `${sourceObj.name.replace(/\s+/g, '-')}`;
             return (
               <Box
-                id={`${sourceObj.name}`}
+                key={id}
+                id={id}
                 as='section'
-                key={i}
                 boxShadow='low'
                 borderRadius='semi'
                 borderColor='gray.200'

@@ -60,7 +60,8 @@ const Overview: React.FC<OverviewProps> = ({
           spatialCoverage ||
           temporalCoverage?.some(coverage => coverage.temporalInterval) ===
             true ||
-          inLanguage
+          inLanguage?.name ||
+          inLanguage?.alternateName
         ),
       },
     ],
