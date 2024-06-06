@@ -7,7 +7,6 @@ import {
   updateRoute,
 } from 'src/components/filters';
 import { SelectedFilterTypeValue } from 'src/components/filters/types';
-import { encodeString } from 'src/utils/querystring-helpers';
 import { useRouter } from 'next/router';
 
 // FilterByButton is used to filter the current results by a specific property and value
@@ -80,8 +79,7 @@ export const SearchByButton = ({
         router.push({
           pathname: `/search`,
           query: {
-            q: `${property}:"${encodeString(value)}"`,
-            advancedSearch: true,
+            q: `${property}:"${value.trim().toLowerCase()}"`,
           },
         });
       }}

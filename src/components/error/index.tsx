@@ -5,11 +5,14 @@ import {
   FlexProps,
   Heading,
   HeadingProps,
+  Stack,
   Text,
 } from '@chakra-ui/react';
 import { PageContent } from 'src/components/page-container';
+import NextLink from 'next/link';
 
 interface Error extends FlexProps {
+  title?: string;
   message?: string;
   headingProps?: HeadingProps;
 }
@@ -19,6 +22,7 @@ export const Error: React.FC<Error> = ({
   children,
   message,
   headingProps,
+  title,
   ...props
 }) => {
   return (
@@ -30,7 +34,7 @@ export const Error: React.FC<Error> = ({
     >
       <Flex flexDirection='column' alignItems='center'>
         <Heading as='h2' my={4} color='inherit' {...headingProps}>
-          Oh no! Something went wrong.
+          {title || 'Something went wrong.'}
         </Heading>
         {message ? <Text color='inherit'>{message}</Text> : <></>}
         {children && (
@@ -48,15 +52,20 @@ export const ErrorCTA: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   return (
-    <Flex
-      flex={1}
-      flexDirection={['column', 'column', 'row']}
+    <Stack
+      w='100%'
+      flexWrap='wrap'
+      flexDirection='row'
       justifyContent='center'
+      spacing={2}
+      sx={{ '>*': { minWidth: '150px', maxWidth: '310px', flex: 1 } }}
     >
       {children}
-      <Button as='a' href='/' ml={[0, 0, 4]}>
-        Back to Home
-      </Button>
-    </Flex>
+      <NextLink href='/'>
+        <Button w='100%' size='md'>
+          Back to Home
+        </Button>
+      </NextLink>
+    </Stack>
   );
 };
