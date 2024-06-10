@@ -39,6 +39,7 @@ export const SearchBarWithDropdown = (props: SearchBarWithDropdownProps) => {
         <SearchBarWithOptions
           searchHistory={searchHistory}
           setSearchHistory={setSearchHistory}
+          options={props.options}
           {...props}
         />
       </InputWithDropdown>

@@ -58,7 +58,7 @@ export const CheckboxList = ({
         <PopoverContent>
           <PopoverArrow />
           <PopoverCloseButton />
-          <PopoverHeader>
+          <PopoverHeader textAlign='left'>
             <Text fontWeight='semibold' lineHeight='normal' my={1}>
               {label}
             </Text>
