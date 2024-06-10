@@ -24,10 +24,17 @@ import {
   fetchNews,
 } from 'src/views/home/components/NewsCarousel';
 import { NewsOrEventsObject, fetchEvents } from './news';
-import { TableWithSearch } from 'src/views/home/components/TableWithSearch/';
+import {
+  TableData,
+  TableWithSearch,
+} from 'src/views/home/components/TableWithSearch/';
 import { useResourceCatalogs } from 'src/hooks/api/useResourceCatalogs';
 import { PageHeader } from 'src/components/page-header';
 import { fetchAllFeaturedPages } from 'src/views/features/helpers';
+import {
+  formatTypeName,
+  getFilterData,
+} from 'src/views/home/components/TableWithSearch/helpers';
 
 const Home: NextPage<{
   data: {
@@ -85,6 +92,12 @@ const Home: NextPage<{
           placeholder='Search for datasets'
           ariaLabel='Search for datasets'
           size='md'
+          options={getFilterData({
+            data: [...(resourceCatalogs || []), ...(repositories || [])],
+            property: 'type',
+            formatName: (str: TableData['type']) =>
+              str ? formatTypeName(str) : '',
+          })}
         />
 
         <Flex mt={2} flexWrap={['wrap']}>
