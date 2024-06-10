@@ -1,14 +1,9 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { uniq } from 'lodash';
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/router';
-import {
-  DropdownInput,
-  DropdownInputProps,
-  useDropdownContext,
-} from '../../input-with-dropdown';
+import { DropdownInput, useDropdownContext } from '../../input-with-dropdown';
 import { SearchHistoryItem } from './search-history-item';
-import { SearchInput } from './search-input';
 import { SearchBarWithDropdownProps } from '..';
 import { FaClockRotateLeft } from 'react-icons/fa6';
 import {
@@ -96,24 +91,6 @@ export const SearchBarWithOptions = ({
     { name: string; value: string; property: string }[]
   >([]);
 
-  const updateFilters = useCallback(
-    (newFilter: { name: string; value: string; property: string }) => {
-      setFilters(prevFilters => {
-        // Check if filter is already added
-        const index = prevFilters.findIndex(
-          f => f.property === newFilter.property && f.value === newFilter.value,
-        );
-        if (index === -1) {
-          // Add new filter
-          return [...prevFilters, newFilter];
-        } else {
-          // Remove filter if it's already there
-          return prevFilters.filter((_, i) => i !== index);
-        }
-      });
-    },
-    [],
-  );
   return (
     <>
       <DropdownInput
@@ -146,7 +123,7 @@ export const SearchBarWithOptions = ({
                     selectedOptions={
                       filters.filter(item => item.property === '@type') || []
                     }
-                    handleChange={updateFilters}
+                    handleChange={setFilters}
                   ></CheckboxList>
                 )}
                 <Button

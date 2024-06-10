@@ -22,11 +22,13 @@ interface CheckboxListProps {
   options: { name: string; value: string; count: number }[];
   label: string;
   selectedOptions: { name: string; value: string; property: string }[];
-  handleChange: (filters: {
-    name: string;
-    value: string;
-    property: string;
-  }) => void;
+  handleChange: (
+    filters: {
+      name: string;
+      value: string;
+      property: string;
+    }[],
+  ) => void;
 }
 
 export const CheckboxList = ({
@@ -76,6 +78,29 @@ export const CheckboxList = ({
             )}
           </PopoverHeader>
           <PopoverBody>
+            <Flex justifyContent='flex-end'>
+              <Button
+                size='xs'
+                variant='link'
+                onClick={() => {
+                  if (selectedOptions.length === options.length) {
+                    handleChange([]);
+                  } else {
+                    handleChange(
+                      options.map(option => ({
+                        name: option.name,
+                        property,
+                        value: option.value,
+                      })),
+                    );
+                  }
+                }}
+              >
+                {selectedOptions.length === options.length
+                  ? 'Clear all'
+                  : 'Select all'}
+              </Button>
+            </Flex>
             <ScrollContainer maxHeight='300px'>
               <CheckboxGroup
                 colorScheme='blue'
@@ -88,11 +113,28 @@ export const CheckboxList = ({
                         key={option.value}
                         value={option.value}
                         onChange={e => {
-                          handleChange({
+                          const newFilter = {
                             name: option.name,
                             property,
                             value: e.target.value,
-                          });
+                          };
+                          const index = selectedOptions.findIndex(
+                            f =>
+                              f.property === newFilter.property &&
+                              f.value === newFilter.value,
+                          );
+                          if (index === -1) {
+                            // Add new filter
+                            return handleChange([
+                              ...selectedOptions,
+                              newFilter,
+                            ]);
+                          } else {
+                            // Remove filter if it's already there
+                            return handleChange(
+                              selectedOptions.filter((_, i) => i !== index),
+                            );
+                          }
                         }}
                         px={1}
                         _hover={{ bg: 'tertiary.50' }}
