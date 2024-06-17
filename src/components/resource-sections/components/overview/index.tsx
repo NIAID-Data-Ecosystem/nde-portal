@@ -108,7 +108,6 @@ const Overview: React.FC<OverviewProps> = ({
                       props.property,
                       data['@type'],
                     )}
-                    glyph={glyph}
                     {...props}
                   >
                     {name && (
