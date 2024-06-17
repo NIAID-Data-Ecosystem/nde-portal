@@ -1,10 +1,18 @@
-import { Box, BoxProps, Flex, Image, Stack, Text } from '@chakra-ui/react';
+import {
+  Box,
+  BoxProps,
+  Flex,
+  Image,
+  ImageProps,
+  Stack,
+  Text,
+} from '@chakra-ui/react';
 import { Link } from 'src/components/link';
 import { FormattedResource } from 'src/utils/api/types';
 import { getRepositoryImage } from 'src/utils/helpers';
 
 interface SourceLogoProps extends BoxProps {
-  // sdPublisher?: FormattedResource['sdPublisher'];
+  imageProps?: ImageProps;
   sources: {
     logo: string | null;
     '@type'?: string | null | undefined;
@@ -29,7 +37,12 @@ export const getSourceDetails = (
   }));
 };
 
-export const SourceLogo = ({ sources, url, ...props }: SourceLogoProps) => {
+export const SourceLogo = ({
+  imageProps,
+  sources,
+  url,
+  ...props
+}: SourceLogoProps) => {
   return (
     sources &&
     sources.length > 0 && (
@@ -57,7 +70,8 @@ export const SourceLogo = ({ sources, url, ...props }: SourceLogoProps) => {
                       h='40px'
                       mr={4}
                       src={source_logo}
-                      alt='Data source logo'
+                      alt={`Logo for ${source.name}`}
+                      {...imageProps}
                     />
                   </Link>
                 ) : (
@@ -68,7 +82,8 @@ export const SourceLogo = ({ sources, url, ...props }: SourceLogoProps) => {
                     h='40px'
                     mr={4}
                     src={source_logo}
-                    alt='Data source logo'
+                    alt={`Logo for ${source.name}`}
+                    {...imageProps}
                   />
                 )
               ) : (
@@ -79,7 +94,7 @@ export const SourceLogo = ({ sources, url, ...props }: SourceLogoProps) => {
                   <Link
                     href={url! || source.url!}
                     isExternal
-                    lineHeight='short'
+                    lineHeight='shorter'
                   >
                     <Text fontSize='12px' lineHeight='short'>
                       Provided by {source.name}
