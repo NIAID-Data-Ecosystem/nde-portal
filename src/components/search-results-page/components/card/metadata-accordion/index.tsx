@@ -15,7 +15,6 @@ import NextLink from 'next/link';
 import { FaMinus, FaPlus } from 'react-icons/fa6';
 import { Link } from 'src/components/link';
 import { FormattedResource } from 'src/utils/api/types';
-import { MetadataIcon } from 'src/components/icon';
 import Tooltip from 'src/components/tooltip';
 import { getMetadataTheme } from 'src/components/icon/helpers';
 import {
@@ -131,15 +130,6 @@ const MetadataAccordion: React.FC<MetadataAccordionProps> = ({ data }) => {
                               }
                             >
                               <Flex alignItems='center'>
-                                <MetadataIcon
-                                  id={`indicator-${property}-${id}`}
-                                  title={property}
-                                  glyph={glyph}
-                                  fill={`${color}.600`}
-                                  m={0.5}
-                                  boxSize={4}
-                                  isDisabled={isDisabled}
-                                />
                                 <TagLabel lineHeight='none'>
                                   <Text fontSize='xs' m={0.5} color='inherit'>
                                     {label}

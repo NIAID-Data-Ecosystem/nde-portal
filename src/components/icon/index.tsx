@@ -15,7 +15,7 @@ import {
 } from 'react-icons/fa6';
 import { IconType } from 'react-icons';
 import Glyph from './components/glyph';
-import { FaEarthAfrica, FaLanguage } from 'react-icons/fa6';
+import { FaLanguage } from 'react-icons/fa6';
 
 // Metadata icon svg.
 export interface IconProps extends ChakraIconProps {

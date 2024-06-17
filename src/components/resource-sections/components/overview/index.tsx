@@ -105,7 +105,6 @@ const Overview: React.FC<OverviewProps> = ({
                       props.property,
                       data['@type'],
                     )}
-                    glyph={glyph}
                     {...props}
                   >
                     {name && (
@@ -181,10 +180,8 @@ const SpatiotemporalCoverage: React.FC<SpatiotemporalCoverageProps> = ({
   return (
     <Skeleton key={`block-${id}-spatioTemporal`} isLoaded={!isLoading}>
       <MetadataBlock
-        id={`${id}-spatialCoverage`}
         label='Spatiotemporal Coverage'
         property='spatialCoverage'
-        glyph='spatialCoverage'
         isDisabled={isDisabled}
         bg='gray.900'
         tooltipLabel={
