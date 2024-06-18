@@ -282,13 +282,15 @@ const BarChartHeatMap = ({
             }
             binWidth={binWidth}
             binHeight={binWidth}
-            gap={2}
+            gap={3}
           >
             {heatmap =>
               heatmap.map(heatmapBins => {
                 return heatmapBins.map(bin => {
                   const data = bin.bin as Bin;
                   const pattern = 'url(#secondary-lines)';
+                  const fieldIsCompatible = data.count > 0;
+
                   return (
                     <Box
                       as='g'
@@ -320,8 +322,8 @@ const BarChartHeatMap = ({
                         rx={radius}
                         ry={radius}
                         strokeWidth={1}
-                        fill={bin.count === 1 ? bin.color : pattern}
-                        fillOpacity={bin.count === 1 ? 1 : 0.5}
+                        fill={fieldIsCompatible ? bin.color : pattern}
+                        fillOpacity={fieldIsCompatible ? 1 : 0.5}
                         stroke={bin.color}
                       />
                       {data.augmented && (
@@ -332,9 +334,11 @@ const BarChartHeatMap = ({
                           cy={bin.y + bin.height / 2}
                           strokeWidth={1}
                           stroke={
-                            bin.count === 1 ? 'whiteAlpha.900' : bin.color
+                            fieldIsCompatible ? 'whiteAlpha.900' : bin.color
                           }
-                          fill={bin.count === 1 ? 'whiteAlpha.900' : bin.color}
+                          fill={
+                            fieldIsCompatible ? 'whiteAlpha.900' : bin.color
+                          }
                         />
                       )}{' '}
                     </Box>
@@ -382,13 +386,14 @@ const BarChartHeatMap = ({
             }
             binWidth={binWidth}
             binHeight={binWidth}
-            gap={2}
+            gap={3}
           >
             {heatmap =>
               heatmap.map(heatmapBins => {
                 return heatmapBins.map(bin => {
                   const data = bin.bin as Bin;
                   const pattern = 'url(#fundamental-lines)';
+                  const fieldIsCompatible = data.count > 0;
                   return (
                     <Box
                       as='g'
@@ -421,8 +426,8 @@ const BarChartHeatMap = ({
                         rx={radius}
                         ry={radius}
                         strokeWidth={1}
-                        fill={bin.count === 1 ? bin.color : pattern}
-                        fillOpacity={bin.count === 1 ? 1 : 0.5}
+                        fill={fieldIsCompatible ? bin.color : pattern}
+                        fillOpacity={fieldIsCompatible ? 1 : 0.5}
                         stroke={bin.color}
                       />
                       {data.augmented && (
@@ -433,7 +438,9 @@ const BarChartHeatMap = ({
                           cy={bin.y + bin.height / 2}
                           stroke='white'
                           strokeWidth={1}
-                          fill={bin.count === 1 ? 'whiteAlpha.900' : bin.color}
+                          fill={
+                            fieldIsCompatible ? 'whiteAlpha.900' : bin.color
+                          }
                         />
                       )}
                     </Box>
