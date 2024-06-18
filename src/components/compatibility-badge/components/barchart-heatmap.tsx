@@ -6,10 +6,11 @@ import { MetadataSource } from 'src/utils/api/types';
 import { theme } from 'src/theme';
 import { PatternLines } from '@visx/pattern';
 import { useTooltip, useTooltipInPortal } from '@visx/tooltip';
-import { Box, Stack, Text } from '@chakra-ui/react';
+import { Box, Icon, Stack, Text } from '@chakra-ui/react';
 import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
 import { SchemaDefinitions } from 'scripts/generate-schema-definitions/types';
 import Tooltip from 'src/components/tooltip';
+import { FaRegCircleUp } from 'react-icons/fa6';
 
 const schema = SCHEMA_DEFINITIONS as SchemaDefinitions;
 
@@ -26,9 +27,9 @@ interface Bins {
   bins: Bin[];
 }
 const primary1 = theme.colors.pink[100];
-const primary2 = theme.colors.pink[600];
+const primary2 = theme.colors.pink[500];
 const secondary1 = theme.colors.secondary[100];
-const secondary2 = theme.colors.secondary[600];
+const secondary2 = theme.colors.secondary[500];
 const bg = '#fff';
 
 function max<Datum>(data: Datum[], value: (d: Datum) => number): number {
@@ -99,7 +100,7 @@ interface ToolTipData extends Bin {
   percent: string;
   theme: string;
 }
-const separation = 16;
+const separation = 20;
 const BarChartHeatMap = ({
   width,
   height,
@@ -239,7 +240,7 @@ const BarChartHeatMap = ({
           id='secondary-lines'
           height={5}
           width={5}
-          stroke={theme.colors.secondary[300]}
+          stroke={theme.colors.secondary[500]}
           strokeWidth={1}
           orientation={['diagonal']}
         />
@@ -321,12 +322,25 @@ const BarChartHeatMap = ({
                         y={bin.y}
                         rx={radius}
                         ry={radius}
-                        strokeWidth={1}
+                        strokeWidth={0.5}
                         fill={fieldIsCompatible ? bin.color : pattern}
                         fillOpacity={fieldIsCompatible ? 1 : 0.5}
-                        stroke={bin.color}
+                        stroke={
+                          fieldIsCompatible
+                            ? bin.color
+                            : theme.colors.secondary[500]
+                        }
                       />
                       {data.augmented && (
+                        <Icon
+                          as={FaRegCircleUp}
+                          color={fieldIsCompatible ? 'white' : bin.color}
+                          x={bin.x + 1.5}
+                          y={bin.y + 1.5}
+                          size={14}
+                        />
+                      )}
+                      {/* {data.augmented && (
                         <Box
                           as='circle'
                           r={2}
@@ -340,7 +354,7 @@ const BarChartHeatMap = ({
                             fieldIsCompatible ? 'whiteAlpha.900' : bin.color
                           }
                         />
-                      )}{' '}
+                      )}{' '} */}
                     </Box>
                   );
                 });
@@ -425,12 +439,22 @@ const BarChartHeatMap = ({
                         y={bin.y}
                         rx={radius}
                         ry={radius}
-                        strokeWidth={1}
+                        strokeWidth={0.5}
                         fill={fieldIsCompatible ? bin.color : pattern}
                         fillOpacity={fieldIsCompatible ? 1 : 0.5}
                         stroke={bin.color}
                       />
+
                       {data.augmented && (
+                        <Icon
+                          as={FaRegCircleUp}
+                          color={fieldIsCompatible ? 'white' : bin.color}
+                          x={bin.x + 1.5}
+                          y={bin.y + 1.5}
+                          size={14}
+                        />
+                      )}
+                      {/* {data.augmented && (
                         <Box
                           as='circle'
                           r={2}
@@ -442,7 +466,7 @@ const BarChartHeatMap = ({
                             fieldIsCompatible ? 'whiteAlpha.900' : bin.color
                           }
                         />
-                      )}
+                      )} */}
                     </Box>
                   );
                 });

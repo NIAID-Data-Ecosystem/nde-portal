@@ -6,9 +6,10 @@ import { MetadataSource } from 'src/utils/api/types';
 import { theme } from 'src/theme';
 import { PatternLines } from '@visx/pattern';
 import { useTooltip, useTooltipInPortal } from '@visx/tooltip';
-import { Box, Stack, Text } from '@chakra-ui/react';
+import { Box, Icon, Stack, Text } from '@chakra-ui/react';
 import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
 import { SchemaDefinitions } from 'scripts/generate-schema-definitions/types';
+import { FaRegCircleUp } from 'react-icons/fa6';
 
 const schema = SCHEMA_DEFINITIONS as SchemaDefinitions;
 
@@ -47,10 +48,10 @@ const bucketSizeMax = (binData: Bins[]) => max(binData, d => bins(d).length);
 
 const rectColorScale = (data: Bins[], type?: string) => {
   const colorScheme = !type
-    ? [primary1, primary2]
+    ? [primary2, primary2]
     : type === 'required'
-    ? [primary1, primary2]
-    : [secondary1, secondary2];
+    ? [primary2, primary2]
+    : [secondary2, secondary2];
 
   return scaleLinear<string>({
     range: colorScheme,
@@ -59,7 +60,7 @@ const rectColorScale = (data: Bins[], type?: string) => {
 };
 const opacityScale = (data: Bins[]) =>
   scaleLinear<number>({
-    range: [0.6, 1],
+    range: [1, 1],
     domain: [0, colorMax(data)],
   });
 
@@ -259,6 +260,8 @@ const HeatMap = ({
                     : data.type === 'required'
                     ? 'url(#fundamental-lines)'
                     : 'url(#recommended-lines)';
+                  const fieldIsCompatible = bin?.count && bin.count > 0;
+
                   return (
                     <Box
                       key={`heatmap-rect-${bin.row}-${bin.column}`}
@@ -294,13 +297,14 @@ const HeatMap = ({
                         fill={bin.count ? color : pattern}
                         fillOpacity={bin.count ? bin.opacity : '1'}
                       />
+
                       {data.augmented && (
                         <Box
                           as='circle'
                           r={2}
                           cx={bin.x + bin.width / 2}
                           cy={bin.y + bin.height / 2}
-                          fill='whiteAlpha.900'
+                          fill={fieldIsCompatible ? 'white' : bin.color}
                           stroke='white'
                           strokeWidth={2}
                         />
