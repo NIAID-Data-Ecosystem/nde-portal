@@ -48,10 +48,10 @@ const colorMax = (binData: Bins[]) => max(binData, d => max(bins(d), count));
 
 const rectColorScale = (data: Bins[], type?: string) => {
   const colorScheme = !type
-    ? [primary1, primary2]
+    ? [primary2, primary2]
     : type === 'required'
-    ? [primary1, primary2]
-    : [secondary1, secondary2];
+    ? [primary2, primary2]
+    : [secondary2, secondary2];
 
   return scaleLinear<string>({
     range: colorScheme,
@@ -132,9 +132,7 @@ const BarChartHeatMap = ({
           ?.required_augmented_fields_coverage?.[field] || null;
       return { field, count, augmented, type: 'required' };
     })
-    .sort((a, b) => {
-      return a.count - b.count;
-    });
+    .sort((a, b) => b.field.localeCompare(a.field));
 
   const recommended = Object.entries(
     data?.sourceInfo?.metadata_completeness?.recommended_fields || {},
@@ -145,14 +143,13 @@ const BarChartHeatMap = ({
           ?.recommended_augmented_fields_coverage?.[field] || null;
       return { field, count, augmented, type: 'recommended' };
     })
-    .sort((a, b) => a.count - b.count);
+    .sort((a, b) => b.field.localeCompare(a.field));
 
-  const NUM_BARS = 21;
+  const NUM_BARS = Math.max(recommended.length, required.length);
 
   const REQUIRED_DATA = getBinsData(required, NUM_BARS).reverse();
 
   const RECOMMENDED_DATA = getBinsData(recommended, NUM_BARS).reverse();
-
   // bounds
   const size =
     width > margin.left + margin.right
@@ -322,9 +319,10 @@ const BarChartHeatMap = ({
                         y={bin.y}
                         rx={radius}
                         ry={radius}
-                        strokeWidth={2}
-                        fill={bin.count ? bin.color : pattern}
-                        fillOpacity={bin.count ? bin.opacity : '1'}
+                        strokeWidth={1}
+                        fill={bin.count === 1 ? bin.color : pattern}
+                        fillOpacity={bin.count === 1 ? 1 : 0.5}
+                        stroke={bin.color}
                       />
                       {data.augmented && (
                         <Box
@@ -332,9 +330,11 @@ const BarChartHeatMap = ({
                           r={2}
                           cx={bin.x + bin.width / 2}
                           cy={bin.y + bin.height / 2}
-                          fill='whiteAlpha.900'
-                          stroke='white'
                           strokeWidth={1}
+                          stroke={
+                            bin.count === 1 ? 'whiteAlpha.900' : bin.color
+                          }
+                          fill={bin.count === 1 ? 'whiteAlpha.900' : bin.color}
                         />
                       )}{' '}
                     </Box>
@@ -420,9 +420,10 @@ const BarChartHeatMap = ({
                         y={bin.y}
                         rx={radius}
                         ry={radius}
-                        strokeWidth={2}
-                        fill={bin.count ? bin.color : pattern}
-                        fillOpacity={bin.count ? bin.opacity : '1'}
+                        strokeWidth={1}
+                        fill={bin.count === 1 ? bin.color : pattern}
+                        fillOpacity={bin.count === 1 ? 1 : 0.5}
+                        stroke={bin.color}
                       />
                       {data.augmented && (
                         <Box
@@ -430,9 +431,9 @@ const BarChartHeatMap = ({
                           r={2}
                           cx={bin.x + bin.width / 2}
                           cy={bin.y + bin.height / 2}
-                          fill='whiteAlpha.900'
                           stroke='white'
                           strokeWidth={1}
+                          fill={bin.count === 1 ? 'whiteAlpha.900' : bin.color}
                         />
                       )}
                     </Box>
