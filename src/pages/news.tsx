@@ -138,23 +138,23 @@ const News: NextPage<NewsProps> = props => {
 
         // Mapping data to the expected structure
         const news = newsResponse.news;
-        // const features = featuresResponse.data.map(item => ({
-        //   ...item,
-        //   type: 'feature',
-        //   attributes: {
-        //     name: item.attributes.title,
-        //     image: item.attributes.thumbnail,
-        //     slug: item.attributes.slug,
-        //     description: `[Read full feature](/features/${item.attributes.slug})`,
-        //     subtitle: item.attributes.subtitle,
-        //   },
-        // })) as NewsOrEventsObject[];
+        const features = featuresResponse.data.map(item => ({
+          ...item,
+          type: 'feature',
+          attributes: {
+            name: item.attributes.title,
+            image: item.attributes.thumbnail,
+            slug: item.attributes.slug,
+            description: `[Read full feature](/features/${item.attributes.slug})`,
+            subtitle: item.attributes.subtitle,
+          },
+        })) as NewsOrEventsObject[];
         const events = eventsResponse.events;
 
         return {
           news,
           events,
-          features: [],
+          features,
         };
       } catch (error: any) {
         // Assuming error is of type any, we throw as type Error for useQuery to handle
@@ -403,7 +403,7 @@ const News: NextPage<NewsProps> = props => {
               </Section>
 
               {/* Features */}
-              {response?.features.length && (
+              {response?.features.length > 0 && (
                 <Section id='features' title='Features'>
                   <SectionList
                     id='features'

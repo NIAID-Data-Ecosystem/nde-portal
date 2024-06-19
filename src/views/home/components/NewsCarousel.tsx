@@ -81,6 +81,8 @@ export const NewsCarousel = ({
             image: item.attributes.thumbnail,
             slug: item.attributes.slug,
             shortDescription: item.attributes.subtitle,
+            publishedAt: item.attributes.publishedAt,
+            updatedAt: item.attributes.updatedAt,
           },
         })) as NewsOrEventsObject[];
         const events = eventsResponse.events;
@@ -150,7 +152,7 @@ export const NewsCarousel = ({
       </Heading>
 
       <Carousel>
-        {carouselCards.slice(0, 5).map((carouselCard, idx) => {
+        {carouselCards.slice(0, 10).map((carouselCard, idx) => {
           const image = carouselCard.attributes?.image?.data
             ? Array.isArray(carouselCard.attributes.image.data)
               ? `${process.env.NEXT_PUBLIC_STRAPI_API_URL}${carouselCard.attributes.image.data[0].attributes.url}`
