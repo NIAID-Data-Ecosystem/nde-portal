@@ -25,7 +25,7 @@ export function useRepoData(options: any = {}) {
           sourceInfo || {};
 
         // [NOTE]: This is a temporary fix to handle the case where sourceInfo is an array (i.e. VeuPathCatalogs), pending further discussions with NIAID .
-        if (Array.isArray(sourceInfo)) {
+        if (!sourceInfo || Array.isArray(sourceInfo)) {
           return {};
         }
         return {
