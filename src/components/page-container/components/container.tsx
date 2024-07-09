@@ -20,6 +20,7 @@ import { Banner } from './banner';
 
 interface PageContainerProps extends FlexProps {
   title: string;
+  metaCanonical?: string;
   metaDescription: string;
   keywords?: string;
   disableSearchBar?: boolean;
@@ -40,6 +41,7 @@ export interface NoticeProps {
 export const PageContainer: React.FC<PageContainerProps> = ({
   children,
   title,
+  metaCanonical,
   metaDescription,
   disableSearchBar,
   ...props
@@ -91,6 +93,7 @@ export const PageContainer: React.FC<PageContainerProps> = ({
           name='keywords'
           content='omics, data, infectious disease, epidemiology, clinical trial, immunology, bioinformatics, surveillance, search, repository'
         />
+        {metaCanonical && <link rel='canonical' href={metaCanonical} />}
 
         {/* og meta */}
         <meta

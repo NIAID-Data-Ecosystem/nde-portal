@@ -1,6 +1,5 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import { Breadcrumbs, BreadcrumbItem } from '../components/breadcrumbs';
 import { useRouter } from 'next/router';
 import { usePathname } from 'next/navigation';
@@ -55,5 +54,36 @@ describe('Breadcrumbs Component', () => {
     (usePathname as jest.Mock).mockReturnValue(mockPathname);
     const { container } = render(<Breadcrumbs />);
     expect(container).toBeEmptyDOMElement();
+  });
+
+  it('renders resource breadcrumbs correctly', () => {
+    const mockPathname = '/resources/dde_9142024b72770a67';
+    (useRouter as jest.Mock).mockReturnValue({
+      pathname: mockPathname,
+    });
+    (usePathname as jest.Mock).mockReturnValue(mockPathname);
+    render(<Breadcrumbs />);
+    expect(screen.getByRole('link', { name: 'Search' })).toBeInTheDocument;
+    expect(screen.getByText('Resources')).toBeInTheDocument();
+    expect(screen.queryByText(/dde_9142024b72770a67/i)).not.toBeInTheDocument();
+  });
+
+  it('links to refferer path when provided', () => {
+    const mockPathname = '/resources/dde_9142024b72770a67';
+    (useRouter as jest.Mock).mockReturnValue({
+      pathname: mockPathname,
+      query: {
+        referrerPath:
+          '/search?from=1&filters=%28%40type%3A%28%22Dataset%22%29%29',
+        id: 'dde_9142024b72770a67',
+      },
+    });
+    (usePathname as jest.Mock).mockReturnValue(mockPathname);
+    render(<Breadcrumbs />);
+    expect(screen.getByRole('link', { name: 'Search' })).toHaveAttribute(
+      'href',
+      '/search?from=1&filters=%28%40type%3A%28%22Dataset%22%29%29',
+    );
+    expect(screen.getByText('Resources')).toBeInTheDocument();
   });
 });

@@ -19,9 +19,9 @@ import { CardContainer } from 'src/components/resource-sections/components/relat
 import { FaMagnifyingGlass } from 'react-icons/fa6';
 import { External } from './components/external';
 import { ScrollContainer } from 'src/components/scroll-container';
-import { ResourceData } from 'src/pages/resources';
 import { CompletenessBadgeCircle } from 'src/components/completeness-badge/Circular';
 import { Link } from 'src/components/link';
+import { ResourceData } from 'src/pages/resources/[id]';
 
 export const Sidebar = ({
   data,
