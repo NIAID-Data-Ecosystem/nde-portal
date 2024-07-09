@@ -17,7 +17,7 @@ import { FaCircleArrowRight, FaAngleRight, FaRegClock } from 'react-icons/fa6';
 import { FormattedResource } from 'src/utils/api/types';
 import { TypeBanner } from 'src/components/resource-sections/components';
 import MetadataAccordion from './metadata-accordion';
-import TopicCategory from './topic-category';
+import TopicCategories from './topic-categories';
 import { DisplayHTMLContent } from 'src/components/html-content';
 import { AccessibleForFree, ConditionsOfAccess } from 'src/components/badges';
 import { SourceLogo, getSourceDetails } from './source-logo';
@@ -109,6 +109,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
         <Skeleton
           isLoaded={!isLoading}
           minHeight={isLoading ? '81px' : 'unset'}
+          flex={1}
         >
           <NextLink
             // referrerPath is the current path of the page - used for breadcrumbs in resources page
@@ -132,7 +133,6 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
               color='inherit'
               fontSize='lg'
               lineHeight='short'
-              flex={1}
               w='100%'
               textDecoration='underline'
               _hover={{
@@ -301,7 +301,11 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
               <MetadataAccordion data={data} />
 
               {data?.topicCategory && data?.topicCategory.length > 0 && (
-                <TopicCategory data={data.topicCategory} />
+                <TopicCategories
+                  type={data['@type']}
+                  data={data.topicCategory}
+                  px={paddingCard}
+                />
               )}
 
               <Stack
