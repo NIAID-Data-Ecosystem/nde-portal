@@ -220,7 +220,10 @@ export const RepositoryCells = ({
           },
         }
       : {
-          pathname: `/resources/${data._id}`,
+          pathname: `/resources`,
+          query: {
+            id: data._id,
+          },
         };
 
   return (

@@ -11,8 +11,8 @@ import {
 } from '@chakra-ui/react';
 import NextLink from 'next/link';
 import { ScrollContainer } from 'src/components/scroll-container';
+import { ResourceData } from 'src/pages/resources';
 import { Link } from 'src/components/link';
-import { ResourceData } from 'src/pages/resources/[id]';
 
 interface CardContainerProps {
   heading: string;
@@ -76,7 +76,8 @@ const RelatedDatasets: React.FC<RelatedDatasetsProps> = ({
                           {dataset._id ? (
                             <NextLink
                               href={{
-                                pathname: `/resources/${dataset._id}`,
+                                pathname: '/resources/',
+                                query: { id: dataset._id },
                               }}
                               passHref
                             >

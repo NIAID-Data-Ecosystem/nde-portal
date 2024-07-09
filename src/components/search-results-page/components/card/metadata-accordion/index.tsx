@@ -205,8 +205,8 @@ const MetadataAccordion: React.FC<MetadataAccordionProps> = ({ data }) => {
                                   <NextLink
                                     href={
                                       props.property === 'funding'
-                                        ? `/resources/${id}#funding`
-                                        : `/resources/${id}#overview`
+                                        ? `/resources?id=${id}#funding`
+                                        : `/resources?id=${id}#overview`
                                     }
                                   >
                                     <Link

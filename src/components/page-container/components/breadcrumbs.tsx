@@ -58,37 +58,34 @@ export const BreadcrumbItem = ({
 export const Breadcrumbs: React.FC<BreadcrumbsProps> = () => {
   const router = useRouter();
   const pathname = usePathname();
-  if (!pathname) {
-    return <></>;
-  }
-  const segments = pathname?.split('/')?.filter(Boolean);
-  let pathSegments = [];
+  const segments = pathname.split('/').filter(Boolean);
 
-  if (segments[0] === 'resources') {
+  const pathSegments = segments.map((path, idx) => {
+    const name = path
+      .replace(/-/g, ' ')
+      .replace(/_/g, ' ')
+      .replace(/(?:^|\s)\S/g, a => a.toUpperCase());
+    const last = idx === 0 ? path : segments.slice(0, idx + 1).join('/');
+    return {
+      name,
+      route: `/${last}`,
+    };
+  });
+
+  if (!pathSegments.length) return null;
+
+  if (pathname === '/resources') {
     // Since `/resources` is not nested within `/search` in the route, we need to hardcode the search breadcrumb.
     // We leverage the router query field to determine the referrer path (which is set in the search results page). If the user is not coming from the search results page, we default to `/search`.
-    pathSegments.push({ name: 'Resources', route: pathname });
+
     pathSegments.unshift({
       name: 'Search',
       route:
-        typeof router.query?.referrerPath === 'string'
+        typeof router.query.referrerPath === 'string'
           ? router.query.referrerPath
           : '/search',
     });
-  } else {
-    pathSegments = segments.map((path, idx) => {
-      const name = path
-        .replace(/-/g, ' ')
-        .replace(/_/g, ' ')
-        .replace(/(?:^|\s)\S/g, a => a.toUpperCase());
-      const last = idx === 0 ? path : segments.slice(0, idx + 1).join('/');
-      return {
-        name,
-        route: `/${last}`,
-      };
-    });
   }
-  if (!pathSegments.length) return null;
   return (
     <Flex px={6} py={2}>
       <Breadcrumb

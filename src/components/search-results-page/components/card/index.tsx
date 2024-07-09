@@ -114,10 +114,10 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
           <NextLink
             // referrerPath is the current path of the page - used for breadcrumbs in resources page
             href={{
-              pathname: `/resources/${id}`,
-              query: { referrerPath },
+              pathname: '/resources/',
+              query: { id, referrerPath },
             }}
-            as={`/resources/${id}`}
+            as={`/resources?id=${id}`}
             passHref
             prefetch={false}
             style={{
@@ -334,10 +334,10 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                     <NextLink
                       // referrerPath is the current path of the page - used for breadcrumbs in resources page
                       href={{
-                        pathname: `/resources/${id}`,
-                        query: { referrerPath },
+                        pathname: '/resources/',
+                        query: { id, referrerPath },
                       }}
-                      as={`/resources/${id}`}
+                      as={`/resources?id=${id}`}
                       style={{ flex: 1 }}
                       passHref
                       prefetch={false}
