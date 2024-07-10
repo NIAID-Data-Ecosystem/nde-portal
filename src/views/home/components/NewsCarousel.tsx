@@ -148,7 +148,7 @@ export const NewsCarousel = ({
         borderBottom='1px solid'
         borderBottomColor='primary.200'
       >
-        Recent News Releases
+        News & Updates
       </Heading>
 
       <Carousel>
@@ -285,7 +285,7 @@ export const NewsCarousel = ({
           passHref
         >
           <Button as='span' size='sm' rightIcon={<Icon as={FaAngleRight} />}>
-            All news releases
+            All news & updates
           </Button>
         </NextLink>
       </Flex>

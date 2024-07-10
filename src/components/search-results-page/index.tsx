@@ -300,7 +300,7 @@ const SearchResultsPage = ({
                 Ensure reserved characters are preceded by a backslash (\).
               </ListItem>
               <ListItem>
-                <Link href={'/docs/advanced-searching'} isExternal>
+                <Link href={'/knowledge-center/advanced-searching'} isExternal>
                   For more information, see the documentation.
                 </Link>
               </ListItem>

@@ -14,8 +14,8 @@
       "href": "/about"
     },
     {
-      "label": "Help",
-      "href": "/docs"
+      "label": "Knowledge Center",
+      "href": "/knowledge-center"
     },
     {
       "label": "Resources",
@@ -31,13 +31,13 @@
           "href": "/sources"
         },
         {
-          "label": "Documentation",
+          "label": "Knowledge Center",
           "subLabel": "Guides and documentation to help navigate and use the Discovery Portal",
-          "href": "/docs"
+          "href": "/knowledge-center"
         },
         {
-          "label": "News",
-          "subLabel": "Latest news releases from the NIAID Data Ecosystem",
+          "label": "News & Updates",
+          "subLabel": "Latest news and updates from the NIAID Data Ecosystem",
           "href": "/news"
         },
         {
