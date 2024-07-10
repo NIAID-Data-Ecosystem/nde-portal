@@ -22,7 +22,7 @@ export const getQueryStatusError = (error: {
         relatedLinks: [
           {
             label: 'For more information, see the documentation.',
-            href: '/docs/advanced-searching',
+            href: '/knowledge-center/advanced-searching',
             isExternal: true,
           },
         ],
@@ -38,7 +38,7 @@ export const getQueryStatusError = (error: {
         relatedLinks: [
           {
             label: 'For more information, see the documentation.',
-            href: '/docs/advanced-searching',
+            href: '/knowledge-center/advanced-searching',
             isExternal: true,
           },
         ],
@@ -54,8 +54,8 @@ export const getQueryStatusError = (error: {
           "We're sorry, but you've exceeded the number of requests allowed. Please try again later.",
         relatedLinks: [
           {
-            label: 'Documentation',
-            href: '/docs/advanced-searching',
+            label: 'See documentation',
+            href: '/knowledge-center/advanced-searching',
             isExternal: true,
           },
         ],
@@ -81,8 +81,8 @@ export const getQueryStatusError = (error: {
           'We are experiencing issues with your request. If you have many wildcards in your query, try removing them. If issues persist, please try again later.',
         relatedLinks: [
           {
-            label: 'Documentation',
-            href: '/docs/advanced-searching',
+            label: 'See documentation',
+            href: '/knowledge-center/advanced-searching',
             isExternal: true,
           },
         ],
@@ -97,8 +97,8 @@ export const getQueryStatusError = (error: {
           'We are experiencing issues with your request. If you have many wildcards in your query, try removing them. If issues persist, please try again later.',
         relatedLinks: [
           {
-            label: 'Documentation',
-            href: '/docs/advanced-searching',
+            label: 'See documentation',
+            href: '/knowledge-center/advanced-searching',
             isExternal: true,
           },
         ],

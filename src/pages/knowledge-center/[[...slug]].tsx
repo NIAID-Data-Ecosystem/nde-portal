@@ -89,7 +89,7 @@ const Docs: NextPage<{
                   name: item.attributes.name,
                   slug: item.attributes.slug,
                   href: {
-                    pathname: `/docs/${item.attributes.slug}`,
+                    pathname: `/knowledge-center/${item.attributes.slug}`,
                   },
                 };
               }) || [];
@@ -127,7 +127,7 @@ const Docs: NextPage<{
   const MAX_PAGES_PER_SECTION = 3;
   return (
     <PageContainer
-      title='Documentation'
+      title='Knowledge Center'
       metaDescription='Documentation for the portal.'
       px={0}
       py={0}
@@ -152,8 +152,8 @@ const Docs: NextPage<{
         borderBottomColor='gray.200'
       >
         <DocsSearchBar
-          placeholder='Search within documentation'
-          ariaLabel='Search within documentation'
+          placeholder='Search Knowledge Center'
+          ariaLabel='Search Knowledge Center'
         />
       </Flex>
       {error ? (

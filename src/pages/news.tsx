@@ -228,12 +228,12 @@ const News: NextPage<NewsProps> = props => {
   return (
     <PageContainer
       title='News'
-      metaDescription='Latest news releases for the NIAID Data Discovery Portal.'
+      metaDescription='Latest news and updates for the NIAID Data Discovery Portal.'
       px={0}
       py={0}
     >
       <PageHeader
-        title='News Releases'
+        title='News & Updates'
         titleProps={{
           size: 'h3',
         }}
@@ -457,11 +457,14 @@ const News: NextPage<NewsProps> = props => {
                   spacing={4}
                   fontSize='md'
                 >
-                  <Link href='/docs'>Documentation</Link>
-                  <Link href='/faq'>FAQ</Link>
+                  <Link href='/knowledge-center'>Knowledge Center</Link>
+                  <Link href='/knowledge-center/frequently-asked-questions'>
+                    FAQ
+                  </Link>
                   <Link href='mailto:NIAIDDataEcosystem@mail.nih.gov'>
                     Ask a question
                   </Link>
+                  <Link href='/changelog'>Changelog</Link>
                 </Stack>
               </Section>
 

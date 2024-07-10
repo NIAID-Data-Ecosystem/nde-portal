@@ -18,6 +18,7 @@ import {
   useDisclosure,
   Text,
   UnorderedList,
+  Stack,
 } from '@chakra-ui/react';
 import {
   DropdownInput,
@@ -264,10 +265,10 @@ const SearchBar = ({
                   my={1}
                   {...getListItemProps({
                     index,
-                    value: `/docs/${result.slug}`,
+                    value: `/knowledge-center/${result.slug}`,
                     isSelected,
                     onClick: () => {
-                      router.push(`/docs/${result.slug}`);
+                      router.push(`/knowledge-center/${result.slug}`);
                       handleClose();
                     },
                   })}
@@ -337,19 +338,31 @@ export const DocsSearchBar = (props: SearchBarWithDropdownProps) => {
   };
   return (
     <>
-      <Button w='350px' variant='unstyled' onClick={onOpen}>
-        <InputGroup>
-          <InputLeftElement>
-            <Icon as={FaMagnifyingGlass} color='gray.200' />
-          </InputLeftElement>
-          <Input as='div' size={size} colorScheme={colorScheme}>
-            <Text textAlign='left' color='gray.800'>
-              {placeholder}
-            </Text>
-          </Input>
-        </InputGroup>
-      </Button>
-
+      <Stack
+        flexDirection={{ base: 'column', sm: 'row' }}
+        spacing={2}
+        flex={1}
+        justifyContent={'flex-end'}
+      >
+        <Button
+          maxWidth={{ base: 'unset', sm: '350px' }}
+          variant='unstyled'
+          onClick={onOpen}
+          flex={1}
+        >
+          <InputGroup>
+            <InputLeftElement>
+              <Icon as={FaMagnifyingGlass} color='gray.200' />
+            </InputLeftElement>
+            <Input as='div' size={size} colorScheme={colorScheme}>
+              <Text textAlign='left' color='gray.800'>
+                {placeholder}
+              </Text>
+            </Input>
+          </InputGroup>
+        </Button>
+        <Button size='sm'>{placeholder}</Button>
+      </Stack>
       {isOpen && (
         <Modal isOpen={isOpen} onClose={handleClose} size='5xl'>
           <ModalContent>

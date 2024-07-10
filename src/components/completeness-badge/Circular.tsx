@@ -281,7 +281,7 @@ export const CompletenessBadgeCircle = ({
       </Box>
       <Tooltip label='See metadata completeness documentation.'>
         <Link
-          href='/docs/metadata-completeness-score'
+          href='/knowledge-center/metadata-completeness-score'
           mt={2}
           textDecoration='underline'
           lineHeight='shorter'

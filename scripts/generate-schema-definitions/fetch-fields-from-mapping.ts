@@ -32,6 +32,8 @@ export const fetchFieldsFromMapping = async (): Promise<MappedFields[]> => {
 export interface MappedFieldsWithCounts extends MappedFields {
   count: number;
 }
+const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
 // Fetch counts for each field.
 export const fetchFieldCounts = async (fields: MappedFields[]) => {
   const results = [];
@@ -46,6 +48,7 @@ export const fetchFieldCounts = async (fields: MappedFields[]) => {
         );
       }
       let count = response.data.total;
+      console.log(`Fetched ${fields[i].dotfield}, ${count}`);
       results.push({ ...fields[i], count });
     } catch (error: any) {
       console.error(
@@ -53,6 +56,7 @@ export const fetchFieldCounts = async (fields: MappedFields[]) => {
         error.message,
       );
     }
+    await delay(500); // 1 second delay between each call
   }
   return results;
 };

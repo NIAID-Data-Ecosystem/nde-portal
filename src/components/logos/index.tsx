@@ -1,6 +1,5 @@
 import React from 'react';
 import { Flex, Link } from '@chakra-ui/react';
-import { NIAIDLogo } from './niaid-logo';
 import { NDELogo } from './nde-logo';
 
 export interface LogoProps {
@@ -21,17 +20,6 @@ export const Logo = ({ href, isLazy }: LogoProps) => {
       height={{ base: '55px', sm: '28px', lg: '40px' }}
       flex={1}
     >
-      <Link
-        display='flex'
-        alignItems='center'
-        href='https://www.niaid.nih.gov/'
-        variant='unstyled'
-        target='_blank'
-        rel='preload'
-      >
-        <NIAIDLogo loading={isLazy ? 'lazy' : 'eager'} />
-      </Link>
-
       <Link
         display='flex'
         alignItems='center'
