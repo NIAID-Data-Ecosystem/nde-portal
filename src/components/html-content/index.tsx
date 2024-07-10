@@ -79,7 +79,7 @@ export const DisplayHTMLContent: React.FC<DisplayHTMLContentProps> = ({
           wordBreak: 'break-word',
         },
         '>*': {
-          whiteSpace: 'pre-wrap',
+          whiteSpace: 'normal',
           wordBreak: 'break-word',
         },
         mark: {
