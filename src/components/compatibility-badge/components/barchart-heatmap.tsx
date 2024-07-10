@@ -322,14 +322,14 @@ const BarChartHeatMap = ({
                         y={bin.y}
                         rx={radius}
                         ry={radius}
-                        strokeWidth={0.5}
                         fill={fieldIsCompatible ? bin.color : pattern}
-                        fillOpacity={fieldIsCompatible ? 1 : 0.5}
-                        stroke={
-                          fieldIsCompatible
-                            ? bin.color
-                            : theme.colors.secondary[500]
-                        }
+                        fillOpacity={1}
+                        // strokeWidth={0.5}
+                        // stroke={
+                        //   fieldIsCompatible
+                        //     ? bin.color
+                        //     : theme.colors.secondary[500]
+                        // }
                       />
                       {data.augmented && (
                         <Icon
@@ -337,7 +337,7 @@ const BarChartHeatMap = ({
                           color={fieldIsCompatible ? 'white' : bin.color}
                           x={bin.x + 1.5}
                           y={bin.y + 1.5}
-                          size={14}
+                          size={10}
                         />
                       )}
                       {/* {data.augmented && (
@@ -439,10 +439,10 @@ const BarChartHeatMap = ({
                         y={bin.y}
                         rx={radius}
                         ry={radius}
-                        strokeWidth={0.5}
                         fill={fieldIsCompatible ? bin.color : pattern}
-                        fillOpacity={fieldIsCompatible ? 1 : 0.5}
-                        stroke={bin.color}
+                        fillOpacity={1}
+                        // stroke={bin.color}
+                        // strokeWidth={0.5}
                       />
 
                       {data.augmented && (
@@ -451,7 +451,7 @@ const BarChartHeatMap = ({
                           color={fieldIsCompatible ? 'white' : bin.color}
                           x={bin.x + 1.5}
                           y={bin.y + 1.5}
-                          size={14}
+                          size={10}
                         />
                       )}
                       {/* {data.augmented && (
@@ -495,24 +495,36 @@ const BarChartHeatMap = ({
                 {tooltipData.type.charAt(0).toUpperCase() +
                   tooltipData.type.slice(1)}
               </Text>
-              <Stack mt={2} spacing={2} fontSize='xs'>
+              <Stack mt={2} spacing={1} fontSize='xs'>
                 <Text lineHeight='shorter'>
-                  Coverage of <strong>{schema[tooltipData.field].name}</strong>{' '}
-                  is{' '}
-                  <Text as='span' bg={`${tooltipData.theme}.100`}>
-                    {tooltipData.percent}
-                  </Text>
-                  .
+                  {tooltipData.count ? (
+                    <>
+                      <strong>{schema[tooltipData.field].name} </strong>
+                      metadata is collected and available for{' '}
+                      <Text as='span' bg={`${tooltipData.theme}.100`}>
+                        {Math.round(tooltipData.count * 100)}%
+                      </Text>{' '}
+                      of resources from this source.
+                    </>
+                  ) : (
+                    <>
+                      <strong>{schema[tooltipData.field].name} </strong>{' '}
+                      metadata was not found for this source.
+                    </>
+                  )}
                 </Text>
-                {tooltipData.augmented && (
-                  <Text lineHeight='shorter'>
-                    Augmented coverage of{' '}
-                    <strong>{schema[tooltipData.field].name}</strong> is{' '}
+
+                {tooltipData.augmented ? (
+                  <Text lineHeight='shorter' mt={1}>
+                    <strong>{schema[tooltipData.field].name} </strong>
+                    was augmented for{' '}
                     <Text as='span' bg={`${tooltipData.theme}.100`}>
                       {Math.round(tooltipData.augmented * 100)}%
-                    </Text>
-                    .
+                    </Text>{' '}
+                    of resources from this source.
                   </Text>
+                ) : (
+                  <></>
                 )}
               </Stack>
             </Box>

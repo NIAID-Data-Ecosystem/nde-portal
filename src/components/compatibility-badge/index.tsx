@@ -179,7 +179,7 @@ export const CompatibilityBadge = () => {
                         alignItems='center'
                       >
                         {/* <Box w='100px' h='200px'> */}
-                        <Box w='450px' h='100px'>
+                        <Box w='350px' h='100px'>
                           <ParentSize>
                             {({ width, height }) => (
                               <BarChartHeatMap

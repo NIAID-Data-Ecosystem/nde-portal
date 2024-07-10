@@ -380,24 +380,37 @@ const Ring = ({
                           >
                             {type}
                           </Text>
+
                           <Stack mt={2} spacing={1} fontSize='xs'>
                             <Text lineHeight='shorter'>
-                              Coverage of{' '}
-                              <strong>{schema[field.field].name}</strong> is{' '}
-                              <Text as='span' bg={`${typeTheme}.100`}>
-                                {Math.round(field.value * 100)}%
-                              </Text>
-                              .
+                              {field.value ? (
+                                <>
+                                  <strong>{schema[field.field].name} </strong>
+                                  metadata is collected and available for{' '}
+                                  <Text as='span' bg={`${typeTheme}.100`}>
+                                    {Math.round(field.value * 100)}%
+                                  </Text>{' '}
+                                  of resources from this source.
+                                </>
+                              ) : (
+                                <>
+                                  <strong>{schema[field.field].name} </strong>{' '}
+                                  metadata was not found for this source.
+                                </>
+                              )}
                             </Text>
-                            {field.augmented && (
-                              <Text lineHeight='shorter'>
-                                Augmented coverage of{' '}
-                                <strong>{schema[field.field].name}</strong> is{' '}
+
+                            {field.augmented ? (
+                              <Text lineHeight='shorter' mt={1}>
+                                <strong>{schema[field.field].name} </strong>
+                                was augmented for{' '}
                                 <Text as='span' bg={`${typeTheme}.100`}>
                                   {Math.round(field.augmented * 100)}%
-                                </Text>
-                                .
+                                </Text>{' '}
+                                of resources from this source.
                               </Text>
+                            ) : (
+                              <></>
                             )}
                           </Stack>
                         </Box>
