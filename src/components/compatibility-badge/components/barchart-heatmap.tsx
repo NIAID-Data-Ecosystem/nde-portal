@@ -6,10 +6,11 @@ import { MetadataSource } from 'src/hooks/api/types';
 import { theme } from 'src/theme';
 import { PatternLines } from '@visx/pattern';
 import { useTooltip, useTooltipInPortal } from '@visx/tooltip';
-import { Box, Stack, Text } from '@chakra-ui/react';
+import { Box, Icon, Stack, Text } from '@chakra-ui/react';
 import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
 import { SchemaDefinitions } from 'scripts/generate-schema-definitions/types';
 import Tooltip from 'src/components/tooltip';
+import { FaRegCircleUp } from 'react-icons/fa6';
 
 const schema = SCHEMA_DEFINITIONS as SchemaDefinitions;
 
@@ -26,9 +27,9 @@ interface Bins {
   bins: Bin[];
 }
 const primary1 = theme.colors.pink[100];
-const primary2 = theme.colors.pink[600];
+const primary2 = theme.colors.pink[500];
 const secondary1 = theme.colors.secondary[100];
-const secondary2 = theme.colors.secondary[600];
+const secondary2 = theme.colors.secondary[500];
 const bg = '#fff';
 
 function max<Datum>(data: Datum[], value: (d: Datum) => number): number {
@@ -48,10 +49,10 @@ const colorMax = (binData: Bins[]) => max(binData, d => max(bins(d), count));
 
 const rectColorScale = (data: Bins[], type?: string) => {
   const colorScheme = !type
-    ? [primary1, primary2]
+    ? [primary2, primary2]
     : type === 'required'
-    ? [primary1, primary2]
-    : [secondary1, secondary2];
+    ? [primary2, primary2]
+    : [secondary2, secondary2];
 
   return scaleLinear<string>({
     range: colorScheme,
@@ -99,7 +100,7 @@ interface ToolTipData extends Bin {
   percent: string;
   theme: string;
 }
-const separation = 16;
+const separation = 20;
 const BarChartHeatMap = ({
   width,
   height,
@@ -132,9 +133,7 @@ const BarChartHeatMap = ({
           ?.required_augmented_fields_coverage?.[field] || null;
       return { field, count, augmented, type: 'required' };
     })
-    .sort((a, b) => {
-      return a.count - b.count;
-    });
+    .sort((a, b) => b.field.localeCompare(a.field));
 
   const recommended = Object.entries(
     data?.sourceInfo?.metadata_completeness?.recommended_fields || {},
@@ -145,14 +144,13 @@ const BarChartHeatMap = ({
           ?.recommended_augmented_fields_coverage?.[field] || null;
       return { field, count, augmented, type: 'recommended' };
     })
-    .sort((a, b) => a.count - b.count);
+    .sort((a, b) => b.field.localeCompare(a.field));
 
-  const NUM_BARS = 21;
+  const NUM_BARS = Math.max(recommended.length, required.length);
 
   const REQUIRED_DATA = getBinsData(required, NUM_BARS).reverse();
 
   const RECOMMENDED_DATA = getBinsData(recommended, NUM_BARS).reverse();
-
   // bounds
   const size =
     width > margin.left + margin.right
@@ -242,7 +240,7 @@ const BarChartHeatMap = ({
           id='secondary-lines'
           height={5}
           width={5}
-          stroke={theme.colors.secondary[300]}
+          stroke={theme.colors.secondary[500]}
           strokeWidth={1}
           orientation={['diagonal']}
         />
@@ -285,13 +283,15 @@ const BarChartHeatMap = ({
             }
             binWidth={binWidth}
             binHeight={binWidth}
-            gap={2}
+            gap={3}
           >
             {heatmap =>
               heatmap.map(heatmapBins => {
                 return heatmapBins.map(bin => {
                   const data = bin.bin as Bin;
                   const pattern = 'url(#secondary-lines)';
+                  const fieldIsCompatible = data.count > 0;
+
                   return (
                     <Box
                       as='g'
@@ -322,21 +322,39 @@ const BarChartHeatMap = ({
                         y={bin.y}
                         rx={radius}
                         ry={radius}
-                        strokeWidth={2}
-                        fill={bin.count ? bin.color : pattern}
-                        fillOpacity={bin.count ? bin.opacity : '1'}
+                        fill={fieldIsCompatible ? bin.color : pattern}
+                        fillOpacity={1}
+                        // strokeWidth={0.5}
+                        // stroke={
+                        //   fieldIsCompatible
+                        //     ? bin.color
+                        //     : theme.colors.secondary[500]
+                        // }
                       />
                       {data.augmented && (
+                        <Icon
+                          as={FaRegCircleUp}
+                          color={fieldIsCompatible ? 'white' : bin.color}
+                          x={bin.x + 1.5}
+                          y={bin.y + 1.5}
+                          size={10}
+                        />
+                      )}
+                      {/* {data.augmented && (
                         <Box
                           as='circle'
                           r={2}
                           cx={bin.x + bin.width / 2}
                           cy={bin.y + bin.height / 2}
-                          fill='whiteAlpha.900'
-                          stroke='white'
                           strokeWidth={1}
+                          stroke={
+                            fieldIsCompatible ? 'whiteAlpha.900' : bin.color
+                          }
+                          fill={
+                            fieldIsCompatible ? 'whiteAlpha.900' : bin.color
+                          }
                         />
-                      )}{' '}
+                      )}{' '} */}
                     </Box>
                   );
                 });
@@ -382,13 +400,14 @@ const BarChartHeatMap = ({
             }
             binWidth={binWidth}
             binHeight={binWidth}
-            gap={2}
+            gap={3}
           >
             {heatmap =>
               heatmap.map(heatmapBins => {
                 return heatmapBins.map(bin => {
                   const data = bin.bin as Bin;
                   const pattern = 'url(#fundamental-lines)';
+                  const fieldIsCompatible = data.count > 0;
                   return (
                     <Box
                       as='g'
@@ -420,21 +439,34 @@ const BarChartHeatMap = ({
                         y={bin.y}
                         rx={radius}
                         ry={radius}
-                        strokeWidth={2}
-                        fill={bin.count ? bin.color : pattern}
-                        fillOpacity={bin.count ? bin.opacity : '1'}
+                        fill={fieldIsCompatible ? bin.color : pattern}
+                        fillOpacity={1}
+                        // stroke={bin.color}
+                        // strokeWidth={0.5}
                       />
+
                       {data.augmented && (
+                        <Icon
+                          as={FaRegCircleUp}
+                          color={fieldIsCompatible ? 'white' : bin.color}
+                          x={bin.x + 1.5}
+                          y={bin.y + 1.5}
+                          size={10}
+                        />
+                      )}
+                      {/* {data.augmented && (
                         <Box
                           as='circle'
                           r={2}
                           cx={bin.x + bin.width / 2}
                           cy={bin.y + bin.height / 2}
-                          fill='whiteAlpha.900'
                           stroke='white'
                           strokeWidth={1}
+                          fill={
+                            fieldIsCompatible ? 'whiteAlpha.900' : bin.color
+                          }
                         />
-                      )}
+                      )} */}
                     </Box>
                   );
                 });
@@ -463,24 +495,36 @@ const BarChartHeatMap = ({
                 {tooltipData.type.charAt(0).toUpperCase() +
                   tooltipData.type.slice(1)}
               </Text>
-              <Stack mt={2} spacing={2} fontSize='xs'>
+              <Stack mt={2} spacing={1} fontSize='xs'>
                 <Text lineHeight='shorter'>
-                  Coverage of <strong>{schema[tooltipData.field].name}</strong>{' '}
-                  is{' '}
-                  <Text as='span' bg={`${tooltipData.theme}.100`}>
-                    {tooltipData.percent}
-                  </Text>
-                  .
+                  {tooltipData.count ? (
+                    <>
+                      <strong>{schema[tooltipData.field].name} </strong>
+                      metadata is collected and available for{' '}
+                      <Text as='span' bg={`${tooltipData.theme}.100`}>
+                        {Math.round(tooltipData.count * 100)}%
+                      </Text>{' '}
+                      of resources from this source.
+                    </>
+                  ) : (
+                    <>
+                      <strong>{schema[tooltipData.field].name} </strong>{' '}
+                      metadata was not found for this source.
+                    </>
+                  )}
                 </Text>
-                {tooltipData.augmented && (
-                  <Text lineHeight='shorter'>
-                    Augmented coverage of{' '}
-                    <strong>{schema[tooltipData.field].name}</strong> is{' '}
+
+                {tooltipData.augmented ? (
+                  <Text lineHeight='shorter' mt={1}>
+                    <strong>{schema[tooltipData.field].name} </strong>
+                    was augmented for{' '}
                     <Text as='span' bg={`${tooltipData.theme}.100`}>
                       {Math.round(tooltipData.augmented * 100)}%
-                    </Text>
-                    .
+                    </Text>{' '}
+                    of resources from this source.
                   </Text>
+                ) : (
+                  <></>
                 )}
               </Stack>
             </Box>

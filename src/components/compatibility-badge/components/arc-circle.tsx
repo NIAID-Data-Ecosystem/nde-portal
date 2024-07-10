@@ -285,23 +285,35 @@ export const ArcCircle = ({
                   tooltipData.type.slice(1)}
               </Text>
               <Stack mt={2} spacing={1} fontSize='xs'>
-                <Text>
-                  Coverage of <strong>{schema[tooltipData.field].name}</strong>{' '}
-                  is{' '}
-                  <Text as='span' bg={`${tooltipData.colorScheme}.100`}>
-                    {Math.round(tooltipData.value * 100)}%
-                  </Text>
-                  .
-                </Text>{' '}
-                {tooltipData.augmented && (
-                  <Text lineHeight='shorter'>
-                    Augmented coverage of{' '}
-                    <strong>{schema[tooltipData.field].name}</strong> is{' '}
+                <Text lineHeight='shorter'>
+                  {tooltipData.value ? (
+                    <>
+                      <strong>{schema[tooltipData.field].name} </strong>
+                      metadata is collected and available for{' '}
+                      <Text as='span' bg={`${tooltipData.theme}.100`}>
+                        {Math.round(tooltipData.value * 100)}%
+                      </Text>{' '}
+                      of resources from this source.
+                    </>
+                  ) : (
+                    <>
+                      <strong>{schema[tooltipData.field].name} </strong>{' '}
+                      metadata was not found for this source.
+                    </>
+                  )}
+                </Text>
+
+                {tooltipData.augmented ? (
+                  <Text lineHeight='shorter' mt={1}>
+                    <strong>{schema[tooltipData.field].name} </strong>
+                    was augmented for{' '}
                     <Text as='span' bg={`${tooltipData.theme}.100`}>
                       {Math.round(tooltipData.augmented * 100)}%
-                    </Text>
-                    .
+                    </Text>{' '}
+                    of resources from this source.
                   </Text>
+                ) : (
+                  <></>
                 )}
               </Stack>
             </Box>

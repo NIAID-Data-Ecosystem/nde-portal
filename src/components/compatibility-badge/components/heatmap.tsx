@@ -6,9 +6,10 @@ import { MetadataSource } from 'src/hooks/api/types';
 import { theme } from 'src/theme';
 import { PatternLines } from '@visx/pattern';
 import { useTooltip, useTooltipInPortal } from '@visx/tooltip';
-import { Box, Stack, Text } from '@chakra-ui/react';
+import { Box, Icon, Stack, Text } from '@chakra-ui/react';
 import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
 import { SchemaDefinitions } from 'scripts/generate-schema-definitions/types';
+import { FaRegCircleUp } from 'react-icons/fa6';
 
 const schema = SCHEMA_DEFINITIONS as SchemaDefinitions;
 
@@ -47,10 +48,10 @@ const bucketSizeMax = (binData: Bins[]) => max(binData, d => bins(d).length);
 
 const rectColorScale = (data: Bins[], type?: string) => {
   const colorScheme = !type
-    ? [primary1, primary2]
+    ? [primary2, primary2]
     : type === 'required'
-    ? [primary1, primary2]
-    : [secondary1, secondary2];
+    ? [primary2, primary2]
+    : [secondary2, secondary2];
 
   return scaleLinear<string>({
     range: colorScheme,
@@ -59,7 +60,7 @@ const rectColorScale = (data: Bins[], type?: string) => {
 };
 const opacityScale = (data: Bins[]) =>
   scaleLinear<number>({
-    range: [0.6, 1],
+    range: [1, 1],
     domain: [0, colorMax(data)],
   });
 
@@ -259,6 +260,8 @@ const HeatMap = ({
                     : data.type === 'required'
                     ? 'url(#fundamental-lines)'
                     : 'url(#recommended-lines)';
+                  const fieldIsCompatible = bin?.count && bin.count > 0;
+
                   return (
                     <Box
                       key={`heatmap-rect-${bin.row}-${bin.column}`}
@@ -300,7 +303,7 @@ const HeatMap = ({
                           r={2}
                           cx={bin.x + bin.width / 2}
                           cy={bin.y + bin.height / 2}
-                          fill='whiteAlpha.900'
+                          fill={fieldIsCompatible ? 'white' : bin.color}
                           stroke='white'
                           strokeWidth={2}
                         />
@@ -335,23 +338,34 @@ const HeatMap = ({
               </Text>
               <Stack mt={2} spacing={1} fontSize='xs'>
                 <Text lineHeight='shorter'>
-                  Coverage of <strong>{schema[tooltipData.field].name}</strong>{' '}
-                  is{' '}
-                  <Text as='span' bg={`${tooltipData.theme}.100`}>
-                    {tooltipData.percent}
-                  </Text>
-                  .
+                  {tooltipData.count ? (
+                    <>
+                      <strong>{schema[tooltipData.field].name} </strong>
+                      metadata is collected and available for{' '}
+                      <Text as='span' bg={`${tooltipData.theme}.100`}>
+                        {Math.round(tooltipData.count * 100)}%
+                      </Text>{' '}
+                      of resources from this source.
+                    </>
+                  ) : (
+                    <>
+                      <strong>{schema[tooltipData.field].name} </strong>{' '}
+                      metadata was not found for this source.
+                    </>
+                  )}
                 </Text>
 
-                {tooltipData.augmented && (
-                  <Text lineHeight='shorter'>
-                    Augmented coverage of{' '}
-                    <strong>{schema[tooltipData.field].name}</strong> is{' '}
+                {tooltipData.augmented ? (
+                  <Text lineHeight='shorter' mt={1}>
+                    <strong>{schema[tooltipData.field].name} </strong>
+                    was augmented for{' '}
                     <Text as='span' bg={`${tooltipData.theme}.100`}>
                       {Math.round(tooltipData.augmented * 100)}%
-                    </Text>
-                    .
+                    </Text>{' '}
+                    of resources from this source.
                   </Text>
+                ) : (
+                  <></>
                 )}
               </Stack>
             </Box>
