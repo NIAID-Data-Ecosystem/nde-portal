@@ -47,7 +47,7 @@ const FeaturedPage: NextPage<{
   return (
     <PageContainer
       title='Featured'
-      metaDescription='Documentation for the portal.'
+      metaDescription='Featured content for the portal.'
       px={0}
       py={0}
       disableSearchBar

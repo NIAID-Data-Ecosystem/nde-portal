@@ -70,6 +70,7 @@
     "programmingLanguage",
     "softwareRequirements",
     "softwareVersion",
+    "sourceOrganization.name",
     "sdPublisher.name",
     "spatialCoverage",
     "spatialCoverage.identifier",

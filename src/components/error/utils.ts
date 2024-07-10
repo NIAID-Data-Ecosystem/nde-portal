@@ -21,8 +21,8 @@ export const getQueryStatusError = (error: {
         message: `Check that your query is formatted properly. For more information, see the documentation.`,
         relatedLinks: [
           {
-            label: 'Documentation',
-            href: '/docs/advanced-searching',
+            label: 'For more information, see the documentation.',
+            href: '/knowledge-center/advanced-searching',
             isExternal: true,
           },
         ],
@@ -34,12 +34,28 @@ export const getQueryStatusError = (error: {
         id: 'not-found',
         type: 'error' as ErrorType,
         title: 'Not Found',
+        message: 'Check that your query is formatted properly.',
+        relatedLinks: [
+          {
+            label: 'For more information, see the documentation.',
+            href: '/knowledge-center/advanced-searching',
+            isExternal: true,
+          },
+        ],
+      };
+    }
+
+    if (+errorStatus === 429) {
+      return {
+        id: 'too-many',
+        type: 'error' as ErrorType,
+        title: 'Too many requests',
         message:
           'Check that your query is formatted properly. For more information, see the documentation.',
         relatedLinks: [
           {
-            label: 'Documentation',
-            href: '/docs/advanced-searching',
+            label: 'See documentation',
+            href: '/knowledge-center/advanced-searching',
             isExternal: true,
           },
         ],
@@ -64,8 +80,8 @@ export const getQueryStatusError = (error: {
           'We are experiencing issues with your request. If you have many wildcards in your query, try removing them. If issues persist, please try again later.',
         relatedLinks: [
           {
-            label: 'Documentation',
-            href: '/docs/advanced-searching',
+            label: 'See documentation',
+            href: '/knowledge-center/advanced-searching',
             isExternal: true,
           },
         ],
@@ -80,8 +96,8 @@ export const getQueryStatusError = (error: {
           'We are experiencing issues with your request. If you have many wildcards in your query, try removing them. If issues persist, please try again later.',
         relatedLinks: [
           {
-            label: 'Documentation',
-            href: '/docs/advanced-searching',
+            label: 'See documentation',
+            href: '/knowledge-center/advanced-searching',
             isExternal: true,
           },
         ],
