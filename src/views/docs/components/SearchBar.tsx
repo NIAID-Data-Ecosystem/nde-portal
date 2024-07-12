@@ -361,7 +361,9 @@ export const DocsSearchBar = (props: SearchBarWithDropdownProps) => {
             </Input>
           </InputGroup>
         </Button>
-        <Button size='sm'>{placeholder}</Button>
+        <Button size='sm' onClick={onOpen}>
+          {placeholder}
+        </Button>
       </Stack>
       {isOpen && (
         <Modal isOpen={isOpen} onClose={handleClose} size='5xl'>
