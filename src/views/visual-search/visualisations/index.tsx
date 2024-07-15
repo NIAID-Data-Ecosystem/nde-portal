@@ -38,7 +38,6 @@ export const SearchResultsVisualizations = ({
     { value: 'species.identifier', label: 'Species' },
     { value: 'infectiousAgent.identifier', label: 'Pathogen' },
   ];
-  console.log('h', encodeURI('http://purl.obolibrary.org/obo/NCBITaxon_11652'));
   const facetTerms = useMemo(() => {
     const aggregatedData = data && data?.[selectedFacet];
 
@@ -56,7 +55,7 @@ export const SearchResultsVisualizations = ({
           ?.filter(item => !item.term.includes('_exists_'))
           .map(item => ({
             ...item,
-            term: `http://purl.obolibrary.org/obo/NCBITAXON_${item.term}`,
+            term: `http://purl.obolibrary.org/obo/NCBITaxon_${item.term}`,
           })) || []
       );
     }

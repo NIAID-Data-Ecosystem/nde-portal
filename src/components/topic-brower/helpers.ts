@@ -1,4 +1,4 @@
-import { OntologyPathsResponse } from './hooks';
+import { EBIOntologyResponse, OntologyPathsResponse } from './hooks';
 
 interface PathItem {
   '@id': string;
@@ -26,10 +26,42 @@ const findOrCreateNode = (root: TreeNode, node: TreeNode): TreeNode => {
     return node;
   }
 };
-export const transformPathArraysToTree = (
-  pathArray: OntologyPathsResponse[],
+// export const transformPathArraysToTree = (
+//   pathArray: OntologyPathsResponse[],
+// ): TreeNode => {
+//   const flattened = pathArray.map(item => item.paths2Root).flat();
+//   console.log('FLAT', flattened);
+//   const root: TreeNode = {
+//     id: 'root',
+//     name: 'root',
+//     definition: '',
+//     url: '',
+//     children: [],
+//   };
+
+//   flattened.forEach(flatArray => {
+//     let currentNode = root;
+//     flatArray.forEach(item => {
+//       const id = item['@id'].split('/').pop();
+//       const item_data = pathArray.find(path => path.id === id);
+//       const newNode: TreeNode = {
+//         ...item_data,
+//         name: item.prefLabel,
+//         definition: item.definition[0],
+//         url: item['@id'],
+//         children: [],
+//       };
+//       currentNode = findOrCreateNode(currentNode, newNode);
+//     });
+//   });
+
+//   return root;
+// };
+
+export const transformAncestorsArraysToTree = (
+  termData: EBIOntologyResponse[],
 ): TreeNode => {
-  const flattened = pathArray.map(item => item.paths2Root).flat();
+  const ancestors = termData.map(item => [...item.ancestors, item]);
   const root: TreeNode = {
     id: 'root',
     name: 'root',
@@ -38,16 +70,11 @@ export const transformPathArraysToTree = (
     children: [],
   };
 
-  flattened.forEach(flatArray => {
+  ancestors.forEach(ancestorList => {
     let currentNode = root;
-    flatArray.forEach(item => {
-      const id = item['@id'].split('/').pop();
-      const item_data = pathArray.find(path => path.id === id);
+    ancestorList.forEach(item => {
       const newNode: TreeNode = {
-        ...item_data,
-        name: item.prefLabel,
-        definition: item.definition[0],
-        url: item['@id'],
+        ...item,
         children: [],
       };
       currentNode = findOrCreateNode(currentNode, newNode);

@@ -20,9 +20,9 @@ import {
 } from 'src/components/topic-brower/components/zoom-container';
 import {
   TreeNode,
-  transformPathArraysToTree,
+  transformAncestorsArraysToTree,
 } from 'src/components/topic-brower/helpers';
-import { useOntologyPaths2Root } from 'src/components/topic-brower/hooks';
+import { useEBIData } from 'src/components/topic-brower/hooks';
 import { FacetTerm } from 'src/utils/api/types';
 import { ParentSize } from '@visx/responsive';
 
@@ -41,13 +41,28 @@ export const TopicDisplay = ({
   margin,
   zoomFactor = 1,
 }: TopicDisplayProps) => {
-  const ontology = useMemo(
-    () => (facet === 'topicCategory.url' ? 'EDAM' : 'NCBITAXON'),
-    [facet],
-  );
+  // Get the ontology based on the facet.
+  const ontology = useMemo(() => {
+    if (facet === 'topicCategory.url') {
+      return 'edam';
+    } else if (
+      facet === 'species.identifier' ||
+      facet === 'infectiousAgent.identifier'
+    ) {
+      return 'ncbitaxon';
+    } else {
+      return '';
+    }
+  }, [facet]);
   const [selectedTopic, setSelectedTopic] = useState<TreeNode | null>(null);
-  const { data } = useOntologyPaths2Root(facetTerms, ontology);
-  const tree = data && transformPathArraysToTree(data);
+  // Using the biontology api to get the paths to root for the topics.
+  // const { data: OntData } = useOntologyPaths2Root(facetTerms, ontology);
+  // const oldTree = OntData && transformPathArraysToTree(OntData);
+
+  // Using the ebi api to get the hierarchical relationships for the topics.
+  const { data } = useEBIData(facetTerms, ontology);
+  const tree = data && transformAncestorsArraysToTree(data);
+
   const initialTransform = initialZoom
     ? {
         scaleX: initialZoom.scaleX * (1 / zoomFactor),
@@ -58,7 +73,7 @@ export const TopicDisplay = ({
         skewY: initialZoom.skewY,
       }
     : undefined;
-  console.log('data', tree, selectedTopic);
+
   return (
     <Flex flexWrap='wrap'>
       <Flex minWidth='500px' maxWidth='700px' flex={1}>
