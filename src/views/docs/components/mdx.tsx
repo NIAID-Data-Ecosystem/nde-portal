@@ -78,6 +78,15 @@ export default {
     );
   },
   img: (props: ImageProps) => {
+    if (props.className === 'unstyled') {
+      return (
+        <Image
+          {...props}
+          alt={props.alt || 'image'}
+          src={`${process.env.NEXT_PUBLIC_STRAPI_API_URL}${props.src}`}
+        />
+      );
+    }
     return (
       <Box
         className='img-border'
@@ -89,11 +98,11 @@ export default {
         borderColor='gray.100'
       >
         <Image
-          alt='image'
           objectFit='contain'
-          {...props}
           w='100%'
           margin='0 auto'
+          {...props}
+          alt={props.alt || 'image'}
           src={`${process.env.NEXT_PUBLIC_STRAPI_API_URL}${props.src}`}
         />
       </Box>
@@ -188,7 +197,7 @@ export default {
       );
     if (containsImgEl) {
       return (
-        <Text as='span' mt={2} size='sm' lineHeight='tall' color='text.body'>
+        <Text as='p' mt={2} size='sm' lineHeight='tall' color='text.body'>
           {props.children}
         </Text>
       );
