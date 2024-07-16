@@ -45,12 +45,12 @@ const Sources: NextPage<SourcesProps> = ({ data, error }) => {
 
       const sourceDetails = Object.entries(sources).map(([key, source]) => {
         const id = (source.sourceInfo && source.sourceInfo.identifier) || key;
-        const githubInfo = data.find(item => {
+        const githubInfo = data?.find(item => {
           return item.id === id;
         });
 
         // in place for when we have a dateModified field in the API that is not in iso format.
-        const dateModified = source.version?.includes('T')
+        const dateModified = source?.version?.includes('T')
           ? source.version
           : /^\d+$/.test(source.version)
           ? `${source.version.substring(0, 4)}-${source.version.substring(
@@ -66,7 +66,7 @@ const Sources: NextPage<SourcesProps> = ({ data, error }) => {
           description:
             (source.sourceInfo && source.sourceInfo.description) || '',
           dateModified,
-          numberOfRecords: source.stats[key] || 0,
+          numberOfRecords: source?.stats?.[key] || 0,
           schema: (source.sourceInfo && source.sourceInfo.schema) || null,
           url: (source.sourceInfo && source.sourceInfo.url) || '',
           isNiaidFunded: getFundedByNIAID(source.sourceInfo?.name),
@@ -107,7 +107,11 @@ const Sources: NextPage<SourcesProps> = ({ data, error }) => {
               </Text>
               <Box mt={4}>
                 <ErrorCTA>
-                  <Button onClick={() => router.reload()} variant='outline'>
+                  <Button
+                    onClick={() => router.reload()}
+                    variant='outline'
+                    size='md'
+                  >
                     Retry
                   </Button>
                 </ErrorCTA>
@@ -174,7 +178,7 @@ export async function getStaticProps() {
             id: (source.sourceInfo && source.sourceInfo.identifier) || k,
             sourcePath: source?.code?.file || null,
           };
-          if (!sourceData.sourcePath) {
+          if (!sourceData?.sourcePath) {
             return sourceData;
           }
 
