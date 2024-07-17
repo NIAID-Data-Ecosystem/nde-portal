@@ -3,11 +3,12 @@ import { scaleLinear, scaleOrdinal } from '@visx/scale';
 import { MetadataSource } from 'src/hooks/api/types';
 import { theme } from 'src/theme';
 import { PatternLines } from '@visx/pattern';
-import { Box, Stack, Text } from '@chakra-ui/react';
+import { Box, Icon, Stack, Text } from '@chakra-ui/react';
 import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
 import { SchemaDefinitions } from 'scripts/generate-schema-definitions/types';
 import { Arc } from '@visx/shape';
 import { useTooltip, useTooltipInPortal } from '@visx/tooltip';
+import { FaCircleCheck, FaRegCircleUp } from 'react-icons/fa6';
 
 const schema = SCHEMA_DEFINITIONS as SchemaDefinitions;
 
@@ -52,21 +53,21 @@ export const ArcCircle = ({
             field,
             augmented,
             name: schema[field].name,
-            value: value < 0.1 ? Math.round(value) : value,
+            count: value < 0.1 ? Math.round(value) : value,
             type: 'required' as FieldDatum['type'],
           };
         })
         .sort((a, b) => {
           // First, sort by whether value is greater than 0 (descending, so items > 0 come first)
-          if (a.value > 0 && b.value === 0) return -1;
-          if (a.value === 0 && b.value > 0) return 1;
+          if (a.count > 0 && b.count === 0) return -1;
+          if (a.count === 0 && b.count > 0) return 1;
 
           // If both have values > 0 or both have values = 0, sort by type (descending)
           if (a.type > b.type) return -1;
           if (a.type < b.type) return 1;
 
           // sort by value in descending order within the same type
-          return b.value - a.value;
+          return b.count - a.count;
         }),
     [
       data.sourceInfo.metadata_completeness?.required_augmented_fields_coverage,
@@ -84,21 +85,21 @@ export const ArcCircle = ({
             field,
             augmented,
             name: schema[field].name,
-            value: value < 0.1 ? Math.round(value) : value,
+            count: value < 0.1 ? Math.round(value) : value,
             type: 'recommended' as FieldDatum['type'],
           };
         })
         .sort((a, b) => {
           // First, sort by whether value is greater than 0 (descending, so items > 0 come first)
-          if (a.value > 0 && b.value === 0) return -1;
-          if (a.value === 0 && b.value > 0) return 1;
+          if (a.count > 0 && b.count === 0) return -1;
+          if (a.count === 0 && b.count > 0) return 1;
 
           // If both have values > 0 or both have values = 0, sort by type (descending)
           if (a.type > b.type) return -1;
           if (a.type < b.type) return 1;
 
           // sort by value in descending order within the same type
-          return b.value - a.value;
+          return b.count - a.count;
         }),
     [
       data.sourceInfo.metadata_completeness
@@ -270,50 +271,85 @@ export const ArcCircle = ({
         tooltipTop != null && (
           <TooltipInPortal
             key={Math.random()}
-            left={tooltipLeft + width / 2}
-            top={tooltipTop + width / 2}
+            left={tooltipLeft - 10}
+            top={tooltipTop}
+            style={{
+              position: 'absolute',
+              backgroundColor: 'white',
+              color: '#666666',
+              // padding: '.3rem .5rem',
+              borderRadius: '3px',
+              fontSize: '14px',
+              boxShadow: '0 1px 2px rgba(33,33,33,0.2)',
+              lineHeight: '1em',
+              pointerEvents: 'none',
+              overflow: 'hidden',
+            }}
           >
-            <Box borderRadius='semi' minW='100px' maxW='200px'>
+            <Box minW='100px' maxW='220px'>
               <Text
                 fontWeight='medium'
-                bg={`${tooltipData.colorScheme}.500`}
+                bg={`${tooltipData.theme}.500`}
                 color='white'
-                px={1}
-                py={1}
+                px={2}
+                py={1.5}
               >
                 {tooltipData.type.charAt(0).toUpperCase() +
                   tooltipData.type.slice(1)}
               </Text>
-              <Stack mt={2} spacing={1} fontSize='xs'>
-                <Text lineHeight='shorter'>
-                  {tooltipData.value ? (
-                    <>
+              <Stack p={2} spacing={1} fontSize='xs'>
+                {tooltipData.count ? (
+                  /* Collected metadata */
+                  <>
+                    <Text lineHeight='shorter'>
+                      <Icon
+                        as={FaCircleCheck}
+                        color='green.500'
+                        boxSize={3}
+                        mr={0.5}
+                      />
                       <strong>{schema[tooltipData.field].name} </strong>
-                      metadata is collected and available for{' '}
-                      <Text as='span' bg={`${tooltipData.theme}.100`}>
-                        {Math.round(tooltipData.value * 100)}%
-                      </Text>{' '}
-                      of resources from this source.
-                    </>
-                  ) : (
-                    <>
-                      <strong>{schema[tooltipData.field].name} </strong>{' '}
-                      metadata was not found for this source.
-                    </>
-                  )}
-                </Text>
-
-                {tooltipData.augmented ? (
-                  <Text lineHeight='shorter' mt={1}>
-                    <strong>{schema[tooltipData.field].name} </strong>
-                    was augmented for{' '}
-                    <Text as='span' bg={`${tooltipData.theme}.100`}>
-                      {Math.round(tooltipData.augmented * 100)}%
-                    </Text>{' '}
-                    of resources from this source.
-                  </Text>
+                      metadata is collected and available for this source.
+                    </Text>
+                    {/* Collected metadata and augmented */}
+                    {tooltipData.augmented ? (
+                      <Text mt={1} lineHeight='shorter'>
+                        <Icon
+                          as={FaRegCircleUp}
+                          color='green.500'
+                          boxSize={3}
+                          mr={0.5}
+                        />
+                        <strong>{schema[tooltipData.field].name} </strong>
+                        was also augmented for this source.
+                      </Text>
+                    ) : (
+                      <></>
+                    )}
+                  </>
                 ) : (
-                  <></>
+                  <Text lineHeight='short'>
+                    {tooltipData.augmented ? (
+                      /* No metadata but augmented */
+                      <Text as='span' mt={1}>
+                        <Icon
+                          as={FaRegCircleUp}
+                          color='green.500'
+                          boxSize={3}
+                          mr={0.5}
+                        />
+                        <strong>{schema[tooltipData.field].name} </strong>{' '}
+                        metadata was not found for this source, but was
+                        augmented for this source.
+                      </Text>
+                    ) : (
+                      /* No metadata and not augmented */
+                      <Text as='span' mt={1}>
+                        <strong>{schema[tooltipData.field].name} </strong>{' '}
+                        metadata was not found for this source.
+                      </Text>
+                    )}
+                  </Text>
                 )}
               </Stack>
             </Box>
@@ -364,7 +400,7 @@ const opacityScale = scaleLinear<number>({
 });
 
 interface FieldDatum {
-  value: number;
+  count: number;
   field: string;
   type: 'required' | 'recommended';
   augmented: number | null;
@@ -409,7 +445,7 @@ export const FieldsArc = ({
     return { data, startAngle, endAngle };
   });
 
-  const nonEmptyArcData = arcsData.filter(({ data }) => data.value > 0);
+  const nonEmptyArcData = arcsData.filter(({ data }) => data.count > 0);
   const handleMouseLeave = useCallback(() => {
     tooltipTimeout = window.setTimeout(() => {
       hideTooltip();
@@ -466,11 +502,11 @@ export const FieldsArc = ({
             />
             {arcsData.map(({ data, startAngle, endAngle }) => {
               const fill =
-                data.value === 0
+                data.count === 0
                   ? `url(#${type}-lines)`
                   : colorScale(data.type);
 
-              const opacity = data.value === 0 ? 1 : opacityScale(data.value);
+              const opacity = data.count === 0 ? 1 : opacityScale(data.count);
 
               return (
                 <React.Fragment key={`${type}-${data.field}`}>
@@ -492,6 +528,8 @@ export const FieldsArc = ({
                             setHoveredType(type);
 
                             if (tooltipTimeout) clearTimeout(tooltipTimeout);
+                            const theme =
+                              data.type === 'required' ? 'pink' : 'secondary';
 
                             showTooltip({
                               tooltipLeft: path.centroid(path)[0],
@@ -499,7 +537,8 @@ export const FieldsArc = ({
                               tooltipData: {
                                 ...data,
                                 colorScheme,
-                                percent: `${Math.round(data.value * 100)}%`,
+                                percent: `${Math.round(data.count * 100)}%`,
+                                theme,
                               },
                             });
                           }}

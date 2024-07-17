@@ -9,7 +9,7 @@ import { useTooltip, useTooltipInPortal } from '@visx/tooltip';
 import { Box, Icon, Stack, Text } from '@chakra-ui/react';
 import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
 import { SchemaDefinitions } from 'scripts/generate-schema-definitions/types';
-import { FaRegCircleUp } from 'react-icons/fa6';
+import { FaCircleCheck, FaRegCircleUp } from 'react-icons/fa6';
 
 const schema = SCHEMA_DEFINITIONS as SchemaDefinitions;
 
@@ -322,50 +322,85 @@ const HeatMap = ({
         tooltipTop != null && (
           <TooltipInPortal
             key={Math.random()}
-            left={tooltipLeft + 10}
-            top={tooltipTop + 10}
+            left={tooltipLeft - 10}
+            top={tooltipTop}
+            style={{
+              position: 'absolute',
+              backgroundColor: 'white',
+              color: '#666666',
+              // padding: '.3rem .5rem',
+              borderRadius: '3px',
+              fontSize: '14px',
+              boxShadow: '0 1px 2px rgba(33,33,33,0.2)',
+              lineHeight: '1em',
+              pointerEvents: 'none',
+              overflow: 'hidden',
+            }}
           >
-            <Box borderRadius='semi' minW='100px' maxW='200px'>
+            <Box minW='100px' maxW='220px'>
               <Text
                 fontWeight='medium'
                 bg={`${tooltipData.theme}.500`}
                 color='white'
-                px={1}
-                py={1}
+                px={2}
+                py={1.5}
               >
                 {tooltipData.type.charAt(0).toUpperCase() +
                   tooltipData.type.slice(1)}
               </Text>
-              <Stack mt={2} spacing={1} fontSize='xs'>
-                <Text lineHeight='shorter'>
-                  {tooltipData.count ? (
-                    <>
+              <Stack p={2} spacing={1} fontSize='xs'>
+                {tooltipData.count ? (
+                  /* Collected metadata */
+                  <>
+                    <Text lineHeight='shorter'>
+                      <Icon
+                        as={FaCircleCheck}
+                        color='green.500'
+                        boxSize={3}
+                        mr={0.5}
+                      />
                       <strong>{schema[tooltipData.field].name} </strong>
-                      metadata is collected and available for{' '}
-                      <Text as='span' bg={`${tooltipData.theme}.100`}>
-                        {Math.round(tooltipData.count * 100)}%
-                      </Text>{' '}
-                      of resources from this source.
-                    </>
-                  ) : (
-                    <>
-                      <strong>{schema[tooltipData.field].name} </strong>{' '}
-                      metadata was not found for this source.
-                    </>
-                  )}
-                </Text>
-
-                {tooltipData.augmented ? (
-                  <Text lineHeight='shorter' mt={1}>
-                    <strong>{schema[tooltipData.field].name} </strong>
-                    was augmented for{' '}
-                    <Text as='span' bg={`${tooltipData.theme}.100`}>
-                      {Math.round(tooltipData.augmented * 100)}%
-                    </Text>{' '}
-                    of resources from this source.
-                  </Text>
+                      metadata is collected and available for this source.
+                    </Text>
+                    {/* Collected metadata and augmented */}
+                    {tooltipData.augmented ? (
+                      <Text mt={1} lineHeight='shorter'>
+                        <Icon
+                          as={FaRegCircleUp}
+                          color='green.500'
+                          boxSize={3}
+                          mr={0.5}
+                        />
+                        <strong>{schema[tooltipData.field].name} </strong>
+                        was also augmented for this source.
+                      </Text>
+                    ) : (
+                      <></>
+                    )}
+                  </>
                 ) : (
-                  <></>
+                  <Text lineHeight='short'>
+                    {tooltipData.augmented ? (
+                      /* No metadata but augmented */
+                      <Text as='span' mt={1}>
+                        <Icon
+                          as={FaRegCircleUp}
+                          color='green.500'
+                          boxSize={3}
+                          mr={0.5}
+                        />
+                        <strong>{schema[tooltipData.field].name} </strong>{' '}
+                        metadata was not found for this source, but was
+                        augmented for this source.
+                      </Text>
+                    ) : (
+                      /* No metadata and not augmented */
+                      <Text as='span' mt={1}>
+                        <strong>{schema[tooltipData.field].name} </strong>{' '}
+                        metadata was not found for this source.
+                      </Text>
+                    )}
+                  </Text>
                 )}
               </Stack>
             </Box>
