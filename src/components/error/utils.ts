@@ -1,7 +1,4 @@
-import {
-  ErrorType,
-  QueryStringError,
-} from '../advanced-search/utils/validation-checks';
+import { ErrorType, QueryStringError } from 'src/components/error/types';
 
 interface StatusError extends QueryStringError {
   relatedLinks?: {
@@ -21,11 +18,11 @@ export const getQueryStatusError = (error: {
         id: 'bad-request',
         type: 'error' as ErrorType,
         title: 'Bad Request',
-        message: `Check that your query is formatted properly. For more information, see the documentation.`,
+        message: 'Check that your query is formatted properly.',
         relatedLinks: [
           {
-            label: 'Documentation',
-            href: '/docs/advanced-searching',
+            label: 'For more information, see the documentation.',
+            href: '/knowledge-center/advanced-searching',
             isExternal: true,
           },
         ],
@@ -37,17 +34,34 @@ export const getQueryStatusError = (error: {
         id: 'not-found',
         type: 'error' as ErrorType,
         title: 'Not Found',
-        message:
-          'Check that your query is formatted properly. For more information, see the documentation.',
+        message: 'Check that your query is formatted properly.',
         relatedLinks: [
           {
-            label: 'Documentation',
-            href: '/docs/advanced-searching',
+            label: 'For more information, see the documentation.',
+            href: '/knowledge-center/advanced-searching',
             isExternal: true,
           },
         ],
       };
     }
+
+    if (+errorStatus === 429) {
+      return {
+        id: 'too-many',
+        type: 'error' as ErrorType,
+        title: 'Too many requests',
+        message:
+          "We're sorry, but you've exceeded the number of requests allowed. Please try again later.",
+        relatedLinks: [
+          {
+            label: 'See documentation',
+            href: '/knowledge-center/advanced-searching',
+            isExternal: true,
+          },
+        ],
+      };
+    }
+
     if (+errorStatus === 500) {
       return {
         id: 'internal-server-error',
@@ -67,8 +81,8 @@ export const getQueryStatusError = (error: {
           'We are experiencing issues with your request. If you have many wildcards in your query, try removing them. If issues persist, please try again later.',
         relatedLinks: [
           {
-            label: 'Documentation',
-            href: '/docs/advanced-searching',
+            label: 'See documentation',
+            href: '/knowledge-center/advanced-searching',
             isExternal: true,
           },
         ],
@@ -83,8 +97,8 @@ export const getQueryStatusError = (error: {
           'We are experiencing issues with your request. If you have many wildcards in your query, try removing them. If issues persist, please try again later.',
         relatedLinks: [
           {
-            label: 'Documentation',
-            href: '/docs/advanced-searching',
+            label: 'See documentation',
+            href: '/knowledge-center/advanced-searching',
             isExternal: true,
           },
         ],

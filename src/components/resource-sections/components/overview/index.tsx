@@ -35,6 +35,7 @@ const Overview: React.FC<OverviewProps> = ({
   measurementTechnique,
   spatialCoverage,
   species,
+  topicCategory,
   temporalCoverage,
   variableMeasured,
   ...data
@@ -46,6 +47,7 @@ const Overview: React.FC<OverviewProps> = ({
     healthCondition,
     variableMeasured,
     measurementTechnique,
+    topicCategory,
   });
   const sortedMetadataContent = sortMetadataArray(
     [
@@ -58,7 +60,8 @@ const Overview: React.FC<OverviewProps> = ({
           spatialCoverage ||
           temporalCoverage?.some(coverage => coverage.temporalInterval) ===
             true ||
-          inLanguage
+          inLanguage?.name ||
+          inLanguage?.alternateName
         ),
       },
     ],
@@ -78,66 +81,68 @@ const Overview: React.FC<OverviewProps> = ({
           borderRadius='semi'
           w='100%'
         >
-          {sortedMetadataContent.map(({ img, items, name, url, ...props }) => {
-            if (props.property === 'spatialCoverage') {
-              return (
-                <SpatiotemporalCoverage
-                  key={`block-${props.id}`}
-                  id={props.id}
-                  isDisabled={props.isDisabled}
-                  isLoading={isLoading}
-                  inLanguage={inLanguage}
-                  spatialCoverage={spatialCoverage}
-                  temporalCoverage={temporalCoverage}
-                  type={data['@type']}
-                />
-              );
-            }
+          {sortedMetadataContent.map(
+            ({ img, items, name, glyph, url, ...props }) => {
+              if (props.property === 'spatialCoverage') {
+                return (
+                  <SpatiotemporalCoverage
+                    key={`block-${props.id}`}
+                    id={props.id}
+                    isDisabled={props.isDisabled}
+                    isLoading={isLoading}
+                    inLanguage={inLanguage}
+                    spatialCoverage={spatialCoverage}
+                    temporalCoverage={temporalCoverage}
+                    type={data['@type']}
+                  />
+                );
+              }
 
-            return (
-              <Skeleton
-                key={`block-${props.id}-${props.property}`}
-                isLoaded={!isLoading}
-              >
-                <MetadataBlock
-                  tooltipLabel={getMetadataDescription(
-                    props.property,
-                    data['@type'],
-                  )}
-                  {...props}
+              return (
+                <Skeleton
+                  key={`block-${props.id}-${props.property}`}
+                  isLoaded={!isLoading}
                 >
-                  {name && (
-                    <MetadataContent
-                      name={name}
-                      img={img}
-                      url={url}
-                      {...content}
-                    />
-                  )}
-                  {items && items.length > 0 && (
-                    <ScrollContainer maxHeight='150px' overflow='auto'>
-                      <MetadataList>
-                        {items.map(({ key, ...item }) => {
-                          return (
-                            <MetadataListItem
-                              key={key}
-                              property={props.property}
-                            >
-                              <MetadataContent
-                                includeOntology
-                                includeSearch
-                                {...item}
-                              />
-                            </MetadataListItem>
-                          );
-                        })}
-                      </MetadataList>
-                    </ScrollContainer>
-                  )}
-                </MetadataBlock>
-              </Skeleton>
-            );
-          })}
+                  <MetadataBlock
+                    tooltipLabel={getMetadataDescription(
+                      props.property,
+                      data['@type'],
+                    )}
+                    {...props}
+                  >
+                    {name && (
+                      <MetadataContent
+                        name={name}
+                        img={img}
+                        url={url}
+                        {...content}
+                      />
+                    )}
+                    {items && items.length > 0 && (
+                      <ScrollContainer maxHeight='150px' overflow='auto'>
+                        <MetadataList>
+                          {items.map(({ key, ...item }) => {
+                            return (
+                              <MetadataListItem
+                                key={key}
+                                property={props.property}
+                              >
+                                <MetadataContent
+                                  includeOntology
+                                  includeSearch
+                                  {...item}
+                                />
+                              </MetadataListItem>
+                            );
+                          })}
+                        </MetadataList>
+                      </ScrollContainer>
+                    )}
+                  </MetadataBlock>
+                </Skeleton>
+              );
+            },
+          )}
         </SimpleGrid>
       </Flex>
     </Flex>
@@ -178,7 +183,6 @@ const SpatiotemporalCoverage: React.FC<SpatiotemporalCoverageProps> = ({
   return (
     <Skeleton key={`block-${id}-spatioTemporal`} isLoaded={!isLoading}>
       <MetadataBlock
-        id={`${id}-spatialCoverage`}
         label='Spatiotemporal Coverage'
         property='spatialCoverage'
         isDisabled={isDisabled}
@@ -199,7 +203,6 @@ const SpatiotemporalCoverage: React.FC<SpatiotemporalCoverageProps> = ({
       >
         <VStack alignItems='flex-start' divider={<Divider />}>
           {/* Geographic information of dataset */}
-
           {spatialInformation && (
             <>
               <Text fontWeight='medium' color='gray.800'>

@@ -6,7 +6,6 @@ import { CompatibilityBadge } from 'src/components/compatibility-badge';
 const ScratchPad: NextPage = () => {
   return (
     <PageContainer
-      hasNavigation
       title='Scratch Pad'
       metaDescription='Scratch Pad page.'
       px={0}

@@ -157,7 +157,6 @@ export const CompatibilityBadge = () => {
         <Text color='gray.600' fontSize='sm'>
           BarChart GridPlot Hybrid
         </Text>
-
         <Flex alignItems='center'>
           <Image
             src='/assets/temp/03.png'
@@ -266,7 +265,6 @@ export const CompatibilityBadge = () => {
         <Text color='gray.600' fontSize='sm'>
           Arcs 2
         </Text>
-
         <Flex alignItems='center'>
           <Image
             src='/assets/temp/05.png'
@@ -320,7 +318,6 @@ export const CompatibilityBadge = () => {
         <Text color='gray.600' fontSize='sm'>
           Circular
         </Text>
-
         <Flex alignItems='center'>
           <Image
             src='/assets/temp/06.png'

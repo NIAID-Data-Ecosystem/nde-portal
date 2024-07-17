@@ -5,6 +5,7 @@ import {
   Button,
   Flex,
   Heading,
+  Highlight,
   Icon,
   Input,
   InputGroup,
@@ -17,10 +18,10 @@ import {
   useDisclosure,
   Text,
   UnorderedList,
+  Stack,
 } from '@chakra-ui/react';
 import {
   DropdownInput,
-  Highlight,
   InputWithDropdown,
   useDropdownContext,
 } from 'src/components/input-with-dropdown';
@@ -227,7 +228,11 @@ const SearchBar = ({
         />
       </Flex>
 
-      <Flex minHeight='400px' flexDirection='column' justifyContent='center'>
+      <Flex
+        minHeight='400px'
+        flexDirection='column'
+        justifyContent='flex-start'
+      >
         <Box py={6}>
           {!searchTerm && (
             <Flex flexDirection='column' alignItems='center' margin='0 auto'>
@@ -251,6 +256,7 @@ const SearchBar = ({
           <UnorderedList ml={0} w='100%' maxHeight='500px' overflow='auto'>
             {results?.map((result, index) => {
               const isSelected = cursor === index;
+
               return (
                 <ListItem
                   key={result.id}
@@ -259,21 +265,13 @@ const SearchBar = ({
                   my={1}
                   {...getListItemProps({
                     index,
-                    value: `/docs/${result.slug}`,
+                    value: `/knowledge-center/${result.slug}`,
                     isSelected,
                     onClick: () => {
-                      router.push(`/docs/${result.slug}`);
+                      router.push(`/knowledge-center/${result.slug}`);
                       handleClose();
                     },
                   })}
-                  sx={{
-                    '* > .search-term': {
-                      fontWeight: 'bold',
-                      textDecoration: 'underline',
-                      color: `${colorScheme}.400`,
-                      bg: 'transparent',
-                    },
-                  }}
                 >
                   <Heading
                     as='h4'
@@ -283,15 +281,35 @@ const SearchBar = ({
                     wordBreak='break-word'
                     textAlign='left'
                   >
-                    <Highlight tags={searchTerm.split(' ')}>
-                      {result.name}
-                    </Highlight>
+                    {result.name && (
+                      <Highlight
+                        query={searchTerm.split(' ')}
+                        styles={{
+                          fontWeight: 'bold',
+                          textDecoration: 'underline',
+                          color: `${colorScheme}.400`,
+                          bg: 'transparent',
+                        }}
+                      >
+                        {result.name}
+                      </Highlight>
+                    )}
                   </Heading>
-                  <Text color='gray.600' fontSize='sm'>
-                    <Highlight tags={searchTerm.split(' ')}>
-                      {result.description}
-                    </Highlight>
-                  </Text>
+                  {result.description && (
+                    <Text color='gray.600' fontSize='sm'>
+                      <Highlight
+                        query={searchTerm.split(' ')}
+                        styles={{
+                          fontWeight: 'bold',
+                          textDecoration: 'underline',
+                          color: `${colorScheme}.400`,
+                          bg: 'transparent',
+                        }}
+                      >
+                        {result.description}
+                      </Highlight>
+                    </Text>
+                  )}
                 </ListItem>
               );
             })}
@@ -320,19 +338,33 @@ export const DocsSearchBar = (props: SearchBarWithDropdownProps) => {
   };
   return (
     <>
-      <Button w='350px' variant='unstyled' onClick={onOpen}>
-        <InputGroup>
-          <InputLeftElement>
-            <Icon as={FaMagnifyingGlass} color='gray.200' />
-          </InputLeftElement>
-          <Input as='div' size={size} colorScheme={colorScheme}>
-            <Text textAlign='left' color='gray.800'>
-              {placeholder}
-            </Text>
-          </Input>
-        </InputGroup>
-      </Button>
-
+      <Stack
+        flexDirection={{ base: 'column', sm: 'row' }}
+        spacing={2}
+        flex={1}
+        justifyContent={'flex-end'}
+      >
+        <Button
+          maxWidth={{ base: 'unset', sm: '350px' }}
+          variant='unstyled'
+          onClick={onOpen}
+          flex={1}
+        >
+          <InputGroup>
+            <InputLeftElement>
+              <Icon as={FaMagnifyingGlass} color='gray.200' />
+            </InputLeftElement>
+            <Input as='div' size={size} colorScheme={colorScheme}>
+              <Text textAlign='left' color='gray.800'>
+                {placeholder}
+              </Text>
+            </Input>
+          </InputGroup>
+        </Button>
+        <Button size='sm' onClick={onOpen}>
+          {placeholder}
+        </Button>
+      </Stack>
       {isOpen && (
         <Modal isOpen={isOpen} onClose={handleClose} size='5xl'>
           <ModalContent>

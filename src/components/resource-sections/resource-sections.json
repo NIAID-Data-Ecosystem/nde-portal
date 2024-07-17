@@ -8,13 +8,14 @@
       "isCollapsible": true
     },
     {
-      "title": "Based On",
-      "hash": "isBasedOn",
+      "title": "Keywords",
+      "hash": "keywords",
       "isCollapsible": true
     },
     {
-      "title": "Keywords",
-      "hash": "keywords"
+      "title": "Based On",
+      "hash": "isBasedOn",
+      "isCollapsible": true
     },
     {
       "title": "Description",

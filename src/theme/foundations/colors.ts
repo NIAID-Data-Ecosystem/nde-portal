@@ -44,6 +44,18 @@ export const colors = {
     800: '#0B2536',
     900: '#000F1A',
   },
+  accent: {
+    50: '#F9DFE9',
+    100: '#F3BFD2',
+    200: '#EC9EBC',
+    300: '#E67EA5',
+    400: '#E05E8F',
+    500: '#B34B72',
+    600: '#863856',
+    700: '#5A2639',
+    800: '#2D131D',
+    900: '#16090E',
+  },
   gray: {
     50: '#FDFDFD',
     100: '#EDEDEE',
@@ -66,7 +78,6 @@ export const colors = {
     heading: '#2F2F2F',
   },
   navigation: { bg: '#262626', hover: '#1B1B1B' },
-  accent: { bg: '#E05E8F' },
   link: {
     color: '#246CD3',
     visited: '#6F57B5',

@@ -1,16 +1,16 @@
 import type { NextPage } from 'next';
-import React, { useState } from 'react';
+import React from 'react';
+import { useQuery } from 'react-query';
+import { useRouter } from 'next/router';
 import { Box, Button, Flex, Text, UnorderedList } from '@chakra-ui/react';
 import { PageContainer, PageContent } from 'src/components/page-container';
 import { Main, Sidebar } from 'src/components/sources';
-import { fetchMetadata } from 'src/utils/api';
 import { Error, ErrorCTA } from 'src/components/error';
 import axios from 'axios';
-import { MetadataSource } from 'src/utils/api/types';
-import { useQuery } from 'react-query';
+import { MetadataSource } from 'src/hooks/api/types';
 import { getQueryStatusError } from 'src/components/error/utils';
-import { useRouter } from 'next/router';
-import REPOSITORIESDETAILS from 'configs/repositories.json';
+import { fetchMetadata } from 'src/hooks/api/helpers';
+import { getFundedByNIAID } from 'src/utils/helpers';
 
 export interface SourceResponse {
   dateCreated?: string;
@@ -45,12 +45,12 @@ const Sources: NextPage<SourcesProps> = ({ data, error }) => {
 
       const sourceDetails = Object.entries(sources).map(([key, source]) => {
         const id = (source.sourceInfo && source.sourceInfo.identifier) || key;
-        const githubInfo = data.find(item => {
+        const githubInfo = data?.find(item => {
           return item.id === id;
         });
 
         // in place for when we have a dateModified field in the API that is not in iso format.
-        const dateModified = source.version?.includes('T')
+        const dateModified = source?.version?.includes('T')
           ? source.version
           : /^\d+$/.test(source.version)
           ? `${source.version.substring(0, 4)}-${source.version.substring(
@@ -59,10 +59,6 @@ const Sources: NextPage<SourcesProps> = ({ data, error }) => {
             )}-${source.version.substring(6, 8)}T00:00:00`
           : '';
 
-        const isNiaidFunded = REPOSITORIESDETAILS['repositories'].find(
-          repo => repo.id === id,
-        )?.isNIAID;
-
         return {
           ...githubInfo,
           id,
@@ -70,10 +66,10 @@ const Sources: NextPage<SourcesProps> = ({ data, error }) => {
           description:
             (source.sourceInfo && source.sourceInfo.description) || '',
           dateModified,
-          numberOfRecords: source.stats[key] || 0,
+          numberOfRecords: source?.stats?.[key] || 0,
           schema: (source.sourceInfo && source.sourceInfo.schema) || null,
           url: (source.sourceInfo && source.sourceInfo.url) || '',
-          isNiaidFunded,
+          isNiaidFunded: getFundedByNIAID(source.sourceInfo?.name),
         };
       });
       return {
@@ -89,12 +85,10 @@ const Sources: NextPage<SourcesProps> = ({ data, error }) => {
   return (
     <PageContainer
       id='sources-page'
-      hasNavigation
       title='Sources'
       metaDescription='NDE Discovery Portal - API data sources.'
       px={0}
       py={0}
-      disableSearchBar
     >
       <Flex>
         {error || metadataError ? (
@@ -113,7 +107,11 @@ const Sources: NextPage<SourcesProps> = ({ data, error }) => {
               </Text>
               <Box mt={4}>
                 <ErrorCTA>
-                  <Button onClick={() => router.reload()} variant='outline'>
+                  <Button
+                    onClick={() => router.reload()}
+                    variant='outline'
+                    size='md'
+                  >
                     Retry
                   </Button>
                 </ErrorCTA>
@@ -180,7 +178,7 @@ export async function getStaticProps() {
             id: (source.sourceInfo && source.sourceInfo.identifier) || k,
             sourcePath: source?.code?.file || null,
           };
-          if (!sourceData.sourcePath) {
+          if (!sourceData?.sourcePath) {
             return sourceData;
           }
 

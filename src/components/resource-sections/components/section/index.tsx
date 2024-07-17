@@ -73,7 +73,7 @@ const Section: React.FC<SectionProps> = ({
                       borderY='0.5px solid'
                       borderColor='gray.100'
                       borderLeft='3px solid'
-                      borderLeftColor='accent.bg'
+                      borderLeftColor='accent.400'
                       _hover={{ bg: props?._hover?.bg || 'page.alt' }}
                       _expanded={{
                         borderColor: 'page.alt',

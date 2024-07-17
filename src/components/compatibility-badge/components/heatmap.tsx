@@ -2,7 +2,7 @@ import React, { useCallback, useMemo } from 'react';
 import { Group } from '@visx/group';
 import { scaleLinear } from '@visx/scale';
 import { HeatmapRect } from '@visx/heatmap';
-import { MetadataSource } from 'src/utils/api/types';
+import { MetadataSource } from 'src/hooks/api/types';
 import { theme } from 'src/theme';
 import { PatternLines } from '@visx/pattern';
 import { useTooltip, useTooltipInPortal } from '@visx/tooltip';
@@ -297,7 +297,6 @@ const HeatMap = ({
                         fill={bin.count ? color : pattern}
                         fillOpacity={bin.count ? bin.opacity : '1'}
                       />
-
                       {data.augmented && (
                         <Box
                           as='circle'

@@ -1,14 +1,15 @@
 import React, { useState } from 'react';
 import {
+  Badge,
   Box,
   Button,
   Collapse,
   Divider,
   Flex,
   Heading,
+  HStack,
   Icon,
   Skeleton,
-  Tag,
   Text,
 } from '@chakra-ui/react';
 import { DisplayHTMLContent } from 'src/components/html-content';
@@ -23,7 +24,7 @@ import {
   FaUpRightFromSquare,
 } from 'react-icons/fa6';
 import { SearchInput } from 'src/components/search-input';
-import { Link } from 'src/components/link';
+import { TagWithUrl } from 'src/components/tag-with-url';
 
 interface Main {
   data?: SourceResponse[];
@@ -91,20 +92,15 @@ const Main: React.FC<Main> = ({ data, isLoading, metadata }) => {
               <Text fontSize='xs' color='gray.800'>
                 API Version:
                 {metadata?.version && (
-                  <Link
+                  <TagWithUrl
+                    bg='status.info_lt'
                     href={`${process.env.NEXT_PUBLIC_API_URL}/metadata`}
-                    target='_blank'
+                    isExternal
+                    fontWeight='semibold'
+                    mx={1}
                   >
-                    <Tag
-                      bg='status.info_lt'
-                      variant='subtle'
-                      size='sm'
-                      fontWeight='semibold'
-                      mx={1}
-                    >
-                      V.{metadata.version}
-                    </Tag>
-                  </Link>
+                    V.{metadata.version}
+                  </TagWithUrl>
                 )}
               </Text>
               {metadata?.date && (
@@ -141,11 +137,12 @@ const Main: React.FC<Main> = ({ data, isLoading, metadata }) => {
             </Flex>
           </Flex>
           {sources.map((sourceObj: SourceResponse, i: number) => {
+            const id = `${sourceObj.name.replace(/\s+/g, '-')}`;
             return (
               <Box
-                id={`${sourceObj.name}`}
+                key={id}
+                id={id}
                 as='section'
-                key={i}
                 boxShadow='low'
                 borderRadius='semi'
                 borderColor='gray.200'
@@ -153,26 +150,23 @@ const Main: React.FC<Main> = ({ data, isLoading, metadata }) => {
                 py={6}
                 sx={{ '>*': { px: 4, mt: 4, mx: [0, 4, 8] } }}
               >
-                <Box mx={[0, 2, 6]}>
-                  <Tag
-                    bg='status.info'
-                    wordBreak='break-word'
-                    m={0.5}
-                    color='white'
-                  >
+                <HStack spacing={2}>
+                  <Text fontWeight='bold' color='text.heading' fontSize='xl'>
                     {sourceObj.name}
-                  </Tag>
-                  {sourceObj.isNiaidFunded && (
-                    <Tag bg='tertiary.700' m={0.5} color='white'>
-                      NIAID
-                    </Tag>
-                  )}
-                </Box>
-                <Box>
-                  <Text fontWeight='bold' fontSize='sm'>
-                    {sourceObj.numberOfRecords.toLocaleString()} Records
-                    Available
                   </Text>
+                  {sourceObj.isNiaidFunded && (
+                    <Badge colorScheme='blue' variant='subtle'>
+                      NIAID
+                    </Badge>
+                  )}
+                </HStack>
+                <Box mt={2}>
+                  {sourceObj?.numberOfRecords > 0 && (
+                    <Text fontWeight='semibold' fontSize='sm'>
+                      {sourceObj.numberOfRecords.toLocaleString()} Records
+                      Available
+                    </Text>
+                  )}
 
                   <DisplayHTMLContent content={sourceObj.description} />
 
@@ -193,6 +187,7 @@ const Main: React.FC<Main> = ({ data, isLoading, metadata }) => {
                           fontWeight='semibold'
                           color='gray.800'
                           textAlign={['center', 'left']}
+                          lineHeight='short'
                         >
                           Visualization of {sourceObj.name} properties
                           transformed to the NIAID Data Ecosystem
@@ -337,7 +332,7 @@ const Main: React.FC<Main> = ({ data, isLoading, metadata }) => {
                       height='unset'
                       m={1}
                     >
-                      Search for {sourceObj.name} records
+                      Search for {sourceObj.name} resources
                     </Button>
                   </NextLink>
                   {sourceObj.url && (

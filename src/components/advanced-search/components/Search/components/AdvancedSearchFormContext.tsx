@@ -3,7 +3,6 @@ import { SearchTypesConfigProps } from '../search-types-config';
 import { QueryValue } from 'src/components/advanced-search/types';
 import { filterSearchTypes } from './SearchOptions/utils';
 import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
-import { SchemaDefinition } from 'scripts/generate-schema-definitions/types';
 
 /**
  * @interface AdvancedSearchContextProps:

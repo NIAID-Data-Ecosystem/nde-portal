@@ -1,8 +1,7 @@
 import React from 'react';
-import { Icon, Tag, Text, BoxProps, TagLabel } from '@chakra-ui/react';
-import { FaSquareArrowUpRight } from 'react-icons/fa6';
+import { BoxProps } from '@chakra-ui/react';
 import Tooltip from 'src/components/tooltip';
-import { Link } from 'src/components/link';
+import { TagWithUrl } from 'src/components/tag-with-url';
 
 interface MetadataWithTagProps extends BoxProps {
   label?: string;
@@ -21,47 +20,16 @@ export const MetadataWithTag = ({
 }: MetadataWithTagProps) => {
   return (
     <Tooltip label={tooltipLabel} fontSize='12px'>
-      <Tag
-        size='sm'
-        variant='subtle'
-        alignItems='center'
-        fontSize='13px'
+      <TagWithUrl
         colorScheme={colorScheme}
+        fontSize='13px'
+        href={url}
+        isExternal
+        label={label + ' |'}
         lineHeight='shorter'
       >
-        <TagLabel>
-          <Text as='span' fontWeight='semibold' mr={2}>
-            {label} |
-          </Text>
-          {url ? (
-            <Link
-              href={url}
-              target='_blank'
-              alignItems='center'
-              borderBottom='none'
-              sx={{
-                color: 'inherit',
-                '#tag-value': { textDecoration: 'underline' },
-              }}
-              _visited={{ color: 'inherit' }}
-              _hover={{
-                color: 'inherit',
-                '#tag-value': { textDecoration: 'none' },
-              }}
-            >
-              <Text id='tag-value'>{value}</Text>
-              <Icon
-                as={FaSquareArrowUpRight}
-                boxSize={2.5}
-                ml={1}
-                color='gray.800'
-              />
-            </Link>
-          ) : (
-            value
-          )}
-        </TagLabel>
-      </Tag>
+        {value}
+      </TagWithUrl>
     </Tooltip>
   );
 };

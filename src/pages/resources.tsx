@@ -133,7 +133,6 @@ const ResourcePage: NextPage = () => {
   return (
     <>
       <PageContainer
-        hasNavigation
         title={`${data?.name ? data?.name : isLoading ? '' : 'Resource'}`}
         metaDescription='NDE Discovery Portal - Detailed resource information.'
       >
@@ -174,7 +173,11 @@ const ResourcePage: NextPage = () => {
 
                   <Box mt={4}>
                     <ErrorCTA>
-                      <Button onClick={() => router.reload()} variant='outline'>
+                      <Button
+                        onClick={() => router.reload()}
+                        variant='outline'
+                        size='md'
+                      >
                         Retry
                       </Button>
                     </ErrorCTA>

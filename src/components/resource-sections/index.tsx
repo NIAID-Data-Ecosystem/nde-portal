@@ -1,5 +1,4 @@
 import React from 'react';
-import { useRouter } from 'next/router';
 import { FormattedResource } from 'src/utils/api/types';
 import {
   Box,
@@ -7,8 +6,6 @@ import {
   Flex,
   ListItem,
   Skeleton,
-  Stack,
-  Tag,
   UnorderedList,
 } from '@chakra-ui/react';
 import { Link } from 'src/components/link';
@@ -25,7 +22,6 @@ import { Route } from './helpers';
 import FilesTable from './components/files-table';
 import { CitedByTable } from './components/cited-by-table';
 import { DisplayHTMLContent } from '../html-content';
-import { DownloadMetadata } from '../download-metadata';
 import SoftwareInformation from './components/software-information';
 import { External } from './components/sidebar/components/external';
 import { Funding } from './components/funding';
@@ -33,8 +29,9 @@ import { JsonViewer } from '../json-viewer';
 import ResourceIsPartOf from './components/is-part-of';
 import BasedOnTable from './components/based-on';
 import { CompletenessBadgeCircle } from 'src/components/completeness-badge/Circular';
-import { HeadingWithTooltip } from './components/sidebar/components/external/components/heading-with-tooltip';
 import { ResourceCatalogCollection } from './components/collection-information';
+import { DownloadMetadata } from '../download-metadata';
+import { Keywords } from './components/keywords';
 
 // Metadata displayed in each section
 export const sectionMetadata: { [key: string]: (keyof FormattedResource)[] } = {
@@ -51,6 +48,7 @@ export const sectionMetadata: { [key: string]: (keyof FormattedResource)[] } = {
     'spatialCoverage',
     'species',
     'temporalCoverage',
+    'topicCategory',
     'variableMeasured',
   ],
   softwareInformation: [
@@ -86,7 +84,6 @@ const Sections = ({
   data?: FormattedResource;
   sections: Route[];
 }) => {
-  const router = useRouter();
   return (
     <>
       <ResourceHeader
@@ -110,48 +107,34 @@ const Sections = ({
           >
             {/* for mobile viewing */}
             {section.hash === 'overview' && data && (
-              <Stack
+              <Flex
                 display={{ base: 'flex', lg: 'none' }}
-                flexWrap='wrap'
+                flex={1}
+                width='100%'
+                border='1px'
+                borderColor='gray.100'
+                borderRadius='semi'
                 flexDirection='column'
-                spacing={4}
-                px={{ base: 0, md: 4 }}
-                py={4}
+                minWidth='250px'
               >
+                {/* Badge indicating completeness of metadata */}
                 {data && data['_meta'] && (
-                  <Flex
-                    flex={1}
-                    justifyContent='center'
-                    alignItems='center'
-                    flexDirection='column'
-                    border='1px'
-                    borderColor='gray.100'
-                    borderRadius='semi'
-                    p={4}
-                  >
-                    <CompletenessBadgeCircle stats={data['_meta']} size='md' />
-                    <HeadingWithTooltip
-                      label='Metadata Completeness'
-                      pt={2}
-                      whiteSpace='nowrap'
+                  <Flex px={4} py={4} justifyContent='center'>
+                    <CompletenessBadgeCircle
+                      type={data['@type']}
+                      stats={data['_meta']}
+                      size='lg'
                     />
                   </Flex>
                 )}
+
                 {/* External links to access data, documents or dataset at the source. */}
-                <Flex
-                  flex={1}
-                  border='1px'
-                  borderColor='gray.100'
-                  borderRadius='semi'
-                  flexDirection='column'
-                >
-                  <External
-                    data={data}
-                    isLoading={isLoading}
-                    hasDivider={false}
-                  />
-                </Flex>
-              </Stack>
+                <External
+                  data={data}
+                  isLoading={isLoading}
+                  hasDivider={false}
+                />
+              </Flex>
             )}
             {section.hash === 'overview' && (
               <>
@@ -175,29 +158,7 @@ const Sections = ({
             {/* Show keywords */}
             {section.hash === 'keywords' && (
               <Skeleton isLoaded={!isLoading}>
-                <Flex flexWrap='wrap'>
-                  {data?.keywords &&
-                    data.keywords.map((keyword, i) => {
-                      return (
-                        <Tag
-                          key={`${keyword}-${i}`}
-                          as='a'
-                          m={2}
-                          colorScheme='primary'
-                          cursor='pointer'
-                          onClick={e => {
-                            e.preventDefault();
-                            router.push({
-                              pathname: `/search`,
-                              query: { q: keyword.trim() },
-                            });
-                          }}
-                        >
-                          {keyword}
-                        </Tag>
-                      );
-                    })}
-                </Flex>
+                {data?.keywords && <Keywords keywords={data.keywords} />}
               </Skeleton>
             )}
             {section.hash === 'softwareInformation' && (
@@ -221,7 +182,7 @@ const Sections = ({
               <Box mt={4}>
                 <BasedOnTable
                   id='software-information-dependency-for'
-                  title='Dependesncy for'
+                  title='Dependency for'
                   caption='Datasets or tools that this dataset/tool is a dependency for.'
                   isLoading={isLoading}
                   items={data.isBasisFor}
@@ -292,9 +253,7 @@ const Sections = ({
               </>
             )}
             {/* Show funding */}
-            {/* {section.hash === 'funding' && (
-              <FundingTable isLoading={isLoading} {...data} />
-            )} */}
+
             {section.hash === 'funding' && (
               <Funding isLoading={isLoading} data={data?.funding || []} />
             )}

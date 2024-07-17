@@ -1,13 +1,13 @@
 import React from 'react';
 import { Flex, Link } from '@chakra-ui/react';
-import { NIAIDLogo } from './niaid-logo';
 import { NDELogo } from './nde-logo';
 
 export interface LogoProps {
   href?: string;
+  isLazy?: boolean;
 }
 
-export const Logo = ({ href }: LogoProps) => {
+export const Logo = ({ href, isLazy }: LogoProps) => {
   /*
     There are two logos in our nav bar with two separate links.
     1. Link to the NIAID homepage
@@ -18,18 +18,8 @@ export const Logo = ({ href }: LogoProps) => {
       className='logo'
       flexDirection={{ base: 'column', sm: 'row' }}
       height={{ base: '55px', sm: '28px', lg: '40px' }}
+      flex={1}
     >
-      <Link
-        display='flex'
-        alignItems='center'
-        href='https://www.niaid.nih.gov/'
-        variant='unstyled'
-        target='_blank'
-        rel='preload'
-      >
-        <NIAIDLogo />
-      </Link>
-
       <Link
         display='flex'
         alignItems='center'
@@ -37,7 +27,7 @@ export const Logo = ({ href }: LogoProps) => {
         variant='unstyled'
         rel='preload'
       >
-        <NDELogo />
+        <NDELogo loading={isLazy ? 'lazy' : 'eager'} />
       </Link>
     </Flex>
   );

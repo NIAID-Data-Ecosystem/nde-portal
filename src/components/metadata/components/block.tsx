@@ -1,18 +1,15 @@
 import React from 'react';
 import { Box, Button, Flex, Icon, Text, TooltipProps } from '@chakra-ui/react';
-import { MetadataIcon } from 'src/components/icon';
 import { getMetadataTheme } from 'src/components/icon/helpers';
 import Tooltip from 'src/components/tooltip';
 import { FaInfo } from 'react-icons/fa6';
 
 interface MetadataBlockProps {
-  id: string;
   label: string;
   property: string;
   isDisabled?: boolean;
   children?: React.ReactNode;
   bg?: string;
-  colorScheme?: string;
   tooltipLabel?: TooltipProps['label'];
 }
 
@@ -20,34 +17,16 @@ interface MetadataBlockProps {
 
 export const MetadataBlock = ({
   isDisabled,
-  id,
   label,
   property,
   children,
   bg,
-  colorScheme,
   tooltipLabel,
 }: MetadataBlockProps) => {
   return (
     <Box flexDirection='column' color={isDisabled ? 'gray.700' : 'text.body'}>
-      <Flex alignItems='center'>
-        <Flex alignItems='center' px={1} mb={0.5} flex={1}>
-          <MetadataIcon
-            id={id}
-            title={property}
-            glyph={property}
-            fill={
-              isDisabled
-                ? 'gray.500'
-                : bg || `${getMetadataTheme(property) || colorScheme}.500`
-            }
-            isDisabled={isDisabled}
-            boxSize={4}
-            mr={1}
-          />
-          <MetadataLabel label={label}></MetadataLabel>
-        </Flex>
-
+      <Flex alignItems='baseline'>
+        <MetadataLabel label={label}></MetadataLabel>
         {tooltipLabel && (
           <MetadataTooltip
             tooltipLabel={tooltipLabel}

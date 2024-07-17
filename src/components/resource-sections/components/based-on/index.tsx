@@ -5,6 +5,7 @@ import {
   Flex,
   Heading,
   Skeleton,
+  Stack,
   Table,
   Text,
   Tr,
@@ -20,7 +21,6 @@ import { Row } from 'src/components/table/components/row';
 import { TableContainer } from 'src/components/table/components/table-container';
 import { getTruncatedText } from 'src/components/table/helpers';
 import { useTableSort } from 'src/components/table/hooks/useTableSort';
-import { TableSortToggle } from 'src/components/table/components/sort-toggle';
 import { TableWrapper } from 'src/components/table/components/wrapper';
 import { TablePagination } from 'src/components/table/components/pagination';
 import { TagWithUrl } from 'src/components/tag-with-url';
@@ -63,7 +63,7 @@ const ROW_SIZES = [5, 10, 50, 100];
 const COLUMNS = [
   { key: 'name', title: 'Name' },
   {
-    key: 'type',
+    key: '@type',
     title: 'Type',
     props: { w: '200px', maxW: '200px', minW: 'unset' },
   },
@@ -132,10 +132,10 @@ const BasedOnTable = ({
   }, []);
 
   // Hook for sorting table data
-  const [{ data, orderBy, sortBy }, updateSort] = useTableSort(
-    itemsWithUniqueId,
+  const [{ data, orderBy, sortBy }, updateSort] = useTableSort({
+    data: itemsWithUniqueId,
     accessor,
-  );
+  });
   // [size]: num of rows per page
   const [size, setSize] = useState(ROW_SIZES[0]);
 
@@ -180,18 +180,16 @@ const BasedOnTable = ({
                       label={column.title}
                       isSelected={column.key === orderBy}
                       borderBottomColor='primary.200'
+                      isSortable={true}
+                      tableSortToggleProps={{
+                        isSelected: column.key === orderBy,
+                        sortBy,
+                        handleToggle: (sortByAsc: boolean) => {
+                          updateSort(column.key, sortByAsc);
+                        },
+                      }}
                       {...column.props}
-                    >
-                      {column.key && (
-                        <TableSortToggle
-                          isSelected={column.key === orderBy}
-                          sortBy={sortBy}
-                          handleToggle={(sortByAsc: boolean) => {
-                            updateSort(column.key, sortByAsc);
-                          }}
-                        />
-                      )}
-                    </Th>
+                    ></Th>
                   );
                 })}
               </Tr>
@@ -233,11 +231,41 @@ const BasedOnTable = ({
                                       <EmptyCell label='No name provided' />
                                     )}
                                   </Text>
+                                  {(item.identifier ||
+                                    item.pmid ||
+                                    item.doi) && (
+                                    <Stack spacing={1} mt={1}>
+                                      {item.identifier && (
+                                        <TagWithUrl
+                                          // only add url here if there is no name (name field is default used for the link)
+                                          href={
+                                            !item.name && item.url
+                                              ? item.url
+                                              : ''
+                                          }
+                                          label='ID |'
+                                          isExternal
+                                        >
+                                          {item.identifier}
+                                        </TagWithUrl>
+                                      )}
+                                      {item.pmid && (
+                                        <TagWithUrl label='PMID |' isExternal>
+                                          {item.pmid}
+                                        </TagWithUrl>
+                                      )}
+                                      {item.doi && (
+                                        <TagWithUrl label='DOI |' isExternal>
+                                          {item.doi}
+                                        </TagWithUrl>
+                                      )}
+                                    </Stack>
+                                  )}
                                 </Box>
                               )}
 
                               {/* type */}
-                              {column.key === 'type' &&
+                              {column.key === '@type' &&
                                 (item.type.length > 0 &&
                                 item.type.some(type => {
                                   return type.name || type.url;
@@ -251,7 +279,7 @@ const BasedOnTable = ({
                                           key={idx}
                                           label={
                                             type?.url
-                                              ? 'show ontology information'
+                                              ? 'Show ontology information.'
                                               : ''
                                           }
                                           hasArrow
@@ -263,10 +291,13 @@ const BasedOnTable = ({
                                         >
                                           <span>
                                             <TagWithUrl
-                                              url={type?.url}
+                                              href={type?.url || ''}
                                               colorScheme='primary'
+                                              isExternal
                                             >
-                                              {type?.name || type?.url}
+                                              {type?.name ||
+                                                type?.url ||
+                                                'No type provided'}
                                             </TagWithUrl>
                                           </span>
                                         </Tooltip>
@@ -296,47 +327,24 @@ const BasedOnTable = ({
                           );
                         })}
                       </Flex>
-                      {(item.identifier || item.pmid || item.doi) && (
-                        <Flex as='td' role='cell' px={3}>
-                          {item.identifier && (
-                            <TagWithUrl
-                              // only add url here if there is no name (name field is default used for the link)
-                              url={!item.name && item.url ? item.url : ''}
-                              mx={0.5}
-                              label='ID |'
-                            >
-                              {item.identifier}
-                            </TagWithUrl>
-                          )}
-                          {item.pmid && (
-                            <TagWithUrl mx={0.5} label='PMID |'>
-                              {item.pmid}
-                            </TagWithUrl>
-                          )}
-                          {item.doi && (
-                            <TagWithUrl mx={0.5} label='DOI |'>
-                              {item.doi}
-                            </TagWithUrl>
-                          )}
-                        </Flex>
-                      )}
-                      <Box
-                        as='td'
-                        role='cell'
-                        px={3}
-                        my={2}
-                        fontSize='xs'
-                        lineHeight='short'
-                        whiteSpace='pre-wrap'
-                        wordBreak='break-word'
-                        fontWeight='normal'
-                      >
-                        {item.description && (
+
+                      {item.description && (
+                        <Box
+                          as='td'
+                          role='cell'
+                          px={3}
+                          my={2}
+                          fontSize='xs'
+                          lineHeight='short'
+                          whiteSpace='pre-wrap'
+                          wordBreak='break-word'
+                          fontWeight='normal'
+                        >
                           <TruncatedDescription
                             description={item.description}
                           />
-                        )}
-                      </Box>
+                        </Box>
+                      )}
                     </Row>
                   </React.Fragment>
                 );

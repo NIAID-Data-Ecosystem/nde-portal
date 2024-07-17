@@ -4,6 +4,27 @@ export type APIResourceType = 'Dataset' | 'ResourceCatalog';
 // | 'Software'
 // | 'ScholarlyArticle'
 // | 'Other';
+
+export type CollectionType =
+  | 'Knowledge Base'
+  | 'Ontology'
+  | 'Terminology'
+  | 'Database'
+  | 'Dataset'
+  | 'Metadata Catalog'
+  | 'Archive'
+  | 'Cloud Ecosystem'
+  | 'Corpus'
+  | 'Repository'
+  | 'Controlled Vocabulary'
+  | 'Registry'
+  | 'Data Dictionary'
+  | 'Data Mart'
+  | 'Data Warehouse'
+  | 'Data Store'
+  | 'Data Collection'
+  | 'Portal';
+
 export type DisplayResourceType =
   | 'Dataset'
   | 'Resource Catalog'

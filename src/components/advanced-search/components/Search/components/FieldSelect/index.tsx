@@ -33,7 +33,7 @@ import ADVANCED_SEARCH from 'configs/advanced-search-fields.json';
  */
 
 // Minimum amount of records a field must have to be included in field select.
-const MIN_FIELD_RECORDS = 5;
+const MIN_FIELD_RECORDS = 1;
 // Filter out fields we want to remove from field select.
 export const filterFields = (field: SchemaDefinition) => {
   return (

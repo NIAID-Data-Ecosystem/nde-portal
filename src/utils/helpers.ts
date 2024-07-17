@@ -1,4 +1,3 @@
-import REPOSITORIES from 'configs/repositories.json';
 import { FormattedResource } from './api/types';
 
 // Get image for repo based on config.
@@ -6,103 +5,28 @@ export const getRepositoryImage = (name: string) => {
   if (!name) {
     return null;
   }
-  const { repositories } = REPOSITORIES;
-  const sourceRepoIndex = repositories.findIndex(repo => {
-    return repo.id === name;
-  });
+  const path = '/assets/resources/';
+  const identifier = name
+    .toLowerCase()
+    .replace(/\s+/g, '-')
+    .replace(/[^a-z-]/g, '');
 
-  const imageURL =
-    sourceRepoIndex >= 0 ? repositories[sourceRepoIndex].imageURL : null;
-
-  return imageURL;
+  return path + identifier + '.png';
 };
 
-export const isSourceFundedByNiaid = (
-  includedInDataCatalog?: FormattedResource['includedInDataCatalog'],
-) => {
-  if (!includedInDataCatalog) return false;
-  const repositories = REPOSITORIES.repositories as {
-    id: string;
-    label: string;
-    isNIAID?: boolean;
-  }[];
-
-  const sources = includedInDataCatalog
-    ? Array.isArray(includedInDataCatalog)
-      ? includedInDataCatalog
-      : [includedInDataCatalog]
-    : [];
-
-  const sources_names = sources.map(source => source.name);
-  const isNiaidFunded =
-    sources &&
-    repositories.filter(
-      ({ label, isNIAID }) => sources_names.includes(label) && isNIAID,
-    ).length > 0;
-
-  return isNiaidFunded;
-};
-// Format authors name string with a given separator
-export const formatAuthorsList2String = (
-  authorsData: FormattedResource['author'],
-  separator: string = ',',
-  maxLength?: number,
-) => {
-  if (!authorsData) {
-    return '';
+export const getFundedByNIAID = (name: string) => {
+  if (!name) {
+    return false;
   }
-  let authors = !Array.isArray(authorsData) ? [authorsData] : authorsData;
-
-  let author_list = authors.map((author, i) => {
-    // Not author name fields exist.
-    let author_name = '';
-
-    if (author.name) {
-      author_name = author.name;
-
-      // If name has comma format so that first name goes after last name.
-      // [NOTE]: might cause issues. Not sure this is the best way of handling.
-      if (author.name.includes(',')) {
-        let [familyName, givenName] = author.name.split(',');
-        author_name = `${givenName} ${familyName}`;
-      }
-    } else if (author.givenName || author.familyName) {
-      author_name = `${author.givenName ? `${author.givenName} ` : ''}${
-        author?.familyName || ''
-      }`;
-    }
-
-    // if only one author.
-    if (authors.length === 1) {
-      return author_name;
-    }
-
-    // Add separator between names.
-    const formattedAuthorString =
-      i === authors.length - 1
-        ? `and ${author_name}`
-        : shouldAppendPunctuation(author_name, separator);
-
-    return formattedAuthorString;
-  });
-
-  // If max length is provided, cut off author list string and add et al.
-  if (maxLength && author_list.length > maxLength) {
-    return author_list.slice(0, maxLength).join(' ') + ' et al';
-  }
-
-  return author_list.join(' ');
-};
-
-// Add punctuation to end of string if needed.
-export const shouldAppendPunctuation = (
-  str: string | null,
-  symbol: string = '.',
-) => {
-  if (!str) {
-    return '';
-  }
-  return str.slice(-1) === symbol ? str : str + symbol;
+  const FUNDED_REPOS = [
+    'AccessClinicalData@NIAID',
+    'ClinEpiDB',
+    'ImmPort',
+    'MicrobiomeDB',
+    'VDJServer',
+    'VEuPathDB',
+  ];
+  return FUNDED_REPOS.includes(name);
 };
 
 // Format DOI if url is included in string.
@@ -177,11 +101,6 @@ export const formatLicense = (license: string) => {
     formattedLicense.title =
       'CC0 1.0 Universal (CC0 1.0) Public Domain Dedication';
     formattedLicense.img = '/assets/copyright/by-p.png';
-  } else if (license.includes('immport')) {
-    formattedLicense.type = 'Immport';
-    formattedLicense.title =
-      'User Agreement for the NIAID Immunology Database and Analysis Portal (ImmPort)';
-    formattedLicense.img = '/assets/resources/immport-icon.jpg';
   } else if (license.includes('dataverse.harvard')) {
     formattedLicense.type = 'Harvard Dataverse';
     formattedLicense.title = 'Harvard Dataverse Terms of Use';

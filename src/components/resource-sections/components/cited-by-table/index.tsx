@@ -7,6 +7,7 @@ import {
   VisuallyHidden,
   Heading,
   Skeleton,
+  Stack,
 } from '@chakra-ui/react';
 import { Link } from 'src/components/link';
 import { CitedBy as CitedByType } from 'src/utils/api/types';
@@ -14,7 +15,6 @@ import { uniqueId } from 'lodash';
 import { Cell, EmptyCell, Th } from 'src/components/table/components/cell';
 import { Row } from 'src/components/table/components/row';
 import { TableContainer } from 'src/components/table/components/table-container';
-import { TableSortToggle } from 'src/components/table/components/sort-toggle';
 import { TableWrapper } from 'src/components/table/components/wrapper';
 import { TablePagination } from 'src/components/table/components/pagination';
 import { useTableSort } from 'src/components/table/hooks/useTableSort';
@@ -65,10 +65,10 @@ export const CitedByTable: React.FC<CitedByTable> = ({
     return v;
   }, []);
 
-  const [{ data, orderBy, sortBy }, updateSort] = useTableSort(
-    citedBy,
+  const [{ data, orderBy, sortBy }, updateSort] = useTableSort({
+    data: citedBy,
     accessor,
-  );
+  });
   // [size]: num of rows per page
   const [size, setSize] = useState(ROW_SIZES[0]);
 
@@ -114,18 +114,16 @@ export const CitedByTable: React.FC<CitedByTable> = ({
                       label={column.title}
                       isSelected={column.key === orderBy}
                       borderBottomColor='primary.200'
+                      isSortable={true}
+                      tableSortToggleProps={{
+                        isSelected: column.key === orderBy,
+                        sortBy,
+                        handleToggle: (sortByAsc: boolean) => {
+                          updateSort(column.key, sortByAsc);
+                        },
+                      }}
                       {...column.props}
-                    >
-                      {column.key && (
-                        <TableSortToggle
-                          isSelected={column.key === orderBy}
-                          sortBy={sortBy}
-                          handleToggle={(sortByAsc: boolean) => {
-                            updateSort(column.key, sortByAsc);
-                          }}
-                        />
-                      )}
-                    </Th>
+                    ></Th>
                   );
                 })}
               </Tr>
@@ -166,32 +164,30 @@ export const CitedByTable: React.FC<CitedByTable> = ({
                                     {item.name || '[No title provided]'}
                                   </Text>
                                 )}
-                                {item.identifier && (
-                                  <TagWithUrl m={0.5} label='ID |'>
-                                    {item.identifier}
-                                  </TagWithUrl>
-                                )}
-                                {item.pmid && (
-                                  <TagWithUrl m={0.5} label='PMID |'>
-                                    {item.pmid}
-                                  </TagWithUrl>
-                                )}
-                                {item.doi && (
-                                  <TagWithUrl m={0.5} label='DOI |'>
-                                    {item.doi}
-                                  </TagWithUrl>
-                                )}
+                                <Stack spacing={1} mt={1}>
+                                  {item.identifier && (
+                                    <TagWithUrl label='ID |'>
+                                      {item.identifier}
+                                    </TagWithUrl>
+                                  )}
+                                  {item.pmid && (
+                                    <TagWithUrl label='PMID |'>
+                                      {item.pmid}
+                                    </TagWithUrl>
+                                  )}
+                                  {item.doi && (
+                                    <TagWithUrl label='DOI |'>
+                                      {item.doi}
+                                    </TagWithUrl>
+                                  )}
+                                </Stack>
                               </>
                             )}
 
                             {column.key === '@type' &&
                               (item['@type'] ? (
                                 <>
-                                  <TagWithUrl
-                                    mx={0.5}
-                                    label=''
-                                    colorScheme='primary'
-                                  >
+                                  <TagWithUrl colorScheme='primary'>
                                     {item['@type']}
                                   </TagWithUrl>
                                 </>

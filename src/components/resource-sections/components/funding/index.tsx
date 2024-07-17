@@ -3,16 +3,13 @@ import {
   Box,
   Flex,
   FlexProps,
-  Icon,
   Table,
   Tr,
-  Tag,
   Text,
   VisuallyHidden,
   Heading,
   Skeleton,
 } from '@chakra-ui/react';
-import { FaSquareArrowUpRight } from 'react-icons/fa6';
 import { Link } from 'src/components/link';
 import { Funding as FundingType } from 'src/utils/api/types';
 import { uniqueId } from 'lodash';
@@ -26,10 +23,10 @@ import {
 } from 'src/components/table/components/cell';
 import { Row, RowWithDrawer } from 'src/components/table/components/row';
 import { TableContainer } from 'src/components/table/components/table-container';
-import { TableSortToggle } from 'src/components/table/components/sort-toggle';
 import { TableWrapper } from 'src/components/table/components/wrapper';
 import { TablePagination } from 'src/components/table/components/pagination';
 import { useTableSort } from 'src/components/table/hooks/useTableSort';
+import { TagWithUrl } from 'src/components/tag-with-url';
 
 // Constants for table configuration.
 // [ROW_SIZES]: num of rows per page
@@ -53,6 +50,7 @@ const COLUMNS = [
 
 interface Row extends FundingType {
   key: string;
+  hasRowDrawer: boolean;
 }
 interface FundingProps {
   isLoading: boolean;
@@ -76,6 +74,19 @@ export const Funding: React.FC<FundingProps> = ({
           key: uniqueId(`funding-${funding.identifier || idx}`),
           name: funding.name || '',
           funderName,
+          hasRowDrawer: funding.funder
+            ? Array.isArray(funding.funder)
+              ? funding.funder.some(funderItem =>
+                  Object.keys(funderItem).some(
+                    key =>
+                      key !== '@type' && key !== 'name' && key !== 'identifier',
+                  ),
+                )
+              : Object.keys(funding.funder).some(
+                  key =>
+                    key !== '@type' && key !== 'name' && key !== 'identifier',
+                )
+            : false,
         };
       }),
     [fundingData],
@@ -86,10 +97,10 @@ export const Funding: React.FC<FundingProps> = ({
     return v;
   }, []);
 
-  const [{ data, orderBy, sortBy }, updateSort] = useTableSort(
-    funding,
+  const [{ data, orderBy, sortBy }, updateSort] = useTableSort({
+    data: funding,
     accessor,
-  );
+  });
   // [size]: num of rows per page
   const [size, setSize] = useState(ROW_SIZES[0]);
 
@@ -108,7 +119,6 @@ export const Funding: React.FC<FundingProps> = ({
   if (!isLoading && funding?.length === 0) {
     return <Text>No funding data available.</Text>;
   }
-
   return (
     <Skeleton isLoaded={!isLoading} overflow='auto'>
       <Heading as='h4' fontSize='sm' mx={1} mb={4} fontWeight='semibold'>
@@ -135,41 +145,42 @@ export const Funding: React.FC<FundingProps> = ({
                       label={column.title}
                       isSelected={column.key === orderBy}
                       borderBottomColor={`${getMetadataTheme('funding')}.200`}
+                      isSortable={true}
+                      tableSortToggleProps={{
+                        isSelected: column.key === orderBy,
+                        sortBy,
+                        handleToggle: (sortByAsc: boolean) => {
+                          updateSort(column.key, sortByAsc);
+                        },
+                      }}
                       {...column.props}
-                    >
-                      {column.key && (
-                        <TableSortToggle
-                          isSelected={column.key === orderBy}
-                          sortBy={sortBy}
-                          handleToggle={(sortByAsc: boolean) => {
-                            updateSort(column.key, sortByAsc);
-                          }}
-                        />
-                      )}
-                    </Th>
+                    />
                   );
                 })}
               </Tr>
             </thead>
-            <tbody>
+            <Flex as='tbody' flexDirection='column'>
               {rows.map(funding => {
                 return (
-                  <Row
-                    as='tr'
-                    key={`table-tr-${funding.key}`}
-                    flexDirection='column'
-                    borderColor='gray.200'
-                  >
-                    <Flex as='td' role='cell'>
+                  <React.Fragment key={`table-tr-${funding.key}`}>
+                    <Row
+                      as='tr'
+                      flexDirection='row'
+                      borderTop='1px solid'
+                      borderTopColor='gray.200'
+                      borderBottom='none'
+                    >
                       {COLUMNS.map(column => {
                         return (
                           <Cell
                             key={`table-td-${funding.key}-${column.key}`}
-                            as='div'
+                            as='td'
+                            role='cell'
                             {...column.props}
                           >
                             {column.key === 'name' && (
                               <ContentWithTag
+                                label='Funding ID |'
                                 identifier={funding.identifier}
                                 url={funding.url}
                                 name={funding.name}
@@ -179,15 +190,16 @@ export const Funding: React.FC<FundingProps> = ({
                               (Array.isArray(funding?.funder)
                                 ? funding.funder
                                 : [funding.funder]
-                              ).map(funder => {
+                              ).map((funder, idx) => {
                                 return (
                                   <Box
-                                    key={`table-td-funder-${funding.key}-${funder?.identifier}-${funder?.name}`}
+                                    key={`table-td-funder-${funding.key}-${funder?.identifier}-${funder?.name}-${idx}`}
                                     as='span'
                                     display='block'
                                     mb={Array.isArray(funding?.funder) ? 4 : 0}
                                   >
                                     <ContentWithTag
+                                      label='Funder ID |'
                                       identifier={funder?.identifier}
                                       url={funder?.url}
                                       name={funder?.name}
@@ -215,35 +227,22 @@ export const Funding: React.FC<FundingProps> = ({
                           </Cell>
                         );
                       })}
-                    </Flex>
-                    {funding?.funder &&
-                      // check that funder has additional fields than @type, name, and identifier
-                      (Array.isArray(funding.funder)
-                        ? funding.funder.some(funderItem =>
-                            Object.keys(funderItem).some(
-                              key =>
-                                key !== '@type' &&
-                                key !== 'name' &&
-                                key !== 'identifier',
-                            ),
-                          )
-                        : Object.keys(funding.funder).some(
-                            key =>
-                              key !== '@type' &&
-                              key !== 'name' &&
-                              key !== 'identifier',
-                          )) && (
+                    </Row>
+
+                    {funding?.hasRowDrawer && (
+                      <Row className='row-drawer' border='none'>
                         <RowWithDrawer as='td' role='cell'>
                           <FundingDrawerContent
                             id={funding.key}
                             funder={funding.funder}
                           />
                         </RowWithDrawer>
-                      )}
-                  </Row>
+                      </Row>
+                    )}
+                  </React.Fragment>
                 );
               })}
-            </tbody>
+            </Flex>
           </Table>
         </TableContainer>
         <TablePagination
@@ -264,12 +263,14 @@ export const Funding: React.FC<FundingProps> = ({
 const ContentWithTag = React.memo(
   ({
     url,
+    label,
     identifier,
     name,
   }: {
-    url?: string | null;
     identifier?: string | null;
+    label?: string;
     name?: string | null;
+    url?: string | null;
   }) => {
     if (!url && !identifier && !name) {
       return <EmptyCell />;
@@ -281,54 +282,21 @@ const ContentWithTag = React.memo(
             <Text fontSize='inherit'>{name || 'Funding Information'}</Text>
           </Link>
         ) : (
-          <Text fontWeight='medium'>{name}</Text>
+          <Text fontWeight='medium' fontStyle={!name ? 'italic' : 'normal'}>
+            {name || 'No name provided'}
+          </Text>
         )}
 
         {identifier && (
-          <Tag
-            size='sm'
-            variant='subtle'
-            alignItems='center'
-            px={1.5}
-            mt={0.5}
-            fontSize='12px'
+          <TagWithUrl
             colorScheme='orange'
+            href={url || ''}
+            label={label}
+            isExternal
+            mt={0.5}
           >
-            {url ? (
-              <Link
-                href={url}
-                target='_blank'
-                alignItems='center'
-                fontWeight='semibold'
-                color='inherit'
-                _visited={{ color: 'inherit' }}
-                _hover={{
-                  color: 'inherit',
-                  '#tag-value': { textDecoration: 'none' },
-                }}
-              >
-                <span>ID</span> |{' '}
-                <Text
-                  id='tag-value'
-                  as='span'
-                  textDecoration='underline'
-                  color='inherit'
-                >
-                  {identifier}
-                </Text>
-                <Icon
-                  as={FaSquareArrowUpRight}
-                  boxSize={3}
-                  ml={1}
-                  color='gray.800'
-                />
-              </Link>
-            ) : (
-              <>
-                <b>ID</b> | {identifier}
-              </>
-            )}
-          </Tag>
+            {identifier}
+          </TagWithUrl>
         )}
       </>
     );
@@ -342,41 +310,10 @@ interface FundingDrawerContentProps extends FlexProps {
 // FundingDrawerContent component - displays detailed information for a funding item.
 const FundingDrawerContent = React.memo(
   ({ funder }: FundingDrawerContentProps) => {
-    // const { isOpen } = useDisclosure();
-
-    // const { text, hasMore } = getTruncatedText(description, isOpen);
-
     const funders = Array.isArray(funder) ? funder : [funder];
 
     return (
       <Flex px={4} flexDirection='column'>
-        {/* <dl>
-          <Label as='dt' mt={2}>
-            Description
-          </Label>
-          <Content as='dd'>
-            {text ? (
-              <Text w='100%'>
-                {text}
-                {!isOpen && hasMore ? '...' : ''}
-                {hasMore ? (
-                  <Button
-                    variant='link'
-                    textDecoration='underline'
-                    mx={1}
-                    onClick={onToggle}
-                  >
-                    {isOpen ? 'read less' : 'read more'}
-                  </Button>
-                ) : (
-                  <></>
-                )}
-              </Text>
-            ) : (
-              <Text fontStyle='italic'>None available</Text>
-            )}
-          </Content>
-        </dl> */}
         {funders.length &&
           funders.some(
             funderItem =>

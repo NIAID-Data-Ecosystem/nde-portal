@@ -15,19 +15,43 @@ import NextLink from 'next/link';
 import { FaMinus, FaPlus } from 'react-icons/fa6';
 import { Link } from 'src/components/link';
 import { FormattedResource } from 'src/utils/api/types';
-import { MetadataIcon } from 'src/components/icon';
 import Tooltip from 'src/components/tooltip';
 import { getMetadataTheme } from 'src/components/icon/helpers';
 import {
-  MetadataBlock,
-  MetadataContent,
-  MetadataList,
-  MetadataListItem,
   generateMetadataContent,
   sortMetadataArray,
 } from 'src/components/metadata';
 import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
 import { SchemaDefinitions } from 'scripts/generate-schema-definitions/types';
+import dynamic from 'next/dynamic';
+
+const MetadataBlock = dynamic(
+  () => import('src/components/metadata').then(mod => mod.MetadataBlock),
+  {
+    loading: () => <p></p>,
+  },
+);
+
+const MetadataContent = dynamic(
+  () => import('src/components/metadata').then(mod => mod.MetadataContent),
+  {
+    loading: () => <p></p>,
+  },
+);
+
+const MetadataList = dynamic(
+  () => import('src/components/metadata').then(mod => mod.MetadataList),
+  {
+    loading: () => <p></p>,
+  },
+);
+
+const MetadataListItem = dynamic(
+  () => import('src/components/metadata').then(mod => mod.MetadataListItem),
+  {
+    loading: () => <p></p>,
+  },
+);
 
 interface MetadataAccordionProps {
   data?: FormattedResource | null;
@@ -72,8 +96,8 @@ const MetadataAccordion: React.FC<MetadataAccordionProps> = ({ data }) => {
                     alignItems='center'
                   >
                     {sortedMetadataContent.map(
-                      ({ label, property, isDisabled }) => {
-                        const color = isDisabled
+                      ({ label, property, glyph, isDisabled }) => {
+                        const colorScheme = isDisabled
                           ? 'gray'
                           : getMetadataTheme(property);
                         const schemaProperty = schema[property];
@@ -89,9 +113,9 @@ const MetadataAccordion: React.FC<MetadataAccordionProps> = ({ data }) => {
                             size='sm'
                             variant='subtle'
                             borderRadius='full'
-                            colorScheme={color}
+                            colorScheme={colorScheme}
                             // darker for variableMeasured
-                            color={`${color}.${
+                            color={`${colorScheme}.${
                               property === 'variableMeasured' ? '900' : '700'
                             }`}
                             m={0.5}
@@ -106,15 +130,6 @@ const MetadataAccordion: React.FC<MetadataAccordionProps> = ({ data }) => {
                               }
                             >
                               <Flex alignItems='center'>
-                                <MetadataIcon
-                                  id={`indicator-${property}-${id}`}
-                                  title={property}
-                                  glyph={property}
-                                  fill={`${color}.600`}
-                                  m={0.5}
-                                  boxSize={4}
-                                  isDisabled={isDisabled}
-                                />
                                 <TagLabel lineHeight='none'>
                                   <Text fontSize='xs' m={0.5} color='inherit'>
                                     {label}
@@ -153,6 +168,7 @@ const MetadataAccordion: React.FC<MetadataAccordionProps> = ({ data }) => {
                         return (
                           <MetadataBlock
                             key={`property-${props.id}`}
+                            glyph={props.property}
                             {...props}
                           >
                             {name && (
@@ -176,6 +192,9 @@ const MetadataAccordion: React.FC<MetadataAccordionProps> = ({ data }) => {
                                         >
                                           <MetadataContent
                                             includeOntology
+                                            colorScheme={getMetadataTheme(
+                                              props.property,
+                                            )}
                                             {...item}
                                           />
                                         </MetadataListItem>

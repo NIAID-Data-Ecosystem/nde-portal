@@ -19,6 +19,7 @@ import { Params, fetchAllSearchResults } from 'src/utils/api';
 import { DownloadArgs, downloadAsCsv, downloadAsJson } from './helpers';
 import { Disclaimer } from './components/Disclaimer';
 import { FaXmark } from 'react-icons/fa6';
+import { encodeString } from 'src/utils/querystring-helpers';
 
 /*
  [COMPONENT INFO]: Download data button that gives JSON or CSV download options.
@@ -71,7 +72,6 @@ export const DownloadMetadata: React.FC<DownloadMetadataProps> = ({
       setQueryKey(newKey);
     }
   }, [queryKey, params]);
-
   const {
     error,
     refetch: fetchDownloadData,

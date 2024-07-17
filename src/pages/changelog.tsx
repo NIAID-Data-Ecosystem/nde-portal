@@ -15,12 +15,10 @@ const Changelog: NextPage<ChangelogProps> = () => {
   const MDXComponents = useMDXComponents({});
   return (
     <PageContainer
-      hasNavigation
       title='Changelog'
       metaDescription='Log of changes to the NDE System.'
       px={0}
       py={0}
-      disableSearchBar
     >
       <PageContent bg='#fff' justifyContent={'center'}>
         <Flex w='1000px' flexDirection='column' mb={32}>

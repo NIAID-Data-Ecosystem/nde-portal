@@ -1,18 +1,18 @@
 import React from 'react';
-import { Box, Flex, Select, VisuallyHidden } from '@chakra-ui/react';
-import { SortOptionsInterface } from 'src/components/search-results-page';
+import { Select, SelectProps, Stack, VisuallyHidden } from '@chakra-ui/react';
+import { SORT_OPTIONS, SortOptionsInterface } from './helpers';
 
 /*
- [COMPONENT INFO]: SortResults
+ [COMPONENT INFO]: SortDropdown
  Handles sorting("sort by" and sort order) for search results.
  Handles number of items to display per page.
 */
 
-interface SortResultsProps {
+interface SortDropdownProps {
+  // size of select element
+  size?: SelectProps['size'];
   // Number of items to display in a page
   selectedPerPage: number;
-  // Sort by options
-  sortOptions: readonly SortOptionsInterface[];
   // Sort order of results
   sortOrder: string;
   // Handler fn for items per page.
@@ -21,32 +21,32 @@ interface SortResultsProps {
   handleSortOrder: (sort: string) => void;
 }
 
-export const SortResults: React.FC<SortResultsProps> = ({
-  selectedPerPage,
-  handleSelectedPerPage,
-  sortOrder,
-  sortOptions,
-  handleSortOrder,
-}) => {
-  const showPerPageOptions = [10, 50, 100];
-  /*
+export const SortDropdown: React.FC<SortDropdownProps> = React.memo(
+  ({
+    selectedPerPage,
+    size = 'sm',
+    sortOrder,
+    handleSelectedPerPage,
+    handleSortOrder,
+  }) => {
+    const showPerPageOptions = [10, 50, 100];
+    /*
   Tooltip describing the sort by option as requested:
   https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/90
   */
-  const getTooltip = (sortBy: SortOptionsInterface['sortBy']) => {
-    if (sortBy === '_score') {
-      return 'Sort by relevancy (field name is boosted).';
-    } else if (sortBy === 'date') {
-      return 'Sort by most recent activity (created, published or modified).';
-    } else if (sortBy === 'name.raw') {
-      return 'Sort alphabetically by title.';
-    }
-    return '';
-  };
-  return (
-    <Flex flexDirection={['column', 'row']} flex={1} bg='white'>
-      {/* Sort Order dropdown. */}
-      <Box mr={[0, 2]}>
+    const getTooltip = (sortBy: SortOptionsInterface['sortBy']) => {
+      if (sortBy === '_score') {
+        return 'Sort by relevancy (field name is boosted).';
+      } else if (sortBy === 'date') {
+        return 'Sort by most recent activity (created, published or modified).';
+      } else if (sortBy === 'name.raw') {
+        return 'Sort alphabetically by title.';
+      }
+      return '';
+    };
+    return (
+      <Stack flexDirection={{ base: 'column', sm: 'row' }} spacing={[1, 4]}>
+        {/* Sort Order dropdown. */}
         <VisuallyHidden>
           <label htmlFor='sorting-order-select' title='Sort order'>
             Select sort order
@@ -55,16 +55,18 @@ export const SortResults: React.FC<SortResultsProps> = ({
         <Select
           id='sorting-order-select'
           aria-label='Select sort order'
-          borderRadius='semi'
           bg='white'
-          value={sortOrder}
+          borderColor='gray.200'
+          borderRadius='semi'
           cursor='pointer'
-          my={1}
           _hover={{ boxShadow: 'low' }}
-          onChange={e => handleSortOrder(e.target.value)}
-          size='md'
+          onChange={e => {
+            handleSortOrder(e.target.value);
+          }}
+          size={size}
+          value={sortOrder}
         >
-          {sortOptions.map(option => {
+          {SORT_OPTIONS.map(option => {
             return (
               <option
                 title={getTooltip(option.sortBy)}
@@ -78,10 +80,8 @@ export const SortResults: React.FC<SortResultsProps> = ({
             );
           })}
         </Select>
-      </Box>
 
-      {/* Show Per Page dropdown. */}
-      <Box>
+        {/* Show Per Page dropdown. */}
         <VisuallyHidden>
           <label htmlFor='show-per-page-select' title='Show per page'>
             Show per page
@@ -90,14 +90,14 @@ export const SortResults: React.FC<SortResultsProps> = ({
         <Select
           id='show-per-page-select'
           aria-label='Select show items per page'
-          borderRadius='semi'
           bg='white'
+          borderColor='gray.200'
+          borderRadius='semi'
           cursor='pointer'
-          value={selectedPerPage}
-          my={1}
-          size='md'
-          _hover={{ boxShadow: 'low' }}
           onChange={e => handleSelectedPerPage(+e.target.value)}
+          size={size}
+          value={selectedPerPage}
+          _hover={{ boxShadow: 'low' }}
         >
           {showPerPageOptions.map(option => {
             return (
@@ -107,7 +107,7 @@ export const SortResults: React.FC<SortResultsProps> = ({
             );
           })}
         </Select>
-      </Box>
-    </Flex>
-  );
-};
+      </Stack>
+    );
+  },
+);

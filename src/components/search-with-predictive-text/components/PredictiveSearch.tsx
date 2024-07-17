@@ -15,10 +15,20 @@ import { usePredictiveSearchResponse } from '../hooks/usePredictiveSearch';
 import {
   InputWithDropdown,
   DropdownInput,
-  DropdownList,
-  DropdownListItem,
-  DropdownContent,
 } from 'src/components/input-with-dropdown';
+import { DropdownListItem } from 'src/components/input-with-dropdown/components/DropdownListItem';
+import dynamic from 'next/dynamic';
+
+const DropdownContent = dynamic(() =>
+  import('src/components/input-with-dropdown/components/DropdownContent').then(
+    mod => mod.DropdownContent,
+  ),
+);
+const DropdownList = dynamic(() =>
+  import('src/components/input-with-dropdown/components/DropdownList').then(
+    mod => mod.DropdownList,
+  ),
+);
 
 export interface SearchWithPredictiveTextProps
   extends usePredictiveSearchResponse {

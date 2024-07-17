@@ -2,16 +2,17 @@ import React from 'react';
 import {
   Button,
   Flex,
-  Image,
-  ImageProps,
   usePrefersReducedMotion,
-  Text,
+  Stack,
   ButtonProps,
 } from '@chakra-ui/react';
 import { FormattedResource } from 'src/utils/api/types';
-import { getRepositoryImage } from 'src/utils/helpers';
 import NextLink from 'next/link';
 import { FaArrowRight } from 'react-icons/fa6';
+import {
+  SourceLogo,
+  getSourceDetails,
+} from 'src/components/search-results-page/components/card/source-logo';
 
 interface DataAccessProps {
   isLoading: boolean;
@@ -35,44 +36,24 @@ export const DataAccess: React.FC<DataAccessProps> = ({
 
   const sources =
     !isLoading && includedInDataCatalog
-      ? Array.isArray(includedInDataCatalog)
-        ? includedInDataCatalog
-        : [includedInDataCatalog]
+      ? getSourceDetails(includedInDataCatalog)
       : [];
 
-  const SourceLogo = ({ src, alt, ...props }: ImageProps) => {
-    if (!src) return <></>;
-    return (
-      <Image width='auto' maxH='80px' src={`${src}`} alt={alt} {...props} />
-    );
-  };
-
   return (
-    <Flex mt={[4, 4]} flexDirection='column' alignItems='flex-start'>
+    <Stack mt={4} flexDirection='column' alignItems='flex-start' spacing={4}>
       {sources.map(source => {
         return (
           <React.Fragment key={source.name}>
-            {/* Source Logo */}
-            <Flex flexDirection='column'>
-              {/* Link to repository if url exists */}
-              {source?.url ? (
-                <NextLink href={source.url} target='_blank'>
-                  <SourceLogo
-                    src={getRepositoryImage(source.name) || undefined}
-                    alt={`Logo for ${source.name}`}
-                  />
-                </NextLink>
-              ) : (
-                <SourceLogo
-                  src={getRepositoryImage(source.name) || undefined}
-                  alt={`Logo for ${source.name}`}
-                />
-              )}
-              <Text fontStyle='italic' mt={1} color='primary.800'>
-                Provided by {source.name}
-              </Text>
-            </Flex>
-
+            <SourceLogo
+              sources={[source]}
+              url={source.url}
+              imageProps={{
+                width: 'auto',
+                height: 'unset',
+                maxHeight: '80px',
+                mb: 1,
+              }}
+            />
             {url ? (
               <Flex
                 w='100%'
@@ -109,6 +90,6 @@ export const DataAccess: React.FC<DataAccessProps> = ({
           </React.Fragment>
         );
       })}
-    </Flex>
+    </Stack>
   );
 };

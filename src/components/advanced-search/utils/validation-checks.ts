@@ -1,19 +1,4 @@
-export type ErrorType = 'info' | 'error' | 'warning';
-
-/**
- * @interface QueryStringError
- *
- * @id {string} - the id of the error
- * @type {ErrorType} - the type of error
- * @title {string} - the title of the error
- * @message {string} - the message of the error
- */
-export interface QueryStringError {
-  id: string;
-  type: ErrorType;
-  title?: string;
-  message: string;
-}
+import { ErrorType, QueryStringError } from 'src/components/error/types';
 
 /**
  * type ValidationConfig
@@ -32,21 +17,21 @@ export const VALIDATION_TEXT_CONFIG: QueryStringError[] = [
     type: 'error' as ErrorType,
     title: 'Unbalanced punctuation',
     message:
-      'Check for missing parentheses, brackets, quotations or curly braces.',
+      'Check for mismatched parentheses, brackets, quotations or curly braces.',
   },
   {
     id: 'checkMissingUnion',
     type: 'error' as ErrorType,
     title: 'Missing union',
     message:
-      'Check for missing unions (AND, OR, NOT) or that all unions are of type (AND, OR, NOT) between grouped elements.',
+      'Check for missing unions (AND, OR, NOT) or that all unions are of type (AND, OR, NOT) and between grouped elements.',
   },
   {
     id: 'unnecessaryUnions',
     type: 'error' as ErrorType,
     title: 'Unnecessary unions',
     message:
-      'Check for unions (AND, OR, NOT) at the beginning or end of the query.',
+      'Check for unnecessary unions (AND, OR, NOT) at the beginning or end of the query.',
   },
 ];
 
@@ -146,7 +131,7 @@ export const startsOrEndsWithUnion = (str: string): ValidationConfig => {
     str.split(' ')[str.split(' ').length - 1].match(/AND|OR|NOT/)
   ) {
     const error = VALIDATION_TEXT_CONFIG.find(
-      err => err.id === 'checkMissingUnion',
+      err => err.id === 'unnecessaryUnions',
     );
     return { isValid: false, error };
   }

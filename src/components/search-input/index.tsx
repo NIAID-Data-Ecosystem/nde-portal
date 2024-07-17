@@ -10,6 +10,7 @@ import {
   InputProps,
   IconButton,
   VisuallyHidden,
+  CloseButton,
 } from '@chakra-ui/react';
 import { FaMagnifyingGlass, FaXmark } from 'react-icons/fa6';
 
@@ -18,6 +19,7 @@ type SizeOptions = 'xs' | 'sm' | 'md' | 'lg';
 export interface SearchInputProps extends Omit<InputProps, 'size'> {
   // Function fired when input is changed.
   handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onClose?: () => void;
   // Function fired button is submitted.
   handleSubmit?: (e: React.FormEvent<HTMLDivElement>) => void;
   // Variant for button
@@ -37,6 +39,7 @@ export interface SearchInputProps extends Omit<InputProps, 'size'> {
 export const SearchInput: React.FC<SearchInputProps> = ({
   size = 'md',
   bg = 'white',
+  onClose,
   handleChange,
   handleSubmit,
   isResponsive = true,
@@ -57,7 +60,7 @@ export const SearchInput: React.FC<SearchInputProps> = ({
     },
     sm: {
       width: '5.5rem',
-      height: '1.7rem',
+      height: '1.75rem',
     },
     md: {
       width: '5.5rem',
@@ -112,21 +115,31 @@ export const SearchInput: React.FC<SearchInputProps> = ({
         />
 
         {/* If handle submit function is provided we show a button. */}
-        {handleSubmit && (
-          <InputRightElement p={1} width={sizeConfig[size].width}>
-            <Button
-              height={sizeConfig[size].height}
-              size={size}
-              colorScheme={colorScheme}
-              isLoading={isLoading}
-              aria-label='search'
-              type='submit'
-              display='flex'
-              // set padding top and bottom for safari, do not remove.
-              py={0}
-            >
-              Search
-            </Button>
+        {(onClose || handleSubmit) && (
+          <InputRightElement p={1} height={sizeConfig[size].height}>
+            {onClose && props.value && (
+              <CloseButton
+                onClick={() => {
+                  onClose();
+                }}
+                size={size}
+                colorScheme='primary'
+              />
+            )}
+            {handleSubmit && (
+              <Button
+                size={size}
+                colorScheme={colorScheme}
+                isLoading={isLoading}
+                aria-label='search'
+                type='submit'
+                display='flex'
+                // set padding top and bottom for safari, do not remove.
+                py={0}
+              >
+                Search
+              </Button>
+            )}
           </InputRightElement>
         )}
       </InputGroup>

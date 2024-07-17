@@ -31,12 +31,10 @@ const FrequentlyAsked: NextPage<FrequentlyAskedProps> = props => {
   const MDXComponents = useMDXComponents({});
   return (
     <PageContainer
-      hasNavigation
       title='FAQ'
       metaDescription='Frequenty asked questions.'
       px={0}
       py={0}
-      disableSearchBar
     >
       <PageContent justifyContent='center'>
         {error ? (

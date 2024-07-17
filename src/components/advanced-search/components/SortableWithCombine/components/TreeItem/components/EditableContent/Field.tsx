@@ -7,13 +7,15 @@ import {
 } from 'src/components/advanced-search/components/Search';
 import { SchemaDefinitions } from 'scripts/generate-schema-definitions/types';
 
+const schema = SCHEMA_DEFINITIONS as SchemaDefinitions;
+
 export const FieldTag = () => {
   const { updateQueryValue, selectedFieldDetails } = useAdvancedSearchContext();
 
   const [selectedField, setSelectedField] = useState(
     selectedFieldDetails?.dotfield,
   );
-  const schema = SCHEMA_DEFINITIONS as SchemaDefinitions;
+
   return (
     <Box position='relative' maxW={['unset', 'unset', '400px']} mt={[4, 2, 0]}>
       <FieldSelect

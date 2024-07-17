@@ -15,7 +15,7 @@ import {
 } from 'react-icons/fa6';
 import { IconType } from 'react-icons';
 import Glyph from './components/glyph';
-import { FaEarthAfrica, FaLanguage } from 'react-icons/fa6';
+import { FaLanguage } from 'react-icons/fa6';
 
 // Metadata icon svg.
 export interface IconProps extends ChakraIconProps {
@@ -53,8 +53,6 @@ export const MetadataIcon = React.forwardRef<HTMLDivElement, IconProps>(
       FaIcon = FaFingerprint;
     } else if (glyph?.toLowerCase() === 'inlanguage') {
       FaIcon = FaLanguage;
-    } else if (glyph?.toLowerCase() === 'spatialcoverage') {
-      FaIcon = FaEarthAfrica;
     } else if (glyph?.toLowerCase() === 'applicationcategory') {
       FaIcon = FaLaptopCode;
     } else if (glyph?.toLowerCase() === 'programminglanguage') {

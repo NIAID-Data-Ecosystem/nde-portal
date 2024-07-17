@@ -8,7 +8,6 @@ import { SearchTypesConfigProps } from 'src/components/advanced-search/component
 import { QueryValue, UnionTypes } from 'src/components/advanced-search/types';
 import {
   checkBalancedPunctuation,
-  QueryStringError,
   removeDuplicateErrors,
 } from 'src/components/advanced-search/utils/validation-checks';
 import { FlattenedItem, Value } from '../../../../types';
@@ -16,6 +15,7 @@ import { getSearchType, stripSearchTerm } from '../../helpers';
 import { FieldTag } from './Field';
 import { SearchLabel } from './SearchLabel';
 import { TermLabel } from './Term';
+import { QueryStringError } from 'src/components/error/types';
 
 export interface ItemContentProps {
   id: FlattenedItem['id'];
