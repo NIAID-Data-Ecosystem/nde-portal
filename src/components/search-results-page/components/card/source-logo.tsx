@@ -66,6 +66,7 @@ export const SourceLogo = ({
                     <Image
                       objectFit='contain'
                       objectPosition='left'
+                      fallbackSrc='/assets/resources/empty-source.png'
                       w='100%'
                       h='40px'
                       mr={4}
