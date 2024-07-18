@@ -104,7 +104,8 @@ export const FiltersList: React.FC<FiltersList> = React.memo(
             return acc;
           }
           const domain =
-            repositories?.find(r => r._id === item.term)?.domain || 'Other';
+            repositories?.find(r => r._id === item.term)?.domain ||
+            'Generalist';
 
           if (!acc[domain]) {
             acc[domain] = [];
