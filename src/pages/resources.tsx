@@ -128,7 +128,11 @@ const ResourcePage: NextPage = () => {
   const errorResponse =
     error && getQueryStatusError(error as unknown as { status: string });
 
-  if (!isLoading && Boolean(!id || id.toString() === 'undefined')) {
+  if (
+    (!isLoading && Boolean(!id || id.toString() === 'undefined')) ||
+    (!isLoading && !data)
+  ) {
+    // Redirect to 404 page if no id is provided or no data is found for the given id.
     router.push('/404');
     return <></>;
   }
