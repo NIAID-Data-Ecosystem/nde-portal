@@ -48,6 +48,7 @@ export interface ResourceData extends ResourceQueryData {
 const ResourcePage: NextPage = () => {
   const router = useRouter();
   const { id } = router.query;
+
   // Access query client
   const {
     isLoading: loadingData,
@@ -85,6 +86,8 @@ const ResourcePage: NextPage = () => {
     },
     {
       refetchOnWindowFocus: false,
+      // Disable query when id is undefined
+      enabled: Boolean(id && id.toString() !== 'undefined'),
       select: data => {
         if (data) {
           return {
@@ -125,7 +128,7 @@ const ResourcePage: NextPage = () => {
   const errorResponse =
     error && getQueryStatusError(error as unknown as { status: string });
 
-  if (!isLoading && !id) {
+  if (!isLoading && Boolean(!id || id.toString() === 'undefined')) {
     router.push('/404');
     return <></>;
   }
@@ -134,9 +137,13 @@ const ResourcePage: NextPage = () => {
     <>
       <PageContainer
         title={`${data?.name ? data?.name : isLoading ? '' : 'Resource'}`}
-        metaCanonical={`${process.env.NEXT_PUBLIC_BASE_URL}/resources?id=${
-          Array.isArray(id) ? id[0].toLowerCase() : id?.toLowerCase()
-        }`}
+        metaCanonical={
+          Boolean(id && id.toString() !== 'undefined')
+            ? `${process.env.NEXT_PUBLIC_BASE_URL}/resources?id=${
+                Array.isArray(id) ? id[0].toLowerCase() : id?.toLowerCase()
+              }`
+            : undefined
+        }
         metaDescription='NDE Discovery Portal - Detailed resource information.'
       >
         <PageContent>
