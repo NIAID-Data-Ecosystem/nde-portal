@@ -53,9 +53,9 @@ const ResourcePage: NextPage = () => {
     isLoading: loadingData,
     error,
     data,
-  } = useQuery<ResourceQueryData | undefined, Error, ResourceData | undefined>(
-    ['search-result', { id }],
-    async () => {
+  } = useQuery<ResourceQueryData | undefined, Error, ResourceData | undefined>({
+    queryKey: ['search-result', { id }],
+    queryFn: async () => {
       const data = await getResourceById(id, { show_meta: true });
       // Get other datasets that have the same study identifier and data catalog name.
       if (data?.isPartOf) {
@@ -83,18 +83,16 @@ const ResourcePage: NextPage = () => {
 
       return data;
     },
-    {
-      refetchOnWindowFocus: false,
-      select: data => {
-        if (data) {
-          return {
-            ...data,
-            rawData: omit(data.rawData, ['_id', '_ignored', '_score', '_meta']),
-          };
-        }
-      },
+    refetchOnWindowFocus: false,
+    select: data => {
+      if (data) {
+        return {
+          ...data,
+          rawData: omit(data.rawData, ['_id', '_ignored', '_score', '_meta']),
+        };
+      }
     },
-  );
+  });
 
   const isLoading = loadingData || !router.isReady;
 

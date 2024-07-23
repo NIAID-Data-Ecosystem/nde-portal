@@ -7,15 +7,14 @@ export function useQuerySearchResults(
   params: Params,
   options?: UseQueryOptions<FetchSearchResultsResponse | undefined, Error>,
 ) {
-  return useQuery<FetchSearchResultsResponse | undefined, Error>(
-    ['search-results', params],
-    () => {
+  return useQuery<FetchSearchResultsResponse | undefined, Error>({
+    queryKey: ['search-results', params],
+    queryFn: () => {
       if (typeof params.q !== 'string' && !params.q) {
         return;
       }
       return fetchSearchResults(params);
     },
-
-    options,
-  );
+    ...options,
+  });
 }

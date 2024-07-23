@@ -76,9 +76,9 @@ export const DownloadMetadata: React.FC<DownloadMetadataProps> = ({
     error,
     refetch: fetchDownloadData,
     isFetching,
-  } = useQuery<any | undefined, Error>(
+  } = useQuery<any | undefined, Error>({
     queryKey,
-    ({ signal }) => {
+    queryFn: ({ signal }) => {
       return fetchAllSearchResults(
         {
           q: params.q,
@@ -95,14 +95,11 @@ export const DownloadMetadata: React.FC<DownloadMetadataProps> = ({
         setPercentComplete,
       );
     },
-    // Don't refresh everytime window is touched.
-    {
-      refetchOnWindowFocus: false,
-      // cancel query when download format is not specified.
-      enabled: !!downloadFormat,
-      retry: false,
-    },
-  );
+    refetchOnWindowFocus: false,
+    // Only enable query when download format is specified.
+    enabled: !!downloadFormat,
+    retry: false,
+  });
   // Percent complete for download progress bar.
   const [percentComplete, setPercentComplete] = useState(0);
 
@@ -201,7 +198,7 @@ export const DownloadMetadata: React.FC<DownloadMetadataProps> = ({
             leftIcon={<FaXmark />}
             colorScheme='primary'
             onClick={() => {
-              queryClient.cancelQueries(queryKey);
+              queryClient.cancelQueries({ queryKey });
               clearDownloadState();
             }}
             variant='solid'

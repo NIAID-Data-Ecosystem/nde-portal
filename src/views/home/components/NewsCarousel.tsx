@@ -47,7 +47,6 @@ export const NewsCarousel = ({
   >({
     queryKey: ['news', 'events', 'features'],
     queryFn: async () => {
-      console.log('query');
       try {
         // Parallel fetching of news, events, and features using Promise.all
         const [newsResponse, featuresResponse, eventsResponse] =
