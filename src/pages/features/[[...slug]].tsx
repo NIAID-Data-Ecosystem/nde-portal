@@ -31,19 +31,16 @@ const FeaturedPage: NextPage<{
   slug: string[];
 }> = props => {
   // Fetch documentation from API.
-
   const { isLoading, error, data } = useQuery<
     FeaturedPageProps | undefined,
     any,
     FeaturedPageProps | undefined
-  >(
-    ['featured', { slug: props.slug }],
-    () => fetchFeaturedContent(props.slug),
-    {
-      refetchOnWindowFocus: true,
-      refetchOnMount: true,
-    },
-  );
+  >({
+    queryKey: ['featured', { slug: props.slug }],
+    queryFn: () => fetchFeaturedContent(props.slug),
+    refetchOnWindowFocus: true,
+    refetchOnMount: true,
+  });
   return (
     <PageContainer
       title='Featured'
