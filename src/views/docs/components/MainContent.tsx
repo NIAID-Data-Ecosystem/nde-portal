@@ -85,59 +85,71 @@ interface MainContentProps {
   data: DocumentationProps;
 }
 
-const MainContent = ({ slug, data: initialData }: MainContentProps) => {
-  // used to determine what levels of heading to add to table of contents.
-  const MAX_HEADING_DEPTH = 3;
-  const [tocSections, setTocSections] = useState<ContentHeading[]>([]);
+// Fetch documentation from API.
+const fetchDocumentation = async (slug: string[]) => {
+  try {
+    const isProd =
+      process.env.NEXT_PUBLIC_BASE_URL === 'https://data.niaid.nih.gov';
+    const docs = await axios.get(
+      `${
+        process.env.NEXT_PUBLIC_STRAPI_API_URL
+      }/api/docs?populate=*&filters[$and][0][slug][$eqi]=${slug}&publicationState=${
+        isProd ? 'live' : 'preview'
+      }`,
+    );
+    return docs.data.data as DocumentationProps[];
+  } catch (err: any) {
+    throw err.response;
+  }
+};
+// used to determine what levels of heading to add to table of contents.
+const MAX_HEADING_DEPTH = 3;
 
-  const [data, setData] = useState(initialData);
-  // Fetch documentation from API.
-  const fetchDocumentation = async () => {
-    try {
-      const isProd =
-        process.env.NEXT_PUBLIC_BASE_URL === 'https://data.niaid.nih.gov';
-      const docs = await axios.get(
-        `${
-          process.env.NEXT_PUBLIC_STRAPI_API_URL
-        }/api/docs?populate=*&filters[$and][0][slug][$eqi]=${slug}&publicationState=${
-          isProd ? 'live' : 'preview'
-        }`,
+const MainContent = ({ slug, data: initialData }: MainContentProps) => {
+  const {
+    data: queryData,
+    isLoading,
+    error,
+  } = useQuery<
+    DocumentationProps[],
+    Error,
+    { data: DocumentationProps; tocSections: ContentHeading[] }
+  >({
+    queryKey: ['doc', { slug }],
+    queryFn: () => fetchDocumentation(slug),
+    initialData: [initialData],
+    select: data => {
+      if (!data || !data[0]) {
+        return {
+          data: initialData,
+          tocSections: [],
+        };
+      }
+      const markdownSections = extractMarkdownHeadings(
+        data[0].attributes.description,
+        MAX_HEADING_DEPTH,
       );
 
-      return docs.data.data as DocumentationProps[];
-    } catch (err: any) {
-      throw err.response;
-    }
-  };
-  const { isLoading, error } = useQuery<DocumentationProps[] | undefined, any>(
-    ['doc', { slug }],
-    fetchDocumentation,
-    {
-      onSuccess(data) {
-        if (!data || !data[0]) {
-          return {};
-        }
-        setData(data[0]);
-        const markdownSections = extractMarkdownHeadings(
-          data[0].attributes.description,
-          MAX_HEADING_DEPTH,
-        );
-        setTocSections([
+      return {
+        data: data[0],
+        tocSections: [
           {
             title: data[0].attributes.name,
             hash: transformString2Hash(data[0].attributes.name),
             depth: 1,
           },
           ...markdownSections,
-        ]);
-      },
-      refetchOnWindowFocus: false,
-      refetchOnMount: false,
+        ],
+      };
     },
-  );
+    refetchOnWindowFocus: false,
+  });
 
   // Date formatting for last content update date.
   const [updatedAt, setUpdatedAt] = useState('');
+
+  const { data, tocSections } = queryData;
+
   useEffect(() => {
     if (data && data.attributes && data.attributes.updatedAt) {
       const date = new Date(data.attributes.updatedAt).toLocaleString([], {
@@ -150,7 +162,6 @@ const MainContent = ({ slug, data: initialData }: MainContentProps) => {
   }, [data]);
 
   const MDXComponents = useMDXComponents(mdxComponents);
-
   return (
     <>
       <Flex
@@ -166,7 +177,7 @@ const MainContent = ({ slug, data: initialData }: MainContentProps) => {
             <Flex flexDirection='column' alignItems='center'>
               <Text fontWeight='light' color='gray.600' fontSize='lg'>
                 API Request:{' '}
-                {error?.statusText ||
+                {error?.message ||
                   'It’s possible that the server is experiencing some issues.'}{' '}
               </Text>
             </Flex>

@@ -38,23 +38,22 @@ interface IntegrationProps {
 }
 
 const IntegrationMain: NextPage<IntegrationProps> = props => {
-  return <></>;
-  const [error, setError] = useState(props?.error || null);
   const {
     data: content,
     isLoading,
     isFetching,
+    error,
   } = useQuery({
     queryKey: ['integration-page'],
     queryFn: () => fetchPageContent(),
-    initialData: props?.data?.page || null,
+    initialData: { page: props?.data?.page || null },
+    select: data => data.page,
   });
-  console.log('content', content);
-  return <>hi</>;
+
   // Retrieve section information (title, slug) from content for the table of contents
   const sections =
     content &&
-    content.attributes &&
+    content?.attributes &&
     Object.values(content.attributes).reduce((r, block) => {
       if (block && typeof block === 'object') {
         if (Array.isArray(block)) {
@@ -76,7 +75,7 @@ const IntegrationMain: NextPage<IntegrationProps> = props => {
   const MDXComponents = useMDXComponents({});
   const [updatedAt, setUpdatedAt] = useState('');
   useEffect(() => {
-    if (content && content.attributes && content.attributes.updatedAt) {
+    if (content && content?.attributes && content.attributes.updatedAt) {
       const date = new Date(content.attributes.updatedAt).toLocaleString([], {
         day: 'numeric',
         month: 'long',

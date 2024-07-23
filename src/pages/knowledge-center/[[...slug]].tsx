@@ -75,36 +75,33 @@ const Docs: NextPage<{
     data: documentationPagesList,
     isLoading,
     error,
-  } = useQuery<DocumentationByCategories[], any, SidebarContent[]>(
-    ['docs'],
-    fetchCategories,
-    {
-      select: (res: DocumentationByCategories[]) => {
-        return res
-          .map(({ id, attributes }) => {
-            const items =
-              attributes?.docs?.data?.map(item => {
-                return {
-                  id: item.id,
-                  name: item.attributes.name,
-                  slug: item.attributes.slug,
-                  href: {
-                    pathname: `/knowledge-center/${item.attributes.slug}`,
-                  },
-                };
-              }) || [];
-            return {
-              id,
-              name: attributes.name,
-              items,
-            };
-          })
-          .filter(({ items }) => items.length > 0);
-      },
-      refetchOnMount: false,
-      refetchOnWindowFocus: false,
+  } = useQuery<DocumentationByCategories[], any, SidebarContent[]>({
+    queryKey: ['docs'],
+    queryFn: fetchCategories,
+    select: (res: DocumentationByCategories[]) => {
+      return res
+        .map(({ id, attributes }) => {
+          const items =
+            attributes?.docs?.data?.map(item => {
+              return {
+                id: item.id,
+                name: item.attributes.name,
+                slug: item.attributes.slug,
+                href: {
+                  pathname: `/knowledge-center/${item.attributes.slug}`,
+                },
+              };
+            }) || [];
+          return {
+            id,
+            name: attributes.name,
+            items,
+          };
+        })
+        .filter(({ items }) => items.length > 0);
     },
-  );
+    refetchOnWindowFocus: false,
+  });
 
   const router = useRouter();
 
