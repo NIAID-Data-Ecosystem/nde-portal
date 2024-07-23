@@ -1,12 +1,15 @@
 import { FiltersConfigProps } from 'src/components/filters/types';
 import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
 import { SchemaDefinitions } from 'scripts/generate-schema-definitions/types';
+import { fetchSearchResults } from 'src/utils/api';
+import { encodeString } from 'src/utils/querystring-helpers';
 
 // Default facet size
 export const FACET_SIZE = 1000;
 
 const schema = SCHEMA_DEFINITIONS as SchemaDefinitions;
-const getSchemaDescription = (property: string) => {
+
+export const getSchemaDescription = (property: string) => {
   const schemaProperty = schema[property];
   return (
     schemaProperty?.abstract?.['Dataset'] ||
@@ -85,3 +88,29 @@ export const FILTERS_CONFIG: FiltersConfigProps = {
     description: getSchemaDescription('measurementTechnique'),
   },
 };
+
+// {
+//   name: 'Host Species',
+//   property: 'species.displayName',
+//   description: getSchemaDescription('species'),
+// },
+// {
+//   name: 'Funding',
+//   property: 'funding.funder.name',
+//   description: getSchemaDescription('funding'),
+// },
+// {
+//   name: 'Conditions of Access',
+//   property: 'conditionsOfAccess',
+//   description: getSchemaDescription('conditionsOfAccess'),
+// },
+// {
+//   name: 'Variable Measured',
+//   property: 'variableMeasured',
+//   description: getSchemaDescription('variableMeasured'),
+// },
+// {
+//   name: 'Measurement Technique',
+//   property: 'measurementTechnique',
+//   description: getSchemaDescription('measurementTechnique'),
+// },
