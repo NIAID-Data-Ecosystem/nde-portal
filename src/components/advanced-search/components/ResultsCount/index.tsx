@@ -22,25 +22,24 @@ export const ResultsCount: React.FC<ResultsCountProps> = ({
     FetchSearchResultsResponse | undefined,
     Error
   >(
-    [
-      'search-results',
-      {
-        queryString,
-      },
-    ],
-    () => {
-      if (typeof queryString !== 'string' && !queryString) {
-        return;
-      }
-
-      return fetchSearchResults({
-        q: queryString,
-        size: 0,
-      });
-    },
-
     // Don't refresh everytime window is touched.
     {
+      queryKey: [
+        'search-results',
+        {
+          queryString,
+        },
+      ],
+      queryFn: () => {
+        if (typeof queryString !== 'string' && !queryString) {
+          return;
+        }
+
+        return fetchSearchResults({
+          q: queryString,
+          size: 0,
+        });
+      },
       refetchOnWindowFocus: false,
       enabled: !!queryString,
       retry: 1,
