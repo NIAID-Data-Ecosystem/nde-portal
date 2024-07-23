@@ -17,7 +17,7 @@ import {
 import { theme } from 'src/theme';
 import { MouseEventHandler, useEffect, useState } from 'react';
 import { FaCheck, FaRegPenToSquare, FaXmark } from 'react-icons/fa6';
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 import { getQueryStatusError } from 'src/components/error/utils';
 import { fetchSearchResults } from 'src/utils/api';
 import { FetchSearchResultsResponse } from 'src/utils/api/types';

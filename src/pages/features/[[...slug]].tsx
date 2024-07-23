@@ -1,5 +1,5 @@
 import React from 'react';
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 import { Flex, Skeleton, Text } from '@chakra-ui/react';
 import type { GetStaticProps, NextPage } from 'next';
 import { PageContainer, PageContent } from 'src/components/page-container';

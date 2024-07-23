@@ -1,4 +1,4 @@
-import { useQuery, UseQueryOptions } from 'react-query';
+import { useQuery, UseQueryOptions } from '@tanstack/react-query';
 import { fetchSearchResults, Params } from 'src/utils/api';
 import { FetchSearchResultsResponse } from 'src/utils/api/types';
 

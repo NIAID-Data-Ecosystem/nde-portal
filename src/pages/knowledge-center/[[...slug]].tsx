@@ -17,7 +17,7 @@ import { PageHeader } from 'src/components/page-header';
 import DOCUMENTATION_COPY from 'configs/docs.json';
 import { Error } from 'src/components/error';
 import axios from 'axios';
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 import NextLink from 'next/link';
 import { useRouter } from 'next/router';
 import {

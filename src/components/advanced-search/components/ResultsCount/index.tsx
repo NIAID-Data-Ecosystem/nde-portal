@@ -1,5 +1,5 @@
 import { Flex, Heading, Spinner } from '@chakra-ui/react';
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 import { getQueryStatusError } from 'src/components/error/utils';
 import { fetchSearchResults } from 'src/utils/api';
 import { FetchSearchResultsResponse } from 'src/utils/api/types';

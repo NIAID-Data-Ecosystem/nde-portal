@@ -16,7 +16,7 @@ import {
 import type { NextPage } from 'next';
 import { useMDXComponents } from 'mdx-components';
 import LocalNavigation from 'src/components/resource-sections/components/navigation';
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
@@ -38,27 +38,19 @@ interface IntegrationProps {
 }
 
 const IntegrationMain: NextPage<IntegrationProps> = props => {
-  const [content, setContent] = useState(props?.data?.page || null);
+  return <></>;
   const [error, setError] = useState(props?.error || null);
-  const { isLoading, isFetching } = useQuery<
-    {
-      page: ContentProps;
-    },
-    any,
-    { page: ContentProps }
-  >(['integration-page'], () => fetchPageContent(), {
-    onSuccess(data) {
-      if (!data || !data.page) {
-        return null;
-      }
-      setContent(data.page);
-    },
-    onError(err) {
-      setError(err);
-    },
-    refetchOnWindowFocus: false,
-    refetchOnMount: true,
+  const {
+    data: content,
+    isLoading,
+    isFetching,
+  } = useQuery({
+    queryKey: ['integration-page'],
+    queryFn: () => fetchPageContent(),
+    initialData: props?.data?.page || null,
   });
+  console.log('content', content);
+  return <>hi</>;
   // Retrieve section information (title, slug) from content for the table of contents
   const sections =
     content &&

@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 import React from 'react';
 import { NewsOrEventsObject, fetchEvents } from 'src/pages/news';
 import { formatDate } from 'src/utils/api/helpers';

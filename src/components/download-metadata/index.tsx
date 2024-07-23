@@ -14,7 +14,7 @@ import {
 } from '@chakra-ui/react';
 import React, { useCallback, useEffect, useState } from 'react';
 import { FaDownload, FaCircleExclamation } from 'react-icons/fa6';
-import { useQuery, useQueryClient } from 'react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Params, fetchAllSearchResults } from 'src/utils/api';
 import { DownloadArgs, downloadAsCsv, downloadAsJson } from './helpers';
 import { Disclaimer } from './components/Disclaimer';

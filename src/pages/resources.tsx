@@ -3,7 +3,7 @@ import type { NextPage } from 'next';
 import NextLink from 'next/link';
 import { PageContainer, PageContent } from 'src/components/page-container';
 import { useRouter } from 'next/router';
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 import { fetchSearchResults, getResourceById } from 'src/utils/api';
 import { FormattedResource } from 'src/utils/api/types';
 import Empty from 'src/components/empty';

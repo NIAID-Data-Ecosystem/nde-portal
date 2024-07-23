@@ -26,7 +26,7 @@ import {
   useDropdownContext,
 } from 'src/components/input-with-dropdown';
 import axios from 'axios';
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 import { debounce } from 'lodash';
 import { FaMagnifyingGlass } from 'react-icons/fa6';
 import { remark } from 'remark';

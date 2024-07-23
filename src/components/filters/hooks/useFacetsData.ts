@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 import { fetchSearchResults, Params } from 'src/utils/api';
 import { formatDate, formatISOString } from 'src/utils/api/helpers';
 import { Facet, FacetTerm, FormattedResource } from 'src/utils/api/types';

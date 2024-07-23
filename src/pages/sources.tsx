@@ -1,6 +1,6 @@
 import type { NextPage } from 'next';
 import React from 'react';
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/router';
 import { Box, Button, Flex, Text, UnorderedList } from '@chakra-ui/react';
 import { PageContainer, PageContent } from 'src/components/page-container';
