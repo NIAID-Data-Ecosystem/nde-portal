@@ -43,11 +43,11 @@ const IntegrationMain: NextPage<IntegrationProps> = props => {
     isLoading,
     isFetching,
     error,
-  } = useQuery({
+  } = useQuery<{ page?: ContentProps }, Error, ContentProps | undefined>({
     queryKey: ['integration-page'],
     queryFn: () => fetchPageContent(),
-    placeholderData: { page: props?.data?.page || null },
-    select: data => data.page,
+    placeholderData: { page: props?.data?.page || undefined },
+    select: data => data?.page,
   });
 
   // Retrieve section information (title, slug) from content for the table of contents
