@@ -46,7 +46,7 @@ const IntegrationMain: NextPage<IntegrationProps> = props => {
   } = useQuery({
     queryKey: ['integration-page'],
     queryFn: () => fetchPageContent(),
-    initialData: { page: props?.data?.page || null },
+    placeholderData: { page: props?.data?.page || null },
     select: data => data.page,
   });
 

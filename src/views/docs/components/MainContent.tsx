@@ -111,13 +111,13 @@ const MainContent = ({ slug, data: initialData }: MainContentProps) => {
     isLoading,
     error,
   } = useQuery<
-    DocumentationProps[],
+    DocumentationProps[] | null,
     Error,
     { data: DocumentationProps; tocSections: ContentHeading[] }
   >({
     queryKey: ['doc', { slug }],
     queryFn: () => fetchDocumentation(slug),
-    initialData: [initialData],
+    placeholderData: [initialData],
     select: data => {
       if (!data || !data[0]) {
         return {
@@ -147,9 +147,8 @@ const MainContent = ({ slug, data: initialData }: MainContentProps) => {
 
   // Date formatting for last content update date.
   const [updatedAt, setUpdatedAt] = useState('');
-
-  const { data, tocSections } = queryData;
-
+  const tocSections = queryData?.tocSections || [];
+  const data = queryData?.data;
   useEffect(() => {
     if (data && data.attributes && data.attributes.updatedAt) {
       const date = new Date(data.attributes.updatedAt).toLocaleString([], {
