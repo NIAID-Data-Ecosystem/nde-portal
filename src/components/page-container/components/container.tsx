@@ -86,7 +86,12 @@ export const PageContainer: React.FC<PageContainerProps> = ({
           content='omics, data, infectious disease, epidemiology, clinical trial, immunology, bioinformatics, surveillance, search, repository'
         />
         {metaCanonical && <link rel='canonical' href={metaCanonical} />}
-
+        {metaCanonical ? (
+          <meta name='robots' content='index, follow'></meta>
+        ) : (
+          // Noindex, nofollow for pages without canonical URL i.e. a resource page with an undefined id.
+          <meta name='robots' content='noindex, nofollow'></meta>
+        )}
         {/* og meta */}
         <meta
           property='og:url'
@@ -103,7 +108,6 @@ export const PageContainer: React.FC<PageContainerProps> = ({
           property='og:image'
           content={`${process.env.NEXT_PUBLIC_BASE_URL}/assets/preview.png`}
         />
-
         {/* twitter meta */}
         <meta property='twitter:title' content='NIAID Data Discovery Portal' />
         <meta property='twitter:description' content={metaDescription} />
