@@ -1,6 +1,6 @@
 import type { AppProps } from 'next/app';
 import Head from 'next/head';
-import { QueryClient, QueryClientProvider } from 'react-query';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { theme } from 'src/theme';
 import { ChakraProvider } from '@chakra-ui/provider';
 import { GoogleTagManager } from '@next/third-parties/google';

@@ -1,7 +1,7 @@
 import { Box, Button, Flex, FlexProps, Icon, Stack } from '@chakra-ui/react';
 import Head from 'next/head';
 import axios from 'axios';
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 import { Footer } from 'src/components/footer';
 import { Navigation } from 'src/components/navigation-bar';
 import { SearchBarWithDropdown } from 'src/components/search-bar';
@@ -41,9 +41,9 @@ export const PageContainer: React.FC<PageContainerProps> = ({
   // Fetch Notices from STRAPI API.
   const isProd =
     process.env.NEXT_PUBLIC_BASE_URL === 'https://data.niaid.nih.gov';
-  const { data: notices } = useQuery<NoticeProps[] | undefined, any>(
-    ['notices'],
-    async () => {
+  const { data: notices } = useQuery<NoticeProps[]>({
+    queryKey: ['notices'],
+    queryFn: async () => {
       try {
         const notices = await axios
           .get(
@@ -67,11 +67,9 @@ export const PageContainer: React.FC<PageContainerProps> = ({
         throw err.response;
       }
     },
-    {
-      refetchOnWindowFocus: false,
-      refetchOnMount: false,
-    },
-  );
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+  });
 
   return (
     <>

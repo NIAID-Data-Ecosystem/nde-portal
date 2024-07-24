@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { useQuery } from 'react-query';
+import { useEffect, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { fetchSearchResults, Params } from 'src/utils/api';
 import { formatDate, formatISOString } from 'src/utils/api/helpers';
 import { Facet, FacetTerm, FormattedResource } from 'src/utils/api/types';
@@ -154,8 +154,8 @@ export const useFacetsData = ({
     { [key: string]: { terms: FacetTerm[] } } | undefined,
     Error,
     FiltersResponse
-  >(
-    [
+  >({
+    queryKey: [
       'search-results',
       {
         q: queryParams.q,
@@ -163,7 +163,7 @@ export const useFacetsData = ({
         facets,
       },
     ],
-    () => {
+    queryFn: () => {
       return fetchFilters(
         {
           ...queryParams,
@@ -176,34 +176,39 @@ export const useFacetsData = ({
         facets,
       );
     },
-    {
-      // enabled: !!hasMounted,
-      refetchOnWindowFocus: false,
-      select: data => {
-        const obj: FiltersResponse = {};
-        if (data) {
-          Object.keys(data).map(facet => {
-            // order facet terms according to number of resources.
-            obj[facet] = data[facet].terms.sort((a, b) => b.count - a.count);
+    // enabled: !!hasMounted,
+    refetchOnWindowFocus: false,
+    select: data => {
+      const obj: FiltersResponse = {};
+      if (data) {
+        Object.keys(data).map(facet => {
+          // order facet terms according to number of resources.
+          obj[facet] = data[facet].terms.sort((a, b) => b.count - a.count);
 
-            return;
-          });
-        }
-        return obj;
-      },
-      onSuccess(data: FiltersResponse) {
-        setFacetTerms(prev => ({ ...prev, ...data }));
-      },
+          return;
+        });
+      }
+      return obj;
     },
-  );
+  });
+
+  useEffect(() => {
+    if (initialData) {
+      setFacetTerms(prev => ({ ...prev, ...initialData }));
+    }
+  }, [initialData]);
 
   // 2. Update counts on facet when filters are applied to searchquery from 1. Runs on load/new querystring and when filters are changed.
-  const { isLoading: isUpdating, error: updatedFiltersError } = useQuery<
+  const {
+    isLoading: isUpdating,
+    data: updatedData,
+    error: updatedFiltersError,
+  } = useQuery<
     { [key: string]: { terms: FacetTerm[] } } | undefined,
     Error,
     Facet
-  >(
-    [
+  >({
+    queryKey: [
       'search-results',
       {
         q: queryParams.q,
@@ -213,7 +218,7 @@ export const useFacetsData = ({
         initialData,
       },
     ],
-    () => {
+    queryFn: () => {
       return fetchFilters(
         {
           ...queryParams,
@@ -226,46 +231,71 @@ export const useFacetsData = ({
         facets,
       );
     },
-    {
-      refetchOnWindowFocus: false,
-      // Only run if there is data to update.
-      enabled: !!(initialData && Object.values(initialData).length > 0),
+    refetchOnWindowFocus: false,
+    // Only run if there is data to update.
+    enabled: !!(initialData && Object.values(initialData).length > 0),
 
-      onSuccess(data) {
-        /*
-        Note that the enabled parameter prevent the query from running but if cached data is available, onSuccess will use that data so we need to check again and return if the same requirements for enabled are false.
-        See here: https://tanstack.com/query/v4/docs/guides/disabling-queries
-        */
-        if (!!(initialData && Object.values(initialData).length > 0)) {
-          // Check if updated facets have changed count..
-          setFacetTerms(prev => {
-            const facetTermsData = { ...prev };
-            Object.keys(facetTermsData).map(facet => {
-              const updatedTerms = facetTermsData[facet].map(facetTerm => {
-                const updateFacetTerm = { ...facetTerm };
-                // Check if element is in updated data.
-                const updatedItem = data[facet].terms.find(
-                  el => el.term === facetTerm.term,
-                );
-                // if item count has changed, update state with new count.
-                if (updatedItem) {
-                  updateFacetTerm.count = updatedItem.count;
-                } else {
-                  // if term is not in updated list then we set the count to zero.
-                  updateFacetTerm.count = 0;
-                }
-                return updateFacetTerm;
-              });
-              facetTermsData[facet] = updatedTerms.sort(
-                (a, b) => b.count - a.count,
-              );
-            });
-            return facetTermsData;
+    // onSuccess(data) {
+    //   /*
+    //     Note that the enabled parameter prevent the query from running but if cached data is available, onSuccess will use that data so we need to check again and return if the same requirements for enabled are false.
+    //     See here: https://tanstack.com/query/v4/docs/guides/disabling-queries
+    //     */
+    //   if (!!(initialData && Object.values(initialData).length > 0)) {
+    //     // Check if updated facets have changed count..
+    //     setFacetTerms(prev => {
+    //       const facetTermsData = { ...prev };
+    //       Object.keys(facetTermsData).map(facet => {
+    //         const updatedTerms = facetTermsData[facet].map(facetTerm => {
+    //           const updateFacetTerm = { ...facetTerm };
+    //           // Check if element is in updated data.
+    //           const updatedItem = data[facet].terms.find(
+    //             el => el.term === facetTerm.term,
+    //           );
+    //           // if item count has changed, update state with new count.
+    //           if (updatedItem) {
+    //             updateFacetTerm.count = updatedItem.count;
+    //           } else {
+    //             // if term is not in updated list then we set the count to zero.
+    //             updateFacetTerm.count = 0;
+    //           }
+    //           return updateFacetTerm;
+    //         });
+    //         facetTermsData[facet] = updatedTerms.sort(
+    //           (a, b) => b.count - a.count,
+    //         );
+    //       });
+    //       return facetTermsData;
+    //     });
+    //   }
+    // },
+  });
+
+  useEffect(() => {
+    if (updatedData) {
+      setFacetTerms(prev => {
+        const facetTermsData = { ...prev };
+        Object.keys(facetTermsData).map(facet => {
+          const updatedTerms = facetTermsData[facet].map(facetTerm => {
+            const updateFacetTerm = { ...facetTerm };
+            const updatedItem = updatedData[facet].terms.find(
+              el => el.term === facetTerm.term,
+            );
+            if (updatedItem) {
+              updateFacetTerm.count = updatedItem.count;
+            } else {
+              updateFacetTerm.count = 0;
+            }
+            return updateFacetTerm;
           });
-        }
-      },
-    },
-  );
+          facetTermsData[facet] = updatedTerms.sort(
+            (a, b) => b.count - a.count,
+          );
+        });
+        return facetTermsData;
+      });
+    }
+  }, [updatedData]);
+
   const error = allFiltersError || updatedFiltersError;
 
   return [

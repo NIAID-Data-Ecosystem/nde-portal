@@ -26,7 +26,7 @@ import { Section, SectionList } from 'src/views/news/components/Section';
 import NDESOCIALS from 'configs/socials.json';
 import { FaLinkedinIn, FaSquareFacebook, FaTwitter } from 'react-icons/fa6';
 import { fetchNews } from 'src/views/home/components/NewsCarousel';
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 import SectionCard from 'src/views/news/components/SectionCard';
 import { fetchAllFeaturedPages } from 'src/views/features/helpers';
 
@@ -109,9 +109,9 @@ const News: NextPage<NewsProps> = props => {
       events: NewsOrEventsObject[];
       features: NewsOrEventsObject[];
     }
-  >(
-    ['news', 'events', 'features'],
-    async () => {
+  >({
+    queryKey: ['news', 'events', 'features'],
+    queryFn: async () => {
       try {
         // Parallel fetching of news, events, and features using Promise.all
         const [newsResponse, featuresResponse, eventsResponse] =
@@ -163,15 +163,13 @@ const News: NextPage<NewsProps> = props => {
         }`;
       }
     },
-    {
-      initialData: {
-        news: data?.news?.data || [],
-        events: data?.events?.data || [],
-        features: [],
-      },
-      refetchOnWindowFocus: false,
+    initialData: {
+      news: data?.news?.data || [],
+      events: data?.events?.data || [],
+      features: [],
     },
-  );
+    refetchOnWindowFocus: false,
+  });
 
   const [sections, setSections] = useState([
     {

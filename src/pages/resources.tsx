@@ -3,7 +3,7 @@ import type { NextPage } from 'next';
 import NextLink from 'next/link';
 import { PageContainer, PageContent } from 'src/components/page-container';
 import { useRouter } from 'next/router';
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 import { fetchSearchResults, getResourceById } from 'src/utils/api';
 import { FormattedResource } from 'src/utils/api/types';
 import Empty from 'src/components/empty';
@@ -54,9 +54,9 @@ const ResourcePage: NextPage = () => {
     isLoading: loadingData,
     error,
     data,
-  } = useQuery<ResourceQueryData | undefined, Error, ResourceData | undefined>(
-    ['search-result', { id }],
-    async () => {
+  } = useQuery<ResourceQueryData | undefined, Error, ResourceData | undefined>({
+    queryKey: ['search-result', { id }],
+    queryFn: async () => {
       const data = await getResourceById(id, { show_meta: true });
       // Get other datasets that have the same study identifier and data catalog name.
       if (data?.isPartOf) {
@@ -84,20 +84,16 @@ const ResourcePage: NextPage = () => {
 
       return data;
     },
-    {
-      refetchOnWindowFocus: false,
-      // Disable query when id is undefined
-      enabled: Boolean(id && id.toString() !== 'undefined'),
-      select: data => {
-        if (data) {
-          return {
-            ...data,
-            rawData: omit(data.rawData, ['_id', '_ignored', '_score', '_meta']),
-          };
-        }
-      },
+    refetchOnWindowFocus: false,
+    select: data => {
+      if (data) {
+        return {
+          ...data,
+          rawData: omit(data.rawData, ['_id', '_ignored', '_score', '_meta']),
+        };
+      }
     },
-  );
+  });
 
   const isLoading = loadingData || !router.isReady;
 
