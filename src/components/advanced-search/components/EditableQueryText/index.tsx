@@ -17,7 +17,7 @@ import {
 import { theme } from 'src/theme';
 import { MouseEventHandler, useEffect, useState } from 'react';
 import { FaCheck, FaRegPenToSquare, FaXmark } from 'react-icons/fa6';
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 import { getQueryStatusError } from 'src/components/error/utils';
 import { fetchSearchResults } from 'src/utils/api';
 import { FetchSearchResultsResponse } from 'src/utils/api/types';
@@ -68,55 +68,55 @@ export const EditableQueryText = ({
     FetchSearchResultsResponse | undefined,
     Error
   >(
-    [
-      'search-results',
-      {
-        queryString: debouncedQueryString,
-      },
-    ],
-    ({ signal }) => {
-      if (typeof debouncedQueryString !== 'string' && !debouncedQueryString) {
-        return;
-      }
-      const formattedQueryString = formatQueryString(debouncedQueryString);
-      const validation = validateQueryString(formattedQueryString);
-      if (!validation.isValid) {
-        return;
-      }
-
-      return fetchSearchResults(
-        {
-          q: debouncedQueryString,
-          size: 0,
-        },
-        signal,
-      );
-    },
     // Don't refresh everytime window is touched.
     {
+      queryKey: [
+        'search-results',
+        {
+          queryString: debouncedQueryString,
+        },
+      ],
+      queryFn: ({ signal }) => {
+        if (typeof debouncedQueryString !== 'string' && !debouncedQueryString) {
+          return;
+        }
+        const formattedQueryString = formatQueryString(debouncedQueryString);
+        const validation = validateQueryString(formattedQueryString);
+        if (!validation.isValid) {
+          return;
+        }
+
+        return fetchSearchResults(
+          {
+            q: debouncedQueryString,
+            size: 0,
+          },
+          signal,
+        );
+      },
       refetchOnWindowFocus: false,
       enabled: !!debouncedQueryString,
       retry: false,
-      onSuccess: res => {
-        // Only show this kind of error when form is submitted.
-        if (isSubmitting && res?.total === 0) {
-          setIsSubmitting(false);
-          setErrors(prev =>
-            removeDuplicateErrors([
-              ...prev,
-              {
-                id: 'no-results',
-                type: 'warning',
-                title: 'Search generates no results.',
-                message:
-                  'Your search query has no errors but it generates 0 results. Try making it more general.',
-              },
-            ]),
-          );
-        }
-      },
     },
   );
+
+  useEffect(() => {
+    // If there are no errors but no results. Show warning.
+    if (data?.total === 0) {
+      setErrors(prev =>
+        removeDuplicateErrors([
+          ...prev,
+          {
+            id: 'no-results',
+            type: 'warning',
+            title: 'Search generates no results.',
+            message:
+              'Your search query has no errors but it generates 0 results. Try making it more general.',
+          },
+        ]),
+      );
+    }
+  }, [data, setErrors]);
 
   useEffect(() => {
     setTimeout(() => {
@@ -214,6 +214,8 @@ export const EditableQueryText = ({
       </Flex>
     );
   }
+
+  console.log('errors:', errors);
 
   return (
     <>

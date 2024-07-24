@@ -16,7 +16,7 @@ import {
 import type { NextPage } from 'next';
 import { useMDXComponents } from 'mdx-components';
 import LocalNavigation from 'src/components/resource-sections/components/navigation';
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
@@ -38,31 +38,22 @@ interface IntegrationProps {
 }
 
 const IntegrationMain: NextPage<IntegrationProps> = props => {
-  const [content, setContent] = useState(props?.data?.page || null);
-  const [error, setError] = useState(props?.error || null);
-  const { isLoading, isFetching } = useQuery<
-    {
-      page: ContentProps;
-    },
-    any,
-    { page: ContentProps }
-  >(['integration-page'], () => fetchPageContent(), {
-    onSuccess(data) {
-      if (!data || !data.page) {
-        return null;
-      }
-      setContent(data.page);
-    },
-    onError(err) {
-      setError(err);
-    },
-    refetchOnWindowFocus: false,
-    refetchOnMount: true,
+  const {
+    data: content,
+    isLoading,
+    isFetching,
+    error,
+  } = useQuery<{ page?: ContentProps }, Error, ContentProps | undefined>({
+    queryKey: ['integration-page'],
+    queryFn: () => fetchPageContent(),
+    placeholderData: { page: props?.data?.page || undefined },
+    select: data => data?.page,
   });
+
   // Retrieve section information (title, slug) from content for the table of contents
   const sections =
     content &&
-    content.attributes &&
+    content?.attributes &&
     Object.values(content.attributes).reduce((r, block) => {
       if (block && typeof block === 'object') {
         if (Array.isArray(block)) {
@@ -84,7 +75,7 @@ const IntegrationMain: NextPage<IntegrationProps> = props => {
   const MDXComponents = useMDXComponents({});
   const [updatedAt, setUpdatedAt] = useState('');
   useEffect(() => {
-    if (content && content.attributes && content.attributes.updatedAt) {
+    if (content && content?.attributes && content.attributes.updatedAt) {
       const date = new Date(content.attributes.updatedAt).toLocaleString([], {
         day: 'numeric',
         month: 'long',

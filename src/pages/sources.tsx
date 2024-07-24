@@ -1,6 +1,6 @@
 import type { NextPage } from 'next';
 import React from 'react';
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/router';
 import { Box, Button, Flex, Text, UnorderedList } from '@chakra-ui/react';
 import { PageContainer, PageContent } from 'src/components/page-container';
@@ -37,9 +37,9 @@ const Sources: NextPage<SourcesProps> = ({ data, error }) => {
     data: metadata,
     isLoading,
     error: metadataError,
-  } = useQuery(['metadata'], fetchMetadata, {
-    refetchOnMount: true,
-
+  } = useQuery({
+    queryKey: ['metadata'],
+    queryFn: fetchMetadata,
     select: res => {
       const sources = res.src;
 
@@ -58,17 +58,16 @@ const Sources: NextPage<SourcesProps> = ({ data, error }) => {
               6,
             )}-${source.version.substring(6, 8)}T00:00:00`
           : '';
-
         return {
           ...githubInfo,
           id,
-          name: (source.sourceInfo && source.sourceInfo.name) || key,
+          name: (source?.sourceInfo && source?.sourceInfo?.name) || key,
           description:
-            (source.sourceInfo && source.sourceInfo.description) || '',
+            (source?.sourceInfo && source?.sourceInfo?.description) || '',
           dateModified,
           numberOfRecords: source?.stats?.[key] || 0,
-          schema: (source.sourceInfo && source.sourceInfo.schema) || null,
-          url: (source.sourceInfo && source.sourceInfo.url) || '',
+          schema: (source?.sourceInfo && source?.sourceInfo?.schema) || null,
+          url: (source?.sourceInfo && source?.sourceInfo?.url) || '',
           isNiaidFunded: getFundedByNIAID(source.sourceInfo?.name),
         };
       });
@@ -80,6 +79,7 @@ const Sources: NextPage<SourcesProps> = ({ data, error }) => {
         sources: sourceDetails,
       };
     },
+    refetchOnMount: true,
   });
 
   return (
