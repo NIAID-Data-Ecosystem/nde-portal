@@ -1,4 +1,4 @@
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 import { fetchMetadata } from './helpers';
 import { Metadata } from './types';
 import { Domain, FormattedResource } from 'src/utils/api/types';

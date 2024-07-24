@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 import React from 'react';
 import { NewsOrEventsObject, fetchEvents } from 'src/pages/news';
 import { formatDate } from 'src/utils/api/helpers';
@@ -44,9 +44,9 @@ export const NewsCarousel = ({
     },
     Error,
     NewsOrEventsObject[]
-  >(
-    ['news', 'events', 'features'],
-    async () => {
+  >({
+    queryKey: ['news', 'events', 'features'],
+    queryFn: async () => {
       try {
         // Parallel fetching of news, events, and features using Promise.all
         const [newsResponse, featuresResponse, eventsResponse] =
@@ -101,31 +101,29 @@ export const NewsCarousel = ({
         );
       }
     },
-    {
-      initialData: {
-        news: initialNews,
-        events: initialEvents,
-        features: initialFeatures,
-      },
-      select: data => {
-        if (!data) return [];
-        // Combine and sort data from most recent to least recent
-        const sortedResults = [
-          ...(data?.features || []),
-          ...(data?.news || []),
-          ...(data?.events || []),
-        ].sort((a, b) => {
-          // Use publishedAt if available, otherwise fallback to updatedAt
-          let dateA = a.attributes.publishedAt || a.attributes.updatedAt;
-          let dateB = b.attributes.publishedAt || b.attributes.updatedAt;
-
-          return Number(new Date(dateB)) - Number(new Date(dateA));
-        });
-
-        return sortedResults;
-      },
+    initialData: {
+      news: initialNews,
+      events: initialEvents,
+      features: initialFeatures,
     },
-  );
+    select: data => {
+      if (!data) return [];
+      // Combine and sort data from most recent to least recent
+      const sortedResults = [
+        ...(data?.features || []),
+        ...(data?.news || []),
+        ...(data?.events || []),
+      ].sort((a, b) => {
+        // Use publishedAt if available, otherwise fallback to updatedAt
+        let dateA = a.attributes.publishedAt || a.attributes.updatedAt;
+        let dateB = b.attributes.publishedAt || b.attributes.updatedAt;
+
+        return Number(new Date(dateB)) - Number(new Date(dateA));
+      });
+
+      return sortedResults;
+    },
+  });
 
   if (isError && !carouselCards) {
     return <></>;

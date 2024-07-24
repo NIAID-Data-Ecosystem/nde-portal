@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/router';
 import {
   Box,
@@ -26,7 +26,7 @@ import {
   useDropdownContext,
 } from 'src/components/input-with-dropdown';
 import axios from 'axios';
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 import { debounce } from 'lodash';
 import { FaMagnifyingGlass } from 'react-icons/fa6';
 import { remark } from 'remark';
@@ -151,48 +151,51 @@ const SearchBar = ({
   }, []);
 
   // Run query every time search trm changes.
-  const { isLoading, error, isFetching, data } = useQuery<
+  const { isLoading, data: queryResults } = useQuery<
     DocumentationProps[],
-    Error
-  >(
-    ['docs-search', { term: searchTerm }],
-    ({ signal }) => {
+    Error,
+    { id: number; name: string; slug: string; description: string }[]
+  >({
+    queryKey: ['docs-search', { term: searchTerm }],
+    queryFn: () => {
       return searchDocumentation(searchTerm);
     },
-
-    {
-      refetchOnWindowFocus: false,
-      onSuccess: data => {
-        const results = data.map(datum => {
-          const slug = Array.isArray(datum.attributes.slug)
-            ? datum.attributes.slug[0]
-            : datum.attributes.slug;
-          if (datum.attributes.description) {
-            const { heading, snippet } = searchInMDX(
-              datum.attributes.description,
-              searchTerm,
-            );
-            return {
-              id: datum.id,
-              name: datum.attributes.name,
-              slug: heading ? slug + '#' + heading : slug,
-              description: snippet,
-              // heading: heading,
-            };
-          }
+    select: data => {
+      if (searchTerm.length === 0) {
+        return [];
+      }
+      const results = data.map(datum => {
+        const slug = Array.isArray(datum.attributes.slug)
+          ? datum.attributes.slug[0]
+          : datum.attributes.slug;
+        if (datum.attributes.description) {
+          const { heading, snippet } = searchInMDX(
+            datum.attributes.description,
+            searchTerm,
+          );
           return {
             id: datum.id,
             name: datum.attributes.name,
-            slug,
-            description: '',
+            slug: heading ? slug + '#' + heading : slug,
+            description: snippet,
           };
-        });
-
-        setResults(results);
-      },
-      enabled: searchTerm.length > 0,
+        }
+        return {
+          id: datum.id,
+          name: datum.attributes.name,
+          slug,
+          description: '',
+        };
+      });
+      return results;
     },
-  );
+    refetchOnWindowFocus: false,
+  });
+
+  // Update results when query results change.
+  useEffect(() => {
+    setResults(queryResults || []);
+  }, [queryResults, setResults]);
 
   const handleClose = () => {
     onClose();
@@ -206,6 +209,7 @@ const SearchBar = ({
       handleClose();
     }
   };
+
   return (
     <>
       <Flex w='100%' alignItems='center'>
@@ -247,7 +251,7 @@ const SearchBar = ({
               </Text>
             </Flex>
           )}
-          {searchTerm && (!results || !results.length) && (
+          {searchTerm && (!results || !results.length) && !isLoading && (
             <Text fontWeight='medium' color='gray.600' textAlign='center'>
               No search results for &quot;{searchTerm}&quot;.
             </Text>

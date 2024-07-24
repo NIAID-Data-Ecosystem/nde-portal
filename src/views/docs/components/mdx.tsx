@@ -197,7 +197,7 @@ export default {
       );
     if (containsImgEl) {
       return (
-        <Text as='p' mt={2} size='sm' lineHeight='tall' color='text.body'>
+        <Text as='span' mt={2} size='sm' lineHeight='tall' color='text.body'>
           {props.children}
         </Text>
       );

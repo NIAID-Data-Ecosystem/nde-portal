@@ -166,6 +166,7 @@ const Provenance: React.FC<Provenance> = ({
                       width='auto'
                       height='40px'
                       maxH='40px'
+                      fallbackSrc='/assets/resources/empty-source.png'
                       src={
                         getRepositoryImage(includedInDataCatalog.name) ||
                         undefined
@@ -178,6 +179,7 @@ const Provenance: React.FC<Provenance> = ({
                     width='auto'
                     height='40px'
                     maxH='40px'
+                    fallbackSrc='/assets/resources/empty-source.png'
                     src={
                       getRepositoryImage(includedInDataCatalog.name) ||
                       undefined

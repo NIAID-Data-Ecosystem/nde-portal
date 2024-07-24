@@ -1,6 +1,6 @@
+import { useEffect } from 'react';
 import { Flex, Heading, Spinner } from '@chakra-ui/react';
-import { useQuery } from 'react-query';
-import { getQueryStatusError } from 'src/components/error/utils';
+import { useQuery } from '@tanstack/react-query';
 import { fetchSearchResults } from 'src/utils/api';
 import { FetchSearchResultsResponse } from 'src/utils/api/types';
 import { formatNumber } from 'src/utils/helpers';
@@ -22,50 +22,32 @@ export const ResultsCount: React.FC<ResultsCountProps> = ({
     FetchSearchResultsResponse | undefined,
     Error
   >(
-    [
-      'search-results',
-      {
-        queryString,
-      },
-    ],
-    () => {
-      if (typeof queryString !== 'string' && !queryString) {
-        return;
-      }
-
-      return fetchSearchResults({
-        q: queryString,
-        size: 0,
-      });
-    },
-
     // Don't refresh everytime window is touched.
     {
-      refetchOnWindowFocus: false,
+      queryKey: [
+        'search-results',
+        {
+          queryString,
+        },
+      ],
+      queryFn: () => {
+        if (typeof queryString !== 'string' && !queryString) {
+          return;
+        }
+
+        return fetchSearchResults({
+          q: queryString,
+          size: 0,
+        });
+      },
       enabled: !!queryString,
       retry: 1,
-      onError: error => {
-        const errorMessage = getQueryStatusError(
-          error as unknown as { status: string },
-        );
-        handleErrors(errorMessage ? [errorMessage] : []);
-      },
-      onSuccess: res => {
-        setCount(res?.total || 0);
-        if (res?.total === 0) {
-          handleErrors([
-            {
-              id: 'no-results',
-              type: 'warning',
-              title: 'Search generates no results.',
-              message:
-                'Your search query has no errors but it generates 0 results. Try making it more general.',
-            },
-          ]);
-        }
-      },
     },
   );
+
+  useEffect(() => {
+    setCount(data?.total || 0);
+  }, [data, setCount]);
 
   if ((!isLoading && !data) || error) {
     return <></>;
