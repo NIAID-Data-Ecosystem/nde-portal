@@ -171,11 +171,7 @@ export const PageContainer: React.FC<PageContainerProps> = ({
                 href={{ pathname: '/advanced-search' }}
                 passHref
                 prefetch={false}
-                style={{
-                  width: '100%',
-                  display: 'flex',
-                  justifyContent: 'flex-end',
-                }}
+                style={{ alignSelf: 'flex-end' }}
               >
                 <Button
                   as='span'
