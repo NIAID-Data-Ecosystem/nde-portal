@@ -1,4 +1,4 @@
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 import { fetchSearchResults } from 'src/utils/api';
 import {
   Domain,
@@ -37,37 +37,35 @@ export function useResourceCatalogs({
     FetchSearchResultsResponse | undefined,
     Error,
     ResourceCatalog[]
-  >(
-    [
+  >({
+    ...options,
+    queryKey: [
       'resource-catalogs',
       {
         queryString: '@type:"ResourceCatalog"',
         fields,
       },
     ],
-    () => {
+    queryFn: () => {
       return fetchSearchResults({
         q: '@type:"ResourceCatalog"',
         fields,
         size: 100,
       });
     },
-    {
-      ...options,
-      refetchOnWindowFocus: false,
-      refetchOnMount: false,
-      select: data => {
-        const catalogs = data?.results || [];
-        return catalogs.map(catalog => ({
-          _id: catalog._id,
-          abstract: catalog.abstract,
-          conditionsOfAccess: catalog.conditionsOfAccess,
-          type: catalog['@type'],
-          name: catalog.name,
-          domain: catalog.genre,
-          url: catalog.url,
-        }));
-      },
+    select: data => {
+      const catalogs = data?.results || [];
+      return catalogs.map(catalog => ({
+        _id: catalog._id,
+        abstract: catalog.abstract,
+        conditionsOfAccess: catalog.conditionsOfAccess,
+        type: catalog['@type'],
+        name: catalog.name,
+        domain: catalog.genre,
+        url: catalog.url,
+      }));
     },
-  );
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+  });
 }

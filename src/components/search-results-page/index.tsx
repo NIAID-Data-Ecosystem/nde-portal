@@ -161,20 +161,17 @@ const SearchResultsPage = ({
     ],
   );
 
-  const [total, setTotal] = useState<number>(initialTotal);
-
   const { isLoading, isRefetching, error, data } = useQuerySearchResults(
     params,
     {
+      queryKey: ['search-results', params],
       // Don't refresh everytime window is touched.
       refetchOnWindowFocus: false,
       enabled: router.isReady,
-      onSuccess: data => {
-        setTotal(data?.total || 0);
-      },
       initialData: { results, total: initialTotal, facets: {} },
     },
   );
+  const total = data?.total || 0;
 
   // Update the route to reflect changes on page without re-render.
   const handleRouteUpdate = useCallback(

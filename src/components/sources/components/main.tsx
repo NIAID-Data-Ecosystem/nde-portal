@@ -161,10 +161,12 @@ const Main: React.FC<Main> = ({ data, isLoading, metadata }) => {
                   )}
                 </HStack>
                 <Box mt={2}>
-                  <Text fontWeight='semibold' fontSize='sm'>
-                    {sourceObj.numberOfRecords.toLocaleString()} Records
-                    Available
-                  </Text>
+                  {sourceObj.numberOfRecords > 0 && (
+                    <Text fontWeight='semibold' fontSize='sm'>
+                      {sourceObj.numberOfRecords.toLocaleString()} Records
+                      Available
+                    </Text>
+                  )}
 
                   <DisplayHTMLContent content={sourceObj.description} />
 
