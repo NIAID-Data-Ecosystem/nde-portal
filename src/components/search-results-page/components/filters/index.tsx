@@ -12,14 +12,14 @@ import { SelectedFilterType } from 'src/components/filters/types';
 import { useRouter } from 'next/router';
 import { FiltersDateSlider } from 'src/components/filters/components/filters-date-slider/';
 
-import { useQueries } from 'react-query';
+import { useQueries } from '@tanstack/react-query';
 import { FiltersConfigProps } from 'src/components/filters/types';
 import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
 import { SchemaDefinitions } from 'scripts/generate-schema-definitions/types';
 import { fetchSearchResults } from 'src/utils/api';
 import { encodeString } from 'src/utils/querystring-helpers';
 import { getSchemaDescription } from './helpers';
-import { r } from 'node_modules/msw/lib/glossary-de6278a9';
+import { formatResourceTypeForDisplay } from 'src/utils/formatting/formatResourceType';
 
 /*
 [COMPONENT INFO]:
@@ -37,21 +37,13 @@ interface FiltersProps {
   removeAllFilters?: () => void;
 }
 
-export const fetchFacetCounts = async params => {
-  return await fetchSearchResults(params).then(res => res);
-};
-
-export const fetchFacetMissingCounts = async params => {
-  return await fetchSearchResults(params);
-};
-
 export const FILTERS_CONFIG_ARR = [
   {
     name: 'Type',
     property: '@type',
     description:
       'Type is used to categorize the nature of the content of the resource',
-    queries: (params: any) => {
+    queries: (params: any, options: any) => {
       const commonParams = {
         ...params,
         q:
@@ -66,19 +58,70 @@ export const FILTERS_CONFIG_ARR = [
       };
       return [
         {
-          queryKey: ['search-results', params.q, params.extra_filter],
-          queryFn: () => fetchFacetCounts(commonParams),
+          queryKey: ['search-results', commonParams],
+          queryFn: async () => {
+            console.log('RAN');
+            return await fetchSearchResults(commonParams);
+          },
+          select: data => {
+            const { total, facets } = data;
+
+            const terms = facets['@type']['terms'].map(datum => ({
+              label: formatResourceTypeForDisplay(datum.term),
+              term: datum.term,
+              count: datum.count,
+              facet: '@type',
+            }));
+
+            return {
+              facet: '@type',
+              results: [
+                {
+                  label: 'Any Specified',
+                  term: '_exists_',
+                  count: total,
+                  facet: '@type',
+                },
+                ...terms,
+              ],
+            };
+          },
+          ...options,
         },
         {
-          queryKey: ['search-facets', '@type', '-_exists_'],
-          queryFn: () =>
-            fetchFacetMissingCounts({
+          queryKey: [
+            'search-results',
+            {
+              ...commonParams,
+              extra_filter: params?.extra_filter
+                ? `${params.extra_filter} AND -_exists_:@type`
+                : `-_exists_:@type`,
+              facet_size: 0,
+            },
+          ],
+          queryFn: async () =>
+            await fetchSearchResults({
               ...commonParams,
               extra_filter: params?.extra_filter
                 ? `${params.extra_filter} AND -_exists_:@type`
                 : `-_exists_:@type`,
               facet_size: 0,
             }),
+          select: data => {
+            const { total } = data;
+            return {
+              facet: '@type',
+              results: [
+                {
+                  label: 'Not Specified',
+                  term: '-_exists_',
+                  count: total,
+                  facet: '@type',
+                },
+              ],
+            };
+          },
+          ...options,
         },
       ];
     },
@@ -87,7 +130,7 @@ export const FILTERS_CONFIG_ARR = [
     name: 'Sources',
     property: 'includedInDataCatalog.name',
     description: getSchemaDescription('includedInDataCatalog'),
-    queries: (params: any) => {
+    queries: (params: any, options: any) => {
       const commonParams = {
         ...params,
         q:
@@ -102,135 +145,69 @@ export const FILTERS_CONFIG_ARR = [
       };
       return [
         {
-          queryKey: ['search-results', params.q, params.extra_filter],
-          queryFn: () => fetchFacetCounts(commonParams),
+          queryKey: ['search-results', commonParams],
+          queryFn: async () => await fetchSearchResults(commonParams),
+          select: data => {
+            const { total, facets } = data;
+
+            const terms = facets['includedInDataCatalog.name']['terms'].map(
+              datum => ({
+                label: datum.term,
+                term: datum.term,
+                count: datum.count,
+                facet: 'includedInDataCatalog.name',
+              }),
+            );
+
+            return {
+              facet: 'includedInDataCatalog.name',
+              results: [
+                {
+                  label: 'Any Specified',
+                  term: '_exists_',
+                  count: total,
+                  facet: 'includedInDataCatalog.name',
+                },
+                ...terms,
+              ],
+            };
+          },
+          ...options,
         },
         {
           queryKey: [
             'search-facets',
-            'includedInDataCatalog.name',
-            '-_exists_',
+            {
+              ...commonParams,
+              extra_filter: params?.extra_filter
+                ? `${params.extra_filter} AND -_exists_:includedInDataCatalog.name`
+                : `-_exists_:includedInDataCatalog.name`,
+              facet_size: 0,
+            },
           ],
-          queryFn: () =>
-            fetchFacetMissingCounts({
+          queryFn: async () =>
+            await fetchSearchResults({
               ...commonParams,
               extra_filter: params?.extra_filter
                 ? `${params.extra_filter} AND -_exists_:includedInDataCatalog.name`
                 : `-_exists_:includedInDataCatalog.name`,
               facet_size: 0,
             }),
-        },
-      ];
-    },
-  },
-  {
-    name: 'Health Condition',
-    property: 'healthCondition.name',
-    description: getSchemaDescription('healthCondition.name'),
-    queries: (params: any) => {
-      const commonParams = {
-        ...params,
-        q:
-          params?.advancedSearch === 'true' ? params.q : encodeString(params.q),
-        extra_filter: params?.extra_filter
-          ? `${params.extra_filter} AND _exists_:healthCondition.name`
-          : `_exists_:healthCondition.name`,
-        size: 0,
-        facet_size: 1000,
-        facets: 'healthCondition.name',
-        sort: undefined,
-      };
-      return [
-        {
-          queryKey: ['search-results', params.q, params.extra_filter],
-          queryFn: () => fetchFacetCounts(commonParams),
-        },
-        {
-          queryKey: ['search-facets', 'healthCondition.name', '-_exists_'],
-          queryFn: () =>
-            fetchFacetMissingCounts({
-              ...commonParams,
-              extra_filter: params?.extra_filter
-                ? `${params.extra_filter} AND -_exists_:healthCondition.name`
-                : `-_exists_:healthCondition.name`,
-              facet_size: 0,
-            }),
-        },
-      ];
-    },
-  },
-  {
-    name: 'Pathogen Species',
-    property: 'infectiousAgent.displayName',
-    description: getSchemaDescription('infectiousAgent.displayName'),
-    queries: (params: any) => {
-      const commonParams = {
-        ...params,
-        q:
-          params?.advancedSearch === 'true' ? params.q : encodeString(params.q),
-        extra_filter: params?.extra_filter
-          ? `${params.extra_filter} AND _exists_:infectiousAgent.displayName`
-          : `_exists_:infectiousAgent.displayName`,
-        size: 0,
-        facet_size: 1000,
-        facets: 'infectiousAgent.displayName',
-        sort: undefined,
-      };
-      return [
-        {
-          queryKey: ['search-results', params.q, params.extra_filter],
-          queryFn: () => fetchFacetCounts(commonParams),
-        },
-        {
-          queryKey: [
-            'search-facets',
-            'infectiousAgent.displayName',
-            '-_exists_',
-          ],
-          queryFn: () =>
-            fetchFacetMissingCounts({
-              ...commonParams,
-              extra_filter: params?.extra_filter
-                ? `${params.extra_filter} AND -_exists_:infectiousAgent.displayName`
-                : `-_exists_:infectiousAgent.displayName`,
-              facet_size: 0,
-            }),
-        },
-      ];
-    },
-  },
-  {
-    name: 'Funding',
-    property: 'funding.funder.name',
-    description: getSchemaDescription('funding.funder.name'),
-    queries: (params: any) => {
-      const commonParams = {
-        ...params,
-        q:
-          params?.advancedSearch === 'true' ? params.q : encodeString(params.q),
-        extra_filter: params?.extra_filter
-          ? `${params.extra_filter} AND _exists_:funding.funder.name`
-          : `_exists_:funding.funder.name`,
-        size: 0,
-        facet_size: 1000,
-        facets: 'funding.funder.name',
-        sort: undefined,
-      };
-      return [
-        {
-          queryKey: ['search-results', params.q, params.extra_filter],
-          queryFn: () => fetchFacetCounts(commonParams),
-        },
-        {
-          queryKey: ['search-facets', 'funding.funder.name', '-_exists_'],
-          queryFn: () =>
-            fetchFacetMissingCounts({
-              ...commonParams,
-              extra_filter: params?.extra_filter
-                ? `${params.extra_filter} AND -_exists_:funding.funder.name`
-                : `-_exists_:funding.funder.name`,
-              facet_size: 0,
-            }),
+          select: data => {
+            const { total } = data;
+            return {
+              facet: 'includedInDataCatalog.name',
+              results: [
+                {
+                  label: 'Not Specified',
+                  term: '-_exists_',
+                  count: total,
+                  facet: 'includedInDataCatalog.name',
+                },
+              ],
+            };
+          },
+          ...options,
         },
       ];
     },
@@ -243,15 +220,65 @@ export const Filters: React.FC<FiltersProps> = ({
   removeAllFilters,
   selectedFilters,
 }) => {
-  console.log('queryparams:', queryParams);
-  // Memoize queries to prevent unnecessary recalculations
+  // Memoize queries to prevent unnecessary recalculations.
   const queries = useMemo(() => {
-    return FILTERS_CONFIG_ARR.flatMap(facet => facet.queries(queryParams));
+    return FILTERS_CONFIG_ARR.flatMap(facet =>
+      facet.queries({ ...queryParams, extra_filter: '' }),
+    );
   }, [queryParams]);
-  console.log('queries', queries);
 
-  const results = useQueries(queries);
-  console.log('results:', results);
+  // Only run on mount without the extra_filters to get the "base" counts for the filters.
+  const results = useQueries({
+    queries,
+    combine: queryResult => {
+      return queryResult.reduce((acc, { data }) => {
+        if (!data) return acc;
+        const { facet, results } = data;
+        if (!acc[facet]) {
+          acc[facet] = results;
+        } else {
+          acc[facet] = acc[facet].concat(results);
+        }
+
+        return acc;
+      }, {});
+    },
+  });
+
+  // Update the queries with the selected filters.
+  const updated_queries = useMemo(() => {
+    return FILTERS_CONFIG_ARR.flatMap(facet =>
+      facet.queries(queryParams, {
+        enabled: !!(
+          queryParams &&
+          queryParams.extra_filter &&
+          results &&
+          Object.keys(results).length > 0
+        ),
+      }),
+    );
+  }, [queryParams, results]);
+
+  // Get the updated results and counts with the selected filters.
+  const updated_results = useQueries({
+    queries: updated_queries,
+    combine: queryResult => {
+      return queryResult.reduce((acc, { data }) => {
+        if (!data) return acc;
+        const { facet, results } = data;
+        if (!acc[facet]) {
+          acc[facet] = results;
+        } else {
+          acc[facet] = acc[facet].concat(results);
+        }
+
+        return acc;
+      }, {});
+    },
+  });
+
+  console.log('updated_results', updated_results);
+
   return <div>filters</div>;
   // const router = useRouter();
   // const [{ data, error, isLoading, isUpdating }] = useFacetsData({
