@@ -10,12 +10,22 @@ import {
 import { Params } from 'src/utils/api';
 import { UseQueryOptions } from '@tanstack/react-query';
 import { FetchSearchResultsResponse } from 'src/utils/api/types';
+import { omit } from 'lodash';
 
 // Default facet size
 export const FACET_SIZE = 1000;
 
 const schema = SCHEMA_DEFINITIONS as SchemaDefinitions;
 
+/**
+ * Get the description for a given schema property.
+ *
+ * This function retrieves the description for a schema property from the schema definitions.
+ * If the property has an abstract or description in the 'Dataset' context, it returns that. Otherwise, it returns an empty string.
+ *
+ * @param property - The schema property to get the description for.
+ * @returns The description for the schema property.
+ */
 export const getSchemaDescription = (property: string) => {
   const schemaProperty = schema[property];
   return (
@@ -114,13 +124,10 @@ interface FilterConfig {
   description: string;
   getQueries: (
     params: Params,
-    options?: Partial<
-      UseQueryOptions<
-        FetchSearchResultsResponse,
-        Error,
-        TransformedQueryResult,
-        any
-      >
+    options: UseQueryOptions<
+      FetchSearchResultsResponse,
+      Error,
+      TransformedQueryResult
     >,
   ) => UseQueryOptions<
     FetchSearchResultsResponse,
@@ -129,7 +136,17 @@ interface FilterConfig {
   >[];
 }
 
-// Helper function to create common query parameters
+/**
+ * Helper function to create common query parameters.
+ *
+ * This function generates the common query parameters required for making the API call.
+ * It handles encoding the search query, setting facet filters, and other parameters.
+ *
+ * @param params - The parameters used in the query.
+ * @param facetField - The facet field to filter by.
+ * @returns The common query parameters.
+ */
+
 const buildCommonParams = (params: Params, facetField: string) => ({
   ...params,
   q: params?.advancedSearch === 'true' ? params.q : encodeString(params.q),
@@ -142,7 +159,19 @@ const buildCommonParams = (params: Params, facetField: string) => ({
   sort: undefined,
 });
 
-// Helper function to create queries for a given facet field
+/**
+ * Helper function to create queries for a given facet field.
+ *
+ * This function generates the query options for a given facet field. It creates two queries:
+ * 1. A query to fetch results where the facet field exists.
+ * 2. A query to fetch results where the facet field does not exist.
+ *
+ * The results are then transformed to a more usable format.
+ *
+ * @param facetField - The facet field to filter by.
+ * @param formatLabel - A function to format the label of the facet terms.
+ * @returns A function that takes query parameters and options, and returns an array of query options.
+ */
 const buildQueries =
   (
     facetField: string,
@@ -153,7 +182,7 @@ const buildQueries =
 
     return [
       {
-        queryKey: ['search-results', commonParams],
+        queryKey: [...options.queryKey, commonParams],
         queryFn: async () => {
           const data = await fetchSearchResults(commonParams);
           if (!data) {
@@ -187,11 +216,11 @@ const buildQueries =
             ],
           };
         },
-        ...options,
+        ...omit(options, 'queryKey'),
       },
       {
         queryKey: [
-          'search-results',
+          ...options.queryKey,
           {
             ...commonParams,
             extra_filter: params?.extra_filter
@@ -224,7 +253,7 @@ const buildQueries =
             },
           ],
         }),
-        ...options,
+        ...omit(options, 'queryKey'),
       },
     ];
   };
