@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useQuery, useQueryClient } from 'react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { debounce } from 'lodash';
 import { fetchSearchResults } from 'src/utils/api';
 import {
@@ -35,12 +35,25 @@ export const usePredictiveSearch = (
     [searchField],
   );
   // Run query every time search trm changes.
-  const { isLoading, error, isFetching } = useQuery<
+  const {
+    isLoading,
+    error,
+    isFetching,
+    data: queryResults,
+  } = useQuery<
     FetchSearchResultsResponse | undefined,
-    Error
-  >(
-    ['predictive-search-results', { term: searchTerm, facet: searchField }],
-    ({ signal }) => {
+    Error,
+    | {
+        [x: string]: string;
+      }[]
+    | FormattedResource[]
+    | undefined
+  >({
+    queryKey: [
+      'predictive-search-results',
+      { term: searchTerm, facet: searchField },
+    ],
+    queryFn: ({ signal }) => {
       const queryString = encode
         ? encodeString(searchTerm).replace(/(?=[()])/g, '\\')
         : searchTerm;
@@ -77,32 +90,36 @@ export const usePredictiveSearch = (
       }
     },
 
-    // Don't refresh everytime window is touched, only run query if there's is a search term
-    {
-      refetchOnWindowFocus: false,
-      retry: 1,
-      enabled:
-        validate &&
-        validate(searchTerm) &&
-        searchTerm.length > 0 &&
-        !!searchField,
-      onSuccess: data => {
-        if (selectedFieldDetails?.type === 'keyword') {
-          if (data?.facets && data?.facets[searchField]) {
-            const results = data?.facets[searchField].terms.map(facet => {
-              return { [searchField]: facet.term };
-            });
-            setResults(results);
-          }
-        } else {
-          // if results exist set state.
-          if (data?.results) {
-            setResults(data?.results);
-          }
+    enabled:
+      validate &&
+      validate(searchTerm) &&
+      searchTerm.length > 0 &&
+      !!searchField,
+    select: data => {
+      if (selectedFieldDetails?.type === 'keyword') {
+        if (data?.facets && data?.facets[searchField]) {
+          const results = data?.facets[searchField].terms.map(facet => {
+            return { [searchField]: facet.term };
+          });
+          return results;
         }
-      },
+      } else {
+        // if results exist set state.
+        if (data?.results) {
+          return data?.results;
+        }
+      }
     },
-  );
+    refetchOnWindowFocus: false,
+    retry: 1,
+  });
+
+  // Set results if query is successful.
+  useEffect(() => {
+    if (queryResults) {
+      setResults(queryResults);
+    }
+  }, [queryResults]);
 
   useEffect(() => {
     setSearchField(field);
@@ -131,7 +148,7 @@ export const usePredictiveSearch = (
   // Cancels query if user changes search term before previous query is complete.
   const cancelRequest = () => {
     const keys = ['advanced-search', { term: searchTerm, facet: searchField }];
-    queryClient.cancelQueries(keys, { fetching: true });
+    queryClient.cancelQueries({ queryKey: keys, fetchStatus: 'fetching' });
   };
 
   return {
