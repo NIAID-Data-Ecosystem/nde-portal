@@ -3,6 +3,13 @@ import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
 import { SchemaDefinitions } from 'scripts/generate-schema-definitions/types';
 import { fetchSearchResults } from 'src/utils/api';
 import { encodeString } from 'src/utils/querystring-helpers';
+import {
+  APIResourceType,
+  formatResourceTypeForDisplay,
+} from 'src/utils/formatting/formatResourceType';
+import { Params } from 'src/utils/api';
+import { UseQueryOptions } from '@tanstack/react-query';
+import { FetchSearchResultsResponse } from 'src/utils/api/types';
 
 // Default facet size
 export const FACET_SIZE = 1000;
@@ -23,7 +30,7 @@ Config for the naming/text of a filter.
 [NOTE]: Order matters here as the filters will be rendered in the order of the keys.
 */
 
-export const FILTERS_CONFIG: FiltersConfigProps = {
+export const OLD_FILTERS_CONFIG: FiltersConfigProps = {
   date: {
     name: 'Date ',
     glyph: 'date',
@@ -89,28 +96,154 @@ export const FILTERS_CONFIG: FiltersConfigProps = {
   },
 };
 
-// {
-//   name: 'Host Species',
-//   property: 'species.displayName',
-//   description: getSchemaDescription('species'),
-// },
-// {
-//   name: 'Funding',
-//   property: 'funding.funder.name',
-//   description: getSchemaDescription('funding'),
-// },
-// {
-//   name: 'Conditions of Access',
-//   property: 'conditionsOfAccess',
-//   description: getSchemaDescription('conditionsOfAccess'),
-// },
-// {
-//   name: 'Variable Measured',
-//   property: 'variableMeasured',
-//   description: getSchemaDescription('variableMeasured'),
-// },
-// {
-//   name: 'Measurement Technique',
-//   property: 'measurementTechnique',
-//   description: getSchemaDescription('measurementTechnique'),
-// },
+// Define the structure of the transformed query result
+export interface TransformedQueryResult {
+  facet: string;
+  results: {
+    label: string;
+    term: string;
+    count: number;
+    facet: string;
+  }[];
+}
+
+// Interface for filter configuration
+interface FilterConfig {
+  name: string;
+  property: string;
+  description: string;
+  getQueries: (
+    params: Params,
+    options?: Partial<
+      UseQueryOptions<
+        FetchSearchResultsResponse,
+        Error,
+        TransformedQueryResult,
+        any
+      >
+    >,
+  ) => UseQueryOptions<
+    FetchSearchResultsResponse,
+    Error,
+    TransformedQueryResult
+  >[];
+}
+
+// Helper function to create common query parameters
+const buildCommonParams = (params: Params, facetField: string) => ({
+  ...params,
+  q: params?.advancedSearch === 'true' ? params.q : encodeString(params.q),
+  extra_filter: params?.extra_filter
+    ? `${params.extra_filter} AND _exists_:${facetField}`
+    : `_exists_:${facetField}`,
+  size: 0,
+  facet_size: 1000,
+  facets: facetField,
+  sort: undefined,
+});
+
+// Helper function to create queries for a given facet field
+const buildQueries =
+  (
+    facetField: string,
+    formatLabel: (term: string) => string,
+  ): FilterConfig['getQueries'] =>
+  (params, options) => {
+    const commonParams = buildCommonParams(params, facetField);
+
+    return [
+      {
+        queryKey: ['search-results', commonParams],
+        queryFn: async () => {
+          const data = await fetchSearchResults(commonParams);
+          if (!data) {
+            throw new Error('No data returned from fetchSearchResults');
+          }
+          return data;
+        },
+        select: data => {
+          const { total, facets } = data;
+          const terms = facets[facetField].terms.map(
+            (item: { term: string; count: number }) => ({
+              label: formatLabel(item.term),
+              term: item.term,
+              count: item.count,
+              facet: facetField,
+            }),
+          );
+          if (facetField === '@type') {
+          }
+
+          return {
+            facet: facetField,
+            results: [
+              {
+                label: 'Any Specified',
+                term: '_exists_',
+                count: total,
+                facet: facetField,
+              },
+              ...terms,
+            ],
+          };
+        },
+        ...options,
+      },
+      {
+        queryKey: [
+          'search-results',
+          {
+            ...commonParams,
+            extra_filter: params?.extra_filter
+              ? `${params.extra_filter} AND -_exists_:@type`
+              : `-_exists_:@type`,
+            facet_size: 0,
+          },
+        ],
+        queryFn: async () => {
+          const data = await fetchSearchResults({
+            ...commonParams,
+            extra_filter: params?.extra_filter
+              ? `${params.extra_filter} AND -_exists_:@type`
+              : `-_exists_:@type`,
+            facet_size: 0,
+          });
+          if (!data) {
+            throw new Error('No data returned from fetchSearchResults');
+          }
+          return data;
+        },
+        select: data => ({
+          facet: facetField,
+          results: [
+            {
+              label: 'Not Specified',
+              term: '-_exists_',
+              count: data.total,
+              facet: facetField,
+            },
+          ],
+        }),
+        ...options,
+      },
+    ];
+  };
+
+// Filter configuration array
+export const FILTER_CONFIGS: FilterConfig[] = [
+  {
+    name: 'Type',
+    property: '@type',
+    description:
+      'Type is used to categorize the nature of the content of the resource',
+    getQueries: buildQueries('@type', term =>
+      formatResourceTypeForDisplay(term as APIResourceType),
+    ),
+  },
+  {
+    name: 'Sources',
+    property: 'includedInDataCatalog.name',
+    description: getSchemaDescription('includedInDataCatalog'),
+    getQueries: buildQueries('includedInDataCatalog.name', term => term),
+  },
+];
