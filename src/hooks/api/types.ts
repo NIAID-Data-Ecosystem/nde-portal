@@ -58,6 +58,12 @@ export interface MetadataSource {
       required_augmented_fields_coverage?: { [key: string]: number };
       sum_required_coverage: number;
       sum_recommended_coverage: number;
+      binary_required_score: number;
+      binary_recommended_score: number;
+      binary_required_augmented: number;
+      binary_recommended_augmented: number;
+      percent_required_fields: number;
+      percent_recommended_fields: number;
     };
     conditionsOfAccess?: string;
     genre?: Domain;

@@ -350,9 +350,8 @@ const Ring = ({
             ? `url(#${selectedType}-lines)`
             : theme.colors.gray[300];
         return (
-          <>
+          <React.Fragment key={idx}>
             <Arc
-              key={idx}
               className={'arc-' + idx}
               startAngle={startAngle}
               endAngle={endAngle}
@@ -455,7 +454,7 @@ const Ring = ({
                 );
               }}
             </Arc>
-          </>
+          </React.Fragment>
         );
       })}
     </>
