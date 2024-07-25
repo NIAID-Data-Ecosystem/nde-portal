@@ -473,33 +473,37 @@ export const FieldsArc = ({
           pointerEvents='none'
         />
         {/* arc in foreground */}
-        <Arc
-          id={'total-arc-' + label}
-          startAngle={nonEmptyArcData[0].startAngle}
-          endAngle={nonEmptyArcData[nonEmptyArcData.length - 1].endAngle}
-          innerRadius={innerRadius}
-          outerRadius={outerRadius}
-          fill={theme.colors[colorScheme][400]}
-          padAngle={0}
-          cornerRadius={4}
-          opacity={showDetails || isHovered ? 0 : 1}
-          pointerEvents='none'
-        />
+        {nonEmptyArcData.length > 0 && (
+          <Arc
+            id={'total-arc-' + label}
+            startAngle={nonEmptyArcData[0].startAngle}
+            endAngle={nonEmptyArcData[nonEmptyArcData.length - 1].endAngle}
+            innerRadius={innerRadius}
+            outerRadius={outerRadius}
+            fill={theme.colors[colorScheme][400]}
+            padAngle={0}
+            cornerRadius={4}
+            opacity={showDetails || isHovered ? 0 : 1}
+            pointerEvents='none'
+          />
+        )}
         {(showDetails || isHovered) && (
           <g>
             {/* arc fill */}
-            <Arc
-              id={'bg-arc-' + label}
-              startAngle={nonEmptyArcData[0].startAngle}
-              endAngle={nonEmptyArcData[nonEmptyArcData.length - 1].endAngle}
-              fill={theme.colors[colorScheme][100]}
-              padAngle={ARCS_SPACING}
-              cornerRadius={4}
-              innerRadius={outerRadius}
-              outerRadius={0}
-              opacity={0.4}
-              pointerEvents='none'
-            />
+            {nonEmptyArcData.length > 0 && (
+              <Arc
+                id={'bg-arc-' + label}
+                startAngle={nonEmptyArcData[0].startAngle}
+                endAngle={nonEmptyArcData[nonEmptyArcData.length - 1].endAngle}
+                fill={theme.colors[colorScheme][100]}
+                padAngle={ARCS_SPACING}
+                cornerRadius={4}
+                innerRadius={outerRadius}
+                outerRadius={0}
+                opacity={0.4}
+                pointerEvents='none'
+              />
+            )}
             {arcsData.map(({ data, startAngle, endAngle }) => {
               const fill =
                 data.count === 0

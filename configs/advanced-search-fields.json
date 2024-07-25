@@ -91,6 +91,7 @@
     "doi": "DOI",
     "pmid": "PMID",
     "url": "URL",
+    "sdPublisher": "SDPublisher",
     "aggregateRating.ratingCount": "Aggregate Rating Count",
     "aggregateRating.ratingValue": "Aggregate Rating Value",
     "includedInDataCatalog": "Source",

@@ -18,6 +18,7 @@ interface Bin {
   bin: number;
   count: number;
   field: string;
+  label: string;
   type: string;
   augmented: number | null;
 }
@@ -78,20 +79,23 @@ export type HeatmapProps = {
 const defaultMargin = { top: 10, left: 10, right: 10, bottom: 10 };
 
 const getBinsData = (fields: Omit<Bin, 'bin'>[], numRows = 2) => {
-  return fields.reduce((bins, { field, count, type, augmented }, idx) => {
-    const col = idx % numRows;
-    const column = bins.find(c => c.bin === col);
-    if (column) {
-      column.bins.push({ bin: col, count, field, type, augmented });
-    } else {
-      bins.push({
-        bin: col,
-        bins: [{ bin: col, count, field, type, augmented }],
-      });
-    }
+  return fields.reduce(
+    (bins, { augmented, count, field, label, type }, idx) => {
+      const col = idx % numRows;
+      const column = bins.find(c => c.bin === col);
+      if (column) {
+        column.bins.push({ bin: col, augmented, count, field, label, type });
+      } else {
+        bins.push({
+          bin: col,
+          bins: [{ bin: col, augmented, count, field, label, type }],
+        });
+      }
 
-    return bins;
-  }, [] as Bins[]);
+      return bins;
+    },
+    [] as Bins[],
+  );
 };
 
 let tooltipTimeout: number;
@@ -131,9 +135,15 @@ const BarChartHeatMap = ({
       const augmented =
         data?.sourceInfo?.metadata_completeness
           ?.required_augmented_fields_coverage?.[field] || null;
-      return { field, count, augmented, type: 'required' };
+      return {
+        label: schema[field].name,
+        field,
+        count,
+        augmented,
+        type: 'required',
+      };
     })
-    .sort((a, b) => b.field.localeCompare(a.field));
+    .sort((a, b) => b.label.localeCompare(a.label));
 
   const recommended = Object.entries(
     data?.sourceInfo?.metadata_completeness?.recommended_fields || {},
@@ -142,15 +152,22 @@ const BarChartHeatMap = ({
       const augmented =
         data?.sourceInfo?.metadata_completeness
           ?.recommended_augmented_fields_coverage?.[field] || null;
-      return { field, count, augmented, type: 'recommended' };
+      return {
+        label: schema[field].name,
+        field,
+        count,
+        augmented,
+        type: 'recommended',
+      };
     })
-    .sort((a, b) => b.field.localeCompare(a.field));
+    .sort((a, b) => b.label.localeCompare(a.label));
 
   const NUM_BARS = Math.max(recommended.length, required.length);
 
   const REQUIRED_DATA = getBinsData(required, NUM_BARS).reverse();
 
   const RECOMMENDED_DATA = getBinsData(recommended, NUM_BARS).reverse();
+
   // bounds
   const size =
     width > margin.left + margin.right
@@ -262,10 +279,8 @@ const BarChartHeatMap = ({
             >
               Recommended{' | '}{' '}
               {Math.round(
-                (data.sourceInfo.metadata_completeness
-                  .sum_recommended_coverage /
-                  recommended.length) *
-                  100,
+                data.sourceInfo.metadata_completeness
+                  .percent_recommended_fields * 100,
               )}
               %
             </Box>
@@ -382,8 +397,7 @@ const BarChartHeatMap = ({
             >
               Fundamental{' | '}
               {Math.round(
-                (data.sourceInfo.metadata_completeness.sum_required_coverage /
-                  required.length) *
+                data.sourceInfo.metadata_completeness.percent_required_fields *
                   100,
               )}
               %
@@ -518,7 +532,7 @@ const BarChartHeatMap = ({
                         boxSize={3}
                         mr={0.5}
                       />
-                      <strong>{schema[tooltipData.field].name} </strong>
+                      <strong>{tooltipData.label} </strong>
                       metadata is collected and available for this source.
                     </Text>
                     {/* Collected metadata and augmented */}
@@ -530,7 +544,7 @@ const BarChartHeatMap = ({
                           boxSize={3}
                           mr={0.5}
                         />
-                        <strong>{schema[tooltipData.field].name} </strong>
+                        <strong>{tooltipData.label} </strong>
                         was also augmented for this source.
                       </Text>
                     ) : (
@@ -548,15 +562,15 @@ const BarChartHeatMap = ({
                           boxSize={3}
                           mr={0.5}
                         />
-                        <strong>{schema[tooltipData.field].name} </strong>{' '}
-                        metadata was not found for this source, but was
-                        augmented for this source.
+                        <strong>{tooltipData.label} </strong> metadata was not
+                        found for this source, but was augmented for this
+                        source.
                       </Text>
                     ) : (
                       /* No metadata and not augmented */
                       <Text as='span' mt={1}>
-                        <strong>{schema[tooltipData.field].name} </strong>{' '}
-                        metadata was not found for this source.
+                        <strong>{tooltipData.label} </strong> metadata was not
+                        found for this source.
                       </Text>
                     )}
                   </Text>

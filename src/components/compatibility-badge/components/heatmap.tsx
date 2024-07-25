@@ -14,11 +14,12 @@ import { FaCircleCheck, FaRegCircleUp } from 'react-icons/fa6';
 const schema = SCHEMA_DEFINITIONS as SchemaDefinitions;
 
 interface Bin {
+  augmented: number | null;
   bin: number;
   count: number;
   field: string;
+  label: string;
   type: string;
-  augmented: number | null;
 }
 
 interface Bins {
@@ -78,20 +79,23 @@ const defaultMargin = { top: 10, left: 10, right: 10, bottom: 10 };
 const NUM_ROWS = 6;
 
 const getBinsData = (fields: Omit<Bin, 'bin'>[]) => {
-  return fields.reduce((bins, { field, count, type, augmented }, idx) => {
-    const col = idx % NUM_ROWS;
-    const column = bins.find(c => c.bin === col);
-    if (column) {
-      column.bins.push({ bin: col, count, field, augmented, type });
-    } else {
-      bins.push({
-        bin: col,
-        bins: [{ bin: col, count, field, augmented, type }],
-      });
-    }
+  return fields.reduce(
+    (bins, { augmented, count, field, label, type }, idx) => {
+      const col = idx % NUM_ROWS;
+      const column = bins.find(c => c.bin === col);
+      if (column) {
+        column.bins.push({ bin: col, augmented, count, field, label, type });
+      } else {
+        bins.push({
+          bin: col,
+          bins: [{ bin: col, augmented, count, field, label, type }],
+        });
+      }
 
-    return bins;
-  }, [] as Bins[]);
+      return bins;
+    },
+    [] as Bins[],
+  );
 };
 let tooltipTimeout: number;
 
@@ -129,7 +133,13 @@ const HeatMap = ({
     const augmented =
       data?.sourceInfo?.metadata_completeness
         ?.required_augmented_fields_coverage?.[field] || null;
-    return { field, count, augmented, type: 'required' };
+    return {
+      augmented,
+      count,
+      field,
+      label: schema[field].name,
+      type: 'required',
+    };
   });
 
   const recommended_fields = Object.entries(
@@ -138,12 +148,18 @@ const HeatMap = ({
     const augmented =
       data?.sourceInfo?.metadata_completeness
         ?.recommended_augmented_fields_coverage?.[field] || null;
-    return { field, count, augmented, type: 'recommended' };
+    return {
+      augmented,
+      count,
+      field,
+      label: schema[field].name,
+      type: 'recommended',
+    };
   });
 
   // Fields sorted alphabetically
   const fields = [...required, ...recommended_fields].sort((a, b) =>
-    b.field.localeCompare(a.field),
+    b.label.localeCompare(a.label),
   );
   const BIN_DATA = getBinsData(fields).reverse();
 
@@ -359,7 +375,7 @@ const HeatMap = ({
                         boxSize={3}
                         mr={0.5}
                       />
-                      <strong>{schema[tooltipData.field].name} </strong>
+                      <strong>{tooltipData.label} </strong>
                       metadata is collected and available for this source.
                     </Text>
                     {/* Collected metadata and augmented */}
@@ -371,7 +387,7 @@ const HeatMap = ({
                           boxSize={3}
                           mr={0.5}
                         />
-                        <strong>{schema[tooltipData.field].name} </strong>
+                        <strong>{tooltipData.label} </strong>
                         was also augmented for this source.
                       </Text>
                     ) : (
@@ -389,15 +405,15 @@ const HeatMap = ({
                           boxSize={3}
                           mr={0.5}
                         />
-                        <strong>{schema[tooltipData.field].name} </strong>{' '}
-                        metadata was not found for this source, but was
-                        augmented for this source.
+                        <strong>{tooltipData.label} </strong> metadata was not
+                        found for this source, but was augmented for this
+                        source.
                       </Text>
                     ) : (
                       /* No metadata and not augmented */
                       <Text as='span' mt={1}>
-                        <strong>{schema[tooltipData.field].name} </strong>{' '}
-                        metadata was not found for this source.
+                        <strong>{tooltipData.label} </strong> metadata was not
+                        found for this source.
                       </Text>
                     )}
                   </Text>

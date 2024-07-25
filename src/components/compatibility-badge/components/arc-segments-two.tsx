@@ -437,10 +437,10 @@ export const FieldsArc = ({
         className={'wheel-' + type}
         opacity={hoveredType !== null && hoveredType !== type ? 0.4 : 1}
       >
-        {!isHovered && (
+        {!isHovered && nonEmptyArcData.length > 0 && (
           <Arc
             id={'bg-arc-' + label}
-            startAngle={nonEmptyArcData[0].startAngle}
+            startAngle={nonEmptyArcData?.[0].startAngle}
             endAngle={ARC_PI * (totalPercentage / 100)}
             fill={theme.colors.gray[100]}
             padAngle={ARCS_SPACING}
@@ -466,23 +466,25 @@ export const FieldsArc = ({
           pointerEvents='none'
         />
         {/* arc in foreground */}
-        <Arc
-          id={'total-arc-' + label}
-          startAngle={nonEmptyArcData[0].startAngle}
-          endAngle={nonEmptyArcData[nonEmptyArcData.length - 1].endAngle}
-          innerRadius={innerRadius}
-          outerRadius={outerRadius}
-          fill={theme.colors[colorScheme][400]}
-          padAngle={0}
-          cornerRadius={4}
-          opacity={showDetails || isHovered ? 0 : 1}
-          pointerEvents='none'
-        />
+        {nonEmptyArcData.length > 0 && (
+          <Arc
+            id={'total-arc-' + label}
+            startAngle={nonEmptyArcData[0].startAngle}
+            endAngle={nonEmptyArcData[nonEmptyArcData.length - 1].endAngle}
+            innerRadius={innerRadius}
+            outerRadius={outerRadius}
+            fill={theme.colors[colorScheme][400]}
+            padAngle={0}
+            cornerRadius={4}
+            opacity={showDetails || isHovered ? 0 : 1}
+            pointerEvents='none'
+          />
+        )}
 
         {(showDetails || isHovered) && (
           <g>
             {/* arc fill */}
-            {isHovered && (
+            {isHovered && nonEmptyArcData.length > 0 && (
               <Arc
                 id={'bg-arc-' + label}
                 startAngle={nonEmptyArcData[0].startAngle}
