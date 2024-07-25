@@ -23,7 +23,7 @@ import { defaultQuery } from './helpers';
 import { MetadataScoreToggle } from './components/metadata-score-toggle';
 import { useQuerySearchResults } from './hooks/useSearchResults';
 import ResultsCount from 'src/components/search-results-page/components/count';
-import { FILTERS_CONFIG } from './components/filters/helpers';
+import { OLD_FILTERS_CONFIG } from './components/filters/helpers';
 import Card from './components/card';
 import { FormattedResource } from 'src/utils/api/types';
 import { DownloadMetadata } from '../download-metadata';
@@ -53,7 +53,8 @@ const SearchResultsPage = ({
 
   // Currently selected filters.
   const defaultFilters = useMemo(
-    () => Object.keys(FILTERS_CONFIG).reduce((r, k) => ({ ...r, [k]: [] }), {}),
+    () =>
+      Object.keys(OLD_FILTERS_CONFIG).reduce((r, k) => ({ ...r, [k]: [] }), {}),
     [],
   );
 

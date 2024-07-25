@@ -9,7 +9,7 @@ import {
 } from '@chakra-ui/react';
 import { queryFilterObject2String } from 'src/components/filters/helpers';
 import { defaultQuery } from 'src/components/search-results-page/helpers';
-import { FILTERS_CONFIG } from 'src/components/search-results-page/components/filters/helpers';
+import { OLD_FILTERS_CONFIG } from 'src/components/search-results-page/components/filters/helpers';
 import { SelectedFilterType, SelectedFilterTypeValue } from '../types';
 
 interface FilterTagsProps extends FlexProps {
@@ -35,7 +35,7 @@ export const FilterTags: React.FC<FilterTagsProps> = ({
   const tags: TagInfo[] = useMemo(() => {
     return Object.entries(selectedFilters).reduce(
       (acc: TagInfo[], [key, values]) => {
-        const filterConfig = FILTERS_CONFIG[key];
+        const filterConfig = OLD_FILTERS_CONFIG[key];
         const filterName = filterConfig?.name || key;
         // Filter out date tags that have a single value such as "exists" and not "exists"
         if (

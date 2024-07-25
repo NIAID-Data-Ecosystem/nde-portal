@@ -1,11 +1,11 @@
-import { FILTERS_CONFIG } from './components/filters/helpers';
+import { OLD_FILTERS_CONFIG } from './components/filters/helpers';
 
 // Default query parameters for the search.
 export const defaultQuery = {
   queryString: '__all__',
   selectedPage: 1,
   selectedPerPage: 10,
-  facets: Object.keys(FILTERS_CONFIG),
+  facets: Object.keys(OLD_FILTERS_CONFIG),
   facetSize: 1000,
   sortOrder: '_score',
 };

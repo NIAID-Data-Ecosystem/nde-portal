@@ -12,7 +12,7 @@ import {
   defaultParams,
   defaultQuery,
 } from 'src/components/search-results-page/helpers';
-import { FILTERS_CONFIG } from 'src/components/search-results-page/components/filters/helpers';
+import { OLD_FILTERS_CONFIG } from 'src/components/search-results-page/components/filters/helpers';
 import { fetchSearchResults } from 'src/utils/api';
 import { Filters } from 'src/components/search-results-page/components/filters';
 import { FormattedResource } from 'src/utils/api/types';
@@ -63,7 +63,8 @@ const Search: NextPage<{
 
   // Default filters list.
   const defaultFilters = useMemo(
-    () => Object.keys(FILTERS_CONFIG).reduce((r, k) => ({ ...r, [k]: [] }), {}),
+    () =>
+      Object.keys(OLD_FILTERS_CONFIG).reduce((r, k) => ({ ...r, [k]: [] }), {}),
     [],
   );
 

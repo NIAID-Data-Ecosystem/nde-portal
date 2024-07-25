@@ -1,7 +1,6 @@
 import axios from 'axios';
 import { formatAPIResource, formatISOString } from './helpers';
 import { FetchSearchResultsResponse, FormattedResource } from './types';
-import { Metadata } from 'src/hooks/api/types';
 
 // Get all resources where query term contains the search term.
 export interface Params {
