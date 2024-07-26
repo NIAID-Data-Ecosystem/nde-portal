@@ -1,7 +1,8 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useQueries } from '@tanstack/react-query';
 import { Params } from 'src/utils/api';
-import { FILTER_CONFIGS, TransformedQueryResult } from '../helpers';
+import { FILTER_CONFIGS } from '../helpers';
+import { TransformedQueryResult } from '../types';
 
 // Define the type for the query result accumulator
 type QueryResultAccumulator = {
@@ -68,23 +69,27 @@ export const useFilterQueries = (queryParams: Params) => {
   // Memoize the initial queries to avoid unnecessary recalculations
   const initialQueries = useMemo(() => {
     return FILTER_CONFIGS.flatMap(facet =>
-      facet.getQueries(
-        { ...queryParams, extra_filter: '' },
+      facet.createQueries(
+        { ...queryParams, extra_filter: '', filters: '' },
         { queryKey: ['search-results'], enabled: true },
       ),
     );
   }, [queryParams]);
 
   // Fetch the initial results without any extra filters
-  const initialResults = useQueries({
+  const { data: initialResults, isLoading } = useQueries({
     queries: initialQueries,
-    combine: queryResult => {
-      return queryResult.reduce((acc, { data }) => {
+    combine: (
+      queryResult,
+    ): { data: QueryResultAccumulator; isLoading: boolean } => {
+      const isLoading = queryResult.some(query => query.isLoading);
+      const results = queryResult.reduce((acc, { data }) => {
         if (!data) return acc;
         const { facet, results } = data;
         acc[facet] = acc[facet] ? acc[facet].concat(results) : results;
         return acc;
       }, {} as QueryResultAccumulator);
+      return { data: results, isLoading };
     },
   });
 
@@ -102,7 +107,7 @@ export const useFilterQueries = (queryParams: Params) => {
 
   const filteredQueries = useMemo(() => {
     return FILTER_CONFIGS.flatMap(facet =>
-      facet.getQueries(queryParams, {
+      facet.createQueries(queryParams, {
         queryKey: ['filtered'],
         enabled: enableFilteredQueries,
       }),
@@ -110,24 +115,41 @@ export const useFilterQueries = (queryParams: Params) => {
   }, [queryParams, enableFilteredQueries]);
 
   // Fetch the updated results with the selected filters
-  const filteredResults = useQueries({
+  const { data: filteredResults, isLoading: isUpdating } = useQueries({
     queries: filteredQueries,
-    combine: queryResult =>
-      queryResult.reduce((acc, { data }) => {
+    combine: (
+      queryResult,
+    ): { data: QueryResultAccumulator; isLoading: boolean } => {
+      const isLoading = queryResult.some(query => query.isLoading);
+      const results = queryResult.reduce((acc, { data }) => {
         if (!data) return acc;
         const { facet, results } = data;
         acc[facet] = acc[facet] ? acc[facet].concat(results) : results;
         return acc;
-      }, {} as QueryResultAccumulator),
+      }, {} as QueryResultAccumulator);
+
+      return { data: results, isLoading };
+    },
   });
 
-  // Merge initial and filtered results
-  const mergedResults = useMemo(() => {
-    if (enableFilteredQueries) {
-      return mergeResults(initialResults, filteredResults);
-    }
-    return initialResults;
-  }, [initialResults, filteredResults, enableFilteredQueries]);
+  // Merge initial and filtered results (if they exist)
+  const [mergedResults, setMergedResults] = useState<QueryResultAccumulator>(
+    {},
+  );
 
-  return { results: mergedResults };
+  useEffect(() => {
+    if (!enableFilteredQueries) {
+      setMergedResults(initialResults);
+    } else if (enableFilteredQueries && !isUpdating) {
+      const merged = mergeResults(initialResults, filteredResults);
+      setMergedResults(merged);
+    }
+  }, [initialResults, filteredResults, enableFilteredQueries, isUpdating]);
+
+  return {
+    results: mergedResults,
+    error: null,
+    isLoading,
+    isUpdating,
+  };
 };

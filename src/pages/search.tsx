@@ -131,6 +131,7 @@ const Search: NextPage<{
             position={{ base: 'unset', md: 'sticky' }}
             h='100vh'
             top='0px'
+            pr={0}
             boxShadow={{ base: 'unset', md: 'base' }}
             bg={{ base: 'unset', md: 'white' }}
             borderRadius='semi'

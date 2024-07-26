@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import {
   Box,
   Button,
@@ -6,40 +6,30 @@ import {
   Icon,
   keyframes,
   UnorderedList,
-  ListItem,
+  Checkbox as ChakraCheckbox,
   CheckboxGroup,
-  Text,
   usePrefersReducedMotion,
 } from '@chakra-ui/react';
 import { SearchInput } from 'src/components/search-input';
-import { FilterTerm } from '../types';
-import { FiltersCheckbox } from './filters-checkbox';
 import { FaArrowDown } from 'react-icons/fa6';
 import { ScrollContainer } from 'src/components/scroll-container';
-import { useRepoData } from 'src/hooks/api/useRepoData';
-import { Domain } from 'src/utils/api/types';
+import { FilterTerm } from 'src/components/search-results-page/components/filters/types';
+import { useFilterTerms } from 'src/components/search-results-page/components/filters/hooks/useFilterTerms';
+import { useDebounceValue } from 'usehooks-ts';
 
-/*
-[COMPONENT INFO]:
-Filter list handles the number of items to show in list (expanded option).
-Filter list handles the searching of filter items.
-*/
-
-interface FiltersList {
+// Define the props interface for the FiltersList component
+interface FiltersListProps {
   colorScheme: string;
-  // list of filter terms to display.
   terms: FilterTerm[];
-  // Search input placeholder text -- also used for aris-label.
   searchPlaceholder: string;
-  // Currently selected filters
   selectedFilters: string[];
-  // fn to update filter selection
   handleSelectedFilters: (arg: string[]) => void;
-  // data loading states
   isLoading: boolean;
   isUpdating?: boolean;
   property: string;
 }
+
+// Animation keyframes for the "bounce" effect
 const bounce = keyframes`
   0%, 20%, 50%, 80%, 100% {
       transform: translateY(0);
@@ -51,75 +41,64 @@ const bounce = keyframes`
       transform: translateY(-5px);
   }
 `;
-export const FiltersList: React.FC<FiltersList> = React.memo(
+// Memoized Checkbox component to prevent unnecessary re-renders
+const Checkbox: React.FC<Partial<FilterTerm>> = React.memo(
+  ({ label, term, facet }) => (
+    <ChakraCheckbox
+      key={`${facet}-${term}`}
+      as='li'
+      value={term}
+      w='100%'
+      px={4}
+      py={1}
+      _hover={{ bg: 'secondary.50' }}
+      sx={{
+        '>.chakra-checkbox__label': {
+          fontSize: 'sm',
+          color: 'text.body',
+          lineHeight: 'tall',
+        },
+      }}
+    >
+      {label}
+    </ChakraCheckbox>
+  ),
+);
+
+export const FiltersList: React.FC<FiltersListProps> = React.memo(
   ({
     colorScheme,
-    searchPlaceholder,
-    selectedFilters,
-    terms,
     handleSelectedFilters,
     isLoading,
     isUpdating,
     property,
+    searchPlaceholder,
+    selectedFilters,
+    terms,
   }) => {
-    const { data: repositories } = useRepoData({
-      refetchOnWindowFocus: false,
-      refetchOnMount: false,
-      enable: property === 'includedInDataCatalog',
-    });
-
     const prefersReducedMotion = usePrefersReducedMotion();
-
     const animation = prefersReducedMotion
       ? undefined
       : `${bounce} 1 1.5s ease-in-out`;
-    /****** Limit List Items ******/
-    // Toggle number of items to show from reduced view to "all" view.
-    const NUM_ITEMS_MIN = 5;
-    const [showFullList, setShowFullList] = useState(false);
 
-    /****** Search handling ******/
-    // Term to filter the filters with.
     const [searchTerm, setSearchTerm] = useState('');
+    const [debouncedSearchTerm] = useDebounceValue(searchTerm, 300);
+
+    // Handle search input change and update the search term in the useFilterTerms hook
     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>): void =>
       setSearchTerm(e.target.value);
 
-    const items: FilterTerm[] = useMemo(
-      () =>
-        terms?.length > 0
-          ? terms.filter(t =>
-              t.displayAs.toLowerCase().includes(searchTerm.toLowerCase()),
-            )
-          : isLoading
-          ? Array(NUM_ITEMS_MIN).fill('') // for loading skeleton purposes
-          : [],
-      [terms, searchTerm, isLoading],
-    );
-
-    /****** Special case for sources where items are grouped by their domain ******/
-    const sources = useMemo(
-      () =>
-        items.reduce((acc, item) => {
-          if (item.term === '_exists_') {
-            return acc;
-          }
-          const domain =
-            repositories?.find(r => r._id === item.term)?.domain || 'Other';
-
-          if (!acc[domain]) {
-            acc[domain] = [];
-          }
-          acc[domain].push(item);
-          return acc;
-        }, {} as { [key in Domain]: FilterTerm[] }),
-      [items, repositories],
-    );
+    // useFilterTerms to handle filter terms logic when a search term is applied.
+    const { filteredTerms, showFullList, toggleShowFullList } = useFilterTerms({
+      terms,
+      searchTerm: debouncedSearchTerm,
+      isLoading,
+    });
 
     return (
       <>
         {/* Search through filter terms */}
-
-        <Box>
+        <Box px={4} py={2}>
           <SearchInput
             ariaLabel={`Search filter ${searchPlaceholder} terms`}
             placeholder={searchPlaceholder}
@@ -131,126 +110,62 @@ export const FiltersList: React.FC<FiltersList> = React.memo(
             onClose={() => setSearchTerm('')}
           />
         </Box>
-        <Box w='100%' my={4}>
-          {/* List of filters available narrowed based on search and expansion toggle */}
-          <ScrollContainer
-            flexDirection='column'
-            ml={0}
-            my={2}
-            maxH={showFullList ? 460 : 400}
-            overflowY='auto'
-          >
-            {!isLoading && !isUpdating && !items.length && (
-              <Box p={2}>No available filters.</Box>
-            )}
-            <CheckboxGroup
-              value={selectedFilters}
-              onChange={handleSelectedFilters}
-            >
-              {property === 'includedInDataCatalog' ? (
-                <Box>
-                  {Object.entries(sources)
-                    ?.sort((a, b) => {
-                      // IID should always be first, NIAID request
-                      if (a[0] == 'IID') return -1;
-                      if (b[0] == 'IID') return 1;
-                      return a[0].localeCompare(b[0]);
-                    })
-
-                    .map(([domain, repos]) => {
-                      const label =
-                        domain === 'iid'
-                          ? 'IID Domain Repositories'
-                          : domain.charAt(0).toUpperCase() +
-                            domain.slice(1) +
-                            ' Repositories';
-                      return (
-                        <React.Fragment key={domain}>
-                          <Text fontSize='sm' fontWeight='semibold' my={1}>
-                            {label}
-                          </Text>
-                          <UnorderedList ml={0}>
-                            {repos
-                              .sort((a, b) => b.count - a.count)
-                              .map((item, i) => {
-                                return (
-                                  <ListItem
-                                    key={item.term}
-                                    p={2}
-                                    py={0}
-                                    my={0}
-                                    _hover={{ bg: `${colorScheme}.50` }}
-                                  >
-                                    <FiltersCheckbox
-                                      value={item.term}
-                                      displayTerm={item.displayAs}
-                                      count={item.count}
-                                      isLoading={isLoading}
-                                      isCountUpdating={isUpdating}
-                                    />
-                                  </ListItem>
-                                );
-                              })}
-                          </UnorderedList>
-                        </React.Fragment>
-                      );
-                    })}
-                </Box>
-              ) : (
-                <UnorderedList ml={0}>
-                  {items
-                    .sort((a, b) => b.count - a.count)
-                    .slice(0, showFullList ? items.length : 5)
-                    .map((item, i) => {
-                      return (
-                        <ListItem
-                          key={i}
-                          p={2}
-                          py={0}
-                          my={0}
-                          _hover={{ bg: `${colorScheme}.50` }}
-                        >
-                          <FiltersCheckbox
-                            value={item.term}
-                            displayTerm={item.displayAs}
-                            count={item.count}
-                            isLoading={isLoading}
-                            isCountUpdating={isUpdating}
-                            property={property}
-                          />
-                        </ListItem>
-                      );
-                    })}
-                </UnorderedList>
-              )}
-            </CheckboxGroup>
-          </ScrollContainer>
-        </Box>
-        {/* Show more expansion button. */}
-        {items.length > NUM_ITEMS_MIN &&
-          property !== 'includedInDataCatalog' && (
-            <Flex
-              w='100%'
-              justifyContent='space-between'
-              borderColor='gray.200'
-              alignItems='center'
-            >
-              <Button
-                variant='link'
-                color='link.color'
-                size='sm'
-                padding={2}
-                onClick={() => setShowFullList(!showFullList)}
-              >
-                {showFullList ? 'Show less' : 'Show all'}
-              </Button>
-              <Icon
-                as={FaArrowDown}
-                animation={showFullList ? animation : undefined}
-                color={showFullList ? 'gray.800' : 'gray.400'}
-              />
-            </Flex>
+        {/* List of filters available narrowed based on search and expansion toggle */}
+        <ScrollContainer
+          flexDirection='column'
+          ml={0}
+          pr={0}
+          maxH={showFullList ? 460 : 400}
+          overflowY='auto'
+        >
+          {!isLoading && !isUpdating && !filteredTerms.length && (
+            <Box p={2}>No available filters.</Box>
           )}
+          <CheckboxGroup
+            value={selectedFilters}
+            onChange={handleSelectedFilters}
+          >
+            <UnorderedList ml={0} pb={4}>
+              {filteredTerms
+                ?.slice(0, showFullList ? filteredTerms.length : 5)
+                .map((item, idx) => {
+                  return (
+                    <Checkbox
+                      key={idx}
+                      term={item.term}
+                      label={item.label}
+                      facet={property}
+                    ></Checkbox>
+                  );
+                })}
+            </UnorderedList>
+          </CheckboxGroup>
+        </ScrollContainer>
+        {/* Show more expansion button. */}
+        {filteredTerms.length > 5 && property !== 'includedInDataCatalog' && (
+          <Flex
+            w='100%'
+            justifyContent='space-between'
+            borderColor='gray.200'
+            alignItems='center'
+          >
+            <Button
+              variant='link'
+              colorScheme='secondary'
+              size='sm'
+              px={2}
+              py={2}
+              onClick={toggleShowFullList}
+            >
+              {showFullList ? 'Show less' : 'Show all'}
+            </Button>
+            <Icon
+              as={FaArrowDown}
+              animation={showFullList ? animation : undefined}
+              color={showFullList ? 'gray.800' : 'gray.400'}
+            />
+          </Flex>
+        )}
       </>
     );
   },

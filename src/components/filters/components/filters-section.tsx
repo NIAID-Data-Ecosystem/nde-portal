@@ -3,16 +3,10 @@ import {
   AccordionItem,
   AccordionButton,
   AccordionPanel,
-  Flex,
-  Heading,
   Text,
 } from '@chakra-ui/react';
 import { FaMinus, FaPlus } from 'react-icons/fa6';
 import Tooltip from 'src/components/tooltip';
-/*
-[COMPONENT INFO]:
-Filter drawer corresponding to a filter facet.
-*/
 
 interface FiltersSectionProps {
   name: string;
@@ -20,34 +14,41 @@ interface FiltersSectionProps {
   children: React.ReactNode;
 }
 
+/*
+[COMPONENT INFO]:
+Filter drawer corresponding to a filter facet.
+*/
 export const FiltersSection: React.FC<FiltersSectionProps> = React.memo(
   ({ name, description, children }) => {
     return (
-      <AccordionItem borderColor='page.alt' borderTopWidth='2px'>
+      <AccordionItem border='none'>
         {({ isExpanded }) => {
           return (
             <>
-              <h3>
-                {/* Toggle expand panel open. */}
+              <h2>
                 <AccordionButton
+                  p={6}
+                  py={isExpanded ? 1.5 : 2}
                   borderLeft='4px solid'
-                  borderColor='gray.200'
-                  py={3}
-                  transition='all 0.2s linear'
-                  _expanded={{
-                    borderColor: 'accent.400',
-                    py: 2,
-                    color: 'text.heading',
-                    transition: 'all 0.2s linear',
-                  }}
+                  borderTop='0.5px solid'
+                  borderColor={isExpanded ? 'secondary.100' : 'gray.200'}
+                  borderLeftColor={isExpanded ? 'secondary.300' : 'transparent'}
                 >
-                  {/* Filter Name */}
                   <Tooltip
                     label={
                       description.charAt(0).toUpperCase() + description.slice(1)
                     }
                   >
-                    <Text as='span' fontSize='sm' flex={1} textAlign='left'>
+                    <Text
+                      as='span'
+                      flex={1}
+                      textAlign='left'
+                      fontSize='xs'
+                      color='gray.800'
+                      textTransform='uppercase'
+                      fontWeight='bold'
+                      mr={2}
+                    >
                       {name}
                     </Text>
                   </Tooltip>
@@ -57,11 +58,11 @@ export const FiltersSection: React.FC<FiltersSectionProps> = React.memo(
                     <FaPlus fontSize='12px' />
                   )}
                 </AccordionButton>
-              </h3>
+              </h2>
               <AccordionPanel
-                p={4}
+                p={0}
                 borderLeft='4px solid'
-                borderColor='accent.400'
+                borderColor='secondary.200'
               >
                 {isExpanded ? children : <></>}
               </AccordionPanel>

@@ -8,6 +8,7 @@ export interface Params {
   advancedSearch?: string;
   dotfield?: boolean;
   extra_filter?: string;
+  filters?: string;
   facets?: string;
   facet_size?: number;
   fields?: string[];

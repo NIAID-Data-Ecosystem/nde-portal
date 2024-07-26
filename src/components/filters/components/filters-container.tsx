@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo, useRef } from 'react';
 import {
   Accordion,
   Button,
   Drawer,
-  DrawerHeader,
   DrawerBody,
   DrawerFooter,
   DrawerOverlay,
@@ -17,39 +16,48 @@ import {
   Icon,
 } from '@chakra-ui/react';
 import { FaFilter } from 'react-icons/fa6';
-import { FiltersConfigProps, SelectedFilterType } from '../types';
+import { SelectedFilterType } from '../types';
 import { ScrollContainer } from 'src/components/scroll-container';
-
-/*
-[COMPONENT INFO]:
-Styled responsive container for filters.
-*/
+import { FilterConfig } from 'src/components/search-results-page/components/filters/types';
 
 interface FiltersContainerProps {
-  // title to show on top of container
   title?: string;
-  // Currently selected filters
   selectedFilters: SelectedFilterType;
-  // fn to remove all selected filters
   removeAllFilters?: () => void;
-  // status of filters data
   error: Error | null;
-  // configuration for filters display.
-  filtersConfig: FiltersConfigProps;
+  filtersList: FilterConfig[];
   children: React.ReactNode;
 }
+
+const DrawerContentMemo: React.FC<{
+  content: React.ReactNode;
+  onClose: () => void;
+  screenSize: string;
+  innerHeight: number;
+}> = React.memo(({ content, onClose, screenSize, innerHeight }) => (
+  <DrawerContent height={`${innerHeight}px`} pt={8}>
+    <DrawerCloseButton />
+    <ScrollContainer>
+      <DrawerBody>{content}</DrawerBody>
+    </ScrollContainer>
+    <DrawerFooter borderTopWidth='1px'>
+      <Button onClick={onClose} colorScheme='secondary' size='md'>
+        Submit and Close
+      </Button>
+    </DrawerFooter>
+  </DrawerContent>
+));
 
 export const FiltersContainer: React.FC<FiltersContainerProps> = ({
   title,
   error,
   children,
   selectedFilters,
-  filtersConfig,
+  filtersList,
   removeAllFilters,
 }) => {
   const [openSections, setOpenSections] = useState<number[]>([]);
-  // Handle toggle open status of mobile filter
-  const btnRef = React.useRef(null);
+  const btnRef = useRef<HTMLButtonElement>(null);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const screenSize = useBreakpointValue({
     base: 'mobile',
@@ -57,19 +65,18 @@ export const FiltersContainer: React.FC<FiltersContainerProps> = ({
     md: 'desktop',
   });
 
-  // Fixes issue with showing footer button on iOS: https://github.com/chakra-ui/chakra-ui/issues/2468
-  const [innerHeight, setH] = React.useState<number>(
+  const [innerHeight, setInnerHeight] = useState<number>(
     typeof window !== 'undefined' ? window.innerHeight : 100,
   );
 
-  function windowResizeHandler() {
-    if (window !== undefined) {
-      setH(window.innerHeight);
+  const windowResizeHandler = () => {
+    if (typeof window !== 'undefined') {
+      setInnerHeight(window.innerHeight);
     }
-  }
+  };
 
   useEffect(() => {
-    if (window !== undefined) {
+    if (typeof window !== 'undefined') {
       window.addEventListener('resize', windowResizeHandler);
       return () => {
         window.removeEventListener('resize', windowResizeHandler);
@@ -77,50 +84,48 @@ export const FiltersContainer: React.FC<FiltersContainerProps> = ({
     }
   }, []);
 
-  useEffect(() => {
-    setOpenSections(() => {
-      // 1. If filter is selected, default to an open accordion panel.
-      let selectedKeys =
-        selectedFilters &&
-        Object.entries(selectedFilters)
-          .filter(([_, v]) => v.length > 0)
-          .map(o =>
-            Object.keys(filtersConfig)
-              .filter(key => key !== 'date')
-              .indexOf(o[0]),
-          );
-      // 2. The filter config specifies that this filter should be open by default.
-      Object.values(filtersConfig)
-        .filter(item => item.property !== 'date')
-        .forEach((v, i) => {
-          if (v.isDefaultOpen && !selectedKeys.includes(i)) {
-            selectedKeys.push(i);
-          }
-        });
-      return selectedKeys;
+  const selectedKeys = useMemo(() => {
+    let keys: number[] = [];
+    if (selectedFilters) {
+      keys = Object.entries(selectedFilters)
+        .filter(([_, v]) => v.length > 0)
+        .map(([key]) =>
+          filtersList.findIndex(config => config.property === key),
+        );
+    }
+    filtersList.forEach((config, i) => {
+      if (
+        config.property !== 'date' &&
+        config.isDefaultOpen &&
+        !keys.includes(i)
+      ) {
+        keys.push(i);
+      }
     });
-    // Only run on mount.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    return keys;
+  }, [selectedFilters, filtersList]);
+
+  useEffect(() => {
+    setOpenSections(selectedKeys);
+  }, [selectedFilters, filtersList, selectedKeys]);
 
   const content = (
     <>
       <Flex
         justifyContent='space-between'
         px={{ base: 0, md: 4 }}
-        py={{ base: 2, md: 4 }}
+        py={{ base: 2, md: 2 }}
         alignItems='center'
       >
         {title && (
-          <Heading size='sm' fontWeight='semibold'>
+          <Heading size='sm' fontWeight='medium'>
             {title}
           </Heading>
         )}
-        {/* Clear all currently selected filters */}
         <Button
           colorScheme='secondary'
           variant='outline'
-          size='sm'
+          size='xs'
           onClick={removeAllFilters}
           isDisabled={!removeAllFilters}
         >
@@ -128,7 +133,6 @@ export const FiltersContainer: React.FC<FiltersContainerProps> = ({
         </Button>
       </Flex>
       {error ? (
-        // Error message.
         <Flex p={4} bg='status.error'>
           <Heading size='sm' color='white' fontWeight='semibold'>
             Something went wrong, unable to load filters. <br />
@@ -143,10 +147,8 @@ export const FiltersContainer: React.FC<FiltersContainerProps> = ({
     </>
   );
 
-  // For mobile view, we show a button that pops out a filters drawer
   return screenSize !== 'desktop' ? (
     <>
-      {/* Styles of floating button from niaid design specs: https://designsystem.niaid.nih.gov/components/atoms */}
       <Button
         ref={btnRef}
         variant='solid'
@@ -189,18 +191,12 @@ export const FiltersContainer: React.FC<FiltersContainerProps> = ({
         size={screenSize === 'mobile' ? 'full' : 'md'}
       >
         <DrawerOverlay />
-        <DrawerContent height={`${innerHeight}px`}>
-          <DrawerCloseButton />
-          <DrawerHeader borderBottomWidth='1px'>Filters</DrawerHeader>
-          <ScrollContainer>
-            <DrawerBody>{content}</DrawerBody>
-          </ScrollContainer>
-          <DrawerFooter borderTopWidth='1px'>
-            <Button onClick={onClose} colorScheme='secondary' size='md'>
-              Submit and Close
-            </Button>
-          </DrawerFooter>
-        </DrawerContent>
+        <DrawerContentMemo
+          content={content}
+          onClose={onClose}
+          screenSize={screenSize!}
+          innerHeight={innerHeight}
+        />
       </Drawer>
     </>
   ) : (
