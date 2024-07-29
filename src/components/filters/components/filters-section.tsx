@@ -27,10 +27,12 @@ export const FiltersSection: React.FC<FiltersSectionProps> = React.memo(
             <>
               <h2>
                 <AccordionButton
-                  p={6}
+                  p={4}
                   py={isExpanded ? 1.5 : 2}
+                  bg={isExpanded ? 'secondary.50' : 'transparent'}
                   borderLeft='4px solid'
                   borderTop='0.5px solid'
+                  borderRadius='sm'
                   borderColor={isExpanded ? 'secondary.100' : 'gray.200'}
                   borderLeftColor={isExpanded ? 'secondary.300' : 'transparent'}
                 >

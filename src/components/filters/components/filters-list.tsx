@@ -2,12 +2,14 @@ import React, { useState } from 'react';
 import {
   Box,
   Button,
+  Checkbox as ChakraCheckbox,
+  CheckboxGroup,
   Flex,
   Icon,
   keyframes,
+  Tag,
+  Text,
   UnorderedList,
-  Checkbox as ChakraCheckbox,
-  CheckboxGroup,
   usePrefersReducedMotion,
 } from '@chakra-ui/react';
 import { SearchInput } from 'src/components/search-input';
@@ -16,6 +18,7 @@ import { ScrollContainer } from 'src/components/scroll-container';
 import { FilterTerm } from 'src/components/search-results-page/components/filters/types';
 import { useFilterTerms } from 'src/components/search-results-page/components/filters/hooks/useFilterTerms';
 import { useDebounceValue } from 'usehooks-ts';
+import { formatNumber } from 'src/utils/helpers';
 
 // Define the props interface for the FiltersList component
 interface FiltersListProps {
@@ -43,24 +46,57 @@ const bounce = keyframes`
 `;
 // Memoized Checkbox component to prevent unnecessary re-renders
 const Checkbox: React.FC<Partial<FilterTerm>> = React.memo(
-  ({ label, term, facet }) => (
+  ({ count, facet, label, term }) => (
     <ChakraCheckbox
       key={`${facet}-${term}`}
       as='li'
       value={term}
       w='100%'
-      px={4}
+      px={6}
+      pr={2}
       py={1}
-      _hover={{ bg: 'secondary.50' }}
+      alignItems='flex-start'
+      _hover={{
+        bg: 'secondary.50',
+      }}
       sx={{
+        '>.chakra-checkbox__control': {
+          mt: 1, // to keep checkbox in line with top of text
+        },
         '>.chakra-checkbox__label': {
-          fontSize: 'sm',
-          color: 'text.body',
-          lineHeight: 'tall',
+          display: 'flex',
+          flex: 1,
+          opacity: count ? 1 : 0.8,
         },
       }}
     >
-      {label}
+      <Text
+        as='span'
+        flex={1}
+        wordBreak='break-word'
+        color='text.heading'
+        fontSize='xs'
+        lineHeight='short'
+        mr={0.5}
+      >
+        {label}
+      </Text>
+      {typeof count === 'number' && (
+        <Tag
+          as='span'
+          className='tag-count'
+          variant='subtle'
+          colorScheme='secondary'
+          bg='secondary.50'
+          size='sm'
+          fontSize='xs'
+          borderRadius='full'
+          alignSelf='flex-start'
+          fontWeight='semibold'
+        >
+          {formatNumber(count)}
+        </Tag>
+      )}
     </ChakraCheckbox>
   ),
 );
@@ -93,12 +129,13 @@ export const FiltersList: React.FC<FiltersListProps> = React.memo(
       terms,
       searchTerm: debouncedSearchTerm,
       isLoading,
+      selectedFilters,
     });
 
     return (
       <>
         {/* Search through filter terms */}
-        <Box px={4} py={2}>
+        <Box px={6} py={2}>
           <SearchInput
             ariaLabel={`Search filter ${searchPlaceholder} terms`}
             placeholder={searchPlaceholder}
@@ -115,6 +152,7 @@ export const FiltersList: React.FC<FiltersListProps> = React.memo(
           flexDirection='column'
           ml={0}
           pr={0}
+          mr={1}
           maxH={showFullList ? 460 : 400}
           overflowY='auto'
         >
@@ -125,7 +163,7 @@ export const FiltersList: React.FC<FiltersListProps> = React.memo(
             value={selectedFilters}
             onChange={handleSelectedFilters}
           >
-            <UnorderedList ml={0} pb={4}>
+            <UnorderedList ml={0} pb={2}>
               {filteredTerms
                 ?.slice(0, showFullList ? filteredTerms.length : 5)
                 .map((item, idx) => {
@@ -134,6 +172,7 @@ export const FiltersList: React.FC<FiltersListProps> = React.memo(
                       key={idx}
                       term={item.term}
                       label={item.label}
+                      count={item.count}
                       facet={property}
                     ></Checkbox>
                   );
@@ -148,6 +187,7 @@ export const FiltersList: React.FC<FiltersListProps> = React.memo(
             justifyContent='space-between'
             borderColor='gray.200'
             alignItems='center'
+            px={4}
           >
             <Button
               variant='link'
