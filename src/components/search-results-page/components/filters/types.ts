@@ -8,6 +8,7 @@ export interface FilterTerm {
   term: string;
   count: number;
   facet: string;
+  groupBy?: string;
 }
 
 export interface TransformedQueryResult {

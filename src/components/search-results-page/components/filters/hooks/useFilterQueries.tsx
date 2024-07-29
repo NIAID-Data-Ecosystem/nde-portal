@@ -9,6 +9,17 @@ type QueryResultAccumulator = {
   [facet: string]: TransformedQueryResult['results'];
 };
 
+// Function to create a hash map from the filtered results for faster lookup
+const createFilteredResultsMap = (filteredResults: QueryResultAccumulator) => {
+  return Object.keys(filteredResults).reduce((acc, facet) => {
+    acc[facet] = new Map();
+    filteredResults[facet].forEach(item => {
+      acc[facet].set(item.term, item.count);
+    });
+    return acc;
+  }, {} as { [facet: string]: Map<string, number> });
+};
+
 /**
  * Merges initial and filtered results.
  *
@@ -26,27 +37,22 @@ const mergeResults = (
 ): QueryResultAccumulator => {
   const mergedResults: QueryResultAccumulator = { ...initialResults };
 
+  const filteredResultsMap = createFilteredResultsMap(filteredResults);
+
   // Iterate over each facet in the initial results
   for (const facet in initialResults) {
-    if (filteredResults[facet]) {
-      // If the facet is found in the filtered results, update the counts
-      mergedResults[facet] = initialResults[facet].map(item => {
-        const filteredItem = filteredResults[facet].find(
-          f => f.term === item.term,
-        );
-        return {
-          ...item,
-          count: filteredItem ? filteredItem.count : 0,
-        };
-      });
+    if (filteredResultsMap[facet]) {
+      mergedResults[facet] = initialResults[facet].map(item => ({
+        ...item,
+        count: filteredResultsMap[facet].get(item.term) ?? 0,
+      }));
     } else {
-      // If the facet is not found in the filtered results, set the counts to 0
       mergedResults[facet] = initialResults[facet].map(item => ({
         ...item,
         count: 0,
       }));
     }
-    // Sort the results of each facet by count indescending order
+    // Sort the results of each facet by count in descending order
     mergedResults[facet].sort((a, b) => b.count - a.count);
   }
 

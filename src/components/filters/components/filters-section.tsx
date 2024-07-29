@@ -33,7 +33,7 @@ export const FiltersSection: React.FC<FiltersSectionProps> = React.memo(
                   borderLeft='4px solid'
                   borderTop='0.5px solid'
                   borderRadius='sm'
-                  borderColor={isExpanded ? 'secondary.100' : 'gray.200'}
+                  borderColor={isExpanded ? 'secondary.100' : 'gray.100'}
                   borderLeftColor={isExpanded ? 'secondary.300' : 'transparent'}
                 >
                   <Tooltip

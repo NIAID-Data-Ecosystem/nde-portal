@@ -8,7 +8,7 @@ import {
   formatResourceTypeForDisplay,
 } from 'src/utils/formatting/formatResourceType';
 import { Params } from 'src/utils/api';
-import { FilterConfig } from './types';
+import { FilterConfig, FilterTerm } from './types';
 
 // Default facet size
 export const FACET_SIZE = 1000;
@@ -91,15 +91,28 @@ const buildQueries =
         },
         select: data => {
           const { total, facets } = data;
+          if (!facets) {
+            throw new Error('No facets returned from fetchSearchResults');
+          }
+
           const terms = facets[facetField].terms.map(
-            (item: { term: string; count: number }) => ({
-              label: formatLabel(item.term),
-              term: item.term,
-              count: item.count,
-              facet: facetField,
-            }),
+            (item: { term: string; count: number }) =>
+              ({
+                label: formatLabel(item.term),
+                term: item.term,
+                count: item.count,
+                facet: facetField,
+              } as FilterTerm),
           );
-          if (facetField === '@type') {
+
+          if (facets?.multi_terms_agg) {
+            facets.multi_terms_agg.terms.map(({ term: multiTerm }) => {
+              const [groupBy, term] = multiTerm.split('|');
+              const matchIndex = terms.findIndex(t => t.term === term);
+              if (matchIndex > -1) {
+                terms[matchIndex] = { ...terms[matchIndex], groupBy };
+              }
+            });
           }
 
           return {
@@ -123,8 +136,8 @@ const buildQueries =
           {
             ...commonParams,
             extra_filter: params?.extra_filter
-              ? `${params.extra_filter} AND -_exists_:@type`
-              : `-_exists_:@type`,
+              ? `${params.extra_filter} AND -_exists_:${facetField}`
+              : `-_exists_:${facetField}`,
             facet_size: 0,
           },
         ],
@@ -132,8 +145,8 @@ const buildQueries =
           const data = await fetchSearchResults({
             ...commonParams,
             extra_filter: params?.extra_filter
-              ? `${params.extra_filter} AND -_exists_:@type`
-              : `-_exists_:@type`,
+              ? `${params.extra_filter} AND -_exists_:${facetField}`
+              : `-_exists_:${facetField}`,
             facet_size: 0,
           });
           if (!data) {
@@ -173,6 +186,21 @@ export const FILTER_CONFIGS: FilterConfig[] = [
     property: 'includedInDataCatalog.name',
     description: getSchemaDescription('includedInDataCatalog'),
     createQueries: buildQueries('includedInDataCatalog.name', term => term),
+  },
+  {
+    name: 'Collections',
+    property: 'sourceOrganization.name',
+    description: getSchemaDescription('sourceOrganization.name'),
+    createQueries: (params, options) =>
+      buildQueries('sourceOrganization.name', term => term)(
+        {
+          ...params,
+          multi_terms_fields:
+            'sourceOrganization.alternateName,sourceOrganization.name',
+          multi_terms_size: '100',
+        },
+        options,
+      ),
   },
 ];
 

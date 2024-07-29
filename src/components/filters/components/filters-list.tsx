@@ -132,6 +132,17 @@ export const FiltersList: React.FC<FiltersListProps> = React.memo(
       selectedFilters,
     });
 
+    const groupedTerms = React.useMemo(
+      () =>
+        filteredTerms.reduce((acc, term) => {
+          const group = term.groupBy || '';
+          if (!acc[group]) acc[group] = [];
+          acc[group].push(term);
+          return acc;
+        }, {} as { [key: string]: FilterTerm[] }),
+      [filteredTerms],
+    );
+
     return (
       <>
         {/* Search through filter terms */}
@@ -165,21 +176,26 @@ export const FiltersList: React.FC<FiltersListProps> = React.memo(
             value={selectedFilters}
             onChange={handleSelectedFilters}
           >
-            <UnorderedList ml={0} pb={2}>
-              {filteredTerms
-                ?.slice(0, showFullList ? filteredTerms.length : 5)
-                .map((item, idx) => {
-                  return (
-                    <Checkbox
-                      key={idx}
-                      term={item.term}
-                      label={item.label}
-                      count={item.count}
-                      facet={property}
-                    ></Checkbox>
-                  );
-                })}
-            </UnorderedList>
+            {Object.entries(groupedTerms).map(([group, terms]) => (
+              <React.Fragment key={group}>
+                <Text fontWeight='medium' px={6} fontSize='xs'>
+                  {group}
+                </Text>
+                <UnorderedList ml={0} pt={group ? 0 : 2} pb={1}>
+                  {terms
+                    ?.slice(0, showFullList ? terms.length : 5)
+                    .map((item, idx) => (
+                      <Checkbox
+                        key={idx}
+                        term={item.term}
+                        label={item.label}
+                        count={item.count}
+                        facet={property}
+                      />
+                    ))}
+                </UnorderedList>
+              </React.Fragment>
+            ))}
           </CheckboxGroup>
         </ScrollContainer>
         {/* Show more expansion button. */}
