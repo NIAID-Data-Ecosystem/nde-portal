@@ -116,6 +116,8 @@ export const FiltersContainer: React.FC<FiltersContainerProps> = ({
         px={{ base: 0, md: 4 }}
         py={{ base: 2, md: 2 }}
         alignItems='center'
+        borderBottom='0.5px solid'
+        borderBottomColor='gray.100'
       >
         {title && (
           <Heading size='sm' fontWeight='medium'>

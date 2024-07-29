@@ -31,9 +31,10 @@ export const FiltersSection: React.FC<FiltersSectionProps> = React.memo(
                   py={isExpanded ? 1.5 : 2}
                   bg={isExpanded ? 'secondary.50' : 'transparent'}
                   borderLeft='4px solid'
-                  borderTop='0.5px solid'
+                  borderBottom='0.5px solid'
                   borderRadius='sm'
-                  borderColor={isExpanded ? 'secondary.100' : 'gray.100'}
+                  borderTopColor={isExpanded ? 'secondary.100' : 'gray.100'}
+                  borderBottomColor={isExpanded ? 'transparent' : 'gray.100'}
                   borderLeftColor={isExpanded ? 'secondary.300' : 'transparent'}
                 >
                   <Tooltip
@@ -64,7 +65,9 @@ export const FiltersSection: React.FC<FiltersSectionProps> = React.memo(
               <AccordionPanel
                 p={0}
                 borderLeft='4px solid'
-                borderColor='secondary.200'
+                borderLeftColor='secondary.200'
+                borderBottom='0.25px solid'
+                borderBottomColor='gray.100'
               >
                 {isExpanded ? children : <></>}
               </AccordionPanel>

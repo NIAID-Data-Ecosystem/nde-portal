@@ -146,7 +146,7 @@ export const FiltersList: React.FC<FiltersListProps> = React.memo(
     return (
       <>
         {/* Search through filter terms */}
-        <Box px={6} py={2}>
+        <Box px={4} pt={4} pb={2}>
           <SearchInput
             ariaLabel={`Search filter ${searchPlaceholder} terms`}
             placeholder={searchPlaceholder}
@@ -181,7 +181,7 @@ export const FiltersList: React.FC<FiltersListProps> = React.memo(
                 <Text fontWeight='medium' px={6} fontSize='xs'>
                   {group}
                 </Text>
-                <UnorderedList ml={0} pt={group ? 0 : 2} pb={1}>
+                <UnorderedList ml={0} pb={1}>
                   {terms
                     ?.slice(0, showFullList ? terms.length : 5)
                     .map((item, idx) => (
