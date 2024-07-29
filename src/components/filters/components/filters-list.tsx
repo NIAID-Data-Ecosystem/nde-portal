@@ -157,7 +157,9 @@ export const FiltersList: React.FC<FiltersListProps> = React.memo(
           overflowY='auto'
         >
           {!isLoading && !isUpdating && !filteredTerms.length && (
-            <Box p={2}>No available filters.</Box>
+            <Box p={2} textAlign='center' color='niaid.placeholder'>
+              No available filters.
+            </Box>
           )}
           <CheckboxGroup
             value={selectedFilters}
