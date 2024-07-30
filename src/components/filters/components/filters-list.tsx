@@ -46,7 +46,7 @@ const bounce = keyframes`
 `;
 // Memoized Checkbox component to prevent unnecessary re-renders
 const Checkbox: React.FC<FilterItem> = React.memo(
-  ({ count, facet, label, term }) => {
+  ({ count, facet, label, subLabel, term }) => {
     if (!label && !term) {
       return <div>Loading...</div>;
     }
@@ -83,8 +83,25 @@ const Checkbox: React.FC<FilterItem> = React.memo(
           fontSize='xs'
           lineHeight='short'
           mr={0.5}
+          display='flex'
+          flexDirection='column'
+          fontWeight={subLabel ? 'semibold' : 'normal'}
         >
           {label.charAt(0).toUpperCase() + label.slice(1)}
+          {subLabel && (
+            <Text
+              as='span'
+              flex={1}
+              wordBreak='break-word'
+              color='text.heading'
+              fontSize='xs'
+              lineHeight='short'
+              fontWeight='normal'
+              mr={0.5}
+            >
+              {subLabel.charAt(0).toUpperCase() + subLabel.slice(1)}
+            </Text>
+          )}
         </Text>
         {typeof count === 'number' && (
           <Tag
@@ -183,13 +200,14 @@ export const FiltersList: React.FC<FiltersListProps> = React.memo(
             onChange={handleSelectedFilters}
           >
             <UnorderedList ml={0} pb={1}>
-              {terms
-                ?.slice(0, showFullList ? terms.length : 5)
+              {filteredTerms
+                ?.slice(0, showFullList ? filteredTerms.length : 5)
                 .map((item, idx) => (
                   <Checkbox
                     key={idx}
                     term={item.term}
                     label={item.label}
+                    subLabel={item.subLabel}
                     count={item.count}
                     facet={property}
                   />

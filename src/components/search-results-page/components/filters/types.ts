@@ -18,6 +18,7 @@ export interface QueryResult {
 export interface FilterItem {
   count: number;
   label: string;
+  subLabel?: string;
   term: string;
   facet?: string;
   groupBy?: string;

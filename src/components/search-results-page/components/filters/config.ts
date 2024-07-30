@@ -4,7 +4,7 @@ import {
   APIResourceType,
   formatResourceTypeForDisplay,
 } from 'src/utils/formatting/formatResourceType';
-import { FilterConfig, FacetTerm } from './types';
+import { FilterConfig, FacetTerm, FilterItem } from './types';
 import { buildQueries, buildSourceQueries } from './utils/query-builders';
 
 const schema = SCHEMA_DEFINITIONS as SchemaDefinitions;
@@ -35,7 +35,7 @@ export const FILTER_CONFIGS: FilterConfig[] = [
     description:
       'Type is used to categorize the nature of the content of the resource',
     createQueries: buildQueries('@type'),
-    transformData: (item): FacetTerm => ({
+    transformData: (item): FilterItem => ({
       ...item,
       label:
         item.label ||
@@ -68,5 +68,61 @@ export const FILTER_CONFIGS: FilterConfig[] = [
     property: 'healthCondition.name',
     description: getSchemaDescription('healthCondition'),
     createQueries: buildQueries('healthCondition.name'),
+  },
+  {
+    name: 'Pathogen Species',
+    property: 'infectiousAgent.displayName',
+    description: getSchemaDescription('infectiousAgent'),
+    createQueries: buildQueries('infectiousAgent.displayName'),
+    transformData: (item): FilterItem => {
+      if (item.term.includes(' | ')) {
+        const [subLabel, label] = item.term.split(' | ');
+        return { ...item, label, subLabel };
+      }
+      return {
+        ...item,
+        label: item.label || item.term,
+      };
+    },
+  },
+  {
+    name: 'Host Species',
+    property: 'species.displayName',
+    description: getSchemaDescription('species'),
+    createQueries: buildQueries('species.displayName'),
+    transformData: (item): FilterItem => {
+      if (item.term.includes(' | ')) {
+        const [subLabel, label] = item.term.split(' | ');
+        return { ...item, label, subLabel };
+      }
+      return {
+        ...item,
+        label: item.label || item.term,
+      };
+    },
+  },
+  {
+    name: 'Funding',
+    property: 'funding.funder.name',
+    description: getSchemaDescription('funding'),
+    createQueries: buildQueries('funding.funder.name'),
+  },
+  {
+    name: 'Conditions of Access',
+    property: 'conditionsOfAccess',
+    description: getSchemaDescription('conditionsOfAccess'),
+    createQueries: buildQueries('conditionsOfAccess'),
+  },
+  {
+    name: 'Variable Measured',
+    property: 'variableMeasured',
+    description: getSchemaDescription('variableMeasured'),
+    createQueries: buildQueries('variableMeasured'),
+  },
+  {
+    name: 'Measurement Technique',
+    property: 'measurementTechnique.name',
+    description: getSchemaDescription('measurementTechnique'),
+    createQueries: buildQueries('measurementTechnique.name'),
   },
 ];
