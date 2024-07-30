@@ -15,7 +15,7 @@ import {
 import { SearchInput } from 'src/components/search-input';
 import { FaArrowDown } from 'react-icons/fa6';
 import { ScrollContainer } from 'src/components/scroll-container';
-import { FilterTerm } from 'src/components/search-results-page/components/filters/types';
+import { FilterItem } from 'src/components/search-results-page/components/filters/types';
 import { useFilterSearch } from 'src/components/search-results-page/components/filters/hooks/useFilterSearch';
 import { useDebounceValue } from 'usehooks-ts';
 import { formatNumber } from 'src/utils/helpers';
@@ -23,7 +23,7 @@ import { formatNumber } from 'src/utils/helpers';
 // Define the props interface for the FiltersList component
 interface FiltersListProps {
   colorScheme: string;
-  terms: FilterTerm[];
+  terms: FilterItem[];
   searchPlaceholder: string;
   selectedFilters: string[];
   handleSelectedFilters: (arg: string[]) => void;
@@ -45,61 +45,66 @@ const bounce = keyframes`
   }
 `;
 // Memoized Checkbox component to prevent unnecessary re-renders
-const Checkbox: React.FC<Partial<FilterTerm>> = React.memo(
-  ({ count, facet, label, term }) => (
-    <ChakraCheckbox
-      key={`${facet}-${term}`}
-      as='li'
-      value={term}
-      w='100%'
-      px={6}
-      pr={2}
-      py={1}
-      alignItems='flex-start'
-      _hover={{
-        bg: 'secondary.50',
-      }}
-      sx={{
-        '>.chakra-checkbox__control': {
-          mt: 1, // to keep checkbox in line with top of text
-        },
-        '>.chakra-checkbox__label': {
-          display: 'flex',
-          alignItems: 'center',
-          flex: 1,
-          opacity: count ? 1 : 0.8,
-        },
-      }}
-    >
-      <Text
-        as='span'
-        flex={1}
-        wordBreak='break-word'
-        color='text.heading'
-        fontSize='xs'
-        lineHeight='short'
-        mr={0.5}
+const Checkbox: React.FC<FilterItem> = React.memo(
+  ({ count, facet, label, term }) => {
+    if (!label && !term) {
+      return <div>Loading...</div>;
+    }
+    return (
+      <ChakraCheckbox
+        key={`${facet}-${term}`}
+        as='li'
+        value={term}
+        w='100%'
+        px={6}
+        pr={2}
+        py={1}
+        alignItems='flex-start'
+        _hover={{
+          bg: 'secondary.50',
+        }}
+        sx={{
+          '>.chakra-checkbox__control': {
+            mt: 1, // to keep checkbox in line with top of text
+          },
+          '>.chakra-checkbox__label': {
+            display: 'flex',
+            alignItems: 'center',
+            flex: 1,
+            opacity: count ? 1 : 0.8,
+          },
+        }}
       >
-        {label}
-      </Text>
-      {typeof count === 'number' && (
-        <Tag
+        <Text
           as='span'
-          className='tag-count'
-          variant='subtle'
-          colorScheme='secondary'
-          bg='secondary.50'
-          size='sm'
+          flex={1}
+          wordBreak='break-word'
+          color='text.heading'
           fontSize='xs'
-          borderRadius='full'
-          alignSelf='flex-start'
-          fontWeight='semibold'
+          lineHeight='short'
+          mr={0.5}
         >
-          {formatNumber(count)}
-        </Tag>
-      )}
-    </ChakraCheckbox>
-  ),
+          {label.charAt(0).toUpperCase() + label.slice(1)}
+        </Text>
+        {typeof count === 'number' && (
+          <Tag
+            as='span'
+            className='tag-count'
+            variant='subtle'
+            colorScheme='secondary'
+            bg='secondary.50'
+            size='sm'
+            fontSize='xs'
+            borderRadius='full'
+            alignSelf='flex-start'
+            fontWeight='semibold'
+          >
+            {formatNumber(count)}
+          </Tag>
+        )}
+      </ChakraCheckbox>
+    );
+  },
 );
 
 export const FiltersList: React.FC<FiltersListProps> = React.memo(
@@ -135,16 +140,14 @@ export const FiltersList: React.FC<FiltersListProps> = React.memo(
         disableToggle: property === 'includedInDataCatalog.name',
       });
 
-    const groupedTerms = React.useMemo(
-      () =>
-        filteredTerms.reduce((acc, term) => {
-          const group = term.groupBy || '';
-          if (!acc[group]) acc[group] = [];
-          acc[group].push(term);
-          return acc;
-        }, {} as { [key: string]: FilterTerm[] }),
-      [filteredTerms],
-    );
+    // const groupedTerms = React.useMemo(() => {
+    //   return filteredTerms.reduce((acc, term) => {
+    //     const group = term.groupBy || '';
+    //     if (!acc[group]) acc[group] = [];
+    //     acc[group].push(term);
+    //     return acc;
+    //   }, {} as { [key: string]: FilterItem[] });
+    // }, [filteredTerms]);
 
     return (
       <>
@@ -179,7 +182,20 @@ export const FiltersList: React.FC<FiltersListProps> = React.memo(
             value={selectedFilters}
             onChange={handleSelectedFilters}
           >
-            {Object.entries(groupedTerms).map(([group, terms]) => (
+            <UnorderedList ml={0} pb={1}>
+              {terms
+                ?.slice(0, showFullList ? terms.length : 5)
+                .map((item, idx) => (
+                  <Checkbox
+                    key={idx}
+                    term={item.term}
+                    label={item.label}
+                    count={item.count}
+                    facet={property}
+                  />
+                ))}
+            </UnorderedList>
+            {/* {Object.entries(groupedTerms).map(([group, terms]) => (
               <React.Fragment key={group}>
                 <Text fontWeight='medium' px={6} fontSize='xs'>
                   {group}
@@ -198,7 +214,7 @@ export const FiltersList: React.FC<FiltersListProps> = React.memo(
                     ))}
                 </UnorderedList>
               </React.Fragment>
-            ))}
+            ))} */}
           </CheckboxGroup>
         </ScrollContainer>
         {/* Show more expansion button. */}

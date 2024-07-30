@@ -2,15 +2,17 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useQueries, UseQueryResult } from '@tanstack/react-query';
 import { Params } from 'src/utils/api';
 import { FILTER_CONFIGS } from '../config';
-import { FilterTerm, TransformedQueryResult } from '../types';
+import { QueryResult, TransformedQueryResult } from '../types';
 
 // Define the type for the query result accumulator
-type QueryResultAccumulator = {
+type TransformedFacetResults = {
   [facet: string]: TransformedQueryResult['results'];
 };
 
 // Function to create a hash map from the filtered results for faster lookup
-const createFilteredResultsMap = (filteredResults: QueryResultAccumulator) => {
+const createFilteredResultsMap = (filteredResults: {
+  [facet: string]: QueryResult['results'];
+}) => {
   return Object.keys(filteredResults).reduce((acc, facet) => {
     acc[facet] = new Map();
     filteredResults[facet].forEach(item => {
@@ -32,10 +34,10 @@ const createFilteredResultsMap = (filteredResults: QueryResultAccumulator) => {
  * @returns The merged results with counts from filtered results if available, otherwise counts are set to 0.
  */
 const mergeResults = (
-  initialResults: QueryResultAccumulator,
-  filteredResults: QueryResultAccumulator,
-): QueryResultAccumulator => {
-  const mergedResults: QueryResultAccumulator = { ...initialResults };
+  initialResults: TransformedFacetResults,
+  filteredResults: { [facet: string]: QueryResult['results'] },
+): TransformedFacetResults => {
+  const mergedResults: TransformedFacetResults = { ...initialResults };
 
   const filteredResultsMap = createFilteredResultsMap(filteredResults);
 
@@ -66,8 +68,8 @@ const mergeResults = (
  * @returns An object containing the combined data and the loading state.
  */
 const combineQueryResults = (
-  queryResult: UseQueryResult<TransformedQueryResult, Error>[],
-): { data: QueryResultAccumulator; isLoading: boolean } => {
+  queryResult: UseQueryResult<QueryResult, Error>[],
+) => {
   const isLoading = queryResult.some(query => query.isLoading);
   const results = queryResult.reduce((acc, { data }) => {
     if (!data || !data?.facet) return acc;
@@ -75,7 +77,7 @@ const combineQueryResults = (
 
     acc[facet] = acc[facet] ? acc[facet].concat(results) : results;
     return acc;
-  }, {} as QueryResultAccumulator);
+  }, {} as { [facet: string]: QueryResult['results'] });
   return { data: results, isLoading };
 };
 
@@ -86,11 +88,11 @@ const combineQueryResults = (
  * @returns An object containing the transformed combined data and the loading state.
  */
 
-const formatData = ({
+const transformResults = ({
   data,
   ...queryResult
 }: {
-  data: QueryResultAccumulator;
+  data: { [facet: string]: QueryResult['results'] };
   isLoading: boolean;
 }) => {
   const transformedResults = { ...data };
@@ -100,11 +102,14 @@ const formatData = ({
     transformedResults[facet] = data[facet].map(item =>
       config?.transformData
         ? config.transformData(item)
-        : ({ ...item, label: item?.label || item.term } as FilterTerm),
+        : { ...item, label: item?.label || item.term },
     );
   });
 
-  return { data: transformedResults, ...queryResult };
+  return {
+    data: transformedResults as TransformedFacetResults,
+    ...queryResult,
+  };
 };
 /**
  * Custom hook to manage filter queries.
@@ -139,8 +144,8 @@ export const useFilterQueries = (queryParams: Params) => {
   // Note: Wrap useQueries combine function in callback because inline functions will run on every render.
   // https://tanstack.com/query/latest/docs/framework/react/reference/useQueries#memoization
   const combineCallback = useCallback(
-    (data: UseQueryResult<TransformedQueryResult, Error>[]) => {
-      return formatData(combineQueryResults(data));
+    (data: UseQueryResult<QueryResult, Error>[]) => {
+      return transformResults(combineQueryResults(data));
     },
     [],
   );
@@ -174,7 +179,7 @@ export const useFilterQueries = (queryParams: Params) => {
 
   // Fetch the updated results with the selected filters
   const combinefilteredQueriesCallback = useCallback(
-    (data: UseQueryResult<TransformedQueryResult, Error>[]) => {
+    (data: UseQueryResult<QueryResult, Error>[]) => {
       return combineQueryResults(data);
     },
     [],
@@ -185,7 +190,7 @@ export const useFilterQueries = (queryParams: Params) => {
   });
 
   // Merge initial and filtered results (if they exist)
-  const [mergedResults, setMergedResults] = useState<QueryResultAccumulator>(
+  const [mergedResults, setMergedResults] = useState<TransformedFacetResults>(
     {},
   );
 

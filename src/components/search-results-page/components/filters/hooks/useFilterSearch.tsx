@@ -1,9 +1,9 @@
 import { useMemo, useState, useCallback } from 'react';
-import { FilterTerm } from 'src/components/search-results-page/components/filters/types';
+import { FilterItem } from 'src/components/search-results-page/components/filters/types';
 
 // Define the props interface for the useFilterSearch hook
 interface useFilterSearchProps {
-  terms: FilterTerm[];
+  terms: FilterItem[];
   searchTerm: string;
   isLoading: boolean;
   selectedFilters: string[];
@@ -31,7 +31,7 @@ export const useFilterSearch = ({
    * - If no terms and not loading, returns an empty array.
    * The useMemo hook ensures this computation is only re-run when terms, searchTerm, isLoading, or selectedFilters change.
    */
-  const filteredTerms: FilterTerm[] = useMemo(() => {
+  const filteredTerms: FilterItem[] = useMemo(() => {
     if (isLoading) {
       return Array(NUM_ITEMS_MIN).fill(''); // Placeholder for loading skeleton purposes
     }

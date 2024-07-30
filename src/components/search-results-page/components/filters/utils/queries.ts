@@ -2,7 +2,6 @@ import { QueryKey } from '@tanstack/react-query';
 import { fetchSearchResults } from 'src/utils/api';
 import { fetchMetadata } from 'src/hooks/api/helpers';
 import { Params } from 'src/utils/api';
-import { FilterTerm } from '../types';
 import { FetchSearchResultsResponse } from 'src/utils/api/types';
 import { Metadata } from 'src/hooks/api/types';
 import { encodeString } from 'src/utils/querystring-helpers';
@@ -210,16 +209,15 @@ export const createCommonQueryWithMetadata = ({
         [];
 
       const terms = facets[queryParams.facets].terms.map(
-        (item: { term: string; count: number }) =>
-          ({
-            label: item.term,
-            term: item.term,
-            count: item.count,
-            facet: queryParams.facets,
-            groupBy:
-              repos?.find(r => r.sourceInfo?.name === item.term)?.sourceInfo
-                ?.genre || 'Generalist',
-          } as FilterTerm),
+        (item: { term: string; count: number }) => ({
+          label: item.term,
+          term: item.term,
+          count: item.count,
+          facet: queryParams.facets,
+          groupBy:
+            repos?.find(r => r.sourceInfo?.name === item.term)?.sourceInfo
+              ?.genre || 'Generalist',
+        }),
       );
 
       return {

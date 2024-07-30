@@ -2,7 +2,7 @@ import { Params } from 'src/utils/api';
 import { UseQueryOptions } from '@tanstack/react-query';
 
 // Define the structure of the transformed query result
-export interface FilterTerm {
+export interface FacetTerm {
   label?: string;
   term: string;
   count: number;
@@ -10,11 +10,23 @@ export interface FilterTerm {
   groupBy?: string;
 }
 
-export interface TransformedQueryResult {
+export interface QueryResult {
   facet: string;
-  results: FilterTerm[];
+  results: FacetTerm[];
 }
 
+export interface FilterItem {
+  count: number;
+  label: string;
+  term: string;
+  facet?: string;
+  groupBy?: string;
+}
+
+export interface TransformedQueryResult {
+  facet: string;
+  results: FilterItem[];
+}
 // Interface for filter configuration
 export interface FilterConfig {
   name: string;
@@ -23,7 +35,7 @@ export interface FilterConfig {
   isDefaultOpen?: Boolean;
   createQueries: (
     params: Params,
-    options?: UseQueryOptions<any, Error, TransformedQueryResult>,
-  ) => UseQueryOptions<any, Error, TransformedQueryResult>[];
-  transformData?: (item: FilterTerm) => FilterTerm;
+    options?: UseQueryOptions<any, Error, QueryResult>,
+  ) => UseQueryOptions<any, Error, QueryResult>[];
+  transformData?: (item: FacetTerm) => FacetTerm;
 }

@@ -4,7 +4,7 @@ import {
   APIResourceType,
   formatResourceTypeForDisplay,
 } from 'src/utils/formatting/formatResourceType';
-import { FilterConfig, FilterTerm } from './types';
+import { FilterConfig, FacetTerm } from './types';
 import { buildQueries, buildSourceQueries } from './utils/query-builders';
 
 const schema = SCHEMA_DEFINITIONS as SchemaDefinitions;
@@ -35,7 +35,7 @@ export const FILTER_CONFIGS: FilterConfig[] = [
     description:
       'Type is used to categorize the nature of the content of the resource',
     createQueries: buildQueries('@type'),
-    transformData: (item: FilterTerm) => ({
+    transformData: (item): FacetTerm => ({
       ...item,
       label:
         item.label ||
