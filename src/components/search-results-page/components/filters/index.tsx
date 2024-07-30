@@ -34,7 +34,7 @@ export const Filters: React.FC<FiltersProps> = ({
   // Use custom hook to get filter query results
   const { results, error, isLoading, isUpdating } =
     useFilterQueries(queryParams);
-  console.log(results);
+
   const handleUpdate = useCallback(
     (update: {}) => updateRoute(update, router),
     [router],

@@ -7,6 +7,7 @@ interface useFilterSearchProps {
   searchTerm: string;
   isLoading: boolean;
   selectedFilters: string[];
+  disableToggle: boolean;
 }
 
 // Custom hook to handle the filtering and display logic for filter terms
@@ -15,9 +16,12 @@ export const useFilterSearch = ({
   searchTerm,
   isLoading,
   selectedFilters,
+  disableToggle = false,
 }: useFilterSearchProps) => {
   const NUM_ITEMS_MIN = 5; // Minimum number of items to display when the list is minimized
-  const [showFullList, setShowFullList] = useState(false); // State to manage whether the full list of terms is shown or not
+  const [showFullList, setShowFullList] = useState(() =>
+    disableToggle ? true : false,
+  ); // State to manage whether the full list of terms is shown or not
 
   /**
    * Memoized computation of the filtered and sorted terms based on the search term.
@@ -64,13 +68,14 @@ export const useFilterSearch = ({
    * The useCallback hook ensures this function is only re-created when setShowFullList changes.
    */
   const toggleShowFullList = useCallback(() => {
-    setShowFullList(prev => !prev); // Toggle the value of showFullList
-  }, []);
+    !disableToggle && setShowFullList(prev => !prev); // Toggle the value of showFullList
+  }, [disableToggle]);
 
   // Return the filtered terms and the state management functions
   return {
     filteredTerms, // The filtered and sorted list of terms
     showFullList, // Boolean indicating if the full list is shown
     toggleShowFullList, // Function to toggle the full list display
+    disableToggle, // Boolean indicating if the toggle should be disabled
   };
 };

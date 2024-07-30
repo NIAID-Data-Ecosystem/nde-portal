@@ -125,14 +125,14 @@ export const FiltersList: React.FC<FiltersListProps> = React.memo(
       setSearchTerm(e.target.value);
 
     // useFilterSearch to handle filter terms logic when a search term is applied.
-    const { filteredTerms, showFullList, toggleShowFullList } = useFilterSearch(
-      {
+    const { disableToggle, filteredTerms, showFullList, toggleShowFullList } =
+      useFilterSearch({
         terms,
         searchTerm: debouncedSearchTerm,
         isLoading,
         selectedFilters,
-      },
-    );
+        disableToggle: property === 'includedInDataCatalog.name',
+      });
 
     const groupedTerms = React.useMemo(
       () =>
@@ -201,7 +201,7 @@ export const FiltersList: React.FC<FiltersListProps> = React.memo(
           </CheckboxGroup>
         </ScrollContainer>
         {/* Show more expansion button. */}
-        {filteredTerms.length > 5 && property !== 'includedInDataCatalog' && (
+        {!disableToggle && filteredTerms.length > 5 && (
           <Flex
             w='100%'
             justifyContent='space-between'
