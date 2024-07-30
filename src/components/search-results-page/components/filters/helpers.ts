@@ -1,59 +1,5 @@
-import { FetchSearchResultsResponse } from 'src/utils/api/types';
 import { FiltersConfigProps } from 'src/components/filters/types';
 import { getSchemaDescription } from './config';
-import { FilterTerm } from './types';
-
-/**
- * Format the terms returned from the fetchSearchResults.
- *
- * @param data - The data returned from the fetchSearchResults API.
- * @param facetField - The facet field being processed.
- * @param formatLabel - Function to format the label of the facet terms.
- * @returns Formatted terms array.
- */
-export const formatTerms = (
-  data: FetchSearchResultsResponse,
-  facetField: string,
-  formatLabel: (term: string) => string = (term: string) => term,
-) => {
-  const { total, facets } = data;
-  if (!facets) {
-    throw new Error('No facets returned from fetchSearchResults');
-  }
-
-  const terms = facets[facetField].terms.map(
-    (item: { term: string; count: number }) =>
-      ({
-        label: formatLabel(item.term),
-        term: item.term,
-        count: item.count,
-        facet: facetField,
-      } as FilterTerm),
-  );
-
-  if (facets?.multi_terms_agg) {
-    facets.multi_terms_agg.terms.forEach(({ term: multiTerm }) => {
-      const [groupBy, term] = multiTerm.split('|');
-      const matchIndex = terms.findIndex(t => t.term === term);
-      if (matchIndex > -1) {
-        terms[matchIndex] = { ...terms[matchIndex], groupBy };
-      }
-    });
-  }
-
-  return {
-    facet: facetField,
-    results: [
-      {
-        label: 'Any Specified',
-        term: '_exists_',
-        count: total,
-        facet: facetField,
-      },
-      ...terms,
-    ],
-  };
-};
 
 /*
 Config for the naming/text of a filter.

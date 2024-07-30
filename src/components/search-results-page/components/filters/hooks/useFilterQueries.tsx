@@ -1,8 +1,8 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useQueries, UseQueryResult } from '@tanstack/react-query';
 import { Params } from 'src/utils/api';
 import { FILTER_CONFIGS } from '../config';
-import { TransformedQueryResult } from '../types';
+import { FilterTerm, TransformedQueryResult } from '../types';
 
 // Define the type for the query result accumulator
 type QueryResultAccumulator = {
@@ -69,16 +69,43 @@ const combineQueryResults = (
   queryResult: UseQueryResult<TransformedQueryResult, Error>[],
 ): { data: QueryResultAccumulator; isLoading: boolean } => {
   const isLoading = queryResult.some(query => query.isLoading);
-
   const results = queryResult.reduce((acc, { data }) => {
     if (!data || !data?.facet) return acc;
     const { facet, results } = data;
+
     acc[facet] = acc[facet] ? acc[facet].concat(results) : results;
     return acc;
   }, {} as QueryResultAccumulator);
   return { data: results, isLoading };
 };
 
+/**
+ * Transform terms based on the filter configuration.
+ *
+ * @param queryResult - The object returned by the combine data.
+ * @returns An object containing the transformed combined data and the loading state.
+ */
+
+const formatData = ({
+  data,
+  ...queryResult
+}: {
+  data: QueryResultAccumulator;
+  isLoading: boolean;
+}) => {
+  const transformedResults = { ...data };
+  Object.keys(data).forEach(facet => {
+    const config = FILTER_CONFIGS.find(f => f.property === facet);
+
+    transformedResults[facet] = data[facet].map(item =>
+      config?.transformData
+        ? config.transformData(item)
+        : ({ ...item, label: item?.label || item.term } as FilterTerm),
+    );
+  });
+
+  return { data: transformedResults, ...queryResult };
+};
 /**
  * Custom hook to manage filter queries.
  *
@@ -97,18 +124,34 @@ export const useFilterQueries = (queryParams: Params) => {
   const initialQueries = useMemo(() => {
     return FILTER_CONFIGS.flatMap(facet =>
       facet.createQueries(
-        { ...queryParams, extra_filter: '', filters: '' },
-        { queryKey: ['search-results'], enabled: true },
+        {
+          q: queryParams.q,
+          facet_size: 1000,
+          size: 0,
+          extra_filter: '',
+          filters: '',
+        },
+        { queryKey: ['search-results'] },
       ),
     );
-  }, [queryParams]);
+  }, [queryParams.q]);
 
-  // Fetch the initial results without any extra filters
+  // Note: Wrap useQueries combine function in callback because inline functions will run on every render.
+  // https://tanstack.com/query/latest/docs/framework/react/reference/useQueries#memoization
+  const combineCallback = useCallback(
+    (data: UseQueryResult<TransformedQueryResult, Error>[]) => {
+      return formatData(combineQueryResults(data));
+    },
+    [],
+  );
+  // Fetch initial data.
   const { data: initialResults, isLoading } = useQueries({
     queries: initialQueries,
-    combine: combineQueryResults,
+    combine: combineCallback,
   });
+
   // Determine if filtered queries should be enabled i.e. run when the initial results are available and extra filters are selected.
+  // Used to update the counts in the initial results with the selected filters.
   const enableFilteredQueries = useMemo(
     () =>
       Boolean(
@@ -130,9 +173,15 @@ export const useFilterQueries = (queryParams: Params) => {
   }, [queryParams, enableFilteredQueries]);
 
   // Fetch the updated results with the selected filters
+  const combinefilteredQueriesCallback = useCallback(
+    (data: UseQueryResult<TransformedQueryResult, Error>[]) => {
+      return combineQueryResults(data);
+    },
+    [],
+  );
   const { data: filteredResults, isLoading: isUpdating } = useQueries({
     queries: filteredQueries,
-    combine: combineQueryResults,
+    combine: combinefilteredQueriesCallback,
   });
 
   // Merge initial and filtered results (if they exist)

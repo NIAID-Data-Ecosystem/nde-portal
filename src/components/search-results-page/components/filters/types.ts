@@ -3,10 +3,10 @@ import { UseQueryOptions } from '@tanstack/react-query';
 
 // Define the structure of the transformed query result
 export interface FilterTerm {
-  label: string;
+  label?: string;
   term: string;
   count: number;
-  facet: string;
+  facet?: string;
   groupBy?: string;
 }
 
@@ -25,4 +25,5 @@ export interface FilterConfig {
     params: Params,
     options?: UseQueryOptions<any, Error, TransformedQueryResult>,
   ) => UseQueryOptions<any, Error, TransformedQueryResult>[];
+  transformData?: (item: FilterTerm) => FilterTerm;
 }

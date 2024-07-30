@@ -4,7 +4,7 @@ import {
   APIResourceType,
   formatResourceTypeForDisplay,
 } from 'src/utils/formatting/formatResourceType';
-import { FilterConfig } from './types';
+import { FilterConfig, FilterTerm } from './types';
 import { buildQueries, buildSourceQueries } from './utils/query-builders';
 
 const schema = SCHEMA_DEFINITIONS as SchemaDefinitions;
@@ -34,9 +34,13 @@ export const FILTER_CONFIGS: FilterConfig[] = [
     isDefaultOpen: true,
     description:
       'Type is used to categorize the nature of the content of the resource',
-    createQueries: buildQueries('@type', term =>
-      formatResourceTypeForDisplay(term as APIResourceType),
-    ),
+    createQueries: buildQueries('@type'),
+    transformData: (item: FilterTerm) => ({
+      ...item,
+      label:
+        item.label ||
+        formatResourceTypeForDisplay(item.term as APIResourceType),
+    }),
   },
   {
     name: 'Sources',
@@ -49,7 +53,7 @@ export const FILTER_CONFIGS: FilterConfig[] = [
     property: 'sourceOrganization.name',
     description: getSchemaDescription('sourceOrganization.name'),
     createQueries: (params, options) =>
-      buildQueries('sourceOrganization.name', term => term)(
+      buildQueries('sourceOrganization.name')(
         {
           ...params,
           multi_terms_fields:

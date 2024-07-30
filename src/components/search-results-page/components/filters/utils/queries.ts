@@ -6,7 +6,6 @@ import { FilterTerm } from '../types';
 import { FetchSearchResultsResponse } from 'src/utils/api/types';
 import { Metadata } from 'src/hooks/api/types';
 import { encodeString } from 'src/utils/querystring-helpers';
-import { formatTerms } from '../helpers';
 
 interface SourcesData extends FetchSearchResultsResponse {
   repos: Metadata | null;
@@ -35,6 +34,46 @@ export const buildFacetQueryParams = (params: FacetParams): FacetParams => ({
 });
 
 /**
+ * Format the terms returned from the fetchSearchResults.
+ *
+ * @param data - The data returned from the fetchSearchResults API.
+ * @param facetField - The facet field being processed.
+ * @returns Formatted terms array.
+ */
+export const structureQueryData = (
+  data: FetchSearchResultsResponse,
+  facetField: string,
+) => {
+  const { total, facets } = data;
+  if (!facets) {
+    throw new Error('No facets returned from fetchSearchResults');
+  }
+  const { terms } = facets[facetField];
+
+  if (facets?.multi_terms_agg) {
+    facets.multi_terms_agg.terms.forEach(({ term: multiTerm }) => {
+      const [groupBy, term] = multiTerm.split('|');
+      const matchIndex = terms.findIndex(t => t.term === term);
+      if (matchIndex > -1) {
+        terms[matchIndex] = { ...terms[matchIndex], groupBy };
+      }
+    });
+  }
+
+  return {
+    facet: facetField,
+    results: [
+      {
+        label: 'Any Specified',
+        term: '_exists_',
+        count: total,
+        facet: facetField,
+      },
+      ...terms,
+    ],
+  };
+};
+/**
  * Create common query for a given facet field.
  *
  * @param commonParams - The common parameters for the query.
@@ -59,10 +98,11 @@ export const createCommonQuery = ({
       if (!data) {
         throw new Error('No data returned from fetchSearchResults');
       }
+
       return data;
     },
     select: (data: FetchSearchResultsResponse) => {
-      return formatTerms(data, queryParams.facets);
+      return structureQueryData(data, queryParams.facets);
     },
     ...options,
   };

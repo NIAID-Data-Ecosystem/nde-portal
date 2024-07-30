@@ -4,37 +4,28 @@ import {
   createNotExistsQuery,
 } from './queries';
 import { FilterConfig } from '../types';
-import { FetchSearchResultsResponse } from 'src/utils/api/types';
-import { formatTerms } from '../helpers';
 
 /**
  * Create queries for a given facet field.
  *
  * @param facetField - The facet field to filter by.
- * @param formatLabel - Function to format the label of the facet terms.
  * @returns Function to create queries for the given facet field.
  */
 export const buildQueries =
-  (
-    facetField: string,
-    formatLabel?: (term: string) => string,
-  ): FilterConfig['createQueries'] =>
+  (facetField: string): FilterConfig['createQueries'] =>
   (params, options) => {
     // Destructure options to exclude queryKey and gather other options, with defaults
-    const { queryKey = [], ...otherOptions } = options || {};
+    const { queryKey = [], ...queryOptions } = options || {};
     return [
       createCommonQuery({
         queryKey,
-        params: { ...params, facets: params?.facets || facetField },
-        select: (data: FetchSearchResultsResponse) => {
-          return formatTerms(data, facetField, formatLabel);
-        },
-        ...otherOptions,
+        params: { ...params, facets: facetField },
+        ...queryOptions,
       }),
       createNotExistsQuery({
         queryKey,
-        params: { ...params, facets: params?.facets || facetField },
-        ...otherOptions,
+        params: { ...params, facets: facetField },
+        ...queryOptions,
       }),
     ];
   };
@@ -43,7 +34,6 @@ export const buildQueries =
  * Create queries for the "Sources" facet field.
  *
  * @param facetField - The facet field to filter by.
- * @param formatLabel - Function to format the label of the facet terms.
  * @returns Function to create queries for the "Sources" facet field.
  */
 export const buildSourceQueries =
@@ -54,7 +44,7 @@ export const buildSourceQueries =
     return [
       createCommonQueryWithMetadata({
         queryKey,
-        params: { ...params, facets: params?.facets || facetField },
+        params: { ...params, facets: facetField },
         ...otherOptions,
       }),
     ];
