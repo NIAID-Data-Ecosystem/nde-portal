@@ -2,7 +2,9 @@ import React, { useCallback } from 'react';
 import { Params } from 'src/utils/api';
 import { SelectedFilterType } from 'src/components/filters/types';
 import { useFilterQueries } from './hooks/useFilterQueries';
-import { FILTER_CONFIGS, OLD_FILTERS_CONFIG } from './helpers';
+import { OLD_FILTERS_CONFIG } from './helpers';
+import { FILTER_CONFIGS } from './config';
+
 import {
   FiltersContainer,
   FiltersList,
@@ -10,7 +12,6 @@ import {
   queryFilterObject2String,
   updateRoute,
 } from 'src/components/filters';
-import { CheckboxGroup } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
 
 // Interface for Filters component props
@@ -33,7 +34,7 @@ export const Filters: React.FC<FiltersProps> = ({
   // Use custom hook to get filter query results
   const { results, error, isLoading, isUpdating } =
     useFilterQueries(queryParams);
-
+  console.log(results);
   const handleUpdate = useCallback(
     (update: {}) => updateRoute(update, router),
     [router],

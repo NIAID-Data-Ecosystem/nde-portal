@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useQueries, UseQueryResult } from '@tanstack/react-query';
 import { Params } from 'src/utils/api';
-import { FILTER_CONFIGS } from '../helpers';
+import { FILTER_CONFIGS } from '../config';
 import { TransformedQueryResult } from '../types';
 
 // Define the type for the query result accumulator
@@ -93,6 +93,7 @@ const combineQueryResults = (
 
 export const useFilterQueries = (queryParams: Params) => {
   // Memoize the initial queries to avoid unnecessary recalculations
+  // ignore extra_filter and filters in the initial queries to get all the possible results (regardless of filter selection)
   const initialQueries = useMemo(() => {
     return FILTER_CONFIGS.flatMap(facet =>
       facet.createQueries(

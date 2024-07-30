@@ -16,7 +16,7 @@ import { SearchInput } from 'src/components/search-input';
 import { FaArrowDown } from 'react-icons/fa6';
 import { ScrollContainer } from 'src/components/scroll-container';
 import { FilterTerm } from 'src/components/search-results-page/components/filters/types';
-import { useFilterTerms } from 'src/components/search-results-page/components/filters/hooks/useFilterTerms';
+import { useFilterSearch } from 'src/components/search-results-page/components/filters/hooks/useFilterSearch';
 import { useDebounceValue } from 'usehooks-ts';
 import { formatNumber } from 'src/utils/helpers';
 
@@ -120,17 +120,19 @@ export const FiltersList: React.FC<FiltersListProps> = React.memo(
     const [searchTerm, setSearchTerm] = useState('');
     const [debouncedSearchTerm] = useDebounceValue(searchTerm, 300);
 
-    // Handle search input change and update the search term in the useFilterTerms hook
+    // Handle search input change and update the search term in the useFilterSearch hook
     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>): void =>
       setSearchTerm(e.target.value);
 
-    // useFilterTerms to handle filter terms logic when a search term is applied.
-    const { filteredTerms, showFullList, toggleShowFullList } = useFilterTerms({
-      terms,
-      searchTerm: debouncedSearchTerm,
-      isLoading,
-      selectedFilters,
-    });
+    // useFilterSearch to handle filter terms logic when a search term is applied.
+    const { filteredTerms, showFullList, toggleShowFullList } = useFilterSearch(
+      {
+        terms,
+        searchTerm: debouncedSearchTerm,
+        isLoading,
+        selectedFilters,
+      },
+    );
 
     const groupedTerms = React.useMemo(
       () =>

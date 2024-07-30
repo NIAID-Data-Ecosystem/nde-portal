@@ -1,6 +1,5 @@
 import { Params } from 'src/utils/api';
 import { UseQueryOptions } from '@tanstack/react-query';
-import { FetchSearchResultsResponse } from 'src/utils/api/types';
 
 // Define the structure of the transformed query result
 export interface FilterTerm {
@@ -24,14 +23,6 @@ export interface FilterConfig {
   isDefaultOpen?: Boolean;
   createQueries: (
     params: Params,
-    options?: UseQueryOptions<
-      FetchSearchResultsResponse,
-      Error,
-      TransformedQueryResult
-    >,
-  ) => UseQueryOptions<
-    FetchSearchResultsResponse,
-    Error,
-    TransformedQueryResult
-  >[];
+    options?: UseQueryOptions<any, Error, TransformedQueryResult>,
+  ) => UseQueryOptions<any, Error, TransformedQueryResult>[];
 }

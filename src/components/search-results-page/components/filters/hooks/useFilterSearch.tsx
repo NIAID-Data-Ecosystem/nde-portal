@@ -1,8 +1,8 @@
 import { useMemo, useState, useCallback } from 'react';
 import { FilterTerm } from 'src/components/search-results-page/components/filters/types';
 
-// Define the props interface for the useFilterTerms hook
-interface UseFilterTermsProps {
+// Define the props interface for the useFilterSearch hook
+interface useFilterSearchProps {
   terms: FilterTerm[];
   searchTerm: string;
   isLoading: boolean;
@@ -10,12 +10,12 @@ interface UseFilterTermsProps {
 }
 
 // Custom hook to handle the filtering and display logic for filter terms
-export const useFilterTerms = ({
+export const useFilterSearch = ({
   terms,
   searchTerm,
   isLoading,
   selectedFilters,
-}: UseFilterTermsProps) => {
+}: useFilterSearchProps) => {
   const NUM_ITEMS_MIN = 5; // Minimum number of items to display when the list is minimized
   const [showFullList, setShowFullList] = useState(false); // State to manage whether the full list of terms is shown or not
 
