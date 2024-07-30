@@ -59,4 +59,10 @@ export const FILTER_CONFIGS: FilterConfig[] = [
         options,
       ),
   },
+  {
+    name: 'Health Condition',
+    property: 'healthCondition.name',
+    description: getSchemaDescription('healthCondition'),
+    createQueries: buildQueries('healthCondition.name'),
+  },
 ];

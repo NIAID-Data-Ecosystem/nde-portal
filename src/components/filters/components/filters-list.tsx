@@ -65,6 +65,7 @@ const Checkbox: React.FC<Partial<FilterTerm>> = React.memo(
         },
         '>.chakra-checkbox__label': {
           display: 'flex',
+          alignItems: 'center',
           flex: 1,
           opacity: count ? 1 : 0.8,
         },
