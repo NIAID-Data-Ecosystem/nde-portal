@@ -220,19 +220,10 @@ export const FiltersList: React.FC<FiltersListProps> = React.memo(
         return [];
       }
 
-      return terms.filter(t =>
-        t.label.toLowerCase().includes(searchTerm.toLowerCase()),
+      return sorted.filter(t =>
+        t.label.toLowerCase().includes(debouncedSearchTerm.toLowerCase()),
       );
-    }, [terms, searchTerm]);
-
-    // const groupedTerms = React.useMemo(() => {
-    //   return filteredTerms.reduce((acc, term) => {
-    //     const group = term.groupBy || '';
-    //     if (!acc[group]) acc[group] = [];
-    //     acc[group].push(term);
-    //     return acc;
-    //   }, {} as { [key: string]: FilterItem[] });
-    // }, [filteredTerms]);
+    }, [terms?.length, sorted, debouncedSearchTerm]);
 
     return (
       <>
