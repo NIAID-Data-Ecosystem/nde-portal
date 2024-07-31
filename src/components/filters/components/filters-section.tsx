@@ -69,7 +69,7 @@ export const FiltersSection: React.FC<FiltersSectionProps> = React.memo(
                 borderBottom='0.25px solid'
                 borderBottomColor='gray.100'
               >
-                {children}
+                {isExpanded ? children : <></>}
               </AccordionPanel>
             </>
           );
