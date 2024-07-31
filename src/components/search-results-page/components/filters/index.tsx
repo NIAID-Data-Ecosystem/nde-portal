@@ -40,23 +40,27 @@ export const Filters: React.FC<FiltersProps> = ({
     [router],
   );
 
-  const handleSelectedFilters = (values: string[], facet: string) => {
-    const updatedValues = values.map(value => {
-      // return object with inverted facet + key for exists values
-      if (value === '-_exists_' || value === '_exists_') {
-        return { [value]: [facet] };
-      }
-      return value;
-    });
-    let updatedFilterString = queryFilterObject2String({
-      ...selectedFilters,
-      ...{ [facet]: updatedValues },
-    });
-    handleUpdate({
-      from: 1,
-      filters: updatedFilterString,
-    });
-  };
+  const handleSelectedFilters = useCallback(
+    (values: string[], facet: string) => {
+      console.log('handleSelectedFilters callback');
+      const updatedValues = values.map(value => {
+        // return object with inverted facet + key for exists values
+        if (value === '-_exists_' || value === '_exists_') {
+          return { [value]: [facet] };
+        }
+        return value;
+      });
+      let updatedFilterString = queryFilterObject2String({
+        ...selectedFilters,
+        ...{ [facet]: updatedValues },
+      });
+      handleUpdate({
+        from: 1,
+        filters: updatedFilterString,
+      });
+    },
+    [selectedFilters, handleUpdate],
+  );
 
   return (
     <FiltersContainer

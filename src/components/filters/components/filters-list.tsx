@@ -50,6 +50,7 @@ const Checkbox: React.FC<FilterItem> = React.memo(
     if (!label && !term) {
       return <div>Loading...</div>;
     }
+
     return (
       <ChakraCheckbox
         key={`${facet}-${term}`}
@@ -147,16 +148,32 @@ export const FiltersList: React.FC<FiltersListProps> = React.memo(
     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>): void =>
       setSearchTerm(e.target.value);
 
+    const sorted = React.useMemo(
+      () =>
+        terms.sort((a, b) => {
+          // 1. Terms -_exists_(labelled as Not Specified) is always first followed by _exists_(labelled as Any Specified) - no matter the count.
+          if (a.term.includes('-_exists_') && !b.term.includes('-_exists_'))
+            return -1;
+          if (!a.term.includes('-_exists_') && b.term.includes('-_exists_'))
+            return 1;
+          if (a.term.includes('_exists_') && !b.term.includes('_exists_'))
+            return -1;
+          if (!a.term.includes('_exists_') && b.term.includes('_exists_'))
+            return 1;
+          // 2. Sort by count in descending order
+          if (a.count !== b.count) return b.count - a.count;
+          // 3. Sort alphabetically if count is the same
+          return a.label.toLowerCase().localeCompare(b.label.toLowerCase());
+        }),
+      [terms],
+    );
     // useFilterSearch to handle filter terms logic when a search term is applied.
     const { disableToggle, filteredTerms, showFullList, toggleShowFullList } =
       useFilterSearch({
-        terms,
+        terms: sorted,
         searchTerm: debouncedSearchTerm,
-        isLoading,
-        selectedFilters,
         disableToggle: property === 'includedInDataCatalog.name',
       });
-
     // const groupedTerms = React.useMemo(() => {
     //   return filteredTerms.reduce((acc, term) => {
     //     const group = term.groupBy || '';

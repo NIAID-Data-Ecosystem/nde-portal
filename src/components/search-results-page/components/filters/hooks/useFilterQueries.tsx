@@ -136,7 +136,26 @@ export const useFilterQueries = (queryParams: Params) => {
           extra_filter: '',
           filters: '',
         },
-        { queryKey: ['search-results'] },
+        {
+          queryKey: ['search-results'],
+          placeholderData: {
+            total: 0,
+            results: [],
+            facets: {
+              [facet.property]: {
+                terms: Array(5)
+                  .fill('')
+                  .map((_, index) => ({
+                    label: `placeholder ${index}`,
+                    term: `placeholder ${index}`,
+                    facet: facet.property,
+                    count: 0,
+                  })),
+              },
+              total: 0,
+            },
+          },
+        },
       ),
     );
   }, [queryParams.q]);
