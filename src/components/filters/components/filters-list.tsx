@@ -150,7 +150,7 @@ export const FiltersList: React.FC<FiltersListProps> = React.memo(
 
     const sorted = React.useMemo(
       () =>
-        terms.sort((a, b) => {
+        terms?.sort((a, b) => {
           // 1. Terms -_exists_(labelled as Not Specified) is always first followed by _exists_(labelled as Any Specified) - no matter the count.
           if (a.term.includes('-_exists_') && !b.term.includes('-_exists_'))
             return -1;

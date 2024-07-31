@@ -144,6 +144,7 @@ const Search: NextPage<{
                   ...defaultParams,
                   ...router.query,
                   q: queryString,
+                  filters: undefined,
                   extra_filter: Array.isArray(router.query.filters)
                     ? router.query.filters.join('')
                     : router.query.filters || '',
