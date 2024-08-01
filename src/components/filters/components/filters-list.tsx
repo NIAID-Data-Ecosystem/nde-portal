@@ -223,15 +223,22 @@ const VirtualizedList = ({
   );
 };
 
-const sortTerms = (terms: FilterItem[]) =>
-  terms?.sort((a, b) => {
-    // 1. Terms -_exists_(labelled as Not Specified) is always first followed by _exists_(labelled as Any Specified) - no matter the count.
+const sortTerms = (terms: FilterItem[], selectedFilters: string[]) =>
+  terms.sort((a, b) => {
+    // Place selected filters at the top of their group
+    const aSelected = selectedFilters.includes(a.term);
+    const bSelected = selectedFilters.includes(b.term);
+    if (aSelected && !bSelected) return -1;
+    if (!aSelected && bSelected) return 1;
+
+    // Terms -_exists_ (labelled as Not Specified) is always first followed by _exists_ (labelled as Any Specified) - no matter the count.
     if (a.term.includes('-_exists_') && !b.term.includes('-_exists_'))
       return -1;
     if (!a.term.includes('-_exists_') && b.term.includes('-_exists_')) return 1;
     if (a.term.includes('_exists_') && !b.term.includes('_exists_')) return -1;
     if (!a.term.includes('_exists_') && b.term.includes('_exists_')) return 1;
-    // 2. Sort by count in descending order
+
+    // Sort by count in descending order
     if (a.count !== b.count) return b.count - a.count;
 
     return a.label.toLowerCase().localeCompare(b.label.toLowerCase());
@@ -239,6 +246,7 @@ const sortTerms = (terms: FilterItem[]) =>
 
 const groupTerms = (
   terms: FilterItem[],
+  selectedFilters: string[],
   groupOrder?: FilterConfig['groupBy'],
 ) => {
   const groupedTerms: Record<string, FilterItem[]> = {};
@@ -252,7 +260,9 @@ const groupTerms = (
     groupedTerms[group].push(term);
   });
 
-  Object.values(groupedTerms).forEach(sortTerms);
+  Object.values(groupedTerms).forEach(group =>
+    sortTerms(group, selectedFilters),
+  );
 
   const results: FilterItem[] = [];
 
@@ -323,8 +333,8 @@ export const FiltersList: React.FC<FiltersListProps> = React.memo(
     );
 
     const groupedAndSorted = useMemo(
-      () => groupTerms(terms, facetConfig?.groupBy),
-      [terms, facetConfig?.groupBy],
+      () => groupTerms(terms, selectedFilters, facetConfig?.groupBy),
+      [terms, facetConfig?.groupBy, selectedFilters],
     );
 
     // Filter the terms based on the search term
