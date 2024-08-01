@@ -47,6 +47,16 @@ export const FILTER_CONFIGS: FilterConfig[] = [
     property: 'includedInDataCatalog.name',
     description: getSchemaDescription('includedInDataCatalog'),
     createQueries: buildSourceQueries('includedInDataCatalog.name'),
+    groupBy: [
+      {
+        property: 'IID',
+        label: 'IID',
+      },
+      {
+        property: 'Generalist',
+        label: 'Generalist',
+      },
+    ],
   },
   {
     name: 'Collections',
@@ -74,32 +84,12 @@ export const FILTER_CONFIGS: FilterConfig[] = [
     property: 'infectiousAgent.displayName',
     description: getSchemaDescription('infectiousAgent'),
     createQueries: buildQueries('infectiousAgent.displayName'),
-    transformData: (item): FilterItem => {
-      if (item.term.includes(' | ')) {
-        const [subLabel, label] = item.term.split(' | ');
-        return { ...item, label, subLabel };
-      }
-      return {
-        ...item,
-        label: item.label || item.term,
-      };
-    },
   },
   {
     name: 'Host Species',
     property: 'species.displayName',
     description: getSchemaDescription('species'),
     createQueries: buildQueries('species.displayName'),
-    transformData: (item): FilterItem => {
-      if (item.term.includes(' | ')) {
-        const [subLabel, label] = item.term.split(' | ');
-        return { ...item, label, subLabel };
-      }
-      return {
-        ...item,
-        label: item.label || item.term,
-      };
-    },
   },
   {
     name: 'Funding',

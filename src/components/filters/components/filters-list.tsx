@@ -1,4 +1,10 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import {
   Box,
   Checkbox as ChakraCheckbox,
@@ -8,10 +14,14 @@ import {
   Text,
 } from '@chakra-ui/react';
 import { SearchInput } from 'src/components/search-input';
-import { FilterItem } from 'src/components/search-results-page/components/filters/types';
+import {
+  FilterConfig,
+  FilterItem,
+} from 'src/components/search-results-page/components/filters/types';
 import { useDebounceValue } from 'usehooks-ts';
 import { formatNumber } from 'src/utils/helpers';
 import { VariableSizeList as List } from 'react-window';
+import { FILTER_CONFIGS } from 'src/components/search-results-page/components/filters/config';
 
 // Define the props interface for the FiltersList component
 interface FiltersListProps {
@@ -30,9 +40,25 @@ interface FilterCheckboxProps extends FilterItem {
   isLoading: boolean;
 }
 const Checkbox: React.FC<FilterCheckboxProps> = React.memo(
-  ({ count, isLoading, label, subLabel, term }) => {
+  ({ count, isHeader, isLoading, term, ...props }) => {
+    let label = props.label;
+    let subLabel = '';
+
     if (!label && !term) {
-      return <div>Nope</div>;
+      return <></>;
+    }
+    if (isHeader) {
+      return (
+        <Text px={6} fontSize='xs' fontWeight='semibold'>
+          {label}
+        </Text>
+      );
+    }
+
+    if (term.includes('|')) {
+      const [scientificName, commonName] = props.label.split(' | ');
+      label = commonName || props.label;
+      subLabel = scientificName;
     }
 
     return (
@@ -124,7 +150,7 @@ const VirtualizedList = ({
 }) => {
   const listRef = useRef<any>();
   const itemRefs = useRef<number[]>(Array(items.length).fill(null));
-  const setItemSize = React.useCallback((index: number, size: number) => {
+  const setItemSize = useCallback((index: number, size: number) => {
     listRef?.current?.resetAfterIndex(0);
 
     itemRefs.current[index] = size;
@@ -139,7 +165,7 @@ const VirtualizedList = ({
     index: number;
     style: any;
   }) => {
-    const ref = React.useRef<HTMLInputElement>(null);
+    const ref = useRef<HTMLInputElement>(null);
 
     // Set the item size in the list for virtualization.
     useEffect(() => {
@@ -181,7 +207,7 @@ const VirtualizedList = ({
         className='virtualized-list'
         ref={listRef}
         width='100%'
-        height={items.length > 10 ? 400 : items.length * 35}
+        height={items.length > 10 ? 400 : Math.max(100, items.length * 35)}
         itemCount={items.length}
         itemSize={index => {
           return itemRefs?.current?.[index] || 35;
@@ -196,12 +222,88 @@ const VirtualizedList = ({
     </Box>
   );
 };
+
+const sortTerms = (terms: FilterItem[]) =>
+  terms?.sort((a, b) => {
+    // 1. Terms -_exists_(labelled as Not Specified) is always first followed by _exists_(labelled as Any Specified) - no matter the count.
+    if (a.term.includes('-_exists_') && !b.term.includes('-_exists_'))
+      return -1;
+    if (!a.term.includes('-_exists_') && b.term.includes('-_exists_')) return 1;
+    if (a.term.includes('_exists_') && !b.term.includes('_exists_')) return -1;
+    if (!a.term.includes('_exists_') && b.term.includes('_exists_')) return 1;
+    // 2. Sort by count in descending order
+    if (a.count !== b.count) return b.count - a.count;
+
+    return a.label.toLowerCase().localeCompare(b.label.toLowerCase());
+  });
+
+const groupTerms = (
+  terms: FilterItem[],
+  groupOrder?: FilterConfig['groupBy'],
+) => {
+  const groupedTerms: Record<string, FilterItem[]> = {};
+
+  terms.forEach(term => {
+    const group =
+      term.groupBy ||
+      (term.term.includes('_exists_') && '_exists_') ||
+      'Ungrouped';
+    if (!groupedTerms[group]) groupedTerms[group] = [];
+    groupedTerms[group].push(term);
+  });
+
+  Object.values(groupedTerms).forEach(sortTerms);
+
+  const results: FilterItem[] = [];
+
+  // Append the _exists_ group first if it exists
+  if (groupedTerms['_exists_']) {
+    results.push(...groupedTerms['_exists_']);
+    delete groupedTerms['_exists_'];
+  }
+
+  // Process group order if provided
+  groupOrder?.forEach(({ property, label }) => {
+    if (groupedTerms[property]) {
+      results.push({
+        label,
+        count: groupedTerms[property].length,
+        term: property,
+        isHeader: true,
+      });
+      results.push(...groupedTerms[property]);
+      delete groupedTerms[property];
+    }
+  });
+
+  // Append remaining groups alphabetically, except for "Ungrouped"
+  Object.keys(groupedTerms)
+    .sort()
+    .forEach(group => {
+      if (group !== 'Ungrouped') {
+        results.push({
+          label: group,
+          count: groupedTerms[group].length,
+          term: group,
+          isHeader: true,
+        });
+        results.push(...groupedTerms[group]);
+      }
+    });
+
+  // Append "Ungrouped" terms at the end without header
+  if (groupedTerms['Ungrouped']) {
+    results.push(...groupedTerms['Ungrouped']);
+  }
+
+  return results;
+};
+
 export const FiltersList: React.FC<FiltersListProps> = React.memo(
   ({
     colorScheme,
     handleSelectedFilters,
     isLoading,
-    isUpdating,
     property,
     searchPlaceholder,
     selectedFilters,
@@ -214,36 +316,29 @@ export const FiltersList: React.FC<FiltersListProps> = React.memo(
     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>): void =>
       setSearchTerm(e.target.value);
 
-    const sorted = React.useMemo(
-      () =>
-        terms?.sort((a, b) => {
-          // 1. Terms -_exists_(labelled as Not Specified) is always first followed by _exists_(labelled as Any Specified) - no matter the count.
-          if (a.term.includes('-_exists_') && !b.term.includes('-_exists_'))
-            return -1;
-          if (!a.term.includes('-_exists_') && b.term.includes('-_exists_'))
-            return 1;
-          if (a.term.includes('_exists_') && !b.term.includes('_exists_'))
-            return -1;
-          if (!a.term.includes('_exists_') && b.term.includes('_exists_'))
-            return 1;
-          // 2. Sort by count in descending order
-          if (a.count !== b.count) return b.count - a.count;
-          // 3. Sort alphabetically if count is the same
-          return a.label.toLowerCase().localeCompare(b.label.toLowerCase());
-        }),
-      [terms],
+    // Group the terms based on the groupBy property in the optional facet order.
+    const facetConfig = useMemo(
+      () => FILTER_CONFIGS.find(f => f.property === property),
+      [property],
+    );
+
+    const groupedAndSorted = useMemo(
+      () => groupTerms(terms, facetConfig?.groupBy),
+      [terms, facetConfig?.groupBy],
     );
 
     // Filter the terms based on the search term
-    const searchedTerms: FilterItem[] = React.useMemo(() => {
-      if (!terms?.length) {
+    const searchedTerms: FilterItem[] = useMemo(() => {
+      if (!groupedAndSorted?.length) {
         return [];
       }
-
-      return sorted.filter(t =>
+      if (!debouncedSearchTerm) {
+        return groupedAndSorted;
+      }
+      return groupedAndSorted.filter(t =>
         t.label.toLowerCase().includes(debouncedSearchTerm.toLowerCase()),
       );
-    }, [terms?.length, sorted, debouncedSearchTerm]);
+    }, [groupedAndSorted, debouncedSearchTerm]);
 
     return (
       <>

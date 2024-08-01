@@ -94,7 +94,6 @@ export const Filters: React.FC<FiltersProps> = ({
                 handleSelectedFilters(values, property)
               }
               isLoading={isLoading}
-              isUpdating={isUpdating}
             />
           </FiltersSection>
         );

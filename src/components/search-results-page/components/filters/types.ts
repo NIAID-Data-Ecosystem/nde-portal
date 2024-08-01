@@ -17,8 +17,8 @@ export interface QueryResult {
 
 export interface FilterItem {
   count: number;
+  isHeader?: boolean;
   label: string;
-  subLabel?: string;
   term: string;
   facet?: string;
   groupBy?: string;
@@ -39,4 +39,8 @@ export interface FilterConfig {
     options?: UseQueryOptions<any, Error, QueryResult>,
   ) => UseQueryOptions<any, Error, QueryResult>[];
   transformData?: (item: FacetTerm) => FacetTerm;
+  groupBy?: {
+    property: string;
+    label: string;
+  }[];
 }
