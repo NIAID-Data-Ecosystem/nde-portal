@@ -71,6 +71,8 @@ const combineQueryResults = (
   queryResult: UseQueryResult<QueryResult, Error>[],
 ) => {
   const isLoading = queryResult.some(query => query.isLoading);
+  const isPending = queryResult.some(query => query.isPending);
+  const isPlaceholderData = queryResult.some(query => query.isPlaceholderData);
   const results = queryResult.reduce((acc, { data }) => {
     if (!data || !data?.facet) return acc;
     const { facet, results } = data;
@@ -78,7 +80,7 @@ const combineQueryResults = (
     acc[facet] = acc[facet] ? acc[facet].concat(results) : results;
     return acc;
   }, {} as { [facet: string]: QueryResult['results'] });
-  return { data: results, isLoading };
+  return { data: results, isLoading, isPlaceholderData, isPending };
 };
 
 /**
@@ -94,6 +96,8 @@ const transformResults = ({
 }: {
   data: { [facet: string]: QueryResult['results'] };
   isLoading: boolean;
+  isPlaceholderData: boolean;
+  isPending: boolean;
 }) => {
   const transformedResults = { ...data };
   Object.keys(data).forEach(facet => {
@@ -169,7 +173,12 @@ export const useFilterQueries = (queryParams: Params) => {
     [],
   );
   // Fetch initial data.
-  const { data: initialResults, isLoading } = useQueries({
+  const {
+    data: initialResults,
+    isLoading,
+    isPending,
+    isPlaceholderData,
+  } = useQueries({
     queries: initialQueries,
     combine: combineCallback,
   });
@@ -225,7 +234,7 @@ export const useFilterQueries = (queryParams: Params) => {
   return {
     results: mergedResults,
     error: null,
-    isLoading,
+    isLoading: isLoading || isPlaceholderData || isPending,
     isUpdating,
   };
 };

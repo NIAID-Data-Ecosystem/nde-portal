@@ -3,6 +3,7 @@ import {
   Box,
   Checkbox as ChakraCheckbox,
   CheckboxGroup,
+  Skeleton,
   Tag,
   Text,
 } from '@chakra-ui/react';
@@ -27,25 +28,27 @@ interface FiltersListProps {
 // Memoized Checkbox component to prevent unnecessary re-renders
 interface FilterCheckboxProps extends FilterItem {
   index: number;
+  isLoading: boolean;
   setItemSize: (idx: number, size: number) => void;
 }
 const Checkbox: React.FC<FilterCheckboxProps> = React.memo(
-  ({ count, label, subLabel, index, term, setItemSize }) => {
+  ({ count, isLoading, label, subLabel, index, term, setItemSize }) => {
     const ref = React.useRef<HTMLInputElement>(null);
 
+    // Set the item size in the list for virtualization.
     useEffect(() => {
       if (ref.current) {
         setItemSize(index, ref.current.clientHeight);
       }
     }, [ref, index, term, setItemSize]);
+
     if (!label && !term) {
-      return <div>Loading...</div>;
+      return <div>Nope</div>;
     }
 
     return (
       <div ref={ref}>
         <ChakraCheckbox
-          as='li'
           value={term}
           w='100%'
           px={6}
@@ -57,7 +60,7 @@ const Checkbox: React.FC<FilterCheckboxProps> = React.memo(
           }}
           sx={{
             '>.chakra-checkbox__control': {
-              mt: 1, // to keep checkbox in line with top of text
+              mt: 1, // to keep checkbox in line with top of text for options with multiple lines
             },
             '>.chakra-checkbox__label': {
               display: 'flex',
@@ -67,50 +70,57 @@ const Checkbox: React.FC<FilterCheckboxProps> = React.memo(
             },
           }}
         >
-          <Text
-            as='span'
-            flex={1}
-            wordBreak='break-word'
-            color='text.heading'
-            fontSize='xs'
-            lineHeight='short'
-            mr={0.5}
+          <Skeleton
+            isLoaded={!isLoading}
             display='flex'
-            flexDirection='column'
-            fontWeight={subLabel ? 'semibold' : 'normal'}
+            flex={1}
+            alignItems='center'
           >
-            {label.charAt(0).toUpperCase() + label.slice(1)}
-            {subLabel && (
-              <Text
-                as='span'
-                flex={1}
-                wordBreak='break-word'
-                color='text.heading'
-                fontSize='xs'
-                lineHeight='short'
-                fontWeight='normal'
-                mr={0.5}
-              >
-                {subLabel.charAt(0).toUpperCase() + subLabel.slice(1)}
-              </Text>
-            )}
-          </Text>
-          {typeof count === 'number' && (
-            <Tag
+            <Text
               as='span'
-              className='tag-count'
-              variant='subtle'
-              colorScheme='secondary'
-              bg='secondary.50'
-              size='sm'
+              flex={1}
+              wordBreak='break-word'
+              color='text.heading'
               fontSize='xs'
-              borderRadius='full'
-              alignSelf='flex-start'
-              fontWeight='semibold'
+              lineHeight='short'
+              mr={0.5}
+              display='flex'
+              flexDirection='column'
+              fontWeight={subLabel ? 'semibold' : 'normal'}
             >
-              {formatNumber(count)}
-            </Tag>
-          )}
+              {label.charAt(0).toUpperCase() + label.slice(1)}
+              {subLabel && (
+                <Text
+                  as='span'
+                  flex={1}
+                  wordBreak='break-word'
+                  color='text.heading'
+                  fontSize='xs'
+                  lineHeight='short'
+                  fontWeight='normal'
+                  mr={0.5}
+                >
+                  {subLabel.charAt(0).toUpperCase() + subLabel.slice(1)}
+                </Text>
+              )}
+            </Text>
+            {typeof count === 'number' && (
+              <Tag
+                as='span'
+                className='tag-count'
+                variant='subtle'
+                colorScheme='secondary'
+                bg='secondary.50'
+                size='sm'
+                fontSize='xs'
+                borderRadius='full'
+                alignSelf='flex-start'
+                fontWeight='semibold'
+              >
+                {formatNumber(count)}
+              </Tag>
+            )}
+          </Skeleton>
         </ChakraCheckbox>
       </div>
     );
@@ -123,7 +133,7 @@ const VirtualizedList = ({
   items,
 }: {
   items: FilterItem[];
-  children: (props: FilterCheckboxProps) => JSX.Element;
+  children: (props: Omit<FilterCheckboxProps, 'isLoading'>) => JSX.Element;
 }) => {
   const listRef = useRef<any>();
   const itemRefs = useRef<number[]>(Array(items.length).fill(null));
@@ -243,7 +253,7 @@ export const FiltersList: React.FC<FiltersListProps> = React.memo(
         {/* List of filters available narrowed based on search and expansion toggle */}
         <CheckboxGroup value={selectedFilters} onChange={handleSelectedFilters}>
           <VirtualizedList items={searchedTerms}>
-            {(props: FilterCheckboxProps) => <Checkbox {...props} />}
+            {props => <Checkbox isLoading={isLoading} {...props} />}
           </VirtualizedList>
         </CheckboxGroup>
       </>

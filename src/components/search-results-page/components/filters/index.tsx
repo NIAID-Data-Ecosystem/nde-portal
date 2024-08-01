@@ -42,7 +42,6 @@ export const Filters: React.FC<FiltersProps> = ({
 
   const handleSelectedFilters = useCallback(
     (values: string[], facet: string) => {
-      console.log('handleSelectedFilters callback');
       const updatedValues = values.map(value => {
         // return object with inverted facet + key for exists values
         if (value === '-_exists_' || value === '_exists_') {
