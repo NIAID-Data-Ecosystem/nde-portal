@@ -27,102 +27,89 @@ interface FiltersListProps {
 
 // Memoized Checkbox component to prevent unnecessary re-renders
 interface FilterCheckboxProps extends FilterItem {
-  index: number;
   isLoading: boolean;
-  setItemSize: (idx: number, size: number) => void;
 }
 const Checkbox: React.FC<FilterCheckboxProps> = React.memo(
-  ({ count, isLoading, label, subLabel, index, term, setItemSize }) => {
-    const ref = React.useRef<HTMLInputElement>(null);
-
-    // Set the item size in the list for virtualization.
-    useEffect(() => {
-      if (ref.current) {
-        setItemSize(index, ref.current.clientHeight);
-      }
-    }, [ref, index, term, setItemSize]);
-
+  ({ count, isLoading, label, subLabel, term }) => {
     if (!label && !term) {
       return <div>Nope</div>;
     }
 
     return (
-      <div ref={ref}>
-        <ChakraCheckbox
-          value={term}
-          w='100%'
-          px={6}
-          pr={2}
-          py={1}
-          alignItems='flex-start'
-          _hover={{
-            bg: 'secondary.50',
-          }}
-          sx={{
-            '>.chakra-checkbox__control': {
-              mt: 1, // to keep checkbox in line with top of text for options with multiple lines
-            },
-            '>.chakra-checkbox__label': {
-              display: 'flex',
-              alignItems: 'center',
-              flex: 1,
-              opacity: count ? 1 : 0.8,
-            },
-          }}
+      <ChakraCheckbox
+        value={term}
+        w='100%'
+        px={6}
+        pr={2}
+        py={1}
+        alignItems='flex-start'
+        _hover={{
+          bg: 'secondary.50',
+        }}
+        sx={{
+          '>.chakra-checkbox__control': {
+            mt: 1, // to keep checkbox in line with top of text for options with multiple lines
+          },
+          '>.chakra-checkbox__label': {
+            display: 'flex',
+            alignItems: 'center',
+            flex: 1,
+            opacity: count ? 1 : 0.8,
+          },
+        }}
+      >
+        <Skeleton
+          isLoaded={!isLoading}
+          display='flex'
+          flex={1}
+          alignItems='center'
         >
-          <Skeleton
-            isLoaded={!isLoading}
-            display='flex'
+          <Text
+            as='span'
             flex={1}
-            alignItems='center'
+            wordBreak='break-word'
+            color='text.heading'
+            fontSize='xs'
+            lineHeight='short'
+            mr={0.5}
+            display='flex'
+            flexDirection='column'
+            fontWeight={subLabel ? 'semibold' : 'normal'}
           >
-            <Text
-              as='span'
-              flex={1}
-              wordBreak='break-word'
-              color='text.heading'
-              fontSize='xs'
-              lineHeight='short'
-              mr={0.5}
-              display='flex'
-              flexDirection='column'
-              fontWeight={subLabel ? 'semibold' : 'normal'}
-            >
-              {label.charAt(0).toUpperCase() + label.slice(1)}
-              {subLabel && (
-                <Text
-                  as='span'
-                  flex={1}
-                  wordBreak='break-word'
-                  color='text.heading'
-                  fontSize='xs'
-                  lineHeight='short'
-                  fontWeight='normal'
-                  mr={0.5}
-                >
-                  {subLabel.charAt(0).toUpperCase() + subLabel.slice(1)}
-                </Text>
-              )}
-            </Text>
-            {typeof count === 'number' && (
-              <Tag
+            {label.charAt(0).toUpperCase() + label.slice(1)}
+            {subLabel && (
+              <Text
                 as='span'
-                className='tag-count'
-                variant='subtle'
-                colorScheme='secondary'
-                bg='secondary.50'
-                size='sm'
+                flex={1}
+                wordBreak='break-word'
+                color='text.heading'
                 fontSize='xs'
-                borderRadius='full'
-                alignSelf='flex-start'
-                fontWeight='semibold'
+                lineHeight='short'
+                fontWeight='normal'
+                mr={0.5}
               >
-                {formatNumber(count)}
-              </Tag>
+                {subLabel.charAt(0).toUpperCase() + subLabel.slice(1)}
+              </Text>
             )}
-          </Skeleton>
-        </ChakraCheckbox>
-      </div>
+          </Text>
+          {typeof count === 'number' && (
+            <Tag
+              as='span'
+              className='tag-count'
+              variant='subtle'
+              colorScheme='secondary'
+              bg='secondary.50'
+              size='sm'
+              fontSize='xs'
+              borderRadius='full'
+              alignSelf='flex-start'
+              fontWeight='semibold'
+            >
+              {formatNumber(count)}
+            </Tag>
+          )}
+        </Skeleton>
+      </ChakraCheckbox>
     );
   },
 );
@@ -133,7 +120,7 @@ const VirtualizedList = ({
   items,
 }: {
   items: FilterItem[];
-  children: (props: Omit<FilterCheckboxProps, 'isLoading'>) => JSX.Element;
+  children: (props: FilterItem) => JSX.Element;
 }) => {
   const listRef = useRef<any>();
   const itemRefs = useRef<number[]>(Array(items.length).fill(null));
@@ -143,32 +130,55 @@ const VirtualizedList = ({
     itemRefs.current[index] = size;
   }, []);
 
+  const Row = ({
+    children,
+    index,
+    style,
+  }: {
+    children: React.ReactNode;
+    index: number;
+    style: any;
+  }) => {
+    const ref = React.useRef<HTMLInputElement>(null);
+
+    // Set the item size in the list for virtualization.
+    useEffect(() => {
+      if (ref.current) {
+        setItemSize(index, ref.current.clientHeight);
+      }
+    }, [ref, index]);
+
+    return (
+      <div className='virtualized-row' style={style}>
+        <div ref={ref}>{children}</div>
+      </div>
+    );
+  };
+
   return (
     <Box
       pr={2}
       pb={2}
       sx={{
-        '>.scrolly-list::-webkit-scrollbar': {
+        '>.virtualized-list::-webkit-scrollbar': {
           width: '8px',
           height: '7px',
         },
-        '>.scrolly-list::-webkit-scrollbar-track': {
+        '>.virtualized-list::-webkit-scrollbar-track': {
           background: 'blackAlpha.100',
           borderRadius: '8px',
         },
-        '>.scrolly-list::-webkit-scrollbar-thumb': {
+        '>.virtualized-list::-webkit-scrollbar-thumb': {
           background: 'gray.300',
           borderRadius: '8px',
         },
-        _hover: {
-          '&::-webkit-scrollbar-thumb': {
-            background: 'niaid.placeholder',
-          },
+        '&:hover>.virtualized-list::-webkit-scrollbar-thumb': {
+          background: 'niaid.placeholder',
         },
       }}
     >
       <List
-        className='scrolly-list'
+        className='virtualized-list'
         ref={listRef}
         width='100%'
         height={items.length > 10 ? 400 : items.length * 35}
@@ -178,9 +188,9 @@ const VirtualizedList = ({
         }}
       >
         {({ index, style }) => (
-          <div style={style}>
-            {children({ ...items[index], index, setItemSize })}
-          </div>
+          <Row index={index} style={style}>
+            {children(items[index])}
+          </Row>
         )}
       </List>
     </Box>
