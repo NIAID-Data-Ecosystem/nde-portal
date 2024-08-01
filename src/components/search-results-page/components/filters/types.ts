@@ -3,11 +3,11 @@ import { UseQueryOptions } from '@tanstack/react-query';
 
 // Define the structure of the transformed query result
 export interface FacetTerm {
-  label?: string;
-  term: string;
   count: number;
+  term: string;
   facet?: string;
   groupBy?: string;
+  label?: string;
 }
 
 export interface QueryResult {
@@ -38,9 +38,14 @@ export interface FilterConfig {
     params: Params,
     options?: UseQueryOptions<any, Error, QueryResult>,
   ) => UseQueryOptions<any, Error, QueryResult>[];
-  transformData?: (item: FacetTerm) => FacetTerm;
+  transformData?: (item: FacetTerm) => FacetTerm; // useful for transforming data before rendering. Note that the label is used for search and display.
   groupBy?: {
     property: string;
     label: string;
   }[];
 }
+
+// Define the type for the query result accumulator
+export type TransformedFacetResults = {
+  [facet: string]: TransformedQueryResult['results'];
+};

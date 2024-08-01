@@ -36,7 +36,7 @@ const Search: NextPage<{
     () =>
       Array.isArray(router.query.q)
         ? router.query.q.map(s => s.trim()).join('+')
-        : router.query.q || defaultParams.q,
+        : router.query.q || defaultParams?.q,
     [router.query.q],
   );
 

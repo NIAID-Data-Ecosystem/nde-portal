@@ -3,16 +3,15 @@ import { Box, Flex } from '@chakra-ui/react';
 import { theme } from 'src/theme';
 import { Bar } from '@visx/shape';
 import { Group } from '@visx/group';
-import { FacetTerm } from 'src/utils/api/types';
 import { useTooltip, useTooltipInPortal } from '@visx/tooltip';
 import { formatNumber } from 'src/utils/helpers';
 import { scaleBand, scaleLinear } from '@visx/scale';
 import { addMissingYears } from '../helpers';
 import { useDateRangeContext } from '../hooks/useDateRangeContext';
-import { LinearGradient } from '@visx/gradient';
+import { FilterItem } from 'src/components/search-results-page/components/filters/types';
 
 interface HistogramProps {
-  updatedData: FacetTerm[];
+  updatedData: FilterItem[];
   handleClick: (args: string[]) => void;
   children: React.ReactNode;
 }
@@ -68,7 +67,7 @@ const Histogram: React.FC<HistogramProps> = ({
     showTooltip,
     hideTooltip,
   } = useTooltip({
-    tooltipData: { count: 0, term: '', displayAs: '', updatedCount: 0 },
+    tooltipData: { count: 0, term: '', label: '', updatedCount: 0 },
   });
 
   const { containerRef, containerBounds, TooltipInPortal } = useTooltipInPortal(
@@ -93,7 +92,7 @@ const Histogram: React.FC<HistogramProps> = ({
       datum: {
         count: number;
         term: string;
-        displayAs: string;
+        label: string;
         updatedCount: number;
       },
     ) => {
@@ -169,9 +168,9 @@ const Histogram: React.FC<HistogramProps> = ({
           top={tooltipTop}
           left={tooltipLeft}
         >
-          {tooltipData && tooltipData.displayAs && (
+          {tooltipData && tooltipData.label && (
             <>
-              {tooltipData.displayAs}:{' '}
+              {tooltipData.label}:{' '}
               {/* Show the updated count and initial count when they differ and the bar is selected. */}
               {range_min &&
                 range_max &&

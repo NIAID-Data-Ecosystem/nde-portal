@@ -5,6 +5,7 @@ import { Params } from 'src/utils/api';
 import { FetchSearchResultsResponse } from 'src/utils/api/types';
 import { Metadata } from 'src/hooks/api/types';
 import { encodeString } from 'src/utils/querystring-helpers';
+import { FacetTerm } from '../types';
 
 interface SourcesData extends FetchSearchResultsResponse {
   repos: Metadata | null;
@@ -20,17 +21,27 @@ interface SourcesData extends FetchSearchResultsResponse {
 interface FacetParams extends Params {
   facets: string;
 }
-export const buildFacetQueryParams = (params: FacetParams): FacetParams => ({
-  ...params,
-  q: params?.advancedSearch === 'true' ? params.q : encodeString(params.q),
-  extra_filter: params?.extra_filter
-    ? `${params.extra_filter} AND _exists_:${params.facets}`
-    : `_exists_:${params.facets}`,
-  size: 0,
-  facet_size: 1000,
-  facets: params.facets,
-  sort: undefined,
-});
+export const buildFacetQueryParams = (params: FacetParams): FacetParams => {
+  const { advancedSearch, q, extra_filter, facets } = params;
+
+  const encodedQuery = advancedSearch === 'true' ? q : encodeString(q);
+
+  const extraFilterWithFacets = extra_filter
+    ? `${extra_filter}${facets ? ` AND _exists_:${facets}` : ''}`
+    : facets
+    ? `_exists_:${facets}`
+    : '';
+
+  return {
+    ...params,
+    q: encodedQuery,
+    extra_filter: extraFilterWithFacets,
+    size: 0,
+    facet_size: 1000,
+    facets,
+    sort: undefined,
+  };
+};
 
 /**
  * Format the terms returned from the fetchSearchResults.
@@ -41,13 +52,14 @@ export const buildFacetQueryParams = (params: FacetParams): FacetParams => ({
  */
 export const structureQueryData = (
   data: FetchSearchResultsResponse,
-  facetField: string,
+  accessor: string,
+  facet?: string,
 ) => {
   const { total, facets } = data;
   if (!facets) {
     throw new Error('No facets returned from fetchSearchResults');
   }
-  const { terms } = facets[facetField];
+  const { terms } = facets[accessor];
 
   if (facets?.multi_terms_agg) {
     facets.multi_terms_agg.terms.forEach(({ term: multiTerm }) => {
@@ -60,13 +72,13 @@ export const structureQueryData = (
   }
 
   return {
-    facet: facetField,
+    facet: facet || accessor,
     results: [
       {
         label: 'Any Specified',
         term: '_exists_',
         count: total,
-        facet: facetField,
+        facet: facet || accessor,
       },
       ...terms,
     ],
@@ -87,6 +99,18 @@ export const createCommonQuery = ({
 }: {
   queryKey: QueryKey;
   params: FacetParams;
+  select?: (data: FetchSearchResultsResponse) => {
+    facet: string;
+    results: (
+      | FacetTerm
+      | {
+          label: string;
+          term: string;
+          count: number;
+          facet: string;
+        }
+    )[];
+  };
 }) => {
   const queryParams = buildFacetQueryParams(params);
 

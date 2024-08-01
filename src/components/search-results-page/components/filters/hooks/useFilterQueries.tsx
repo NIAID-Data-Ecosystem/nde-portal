@@ -2,12 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useQueries, UseQueryResult } from '@tanstack/react-query';
 import { Params } from 'src/utils/api';
 import { FILTER_CONFIGS } from '../config';
-import { QueryResult, TransformedQueryResult } from '../types';
-
-// Define the type for the query result accumulator
-type TransformedFacetResults = {
-  [facet: string]: TransformedQueryResult['results'];
-};
+import { QueryResult, TransformedFacetResults } from '../types';
 
 // Function to create a hash map from the filtered results for faster lookup
 const createFilteredResultsMap = (filteredResults: {
@@ -40,7 +35,6 @@ const mergeResults = (
   const mergedResults: TransformedFacetResults = { ...initialResults };
 
   const filteredResultsMap = createFilteredResultsMap(filteredResults);
-
   // Iterate over each facet in the initial results
   for (const facet in initialResults) {
     if (filteredResultsMap[facet]) {
@@ -206,15 +200,9 @@ export const useFilterQueries = (queryParams: Params) => {
   }, [queryParams, enableFilteredQueries]);
 
   // Fetch the updated results with the selected filters
-  const combinefilteredQueriesCallback = useCallback(
-    (data: UseQueryResult<QueryResult, Error>[]) => {
-      return combineQueryResults(data);
-    },
-    [],
-  );
   const { data: filteredResults, isLoading: isUpdating } = useQueries({
     queries: filteredQueries,
-    combine: combinefilteredQueriesCallback,
+    combine: combineCallback,
   });
 
   // Merge initial and filtered results (if they exist)
@@ -235,6 +223,7 @@ export const useFilterQueries = (queryParams: Params) => {
     results: mergedResults,
     error: null,
     isLoading: isLoading || isPlaceholderData || isPending,
-    isUpdating,
+    initialResults,
+    // isUpdating,
   };
 };

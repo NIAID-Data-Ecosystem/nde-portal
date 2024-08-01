@@ -47,8 +47,9 @@ export const FiltersSection: React.FC<FiltersSectionProps> = React.memo(
                       flex={1}
                       textAlign='left'
                       fontSize='sm'
-                      color='text.heading'
+                      color='gray.800'
                       mr={2}
+                      fontWeight='bold'
                     >
                       {name}
                     </Text>

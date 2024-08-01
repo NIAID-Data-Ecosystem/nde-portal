@@ -251,7 +251,7 @@ const groupTerms = (
 ) => {
   const groupedTerms: Record<string, FilterItem[]> = {};
 
-  terms.forEach(term => {
+  terms?.forEach(term => {
     const group =
       term.groupBy ||
       (term.term.includes('_exists_') && '_exists_') ||

@@ -21,7 +21,7 @@ export const Slider: React.FC<FiltersRangeSliderProps> = React.memo(
     const isDisabled = data && data.length <= 1;
     // Thumbs share the same value.
     const thumbsSameValue =
-      data && data[dateRange[0]]?.displayAs === data[dateRange[1]]?.displayAs;
+      data && data[dateRange[0]]?.label === data[dateRange[1]]?.label;
 
     if (!data || dateRange?.length !== 2) {
       return <></>;
@@ -84,7 +84,7 @@ export const Slider: React.FC<FiltersRangeSliderProps> = React.memo(
             py={0.5}
             width='unset'
           >
-            {dateRange?.[0] !== undefined ? data[dateRange[0]]?.displayAs : ''}
+            {dateRange?.[0] !== undefined ? data[dateRange[0]]?.label : ''}
           </Text>
         </RangeSliderThumb>
         <RangeSliderThumb
@@ -110,7 +110,7 @@ export const Slider: React.FC<FiltersRangeSliderProps> = React.memo(
             py={0.5}
             width='unset'
           >
-            {dateRange?.[1] !== undefined ? data[dateRange[1]]?.displayAs : ''}
+            {dateRange?.[1] !== undefined ? data[dateRange[1]]?.label : ''}
           </Text>
         </RangeSliderThumb>
       </RangeSlider>

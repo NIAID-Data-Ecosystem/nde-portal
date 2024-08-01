@@ -1,6 +1,6 @@
-import { FilterTerm } from '../../types';
+import { FilterItem } from 'src/components/search-results-page/components/filters/types';
 
-export const addMissingYears = (dates: FilterTerm[]) => {
+export const addMissingYears = (dates: FilterItem[]) => {
   //  Add in missing years (with a count of 0)
   dates
     .sort((a, b) => new Date(a.term).valueOf() - new Date(b.term).valueOf())
@@ -17,7 +17,7 @@ export const addMissingYears = (dates: FilterTerm[]) => {
         dates.splice(i + 1, 0, {
           count: 0,
           term: `${+year + 1}-01-01`,
-          displayAs: `${+year + 1}`,
+          label: `${+year + 1}`,
         });
       }
     });

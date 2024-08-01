@@ -4,8 +4,15 @@ import {
   APIResourceType,
   formatResourceTypeForDisplay,
 } from 'src/utils/formatting/formatResourceType';
-import { FilterConfig, FacetTerm, FilterItem } from './types';
+import { FilterConfig, FilterItem } from './types';
 import { buildQueries, buildSourceQueries } from './utils/query-builders';
+import { formatDate, formatISOString } from 'src/utils/api/helpers';
+import { FetchSearchResultsResponse } from 'src/utils/api/types';
+import {
+  createCommonQuery,
+  createNotExistsQuery,
+  structureQueryData,
+} from './utils/queries';
 
 const schema = SCHEMA_DEFINITIONS as SchemaDefinitions;
 
@@ -29,9 +36,44 @@ export const getSchemaDescription = (property: string) => {
  */
 export const FILTER_CONFIGS: FilterConfig[] = [
   {
+    name: 'Date',
+    property: 'date',
+    isDefaultOpen: true,
+    description: getSchemaDescription('hist_dates'),
+    createQueries: (params, options) => {
+      // Destructure options to exclude queryKey and gather other options, with defaults
+      const { queryKey = [], ...queryOptions } = options || {};
+      return [
+        createCommonQuery({
+          queryKey,
+          params: { ...params, hist: 'date', facets: '' },
+          ...queryOptions,
+          select: (data: FetchSearchResultsResponse) => {
+            return structureQueryData(data, 'hist_dates', 'date');
+          },
+        }),
+        createNotExistsQuery({
+          queryKey,
+          params: { ...params, facets: 'date' },
+          ...queryOptions,
+        }),
+      ];
+    },
+
+    transformData: (item): FilterItem => {
+      if (item.term.includes('_exists_')) {
+        return { ...item, label: item.label || '' };
+      }
+      return {
+        ...item,
+        label: formatDate(item.term)?.split('-')[0] || item.term,
+        term: formatISOString(item.term),
+      };
+    },
+  },
+  {
     name: 'Type',
     property: '@type',
-    isDefaultOpen: true,
     description:
       'Type is used to categorize the nature of the content of the resource',
     createQueries: buildQueries('@type'),

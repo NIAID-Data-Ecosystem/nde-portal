@@ -1,10 +1,10 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { FacetTerms, FilterTerm } from 'src/components/filters/types';
 import { addMissingYears } from '../helpers';
+import { FilterItem } from 'src/components/search-results-page/components/filters/types';
 
 export interface ContextProps {
   colorScheme: string;
-  data?: FilterTerm[];
+  data?: FilterItem[];
   dates: (string | null)[];
   dateRange: number[];
   setDateRange: React.Dispatch<React.SetStateAction<ContextProps['dateRange']>>;
@@ -34,7 +34,7 @@ DateRangeContext.displayName = 'DateRangeContext';
   [DateRangeSlider]: Range controlled by sliders. Indices of resourcesWithDate.
 */
 export const DateRangeSlider: React.FC<{
-  data: FacetTerms;
+  data: FilterItem[];
   selectedDates: string[];
   colorScheme: ContextProps['colorScheme'];
   children: React.ReactNode;
@@ -50,7 +50,7 @@ export const DateRangeSlider: React.FC<{
   const data = useMemo(
     () =>
       addMissingYears(
-        initialData?.date
+        initialData
           .filter(datum => {
             // filter out dates that exceed the current year.
             return (
@@ -59,7 +59,7 @@ export const DateRangeSlider: React.FC<{
           })
           .filter(d => !(d.term === '-_exists_' || d.count === 0)) || [],
       ),
-    [initialData?.date],
+    [initialData],
   );
   useEffect(() => {
     // This logic is added to control the state when filter tags are updated / page is refreshed.

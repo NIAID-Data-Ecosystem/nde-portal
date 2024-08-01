@@ -1,16 +1,11 @@
 import React, { useMemo } from 'react';
-import { omit } from 'lodash';
 import { Box, Checkbox, Flex, Heading, Skeleton, Text } from '@chakra-ui/react';
-import { useFacetsData } from '../../hooks/useFacetsData';
-import { SelectedFilterType } from '../../types';
-import { Params } from 'src/utils/api';
-import { queryFilterObject2String } from '../../helpers';
 import { Slider } from './components/slider';
-import { FacetTerm } from 'src/utils/api/types';
 import { DatePicker } from './components/date-picker';
 import { formatNumber } from 'src/utils/helpers';
 import { DateRangeSlider } from './hooks/useDateRangeContext';
 import dynamic from 'next/dynamic';
+import { FilterItem } from 'src/components/search-results-page/components/filters/types';
 
 const Histogram = dynamic(() => import('./components/histogram'), {
   ssr: false,
@@ -18,12 +13,12 @@ const Histogram = dynamic(() => import('./components/histogram'), {
 
 interface FiltersDateSliderProps {
   colorScheme: string;
-  // Params used in query.
-  queryParams: Params;
+  error: Error | null;
+  initialResults: FilterItem[];
+  isLoading: boolean;
+  selectedData: FilterItem[];
   // Selected resourcesWithDate [min, max] from router.
   selectedDates: string[];
-  filters: SelectedFilterType;
-  selectedData: FacetTerm[];
   // fn to update filter selection
   handleSelectedFilter: (arg: string[]) => void;
   // fn to reset filter selection
@@ -32,31 +27,26 @@ interface FiltersDateSliderProps {
 
 export const FiltersDateSlider: React.FC<FiltersDateSliderProps> = ({
   colorScheme,
-  queryParams: params,
-  filters,
-  selectedDates,
+  error,
+  initialResults,
+  isLoading,
   selectedData,
+  selectedDates,
   handleSelectedFilter,
   resetFilter,
 }) => {
+  // To do: remove isUpdating
+  const isUpdating = false;
   /*
   RETRIEVE DATES DATA
     [resourcesWithDate] The data for the date slider updates with filters and querystring changes but we omit the date filter from updating the data for the appearance of this filter.
   */
-  const queryParams = {
-    ...params,
-    extra_filter: queryFilterObject2String(omit(filters, ['date'])) ?? '',
-  };
-  // Initial data. Not impacted by date selection, used for default state of bars, input and slider.
-  const [{ data, error, isLoading, isUpdating }] = useFacetsData({
-    queryParams,
-    facets: ['date'],
-  });
 
   // [resourcesWithNoDate]: Data used for resources that do not have a date field.
   const resourcesWithNoDate = useMemo(
-    () => data?.date?.filter(d => d.term === '-_exists_' && d.count > 0) || [],
-    [data?.date],
+    () =>
+      initialResults?.filter(d => d.term === '-_exists_' && d.count > 0) || [],
+    [initialResults],
   );
 
   // check if there is data with dates available to display the historgram.
@@ -83,12 +73,12 @@ export const FiltersDateSlider: React.FC<FiltersDateSliderProps> = ({
       borderColor='primary.100'
     >
       <Skeleton isLoaded={!isLoading} w='100%' h={isLoading ? '4rem' : 'unset'}>
-        {!isLoading && data?.date?.length === 0 && (
+        {!isLoading && initialResults?.length === 0 && (
           <Text>No available filters.</Text>
         )}
-        {!isLoading && !isUpdating && data?.date?.length > 0 ? (
+        {!isLoading && !isUpdating && initialResults?.length > 0 ? (
           <DateRangeSlider
-            data={data}
+            data={initialResults}
             selectedDates={selectedDates}
             colorScheme='secondary'
           >
