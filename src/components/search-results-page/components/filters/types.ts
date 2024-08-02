@@ -37,6 +37,7 @@ export interface FilterConfig {
   createQueries: (
     params: Params,
     options?: UseQueryOptions<any, Error, QueryResult>,
+    isInitialQuery?: boolean,
   ) => UseQueryOptions<any, Error, QueryResult>[];
   transformData?: (item: FacetTerm) => FacetTerm; // useful for transforming data before rendering. Note that the label is used for search and display.
   groupBy?: {

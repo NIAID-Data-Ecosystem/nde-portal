@@ -13,6 +13,11 @@ import {
   createNotExistsQuery,
   structureQueryData,
 } from './utils/queries';
+import {
+  queryFilterObject2String,
+  queryFilterString2Object,
+} from 'src/components/filters';
+import { omit } from 'lodash';
 
 const schema = SCHEMA_DEFINITIONS as SchemaDefinitions;
 
@@ -40,13 +45,31 @@ export const FILTER_CONFIGS: FilterConfig[] = [
     property: 'date',
     isDefaultOpen: true,
     description: getSchemaDescription('hist_dates'),
-    createQueries: (params, options) => {
+    createQueries: (params, options, isInitialQuery) => {
       // Destructure options to exclude queryKey and gather other options, with defaults
       const { queryKey = [], ...queryOptions } = options || {};
+      const filtersString2Object = params.extra_filter
+        ? queryFilterString2Object(params.extra_filter)
+        : '';
+
+      /*
+      Remove date filter from filters object for initial results.
+      This is necessary to get all the possible results (regardless of date filter selection),
+      If we want the histogram bars to fully change whenever there's a new date selection, add back the date filter.
+      */
+      const filters = isInitialQuery
+        ? omit(filtersString2Object, ['date'])
+        : filtersString2Object;
+
       return [
         createCommonQuery({
           queryKey,
-          params: { ...params, hist: 'date', facets: '' },
+          params: {
+            ...params,
+            extra_filter: queryFilterObject2String(filters) ?? '',
+            hist: 'date',
+            facets: '',
+          },
           ...queryOptions,
           select: (data: FetchSearchResultsResponse) => {
             return structureQueryData(data, 'hist_dates', 'date');

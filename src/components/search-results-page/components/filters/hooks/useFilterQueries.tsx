@@ -127,13 +127,7 @@ export const useFilterQueries = (queryParams: Params) => {
   const initialQueries = useMemo(() => {
     return FILTER_CONFIGS.flatMap(facet =>
       facet.createQueries(
-        {
-          q: queryParams.q,
-          facet_size: 1000,
-          size: 0,
-          extra_filter: '',
-          filters: '',
-        },
+        queryParams,
         {
           queryKey: ['search-results'],
           placeholderData: {
@@ -154,9 +148,10 @@ export const useFilterQueries = (queryParams: Params) => {
             },
           },
         },
+        true,
       ),
     );
-  }, [queryParams.q]);
+  }, [queryParams]);
 
   // Note: Wrap useQueries combine function in callback because inline functions will run on every render.
   // https://tanstack.com/query/latest/docs/framework/react/reference/useQueries#memoization
@@ -224,6 +219,5 @@ export const useFilterQueries = (queryParams: Params) => {
     error: null,
     isLoading: isLoading || isPlaceholderData || isPending,
     initialResults,
-    // isUpdating,
   };
 };

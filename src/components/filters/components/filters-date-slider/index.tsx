@@ -16,6 +16,7 @@ interface FiltersDateSliderProps {
   error: Error | null;
   initialResults: FilterItem[];
   isLoading: boolean;
+  isUpdating: boolean;
   selectedData: FilterItem[];
   // Selected resourcesWithDate [min, max] from router.
   selectedDates: string[];
@@ -35,13 +36,6 @@ export const FiltersDateSlider: React.FC<FiltersDateSliderProps> = ({
   handleSelectedFilter,
   resetFilter,
 }) => {
-  // To do: remove isUpdating
-  const isUpdating = false;
-  /*
-  RETRIEVE DATES DATA
-    [resourcesWithDate] The data for the date slider updates with filters and querystring changes but we omit the date filter from updating the data for the appearance of this filter.
-  */
-
   // [resourcesWithNoDate]: Data used for resources that do not have a date field.
   const resourcesWithNoDate = useMemo(
     () =>
@@ -76,7 +70,7 @@ export const FiltersDateSlider: React.FC<FiltersDateSliderProps> = ({
         {!isLoading && initialResults?.length === 0 && (
           <Text>No available filters.</Text>
         )}
-        {!isLoading && !isUpdating && initialResults?.length > 0 ? (
+        {!isLoading && selectedData?.length > 0 ? (
           <DateRangeSlider
             data={initialResults}
             selectedDates={selectedDates}

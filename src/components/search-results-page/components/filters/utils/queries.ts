@@ -22,20 +22,15 @@ interface FacetParams extends Params {
   facets: string;
 }
 export const buildFacetQueryParams = (params: FacetParams): FacetParams => {
-  const { advancedSearch, q, extra_filter, facets } = params;
+  const { advancedSearch, q, facets, extra_filter } = params;
 
   const encodedQuery = advancedSearch === 'true' ? q : encodeString(q);
-
-  const extraFilterWithFacets = extra_filter
-    ? `${extra_filter}${facets ? ` AND _exists_:${facets}` : ''}`
-    : facets
-    ? `_exists_:${facets}`
-    : '';
 
   return {
     ...params,
     q: encodedQuery,
-    extra_filter: extraFilterWithFacets,
+    extra_filter,
+    filters: '',
     size: 0,
     facet_size: 1000,
     facets,
@@ -92,11 +87,7 @@ export const structureQueryData = (
  * @returns The query object.
  */
 
-export const createCommonQuery = ({
-  params,
-  queryKey,
-  ...options
-}: {
+interface QueryArgs {
   queryKey: QueryKey;
   params: FacetParams;
   select?: (data: FetchSearchResultsResponse) => {
@@ -111,8 +102,26 @@ export const createCommonQuery = ({
         }
     )[];
   };
-}) => {
-  const queryParams = buildFacetQueryParams(params);
+}
+
+export const createCommonQuery = ({
+  params,
+  queryKey,
+  ...options
+}: QueryArgs) => {
+  // add exists to get total count for "Any Specified"
+  const extraFilterWithFacets = params.extra_filter
+    ? `${params.extra_filter}${
+        params.facets ? ` AND _exists_:${params.facets}` : ''
+      }`
+    : params.facets
+    ? `_exists_:${params.facets}`
+    : '';
+
+  const queryParams = buildFacetQueryParams({
+    ...params,
+    extra_filter: extraFilterWithFacets,
+  });
 
   return {
     queryKey: [...queryKey, queryParams],
@@ -143,20 +152,26 @@ export const createNotExistsQuery = ({
   params,
   queryKey,
   ...options
-}: {
-  queryKey: QueryKey;
-  params: FacetParams;
-}) => {
-  const queryParams = buildFacetQueryParams(params);
+}: QueryArgs) => {
+  // add not exists to get total count for "None Specified"
+  const extraFilterWithFacets = params.extra_filter
+    ? `${params.extra_filter}${
+        params.facets ? ` AND -_exists_:${params.facets}` : ''
+      }`
+    : params.facets
+    ? `-_exists_:${params.facets}`
+    : '';
+  const queryParams = buildFacetQueryParams({
+    ...params,
+    extra_filter: extraFilterWithFacets,
+  });
 
   return {
     queryKey: [
       ...queryKey,
       {
         ...queryParams,
-        extra_filter: params.extra_filter
-          ? `${params.extra_filter} AND -_exists_:${params.facets}`
-          : `-_exists_:${params.facets}`,
+        extra_filter: extraFilterWithFacets,
         facet_size: 0,
       },
     ],
@@ -199,15 +214,11 @@ export const createNotExistsQuery = ({
  * @returns The query object.
  */
 export const createCommonQueryWithMetadata = ({
-  queryKey,
   params,
+  queryKey,
   ...options
-}: {
-  queryKey: QueryKey;
-  params: FacetParams;
-}) => {
+}: QueryArgs) => {
   const queryParams = buildFacetQueryParams(params);
-
   return {
     queryKey: [...queryKey, queryParams],
     queryFn: async () => {
