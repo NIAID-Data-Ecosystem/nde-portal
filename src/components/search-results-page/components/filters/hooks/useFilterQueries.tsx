@@ -138,8 +138,8 @@ export const useFilterQueries = (queryParams: Params) => {
                 terms: Array(5)
                   .fill('')
                   .map((_, index) => ({
-                    label: `placeholder ${index}`,
-                    term: `placeholder ${index}`,
+                    label: `Loading... ${index}`,
+                    term: `Loading... ${index}`,
                     facet: facet.property,
                     count: 0,
                   })),
@@ -219,5 +219,6 @@ export const useFilterQueries = (queryParams: Params) => {
     error: null,
     isLoading: isLoading || isPlaceholderData || isPending,
     initialResults,
+    isUpdating,
   };
 };

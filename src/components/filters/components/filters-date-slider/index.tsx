@@ -16,7 +16,6 @@ interface FiltersDateSliderProps {
   error: Error | null;
   initialResults: FilterItem[];
   isLoading: boolean;
-  isUpdating: boolean;
   selectedData: FilterItem[];
   // Selected resourcesWithDate [min, max] from router.
   selectedDates: string[];

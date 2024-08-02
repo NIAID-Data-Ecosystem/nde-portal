@@ -127,7 +127,7 @@ export const FILTER_CONFIGS: FilterConfig[] = [
     name: 'Collections',
     property: 'sourceOrganization.name',
     description: getSchemaDescription('sourceOrganization.name'),
-    createQueries: (params, options) =>
+    createQueries: (params, options, isInitialQuery) =>
       buildQueries('sourceOrganization.name')(
         {
           ...params,
@@ -136,6 +136,7 @@ export const FILTER_CONFIGS: FilterConfig[] = [
           multi_terms_size: '100',
         },
         options,
+        isInitialQuery,
       ),
   },
   {

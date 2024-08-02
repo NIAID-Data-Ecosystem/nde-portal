@@ -32,7 +32,7 @@ export const Filters: React.FC<FiltersProps> = ({
   const router = useRouter();
 
   // Use custom hook to get filter query results
-  const { results, initialResults, error, isLoading } =
+  const { results, initialResults, error, isLoading, isUpdating } =
     useFilterQueries(queryParams);
 
   const handleUpdate = useCallback(
@@ -112,6 +112,7 @@ export const Filters: React.FC<FiltersProps> = ({
                 handleSelectedFilters(values, property)
               }
               isLoading={isLoading}
+              isUpdating={isUpdating}
             />
           </FiltersSection>
         );

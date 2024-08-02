@@ -314,6 +314,7 @@ export const FiltersList: React.FC<FiltersListProps> = React.memo(
     colorScheme,
     handleSelectedFilters,
     isLoading,
+    isUpdating,
     property,
     searchPlaceholder,
     selectedFilters,
@@ -368,7 +369,9 @@ export const FiltersList: React.FC<FiltersListProps> = React.memo(
         {/* List of filters available narrowed based on search and expansion toggle */}
         <CheckboxGroup value={selectedFilters} onChange={handleSelectedFilters}>
           <VirtualizedList items={searchedTerms}>
-            {props => <Checkbox isLoading={isLoading} {...props} />}
+            {props => (
+              <Checkbox isLoading={isLoading && !isUpdating} {...props} />
+            )}
           </VirtualizedList>
         </CheckboxGroup>
       </>
