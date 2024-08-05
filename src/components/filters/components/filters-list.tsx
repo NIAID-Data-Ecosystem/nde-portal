@@ -148,8 +148,9 @@ const VirtualizedList = ({
   items: FilterItem[];
   children: (props: FilterItem) => JSX.Element;
 }) => {
+  const DEFAULT_SIZE = useMemo(() => 35, []);
   const listRef = useRef<any>();
-  const itemRefs = useRef<number[]>(Array(items.length).fill(null));
+  const itemRefs = useRef<number[]>(Array(items.length).fill(DEFAULT_SIZE));
   const setItemSize = useCallback((index: number, size: number) => {
     listRef?.current?.resetAfterIndex(0);
 
@@ -165,7 +166,7 @@ const VirtualizedList = ({
     index: number;
     style: any;
   }) => {
-    const ref = useRef<HTMLInputElement>(null);
+    const ref = useRef<HTMLDivElement>(null);
 
     // Set the item size in the list for virtualization.
     useEffect(() => {
@@ -207,11 +208,11 @@ const VirtualizedList = ({
         className='virtualized-list'
         ref={listRef}
         width='100%'
-        height={items.length > 10 ? 400 : Math.max(100, items.length * 35)}
+        height={
+          items.length > 10 ? 400 : Math.max(100, items.length * DEFAULT_SIZE)
+        }
         itemCount={items.length}
-        itemSize={index => {
-          return itemRefs?.current?.[index] || 35;
-        }}
+        itemSize={index => itemRefs.current[index] || DEFAULT_SIZE}
       >
         {({ index, style }) => (
           <Row index={index} style={style}>
@@ -223,50 +224,54 @@ const VirtualizedList = ({
   );
 };
 
-const sortTerms = (terms: FilterItem[], selectedFilters: string[]) =>
-  terms.sort((a, b) => {
-    // Place selected filters at the top of their group
-    const aSelected = selectedFilters.includes(a.term);
-    const bSelected = selectedFilters.includes(b.term);
-    if (aSelected && !bSelected) return -1;
-    if (!aSelected && bSelected) return 1;
+const sortTerms = (terms: FilterItem[], selectedFilters: string[]) => {
+  const selectedSet = new Set(selectedFilters);
 
+  return terms.sort((a, b) => {
+    // Place selected filters at the top of their group
+    const aSelected = selectedSet.has(a.term);
+    const bSelected = selectedSet.has(b.term);
+
+    if (aSelected !== bSelected) return aSelected ? -1 : 1;
     // Terms -_exists_ (labelled as Not Specified) is always first followed by _exists_ (labelled as Any Specified) - no matter the count.
-    if (a.term.includes('-_exists_') && !b.term.includes('-_exists_'))
-      return -1;
-    if (!a.term.includes('-_exists_') && b.term.includes('-_exists_')) return 1;
-    if (a.term.includes('_exists_') && !b.term.includes('_exists_')) return -1;
-    if (!a.term.includes('_exists_') && b.term.includes('_exists_')) return 1;
+    if (a.term.includes('-_exists_') !== b.term.includes('-_exists_'))
+      return a.term.includes('-_exists_') ? -1 : 1;
+
+    if (a.term.includes('_exists_') !== b.term.includes('_exists_'))
+      return a.term.includes('_exists_') ? -1 : 1;
 
     // Sort by count in descending order
     if (a.count !== b.count) return b.count - a.count;
 
-    return a.label.toLowerCase().localeCompare(b.label.toLowerCase());
+    return a.label.localeCompare(b.label, undefined, { sensitivity: 'base' });
   });
+};
 
 const groupTerms = (
   terms: FilterItem[],
   selectedFilters: string[],
   groupOrder?: FilterConfig['groupBy'],
 ) => {
-  const groupedTerms: Record<string, FilterItem[]> = {};
-
-  terms?.forEach(term => {
-    const group =
-      term.groupBy ||
-      (term.term.includes('_exists_') && '_exists_') ||
-      'Ungrouped';
-    if (!groupedTerms[group]) groupedTerms[group] = [];
-    groupedTerms[group].push(term);
-  });
-
-  Object.values(groupedTerms).forEach(group =>
-    sortTerms(group, selectedFilters),
+  const groupedTerms: Record<string, FilterItem[]> = terms.reduce(
+    (acc, term) => {
+      const group =
+        term.groupBy ||
+        (term.term.includes('_exists_') && '_exists_') ||
+        'Ungrouped';
+      if (!acc[group]) acc[group] = [];
+      acc[group].push(term);
+      return acc;
+    },
+    {} as Record<string, FilterItem[]>,
   );
+
+  Object.keys(groupedTerms).forEach(group => {
+    groupedTerms[group] = sortTerms(groupedTerms[group], selectedFilters);
+  });
 
   const results: FilterItem[] = [];
 
-  // Append the _exists_ group first if it exists
+  // Append the _exists_ group first if it exists.
   if (groupedTerms['_exists_']) {
     results.push(...groupedTerms['_exists_']);
     delete groupedTerms['_exists_'];

@@ -49,7 +49,7 @@ export const FiltersSection: React.FC<FiltersSectionProps> = React.memo(
                       fontSize='sm'
                       color='gray.800'
                       mr={2}
-                      fontWeight='bold'
+                      fontWeight='medium'
                     >
                       {name}
                     </Text>

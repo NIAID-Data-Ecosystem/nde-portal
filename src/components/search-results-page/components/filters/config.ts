@@ -115,11 +115,11 @@ export const FILTER_CONFIGS: FilterConfig[] = [
     groupBy: [
       {
         property: 'IID',
-        label: 'IID',
+        label: 'IID Repositories',
       },
       {
         property: 'Generalist',
-        label: 'Generalist',
+        label: 'Generalist Repositories',
       },
     ],
   },
