@@ -5,7 +5,7 @@ import { DatePicker } from './components/date-picker';
 import { formatNumber } from 'src/utils/helpers';
 import { DateRangeSlider } from './hooks/useDateRangeContext';
 import dynamic from 'next/dynamic';
-import { FilterItem } from 'src/components/search-results-page/components/filters/types';
+import { FilterItem } from 'src/views/search-results-page/components/filters/types';
 
 const Histogram = dynamic(() => import('./components/histogram'), {
   ssr: false,

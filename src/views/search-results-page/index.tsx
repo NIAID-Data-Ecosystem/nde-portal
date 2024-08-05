@@ -22,7 +22,7 @@ import { SelectedFilterType } from '../filters/types';
 import { defaultQuery } from './helpers';
 import { MetadataScoreToggle } from './components/metadata-score-toggle';
 import { useQuerySearchResults } from './hooks/useSearchResults';
-import ResultsCount from 'src/components/search-results-page/components/count';
+import ResultsCount from 'src/views/search-results-page/components/count';
 import { OLD_FILTERS_CONFIG } from './components/filters/helpers';
 import Card from './components/card';
 import { FormattedResource } from 'src/utils/api/types';

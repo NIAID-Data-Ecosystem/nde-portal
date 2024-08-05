@@ -18,7 +18,7 @@ import {
 import { FaFilter } from 'react-icons/fa6';
 import { SelectedFilterType } from '../types';
 import { ScrollContainer } from 'src/components/scroll-container';
-import { FilterConfig } from 'src/components/search-results-page/components/filters/types';
+import { FilterConfig } from 'src/views/search-results-page/components/filters/types';
 
 interface FiltersContainerProps {
   title?: string;

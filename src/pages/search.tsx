@@ -3,7 +3,7 @@ import { useRouter } from 'next/router';
 import { PageContainer, PageContent } from 'src/components/page-container';
 import { Flex, Heading } from '@chakra-ui/react';
 import { useHasMounted } from 'src/hooks/useHasMounted';
-import SearchResultsPage from 'src/components/search-results-page';
+import SearchResultsPage from 'src/views/search-results-page';
 import { queryFilterString2Object } from 'src/components/filters/helpers';
 import { useCallback, useMemo } from 'react';
 import { SelectedFilterType } from 'src/components/filters/types';
@@ -11,10 +11,10 @@ import dynamic from 'next/dynamic';
 import {
   defaultParams,
   defaultQuery,
-} from 'src/components/search-results-page/helpers';
-import { OLD_FILTERS_CONFIG } from 'src/components/search-results-page/components/filters/helpers';
+} from 'src/views/search-results-page/helpers';
+import { OLD_FILTERS_CONFIG } from 'src/views/search-results-page/components/filters/helpers';
 import { fetchSearchResults } from 'src/utils/api';
-import { Filters } from 'src/components/search-results-page/components/filters';
+import { Filters } from 'src/views/search-results-page/components/filters';
 import { FormattedResource } from 'src/utils/api/types';
 import { ScrollContainer } from 'src/components/scroll-container';
 

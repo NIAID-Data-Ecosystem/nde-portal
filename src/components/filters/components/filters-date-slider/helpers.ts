@@ -1,4 +1,4 @@
-import { FilterItem } from 'src/components/search-results-page/components/filters/types';
+import { FilterItem } from 'src/views/search-results-page/components/filters/types';
 
 export const addMissingYears = (dates: FilterItem[]) => {
   //  Add in missing years (with a count of 0)

@@ -17,11 +17,11 @@ import { SearchInput } from 'src/components/search-input';
 import {
   FilterConfig,
   FilterItem,
-} from 'src/components/search-results-page/components/filters/types';
+} from 'src/views/search-results-page/components/filters/types';
 import { useDebounceValue } from 'usehooks-ts';
 import { formatNumber } from 'src/utils/helpers';
 import { VariableSizeList as List } from 'react-window';
-import { FILTER_CONFIGS } from 'src/components/search-results-page/components/filters/config';
+import { FILTER_CONFIGS } from 'src/views/search-results-page/components/filters/config';
 
 // Define the props interface for the FiltersList component
 interface FiltersListProps {

@@ -8,7 +8,7 @@ import { formatNumber } from 'src/utils/helpers';
 import { scaleBand, scaleLinear } from '@visx/scale';
 import { addMissingYears } from '../helpers';
 import { useDateRangeContext } from '../hooks/useDateRangeContext';
-import { FilterItem } from 'src/components/search-results-page/components/filters/types';
+import { FilterItem } from 'src/views/search-results-page/components/filters/types';
 
 interface HistogramProps {
   updatedData: FilterItem[];

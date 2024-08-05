@@ -8,8 +8,8 @@ import {
   FlexProps,
 } from '@chakra-ui/react';
 import { queryFilterObject2String } from 'src/components/filters/helpers';
-import { defaultQuery } from 'src/components/search-results-page/helpers';
-import { OLD_FILTERS_CONFIG } from 'src/components/search-results-page/components/filters/helpers';
+import { defaultQuery } from 'src/views/search-results-page/helpers';
+import { OLD_FILTERS_CONFIG } from 'src/views/search-results-page/components/filters/helpers';
 import { SelectedFilterType, SelectedFilterTypeValue } from '../types';
 
 interface FilterTagsProps extends FlexProps {
