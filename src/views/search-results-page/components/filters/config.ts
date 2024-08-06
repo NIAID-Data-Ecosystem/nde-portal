@@ -27,7 +27,7 @@ const schema = SCHEMA_DEFINITIONS as SchemaDefinitions;
  * @param property - The schema property to get the description for.
  * @returns The description for the schema property.
  */
-export const getSchemaDescription = (property: string) => {
+const getSchemaDescription = (property: string) => {
   const schemaProperty = schema[property];
   return (
     schemaProperty?.abstract?.['Dataset'] ||

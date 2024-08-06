@@ -252,6 +252,9 @@ const groupTerms = (
   selectedFilters: string[],
   groupOrder?: FilterConfig['groupBy'],
 ) => {
+  if (!terms) {
+    return [];
+  }
   const groupedTerms: Record<string, FilterItem[]> = terms.reduce(
     (acc, term) => {
       const group =

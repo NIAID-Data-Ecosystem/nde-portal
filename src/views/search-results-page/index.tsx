@@ -18,7 +18,7 @@ import {
 import { MAX_PAGES, Pagination } from './components/pagination';
 import { SortDropdown } from './components/sort';
 import { encodeString } from 'src/utils/querystring-helpers';
-import { SelectedFilterType } from '../filters/types';
+import { SelectedFilterType } from 'src/components/filters/types';
 import { defaultQuery } from './helpers';
 import { MetadataScoreToggle } from './components/metadata-score-toggle';
 import { useQuerySearchResults } from './hooks/useSearchResults';
@@ -26,13 +26,13 @@ import ResultsCount from 'src/views/search-results-page/components/count';
 import { OLD_FILTERS_CONFIG } from './components/filters/helpers';
 import Card from './components/card';
 import { FormattedResource } from 'src/utils/api/types';
-import { DownloadMetadata } from '../download-metadata';
 import Empty from 'src/components/empty';
 import NextLink from 'next/link';
-import Banner from '../banner';
 import { formatNumber } from 'src/utils/helpers';
 import { ErrorMessage } from './components/error';
 import { Link } from 'src/components/link';
+import { DownloadMetadata } from 'src/components/download-metadata';
+import Banner from 'src/components/banner';
 
 /*
 [COMPONENT INFO]:

@@ -1,10 +1,20 @@
 import { FiltersConfigProps } from 'src/components/filters/types';
-import { getSchemaDescription } from './config';
-
+import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
+import { SchemaDefinitions } from 'scripts/generate-schema-definitions/types';
 /*
 Config for the naming/text of a filter.
 [NOTE]: Order matters here as the filters will be rendered in the order of the keys.
 */
+const schema = SCHEMA_DEFINITIONS as SchemaDefinitions;
+
+const getSchemaDescription = (property: string) => {
+  const schemaProperty = schema[property];
+  return (
+    schemaProperty?.abstract?.['Dataset'] ||
+    schemaProperty?.description?.['Dataset'] ||
+    ''
+  );
+};
 
 export const OLD_FILTERS_CONFIG: FiltersConfigProps = {
   date: {

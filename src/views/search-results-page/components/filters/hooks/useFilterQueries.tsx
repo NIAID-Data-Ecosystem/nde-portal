@@ -67,6 +67,7 @@ const combineQueryResults = (
   const isLoading = queryResult.some(query => query.isLoading);
   const isPending = queryResult.some(query => query.isPending);
   const isPlaceholderData = queryResult.some(query => query.isPlaceholderData);
+  const error = queryResult.find(query => query.error)?.error;
   const results = queryResult.reduce((acc, { data }) => {
     if (!data || !data?.facet) return acc;
     const { facet, results } = data;
@@ -74,7 +75,13 @@ const combineQueryResults = (
     acc[facet] = acc[facet] ? acc[facet].concat(results) : results;
     return acc;
   }, {} as { [facet: string]: QueryResult['results'] });
-  return { data: results, isLoading, isPlaceholderData, isPending };
+  return {
+    data: results,
+    isLoading,
+    isPlaceholderData,
+    isPending,
+    error: error || null,
+  };
 };
 
 /**
@@ -83,7 +90,6 @@ const combineQueryResults = (
  * @param queryResult - The object returned by the combine data.
  * @returns An object containing the transformed combined data and the loading state.
  */
-
 const transformResults = ({
   data,
   ...queryResult
@@ -92,6 +98,7 @@ const transformResults = ({
   isLoading: boolean;
   isPlaceholderData: boolean;
   isPending: boolean;
+  error: Error | null;
 }) => {
   const transformedResults = { ...data };
   Object.keys(data).forEach(facet => {
@@ -109,6 +116,7 @@ const transformResults = ({
     ...queryResult,
   };
 };
+
 /**
  * Custom hook to manage filter queries.
  *
@@ -120,7 +128,6 @@ const transformResults = ({
  * @param queryParams - The parameters used in the query.
  * @returns The merged initial and filtered results.
  */
-
 export const useFilterQueries = (queryParams: Params) => {
   // Memoize the initial queries to avoid unnecessary recalculations
   // ignore extra_filter and filters in the initial queries to get all the possible results (regardless of filter selection)
@@ -161,12 +168,14 @@ export const useFilterQueries = (queryParams: Params) => {
     },
     [],
   );
+
   // Fetch initial data.
   const {
     data: initialResults,
     isLoading,
     isPending,
     isPlaceholderData,
+    error: initialError,
   } = useQueries({
     queries: initialQueries,
     combine: combineCallback,
@@ -195,7 +204,11 @@ export const useFilterQueries = (queryParams: Params) => {
   }, [queryParams, enableFilteredQueries]);
 
   // Fetch the updated results with the selected filters
-  const { data: filteredResults, isLoading: isUpdating } = useQueries({
+  const {
+    data: filteredResults,
+    isLoading: isUpdating,
+    error: filteredError,
+  } = useQueries({
     queries: filteredQueries,
     combine: combineCallback,
   });
@@ -214,9 +227,12 @@ export const useFilterQueries = (queryParams: Params) => {
     }
   }, [initialResults, filteredResults, enableFilteredQueries, isUpdating]);
 
+  // Combine errors from initial and filtered queries
+  const error = initialError || filteredError;
+
   return {
     results: mergedResults,
-    error: null,
+    error,
     isLoading: isLoading || isPlaceholderData || isPending,
     initialResults,
     isUpdating,
