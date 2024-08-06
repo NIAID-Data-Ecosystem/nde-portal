@@ -71,6 +71,7 @@ export const FILTER_CONFIGS: FilterConfig[] = [
             facets: '',
           },
           ...queryOptions,
+          placeholderData: undefined,
           select: (data: FetchSearchResultsResponse) => {
             return structureQueryData(data, 'hist_dates', 'date');
           },

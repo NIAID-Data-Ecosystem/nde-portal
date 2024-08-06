@@ -18,7 +18,7 @@ interface SourcesData extends FetchSearchResultsResponse {
  * @param facetField - The facet field to filter by.
  * @returns The common query parameters.
  */
-interface FacetParams extends Params {
+export interface FacetParams extends Params {
   facets: string;
 }
 export const buildFacetQueryParams = (params: FacetParams): FacetParams => {
@@ -54,6 +54,7 @@ export const structureQueryData = (
   if (!facets) {
     throw new Error('No facets returned from fetchSearchResults');
   }
+
   const { terms } = facets[accessor];
 
   if (facets?.multi_terms_agg) {
@@ -90,6 +91,7 @@ export const structureQueryData = (
 interface QueryArgs {
   queryKey: QueryKey;
   params: FacetParams;
+  placeholderData?: any;
   select?: (data: FetchSearchResultsResponse) => {
     facet: string;
     results: (
@@ -233,7 +235,11 @@ export const createCommonQueryWithMetadata = ({
       return { ...data, repos };
     },
     select: (data: SourcesData) => {
+      if (!data) {
+        throw new Error('No data returned from fetchSearchResults');
+      }
       const { facets } = data;
+
       if (!facets) {
         throw new Error('No facets returned from fetchSearchResults');
       }

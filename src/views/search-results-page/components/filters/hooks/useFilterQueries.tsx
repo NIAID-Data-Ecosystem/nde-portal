@@ -154,6 +154,7 @@ export const useFilterQueries = (queryParams: Params) => {
               total: 0,
             },
           },
+          refetchOnWindowFocus: false,
         },
         true,
       ),
@@ -199,6 +200,7 @@ export const useFilterQueries = (queryParams: Params) => {
       facet.createQueries(queryParams, {
         queryKey: ['filtered'],
         enabled: enableFilteredQueries,
+        refetchOnWindowFocus: false,
       }),
     );
   }, [queryParams, enableFilteredQueries]);
