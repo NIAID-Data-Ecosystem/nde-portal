@@ -77,19 +77,24 @@ export const Filters: React.FC<FiltersProps> = ({
 
         if (property === 'date') {
           return (
-            <FiltersDateSlider
-              key={property}
-              colorScheme={colorScheme}
-              error={error}
-              handleSelectedFilter={values =>
-                handleSelectedFilters(values, property)
-              }
-              isLoading={isLoading}
-              initialResults={initialResults[property]}
-              resetFilter={() => handleSelectedFilters([], property)}
-              selectedData={results[property] || []}
-              selectedDates={selected || []}
-            />
+            <FiltersSection
+              key={facet.name}
+              name={facet.name}
+              description={facet.description}
+            >
+              <FiltersDateSlider
+                colorScheme={colorScheme}
+                error={error}
+                handleSelectedFilter={values =>
+                  handleSelectedFilters(values, property)
+                }
+                isLoading={isLoading}
+                initialResults={initialResults[property]}
+                resetFilter={() => handleSelectedFilters([], property)}
+                selectedData={results[property] || []}
+                selectedDates={selected || []}
+              />
+            </FiltersSection>
           );
         }
         return (

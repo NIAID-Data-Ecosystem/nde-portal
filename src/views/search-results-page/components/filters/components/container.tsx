@@ -94,11 +94,7 @@ export const FiltersContainer: React.FC<FiltersContainerProps> = ({
         );
     }
     filtersList.forEach((config, i) => {
-      if (
-        config.property !== 'date' &&
-        config.isDefaultOpen &&
-        !keys.includes(i)
-      ) {
+      if (config.isDefaultOpen && !keys.includes(i)) {
         keys.push(i);
       }
     });
@@ -114,13 +110,13 @@ export const FiltersContainer: React.FC<FiltersContainerProps> = ({
       <Flex
         justifyContent='space-between'
         px={{ base: 0, md: 4 }}
-        py={{ base: 2, md: 2 }}
+        py={{ base: 2, md: 4 }}
         alignItems='center'
         borderBottom='0.5px solid'
         borderBottomColor='gray.100'
       >
         {title && (
-          <Heading size='sm' fontWeight='medium'>
+          <Heading size='sm' fontWeight='medium' lineHeight='short'>
             {title}
           </Heading>
         )}
@@ -180,7 +176,7 @@ export const FiltersContainer: React.FC<FiltersContainerProps> = ({
         >
           <Icon as={FaFilter} boxSize={5} ml={1} mr={2} />
         </Flex>
-        <Text className='toast' color='white' fontWeight='normal' fontSize='lg'>
+        <Text color='white' fontWeight='normal' fontSize='lg'>
           {title || 'Filters'}
         </Text>
       </Button>
