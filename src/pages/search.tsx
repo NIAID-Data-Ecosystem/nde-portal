@@ -20,7 +20,7 @@ import { SelectedFilterType } from 'src/views/search-results-page/components/fil
 
 const FilterTags = dynamic(() =>
   import(
-    'src/views/search-results-page/components/filters/components/filters-tag'
+    'src/views/search-results-page/components/filters/components/tag'
   ).then(mod => mod.FilterTags),
 );
 

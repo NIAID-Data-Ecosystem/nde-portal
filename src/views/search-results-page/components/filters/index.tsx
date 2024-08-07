@@ -4,10 +4,10 @@ import { useFilterQueries } from './hooks/useFilterQueries';
 import { FILTER_CONFIGS } from './config';
 import { useRouter } from 'next/router';
 import { queryFilterObject2String, updateRoute } from '../../helpers';
-import { FiltersSection } from './components/filters-section';
-import { FiltersList } from './components/filters-list';
-import { FiltersContainer } from './components/filters-container';
-import { FiltersDateSlider } from './components/filters-date-slider';
+import { FiltersSection } from './components/section';
+import { FiltersList } from './components/list';
+import { FiltersContainer } from './components/container';
+import { FiltersDateSlider } from './components/date-slider';
 import { SelectedFilterType } from './types';
 
 // Interface for Filters component props
