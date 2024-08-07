@@ -14,7 +14,7 @@ jest.mock('../../utils/queries', () => ({
 describe('buildQueries', () => {
   it('should create queries for a given facet field with non-initial query', () => {
     const facetField = 'testFacet';
-    const params = { extra_filter: 'filter1' };
+    const params = { q: '', extra_filter: 'filter1' };
     const options = { queryKey: ['key1'], option1: 'value1' };
     const isInitialQuery = false;
 
@@ -38,7 +38,7 @@ describe('buildQueries', () => {
 
   it('should handle initial query by omitting filters', () => {
     const facetField = 'testFacet';
-    const params = { extra_filter: 'filter1' };
+    const params = { q: '', extra_filter: 'filter1' };
     const options = { queryKey: ['key1'], option1: 'value1' };
     const isInitialQuery = true;
 
@@ -62,7 +62,7 @@ describe('buildQueries', () => {
 
   it('should handle absence of extra_filter in params', () => {
     const facetField = 'testFacet';
-    const params = {};
+    const params = { q: '' };
     const options = { queryKey: ['key1'], option1: 'value1' };
     const isInitialQuery = false;
 
@@ -86,7 +86,7 @@ describe('buildQueries', () => {
 
   it('should handle absence of options', () => {
     const facetField = 'testFacet';
-    const params = { extra_filter: 'filter1' };
+    const params = { q: '', extra_filter: 'filter1' };
     const options = undefined;
     const isInitialQuery = false;
 
@@ -108,7 +108,7 @@ describe('buildQueries', () => {
 
   it('should handle absence of queryKey in options', () => {
     const facetField = 'testFacet';
-    const params = { extra_filter: 'filter1' };
+    const params = { q: '', extra_filter: 'filter1' };
     const options = { option1: 'value1' };
     const isInitialQuery = false;
 
@@ -135,7 +135,7 @@ describe('buildQueries', () => {
 describe('buildSourceQueries', () => {
   it('should create queries for the "Sources" facet field with non-initial query', () => {
     const facetField = 'sourceFacet';
-    const params = { extra_filter: 'filter2' };
+    const params = { q: '', extra_filter: 'filter2' };
     const options = { queryKey: ['key2'], option2: 'value2' };
     const isInitialQuery = false;
 
@@ -153,7 +153,7 @@ describe('buildSourceQueries', () => {
 
   it('should handle initial query by omitting filters', () => {
     const facetField = 'sourceFacet';
-    const params = { extra_filter: 'filter2' };
+    const params = { q: '', extra_filter: 'filter2' };
     const options = { queryKey: ['key2'], option2: 'value2' };
     const isInitialQuery = true;
 
@@ -171,7 +171,7 @@ describe('buildSourceQueries', () => {
 
   it('should handle absence of extra_filter in params', () => {
     const facetField = 'sourceFacet';
-    const params = {};
+    const params = { q: '' };
     const options = { queryKey: ['key2'], option2: 'value2' };
     const isInitialQuery = false;
 
@@ -189,7 +189,7 @@ describe('buildSourceQueries', () => {
 
   it('should handle absence of options', () => {
     const facetField = 'sourceFacet';
-    const params = { extra_filter: 'filter2' };
+    const params = { q: '', extra_filter: 'filter2' };
     const options = undefined;
     const isInitialQuery = false;
 
@@ -206,7 +206,7 @@ describe('buildSourceQueries', () => {
 
   it('should handle absence of queryKey in options', () => {
     const facetField = 'sourceFacet';
-    const params = { extra_filter: 'filter2' };
+    const params = { q: '', extra_filter: 'filter2' };
     const options = { option2: 'value2' };
     const isInitialQuery = false;
 

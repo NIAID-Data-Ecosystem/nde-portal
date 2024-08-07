@@ -149,7 +149,7 @@ export const FiltersContainer: React.FC<FiltersContainerProps> = ({
     </>
   );
 
-  return screenSize !== 'desktop' ? (
+  return screenSize && screenSize !== 'desktop' ? (
     <>
       <Button
         ref={btnRef}
@@ -180,7 +180,7 @@ export const FiltersContainer: React.FC<FiltersContainerProps> = ({
         >
           <Icon as={FaFilter} boxSize={5} ml={1} mr={2} />
         </Flex>
-        <Text pl={2} color='white' fontWeight='semibold' fontSize='lg'>
+        <Text className='toast' color='white' fontWeight='normal' fontSize='lg'>
           {title || 'Filters'}
         </Text>
       </Button>
