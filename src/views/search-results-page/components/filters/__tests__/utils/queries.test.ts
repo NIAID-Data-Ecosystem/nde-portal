@@ -2,12 +2,11 @@ import {
   createCommonQuery,
   createNotExistsQuery,
   createCommonQueryWithMetadata,
-  FacetParams,
-} from '../utils/queries';
-import { fetchSearchResults } from '../../../../../utils/api';
-import { Metadata } from '../../../../../hooks/api/types';
-import { fetchMetadata } from '../../../../../hooks/api/helpers';
-import { FetchSearchResultsResponse } from '../../../../../utils/api/types';
+} from '../../utils/queries';
+import { fetchSearchResults } from 'src/utils/api';
+import { Metadata } from 'src/hooks/api/types';
+import { fetchMetadata } from 'src/hooks/api/helpers';
+import { FetchSearchResultsResponse } from 'src/utils/api/types';
 
 jest.mock('src/utils/api', () => ({
   fetchSearchResults: jest.fn(),
@@ -21,7 +20,7 @@ jest.mock('src/utils/querystring-helpers', () => ({
   encodeString: jest.fn((str: string) => `encoded-${str}`),
 }));
 
-describe('API Query Builders', () => {
+describe('API Query Functions', () => {
   const params = {
     advancedSearch: 'false',
     q: 'test',

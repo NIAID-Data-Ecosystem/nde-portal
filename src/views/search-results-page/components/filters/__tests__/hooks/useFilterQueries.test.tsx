@@ -1,11 +1,11 @@
 import { renderHook } from '@testing-library/react-hooks';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { useFilterQueries } from '../hooks/useFilterQueries';
+import { useFilterQueries } from '../../hooks/useFilterQueries';
 import React from 'react';
-import { buildFacetQueryParams } from '../utils/queries';
+import { buildFacetQueryParams } from '../../utils/queries';
 
 // Mock FILTER_CONFIGS to return specific queries
-jest.mock('../config', () => ({
+jest.mock('../../config', () => ({
   FILTER_CONFIGS: [
     {
       property: 'category',

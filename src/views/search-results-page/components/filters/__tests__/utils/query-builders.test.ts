@@ -1,11 +1,11 @@
-import { buildQueries, buildSourceQueries } from '../utils/query-builders';
+import { buildQueries, buildSourceQueries } from '../../utils/query-builders';
 import {
   createCommonQuery,
   createCommonQueryWithMetadata,
   createNotExistsQuery,
-} from '../utils/queries';
+} from '../../utils/queries';
 
-jest.mock('../utils/queries', () => ({
+jest.mock('../../utils/queries', () => ({
   createCommonQuery: jest.fn(),
   createCommonQueryWithMetadata: jest.fn(),
   createNotExistsQuery: jest.fn(),
