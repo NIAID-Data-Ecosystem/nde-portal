@@ -1,8 +1,14 @@
 import { Params } from 'src/utils/api';
 import { UseQueryOptions } from '@tanstack/react-query';
 
+export type SelectedFilterTypeValue = string | { [key: string]: string[] };
+
+export interface SelectedFilterType {
+  [key: string]: SelectedFilterTypeValue[];
+}
+
 // Define the structure of the transformed query result
-export interface FacetTerm {
+export interface FacetTermWithDetails {
   count: number;
   term: string;
   facet?: string;
@@ -12,7 +18,7 @@ export interface FacetTerm {
 
 export interface QueryResult {
   facet: string;
-  results: FacetTerm[];
+  results: FacetTermWithDetails[];
 }
 
 export interface FilterItem {
@@ -39,7 +45,7 @@ export interface FilterConfig {
     options?: UseQueryOptions<any, Error, QueryResult>,
     isInitialQuery?: boolean,
   ) => UseQueryOptions<any, Error, QueryResult>[];
-  transformData?: (item: FacetTerm) => FacetTerm; // useful for transforming data before rendering. Note that the label is used for search and display.
+  transformData?: (item: FacetTermWithDetails) => FacetTermWithDetails; // useful for transforming data before rendering. Note that the label is used for search and display.
   groupBy?: {
     property: string;
     label: string;

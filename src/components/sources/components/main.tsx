@@ -15,7 +15,7 @@ import {
 import { DisplayHTMLContent } from 'src/components/html-content';
 import NextLink from 'next/link';
 import type { SourceResponse } from 'src/pages/sources';
-import { queryFilterObject2String } from 'src/components/filters/helpers';
+import { queryFilterObject2String } from 'src/views/search-results-page/helpers';
 import { formatDate } from 'src/utils/api/helpers';
 import {
   FaMagnifyingGlass,

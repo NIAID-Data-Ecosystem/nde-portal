@@ -5,7 +5,7 @@ import { Params } from 'src/utils/api';
 import { FetchSearchResultsResponse } from 'src/utils/api/types';
 import { Metadata } from 'src/hooks/api/types';
 import { encodeString } from 'src/utils/querystring-helpers';
-import { FacetTerm } from '../types';
+import { FacetTermWithDetails } from '../types';
 
 interface SourcesData extends FetchSearchResultsResponse {
   repos: Metadata | null;
@@ -95,7 +95,7 @@ interface QueryArgs {
   select?: (data: FetchSearchResultsResponse) => {
     facet: string;
     results: (
-      | FacetTerm
+      | FacetTermWithDetails
       | {
           label: string;
           term: string;

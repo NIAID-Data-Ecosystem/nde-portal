@@ -4,24 +4,24 @@ import { PageContainer, PageContent } from 'src/components/page-container';
 import { Flex, Heading } from '@chakra-ui/react';
 import { useHasMounted } from 'src/hooks/useHasMounted';
 import SearchResultsPage from 'src/views/search-results-page';
-import { queryFilterString2Object } from 'src/components/filters/helpers';
 import { useCallback, useMemo } from 'react';
-import { SelectedFilterType } from 'src/components/filters/types';
 import dynamic from 'next/dynamic';
 import {
   defaultParams,
   defaultQuery,
+  queryFilterString2Object,
 } from 'src/views/search-results-page/helpers';
-import { OLD_FILTERS_CONFIG } from 'src/views/search-results-page/components/filters/helpers';
 import { fetchSearchResults } from 'src/utils/api';
 import { Filters } from 'src/views/search-results-page/components/filters';
 import { FormattedResource } from 'src/utils/api/types';
 import { ScrollContainer } from 'src/components/scroll-container';
+import { FILTER_CONFIGS } from 'src/views/search-results-page/components/filters/config';
+import { SelectedFilterType } from 'src/views/search-results-page/components/filters/types';
 
 const FilterTags = dynamic(() =>
-  import('src/components/filters/components/filters-tag').then(
-    mod => mod.FilterTags,
-  ),
+  import(
+    'src/views/search-results-page/components/filters/components/filters-tag'
+  ).then(mod => mod.FilterTags),
 );
 
 //  This page renders the search results from the search bar.
@@ -64,7 +64,10 @@ const Search: NextPage<{
   // Default filters list.
   const defaultFilters = useMemo(
     () =>
-      Object.keys(OLD_FILTERS_CONFIG).reduce((r, k) => ({ ...r, [k]: [] }), {}),
+      FILTER_CONFIGS.reduce(
+        (r, { property }) => ({ ...r, [property]: [] }),
+        {},
+      ),
     [],
   );
 

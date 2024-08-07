@@ -14,16 +14,14 @@ import {
   queryFilterObject2String,
   queryFilterString2Object,
   updateRoute,
-} from 'src/components/filters/helpers';
+} from 'src/views/search-results-page/helpers';
 import { MAX_PAGES, Pagination } from './components/pagination';
 import { SortDropdown } from './components/sort';
 import { encodeString } from 'src/utils/querystring-helpers';
-import { SelectedFilterType } from 'src/components/filters/types';
 import { defaultQuery } from './helpers';
 import { MetadataScoreToggle } from './components/metadata-score-toggle';
 import { useQuerySearchResults } from './hooks/useSearchResults';
 import ResultsCount from 'src/views/search-results-page/components/count';
-import { OLD_FILTERS_CONFIG } from './components/filters/helpers';
 import Card from './components/card';
 import { FormattedResource } from 'src/utils/api/types';
 import Empty from 'src/components/empty';
@@ -33,6 +31,8 @@ import { ErrorMessage } from './components/error';
 import { Link } from 'src/components/link';
 import { DownloadMetadata } from 'src/components/download-metadata';
 import Banner from 'src/components/banner';
+import { SelectedFilterType } from './components/filters/types';
+import { FILTER_CONFIGS } from './components/filters/config';
 
 /*
 [COMPONENT INFO]:
@@ -54,7 +54,10 @@ const SearchResultsPage = ({
   // Currently selected filters.
   const defaultFilters = useMemo(
     () =>
-      Object.keys(OLD_FILTERS_CONFIG).reduce((r, k) => ({ ...r, [k]: [] }), {}),
+      FILTER_CONFIGS.reduce(
+        (r, { property }) => ({ ...r, [property]: [] }),
+        {},
+      ),
     [],
   );
 

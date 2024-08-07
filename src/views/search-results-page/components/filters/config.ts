@@ -1,5 +1,3 @@
-import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
-import { SchemaDefinitions } from 'scripts/generate-schema-definitions/types';
 import {
   APIResourceType,
   formatResourceTypeForDisplay,
@@ -16,7 +14,9 @@ import {
 import {
   queryFilterObject2String,
   queryFilterString2Object,
-} from 'src/components/filters';
+} from 'src/views/search-results-page/helpers';
+import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
+import { SchemaDefinitions } from 'scripts/generate-schema-definitions/types';
 import { omit } from 'lodash';
 
 const schema = SCHEMA_DEFINITIONS as SchemaDefinitions;

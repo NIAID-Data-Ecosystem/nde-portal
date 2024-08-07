@@ -8,7 +8,6 @@ import {
   Text,
   useDisclosure,
 } from '@chakra-ui/react';
-import { theme } from 'src/theme';
 import { SelectedFilterType } from '../types';
 
 interface FilterTagsWrapperProps {

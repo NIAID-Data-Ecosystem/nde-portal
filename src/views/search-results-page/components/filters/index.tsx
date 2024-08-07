@@ -1,18 +1,14 @@
 import React, { useCallback } from 'react';
 import { Params } from 'src/utils/api';
-import { SelectedFilterType } from 'src/components/filters/types';
 import { useFilterQueries } from './hooks/useFilterQueries';
 import { FILTER_CONFIGS } from './config';
-
-import {
-  FiltersContainer,
-  FiltersList,
-  FiltersSection,
-  queryFilterObject2String,
-  updateRoute,
-} from 'src/components/filters';
 import { useRouter } from 'next/router';
-import { FiltersDateSlider } from 'src/components/filters/components/filters-date-slider';
+import { queryFilterObject2String, updateRoute } from '../../helpers';
+import { FiltersSection } from './components/filters-section';
+import { FiltersList } from './components/filters-list';
+import { FiltersContainer } from './components/filters-container';
+import { FiltersDateSlider } from './components/filters-date-slider';
+import { SelectedFilterType } from './types';
 
 // Interface for Filters component props
 interface FiltersProps {
