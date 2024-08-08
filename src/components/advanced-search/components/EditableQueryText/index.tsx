@@ -215,8 +215,6 @@ export const EditableQueryText = ({
     );
   }
 
-  console.log('errors:', errors);
-
   return (
     <>
       <Editable

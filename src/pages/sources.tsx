@@ -12,7 +12,7 @@ import { getQueryStatusError } from 'src/components/error/utils';
 import { fetchMetadata } from 'src/hooks/api/helpers';
 import { getFundedByNIAID } from 'src/utils/helpers';
 
-export interface SourceResponse {
+export interface SourceResponse extends MetadataSource {
   dateCreated?: string;
   id: MetadataSource['sourceInfo']['identifier'];
   name: MetadataSource['sourceInfo']['name'];
@@ -42,7 +42,6 @@ const Sources: NextPage<SourcesProps> = ({ data, error }) => {
     queryFn: fetchMetadata,
     select: res => {
       const sources = res.src;
-
       const sourceDetails = Object.entries(sources).map(([key, source]) => {
         const id = (source.sourceInfo && source.sourceInfo.identifier) || key;
         const githubInfo = data?.find(item => {
@@ -60,6 +59,7 @@ const Sources: NextPage<SourcesProps> = ({ data, error }) => {
           : '';
         return {
           ...githubInfo,
+          ...source,
           id,
           name: (source?.sourceInfo && source?.sourceInfo?.name) || key,
           description:
