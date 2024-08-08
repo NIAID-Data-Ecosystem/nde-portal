@@ -334,6 +334,20 @@ const SearchResultsPage = ({
             })}
         </UnorderedList>
       )}
+
+      <Flex borderRadius='semi' boxShadow='base' bg='white' px={4} py={2}>
+        <Pagination
+          id='pagination-bottom'
+          ariaLabel='paginate through resources bottom bar'
+          handleSelectedPage={from => {
+            handleRouteUpdate({ from });
+          }}
+          isLoading={isLoading}
+          selectedPage={selectedPage}
+          selectedPerPage={selectedPerPage}
+          total={total}
+        />
+      </Flex>
     </Flex>
   );
 };
