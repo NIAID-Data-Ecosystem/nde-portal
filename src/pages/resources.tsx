@@ -85,6 +85,8 @@ const ResourcePage: NextPage = () => {
       return data;
     },
     refetchOnWindowFocus: false,
+    // Disable query when id is undefined
+    enabled: Boolean(id && id.toString() !== 'undefined'),
     select: data => {
       if (data) {
         return {
@@ -137,6 +139,7 @@ const ResourcePage: NextPage = () => {
     <>
       <PageContainer
         title={`${data?.name ? data?.name : isLoading ? '' : 'Resource'}`}
+        metaDescription='NDE Discovery Portal - Detailed resource information.'
         metaCanonical={
           Boolean(id && id.toString() !== 'undefined')
             ? `${process.env.NEXT_PUBLIC_BASE_URL}/resources?id=${
@@ -144,7 +147,6 @@ const ResourcePage: NextPage = () => {
               }`
             : undefined
         }
-        metaDescription='NDE Discovery Portal - Detailed resource information.'
       >
         <PageContent>
           <Flex
