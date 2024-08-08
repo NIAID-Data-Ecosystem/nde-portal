@@ -20,6 +20,7 @@ import { Banner } from './banner';
 
 interface PageContainerProps extends FlexProps {
   title: string;
+  metaCanonical?: string;
   metaDescription: string;
   keywords?: string;
   disableSearchBar?: boolean;
@@ -40,6 +41,7 @@ export interface NoticeProps {
 export const PageContainer: React.FC<PageContainerProps> = ({
   children,
   title,
+  metaCanonical,
   metaDescription,
   disableSearchBar,
   ...props
@@ -89,6 +91,7 @@ export const PageContainer: React.FC<PageContainerProps> = ({
           name='keywords'
           content='omics, data, infectious disease, epidemiology, clinical trial, immunology, bioinformatics, surveillance, search, repository'
         />
+        {metaCanonical && <link rel='canonical' href={metaCanonical} />}
 
         {/* og meta */}
         <meta
@@ -110,8 +113,6 @@ export const PageContainer: React.FC<PageContainerProps> = ({
         {/* twitter meta */}
         <meta property='twitter:title' content='NIAID Data Discovery Portal' />
         <meta property='twitter:description' content={metaDescription} />
-        {/* <meta property='twitter:site' content='@NIAID' />
-        <meta property='twitter:creator' content='@NIAID' /> */}
         <meta property='twitter:card' content='summary' />
         <meta
           property='twitter:image'
@@ -168,6 +169,7 @@ export const PageContainer: React.FC<PageContainerProps> = ({
               flexDirection='column'
               px={{ base: 4, sm: 6, lg: 10, xl: '5vw' }}
               py={4}
+              flex={1}
             >
               <NextLink
                 href={{ pathname: '/advanced-search' }}
