@@ -21,7 +21,7 @@ import TopicCategories from './topic-categories';
 import { DisplayHTMLContent } from 'src/components/html-content';
 import { AccessibleForFree, ConditionsOfAccess } from 'src/components/badges';
 import { SourceLogo, getSourceDetails } from './source-logo';
-import { CompletenessBadgeCircle } from 'src/components/completeness-badge/Circular';
+import { CompletenessBadgeCircle } from 'src/components/metadata-completeness-badge/Circular';
 import { ToggleContainer } from 'src/components/toggle-container';
 import { formatAuthorsList2String } from 'src/utils/helpers/authors';
 import { isSourceFundedByNiaid } from 'src/utils/helpers/sources';

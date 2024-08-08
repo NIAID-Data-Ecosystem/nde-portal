@@ -27,7 +27,6 @@ export function useRepoData(options: any = {}) {
         }
         const { identifier, abstract, conditionsOfAccess, name, url, genre } =
           sourceInfo || {};
-
         return {
           _id: identifier,
           abstract: abstract || '',
