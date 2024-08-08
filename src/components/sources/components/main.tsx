@@ -140,6 +140,21 @@ const Main: React.FC<Main> = ({ data, isLoading, metadata }) => {
           </Flex>
           {sources.map((sourceObj: SourceResponse, i: number) => {
             const id = `${sourceObj.name.replace(/\s+/g, '-')}`;
+
+            // used for metadata compatibility badge
+            const parentCollectionInfo = sourceObj?.sourceInfo?.parentCollection
+              ?.id
+              ? sources.find(
+                  source =>
+                    source.key === sourceObj?.sourceInfo?.parentCollection?.id,
+                )
+              : null;
+
+            const metadataCompatibilityData =
+              sourceObj?.sourceInfo?.metadata_completeness ||
+              parentCollectionInfo?.sourceInfo.metadata_completeness ||
+              null;
+
             return (
               <Box
                 key={id}
@@ -171,7 +186,9 @@ const Main: React.FC<Main> = ({ data, isLoading, metadata }) => {
                   )}
 
                   <DisplayHTMLContent content={sourceObj.description} />
-                  <MetadataCompatibilitySourceBadge source={sourceObj} />
+                  <MetadataCompatibilitySourceBadge
+                    data={metadataCompatibilityData}
+                  />
                   {sourceObj?.schema && (
                     <Box mt={2} w='100%'>
                       <Flex

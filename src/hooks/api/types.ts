@@ -67,6 +67,7 @@ export interface MetadataSource {
     };
     conditionsOfAccess?: string;
     genre?: Domain;
+    parentCollection?: { id: string };
   };
   stats: { [key: string]: number };
   version: string;

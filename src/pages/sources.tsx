@@ -14,6 +14,7 @@ import { getFundedByNIAID } from 'src/utils/helpers';
 
 export interface SourceResponse extends MetadataSource {
   dateCreated?: string;
+  key: string;
   id: MetadataSource['sourceInfo']['identifier'];
   name: MetadataSource['sourceInfo']['name'];
   description: MetadataSource['sourceInfo']['description'];
@@ -57,9 +58,11 @@ const Sources: NextPage<SourcesProps> = ({ data, error }) => {
               6,
             )}-${source.version.substring(6, 8)}T00:00:00`
           : '';
+
         return {
           ...githubInfo,
           ...source,
+          key,
           id,
           name: (source?.sourceInfo && source?.sourceInfo?.name) || key,
           description:

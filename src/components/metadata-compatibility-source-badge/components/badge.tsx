@@ -67,7 +67,7 @@ const opacityScale = (data: Bins[]) =>
 export type HeatmapProps = {
   width: number;
   height: number;
-  data: MetadataSource;
+  data: MetadataSource['sourceInfo']['metadata_completeness'];
   margin?: { top: number; right: number; bottom: number; left: number };
 };
 
@@ -99,7 +99,7 @@ interface ToolTipData extends Bin {
   percent: string;
   theme: string;
 }
-const separation = 10;
+const separation = 14;
 export const CompatibilityBadge = ({
   width,
   height,
@@ -122,13 +122,10 @@ export const CompatibilityBadge = ({
     scroll: true,
   });
   // data
-  const required = Object.entries(
-    data?.sourceInfo?.metadata_completeness?.required_fields || {},
-  )
+  const required = Object.entries(data.required_fields || {})
     .map(([field, count]) => {
       const augmented =
-        data?.sourceInfo?.metadata_completeness
-          ?.required_augmented_fields_coverage?.[field] || null;
+        data.required_augmented_fields_coverage?.[field] || null;
       return {
         label: schema[field].name,
         field,
@@ -139,13 +136,10 @@ export const CompatibilityBadge = ({
     })
     .sort((a, b) => b.label.localeCompare(a.label));
 
-  const recommended = Object.entries(
-    data?.sourceInfo?.metadata_completeness?.recommended_fields || {},
-  )
+  const recommended = Object.entries(data.recommended_fields || {})
     .map(([field, count]) => {
       const augmented =
-        data?.sourceInfo?.metadata_completeness
-          ?.recommended_augmented_fields_coverage?.[field] || null;
+        data.recommended_augmented_fields_coverage?.[field] || null;
       return {
         label: schema[field].name,
         field,
@@ -268,15 +262,11 @@ export const CompatibilityBadge = ({
               x={0}
               y={yScale(0)}
               dy={-0.75}
-              fontSize='11px'
-              style={{ fill: 'gray' }}
+              fontSize='12px'
+              fill='gray.800'
             >
               Recommended{' | '}{' '}
-              {Math.round(
-                data.sourceInfo.metadata_completeness
-                  .percent_recommended_fields * 100,
-              )}
-              %
+              {Math.round(data.percent_recommended_fields * 100)}%
             </Box>
           </Tooltip>
 
@@ -361,15 +351,11 @@ export const CompatibilityBadge = ({
               x={0}
               y={yScale(0)}
               dy={-0.75}
-              fontSize='11px'
-              style={{ fill: 'gray' }}
+              fontSize='12px'
+              fill='gray.800'
             >
               Fundamental{' | '}
-              {Math.round(
-                data.sourceInfo.metadata_completeness.percent_required_fields *
-                  100,
-              )}
-              %
+              {Math.round(data.percent_required_fields * 100)}%
             </Box>
           </Tooltip>
 
