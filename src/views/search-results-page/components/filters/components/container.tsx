@@ -20,7 +20,7 @@ import { SelectedFilterType } from '../types';
 import { ScrollContainer } from 'src/components/scroll-container';
 import { FilterConfig } from 'src/views/search-results-page/components/filters/types';
 
-interface FiltersContainerProps {
+export interface FiltersContainerProps {
   title?: string;
   selectedFilters: SelectedFilterType;
   removeAllFilters?: () => void;

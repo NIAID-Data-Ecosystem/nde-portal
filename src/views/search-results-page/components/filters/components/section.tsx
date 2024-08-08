@@ -55,9 +55,9 @@ export const FiltersSection: React.FC<FiltersSectionProps> = React.memo(
                     </Text>
                   </Tooltip>
                   {isExpanded ? (
-                    <FaMinus fontSize='12px' />
+                    <FaMinus data-testid='minus-icon' fontSize='12px' />
                   ) : (
-                    <FaPlus fontSize='12px' />
+                    <FaPlus data-testid='plus-icon' fontSize='12px' />
                   )}
                 </AccordionButton>
               </h2>
