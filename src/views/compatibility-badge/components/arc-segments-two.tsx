@@ -1,4 +1,4 @@
-import React, { use, useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { scaleLinear, scaleOrdinal } from '@visx/scale';
 import { MetadataSource } from 'src/hooks/api/types';
 import { theme } from 'src/theme';

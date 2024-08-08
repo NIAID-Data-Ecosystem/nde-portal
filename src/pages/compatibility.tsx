@@ -1,7 +1,7 @@
 import type { NextPage } from 'next';
 import { PageContainer, PageContent } from 'src/components/page-container';
 import { Box } from '@chakra-ui/react';
-import { CompatibilityBadge } from 'src/components/compatibility-badge';
+import { CompatibilityBadge } from 'src/views/compatibility-badge';
 
 const ScratchPad: NextPage = () => {
   return (
