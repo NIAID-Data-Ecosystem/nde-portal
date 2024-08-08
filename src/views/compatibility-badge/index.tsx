@@ -2,11 +2,11 @@ import { useMetadata } from 'src/hooks/api/useMetadata';
 import { ParentSize } from '@visx/responsive';
 import HeatMap from './components/heatmap';
 import { Box, Flex, Image, Link, Stack, Text } from '@chakra-ui/react';
-import { ScrollContainer } from '../scroll-container';
 import BarChartHeatMap from './components/barchart-heatmap';
 import { ArcSegments } from './components/arc-segments';
 import { ArcSegmentsTwo } from './components/arc-segments-two';
 import { ArcCircle } from './components/arc-circle';
+import { ScrollContainer } from 'src/components/scroll-container';
 
 export const CompatibilityBadge = () => {
   const { data } = useMetadata();

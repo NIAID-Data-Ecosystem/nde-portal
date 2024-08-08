@@ -27,9 +27,7 @@ interface Bins {
   bin: number;
   bins: Bin[];
 }
-const primary1 = theme.colors.pink[100];
 const primary2 = theme.colors.pink[500];
-const secondary1 = theme.colors.secondary[100];
 const secondary2 = theme.colors.secondary[500];
 const bg = '#fff';
 
@@ -69,14 +67,11 @@ const opacityScale = (data: Bins[]) =>
 export type HeatmapProps = {
   width: number;
   height: number;
-  data: MetadataSource;
+  data: MetadataSource['sourceInfo']['metadata_completeness'];
   margin?: { top: number; right: number; bottom: number; left: number };
-
-  // Used for determining the best colorscheme for the heatmap in our deliberation process. If true, the heatmap will use a single color scheme. If false, the heatmap will use two color schemes.
-  isMonoChromatic: boolean;
 };
 
-const defaultMargin = { top: 10, left: 10, right: 10, bottom: 10 };
+const defaultMargin = { top: 10, left: 0, right: 0, bottom: 0 };
 
 const getBinsData = (fields: Omit<Bin, 'bin'>[], numRows = 2) => {
   return fields.reduce(
@@ -104,13 +99,12 @@ interface ToolTipData extends Bin {
   percent: string;
   theme: string;
 }
-const separation = 20;
-const BarChartHeatMap = ({
+const separation = 14;
+export const CompatibilityBadge = ({
   width,
   height,
   data,
   margin = defaultMargin,
-  isMonoChromatic,
 }: HeatmapProps) => {
   const {
     tooltipData,
@@ -128,13 +122,10 @@ const BarChartHeatMap = ({
     scroll: true,
   });
   // data
-  const required = Object.entries(
-    data?.sourceInfo?.metadata_completeness?.required_fields || {},
-  )
+  const required = Object.entries(data.required_fields || {})
     .map(([field, count]) => {
       const augmented =
-        data?.sourceInfo?.metadata_completeness
-          ?.required_augmented_fields_coverage?.[field] || null;
+        data.required_augmented_fields_coverage?.[field] || null;
       return {
         label: schema[field].name,
         field,
@@ -145,13 +136,10 @@ const BarChartHeatMap = ({
     })
     .sort((a, b) => b.label.localeCompare(a.label));
 
-  const recommended = Object.entries(
-    data?.sourceInfo?.metadata_completeness?.recommended_fields || {},
-  )
+  const recommended = Object.entries(data.recommended_fields || {})
     .map(([field, count]) => {
       const augmented =
-        data?.sourceInfo?.metadata_completeness
-          ?.recommended_augmented_fields_coverage?.[field] || null;
+        data.recommended_augmented_fields_coverage?.[field] || null;
       return {
         label: schema[field].name,
         field,
@@ -206,14 +194,14 @@ const BarChartHeatMap = ({
   // event handlers
   const handleMouseMove = useCallback(
     (
-      event: React.MouseEvent | React.TouchEvent,
+      _: React.MouseEvent | React.TouchEvent,
       { x, y, data }: { x: number; y: number; data: Bin },
     ) => {
       if (tooltipTimeout) clearTimeout(tooltipTimeout);
       const theme = data.type === 'required' ? 'pink' : 'secondary';
       showTooltip({
         tooltipLeft: x,
-        tooltipTop: y,
+        tooltipTop: data.type === 'required' ? y - separation : y,
         tooltipData: {
           ...data,
           percent: `${Math.round(data.count * 100)}%`,
@@ -233,8 +221,8 @@ const BarChartHeatMap = ({
 
   return width < 10 ? null : (
     <Box
-      width={width}
-      height={height}
+      width={`${width}px`}
+      height={`${height}px`}
       position='relative'
       sx={{
         '.visx-heatmap-rect:hover': {
@@ -262,27 +250,23 @@ const BarChartHeatMap = ({
           orientation={['diagonal']}
         />
         <rect x={0} y={0} width={width} height={height} rx={14} fill={bg} />
-        <Group left={margin.left} top={yMax - margin.top}>
+        <Group top={yMax} left={margin.left}>
           <Tooltip
             label='Recommended fields coverage.'
             position='absolute'
             left={0}
-            top={0}
+            top={yMax}
           >
             <Box
               as='text'
               x={0}
               y={yScale(0)}
               dy={-0.75}
-              fontSize='11px'
-              style={{ fill: 'gray' }}
+              fontSize='12px'
+              fill='gray.800'
             >
               Recommended{' | '}{' '}
-              {Math.round(
-                data.sourceInfo.metadata_completeness
-                  .percent_recommended_fields * 100,
-              )}
-              %
+              {Math.round(data.percent_recommended_fields * 100)}%
             </Box>
           </Tooltip>
 
@@ -291,11 +275,7 @@ const BarChartHeatMap = ({
             xScale={d => xScale(d) ?? 0}
             yScale={d => yScale(d) ?? 0}
             opacityScale={opacityScale(RECOMMENDED_DATA)}
-            colorScale={
-              isMonoChromatic
-                ? rectColorScale(RECOMMENDED_DATA, 'recommended')
-                : undefined
-            }
+            colorScale={rectColorScale(RECOMMENDED_DATA, 'recommended')}
             binWidth={binWidth}
             binHeight={binWidth}
             gap={3}
@@ -339,12 +319,6 @@ const BarChartHeatMap = ({
                         ry={radius}
                         fill={fieldIsCompatible ? bin.color : pattern}
                         fillOpacity={1}
-                        // strokeWidth={0.5}
-                        // stroke={
-                        //   fieldIsCompatible
-                        //     ? bin.color
-                        //     : theme.colors.secondary[500]
-                        // }
                       />
                       {data.augmented && (
                         <Icon
@@ -355,21 +329,6 @@ const BarChartHeatMap = ({
                           size={10}
                         />
                       )}
-                      {/* {data.augmented && (
-                        <Box
-                          as='circle'
-                          r={2}
-                          cx={bin.x + bin.width / 2}
-                          cy={bin.y + bin.height / 2}
-                          strokeWidth={1}
-                          stroke={
-                            fieldIsCompatible ? 'whiteAlpha.900' : bin.color
-                          }
-                          fill={
-                            fieldIsCompatible ? 'whiteAlpha.900' : bin.color
-                          }
-                        />
-                      )}{' '} */}
                     </Box>
                   );
                 });
@@ -378,11 +337,11 @@ const BarChartHeatMap = ({
           </HeatmapRect>
         </Group>
         <Group
-          top={yMax - margin.top - binHeight - separation}
+          top={yMax - binHeight - margin.top - separation}
           left={margin.left}
         >
           <Tooltip
-            label='Fundemental fields coverage.'
+            label='Fundamental fields coverage.'
             position='absolute'
             left={0}
             top={0}
@@ -392,15 +351,11 @@ const BarChartHeatMap = ({
               x={0}
               y={yScale(0)}
               dy={-0.75}
-              fontSize='11px'
-              style={{ fill: 'gray' }}
+              fontSize='12px'
+              fill='gray.800'
             >
               Fundamental{' | '}
-              {Math.round(
-                data.sourceInfo.metadata_completeness.percent_required_fields *
-                  100,
-              )}
-              %
+              {Math.round(data.percent_required_fields * 100)}%
             </Box>
           </Tooltip>
 
@@ -409,9 +364,7 @@ const BarChartHeatMap = ({
             xScale={d => xScale(d) ?? 0}
             yScale={d => yScale(d) ?? 0}
             opacityScale={opacityScale(REQUIRED_DATA)}
-            colorScale={
-              isMonoChromatic ? rectColorScale(REQUIRED_DATA) : undefined
-            }
+            colorScale={rectColorScale(REQUIRED_DATA)}
             binWidth={binWidth}
             binHeight={binWidth}
             gap={3}
@@ -468,19 +421,6 @@ const BarChartHeatMap = ({
                           size={10}
                         />
                       )}
-                      {/* {data.augmented && (
-                        <Box
-                          as='circle'
-                          r={2}
-                          cx={bin.x + bin.width / 2}
-                          cy={bin.y + bin.height / 2}
-                          stroke='white'
-                          strokeWidth={1}
-                          fill={
-                            fieldIsCompatible ? 'whiteAlpha.900' : bin.color
-                          }
-                        />
-                      )} */}
                     </Box>
                   );
                 });
@@ -582,5 +522,3 @@ const BarChartHeatMap = ({
     </Box>
   );
 };
-
-export default BarChartHeatMap;

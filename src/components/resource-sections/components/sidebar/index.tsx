@@ -20,7 +20,7 @@ import { FaMagnifyingGlass } from 'react-icons/fa6';
 import { External } from './components/external';
 import { ScrollContainer } from 'src/components/scroll-container';
 import { ResourceData } from 'src/pages/resources';
-import { CompletenessBadgeCircle } from 'src/components/completeness-badge/Circular';
+import { CompletenessBadgeCircle } from 'src/components/metadata-completeness-badge/Circular';
 import { Link } from 'src/components/link';
 
 export const Sidebar = ({
