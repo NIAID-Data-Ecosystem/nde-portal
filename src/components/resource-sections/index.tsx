@@ -28,7 +28,7 @@ import { Funding } from './components/funding';
 import { JsonViewer } from '../json-viewer';
 import ResourceIsPartOf from './components/is-part-of';
 import BasedOnTable from './components/based-on';
-import { CompletenessBadgeCircle } from 'src/components/completeness-badge/Circular';
+import { CompletenessBadgeCircle } from 'src/components/metadata-completeness-badge/Circular';
 import { ResourceCatalogCollection } from './components/collection-information';
 import { DownloadMetadata } from '../download-metadata';
 import { Keywords } from './components/keywords';
