@@ -10,7 +10,6 @@ import {
   Text,
   UnorderedList,
 } from '@chakra-ui/react';
-import { Link } from 'src/components/link';
 import {
   queryFilterObject2String,
   queryFilterString2Object,
