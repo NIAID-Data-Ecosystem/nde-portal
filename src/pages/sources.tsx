@@ -45,12 +45,12 @@ const Sources: NextPage<SourcesProps> = ({ data, error }) => {
 
       const sourceDetails = Object.entries(sources).map(([key, source]) => {
         const id = (source.sourceInfo && source.sourceInfo.identifier) || key;
-        const githubInfo = data.find(item => {
+        const githubInfo = data?.find(item => {
           return item.id === id;
         });
 
         // in place for when we have a dateModified field in the API that is not in iso format.
-        const dateModified = source.version?.includes('T')
+        const dateModified = source?.version?.includes('T')
           ? source.version
           : /^\d+$/.test(source.version)
           ? `${source.version.substring(0, 4)}-${source.version.substring(
@@ -179,7 +179,7 @@ export async function getStaticProps() {
             id: (source.sourceInfo && source.sourceInfo.identifier) || k,
             sourcePath: source?.code?.file || null,
           };
-          if (!sourceData.sourcePath) {
+          if (!sourceData?.sourcePath) {
             return sourceData;
           }
 
