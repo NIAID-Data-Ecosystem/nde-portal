@@ -11,6 +11,7 @@ import {
   Icon,
   Skeleton,
   Stack,
+  StackDivider,
   Text,
 } from '@chakra-ui/react';
 import { DisplayHTMLContent } from 'src/components/html-content';
@@ -177,6 +178,8 @@ const Main: React.FC<Main> = ({ data, isLoading, metadata }) => {
                     </Badge>
                   )}
                 </HStack>
+
+                {/* Num records */}
                 <Box mt={2}>
                   {sourceObj?.numberOfRecords > 0 && (
                     <Text fontWeight='semibold' fontSize='sm'>
@@ -185,12 +188,46 @@ const Main: React.FC<Main> = ({ data, isLoading, metadata }) => {
                     </Text>
                   )}
 
+                  {/* Release dates */}
+                  <HStack divider={<StackDivider borderColor='gray.100' />}>
+                    <Text fontSize='xs' fontWeight='semibold' color='text.body'>
+                      Latest Release:{' '}
+                      <Text as='span' fontWeight='normal'>
+                        {sourceObj.dateModified
+                          ? new Date(sourceObj.dateModified).toLocaleDateString(
+                              'en-US',
+                              {
+                                year: 'numeric',
+                                month: 'long',
+                                day: 'numeric',
+                              },
+                            )
+                          : 'N/A'}
+                      </Text>
+                    </Text>
+                    <Text fontSize='xs' fontWeight='semibold' color='text.body'>
+                      First Released:{' '}
+                      <Text as='span' fontWeight='normal'>
+                        {sourceObj.dateCreated
+                          ? new Date(sourceObj.dateCreated).toLocaleDateString(
+                              'en-US',
+                              {
+                                year: 'numeric',
+                                month: 'long',
+                                day: 'numeric',
+                              },
+                            )
+                          : 'N/A'}
+                      </Text>
+                    </Text>
+                  </HStack>
+
+                  {/* Description */}
                   <DisplayHTMLContent content={sourceObj.description} />
-                  <MetadataCompatibilitySourceBadge
-                    data={metadataCompatibilityData}
-                  />
+
+                  {/* Property transformations table */}
                   {sourceObj?.schema && (
-                    <Box mt={2} w='100%'>
+                    <Box w='100%' mt={1}>
                       <Flex
                         w='100%'
                         as='button'
@@ -294,41 +331,21 @@ const Main: React.FC<Main> = ({ data, isLoading, metadata }) => {
                     </Box>
                   )}
                 </Box>
-                <Box>
-                  <Text fontSize='xs' fontWeight='semibold' color='text.body'>
-                    Latest Release:{' '}
-                    <Text as='span' fontWeight='normal'>
-                      {sourceObj.dateModified
-                        ? new Date(sourceObj.dateModified).toLocaleDateString(
-                            'en-US',
-                            {
-                              year: 'numeric',
-                              month: 'long',
-                              day: 'numeric',
-                            },
-                          )
-                        : 'N/A'}
-                    </Text>
-                  </Text>
-                  <Text fontSize='xs' fontWeight='semibold' color='text.body'>
-                    First Released:{' '}
-                    <Text as='span' fontWeight='normal'>
-                      {sourceObj.dateCreated
-                        ? new Date(sourceObj.dateCreated).toLocaleDateString(
-                            'en-US',
-                            {
-                              year: 'numeric',
-                              month: 'long',
-                              day: 'numeric',
-                            },
-                          )
-                        : 'N/A'}
-                    </Text>
-                  </Text>
-                </Box>
+
+                {/* Source Compatibility */}
+                {metadataCompatibilityData && (
+                  <Box mt={1} mb={4}>
+                    <MetadataCompatibilitySourceBadge
+                      data={metadataCompatibilityData}
+                    />
+                  </Box>
+                )}
+
+                {/* Call to action */}
                 <Stack
                   flexDirection={['column', 'column', 'row']}
                   justifyContent='space-between'
+                  mt={4}
                 >
                   <NextLink
                     style={{ flex: 1, maxWidth: '380px' }}

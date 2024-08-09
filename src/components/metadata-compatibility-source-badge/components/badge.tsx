@@ -29,7 +29,6 @@ interface Bins {
 }
 const primary2 = theme.colors.pink[500];
 const secondary2 = theme.colors.secondary[500];
-const bg = '#fff';
 
 function max<Datum>(data: Datum[], value: (d: Datum) => number): number {
   return Math.max(...data.map(value));
@@ -71,7 +70,7 @@ export type HeatmapProps = {
   margin?: { top: number; right: number; bottom: number; left: number };
 };
 
-const defaultMargin = { top: 10, left: 0, right: 0, bottom: 0 };
+export const defaultMargin = { top: 10, left: 0, right: 0, bottom: 0 };
 
 const getBinsData = (fields: Omit<Bin, 'bin'>[], numRows = 2) => {
   return fields.reduce(
@@ -249,7 +248,6 @@ export const CompatibilityBadge = ({
           strokeWidth={1}
           orientation={['diagonal']}
         />
-        <rect x={0} y={0} width={width} height={height} rx={14} fill={bg} />
         <Group top={yMax} left={margin.left}>
           <Tooltip
             label='Recommended fields coverage.'
