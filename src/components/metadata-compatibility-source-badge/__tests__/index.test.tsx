@@ -59,39 +59,41 @@ const mockData = {
   avg_recommended_score_ratio: 0.33,
   avg_required_ratio: 0.69,
   required_fields: {
-    name: 1,
-    description: 1,
     author: 1,
-    url: 1,
-    measurementTechnique: 0,
-    includedInDataCatalog: 1,
+    date: 1,
+    description: 1,
     distribution: 1,
     funding: 0.13,
-    date: 1,
+    includedInDataCatalog: 1,
+    measurementTechnique: 0,
+    name: 1,
+    url: 1,
   },
   recommended_fields: {
-    species: 0,
-    infectiousAgent: 0,
-    healthCondition: 0,
     citation: 0,
+    citedBy: 0.1,
     dateCreated: 0,
     dateModified: 1,
     datePublished: 1,
-    citedBy: 0.1,
     doi: 0.71,
+    healthCondition: 0,
+    infectiousAgent: 0,
+    species: 0,
     variableMeasured: 0,
   },
   sum_required_coverage: 7.13,
   sum_recommended_coverage: 6.91,
   required_augmented_fields_coverage: {
+    date: 1,
     funding: 0,
     measurementTechnique: 0,
   },
   recommended_augmented_fields_coverage: {
-    species: 0,
-    infectiousAgent: 0,
-    healthCondition: 0,
     citation: 0,
+    healthCondition: 0,
+    infectiousAgent: 0,
+    species: 0,
+    variableMeasured: 1,
   },
   binary_required_score: 8,
   binary_recommended_score: 9,
@@ -186,5 +188,98 @@ describe('CompatibilityBadge', () => {
 
     const rects = container.querySelectorAll('rect');
     expect(rects.length).toBe(1); // Should only have recommended field heatmap
+  });
+
+  test('displays tooltip on mouse hover for recommended fields', () => {
+    const { container } = render(
+      <CompatibilityBadge width={500} height={500} data={mockData} />,
+    );
+
+    // Select all rect elements within the .recommended-fields group
+    const recommendedRects = container.querySelectorAll(
+      '.recommended-fields .visx-heatmap-rect rect',
+    );
+
+    // Simulate mouse hover on the heatmap rect
+    fireEvent.mouseMove(recommendedRects[0]);
+    // Assert that the tooltip is visible
+    expect(
+      screen.getByText(/metadata was not found for this source./i),
+    ).toBeInTheDocument();
+  });
+
+  test('displays tooltip on mouse hover for required fields', () => {
+    const { container } = render(
+      <CompatibilityBadge width={500} height={500} data={mockData} />,
+    );
+
+    // Select all rect elements within the .required-fields group
+    const requiredRects = container.querySelectorAll(
+      '.required-fields .visx-heatmap-rect rect',
+    );
+
+    // Simulate mouse hover on the heatmap rect
+    fireEvent.mouseMove(requiredRects[0]);
+
+    // Assert that the tooltip is visible
+    expect(
+      screen.getByText(/metadata is collected and available for this source./i),
+    ).toBeInTheDocument();
+  });
+
+  it('handles augmented data display correctly', () => {
+    const { container } = render(
+      <CompatibilityBadge width={500} height={500} data={mockData} />,
+    );
+
+    // Select all rect elements within the .required-fields group
+    const requiredRects = container.querySelectorAll(
+      '.required-fields .visx-heatmap-rect rect',
+    );
+
+    // Simulate mouse hover on the heatmap rect
+    fireEvent.mouseMove(requiredRects[1]);
+
+    // Assert that the tooltip is visible
+    expect(
+      screen.getByText(/metadata is collected and available for this source./i),
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByText(/was also augmented for this source./i),
+    ).toBeInTheDocument();
+
+    // Select all rect elements within the .recommended-fields group
+    const recommendedRects = container.querySelectorAll(
+      '.recommended-fields .visx-heatmap-rect rect',
+    );
+
+    // Simulate mouse hover on the heatmap rect
+    fireEvent.mouseMove(recommendedRects[9]);
+
+    // Assert that the tooltip is visible
+    expect(
+      screen.getByText(
+        /metadata was not found for this source, but was augmented for this source./i,
+      ),
+    ).toBeInTheDocument();
+  });
+
+  it('clears tooltip on mouse leave', () => {
+    render(<CompatibilityBadge width={500} height={500} data={mockData} />);
+
+    const { container } = render(
+      <CompatibilityBadge width={500} height={500} data={mockData} />,
+    );
+
+    const rects = container.querySelectorAll('rect');
+
+    // Simulate mouse hover on the heatmap rect
+    fireEvent.mouseMove(rects[0]);
+
+    fireEvent.mouseLeave(rects[0]);
+
+    const tooltip = screen.queryByText(/metadata is collected and available/i);
+    expect(tooltip).not.toBeInTheDocument();
   });
 });

@@ -34,10 +34,6 @@ function max<Datum>(data: Datum[], value: (d: Datum) => number): number {
   return Math.max(...data.map(value));
 }
 
-function min<Datum>(data: Datum[], value: (d: Datum) => number): number {
-  return Math.min(...data.map(value));
-}
-
 // accessors
 const bins = (d: Bins) => d.bins;
 const count = (d: Bin) => d.count;
@@ -248,7 +244,7 @@ export const CompatibilityBadge = ({
           strokeWidth={1}
           orientation={['diagonal']}
         />
-        <Group top={yMax} left={margin.left}>
+        <Group className='recommended-fields' top={yMax} left={margin.left}>
           <Tooltip
             label='Recommended fields coverage.'
             position='absolute'
@@ -335,6 +331,7 @@ export const CompatibilityBadge = ({
           </HeatmapRect>
         </Group>
         <Group
+          className='required-fields'
           top={yMax - binHeight - margin.top - separation}
           left={margin.left}
         >

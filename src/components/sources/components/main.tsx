@@ -225,6 +225,15 @@ const Main: React.FC<Main> = ({ data, isLoading, metadata }) => {
                   {/* Description */}
                   <DisplayHTMLContent content={sourceObj.description} />
 
+                  {/* Source Compatibility */}
+                  {metadataCompatibilityData && (
+                    <Box mt={1} mb={4}>
+                      <MetadataCompatibilitySourceBadge
+                        data={metadataCompatibilityData}
+                      />
+                    </Box>
+                  )}
+
                   {/* Property transformations table */}
                   {sourceObj?.schema && (
                     <Box w='100%' mt={1}>
@@ -331,15 +340,6 @@ const Main: React.FC<Main> = ({ data, isLoading, metadata }) => {
                     </Box>
                   )}
                 </Box>
-
-                {/* Source Compatibility */}
-                {metadataCompatibilityData && (
-                  <Box mt={1} mb={4}>
-                    <MetadataCompatibilitySourceBadge
-                      data={metadataCompatibilityData}
-                    />
-                  </Box>
-                )}
 
                 {/* Call to action */}
                 <Stack
