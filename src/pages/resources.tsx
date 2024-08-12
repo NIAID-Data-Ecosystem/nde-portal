@@ -84,6 +84,8 @@ const ResourcePage: NextPage = () => {
       return data;
     },
     refetchOnWindowFocus: false,
+    // Disable query when id is undefined
+    enabled: Boolean(id && id.toString() !== 'undefined'),
     select: data => {
       if (data) {
         return {
@@ -123,7 +125,11 @@ const ResourcePage: NextPage = () => {
   const errorResponse =
     error && getQueryStatusError(error as unknown as { status: string });
 
-  if (!isLoading && !id) {
+  if (
+    (!isLoading && Boolean(!id || id.toString() === 'undefined')) ||
+    (!isLoading && !data)
+  ) {
+    // Redirect to 404 page if no id is provided or no data is found for the given id.
     router.push('/404');
     return <></>;
   }
@@ -133,6 +139,13 @@ const ResourcePage: NextPage = () => {
       <PageContainer
         title={`${data?.name ? data?.name : isLoading ? '' : 'Resource'}`}
         metaDescription='NDE Discovery Portal - Detailed resource information.'
+        metaCanonical={
+          Boolean(id && id.toString() !== 'undefined')
+            ? `${process.env.NEXT_PUBLIC_BASE_URL}/resources?id=${
+                Array.isArray(id) ? id[0].toLowerCase() : id?.toLowerCase()
+              }`
+            : undefined
+        }
       >
         <PageContent>
           <Flex
@@ -171,7 +184,11 @@ const ResourcePage: NextPage = () => {
 
                   <Box mt={4}>
                     <ErrorCTA>
-                      <Button onClick={() => router.reload()} variant='outline'>
+                      <Button
+                        onClick={() => router.reload()}
+                        variant='outline'
+                        size='md'
+                      >
                         Retry
                       </Button>
                     </ErrorCTA>

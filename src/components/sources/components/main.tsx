@@ -10,6 +10,8 @@ import {
   HStack,
   Icon,
   Skeleton,
+  Stack,
+  StackDivider,
   Text,
 } from '@chakra-ui/react';
 import { DisplayHTMLContent } from 'src/components/html-content';
@@ -25,6 +27,7 @@ import {
 } from 'react-icons/fa6';
 import { SearchInput } from 'src/components/search-input';
 import { TagWithUrl } from 'src/components/tag-with-url';
+import { MetadataCompatibilitySourceBadge } from 'src/components/metadata-compatibility-source-badge';
 
 interface Main {
   data?: SourceResponse[];
@@ -138,6 +141,21 @@ const Main: React.FC<Main> = ({ data, isLoading, metadata }) => {
           </Flex>
           {sources.map((sourceObj: SourceResponse, i: number) => {
             const id = `${sourceObj.name.replace(/\s+/g, '-')}`;
+
+            // used for metadata compatibility badge
+            const parentCollectionInfo = sourceObj?.sourceInfo?.parentCollection
+              ?.id
+              ? sources.find(
+                  source =>
+                    source.key === sourceObj?.sourceInfo?.parentCollection?.id,
+                )
+              : null;
+
+            const metadataCompatibilityData =
+              sourceObj?.sourceInfo?.metadata_completeness ||
+              parentCollectionInfo?.sourceInfo.metadata_completeness ||
+              null;
+
             return (
               <Box
                 key={id}
@@ -148,7 +166,7 @@ const Main: React.FC<Main> = ({ data, isLoading, metadata }) => {
                 borderColor='gray.200'
                 my={4}
                 py={6}
-                sx={{ '>*': { px: 4, mt: 4, mx: [0, 4, 8] } }}
+                sx={{ '>*': { px: 2, mt: 2, mx: [0, 4, 8] } }}
               >
                 <HStack spacing={2}>
                   <Text fontWeight='bold' color='text.heading' fontSize='xl'>
@@ -160,18 +178,65 @@ const Main: React.FC<Main> = ({ data, isLoading, metadata }) => {
                     </Badge>
                   )}
                 </HStack>
+
+                {/* Num records */}
                 <Box mt={2}>
-                  {sourceObj.numberOfRecords > 0 && (
+                  {sourceObj?.numberOfRecords > 0 && (
                     <Text fontWeight='semibold' fontSize='sm'>
                       {sourceObj.numberOfRecords.toLocaleString()} Records
                       Available
                     </Text>
                   )}
 
+                  {/* Release dates */}
+                  <HStack divider={<StackDivider borderColor='gray.100' />}>
+                    <Text fontSize='xs' fontWeight='semibold' color='text.body'>
+                      Latest Release:{' '}
+                      <Text as='span' fontWeight='normal'>
+                        {sourceObj.dateModified
+                          ? new Date(sourceObj.dateModified).toLocaleDateString(
+                              'en-US',
+                              {
+                                year: 'numeric',
+                                month: 'long',
+                                day: 'numeric',
+                              },
+                            )
+                          : 'N/A'}
+                      </Text>
+                    </Text>
+                    <Text fontSize='xs' fontWeight='semibold' color='text.body'>
+                      First Released:{' '}
+                      <Text as='span' fontWeight='normal'>
+                        {sourceObj.dateCreated
+                          ? new Date(sourceObj.dateCreated).toLocaleDateString(
+                              'en-US',
+                              {
+                                year: 'numeric',
+                                month: 'long',
+                                day: 'numeric',
+                              },
+                            )
+                          : 'N/A'}
+                      </Text>
+                    </Text>
+                  </HStack>
+
+                  {/* Description */}
                   <DisplayHTMLContent content={sourceObj.description} />
 
+                  {/* Source Compatibility */}
+                  {metadataCompatibilityData && (
+                    <Box mt={1} mb={4}>
+                      <MetadataCompatibilitySourceBadge
+                        data={metadataCompatibilityData}
+                      />
+                    </Box>
+                  )}
+
+                  {/* Property transformations table */}
                   {sourceObj?.schema && (
-                    <Box mt={4} w='100%'>
+                    <Box w='100%' mt={1}>
                       <Flex
                         w='100%'
                         as='button'
@@ -180,13 +245,14 @@ const Main: React.FC<Main> = ({ data, isLoading, metadata }) => {
                         justifyContent='space-between'
                         onClick={() => schemaIdFunc(sourceObj.name)}
                         borderY='1px solid'
-                        borderColor='gray.200'
-                        p={2}
+                        borderColor='gray.100'
+                        px={0}
+                        py={2}
                       >
                         <Text
                           fontWeight='semibold'
                           color='gray.800'
-                          textAlign={['center', 'left']}
+                          textAlign='left'
                           lineHeight='short'
                         >
                           Visualization of {sourceObj.name} properties
@@ -274,40 +340,15 @@ const Main: React.FC<Main> = ({ data, isLoading, metadata }) => {
                     </Box>
                   )}
                 </Box>
-                <Box>
-                  <Text fontSize='xs' fontWeight='semibold' color='text.body'>
-                    Latest Release:{' '}
-                    <Text as='span' fontWeight='normal'>
-                      {sourceObj.dateModified
-                        ? new Date(sourceObj.dateModified).toLocaleDateString(
-                            'en-US',
-                            {
-                              year: 'numeric',
-                              month: 'long',
-                              day: 'numeric',
-                            },
-                          )
-                        : 'N/A'}
-                    </Text>
-                  </Text>
-                  <Text fontSize='xs' fontWeight='semibold' color='text.body'>
-                    First Released:{' '}
-                    <Text as='span' fontWeight='normal'>
-                      {sourceObj.dateCreated
-                        ? new Date(sourceObj.dateCreated).toLocaleDateString(
-                            'en-US',
-                            {
-                              year: 'numeric',
-                              month: 'long',
-                              day: 'numeric',
-                            },
-                          )
-                        : 'N/A'}
-                    </Text>
-                  </Text>
-                </Box>
-                <Flex justifyContent={'space-between'} flexWrap='wrap'>
+
+                {/* Call to action */}
+                <Stack
+                  flexDirection={['column', 'column', 'row']}
+                  justifyContent='space-between'
+                  mt={4}
+                >
                   <NextLink
+                    style={{ flex: 1, maxWidth: '380px' }}
                     href={{
                       pathname: `/search`,
                       query: {
@@ -321,22 +362,25 @@ const Main: React.FC<Main> = ({ data, isLoading, metadata }) => {
                   >
                     <Button
                       as='span'
+                      size='sm'
+                      leftIcon={<Icon as={FaMagnifyingGlass} />}
                       wordBreak='break-word'
                       whiteSpace='normal'
                       textAlign='center'
                       flex={1}
-                      size='sm'
                       colorScheme='primary'
-                      leftIcon={<Icon as={FaMagnifyingGlass} boxSize={3} />}
                       variant='solid'
                       height='unset'
-                      m={1}
+                      py={1.5}
+                      w='100%'
+                      h='100%'
                     >
                       Search for {sourceObj.name} resources
                     </Button>
                   </NextLink>
                   {sourceObj.url && (
                     <NextLink
+                      style={{ flex: 1, maxWidth: '380px' }}
                       href={{
                         pathname: `${sourceObj.url}`,
                       }}
@@ -356,13 +400,15 @@ const Main: React.FC<Main> = ({ data, isLoading, metadata }) => {
                         }
                         variant='outline'
                         height='unset'
-                        m={1}
+                        py={1.5}
+                        w='100%'
+                        h='100%'
                       >
                         View {sourceObj.name} website
                       </Button>
                     </NextLink>
                   )}
-                </Flex>
+                </Stack>
               </Box>
             );
           })}

@@ -12,8 +12,9 @@ import { getQueryStatusError } from 'src/components/error/utils';
 import { fetchMetadata } from 'src/hooks/api/helpers';
 import { getFundedByNIAID } from 'src/utils/helpers';
 
-export interface SourceResponse {
+export interface SourceResponse extends MetadataSource {
   dateCreated?: string;
+  key: string;
   id: MetadataSource['sourceInfo']['identifier'];
   name: MetadataSource['sourceInfo']['name'];
   description: MetadataSource['sourceInfo']['description'];
@@ -42,15 +43,14 @@ const Sources: NextPage<SourcesProps> = ({ data, error }) => {
     queryFn: fetchMetadata,
     select: res => {
       const sources = res.src;
-
       const sourceDetails = Object.entries(sources).map(([key, source]) => {
         const id = (source.sourceInfo && source.sourceInfo.identifier) || key;
-        const githubInfo = data.find(item => {
+        const githubInfo = data?.find(item => {
           return item.id === id;
         });
 
         // in place for when we have a dateModified field in the API that is not in iso format.
-        const dateModified = source.version?.includes('T')
+        const dateModified = source?.version?.includes('T')
           ? source.version
           : /^\d+$/.test(source.version)
           ? `${source.version.substring(0, 4)}-${source.version.substring(
@@ -58,8 +58,11 @@ const Sources: NextPage<SourcesProps> = ({ data, error }) => {
               6,
             )}-${source.version.substring(6, 8)}T00:00:00`
           : '';
+
         return {
           ...githubInfo,
+          ...source,
+          key,
           id,
           name: (source?.sourceInfo && source?.sourceInfo?.name) || key,
           description:
@@ -178,7 +181,7 @@ export async function getStaticProps() {
             id: (source.sourceInfo && source.sourceInfo.identifier) || k,
             sourcePath: source?.code?.file || null,
           };
-          if (!sourceData.sourcePath) {
+          if (!sourceData?.sourcePath) {
             return sourceData;
           }
 

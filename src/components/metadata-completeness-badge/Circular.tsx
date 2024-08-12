@@ -329,6 +329,7 @@ const AnimatedArc = ({
   arcs,
   path,
   size,
+  ...rest
 }: AnimatedPieProps<any>) => {
   const transitions = useTransition<PieArcDatum<any>, AnimatedStyles>(arcs, {
     from: animate ? fromLeaveTransition : enterUpdateTransition,
@@ -359,10 +360,11 @@ const AnimatedArc = ({
                 endAngle,
               }),
             )}
+            {...rest}
           />
         </clipPath>
       );
     }
-    return <path key={key} fill='transparent' d={path(arc) || ''} />;
+    return <path key={key} fill='transparent' d={path(arc) || ''} {...rest} />;
   });
 };
