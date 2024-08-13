@@ -59,11 +59,14 @@ export const FiltersContainer: React.FC<FiltersContainerProps> = ({
   const [openSections, setOpenSections] = useState<number[]>([]);
   const btnRef = useRef<HTMLButtonElement>(null);
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const screenSize = useBreakpointValue({
-    base: 'mobile',
-    sm: 'tablet',
-    md: 'desktop',
-  });
+  const screenSize = useBreakpointValue(
+    {
+      base: 'mobile',
+      sm: 'tablet',
+      md: 'desktop',
+    },
+    { fallback: 'md' },
+  );
 
   const [innerHeight, setInnerHeight] = useState<number>(
     typeof window !== 'undefined' ? window.innerHeight : 100,
@@ -138,7 +141,17 @@ export const FiltersContainer: React.FC<FiltersContainerProps> = ({
           </Heading>
         </Flex>
       ) : (
-        <Accordion bg='white' allowMultiple defaultIndex={openSections}>
+        <Accordion
+          bg='white'
+          allowMultiple
+          index={openSections}
+          onChange={expandedIndex => {
+            const sections = Array.isArray(expandedIndex)
+              ? expandedIndex
+              : [expandedIndex];
+            setOpenSections(sections);
+          }}
+        >
           {children}
         </Accordion>
       )}
