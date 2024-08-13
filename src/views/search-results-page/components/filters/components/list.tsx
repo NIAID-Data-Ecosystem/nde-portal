@@ -38,15 +38,19 @@ interface FiltersListProps {
 // Memoized Checkbox component to prevent unnecessary re-renders
 interface FilterCheckboxProps extends FilterItem {
   isLoading: boolean;
+  isUpdating?: boolean;
 }
 const Checkbox: React.FC<FilterCheckboxProps> = React.memo(
-  ({ count, isHeader, isLoading, term, ...props }) => {
+  ({ count, isHeader, isLoading, term, isUpdating, ...props }) => {
     let label = props.label;
     let subLabel = '';
 
-    if (!label && !term) {
-      return <></>;
-    }
+    const termCount = useMemo(
+      () => (typeof count === 'number' ? formatNumber(count) : undefined),
+      [count],
+    );
+
+    // Display the header label for the group
     if (isHeader) {
       return (
         <Text px={6} fontSize='xs' fontWeight='semibold'>
@@ -55,7 +59,8 @@ const Checkbox: React.FC<FilterCheckboxProps> = React.memo(
       );
     }
 
-    if (term.includes('|')) {
+    // Split the label into scientific name and common name if it contains '|'
+    if (term?.includes('|')) {
       const [scientificName, commonName] = props.label.split(' | ');
       label = commonName || props.label;
       subLabel = scientificName;
@@ -74,22 +79,17 @@ const Checkbox: React.FC<FilterCheckboxProps> = React.memo(
         }}
         sx={{
           '>.chakra-checkbox__control': {
-            mt: 1, // to keep checkbox in line with top of text for options with multiple lines
+            mt: '0.15rem', // to keep checkbox in line with top of text for options with multiple lines
           },
           '>.chakra-checkbox__label': {
             display: 'flex',
-            alignItems: 'center',
+            alignItems: 'flex-start',
             flex: 1,
             opacity: count ? 1 : 0.8,
           },
         }}
       >
-        <Skeleton
-          isLoaded={!isLoading}
-          display='flex'
-          flex={1}
-          alignItems='center'
-        >
+        <Skeleton isLoaded={!isLoading} display='flex' flex={1}>
           <Text
             as='span'
             flex={1}
@@ -102,7 +102,9 @@ const Checkbox: React.FC<FilterCheckboxProps> = React.memo(
             flexDirection='column'
             fontWeight={subLabel ? 'semibold' : 'normal'}
           >
-            {label.charAt(0).toUpperCase() + label.slice(1)}
+            {label
+              ? label.charAt(0).toUpperCase() + label.slice(1)
+              : 'Loading...'}
             {subLabel && (
               <Text
                 as='span'
@@ -118,22 +120,34 @@ const Checkbox: React.FC<FilterCheckboxProps> = React.memo(
               </Text>
             )}
           </Text>
-          {typeof count === 'number' && (
+
+          {/* Display the count of the filter term */}
+          <Skeleton
+            isLoaded={!isUpdating && typeof count === 'number'}
+            borderRadius='full'
+            startColor='secondary.50'
+            endColor='secondary.100'
+            fontSize='xs'
+            alignSelf='flex-start'
+            lineHeight={1.2}
+          >
             <Tag
               as='span'
               className='tag-count'
               variant='subtle'
-              colorScheme='secondary'
               bg='secondary.50'
-              size='sm'
-              fontSize='xs'
+              colorScheme='secondary'
               borderRadius='full'
-              alignSelf='flex-start'
-              fontWeight='semibold'
+              fontSize='inherit'
+              size='sm'
             >
-              {formatNumber(count)}
+              {!isUpdating && typeof count === 'number' ? (
+                <>{termCount}</>
+              ) : (
+                <>0,000</>
+              )}
             </Tag>
-          )}
+          </Skeleton>
         </Skeleton>
       </ChakraCheckbox>
     );
@@ -358,7 +372,6 @@ export const FiltersList: React.FC<FiltersListProps> = React.memo(
         t.label.toLowerCase().includes(debouncedSearchTerm.toLowerCase()),
       );
     }, [groupedAndSorted, debouncedSearchTerm]);
-
     return (
       <>
         {/* Search through filter terms */}
@@ -378,7 +391,11 @@ export const FiltersList: React.FC<FiltersListProps> = React.memo(
         <CheckboxGroup value={selectedFilters} onChange={handleSelectedFilters}>
           <VirtualizedList items={searchedTerms}>
             {props => (
-              <Checkbox isLoading={isLoading && !isUpdating} {...props} />
+              <Checkbox
+                isLoading={isLoading && !isUpdating}
+                isUpdating={isLoading || isUpdating}
+                {...props}
+              />
             )}
           </VirtualizedList>
         </CheckboxGroup>

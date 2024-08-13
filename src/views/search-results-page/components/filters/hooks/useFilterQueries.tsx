@@ -221,11 +221,11 @@ export const useFilterQueries = (queryParams: Params) => {
   );
 
   useEffect(() => {
-    if (!enableFilteredQueries) {
-      setMergedResults(initialResults);
-    } else if (enableFilteredQueries && !isUpdating) {
+    if (enableFilteredQueries && !isUpdating) {
       const merged = mergeResults(initialResults, filteredResults);
       setMergedResults(merged);
+    } else {
+      setMergedResults(initialResults);
     }
   }, [initialResults, filteredResults, enableFilteredQueries, isUpdating]);
 
