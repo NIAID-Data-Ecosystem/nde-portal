@@ -65,7 +65,11 @@ export const FiltersDateSlider: React.FC<FiltersDateSliderProps> = ({
       border='1px solid'
       borderColor='primary.100'
     >
-      <Skeleton isLoaded={!isLoading} w='100%' h={isLoading ? '4rem' : 'unset'}>
+      <Skeleton
+        isLoaded={!isLoading}
+        w='100%'
+        h={isLoading ? '404px' : 'unset'}
+      >
         {!isLoading && initialResults?.length === 0 && (
           <Text>No available filters.</Text>
         )}
