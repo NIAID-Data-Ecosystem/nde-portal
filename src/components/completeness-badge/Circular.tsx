@@ -329,6 +329,7 @@ const AnimatedArc = ({
   arcs,
   path,
   size,
+  pie,
 }: AnimatedPieProps<any>) => {
   const transitions = useTransition<PieArcDatum<any>, AnimatedStyles>(arcs, {
     from: animate ? fromLeaveTransition : enterUpdateTransition,
