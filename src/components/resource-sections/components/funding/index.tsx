@@ -215,7 +215,7 @@ export const Funding: React.FC<FundingProps> = ({
                                       {funders.length > SHOW_MAX_FUNDER_NAMES &&
                                       idx === SHOW_MAX_FUNDER_NAMES - 1 ? (
                                         <Text as='span' mt={8}>
-                                          {`${
+                                          {`and ${
                                             funders.length -
                                             SHOW_MAX_FUNDER_NAMES
                                           } more... `}
