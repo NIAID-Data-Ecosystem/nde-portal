@@ -116,11 +116,11 @@ export const FILTER_CONFIGS: FilterConfig[] = [
     property: 'sourceOrganization.name',
     description: getSchemaDescription('sourceOrganization.name'),
     createQueries: (params, options) =>
-      buildQueries('sourceOrganization.name')(
+      buildQueries('sourceOrganization.name')!(
         {
           ...params,
           multi_terms_fields:
-            'sourceOrganization.alternateName,sourceOrganization.name',
+            'sourceOrganization.parentOrganization,sourceOrganization.name',
           multi_terms_size: '100',
         },
         options,
