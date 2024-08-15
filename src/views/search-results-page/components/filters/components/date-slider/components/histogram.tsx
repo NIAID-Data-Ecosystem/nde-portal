@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo } from 'react';
-import { Box, Flex } from '@chakra-ui/react';
+import { Box, Flex, Text } from '@chakra-ui/react';
 import { theme } from 'src/theme';
 import { Bar } from '@visx/shape';
 import { Group } from '@visx/group';
@@ -186,7 +186,7 @@ const Histogram: React.FC<HistogramProps> = ({
       )}
 
       {/* Bars */}
-      <Flex ref={containerRef} justifyContent='center' mb={10}>
+      <Flex ref={containerRef} justifyContent='center'>
         {data.length ? (
           <Box>
             <Box as='svg' id='filters-histogram' width={svgWidth}>
@@ -341,7 +341,9 @@ const Histogram: React.FC<HistogramProps> = ({
             </Flex>
           </Box>
         ) : (
-          <></>
+          <Text fontStyle='italic' color='niaid.placeholder'>
+            No results with date information.
+          </Text>
         )}
       </Flex>
     </div>

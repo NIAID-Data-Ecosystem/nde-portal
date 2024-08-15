@@ -53,7 +53,13 @@ const Checkbox: React.FC<FilterCheckboxProps> = React.memo(
     // Display the header label for the group
     if (isHeader) {
       return (
-        <Text px={6} fontSize='xs' fontWeight='semibold'>
+        <Text
+          px={6}
+          fontSize='xs'
+          fontWeight='semibold'
+          lineHeight='shorter'
+          py={1}
+        >
           {label}
         </Text>
       );

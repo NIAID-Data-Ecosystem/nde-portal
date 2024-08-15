@@ -45,28 +45,15 @@ export const FILTER_CONFIGS: FilterConfig[] = [
     property: 'date',
     isDefaultOpen: true,
     description: getSchemaDescription('hist_dates'),
-    createQueries: (params, options, isInitialQuery) => {
+    createQueries: (params, options) => {
       // Destructure options to exclude queryKey and gather other options, with defaults
       const { queryKey = [], ...queryOptions } = options || {};
-      const filtersString2Object = params.extra_filter
-        ? queryFilterString2Object(params.extra_filter)
-        : '';
-
-      /*
-      Remove date filter from filters object for initial results.
-      This is necessary to get all the possible results (regardless of date filter selection),
-      If we want the histogram bars to fully change whenever there's a new date selection, add back the date filter.
-      */
-      const filters = isInitialQuery
-        ? omit(filtersString2Object, ['date'])
-        : filtersString2Object;
 
       return [
         createCommonQuery({
           queryKey,
           params: {
             ...params,
-            extra_filter: queryFilterObject2String(filters) ?? '',
             hist: 'date',
             facets: '',
           },
@@ -128,7 +115,7 @@ export const FILTER_CONFIGS: FilterConfig[] = [
     name: 'Program Collections',
     property: 'sourceOrganization.name',
     description: getSchemaDescription('sourceOrganization.name'),
-    createQueries: (params, options, isInitialQuery) =>
+    createQueries: (params, options) =>
       buildQueries('sourceOrganization.name')(
         {
           ...params,
@@ -137,7 +124,6 @@ export const FILTER_CONFIGS: FilterConfig[] = [
           multi_terms_size: '100',
         },
         options,
-        isInitialQuery,
       ),
   },
   {

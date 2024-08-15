@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { Params } from 'src/utils/api';
 import { useFilterQueries } from './hooks/useFilterQueries';
 import { FILTER_CONFIGS } from './config';
@@ -27,9 +27,20 @@ export const Filters: React.FC<FiltersProps> = ({
 }) => {
   const router = useRouter();
 
+  // Omits date filter from filter config since date is handled differently i.e. as a histogram
+  const config = useMemo(
+    () => FILTER_CONFIGS.filter(facet => facet.property !== 'date'),
+    [],
+  );
+
   // Use custom hook to get filter query results
-  const { results, initialResults, error, isLoading, isUpdating } =
-    useFilterQueries(queryParams);
+  const { results, error, isLoading, isUpdating } = useFilterQueries({
+    initialParams: {
+      q: queryParams.q,
+    },
+    updateParams: queryParams,
+    config,
+  });
 
   const handleUpdate = useCallback(
     (update: {}) => updateRoute(update, router),
@@ -84,15 +95,12 @@ export const Filters: React.FC<FiltersProps> = ({
             >
               <FiltersDateSlider
                 colorScheme={colorScheme}
-                error={error}
                 handleSelectedFilter={values =>
                   handleSelectedFilters(values, property)
                 }
-                isLoading={isLoading}
-                initialResults={initialResults[property]}
                 resetFilter={() => handleSelectedFilters([], property)}
-                selectedData={results[property] || []}
                 selectedDates={selected || []}
+                queryParams={queryParams}
               />
             </FiltersSection>
           );

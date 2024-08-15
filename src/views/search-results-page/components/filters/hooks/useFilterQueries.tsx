@@ -1,16 +1,15 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useQueries, UseQueryResult } from '@tanstack/react-query';
 import { Params } from 'src/utils/api';
-import { FILTER_CONFIGS } from '../config';
-import { QueryResult, TransformedFacetResults } from '../types';
+import { FilterConfig, QueryResult, TransformedFacetResults } from '../types';
 
 // Function to create a hash map from the filtered results for faster lookup
-const createFilteredResultsMap = (filteredResults: {
+const createFilteredResultsMap = (updatedResults: {
   [facet: string]: QueryResult['results'];
 }) => {
-  return Object.keys(filteredResults).reduce((acc, facet) => {
+  return Object.keys(updatedResults).reduce((acc, facet) => {
     acc[facet] = new Map();
-    filteredResults[facet].forEach(item => {
+    updatedResults[facet].forEach(item => {
       acc[facet].set(item.term, item.count);
     });
     return acc;
@@ -25,16 +24,16 @@ const createFilteredResultsMap = (filteredResults: {
  * If an item is not found in the filtered results, its count is set to 0.
  *
  * @param initialResults - The initial results fetched without any extra filters.
- * @param filteredResults - The results fetched with the selected filters.
+ * @param updatedResults - The results fetched with the selected filters.
  * @returns The merged results with counts from filtered results if available, otherwise counts are set to 0.
  */
 const mergeResults = (
   initialResults: TransformedFacetResults,
-  filteredResults: { [facet: string]: QueryResult['results'] },
+  updatedResults: { [facet: string]: QueryResult['results'] },
 ): TransformedFacetResults => {
   const mergedResults: TransformedFacetResults = { ...initialResults };
 
-  const filteredResultsMap = createFilteredResultsMap(filteredResults);
+  const filteredResultsMap = createFilteredResultsMap(updatedResults);
   // Iterate over each facet in the initial results
   for (const facet in initialResults) {
     if (filteredResultsMap[facet]) {
@@ -90,23 +89,26 @@ const combineQueryResults = (
  * @param queryResult - The object returned by the combine data.
  * @returns An object containing the transformed combined data and the loading state.
  */
-const transformResults = ({
-  data,
-  ...queryResult
-}: {
-  data: { [facet: string]: QueryResult['results'] };
-  isLoading: boolean;
-  isPlaceholderData: boolean;
-  isPending: boolean;
-  error: Error | null;
-}) => {
+const transformResults = (
+  config: FilterConfig[],
+  {
+    data,
+    ...queryResult
+  }: {
+    data: { [facet: string]: QueryResult['results'] };
+    isLoading: boolean;
+    isPlaceholderData: boolean;
+    isPending: boolean;
+    error: Error | null;
+  },
+) => {
   const transformedResults = { ...data };
   Object.keys(data).forEach(facet => {
-    const config = FILTER_CONFIGS.find(f => f.property === facet);
+    const configFacet = config.find(f => f.property === facet);
 
     transformedResults[facet] = data[facet].map(item =>
-      config?.transformData
-        ? config.transformData(item)
+      configFacet?.transformData
+        ? configFacet.transformData(item)
         : { ...item, label: item?.label || item.term },
     );
   });
@@ -125,49 +127,66 @@ const transformResults = ({
  * The initial and filtered results are merged such that counts from filtered results replace those in initial results.
  * If an item is not present in filtered results, its count is set to 0. The results are sorted by count in descending order.
  *
- * @param queryParams - The parameters used in the query.
+ * @param config - The filter configuration array.
+ * @param initialParams - The parameters used in the update query.
+ * @param updateParams - The parameters used in the update query.
  * @returns The merged initial and filtered results.
  */
-export const useFilterQueries = (queryParams: Params) => {
+export const useFilterQueries = ({
+  config,
+  initialParams,
+  updateParams,
+}: {
+  config: FilterConfig[];
+  initialParams: Params;
+  updateParams: Params;
+}) => {
   // Memoize the initial queries to avoid unnecessary recalculations
   // ignore extra_filter and filters in the initial queries to get all the possible results (regardless of filter selection)
   const initialQueries = useMemo(() => {
-    return FILTER_CONFIGS.flatMap(facet =>
-      facet.createQueries(
-        queryParams,
-        {
-          queryKey: ['search-results'],
-          placeholderData: {
-            total: 0,
-            results: [],
-            facets: {
-              [facet.property]: {
-                terms: Array(5)
-                  .fill('')
-                  .map((_, index) => ({
-                    label: `Loading... ${index}`,
-                    term: `Loading... ${index}`,
-                    facet: facet.property,
-                    count: 0,
-                  })),
-              },
-              total: 0,
+    return config
+      .flatMap(
+        facet =>
+          facet?.createQueries &&
+          facet.createQueries(
+            {
+              q: initialParams.q,
+              extra_filter: initialParams?.extra_filter || '',
             },
-          },
-          refetchOnWindowFocus: false,
-        },
-        true,
-      ),
-    );
-  }, [queryParams]);
+            {
+              queryKey: ['search-results'],
+              placeholderData: {
+                total: 0,
+                results: [],
+                facets: {
+                  [facet.property]: {
+                    terms: Array(5)
+                      .fill('')
+                      .map((_, index) => ({
+                        label: `Loading... ${index}`,
+                        term: `Loading... ${index}`,
+                        facet: facet.property,
+                        count: 0,
+                      })),
+                  },
+                  total: 0,
+                },
+              },
+              refetchOnWindowFocus: false,
+            },
+            true,
+          ),
+      )
+      .filter(query => !!query);
+  }, [config, initialParams.q, initialParams.extra_filter]);
 
   // Note: Wrap useQueries combine function in callback because inline functions will run on every render.
   // https://tanstack.com/query/latest/docs/framework/react/reference/useQueries#memoization
   const combineCallback = useCallback(
     (data: UseQueryResult<QueryResult, Error>[]) => {
-      return transformResults(combineQueryResults(data));
+      return transformResults(config, combineQueryResults(data));
     },
-    [],
+    [config],
   );
 
   // Fetch initial data.
@@ -184,34 +203,39 @@ export const useFilterQueries = (queryParams: Params) => {
 
   // Determine if filtered queries should be enabled i.e. run when the initial results are available and extra filters are selected.
   // Used to update the counts in the initial results with the selected filters.
-  const enableFilteredQueries = useMemo(
+  const enableUpdate = useMemo(
     () =>
       Boolean(
-        queryParams &&
-          queryParams.extra_filter &&
+        updateParams &&
+          updateParams.extra_filter &&
           initialResults &&
           Object.keys(initialResults).length > 0,
       ),
-    [queryParams, initialResults],
+    [updateParams, initialResults],
   );
 
-  const filteredQueries = useMemo(() => {
-    return FILTER_CONFIGS.flatMap(facet =>
-      facet.createQueries(queryParams, {
-        queryKey: ['filtered'],
-        enabled: enableFilteredQueries,
-        refetchOnWindowFocus: false,
-      }),
-    );
-  }, [queryParams, enableFilteredQueries]);
+  const updateQueries = useMemo(() => {
+    return config
+      .filter(facet => facet?.createQueries)
+      .flatMap(
+        facet =>
+          facet?.createQueries &&
+          facet.createQueries(updateParams, {
+            queryKey: ['filtered'],
+            enabled: enableUpdate,
+            refetchOnWindowFocus: false,
+          }),
+      )
+      .filter(query => !!query);
+  }, [config, updateParams, enableUpdate]);
 
   // Fetch the updated results with the selected filters
   const {
-    data: filteredResults,
+    data: updatedResults,
     isLoading: isUpdating,
-    error: filteredError,
+    error: updatedError,
   } = useQueries({
-    queries: filteredQueries,
+    queries: updateQueries,
     combine: combineCallback,
   });
 
@@ -221,16 +245,16 @@ export const useFilterQueries = (queryParams: Params) => {
   );
 
   useEffect(() => {
-    if (enableFilteredQueries && !isUpdating) {
-      const merged = mergeResults(initialResults, filteredResults);
+    if (enableUpdate && !isUpdating) {
+      const merged = mergeResults(initialResults, updatedResults);
       setMergedResults(merged);
     } else {
       setMergedResults(initialResults);
     }
-  }, [initialResults, filteredResults, enableFilteredQueries, isUpdating]);
+  }, [initialResults, updatedResults, enableUpdate, isUpdating]);
 
   // Combine errors from initial and filtered queries
-  const error = initialError || filteredError;
+  const error = initialError || updatedError;
 
   return {
     results: mergedResults,

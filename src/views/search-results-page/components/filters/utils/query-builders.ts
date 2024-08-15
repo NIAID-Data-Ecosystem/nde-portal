@@ -13,17 +13,14 @@ import { FilterConfig } from '../types';
  */
 export const buildQueries =
   (facetField: string): FilterConfig['createQueries'] =>
-  (params, options, isInitialQuery = false) => {
+  (params, options) => {
     // Destructure options to exclude queryKey and gather other options, with defaults
     const { queryKey = [], ...queryOptions } = options || {};
-
-    // omit filters from initialQuery to get full results back.
-    const extra_filter = isInitialQuery ? '' : params.extra_filter;
 
     return [
       createCommonQuery({
         queryKey,
-        params: { ...params, extra_filter, facets: facetField },
+        params: { ...params, facets: facetField },
         ...queryOptions,
       }),
       createNotExistsQuery({
@@ -42,16 +39,14 @@ export const buildQueries =
  */
 export const buildSourceQueries =
   (facetField: string): FilterConfig['createQueries'] =>
-  (params, options, isInitialQuery) => {
+  (params, options) => {
     // Destructure options to exclude queryKey and gather other options, with defaults
     const { queryKey = [], ...otherOptions } = options || {};
-    // omit filters from initialQuery to get full results back.
-    const extra_filter = isInitialQuery ? '' : params.extra_filter;
 
     return [
       createCommonQueryWithMetadata({
         queryKey,
-        params: { ...params, extra_filter, facets: facetField },
+        params: { ...params, facets: facetField },
         ...otherOptions,
       }),
     ];

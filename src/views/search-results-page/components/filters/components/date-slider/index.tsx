@@ -5,7 +5,14 @@ import { DatePicker } from './components/date-picker';
 import { formatNumber } from 'src/utils/helpers';
 import { DateRangeSlider } from './hooks/useDateRangeContext';
 import dynamic from 'next/dynamic';
-import { FilterItem } from 'src/views/search-results-page/components/filters/types';
+import { Params } from 'src/utils/api';
+import { useFilterQueries } from '../../hooks/useFilterQueries';
+import { FILTER_CONFIGS } from '../../config';
+import {
+  queryFilterObject2String,
+  queryFilterString2Object,
+} from 'src/views/search-results-page/helpers';
+import { omit } from 'lodash';
 
 const Histogram = dynamic(() => import('./components/histogram'), {
   ssr: false,
@@ -13,10 +20,7 @@ const Histogram = dynamic(() => import('./components/histogram'), {
 
 interface FiltersDateSliderProps {
   colorScheme: string;
-  error: Error | null;
-  initialResults: FilterItem[];
-  isLoading: boolean;
-  selectedData: FilterItem[];
+  queryParams: Params;
   // Selected resourcesWithDate [min, max] from router.
   selectedDates: string[];
   // fn to update filter selection
@@ -27,18 +31,46 @@ interface FiltersDateSliderProps {
 
 export const FiltersDateSlider: React.FC<FiltersDateSliderProps> = ({
   colorScheme,
-  error,
-  initialResults,
-  isLoading,
-  selectedData,
+  queryParams,
   selectedDates,
   handleSelectedFilter,
   resetFilter,
 }) => {
+  const config = useMemo(
+    () => FILTER_CONFIGS.filter(facet => facet.property === 'date'),
+    [],
+  );
+
+  /*
+  Remove date filter from filters object for initial results.
+  This is necessary to get all the possible results (regardless of date filter selection),
+  If we want the histogram bars to fully change whenever there's a new date selection, add back the date filter.
+  */
+  const initialParams = useMemo(() => {
+    const filtersString2Object = queryParams.extra_filter
+      ? queryFilterString2Object(queryParams.extra_filter)
+      : '';
+    const filters = omit(filtersString2Object, ['date']);
+    return {
+      ...queryParams,
+      extra_filter: queryFilterObject2String(filters) || '',
+    };
+  }, [queryParams]);
+
+  const { results, initialResults, error, isLoading, isUpdating } =
+    useFilterQueries({
+      initialParams,
+      updateParams: queryParams,
+      config,
+    });
+
+  const selectedData = results?.date || [];
   // [resourcesWithNoDate]: Data used for resources that do not have a date field.
   const resourcesWithNoDate = useMemo(
     () =>
-      initialResults?.filter(d => d.term === '-_exists_' && d.count > 0) || [],
+      initialResults['date']?.filter(
+        d => d.term === '-_exists_' && d.count > 0,
+      ) || [],
     [initialResults],
   );
 
@@ -66,16 +98,17 @@ export const FiltersDateSlider: React.FC<FiltersDateSliderProps> = ({
       borderColor='primary.100'
     >
       <Skeleton
+        className='date-slider-skeleton'
         isLoaded={!isLoading}
         w='100%'
         h={isLoading ? '404px' : 'unset'}
       >
-        {!isLoading && initialResults?.length === 0 && (
+        {!isLoading && initialResults['date']?.length === 0 && (
           <Text>No available filters.</Text>
         )}
         {!isLoading && selectedData?.length > 0 ? (
           <DateRangeSlider
-            data={initialResults}
+            data={initialResults['date']}
             selectedDates={selectedDates}
             colorScheme='secondary'
           >
@@ -87,7 +120,6 @@ export const FiltersDateSlider: React.FC<FiltersDateSliderProps> = ({
                 p={4}
                 px={8}
                 mt={-1.5}
-                flex={1}
               >
                 {/*  Histogram for resources grouped by year */}
                 <Histogram
@@ -99,6 +131,7 @@ export const FiltersDateSlider: React.FC<FiltersDateSliderProps> = ({
                 </Histogram>
               </Flex>
             )}
+
             {/* Calendar Inputs */}
             <Flex bg='blackAlpha.50' flexDirection='column' p={4}>
               <DatePicker
