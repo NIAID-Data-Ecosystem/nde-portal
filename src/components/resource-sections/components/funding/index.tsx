@@ -57,6 +57,7 @@ interface FundingProps {
   data: FundingType[];
 }
 
+const SHOW_MAX_FUNDER_NAMES = 5;
 // Main Funding component - renders a table with funding data.
 export const Funding: React.FC<FundingProps> = ({
   data: fundingData,
@@ -161,6 +162,9 @@ export const Funding: React.FC<FundingProps> = ({
             </thead>
             <Flex as='tbody' flexDirection='column'>
               {rows.map(funding => {
+                const funders = Array.isArray(funding?.funder)
+                  ? funding.funder
+                  : [funding.funder];
                 return (
                   <React.Fragment key={`table-tr-${funding.key}`}>
                     <Row
@@ -187,26 +191,41 @@ export const Funding: React.FC<FundingProps> = ({
                               />
                             )}
                             {column.key === 'funderName' &&
-                              (Array.isArray(funding?.funder)
-                                ? funding.funder
-                                : [funding.funder]
-                              ).map((funder, idx) => {
-                                return (
-                                  <Box
-                                    key={`table-td-funder-${funding.key}-${funder?.identifier}-${funder?.name}-${idx}`}
-                                    as='span'
-                                    display='block'
-                                    mb={Array.isArray(funding?.funder) ? 4 : 0}
-                                  >
-                                    <ContentWithTag
-                                      label='Funder ID |'
-                                      identifier={funder?.identifier}
-                                      url={funder?.url}
-                                      name={funder?.name}
-                                    />
-                                  </Box>
-                                );
-                              })}
+                              funders
+                                .slice(0, SHOW_MAX_FUNDER_NAMES)
+                                .map((funder, idx) => {
+                                  return (
+                                    <React.Fragment
+                                      key={`table-td-funder-${funding.key}-${funder?.identifier}-${funder?.name}-${idx}`}
+                                    >
+                                      <Box
+                                        as='span'
+                                        display='block'
+                                        mb={
+                                          Array.isArray(funding?.funder) ? 2 : 0
+                                        }
+                                      >
+                                        <ContentWithTag
+                                          label='Funder ID |'
+                                          identifier={funder?.identifier}
+                                          url={funder?.url}
+                                          name={funder?.name}
+                                        />
+                                      </Box>
+                                      {funders.length > SHOW_MAX_FUNDER_NAMES &&
+                                      idx === SHOW_MAX_FUNDER_NAMES - 1 ? (
+                                        <Text as='span' mt={8}>
+                                          {`and ${
+                                            funders.length -
+                                            SHOW_MAX_FUNDER_NAMES
+                                          } more... `}
+                                        </Text>
+                                      ) : (
+                                        ''
+                                      )}
+                                    </React.Fragment>
+                                  );
+                                })}
 
                             {column.key.toLowerCase().includes('date') &&
                               (funding[column.key as keyof FundingType] ? (

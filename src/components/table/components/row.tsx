@@ -39,7 +39,9 @@ export const RowWithDrawer = React.memo(({ children, ...props }: FlexProps) => {
                 <h2>
                   <AccordionButton px={4} py={1} bg='white'>
                     <Flex alignItems='center'>
-                      <Text fontSize='xs'>{isExpanded ? 'Less' : 'More'}</Text>
+                      <Text fontSize='xs'>
+                        {isExpanded ? 'Less Information' : 'More Information'}
+                      </Text>
                       <Icon
                         as={isExpanded ? FaMinus : FaPlus}
                         boxSize={2}

@@ -174,6 +174,7 @@ const createFundingContent = (
   };
 
   const fundingDetails = getFundingDetails(funding);
+  const SHOW_MAX_FUNDER_NAMES = 5;
   return {
     id: `${property}-${id}`,
     label: 'Funding',
@@ -186,8 +187,10 @@ const createFundingContent = (
           const name = Array.isArray(funding.funder)
             ? funding.funder
                 .filter(funder => !!funder.name)
+                .slice(0, SHOW_MAX_FUNDER_NAMES)
                 .map(funder => funder.name)
-                .join(', ')
+                .join(', ') +
+              (funding.funder.length > SHOW_MAX_FUNDER_NAMES ? '...' : '')
             : funding?.funder?.name;
 
           return {
