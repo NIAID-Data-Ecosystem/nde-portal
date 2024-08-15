@@ -19,7 +19,6 @@ import {
   FilterItem,
 } from 'src/views/search-results-page/components/filters/types';
 import { useDebounceValue } from 'usehooks-ts';
-import { formatNumber } from 'src/utils/helpers';
 import { VariableSizeList as List } from 'react-window';
 import { FILTER_CONFIGS } from 'src/views/search-results-page/components/filters/config';
 
@@ -44,11 +43,6 @@ const Checkbox: React.FC<FilterCheckboxProps> = React.memo(
   ({ count, isHeader, isLoading, term, isUpdating, ...props }) => {
     let label = props.label;
     let subLabel = '';
-
-    const termCount = useMemo(
-      () => (typeof count === 'number' ? formatNumber(count) : undefined),
-      [count],
-    );
 
     // Display the header label for the group
     if (isHeader) {
@@ -85,17 +79,23 @@ const Checkbox: React.FC<FilterCheckboxProps> = React.memo(
         }}
         sx={{
           '>.chakra-checkbox__control': {
-            mt: '0.15rem', // to keep checkbox in line with top of text for options with multiple lines
+            mt: 1, // to keep checkbox in line with top of text for options with multiple lines
           },
           '>.chakra-checkbox__label': {
             display: 'flex',
-            alignItems: 'flex-start',
+            alignItems: 'center',
             flex: 1,
             opacity: count ? 1 : 0.8,
           },
         }}
       >
-        <Skeleton isLoaded={!isLoading} display='flex' flex={1}>
+        {/* Loading skeleton only on load  */}
+        <Skeleton
+          isLoaded={!isLoading || isUpdating}
+          display='flex'
+          alignItems='center'
+          flex={1}
+        >
           <Text
             as='span'
             flex={1}
@@ -128,32 +128,20 @@ const Checkbox: React.FC<FilterCheckboxProps> = React.memo(
           </Text>
 
           {/* Display the count of the filter term */}
-          <Skeleton
-            isLoaded={!isUpdating && typeof count === 'number'}
+          <Tag
+            as='span'
+            className='tag-count'
+            variant='subtle'
+            bg='secondary.50'
+            colorScheme='secondary'
             borderRadius='full'
-            startColor='secondary.50'
-            endColor='secondary.100'
             fontSize='xs'
             alignSelf='flex-start'
             lineHeight={1.2}
+            size='sm'
           >
-            <Tag
-              as='span'
-              className='tag-count'
-              variant='subtle'
-              bg='secondary.50'
-              colorScheme='secondary'
-              borderRadius='full'
-              fontSize='inherit'
-              size='sm'
-            >
-              {!isUpdating && typeof count === 'number' ? (
-                <>{termCount}</>
-              ) : (
-                <>0,000</>
-              )}
-            </Tag>
-          </Skeleton>
+            {count?.toLocaleString('en-US')}
+          </Tag>
         </Skeleton>
       </ChakraCheckbox>
     );
@@ -161,88 +149,90 @@ const Checkbox: React.FC<FilterCheckboxProps> = React.memo(
 );
 
 // VirtualizedList component to render the list of filter terms
-const VirtualizedList = ({
-  children,
-  items,
-}: {
-  items: FilterItem[];
-  children: (props: FilterItem) => JSX.Element;
-}) => {
-  const DEFAULT_SIZE = useMemo(() => 35, []);
-  const listRef = useRef<any>();
-  const itemRefs = useRef<number[]>(Array(items.length).fill(DEFAULT_SIZE));
-  const setItemSize = useCallback((index: number, size: number) => {
-    listRef?.current?.resetAfterIndex(0);
-
-    itemRefs.current[index] = size;
-  }, []);
-
-  const Row = ({
+const VirtualizedList = React.memo(
+  ({
     children,
-    index,
-    style,
+    items,
   }: {
-    children: React.ReactNode;
-    index: number;
-    style: any;
+    items: FilterItem[];
+    children: (props: FilterItem) => JSX.Element;
   }) => {
-    const ref = useRef<HTMLDivElement>(null);
+    const DEFAULT_SIZE = useMemo(() => 35, []);
+    const listRef = useRef<any>();
+    const itemRefs = useRef<number[]>(Array(items.length).fill(DEFAULT_SIZE));
+    const setItemSize = useCallback((index: number, size: number) => {
+      listRef?.current?.resetAfterIndex(0);
 
-    // Set the item size in the list for virtualization.
-    useEffect(() => {
-      if (ref.current) {
-        setItemSize(index, ref.current.clientHeight);
-      }
-    }, [ref, index]);
+      itemRefs.current[index] = size;
+    }, []);
+
+    const Row = ({
+      children,
+      index,
+      style,
+    }: {
+      children: React.ReactNode;
+      index: number;
+      style: any;
+    }) => {
+      const ref = useRef<HTMLDivElement>(null);
+
+      // Set the item size in the list for virtualization.
+      useEffect(() => {
+        if (ref.current) {
+          setItemSize(index, ref.current.clientHeight);
+        }
+      }, [ref, index]);
+
+      return (
+        <div className='virtualized-row' style={style}>
+          <div ref={ref}>{children}</div>
+        </div>
+      );
+    };
 
     return (
-      <div className='virtualized-row' style={style}>
-        <div ref={ref}>{children}</div>
-      </div>
-    );
-  };
-
-  return (
-    <Box
-      pr={2}
-      pb={2}
-      sx={{
-        '>.virtualized-list::-webkit-scrollbar': {
-          width: '8px',
-          height: '7px',
-        },
-        '>.virtualized-list::-webkit-scrollbar-track': {
-          background: 'blackAlpha.100',
-          borderRadius: '8px',
-        },
-        '>.virtualized-list::-webkit-scrollbar-thumb': {
-          background: 'gray.300',
-          borderRadius: '8px',
-        },
-        '&:hover>.virtualized-list::-webkit-scrollbar-thumb': {
-          background: 'niaid.placeholder',
-        },
-      }}
-    >
-      <List
-        className='virtualized-list'
-        ref={listRef}
-        width='100%'
-        height={
-          items.length > 10 ? 400 : Math.max(100, items.length * DEFAULT_SIZE)
-        }
-        itemCount={items.length}
-        itemSize={index => itemRefs.current[index] || DEFAULT_SIZE}
+      <Box
+        pr={2}
+        pb={2}
+        sx={{
+          '>.virtualized-list::-webkit-scrollbar': {
+            width: '8px',
+            height: '7px',
+          },
+          '>.virtualized-list::-webkit-scrollbar-track': {
+            background: 'blackAlpha.100',
+            borderRadius: '8px',
+          },
+          '>.virtualized-list::-webkit-scrollbar-thumb': {
+            background: 'gray.300',
+            borderRadius: '8px',
+          },
+          '&:hover>.virtualized-list::-webkit-scrollbar-thumb': {
+            background: 'niaid.placeholder',
+          },
+        }}
       >
-        {({ index, style }) => (
-          <Row index={index} style={style}>
-            {children(items[index])}
-          </Row>
-        )}
-      </List>
-    </Box>
-  );
-};
+        <List
+          className='virtualized-list'
+          ref={listRef}
+          width='100%'
+          height={
+            items.length > 10 ? 400 : Math.max(100, items.length * DEFAULT_SIZE)
+          }
+          itemCount={items.length}
+          itemSize={index => itemRefs.current[index] || DEFAULT_SIZE}
+        >
+          {({ index, style }) => (
+            <Row index={index} style={style}>
+              {children(items[index])}
+            </Row>
+          )}
+        </List>
+      </Box>
+    );
+  },
+);
 
 const sortTerms = (terms: FilterItem[], selectedFilters: string[]) => {
   const selectedSet = new Set(selectedFilters);
@@ -378,6 +368,7 @@ export const FiltersList: React.FC<FiltersListProps> = React.memo(
         t.label.toLowerCase().includes(debouncedSearchTerm.toLowerCase()),
       );
     }, [groupedAndSorted, debouncedSearchTerm]);
+
     return (
       <>
         {/* Search through filter terms */}
@@ -398,8 +389,8 @@ export const FiltersList: React.FC<FiltersListProps> = React.memo(
           <VirtualizedList items={searchedTerms}>
             {props => (
               <Checkbox
-                isLoading={isLoading && !isUpdating}
-                isUpdating={isLoading || isUpdating}
+                isLoading={isLoading}
+                isUpdating={isUpdating}
                 {...props}
               />
             )}

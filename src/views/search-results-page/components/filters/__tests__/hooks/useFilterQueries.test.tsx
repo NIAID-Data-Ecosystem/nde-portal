@@ -3,56 +3,57 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useFilterQueries } from '../../hooks/useFilterQueries';
 import React from 'react';
 import { buildFacetQueryParams } from '../../utils/queries';
+import { FilterConfig } from '../../types';
 
-// Mock FILTER_CONFIGS to return specific queries
-jest.mock('../../config', () => ({
-  FILTER_CONFIGS: [
-    {
-      property: 'category',
-      createQueries: jest.fn((params, options, isInitialQuery = false) => {
-        // Destructure options to exclude queryKey and gather other options, with defaults
-        const { queryKey = [] } = options || {};
+const config = [
+  {
+    property: 'category',
+    createQueries: jest.fn((params, options) => {
+      // Destructure options to exclude queryKey and gather other options, with defaults
+      const { queryKey = [] } = options || {};
 
-        // omit filters from initialQuery to get full results back.
-        const extra_filter = isInitialQuery ? '' : params.extra_filter;
+      // add exists to get total count for "Any Specified"
+      const extraFilterWithFacets = params.extra_filter
+        ? `${params.extra_filter}${
+            params.facets ? ` AND _exists_:${params.facets}` : ''
+          }`
+        : params.facets
+        ? `_exists_:${params.facets}`
+        : '';
 
-        // add exists to get total count for "Any Specified"
-        const extraFilterWithFacets = extra_filter
-          ? `${extra_filter}${
-              params.facets ? ` AND _exists_:${params.facets}` : ''
-            }`
-          : params.facets
-          ? `_exists_:${params.facets}`
-          : '';
+      const queryParams = buildFacetQueryParams({
+        ...params,
+        extra_filter: extraFilterWithFacets,
+      });
 
-        const queryParams = buildFacetQueryParams({
-          ...params,
-          extra_filter: extraFilterWithFacets,
-        });
-
-        return [
-          {
-            queryKey: [...queryKey, queryParams],
-            queryFn: async () => {
+      return [
+        {
+          queryKey: [...queryKey, queryParams],
+          queryFn: async () => {
+            if (queryParams.extra_filter?.includes('_exists_:category')) {
               return {
+                total: 26,
                 facet: 'category',
-                results: isInitialQuery
-                  ? [
-                      { term: 'electronics', count: 10 },
-                      { term: 'books', count: 5 },
-                    ]
-                  : [
-                      { term: 'electronics', count: 22 },
-                      { term: 'books', count: 4 },
-                    ],
+                results: [
+                  { term: 'electronics', count: 22 },
+                  { term: 'books', count: 4 },
+                ],
               };
-            },
+            }
+            return {
+              total: 15,
+              facet: 'category',
+              results: [
+                { term: 'electronics', count: 10 },
+                { term: 'books', count: 5 },
+              ],
+            };
           },
-        ];
-      }),
-    },
-  ],
-}));
+        },
+      ];
+    }),
+  } as unknown as FilterConfig,
+];
 
 const queryClient = new QueryClient();
 
@@ -69,8 +70,13 @@ describe('useFilterQueries', () => {
     const { result, waitFor } = renderHook(
       () =>
         useFilterQueries({
-          q: '',
-          facets: 'category',
+          initialParams: {
+            q: '__all__',
+          },
+          updateParams: {
+            q: '__all__',
+          },
+          config,
         }),
       {
         wrapper,
@@ -94,9 +100,14 @@ describe('useFilterQueries', () => {
     const { result, waitFor } = renderHook(
       () =>
         useFilterQueries({
-          q: '',
-          extra_filter: '@type:("Dataset")',
-          facets: 'category',
+          initialParams: {
+            q: '__all__',
+          },
+          updateParams: {
+            q: '__all__',
+            extra_filter: '_exists_:category',
+          },
+          config,
         }),
       {
         wrapper,

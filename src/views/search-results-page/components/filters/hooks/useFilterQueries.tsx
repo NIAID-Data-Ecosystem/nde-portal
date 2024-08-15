@@ -174,7 +174,6 @@ export const useFilterQueries = ({
               },
               refetchOnWindowFocus: false,
             },
-            true,
           ),
       )
       .filter(query => !!query);
@@ -234,6 +233,7 @@ export const useFilterQueries = ({
     data: updatedResults,
     isLoading: isUpdating,
     error: updatedError,
+    isPending: updatedPending,
   } = useQueries({
     queries: updateQueries,
     combine: combineCallback,
@@ -243,24 +243,27 @@ export const useFilterQueries = ({
   const [mergedResults, setMergedResults] = useState<TransformedFacetResults>(
     {},
   );
-
   useEffect(() => {
-    if (enableUpdate && !isUpdating) {
+    if (
+      enableUpdate &&
+      !isUpdating &&
+      updatedResults &&
+      Object.keys(updatedResults)?.length > 0
+    ) {
       const merged = mergeResults(initialResults, updatedResults);
       setMergedResults(merged);
-    } else {
+    } else if (!isLoading && !isUpdating && initialResults) {
       setMergedResults(initialResults);
     }
-  }, [initialResults, updatedResults, enableUpdate, isUpdating]);
+  }, [initialResults, updatedResults, enableUpdate, isUpdating, isLoading]);
 
   // Combine errors from initial and filtered queries
   const error = initialError || updatedError;
-
   return {
-    results: mergedResults,
     error,
-    isLoading: isLoading || isPlaceholderData || isPending,
     initialResults,
-    isUpdating,
+    isLoading: isLoading || isPlaceholderData || isPending,
+    isUpdating: enableUpdate && (isUpdating || updatedPending),
+    results: mergedResults,
   };
 };

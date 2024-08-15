@@ -12,14 +12,13 @@ jest.mock('../../utils/queries', () => ({
 }));
 
 describe('buildQueries', () => {
-  it('should create queries for a given facet field with non-initial query', () => {
+  it('should create queries for a given facet field', () => {
     const facetField = 'testFacet';
     const params = { q: '', extra_filter: 'filter1' };
     const options = { queryKey: ['key1'], option1: 'value1' };
-    const isInitialQuery = false;
 
-    const createQueries = buildQueries(facetField);
-    const queries = createQueries(params, options, isInitialQuery);
+    const createQueries = buildQueries(facetField)!;
+    const queries = createQueries(params, options);
 
     expect(createCommonQuery).toHaveBeenCalledWith({
       queryKey: ['key1'],
@@ -36,38 +35,13 @@ describe('buildQueries', () => {
     expect(queries).toHaveLength(2);
   });
 
-  it('should handle initial query by omitting filters', () => {
-    const facetField = 'testFacet';
-    const params = { q: '', extra_filter: 'filter1' };
-    const options = { queryKey: ['key1'], option1: 'value1' };
-    const isInitialQuery = true;
-
-    const createQueries = buildQueries(facetField);
-    const queries = createQueries(params, options, isInitialQuery);
-
-    expect(createCommonQuery).toHaveBeenCalledWith({
-      queryKey: ['key1'],
-      params: { ...params, extra_filter: '', facets: facetField },
-      option1: 'value1',
-    });
-
-    expect(createNotExistsQuery).toHaveBeenCalledWith({
-      queryKey: ['key1'],
-      params: { ...params, facets: facetField },
-      option1: 'value1',
-    });
-
-    expect(queries).toHaveLength(2);
-  });
-
   it('should handle absence of extra_filter in params', () => {
     const facetField = 'testFacet';
     const params = { q: '' };
     const options = { queryKey: ['key1'], option1: 'value1' };
-    const isInitialQuery = false;
 
-    const createQueries = buildQueries(facetField);
-    const queries = createQueries(params, options, isInitialQuery);
+    const createQueries = buildQueries(facetField)!;
+    const queries = createQueries(params, options);
 
     expect(createCommonQuery).toHaveBeenCalledWith({
       queryKey: ['key1'],
@@ -88,10 +62,9 @@ describe('buildQueries', () => {
     const facetField = 'testFacet';
     const params = { q: '', extra_filter: 'filter1' };
     const options = undefined;
-    const isInitialQuery = false;
 
-    const createQueries = buildQueries(facetField);
-    const queries = createQueries(params, options, isInitialQuery);
+    const createQueries = buildQueries(facetField)!;
+    const queries = createQueries(params, options);
 
     expect(createCommonQuery).toHaveBeenCalledWith({
       queryKey: [],
@@ -110,11 +83,9 @@ describe('buildQueries', () => {
     const facetField = 'testFacet';
     const params = { q: '', extra_filter: 'filter1' };
     const options = { option1: 'value1' };
-    const isInitialQuery = false;
 
-    const createQueries = buildQueries(facetField);
-    // @ts-ignore
-    const queries = createQueries(params, options, isInitialQuery);
+    const createQueries = buildQueries(facetField)!;
+    const queries = createQueries(params, options);
 
     expect(createCommonQuery).toHaveBeenCalledWith({
       queryKey: [],
@@ -133,14 +104,13 @@ describe('buildQueries', () => {
 });
 
 describe('buildSourceQueries', () => {
-  it('should create queries for the "Sources" facet field with non-initial query', () => {
+  it('should create queries for the "Sources" facet field', () => {
     const facetField = 'sourceFacet';
     const params = { q: '', extra_filter: 'filter2' };
     const options = { queryKey: ['key2'], option2: 'value2' };
-    const isInitialQuery = false;
 
-    const createQueries = buildSourceQueries(facetField);
-    const queries = createQueries(params, options, isInitialQuery);
+    const createQueries = buildSourceQueries(facetField)!;
+    const queries = createQueries(params, options);
 
     expect(createCommonQueryWithMetadata).toHaveBeenCalledWith({
       queryKey: ['key2'],
@@ -151,32 +121,13 @@ describe('buildSourceQueries', () => {
     expect(queries).toHaveLength(1);
   });
 
-  it('should handle initial query by omitting filters', () => {
-    const facetField = 'sourceFacet';
-    const params = { q: '', extra_filter: 'filter2' };
-    const options = { queryKey: ['key2'], option2: 'value2' };
-    const isInitialQuery = true;
-
-    const createQueries = buildSourceQueries(facetField);
-    const queries = createQueries(params, options, isInitialQuery);
-
-    expect(createCommonQueryWithMetadata).toHaveBeenCalledWith({
-      queryKey: ['key2'],
-      params: { ...params, extra_filter: '', facets: facetField },
-      option2: 'value2',
-    });
-
-    expect(queries).toHaveLength(1);
-  });
-
   it('should handle absence of extra_filter in params', () => {
     const facetField = 'sourceFacet';
     const params = { q: '' };
     const options = { queryKey: ['key2'], option2: 'value2' };
-    const isInitialQuery = false;
 
-    const createQueries = buildSourceQueries(facetField);
-    const queries = createQueries(params, options, isInitialQuery);
+    const createQueries = buildSourceQueries(facetField)!;
+    const queries = createQueries(params, options);
 
     expect(createCommonQueryWithMetadata).toHaveBeenCalledWith({
       queryKey: ['key2'],
@@ -191,10 +142,9 @@ describe('buildSourceQueries', () => {
     const facetField = 'sourceFacet';
     const params = { q: '', extra_filter: 'filter2' };
     const options = undefined;
-    const isInitialQuery = false;
 
-    const createQueries = buildSourceQueries(facetField);
-    const queries = createQueries(params, options, isInitialQuery);
+    const createQueries = buildSourceQueries(facetField)!;
+    const queries = createQueries(params, options);
 
     expect(createCommonQueryWithMetadata).toHaveBeenCalledWith({
       queryKey: [],
@@ -208,11 +158,10 @@ describe('buildSourceQueries', () => {
     const facetField = 'sourceFacet';
     const params = { q: '', extra_filter: 'filter2' };
     const options = { option2: 'value2' };
-    const isInitialQuery = false;
 
-    const createQueries = buildSourceQueries(facetField);
+    const createQueries = buildSourceQueries(facetField)!;
     // @ts-ignore
-    const queries = createQueries(params, options, isInitialQuery);
+    const queries = createQueries(params, options);
 
     expect(createCommonQueryWithMetadata).toHaveBeenCalledWith({
       queryKey: [],

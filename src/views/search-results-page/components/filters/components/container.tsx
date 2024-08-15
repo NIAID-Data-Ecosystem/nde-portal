@@ -105,7 +105,14 @@ export const FiltersContainer: React.FC<FiltersContainerProps> = ({
   }, [selectedFilters, filtersList]);
 
   useEffect(() => {
-    setOpenSections(selectedKeys);
+    setOpenSections(prev => {
+      // Get the sections that are selected
+      const sections = selectedKeys.filter(sectionId => {
+        return !prev?.includes(sectionId);
+      });
+      // Return the previous sections and the new sections
+      return [...prev, ...sections];
+    });
   }, [selectedFilters, filtersList, selectedKeys]);
 
   const content = (
