@@ -17,7 +17,7 @@ import {
 } from 'src/components/filters/helpers';
 import { MAX_PAGES, Pagination } from './components/pagination';
 import { SortDropdown } from './components/sort';
-import { encodeString } from 'src/utils/querystring-helpers';
+import { encodeString, RESERVED_CHARS } from 'src/utils/querystring-helpers';
 import { SelectedFilterType } from '../filters/types';
 import { defaultQuery } from './helpers';
 import { MetadataScoreToggle } from './components/metadata-score-toggle';
@@ -294,7 +294,8 @@ const SearchResultsPage = ({
                 intentional and followed by a colon.
               </ListItem>
               <ListItem listStyleType='inherit'>
-                Ensure reserved characters are preceded by a backslash (\).
+                Ensure reserved characters ( {RESERVED_CHARS.join(' ')}) are
+                preceded by a backslash (\).
               </ListItem>
               <ListItem>
                 <Link href={'/knowledge-center/advanced-searching'} isExternal>
