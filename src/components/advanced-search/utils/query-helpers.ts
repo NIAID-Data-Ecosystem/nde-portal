@@ -118,13 +118,6 @@ export const convertObject2QueryString = (items: TreeItem[]) => {
           !containsUnion
         ) {
           str += formattedTerm;
-        } else if (
-          formattedTerm.split(' ').length > 1 &&
-          !formattedTerm.startsWith('[') &&
-          !formattedTerm.endsWith(']')
-        ) {
-          // 2. if the term contains spaces or contains a field, wrap in parens.
-          str += `(${formattedTerm})`;
         } else {
           str += formattedTerm;
         }
