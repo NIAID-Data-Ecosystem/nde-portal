@@ -17,8 +17,8 @@ export const RESERVED_CHARS = [
   '!',
   '{',
   '}',
-  '[',
-  ']',
+  // '[',
+  // ']',
   '^',
   '~',
   '?',
@@ -59,7 +59,6 @@ export const encodeString = (str: string) => {
   return str.split(':').reduce((acc, part, index, parts) => {
     // Always escape special characters
     const escapedPart = escapeSpecialChars(part);
-
     // Check if this part could be a field query
     if (index < parts.length - 1) {
       // Extract the potential field name (after cleaning up non-alpha characters (excluded @, . and _ for field names))
