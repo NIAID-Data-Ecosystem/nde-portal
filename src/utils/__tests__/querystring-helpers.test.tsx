@@ -2,8 +2,8 @@ import { encodeString } from '../querystring-helpers';
 
 describe('encoding querystring helpers', () => {
   test('escapes ES reserved characters', () => {
-    const result = encodeString('test[query]');
-    expect(result).toEqual('test\\[query\\]');
+    const result = encodeString('test&query=');
+    expect(result).toEqual('test\\&query\\=');
   });
 
   test('Does not escape colons if preceeded by metadata field', () => {
