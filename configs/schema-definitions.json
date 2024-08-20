@@ -21,10 +21,7 @@
     "property": "@type",
     "count": 3335344,
     "type": "keyword",
-    "enum": [
-      "Dataset",
-      "ResourceCatalog"
-    ],
+    "enum": ["Dataset", "ResourceCatalog"],
     "description": {
       "Dataset": "Datasets contained in the NIAID Data Ecosystem. A dataset is a collection of data of a particular experimental type. The NIAID Data Ecosystem is an environment to find and access and infectious and immune-mediated disease data and computational tools to speed the development of diagnostics, therapeutics, and vaccines. The NIAID Data Ecosystem Discovery Portal harvests metadata from dataset repository and harmonizes them to this schema to enable easy cross-platform dataset searching and filtering.",
       "ResourceCatalog": "ResourceCatalogs (collections of scientific information or research outputs) contained in the NIAID Data Ecosystem. Resource catalogs include databases, repositories, knowledge bases, citation indices, software indices, browser-based data portals (web portals), etc. The NIAID Data Ecosystem is an environment to find and access and infectious and immune-mediated disease data, resources and computational tools to speed the development of diagnostics, therapeutics, and vaccines. The NIAID Data Ecosystem Discovery Portal harvests metadata from dataset repository and harmonizes them to this schema to enable easy cross-platform dataset searching and filtering."
@@ -1169,12 +1166,7 @@
     "count": 75836,
     "type": "keyword",
     "schemaType": "string",
-    "enum": [
-      "Closed",
-      "Open",
-      "Restricted",
-      "Embargoed"
-    ],
+    "enum": ["Closed", "Open", "Restricted", "Embargoed"],
     "description": {
       "Dataset": "Conditions that affect the availability of, or method(s) of access to, the work. Options include open (freely available), restricted (may include restrictions such as on use), closed (requires registration to access), or embargoed (unpublished).",
       "ResourceCatalog": "Conditions that affect the availability of, or method(s) of access to, the work. Options include open (freely available), restricted (may include restrictions such as on use), closed (requires registration to access), or embargoed (unpublished)."
@@ -2956,7 +2948,7 @@
     "name": "Is Based On PMID",
     "dotfield": "isBasedOn.pmid",
     "property": "pmid",
-    "count": 4,
+    "count": 5,
     "type": "text",
     "schemaType": "string",
     "description": {
@@ -3541,7 +3533,7 @@
     "name": "Is Similar To",
     "dotfield": "isSimilarTo",
     "property": "isSimilarTo",
-    "count": 1,
+    "count": 2,
     "type": "object",
     "description": {
       "Dataset": "Datasets or computational tools which are similar to the work, based on terms in the names, descriptions, authors, measurementTechniques, infectiousAgents, healthConditions, etc.",
@@ -3557,7 +3549,7 @@
     "name": "Is Similar To Type",
     "dotfield": "isSimilarTo.@type",
     "property": "@type",
-    "count": 1,
+    "count": 2,
     "type": "text",
     "isAdvancedSearchField": false
   },
@@ -3637,7 +3629,7 @@
     "name": "Is Similar To Name",
     "dotfield": "isSimilarTo.name",
     "property": "name",
-    "count": 1,
+    "count": 2,
     "type": "text",
     "schemaType": "string",
     "description": {

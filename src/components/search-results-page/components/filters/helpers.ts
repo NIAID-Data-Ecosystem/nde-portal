@@ -40,6 +40,11 @@ export const FILTERS_CONFIG: FiltersConfigProps = {
     property: 'includedInDataCatalog',
     description: getSchemaDescription('includedInDataCatalog'),
   },
+  'sourceOrganization.name': {
+    name: 'Program Collections',
+    property: 'sourceOrganization.name',
+    description: getSchemaDescription('sourceOrganization'),
+  },
   'healthCondition.name': {
     name: 'Health Condition',
     glyph: 'healthCondition',

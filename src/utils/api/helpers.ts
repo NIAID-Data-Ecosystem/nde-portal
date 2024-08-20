@@ -266,6 +266,7 @@ export const formatAPIResource = (data: any) => {
     softwareHelp: convertToArray(data.softwareHelp),
     softwareRequirements: convertToArray(data.softwareRequirements),
     softwareVersion: convertToArray(data.softwareVersion),
+    sourceOrganization: convertToArray(data.sourceOrganization),
     spatialCoverage: convertToArray(data.spatialCoverage),
     species: convertToArray(data.species),
     temporalCoverage: convertToArray(data.temporalCoverage) || null,

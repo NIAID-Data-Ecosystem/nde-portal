@@ -15,8 +15,15 @@ export const formatFacetTermDisplay = (term: string, facet: string) => {
     return formatResourceTypeForDisplay(term as APIResourceType);
   } else if (facet === 'date') {
     return formatDate(term)?.split('-')[0];
-  } else if (facet === 'date') {
-    return formatDate(term)?.split('-')[0];
+  } else if (facet === 'sourceOrganization.name') {
+    let display_term = term;
+    if (term.toLocaleLowerCase().includes('creid')) {
+      display_term = display_term.replace(/creid/g, 'CREID');
+    }
+    if (term.toLocaleLowerCase().includes('niaid')) {
+      display_term = display_term.replace(/niaid/g, 'NIAID');
+    }
+    return display_term;
   }
   return term;
 };
