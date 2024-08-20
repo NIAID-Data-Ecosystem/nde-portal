@@ -5,10 +5,7 @@ export const Button = {
       borderRadius: 'semi',
       fontWeight: 'normal',
       fontFamily: 'body',
-      _visited: { color: 'white' },
-      _hover: {
-        color: 'inherit',
-      },
+      // _visited: { color: 'white' },
     };
   },
   sizes: {
@@ -179,11 +176,23 @@ export const Button = {
         },
       };
     },
+    link: () => {
+      return {
+        textDecoration: 'underline',
+
+        _hover: {
+          textDecoration: 'none',
+        },
+      };
+    },
     unstyled: () => {
       return {
         background: 'transparent',
+        color: 'inherit',
+
         _hover: {
           background: 'transparent',
+          color: 'inherit',
         },
       };
     },
