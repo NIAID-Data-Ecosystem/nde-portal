@@ -7,6 +7,7 @@ import {
   FlexProps,
   Image,
   Skeleton,
+  Stack,
   Tag,
   Text,
   usePrefersReducedMotion,
@@ -14,16 +15,18 @@ import {
 import { FormattedResource } from 'src/utils/api/types';
 import { getRepositoryImage } from 'src/utils/helpers';
 import { formatDate } from 'src/utils/api/helpers';
-import { FaArrowRight } from 'react-icons/fa6';
+import { FaArrowRight, FaMagnifyingGlass } from 'react-icons/fa6';
 import NextLink from 'next/link';
 import { ScrollContainer } from 'src/components/scroll-container';
 import { Link } from 'src/components/link';
+import Tooltip from 'src/components/tooltip';
 
 interface Provenance {
   isLoading: boolean;
   includedInDataCatalog?: FormattedResource['includedInDataCatalog'];
   url?: FormattedResource['url'];
   sdPublisher?: FormattedResource['sdPublisher'];
+  sourceOrganization?: FormattedResource['sourceOrganization'];
   curatedBy?: FormattedResource['curatedBy'];
 }
 
@@ -31,6 +34,7 @@ const Provenance: React.FC<Provenance> = ({
   includedInDataCatalog,
   isLoading,
   url,
+  sourceOrganization,
   sdPublisher,
   curatedBy,
 }) => {
@@ -70,7 +74,7 @@ const Provenance: React.FC<Provenance> = ({
             <Divider />
           </>
         )}
-        <Box>{children}</Box>
+        <>{children}</>
         {url ? (
           <Flex
             mt={2}
@@ -134,7 +138,6 @@ const Provenance: React.FC<Provenance> = ({
         whiteSpace='pre-wrap'
         wordBreak='break-word'
         fontWeight='normal'
-        mt={0.5}
       >
         {children ? (
           children
@@ -149,6 +152,10 @@ const Provenance: React.FC<Provenance> = ({
 
   return (
     <Skeleton isLoaded={!isLoading}>
+      {/* Source  information */}
+      <Text fontSize='xs' fontWeight='semibold' lineHeight='tall' mt={4}>
+        Source information
+      </Text>
       <ScrollContainer display='flex' py={2}>
         {provenanceCatalogs.map(includedInDataCatalog => {
           return (
@@ -199,6 +206,7 @@ const Provenance: React.FC<Provenance> = ({
             </Block>
           );
         })}
+
         {(curatedBy || sdPublisher) && (
           <Block>
             {curatedBy && curatedBy.name && (
@@ -264,6 +272,90 @@ const Provenance: React.FC<Provenance> = ({
           </Block>
         )}
       </ScrollContainer>
+
+      {/* Collection information */}
+      {sourceOrganization && (
+        <>
+          <Text fontSize='xs' fontWeight='semibold' lineHeight='tall' mt={4}>
+            Collection information
+          </Text>
+          <ScrollContainer display='flex' py={2}>
+            <Stack
+              spacing={4}
+              direction={{ base: 'column', xl: 'row' }}
+              flexWrap='wrap'
+              w='100%'
+            >
+              {sourceOrganization.map(organization => {
+                return (
+                  <Block
+                    key={organization.name}
+                    label={organization.name}
+                    w='100%'
+                    minW='unset'
+                    maxW='600px'
+                    flex={1}
+                    mx={0}
+                  >
+                    <Box as='dl' flex={1}>
+                      <Field label='Parent Organization'>
+                        {organization.parentOrganization}
+                      </Field>
+                      {organization.description && (
+                        <Field label='About'>
+                          <Text noOfLines={10}>{organization.description}</Text>
+                        </Field>
+                      )}
+                    </Box>
+                    <Stack
+                      flexDirection='row'
+                      justifyContent='space-between'
+                      flexWrap='wrap'
+                      spacing={1}
+                      alignSelf='baseline'
+                      w='100%'
+                    >
+                      <Tooltip label='Search for results from this program collection.'>
+                        <Button
+                          as={NextLink}
+                          variant='solid'
+                          size='sm'
+                          leftIcon={<FaMagnifyingGlass />}
+                          mt={2}
+                          w={{ base: '100%', sm: 'auto' }}
+                          href={{
+                            pathname: '/search',
+                            query: {
+                              q: `sourceOrganization.name:"${organization.name}"`,
+                            },
+                          }}
+                        >
+                          <Text isTruncated color='inherit'>
+                            View collection
+                          </Text>
+                        </Button>
+                      </Tooltip>
+                      {organization?.url && (
+                        <NextLink href={organization.url} target='_blank'>
+                          <Button
+                            as='span'
+                            variant='outline'
+                            size='sm'
+                            rightIcon={<FaArrowRight />}
+                            mt={2}
+                          >
+                            View program site
+                          </Button>
+                        </NextLink>
+                      )}
+                    </Stack>
+                  </Block>
+                );
+              })}
+            </Stack>
+          </ScrollContainer>
+        </>
+      )}
     </Skeleton>
   );
 };

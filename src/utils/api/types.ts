@@ -253,6 +253,15 @@ export interface SdPublisher {
   url?: string;
 }
 
+export interface SourceOrganization {
+  '@type': string;
+  name: string;
+  alternateName?: string;
+  description?: string;
+  parentOrganization?: string;
+  url?: string;
+}
+
 interface SpatialCoverage {
   identifier?: string;
   geo?: {
@@ -411,6 +420,7 @@ export interface FormattedResource {
   softwareHelp: { name?: string; url: string }[] | null;
   softwareRequirements: string[] | null;
   softwareVersion: string[] | null;
+  sourceOrganization: SourceOrganization[] | null;
   sdPublisher: SdPublisher[] | null;
   spatialCoverage: SpatialCoverage[] | null;
   species: Species[] | null;
