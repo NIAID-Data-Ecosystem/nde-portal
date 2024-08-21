@@ -35,17 +35,26 @@ DateRangeContext.displayName = 'DateRangeContext';
 */
 export const DateRangeSlider: React.FC<{
   data: FilterItem[];
+  isLoading: boolean;
   selectedDates: string[];
   colorScheme: ContextProps['colorScheme'];
   children: React.ReactNode;
 }> = ({
   children,
-  data: initialData,
+  data: datesData,
+  isLoading,
   selectedDates = [],
   colorScheme = 'primary',
 }) => {
+  const [initialData, setInitialData] = useState<FilterItem[]>([]);
   const [isDragging, setIsDragging] = useState(false);
   const [dateRange, setDateRange] = useState<number[]>([]);
+
+  useEffect(() => {
+    if (!isLoading) {
+      setInitialData(datesData);
+    }
+  }, [datesData, isLoading]);
 
   const data = useMemo(
     () =>
@@ -61,6 +70,7 @@ export const DateRangeSlider: React.FC<{
       ),
     [initialData],
   );
+
   useEffect(() => {
     // This logic is added to control the state when filter tags are updated / page is refreshed.
     setDateRange(prev => {

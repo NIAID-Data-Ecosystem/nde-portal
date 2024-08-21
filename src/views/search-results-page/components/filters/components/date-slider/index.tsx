@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Box, Checkbox, Flex, Heading, Skeleton, Text } from '@chakra-ui/react';
+import { Box, Checkbox, Flex, Heading, Spinner, Text } from '@chakra-ui/react';
 import { Slider } from './components/slider';
 import { DatePicker } from './components/date-picker';
 import { formatNumber } from 'src/utils/helpers';
@@ -64,20 +64,22 @@ export const FiltersDateSlider: React.FC<FiltersDateSliderProps> = ({
       config,
     });
 
-  const selectedData = results?.date || [];
-  // [resourcesWithNoDate]: Data used for resources that do not have a date field.
-  const resourcesWithNoDate = useMemo(
-    () =>
-      initialResults['date']?.filter(
-        d => d.term === '-_exists_' && d.count > 0,
-      ) || [],
+  const initialData = useMemo(
+    () => initialResults?.date || [],
     [initialResults],
   );
+  const selectedData = useMemo(() => results?.date || [], [results]);
 
-  // check if there is data with dates available to display the historgram.
-  const showHistogram = selectedData?.filter(
-    d => d.term !== '-_exists_' && d.count !== 0,
+  // [resourcesWithNoDate]: Data used for resources that do not have a date field.
+  const resourcesWithNoDate = useMemo(
+    () => initialData?.filter(d => d.term === '-_exists_' && d.count > 0) || [],
+    [initialData],
   );
+
+  // [showHistogram]: Data used for resources that have a date field.
+  const showHistogram =
+    selectedData?.filter(d => d.term !== '-_exists_' && d.count !== 0).length >
+    0;
 
   if (error) {
     return (
@@ -97,96 +99,110 @@ export const FiltersDateSlider: React.FC<FiltersDateSliderProps> = ({
       border='1px solid'
       borderColor='primary.100'
     >
-      <Skeleton
-        className='date-slider-skeleton'
-        isLoaded={!isLoading}
-        w='100%'
-        h={isLoading ? '404px' : 'unset'}
+      <DateRangeSlider
+        data={initialData}
+        isLoading={isLoading}
+        selectedDates={selectedDates}
+        colorScheme='secondary'
       >
-        {!isLoading && initialResults['date']?.length === 0 && (
-          <Text>No available filters.</Text>
-        )}
-        {!isLoading && selectedData?.length > 0 ? (
-          <DateRangeSlider
-            data={initialResults['date']}
-            selectedDates={selectedDates}
-            colorScheme='secondary'
-          >
-            {showHistogram.length > 0 && (
-              <Flex
-                w='100%'
-                flexDirection='column'
-                alignItems='center'
-                p={4}
-                px={8}
-                mt={-1.5}
-              >
-                {/*  Histogram for resources grouped by year */}
-                <Histogram
-                  updatedData={selectedData}
-                  handleClick={handleSelectedFilter}
-                >
-                  {/* Slider for choosing the date range. */}
-                  <Slider onChangeEnd={handleSelectedFilter} />
-                </Histogram>
-              </Flex>
-            )}
-
-            {/* Calendar Inputs */}
-            <Flex bg='blackAlpha.50' flexDirection='column' p={4}>
-              <DatePicker
-                colorScheme={colorScheme}
-                selectedDates={selectedDates}
-                handleSelectedFilter={handleSelectedFilter}
-                resetFilter={resetFilter}
+        <Flex
+          w='100%'
+          flexDirection='column'
+          alignItems='center'
+          p={4}
+          px={6}
+          mt={-1.5}
+          position='relative'
+          minHeight='180px'
+        >
+          {(isLoading || isUpdating) && (
+            <Flex
+              position='absolute'
+              top={0}
+              width='100%'
+              height='100%'
+              bg='whiteAlpha.600'
+              zIndex={1000}
+              alignItems='center'
+              justifyContent='center'
+            >
+              <Spinner
+                color='accent.600'
+                emptyColor='white'
+                position='absolute'
+                size='md'
+                thickness='2px'
               />
-              {/* Checkbox to toggle items with/without dates. Default is to show all resources (including those without the date field). */}
-              <Checkbox
-                mt={4}
-                isChecked={
-                  selectedDates.length === 0 ||
-                  selectedDates.includes('-_exists_')
-                }
-                onChange={e => {
-                  let updatedDates = [...selectedDates];
-                  // if toggled when no selection is made, show resources with dates.
-                  if (selectedDates.length === 0) {
-                    updatedDates.push('_exists_');
-                  }
-                  // if toggled when resources with dates is showing, remove this filter.
-                  else if (selectedDates.includes('_exists_')) {
-                    updatedDates = selectedDates.filter(
-                      d => !d.includes('_exists_'),
-                    );
-                  }
-                  //user toggles this when dates are selected and they also want to show resources with no dates.
-                  else {
-                    if (updatedDates.includes('-_exists_')) {
-                      updatedDates = selectedDates.filter(
-                        d => !d.includes('-_exists_'),
-                      );
-                    } else {
-                      updatedDates.push('-_exists_');
-                    }
-                  }
-                  handleSelectedFilter(updatedDates);
-                }}
-                isDisabled={!resourcesWithNoDate.length}
-              >
-                <Text fontSize='sm' fontWeight='medium' lineHeight='shorter'>
-                  Include{' '}
-                  {resourcesWithNoDate.length && resourcesWithNoDate[0].count
-                    ? `${formatNumber(resourcesWithNoDate[0].count)}`
-                    : ''}{' '}
-                  resources with no date information.{' '}
-                </Text>
-              </Checkbox>
             </Flex>
-          </DateRangeSlider>
-        ) : (
-          <></>
-        )}
-      </Skeleton>
+          )}
+          {showHistogram ? (
+            // Histogram for resources grouped by year
+            <Histogram
+              updatedData={selectedData}
+              handleClick={handleSelectedFilter}
+            >
+              {/* Slider for choosing the date range. */}
+              <Slider onChangeEnd={handleSelectedFilter} />
+            </Histogram>
+          ) : (
+            !isLoading &&
+            !isUpdating && (
+              <Text fontStyle='italic' color='gray.800' mt={1}>
+                No results with date information.
+              </Text>
+            )
+          )}
+        </Flex>
+        {/* Calendar Inputs */}
+        <Flex bg='blackAlpha.50' flexDirection='column' p={4}>
+          <DatePicker
+            colorScheme={colorScheme}
+            selectedDates={selectedDates}
+            handleSelectedFilter={handleSelectedFilter}
+            resetFilter={resetFilter}
+          />
+          {/* Checkbox to toggle items with/without dates. Default is to show all resources (including those without the date field). */}
+          <Checkbox
+            mt={4}
+            isChecked={
+              selectedDates.length === 0 || selectedDates.includes('-_exists_')
+            }
+            onChange={e => {
+              let updatedDates = [...selectedDates];
+              // if toggled when no selection is made, show resources with dates.
+              if (selectedDates.length === 0) {
+                updatedDates.push('_exists_');
+              }
+              // if toggled when resources with dates is showing, remove this filter.
+              else if (selectedDates.includes('_exists_')) {
+                updatedDates = selectedDates.filter(
+                  d => !d.includes('_exists_'),
+                );
+              }
+              //user toggles this when dates are selected and they also want to show resources with no dates.
+              else {
+                if (updatedDates.includes('-_exists_')) {
+                  updatedDates = selectedDates.filter(
+                    d => !d.includes('-_exists_'),
+                  );
+                } else {
+                  updatedDates.push('-_exists_');
+                }
+              }
+              handleSelectedFilter(updatedDates);
+            }}
+            isDisabled={!resourcesWithNoDate.length}
+          >
+            <Text fontSize='sm' fontWeight='medium' lineHeight='shorter'>
+              Include{' '}
+              {resourcesWithNoDate.length && resourcesWithNoDate[0].count
+                ? `${formatNumber(resourcesWithNoDate[0].count)}`
+                : ''}{' '}
+              resources with no date information.{' '}
+            </Text>
+          </Checkbox>
+        </Flex>
+      </DateRangeSlider>
     </Box>
   );
 };

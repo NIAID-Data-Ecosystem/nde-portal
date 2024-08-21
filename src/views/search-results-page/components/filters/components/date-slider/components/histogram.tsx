@@ -241,10 +241,8 @@ const Histogram: React.FC<HistogramProps> = ({
 
                     // If bar is hovered over, fill with a different color.
                     // if count is zero we fill the bar with a lighter colors
-                    if (count === 0) {
-                      fill = termInRange
-                        ? params.fill.inactive
-                        : theme.colors.gray[200];
+                    if (count === 0 || updatedCount === 0) {
+                      fill = theme.colors.gray[200];
                     }
                   }
 
@@ -253,6 +251,7 @@ const Histogram: React.FC<HistogramProps> = ({
                       {/* Used only when the bar is selected and the updated count is less than the full count. */}
                       {updatedCount > 0 && updatedCount < count && (
                         <Bar
+                          className='partial-bar'
                           x={barX}
                           width={barWidth}
                           opacity={
@@ -268,7 +267,7 @@ const Histogram: React.FC<HistogramProps> = ({
 
                       {/* Bars that show the full count.*/}
                       <Bar
-                        className='default-bar'
+                        className='full-bar'
                         x={barX}
                         width={barWidth}
                         opacity={
@@ -282,6 +281,8 @@ const Histogram: React.FC<HistogramProps> = ({
                   );
                 })}
               </Group>
+
+              {/* Invisible bars that are used to trigger the tooltip. */}
               <Group>
                 {data.map((d, i) => {
                   const { term } = d;
@@ -294,7 +295,6 @@ const Histogram: React.FC<HistogramProps> = ({
 
                   return (
                     <React.Fragment key={`invisible-bar-${term}`}>
-                      {/* Invisible bars that are used to trigger the tooltip. */}
                       <Bar
                         className='hover-bar'
                         x={barX}
@@ -341,7 +341,7 @@ const Histogram: React.FC<HistogramProps> = ({
             </Flex>
           </Box>
         ) : (
-          <Text fontStyle='italic' color='niaid.placeholder'>
+          <Text fontStyle='italic' color='gray.800' mt={1}>
             No results with date information.
           </Text>
         )}
