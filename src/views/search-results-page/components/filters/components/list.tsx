@@ -15,23 +15,15 @@ import {
 } from '@chakra-ui/react';
 import { SearchInput } from 'src/components/search-input';
 import {
+  FacetTermWithDetails,
   FilterConfig,
-  FilterItem,
 } from 'src/views/search-results-page/components/filters/types';
 import { useDebounceValue } from 'usehooks-ts';
 import { VariableSizeList as List } from 'react-window';
 import { FILTER_CONFIGS } from 'src/views/search-results-page/components/filters/config';
 
-// Define the props interface for the FiltersList component
-interface FiltersListProps {
-  colorScheme: string;
-  terms: FilterItem[];
-  searchPlaceholder: string;
-  selectedFilters: string[];
-  handleSelectedFilters: (arg: string[]) => void;
-  isLoading: boolean;
-  isUpdating?: boolean;
-  property: string;
+export interface FilterItem extends FacetTermWithDetails {
+  isHeader?: boolean;
 }
 
 // Memoized Checkbox component to prevent unnecessary re-renders
@@ -258,7 +250,7 @@ const sortTerms = (terms: FilterItem[], selectedFilters: string[]) => {
 };
 
 const groupTerms = (
-  terms: FilterItem[],
+  terms: FacetTermWithDetails[],
   selectedFilters: string[],
   groupOrder?: FilterConfig['groupBy'],
 ) => {
@@ -327,6 +319,18 @@ const groupTerms = (
   return results;
 };
 
+// Define the props interface for the FiltersList component
+interface FiltersListProps {
+  colorScheme: string;
+  terms: FacetTermWithDetails[];
+  searchPlaceholder: string;
+  selectedFilters: string[];
+  handleSelectedFilters: (arg: string[]) => void;
+  isLoading: boolean;
+  isUpdating?: boolean;
+  property: string;
+}
+
 export const FiltersList: React.FC<FiltersListProps> = React.memo(
   ({
     colorScheme,
@@ -355,7 +359,6 @@ export const FiltersList: React.FC<FiltersListProps> = React.memo(
       () => groupTerms(terms, selectedFilters, facetConfig?.groupBy),
       [terms, facetConfig?.groupBy, selectedFilters],
     );
-
     // Filter the terms based on the search term
     const searchedTerms: FilterItem[] = useMemo(() => {
       if (!groupedAndSorted?.length) {

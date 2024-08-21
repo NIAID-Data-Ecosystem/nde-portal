@@ -1,7 +1,7 @@
 import {
   createCommonQuery,
   createNotExistsQuery,
-  createCommonQueryWithMetadata,
+  createQueryWithSourceMetadata,
 } from '../../utils/queries';
 import { fetchSearchResults } from 'src/utils/api';
 import { Metadata } from 'src/hooks/api/types';
@@ -362,14 +362,14 @@ describe('API Query Functions', () => {
     });
   });
 
-  describe('createCommonQueryWithMetadata', () => {
+  describe('createQueryWithSourceMetadata', () => {
     it('should build a query correctly', async () => {
       (fetchSearchResults as jest.Mock).mockResolvedValue(
         fetchSearchResultsResponse,
       );
       (fetchMetadata as jest.Mock).mockResolvedValue(metadata);
 
-      const query = createCommonQueryWithMetadata({
+      const query = createQueryWithSourceMetadata({
         params,
         queryKey: ['testKey'],
       });
@@ -423,7 +423,7 @@ describe('API Query Functions', () => {
       );
       (fetchMetadata as jest.Mock).mockResolvedValue(null);
 
-      const query = createCommonQueryWithMetadata({
+      const query = createQueryWithSourceMetadata({
         params,
         queryKey: ['testKey'],
       });
@@ -437,7 +437,7 @@ describe('API Query Functions', () => {
       (fetchSearchResults as jest.Mock).mockResolvedValue(mockResponse);
       (fetchMetadata as jest.Mock).mockResolvedValue(metadata);
 
-      const query = createCommonQueryWithMetadata({
+      const query = createQueryWithSourceMetadata({
         params: { ...params, facets: 'facet' },
         queryKey: ['testKey'],
       });
@@ -452,7 +452,7 @@ describe('API Query Functions', () => {
       (fetchSearchResults as jest.Mock).mockResolvedValue(mockResponse);
       (fetchMetadata as jest.Mock).mockResolvedValue(metadata);
 
-      const query = createCommonQueryWithMetadata({
+      const query = createQueryWithSourceMetadata({
         params: { ...params, facets: '' },
         queryKey: ['testKey'],
       });

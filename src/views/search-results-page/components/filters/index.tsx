@@ -114,7 +114,7 @@ export const Filters: React.FC<FiltersProps> = ({
             <FiltersList
               colorScheme={colorScheme}
               searchPlaceholder={`Search ${name.toLowerCase()} filters`}
-              terms={results[property]}
+              terms={results?.[property]?.['data'] || []}
               property={property}
               selectedFilters={selected || []}
               handleSelectedFilters={values =>

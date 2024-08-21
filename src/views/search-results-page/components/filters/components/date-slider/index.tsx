@@ -65,10 +65,10 @@ export const FiltersDateSlider: React.FC<FiltersDateSliderProps> = ({
     });
 
   const initialData = useMemo(
-    () => initialResults?.date || [],
+    () => initialResults?.date?.['data'] || [],
     [initialResults],
   );
-  const selectedData = useMemo(() => results?.date || [], [results]);
+  const selectedData = useMemo(() => results?.date?.['data'] || [], [results]);
 
   // [resourcesWithNoDate]: Data used for resources that do not have a date field.
   const resourcesWithNoDate = useMemo(
@@ -110,7 +110,7 @@ export const FiltersDateSlider: React.FC<FiltersDateSliderProps> = ({
           flexDirection='column'
           alignItems='center'
           p={4}
-          px={6}
+          px={8}
           mt={-1.5}
           position='relative'
           minHeight='180px'

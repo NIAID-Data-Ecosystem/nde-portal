@@ -1,6 +1,6 @@
 import {
   createCommonQuery,
-  createCommonQueryWithMetadata,
+  createQueryWithSourceMetadata,
   createNotExistsQuery,
 } from './queries';
 import { FilterConfig } from '../types';
@@ -44,7 +44,7 @@ export const buildSourceQueries =
     const { queryKey = [], ...otherOptions } = options || {};
 
     return [
-      createCommonQueryWithMetadata({
+      createQueryWithSourceMetadata({
         queryKey,
         params: { ...params, facets: facetField },
         ...otherOptions,

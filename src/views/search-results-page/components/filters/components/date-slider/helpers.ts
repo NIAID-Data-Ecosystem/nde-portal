@@ -1,6 +1,6 @@
-import { FilterItem } from 'src/views/search-results-page/components/filters/types';
+import { FacetTermWithDetails } from 'src/views/search-results-page/components/filters/types';
 
-export const addMissingYears = (dates: FilterItem[]) => {
+export const addMissingYears = (dates: FacetTermWithDetails[]) => {
   //  Add in missing years (with a count of 0)
   dates
     .sort((a, b) => new Date(a.term).valueOf() - new Date(b.term).valueOf())

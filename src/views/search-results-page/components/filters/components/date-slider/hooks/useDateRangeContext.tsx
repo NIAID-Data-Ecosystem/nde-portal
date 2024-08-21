@@ -1,10 +1,10 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { addMissingYears } from '../helpers';
-import { FilterItem } from 'src/views/search-results-page/components/filters/types';
+import { FacetTermWithDetails } from 'src/views/search-results-page/components/filters/types';
 
 export interface ContextProps {
   colorScheme: string;
-  data?: FilterItem[];
+  data?: FacetTermWithDetails[];
   dates: (string | null)[];
   dateRange: number[];
   setDateRange: React.Dispatch<React.SetStateAction<ContextProps['dateRange']>>;

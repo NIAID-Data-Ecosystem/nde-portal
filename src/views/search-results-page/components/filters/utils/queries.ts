@@ -5,7 +5,7 @@ import { Params } from 'src/utils/api';
 import { FetchSearchResultsResponse } from 'src/utils/api/types';
 import { Metadata } from 'src/hooks/api/types';
 import { encodeString } from 'src/utils/querystring-helpers';
-import { FacetTermWithDetails } from '../types';
+import { RawQueryResult } from '../types';
 
 interface SourcesData extends FetchSearchResultsResponse {
   repos: Metadata | null;
@@ -92,18 +92,7 @@ interface QueryArgs {
   queryKey: QueryKey;
   params: FacetParams;
   placeholderData?: any;
-  select?: (data: FetchSearchResultsResponse) => {
-    facet: string;
-    results: (
-      | FacetTermWithDetails
-      | {
-          label: string;
-          term: string;
-          count: number;
-          facet: string;
-        }
-    )[];
-  };
+  select?: (data: FetchSearchResultsResponse) => RawQueryResult;
 }
 
 export const createCommonQuery = ({
@@ -215,7 +204,7 @@ export const createNotExistsQuery = ({
  * @param optionsQueryKey - The query key options.
  * @returns The query object.
  */
-export const createCommonQueryWithMetadata = ({
+export const createQueryWithSourceMetadata = ({
   params,
   queryKey,
   ...options
@@ -225,7 +214,6 @@ export const createCommonQueryWithMetadata = ({
     queryKey: [...queryKey, queryParams],
     queryFn: async () => {
       const data = await fetchSearchResults(queryParams);
-      // Don't need to re-run the metadata query if the data is already in the cache
       const repos = !queryKey.includes('filtered')
         ? await fetchMetadata()
         : null;

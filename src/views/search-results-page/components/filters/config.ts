@@ -2,7 +2,7 @@ import {
   APIResourceType,
   formatResourceTypeForDisplay,
 } from 'src/utils/formatting/formatResourceType';
-import { FilterConfig, FilterItem } from './types';
+import { FilterConfig, FacetTermWithDetails } from './types';
 import { buildQueries, buildSourceQueries } from './utils/query-builders';
 import { formatDate, formatISOString } from 'src/utils/api/helpers';
 import { FetchSearchResultsResponse } from 'src/utils/api/types';
@@ -66,7 +66,7 @@ export const FILTER_CONFIGS: FilterConfig[] = [
       ];
     },
 
-    transformData: (item): FilterItem => {
+    transformData: (item): FacetTermWithDetails => {
       if (item.term.includes('_exists_')) {
         return { ...item, label: item.label || '' };
       }
@@ -83,7 +83,7 @@ export const FILTER_CONFIGS: FilterConfig[] = [
     description:
       'Type is used to categorize the nature of the content of the resource',
     createQueries: buildQueries('@type'),
-    transformData: (item): FilterItem => ({
+    transformData: (item): FacetTermWithDetails => ({
       ...item,
       label:
         item.label ||
@@ -120,7 +120,7 @@ export const FILTER_CONFIGS: FilterConfig[] = [
         },
         options,
       ),
-    transformData: (item): FilterItem => {
+    transformData: (item): FacetTermWithDetails => {
       let label = item.label || item.term;
       if (label.toLocaleLowerCase().includes('creid')) {
         label = label.replace(/creid/g, 'CREID');

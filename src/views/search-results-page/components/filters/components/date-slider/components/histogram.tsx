@@ -8,10 +8,10 @@ import { formatNumber } from 'src/utils/helpers';
 import { scaleBand, scaleLinear } from '@visx/scale';
 import { addMissingYears } from '../helpers';
 import { useDateRangeContext } from '../hooks/useDateRangeContext';
-import { FilterItem } from 'src/views/search-results-page/components/filters/types';
+import { FacetTermWithDetails } from 'src/views/search-results-page/components/filters/types';
 
 interface HistogramProps {
-  updatedData: FilterItem[];
+  updatedData: FacetTermWithDetails[];
   handleClick: (args: string[]) => void;
   children: React.ReactNode;
 }
@@ -27,13 +27,7 @@ const Histogram: React.FC<HistogramProps> = ({
   updatedData,
   handleClick,
 }) => {
-  const {
-    // colorScheme,
-    data = [],
-    dates,
-    setDateRange,
-    // isDragging,
-  } = useDateRangeContext();
+  const { data = [], dates, setDateRange } = useDateRangeContext();
 
   const params = useMemo(
     () => ({
@@ -241,7 +235,7 @@ const Histogram: React.FC<HistogramProps> = ({
 
                     // If bar is hovered over, fill with a different color.
                     // if count is zero we fill the bar with a lighter colors
-                    if (count === 0 || updatedCount === 0) {
+                    if (count === 0 && updatedCount === 0) {
                       fill = theme.colors.gray[200];
                     }
                   }

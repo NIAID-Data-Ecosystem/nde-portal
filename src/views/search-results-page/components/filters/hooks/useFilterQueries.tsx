@@ -1,15 +1,13 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useQueries, UseQueryResult } from '@tanstack/react-query';
 import { Params } from 'src/utils/api';
-import { FilterConfig, QueryResult, TransformedFacetResults } from '../types';
+import { FilterConfig, QueryData, RawQueryResult } from '../types';
 
 // Function to create a hash map from the filtered results for faster lookup
-const createFilteredResultsMap = (updatedResults: {
-  [facet: string]: QueryResult['results'];
-}) => {
+const createFilteredResultsMap = (updatedResults: QueryData) => {
   return Object.keys(updatedResults).reduce((acc, facet) => {
     acc[facet] = new Map();
-    updatedResults[facet].forEach(item => {
+    updatedResults[facet]['data'].forEach(item => {
       acc[facet].set(item.term, item.count);
     });
     return acc;
@@ -27,28 +25,29 @@ const createFilteredResultsMap = (updatedResults: {
  * @param updatedResults - The results fetched with the selected filters.
  * @returns The merged results with counts from filtered results if available, otherwise counts are set to 0.
  */
-const mergeResults = (
-  initialResults: TransformedFacetResults,
-  updatedResults: { [facet: string]: QueryResult['results'] },
-): TransformedFacetResults => {
-  const mergedResults: TransformedFacetResults = { ...initialResults };
+const mergeResults = (initialResults: QueryData, updatedResults: QueryData) => {
+  const mergedResults = { ...initialResults };
 
   const filteredResultsMap = createFilteredResultsMap(updatedResults);
   // Iterate over each facet in the initial results
   for (const facet in initialResults) {
     if (filteredResultsMap[facet]) {
-      mergedResults[facet] = initialResults[facet].map(item => ({
-        ...item,
-        count: filteredResultsMap[facet].get(item.term) ?? 0,
-      }));
+      mergedResults[facet]['data'] = initialResults[facet]['data'].map(
+        item => ({
+          ...item,
+          count: filteredResultsMap[facet].get(item.term) ?? 0,
+        }),
+      );
     } else {
-      mergedResults[facet] = initialResults[facet].map(item => ({
-        ...item,
-        count: 0,
-      }));
+      mergedResults[facet]['data'] = initialResults[facet]['data'].map(
+        item => ({
+          ...item,
+          count: 0,
+        }),
+      );
     }
     // Sort the results of each facet by count in descending order
-    mergedResults[facet].sort((a, b) => b.count - a.count);
+    mergedResults[facet]['data'].sort((a, b) => b.count - a.count);
   }
 
   return mergedResults;
@@ -61,19 +60,29 @@ const mergeResults = (
  * @returns An object containing the combined data and the loading state.
  */
 const combineQueryResults = (
-  queryResult: UseQueryResult<QueryResult, Error>[],
+  queryResult: UseQueryResult<RawQueryResult, Error>[],
 ) => {
   const isLoading = queryResult.some(query => query.isLoading);
   const isPending = queryResult.some(query => query.isPending);
   const isPlaceholderData = queryResult.some(query => query.isPlaceholderData);
   const error = queryResult.find(query => query.error)?.error;
-  const results = queryResult.reduce((acc, { data }) => {
-    if (!data || !data?.facet) return acc;
-    const { facet, results } = data;
+  const results = queryResult.reduce(
+    (acc, { data }) => {
+      if (!data || !data?.facet) return acc;
+      const { facet, results } = data;
 
-    acc[facet] = acc[facet] ? acc[facet].concat(results) : results;
-    return acc;
-  }, {} as { [facet: string]: QueryResult['results'] });
+      if (!acc[facet]) {
+        acc[facet] = { data: [] };
+      }
+
+      acc[facet]['data'] = acc[facet]['data'].concat(results);
+      return acc;
+    },
+    {} as {
+      [facet: string]: { data: RawQueryResult['results'] };
+    },
+  );
+
   return {
     data: results,
     isLoading,
@@ -95,7 +104,9 @@ const transformResults = (
     data,
     ...queryResult
   }: {
-    data: { [facet: string]: QueryResult['results'] };
+    data: {
+      [facet: string]: { data: RawQueryResult['results'] };
+    };
     isLoading: boolean;
     isPlaceholderData: boolean;
     isPending: boolean;
@@ -106,15 +117,17 @@ const transformResults = (
   Object.keys(data).forEach(facet => {
     const configFacet = config.find(f => f.property === facet);
 
-    transformedResults[facet] = data[facet].map(item =>
+    const items = data[facet]['data'].map(item =>
       configFacet?.transformData
         ? configFacet.transformData(item)
         : { ...item, label: item?.label || item.term },
     );
+
+    transformedResults[facet] = { data: items };
   });
 
   return {
-    data: transformedResults as TransformedFacetResults,
+    data: transformedResults as QueryData,
     ...queryResult,
   };
 };
@@ -182,7 +195,7 @@ export const useFilterQueries = ({
   // Note: Wrap useQueries combine function in callback because inline functions will run on every render.
   // https://tanstack.com/query/latest/docs/framework/react/reference/useQueries#memoization
   const combineCallback = useCallback(
-    (data: UseQueryResult<QueryResult, Error>[]) => {
+    (data: UseQueryResult<RawQueryResult, Error>[]) => {
       return transformResults(config, combineQueryResults(data));
     },
     [config],
@@ -199,7 +212,6 @@ export const useFilterQueries = ({
     queries: initialQueries,
     combine: combineCallback,
   });
-
   // Determine if filtered queries should be enabled i.e. run when the initial results are available and extra filters are selected.
   // Used to update the counts in the initial results with the selected filters.
   const enableUpdate = useMemo(
@@ -240,9 +252,8 @@ export const useFilterQueries = ({
   });
 
   // Merge initial and filtered results (if they exist)
-  const [mergedResults, setMergedResults] = useState<TransformedFacetResults>(
-    {},
-  );
+  const [mergedResults, setMergedResults] = useState<QueryData>({});
+
   useEffect(() => {
     if (
       enableUpdate &&
@@ -251,6 +262,7 @@ export const useFilterQueries = ({
       Object.keys(updatedResults)?.length > 0
     ) {
       const merged = mergeResults(initialResults, updatedResults);
+
       setMergedResults(merged);
     } else if (!isLoading && !isUpdating && initialResults) {
       setMergedResults(initialResults);
@@ -259,6 +271,7 @@ export const useFilterQueries = ({
 
   // Combine errors from initial and filtered queries
   const error = initialError || updatedError;
+
   return {
     error,
     initialResults,

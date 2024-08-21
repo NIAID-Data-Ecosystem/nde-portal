@@ -7,33 +7,27 @@ export interface SelectedFilterType {
   [key: string]: SelectedFilterTypeValue[];
 }
 
+export interface RawQueryResult {
+  facet: string;
+  results: {
+    count: number;
+    facet?: string;
+    label?: string;
+    groupBy?: string;
+    term: string;
+  }[];
+}
+
 // Define the structure of the transformed query result
-export interface FacetTermWithDetails {
-  count: number;
-  term: string;
-  facet?: string;
-  groupBy?: string;
-  label?: string;
-}
-
-export interface QueryResult {
-  facet: string;
-  results: FacetTermWithDetails[];
-}
-
-export interface FilterItem {
-  count: number;
-  isHeader?: boolean;
+export interface FacetTermWithDetails
+  extends Omit<RawQueryResult['results'][number], 'label'> {
   label: string;
-  term: string;
-  facet?: string;
-  groupBy?: string;
 }
 
-export interface TransformedQueryResult {
-  facet: string;
-  results: FilterItem[];
+export interface QueryData {
+  [facet: string]: { data: FacetTermWithDetails[] };
 }
+
 // Interface for filter configuration
 export interface FilterConfig {
   name: string;
@@ -42,16 +36,13 @@ export interface FilterConfig {
   isDefaultOpen?: Boolean;
   createQueries?: (
     params: Params,
-    options?: UseQueryOptions<any, Error, QueryResult>,
-  ) => UseQueryOptions<any, Error, QueryResult>[];
-  transformData?: (item: FacetTermWithDetails) => FacetTermWithDetails; // useful for transforming data before rendering. Note that the label is used for search and display.
+    options?: UseQueryOptions<any, Error, RawQueryResult>,
+  ) => UseQueryOptions<any, Error, RawQueryResult>[];
+  transformData?: (
+    item: RawQueryResult['results'][number],
+  ) => FacetTermWithDetails; // useful for transforming data before rendering. Note that the label is used for search and display.
   groupBy?: {
     property: string;
     label: string;
   }[];
 }
-
-// Define the type for the query result accumulator
-export type TransformedFacetResults = {
-  [facet: string]: TransformedQueryResult['results'];
-};

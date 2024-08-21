@@ -1,13 +1,13 @@
 import { buildQueries, buildSourceQueries } from '../../utils/query-builders';
 import {
   createCommonQuery,
-  createCommonQueryWithMetadata,
+  createQueryWithSourceMetadata,
   createNotExistsQuery,
 } from '../../utils/queries';
 
 jest.mock('../../utils/queries', () => ({
   createCommonQuery: jest.fn(),
-  createCommonQueryWithMetadata: jest.fn(),
+  createQueryWithSourceMetadata: jest.fn(),
   createNotExistsQuery: jest.fn(),
 }));
 
@@ -112,7 +112,7 @@ describe('buildSourceQueries', () => {
     const createQueries = buildSourceQueries(facetField)!;
     const queries = createQueries(params, options);
 
-    expect(createCommonQueryWithMetadata).toHaveBeenCalledWith({
+    expect(createQueryWithSourceMetadata).toHaveBeenCalledWith({
       queryKey: ['key2'],
       params: { ...params, extra_filter: 'filter2', facets: facetField },
       option2: 'value2',
@@ -129,7 +129,7 @@ describe('buildSourceQueries', () => {
     const createQueries = buildSourceQueries(facetField)!;
     const queries = createQueries(params, options);
 
-    expect(createCommonQueryWithMetadata).toHaveBeenCalledWith({
+    expect(createQueryWithSourceMetadata).toHaveBeenCalledWith({
       queryKey: ['key2'],
       params: { ...params, extra_filter: undefined, facets: facetField },
       option2: 'value2',
@@ -146,7 +146,7 @@ describe('buildSourceQueries', () => {
     const createQueries = buildSourceQueries(facetField)!;
     const queries = createQueries(params, options);
 
-    expect(createCommonQueryWithMetadata).toHaveBeenCalledWith({
+    expect(createQueryWithSourceMetadata).toHaveBeenCalledWith({
       queryKey: [],
       params: { ...params, extra_filter: 'filter2', facets: facetField },
     });
@@ -163,7 +163,7 @@ describe('buildSourceQueries', () => {
     // @ts-ignore
     const queries = createQueries(params, options);
 
-    expect(createCommonQueryWithMetadata).toHaveBeenCalledWith({
+    expect(createQueryWithSourceMetadata).toHaveBeenCalledWith({
       queryKey: [],
       params: { ...params, extra_filter: 'filter2', facets: facetField },
       option2: 'value2',
