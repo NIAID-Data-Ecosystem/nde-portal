@@ -222,4 +222,9 @@ export default {
       {props.children}
     </Text>
   ),
+  br: (props: any) => (
+    <Box as='span' margin='10px 0 10px 0'>
+      {props.children}
+    </Box>
+  ),
 };
