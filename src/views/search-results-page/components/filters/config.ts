@@ -11,13 +11,8 @@ import {
   createNotExistsQuery,
   structureQueryData,
 } from './utils/queries';
-import {
-  queryFilterObject2String,
-  queryFilterString2Object,
-} from 'src/views/search-results-page/helpers';
 import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
 import { SchemaDefinitions } from 'scripts/generate-schema-definitions/types';
-import { omit } from 'lodash';
 
 const schema = SCHEMA_DEFINITIONS as SchemaDefinitions;
 
@@ -125,6 +120,16 @@ export const FILTER_CONFIGS: FilterConfig[] = [
         },
         options,
       ),
+    transformData: (item): FilterItem => {
+      let label = item.label || item.term;
+      if (label.toLocaleLowerCase().includes('creid')) {
+        label = label.replace(/creid/g, 'CREID');
+      }
+      if (label.toLocaleLowerCase().includes('niaid')) {
+        label = label.replace(/niaid/g, 'NIAID');
+      }
+      return { ...item, label };
+    },
   },
   {
     name: 'Health Condition',
