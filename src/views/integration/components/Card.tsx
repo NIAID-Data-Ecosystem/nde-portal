@@ -45,7 +45,7 @@ export const StepCard = ({
       fontSize='sm'
     >
       <Flex p={4} position='relative' flexWrap='wrap'>
-        {icon && icon.data && (
+        {/* {icon && icon.data && (
           <Box>
             <Box
               bg='page.alt'
@@ -62,7 +62,7 @@ export const StepCard = ({
               />
             </Box>
           </Box>
-        )}
+        )} */}
         <Box flex={1} px={[0, 4]} minW='250px' maxW='500px'>
           <Heading as='h4' fontSize='md' fontWeight='semibold' mt={2} pr={4}>
             {title}
@@ -118,8 +118,8 @@ export const StepCard = ({
                   {icon && icon.data && (
                     <Image
                       m={2}
-                      w='25px'
-                      h='25px'
+                      w='35px'
+                      h='35px'
                       src={`${process.env.NEXT_PUBLIC_STRAPI_API_URL}${icon.data.attributes.url}`}
                       alt={icon.data.attributes.alternativeText}
                     />
