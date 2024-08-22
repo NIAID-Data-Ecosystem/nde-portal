@@ -25,32 +25,29 @@ const createFilteredResultsMap = (updatedResults: QueryData) => {
  * @param updatedResults - The results fetched with the selected filters.
  * @returns The merged results with counts from filtered results if available, otherwise counts are set to 0.
  */
-const mergeResults = (initialResults: QueryData, updatedResults: QueryData) => {
-  const mergedResults = { ...initialResults };
-
+export const mergeResults = (
+  initialResults: QueryData,
+  updatedResults: QueryData,
+): QueryData => {
   const filteredResultsMap = createFilteredResultsMap(updatedResults);
-  // Iterate over each facet in the initial results
-  for (const facet in initialResults) {
-    if (filteredResultsMap[facet]) {
-      mergedResults[facet]['data'] = initialResults[facet]['data'].map(
-        item => ({
-          ...item,
-          count: filteredResultsMap[facet].get(item.term) ?? 0,
-        }),
-      );
-    } else {
-      mergedResults[facet]['data'] = initialResults[facet]['data'].map(
-        item => ({
-          ...item,
-          count: 0,
-        }),
-      );
-    }
-    // Sort the results of each facet by count in descending order
-    mergedResults[facet]['data'].sort((a, b) => b.count - a.count);
-  }
 
-  return mergedResults;
+  // Convert initialResults object to an array of [facet, data] pairs,
+  // transform them, and then convert back to an object
+  return Object.fromEntries(
+    Object.entries(initialResults).map(([facet, { data }]) => [
+      facet,
+      {
+        // Transform data by updating the count based on filteredResultsMap
+        data: data
+          .map(item => ({
+            ...item, // Spread existing properties of the item
+            count: filteredResultsMap[facet]?.get(item.term) ?? 0, // Update count or set to 0 if not found
+          }))
+          // Sort the items by count in descending order
+          .sort((a, b) => b.count - a.count),
+      },
+    ]),
+  );
 };
 
 /**

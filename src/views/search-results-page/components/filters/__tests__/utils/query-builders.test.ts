@@ -85,6 +85,7 @@ describe('buildQueries', () => {
     const options = { option1: 'value1' };
 
     const createQueries = buildQueries(facetField)!;
+    // @ts-ignore
     const queries = createQueries(params, options);
 
     expect(createCommonQuery).toHaveBeenCalledWith({

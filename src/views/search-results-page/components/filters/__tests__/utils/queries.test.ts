@@ -71,7 +71,7 @@ describe('API Query Functions', () => {
           genre: 'Generalist',
           url: '#',
           schema: null,
-        },
+        } as Metadata['src'][number]['sourceInfo'],
       },
 
       source2: {
@@ -85,7 +85,7 @@ describe('API Query Functions', () => {
           genre: 'IID',
           url: '#',
           schema: null,
-        },
+        } as Metadata['src'][number]['sourceInfo'],
       },
     },
     biothing_type: '',

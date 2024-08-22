@@ -1,9 +1,9 @@
 import { renderHook } from '@testing-library/react-hooks';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { useFilterQueries } from '../../hooks/useFilterQueries';
 import React from 'react';
 import { buildFacetQueryParams } from '../../utils/queries';
-import { FilterConfig } from '../../types';
+import { FilterConfig, QueryData } from '../../types';
+import { mergeResults, useFilterQueries } from '../../hooks/useFilterQueries';
 
 const config = [
   {
@@ -84,12 +84,13 @@ describe('useFilterQueries', () => {
     );
 
     await waitFor(() => !result.current.isLoading);
-
     expect(result.current.results).toEqual({
-      category: [
-        { term: 'electronics', count: 10, label: 'electronics' },
-        { term: 'books', count: 5, label: 'books' },
-      ],
+      category: {
+        data: [
+          { term: 'electronics', count: 10, label: 'electronics' },
+          { term: 'books', count: 5, label: 'books' },
+        ],
+      },
     });
     expect(result.current.isLoading).toBe(false);
     expect(result.current.isUpdating).toBe(false);
@@ -117,10 +118,47 @@ describe('useFilterQueries', () => {
     await waitFor(() => !result.current.isLoading);
 
     expect(result.current.results).toEqual({
-      category: [
-        { term: 'electronics', count: 22, label: 'electronics' },
-        { term: 'books', count: 4, label: 'books' },
-      ],
+      category: {
+        data: [
+          { term: 'electronics', count: 22, label: 'electronics' },
+          { term: 'books', count: 4, label: 'books' },
+        ],
+      },
     });
+  });
+
+  it('should correctly handle cases where initial results have terms not present in updated results', () => {
+    const initialResults: QueryData = {
+      category: {
+        data: [
+          { term: 'electronics', count: 10, label: 'electronics' },
+          { term: 'books', count: 5, label: 'books' },
+          { term: 'furniture', count: 3, label: 'furniture' },
+        ],
+      },
+    };
+
+    const updatedResults: QueryData = {
+      category: {
+        data: [
+          { term: 'electronics', count: 22, label: 'electronics' },
+          { term: 'books', count: 4, label: 'books' },
+        ],
+      },
+    };
+
+    const expectedMergedResults: QueryData = {
+      category: {
+        data: [
+          { term: 'electronics', count: 22, label: 'electronics' },
+          { term: 'books', count: 4, label: 'books' },
+          { term: 'furniture', count: 0, label: 'furniture' }, // Count set to 0 since it's not in updatedResults
+        ],
+      },
+    };
+
+    const result = mergeResults(initialResults, updatedResults);
+
+    expect(result).toEqual(expectedMergedResults);
   });
 });
