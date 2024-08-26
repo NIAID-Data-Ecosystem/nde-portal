@@ -30,9 +30,10 @@ export interface FilterItem extends FacetTermWithDetails {
 interface FilterCheckboxProps extends FilterItem {
   isLoading: boolean;
   isUpdating?: boolean;
+  colorScheme?: string;
 }
 const Checkbox: React.FC<FilterCheckboxProps> = React.memo(
-  ({ count, isHeader, isLoading, term, isUpdating, ...props }) => {
+  ({ colorScheme, count, isHeader, isLoading, term, isUpdating, ...props }) => {
     let label = props.label;
     let subLabel = '';
 
@@ -67,7 +68,7 @@ const Checkbox: React.FC<FilterCheckboxProps> = React.memo(
         py={1}
         alignItems='flex-start'
         _hover={{
-          bg: 'secondary.50',
+          bg: `${colorScheme}.50`,
         }}
         sx={{
           '>.chakra-checkbox__control': {
@@ -124,8 +125,8 @@ const Checkbox: React.FC<FilterCheckboxProps> = React.memo(
             as='span'
             className='tag-count'
             variant='subtle'
-            bg='secondary.50'
-            colorScheme='secondary'
+            bg={`${colorScheme}.50`}
+            colorScheme={colorScheme}
             borderRadius='full'
             fontSize='xs'
             alignSelf='flex-start'
@@ -226,7 +227,7 @@ const VirtualizedList = React.memo(
   },
 );
 
-const sortTerms = (terms: FilterItem[], selectedFilters: string[]) => {
+export const sortTerms = (terms: FilterItem[], selectedFilters: string[]) => {
   const selectedSet = new Set(selectedFilters);
 
   return terms.sort((a, b) => {
@@ -249,7 +250,7 @@ const sortTerms = (terms: FilterItem[], selectedFilters: string[]) => {
   });
 };
 
-const groupTerms = (
+export const groupTerms = (
   terms: FacetTermWithDetails[],
   selectedFilters: string[],
   groupOrder?: FilterConfig['groupBy'],
@@ -377,7 +378,7 @@ export const FiltersList: React.FC<FiltersListProps> = React.memo(
         {/* Search through filter terms */}
         <Box px={4} pt={4} pb={2}>
           <SearchInput
-            ariaLabel={`Search filter ${searchPlaceholder} terms`}
+            ariaLabel={searchPlaceholder}
             placeholder={searchPlaceholder}
             maxW='unset'
             size='sm'
@@ -394,6 +395,7 @@ export const FiltersList: React.FC<FiltersListProps> = React.memo(
               <Checkbox
                 isLoading={isLoading}
                 isUpdating={isUpdating}
+                colorScheme={colorScheme}
                 {...props}
               />
             )}
