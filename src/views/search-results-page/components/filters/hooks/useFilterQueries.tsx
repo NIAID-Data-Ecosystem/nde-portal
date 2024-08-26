@@ -64,12 +64,12 @@ const combineQueryResults = (
   const isPlaceholderData = queryResult.some(query => query.isPlaceholderData);
   const error = queryResult.find(query => query.error)?.error;
   const results = queryResult.reduce(
-    (acc, { data }) => {
+    (acc, { data }, idx) => {
       if (!data || !data?.facet) return acc;
       const { facet, results } = data;
 
       if (!acc[facet]) {
-        acc[facet] = { data: [] };
+        acc[facet] = { ...queryResult[idx], data: [] };
       }
 
       acc[facet]['data'] = acc[facet]['data'].concat(results);
@@ -120,9 +120,8 @@ const transformResults = (
         : { ...item, label: item?.label || item.term },
     );
 
-    transformedResults[facet] = { data: items };
+    transformedResults[facet] = { ...data[facet], data: items };
   });
-
   return {
     data: transformedResults as QueryData,
     ...queryResult,
@@ -209,6 +208,7 @@ export const useFilterQueries = ({
     queries: initialQueries,
     combine: combineCallback,
   });
+
   // Determine if filtered queries should be enabled i.e. run when the initial results are available and extra filters are selected.
   // Used to update the counts in the initial results with the selected filters.
   const enableUpdate = useMemo(

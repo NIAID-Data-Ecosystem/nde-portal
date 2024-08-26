@@ -120,7 +120,11 @@ export const Filters: React.FC<FiltersProps> = ({
               handleSelectedFilters={values =>
                 handleSelectedFilters(values, property)
               }
-              isLoading={isLoading}
+              isLoading={
+                results?.[property]?.['isLoading'] ||
+                results?.[property]?.['isPlaceholderData'] ||
+                results?.[property]?.['isPending']
+              }
               isUpdating={isUpdating}
             />
           </FiltersSection>

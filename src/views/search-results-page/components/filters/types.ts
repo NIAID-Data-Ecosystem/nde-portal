@@ -1,5 +1,5 @@
 import { Params } from 'src/utils/api';
-import { UseQueryOptions } from '@tanstack/react-query';
+import { UseQueryOptions, UseQueryResult } from '@tanstack/react-query';
 
 export type SelectedFilterTypeValue = string | { [key: string]: string[] };
 
@@ -25,7 +25,9 @@ export interface FacetTermWithDetails
 }
 
 export interface QueryData {
-  [facet: string]: { data: FacetTermWithDetails[] };
+  [facet: string]: Omit<UseQueryResult<FacetTermWithDetails[]>, 'data'> & {
+    data: FacetTermWithDetails[];
+  };
 }
 
 // Interface for filter configuration

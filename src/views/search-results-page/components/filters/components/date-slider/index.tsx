@@ -68,7 +68,7 @@ export const FiltersDateSlider: React.FC<FiltersDateSliderProps> = ({
     () => initialResults?.date?.['data'] || [],
     [initialResults],
   );
-  const selectedData = useMemo(() => results?.date?.['data'] || [], [results]);
+  const selectedData = useMemo(() => results?.date?.['data'], [results]);
 
   // [resourcesWithNoDate]: Data used for resources that do not have a date field.
   const resourcesWithNoDate = useMemo(
@@ -146,7 +146,8 @@ export const FiltersDateSlider: React.FC<FiltersDateSliderProps> = ({
             </Histogram>
           ) : (
             !isLoading &&
-            !isUpdating && (
+            !isUpdating &&
+            selectedData?.length === 0 && (
               <Text fontStyle='italic' color='gray.800' mt={1}>
                 No results with date information.
               </Text>

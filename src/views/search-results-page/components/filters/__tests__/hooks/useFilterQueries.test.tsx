@@ -84,17 +84,16 @@ describe('useFilterQueries', () => {
     );
 
     await waitFor(() => !result.current.isLoading);
-    expect(result.current.results).toEqual({
-      category: {
-        data: [
-          { term: 'electronics', count: 10, label: 'electronics' },
-          { term: 'books', count: 5, label: 'books' },
-        ],
-      },
-    });
+
     expect(result.current.isLoading).toBe(false);
     expect(result.current.isUpdating).toBe(false);
     expect(result.current.error).toBe(null);
+    expect(result.current.results.category.status).toBe('success');
+    expect(result.current.results.category.isSuccess).toBe(true);
+    expect(result.current.results.category.data).toEqual([
+      { term: 'electronics', count: 10, label: 'electronics' },
+      { term: 'books', count: 5, label: 'books' },
+    ]);
   });
 
   it('should merge initial and filtered results correctly', async () => {
@@ -135,7 +134,7 @@ describe('useFilterQueries', () => {
           { term: 'books', count: 5, label: 'books' },
           { term: 'furniture', count: 3, label: 'furniture' },
         ],
-      },
+      } as QueryData['category'],
     };
 
     const updatedResults: QueryData = {
@@ -144,7 +143,7 @@ describe('useFilterQueries', () => {
           { term: 'electronics', count: 22, label: 'electronics' },
           { term: 'books', count: 4, label: 'books' },
         ],
-      },
+      } as QueryData['category'],
     };
 
     const expectedMergedResults: QueryData = {
@@ -154,7 +153,7 @@ describe('useFilterQueries', () => {
           { term: 'books', count: 4, label: 'books' },
           { term: 'furniture', count: 0, label: 'furniture' }, // Count set to 0 since it's not in updatedResults
         ],
-      },
+      } as QueryData['category'],
     };
 
     const result = mergeResults(initialResults, updatedResults);
