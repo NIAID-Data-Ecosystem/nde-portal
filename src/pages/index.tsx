@@ -9,6 +9,8 @@ import {
   Text,
   Heading,
   Divider,
+  VStack,
+  Stack,
 } from '@chakra-ui/react';
 import { Link } from 'src/components/link';
 import { PageContainer, PageContent } from 'src/components/page-container';
@@ -17,7 +19,12 @@ import HOME_QUERIES from 'configs/queries/home-queries.json';
 import NextLink from 'next/link';
 import { SearchBarWithDropdown } from 'src/components/search-bar';
 import { AdvancedSearchOpen } from 'src/components/advanced-search/components/buttons';
-import { FaRegEnvelope, FaGithub, FaAngleRight } from 'react-icons/fa6';
+import {
+  FaRegEnvelope,
+  FaGithub,
+  FaAngleRight,
+  FaMagnifyingGlass,
+} from 'react-icons/fa6';
 import { useRepoData } from 'src/hooks/api/useRepoData';
 import {
   NewsCarousel,
@@ -28,6 +35,8 @@ import { TableWithSearch } from 'src/views/home/components/TableWithSearch/';
 import { useResourceCatalogs } from 'src/hooks/api/useResourceCatalogs';
 import { PageHeader } from 'src/components/page-header';
 import { fetchAllFeaturedPages } from 'src/views/features/helpers';
+import { HeroBanner } from 'src/views/home/components/HeroBanner';
+import { TagWithUrl } from 'src/components/tag-with-url';
 
 const Home: NextPage<{
   data: {
@@ -59,77 +68,60 @@ const Home: NextPage<{
       disableSearchBar
     >
       {/**** Hero banner + search bar *****/}
-      <PageHeader
+      <HeroBanner
         title={HOMEPAGE_COPY.sections.hero.heading}
         subtitle={HOMEPAGE_COPY.sections.hero.subtitle}
-        body={[HOMEPAGE_COPY.sections.hero.body]}
       >
-        <Flex w='100%' justifyContent='flex-end' mt={[15, 20, 24]} mb={2}>
-          <Box mb={2}>
-            <NextLink
-              href={{ pathname: '/advanced-search' }}
-              passHref
-              prefetch={false}
-            >
-              <AdvancedSearchOpen
-                onClick={() => {}}
-                variant='outline'
-                bg='whiteAlpha.500'
-                color='white'
-                _hover={{ bg: 'whiteAlpha.800', color: 'primary.600' }}
-              />
-            </NextLink>
-          </Box>
-        </Flex>
-        <SearchBarWithDropdown
-          placeholder='Search for datasets'
-          ariaLabel='Search for datasets'
-          size='md'
-        />
-
-        <Flex mt={2} flexWrap={['wrap']}>
-          <Text color='whiteAlpha.800' mr={2}>
-            Try:
-          </Text>
-          {HOME_QUERIES.map((query, i) => {
-            return (
-              <Link
-                key={query.title}
-                as='div'
-                px={2}
-                color='whiteAlpha.800'
-                _hover={{
-                  color: 'white',
-                  svg: {
-                    transform: 'translateX(0)',
-                    transition: '0.2s ease-in-out',
-                  },
-                }}
-                _visited={{ color: 'white' }}
-                // display less options in mobile
-                display={[i > 2 ? 'none' : 'block', 'block']}
-              >
-                <NextLink
-                  href={{
-                    pathname: `/search`,
-                    query: { q: query.searchTerms.join(' OR ') },
-                  }}
-                  prefetch={false}
-                >
-                  <Text color='inherit'>{query.title}</Text>
-                  <Icon
-                    as={FaAngleRight}
-                    ml={2}
-                    boxSize={3}
-                    transform='translateX(-5px)'
-                    transition='0.2s ease-in-out'
+        <Stack
+          flexDirection='column'
+          w='100%'
+          alignItems='flex-start'
+          spacing={{ base: 4, sm: 2 }}
+          zIndex={2}
+        >
+          <Flex w='100%' flexDirection='column' maxWidth='1000px'>
+            <SearchBarWithDropdown
+              placeholder='Search for datasets'
+              ariaLabel='Search for datasets'
+              size='md'
+            />
+          </Flex>
+          <Box>
+            <Text fontWeight='semibold'>Try these searches:</Text>
+            <Stack flexDirection='row' flexWrap={'wrap'}>
+              {HOME_QUERIES.map(query => {
+                return (
+                  <TagWithUrl
+                    key={query.title}
+                    label={query.title}
+                    href={{
+                      pathname: `/search`,
+                      query: { q: query.searchTerms.join(' OR ') },
+                    }}
+                    colorScheme='tertiary'
+                    variant='solid'
+                    bg='niaid.color'
+                    leftIcon={FaMagnifyingGlass}
+                    size={{ base: 'md', sm: 'sm' }}
                   />
-                </NextLink>
-              </Link>
-            );
-          })}
-        </Flex>
-      </PageHeader>
+                );
+              })}
+            </Stack>
+          </Box>
+          <Button
+            as={NextLink}
+            href={{ pathname: '/advanced-search' }}
+            size={{ base: 'sm', sm: 'xs' }}
+            height={{ base: 'unset', sm: '25.5px' }}
+            leftIcon={<FaMagnifyingGlass />}
+            mt={2}
+            fontWeight='medium'
+            lineHeight='shorter'
+          >
+            Advanced Search
+          </Button>
+        </Stack>
+      </HeroBanner>
       <>
         {/**** Repositories Table section *****/}
         {!(repositoriesCatalogsError || resourceCatalogsError) && (
