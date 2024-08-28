@@ -438,6 +438,14 @@ export interface FormattedResource {
         url?: string | null;
         description?: string | null;
       }[];
-  variableMeasured: string[] | null;
+  variableMeasured:
+    | string[]
+    | {
+        description?: string;
+        identifier?: string;
+        name: string;
+        url?: string;
+      }[]
+    | null;
   version: number | null;
 }
