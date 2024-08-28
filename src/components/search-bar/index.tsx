@@ -170,7 +170,7 @@ const SearchBar = ({
                 onClick={() => setIsOpen(false)}
               /> */}
             </ListItem>
-            {searchHistory.map((str, index) => {
+            {[...searchHistory].reverse().map((str, index) => {
               return (
                 <SearchHistoryItem
                   key={str}
