@@ -20,7 +20,7 @@ import { SortDropdown } from './components/sort';
 import { encodeString, RESERVED_CHARS } from 'src/utils/querystring-helpers';
 import { SelectedFilterType } from '../filters/types';
 import { defaultQuery } from './helpers';
-import { MetadataScoreToggle } from './components/metadata-score-toggle';
+// import { MetadataScoreToggle } from './components/metadata-score-toggle';
 import { useQuerySearchResults } from './hooks/useSearchResults';
 import ResultsCount from 'src/components/search-results-page/components/count';
 import { FILTERS_CONFIG } from './components/filters/helpers';
@@ -179,10 +179,10 @@ const SearchResultsPage = ({
     [router],
   );
 
-  const handleMetadataScoreToggle = useCallback(
-    () => setShouldUseMetadataScore(prev => !prev),
-    [],
-  );
+  // const handleMetadataScoreToggle = useCallback(
+  //   () => setShouldUseMetadataScore(prev => !prev),
+  //   [],
+  // );
 
   const numCards = useMemo(
     () =>
@@ -207,11 +207,11 @@ const SearchResultsPage = ({
       {/* Search results controls */}
       {numCards > 0 && (
         <Stack borderRadius='semi' boxShadow='base' bg='white' px={4} py={2}>
-          <MetadataScoreToggle
+          {/* <MetadataScoreToggle
             isChecked={shouldUseMetadataScore}
             isDisabled={sortOrder !== '_score'}
             handleToggle={handleMetadataScoreToggle}
-          />
+          /> */}
           <Flex
             borderBottom={{ base: '1px solid' }}
             borderColor={{ base: 'page.alt' }}
