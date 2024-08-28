@@ -567,7 +567,7 @@ const createVariableMeasuredContent = (
                   name: variable.name,
                   searchProps: {
                     ['aria-label']: `Search for results with variable measured "${variable.name}"`,
-                    property,
+                    property: 'variableMeasured.name',
                     value: variable.name,
                   },
                 };
