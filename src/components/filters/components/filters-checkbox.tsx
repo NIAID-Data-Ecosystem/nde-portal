@@ -44,7 +44,7 @@ export const FiltersCheckbox: React.FC<FiltersCheckboxProps> = React.memo(
               lineHeight={1.5}
             >
               {displayTerm && (
-                <Text fontSize='xs' lineHeight={1.5}>
+                <Text fontSize='xs' lineHeight={1.5} wordBreak='break-word'>
                   {(property === 'infectiousAgent' || property === 'species') &&
                   displayTerm?.includes('|') ? (
                     <>
