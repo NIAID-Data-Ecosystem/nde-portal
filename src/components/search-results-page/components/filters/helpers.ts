@@ -72,10 +72,10 @@ export const FILTERS_CONFIG: FiltersConfigProps = {
     property: 'conditionsOfAccess',
     description: getSchemaDescription('conditionsOfAccess'),
   },
-  variableMeasured: {
+  'variableMeasured.name': {
     name: 'Variable Measured',
     glyph: 'variableMeasured',
-    property: 'variableMeasured',
+    property: 'variableMeasured.name',
     description: getSchemaDescription('variableMeasured'),
   },
   'measurementTechnique.name': {
