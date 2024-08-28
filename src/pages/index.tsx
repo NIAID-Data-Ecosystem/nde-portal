@@ -172,7 +172,7 @@ const Home: NextPage<{
                     </Text>
                     <Button
                       as={NextLink}
-                      href='/knowledge-center/getting-started-with-niaid-data-ecosystem-discovery-portal'
+                      href='/knowledge-center/getting-started'
                       size={{ base: 'md', sm: 'sm' }}
                       width={{ base: '100%', sm: 'auto' }}
                     >
@@ -183,7 +183,7 @@ const Home: NextPage<{
                   </VStack>
                 </Flex>
               </Flex>
-              <Box px={{ base: 0, sm: 4 }}>
+              <Box px={{ base: 2, sm: 4 }}>
                 <Heading as='h2' fontSize='2xl' fontWeight='semibold' mb={4}>
                   Explore All Included Resources
                 </Heading>
