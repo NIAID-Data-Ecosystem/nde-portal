@@ -6,25 +6,19 @@ import {
   ButtonGroup,
   Flex,
   Icon,
+  Image,
   Text,
   Heading,
   Divider,
   VStack,
   Stack,
 } from '@chakra-ui/react';
-import { Link } from 'src/components/link';
 import { PageContainer, PageContent } from 'src/components/page-container';
 import HOMEPAGE_COPY from 'configs/homepage.json';
 import HOME_QUERIES from 'configs/queries/home-queries.json';
 import NextLink from 'next/link';
 import { SearchBarWithDropdown } from 'src/components/search-bar';
-import { AdvancedSearchOpen } from 'src/components/advanced-search/components/buttons';
-import {
-  FaRegEnvelope,
-  FaGithub,
-  FaAngleRight,
-  FaMagnifyingGlass,
-} from 'react-icons/fa6';
+import { FaRegEnvelope, FaGithub, FaMagnifyingGlass } from 'react-icons/fa6';
 import { useRepoData } from 'src/hooks/api/useRepoData';
 import {
   NewsCarousel,
@@ -33,7 +27,6 @@ import {
 import { NewsOrEventsObject, fetchEvents } from './news';
 import { TableWithSearch } from 'src/views/home/components/TableWithSearch/';
 import { useResourceCatalogs } from 'src/hooks/api/useResourceCatalogs';
-import { PageHeader } from 'src/components/page-header';
 import { fetchAllFeaturedPages } from 'src/views/features/helpers';
 import { HeroBanner } from 'src/views/home/components/HeroBanner';
 import { TagWithUrl } from 'src/components/tag-with-url';
@@ -132,6 +125,64 @@ const Home: NextPage<{
             alignItems='center'
           >
             <Box maxW='1300px' width='100%'>
+              <Flex
+                id='getting-started-card'
+                boxShadow='sm'
+                borderRadius='semi'
+                overflow='hidden'
+                border='1px solid'
+                borderColor='gray.100'
+                m={{ base: 0, sm: 4 }}
+                mb={{ base: 8, sm: 8 }}
+                flexWrap='wrap'
+              >
+                <Box flex={1}>
+                  <Image
+                    src='/assets/homepage/getting-started.png'
+                    alt='The image shows a healthcare professional, likely a doctor, wearing a white coat and stethoscope, interacting with a digital interface. The interface displays various health-related icons, such as a heart, a DNA helix, a medical cross, a microscope, a pill, an apple, and a syringe, representing different aspects of healthcare and medical research. The doctor is pointing at the heart icon, indicating a focus on heart health or medical diagnostics.'
+                    objectFit='cover'
+                    height='100%'
+                    minWidth='400px'
+                    minHeight={{ base: '200px', xl: '316px' }}
+                  />
+                </Box>
+                <Flex
+                  w='100%'
+                  px={{ base: 4, sm: 8 }}
+                  py={{ base: 4, sm: 6 }}
+                  flex={1}
+                  justifyContent={{ base: 'flex-start', sm: 'center' }}
+                >
+                  <VStack
+                    w='100%'
+                    alignItems='flex-start'
+                    spacing={4}
+                    justifyContent='center'
+                    px={{ base: 0, xl: 8 }}
+                  >
+                    <Heading as='h2' fontSize='2xl' fontWeight='semibold'>
+                      Getting Started
+                    </Heading>
+                    <Text fontWeight='medium'>
+                      If you are new to the NIAID Data Ecosystem Discovery
+                      Portal you can find tips for searching infectious and
+                      immune disease datasets, learn about the different
+                      repositories, discover how best to filter results, and
+                      more...
+                    </Text>
+                    <Button
+                      as={NextLink}
+                      href='/knowledge-center/getting-started'
+                      size={{ base: 'md', sm: 'sm' }}
+                      width={{ base: '100%', sm: 'auto' }}
+                    >
+                      <Text isTruncated color='inherit'>
+                        Read more about getting started
+                      </Text>
+                    </Button>
+                  </VStack>
+                </Flex>
+              </Flex>
               <Box px={{ base: 0, sm: 4 }}>
                 <Heading as='h2' fontSize='2xl' fontWeight='semibold' mb={4}>
                   Explore All Included Resources
