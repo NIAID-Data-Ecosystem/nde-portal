@@ -83,7 +83,8 @@
     "temporalCoverage.temporalInterval.startDate",
     "topicCategory.description",
     "topicCategory.name",
-    "variableMeasured"
+    "variableMeasured",
+    "variableMeasured.name"
   ],
   "namingChanges": {
     "@id": "ID",
