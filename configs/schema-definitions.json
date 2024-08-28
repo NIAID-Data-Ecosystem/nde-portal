@@ -21,10 +21,7 @@
     "property": "@type",
     "count": 5526257,
     "type": "keyword",
-    "enum": [
-      "Dataset",
-      "ResourceCatalog"
-    ],
+    "enum": ["Dataset", "ResourceCatalog"],
     "description": {
       "Dataset": "Datasets contained in the NIAID Data Ecosystem. A dataset is a collection of data of a particular experimental type. The NIAID Data Ecosystem is an environment to find and access and infectious and immune-mediated disease data and computational tools to speed the development of diagnostics, therapeutics, and vaccines. The NIAID Data Ecosystem Discovery Portal harvests metadata from dataset repository and harmonizes them to this schema to enable easy cross-platform dataset searching and filtering.",
       "ResourceCatalog": "ResourceCatalogs (collections of scientific information or research outputs) contained in the NIAID Data Ecosystem. Resource catalogs include databases, repositories, knowledge bases, citation indices, software indices, browser-based data portals (web portals), etc. The NIAID Data Ecosystem is an environment to find and access and infectious and immune-mediated disease data, resources and computational tools to speed the development of diagnostics, therapeutics, and vaccines. The NIAID Data Ecosystem Discovery Portal harvests metadata from dataset repository and harmonizes them to this schema to enable easy cross-platform dataset searching and filtering."
@@ -1169,12 +1166,7 @@
     "count": 125350,
     "type": "keyword",
     "schemaType": "string",
-    "enum": [
-      "Closed",
-      "Open",
-      "Restricted",
-      "Embargoed"
-    ],
+    "enum": ["Closed", "Open", "Restricted", "Embargoed"],
     "description": {
       "Dataset": "Conditions that affect the availability of, or method(s) of access to, the work. Options include open (freely available), restricted (may include restrictions such as on use), closed (requires registration to access), or embargoed (unpublished).",
       "ResourceCatalog": "Conditions that affect the availability of, or method(s) of access to, the work. Options include open (freely available), restricted (may include restrictions such as on use), closed (requires registration to access), or embargoed (unpublished)."
@@ -2788,6 +2780,65 @@
     "property": "url",
     "count": 380574,
     "type": "text",
+    "isAdvancedSearchField": false
+  },
+  "isBasedOn.author": {
+    "name": "Is Based On Author",
+    "dotfield": "isBasedOn.author",
+    "property": "author",
+    "count": 5,
+    "type": "object",
+    "description": {
+      "Dataset": "Author(s) of the referenced work",
+      "ResourceCatalog": "Author(s) of the referenced work"
+    },
+    "isAdvancedSearchField": false
+  },
+  "isBasedOn.author.@type": {
+    "name": "Is Based On Author Type",
+    "dotfield": "isBasedOn.author.@type",
+    "property": "@type",
+    "count": 5,
+    "type": "text",
+    "isAdvancedSearchField": false
+  },
+  "isBasedOn.author.familyName": {
+    "name": "Is Based On Author Family Name",
+    "dotfield": "isBasedOn.author.familyName",
+    "property": "familyName",
+    "count": 0,
+    "type": "text",
+    "schemaType": "string",
+    "description": {
+      "Dataset": "Family name (surname) of the person",
+      "ResourceCatalog": "Family name (surname) of the person"
+    },
+    "isAdvancedSearchField": false
+  },
+  "isBasedOn.author.givenName": {
+    "name": "Is Based On Author Given Name",
+    "dotfield": "isBasedOn.author.givenName",
+    "property": "givenName",
+    "count": 0,
+    "type": "text",
+    "schemaType": "string",
+    "description": {
+      "Dataset": "Given (first) name of the person",
+      "ResourceCatalog": "Given (first) name of the person"
+    },
+    "isAdvancedSearchField": false
+  },
+  "isBasedOn.author.name": {
+    "name": "Is Based On Author Name",
+    "dotfield": "isBasedOn.author.name",
+    "property": "name",
+    "count": 5,
+    "type": "text",
+    "schemaType": "string",
+    "description": {
+      "Dataset": "Name of the organization",
+      "ResourceCatalog": "Name of the organization"
+    },
     "isAdvancedSearchField": false
   },
   "isBasedOn.author": {
