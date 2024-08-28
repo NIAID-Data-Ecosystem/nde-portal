@@ -55,7 +55,7 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
         {/* Hexagons image */}
         <Image
           alt='An abstract graphic featuring three hexagons. The top-right hexagon shows a person typing on a keyboard with a microscope in the background, symbolizing a blend of technology and science.'
-          src='/assets/homepage/ecosystem-hero-hexagons.png'
+          src='/assets/homepage/ecosystem-hero-hexagons-02.png'
           position='absolute'
           top={{ base: 4, sm: 2, md: 16 }}
           right={{ base: 4, sm: 0, md: 6, lg: 0 }}
