@@ -20,7 +20,6 @@ import { SortDropdown } from './components/sort';
 import { encodeString, RESERVED_CHARS } from 'src/utils/querystring-helpers';
 import { SelectedFilterType } from '../filters/types';
 import { defaultQuery } from './helpers';
-// import { MetadataScoreToggle } from './components/metadata-score-toggle';
 import { useQuerySearchResults } from './hooks/useSearchResults';
 import ResultsCount from 'src/components/search-results-page/components/count';
 import { FILTERS_CONFIG } from './components/filters/helpers';
@@ -33,6 +32,8 @@ import Banner from '../banner';
 import { formatNumber } from 'src/utils/helpers';
 import { ErrorMessage } from './components/error';
 import { Link } from 'src/components/link';
+import { MetadataScoreToggle } from './components/metadata-score-toggle';
+import { useLocalStorage } from 'usehooks-ts';
 
 /*
 [COMPONENT INFO]:
@@ -47,7 +48,15 @@ const SearchResultsPage = ({
   results: FormattedResource[];
   total: number;
 }) => {
-  const [shouldUseMetadataScore, setShouldUseMetadataScore] = useState(true);
+  const [shouldUseMetadataScore, setShouldUseMetadataScore] = useLocalStorage(
+    'useMetadataScore',
+    true,
+  );
+  const [isMounted, setIsMounted] = useState(false); // for SSR
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   const router = useRouter();
 
@@ -179,10 +188,10 @@ const SearchResultsPage = ({
     [router],
   );
 
-  // const handleMetadataScoreToggle = useCallback(
-  //   () => setShouldUseMetadataScore(prev => !prev),
-  //   [],
-  // );
+  const handleMetadataScoreToggle = useCallback(
+    () => setShouldUseMetadataScore(prev => !prev),
+    [setShouldUseMetadataScore],
+  );
 
   const numCards = useMemo(
     () =>
@@ -196,6 +205,7 @@ const SearchResultsPage = ({
   if (error) {
     return <ErrorMessage error={error} querystring={querystring} />;
   }
+
   return (
     <Flex w='100%' flexDirection='column' mx={[0, 0, 4]} flex={[1, 2]}>
       {/* Number of search results */}
@@ -207,11 +217,11 @@ const SearchResultsPage = ({
       {/* Search results controls */}
       {numCards > 0 && (
         <Stack borderRadius='semi' boxShadow='base' bg='white' px={4} py={2}>
-          {/* <MetadataScoreToggle
-            isChecked={shouldUseMetadataScore}
+          <MetadataScoreToggle
+            isChecked={isMounted ? shouldUseMetadataScore : false}
             isDisabled={sortOrder !== '_score'}
             handleToggle={handleMetadataScoreToggle}
-          /> */}
+          />
           <Flex
             borderBottom={{ base: '1px solid' }}
             borderColor={{ base: 'page.alt' }}
