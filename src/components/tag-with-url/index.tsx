@@ -62,36 +62,37 @@ export const TagWithUrl = ({
       </Text>
     );
   return (
-    <NextLink href={href} target={isExternal ? '_blank' : '_self'}>
-      <Tag
-        size='sm'
-        variant='subtle'
-        alignItems='center'
-        _hover={{
-          '.tag-text': {
-            textDecoration: 'none',
-          },
-        }}
-        lineHeight='shorter'
-        {...props}
-      >
-        {leftIcon && <TagLeftIcon as={leftIcon} />}
+    <Tag
+      as={NextLink}
+      href={href}
+      target={isExternal ? '_blank' : '_self'}
+      size='sm'
+      variant='subtle'
+      alignItems='center'
+      _hover={{
+        '.tag-text': {
+          textDecoration: 'none',
+        },
+      }}
+      lineHeight='shorter'
+      {...props}
+    >
+      {leftIcon && <TagLeftIcon as={leftIcon} />}
 
-        <TagLabel fontSize='inherit' lineHeight='inherit'>
-          <Label />
-          <Text
-            as='span'
-            className='tag-text'
-            textDecoration='underline'
-            fontSize='inherit'
-            lineHeight='inherit'
-            color='inherit'
-          >
-            {children}
-          </Text>
-        </TagLabel>
-        {isExternal && <TagRightIcon as={FaSquareArrowUpRight} ml={1} />}
-      </Tag>
-    </NextLink>
+      <TagLabel fontSize='inherit' lineHeight='inherit'>
+        <Label />
+        <Text
+          as='span'
+          className='tag-text'
+          textDecoration='underline'
+          fontSize='inherit'
+          lineHeight='inherit'
+          color='inherit'
+        >
+          {children}
+        </Text>
+      </TagLabel>
+      {isExternal && <TagRightIcon as={FaSquareArrowUpRight} ml={1} />}
+    </Tag>
   );
 };

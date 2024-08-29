@@ -6,18 +6,19 @@ import {
   ButtonGroup,
   Flex,
   Icon,
+  Image,
   Text,
   Heading,
   Divider,
+  VStack,
+  Stack,
 } from '@chakra-ui/react';
-import { Link } from 'src/components/link';
 import { PageContainer, PageContent } from 'src/components/page-container';
 import HOMEPAGE_COPY from 'configs/homepage.json';
 import HOME_QUERIES from 'configs/queries/home-queries.json';
 import NextLink from 'next/link';
 import { SearchBarWithDropdown } from 'src/components/search-bar';
-import { AdvancedSearchOpen } from 'src/components/advanced-search/components/buttons';
-import { FaRegEnvelope, FaGithub, FaAngleRight } from 'react-icons/fa6';
+import { FaRegEnvelope, FaGithub, FaMagnifyingGlass } from 'react-icons/fa6';
 import { useRepoData } from 'src/hooks/api/useRepoData';
 import {
   NewsCarousel,
@@ -26,8 +27,9 @@ import {
 import { NewsOrEventsObject, fetchEvents } from './news';
 import { TableWithSearch } from 'src/views/home/components/TableWithSearch/';
 import { useResourceCatalogs } from 'src/hooks/api/useResourceCatalogs';
-import { PageHeader } from 'src/components/page-header';
 import { fetchAllFeaturedPages } from 'src/views/features/helpers';
+import { HeroBanner } from 'src/views/home/components/HeroBanner';
+import { TagWithUrl } from 'src/components/tag-with-url';
 
 const Home: NextPage<{
   data: {
@@ -59,77 +61,60 @@ const Home: NextPage<{
       disableSearchBar
     >
       {/**** Hero banner + search bar *****/}
-      <PageHeader
+      <HeroBanner
         title={HOMEPAGE_COPY.sections.hero.heading}
         subtitle={HOMEPAGE_COPY.sections.hero.subtitle}
-        body={[HOMEPAGE_COPY.sections.hero.body]}
       >
-        <Flex w='100%' justifyContent='flex-end' mt={[15, 20, 24]} mb={2}>
-          <Box mb={2}>
-            <NextLink
-              href={{ pathname: '/advanced-search' }}
-              passHref
-              prefetch={false}
-            >
-              <AdvancedSearchOpen
-                onClick={() => {}}
-                variant='outline'
-                bg='whiteAlpha.500'
-                color='white'
-                _hover={{ bg: 'whiteAlpha.800', color: 'primary.600' }}
-              />
-            </NextLink>
-          </Box>
-        </Flex>
-        <SearchBarWithDropdown
-          placeholder='Search for datasets'
-          ariaLabel='Search for datasets'
-          size='md'
-        />
-
-        <Flex mt={2} flexWrap={['wrap']}>
-          <Text color='whiteAlpha.800' mr={2}>
-            Try:
-          </Text>
-          {HOME_QUERIES.map((query, i) => {
-            return (
-              <Link
-                key={query.title}
-                as='div'
-                px={2}
-                color='whiteAlpha.800'
-                _hover={{
-                  color: 'white',
-                  svg: {
-                    transform: 'translateX(0)',
-                    transition: '0.2s ease-in-out',
-                  },
-                }}
-                _visited={{ color: 'white' }}
-                // display less options in mobile
-                display={[i > 2 ? 'none' : 'block', 'block']}
-              >
-                <NextLink
-                  href={{
-                    pathname: `/search`,
-                    query: { q: query.searchTerms.join(' OR ') },
-                  }}
-                  prefetch={false}
-                >
-                  <Text color='inherit'>{query.title}</Text>
-                  <Icon
-                    as={FaAngleRight}
-                    ml={2}
-                    boxSize={3}
-                    transform='translateX(-5px)'
-                    transition='0.2s ease-in-out'
+        <Stack
+          flexDirection='column'
+          w='100%'
+          alignItems='flex-start'
+          spacing={{ base: 4, sm: 2 }}
+          zIndex={2}
+        >
+          <Flex w='100%' flexDirection='column' maxWidth='1000px'>
+            <SearchBarWithDropdown
+              placeholder='Search for datasets'
+              ariaLabel='Search for datasets'
+              size='md'
+            />
+          </Flex>
+          <Box>
+            <Text fontWeight='semibold'>Try these searches:</Text>
+            <Stack flexDirection='row' flexWrap={'wrap'}>
+              {HOME_QUERIES.map(query => {
+                return (
+                  <TagWithUrl
+                    key={query.title}
+                    label={query.title}
+                    href={{
+                      pathname: `/search`,
+                      query: { q: query.searchTerms.join(' OR ') },
+                    }}
+                    colorScheme='tertiary'
+                    variant='solid'
+                    bg='niaid.color'
+                    leftIcon={FaMagnifyingGlass}
+                    size={{ base: 'md', sm: 'sm' }}
                   />
-                </NextLink>
-              </Link>
-            );
-          })}
-        </Flex>
-      </PageHeader>
+                );
+              })}
+            </Stack>
+          </Box>
+          <Button
+            as={NextLink}
+            href={{ pathname: '/advanced-search' }}
+            size={{ base: 'sm', sm: 'xs' }}
+            height={{ base: 'unset', sm: '25.5px' }}
+            leftIcon={<FaMagnifyingGlass />}
+            mt={2}
+            fontWeight='medium'
+            lineHeight='shorter'
+          >
+            Advanced Search
+          </Button>
+        </Stack>
+      </HeroBanner>
       <>
         {/**** Repositories Table section *****/}
         {!(repositoriesCatalogsError || resourceCatalogsError) && (
@@ -140,7 +125,65 @@ const Home: NextPage<{
             alignItems='center'
           >
             <Box maxW='1300px' width='100%'>
-              <Box px={{ base: 0, sm: 4 }}>
+              <Flex
+                id='getting-started-card'
+                boxShadow='sm'
+                borderRadius='semi'
+                overflow='hidden'
+                border='1px solid'
+                borderColor='gray.100'
+                m={{ base: 0, sm: 4 }}
+                mb={{ base: 8, sm: 8 }}
+                flexWrap='wrap'
+              >
+                <Box flex={1}>
+                  <Image
+                    src='/assets/homepage/getting-started.png'
+                    alt='The image shows a healthcare professional, likely a doctor, wearing a white coat and stethoscope, interacting with a digital interface. The interface displays various health-related icons, such as a heart, a DNA helix, a medical cross, a microscope, a pill, an apple, and a syringe, representing different aspects of healthcare and medical research. The doctor is pointing at the heart icon, indicating a focus on heart health or medical diagnostics.'
+                    objectFit='cover'
+                    height='100%'
+                    minWidth='400px'
+                    minHeight={{ base: '200px', xl: '316px' }}
+                  />
+                </Box>
+                <Flex
+                  w='100%'
+                  px={{ base: 4, sm: 8 }}
+                  py={{ base: 4, sm: 6 }}
+                  flex={1}
+                  justifyContent={{ base: 'flex-start', sm: 'center' }}
+                >
+                  <VStack
+                    w='100%'
+                    alignItems='flex-start'
+                    spacing={4}
+                    justifyContent='center'
+                    px={{ base: 0, xl: 8 }}
+                  >
+                    <Heading as='h2' fontSize='2xl' fontWeight='semibold'>
+                      Getting Started
+                    </Heading>
+                    <Text fontWeight='medium'>
+                      If you are new to the NIAID Data Ecosystem Discovery
+                      Portal you can find tips for searching infectious and
+                      immune disease datasets, learn about the different
+                      repositories, discover how best to filter results, and
+                      more...
+                    </Text>
+                    <Button
+                      as={NextLink}
+                      href='/knowledge-center/getting-started-with-niaid-data-ecosystem-discovery-portal'
+                      size={{ base: 'md', sm: 'sm' }}
+                      width={{ base: '100%', sm: 'auto' }}
+                    >
+                      <Text isTruncated color='inherit'>
+                        Read more about getting started
+                      </Text>
+                    </Button>
+                  </VStack>
+                </Flex>
+              </Flex>
+              <Box px={{ base: 2, sm: 4 }}>
                 <Heading as='h2' fontSize='2xl' fontWeight='semibold' mb={4}>
                   Explore All Included Resources
                 </Heading>
