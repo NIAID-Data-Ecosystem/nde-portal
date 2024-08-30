@@ -19,7 +19,6 @@ import { MAX_PAGES, Pagination } from './components/pagination';
 import { SortDropdown } from './components/sort';
 import { encodeString, RESERVED_CHARS } from 'src/utils/querystring-helpers';
 import { defaultQuery } from './helpers';
-import { MetadataScoreToggle } from './components/metadata-score-toggle';
 import { useQuerySearchResults } from './hooks/useSearchResults';
 import ResultsCount from 'src/views/search-results-page/components/count';
 import Card from './components/card';
@@ -33,6 +32,8 @@ import { DownloadMetadata } from 'src/components/download-metadata';
 import Banner from 'src/components/banner';
 import { FILTER_CONFIGS } from './components/filters/config';
 import { SelectedFilterType } from './components/filters/types';
+import { MetadataScoreToggle } from './components/metadata-score-toggle';
+import { useLocalStorage } from 'usehooks-ts';
 
 /*
 [COMPONENT INFO]:
@@ -47,7 +48,15 @@ const SearchResultsPage = ({
   results: FormattedResource[];
   total: number;
 }) => {
-  const [shouldUseMetadataScore, setShouldUseMetadataScore] = useState(true);
+  const [shouldUseMetadataScore, setShouldUseMetadataScore] = useLocalStorage(
+    'useMetadataScore',
+    true,
+  );
+  const [isMounted, setIsMounted] = useState(false); // for SSR
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   const router = useRouter();
 
@@ -185,7 +194,7 @@ const SearchResultsPage = ({
 
   const handleMetadataScoreToggle = useCallback(
     () => setShouldUseMetadataScore(prev => !prev),
-    [],
+    [setShouldUseMetadataScore],
   );
 
   const numCards = useMemo(
@@ -200,6 +209,7 @@ const SearchResultsPage = ({
   if (error) {
     return <ErrorMessage error={error} querystring={querystring} />;
   }
+
   return (
     <Flex w='100%' flexDirection='column' mx={[0, 0, 4]} flex={[1, 2]}>
       {/* Number of search results */}
@@ -212,7 +222,7 @@ const SearchResultsPage = ({
       {numCards > 0 && (
         <Stack borderRadius='semi' boxShadow='base' bg='white' px={4} py={2}>
           <MetadataScoreToggle
-            isChecked={shouldUseMetadataScore}
+            isChecked={isMounted ? shouldUseMetadataScore : false}
             isDisabled={sortOrder !== '_score'}
             handleToggle={handleMetadataScoreToggle}
           />

@@ -549,17 +549,33 @@ const createVariableMeasuredContent = (
     isDisabled: !variableMeasured,
     items:
       showItems && variableMeasured
-        ? variableMeasured.map((variable, idx) => {
-            return {
-              key: uniqueId(`${property}-${id}-${idx}`),
-              name: variable,
-              searchProps: {
-                ['aria-label']: `Search for results with variable measured "${variable}"`,
-                property,
-                value: variable,
-              },
-            };
-          })
+        ? (variableMeasured
+            .map((variable, idx) => {
+              if (typeof variable === 'string') {
+                return {
+                  key: uniqueId(`${property}-${id}-${idx}`),
+                  name: variable,
+                  searchProps: {
+                    ['aria-label']: `Search for results with variable measured "${variable}"`,
+                    property,
+                    value: variable,
+                  },
+                };
+              } else if (typeof variable === 'object') {
+                return {
+                  key: uniqueId(`${property}-${id}-${idx}`),
+                  name: variable.name,
+                  searchProps: {
+                    ['aria-label']: `Search for results with variable measured "${variable.name}"`,
+                    property: 'variableMeasured.name',
+                    value: variable.name,
+                  },
+                };
+              } else {
+                return null;
+              }
+            })
+            .filter(item => item !== null) as MetadataItem[])
         : [],
   };
 };
