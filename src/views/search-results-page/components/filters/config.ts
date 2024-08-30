@@ -163,9 +163,9 @@ export const FILTER_CONFIGS: FilterConfig[] = [
   },
   {
     name: 'Variable Measured',
-    property: 'variableMeasured',
-    description: getSchemaDescription('variableMeasured'),
-    createQueries: buildQueries('variableMeasured'),
+    property: 'variableMeasured.name',
+    description: getSchemaDescription('variableMeasured.name'),
+    createQueries: buildQueries('variableMeasured.name'),
   },
   {
     name: 'Measurement Technique',

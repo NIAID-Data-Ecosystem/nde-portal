@@ -229,7 +229,6 @@ export const FiltersList: React.FC<FiltersListProps> = React.memo(
     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>): void =>
       setSearchTerm(e.target.value);
 
-    // Group the terms based on the groupBy property in the optional facet order.
     const facetConfig = useMemo(
       () => FILTER_CONFIGS.find(f => f.property === property),
       [property],
