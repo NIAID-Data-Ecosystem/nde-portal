@@ -47,7 +47,7 @@ export const mergeResults = (
           .sort((a, b) => b.count - a.count),
       },
     ]),
-  );
+  ) as QueryData;
 };
 
 /**
