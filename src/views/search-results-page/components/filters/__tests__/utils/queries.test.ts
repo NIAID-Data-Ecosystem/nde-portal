@@ -100,6 +100,7 @@ describe('API Query Functions', () => {
       );
 
       const query = createCommonQuery({
+        id: 'test-id',
         params,
         queryKey: ['testKey'],
       });
@@ -124,13 +125,13 @@ describe('API Query Functions', () => {
       const selectedData = query.select!(fetchSearchResultsResponse);
 
       expect(selectedData).toEqual({
-        facet: 'facet',
+        id: 'test-id',
+        facet: params.facets,
         results: [
           {
             label: 'Any Specified',
             term: '_exists_',
             count: 100,
-            facet: 'facet',
           },
           { term: 'term1', count: 50, groupBy: 'group1' },
           { term: 'term2', count: 50, groupBy: 'group2' },
@@ -142,13 +143,13 @@ describe('API Query Functions', () => {
       (fetchSearchResults as jest.Mock).mockResolvedValue(
         fetchSearchResultsResponse,
       );
-      const paramsmissingExtraFilters = {
+      const paramsWithoutExtraFilters = {
         ...params,
-        facets: 'facet',
         extra_filter: '',
       };
       const query = createCommonQuery({
-        params: paramsmissingExtraFilters,
+        id: 'test-id',
+        params: paramsWithoutExtraFilters,
         queryKey: ['testKey'],
       });
 
@@ -176,6 +177,7 @@ describe('API Query Functions', () => {
       );
 
       const query = createCommonQuery({
+        id: 'test-id',
         params: { ...params, facets: '' },
         queryKey: ['testKey'],
       });
@@ -197,6 +199,7 @@ describe('API Query Functions', () => {
       const data = await query.queryFn();
       expect(data).toEqual(fetchSearchResultsResponse);
     });
+
     it('should handle missing extra_filter and missing facet', async () => {
       (fetchSearchResults as jest.Mock).mockResolvedValue(
         fetchSearchResultsResponse,
@@ -207,6 +210,7 @@ describe('API Query Functions', () => {
         extra_filter: '',
       };
       const query = createCommonQuery({
+        id: 'test-id',
         params: paramsmissingExtraFilters,
         queryKey: ['testKey'],
       });
@@ -237,6 +241,7 @@ describe('API Query Functions', () => {
       );
 
       const query = createNotExistsQuery({
+        id: 'test-id',
         params,
         queryKey: ['testKey'],
       });
@@ -261,13 +266,13 @@ describe('API Query Functions', () => {
       const selectedData = query.select!(fetchSearchResultsResponse);
 
       expect(selectedData).toEqual({
+        id: 'test-id',
         facet: 'facet',
         results: [
           {
             label: 'Not Specified',
             term: '-_exists_',
             count: 100,
-            facet: 'facet',
           },
         ],
       });
@@ -279,6 +284,7 @@ describe('API Query Functions', () => {
       );
 
       const query = createNotExistsQuery({
+        id: 'test-id',
         //@ts-ignore
         params: { ...params, facets: 'facet', extra_filter: '' },
         queryKey: ['testKey'],
@@ -308,6 +314,7 @@ describe('API Query Functions', () => {
       );
 
       const query = createNotExistsQuery({
+        id: 'test-id',
         params: { ...params, facets: '' },
         queryKey: ['testKey'],
       });
@@ -329,17 +336,19 @@ describe('API Query Functions', () => {
       const data = await query.queryFn();
       expect(data).toEqual(fetchSearchResultsResponse);
     });
+
     it('should handle missing extra_filter and missing facet', async () => {
       (fetchSearchResults as jest.Mock).mockResolvedValue(
         fetchSearchResultsResponse,
       );
-      const paramsmissingExtraFilters = {
+      const paramsWithoutExtraFilters = {
         ...params,
         facets: '',
         extra_filter: '',
       };
       const query = createCommonQuery({
-        params: paramsmissingExtraFilters,
+        id: 'test-id',
+        params: paramsWithoutExtraFilters,
         queryKey: ['testKey'],
       });
 
@@ -370,6 +379,7 @@ describe('API Query Functions', () => {
       (fetchMetadata as jest.Mock).mockResolvedValue(metadata);
 
       const query = createQueryWithSourceMetadata({
+        id: 'test-id',
         params,
         queryKey: ['testKey'],
       });
@@ -397,6 +407,7 @@ describe('API Query Functions', () => {
       });
 
       expect(selectedData).toEqual({
+        id: 'test-id',
         facet: 'facet',
         results: [
           {
@@ -424,6 +435,7 @@ describe('API Query Functions', () => {
       (fetchMetadata as jest.Mock).mockResolvedValue(null);
 
       const query = createQueryWithSourceMetadata({
+        id: 'test-id',
         params,
         queryKey: ['testKey'],
       });
@@ -438,6 +450,7 @@ describe('API Query Functions', () => {
       (fetchMetadata as jest.Mock).mockResolvedValue(metadata);
 
       const query = createQueryWithSourceMetadata({
+        id: 'test-id',
         params: { ...params, facets: 'facet' },
         queryKey: ['testKey'],
       });
@@ -453,6 +466,7 @@ describe('API Query Functions', () => {
       (fetchMetadata as jest.Mock).mockResolvedValue(metadata);
 
       const query = createQueryWithSourceMetadata({
+        id: 'test-id',
         params: { ...params, facets: '' },
         queryKey: ['testKey'],
       });

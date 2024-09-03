@@ -2,13 +2,16 @@ import { renderHook } from '@testing-library/react-hooks';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import React from 'react';
 import { buildFacetQueryParams } from '../../utils/queries';
-import { FilterConfig, QueryData } from '../../types';
+import { FilterConfig, QueryData, RawQueryResult } from '../../types';
 import { mergeResults, useFilterQueries } from '../../hooks/useFilterQueries';
 
 const config = [
   {
+    _id: 'category_id',
+    name: 'Category Filter',
+    description: 'A filter for categories',
     property: 'category',
-    createQueries: jest.fn((params, options) => {
+    createQueries: jest.fn((id, params, options) => {
       // Destructure options to exclude queryKey and gather other options, with defaults
       const { queryKey = [] } = options || {};
 
@@ -29,10 +32,11 @@ const config = [
       return [
         {
           queryKey: [...queryKey, queryParams],
-          queryFn: async () => {
-            if (queryParams.extra_filter?.includes('_exists_:category')) {
+          queryFn: async (): Promise<RawQueryResult> => {
+            if (params.extra_filter) {
               return {
-                total: 26,
+                id,
+                // total: 26,
                 facet: 'category',
                 results: [
                   { term: 'electronics', count: 22 },
@@ -41,7 +45,8 @@ const config = [
               };
             }
             return {
-              total: 15,
+              id,
+              // total: 15,
               facet: 'category',
               results: [
                 { term: 'electronics', count: 10 },
@@ -52,7 +57,7 @@ const config = [
         },
       ];
     }),
-  } as unknown as FilterConfig,
+  } as FilterConfig,
 ];
 
 const queryClient = new QueryClient();
@@ -62,6 +67,8 @@ const wrapper = ({ children }: { children: React.ReactNode }) => (
 );
 
 describe('useFilterQueries', () => {
+  const id = config[0]._id;
+
   beforeEach(() => {
     queryClient.clear();
   });
@@ -88,9 +95,9 @@ describe('useFilterQueries', () => {
     expect(result.current.isLoading).toBe(false);
     expect(result.current.isUpdating).toBe(false);
     expect(result.current.error).toBe(null);
-    expect(result.current.results.category.status).toBe('success');
-    expect(result.current.results.category.isSuccess).toBe(true);
-    expect(result.current.results.category.data).toEqual([
+    expect(result.current.results[id].status).toBe('success');
+    expect(result.current.results[id].isSuccess).toBe(true);
+    expect(result.current.results[id].data).toEqual([
       { term: 'electronics', count: 10, label: 'electronics' },
       { term: 'books', count: 5, label: 'books' },
     ]);
@@ -117,7 +124,7 @@ describe('useFilterQueries', () => {
     await waitFor(() => !result.current.isLoading);
 
     expect(result.current.results).toEqual({
-      category: {
+      [id]: {
         data: [
           { term: 'electronics', count: 22, label: 'electronics' },
           { term: 'books', count: 4, label: 'books' },
@@ -128,32 +135,32 @@ describe('useFilterQueries', () => {
 
   it('should correctly handle cases where initial results have terms not present in updated results', () => {
     const initialResults: QueryData = {
-      category: {
+      [id]: {
         data: [
           { term: 'electronics', count: 10, label: 'electronics' },
           { term: 'books', count: 5, label: 'books' },
           { term: 'furniture', count: 3, label: 'furniture' },
         ],
-      } as QueryData['category'],
+      } as QueryData['string'],
     };
 
     const updatedResults: QueryData = {
-      category: {
+      [id]: {
         data: [
           { term: 'electronics', count: 22, label: 'electronics' },
           { term: 'books', count: 4, label: 'books' },
         ],
-      } as QueryData['category'],
+      } as QueryData['string'],
     };
 
     const expectedMergedResults: QueryData = {
-      category: {
+      [id]: {
         data: [
           { term: 'electronics', count: 22, label: 'electronics' },
           { term: 'books', count: 4, label: 'books' },
           { term: 'furniture', count: 0, label: 'furniture' }, // Count set to 0 since it's not in updatedResults
         ],
-      } as QueryData['category'],
+      } as QueryData['string'],
     };
 
     const result = mergeResults(initialResults, updatedResults);

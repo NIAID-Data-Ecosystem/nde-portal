@@ -15,6 +15,9 @@ import { FilterConfig } from '../types';
 export const buildQueries =
   (overrides?: Partial<QueryArgs>): FilterConfig['createQueries'] =>
   (id, params, options) => {
+    if (!id) {
+      throw new Error('id is required');
+    }
     // Destructure options to exclude queryKey and gather other options, with defaults
     const { queryKey = [], ...queryOptions } = options || {};
 
@@ -45,6 +48,9 @@ export const buildQueries =
 export const buildSourceQueries =
   (overrides?: QueryArgs): FilterConfig['createQueries'] =>
   (id, params, options) => {
+    if (!id) {
+      throw new Error('id is required');
+    }
     // Destructure options to exclude queryKey and gather other options, with defaults
     const { queryKey = [], ...queryOptions } = options || {};
 

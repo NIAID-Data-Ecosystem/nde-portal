@@ -188,7 +188,6 @@ export const createNotExistsQuery = ({
                 label: 'Not Specified',
                 term: '-_exists_',
                 count: data.total,
-                facet: queryParams.facets,
               },
             ],
     }),
