@@ -1,6 +1,9 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { addMissingYears } from '../helpers';
-import { FacetTermWithDetails } from 'src/views/search-results-page/components/filters/types';
+import {
+  FacetTermWithDetails,
+  FilterItem,
+} from 'src/views/search-results-page/components/filters/types';
 
 export interface ContextProps {
   colorScheme: string;

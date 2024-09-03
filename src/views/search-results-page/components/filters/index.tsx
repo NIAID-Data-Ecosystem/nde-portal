@@ -76,8 +76,8 @@ export const Filters: React.FC<FiltersProps> = ({
       selectedFilters={selectedFilters}
       removeAllFilters={removeAllFilters}
     >
-      {FILTER_CONFIGS.map(facet => {
-        const { name, property } = facet;
+      {FILTER_CONFIGS.map(config => {
+        const { _id, name, property } = config;
         const selected = selectedFilters?.[property]?.map(filter => {
           if (typeof filter === 'object') {
             return Object.keys(filter)[0];
@@ -89,9 +89,9 @@ export const Filters: React.FC<FiltersProps> = ({
         if (property === 'date') {
           return (
             <FiltersSection
-              key={facet.name}
-              name={facet.name}
-              description={facet.description}
+              key={config.name}
+              name={config.name}
+              description={config.description}
             >
               <FiltersDateSlider
                 colorScheme={colorScheme}
@@ -107,23 +107,23 @@ export const Filters: React.FC<FiltersProps> = ({
         }
         return (
           <FiltersSection
-            key={facet.name}
-            name={facet.name}
-            description={facet.description}
+            key={config.name}
+            name={config.name}
+            description={config.description}
           >
             <FiltersList
+              config={config}
               colorScheme={colorScheme}
               searchPlaceholder={`Search ${name.toLowerCase()} filters`}
-              terms={results?.[property]?.['data'] || []}
-              property={property}
+              terms={results?.[_id]?.['data'] || []}
               selectedFilters={selected || []}
               handleSelectedFilters={values =>
                 handleSelectedFilters(values, property)
               }
               isLoading={
-                results?.[property]?.['isLoading'] ||
-                results?.[property]?.['isPlaceholderData'] ||
-                results?.[property]?.['isPending']
+                results?.[_id]?.['isLoading'] ||
+                results?.[_id]?.['isPlaceholderData'] ||
+                results?.[_id]?.['isPending']
               }
               isUpdating={isUpdating}
             />

@@ -45,17 +45,13 @@ export const buildFacetQueryParams = (params: FacetParams): FacetParams => {
  * @param facetField - The facet field being processed.
  * @returns Formatted terms array.
  */
-export const structureQueryData = (
-  data: FetchSearchResultsResponse,
-  accessor: string,
-  facet?: string,
-) => {
+export const structureQueryData = (data: FetchSearchResultsResponse) => {
   const { total, facets } = data;
   if (!facets) {
     throw new Error('No facets returned from fetchSearchResults');
   }
 
-  const { terms } = facets[accessor];
+  const terms = Object.values(facets)[0].terms;
 
   if (facets?.multi_terms_agg) {
     facets.multi_terms_agg.terms.forEach(({ term: multiTerm }) => {
@@ -67,18 +63,14 @@ export const structureQueryData = (
     });
   }
 
-  return {
-    facet: facet || accessor,
-    results: [
-      {
-        label: 'Any Specified',
-        term: '_exists_',
-        count: total,
-        facet: facet || accessor,
-      },
-      ...terms,
-    ],
-  };
+  return [
+    {
+      label: 'Any Specified',
+      term: '_exists_',
+      count: total,
+    },
+    ...terms,
+  ];
 };
 /**
  * Create common query for a given facet field.
@@ -88,7 +80,8 @@ export const structureQueryData = (
  * @returns The query object.
  */
 
-interface QueryArgs {
+export interface QueryArgs {
+  id: string;
   queryKey: QueryKey;
   params: FacetParams;
   placeholderData?: any;
@@ -96,6 +89,7 @@ interface QueryArgs {
 }
 
 export const createCommonQuery = ({
+  id,
   params,
   queryKey,
   ...options
@@ -121,11 +115,14 @@ export const createCommonQuery = ({
       if (!data) {
         throw new Error('No data returned from fetchSearchResults');
       }
-
       return data;
     },
     select: (data: FetchSearchResultsResponse) => {
-      return structureQueryData(data, queryParams.facets);
+      return {
+        id,
+        facet: queryParams.facets,
+        results: structureQueryData(data),
+      };
     },
     ...options,
   };
@@ -140,6 +137,7 @@ export const createCommonQuery = ({
  */
 
 export const createNotExistsQuery = ({
+  id,
   params,
   queryKey,
   ...options
@@ -180,6 +178,7 @@ export const createNotExistsQuery = ({
       return data;
     },
     select: (data: FetchSearchResultsResponse) => ({
+      id,
       facet: queryParams.facets,
       results:
         data.total === 0
@@ -205,6 +204,7 @@ export const createNotExistsQuery = ({
  * @returns The query object.
  */
 export const createQueryWithSourceMetadata = ({
+  id,
   params,
   queryKey,
   ...options
@@ -236,8 +236,7 @@ export const createQueryWithSourceMetadata = ({
         (data?.repos?.src &&
           Object.values(data.repos.src).filter(repo => repo?.sourceInfo)) ||
         [];
-
-      const terms = facets[queryParams.facets].terms.map(
+      const terms = Object.values(facets)[0].terms.map(
         (item: { term: string; count: number }) => ({
           label: item.term,
           term: item.term,
@@ -250,6 +249,7 @@ export const createQueryWithSourceMetadata = ({
       );
 
       return {
+        id,
         facet: queryParams.facets,
         results: terms,
       };

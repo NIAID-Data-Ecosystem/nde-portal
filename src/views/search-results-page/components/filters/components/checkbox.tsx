@@ -5,11 +5,7 @@ import {
   Tag,
   Text,
 } from '@chakra-ui/react';
-import { FacetTermWithDetails } from 'src/views/search-results-page/components/filters/types';
-
-export interface FilterItem extends FacetTermWithDetails {
-  isHeader?: boolean;
-}
+import { FilterItem } from 'src/views/search-results-page/components/filters/types';
 
 // Memoized Checkbox component to prevent unnecessary re-renders
 interface FilterCheckboxProps extends FilterItem {

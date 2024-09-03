@@ -36,16 +36,17 @@ const getSchemaDescription = (property: string) => {
  */
 export const FILTER_CONFIGS: FilterConfig[] = [
   {
+    _id: 'date',
     name: 'Date',
     property: 'date',
     isDefaultOpen: true,
-    description: getSchemaDescription('hist_dates'),
-    createQueries: (params, options) => {
+    description: '',
+    createQueries: (id, params, options) => {
       // Destructure options to exclude queryKey and gather other options, with defaults
       const { queryKey = [], ...queryOptions } = options || {};
-
       return [
         createCommonQuery({
+          id,
           queryKey,
           params: {
             ...params,
@@ -55,10 +56,15 @@ export const FILTER_CONFIGS: FilterConfig[] = [
           ...queryOptions,
           placeholderData: undefined,
           select: (data: FetchSearchResultsResponse) => {
-            return structureQueryData(data, 'hist_dates', 'date');
+            return {
+              id,
+              facet: 'date',
+              results: structureQueryData(data),
+            };
           },
         }),
         createNotExistsQuery({
+          id,
           queryKey,
           params: { ...params, facets: 'date' },
           ...queryOptions,
@@ -78,11 +84,12 @@ export const FILTER_CONFIGS: FilterConfig[] = [
     },
   },
   {
+    _id: '__type',
     name: 'Type',
     property: '@type',
     description:
       'Type is used to categorize the nature of the content of the resource',
-    createQueries: buildQueries('@type'),
+    createQueries: buildQueries(),
     transformData: (item): FacetTermWithDetails => ({
       ...item,
       label:
@@ -91,10 +98,11 @@ export const FILTER_CONFIGS: FilterConfig[] = [
     }),
   },
   {
+    _id: 'includedInDataCatalog',
     name: 'Sources',
     property: 'includedInDataCatalog.name',
     description: getSchemaDescription('includedInDataCatalog'),
-    createQueries: buildSourceQueries('includedInDataCatalog.name'),
+    createQueries: buildSourceQueries(),
     groupBy: [
       {
         property: 'IID',
@@ -107,70 +115,79 @@ export const FILTER_CONFIGS: FilterConfig[] = [
     ],
   },
   {
+    _id: 'sourceOrganization.name',
     name: 'Program Collections',
     property: 'sourceOrganization.name',
     description: getSchemaDescription('sourceOrganization.name'),
-    createQueries: (params, options) =>
-      buildQueries('sourceOrganization.name')!(
-        {
+    createQueries: (id, params, options) => {
+      return buildQueries({
+        params: {
           ...params,
+          facets: 'sourceOrganization.name.raw',
           multi_terms_fields:
-            'sourceOrganization.parentOrganization,sourceOrganization.name',
+            'sourceOrganization.parentOrganization,sourceOrganization.name.raw',
           multi_terms_size: '100',
         },
-        options,
-      ),
-    transformData: (item): FacetTermWithDetails => {
-      let label = item.label || item.term;
-      if (label.toLocaleLowerCase().includes('creid')) {
-        label = label.replace(/creid/g, 'CREID');
-      }
-      if (label.toLocaleLowerCase().includes('niaid')) {
-        label = label.replace(/niaid/g, 'NIAID');
-      }
-      return { ...item, label };
+      })(id, params, options);
     },
+    // transformData: (item): FacetTermWithDetails => {
+    //   let label = item.label || item.term;
+    //   if (label.toLocaleLowerCase().includes('creid')) {
+    //     label = label.replace(/creid/g, 'CREID');
+    //   }
+    //   if (label.toLocaleLowerCase().includes('niaid')) {
+    //     label = label.replace(/niaid/g, 'NIAID');
+    //   }
+    //   return { ...item, label };
+    // },
   },
   {
+    _id: 'healthCondition.name',
     name: 'Health Condition',
     property: 'healthCondition.name',
     description: getSchemaDescription('healthCondition'),
-    createQueries: buildQueries('healthCondition.name'),
+    createQueries: buildQueries(),
   },
   {
+    _id: 'infectiousAgent.displayName',
     name: 'Pathogen Species',
     property: 'infectiousAgent.displayName',
     description: getSchemaDescription('infectiousAgent'),
-    createQueries: buildQueries('infectiousAgent.displayName'),
+    createQueries: buildQueries(),
   },
   {
+    _id: 'species.displayName',
     name: 'Host Species',
     property: 'species.displayName',
     description: getSchemaDescription('species'),
-    createQueries: buildQueries('species.displayName'),
+    createQueries: buildQueries(),
   },
   {
+    _id: 'funding.funder.name',
     name: 'Funding',
     property: 'funding.funder.name',
     description: getSchemaDescription('funding'),
-    createQueries: buildQueries('funding.funder.name'),
+    createQueries: buildQueries(),
   },
   {
+    _id: 'conditionsOfAccess',
     name: 'Conditions of Access',
     property: 'conditionsOfAccess',
     description: getSchemaDescription('conditionsOfAccess'),
-    createQueries: buildQueries('conditionsOfAccess'),
+    createQueries: buildQueries(),
   },
   {
+    _id: 'variableMeasured.name',
     name: 'Variable Measured',
     property: 'variableMeasured.name',
     description: getSchemaDescription('variableMeasured.name'),
-    createQueries: buildQueries('variableMeasured.name'),
+    createQueries: buildQueries(),
   },
   {
+    _id: 'measurementTechnique.name',
     name: 'Measurement Technique',
     property: 'measurementTechnique.name',
     description: getSchemaDescription('measurementTechnique'),
-    createQueries: buildQueries('measurementTechnique.name'),
+    createQueries: buildQueries(),
   },
 ];

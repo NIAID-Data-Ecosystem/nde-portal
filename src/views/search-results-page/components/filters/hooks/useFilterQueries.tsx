@@ -34,14 +34,14 @@ export const mergeResults = (
   // Convert initialResults object to an array of [facet, data] pairs,
   // transform them, and then convert back to an object
   return Object.fromEntries(
-    Object.entries(initialResults).map(([facet, { data }]) => [
-      facet,
+    Object.entries(initialResults).map(([key, { data }]) => [
+      key,
       {
         // Transform data by updating the count based on filteredResultsMap
         data: data
           .map(item => ({
             ...item, // Spread existing properties of the item
-            count: filteredResultsMap[facet]?.get(item.term) ?? 0, // Update count or set to 0 if not found
+            count: filteredResultsMap[key]?.get(item.term) ?? 0, // Update count or set to 0 if not found
           }))
           // Sort the items by count in descending order
           .sort((a, b) => b.count - a.count),
@@ -65,18 +65,18 @@ const combineQueryResults = (
   const error = queryResult.find(query => query.error)?.error;
   const results = queryResult.reduce(
     (acc, { data }, idx) => {
-      if (!data || !data?.facet) return acc;
-      const { facet, results } = data;
+      if (!data || !data?.id) return acc;
+      const { id, results } = data;
 
-      if (!acc[facet]) {
-        acc[facet] = { ...queryResult[idx], data: [] };
+      if (!acc[id]) {
+        acc[id] = { ...queryResult[idx], data: [] };
       }
 
-      acc[facet]['data'] = acc[facet]['data'].concat(results);
+      acc[id]['data'] = acc[id]['data'].concat(results);
       return acc;
     },
     {} as {
-      [facet: string]: { data: RawQueryResult['results'] };
+      [id: string]: { data: RawQueryResult['results'] };
     },
   );
 
@@ -111,16 +111,16 @@ const transformResults = (
   },
 ) => {
   const transformedResults = { ...data };
-  Object.keys(data).forEach(facet => {
-    const configFacet = config.find(f => f.property === facet);
+  Object.keys(data).forEach(id => {
+    const configFacet = config.find(f => f._id === id);
 
-    const items = data[facet]['data'].map(item =>
+    const items = data[id]['data'].map(item =>
       configFacet?.transformData
         ? configFacet.transformData(item)
         : { ...item, label: item?.label || item.term },
     );
 
-    transformedResults[facet] = { ...data[facet], data: items };
+    transformedResults[id] = { ...data[id], data: items };
   });
   return {
     data: transformedResults as QueryData,
@@ -155,12 +155,14 @@ export const useFilterQueries = ({
   const initialQueries = useMemo(() => {
     return config
       .flatMap(
-        facet =>
-          facet?.createQueries &&
-          facet.createQueries(
+        facetConfig =>
+          facetConfig?.createQueries &&
+          facetConfig.createQueries(
+            facetConfig._id,
             {
               q: initialParams.q,
               extra_filter: initialParams?.extra_filter || '',
+              facets: facetConfig.property,
             },
             {
               queryKey: ['search-results'],
@@ -168,13 +170,13 @@ export const useFilterQueries = ({
                 total: 0,
                 results: [],
                 facets: {
-                  [facet.property]: {
+                  [facetConfig._id]: {
                     terms: Array(5)
                       .fill('')
                       .map((_, index) => ({
                         label: `Loading... ${index}`,
                         term: `Loading... ${index}`,
-                        facet: facet.property,
+                        facetConfig: facetConfig.property,
                         count: 0,
                       })),
                   },
@@ -226,13 +228,17 @@ export const useFilterQueries = ({
     return config
       .filter(facet => facet?.createQueries)
       .flatMap(
-        facet =>
-          facet?.createQueries &&
-          facet.createQueries(updateParams, {
-            queryKey: ['filtered'],
-            enabled: enableUpdate,
-            refetchOnWindowFocus: false,
-          }),
+        facetConfig =>
+          facetConfig?.createQueries &&
+          facetConfig.createQueries(
+            facetConfig._id,
+            { ...updateParams, facets: facetConfig.property },
+            {
+              queryKey: ['filtered'],
+              enabled: enableUpdate,
+              refetchOnWindowFocus: false,
+            },
+          ),
       )
       .filter(query => !!query);
   }, [config, updateParams, enableUpdate]);
@@ -268,7 +274,6 @@ export const useFilterQueries = ({
 
   // Combine errors from initial and filtered queries
   const error = initialError || updatedError;
-
   return {
     error,
     initialResults,

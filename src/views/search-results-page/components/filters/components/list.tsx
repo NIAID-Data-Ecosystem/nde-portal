@@ -10,15 +10,11 @@ import { SearchInput } from 'src/components/search-input';
 import {
   FacetTermWithDetails,
   FilterConfig,
+  FilterItem,
 } from 'src/views/search-results-page/components/filters/types';
 import { useDebounceValue } from 'usehooks-ts';
 import { VariableSizeList as List } from 'react-window';
-import { FILTER_CONFIGS } from 'src/views/search-results-page/components/filters/config';
 import { Checkbox } from './checkbox';
-
-export interface FilterItem extends FacetTermWithDetails {
-  isHeader?: boolean;
-}
 
 // VirtualizedList component to render the list of filter terms
 const VirtualizedList = React.memo(
@@ -208,16 +204,16 @@ interface FiltersListProps {
   handleSelectedFilters: (arg: string[]) => void;
   isLoading: boolean;
   isUpdating?: boolean;
-  property: string;
+  config: FilterConfig;
 }
 
 export const FiltersList: React.FC<FiltersListProps> = React.memo(
   ({
     colorScheme,
+    config,
     handleSelectedFilters,
     isLoading,
     isUpdating,
-    property,
     searchPlaceholder,
     selectedFilters,
     terms,
@@ -229,14 +225,9 @@ export const FiltersList: React.FC<FiltersListProps> = React.memo(
     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>): void =>
       setSearchTerm(e.target.value);
 
-    const facetConfig = useMemo(
-      () => FILTER_CONFIGS.find(f => f.property === property),
-      [property],
-    );
-
     const groupedAndSorted = useMemo(
-      () => groupTerms(terms, selectedFilters, facetConfig?.groupBy),
-      [terms, facetConfig?.groupBy, selectedFilters],
+      () => groupTerms(terms, selectedFilters, config?.groupBy),
+      [terms, config?.groupBy, selectedFilters],
     );
     // Filter the terms based on the search term
     const searchedTerms: FilterItem[] = useMemo(() => {

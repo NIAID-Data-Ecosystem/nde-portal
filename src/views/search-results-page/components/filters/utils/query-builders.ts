@@ -2,31 +2,36 @@ import {
   createCommonQuery,
   createQueryWithSourceMetadata,
   createNotExistsQuery,
+  QueryArgs,
 } from './queries';
 import { FilterConfig } from '../types';
 
 /**
  * Create queries for a given facet field.
  *
- * @param facetField - The facet field to filter by.
+ * @param overrides - Optional overrides for the query arguments.
  * @returns Function to create queries for the given facet field.
  */
 export const buildQueries =
-  (facetField: string): FilterConfig['createQueries'] =>
-  (params, options) => {
+  (overrides?: Partial<QueryArgs>): FilterConfig['createQueries'] =>
+  (id, params, options) => {
     // Destructure options to exclude queryKey and gather other options, with defaults
     const { queryKey = [], ...queryOptions } = options || {};
 
     return [
       createCommonQuery({
+        id,
         queryKey,
-        params: { ...params, facets: facetField },
+        params,
         ...queryOptions,
+        ...overrides,
       }),
       createNotExistsQuery({
+        id,
         queryKey,
-        params: { ...params, facets: facetField },
+        params,
         ...queryOptions,
+        ...overrides,
       }),
     ];
   };
@@ -38,16 +43,18 @@ export const buildQueries =
  * @returns Function to create queries for the "Sources" facet field.
  */
 export const buildSourceQueries =
-  (facetField: string): FilterConfig['createQueries'] =>
-  (params, options) => {
+  (overrides?: QueryArgs): FilterConfig['createQueries'] =>
+  (id, params, options) => {
     // Destructure options to exclude queryKey and gather other options, with defaults
-    const { queryKey = [], ...otherOptions } = options || {};
+    const { queryKey = [], ...queryOptions } = options || {};
 
     return [
       createQueryWithSourceMetadata({
+        id,
         queryKey,
-        params: { ...params, facets: facetField },
-        ...otherOptions,
+        params,
+        ...queryOptions,
+        ...overrides,
       }),
     ];
   };

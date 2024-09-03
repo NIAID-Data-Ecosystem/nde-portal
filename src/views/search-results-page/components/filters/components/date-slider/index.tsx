@@ -40,6 +40,7 @@ export const FiltersDateSlider: React.FC<FiltersDateSliderProps> = ({
     () => FILTER_CONFIGS.filter(facet => facet.property === 'date'),
     [],
   );
+  const key = config[0]._id;
 
   /*
   Remove date filter from filters object for initial results.
@@ -65,10 +66,11 @@ export const FiltersDateSlider: React.FC<FiltersDateSliderProps> = ({
     });
 
   const initialData = useMemo(
-    () => initialResults?.date?.['data'] || [],
-    [initialResults],
+    () => initialResults?.[key]?.['data'] || [],
+    [key, initialResults],
   );
-  const selectedData = useMemo(() => results?.date?.['data'], [results]);
+
+  const selectedData = useMemo(() => results?.[key]?.['data'], [key, results]);
 
   // [resourcesWithNoDate]: Data used for resources that do not have a date field.
   const resourcesWithNoDate = useMemo(
