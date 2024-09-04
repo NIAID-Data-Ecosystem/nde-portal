@@ -5,7 +5,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { Box, CheckboxGroup } from '@chakra-ui/react';
+import { Box, CheckboxGroup, Text } from '@chakra-ui/react';
 import { SearchInput } from 'src/components/search-input';
 import {
   FacetTermWithDetails,
@@ -241,21 +241,26 @@ export const FiltersList: React.FC<FiltersListProps> = React.memo(
         t.label.toLowerCase().includes(debouncedSearchTerm.toLowerCase()),
       );
     }, [groupedAndSorted, debouncedSearchTerm]);
-
     return (
       <>
         {/* Search through filter terms */}
         <Box px={4} pt={4} pb={2}>
-          <SearchInput
-            ariaLabel={searchPlaceholder}
-            placeholder={searchPlaceholder}
-            maxW='unset'
-            size='sm'
-            value={searchTerm}
-            handleChange={handleSearchChange}
-            colorScheme={colorScheme}
-            onClose={() => setSearchTerm('')}
-          />
+          {!isLoading && !isUpdating && terms?.length === 0 ? (
+            <Text fontStyle='italic' color='gray.800' mt={1} textAlign='center'>
+              No results with {config.name.toLocaleLowerCase()} information.
+            </Text>
+          ) : (
+            <SearchInput
+              ariaLabel={searchPlaceholder}
+              placeholder={searchPlaceholder}
+              maxW='unset'
+              size='sm'
+              value={searchTerm}
+              handleChange={handleSearchChange}
+              colorScheme={colorScheme}
+              onClose={() => setSearchTerm('')}
+            />
+          )}
         </Box>
         {/* List of filters available narrowed based on search and expansion toggle */}
         <CheckboxGroup value={selectedFilters} onChange={handleSelectedFilters}>

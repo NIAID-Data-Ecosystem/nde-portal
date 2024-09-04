@@ -62,7 +62,9 @@ export const structureQueryData = (data: FetchSearchResultsResponse) => {
       }
     });
   }
-
+  if (!terms.length) {
+    return [];
+  }
   return [
     {
       label: 'Any Specified',
