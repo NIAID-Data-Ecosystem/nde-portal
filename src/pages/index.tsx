@@ -172,7 +172,7 @@ const Home: NextPage<{
                     </Text>
                     <Button
                       as={NextLink}
-                      href='/knowledge-center/getting-started'
+                      href='/knowledge-center/getting-started-with-niaid-data-ecosystem-discovery-portal'
                       size={{ base: 'md', sm: 'sm' }}
                       width={{ base: '100%', sm: 'auto' }}
                     >
