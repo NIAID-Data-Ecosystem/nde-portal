@@ -43,7 +43,7 @@ jest.mock('src/components/tooltip', () => ({
 const renderComponent = (props: {
   containerProps: Omit<FiltersContainerProps, 'children'>;
   sections: {
-    key: string;
+    _id: string;
     name: string;
     property: string;
     description: string;
@@ -54,7 +54,7 @@ const renderComponent = (props: {
     <ChakraProvider>
       <FiltersContainer {...props.containerProps}>
         {props.sections.map(section => (
-          <FiltersSection {...section} key={section.key} />
+          <FiltersSection {...section} key={section._id} />
         ))}
       </FiltersContainer>
     </ChakraProvider>,
@@ -65,7 +65,7 @@ describe('FiltersSection', () => {
   (useBreakpointValue as jest.Mock).mockImplementation(values => values.md);
   const sections = [
     {
-      key: 'test_01',
+      _id: 'test_01',
       name: 'Test Filter 1',
       property: 'test_01',
       description: 'test 1 description',
@@ -73,7 +73,7 @@ describe('FiltersSection', () => {
       createQueries: () => [],
     },
     {
-      key: 'test_02',
+      _id: 'test_02',
       name: 'Test Filter 2',
       property: 'test_02',
       description: 'test 2 description',

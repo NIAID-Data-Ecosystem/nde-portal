@@ -8,6 +8,7 @@ import { ChakraProvider, useBreakpointValue } from '@chakra-ui/react';
 // Mock data
 const mockFiltersList: FilterConfig[] = [
   {
+    _id: '01',
     name: 'Filter 1',
     description: '',
     property: 'filter1',
@@ -17,6 +18,7 @@ const mockFiltersList: FilterConfig[] = [
     },
   },
   {
+    _id: '02',
     name: 'Filter 2',
     description: '',
     property: 'filter2',

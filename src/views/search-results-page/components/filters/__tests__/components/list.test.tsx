@@ -1,12 +1,12 @@
 // FiltersList.test.tsx
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import '@testing-library/jest-dom/extend-expect';
-import { FilterItem, FiltersList, groupTerms } from '../../components/list';
 import {
   FilterConfig,
   FacetTermWithDetails,
+  FilterItem,
 } from 'src/views/search-results-page/components/filters/types';
+import { FiltersList, groupTerms } from '../../components/list';
 
 jest.mock('react-window', () => ({
   VariableSizeList: ({ children, itemCount }: any) => (
@@ -53,6 +53,7 @@ describe('FiltersList', () => {
     handleSelectedFilters: jest.fn(),
     isLoading: false,
     property: 'testProperty',
+    config: { name: 'Test Config' } as FilterConfig,
   };
 
   it('renders without crashing', () => {
@@ -194,14 +195,14 @@ describe('FiltersList', () => {
 
   it('handles empty terms gracefully', () => {
     render(<FiltersList {...defaultProps} terms={[]} />);
-    expect(screen.getByPlaceholderText('Search terms')).toBeInTheDocument();
+    expect(screen.getByText(/no results/i)).toBeInTheDocument();
     expect(screen.queryByRole('checkbox')).not.toBeInTheDocument();
   });
 
   it('handles undefined terms gracefully', () => {
     //@ts-ignore
     render(<FiltersList {...defaultProps} terms={undefined} />);
-    expect(screen.getByPlaceholderText('Search terms')).toBeInTheDocument();
+    expect(screen.getByText(/no results/i)).toBeInTheDocument();
     expect(screen.queryByRole('checkbox')).not.toBeInTheDocument();
   });
 });
@@ -296,6 +297,7 @@ describe('groupTerms', () => {
       { term: 'term1', label: 'Term 1', count: 1 },
     ]);
   });
+
   it('places selected filters right after _exists_', () => {
     const terms: FacetTermWithDetails[] = [
       { term: '-_exists_', label: 'Not Specified', count: 1 },
