@@ -46,11 +46,21 @@ const VirtualizedList = React.memo(
       const ref = useRef<HTMLDivElement>(null);
 
       // Set the item size in the list for virtualization.
-      useEffect(() => {
+      const handleRowSize = useCallback(() => {
         if (ref.current) {
           setItemSize(index, ref.current.clientHeight);
         }
-      }, [ref, index]);
+      }, [index]);
+
+      // Set the item size on mount and on resize
+      useEffect(() => {
+        handleRowSize();
+      }, [handleRowSize]);
+
+      useEffect(() => {
+        window.addEventListener('resize', handleRowSize);
+        return () => window.removeEventListener('resize', handleRowSize);
+      }, [handleRowSize]);
 
       return (
         <div className='virtualized-row' style={style}>
