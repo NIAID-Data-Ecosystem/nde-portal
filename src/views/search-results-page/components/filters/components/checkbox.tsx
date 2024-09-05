@@ -26,7 +26,8 @@ export const Checkbox: React.FC<FilterCheckboxProps> = React.memo(
           fontSize='xs'
           fontWeight='semibold'
           lineHeight='shorter'
-          py={1}
+          pt={2}
+          pb={1}
         >
           {label}
         </Text>
@@ -46,7 +47,7 @@ export const Checkbox: React.FC<FilterCheckboxProps> = React.memo(
         w='100%'
         px={6}
         pr={2}
-        py={1}
+        py={1.5}
         alignItems='flex-start'
         _hover={{
           bg: `${colorScheme}.50`,

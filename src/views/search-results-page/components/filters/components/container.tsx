@@ -63,9 +63,10 @@ export const FiltersContainer: React.FC<FiltersContainerProps> = ({
     {
       base: 'mobile',
       sm: 'tablet',
-      md: 'desktop',
+      md: 'tablet',
+      lg: 'desktop',
     },
-    { fallback: 'md' },
+    { fallback: 'lg' },
   );
 
   const [innerHeight, setInnerHeight] = useState<number>(
@@ -218,6 +219,16 @@ export const FiltersContainer: React.FC<FiltersContainerProps> = ({
       </Drawer>
     </>
   ) : (
-    <>{content}</>
+    <ScrollContainer
+      w='100%'
+      h='100%'
+      pr={0}
+      boxShadow='base'
+      bg='white'
+      borderRadius='semi'
+      overflowY='auto'
+    >
+      {content}
+    </ScrollContainer>
   );
 };

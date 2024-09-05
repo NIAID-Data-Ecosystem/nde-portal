@@ -25,7 +25,7 @@ const VirtualizedList = React.memo(
     items: FilterItem[];
     children: (props: FilterItem) => JSX.Element;
   }) => {
-    const DEFAULT_SIZE = useMemo(() => 35, []);
+    const DEFAULT_SIZE = useMemo(() => 40, []);
     const listRef = useRef<any>();
     const itemRefs = useRef<number[]>(Array(items.length).fill(DEFAULT_SIZE));
     const setItemSize = useCallback((index: number, size: number) => {

@@ -211,7 +211,7 @@ const SearchResultsPage = ({
   }
 
   return (
-    <Flex w='100%' flexDirection='column' mx={[0, 0, 4]} flex={[1, 2]}>
+    <Flex w='100%' flexDirection='column' flex={[1, 2]}>
       {/* Number of search results */}
       <ResultsCount
         isLoading={isLoading || isRefetching || !router.isReady}
