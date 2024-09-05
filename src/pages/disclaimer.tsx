@@ -11,7 +11,7 @@ import remarkGfm from 'remark-gfm';
 import { PageContainer, PageContent } from 'src/components/page-container';
 import { Error } from 'src/components/error';
 
-interface AboutContent {
+interface DisclaimerContent {
   name: string;
   description: string;
   subtitle: string | null;
@@ -19,19 +19,15 @@ interface AboutContent {
   updatedAt: string;
   publishedAt: string | null;
 }
-interface AboutProps {
-  data: AboutContent;
-  error: any;
-}
 
-const fetchContent = async (): Promise<AboutContent> => {
+const fetchContent = async (): Promise<DisclaimerContent> => {
   try {
     const isProd =
       process.env.NEXT_PUBLIC_BASE_URL === 'https://data.niaid.nih.gov';
     const { data } = await axios.get(
       `${
         process.env.NEXT_PUBLIC_STRAPI_API_URL
-      }/api/about-page?populate=*&publicationState=${
+      }/api/disclaimer-page?populate=*&publicationState=${
         isProd ? 'live' : 'preview'
       }`,
     );
@@ -46,14 +42,19 @@ const fetchContent = async (): Promise<AboutContent> => {
   }
 };
 
-const About: NextPage<AboutProps> = props => {
+interface DisclaimerProps {
+  data: DisclaimerContent;
+  error: any;
+}
+
+const Disclaimer: NextPage<DisclaimerProps> = props => {
   const MDXComponents = useMDXComponents({});
 
-  const [content, setContent] = useState<AboutProps['data']>(props.data);
+  const [content, setContent] = useState<DisclaimerProps['data']>(props.data);
   const [contentError, setContentError] = useState<any>(props.error);
 
   const { error, data } = useQuery({
-    queryKey: ['about-page'],
+    queryKey: ['disclaimer-page'],
     queryFn: () => fetchContent(),
     refetchOnWindowFocus: true,
     refetchOnMount: true,
@@ -74,7 +75,12 @@ const About: NextPage<AboutProps> = props => {
   }, [content, data]);
 
   return (
-    <PageContainer title='About' metaDescription='About page.' px={0} py={0}>
+    <PageContainer
+      title='Disclaimer'
+      metaDescription='An overview of the NIAID Data Ecosystem Discovery Portal endorsement disclaimers and information disclaimers.'
+      px={0}
+      py={0}
+    >
       {contentError && !content && (
         <Error>
           <Text fontWeight='light' color='gray.600' fontSize='lg'>
@@ -143,4 +149,4 @@ export const getStaticProps: GetStaticProps = async context => {
   return { props: { data: content, error: null } };
 };
 
-export default About;
+export default Disclaimer;
