@@ -37,7 +37,9 @@ export const Link = forwardRef<LinkProps, 'a'>((props, ref) => {
         {children}
       </Box>
       {/* Show external icon when [isExternal] prop is true */}
-      {isExternal && <Icon as={FaArrowUpRightFromSquare} boxSize={3} ml={2} />}
+      {isExternal && (
+        <Icon as={FaArrowUpRightFromSquare} boxSize={3} ml={1} mr={0.5} />
+      )}
     </ChakraLink>
   );
 });

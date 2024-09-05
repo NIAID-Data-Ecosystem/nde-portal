@@ -33,27 +33,7 @@ const SectionCard = ({ attributes, image }: SectionCardProps) => {
     'yellow',
     'cyan',
   ];
-  const MDXComponents = useMDXComponents({
-    a: (props: any) => {
-      return (
-        <Link
-          href={props.href}
-          // External links should open in a new tab if not on the same domain.
-          isExternal={
-            (props.href.startsWith('/') ||
-              props.href.startsWith(process.env.NEXT_PUBLIC_BASE_URL)) &&
-            props.target !== '_blank'
-              ? false
-              : true
-          }
-          textDecoration='underline'
-          _hover={{ textDecoration: 'none' }}
-        >
-          {props.children}
-        </Link>
-      );
-    },
-  });
+  const MDXComponents = useMDXComponents({});
 
   return (
     <Card

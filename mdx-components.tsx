@@ -147,14 +147,21 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
         href = '';
       }
       if (typeof props.children === 'object') {
+        // Check if the link is a relative link or starts with portal domain
+        const isPortalLink =
+          href.startsWith('/') ||
+          href.startsWith(process.env.NEXT_PUBLIC_BASE_URL);
         return (
           <Link
             href={href}
-            isExternal={
-              props.target === '_blank' &&
-              !href.startsWith('/') && // relative links
-              !href.startsWith(process.env.NEXT_PUBLIC_BASE_URL) // links starting with portal domain
-            }
+            isExternal={props?.target === '_blank' || !isPortalLink}
+            sx={{
+              // Workaround for Emotion warning with ":first-child" pseudo class is potentially unsafe when doing server-side rendering.
+              '*:not(:not(:last-child) ~ *)': {
+                borderBottom: '0.0625rem solid',
+                _hover: { borderBottomColor: 'transparent' },
+              },
+            }}
             {...props}
           ></Link>
         );
