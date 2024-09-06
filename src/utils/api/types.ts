@@ -33,7 +33,6 @@ type NestedFacet =
 export interface FacetTerm {
   count: number;
   term: string;
-  displayAs: string;
   [key: string]: NestedFacet;
 }
 

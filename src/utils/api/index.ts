@@ -1,7 +1,6 @@
 import axios from 'axios';
 import { formatAPIResource, formatISOString } from './helpers';
 import { FetchSearchResultsResponse, FormattedResource } from './types';
-import { Metadata } from 'src/hooks/api/types';
 
 // Get all resources where query term contains the search term.
 export interface Params {
@@ -9,6 +8,7 @@ export interface Params {
   advancedSearch?: string;
   dotfield?: boolean;
   extra_filter?: string;
+  filters?: string;
   facets?: string;
   facet_size?: number;
   fields?: string[];
@@ -19,6 +19,8 @@ export interface Params {
   size?: string | number;
   sort?: string;
   use_metadata_score?: string;
+  multi_terms_fields?: string;
+  multi_terms_size?: string;
 }
 
 export const getResourceById = async (

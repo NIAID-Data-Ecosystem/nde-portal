@@ -1,12 +1,4 @@
-import {
-  Box,
-  Breadcrumb,
-  Button,
-  Flex,
-  FlexProps,
-  Icon,
-  Stack,
-} from '@chakra-ui/react';
+import { Box, Button, Flex, FlexProps, Icon, Stack } from '@chakra-ui/react';
 import Head from 'next/head';
 import axios from 'axios';
 import { useQuery } from '@tanstack/react-query';
@@ -162,57 +154,56 @@ export const PageContainer: React.FC<PageContainerProps> = ({
 
           {/* <!-- Search bar for datasets across site --> */}
           {!disableSearchBar && (
-            <Stack
-              bg='#fff'
+            <Flex
+              justifyContent='center'
+              px={{ base: 4, sm: 4, lg: 6, xl: '5vw' }}
               borderBottom='1px solid'
               borderColor='gray.100'
-              flexDirection='column'
-              px={{ base: 4, sm: 6, lg: 10, xl: '5vw' }}
-              py={4}
-              flex={1}
             >
-              <NextLink
-                href={{ pathname: '/advanced-search' }}
-                passHref
-                prefetch={false}
-                style={{ alignSelf: 'flex-end' }}
-              >
-                <Button
-                  as='span'
-                  variant='outline'
-                  size='sm'
-                  transition='0.2s ease-in-out'
-                  colorScheme='primary'
-                  fontWeight='semibold'
-                  _hover={{
-                    bg: 'primary.600',
-                    color: 'white',
-                    transition: '0.2s ease-in-out',
-
-                    svg: {
-                      transform: 'translateX(-8px)',
-                      transition: '0.2s transform ease-in-out',
-                    },
-                  }}
-                  leftIcon={
-                    <Icon
-                      as={FaMagnifyingGlass}
-                      ml={2}
-                      boxSize={3}
-                      transform='translateX(-4px)'
-                      transition='0.2s transform ease-in-out'
-                    />
-                  }
+              <Stack flexDirection='column' py={4} flex={1} maxW='2600px'>
+                <NextLink
+                  href={{ pathname: '/advanced-search' }}
+                  passHref
+                  prefetch={false}
+                  style={{ alignSelf: 'flex-end' }}
                 >
-                  Advanced Search
-                </Button>
-              </NextLink>
-              <SearchBarWithDropdown
-                ariaLabel='Search for datasets'
-                placeholder='Search for datasets'
-                size='md'
-              />
-            </Stack>
+                  <Button
+                    as='span'
+                    variant='outline'
+                    size='sm'
+                    transition='0.2s ease-in-out'
+                    colorScheme='primary'
+                    fontWeight='semibold'
+                    _hover={{
+                      bg: 'primary.600',
+                      color: 'white',
+                      transition: '0.2s ease-in-out',
+
+                      svg: {
+                        transform: 'translateX(-8px)',
+                        transition: '0.2s transform ease-in-out',
+                      },
+                    }}
+                    leftIcon={
+                      <Icon
+                        as={FaMagnifyingGlass}
+                        ml={2}
+                        boxSize={3}
+                        transform='translateX(-4px)'
+                        transition='0.2s transform ease-in-out'
+                      />
+                    }
+                  >
+                    Advanced Search
+                  </Button>
+                </NextLink>
+                <SearchBarWithDropdown
+                  ariaLabel='Search for datasets'
+                  placeholder='Search for datasets'
+                  size='md'
+                />
+              </Stack>
+            </Flex>
           )}
 
           {children}
