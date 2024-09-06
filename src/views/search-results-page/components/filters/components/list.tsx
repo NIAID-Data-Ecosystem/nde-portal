@@ -25,7 +25,7 @@ const VirtualizedList = React.memo(
     items: FilterItem[];
     children: (props: FilterItem) => JSX.Element;
   }) => {
-    const DEFAULT_SIZE = useMemo(() => 35, []);
+    const DEFAULT_SIZE = useMemo(() => 40, []);
     const listRef = useRef<any>();
     const itemRefs = useRef<number[]>(Array(items.length).fill(DEFAULT_SIZE));
     const setItemSize = useCallback((index: number, size: number) => {
@@ -46,11 +46,21 @@ const VirtualizedList = React.memo(
       const ref = useRef<HTMLDivElement>(null);
 
       // Set the item size in the list for virtualization.
-      useEffect(() => {
+      const handleRowSize = useCallback(() => {
         if (ref.current) {
           setItemSize(index, ref.current.clientHeight);
         }
-      }, [ref, index]);
+      }, [index]);
+
+      // Set the item size on mount and on resize
+      useEffect(() => {
+        handleRowSize();
+      }, [handleRowSize]);
+
+      useEffect(() => {
+        window.addEventListener('resize', handleRowSize);
+        return () => window.removeEventListener('resize', handleRowSize);
+      }, [handleRowSize]);
 
       return (
         <div className='virtualized-row' style={style}>
@@ -270,6 +280,7 @@ export const FiltersList: React.FC<FiltersListProps> = React.memo(
                 isLoading={isLoading}
                 isUpdating={isUpdating}
                 colorScheme={colorScheme}
+                filterName={config.name}
                 {...props}
               />
             )}
