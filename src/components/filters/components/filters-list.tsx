@@ -39,6 +39,7 @@ interface FiltersList {
   isLoading: boolean;
   isUpdating?: boolean;
   property: string;
+  filterName: string;
 }
 const bounce = keyframes`
   0%, 20%, 50%, 80%, 100% {
@@ -58,6 +59,7 @@ export const FiltersList: React.FC<FiltersList> = React.memo(
     selectedFilters,
     terms,
     handleSelectedFilters,
+    filterName,
     isLoading,
     isUpdating,
     property,
@@ -188,6 +190,7 @@ export const FiltersList: React.FC<FiltersList> = React.memo(
                                       count={item.count}
                                       isLoading={isLoading}
                                       isCountUpdating={isUpdating}
+                                      filterName={filterName}
                                     />
                                   </ListItem>
                                 );
@@ -218,6 +221,7 @@ export const FiltersList: React.FC<FiltersList> = React.memo(
                             isLoading={isLoading}
                             isCountUpdating={isUpdating}
                             property={property}
+                            filterName={filterName}
                           />
                         </ListItem>
                       );

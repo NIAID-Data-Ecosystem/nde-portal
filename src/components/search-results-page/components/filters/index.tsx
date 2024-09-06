@@ -120,6 +120,7 @@ export const Filters: React.FC<FiltersProps> = ({
               }
               isLoading={isLoading}
               isUpdating={isUpdating}
+              filterName={name}
             />
           </FiltersSection>
         );

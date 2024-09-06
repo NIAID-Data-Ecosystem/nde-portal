@@ -7,6 +7,7 @@ import {
   Skeleton,
 } from '@chakra-ui/react';
 import { formatNumber } from 'src/utils/helpers';
+import Tooltip from 'src/components/tooltip';
 
 export interface FiltersCheckboxProps extends CheckboxProps {
   displayTerm: string; // term used for display
@@ -14,11 +15,40 @@ export interface FiltersCheckboxProps extends CheckboxProps {
   count?: number;
   isLoading: boolean;
   property?: string;
+  filterName: string;
   isCountUpdating?: boolean;
 }
 
+// Display the tooltip label for the filter term
+const getTooltipLabel = (
+  term: FiltersCheckboxProps['value'],
+  filterName: FiltersCheckboxProps['filterName'],
+) => {
+  if (term === '-_exists_') {
+    const name =
+      filterName.charAt(0).toUpperCase() + filterName.slice(1).toLowerCase();
+    return <>{name} not specified, missing, or unavailable.</>;
+  } else if (term === '_exists_') {
+    return (
+      <>
+        One or more {filterName.toLocaleLowerCase()} is specified, found, or
+        available.
+      </>
+    );
+  }
+  return '';
+};
+
 export const FiltersCheckbox: React.FC<FiltersCheckboxProps> = React.memo(
-  ({ displayTerm, count, value, isCountUpdating, isLoading, property }) => {
+  ({
+    displayTerm,
+    count,
+    filterName,
+    value,
+    isCountUpdating,
+    isLoading,
+    property,
+  }) => {
     return (
       <Checkbox
         w='100%'
@@ -44,34 +74,37 @@ export const FiltersCheckbox: React.FC<FiltersCheckboxProps> = React.memo(
               lineHeight={1.5}
             >
               {displayTerm && (
-                <Text fontSize='xs' lineHeight={1.5} wordBreak='break-word'>
-                  {(property === 'infectiousAgent' || property === 'species') &&
-                  displayTerm?.includes('|') ? (
-                    <>
-                      {displayTerm
-                        .split(' | ')
-                        .reverse()
-                        .map((term, i) => {
-                          return (
-                            <React.Fragment key={`${term}-${i}`}>
-                              <Text
-                                as='span'
-                                fontWeight={i === 0 ? 'semibold' : 'normal'}
-                              >
-                                {term.charAt(0).toUpperCase() + term.slice(1)}
-                              </Text>
-                              <br />
-                            </React.Fragment>
-                          );
-                        })}
-                    </>
-                  ) : (
-                    <>
-                      {displayTerm.charAt(0).toUpperCase() +
-                        displayTerm.slice(1)}
-                    </>
-                  )}
-                </Text>
+                <Tooltip label={getTooltipLabel(value, filterName)}>
+                  <Text fontSize='xs' lineHeight={1.5} wordBreak='break-word'>
+                    {(property === 'infectiousAgent' ||
+                      property === 'species') &&
+                    displayTerm?.includes('|') ? (
+                      <>
+                        {displayTerm
+                          .split(' | ')
+                          .reverse()
+                          .map((term, i) => {
+                            return (
+                              <React.Fragment key={`${term}-${i}`}>
+                                <Text
+                                  as='span'
+                                  fontWeight={i === 0 ? 'semibold' : 'normal'}
+                                >
+                                  {term.charAt(0).toUpperCase() + term.slice(1)}
+                                </Text>
+                                <br />
+                              </React.Fragment>
+                            );
+                          })}
+                      </>
+                    ) : (
+                      <>
+                        {displayTerm.charAt(0).toUpperCase() +
+                          displayTerm.slice(1)}
+                      </>
+                    )}
+                  </Text>
+                </Tooltip>
               )}
 
               {typeof count !== 'undefined' && (
