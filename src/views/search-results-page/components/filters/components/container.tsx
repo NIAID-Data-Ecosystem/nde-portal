@@ -219,15 +219,7 @@ export const FiltersContainer: React.FC<FiltersContainerProps> = ({
       </Drawer>
     </>
   ) : (
-    <ScrollContainer
-      w='100%'
-      h='100%'
-      pr={0}
-      boxShadow='base'
-      bg='white'
-      borderRadius='semi'
-      overflowY='auto'
-    >
+    <ScrollContainer w='100%' h='100%' pr={0} overflowY='auto'>
       {content}
     </ScrollContainer>
   );

@@ -6,15 +6,47 @@ import {
   Text,
 } from '@chakra-ui/react';
 import { FilterItem } from 'src/views/search-results-page/components/filters/types';
+import Tooltip from 'src/components/tooltip';
 
 // Memoized Checkbox component to prevent unnecessary re-renders
 interface FilterCheckboxProps extends FilterItem {
   isLoading: boolean;
   isUpdating?: boolean;
   colorScheme?: string;
+  filterName: string;
 }
+
+// Display the tooltip label for the filter term
+const getTooltipLabel = (
+  term: FilterItem['term'],
+  filterName: FilterCheckboxProps['filterName'],
+) => {
+  if (term === '-_exists_') {
+    const name =
+      filterName.charAt(0).toUpperCase() + filterName.slice(1).toLowerCase();
+    return <>{name} not specified, missing, or unavailable.</>;
+  } else if (term === '_exists_') {
+    return (
+      <>
+        One or more {filterName.toLocaleLowerCase()} is specified, found, or
+        available.
+      </>
+    );
+  }
+  return '';
+};
+
 export const Checkbox: React.FC<FilterCheckboxProps> = React.memo(
-  ({ colorScheme, count, isHeader, isLoading, term, isUpdating, ...props }) => {
+  ({
+    colorScheme,
+    count,
+    filterName,
+    isHeader,
+    isLoading,
+    term,
+    isUpdating,
+    ...props
+  }) => {
     let label = props.label;
     let subLabel = '';
 
@@ -71,36 +103,38 @@ export const Checkbox: React.FC<FilterCheckboxProps> = React.memo(
           alignItems='center'
           flex={1}
         >
-          <Text
-            as='span'
-            flex={1}
-            wordBreak='break-word'
-            color='text.heading'
-            fontSize='xs'
-            lineHeight='short'
-            mr={0.5}
-            display='flex'
-            flexDirection='column'
-            fontWeight={subLabel ? 'semibold' : 'normal'}
-          >
-            {label
-              ? label.charAt(0).toUpperCase() + label.slice(1)
-              : 'Loading...'}
-            {subLabel && (
-              <Text
-                as='span'
-                flex={1}
-                wordBreak='break-word'
-                color='text.heading'
-                fontSize='xs'
-                lineHeight='short'
-                fontWeight='normal'
-                mr={0.5}
-              >
-                {subLabel.charAt(0).toUpperCase() + subLabel.slice(1)}
-              </Text>
-            )}
-          </Text>
+          <Tooltip label={getTooltipLabel(term, filterName)}>
+            <Text
+              as='span'
+              flex={1}
+              wordBreak='break-word'
+              color='text.heading'
+              fontSize='xs'
+              lineHeight='short'
+              mr={0.5}
+              display='flex'
+              flexDirection='column'
+              fontWeight={subLabel ? 'semibold' : 'normal'}
+            >
+              {label
+                ? label.charAt(0).toUpperCase() + label.slice(1)
+                : 'Loading...'}
+              {subLabel && (
+                <Text
+                  as='span'
+                  flex={1}
+                  wordBreak='break-word'
+                  color='text.heading'
+                  fontSize='xs'
+                  lineHeight='short'
+                  fontWeight='normal'
+                  mr={0.5}
+                >
+                  {subLabel.charAt(0).toUpperCase() + subLabel.slice(1)}
+                </Text>
+              )}
+            </Text>
+          </Tooltip>
 
           {/* Display the count of the filter term */}
           <Tag

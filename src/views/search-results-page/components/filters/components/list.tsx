@@ -280,6 +280,7 @@ export const FiltersList: React.FC<FiltersListProps> = React.memo(
                 isLoading={isLoading}
                 isUpdating={isUpdating}
                 colorScheme={colorScheme}
+                filterName={config.name}
                 {...props}
               />
             )}

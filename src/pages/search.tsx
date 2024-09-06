@@ -145,6 +145,9 @@ const Search: NextPage<{
               maxW={{ base: 'unset', lg: '450px' }}
               position={{ base: 'unset', lg: 'sticky' }}
               top='0px'
+              bg='white'
+              borderRadius='semi'
+              boxShadow='base'
             >
               {router.isReady && hasMounted && (
                 <Filters
