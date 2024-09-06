@@ -62,7 +62,7 @@ const renderComponent = (props: {
 };
 
 describe('FiltersSection', () => {
-  (useBreakpointValue as jest.Mock).mockImplementation(values => values.md);
+  (useBreakpointValue as jest.Mock).mockImplementation(values => values.lg);
   const sections = [
     {
       _id: 'test_01',

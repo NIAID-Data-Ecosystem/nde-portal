@@ -60,6 +60,8 @@ const renderComponent = (props = {}) => {
 
 describe('FiltersContainer', () => {
   beforeEach(() => {
+    (useBreakpointValue as jest.Mock).mockImplementation(values => values.lg);
+
     // Mock window.innerWidth to simulate desktop
     Object.defineProperty(window, 'innerWidth', {
       writable: true,
@@ -74,7 +76,6 @@ describe('FiltersContainer', () => {
   });
 
   it('renders correctly with title and removeAllFilters', () => {
-    (useBreakpointValue as jest.Mock).mockImplementation(values => values.md);
     renderComponent();
     expect(screen.getByText('Test Filters')).toBeInTheDocument();
     expect(screen.getByText('Clear All')).toBeInTheDocument();
@@ -82,7 +83,6 @@ describe('FiltersContainer', () => {
   });
 
   it('renders correctly without title', () => {
-    (useBreakpointValue as jest.Mock).mockImplementation(values => values.md);
     renderComponent({ title: '' });
     expect(screen.queryByText('Test Filters')).not.toBeInTheDocument();
     expect(screen.getByText('Clear All')).toBeInTheDocument();
@@ -90,7 +90,6 @@ describe('FiltersContainer', () => {
   });
 
   it('renders correctly without removeAllFilters', () => {
-    (useBreakpointValue as jest.Mock).mockImplementation(values => values.md);
     renderComponent({ removeAllFilters: undefined });
     expect(screen.getByText('Test Filters')).toBeInTheDocument();
     expect(screen.queryByText('Clear All')).toBeDisabled();
@@ -98,7 +97,6 @@ describe('FiltersContainer', () => {
   });
 
   it('does not render the drawer on desktop', () => {
-    (useBreakpointValue as jest.Mock).mockImplementation(values => values.md);
     renderComponent();
     expect(
       screen.queryByRole('button', { name: /filters/i }),
@@ -106,7 +104,6 @@ describe('FiltersContainer', () => {
   });
 
   it('clears all filters', () => {
-    (useBreakpointValue as jest.Mock).mockImplementation(values => values.md);
     const mockRemoveAllFilters = jest.fn();
     renderComponent({ removeAllFilters: mockRemoveAllFilters });
 
@@ -116,7 +113,6 @@ describe('FiltersContainer', () => {
   });
 
   it('displays error message', () => {
-    (useBreakpointValue as jest.Mock).mockImplementation(values => values.md);
     const mockError = new Error('Test error');
     renderComponent({ error: mockError });
 
