@@ -61,15 +61,19 @@ export const FiltersSection: React.FC<FiltersSectionProps> = React.memo(
                   )}
                 </AccordionButton>
               </h2>
-              <AccordionPanel
-                p={0}
-                borderLeft='4px solid'
-                borderLeftColor='secondary.200'
-                borderBottom='0.25px solid'
-                borderBottomColor='gray.100'
-              >
-                {isExpanded ? children : <></>}
-              </AccordionPanel>
+              {isExpanded ? (
+                <AccordionPanel
+                  p={0}
+                  borderLeft='4px solid'
+                  borderLeftColor='secondary.200'
+                  borderBottom='0.25px solid'
+                  borderBottomColor='gray.100'
+                >
+                  {children}
+                </AccordionPanel>
+              ) : (
+                <></>
+              )}
             </>
           );
         }}
