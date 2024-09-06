@@ -173,82 +173,106 @@ const Sources: NextPage<SourcesProps> = ({ data, error }) => {
   );
 };
 
+const fetchGithubCommits = async (sourcePath: string) => {
+  const url = `https://api.github.com/repos/NIAID-Data-Ecosystem/nde-crawlers/commits`;
+  const response = await axios.get(url, {
+    headers: {
+      Authorization: process.env.GH_API_KEY
+        ? `Bearer ${process.env.GH_API_KEY}`
+        : '',
+      'Content-Type': 'application/json',
+    },
+    params: {
+      path: sourcePath,
+    },
+  });
+
+  return response.data;
+};
+
+const extractCommitDates = (data: any[]) => {
+  const dates: string[] = [];
+  data.forEach((item: { commit: { author: { date: string } } }) => {
+    dates.push(item.commit.author.date);
+  });
+  // Get the last date in the array which corresponds to the first commit.
+  return dates[dates.length - 1];
+};
+
 export async function getStaticProps() {
-  const fetchRepositoryInfo = async (sourceData: any) => {
+  const fetchRepositoryInfo = async (sourceData: any[]) => {
     try {
       const data = await Promise.all(
         sourceData.map(async ([k, source]: [string, any]) => {
-          const sourceData = {
-            id: (source.sourceInfo && source.sourceInfo.identifier) || k,
+          const sourceObject = {
+            id: source?.sourceInfo?.identifier || k,
             sourcePath: source?.code?.file || null,
           };
-          if (!sourceData?.sourcePath) {
-            return sourceData;
+
+          // Get parent collection source path if source path is not found for source.
+          if (!sourceObject.sourcePath) {
+            const parentId = source?.sourceInfo?.parentCollection?.id;
+            if (parentId) {
+              const parentSource = sourceData.find(
+                (item: any) => item[0] === parentId,
+              );
+              sourceObject.sourcePath = parentSource?.[1]?.code?.file || null;
+            }
           }
 
-          // Fetch source information from github
-          try {
-            const url = `https://api.github.com/repos/NIAID-Data-Ecosystem/nde-crawlers/commits`;
-            const response = await axios.get(url, {
-              headers: {
-                Authorization: process.env.GH_API_KEY
-                  ? `Bearer ${process.env.GH_API_KEY}`
-                  : '',
-                'Content-Type': 'application/json',
-              },
-              params: {
-                url: '/repos/{owner}/{repo}/commits?path={path}',
-                owner: 'NIAID-Data-Ecosystem',
-                repo: 'nde-crawlers',
-                path: sourceData.sourcePath,
-              },
-            });
-            const data = await response.data;
-            const dates: string[] = [];
-            if (data) {
-              data.forEach(
-                (jsonObj: { commit: { author: { date: string } } }) => {
-                  dates.push(jsonObj.commit.author.date);
-                },
-              );
-            }
+          // If no source path is found, skip fetching GitHub data
+          if (!sourceObject.sourcePath) {
+            return sourceObject;
+          }
 
-            return { ...sourceData, dateCreated: dates[dates.length - 1] };
-          } catch (err) {
-            throw err;
+          // Fetch source information from GitHub.
+          try {
+            const githubData = await fetchGithubCommits(
+              sourceObject.sourcePath,
+            );
+            const dateCreated = extractCommitDates(githubData);
+            return { ...sourceObject, dateCreated };
+          } catch (err: any) {
+            console.error(`Failed to fetch GitHub commits: ${err.message}`);
+            return sourceObject;
           }
         }),
       );
       return { error: null, data };
     } catch (err: any) {
+      console.error(`Failed to process source data: ${err.message}`);
       return {
         data: [],
         error: {
           type: 'error',
-          status: err.response.status,
-          message: err.response.statusText,
+          status: err.response?.status || 500,
+          message: err.response?.statusText || 'Unknown error',
         },
       };
     }
   };
-  const sources = await fetchMetadata()
-    .then(data => ({ data }))
-    .catch(err => {
-      return {
-        data: null,
+
+  try {
+    const sources = await fetchMetadata();
+    if (!sources) {
+      return { props: { error: 'No source data found' } };
+    }
+
+    const sourceData = await fetchRepositoryInfo(Object.entries(sources.src));
+
+    return { props: { ...sourceData } };
+  } catch (err: any) {
+    console.error(`Failed to fetch metadata: ${err.message}`);
+    return {
+      props: {
         error: {
           type: 'error',
-          status: err.response.status,
+          status: err.response?.status || 500,
+          message: err.response?.statusText || 'Unknown error',
         },
-      };
-    });
-  if (!sources.data) {
-    return { props: { ...sources } };
+      },
+    };
   }
-  const sourceData = await fetchRepositoryInfo(
-    Object.entries(sources.data.src),
-  );
-  return { props: { ...sourceData } };
 }
 
 export default Sources;
