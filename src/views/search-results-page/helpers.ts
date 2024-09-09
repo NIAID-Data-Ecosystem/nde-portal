@@ -1,5 +1,24 @@
 import { NextRouter } from 'next/router';
 import { formatResourceTypeForAPI } from 'src/utils/formatting/formatResourceType';
+import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
+import { SchemaDefinitions } from 'scripts/generate-schema-definitions/types';
+
+const schema = SCHEMA_DEFINITIONS as SchemaDefinitions;
+
+/**
+ * Get the description for a given schema property.
+ *
+ * @param property - The schema property to get the description for.
+ * @returns The description for the schema property.
+ */
+export const getSchemaDescription = (property: string) => {
+  const schemaProperty = schema[property];
+  return (
+    schemaProperty?.abstract?.['Dataset'] ||
+    schemaProperty?.description?.['Dataset'] ||
+    ''
+  );
+};
 
 // Default query parameters for the search.
 export const defaultQuery = {

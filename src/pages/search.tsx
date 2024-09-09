@@ -18,6 +18,7 @@ import { FILTER_CONFIGS } from 'src/views/search-results-page/components/filters
 import { SelectedFilterType } from 'src/views/search-results-page/components/filters/types';
 import { encodeString } from 'src/utils/querystring-helpers';
 import ResultsCount from 'src/views/search-results-page/components/count';
+import { SearchResultsVisualizations } from 'src/views/search-results-page/components/topic-browser';
 
 const FilterTags = dynamic(() =>
   import(
@@ -126,6 +127,7 @@ const Search: NextPage<{
           flexDirection='column'
           mb={2}
           py={4}
+          pb={1}
           px={4}
           spacing={2}
           w='100%'
@@ -167,6 +169,16 @@ const Search: NextPage<{
               />
             </>
           )}
+          <SearchResultsVisualizations
+            queryParams={{
+              ...defaultParams,
+              ...router.query,
+              q: querystring,
+              extra_filter: Array.isArray(router.query.filters)
+                ? router.query.filters.join('')
+                : router.query.filters || '',
+            }}
+          />
         </Stack>
 
         <HStack
