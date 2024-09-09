@@ -44,8 +44,10 @@ import { useLocalStorage } from 'usehooks-ts';
 const SearchResultsPage = ({
   results,
   total: initialTotal,
+  setCount,
 }: {
   results: FormattedResource[];
+  setCount: (count: { total: number; isLoading: boolean }) => void;
   total: number;
 }) => {
   const [shouldUseMetadataScore, setShouldUseMetadataScore] = useLocalStorage(
@@ -206,18 +208,19 @@ const SearchResultsPage = ({
     [isLoading, data?.results?.length, selectedPerPage],
   );
 
+  useEffect(() => {
+    setCount({
+      total,
+      isLoading: isLoading || isRefetching || !router.isReady,
+    });
+  }, [isLoading, isRefetching, router, setCount, total]);
+
   if (error) {
     return <ErrorMessage error={error} querystring={querystring} />;
   }
 
   return (
     <Flex w='100%' flexDirection='column' flex={[1, 2]}>
-      {/* Number of search results */}
-      <ResultsCount
-        isLoading={isLoading || isRefetching || !router.isReady}
-        total={total}
-      />
-
       {/* Search results controls */}
       {numCards > 0 && (
         <Stack borderRadius='semi' boxShadow='base' bg='white' px={4} py={2}>

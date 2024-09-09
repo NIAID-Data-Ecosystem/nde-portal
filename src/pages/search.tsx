@@ -1,10 +1,10 @@
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import { PageContainer, PageContent } from 'src/components/page-container';
-import { Flex, Heading, HStack } from '@chakra-ui/react';
+import { Divider, Flex, Heading, HStack, Stack, Text } from '@chakra-ui/react';
 import { useHasMounted } from 'src/hooks/useHasMounted';
 import SearchResultsPage from 'src/views/search-results-page';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import dynamic from 'next/dynamic';
 import {
   defaultParams,
@@ -16,6 +16,8 @@ import { Filters } from 'src/views/search-results-page/components/filters';
 import { FormattedResource } from 'src/utils/api/types';
 import { FILTER_CONFIGS } from 'src/views/search-results-page/components/filters/config';
 import { SelectedFilterType } from 'src/views/search-results-page/components/filters/types';
+import { encodeString } from 'src/utils/querystring-helpers';
+import ResultsCount from 'src/views/search-results-page/components/count';
 
 const FilterTags = dynamic(() =>
   import(
@@ -30,14 +32,25 @@ const Search: NextPage<{
 }> = ({ results, total }) => {
   const hasMounted = useHasMounted();
   const router = useRouter();
+  const [count, setCount] = useState({ total, isLoading: !router.isReady });
 
-  const queryString = useMemo(
-    () =>
-      Array.isArray(router.query.q)
-        ? router.query.q.map(s => s.trim()).join('+')
-        : router.query.q || defaultParams?.q,
-    [router.query.q],
-  );
+  const getQueryString = useCallback(() => {
+    let querystring = router.query.q;
+
+    if (!querystring) {
+      querystring = defaultQuery.queryString;
+    } else {
+      querystring = Array.isArray(querystring)
+        ? `${querystring.map(s => s.trim()).join('+')}`
+        : `${querystring.trim()}`;
+    }
+
+    return router.query.advancedSearch
+      ? querystring
+      : encodeString(querystring);
+  }, [router]);
+
+  const querystring = useMemo(() => getQueryString(), [getQueryString]);
 
   ////////////////////////////////////////////////////
   ////////////////// Update Router ///////////////////
@@ -102,76 +115,104 @@ const Search: NextPage<{
         alignItems='center'
         px={{ base: 2, sm: 4, xl: '5vw' }}
       >
-        <Flex flexDirection='column' w='100%'>
+        {/* Number of search results */}
+        <ResultsCount isLoading={count.isLoading} total={count.total} />
+
+        <Stack
+          bg='white'
+          border='1px solid'
+          borderColor='gray.100'
+          borderRadius='semi'
+          flexDirection='column'
+          mb={2}
+          py={4}
+          px={4}
+          spacing={2}
+          w='100%'
+        >
           {/* Search query */}
+
           <Heading
             as='h1'
             fontSize='sm'
-            color='gray.800'
-            fontWeight='normal'
-            lineHeight='short'
-            mb={4}
+            fontWeight='medium'
+            lineHeight='shorter'
+            color='black'
           >
-            {queryString === '__all__'
-              ? `Showing all results`
-              : `Showing results for`}
-            <br />
-            {queryString !== '__all__' && (
-              <Heading as='span' fontWeight='bold' fontSize='inherit'>
-                {queryString.replaceAll('\\', '')}
-              </Heading>
-            )}
+            <Text as='span' color='gray.800' fontSize='sm' fontWeight='normal'>
+              {querystring === '__all__'
+                ? 'Showing all results'
+                : 'Showing results for:'}
+            </Text>
+            {querystring !== '__all__' &&
+              ' ' + querystring.replaceAll('\\', '')}
           </Heading>
 
           {/* Tags with the names of the currently selected filters */}
-          {Object.values(selectedFilters).length > 0 && (
-            <FilterTags
-              selectedFilters={selectedFilters}
-              handleRouteUpdate={handleRouteUpdate}
-              removeAllFilters={removeAllFilters}
-            />
+          {Object.values(applied_filters).length > 0 && (
+            <>
+              <Divider />
+              <Text
+                color='gray.800'
+                fontSize='sm'
+                fontWeight='medium'
+                lineHeight='short'
+              >
+                Results filtered by:
+              </Text>
+              <FilterTags
+                selectedFilters={selectedFilters}
+                handleRouteUpdate={handleRouteUpdate}
+                removeAllFilters={removeAllFilters}
+              />
+            </>
           )}
-          <HStack
-            w='100%'
-            spacing={[0, 0, 4, 4, 6]}
-            alignItems='flex-start'
-            maxW='2600px'
+        </Stack>
+
+        <HStack
+          w='100%'
+          spacing={[0, 0, 4, 4, 6]}
+          alignItems='flex-start'
+          maxW='2600px'
+        >
+          {/* Filters sidebar */}
+          <Flex
+            flex={{ base: 0, lg: 1 }}
+            height='100vh'
+            minW={{ base: 'unset', lg: '300px' }}
+            maxW={{ base: 'unset', lg: '450px' }}
+            position={{ base: 'unset', lg: 'sticky' }}
+            top='0px'
+            bg='white'
+            borderRadius='semi'
+            boxShadow='base'
           >
-            {/* Filters sidebar */}
-            <Flex
-              flex={{ base: 0, lg: 1 }}
-              height='100vh'
-              minW={{ base: 'unset', lg: '300px' }}
-              maxW={{ base: 'unset', lg: '450px' }}
-              position={{ base: 'unset', lg: 'sticky' }}
-              top='0px'
-              bg='white'
-              borderRadius='semi'
-              boxShadow='base'
-            >
-              {router.isReady && hasMounted && (
-                <Filters
-                  colorScheme='secondary'
-                  queryParams={{
-                    ...defaultParams,
-                    ...router.query,
-                    q: queryString,
-                    filters: undefined,
-                    extra_filter: Array.isArray(router.query.filters)
-                      ? router.query.filters.join('')
-                      : router.query.filters || '',
-                  }}
-                  selectedFilters={selectedFilters}
-                  removeAllFilters={
-                    applied_filters.length > 0 ? removeAllFilters : undefined
-                  }
-                />
-              )}
-            </Flex>
-            {/* Result cards */}
-            <SearchResultsPage results={results} total={total} />
-          </HStack>
-        </Flex>
+            {router.isReady && hasMounted && (
+              <Filters
+                colorScheme='secondary'
+                queryParams={{
+                  ...defaultParams,
+                  ...router.query,
+                  q: querystring,
+                  filters: undefined,
+                  extra_filter: Array.isArray(router.query.filters)
+                    ? router.query.filters.join('')
+                    : router.query.filters || '',
+                }}
+                selectedFilters={selectedFilters}
+                removeAllFilters={
+                  applied_filters.length > 0 ? removeAllFilters : undefined
+                }
+              />
+            )}
+          </Flex>
+          {/* Result cards */}
+          <SearchResultsPage
+            results={results}
+            total={total}
+            setCount={setCount}
+          />
+        </HStack>
       </PageContent>
     </PageContainer>
   );

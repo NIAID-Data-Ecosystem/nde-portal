@@ -5,14 +5,15 @@ import {
   Tag,
   TagCloseButton,
   TagLabel,
-  FlexProps,
+  HStack,
+  StackProps,
 } from '@chakra-ui/react';
 import { queryFilterObject2String } from 'src/views/search-results-page/helpers';
 import { defaultQuery } from 'src/views/search-results-page/helpers';
 import { SelectedFilterType, SelectedFilterTypeValue } from '../types';
 import { FILTER_CONFIGS } from '../config';
 
-interface FilterTagsProps extends FlexProps {
+interface FilterTagsProps extends StackProps {
   selectedFilters: SelectedFilterType;
   handleRouteUpdate: (update: Record<string, any>) => void;
   removeAllFilters: () => void;
@@ -114,32 +115,33 @@ export const FilterTags: React.FC<FilterTagsProps> = ({
   if (!tags.length) return null;
 
   return (
-    <Flex pb={[4, 6]} flexWrap='wrap' {...props}>
+    <HStack flexWrap='wrap' spacing={2} {...props}>
       <Button
-        m={1}
         variant='outline'
-        size='md'
-        px={3}
-        py={2}
-        fontSize='sm'
-        fontWeight='medium'
+        fontSize='xs'
+        size='sm'
+        fontWeight='semibold'
         colorScheme='secondary'
         onClick={removeAllFilters}
+        py={1}
+        maxH='unset'
+        height='100%'
       >
         Clear All
       </Button>
       {tags.map(({ key, name, value, displayValue, filterKey }) => (
-        <Tag key={key} colorScheme='secondary' size='md' m={1}>
-          <TagLabel>{`${name}: ${
-            typeof displayValue === 'string'
+        <Tag key={key} colorScheme='secondary' variant='solid' size='sm'>
+          <TagLabel>
+            {name} :{' '}
+            {typeof displayValue === 'string'
               ? displayValue
-              : JSON.stringify(displayValue)
-          }`}</TagLabel>
+              : JSON.stringify(displayValue)}
+          </TagLabel>
           <TagCloseButton
             onClick={() => removeSelectedFilter(filterKey, value)}
           />
         </Tag>
       ))}
-    </Flex>
+    </HStack>
   );
 };
