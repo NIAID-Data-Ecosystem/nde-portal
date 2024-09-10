@@ -1,4 +1,4 @@
-import { Box, Heading, Text } from '@chakra-ui/react';
+import { Flex, Heading, Text } from '@chakra-ui/react';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import { useMDXComponents } from 'mdx-components';
@@ -97,7 +97,7 @@ const Disclaimer: NextPage<DisclaimerProps> = props => {
           alignItems='center'
           bg='#fff'
         >
-          <Box w='100%' maxW='1000px' mt={8} mb={32}>
+          <Flex flexDirection='column' w='100%' maxW='1000px' mt={8} mb={32}>
             <Heading as='h1' fontSize='4xl'>
               {content.name || ''}
             </Heading>
@@ -111,7 +111,7 @@ const Disclaimer: NextPage<DisclaimerProps> = props => {
             >
               {content?.description || ''}
             </ReactMarkdown>
-          </Box>
+          </Flex>
         </PageContent>
       )}
     </PageContainer>
