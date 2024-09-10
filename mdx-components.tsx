@@ -86,61 +86,6 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
   };
 
   return {
-    // Allows customizing built-in components, e.g. to add styling.
-    Image: (props: ImageProps) => (
-      <Image
-        alt='image'
-        width={700}
-        height={400}
-        objectFit='contain'
-        {...props}
-      />
-    ),
-    h1: (props: any) => (
-      <Heading
-        as='h1'
-        size='h1'
-        mt={8}
-        fontSize={['4xl', '5xl']}
-        fontWeight='bold'
-        {...props}
-      />
-    ),
-
-    h2: (props: any) => (
-      <Heading as='h2' size='h2' mt={8} fontSize='2xl' {...props} />
-    ),
-    h3: (props: any) => (
-      <Heading as='h3' fontSize='lg' mt={6} mb={2} {...props} />
-    ),
-    h4: (props: any) => (
-      <Heading as='h4' fontSize='md' fontWeight='semibold' mt={2} {...props} />
-    ),
-
-    hr: (props: any) => <chakra.hr {...props} />,
-    strong: (props: any) => (
-      <Box as='strong' fontWeight='semibold' {...props} />
-    ),
-
-    br: () => <br />,
-    p: (props: any) => <Text mt={2} fontSize='md' {...props} />,
-    ul: (props: any) => (
-      <UnorderedList my={4} ml={12}>
-        {props.children}
-      </UnorderedList>
-    ),
-    ol: (props: any) => (
-      <OrderedList ml={12} my={2} {...props}>
-        {props.children}
-      </OrderedList>
-    ),
-    li: (props: any) => {
-      return (
-        <ListItem listStyleType='inherit' pb='4px' fontSize='md'>
-          {props.children}
-        </ListItem>
-      );
-    },
     a: (props: any) => {
       let { href } = props;
       if (href.startsWith('doc:')) {
@@ -172,23 +117,135 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
         </Link>
       );
     },
-    Link: (props: any) => {
-      return <Link {...props} />;
-    },
-    Flex: (props: any) => <Flex {...props} />,
     blockquote: (props: any) => {
+      const getThemeByTitle = (node: any) => {
+        const text = node?.children[0]?.value;
+        if (!text) {
+          return {
+            bg: 'status.info_lt',
+            color: 'status.info',
+          };
+        }
+
+        // Find emojis in text.
+        const emojis = text.match(/\p{Emoji_Presentation}/gu);
+        if (!emojis) {
+          return {
+            bg: 'status.info_lt',
+            color: 'status.info',
+          };
+        } else if (emojis[0] === '🚧') {
+          return {
+            bg: 'status.warning_lt',
+            color: 'status.warning',
+          };
+        } else if (emojis[0] === '🚨') {
+          return {
+            bg: 'status.error_lt',
+            color: 'status.error',
+          };
+        } else {
+          return {
+            bg: 'status.info_lt',
+            color: 'status.info',
+          };
+        }
+      };
+
+      const titleEl = props?.node?.children.find(
+        (child: any) => child.type === 'element',
+      );
+      const theme = getThemeByTitle(titleEl);
+      const childrenEl = props.children.filter(
+        (el: any) => typeof el === 'object',
+      );
       return (
         <Box
           borderLeft='0.2em solid'
-          borderLeftColor='status.info'
-          px={4}
+          borderLeftColor={theme.color}
+          px={6}
           py={2}
-          mx={{ base: 0, md: 2 }}
-          bg='status.info_lt'
+          m={{ base: 0, md: 2 }}
+          bg={theme.bg}
+          sx={{
+            p: {
+              my: 4,
+            },
+            'p:first-of-type':
+              childrenEl.length > 1
+                ? {
+                    color: theme.color,
+                    fontWeight: 'bold',
+                    fontSize: 'lg',
+                  }
+                : {},
+          }}
           {...props}
         />
       );
     },
+    br: (props: any) => (
+      <Box as='span' margin='10px 0 10px 0'>
+        {props.children}
+      </Box>
+    ),
+    details: props => {
+      return <Details {...props} />;
+    },
+    Flex: (props: any) => <Flex {...props} />,
+    h1: (props: any) => (
+      <Heading
+        as='h1'
+        size='h1'
+        mt={8}
+        fontSize={['4xl', '5xl']}
+        fontWeight='bold'
+        {...props}
+      />
+    ),
+    h2: (props: any) => (
+      <Heading as='h2' size='h2' mt={8} fontSize='2xl' {...props} />
+    ),
+    h3: (props: any) => (
+      <Heading as='h3' fontSize='lg' mt={6} mb={2} {...props} />
+    ),
+    h4: (props: any) => (
+      <Heading as='h4' fontSize='md' fontWeight='semibold' mt={2} {...props} />
+    ),
+    hr: (props: any) => <chakra.hr {...props} />,
+    // Allows customizing built-in components, e.g. to add styling.
+    Image: (props: ImageProps) => (
+      <Image
+        alt='image'
+        width={700}
+        height={400}
+        objectFit='contain'
+        {...props}
+      />
+    ),
+    img: (props: ImageProps) => (
+      <Image
+        {...props}
+        alt={props.alt || 'image'}
+        src={`${process.env.NEXT_PUBLIC_STRAPI_API_URL}${props.src}`}
+      />
+    ),
+    li: (props: any) => {
+      return (
+        <ListItem listStyleType='inherit' pb='4px' fontSize='md'>
+          {props.children}
+        </ListItem>
+      );
+    },
+    Link: (props: any) => {
+      return <Link {...props} />;
+    },
+    ol: (props: any) => (
+      <OrderedList ml={12} my={2} {...props}>
+        {props.children}
+      </OrderedList>
+    ),
+    p: (props: any) => <Text mt={2} fontSize='md' {...props} />,
     section: (props: any) => {
       const classNames = props.className.split(' ');
       if (classNames?.includes('rightImage')) {
@@ -214,10 +271,14 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
       }
       return <Box {...props} bg='red' />;
     },
-
-    details: props => {
-      return <Details {...props} />;
-    },
+    strong: (props: any) => (
+      <Box as='strong' fontWeight='semibold' {...props} />
+    ),
+    ul: (props: any) => (
+      <UnorderedList my={4} ml={12}>
+        {props.children}
+      </UnorderedList>
+    ),
     ...components,
   };
 }
