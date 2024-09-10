@@ -33,7 +33,13 @@ const Search: NextPage<{
 }> = ({ results, total }) => {
   const hasMounted = useHasMounted();
   const router = useRouter();
-  const [count, setCount] = useState({ total, isLoading: !router.isReady });
+  const [count, setCount] = useState<{
+    total: number;
+    isLoading: boolean;
+  }>({
+    total,
+    isLoading: !router.isReady || true,
+  });
 
   const getQueryString = useCallback(() => {
     let querystring = router.query.q;
