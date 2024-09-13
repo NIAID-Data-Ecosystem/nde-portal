@@ -1,16 +1,8 @@
 import axios from 'axios';
+import { stratify } from '@visx/hierarchy';
+import { HierarchyNode } from '@visx/hierarchy/lib/types';
 
 const OLS_API_URL = 'https://www.ebi.ac.uk/ols4/api';
-// q=NCBITaxon_562
-// ontology=edam,ncbitaxon
-// queryFields=label,short_form,obo_id,iri
-// exact=false
-// obsoletes=false
-// local=false
-// rows=20
-// start=0
-// format=json
-// lang=en
 
 interface SearchParams {
   q: string;
@@ -65,6 +57,160 @@ export const searchOntologyAPI = async (
   return data.response.docs;
 };
 
-// export const fetchChildrenByTaxonId = (taxo)=>{
-//   return 'fetchChildrenByTaxaId';
-// }
+export interface OntologyTreeParams {
+  id: string;
+  ontology: 'edam' | 'ncbitaxon';
+  lang?: string;
+  siblings?: boolean;
+  viewMode?: string;
+}
+
+interface OntologyTreeItemRaw {
+  children: boolean;
+  id: string;
+  parent: string;
+  iri: string;
+  state: {
+    opened: boolean;
+    selected: boolean;
+  };
+  text: string;
+  ontology_name: string;
+}
+
+interface OntologyTreeItem extends Omit<OntologyTreeItemRaw, 'children'> {
+  label: string;
+  taxonId: string;
+}
+
+export interface OntologyTreeResponse {
+  children: OntologyTreeItem[];
+  lineage: OntologyTreeItem[];
+  tree: HierarchyNode<OntologyTreeItem>;
+}
+
+export const fetchOntologyTreeByTaxonId = async (
+  params: OntologyTreeParams,
+  signal?: AbortSignal,
+): Promise<OntologyTreeResponse> => {
+  if (!params?.id) {
+    throw new Error('No id provided');
+  }
+
+  const { ontology, ...rest } = params;
+  const iri =
+    params.ontology.toLowerCase() === 'edam'
+      ? `http://edamontology.org/${params.id}`
+      : `http://purl.obolibrary.org/obo/${params.id}`;
+
+  // Note that: IRIs must be double URL encoded: https://www.ebi.ac.uk/ols4/help
+  const encodedIri = encodeURIComponent(encodeURIComponent(iri));
+
+  // Fetch the tree data
+  const { lineage } = await axios
+    .get(`${OLS_API_URL}/ontologies/${ontology}/terms/${encodedIri}/jstree?`, {
+      params: {
+        lang: 'en',
+        siblings: false,
+        viewMode: 'PreferredRoots',
+        ...rest,
+      },
+      signal,
+    })
+    .then(response => {
+      const data: OntologyTreeItemRaw[] = response.data;
+      const lineage = data.map(item => {
+        const { id, iri, ontology_name, state, text } = item;
+        // set the parent to empty string if it is the root node.
+        const parent = item.parent === '#' ? '' : item.parent;
+        const taxonId = iri.split('/').pop() || '';
+
+        return {
+          id,
+          iri,
+          label: item.text,
+          ontology_name,
+          parent,
+          state,
+          text,
+          taxonId,
+        };
+      });
+
+      return { lineage };
+    });
+
+  // Fetch the children data.
+  const node_id = lineage[lineage.length - 1].id;
+  const { children } = await fetchOntologyChildrenByNodeId(
+    node_id,
+    params,
+    signal,
+  );
+
+  const tree = transformArray2Tree([...lineage, ...children]);
+  // [Note]: returning both array and hierarchy form until we decide which structure we want.
+  return { children, lineage, tree };
+};
+
+const transformArray2Tree = (data: OntologyTreeItem[]) => {
+  const tree = stratify<OntologyTreeItem>()
+    .id(d => d.id)
+    .parentId(d => d.parent)(data);
+
+  return tree;
+};
+
+export const fetchOntologyChildrenByNodeId = async (
+  nodeId: string,
+  params: OntologyTreeParams,
+  signal?: AbortSignal,
+): Promise<{ children: OntologyTreeResponse['children'] }> => {
+  if (!nodeId || !params?.id) {
+    throw new Error('No id provided');
+  }
+  const { ontology, ...rest } = params;
+  const iri =
+    params.ontology.toLowerCase() === 'edam'
+      ? `http://edamontology.org/${params.id}`
+      : `http://purl.obolibrary.org/obo/${params.id}`;
+
+  // Note that: IRIs must be double URL encoded: https://www.ebi.ac.uk/ols4/help
+  const encodedIri = encodeURIComponent(encodeURIComponent(iri));
+
+  // Fetch the children data.
+  const { children } = await axios
+    .get(
+      `${OLS_API_URL}/ontologies/${ontology}/terms/${encodedIri}/jstree/children/${nodeId}?`,
+      {
+        params: {
+          lang: params.lang || 'en',
+        },
+        signal,
+      },
+    )
+    .then(response => {
+      const data: OntologyTreeItemRaw[] = response.data;
+      const children = data.map(item => {
+        const { id, iri, ontology_name, state, text } = item;
+        // set the parent to empty string if it is the root node.
+        const parent = item.parent === '#' ? '' : item.parent;
+        const taxonId = iri.split('/').pop() || '';
+
+        return {
+          id,
+          iri,
+          label: item.text,
+          ontology_name,
+          parent,
+          state,
+          taxonId,
+          text,
+        };
+      });
+
+      return { children };
+    });
+
+  return { children };
+};

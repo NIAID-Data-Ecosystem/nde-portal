@@ -1,7 +1,8 @@
+import { VStack } from '@chakra-ui/react';
 import type { NextPage } from 'next';
 import { PageContainer, PageContent } from 'src/components/page-container';
-import { TreeBrowserOne } from 'src/views/tree-browser-one';
 import { TreeBrowserSearch } from 'src/views/tree-browser-one/components/search';
+import { TreeBrowserTable } from 'src/views/tree-browser-one/components/table';
 
 //  This page renders the search results from the search bar.
 const TreeBrowserOnePage: NextPage = () => {
@@ -18,8 +19,10 @@ const TreeBrowserOnePage: NextPage = () => {
         alignItems='center'
         px={{ base: 2, sm: 4, xl: '5vw' }}
       >
-        <TreeBrowserSearch />
-        {/* <TreeBrowserOne /> */}
+        <VStack w='100%' spacing={4} p={4}>
+          <TreeBrowserSearch />
+          <TreeBrowserTable />
+        </VStack>
       </PageContent>
     </PageContainer>
   );

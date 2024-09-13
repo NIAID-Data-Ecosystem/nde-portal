@@ -30,7 +30,6 @@ export const TreeBrowserSearch = ({
   size = 'md',
 }: TreeBrowserSearchProps) => {
   const router = useRouter();
-  const { id } = router.query;
 
   const [searchTerm, setSearchTerm] = useState('');
   const [debouncedTerm, setDebouncedTerm] = useState(searchTerm);
