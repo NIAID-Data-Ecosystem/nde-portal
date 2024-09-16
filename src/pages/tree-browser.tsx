@@ -1,8 +1,8 @@
 import { VStack } from '@chakra-ui/react';
 import type { NextPage } from 'next';
 import { PageContainer, PageContent } from 'src/components/page-container';
-import { TreeBrowserSearch } from 'src/views/tree-browser-one/components/search';
-import { TreeBrowserTable } from 'src/views/tree-browser-one/components/table';
+import { TreeBrowserSearch } from 'src/views/tree-browser/components/search';
+import { TreeBrowserTable } from 'src/views/tree-browser/components/table';
 
 //  This page renders the search results from the search bar.
 const TreeBrowserOnePage: NextPage = () => {

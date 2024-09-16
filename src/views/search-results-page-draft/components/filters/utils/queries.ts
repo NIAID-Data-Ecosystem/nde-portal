@@ -18,9 +18,11 @@ interface SourcesData extends FetchSearchResultsResponse {
  * @param facetField - The facet field to filter by.
  * @returns The common query parameters.
  */
+
 export interface FacetParams extends Params {
   facets: string;
 }
+
 export const buildFacetQueryParams = (params: FacetParams): FacetParams => {
   const { advancedSearch, q, facets, extra_filter } = params;
 
@@ -32,7 +34,7 @@ export const buildFacetQueryParams = (params: FacetParams): FacetParams => {
     extra_filter,
     filters: '',
     size: 0,
-    facet_size: 1000,
+    facet_size: params.facet_size || 1000,
     facets,
     sort: undefined,
   };

@@ -11,25 +11,7 @@ import {
   createNotExistsQuery,
   structureQueryData,
 } from './utils/queries';
-import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
-import { SchemaDefinitions } from 'scripts/generate-schema-definitions/types';
-
-const schema = SCHEMA_DEFINITIONS as SchemaDefinitions;
-
-/**
- * Get the description for a given schema property.
- *
- * @param property - The schema property to get the description for.
- * @returns The description for the schema property.
- */
-const getSchemaDescription = (property: string) => {
-  const schemaProperty = schema[property];
-  return (
-    schemaProperty?.abstract?.['Dataset'] ||
-    schemaProperty?.description?.['Dataset'] ||
-    ''
-  );
-};
+import { getSchemaDescription } from '../../helpers';
 
 /**
  * Filter configuration array. Order matters here as the filters will be rendered in the same order.

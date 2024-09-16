@@ -14,6 +14,7 @@ export interface TreeNode {
   name: string;
   term?: string;
   url: string;
+  isExpanded?: boolean;
 }
 
 // Helper function to find or create a node

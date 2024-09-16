@@ -57,7 +57,7 @@ export const TreeBrowserSearch = ({
 
   const handleSubmit = ({ id }: { id: string }) => {
     router.push({
-      pathname: `/tree-browser-one`,
+      pathname: `/tree-browser`,
       query: { id },
     });
     setSearchTerm('');
@@ -168,7 +168,7 @@ const DropdownListItem = ({
       my={1}
       {...getListItemProps({
         index,
-        value: `/tree-browser-one/${id}`,
+        value: `/tree-browser/${id}`,
         isSelected: cursor === index,
         onClick: () => handleSubmit({ id }),
       })}

@@ -1,10 +1,10 @@
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import { PageContainer, PageContent } from 'src/components/page-container';
-import { Divider, Flex, Heading, HStack, Stack, Text } from '@chakra-ui/react';
+import { Flex, Heading, HStack } from '@chakra-ui/react';
 import { useHasMounted } from 'src/hooks/useHasMounted';
 import SearchResultsPage from 'src/views/search-results-page';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo } from 'react';
 import dynamic from 'next/dynamic';
 import {
   defaultParams,
@@ -16,9 +16,6 @@ import { Filters } from 'src/views/search-results-page/components/filters';
 import { FormattedResource } from 'src/utils/api/types';
 import { FILTER_CONFIGS } from 'src/views/search-results-page/components/filters/config';
 import { SelectedFilterType } from 'src/views/search-results-page/components/filters/types';
-import { encodeString } from 'src/utils/querystring-helpers';
-import ResultsCount from 'src/views/search-results-page/components/count';
-import { SearchResultsVisualizations } from 'src/views/search-results-page/components/topic-browser';
 
 const FilterTags = dynamic(() =>
   import(
@@ -33,31 +30,14 @@ const Search: NextPage<{
 }> = ({ results, total }) => {
   const hasMounted = useHasMounted();
   const router = useRouter();
-  const [count, setCount] = useState<{
-    total: number;
-    isLoading: boolean;
-  }>({
-    total,
-    isLoading: !router.isReady || true,
-  });
 
-  const getQueryString = useCallback(() => {
-    let querystring = router.query.q;
-
-    if (!querystring) {
-      querystring = defaultQuery.queryString;
-    } else {
-      querystring = Array.isArray(querystring)
-        ? `${querystring.map(s => s.trim()).join('+')}`
-        : `${querystring.trim()}`;
-    }
-
-    return router.query.advancedSearch
-      ? querystring
-      : encodeString(querystring);
-  }, [router]);
-
-  const querystring = useMemo(() => getQueryString(), [getQueryString]);
+  const queryString = useMemo(
+    () =>
+      Array.isArray(router.query.q)
+        ? router.query.q.map(s => s.trim()).join('+')
+        : router.query.q || defaultParams?.q,
+    [router.query.q],
+  );
 
   ////////////////////////////////////////////////////
   ////////////////// Update Router ///////////////////
@@ -122,115 +102,76 @@ const Search: NextPage<{
         alignItems='center'
         px={{ base: 2, sm: 4, xl: '5vw' }}
       >
-        {/* Number of search results */}
-        <ResultsCount isLoading={count.isLoading} total={count.total} />
-
-        <Stack
-          bg='white'
-          border='1px solid'
-          borderColor='gray.100'
-          borderRadius='semi'
-          flexDirection='column'
-          mb={2}
-          py={4}
-          pb={1}
-          px={4}
-          spacing={2}
-          w='100%'
-        >
+        <Flex flexDirection='column' w='100%'>
           {/* Search query */}
-
           <Heading
             as='h1'
             fontSize='sm'
-            fontWeight='medium'
-            lineHeight='shorter'
-            color='black'
+            color='gray.800'
+            fontWeight='normal'
+            lineHeight='short'
+            mb={4}
           >
-            <Text as='span' color='gray.800' fontSize='sm' fontWeight='normal'>
-              {querystring === '__all__'
-                ? 'Showing all results'
-                : 'Showing results for:'}
-            </Text>
-            {querystring !== '__all__' &&
-              ' ' + querystring.replaceAll('\\', '')}
+            {queryString === '__all__'
+              ? `Showing all results`
+              : `Showing results for`}
+            <br />
+            {queryString !== '__all__' && (
+              <Heading as='span' fontWeight='bold' fontSize='inherit'>
+                {queryString.replaceAll('\\', '')}
+              </Heading>
+            )}
           </Heading>
 
           {/* Tags with the names of the currently selected filters */}
-          {Object.values(applied_filters).length > 0 && (
-            <>
-              <Divider />
-              <Text
-                color='gray.800'
-                fontSize='sm'
-                fontWeight='medium'
-                lineHeight='short'
-              >
-                Results filtered by:
-              </Text>
-              <FilterTags
-                selectedFilters={selectedFilters}
-                handleRouteUpdate={handleRouteUpdate}
-                removeAllFilters={removeAllFilters}
-              />
-            </>
+          {Object.values(selectedFilters).length > 0 && (
+            <FilterTags
+              selectedFilters={selectedFilters}
+              handleRouteUpdate={handleRouteUpdate}
+              removeAllFilters={removeAllFilters}
+            />
           )}
-          <SearchResultsVisualizations
-            queryParams={{
-              ...defaultParams,
-              ...router.query,
-              q: querystring,
-              extra_filter: Array.isArray(router.query.filters)
-                ? router.query.filters.join('')
-                : router.query.filters || '',
-            }}
-          />
-        </Stack>
-
-        <HStack
-          w='100%'
-          spacing={[0, 0, 4, 4, 6]}
-          alignItems='flex-start'
-          maxW='2600px'
-        >
-          {/* Filters sidebar */}
-          <Flex
-            flex={{ base: 0, lg: 1 }}
-            height='100vh'
-            minW={{ base: 'unset', lg: '300px' }}
-            maxW={{ base: 'unset', lg: '450px' }}
-            position={{ base: 'unset', lg: 'sticky' }}
-            top='0px'
-            bg='white'
-            borderRadius='semi'
-            boxShadow='base'
+          <HStack
+            w='100%'
+            spacing={[0, 0, 4, 4, 6]}
+            alignItems='flex-start'
+            maxW='2600px'
           >
-            {router.isReady && hasMounted && (
-              <Filters
-                colorScheme='secondary'
-                queryParams={{
-                  ...defaultParams,
-                  ...router.query,
-                  q: querystring,
-                  filters: undefined,
-                  extra_filter: Array.isArray(router.query.filters)
-                    ? router.query.filters.join('')
-                    : router.query.filters || '',
-                }}
-                selectedFilters={selectedFilters}
-                removeAllFilters={
-                  applied_filters.length > 0 ? removeAllFilters : undefined
-                }
-              />
-            )}
-          </Flex>
-          {/* Result cards */}
-          <SearchResultsPage
-            results={results}
-            total={total}
-            setCount={setCount}
-          />
-        </HStack>
+            {/* Filters sidebar */}
+            <Flex
+              flex={{ base: 0, lg: 1 }}
+              height='100vh'
+              minW={{ base: 'unset', lg: '300px' }}
+              maxW={{ base: 'unset', lg: '450px' }}
+              position={{ base: 'unset', lg: 'sticky' }}
+              top='0px'
+              bg='white'
+              borderRadius='semi'
+              boxShadow='base'
+            >
+              {router.isReady && hasMounted && (
+                <Filters
+                  colorScheme='secondary'
+                  queryParams={{
+                    ...defaultParams,
+                    ...router.query,
+                    q: queryString,
+                    filters: undefined,
+                    extra_filter: Array.isArray(router.query.filters)
+                      ? router.query.filters.join('')
+                      : router.query.filters || '',
+                  }}
+                  selectedFilters={selectedFilters}
+                  removeAllFilters={
+                    applied_filters.length > 0 ? removeAllFilters : undefined
+                  }
+                />
+              )}
+            </Flex>
+            {/* Result cards */}
+            <SearchResultsPage results={results} total={total} />
+          </HStack>
+        </Flex>
       </PageContent>
     </PageContainer>
   );

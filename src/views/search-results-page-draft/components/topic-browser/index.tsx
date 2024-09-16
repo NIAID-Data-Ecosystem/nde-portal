@@ -17,6 +17,7 @@ import {
   transformAncestorsArraysToTree,
 } from './helpers';
 import { FacetTermWithDetails } from '../filters/types';
+import { FacetParams } from '../filters/utils/queries';
 
 interface SearchResultsVisualizationsProps {
   queryParams: Params;
@@ -36,7 +37,7 @@ const config = [
         // multi_terms_fields:
         //   'infectiousAgent.identifier,infectiousAgent.displayName',
         // multi_terms_size: '10',
-      },
+      } as FacetParams,
     }),
   },
   // {
