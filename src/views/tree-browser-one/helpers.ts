@@ -79,6 +79,7 @@ interface OntologyTreeItemRaw {
 }
 
 interface OntologyTreeItem extends Omit<OntologyTreeItemRaw, 'children'> {
+  hasChildren: boolean;
   label: string;
   taxonId: string;
 }
@@ -126,6 +127,7 @@ export const fetchOntologyTreeByTaxonId = async (
         const taxonId = iri.split('/').pop() || '';
 
         return {
+          hasChildren: item.children,
           id,
           iri,
           label: item.text,
@@ -153,7 +155,7 @@ export const fetchOntologyTreeByTaxonId = async (
   return { children, lineage, tree };
 };
 
-const transformArray2Tree = (data: OntologyTreeItem[]) => {
+export const transformArray2Tree = (data: OntologyTreeItem[]) => {
   const tree = stratify<OntologyTreeItem>()
     .id(d => d.id)
     .parentId(d => d.parent)(data);
@@ -162,8 +164,8 @@ const transformArray2Tree = (data: OntologyTreeItem[]) => {
 };
 
 export const fetchOntologyChildrenByNodeId = async (
-  nodeId: string,
-  params: OntologyTreeParams,
+  nodeId?: string,
+  params?: OntologyTreeParams,
   signal?: AbortSignal,
 ): Promise<{ children: OntologyTreeResponse['children'] }> => {
   if (!nodeId || !params?.id) {
@@ -198,6 +200,7 @@ export const fetchOntologyChildrenByNodeId = async (
         const taxonId = iri.split('/').pop() || '';
 
         return {
+          hasChildren: item.children,
           id,
           iri,
           label: item.text,
