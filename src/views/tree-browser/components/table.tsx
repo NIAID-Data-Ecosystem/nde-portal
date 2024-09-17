@@ -1,34 +1,22 @@
-import {
-  Accordion,
-  AccordionItem,
-  AccordionButton,
-  AccordionPanel,
-  AccordionIcon,
-  Box,
-  Flex,
-  HStack,
-  Spinner,
-  Tag,
-  Text,
-  Alert,
-} from '@chakra-ui/react';
+import { Box, HStack, Spinner, Text, Alert } from '@chakra-ui/react';
 import { useQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/router';
 import {
   fetchOntologyChildrenByNodeId,
   fetchOntologyTreeByTaxonId,
+  getChildren,
+  OntologyTreeItem,
   OntologyTreeParams,
   OntologyTreeResponse,
-  transformArray2Tree,
 } from '../helpers';
 import { TagWithUrl } from 'src/components/tag-with-url';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { debounce } from 'lodash';
 
 export const TreeBrowserTable = () => {
   const router = useRouter();
   const id = router.query.id || 'NCBITaxon_1';
   const [tree, setTree] = useState<OntologyTreeResponse['tree'] | null>(null);
+  const [lineage, setLineage] = useState<OntologyTreeItem[] | null>(null);
 
   // Memoize the query params to avoid unnecessary recalculations on each render
   const queryParams = useMemo(() => {
@@ -42,39 +30,54 @@ export const TreeBrowserTable = () => {
   }, [id]);
 
   // Fetch tree data
-  const { error, isLoading, data } = useQuery({
+  const {
+    error,
+    isLoading,
+    data: allData,
+  } = useQuery({
     queryKey: ['tree-browser-search', queryParams.id, queryParams.ontology],
     queryFn: () => fetchOntologyTreeByTaxonId(queryParams),
     refetchOnWindowFocus: false,
     enabled: router.isReady && !!queryParams.id,
   });
 
-  const selectedNode = data?.lineage[data.lineage.length - 1];
+  const selectedNode = allData?.lineage[allData.lineage.length - 1];
 
   useEffect(() => {
-    if (data?.tree) {
-      setTree(data.tree);
+    if (allData) {
+      // setTree(allData.tree);
+      setLineage(allData.lineage);
     }
-  }, [data]);
+  }, [allData]);
 
-  // Memoize the updateTreeData function
-  const updateTreeData = useCallback(
-    (children: OntologyTreeResponse['children']) => {
-      if (!tree) return;
+  // Update lineage with new children
+  const updateLineageWithChildren = useCallback(
+    (nodeId: string, children: OntologyTreeItem[]) => {
+      setLineage(prevLineage => {
+        if (!prevLineage) return [];
 
-      const flattenedTree = tree.descendants().map(d => d.data);
-      const filteredChildren = children.filter(
-        child => !flattenedTree.some(node => node.id === child.id),
-      );
+        // Find the index of the node to insert children after
+        const index = prevLineage.findIndex(node => node.id === nodeId);
+        if (index === -1) return prevLineage;
 
-      const newTree = transformArray2Tree([
-        ...flattenedTree,
-        ...filteredChildren,
-      ]);
-      setTree(newTree);
+        // Filter out children that are already in the prevLineage
+        const filteredChildren = children.filter(
+          child => !prevLineage.some(prevNode => prevNode.id === child.id),
+        );
+
+        // If no children left after filtering, return previous lineage as it is
+        if (filteredChildren.length === 0) return prevLineage;
+
+        // Merge filtered children into prevLineage
+        const merged = [...prevLineage];
+        merged.splice(index + 1, 0, ...filteredChildren);
+
+        return merged;
+      });
     },
-    [tree],
+    [],
   );
+  console.log('lineage', lineage);
   if (error) {
     return (
       <Alert status='error'>
@@ -115,116 +118,111 @@ export const TreeBrowserTable = () => {
         {isLoading || !router.isReady ? (
           <Spinner size='md' color='primary.500' m={4} />
         ) : (
-          tree && <OntologyItem item={tree} updateTreeData={updateTreeData} />
+          lineage && (
+            <Tree data={lineage} updateLineage={updateLineageWithChildren} />
+          )
         )}
       </Box>
     </Box>
   );
 };
 
-export const OntologyItem = ({
-  item,
-  updateTreeData,
+// TreeNode component
+const TreeNode = ({
+  node,
+  data,
+  depth = 0,
+  updateLineage,
 }: {
-  item: OntologyTreeResponse['tree'];
-  updateTreeData: (children: OntologyTreeResponse['children']) => void;
+  node: OntologyTreeItem;
+  data: OntologyTreeItem[];
+  updateLineage: (nodeId: string, children: OntologyTreeItem[]) => void;
 }) => {
-  const MARGIN = 16;
-  const [showChildren, setShowChildren] = useState(false);
+  const [isOpen, setIsOpen] = useState(node.state.opened);
 
-  // Ref to track if children are fetched
-  const childrenFetched = useRef(false);
+  const children = getChildren(node.id, data);
 
-  const { error, isLoading, data } = useQuery({
-    queryKey: ['fetch-children', item.data.id],
+  const {
+    error,
+    isLoading,
+    data: childrenData,
+    refetch,
+  } = useQuery({
+    queryKey: ['fetch-children', node.id],
     queryFn: () => {
-      if (!item.id) {
+      if (!node.id) {
         return null;
       }
-      return fetchOntologyChildrenByNodeId(item.id, {
-        id: item.data.taxonId,
-        ontology: item.data.ontology_name as OntologyTreeParams['ontology'],
+      return fetchOntologyChildrenByNodeId(node.id, {
+        id: node.taxonId,
+        ontology: node.ontology_name as OntologyTreeParams['ontology'],
       });
     },
     refetchOnWindowFocus: false,
-    enabled: showChildren && !childrenFetched.current,
+    enabled: false,
   });
 
+  const toggleNode = () => {
+    refetch();
+    setIsOpen(!isOpen);
+  };
+
   useEffect(() => {
-    if (
-      data &&
-      data.children &&
-      data.children.length > 0 &&
-      !childrenFetched.current
-    ) {
-      updateTreeData(data.children);
-      childrenFetched.current = true;
+    if (childrenData) {
+      updateLineage(node.id, childrenData.children);
     }
-  }, [data, item, updateTreeData]);
+  }, [childrenData, node.id, updateLineage]);
+  return (
+    <li>
+      <div
+        onClick={toggleNode}
+        style={{
+          cursor:
+            children.length > 0 || node.hasChildren ? 'pointer' : 'default',
+          paddingLeft: `${depth * 20}px`, // Indent based on depth level
+        }}
+      >
+        {children.length > 0 || node.hasChildren ? (isOpen ? '▼' : '►') : '•'}{' '}
+        {node.text}
+      </div>
+      {isOpen && children.length > 0 && (
+        <ul>
+          {children.map(child => (
+            <TreeNode
+              key={child.id}
+              node={child}
+              data={data}
+              depth={depth + 1}
+              updateLineage={updateLineage}
+            />
+          ))}
+        </ul>
+      )}
+    </li>
+  );
+};
 
-  if (!item || !item.data) return null;
-
-  const { label, state } = item.data;
-  const { opened, selected } = state;
-  const defaultIndex = opened ? 0 : -1;
+// Tree component that renders the entire tree
+const Tree = ({
+  data,
+  updateLineage,
+}: {
+  data: OntologyTreeItem[];
+  updateLineage: (nodeId: string, children: OntologyTreeItem[]) => void;
+}) => {
+  // Only render the root nodes initially (nodes with no parent)
+  const rootNodes = data.filter(item => !item.parent);
 
   return (
-    <Accordion
-      w='100%'
-      allowToggle
-      defaultIndex={defaultIndex}
-      onChange={() => setShowChildren(!showChildren)}
-    >
-      <AccordionItem border='none'>
-        <h2>
-          <AccordionButton
-            borderTop={item.depth !== 0 ? '0.25px solid' : 'none'}
-            borderColor='gray.200'
-            bg={selected ? 'primary.50' : 'transparent'}
-            pl={`${(item.depth + 1) * MARGIN}px`}
-            cursor={
-              item.children || item.data.hasChildren ? 'pointer' : 'default'
-            }
-            _expanded={{ svg: { transform: 'rotate(0deg)' } }}
-            _hover={{
-              bg:
-                item.children || item.data.hasChildren
-                  ? 'blackAlpha.50'
-                  : 'transparent',
-            }}
-          >
-            <AccordionIcon
-              transform='rotate(-90deg)'
-              color={
-                item.children || item.data.hasChildren
-                  ? 'currentColor'
-                  : 'transparent'
-              }
-            />
-            <Text
-              color={selected ? 'primary.600' : 'currentColor'}
-              flex='1'
-              fontWeight={selected ? 'semibold' : 'normal'}
-              ml={`${MARGIN}px`}
-              textAlign='left'
-            >
-              {label}
-            </Text>
-            {isLoading && <Spinner size='sm' color='primary.500' />}
-          </AccordionButton>
-        </h2>
-        {item.children && (
-          <AccordionPanel px={0} py={0}>
-            {item.children.map(child => (
-              <OntologyItem
-                key={child.id}
-                item={child}
-                updateTreeData={updateTreeData}
-              />
-            ))}
-          </AccordionPanel>
-        )}
-      </AccordionItem>
-    </Accordion>
+    <ul>
+      {rootNodes.map(node => (
+        <TreeNode
+          key={node.id}
+          node={node}
+          data={data}
+          updateLineage={updateLineage}
+        />
+      ))}
+    </ul>
   );
 };
