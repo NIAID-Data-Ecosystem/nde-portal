@@ -136,6 +136,7 @@ const TreeNode = ({
 }: {
   node: OntologyTreeItem;
   data: OntologyTreeItem[];
+  depth: number;
   updateLineage: (nodeId: string, children: OntologyTreeItem[]) => void;
 }) => {
   const [isOpen, setIsOpen] = useState(node.state.opened);
@@ -220,6 +221,7 @@ const Tree = ({
           key={node.id}
           node={node}
           data={data}
+          depth={0}
           updateLineage={updateLineage}
         />
       ))}
