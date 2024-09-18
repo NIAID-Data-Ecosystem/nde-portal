@@ -10,12 +10,12 @@ import {
   OntologyTreeResponse,
 } from '../helpers';
 import { TagWithUrl } from 'src/components/tag-with-url';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { use, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { u } from 'node_modules/msw/lib/glossary-de6278a9';
 
 export const TreeBrowserTable = () => {
   const router = useRouter();
   const id = router.query.id || 'NCBITaxon_1';
-  const [tree, setTree] = useState<OntologyTreeResponse['tree'] | null>(null);
   const [lineage, setLineage] = useState<OntologyTreeItem[] | null>(null);
 
   // Memoize the query params to avoid unnecessary recalculations on each render
@@ -45,7 +45,6 @@ export const TreeBrowserTable = () => {
 
   useEffect(() => {
     if (allData) {
-      // setTree(allData.tree);
       setLineage(allData.lineage);
     }
   }, [allData]);
@@ -55,6 +54,9 @@ export const TreeBrowserTable = () => {
     (nodeId: string, children: OntologyTreeItem[]) => {
       setLineage(prevLineage => {
         if (!prevLineage) return [];
+
+        // If no children, return previous lineage as it is
+        if (children.length === 0) return prevLineage;
 
         // Find the index of the node to insert children after
         const index = prevLineage.findIndex(node => node.id === nodeId);
@@ -119,7 +121,11 @@ export const TreeBrowserTable = () => {
           <Spinner size='md' color='primary.500' m={4} />
         ) : (
           lineage && (
-            <Tree data={lineage} updateLineage={updateLineageWithChildren} />
+            <Tree
+              queryId={queryParams.id}
+              data={lineage}
+              updateLineage={updateLineageWithChildren}
+            />
           )
         )}
       </Box>
@@ -132,22 +138,24 @@ const TreeNode = ({
   node,
   data,
   depth = 0,
+  queryId,
   updateLineage,
 }: {
   node: OntologyTreeItem;
   data: OntologyTreeItem[];
   depth: number;
+  queryId: string;
   updateLineage: (nodeId: string, children: OntologyTreeItem[]) => void;
 }) => {
   const [isOpen, setIsOpen] = useState(node.state.opened);
-
-  const children = getChildren(node.id, data);
+  const [isToggled, setIsToggled] = useState(false);
+  const [childrenList, setChildrenList] = useState<OntologyTreeItem[]>([]);
 
   const {
     error,
     isLoading,
     data: childrenData,
-    refetch,
+    refetch: fetchChildren,
   } = useQuery({
     queryKey: ['fetch-children', node.id],
     queryFn: () => {
@@ -163,34 +171,47 @@ const TreeNode = ({
     enabled: false,
   });
 
-  const toggleNode = () => {
-    refetch();
-    setIsOpen(!isOpen);
+  const toggleNode = async () => {
+    fetchChildren();
+    setIsToggled(!isToggled);
   };
 
+  // set children data in state with node information
   useEffect(() => {
-    if (childrenData) {
+    const children = getChildren(node.id, data);
+    setChildrenList(children);
+  }, [queryId, data, node.id]);
+
+  // update lineage with new children when toggled open
+  useEffect(() => {
+    if (isToggled && childrenData?.children) {
       updateLineage(node.id, childrenData.children);
     }
-  }, [childrenData, node.id, updateLineage]);
+  }, [isToggled, childrenData, node.id, updateLineage]);
+
   return (
     <li>
       <div
         onClick={toggleNode}
         style={{
           cursor:
-            children.length > 0 || node.hasChildren ? 'pointer' : 'default',
+            childrenList.length > 0 || node.hasChildren ? 'pointer' : 'default',
           paddingLeft: `${depth * 20}px`, // Indent based on depth level
         }}
       >
-        {children.length > 0 || node.hasChildren ? (isOpen ? '▼' : '►') : '•'}{' '}
+        {childrenList.length > 0 || node.hasChildren
+          ? isToggled || node.state.opened
+            ? '▼'
+            : '►'
+          : '•'}{' '}
         {node.text}
       </div>
-      {isOpen && children.length > 0 && (
+      {(isToggled || node.state.opened) && childrenList.length > 0 && (
         <ul>
-          {children.map(child => (
+          {childrenList.map(child => (
             <TreeNode
               key={child.id}
+              queryId={queryId}
               node={child}
               data={data}
               depth={depth + 1}
@@ -207,7 +228,9 @@ const TreeNode = ({
 const Tree = ({
   data,
   updateLineage,
+  queryId,
 }: {
+  queryId: string;
   data: OntologyTreeItem[];
   updateLineage: (nodeId: string, children: OntologyTreeItem[]) => void;
 }) => {
@@ -219,6 +242,7 @@ const Tree = ({
       {rootNodes.map(node => (
         <TreeNode
           key={node.id}
+          queryId={queryId}
           node={node}
           data={data}
           depth={0}
