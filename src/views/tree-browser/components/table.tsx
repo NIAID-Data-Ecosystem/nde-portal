@@ -8,6 +8,8 @@ import {
   ListItem,
   UnorderedList,
   IconButton,
+  Stack,
+  Button,
 } from '@chakra-ui/react';
 import { useQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/router';
@@ -17,16 +19,18 @@ import {
   getChildren,
   OntologyTreeItem,
   OntologyTreeParams,
-  OntologyTreeResponse,
 } from '../helpers';
 import { TagWithUrl } from 'src/components/tag-with-url';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { FaAngleRight } from 'react-icons/fa6';
+import { FaAngleRight, FaCheck, FaMagnifyingGlass, FaX } from 'react-icons/fa6';
 
 export const TreeBrowserTable = () => {
   const router = useRouter();
   const id = router.query.id || 'NCBITaxon_1';
   const [lineage, setLineage] = useState<OntologyTreeItem[] | null>(null);
+  const [searchList, setSearchList] = useState<
+    { ontology: string; id: string; label: string }[]
+  >([]);
 
   // Memoize the query params to avoid unnecessary recalculations on each render
   const queryParams = useMemo(() => {
@@ -89,7 +93,6 @@ export const TreeBrowserTable = () => {
     },
     [],
   );
-  console.log('lineage', lineage);
   if (error) {
     return (
       <Alert status='error'>
@@ -135,25 +138,114 @@ export const TreeBrowserTable = () => {
               queryId={queryParams.id}
               data={lineage}
               updateLineage={updateLineageWithChildren}
+              isIncludedInSearch={id => {
+                return searchList.some(item => item.id === id);
+              }}
+              addToSearch={({ ontology, id, label }) => {
+                setSearchList(prev => {
+                  //if it already exists in the list, remove it
+                  if (prev.some(item => item.id === id)) {
+                    return prev.filter(item => item.id !== id);
+                  } else {
+                    return [...prev, { ontology, id, label: label }];
+                  }
+                });
+              }}
             />
           )
         )}
       </Box>
+
+      {searchList && searchList.length > 0 && (
+        <Box my={4}>
+          <HStack my={4} spacing={4} justifyContent='flex-end'>
+            <Button
+              size='sm'
+              onClick={() => setSearchList([])}
+              variant='outline'
+            >
+              Clear
+            </Button>
+            <Button leftIcon={<FaMagnifyingGlass />} size='sm' isDisabled>
+              Search for {searchList.length} values{' '}
+            </Button>
+          </HStack>
+          <Stack
+            flexDirection='column'
+            bg='white'
+            border='1px solid'
+            borderRadius='semi'
+            borderColor='niaid.placeholder'
+            maxHeight={300}
+            overflow='auto'
+          >
+            {searchList.map(({ ontology, label }, index) => (
+              <Flex
+                key={`${ontology}-${label}`}
+                flexDirection={'column'}
+                px={2}
+                py={1}
+                bg={index % 2 ? 'primary.50' : 'transparent'}
+              >
+                <Text
+                  fontSize='12px'
+                  color='primary.800'
+                  wordBreak='break-word'
+                  fontWeight='light'
+                  textAlign='left'
+                >
+                  {ontology.toUpperCase()}
+                </Text>
+
+                <Text
+                  size='sm'
+                  lineHeight='short'
+                  color='text.body'
+                  wordBreak='break-word'
+                  fontWeight='normal'
+                  textAlign='left'
+                >
+                  {label}
+                  <Text
+                    as='span'
+                    fontSize='12px'
+                    color='primary.800'
+                    ml={1}
+                    borderLeft='1px solid'
+                    borderLeftColor='gray.400'
+                    pl={1}
+                  >
+                    {id}
+                  </Text>
+                </Text>
+              </Flex>
+            ))}
+          </Stack>
+        </Box>
+      )}
     </Box>
   );
 };
 const MARGIN = 16;
 // TreeNode component
 const TreeNode = ({
+  addToSearch,
   node,
   data,
   depth = 0,
+  isIncludedInSearch,
   queryId,
   updateLineage,
 }: {
-  node: OntologyTreeItem;
+  addToSearch: (search: {
+    ontology: string;
+    label: string;
+    id: string;
+  }) => void;
   data: OntologyTreeItem[];
   depth: number;
+  isIncludedInSearch: (id: string) => boolean;
+  node: OntologyTreeItem;
   queryId: string;
   updateLineage: (nodeId: string, children: OntologyTreeItem[]) => void;
 }) => {
@@ -254,6 +346,27 @@ const TreeNode = ({
         >
           {node.label}
         </Text>
+        <IconButton
+          aria-label='Search database'
+          icon={
+            isIncludedInSearch(node.taxonId) ? (
+              <FaCheck />
+            ) : (
+              <FaMagnifyingGlass />
+            )
+          }
+          size='sm'
+          variant='outline'
+          fontSize='xs'
+          onClick={e => {
+            e.stopPropagation();
+            addToSearch({
+              id: node.taxonId,
+              label: node.label,
+              ontology: node.ontology_name,
+            });
+          }}
+        ></IconButton>
         {isLoading && <Spinner size='sm' color='primary.500' />}
       </Flex>
 
@@ -262,6 +375,8 @@ const TreeNode = ({
           {childrenList.map(child => (
             <TreeNode
               key={child.id}
+              addToSearch={addToSearch}
+              isIncludedInSearch={isIncludedInSearch}
               queryId={queryId}
               node={child}
               data={data}
@@ -277,10 +392,18 @@ const TreeNode = ({
 
 // Tree component that renders the entire tree
 const Tree = ({
+  addToSearch,
   data,
-  updateLineage,
+  isIncludedInSearch,
   queryId,
+  updateLineage,
 }: {
+  addToSearch: (search: {
+    ontology: string;
+    label: string;
+    id: string;
+  }) => void;
+  isIncludedInSearch: (id: string) => boolean;
   queryId: string;
   data: OntologyTreeItem[];
   updateLineage: (nodeId: string, children: OntologyTreeItem[]) => void;
@@ -293,6 +416,8 @@ const Tree = ({
       {rootNodes.map(node => (
         <TreeNode
           key={node.id}
+          addToSearch={addToSearch}
+          isIncludedInSearch={isIncludedInSearch}
           queryId={queryId}
           node={node}
           data={data}
