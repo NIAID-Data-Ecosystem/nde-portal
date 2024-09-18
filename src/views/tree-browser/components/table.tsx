@@ -347,6 +347,7 @@ const TreeNode = ({
         >
           {node.label}
         </Text>
+        {isLoading && <Spinner size='sm' color='primary.500' />}
         <IconButton
           aria-label='Search database'
           icon={
@@ -368,7 +369,6 @@ const TreeNode = ({
             });
           }}
         ></IconButton>
-        {isLoading && <Spinner size='sm' color='primary.500' />}
       </Flex>
 
       {isToggled && childrenList.length > 0 && (
