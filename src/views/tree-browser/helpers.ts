@@ -78,7 +78,8 @@ interface OntologyTreeItemRaw {
   ontology_name: string;
 }
 
-interface OntologyTreeItem extends Omit<OntologyTreeItemRaw, 'children'> {
+export interface OntologyTreeItem
+  extends Omit<OntologyTreeItemRaw, 'children'> {
   hasChildren: boolean;
   label: string;
   taxonId: string;
@@ -216,4 +217,12 @@ export const fetchOntologyChildrenByNodeId = async (
     });
 
   return { children };
+};
+
+// Helper function to get children of a node
+export const getChildren = (
+  parentId: OntologyTreeItem['id'],
+  data: OntologyTreeItem[],
+) => {
+  return data.filter(item => item.parent === parentId);
 };
