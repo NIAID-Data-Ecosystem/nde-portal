@@ -20,9 +20,8 @@ import {
   OntologyTreeResponse,
 } from '../helpers';
 import { TagWithUrl } from 'src/components/tag-with-url';
-import { use, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { u } from 'node_modules/msw/lib/glossary-de6278a9';
-import { FaAngleRight, FaCaretRight } from 'react-icons/fa6';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { FaAngleRight } from 'react-icons/fa6';
 
 export const TreeBrowserTable = () => {
   const router = useRouter();
@@ -181,7 +180,7 @@ const TreeNode = ({
     enabled: false,
   });
 
-  const toggleNode = async () => {
+  const toggleNode = () => {
     fetchChildren();
     setIsToggled(!isToggled);
   };
@@ -202,6 +201,7 @@ const TreeNode = ({
   return (
     <ListItem>
       <Flex
+        alignItems='center'
         borderTop={depth !== 0 ? '0.25px solid' : 'none'}
         borderColor='gray.200'
         bg={node.state.selected ? 'primary.50' : 'transparent'}
@@ -223,15 +223,17 @@ const TreeNode = ({
           colorScheme='gray'
           size='sm'
           transform={isToggled || node.state.opened ? 'rotate(90deg)' : ''}
-        ></IconButton>
+        />
         <Text
           ml={`${MARGIN}px`}
           color={node.state.selected ? 'primary.500' : 'currentColor'}
           fontWeight={node.state.selected ? 'semibold' : 'normal'}
           textAlign='left'
+          flex={1}
         >
           {node.label}
         </Text>
+        {isLoading && <Spinner size='sm' color='primary.500' />}
       </Flex>
 
       {(isToggled || node.state.opened) && childrenList.length > 0 && (
