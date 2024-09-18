@@ -147,7 +147,6 @@ const TreeNode = ({
   queryId: string;
   updateLineage: (nodeId: string, children: OntologyTreeItem[]) => void;
 }) => {
-  const [isOpen, setIsOpen] = useState(node.state.opened);
   const [isToggled, setIsToggled] = useState(false);
   const [childrenList, setChildrenList] = useState<OntologyTreeItem[]>([]);
 
@@ -176,13 +175,13 @@ const TreeNode = ({
     setIsToggled(!isToggled);
   };
 
-  // set children data in state with node information
+  // Set children data in state with node information. Refresh when queryId changes.
   useEffect(() => {
     const children = getChildren(node.id, data);
     setChildrenList(children);
   }, [queryId, data, node.id]);
 
-  // update lineage with new children when toggled open
+  // Update lineage with new children data (if there is) when toggled open
   useEffect(() => {
     if (isToggled && childrenData?.children) {
       updateLineage(node.id, childrenData.children);
