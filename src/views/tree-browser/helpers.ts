@@ -91,6 +91,17 @@ export interface OntologyTreeResponse {
   tree: HierarchyNode<OntologyTreeItem>;
 }
 
+const formatIRI = (
+  id: OntologyTreeParams['id'],
+  ontology: OntologyTreeParams['ontology'],
+) => {
+  if (ontology.toLowerCase() === 'edam') {
+    const iri_id = id.includes('EDAM') ? id.replace('EDAM_', 'topic_') : id;
+    return `http://edamontology.org/${iri_id}`;
+  }
+  return `http://purl.obolibrary.org/obo/${id}`;
+};
+
 export const fetchOntologyTreeByTaxonId = async (
   params: OntologyTreeParams,
   signal?: AbortSignal,
@@ -100,10 +111,8 @@ export const fetchOntologyTreeByTaxonId = async (
   }
 
   const { ontology, ...rest } = params;
-  const iri =
-    params.ontology.toLowerCase() === 'edam'
-      ? `http://edamontology.org/${params.id}`
-      : `http://purl.obolibrary.org/obo/${params.id}`;
+
+  const iri = formatIRI(params.id, params.ontology);
 
   // Note that: IRIs must be double URL encoded: https://www.ebi.ac.uk/ols4/help
   const encodedIri = encodeURIComponent(encodeURIComponent(iri));
@@ -173,10 +182,7 @@ export const fetchOntologyChildrenByNodeId = async (
     throw new Error('No id provided');
   }
   const { ontology, ...rest } = params;
-  const iri =
-    params.ontology.toLowerCase() === 'edam'
-      ? `http://edamontology.org/${params.id}`
-      : `http://purl.obolibrary.org/obo/${params.id}`;
+  const iri = formatIRI(params.id, params.ontology);
 
   // Note that: IRIs must be double URL encoded: https://www.ebi.ac.uk/ols4/help
   const encodedIri = encodeURIComponent(encodeURIComponent(iri));
