@@ -1,4 +1,14 @@
-import { Box, HStack, Spinner, Text, Alert } from '@chakra-ui/react';
+import {
+  Box,
+  HStack,
+  Spinner,
+  Text,
+  Alert,
+  Flex,
+  ListItem,
+  UnorderedList,
+  IconButton,
+} from '@chakra-ui/react';
 import { useQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/router';
 import {
@@ -12,6 +22,7 @@ import {
 import { TagWithUrl } from 'src/components/tag-with-url';
 import { use, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { u } from 'node_modules/msw/lib/glossary-de6278a9';
+import { FaAngleRight, FaCaretRight } from 'react-icons/fa6';
 
 export const TreeBrowserTable = () => {
   const router = useRouter();
@@ -132,7 +143,7 @@ export const TreeBrowserTable = () => {
     </Box>
   );
 };
-
+const MARGIN = 16;
 // TreeNode component
 const TreeNode = ({
   node,
@@ -189,24 +200,42 @@ const TreeNode = ({
   }, [isToggled, childrenData, node.id, updateLineage]);
 
   return (
-    <li>
-      <div
+    <ListItem>
+      <Flex
+        borderTop={depth !== 0 ? '0.25px solid' : 'none'}
+        borderColor='gray.200'
+        bg={node.state.selected ? 'primary.50' : 'transparent'}
+        px={4}
+        py={2}
+        pl={`${(depth + 1) * MARGIN}px`}
         onClick={toggleNode}
-        style={{
-          cursor:
-            childrenList.length > 0 || node.hasChildren ? 'pointer' : 'default',
-          paddingLeft: `${depth * 20}px`, // Indent based on depth level
+        cursor={
+          childrenList.length > 0 || node.hasChildren ? 'pointer' : 'default'
+        }
+        _hover={{
+          bg: node.state.selected ? 'primary.50' : 'blackAlpha.100',
         }}
       >
-        {childrenList.length > 0 || node.hasChildren
-          ? isToggled || node.state.opened
-            ? '▼'
-            : '►'
-          : '•'}{' '}
-        {node.text}
-      </div>
+        <IconButton
+          aria-label='Search database'
+          icon={<FaAngleRight />}
+          variant='ghost'
+          colorScheme='gray'
+          size='sm'
+          transform={isToggled || node.state.opened ? 'rotate(90deg)' : ''}
+        ></IconButton>
+        <Text
+          ml={`${MARGIN}px`}
+          color={node.state.selected ? 'primary.500' : 'currentColor'}
+          fontWeight={node.state.selected ? 'semibold' : 'normal'}
+          textAlign='left'
+        >
+          {node.label}
+        </Text>
+      </Flex>
+
       {(isToggled || node.state.opened) && childrenList.length > 0 && (
-        <ul>
+        <UnorderedList ml={0}>
           {childrenList.map(child => (
             <TreeNode
               key={child.id}
@@ -217,9 +246,9 @@ const TreeNode = ({
               updateLineage={updateLineage}
             />
           ))}
-        </ul>
+        </UnorderedList>
       )}
-    </li>
+    </ListItem>
   );
 };
 
@@ -237,7 +266,7 @@ const Tree = ({
   const rootNodes = data.filter(item => !item.parent);
 
   return (
-    <ul>
+    <UnorderedList ml={0}>
       {rootNodes.map(node => (
         <TreeNode
           key={node.id}
@@ -248,6 +277,6 @@ const Tree = ({
           updateLineage={updateLineage}
         />
       ))}
-    </ul>
+    </UnorderedList>
   );
 };
