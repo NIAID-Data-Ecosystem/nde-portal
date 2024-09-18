@@ -157,7 +157,10 @@ const TreeNode = ({
   queryId: string;
   updateLineage: (nodeId: string, children: OntologyTreeItem[]) => void;
 }) => {
-  const [isToggled, setIsToggled] = useState(false);
+  const [isToggled, setIsToggled] = useState(node.state.opened);
+  const [fetchedChildren, setFetchedChildren] = useState<OntologyTreeItem[]>(
+    [],
+  );
   const [childrenList, setChildrenList] = useState<OntologyTreeItem[]>([]);
 
   const {
@@ -185,6 +188,19 @@ const TreeNode = ({
     setIsToggled(!isToggled);
   };
 
+  useEffect(() => {
+    if (isToggled && childrenData?.children) {
+      setFetchedChildren(childrenData.children);
+    } else {
+      setFetchedChildren([]);
+    }
+  }, [queryId, childrenData, isToggled]);
+
+  useEffect(() => {
+    setIsToggled(node.state.opened);
+    setFetchedChildren([]);
+  }, [queryId, node.state.opened]);
+
   // Set children data in state with node information. Refresh when queryId changes.
   useEffect(() => {
     const children = getChildren(node.id, data);
@@ -193,10 +209,10 @@ const TreeNode = ({
 
   // Update lineage with new children data (if there is) when toggled open
   useEffect(() => {
-    if (isToggled && childrenData?.children) {
-      updateLineage(node.id, childrenData.children);
+    if (isToggled && fetchedChildren.length > 0) {
+      updateLineage(node.id, fetchedChildren);
     }
-  }, [isToggled, childrenData, node.id, updateLineage]);
+  }, [queryId, isToggled, fetchedChildren, node.id, updateLineage]);
 
   return (
     <ListItem>
@@ -222,7 +238,12 @@ const TreeNode = ({
           variant='ghost'
           colorScheme='gray'
           size='sm'
-          transform={isToggled || node.state.opened ? 'rotate(90deg)' : ''}
+          transform={isToggled ? 'rotate(90deg)' : ''}
+          color={
+            childrenList.length > 0 || node.hasChildren
+              ? 'currentColor'
+              : 'transparent'
+          }
         />
         <Text
           ml={`${MARGIN}px`}
@@ -236,7 +257,7 @@ const TreeNode = ({
         {isLoading && <Spinner size='sm' color='primary.500' />}
       </Flex>
 
-      {(isToggled || node.state.opened) && childrenList.length > 0 && (
+      {isToggled && childrenList.length > 0 && (
         <UnorderedList ml={0}>
           {childrenList.map(child => (
             <TreeNode
