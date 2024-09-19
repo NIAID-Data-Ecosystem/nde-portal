@@ -16,7 +16,6 @@ import {
 import { Link } from 'src/components/link';
 import type { NextPage } from 'next';
 import { PageContainer, PageContent } from 'src/components/page-container';
-import { PageHeader } from 'src/components/page-header';
 import { MDXRemoteSerializeResult } from 'next-mdx-remote';
 import { Error } from 'src/components/error';
 import axios from 'axios';
@@ -29,6 +28,10 @@ import { fetchNews } from 'src/views/home/components/NewsCarousel';
 import { useQuery } from '@tanstack/react-query';
 import SectionCard from 'src/views/news/components/SectionCard';
 import { fetchAllFeaturedPages } from 'src/views/features/helpers';
+import {
+  HeroBannerContainer,
+  HeroBannerText,
+} from 'src/views/home/components/HeroBanner';
 
 export interface NewsOrEventsObject {
   compiledMDX: MDXRemoteSerializeResult;
@@ -231,24 +234,41 @@ const News: NextPage<NewsProps> = props => {
       py={0}
       disableSearchBar
     >
-      <PageHeader
-        title='News & Updates'
-        titleProps={{
-          size: 'h3',
-        }}
-        body={['Latest news and events from the NIAID Data Discovery Portal']}
-        bodyProps={{
-          color: '#fff',
-          mt: 10,
-        }}
+      <HeroBannerContainer
+        justifyContent={{ base: 'flex-start', md: 'center' }}
         bgImg='/assets/news-01.jpg'
-        sx={{
-          '#header': {
-            minW: '100%',
-            bg: 'blackAlpha.600',
-          },
-        }}
-      />
+        backgroundSize='cover'
+        px='0px'
+        minHeight='unset'
+      >
+        <Flex
+          bg='blackAlpha.600'
+          flexDirection='column'
+          alignItems={{ base: 'flex-start', xl: 'center' }}
+          textAlign={{ xl: 'center' }}
+          px={{ base: 6, sm: 10, lg: 16, xl: '5vw' }}
+          py={{ base: 6, sm: 10, xl: 16 }}
+          w='100%'
+        >
+          <HeroBannerText
+            title='News & Updates'
+            body='Latest news and events from the NIAID Data Discovery Portal'
+            alignItems={{ base: 'flex-start', lg: 'center' }}
+            color='#fff'
+            maxWidth={{ md: '500px', xl: '680px' }}
+            mt={0}
+            mb={0}
+            spacing={10}
+            textAlign={{ base: 'left', lg: 'center' }}
+            sx={{
+              h1: {
+                letterSpacing: '1px',
+              },
+            }}
+          ></HeroBannerText>
+        </Flex>
+      </HeroBannerContainer>
+
       <PageContent
         bg='#fff'
         maxW={{ base: 'unset', lg: '1600px' }}
