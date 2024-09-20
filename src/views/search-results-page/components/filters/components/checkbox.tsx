@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import {
   Checkbox as ChakraCheckbox,
   Skeleton,
@@ -7,6 +7,7 @@ import {
 } from '@chakra-ui/react';
 import { FilterItem } from 'src/views/search-results-page/components/filters/types';
 import Tooltip from 'src/components/tooltip';
+import { sendGTMEvent } from '@next/third-parties/google';
 
 // Memoized Checkbox component to prevent unnecessary re-renders
 interface FilterCheckboxProps extends FilterItem {
@@ -50,6 +51,23 @@ export const Checkbox: React.FC<FilterCheckboxProps> = React.memo(
     let label = props.label;
     let subLabel = '';
 
+    const trackGAEvent = useCallback((value: string, filterName: string) => {
+      if (value.includes('_exists_') || value.includes('-_exists_')) {
+        sendGTMEvent({
+          label: filterName || 'unknown_filter',
+          event: 'filter_checkbox_click',
+          value:
+            value === '_exists_'
+              ? `Any Specified: ${filterName}`
+              : `Not Specified: ${filterName}`,
+          eventValue:
+            value === '_exists_'
+              ? `Any Specified: ${filterName}`
+              : `Not Specified: ${filterName}`,
+        });
+      }
+    }, []);
+
     // Display the header label for the group
     if (isHeader) {
       return (
@@ -75,6 +93,9 @@ export const Checkbox: React.FC<FilterCheckboxProps> = React.memo(
 
     return (
       <ChakraCheckbox
+        onChange={() => {
+          trackGAEvent(term, filterName);
+        }}
         value={term}
         w='100%'
         px={6}
