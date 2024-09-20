@@ -19,7 +19,6 @@ import { MAX_PAGES, Pagination } from './components/pagination';
 import { SortDropdown } from './components/sort';
 import { encodeString, RESERVED_CHARS } from 'src/utils/querystring-helpers';
 import { defaultQuery } from './helpers';
-// import { MetadataScoreToggle } from './components/metadata-score-toggle';
 import { useQuerySearchResults } from './hooks/useSearchResults';
 import ResultsCount from 'src/views/search-results-page/components/count';
 import Card from './components/card';
@@ -33,8 +32,6 @@ import { DownloadMetadata } from 'src/components/download-metadata';
 import Banner from 'src/components/banner';
 import { FILTER_CONFIGS } from './components/filters/config';
 import { SelectedFilterType } from './components/filters/types';
-import { MetadataScoreToggle } from './components/metadata-score-toggle';
-import { useLocalStorage } from 'usehooks-ts';
 
 /*
 [COMPONENT INFO]:
