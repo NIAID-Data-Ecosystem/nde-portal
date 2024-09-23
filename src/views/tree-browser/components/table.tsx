@@ -122,45 +122,53 @@ export const TreeBrowserTable = () => {
   }
   return (
     <>
-      {selectedNode && (
-        <Box w='100%' my={1}>
-          <Text fontWeight='normal' fontSize='sm' lineHeight='none'>
-            Selected taxonomy:{' '}
-          </Text>
-          <HStack>
-            <Text as='span' fontWeight='medium'>
-              {selectedNode.label}
-            </Text>
-            <TagWithUrl
-              href={selectedNode.iri}
-              isExternal
-              colorScheme='primary'
+      <HStack w='100%' alignItems='flex-start' spacing={10} flexWrap='wrap'>
+        <Box flex={2} minWidth='500px'>
+          {selectedNode && (
+            <Flex
+              w='100%'
+              justifyContent='space-between'
+              alignItems='flex-end'
+              mb={1}
             >
-              {id}
-            </TagWithUrl>
-          </HStack>
-        </Box>
-      )}
-      <HStack w='100%' alignItems='flex-start' spacing={6}>
-        {/* Tree Browser */}
-        <Box w='100%'>
-          <Flex justifyContent='flex-end'>
-            <FormControl display='flex' alignItems='center'>
-              <FormLabel htmlFor='condensed-view' mb='0' fontSize='sm'>
-                Enable condensed view?
-              </FormLabel>
-              <Switch
-                id='condensed-view'
-                colorScheme='primary'
-                isChecked={viewMode === 'condensed'}
-                onChange={() =>
-                  setViewMode(
-                    viewMode === 'condensed' ? 'expanded' : 'condensed',
-                  )
-                }
-              />
-            </FormControl>
-          </Flex>
+              <Box>
+                <Text fontWeight='normal' fontSize='sm' lineHeight='short'>
+                  Selected taxonomy:{' '}
+                </Text>
+                <HStack>
+                  <Link
+                    href={selectedNode.iri}
+                    fontWeight='medium'
+                    isExternal
+                    fontSize='sm'
+                  >
+                    {selectedNode.label}
+                  </Link>
+                </HStack>
+              </Box>
+              {/* toggle */}
+              <Flex justifyContent='flex-end'>
+                {router.query.id && (
+                  <FormControl display='flex' alignItems='center'>
+                    <FormLabel htmlFor='condensed-view' mb='0' fontSize='sm'>
+                      Enable condensed view?
+                    </FormLabel>
+                    <Switch
+                      id='condensed-view'
+                      colorScheme='primary'
+                      isChecked={viewMode === 'condensed'}
+                      onChange={() =>
+                        setViewMode(
+                          viewMode === 'condensed' ? 'expanded' : 'condensed',
+                        )
+                      }
+                    />
+                  </FormControl>
+                )}
+              </Flex>
+            </Flex>
+          )}
+          {/* Tree Browser */}
           <Box
             w='100%'
             bg='white'
@@ -197,15 +205,32 @@ export const TreeBrowserTable = () => {
             )}
           </Box>
         </Box>
+
         {/* Search List */}
         {searchList && searchList.length > 0 && (
-          <Flex flexDirection='column' flex={1}>
-            <Text fontSize='sm' fontWeight='medium'>
-              List of search values
-            </Text>
+          <Flex
+            flexDirection='column'
+            flex={1}
+            maxWidth='400px'
+            mt={7}
+            alignItems='flex-end'
+          >
+            <Flex justifyContent='space-between' w='100%'>
+              <Text fontSize='sm' fontWeight='medium' mb={1} lineHeight='tall'>
+                List of search values
+              </Text>
+              <Button
+                size='sm'
+                onClick={() => setSearchList([])}
+                variant='link'
+              >
+                Clear all
+              </Button>
+            </Flex>
             {/* Search list */}
             <Box
               flex={1}
+              w='100%'
               flexDirection='column'
               bg='white'
               border='1px solid'
@@ -214,9 +239,9 @@ export const TreeBrowserTable = () => {
               maxHeight={300}
               overflow='auto'
             >
-              {searchList.map(({ ontology, label }, index) => (
+              {searchList.map(({ id, ontology, label }, index) => (
                 <Flex
-                  key={`${ontology}-${label}`}
+                  key={`${ontology}-${id}`}
                   px={2}
                   py={1}
                   bg={index % 2 ? 'primary.50' : 'transparent'}
@@ -229,6 +254,8 @@ export const TreeBrowserTable = () => {
                     fontWeight='normal'
                     textAlign='left'
                     flex={1}
+                    display='flex'
+                    alignItems='center'
                   >
                     {label}
                     <Text
@@ -250,7 +277,7 @@ export const TreeBrowserTable = () => {
                     colorScheme='red'
                     size='sm'
                     p={1}
-                    color='red.600'
+                    color='red.500'
                     boxSize={6}
                     minWidth={6}
                     onClick={() => {
@@ -262,37 +289,42 @@ export const TreeBrowserTable = () => {
                 </Flex>
               ))}
             </Box>
+            <Button
+              mt={2}
+              leftIcon={<FaMagnifyingGlass />}
+              size='sm'
+              onClick={() => {
+                const termsWithFields = searchList.map(node => {
+                  if (node.id.includes('NCBITaxon')) {
+                    return `species.identifier: "${
+                      node.id.split('_')[1]
+                    }" OR infectiousAgent.identifier: "${
+                      node.id.split('_')[1]
+                    }"`;
+                  } else if (node.id.startsWith('topic')) {
+                    return `topicCategory.identifier: "${node.id}"`;
+                  }
+                  return node.id;
+                });
+                // const terms = searchList.map(node => {
+                //   if (node.id.includes('NCBITaxon')) {
+                //     return node.id.split('_')[1];
+                //   }
+                //   return node.id;
+                // });
+                // const q = `"${termsWithFields.join('" OR "')}"`;
 
-            <HStack my={2} spacing={4} justifyContent='flex-end'>
-              <Button
-                size='sm'
-                onClick={() => setSearchList([])}
-                variant='outline'
-              >
-                Clear
-              </Button>
-              <Button
-                leftIcon={<FaMagnifyingGlass />}
-                size='sm'
-                onClick={() => {
-                  router.push({
-                    pathname: `/search`,
-                    query: {
-                      q: `"${searchList
-                        .map(node => {
-                          if (node.id.includes('NCBITaxon')) {
-                            return node.id.split('_')[1];
-                          }
-                          return node.id;
-                        })
-                        .join('" OR "')}"`,
-                    },
-                  });
-                }}
-              >
-                Search for {searchList.length} values{' '}
-              </Button>
-            </HStack>
+                router.push({
+                  pathname: `/search`,
+                  query: {
+                    q: `${termsWithFields.join(' OR ')}`,
+                  },
+                });
+              }}
+            >
+              Search for {searchList.length}{' '}
+              {searchList.length > 1 ? 'values' : 'value'}
+            </Button>
           </Flex>
         )}
       </HStack>
@@ -385,7 +417,6 @@ const TreeNode = ({
         alignItems='center'
         borderTop={depth !== 0 ? '0.25px solid' : 'none'}
         borderColor='gray.200'
-        bg={node.state.selected ? 'primary.50' : 'transparent'}
         px={4}
         py={2}
         pl={`${(depth + 1) * MARGIN}px`}
@@ -394,7 +425,7 @@ const TreeNode = ({
           childrenList.length > 0 || node.hasChildren ? 'pointer' : 'default'
         }
         _hover={{
-          bg: node.state.selected ? 'primary.50' : 'blackAlpha.100',
+          bg: 'blackAlpha.50',
         }}
       >
         {childrenList.length > 0 || node.hasChildren ? (
