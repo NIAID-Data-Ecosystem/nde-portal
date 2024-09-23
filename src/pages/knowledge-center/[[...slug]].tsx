@@ -133,7 +133,7 @@ const Docs: NextPage<{
       <HeroBanner
         title={DOCUMENTATION_COPY.sections.hero.heading}
         subtitle={DOCUMENTATION_COPY.sections.hero.subtitle}
-        body={DOCUMENTATION_COPY.sections.hero.body}
+        body={!props.slug ? DOCUMENTATION_COPY.sections.hero.body : ''}
       />
 
       <Flex

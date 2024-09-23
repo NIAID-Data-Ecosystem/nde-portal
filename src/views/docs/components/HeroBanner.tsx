@@ -18,7 +18,10 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
   children,
 }) => {
   return (
-    <HeroBannerContainer justifyContent={{ base: 'flex-start', md: 'center' }}>
+    <HeroBannerContainer
+      justifyContent={{ base: 'flex-start', md: 'center' }}
+      minHeight='unset'
+    >
       <Box width='100%' height='100%' overflow='hidden' position='absolute'>
         <Image
           alt='A complex network of interconnected lines and nodes, resembling a molecular or neural network structure. The image features various shades of blue and white, with nodes of different sizes connected by thin lines, creating a web-like pattern.'
