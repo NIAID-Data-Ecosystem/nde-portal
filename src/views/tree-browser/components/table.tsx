@@ -4,14 +4,14 @@ import {
   Box,
   Button,
   Flex,
+  FormControl,
+  FormLabel,
   HStack,
   Icon,
   IconButton,
   ListItem,
-  Radio,
-  RadioGroup,
   Spinner,
-  Stack,
+  Switch,
   Text,
   UnorderedList,
 } from '@chakra-ui/react';
@@ -145,17 +145,21 @@ export const TreeBrowserTable = () => {
         {/* Tree Browser */}
         <Box w='100%'>
           <Flex justifyContent='flex-end'>
-            <RadioGroup
-              onChange={setViewMode}
-              value={viewMode}
-              colorScheme='primary'
-              size='sm'
-            >
-              <Stack direction='row' spacing={4}>
-                <Radio value='condensed'>Condensed View</Radio>
-                <Radio value='expanded'>Expanded View</Radio>
-              </Stack>
-            </RadioGroup>
+            <FormControl display='flex' alignItems='center'>
+              <FormLabel htmlFor='condensed-view' mb='0' fontSize='sm'>
+                Enable condensed view?
+              </FormLabel>
+              <Switch
+                id='condensed-view'
+                colorScheme='primary'
+                isChecked={viewMode === 'condensed'}
+                onChange={() =>
+                  setViewMode(
+                    viewMode === 'condensed' ? 'expanded' : 'condensed',
+                  )
+                }
+              />
+            </FormControl>
           </Flex>
           <Box
             w='100%'
@@ -196,7 +200,9 @@ export const TreeBrowserTable = () => {
         {/* Search List */}
         {searchList && searchList.length > 0 && (
           <Flex flexDirection='column' flex={1}>
-            <Text fontSize='sm'>List of search values</Text>
+            <Text fontSize='sm' fontWeight='medium'>
+              List of search values
+            </Text>
             {/* Search list */}
             <Box
               flex={1}
