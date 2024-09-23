@@ -1,3 +1,4 @@
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   Box,
   HStack,
@@ -10,6 +11,7 @@ import {
   IconButton,
   Stack,
   Button,
+  Icon,
 } from '@chakra-ui/react';
 import { useQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/router';
@@ -21,8 +23,13 @@ import {
   OntologyTreeParams,
 } from '../helpers';
 import { TagWithUrl } from 'src/components/tag-with-url';
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { FaAngleRight, FaCheck, FaMagnifyingGlass, FaX } from 'react-icons/fa6';
+import {
+  FaAngleRight,
+  FaCheck,
+  FaEllipsis,
+  FaMagnifyingGlass,
+  FaX,
+} from 'react-icons/fa6';
 
 export const TreeBrowserTable = () => {
   const router = useRouter();
@@ -31,6 +38,7 @@ export const TreeBrowserTable = () => {
   const [searchList, setSearchList] = useState<
     { ontology: string; id: string; label: string }[]
   >([]);
+  const [showFromIndex, setShowFromIndex] = useState(0);
 
   // Memoize the query params to avoid unnecessary recalculations on each render
   const queryParams = useMemo(() => {
@@ -56,10 +64,14 @@ export const TreeBrowserTable = () => {
   });
 
   const selectedNode = allData?.lineage[allData.lineage.length - 1];
-
+  const MAX_NODES = 5;
   useEffect(() => {
     if (allData) {
       setLineage(allData.lineage);
+      MAX_NODES &&
+        setShowFromIndex(
+          allData.lineage.length > MAX_NODES ? allData.lineage.length - 3 : 0,
+        );
     }
   }, [allData]);
 
@@ -137,8 +149,10 @@ export const TreeBrowserTable = () => {
           lineage && (
             <Tree
               queryId={queryParams.id}
+              showFromIndex={showFromIndex}
               data={lineage}
               updateLineage={updateLineageWithChildren}
+              updateShowFromIndex={setShowFromIndex}
               isIncludedInSearch={id => {
                 return searchList.some(item => item.id === id);
               }}
@@ -325,19 +339,19 @@ const TreeNode = ({
           bg: node.state.selected ? 'primary.50' : 'blackAlpha.100',
         }}
       >
-        <IconButton
-          aria-label='Search database'
-          icon={<FaAngleRight />}
-          variant='ghost'
-          colorScheme='gray'
-          size='sm'
-          transform={isToggled ? 'rotate(90deg)' : ''}
-          color={
-            childrenList.length > 0 || node.hasChildren
-              ? 'currentColor'
-              : 'transparent'
-          }
-        />
+        {childrenList.length > 0 || node.hasChildren ? (
+          <IconButton
+            aria-label='Search database'
+            icon={<FaAngleRight />}
+            variant='ghost'
+            colorScheme='gray'
+            size='sm'
+            transform={isToggled ? 'rotate(90deg)' : ''}
+            color='currentColor'
+          />
+        ) : (
+          <Box mx={4}></Box>
+        )}
         <Text
           ml={`${MARGIN}px`}
           color={node.state.selected ? 'primary.500' : 'currentColor'}
@@ -347,7 +361,7 @@ const TreeNode = ({
         >
           {node.label}
         </Text>
-        {isLoading && <Spinner size='sm' color='primary.500' />}
+        {isLoading && <Spinner size='sm' color='primary.500' mx={2} />}
         <IconButton
           aria-label='Search database'
           icon={
@@ -368,7 +382,7 @@ const TreeNode = ({
               ontology: node.ontology_name,
             });
           }}
-        ></IconButton>
+        />
       </Flex>
 
       {isToggled && childrenList.length > 0 && (
@@ -397,7 +411,9 @@ const Tree = ({
   data,
   isIncludedInSearch,
   queryId,
+  showFromIndex,
   updateLineage,
+  updateShowFromIndex,
 }: {
   addToSearch: (search: {
     ontology: string;
@@ -407,13 +423,86 @@ const Tree = ({
   isIncludedInSearch: (id: string) => boolean;
   queryId: string;
   data: OntologyTreeItem[];
+  showFromIndex: number;
   updateLineage: (nodeId: string, children: OntologyTreeItem[]) => void;
+  updateShowFromIndex: (index: number) => void;
 }) => {
   // Only render the root nodes initially (nodes with no parent)
-  const rootNodes = data.filter(item => !item.parent);
+  // const rootNodes = data.filter(item => !item.parent);
+  const treeNodes = data.slice(showFromIndex);
+  const rootNodes = [treeNodes[0]];
+
+  const pathNodes = data.slice(0, showFromIndex);
 
   return (
     <UnorderedList ml={0}>
+      {showFromIndex > 0 && (
+        <>
+          <ListItem>
+            {/* breadcrumb like path for treenodes */}
+            <HStack
+              alignItems='center'
+              borderColor='gray.200'
+              px={4}
+              py={2}
+              pl={`${MARGIN}px`}
+              flexWrap='wrap'
+              spacing={0}
+              divider={
+                <Icon
+                  as={FaAngleRight}
+                  color='gray.400'
+                  boxSize={3}
+                  borderLeft='none'
+                />
+              }
+            >
+              {pathNodes.map((node, index) => (
+                <React.Fragment key={node.id}>
+                  <Button
+                    colorScheme='gray'
+                    variant='ghost'
+                    size='sm'
+                    px={1}
+                    _hover={{ textDecoration: 'underline' }}
+                    onClick={() => updateShowFromIndex(index)}
+                  >
+                    {node.label}
+                  </Button>
+                </React.Fragment>
+              ))}
+            </HStack>
+          </ListItem>
+          <ListItem>
+            <Flex
+              alignItems='center'
+              borderY='0.25px solid'
+              borderColor='gray.200'
+              px={4}
+              py={2}
+              pl={`${MARGIN}px`}
+              onClick={() => {
+                updateShowFromIndex(showFromIndex < 1 ? 0 : showFromIndex - 1);
+              }}
+              cursor='pointer'
+              _hover={{
+                bg: 'blackAlpha.100',
+              }}
+            >
+              <IconButton
+                aria-label='show previous nodes'
+                icon={<FaEllipsis />}
+                variant='ghost'
+                colorScheme='gray'
+                size='sm'
+                color='currentColor'
+                justifyContent='flex-start'
+                px={2}
+              />
+            </Flex>
+          </ListItem>
+        </>
+      )}
       {rootNodes.map(node => (
         <TreeNode
           key={node.id}
@@ -421,7 +510,7 @@ const Tree = ({
           isIncludedInSearch={isIncludedInSearch}
           queryId={queryId}
           node={node}
-          data={data}
+          data={treeNodes}
           depth={0}
           updateLineage={updateLineage}
         />
