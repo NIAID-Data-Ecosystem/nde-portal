@@ -1,17 +1,19 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
-  Box,
-  HStack,
-  Spinner,
-  Text,
   Alert,
-  Flex,
-  ListItem,
-  UnorderedList,
-  IconButton,
-  Stack,
+  Box,
   Button,
+  Flex,
+  HStack,
   Icon,
+  IconButton,
+  ListItem,
+  Radio,
+  RadioGroup,
+  Spinner,
+  Stack,
+  Text,
+  UnorderedList,
 } from '@chakra-ui/react';
 import { useQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/router';
@@ -39,6 +41,7 @@ export const TreeBrowserTable = () => {
     { ontology: string; id: string; label: string }[]
   >([]);
   const [showFromIndex, setShowFromIndex] = useState(0);
+  const [viewMode, setViewMode] = useState('condensed');
 
   // Memoize the query params to avoid unnecessary recalculations on each render
   const queryParams = useMemo(() => {
@@ -68,12 +71,15 @@ export const TreeBrowserTable = () => {
   useEffect(() => {
     if (allData) {
       setLineage(allData.lineage);
-      MAX_NODES &&
+      if (viewMode === 'condensed') {
         setShowFromIndex(
           allData.lineage.length > MAX_NODES ? allData.lineage.length - 3 : 0,
         );
+      } else {
+        setShowFromIndex(0);
+      }
     }
-  }, [allData]);
+  }, [allData, viewMode]);
 
   // Update lineage with new children
   const updateLineageWithChildren = useCallback(
@@ -134,7 +140,19 @@ export const TreeBrowserTable = () => {
           </HStack>
         </Box>
       )}
-
+      <Flex justifyContent='flex-end'>
+        <RadioGroup
+          onChange={setViewMode}
+          value={viewMode}
+          colorScheme='primary'
+          size='sm'
+        >
+          <Stack direction='row' spacing={4}>
+            <Radio value='condensed'>Condensed View</Radio>
+            <Radio value='expanded'>Expanded View</Radio>
+          </Stack>
+        </RadioGroup>
+      </Flex>
       <Box
         w='100%'
         bg='white'
