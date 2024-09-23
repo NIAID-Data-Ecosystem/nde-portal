@@ -39,7 +39,7 @@ export const filterFields = (field: SchemaDefinition) => {
   return (
     field.type !== 'object' &&
     field.count >= MIN_FIELD_RECORDS &&
-    !!ADVANCED_SEARCH.fields.includes(field.property)
+    !!ADVANCED_SEARCH.fields.includes(field.dotfield)
   );
 };
 
@@ -234,6 +234,7 @@ export const FieldSelect: React.FC<FieldSelectProps> = ({
         }),
     [allFields, inputValue],
   );
+
   const fuse = new Fuse(fields, { keys: ['label'] });
   const fuzzy_fields = fuse.search(inputValue).map(({ item }) => item);
 

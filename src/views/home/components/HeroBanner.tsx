@@ -1,4 +1,13 @@
-import { Box, Flex, Heading, Image, Text, VStack } from '@chakra-ui/react';
+import {
+  Box,
+  Flex,
+  FlexProps,
+  Heading,
+  Image,
+  StackProps,
+  Text,
+  VStack,
+} from '@chakra-ui/react';
 
 interface HeroBannerProps {
   title?: string;
@@ -14,18 +23,7 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
   children,
 }) => {
   return (
-    <Flex
-      id='hero-banner'
-      position='relative'
-      bgGradient='linear(to-r,#ddf4fd 50%, #c1e0eb)' // small gradient to lighten up scene
-      minHeight={{
-        base: '320px',
-        sm: '360px',
-        md: '350px',
-      }}
-      justifyContent={{ base: 'flex-start', '2xl': 'center' }}
-      px={{ base: 2, sm: 6, lg: 10, xl: '5vw' }}
-    >
+    <HeroBannerContainer>
       {/* Nodes background image */}
       <Box width='100%' height='100%' overflow='hidden' position='absolute'>
         <Image
@@ -71,29 +69,96 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
         />
 
         {/* Headings */}
-        <VStack
-          maxWidth='350px'
-          spacing={4}
-          alignItems='flex-start'
-          zIndex={2}
-          mt={10}
-          mb={4}
-        >
-          {title && (
-            <Heading as='h1' fontSize='4xl' fontWeight='bold'>
-              {title}
-            </Heading>
-          )}
-          {subtitle && (
-            <Heading as='h2' fontSize='md' fontWeight='semibold'>
-              {subtitle}
-            </Heading>
-          )}
-          {body && <Text lineHeight='shorter'>{body}</Text>}
-        </VStack>
+        <HeroBannerText title={title} subtitle={subtitle} body={body} />
 
         {children}
       </VStack>
+    </HeroBannerContainer>
+  );
+};
+
+interface HeroBannerContainerProps extends FlexProps {}
+export const HeroBannerContainer = ({
+  children,
+  ...rest
+}: HeroBannerContainerProps) => {
+  return (
+    <Flex
+      id='hero-banner'
+      position='relative'
+      bgGradient='linear(to-r,#ddf4fd 50%, #c1e0eb)' // small gradient to lighten up scene
+      minHeight={{
+        base: '320px',
+        sm: '360px',
+        md: '350px',
+      }}
+      justifyContent={{ base: 'flex-start', '2xl': 'center' }}
+      px={{ base: 2, sm: 6, lg: 10, xl: '5vw' }}
+      {...rest}
+    >
+      {children}
     </Flex>
+  );
+};
+
+interface HeroBannerTextProps extends StackProps {
+  title?: HeroBannerProps['title'];
+  subtitle?: HeroBannerProps['subtitle'];
+  body?: HeroBannerProps['body'];
+}
+export const HeroBannerText = ({
+  title,
+  subtitle,
+  body,
+  children,
+  ...rest
+}: HeroBannerTextProps) => {
+  return (
+    <VStack
+      maxWidth='350px'
+      spacing={4}
+      alignItems='flex-start'
+      zIndex={2}
+      mt={10}
+      mb={4}
+      color='text.heading'
+      {...rest}
+    >
+      {title && (
+        <Heading
+          className='hero-title'
+          as='h1'
+          fontSize='4xl'
+          fontWeight='bold'
+          color='inherit'
+        >
+          {title}
+        </Heading>
+      )}
+      {subtitle && (
+        <Heading
+          as='h2'
+          className='hero-subtitle'
+          fontSize='md'
+          fontWeight='semibold'
+          color='inherit'
+        >
+          {subtitle}
+        </Heading>
+      )}
+      {body && (
+        <Text
+          className='hero-body'
+          lineHeight='tall'
+          fontSize='lg'
+          fontWeight='medium'
+          color='inherit'
+        >
+          {body}
+        </Text>
+      )}
+
+      {children}
+    </VStack>
   );
 };
