@@ -18,6 +18,13 @@ import {
 import { useQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/router';
 import {
+  FaAngleRight,
+  FaCheck,
+  FaEllipsis,
+  FaMagnifyingGlass,
+  FaX,
+} from 'react-icons/fa6';
+import {
   fetchOntologyChildrenByNodeId,
   fetchOntologyTreeByTaxonId,
   getChildren,
@@ -25,13 +32,7 @@ import {
   OntologyTreeParams,
 } from '../helpers';
 import { TagWithUrl } from 'src/components/tag-with-url';
-import {
-  FaAngleRight,
-  FaCheck,
-  FaEllipsis,
-  FaMagnifyingGlass,
-  FaX,
-} from 'react-icons/fa6';
+import { Link } from 'src/components/link';
 
 export const TreeBrowserTable = () => {
   const router = useRouter();
@@ -120,9 +121,9 @@ export const TreeBrowserTable = () => {
     );
   }
   return (
-    <Box w='100%'>
+    <>
       {selectedNode && (
-        <Box my={1}>
+        <Box w='100%' my={1}>
           <Text fontWeight='normal' fontSize='sm' lineHeight='none'>
             Selected taxonomy:{' '}
           </Text>
@@ -140,123 +141,156 @@ export const TreeBrowserTable = () => {
           </HStack>
         </Box>
       )}
-      <Flex justifyContent='flex-end'>
-        <RadioGroup
-          onChange={setViewMode}
-          value={viewMode}
-          colorScheme='primary'
-          size='sm'
-        >
-          <Stack direction='row' spacing={4}>
-            <Radio value='condensed'>Condensed View</Radio>
-            <Radio value='expanded'>Expanded View</Radio>
-          </Stack>
-        </RadioGroup>
-      </Flex>
-      <Box
-        w='100%'
-        bg='white'
-        border='1px solid'
-        borderRadius='semi'
-        borderColor='niaid.placeholder'
-        overflow='hidden'
-      >
-        {isLoading || !router.isReady ? (
-          <Spinner size='md' color='primary.500' m={4} />
-        ) : (
-          lineage && (
-            <Tree
-              queryId={queryParams.id}
-              showFromIndex={showFromIndex}
-              data={lineage}
-              updateLineage={updateLineageWithChildren}
-              updateShowFromIndex={setShowFromIndex}
-              isIncludedInSearch={id => {
-                return searchList.some(item => item.id === id);
-              }}
-              addToSearch={({ ontology, id, label }) => {
-                setSearchList(prev => {
-                  //if it already exists in the list, remove it
-                  if (prev.some(item => item.id === id)) {
-                    return prev.filter(item => item.id !== id);
-                  } else {
-                    return [...prev, { ontology, id, label: label }];
-                  }
-                });
-              }}
-            />
-          )
-        )}
-      </Box>
-
-      {searchList && searchList.length > 0 && (
-        <Box my={4}>
-          <HStack my={4} spacing={4} justifyContent='flex-end'>
-            <Button
+      <HStack w='100%' alignItems='flex-start' spacing={6}>
+        {/* Tree Browser */}
+        <Box w='100%'>
+          <Flex justifyContent='flex-end'>
+            <RadioGroup
+              onChange={setViewMode}
+              value={viewMode}
+              colorScheme='primary'
               size='sm'
-              onClick={() => setSearchList([])}
-              variant='outline'
             >
-              Clear
-            </Button>
-            <Button leftIcon={<FaMagnifyingGlass />} size='sm' isDisabled>
-              Search for {searchList.length} values{' '}
-            </Button>
-          </HStack>
-          <Stack
-            flexDirection='column'
+              <Stack direction='row' spacing={4}>
+                <Radio value='condensed'>Condensed View</Radio>
+                <Radio value='expanded'>Expanded View</Radio>
+              </Stack>
+            </RadioGroup>
+          </Flex>
+          <Box
+            w='100%'
             bg='white'
             border='1px solid'
             borderRadius='semi'
             borderColor='niaid.placeholder'
-            maxHeight={300}
-            overflow='auto'
+            overflow='hidden'
           >
-            {searchList.map(({ ontology, label }, index) => (
-              <Flex
-                key={`${ontology}-${label}`}
-                flexDirection={'column'}
-                px={2}
-                py={1}
-                bg={index % 2 ? 'primary.50' : 'transparent'}
-              >
-                <Text
-                  fontSize='12px'
-                  color='primary.800'
-                  wordBreak='break-word'
-                  fontWeight='light'
-                  textAlign='left'
-                >
-                  {ontology.toUpperCase()}
-                </Text>
-
-                <Text
-                  size='sm'
-                  lineHeight='short'
-                  color='text.body'
-                  wordBreak='break-word'
-                  fontWeight='normal'
-                  textAlign='left'
-                >
-                  {label}
-                  <Text
-                    as='span'
-                    fontSize='12px'
-                    color='primary.800'
-                    ml={1}
-                    borderLeft='1px solid'
-                    borderLeftColor='gray.400'
-                    pl={1}
-                  >
-                    {id}
-                  </Text>
-                </Text>
-              </Flex>
-            ))}
-          </Stack>
+            {isLoading || !router.isReady ? (
+              <Spinner size='md' color='primary.500' m={4} />
+            ) : (
+              lineage && (
+                <Tree
+                  queryId={queryParams.id}
+                  showFromIndex={showFromIndex}
+                  data={lineage}
+                  updateLineage={updateLineageWithChildren}
+                  updateShowFromIndex={setShowFromIndex}
+                  isIncludedInSearch={id => {
+                    return searchList.some(item => item.id === id);
+                  }}
+                  addToSearch={({ ontology, id, label }) => {
+                    setSearchList(prev => {
+                      //if it already exists in the list, remove it
+                      if (prev.some(item => item.id === id)) {
+                        return prev.filter(item => item.id !== id);
+                      } else {
+                        return [...prev, { ontology, id, label: label }];
+                      }
+                    });
+                  }}
+                />
+              )
+            )}
+          </Box>
         </Box>
-      )}
-    </Box>
+        {/* Search List */}
+        {searchList && searchList.length > 0 && (
+          <Flex flexDirection='column' flex={1}>
+            <Text fontSize='sm'>List of search values</Text>
+            {/* Search list */}
+            <Box
+              flex={1}
+              flexDirection='column'
+              bg='white'
+              border='1px solid'
+              borderRadius='semi'
+              borderColor='niaid.placeholder'
+              maxHeight={300}
+              overflow='auto'
+            >
+              {searchList.map(({ ontology, label }, index) => (
+                <Flex
+                  key={`${ontology}-${label}`}
+                  px={2}
+                  py={1}
+                  bg={index % 2 ? 'primary.50' : 'transparent'}
+                >
+                  <Text
+                    fontSize='xs'
+                    lineHeight='short'
+                    color='text.body'
+                    wordBreak='break-word'
+                    fontWeight='normal'
+                    textAlign='left'
+                    flex={1}
+                  >
+                    {label}
+                    <Text
+                      as='span'
+                      fontSize='12px'
+                      color='primary.800'
+                      ml={1}
+                      borderLeft='1px solid'
+                      borderLeftColor='gray.400'
+                      pl={1}
+                    >
+                      {id}
+                    </Text>
+                  </Text>
+                  <IconButton
+                    aria-label='remove item from search'
+                    icon={<Icon as={FaX} boxSize={2.5} />}
+                    variant='ghost'
+                    colorScheme='red'
+                    size='sm'
+                    p={1}
+                    color='red.600'
+                    boxSize={6}
+                    minWidth={6}
+                    onClick={() => {
+                      setSearchList(prev =>
+                        prev.filter(item => item.label !== label),
+                      );
+                    }}
+                  />
+                </Flex>
+              ))}
+            </Box>
+
+            <HStack my={2} spacing={4} justifyContent='flex-end'>
+              <Button
+                size='sm'
+                onClick={() => setSearchList([])}
+                variant='outline'
+              >
+                Clear
+              </Button>
+              <Button
+                leftIcon={<FaMagnifyingGlass />}
+                size='sm'
+                onClick={() => {
+                  router.push({
+                    pathname: `/search`,
+                    query: {
+                      q: `"${searchList
+                        .map(node => {
+                          if (node.id.includes('NCBITaxon')) {
+                            return node.id.split('_')[1];
+                          }
+                          return node.id;
+                        })
+                        .join('" OR "')}"`,
+                    },
+                  });
+                }}
+              >
+                Search for {searchList.length} values{' '}
+              </Button>
+            </HStack>
+          </Flex>
+        )}
+      </HStack>
+    </>
   );
 };
 const MARGIN = 16;
@@ -370,15 +404,18 @@ const TreeNode = ({
         ) : (
           <Box mx={4}></Box>
         )}
-        <Text
-          ml={`${MARGIN}px`}
-          color={node.state.selected ? 'primary.500' : 'currentColor'}
-          fontWeight={node.state.selected ? 'semibold' : 'normal'}
-          textAlign='left'
-          flex={1}
-        >
-          {node.label}
-        </Text>
+        <HStack spacing={2} flex={1} ml={`${MARGIN}px`}>
+          <Link href={node.iri} fontSize='xs' isExternal>
+            <Text
+              color={node.state.selected ? 'primary.500' : 'currentColor'}
+              fontWeight={node.state.selected ? 'semibold' : 'normal'}
+              textAlign='left'
+              fontSize='sm'
+            >
+              {node.label}
+            </Text>
+          </Link>
+        </HStack>
         {isLoading && <Spinner size='sm' color='primary.500' mx={2} />}
         <IconButton
           aria-label='Search database'
@@ -402,7 +439,6 @@ const TreeNode = ({
           }}
         />
       </Flex>
-
       {isToggled && childrenList.length > 0 && (
         <UnorderedList ml={0}>
           {childrenList.map(child => (
