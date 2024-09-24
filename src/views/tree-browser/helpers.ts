@@ -4,7 +4,7 @@ import { HierarchyNode } from '@visx/hierarchy/lib/types';
 
 const OLS_API_URL = 'https://www.ebi.ac.uk/ols4/api';
 
-interface SearchParams {
+export interface SearchParams {
   q: string;
   ontology: ('edam' | 'ncbitaxon')[];
   queryFields: ('label' | 'short_form' | 'obo_id' | 'iri')[];

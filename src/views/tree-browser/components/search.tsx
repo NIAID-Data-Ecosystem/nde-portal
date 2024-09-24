@@ -1,18 +1,19 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   Box,
   Button,
   Flex,
-  Heading,
   Highlight,
+  HStack,
   Icon,
   ListItem,
+  Tag,
   Text,
   UnorderedList,
 } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
 import { useQuery } from '@tanstack/react-query';
-import { searchOntologyAPI } from '../helpers';
+import { searchOntologyAPI, SearchParams } from '../helpers';
 import {
   DropdownInput,
   InputWithDropdown,
@@ -20,11 +21,23 @@ import {
 } from 'src/components/input-with-dropdown';
 import { DropdownContent } from 'src/components/input-with-dropdown/components/DropdownContent';
 import { FaMagnifyingGlass } from 'react-icons/fa6';
+import { CheckboxList } from 'src/components/checkbox-list';
 
 interface TreeBrowserSearchProps {
   colorScheme?: string;
   size?: 'sm' | 'md' | 'lg';
 }
+
+type OntologyOption = {
+  name: string;
+  value: SearchParams['ontology'][number];
+};
+
+const ONTOLOGY_OPTIONS: OntologyOption[] = [
+  { name: 'NCBI Taxonomy', value: 'ncbitaxon' },
+  { name: 'EDAM', value: 'edam' },
+];
+
 export const TreeBrowserSearch = ({
   colorScheme = 'primary',
   size = 'md',
@@ -33,6 +46,8 @@ export const TreeBrowserSearch = ({
 
   const [searchTerm, setSearchTerm] = useState('');
   const [debouncedTerm, setDebouncedTerm] = useState(searchTerm);
+  const [selectedOntologies, setSelectedOntologies] =
+    useState(ONTOLOGY_OPTIONS);
 
   useEffect(() => {
     const handler = setTimeout(() => setDebouncedTerm(searchTerm), 300);
@@ -45,11 +60,11 @@ export const TreeBrowserSearch = ({
     isLoading,
     data: suggestions,
   } = useQuery({
-    queryKey: ['tree-browser-search', debouncedTerm],
+    queryKey: ['tree-browser-search', debouncedTerm, selectedOntologies],
     queryFn: () =>
       searchOntologyAPI({
         q: debouncedTerm ? debouncedTerm : '',
-        ontology: ['ncbitaxon', 'edam'],
+        ontology: selectedOntologies.map(o => o.value),
         queryFields: ['label', 'short_form', 'obo_id', 'iri'],
       }),
     refetchOnWindowFocus: false,
@@ -62,81 +77,161 @@ export const TreeBrowserSearch = ({
     });
     setSearchTerm('');
   };
-  return (
-    <Flex flexDirection='column' w='100%'>
-      <Text
-        as='label'
-        htmlFor='tree-browser-search-bar'
-        fontSize='sm'
-        color='gray.800'
-        px={1}
-      >
-        Search taxonomy browser
-      </Text>
-      <InputWithDropdown
-        inputValue={debouncedTerm}
-        cursorMax={suggestions?.length || 0}
-        colorScheme={colorScheme}
-      >
-        <DropdownInput
-          id='tree-browser-search-bar'
-          ariaLabel='Search taxonomy browser'
-          isLoading={isLoading}
-          placeholder='Enter a taxonomy name or identifier'
-          size={size}
-          type='text'
-          onChange={str => setSearchTerm(str)}
-          onClose={() => setSearchTerm('')}
-          onSubmit={str => {
-            const suggestion = suggestions?.find(s => s.label === str);
-            if (suggestion) {
-              handleSubmit({ id: suggestion.short_form });
-            }
-          }}
-          getInputValue={(idx: number): string => {
-            if (suggestions && suggestions.length > 0 && suggestions[idx]) {
-              return suggestions[idx].label || '';
-            }
-            return '';
-          }}
-          renderSubmitButton={() => {
-            return (
-              <>
-                {/* To do : add close button to clear input */}
-                <Button
-                  colorScheme={colorScheme}
-                  size={size}
-                  type='submit'
-                  display={{ base: 'none', md: 'flex' }}
-                  isDisabled={isLoading || !debouncedTerm}
-                >
-                  Search
-                </Button>
-              </>
-            );
-          }}
-        />
 
-        <DropdownContent>
-          <UnorderedList ml={0}>
-            {suggestions?.map((suggestion, index) => {
+  const updateOntologySelection = useCallback(
+    (newSelection: OntologyOption) => {
+      setSelectedOntologies(prevOntologies => {
+        // Check if selection is already included.
+        const index = prevOntologies.findIndex(
+          item => item.value === newSelection.value,
+        );
+        if (index === -1) {
+          // Add new selection
+          return [...prevOntologies, newSelection];
+        } else {
+          // If only one selection is there, don't remove it
+          if (prevOntologies.length === 1) {
+            return prevOntologies;
+          }
+          // Remove selection if it's already there
+          return prevOntologies.filter((_, i) => i !== index);
+        }
+      });
+    },
+    [],
+  );
+  return (
+    <HStack
+      w='100%'
+      alignItems='flex-end'
+      flexDirection={{ base: 'column', md: 'row' }}
+    >
+      <Flex
+        flex={1}
+        flexDirection='column'
+        width={{ base: '100%', md: 'unset' }}
+        minWidth={{ base: 'unset', md: '450px' }}
+      >
+        <Text
+          as='label'
+          htmlFor='tree-browser-search-bar'
+          fontSize='sm'
+          color='gray.800'
+          px={1}
+        >
+          Search taxonomy browser
+        </Text>
+        <InputWithDropdown
+          inputValue={debouncedTerm}
+          cursorMax={suggestions?.length || 0}
+          colorScheme={colorScheme}
+        >
+          <DropdownInput
+            id='tree-browser-search-bar'
+            ariaLabel='Search taxonomy browser'
+            isLoading={isLoading}
+            placeholder='Enter a taxonomy name or identifier'
+            size={size}
+            type='text'
+            onChange={str => setSearchTerm(str)}
+            onClose={() => setSearchTerm('')}
+            onSubmit={str => {
+              const suggestion = suggestions?.find(s => s.label === str);
+              if (suggestion) {
+                handleSubmit({ id: suggestion.short_form });
+              }
+            }}
+            getInputValue={(idx: number): string => {
+              if (suggestions && suggestions.length > 0 && suggestions[idx]) {
+                return suggestions[idx].label || '';
+              }
+              return '';
+            }}
+            renderSubmitButton={() => {
               return (
-                <DropdownListItem
-                  key={suggestion.iri}
-                  handleSubmit={handleSubmit}
-                  highlight={debouncedTerm}
-                  id={suggestion.short_form}
-                  index={index}
-                  ontology={suggestion.ontology_prefix}
-                >
-                  {suggestion.label}
-                </DropdownListItem>
+                <>
+                  {/* To do : add close button to clear input */}
+                  <Button
+                    colorScheme={colorScheme}
+                    size={size}
+                    type='submit'
+                    display={{ base: 'none', md: 'flex' }}
+                    isDisabled={isLoading || !debouncedTerm}
+                  >
+                    Search
+                  </Button>
+                </>
               );
-            })}
-          </UnorderedList>
-        </DropdownContent>
-      </InputWithDropdown>
-    </Flex>
+            }}
+          />
+
+          <DropdownContent>
+            <UnorderedList ml={0}>
+              {suggestions?.map((suggestion, index) => {
+                return (
+                  <DropdownListItem
+                    key={suggestion.iri}
+                    handleSubmit={handleSubmit}
+                    highlight={debouncedTerm}
+                    id={suggestion.short_form}
+                    index={index}
+                    ontology={suggestion.ontology_prefix}
+                  >
+                    {suggestion.label}
+                  </DropdownListItem>
+                );
+              })}
+            </UnorderedList>
+          </DropdownContent>
+        </InputWithDropdown>
+      </Flex>
+
+      {/* <!-- Select Ontology --> */}
+      <CheckboxList
+        fontSize='sm'
+        width={{ base: '100%', md: 'unset' }}
+        buttonProps={{
+          width: '250px',
+          maxWidth: { base: 'unset', md: '250px' },
+          overflow: 'hidden',
+        }}
+        label={
+          <Text
+            as='span'
+            isTruncated
+            color='inherit'
+            display='flex'
+            alignItems='center'
+            w='100%'
+          >
+            {/* {`Searching ${
+              selectedOntologies.length === ONTOLOGY_OPTIONS.length
+                ? 'all'
+                : `selected`
+            } ontologies`} */}
+            Selected Ontologies
+            <Tag
+              variant='outline'
+              color='inherit'
+              borderRadius='full'
+              fontSize='xs'
+              alignSelf='flex-start'
+              lineHeight={1.2}
+              size='sm'
+              px={3}
+              ml={2}
+            >
+              {selectedOntologies.length}
+            </Tag>
+          </Text>
+        }
+        size='lg'
+        description=''
+        options={ONTOLOGY_OPTIONS}
+        selectedOptions={selectedOntologies}
+        handleChange={updateOntologySelection}
+      />
+    </HStack>
   );
 };
 

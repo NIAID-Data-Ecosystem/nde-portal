@@ -31,7 +31,6 @@ import {
   OntologyTreeItem,
   OntologyTreeParams,
 } from '../helpers';
-import { TagWithUrl } from 'src/components/tag-with-url';
 import { Link } from 'src/components/link';
 
 export const TreeBrowserTable = () => {
@@ -441,7 +440,22 @@ const TreeNode = ({
         ) : (
           <Box mx={4}></Box>
         )}
-        <HStack spacing={2} flex={1} ml={`${MARGIN}px`}>
+        <HStack
+          spacing={2}
+          flex={1}
+          ml={`${MARGIN}px`}
+          divider={
+            <Box
+              borderColor='gray.200'
+              borderLeftWidth={'32px'}
+              w='auto'
+              h='auto'
+              ml={2}
+              my={4}
+              alignSelf='center'
+            />
+          }
+        >
           <Link href={node.iri} fontSize='xs' isExternal>
             <Text
               color={node.state.selected ? 'primary.500' : 'currentColor'}
