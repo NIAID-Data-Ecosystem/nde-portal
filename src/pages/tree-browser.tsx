@@ -19,7 +19,7 @@ const TreeBrowserOnePage: NextPage = () => {
         alignItems='center'
         px={{ base: 2, sm: 4, xl: '5vw' }}
       >
-        <VStack w='100%' spacing={4} p={4}>
+        <VStack w='100%' spacing={4} p={4} maxWidth='1600px'>
           <TreeBrowserSearch />
           <TreeBrowserTable />
         </VStack>

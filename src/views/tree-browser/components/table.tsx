@@ -1,18 +1,29 @@
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
-  Box,
-  HStack,
-  Spinner,
-  Text,
   Alert,
-  Flex,
-  ListItem,
-  UnorderedList,
-  IconButton,
-  Stack,
+  Box,
   Button,
+  Flex,
+  FormControl,
+  FormLabel,
+  HStack,
+  Icon,
+  IconButton,
+  ListItem,
+  Spinner,
+  Switch,
+  Text,
+  UnorderedList,
 } from '@chakra-ui/react';
 import { useQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/router';
+import {
+  FaAngleRight,
+  FaCheck,
+  FaEllipsis,
+  FaMagnifyingGlass,
+  FaX,
+} from 'react-icons/fa6';
 import {
   fetchOntologyChildrenByNodeId,
   fetchOntologyTreeByTaxonId,
@@ -21,8 +32,7 @@ import {
   OntologyTreeParams,
 } from '../helpers';
 import { TagWithUrl } from 'src/components/tag-with-url';
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { FaAngleRight, FaCheck, FaMagnifyingGlass, FaX } from 'react-icons/fa6';
+import { Link } from 'src/components/link';
 
 export const TreeBrowserTable = () => {
   const router = useRouter();
@@ -31,6 +41,8 @@ export const TreeBrowserTable = () => {
   const [searchList, setSearchList] = useState<
     { ontology: string; id: string; label: string }[]
   >([]);
+  const [showFromIndex, setShowFromIndex] = useState(0);
+  const [viewMode, setViewMode] = useState('condensed');
 
   // Memoize the query params to avoid unnecessary recalculations on each render
   const queryParams = useMemo(() => {
@@ -56,12 +68,19 @@ export const TreeBrowserTable = () => {
   });
 
   const selectedNode = allData?.lineage[allData.lineage.length - 1];
-
+  const MAX_NODES = 5;
   useEffect(() => {
     if (allData) {
       setLineage(allData.lineage);
+      if (viewMode === 'condensed') {
+        setShowFromIndex(
+          allData.lineage.length > MAX_NODES ? allData.lineage.length - 3 : 0,
+        );
+      } else {
+        setShowFromIndex(0);
+      }
     }
-  }, [allData]);
+  }, [allData, viewMode]);
 
   // Update lineage with new children
   const updateLineageWithChildren = useCallback(
@@ -101,129 +120,214 @@ export const TreeBrowserTable = () => {
     );
   }
   return (
-    <Box w='100%'>
-      {selectedNode && (
-        <Box my={1}>
-          <Text fontWeight='normal' fontSize='sm' lineHeight='none'>
-            Selected taxonomy:{' '}
-          </Text>
-          <HStack>
-            <Text as='span' fontWeight='medium'>
-              {selectedNode.label}
-            </Text>
-            <TagWithUrl
-              href={selectedNode.iri}
-              isExternal
-              colorScheme='primary'
+    <>
+      <HStack w='100%' alignItems='flex-start' spacing={10} flexWrap='wrap'>
+        <Box flex={2} minWidth='500px'>
+          {selectedNode && (
+            <Flex
+              w='100%'
+              justifyContent='space-between'
+              alignItems='flex-end'
+              mb={1}
             >
-              {id}
-            </TagWithUrl>
-          </HStack>
-        </Box>
-      )}
-
-      <Box
-        w='100%'
-        bg='white'
-        border='1px solid'
-        borderRadius='semi'
-        borderColor='niaid.placeholder'
-        overflow='hidden'
-      >
-        {isLoading || !router.isReady ? (
-          <Spinner size='md' color='primary.500' m={4} />
-        ) : (
-          lineage && (
-            <Tree
-              queryId={queryParams.id}
-              data={lineage}
-              updateLineage={updateLineageWithChildren}
-              isIncludedInSearch={id => {
-                return searchList.some(item => item.id === id);
-              }}
-              addToSearch={({ ontology, id, label }) => {
-                setSearchList(prev => {
-                  //if it already exists in the list, remove it
-                  if (prev.some(item => item.id === id)) {
-                    return prev.filter(item => item.id !== id);
-                  } else {
-                    return [...prev, { ontology, id, label: label }];
-                  }
-                });
-              }}
-            />
-          )
-        )}
-      </Box>
-
-      {searchList && searchList.length > 0 && (
-        <Box my={4}>
-          <HStack my={4} spacing={4} justifyContent='flex-end'>
-            <Button
-              size='sm'
-              onClick={() => setSearchList([])}
-              variant='outline'
-            >
-              Clear
-            </Button>
-            <Button leftIcon={<FaMagnifyingGlass />} size='sm' isDisabled>
-              Search for {searchList.length} values{' '}
-            </Button>
-          </HStack>
-          <Stack
-            flexDirection='column'
+              <Box>
+                <Text fontWeight='normal' fontSize='sm' lineHeight='short'>
+                  Selected taxonomy:{' '}
+                </Text>
+                <HStack>
+                  <Link
+                    href={selectedNode.iri}
+                    fontWeight='medium'
+                    isExternal
+                    fontSize='sm'
+                  >
+                    {selectedNode.label}
+                  </Link>
+                </HStack>
+              </Box>
+              {/* toggle */}
+              <Flex justifyContent='flex-end'>
+                {router.query.id && (
+                  <FormControl display='flex' alignItems='center'>
+                    <FormLabel htmlFor='condensed-view' mb='0' fontSize='sm'>
+                      Enable condensed view?
+                    </FormLabel>
+                    <Switch
+                      id='condensed-view'
+                      colorScheme='primary'
+                      isChecked={viewMode === 'condensed'}
+                      onChange={() =>
+                        setViewMode(
+                          viewMode === 'condensed' ? 'expanded' : 'condensed',
+                        )
+                      }
+                    />
+                  </FormControl>
+                )}
+              </Flex>
+            </Flex>
+          )}
+          {/* Tree Browser */}
+          <Box
+            w='100%'
             bg='white'
             border='1px solid'
             borderRadius='semi'
             borderColor='niaid.placeholder'
-            maxHeight={300}
-            overflow='auto'
+            overflow='hidden'
           >
-            {searchList.map(({ ontology, label }, index) => (
-              <Flex
-                key={`${ontology}-${label}`}
-                flexDirection={'column'}
-                px={2}
-                py={1}
-                bg={index % 2 ? 'primary.50' : 'transparent'}
-              >
-                <Text
-                  fontSize='12px'
-                  color='primary.800'
-                  wordBreak='break-word'
-                  fontWeight='light'
-                  textAlign='left'
-                >
-                  {ontology.toUpperCase()}
-                </Text>
-
-                <Text
-                  size='sm'
-                  lineHeight='short'
-                  color='text.body'
-                  wordBreak='break-word'
-                  fontWeight='normal'
-                  textAlign='left'
-                >
-                  {label}
-                  <Text
-                    as='span'
-                    fontSize='12px'
-                    color='primary.800'
-                    ml={1}
-                    borderLeft='1px solid'
-                    borderLeftColor='gray.400'
-                    pl={1}
-                  >
-                    {id}
-                  </Text>
-                </Text>
-              </Flex>
-            ))}
-          </Stack>
+            {isLoading || !router.isReady ? (
+              <Spinner size='md' color='primary.500' m={4} />
+            ) : (
+              lineage && (
+                <Tree
+                  queryId={queryParams.id}
+                  showFromIndex={showFromIndex}
+                  data={lineage}
+                  updateLineage={updateLineageWithChildren}
+                  updateShowFromIndex={setShowFromIndex}
+                  isIncludedInSearch={id => {
+                    return searchList.some(item => item.id === id);
+                  }}
+                  addToSearch={({ ontology, id, label }) => {
+                    setSearchList(prev => {
+                      //if it already exists in the list, remove it
+                      if (prev.some(item => item.id === id)) {
+                        return prev.filter(item => item.id !== id);
+                      } else {
+                        return [...prev, { ontology, id, label: label }];
+                      }
+                    });
+                  }}
+                />
+              )
+            )}
+          </Box>
         </Box>
-      )}
-    </Box>
+
+        {/* Search List */}
+        {searchList && searchList.length > 0 && (
+          <Flex
+            flexDirection='column'
+            flex={1}
+            maxWidth='400px'
+            mt={7}
+            alignItems='flex-end'
+          >
+            <Flex justifyContent='space-between' w='100%'>
+              <Text fontSize='sm' fontWeight='medium' mb={1} lineHeight='tall'>
+                List of search values
+              </Text>
+              <Button
+                size='sm'
+                onClick={() => setSearchList([])}
+                variant='link'
+              >
+                Clear all
+              </Button>
+            </Flex>
+            {/* Search list */}
+            <Box
+              flex={1}
+              w='100%'
+              flexDirection='column'
+              bg='white'
+              border='1px solid'
+              borderRadius='semi'
+              borderColor='niaid.placeholder'
+              maxHeight={300}
+              overflow='auto'
+            >
+              {searchList.map(({ id, ontology, label }, index) => (
+                <Flex
+                  key={`${ontology}-${id}`}
+                  px={2}
+                  py={1}
+                  bg={index % 2 ? 'primary.50' : 'transparent'}
+                >
+                  <Text
+                    fontSize='xs'
+                    lineHeight='short'
+                    color='text.body'
+                    wordBreak='break-word'
+                    fontWeight='normal'
+                    textAlign='left'
+                    flex={1}
+                    display='flex'
+                    alignItems='center'
+                  >
+                    {label}
+                    <Text
+                      as='span'
+                      fontSize='12px'
+                      color='primary.800'
+                      ml={1}
+                      borderLeft='1px solid'
+                      borderLeftColor='gray.400'
+                      pl={1}
+                    >
+                      {id}
+                    </Text>
+                  </Text>
+                  <IconButton
+                    aria-label='remove item from search'
+                    icon={<Icon as={FaX} boxSize={2.5} />}
+                    variant='ghost'
+                    colorScheme='red'
+                    size='sm'
+                    p={1}
+                    color='red.500'
+                    boxSize={6}
+                    minWidth={6}
+                    onClick={() => {
+                      setSearchList(prev =>
+                        prev.filter(item => item.label !== label),
+                      );
+                    }}
+                  />
+                </Flex>
+              ))}
+            </Box>
+            <Button
+              mt={2}
+              leftIcon={<FaMagnifyingGlass />}
+              size='sm'
+              onClick={() => {
+                const termsWithFields = searchList.map(node => {
+                  if (node.id.includes('NCBITaxon')) {
+                    return `species.identifier: "${
+                      node.id.split('_')[1]
+                    }" OR infectiousAgent.identifier: "${
+                      node.id.split('_')[1]
+                    }"`;
+                  } else if (node.id.startsWith('topic')) {
+                    return `topicCategory.identifier: "${node.id}"`;
+                  }
+                  return node.id;
+                });
+                // const terms = searchList.map(node => {
+                //   if (node.id.includes('NCBITaxon')) {
+                //     return node.id.split('_')[1];
+                //   }
+                //   return node.id;
+                // });
+                // const q = `"${termsWithFields.join('" OR "')}"`;
+
+                router.push({
+                  pathname: `/search`,
+                  query: {
+                    q: `${termsWithFields.join(' OR ')}`,
+                  },
+                });
+              }}
+            >
+              Search for {searchList.length}{' '}
+              {searchList.length > 1 ? 'values' : 'value'}
+            </Button>
+          </Flex>
+        )}
+      </HStack>
+    </>
   );
 };
 const MARGIN = 16;
@@ -312,7 +416,6 @@ const TreeNode = ({
         alignItems='center'
         borderTop={depth !== 0 ? '0.25px solid' : 'none'}
         borderColor='gray.200'
-        bg={node.state.selected ? 'primary.50' : 'transparent'}
         px={4}
         py={2}
         pl={`${(depth + 1) * MARGIN}px`}
@@ -321,32 +424,35 @@ const TreeNode = ({
           childrenList.length > 0 || node.hasChildren ? 'pointer' : 'default'
         }
         _hover={{
-          bg: node.state.selected ? 'primary.50' : 'blackAlpha.100',
+          bg: 'blackAlpha.50',
         }}
       >
-        <IconButton
-          aria-label='Search database'
-          icon={<FaAngleRight />}
-          variant='ghost'
-          colorScheme='gray'
-          size='sm'
-          transform={isToggled ? 'rotate(90deg)' : ''}
-          color={
-            childrenList.length > 0 || node.hasChildren
-              ? 'currentColor'
-              : 'transparent'
-          }
-        />
-        <Text
-          ml={`${MARGIN}px`}
-          color={node.state.selected ? 'primary.500' : 'currentColor'}
-          fontWeight={node.state.selected ? 'semibold' : 'normal'}
-          textAlign='left'
-          flex={1}
-        >
-          {node.label}
-        </Text>
-        {isLoading && <Spinner size='sm' color='primary.500' />}
+        {childrenList.length > 0 || node.hasChildren ? (
+          <IconButton
+            aria-label='Search database'
+            icon={<FaAngleRight />}
+            variant='ghost'
+            colorScheme='gray'
+            size='sm'
+            transform={isToggled ? 'rotate(90deg)' : ''}
+            color='currentColor'
+          />
+        ) : (
+          <Box mx={4}></Box>
+        )}
+        <HStack spacing={2} flex={1} ml={`${MARGIN}px`}>
+          <Link href={node.iri} fontSize='xs' isExternal>
+            <Text
+              color={node.state.selected ? 'primary.500' : 'currentColor'}
+              fontWeight={node.state.selected ? 'semibold' : 'normal'}
+              textAlign='left'
+              fontSize='sm'
+            >
+              {node.label}
+            </Text>
+          </Link>
+        </HStack>
+        {isLoading && <Spinner size='sm' color='primary.500' mx={2} />}
         <IconButton
           aria-label='Search database'
           icon={
@@ -367,9 +473,8 @@ const TreeNode = ({
               ontology: node.ontology_name,
             });
           }}
-        ></IconButton>
+        />
       </Flex>
-
       {isToggled && childrenList.length > 0 && (
         <UnorderedList ml={0}>
           {childrenList.map(child => (
@@ -396,7 +501,9 @@ const Tree = ({
   data,
   isIncludedInSearch,
   queryId,
+  showFromIndex,
   updateLineage,
+  updateShowFromIndex,
 }: {
   addToSearch: (search: {
     ontology: string;
@@ -406,13 +513,86 @@ const Tree = ({
   isIncludedInSearch: (id: string) => boolean;
   queryId: string;
   data: OntologyTreeItem[];
+  showFromIndex: number;
   updateLineage: (nodeId: string, children: OntologyTreeItem[]) => void;
+  updateShowFromIndex: (index: number) => void;
 }) => {
   // Only render the root nodes initially (nodes with no parent)
-  const rootNodes = data.filter(item => !item.parent);
+  // const rootNodes = data.filter(item => !item.parent);
+  const treeNodes = data.slice(showFromIndex);
+  const rootNodes = [treeNodes[0]];
+
+  const pathNodes = data.slice(0, showFromIndex);
 
   return (
     <UnorderedList ml={0}>
+      {showFromIndex > 0 && (
+        <>
+          <ListItem>
+            {/* breadcrumb like path for treenodes */}
+            <HStack
+              alignItems='center'
+              borderColor='gray.200'
+              px={4}
+              py={2}
+              pl={`${MARGIN}px`}
+              flexWrap='wrap'
+              spacing={0}
+              divider={
+                <Icon
+                  as={FaAngleRight}
+                  color='gray.400'
+                  boxSize={3}
+                  borderLeft='none'
+                />
+              }
+            >
+              {pathNodes.map((node, index) => (
+                <React.Fragment key={node.id}>
+                  <Button
+                    colorScheme='gray'
+                    variant='ghost'
+                    size='sm'
+                    px={1}
+                    _hover={{ textDecoration: 'underline' }}
+                    onClick={() => updateShowFromIndex(index)}
+                  >
+                    {node.label}
+                  </Button>
+                </React.Fragment>
+              ))}
+            </HStack>
+          </ListItem>
+          <ListItem>
+            <Flex
+              alignItems='center'
+              borderY='0.25px solid'
+              borderColor='gray.200'
+              px={4}
+              py={2}
+              pl={`${MARGIN}px`}
+              onClick={() => {
+                updateShowFromIndex(showFromIndex < 1 ? 0 : showFromIndex - 1);
+              }}
+              cursor='pointer'
+              _hover={{
+                bg: 'blackAlpha.100',
+              }}
+            >
+              <IconButton
+                aria-label='show previous nodes'
+                icon={<FaEllipsis />}
+                variant='ghost'
+                colorScheme='gray'
+                size='sm'
+                color='currentColor'
+                justifyContent='flex-start'
+                px={2}
+              />
+            </Flex>
+          </ListItem>
+        </>
+      )}
       {rootNodes.map(node => (
         <TreeNode
           key={node.id}
@@ -420,7 +600,7 @@ const Tree = ({
           isIncludedInSearch={isIncludedInSearch}
           queryId={queryId}
           node={node}
-          data={data}
+          data={treeNodes}
           depth={0}
           updateLineage={updateLineage}
         />

@@ -13,7 +13,6 @@ import {
 import { Link } from 'src/components/link';
 import type { GetStaticProps, NextPage } from 'next';
 import { PageContainer, PageContent } from 'src/components/page-container';
-import { PageHeader } from 'src/components/page-header';
 import DOCUMENTATION_COPY from 'configs/docs.json';
 import { Error } from 'src/components/error';
 import axios from 'axios';
@@ -32,6 +31,7 @@ import MainContent, {
 import Empty from 'src/components/empty';
 import IntegrationMain from 'src/views/integration/components/Main';
 import { DocsSearchBar } from 'src/views/docs/components/SearchBar';
+import { HeroBanner } from 'src/views/docs/components/HeroBanner';
 
 export interface DocumentationByCategories {
   id: number;
@@ -129,18 +129,12 @@ const Docs: NextPage<{
       px={0}
       py={0}
     >
-      <PageHeader
+      <HeroBanner
         title={DOCUMENTATION_COPY.sections.hero.heading}
-        titleProps={{
-          size: 'h3',
-        }}
         subtitle={DOCUMENTATION_COPY.sections.hero.subtitle}
-        body={!props.slug ? [DOCUMENTATION_COPY.sections.hero.body] : []}
-        bodyProps={{
-          maxW: 'unset',
-          mt: 10,
-        }}
+        body={!props.slug ? DOCUMENTATION_COPY.sections.hero.body : ''}
       />
+
       <Flex
         w='100%'
         justifyContent='flex-end'
