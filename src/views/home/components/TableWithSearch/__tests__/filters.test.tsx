@@ -1,7 +1,7 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Filters } from '../filters/';
-import { CheckboxList } from '../filters/checkbox-list';
+import { CheckboxList } from 'src/components/checkbox-list';
 
 describe('Landing Table Filters Component', () => {
   const mockData = [

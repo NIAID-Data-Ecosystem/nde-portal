@@ -1,7 +1,7 @@
 import { TableData } from '..';
 import { useMemo } from 'react';
 import { getFilterData } from '../helpers';
-import { CheckboxList } from './checkbox-list';
+import { CheckboxList } from 'src/components/checkbox-list';
 import { formatDomainName, formatTypeName } from '../helpers';
 import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
 
