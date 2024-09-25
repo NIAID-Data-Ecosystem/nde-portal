@@ -12,6 +12,7 @@ import {
   ListItem,
   Spinner,
   Switch,
+  Tag,
   Text,
   UnorderedList,
 } from '@chakra-ui/react';
@@ -32,6 +33,15 @@ import {
   OntologyTreeParams,
 } from '../helpers';
 import { Link } from 'src/components/link';
+import { fetchSearchResults } from 'src/utils/api';
+import Tooltip from 'src/components/tooltip';
+
+const formatIdentifier = (node: { id: string }) => {
+  if (node.id.includes('NCBITaxon')) {
+    return node.id.split('_')[1];
+  }
+  return node.id;
+};
 
 export const TreeBrowserTable = () => {
   const router = useRouter();
@@ -294,16 +304,14 @@ export const TreeBrowserTable = () => {
               size='sm'
               onClick={() => {
                 const termsWithFields = searchList.map(node => {
-                  if (node.id.includes('NCBITaxon')) {
-                    return `species.identifier: "${
-                      node.id.split('_')[1]
-                    }" OR infectiousAgent.identifier: "${
-                      node.id.split('_')[1]
-                    }"`;
-                  } else if (node.id.startsWith('topic')) {
-                    return `topicCategory.identifier: "${node.id}"`;
+                  const id = formatIdentifier(node);
+                  let querystring = router.query.q;
+                  if (node.ontology === 'ncbitaxon') {
+                    querystring = `(species.identifier: "${id}" OR infectiousAgent.identifier: "${id}")`;
+                  } else if (node.ontology === 'edam') {
+                    querystring = `(topicCategory.identifier: "${id}")`;
                   }
-                  return node.id;
+                  return querystring;
                 });
                 // const terms = searchList.map(node => {
                 //   if (node.id.includes('NCBITaxon')) {
@@ -316,7 +324,9 @@ export const TreeBrowserTable = () => {
                 router.push({
                   pathname: `/search`,
                   query: {
-                    q: `${termsWithFields.join(' OR ')}`,
+                    q: `${router.query.q} AND (${termsWithFields.join(
+                      ' AND ',
+                    )})`,
                   },
                 });
               }}
@@ -377,6 +387,37 @@ const TreeNode = ({
     },
     refetchOnWindowFocus: false,
     enabled: false,
+  });
+
+  // Fetch resource count for each node.
+  const router = useRouter();
+
+  const {
+    error: countError,
+    isLoading: countIsLoading,
+    data: count,
+  } = useQuery({
+    queryKey: ['fetch-count', node.id],
+    queryFn: () => {
+      if (!node.id) {
+        return null;
+      }
+      const id = formatIdentifier({ id: node.taxonId });
+      let querystring = '';
+      if (node.ontology_name === 'ncbitaxon') {
+        querystring = `species.identifier: "${id}" OR infectiousAgent.identifier: "${id}"`;
+      } else if (node.ontology_name === 'edam') {
+        querystring = `topicCategory.identifier: "${id}"`;
+      }
+      if (!querystring) return null;
+      return fetchSearchResults({
+        q: router.query.q + ' AND ' + `(${querystring})`,
+        size: 0,
+      });
+    },
+    select: data => data?.total,
+    refetchOnWindowFocus: false,
+    enabled: !!node.id,
   });
 
   const toggleNode = () => {
@@ -467,28 +508,43 @@ const TreeNode = ({
             </Text>
           </Link>
         </HStack>
-        {isLoading && <Spinner size='sm' color='primary.500' mx={2} />}
-        <IconButton
-          aria-label='Search database'
-          icon={
-            isIncludedInSearch(node.taxonId) ? (
-              <FaCheck />
-            ) : (
-              <FaMagnifyingGlass />
-            )
-          }
-          size='sm'
-          variant='outline'
-          fontSize='xs'
-          onClick={e => {
-            e.stopPropagation();
-            addToSearch({
-              id: node.taxonId,
-              label: node.label,
-              ontology: node.ontology_name,
-            });
-          }}
-        />
+        <HStack>
+          <Tooltip label='Number of matching resources in NIAID Discovery Portal'>
+            <Tag
+              borderRadius='full'
+              colorScheme={!countIsLoading && count === 0 ? 'gray' : 'primary'}
+              variant='subtle'
+              size='sm'
+            >
+              {isLoading || countIsLoading ? (
+                <Spinner size='sm' color='primary.500' mx={2} />
+              ) : (
+                count?.toLocaleString() || 0
+              )}
+            </Tag>
+          </Tooltip>
+          <IconButton
+            aria-label='Search database'
+            icon={
+              isIncludedInSearch(node.taxonId) ? (
+                <FaCheck />
+              ) : (
+                <FaMagnifyingGlass />
+              )
+            }
+            size='sm'
+            variant='outline'
+            fontSize='xs'
+            onClick={e => {
+              e.stopPropagation();
+              addToSearch({
+                id: node.taxonId,
+                label: node.label,
+                ontology: node.ontology_name,
+              });
+            }}
+          />
+        </HStack>
       </Flex>
       {isToggled && childrenList.length > 0 && (
         <UnorderedList ml={0}>

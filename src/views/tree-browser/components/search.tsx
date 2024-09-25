@@ -73,7 +73,7 @@ export const TreeBrowserSearch = ({
   const handleSubmit = ({ id }: { id: string }) => {
     router.push({
       pathname: `/tree-browser`,
-      query: { id },
+      query: { ...router.query, id },
     });
     setSearchTerm('');
   };
@@ -201,7 +201,7 @@ export const TreeBrowserSearch = ({
             isTruncated
             color='inherit'
             display='flex'
-            alignItems='center'
+            alignItems='flex-end'
             w='100%'
           >
             {/* {`Searching ${
