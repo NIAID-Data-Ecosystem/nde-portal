@@ -15,6 +15,7 @@ import {
   Tag,
   Text,
   UnorderedList,
+  VStack,
 } from '@chakra-ui/react';
 import { useQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/router';
@@ -48,7 +49,7 @@ export const TreeBrowserTable = () => {
   const id = router.query.id || 'NCBITaxon_1';
   const [lineage, setLineage] = useState<OntologyTreeItem[] | null>(null);
   const [searchList, setSearchList] = useState<
-    { ontology: string; id: string; label: string }[]
+    { ontology: string; id: string; label: string; count?: number }[]
   >([]);
   const [showFromIndex, setShowFromIndex] = useState(0);
   const [viewMode, setViewMode] = useState('condensed');
@@ -122,6 +123,10 @@ export const TreeBrowserTable = () => {
     [],
   );
 
+  const totalCount = useMemo(
+    () => searchList.reduce((sum, item) => sum + (item?.count || 0), 0),
+    [searchList],
+  );
   if (error) {
     return (
       <Alert status='error'>
@@ -199,13 +204,13 @@ export const TreeBrowserTable = () => {
                   isIncludedInSearch={id => {
                     return searchList.some(item => item.id === id);
                   }}
-                  addToSearch={({ ontology, id, label }) => {
+                  addToSearch={({ ontology, id, label, count }) => {
                     setSearchList(prev => {
                       //if it already exists in the list, remove it
                       if (prev.some(item => item.id === id)) {
                         return prev.filter(item => item.id !== id);
                       } else {
-                        return [...prev, { ontology, id, label: label }];
+                        return [...prev, { ontology, id, label: label, count }];
                       }
                     });
                   }}
@@ -248,45 +253,52 @@ export const TreeBrowserTable = () => {
               maxHeight={300}
               overflow='auto'
             >
-              {searchList.map(({ id, ontology, label }, index) => (
+              {searchList.map(({ id, count, ontology, label }, index) => (
                 <Flex
                   key={`${ontology}-${id}`}
                   px={2}
                   py={1}
                   bg={index % 2 ? 'primary.50' : 'transparent'}
+                  alignItems='center'
                 >
-                  <Text
-                    fontSize='xs'
-                    lineHeight='short'
-                    color='text.body'
-                    wordBreak='break-word'
-                    fontWeight='normal'
-                    textAlign='left'
+                  <Box
                     flex={1}
-                    display='flex'
-                    alignItems='center'
+                    fontWeight='normal'
+                    lineHeight='short'
+                    textAlign='left'
+                    wordBreak='break-word'
                   >
-                    {label}
-                    <Text
-                      as='span'
-                      fontSize='12px'
-                      color='primary.800'
-                      ml={1}
-                      borderLeft='1px solid'
-                      borderLeftColor='gray.400'
-                      pl={1}
-                    >
+                    <Text color='gray.800' fontSize='12px'>
                       {id}
                     </Text>
-                  </Text>
+                    <Text
+                      color='text.body'
+                      fontSize='xs'
+                      fontWeight='medium'
+                      lineHeight='inherit'
+                    >
+                      {label}
+                    </Text>
+                  </Box>
+                  <Tooltip label='Number of matching resources in NIAID Discovery Portal'>
+                    <Tag
+                      borderRadius='full'
+                      colorScheme={count === 0 ? 'gray' : 'primary'}
+                      variant='subtle'
+                      size='sm'
+                    >
+                      {count?.toLocaleString() || 0}
+                    </Tag>
+                  </Tooltip>
+
                   <IconButton
                     aria-label='remove item from search'
                     icon={<Icon as={FaX} boxSize={2.5} />}
                     variant='ghost'
-                    colorScheme='red'
+                    colorScheme='gray'
                     size='sm'
                     p={1}
-                    color='red.500'
+                    ml={2}
                     boxSize={6}
                     minWidth={6}
                     onClick={() => {
@@ -324,15 +336,14 @@ export const TreeBrowserTable = () => {
                 router.push({
                   pathname: `/search`,
                   query: {
-                    q: `${router.query.q} AND (${termsWithFields.join(
-                      ' AND ',
-                    )})`,
+                    q: `${
+                      router.query.q ? `${router.query.q} AND ` : ''
+                    }(${termsWithFields.join(' AND ')})`,
                   },
                 });
               }}
             >
-              Search for {searchList.length}{' '}
-              {searchList.length > 1 ? 'values' : 'value'}
+              Search {totalCount.toLocaleString()} resources
             </Button>
           </Flex>
         )}
@@ -355,6 +366,7 @@ const TreeNode = ({
     ontology: string;
     label: string;
     id: string;
+    count?: number;
   }) => void;
   data: OntologyTreeItem[];
   depth: number;
@@ -411,7 +423,7 @@ const TreeNode = ({
       }
       if (!querystring) return null;
       return fetchSearchResults({
-        q: router.query.q + ' AND ' + `(${querystring})`,
+        q: router.query.q ? `${router.query.q} AND ` : '' + `(${querystring})`,
         size: 0,
       });
     },
@@ -481,33 +493,31 @@ const TreeNode = ({
         ) : (
           <Box mx={4}></Box>
         )}
-        <HStack
-          spacing={2}
+        <Box
+          alignItems='flex-start'
           flex={1}
-          ml={`${MARGIN}px`}
-          divider={
-            <Box
-              borderColor='gray.200'
-              borderLeftWidth={'32px'}
-              w='auto'
-              h='auto'
-              ml={2}
-              my={4}
-              alignSelf='center'
-            />
-          }
+          fontWeight='normal'
+          lineHeight='short'
+          ml={2}
+          textAlign='left'
+          wordBreak='break-word'
         >
+          <Text color='gray.800' fontSize='12px'>
+            {node.taxonId}
+          </Text>
+
           <Link href={node.iri} fontSize='xs' isExternal>
             <Text
               color={node.state.selected ? 'primary.500' : 'currentColor'}
-              fontWeight={node.state.selected ? 'semibold' : 'normal'}
+              fontWeight={node.state.selected ? 'semibold' : 'medium'}
+              lineHeight='inherit'
               textAlign='left'
-              fontSize='sm'
+              fontSize='xs'
             >
               {node.label}
             </Text>
           </Link>
-        </HStack>
+        </Box>
         <HStack>
           <Tooltip label='Number of matching resources in NIAID Discovery Portal'>
             <Tag
@@ -541,6 +551,7 @@ const TreeNode = ({
                 id: node.taxonId,
                 label: node.label,
                 ontology: node.ontology_name,
+                count,
               });
             }}
           />
@@ -580,6 +591,7 @@ const Tree = ({
     ontology: string;
     label: string;
     id: string;
+    count?: number;
   }) => void;
   isIncludedInSearch: (id: string) => boolean;
   queryId: string;
