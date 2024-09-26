@@ -9,6 +9,7 @@ import {
   VisuallyHidden,
   Heading,
   Skeleton,
+  VStack,
 } from '@chakra-ui/react';
 import { Link } from 'src/components/link';
 import { Funding as FundingType } from 'src/utils/api/types';
@@ -294,10 +295,18 @@ const ContentWithTag = React.memo(
     if (!url && !identifier && !name) {
       return <EmptyCell />;
     }
+
+    const href = url
+      ? url
+      : // check if it's a ror identifier
+      identifier?.startsWith('https://ror.org/')
+      ? identifier
+      : '';
+
     return (
       <>
-        {url && !identifier ? (
-          <Link href={url} isExternal>
+        {href && !identifier ? (
+          <Link href={href} isExternal>
             <Text fontSize='inherit'>{name || 'Funding Information'}</Text>
           </Link>
         ) : (
@@ -309,7 +318,7 @@ const ContentWithTag = React.memo(
         {identifier && (
           <TagWithUrl
             colorScheme='orange'
-            href={url || ''}
+            href={href || ''}
             label={label}
             isExternal
             mt={0.5}
@@ -362,79 +371,97 @@ const FundingDrawerContent = React.memo(
                       <Label as='dt' textTransform='capitalize' px={2}>
                         Funder
                       </Label>
-                      {funder?.name && (
-                        <Box as='dd' px={4} py={1}>
-                          <Content fontWeight='semibold' my={0}>
-                            {funder.name}
-                            {alternateNames && (
-                              <Text color='gray.800' fontWeight='normal'>
-                                Alternate Name:{' '}
-                                {alternateNames.join(', ') || '-'}
-                              </Text>
+                      <VStack px={4} py={1} spacing={1} alignItems='flex-start'>
+                        {funder?.name && (
+                          <dd>
+                            <Content fontWeight='semibold' my={0}>
+                              {funder.name}
+                              {alternateNames && (
+                                <Text color='gray.800' fontWeight='normal'>
+                                  Alternate Name:{' '}
+                                  {alternateNames.join(', ') || '-'}
+                                </Text>
+                              )}
+                            </Content>
+                          </dd>
+                        )}
+
+                        {(funder?.class ||
+                          funder?.role ||
+                          funder?.parentOrganization ||
+                          funder?.employee) && (
+                          <>
+                            {funder?.class && (
+                              <Flex alignItems='baseline'>
+                                <Label
+                                  as='dt'
+                                  textTransform='capitalize'
+                                  fontWeight='medium'
+                                >
+                                  Class:
+                                </Label>
+                                <Content as='dd' my={0} ml={1}>
+                                  {Array.isArray(funder.class)
+                                    ? funder.class.join(', ')
+                                    : funder.class}
+                                </Content>
+                              </Flex>
                             )}
-                          </Content>
-                        </Box>
-                      )}
+                            {funder?.role && (
+                              <Flex alignItems='baseline'>
+                                <Label
+                                  as='dt'
+                                  textTransform='capitalize'
+                                  fontWeight='medium'
+                                >
+                                  Role:
+                                </Label>
+                                <Content as='dd' my={0} ml={1}>
+                                  {Array.isArray(funder.role)
+                                    ? funder.role.join(', ')
+                                    : funder.role}
+                                </Content>
+                              </Flex>
+                            )}
 
-                      {(funder?.class ||
-                        funder?.role ||
-                        funder?.parentOrganization ||
-                        funder?.employee) && (
-                        <>
-                          {funder?.class && (
-                            <Box px={4} py={1}>
-                              <Label as='dt' textTransform='capitalize'>
-                                Class
-                              </Label>
-                              <Content as='dd' my={1}>
-                                {Array.isArray(funder.class)
-                                  ? funder.class.join(', ')
-                                  : funder.class}
-                              </Content>
-                            </Box>
-                          )}
-                          {funder?.role && (
-                            <Box px={4} py={1}>
-                              <Label as='dt' textTransform='capitalize'>
-                                Role
-                              </Label>
-                              <Content as='dd' my={1}>
-                                {Array.isArray(funder.role)
-                                  ? funder.role.join(', ')
-                                  : funder.role}
-                              </Content>
-                            </Box>
-                          )}
+                            {funder?.parentOrganization && (
+                              <Flex alignItems='baseline'>
+                                <Label
+                                  as='dt'
+                                  textTransform='capitalize'
+                                  fontWeight='medium'
+                                >
+                                  Parent Organization:
+                                </Label>
+                                <Content as='dd' my={0} ml={1}>
+                                  {Array.isArray(funder.parentOrganization)
+                                    ? funder.parentOrganization.join(', ')
+                                    : funder.parentOrganization}
+                                </Content>
+                              </Flex>
+                            )}
 
-                          {funder?.parentOrganization && (
-                            <Box px={4} py={1}>
-                              <Label as='dt' textTransform='capitalize'>
-                                Parent Organization
-                              </Label>
-                              <Content as='dd' my={1}>
-                                {Array.isArray(funder.parentOrganization)
-                                  ? funder.parentOrganization.join(', ')
-                                  : funder.parentOrganization}
-                              </Content>
-                            </Box>
-                          )}
-
-                          {funder?.employee && (
-                            <Box px={4} py={1}>
-                              <Label as='dt' textTransform='capitalize'>
-                                Employee
-                              </Label>
-                              <Content as='dd' my={1}>
-                                {funder.employee.map(employee => {
-                                  return Array.isArray(employee.name)
-                                    ? employee.name.join(', ')
-                                    : employee.name;
-                                })}
-                              </Content>
-                            </Box>
-                          )}
-                        </>
-                      )}
+                            {funder?.employee && (
+                              <Flex alignItems='baseline'>
+                                <Label
+                                  as='dt'
+                                  textTransform='capitalize'
+                                  fontWeight='medium'
+                                >
+                                  Employee:
+                                </Label>
+                                <Content as='dd' my={0} ml={1}>
+                                  {funder.employee.map(employee => {
+                                    return Array.isArray(employee.name)
+                                      ? employee.name.join(', ')
+                                      : employee.name;
+                                  })}
+                                </Content>
+                              </Flex>
+                            )}
+                          </>
+                        )}
+                      </VStack>
                     </Box>
                   );
                 })}
