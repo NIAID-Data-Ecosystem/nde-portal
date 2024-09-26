@@ -15,7 +15,6 @@ import {
   Tag,
   Text,
   UnorderedList,
-  VStack,
 } from '@chakra-ui/react';
 import { useQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/router';
@@ -136,7 +135,7 @@ export const TreeBrowserTable = () => {
   }
   return (
     <>
-      <HStack w='100%' alignItems='flex-start' spacing={10} flexWrap='wrap'>
+      <Flex w='100%' alignItems='flex-start' flexWrap='wrap'>
         <Box flex={2} minWidth='500px'>
           {selectedNode && (
             <Flex
@@ -219,135 +218,138 @@ export const TreeBrowserTable = () => {
             )}
           </Box>
         </Box>
-
         {/* Search List */}
-        {searchList && searchList.length > 0 && (
-          <Flex
-            flexDirection='column'
-            flex={1}
-            maxWidth='400px'
-            mt={7}
-            alignItems='flex-end'
-          >
-            <Flex justifyContent='space-between' w='100%'>
-              <Text fontSize='sm' fontWeight='medium' mb={1} lineHeight='tall'>
-                List of search values
-              </Text>
-              <Button
-                size='sm'
-                onClick={() => setSearchList([])}
-                variant='link'
-              >
-                Clear all
-              </Button>
-            </Flex>
-            {/* Search list */}
-            <Box
-              flex={1}
-              w='100%'
-              flexDirection='column'
-              bg='white'
-              border='1px solid'
-              borderRadius='semi'
-              borderColor='niaid.placeholder'
-              maxHeight={300}
-              overflow='auto'
-            >
-              {searchList.map(({ id, count, ontology, label }, index) => (
-                <Flex
-                  key={`${ontology}-${id}`}
-                  px={2}
-                  py={1}
-                  bg={index % 2 ? 'primary.50' : 'transparent'}
-                  alignItems='center'
-                >
-                  <Box
-                    flex={1}
-                    fontWeight='normal'
-                    lineHeight='short'
-                    textAlign='left'
-                    wordBreak='break-word'
-                  >
-                    <Text color='gray.800' fontSize='12px'>
-                      {id}
-                    </Text>
-                    <Text
-                      color='text.body'
-                      fontSize='xs'
-                      fontWeight='medium'
-                      lineHeight='inherit'
-                    >
-                      {label}
-                    </Text>
-                  </Box>
-                  <Tooltip label='Number of matching resources in NIAID Discovery Portal'>
-                    <Tag
-                      borderRadius='full'
-                      colorScheme={count === 0 ? 'gray' : 'primary'}
-                      variant='subtle'
-                      size='sm'
-                    >
-                      {count?.toLocaleString() || 0}
-                    </Tag>
-                  </Tooltip>
-
-                  <IconButton
-                    aria-label='remove item from search'
-                    icon={<Icon as={FaX} boxSize={2.5} />}
-                    variant='ghost'
-                    colorScheme='gray'
-                    size='sm'
-                    p={1}
-                    ml={2}
-                    boxSize={6}
-                    minWidth={6}
-                    onClick={() => {
-                      setSearchList(prev =>
-                        prev.filter(item => item.label !== label),
-                      );
-                    }}
-                  />
-                </Flex>
-              ))}
-            </Box>
-            <Button
-              mt={2}
-              leftIcon={<FaMagnifyingGlass />}
-              size='sm'
-              onClick={() => {
-                const termsWithFields = searchList.map(node => {
-                  const id = formatIdentifier(node);
-                  let querystring = router.query.q;
-                  if (node.ontology === 'ncbitaxon') {
-                    querystring = `(species.identifier: "${id}" OR infectiousAgent.identifier: "${id}")`;
-                  } else if (node.ontology === 'edam') {
-                    querystring = `(topicCategory.identifier: "${id}")`;
-                  }
-                  return querystring;
-                });
-                // const terms = searchList.map(node => {
-                //   if (node.id.includes('NCBITaxon')) {
-                //     return node.id.split('_')[1];
-                //   }
-                //   return node.id;
-                // });
-                // const q = `"${termsWithFields.join('" OR "')}"`;
-
-                router.push({
-                  pathname: `/search`,
-                  query: {
-                    q: `${
-                      router.query.q ? `${router.query.q} AND ` : ''
-                    }(${termsWithFields.join(' AND ')})`,
-                  },
-                });
-              }}
-            >
-              Search {totalCount.toLocaleString()} resources
+        <Flex
+          className='search-list'
+          alignItems='flex-end'
+          flexDirection='column'
+          maxWidth='350px'
+          mt={7}
+          ml={searchList?.length > 0 ? 8 : 0}
+          overflow={searchList?.length > 0 ? 'auto' : 'hidden'}
+          transform={
+            searchList?.length > 0 ? 'translateX(0)' : 'translateX(100%)'
+          }
+          w={searchList?.length > 0 ? '350px' : '0px'}
+          transitionDuration='slow'
+          transitionProperty='width, transform'
+          transitionTimingFunction='ease-in-out'
+        >
+          <Flex justifyContent='space-between' w='100%' px={1}>
+            <Text fontSize='sm' fontWeight='medium' mb={1} lineHeight='tall'>
+              List of search values
+            </Text>
+            <Button size='sm' onClick={() => setSearchList([])} variant='link'>
+              Clear all
             </Button>
           </Flex>
-        )}
-      </HStack>
+          {/* Search list */}
+          <Box
+            flex={1}
+            w='100%'
+            flexDirection='column'
+            bg='white'
+            border='1px solid'
+            borderRadius='semi'
+            borderColor='niaid.placeholder'
+            maxHeight={300}
+            overflow='auto'
+          >
+            {searchList.map(({ id, count, ontology, label }, index) => (
+              <Flex
+                key={`${ontology}-${id}`}
+                px={2}
+                py={1}
+                bg={index % 2 ? 'primary.50' : 'transparent'}
+                alignItems='center'
+              >
+                <Box
+                  flex={1}
+                  fontWeight='normal'
+                  lineHeight='short'
+                  textAlign='left'
+                  wordBreak='break-word'
+                >
+                  <Text color='gray.800' fontSize='12px'>
+                    {id}
+                  </Text>
+                  <Text
+                    color='text.body'
+                    fontSize='xs'
+                    fontWeight='medium'
+                    lineHeight='inherit'
+                  >
+                    {label}
+                  </Text>
+                </Box>
+                <Tooltip label='Number of matching resources in NIAID Discovery Portal'>
+                  <Tag
+                    borderRadius='full'
+                    colorScheme={count === 0 ? 'gray' : 'primary'}
+                    variant='subtle'
+                    size='sm'
+                  >
+                    {count?.toLocaleString() || 0}
+                  </Tag>
+                </Tooltip>
+
+                <IconButton
+                  aria-label='remove item from search'
+                  icon={<Icon as={FaX} boxSize={2.5} />}
+                  variant='ghost'
+                  colorScheme='gray'
+                  size='sm'
+                  p={1}
+                  ml={2}
+                  boxSize={6}
+                  minWidth={6}
+                  onClick={() => {
+                    setSearchList(prev =>
+                      prev.filter(item => item.label !== label),
+                    );
+                  }}
+                />
+              </Flex>
+            ))}
+          </Box>
+          <Button
+            mt={2}
+            leftIcon={<FaMagnifyingGlass />}
+            size='sm'
+            onClick={() => {
+              const termsWithFields = searchList.map(node => {
+                const id = formatIdentifier(node);
+                let querystring = router.query.q;
+                if (node.ontology === 'ncbitaxon') {
+                  querystring = `(species.identifier: "${id}" OR infectiousAgent.identifier: "${id}")`;
+                } else if (node.ontology === 'edam') {
+                  querystring = `(topicCategory.identifier: "${id}")`;
+                }
+                return querystring;
+              });
+              // const terms = searchList.map(node => {
+              //   if (node.id.includes('NCBITaxon')) {
+              //     return node.id.split('_')[1];
+              //   }
+              //   return node.id;
+              // });
+              // const q = `"${termsWithFields.join('" OR "')}"`;
+
+              router.push({
+                pathname: `/search`,
+                query: {
+                  q: `${
+                    router.query.q ? `${router.query.q} AND ` : ''
+                  }(${termsWithFields.join(' AND ')})`,
+                },
+              });
+            }}
+          >
+            Search {totalCount.toLocaleString()} resources
+          </Button>
+        </Flex>
+        {/* )} */}
+      </Flex>
     </>
   );
 };
