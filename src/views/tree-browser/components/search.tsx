@@ -8,6 +8,7 @@ import {
   Icon,
   ListItem,
   Tag,
+  TagLabel,
   Text,
   UnorderedList,
 } from '@chakra-ui/react';
@@ -34,8 +35,14 @@ type OntologyOption = {
 };
 
 const ONTOLOGY_OPTIONS: OntologyOption[] = [
-  { name: 'NCBI Taxonomy', value: 'ncbitaxon' },
-  { name: 'EDAM', value: 'edam' },
+  {
+    name: 'NCBI Taxonomy',
+    value: 'ncbitaxon',
+  },
+  {
+    name: 'EDAM',
+    value: 'edam',
+  },
 ];
 
 export const TreeBrowserSearch = ({
@@ -221,7 +228,7 @@ export const TreeBrowserSearch = ({
               px={3}
               ml={2}
             >
-              {selectedOntologies.length}
+              <TagLabel>{selectedOntologies.length}</TagLabel>
             </Tag>
           </Text>
         }

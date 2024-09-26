@@ -424,8 +424,9 @@ const TreeNode = ({
         querystring = `topicCategory.identifier: "${id}"`;
       }
       if (!querystring) return null;
+
       return fetchSearchResults({
-        q: router.query.q ? `${router.query.q} AND ` : '' + `(${querystring})`,
+        q: `${router.query.q ? `${router.query.q} AND ` : ''}(${querystring})`,
         size: 0,
       });
     },
