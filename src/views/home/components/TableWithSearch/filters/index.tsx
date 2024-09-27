@@ -1,7 +1,7 @@
 import { TableData } from '..';
 import { useMemo } from 'react';
 import { getFilterData } from '../helpers';
-import { CheckboxList } from './checkbox-list';
+import { CheckboxList } from 'src/components/checkbox-list';
 import { formatDomainName, formatTypeName } from '../helpers';
 import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
 
@@ -58,13 +58,12 @@ export const Filters = ({ data, filters, updateFilter }: TableFiltersProps) => {
       {types.length > 0 && (
         <CheckboxList
           label='Type'
-          property='type'
           description={SCHEMA_DEFINITIONS['type'].abstract['Dataset']}
           options={types.sort((a, b) => a.name.localeCompare(b.name))}
           selectedOptions={
             filters.filter(item => item.property === 'type') || []
           }
-          handleChange={updateFilter}
+          handleChange={props => updateFilter({ ...props, property: 'type' })}
         />
       )}
 
@@ -72,13 +71,12 @@ export const Filters = ({ data, filters, updateFilter }: TableFiltersProps) => {
       {domains.length > 0 && (
         <CheckboxList
           label='Research Domain'
-          property='domain'
           description={SCHEMA_DEFINITIONS['domain'].abstract['Dataset']}
           options={domains.sort((a, b) => a.name.localeCompare(b.name))}
           selectedOptions={
             filters.filter(item => item.property === 'domain') || []
           }
-          handleChange={updateFilter}
+          handleChange={props => updateFilter({ ...props, property: 'domain' })}
         />
       )}
 
@@ -86,7 +84,6 @@ export const Filters = ({ data, filters, updateFilter }: TableFiltersProps) => {
       {conditionsOfAccess.length > 0 && (
         <CheckboxList
           label='Access'
-          property='conditionsOfAccess'
           description={
             SCHEMA_DEFINITIONS['conditionsOfAccess'].abstract['Dataset']
               .charAt(0)
@@ -102,7 +99,9 @@ export const Filters = ({ data, filters, updateFilter }: TableFiltersProps) => {
           selectedOptions={
             filters.filter(item => item.property === 'conditionsOfAccess') || []
           }
-          handleChange={updateFilter}
+          handleChange={props =>
+            updateFilter({ ...props, property: 'conditionsOfAccess' })
+          }
         />
       )}
     </>

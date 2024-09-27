@@ -12,47 +12,57 @@ import {
   PopoverBody,
   PopoverArrow,
   Text,
+  FlexProps,
+  PopoverProps,
+  ButtonProps,
 } from '@chakra-ui/react';
+import React from 'react';
 import { FaCaretDown } from 'react-icons/fa6';
 import { ScrollContainer } from 'src/components/scroll-container';
-
-interface CheckboxListProps {
-  property: string;
-  description?: string;
-  options: { name: string; value: string; count: number }[];
-  label: string;
-  selectedOptions: { name: string; value: string; property: string }[];
-  handleChange: (filters: {
-    name: string;
-    value: string;
-    property: string;
-  }) => void;
+interface Option {
+  name: string;
+  value: string;
+  count?: number;
 }
 
-export const CheckboxList = ({
+interface CheckboxListProps<T extends Option> extends FlexProps {
+  buttonProps?: ButtonProps;
+  description?: string;
+  handleChange: (filters: T) => void;
+  label: string | React.ReactNode;
+  options: T[];
+  selectedOptions: T[];
+  size?: PopoverProps['size'];
+}
+
+export const CheckboxList = <T extends Option>({
   label,
   options,
-  property,
   description,
   handleChange,
   selectedOptions,
-}: CheckboxListProps) => {
+  size = 'md',
+  buttonProps,
+  ...rest
+}: CheckboxListProps<T>) => {
   return (
-    <Flex flex={{ base: 1, sm: 'unset' }} height={{ base: 'unset' }}>
+    <Flex flex={{ base: 1, sm: 'unset' }} height={{ base: 'unset' }} {...rest}>
       <Popover>
         <PopoverTrigger>
           <Button
             colorScheme='gray'
             flex={1}
             fontWeight='medium'
+            fontSize='inherit'
             lineHeight='shorter'
-            size='md'
+            size={size}
             px={4}
             rightIcon={<FaCaretDown />}
             variant='outline'
             justifyContent='space-between'
+            {...buttonProps}
           >
-            {label}
+            {buttonProps?.children || label}
           </Button>
         </PopoverTrigger>
         <PopoverContent>
@@ -82,25 +92,22 @@ export const CheckboxList = ({
                 value={selectedOptions.map(item => item.value)}
               >
                 <Stack spacing={1} direction='column'>
-                  {options.map(option => {
-                    return (
-                      <Checkbox
-                        key={option.value}
-                        value={option.value}
-                        onChange={e => {
-                          handleChange({
-                            name: option.name,
-                            property,
-                            value: e.target.value,
-                          });
-                        }}
-                        px={1}
-                        _hover={{ bg: 'tertiary.50' }}
-                      >
-                        <Text fontSize='sm'>{option.name}</Text>
-                      </Checkbox>
-                    );
-                  })}
+                  {options.map(option => (
+                    <Checkbox
+                      key={option.value}
+                      value={option.value}
+                      onChange={e => {
+                        handleChange({
+                          name: option.name,
+                          value: e.target.value,
+                        } as T);
+                      }}
+                      px={1}
+                      _hover={{ bg: 'tertiary.50' }}
+                    >
+                      <Text fontSize='sm'>{option.name}</Text>
+                    </Checkbox>
+                  ))}
                 </Stack>
               </CheckboxGroup>
             </ScrollContainer>
