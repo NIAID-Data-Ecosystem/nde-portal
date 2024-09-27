@@ -12,8 +12,12 @@ const OntologyBrowserOptions = [
     name: 'NCBI Taxonomy',
     value: 'ncbitaxon',
     relatedPortalSchemaProperties: [
+      'infectiousAgent.displayName',
       'infectiousAgent.displayName.raw',
+      'infectiousAgent.name',
+      'species.displayName',
       'species.displayName.raw',
+      'species.name',
     ],
   },
   {
@@ -141,6 +145,7 @@ export const TopicBrowserPopUp = ({
         query: {
           q: querystring,
           id: suggestions?.[0]?.short_form || '',
+          onto: ontology?.value,
         },
       }}
     >

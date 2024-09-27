@@ -57,6 +57,17 @@ export const TreeBrowserSearch = ({
     useState(ONTOLOGY_OPTIONS);
 
   useEffect(() => {
+    if (router?.query?.onto) {
+      setSelectedOntologies(
+        ONTOLOGY_OPTIONS.filter(
+          option =>
+            router?.query?.onto && router?.query?.onto.includes(option.value),
+        ),
+      );
+    }
+  }, [router?.query?.onto]);
+
+  useEffect(() => {
     const handler = setTimeout(() => setDebouncedTerm(searchTerm), 300);
     return () => clearTimeout(handler);
   }, [searchTerm]);
@@ -216,7 +227,7 @@ export const TreeBrowserSearch = ({
                 ? 'all'
                 : `selected`
             } ontologies`} */}
-            Selected Ontologies
+            Selected ontologies
             <Tag
               variant='outline'
               color='inherit'
