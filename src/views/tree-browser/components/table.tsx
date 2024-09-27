@@ -282,7 +282,7 @@ export const TreeBrowserTable = () => {
                     {label}
                   </Text>
                 </Box>
-                <Tooltip label='Number of matching resources in NIAID Discovery Portal'>
+                <Tooltip label='Number of potential matching resources in NIAID Discovery Portal'>
                   <Tag
                     borderRadius='full'
                     colorScheme={count === 0 ? 'gray' : 'primary'}
@@ -345,7 +345,7 @@ export const TreeBrowserTable = () => {
               });
             }}
           >
-            Search {totalCount.toLocaleString()} resources
+            Search resources
           </Button>
         </Flex>
         {/* )} */}
@@ -522,7 +522,7 @@ const TreeNode = ({
           </Link>
         </Box>
         <HStack>
-          <Tooltip label='Number of matching resources in NIAID Discovery Portal'>
+          <Tooltip label='Number of potential matching resources in NIAID Discovery Portal'>
             <Tag
               borderRadius='full'
               colorScheme={!countIsLoading && count === 0 ? 'gray' : 'primary'}
