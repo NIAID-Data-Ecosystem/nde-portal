@@ -25,13 +25,19 @@ interface Option {
   count?: number;
 }
 
+interface Option {
+  name: string;
+  value: string;
+  count?: number;
+}
+
 interface CheckboxListProps<T extends Option> extends FlexProps {
   buttonProps?: ButtonProps;
   description?: string;
   handleChange: (filters: T) => void;
   label: string | React.ReactNode;
   options: T[];
-  selectedOptions: T[];
+  selectedOptions: Pick<T, 'name' | 'value'>[];
   size?: PopoverProps['size'];
 }
 
