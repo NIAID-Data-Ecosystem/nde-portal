@@ -76,7 +76,7 @@ export const OntologyBrowserTable = () => {
     isLoading,
     data: allData,
   } = useQuery({
-    queryKey: ['ontology-browser-search', queryParams.id, queryParams.ontology],
+    queryKey: ['ontology-browser-tree', queryParams.id, queryParams.ontology],
     queryFn: () => fetchOntologyTreeByTaxonId(queryParams),
     refetchOnWindowFocus: false,
     enabled: router.isReady && !!queryParams.id,
@@ -531,6 +531,7 @@ const TreeNode = ({
         >
           {childrenList.length > 0 || node.hasChildren ? (
             <IconButton
+              as='div'
               aria-label='Search database'
               icon={<FaAngleRight />}
               variant='ghost'

@@ -74,11 +74,20 @@ const findRelatedOntology = (
 
       // Check if the querystring contains the property
       if (querystring && querystring.includes(property)) {
+        let term = extractSubstringFromQueryString(querystring, property);
+        if (property.includes('identifier')) {
+          if (ontology.value === 'ncbitaxon') {
+            term = `${ontology.value}_${term}`;
+          } else if (ontology.value === 'edam') {
+            term = `${term?.replace('topic', 'EDAM')}`;
+          }
+        }
+
         return {
           hasOntology: true,
           ontology,
           property,
-          term: extractSubstringFromQueryString(querystring, property),
+          term,
         };
       }
     }
