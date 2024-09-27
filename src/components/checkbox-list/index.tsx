@@ -19,6 +19,7 @@ import {
 import React from 'react';
 import { FaCaretDown } from 'react-icons/fa6';
 import { ScrollContainer } from 'src/components/scroll-container';
+
 interface Option {
   name: string;
   value: string;
@@ -31,7 +32,7 @@ interface CheckboxListProps<T extends Option> extends FlexProps {
   handleChange: (filters: T) => void;
   label: string | React.ReactNode;
   options: T[];
-  selectedOptions: T[];
+  selectedOptions: Pick<T, 'name' | 'value'>[];
   size?: PopoverProps['size'];
 }
 
