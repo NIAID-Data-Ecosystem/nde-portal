@@ -29,6 +29,7 @@ import {
   fetchOntologyChildrenByNodeId,
   fetchOntologyTreeByTaxonId,
   getChildren,
+  ONTOLOGY_BROWSER_OPTIONS,
   OntologyTreeItem,
   OntologyTreeParams,
 } from '../helpers';
@@ -48,7 +49,13 @@ export const TreeBrowserTable = () => {
   const id = router.query.id || 'NCBITaxon_1';
   const [lineage, setLineage] = useState<OntologyTreeItem[] | null>(null);
   const [searchList, setSearchList] = useState<
-    { ontology: string; id: string; label: string; count?: number }[]
+    {
+      ontology: string;
+      id: string;
+      label: string;
+      facet: string;
+      count?: number;
+    }[]
   >([]);
   const [showFromIndex, setShowFromIndex] = useState(0);
   const [viewMode, setViewMode] = useState('condensed');
@@ -122,10 +129,6 @@ export const TreeBrowserTable = () => {
     [],
   );
 
-  const totalCount = useMemo(
-    () => searchList.reduce((sum, item) => sum + (item?.count || 0), 0),
-    [searchList],
-  );
   if (error) {
     return (
       <Alert status='error'>
@@ -203,13 +206,13 @@ export const TreeBrowserTable = () => {
                   isIncludedInSearch={id => {
                     return searchList.some(item => item.id === id);
                   }}
-                  addToSearch={({ ontology, id, label, count }) => {
+                  addToSearch={({ ontology, id, label, facet, count }) => {
                     setSearchList(prev => {
                       //if it already exists in the list, remove it
                       if (prev.some(item => item.id === id)) {
                         return prev.filter(item => item.id !== id);
                       } else {
-                        return [...prev, { ontology, id, label: label, count }];
+                        return [...prev, { ontology, id, label, facet, count }];
                       }
                     });
                   }}
@@ -317,30 +320,19 @@ export const TreeBrowserTable = () => {
             leftIcon={<FaMagnifyingGlass />}
             size='sm'
             onClick={() => {
-              const termsWithFields = searchList.map(node => {
-                const id = formatIdentifier(node);
-                let querystring = router.query.q;
-                if (node.ontology === 'ncbitaxon') {
-                  querystring = `(species.identifier: "${id}" OR infectiousAgent.identifier: "${id}")`;
-                } else if (node.ontology === 'edam') {
-                  querystring = `(topicCategory.identifier: "${id}")`;
-                }
-                return querystring;
-              });
-              // const terms = searchList.map(node => {
-              //   if (node.id.includes('NCBITaxon')) {
-              //     return node.id.split('_')[1];
-              //   }
-              //   return node.id;
-              // });
-              // const q = `"${termsWithFields.join('" OR "')}"`;
+              const termsWithFieldsString = searchList.reduce(
+                (querystring, node) => {
+                  const id = formatIdentifier(node);
+                  const joiner = querystring ? ' AND ' : '';
+                  return `${querystring}${joiner}${node.facet}:"${id}"`;
+                },
+                router?.query?.q || '',
+              );
 
               router.push({
                 pathname: `/search`,
                 query: {
-                  q: `${
-                    router.query.q ? `${router.query.q} AND ` : ''
-                  }(${termsWithFields.join(' AND ')})`,
+                  q: termsWithFieldsString,
                 },
               });
             }}
@@ -368,6 +360,7 @@ const TreeNode = ({
     ontology: string;
     label: string;
     id: string;
+    facet: string;
     count?: number;
   }) => void;
   data: OntologyTreeItem[];
@@ -407,30 +400,80 @@ const TreeNode = ({
   const router = useRouter();
 
   const {
-    error: countError,
     isLoading: countIsLoading,
-    data: count,
+    data: { total: count, property } = { total: 0, property: '' },
   } = useQuery({
     queryKey: ['fetch-count', node.id],
-    queryFn: () => {
+    queryFn: async () => {
       if (!node.id) {
-        return null;
+        return {
+          total: 0,
+          property: '',
+        };
       }
-      const id = formatIdentifier({ id: node.taxonId });
-      let querystring = '';
-      if (node.ontology_name === 'ncbitaxon') {
-        querystring = `species.identifier: "${id}" OR infectiousAgent.identifier: "${id}"`;
-      } else if (node.ontology_name === 'edam') {
-        querystring = `topicCategory.identifier: "${id}"`;
-      }
-      if (!querystring) return null;
 
-      return fetchSearchResults({
-        q: `${router.query.q ? `${router.query.q} AND ` : ''}(${querystring})`,
-        size: 0,
-      });
+      const id = formatIdentifier({ id: node.taxonId });
+
+      // Separate query handlers for ncbitaxon and edam
+      if (node.ontology_name === 'ncbitaxon') {
+        const species_property = 'species.identifier';
+        const infectiousAgent_property = 'infectiousAgent.identifier';
+
+        /*
+        Based on the counts (maybe by running multiple queries), we can decide which property to use (i.e. infectiousAgent vs species) when executing the final search.
+        Then instead of "OR"ing these two general categories which could be really long depending on the onto. We can drill down further to the specific property. (i.e. species.identifier:"####" OR species.name "-----")
+        */
+        const speciesQuery = fetchSearchResults({
+          q: `${
+            router.query.q ? `${router.query.q} AND ` : ''
+          }(${species_property}:"${id}")`,
+          size: 0,
+        });
+
+        const infectiousAgentQuery = fetchSearchResults({
+          q: `${
+            router.query.q ? `${router.query.q} AND ` : ''
+          }(${infectiousAgent_property}:"${id}")`,
+          size: 0,
+        });
+
+        // Wait for both queries to complete
+        const [speciesResult, infectiousAgentResult] = await Promise.all([
+          speciesQuery,
+          infectiousAgentQuery,
+        ]);
+
+        if (speciesResult?.total) {
+          return { total: speciesResult.total, property: species_property };
+        } else if (infectiousAgentResult?.total) {
+          return {
+            total: infectiousAgentResult.total,
+            property: infectiousAgent_property,
+          };
+        }
+      } else if (node.ontology_name === 'edam') {
+        const topicCategory_property = 'topicCategory.identifier';
+        const edamQuery = fetchSearchResults({
+          q: `${
+            router.query.q ? `${router.query.q} AND ` : ''
+          }(${topicCategory_property}:"${id}")`,
+          size: 0,
+        });
+
+        const topicCategoryResult = await edamQuery;
+
+        return {
+          total: topicCategoryResult?.total || 0,
+          property: topicCategory_property,
+        };
+      }
+
+      return {
+        total: 0,
+        property: '',
+      };
     },
-    select: data => data?.total,
+    select: data => data,
     refetchOnWindowFocus: false,
     enabled: !!node.id,
   });
@@ -555,6 +598,7 @@ const TreeNode = ({
                 label: node.label,
                 ontology: node.ontology_name,
                 count,
+                facet: property,
               });
             }}
           />
@@ -594,6 +638,7 @@ const Tree = ({
     ontology: string;
     label: string;
     id: string;
+    facet: string;
     count?: number;
   }) => void;
   isIncludedInSearch: (id: string) => boolean;

@@ -5,27 +5,11 @@ import {
   SelectedFilterTypeValue,
 } from 'src/views/search-results-page/components/filters/types';
 import { useQuery } from '@tanstack/react-query';
-import { searchOntologyAPI, SearchParams } from '../helpers';
-
-const OntologyBrowserOptions = [
-  {
-    name: 'NCBI Taxonomy',
-    value: 'ncbitaxon',
-    relatedPortalSchemaProperties: [
-      'infectiousAgent.displayName',
-      'infectiousAgent.displayName.raw',
-      'infectiousAgent.name',
-      'species.displayName',
-      'species.displayName.raw',
-      'species.name',
-    ],
-  },
-  {
-    name: 'EDAM',
-    value: 'edam',
-    relatedPortalSchemaProperties: ['topicCategory.name'],
-  },
-];
+import {
+  ONTOLOGY_BROWSER_OPTIONS,
+  searchOntologyAPI,
+  SearchParams,
+} from '../helpers';
 
 const extractSubstringFromQueryString = (term: string, fieldName: string) => {
   const regex = new RegExp(`${fieldName}:"([^"]+)"(?=\\s*(AND|OR|NOT|$))`);
@@ -41,8 +25,12 @@ const extractValueFromSelectedFilters = (
     return '';
   }
   if (typeof term === 'string') {
-    if (fieldName.includes('displayName')) {
-      return term.split(' | ')[1].trim();
+    if (fieldName?.includes('displayName')) {
+      if (term.includes(' | ')) {
+        return term.split(' | ')[1];
+      } else {
+        return term;
+      }
     }
   }
 };
@@ -112,7 +100,7 @@ export const TopicBrowserPopUp = ({
   // Find the related ontology based on the selected filters
   const { hasOntology, ontology, term } = findRelatedOntology(
     { querystring, filters: selectedFilters },
-    OntologyBrowserOptions,
+    ONTOLOGY_BROWSER_OPTIONS,
   );
 
   // Fetch suggestions based on found value.

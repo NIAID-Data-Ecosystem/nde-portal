@@ -14,7 +14,12 @@ import {
 } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
 import { useQuery } from '@tanstack/react-query';
-import { searchOntologyAPI, SearchParams } from '../helpers';
+import {
+  ONTOLOGY_BROWSER_OPTIONS,
+  OntologyOption,
+  searchOntologyAPI,
+  SearchParams,
+} from '../helpers';
 import {
   DropdownInput,
   InputWithDropdown,
@@ -29,22 +34,6 @@ interface TreeBrowserSearchProps {
   size?: 'sm' | 'md' | 'lg';
 }
 
-type OntologyOption = {
-  name: string;
-  value: SearchParams['ontology'][number];
-};
-
-const ONTOLOGY_OPTIONS: OntologyOption[] = [
-  {
-    name: 'NCBI Taxonomy',
-    value: 'ncbitaxon',
-  },
-  {
-    name: 'EDAM',
-    value: 'edam',
-  },
-];
-
 export const TreeBrowserSearch = ({
   colorScheme = 'primary',
   size = 'md',
@@ -53,13 +42,14 @@ export const TreeBrowserSearch = ({
 
   const [searchTerm, setSearchTerm] = useState('');
   const [debouncedTerm, setDebouncedTerm] = useState(searchTerm);
-  const [selectedOntologies, setSelectedOntologies] =
-    useState(ONTOLOGY_OPTIONS);
+  const [selectedOntologies, setSelectedOntologies] = useState(
+    ONTOLOGY_BROWSER_OPTIONS,
+  );
 
   useEffect(() => {
     if (router?.query?.onto) {
       setSelectedOntologies(
-        ONTOLOGY_OPTIONS.filter(
+        ONTOLOGY_BROWSER_OPTIONS.filter(
           option =>
             router?.query?.onto && router?.query?.onto.includes(option.value),
         ),
@@ -82,7 +72,9 @@ export const TreeBrowserSearch = ({
     queryFn: () =>
       searchOntologyAPI({
         q: debouncedTerm ? debouncedTerm : '',
-        ontology: selectedOntologies.map(o => o.value),
+        ontology: selectedOntologies.map(
+          o => o.value,
+        ) as SearchParams['ontology'],
         queryFields: ['label', 'short_form', 'obo_id', 'iri'],
       }),
     refetchOnWindowFocus: false,
@@ -223,7 +215,7 @@ export const TreeBrowserSearch = ({
             w='100%'
           >
             {/* {`Searching ${
-              selectedOntologies.length === ONTOLOGY_OPTIONS.length
+              selectedOntologies.length === ONTOLOGY_BROWSER_OPTIONS.length
                 ? 'all'
                 : `selected`
             } ontologies`} */}
@@ -245,7 +237,7 @@ export const TreeBrowserSearch = ({
         }
         size='lg'
         description=''
-        options={ONTOLOGY_OPTIONS}
+        options={ONTOLOGY_BROWSER_OPTIONS}
         selectedOptions={selectedOntologies}
         handleChange={updateOntologySelection}
       />

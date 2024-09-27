@@ -2,6 +2,32 @@ import axios from 'axios';
 import { stratify } from '@visx/hierarchy';
 import { HierarchyNode } from '@visx/hierarchy/lib/types';
 
+export type OntologyOption = {
+  name: string;
+  value: SearchParams['ontology'][number];
+  relatedPortalSchemaProperties: string[];
+};
+
+export const ONTOLOGY_BROWSER_OPTIONS = [
+  {
+    name: 'NCBI Taxonomy',
+    value: 'ncbitaxon',
+    relatedPortalSchemaProperties: [
+      'infectiousAgent.displayName',
+      'infectiousAgent.displayName.raw',
+      'infectiousAgent.name',
+      'species.displayName',
+      'species.displayName.raw',
+      'species.name',
+    ],
+  },
+  {
+    name: 'EDAM',
+    value: 'edam',
+    relatedPortalSchemaProperties: ['topicCategory.name'],
+  },
+] as OntologyOption[];
+
 const OLS_API_URL = 'https://www.ebi.ac.uk/ols4/api';
 
 export interface SearchParams {
