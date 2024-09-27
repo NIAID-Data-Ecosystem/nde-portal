@@ -514,55 +514,60 @@ const TreeNode = ({
         alignItems='center'
         borderTop={depth !== 0 ? '0.25px solid' : 'none'}
         borderColor='gray.200'
-        px={4}
-        py={2}
+        sx={{ '>*': { px: 4, py: 2 } }}
         pl={`${(depth + 1) * MARGIN}px`}
-        onClick={toggleNode}
-        cursor={
-          childrenList.length > 0 || node.hasChildren ? 'pointer' : 'default'
-        }
         _hover={{
           bg: 'blackAlpha.50',
         }}
       >
-        {childrenList.length > 0 || node.hasChildren ? (
-          <IconButton
-            aria-label='Search database'
-            icon={<FaAngleRight />}
-            variant='ghost'
-            colorScheme='gray'
-            size='sm'
-            transform={isToggled ? 'rotate(90deg)' : ''}
-            color='currentColor'
-          />
-        ) : (
-          <Box mx={4}></Box>
-        )}
-        <Box
-          alignItems='flex-start'
+        <Flex
+          as='button'
+          alignItems='center'
+          onClick={toggleNode}
+          cursor={
+            childrenList.length > 0 || node.hasChildren ? 'pointer' : 'default'
+          }
           flex={1}
-          fontWeight='normal'
-          lineHeight='short'
-          ml={2}
-          textAlign='left'
-          wordBreak='break-word'
         >
-          <Text color='gray.800' fontSize='12px'>
-            {node.taxonId}
-          </Text>
-
-          <Link href={node.iri} fontSize='xs' isExternal>
-            <Text
-              color={node.state.selected ? 'primary.500' : 'currentColor'}
-              fontWeight={node.state.selected ? 'semibold' : 'medium'}
-              lineHeight='inherit'
-              textAlign='left'
-              fontSize='xs'
-            >
-              {node.label}
+          {childrenList.length > 0 || node.hasChildren ? (
+            <IconButton
+              aria-label='Search database'
+              icon={<FaAngleRight />}
+              variant='ghost'
+              colorScheme='gray'
+              size='sm'
+              transform={isToggled ? 'rotate(90deg)' : ''}
+              color='currentColor'
+            />
+          ) : (
+            <Box mx={4}></Box>
+          )}
+          <Box
+            alignItems='flex-start'
+            flex={1}
+            fontWeight='normal'
+            lineHeight='short'
+            ml={2}
+            textAlign='left'
+            wordBreak='break-word'
+          >
+            <Text color='gray.800' fontSize='12px'>
+              {node.taxonId}
             </Text>
-          </Link>
-        </Box>
+
+            <Link href={node.iri} fontSize='xs' isExternal>
+              <Text
+                color={node.state.selected ? 'primary.500' : 'currentColor'}
+                fontWeight={node.state.selected ? 'semibold' : 'medium'}
+                lineHeight='inherit'
+                textAlign='left'
+                fontSize='xs'
+              >
+                {node.label}
+              </Text>
+            </Link>
+          </Box>
+        </Flex>
         <HStack>
           <Tooltip label='Number of potential matching resources in NIAID Discovery Portal'>
             <Tag
