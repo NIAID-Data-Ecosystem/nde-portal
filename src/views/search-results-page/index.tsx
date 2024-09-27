@@ -34,7 +34,7 @@ import { FILTER_CONFIGS } from './components/filters/config';
 import { SelectedFilterType } from './components/filters/types';
 import { MetadataScoreToggle } from './components/metadata-score-toggle';
 import { useLocalStorage } from 'usehooks-ts';
-import { TopicBrowserPopUp } from '../tree-browser/components/popup';
+import { OntologyBrowserPopup } from '../ontology-browser/components/popup';
 
 /*
 [COMPONENT INFO]:
@@ -227,7 +227,7 @@ const SearchResultsPage = ({
           isLoading={isLoading || isRefetching || !router.isReady}
           total={total}
         />
-        <TopicBrowserPopUp
+        <OntologyBrowserPopup
           querystring={querystring === '__all__' ? '' : querystring}
           selectedFilters={selectedFilters}
         />

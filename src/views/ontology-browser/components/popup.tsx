@@ -90,7 +90,7 @@ const findRelatedOntology = (
   };
 };
 
-export const TopicBrowserPopUp = ({
+export const OntologyBrowserPopup = ({
   querystring,
   selectedFilters,
 }: {
@@ -109,7 +109,7 @@ export const TopicBrowserPopUp = ({
     isLoading,
     data: suggestions,
   } = useQuery({
-    queryKey: ['tree-browser-search', term, ontology?.value],
+    queryKey: ['ontology-browser-search', term, ontology?.value],
     queryFn: () =>
       searchOntologyAPI({
         q: term || '',
@@ -129,7 +129,7 @@ export const TopicBrowserPopUp = ({
   return (
     <NextLink
       href={{
-        pathname: `/tree-browser`,
+        pathname: `/ontology-browser`,
         query: {
           q: querystring,
           id: suggestions?.[0]?.short_form || '',

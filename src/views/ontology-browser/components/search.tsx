@@ -29,15 +29,15 @@ import { DropdownContent } from 'src/components/input-with-dropdown/components/D
 import { FaMagnifyingGlass } from 'react-icons/fa6';
 import { CheckboxList } from 'src/components/checkbox-list';
 
-interface TreeBrowserSearchProps {
+interface OntologyBrowserSearchProps {
   colorScheme?: string;
   size?: 'sm' | 'md' | 'lg';
 }
 
-export const TreeBrowserSearch = ({
+export const OntologyBrowserSearch = ({
   colorScheme = 'primary',
   size = 'md',
-}: TreeBrowserSearchProps) => {
+}: OntologyBrowserSearchProps) => {
   const router = useRouter();
 
   const [searchTerm, setSearchTerm] = useState('');
@@ -68,7 +68,7 @@ export const TreeBrowserSearch = ({
     isLoading,
     data: suggestions,
   } = useQuery({
-    queryKey: ['tree-browser-search', debouncedTerm, selectedOntologies],
+    queryKey: ['ontology-browser-search', debouncedTerm, selectedOntologies],
     queryFn: () =>
       searchOntologyAPI({
         q: debouncedTerm ? debouncedTerm : '',
@@ -82,7 +82,7 @@ export const TreeBrowserSearch = ({
 
   const handleSubmit = ({ id }: { id: string }) => {
     router.push({
-      pathname: `/tree-browser`,
+      pathname: `/ontology-browser`,
       query: { ...router.query, id },
     });
     setSearchTerm('');
@@ -124,7 +124,7 @@ export const TreeBrowserSearch = ({
       >
         <Text
           as='label'
-          htmlFor='tree-browser-search-bar'
+          htmlFor='ontology-browser-search-bar'
           fontSize='sm'
           color='gray.800'
           px={1}
@@ -137,7 +137,7 @@ export const TreeBrowserSearch = ({
           colorScheme={colorScheme}
         >
           <DropdownInput
-            id='tree-browser-search-bar'
+            id='ontology-browser-search-bar'
             ariaLabel='Search taxonomy browser'
             isLoading={isLoading}
             placeholder='Enter a taxonomy name or identifier'
@@ -273,7 +273,7 @@ const DropdownListItem = ({
       my={1}
       {...getListItemProps({
         index,
-        value: `/tree-browser/${id}`,
+        value: `/ontology-browser/${id}`,
         isSelected: cursor === index,
         onClick: () => handleSubmit({ id }),
       })}

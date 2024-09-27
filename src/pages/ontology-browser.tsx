@@ -1,11 +1,11 @@
 import { VStack } from '@chakra-ui/react';
 import type { NextPage } from 'next';
 import { PageContainer, PageContent } from 'src/components/page-container';
-import { TreeBrowserSearch } from 'src/views/tree-browser/components/search';
-import { TreeBrowserTable } from 'src/views/tree-browser/components/table';
+import { OntologyBrowserSearch } from 'src/views/ontology-browser/components/search';
+import { OntologyBrowserTable } from 'src/views/ontology-browser/components/table';
 
 //  This page renders the search results from the search bar.
-const TreeBrowserOnePage: NextPage = () => {
+const OntologyBrowserOnePage: NextPage = () => {
   return (
     <PageContainer
       title='Search'
@@ -20,12 +20,12 @@ const TreeBrowserOnePage: NextPage = () => {
         px={{ base: 2, sm: 4, xl: '5vw' }}
       >
         <VStack w='100%' spacing={4} p={4} maxWidth='1600px'>
-          <TreeBrowserSearch />
-          <TreeBrowserTable />
+          <OntologyBrowserSearch />
+          <OntologyBrowserTable />
         </VStack>
       </PageContent>
     </PageContainer>
   );
 };
 
-export default TreeBrowserOnePage;
+export default OntologyBrowserOnePage;

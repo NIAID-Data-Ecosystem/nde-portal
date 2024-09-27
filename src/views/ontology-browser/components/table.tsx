@@ -29,7 +29,6 @@ import {
   fetchOntologyChildrenByNodeId,
   fetchOntologyTreeByTaxonId,
   getChildren,
-  ONTOLOGY_BROWSER_OPTIONS,
   OntologyTreeItem,
   OntologyTreeParams,
 } from '../helpers';
@@ -44,7 +43,7 @@ const formatIdentifier = (node: { id: string }) => {
   return node.id;
 };
 
-export const TreeBrowserTable = () => {
+export const OntologyBrowserTable = () => {
   const router = useRouter();
   const id = router.query.id || 'NCBITaxon_1';
   const [lineage, setLineage] = useState<OntologyTreeItem[] | null>(null);
@@ -77,7 +76,7 @@ export const TreeBrowserTable = () => {
     isLoading,
     data: allData,
   } = useQuery({
-    queryKey: ['tree-browser-search', queryParams.id, queryParams.ontology],
+    queryKey: ['ontology-browser-search', queryParams.id, queryParams.ontology],
     queryFn: () => fetchOntologyTreeByTaxonId(queryParams),
     refetchOnWindowFocus: false,
     enabled: router.isReady && !!queryParams.id,
