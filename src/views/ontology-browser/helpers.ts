@@ -263,3 +263,10 @@ export const getChildren = (
 ) => {
   return data.filter(item => item.parent === parentId);
 };
+
+export const formatIdentifier = (node: { id: string }) => {
+  if (node.id.includes('NCBITaxon')) {
+    return node.id.split('_')[1];
+  }
+  return node.id;
+};

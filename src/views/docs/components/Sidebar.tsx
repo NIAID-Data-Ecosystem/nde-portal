@@ -37,6 +37,7 @@ interface DocumentationSidebarProps extends FlexProps {
 
 const SidebarContainer: React.FC<DocumentationSidebarProps> = ({
   children,
+  bg,
   ...props
 }) => {
   const { isOpen, onOpen, onClose } = useDisclosure({ defaultIsOpen: true });
@@ -48,7 +49,7 @@ const SidebarContainer: React.FC<DocumentationSidebarProps> = ({
           aria-label='Expand documentation navigation menu'
           onClick={onOpen}
           colorScheme='gray'
-          bg='white'
+          bg={bg || 'white'}
           variant='ghost'
           borderRight='1px solid'
           borderColor='gray.200'
@@ -61,7 +62,8 @@ const SidebarContainer: React.FC<DocumentationSidebarProps> = ({
         </Button>
       )}
       <Box
-        bg='white'
+        className='content'
+        bg={bg || 'white'}
         borderRight='1px solid'
         borderColor='gray.100'
         w={isOpen ? '300px' : '0px'}
