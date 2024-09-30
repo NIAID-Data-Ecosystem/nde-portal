@@ -44,7 +44,7 @@ export const OntologyBrowserTable = ({
     ontology: string;
     id: string;
     label: string;
-    facet: string;
+    facet: string[];
     count?: number;
   }[];
   setSearchList: React.Dispatch<
@@ -53,7 +53,7 @@ export const OntologyBrowserTable = ({
         ontology: string;
         id: string;
         label: string;
-        facet: string;
+        facet: string[];
         count?: number;
       }[]
     >
@@ -144,7 +144,7 @@ export const OntologyBrowserTable = ({
   }
   return (
     <>
-      <Flex w='100%' alignItems='flex-start' flexWrap='wrap'>
+      <Flex w='100%' alignItems='flex-start' flexWrap='wrap' flex={1}>
         <Box flex={2} minWidth='500px'>
           {selectedNode && (
             <Flex
@@ -246,7 +246,7 @@ const TreeNode = ({
     ontology: string;
     label: string;
     id: string;
-    facet: string;
+    facet: string[];
     count?: number;
   }) => void;
   data: OntologyTreeItem[];
@@ -287,14 +287,14 @@ const TreeNode = ({
 
   const {
     isLoading: countIsLoading,
-    data: { total: count, property } = { total: 0, property: '' },
+    data: { total: count, facet } = { total: 0, facet: [] },
   } = useQuery({
     queryKey: ['fetch-count', node.id],
     queryFn: async () => {
       if (!node.id) {
         return {
           total: 0,
-          property: '',
+          facet: [],
         };
       }
 
@@ -306,8 +306,8 @@ const TreeNode = ({
         const infectiousAgent_property = 'infectiousAgent.identifier';
 
         /*
-        Based on the counts (maybe by running multiple queries), we can decide which property to use (i.e. infectiousAgent vs species) when executing the final search.
-        Then instead of "OR"ing these two general categories which could be really long depending on the onto. We can drill down further to the specific property. (i.e. species.identifier:"####" OR species.name "-----")
+        Based on the counts (maybe by running multiple queries), we can decide which facet to use (i.e. infectiousAgent vs species) when executing the final search.
+        Then instead of "OR"ing these two general categories which could be really long depending on the onto. We can drill down further to the specific facet. (i.e. species.identifier:"####" OR species.name "-----")
         */
         const speciesQuery = fetchSearchResults({
           q: `${
@@ -330,11 +330,16 @@ const TreeNode = ({
         ]);
 
         if (speciesResult?.total) {
-          return { total: speciesResult.total, property: species_property };
+          return { total: speciesResult.total, facet: [species_property] };
         } else if (infectiousAgentResult?.total) {
           return {
             total: infectiousAgentResult.total,
-            property: infectiousAgent_property,
+            facet: [infectiousAgent_property],
+          };
+        } else {
+          return {
+            total: 0,
+            facet: [infectiousAgent_property, species_property],
           };
         }
       } else if (node.ontology_name === 'edam') {
@@ -350,13 +355,13 @@ const TreeNode = ({
 
         return {
           total: topicCategoryResult?.total || 0,
-          property: topicCategory_property,
+          facet: [topicCategory_property],
         };
       }
 
       return {
         total: 0,
-        property: '',
+        facet: [],
       };
     },
     select: data => data,
@@ -490,7 +495,7 @@ const TreeNode = ({
                 label: node.label,
                 ontology: node.ontology_name,
                 count,
-                facet: property,
+                facet,
               });
             }}
           />
@@ -530,7 +535,7 @@ const Tree = ({
     ontology: string;
     label: string;
     id: string;
-    facet: string;
+    facet: string[];
     count?: number;
   }) => void;
   isIncludedInSearch: (id: string) => boolean;

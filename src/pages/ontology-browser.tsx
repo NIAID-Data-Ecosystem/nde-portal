@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { VStack } from '@chakra-ui/react';
+import { Flex, VStack } from '@chakra-ui/react';
 import type { NextPage } from 'next';
 import { PageContainer, PageContent } from 'src/components/page-container';
 import { OntologyBrowserSearch } from 'src/views/ontology-browser/components/search';
@@ -25,20 +25,22 @@ const OntologyBrowserOnePage: NextPage = () => {
       py={0}
     >
       <PageContent
-        w='100%'
-        flexDirection='column'
         alignItems='center'
+        flexDirection='column'
         px={{ base: 2, sm: 4, xl: '5vw' }}
+        w='100%'
       >
-        <VStack w='100%' spacing={4} p={4} maxWidth='1600px'>
-          <OntologyBrowserSearch />
-          <OntologyBrowserTable
-            searchList={searchList}
-            setSearchList={setSearchList}
-          />
-        </VStack>
-        {/* <-- Sidebar with selected terms --> */}
-        <OntologyList searchList={searchList} setSearchList={setSearchList} />
+        <Flex w='100%' maxWidth='2000px'>
+          <VStack w='100%' flex={1} spacing={4} p={4}>
+            <OntologyBrowserSearch />
+            <OntologyBrowserTable
+              searchList={searchList}
+              setSearchList={setSearchList}
+            />
+          </VStack>
+          {/* <-- Sidebar with selected terms --> */}
+          <OntologyList searchList={searchList} setSearchList={setSearchList} />
+        </Flex>
       </PageContent>
     </PageContainer>
   );
