@@ -29,8 +29,13 @@ const OntologyBrowserOnePage: NextPage = () => {
         flexDirection='column'
         px={{ base: 2, sm: 4, xl: '5vw' }}
         w='100%'
+        position='relative'
       >
-        <Flex w='100%' maxWidth='2000px'>
+        <Flex
+          w='100%'
+          maxWidth='2000px'
+          flexDirection={{ base: 'column-reverse', lg: 'row' }}
+        >
           <VStack w='100%' flex={1} spacing={4} p={4}>
             <OntologyBrowserSearch />
             <OntologyBrowserTable

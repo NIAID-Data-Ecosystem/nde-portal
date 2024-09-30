@@ -119,9 +119,11 @@ export const OntologyBrowserSearch = ({
         w='100%'
         alignItems='flex-end'
         flexDirection={{ base: 'column', md: 'row' }}
+        flexWrap='wrap'
+        justifyContent='flex-end'
       >
         <Flex
-          flex={1}
+          flex={3}
           flexDirection='column'
           width={{ base: '100%', md: 'unset' }}
           minWidth={{ base: 'unset', md: '450px' }}
@@ -211,11 +213,12 @@ export const OntologyBrowserSearch = ({
 
         {/* <!-- Select Ontology --> */}
         <CheckboxList
+          flex={1}
           fontSize='sm'
           width={{ base: '100%', md: 'unset' }}
           buttonProps={{
             width: '250px',
-            maxWidth: { base: 'unset', md: '250px' },
+            maxWidth: { base: 'unset', xl: '250px' },
             overflow: 'hidden',
           }}
           label={

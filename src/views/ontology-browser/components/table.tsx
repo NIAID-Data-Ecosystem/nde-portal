@@ -144,8 +144,14 @@ export const OntologyBrowserTable = ({
   }
   return (
     <>
-      <Flex w='100%' alignItems='flex-start' flexWrap='wrap' flex={1}>
-        <Box flex={2} minWidth='500px'>
+      <Flex
+        className='onto-table'
+        w='100%'
+        alignItems='flex-start'
+        flexWrap='wrap'
+        flex={1}
+      >
+        <Box flex={2} minWidth={{ base: 'unset', md: '500px' }}>
           {selectedNode && (
             <Flex
               w='100%'
