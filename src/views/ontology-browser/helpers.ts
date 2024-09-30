@@ -15,16 +15,21 @@ export const ONTOLOGY_BROWSER_OPTIONS = [
     relatedPortalSchemaProperties: [
       'infectiousAgent.displayName',
       'infectiousAgent.displayName.raw',
+      'infectiousAgent.identifier',
       'infectiousAgent.name',
       'species.displayName',
       'species.displayName.raw',
+      'species.identifier',
       'species.name',
     ],
   },
   {
     name: 'EDAM',
     value: 'edam',
-    relatedPortalSchemaProperties: ['topicCategory.name'],
+    relatedPortalSchemaProperties: [
+      'topicCategory.identifier',
+      'topicCategory.name',
+    ],
   },
 ] as OntologyOption[];
 
@@ -257,4 +262,11 @@ export const getChildren = (
   data: OntologyTreeItem[],
 ) => {
   return data.filter(item => item.parent === parentId);
+};
+
+export const formatIdentifier = (node: { id: string }) => {
+  if (node.id.includes('NCBITaxon')) {
+    return node.id.split('_')[1];
+  }
+  return node.id;
 };

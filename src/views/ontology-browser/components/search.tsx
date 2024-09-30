@@ -11,6 +11,7 @@ import {
   TagLabel,
   Text,
   UnorderedList,
+  VStack,
 } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
 import { useQuery } from '@tanstack/react-query';
@@ -41,6 +42,7 @@ export const OntologyBrowserSearch = ({
   const router = useRouter();
 
   const [searchTerm, setSearchTerm] = useState('');
+  const [hasNoMatch, setHasNoMatch] = useState(false);
   const [debouncedTerm, setDebouncedTerm] = useState(searchTerm);
   const [selectedOntologies, setSelectedOntologies] = useState(
     ONTOLOGY_BROWSER_OPTIONS,
@@ -86,6 +88,7 @@ export const OntologyBrowserSearch = ({
       query: { ...router.query, id },
     });
     setSearchTerm('');
+    setHasNoMatch(false);
   };
 
   const updateOntologySelection = useCallback(
@@ -111,137 +114,152 @@ export const OntologyBrowserSearch = ({
     [],
   );
   return (
-    <HStack
-      w='100%'
-      alignItems='flex-end'
-      flexDirection={{ base: 'column', md: 'row' }}
-    >
-      <Flex
-        flex={1}
-        flexDirection='column'
-        width={{ base: '100%', md: 'unset' }}
-        minWidth={{ base: 'unset', md: '450px' }}
+    <VStack w='100%' alignItems='flex-start' spacing={1}>
+      <HStack
+        w='100%'
+        alignItems='flex-end'
+        flexDirection={{ base: 'column', md: 'row' }}
+        flexWrap='wrap'
+        justifyContent='flex-end'
       >
-        <Text
-          as='label'
-          htmlFor='ontology-browser-search-bar'
-          fontSize='sm'
-          color='gray.800'
-          px={1}
+        <Flex
+          flex={3}
+          flexDirection='column'
+          width={{ base: '100%', md: 'unset' }}
+          minWidth={{ base: 'unset', md: '450px' }}
         >
-          Search taxonomy browser
-        </Text>
-        <InputWithDropdown
-          inputValue={debouncedTerm}
-          cursorMax={suggestions?.length || 0}
-          colorScheme={colorScheme}
-        >
-          <DropdownInput
-            id='ontology-browser-search-bar'
-            ariaLabel='Search taxonomy browser'
-            isLoading={isLoading}
-            placeholder='Enter a taxonomy name or identifier'
-            size={size}
-            type='text'
-            onChange={str => setSearchTerm(str)}
-            onClose={() => setSearchTerm('')}
-            onSubmit={str => {
-              const suggestion = suggestions?.find(s => s.label === str);
-              if (suggestion) {
-                handleSubmit({ id: suggestion.short_form });
-              }
-            }}
-            getInputValue={(idx: number): string => {
-              if (suggestions && suggestions.length > 0 && suggestions[idx]) {
-                return suggestions[idx].label || '';
-              }
-              return '';
-            }}
-            renderSubmitButton={() => {
-              return (
-                <>
-                  {/* To do : add close button to clear input */}
-                  <Button
-                    colorScheme={colorScheme}
-                    size={size}
-                    type='submit'
-                    display={{ base: 'none', md: 'flex' }}
-                    isDisabled={isLoading || !debouncedTerm}
-                  >
-                    Search
-                  </Button>
-                </>
-              );
-            }}
-          />
-
-          <DropdownContent>
-            <UnorderedList ml={0}>
-              {suggestions?.map((suggestion, index) => {
-                return (
-                  <DropdownListItem
-                    key={suggestion.iri}
-                    handleSubmit={handleSubmit}
-                    highlight={debouncedTerm}
-                    id={suggestion.short_form}
-                    index={index}
-                    ontology={suggestion.ontology_prefix}
-                  >
-                    {suggestion.label}
-                  </DropdownListItem>
-                );
-              })}
-            </UnorderedList>
-          </DropdownContent>
-        </InputWithDropdown>
-      </Flex>
-
-      {/* <!-- Select Ontology --> */}
-      <CheckboxList
-        fontSize='sm'
-        width={{ base: '100%', md: 'unset' }}
-        buttonProps={{
-          width: '250px',
-          maxWidth: { base: 'unset', md: '250px' },
-          overflow: 'hidden',
-        }}
-        label={
           <Text
-            as='span'
-            isTruncated
-            color='inherit'
-            display='flex'
-            alignItems='flex-end'
-            w='100%'
+            as='label'
+            htmlFor='ontology-browser-search-bar'
+            fontSize='sm'
+            color='gray.800'
+            px={1}
           >
-            {/* {`Searching ${
-              selectedOntologies.length === ONTOLOGY_BROWSER_OPTIONS.length
-                ? 'all'
-                : `selected`
-            } ontologies`} */}
-            Selected ontologies
-            <Tag
-              variant='outline'
-              color='inherit'
-              borderRadius='full'
-              fontSize='xs'
-              alignSelf='flex-start'
-              lineHeight={1.2}
-              size='sm'
-              px={3}
-              ml={2}
-            >
-              <TagLabel>{selectedOntologies.length}</TagLabel>
-            </Tag>
+            Search taxonomy browser
           </Text>
-        }
-        size='lg'
-        description=''
-        options={ONTOLOGY_BROWSER_OPTIONS}
-        selectedOptions={selectedOntologies}
-        handleChange={updateOntologySelection}
-      />
-    </HStack>
+          <InputWithDropdown
+            inputValue={debouncedTerm}
+            cursorMax={suggestions?.length || 0}
+            colorScheme={colorScheme}
+          >
+            <DropdownInput
+              id='ontology-browser-search-bar'
+              ariaLabel='Search taxonomy browser'
+              isLoading={isLoading}
+              placeholder='Enter a taxonomy name or identifier'
+              size={size}
+              type='text'
+              onChange={str => {
+                setHasNoMatch(false);
+                setSearchTerm(str);
+              }}
+              onClose={() => {
+                setHasNoMatch(false);
+                setSearchTerm('');
+              }}
+              onSubmit={str => {
+                const suggestion = suggestions?.find(s => s.label === str);
+
+                if (suggestion) {
+                  handleSubmit({ id: suggestion.short_form });
+                } else {
+                  setHasNoMatch(true);
+                }
+              }}
+              getInputValue={(idx: number): string => {
+                if (suggestions && suggestions.length > 0 && suggestions[idx]) {
+                  return suggestions[idx].label || '';
+                }
+                return '';
+              }}
+              renderSubmitButton={() => {
+                return (
+                  <>
+                    {/* To do : add close button to clear input */}
+                    <Button
+                      colorScheme={colorScheme}
+                      size={size}
+                      type='submit'
+                      display={{ base: 'none', md: 'flex' }}
+                      isDisabled={isLoading || !debouncedTerm}
+                    >
+                      Search
+                    </Button>
+                  </>
+                );
+              }}
+            />
+
+            <DropdownContent>
+              <UnorderedList ml={0}>
+                {suggestions?.map((suggestion, index) => {
+                  return (
+                    <DropdownListItem
+                      key={suggestion.iri}
+                      handleSubmit={handleSubmit}
+                      highlight={debouncedTerm}
+                      id={suggestion.short_form}
+                      index={index}
+                      ontology={suggestion.ontology_prefix}
+                    >
+                      {suggestion.label}
+                    </DropdownListItem>
+                  );
+                })}
+              </UnorderedList>
+            </DropdownContent>
+          </InputWithDropdown>
+        </Flex>
+
+        {/* <!-- Select Ontology --> */}
+        <CheckboxList
+          flex={1}
+          fontSize='sm'
+          width={{ base: '100%', md: 'unset' }}
+          buttonProps={{
+            width: '250px',
+            maxWidth: { base: 'unset', xl: '250px' },
+            overflow: 'hidden',
+          }}
+          label={
+            <Text
+              as='span'
+              isTruncated
+              color='inherit'
+              display='flex'
+              alignItems='flex-end'
+              w='100%'
+            >
+              Selected ontologies
+              <Tag
+                variant='outline'
+                color='inherit'
+                borderRadius='full'
+                fontSize='xs'
+                alignSelf='flex-start'
+                lineHeight={1.2}
+                size='sm'
+                px={3}
+                ml={2}
+              >
+                <TagLabel>{selectedOntologies.length}</TagLabel>
+              </Tag>
+            </Text>
+          }
+          size='lg'
+          description=''
+          options={ONTOLOGY_BROWSER_OPTIONS}
+          selectedOptions={selectedOntologies}
+          handleChange={updateOntologySelection}
+        />
+      </HStack>
+      {hasNoMatch && (
+        <Text color='red.500' fontStyle='italic' fontSize='sm'>
+          Search term : {debouncedTerm ? `"${debouncedTerm}"` : ''} not found in
+          selected ontologies
+        </Text>
+      )}
+    </VStack>
   );
 };
 

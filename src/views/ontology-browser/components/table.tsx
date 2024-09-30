@@ -23,11 +23,11 @@ import {
   FaCheck,
   FaEllipsis,
   FaMagnifyingGlass,
-  FaX,
 } from 'react-icons/fa6';
 import {
   fetchOntologyChildrenByNodeId,
   fetchOntologyTreeByTaxonId,
+  formatIdentifier,
   getChildren,
   OntologyTreeItem,
   OntologyTreeParams,
@@ -36,26 +36,33 @@ import { Link } from 'src/components/link';
 import { fetchSearchResults } from 'src/utils/api';
 import Tooltip from 'src/components/tooltip';
 
-const formatIdentifier = (node: { id: string }) => {
-  if (node.id.includes('NCBITaxon')) {
-    return node.id.split('_')[1];
-  }
-  return node.id;
-};
-
-export const OntologyBrowserTable = () => {
+export const OntologyBrowserTable = ({
+  searchList,
+  setSearchList,
+}: {
+  searchList: {
+    ontology: string;
+    id: string;
+    label: string;
+    facet: string[];
+    count?: number;
+  }[];
+  setSearchList: React.Dispatch<
+    React.SetStateAction<
+      {
+        ontology: string;
+        id: string;
+        label: string;
+        facet: string[];
+        count?: number;
+      }[]
+    >
+  >;
+}) => {
   const router = useRouter();
   const id = router.query.id || 'NCBITaxon_1';
   const [lineage, setLineage] = useState<OntologyTreeItem[] | null>(null);
-  const [searchList, setSearchList] = useState<
-    {
-      ontology: string;
-      id: string;
-      label: string;
-      facet: string;
-      count?: number;
-    }[]
-  >([]);
+
   const [showFromIndex, setShowFromIndex] = useState(0);
   const [viewMode, setViewMode] = useState('condensed');
 
@@ -76,7 +83,7 @@ export const OntologyBrowserTable = () => {
     isLoading,
     data: allData,
   } = useQuery({
-    queryKey: ['ontology-browser-search', queryParams.id, queryParams.ontology],
+    queryKey: ['ontology-browser-tree', queryParams.id, queryParams.ontology],
     queryFn: () => fetchOntologyTreeByTaxonId(queryParams),
     refetchOnWindowFocus: false,
     enabled: router.isReady && !!queryParams.id,
@@ -137,8 +144,14 @@ export const OntologyBrowserTable = () => {
   }
   return (
     <>
-      <Flex w='100%' alignItems='flex-start' flexWrap='wrap'>
-        <Box flex={2} minWidth='500px'>
+      <Flex
+        className='onto-table'
+        w='100%'
+        alignItems='flex-start'
+        flexWrap='wrap'
+        flex={1}
+      >
+        <Box flex={2} minWidth={{ base: 'unset', md: '500px' }}>
           {selectedNode && (
             <Flex
               w='100%'
@@ -220,126 +233,6 @@ export const OntologyBrowserTable = () => {
             )}
           </Box>
         </Box>
-        {/* Search List */}
-        <Flex
-          className='search-list'
-          alignItems='flex-end'
-          flexDirection='column'
-          maxWidth='350px'
-          mt={7}
-          ml={searchList?.length > 0 ? 8 : 0}
-          overflow={searchList?.length > 0 ? 'auto' : 'hidden'}
-          transform={
-            searchList?.length > 0 ? 'translateX(0)' : 'translateX(100%)'
-          }
-          w={searchList?.length > 0 ? '350px' : '0px'}
-          transitionDuration='slow'
-          transitionProperty='width, transform'
-          transitionTimingFunction='ease-in-out'
-        >
-          <Flex justifyContent='space-between' w='100%' px={1}>
-            <Text fontSize='sm' fontWeight='medium' mb={1} lineHeight='tall'>
-              List of search values
-            </Text>
-            <Button size='sm' onClick={() => setSearchList([])} variant='link'>
-              Clear all
-            </Button>
-          </Flex>
-          {/* Search list */}
-          <Box
-            flex={1}
-            w='100%'
-            flexDirection='column'
-            bg='white'
-            border='1px solid'
-            borderRadius='semi'
-            borderColor='niaid.placeholder'
-            maxHeight={300}
-            overflow='auto'
-          >
-            {searchList.map(({ id, count, ontology, label }, index) => (
-              <Flex
-                key={`${ontology}-${id}`}
-                px={2}
-                py={1}
-                bg={index % 2 ? 'primary.50' : 'transparent'}
-                alignItems='center'
-              >
-                <Box
-                  flex={1}
-                  fontWeight='normal'
-                  lineHeight='short'
-                  textAlign='left'
-                  wordBreak='break-word'
-                >
-                  <Text color='gray.800' fontSize='12px'>
-                    {id}
-                  </Text>
-                  <Text
-                    color='text.body'
-                    fontSize='xs'
-                    fontWeight='medium'
-                    lineHeight='inherit'
-                  >
-                    {label}
-                  </Text>
-                </Box>
-                <Tooltip label='Number of potential matching resources in NIAID Discovery Portal'>
-                  <Tag
-                    borderRadius='full'
-                    colorScheme={count === 0 ? 'gray' : 'primary'}
-                    variant='subtle'
-                    size='sm'
-                  >
-                    {count?.toLocaleString() || 0}
-                  </Tag>
-                </Tooltip>
-
-                <IconButton
-                  aria-label='remove item from search'
-                  icon={<Icon as={FaX} boxSize={2.5} />}
-                  variant='ghost'
-                  colorScheme='gray'
-                  size='sm'
-                  p={1}
-                  ml={2}
-                  boxSize={6}
-                  minWidth={6}
-                  onClick={() => {
-                    setSearchList(prev =>
-                      prev.filter(item => item.label !== label),
-                    );
-                  }}
-                />
-              </Flex>
-            ))}
-          </Box>
-          <Button
-            mt={2}
-            leftIcon={<FaMagnifyingGlass />}
-            size='sm'
-            onClick={() => {
-              const termsWithFieldsString = searchList.reduce(
-                (querystring, node) => {
-                  const id = formatIdentifier(node);
-                  const joiner = querystring ? ' AND ' : '';
-                  return `${querystring}${joiner}${node.facet}:"${id}"`;
-                },
-                router?.query?.q || '',
-              );
-
-              router.push({
-                pathname: `/search`,
-                query: {
-                  q: termsWithFieldsString,
-                },
-              });
-            }}
-          >
-            Search resources
-          </Button>
-        </Flex>
-        {/* )} */}
       </Flex>
     </>
   );
@@ -359,7 +252,7 @@ const TreeNode = ({
     ontology: string;
     label: string;
     id: string;
-    facet: string;
+    facet: string[];
     count?: number;
   }) => void;
   data: OntologyTreeItem[];
@@ -400,14 +293,14 @@ const TreeNode = ({
 
   const {
     isLoading: countIsLoading,
-    data: { total: count, property } = { total: 0, property: '' },
+    data: { total: count, facet } = { total: 0, facet: [] },
   } = useQuery({
     queryKey: ['fetch-count', node.id],
     queryFn: async () => {
       if (!node.id) {
         return {
           total: 0,
-          property: '',
+          facet: [],
         };
       }
 
@@ -419,8 +312,8 @@ const TreeNode = ({
         const infectiousAgent_property = 'infectiousAgent.identifier';
 
         /*
-        Based on the counts (maybe by running multiple queries), we can decide which property to use (i.e. infectiousAgent vs species) when executing the final search.
-        Then instead of "OR"ing these two general categories which could be really long depending on the onto. We can drill down further to the specific property. (i.e. species.identifier:"####" OR species.name "-----")
+        Based on the counts (maybe by running multiple queries), we can decide which facet to use (i.e. infectiousAgent vs species) when executing the final search.
+        Then instead of "OR"ing these two general categories which could be really long depending on the onto. We can drill down further to the specific facet. (i.e. species.identifier:"####" OR species.name "-----")
         */
         const speciesQuery = fetchSearchResults({
           q: `${
@@ -443,11 +336,16 @@ const TreeNode = ({
         ]);
 
         if (speciesResult?.total) {
-          return { total: speciesResult.total, property: species_property };
+          return { total: speciesResult.total, facet: [species_property] };
         } else if (infectiousAgentResult?.total) {
           return {
             total: infectiousAgentResult.total,
-            property: infectiousAgent_property,
+            facet: [infectiousAgent_property],
+          };
+        } else {
+          return {
+            total: 0,
+            facet: [infectiousAgent_property, species_property],
           };
         }
       } else if (node.ontology_name === 'edam') {
@@ -463,13 +361,13 @@ const TreeNode = ({
 
         return {
           total: topicCategoryResult?.total || 0,
-          property: topicCategory_property,
+          facet: [topicCategory_property],
         };
       }
 
       return {
         total: 0,
-        property: '',
+        facet: [],
       };
     },
     select: data => data,
@@ -531,6 +429,7 @@ const TreeNode = ({
         >
           {childrenList.length > 0 || node.hasChildren ? (
             <IconButton
+              as='div'
               aria-label='Search database'
               icon={<FaAngleRight />}
               variant='ghost'
@@ -602,7 +501,7 @@ const TreeNode = ({
                 label: node.label,
                 ontology: node.ontology_name,
                 count,
-                facet: property,
+                facet,
               });
             }}
           />
@@ -642,7 +541,7 @@ const Tree = ({
     ontology: string;
     label: string;
     id: string;
-    facet: string;
+    facet: string[];
     count?: number;
   }) => void;
   isIncludedInSearch: (id: string) => boolean;
