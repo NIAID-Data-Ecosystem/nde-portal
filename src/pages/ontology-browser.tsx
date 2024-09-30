@@ -13,7 +13,7 @@ const OntologyBrowserOnePage: NextPage = () => {
       ontology: string;
       id: string;
       label: string;
-      facet: string;
+      facet: string[];
       count?: number;
     }[]
   >([]);
