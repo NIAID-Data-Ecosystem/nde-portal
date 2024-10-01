@@ -218,7 +218,7 @@ export const OntologyBrowserSearch = ({
           width={{ base: '100%', md: 'unset' }}
           buttonProps={{
             width: '250px',
-            maxWidth: { base: 'unset', xl: '250px' },
+            // maxWidth: { base: 'unset', xl: '250px' },
             overflow: 'hidden',
           }}
           label={
