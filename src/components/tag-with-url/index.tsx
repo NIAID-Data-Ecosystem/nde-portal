@@ -34,6 +34,7 @@ export const TagWithUrl = ({
   href,
   isExternal,
   leftIcon,
+  noOfLines = 1,
   ...props
 }: TagWithUrlProps) => {
   const Label = () =>
@@ -88,6 +89,7 @@ export const TagWithUrl = ({
           fontSize='inherit'
           lineHeight='inherit'
           color='inherit'
+          noOfLines={noOfLines}
         >
           {children}
         </Text>
