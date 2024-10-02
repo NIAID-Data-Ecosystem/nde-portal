@@ -89,7 +89,7 @@ export const TagWithUrl = ({
           fontSize='inherit'
           lineHeight='inherit'
           color='inherit'
-          noOfLines={noOfLines}
+          whiteSpace='normal'
         >
           {children}
         </Text>

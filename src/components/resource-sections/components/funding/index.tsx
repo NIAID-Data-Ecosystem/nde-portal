@@ -322,6 +322,7 @@ const ContentWithTag = React.memo(
             label={label}
             isExternal
             mt={0.5}
+            whiteSpace='nowrap'
           >
             {identifier}
           </TagWithUrl>
