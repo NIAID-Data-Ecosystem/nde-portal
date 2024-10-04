@@ -90,7 +90,7 @@
     "temporalCoverage.temporalInterval.endDate",
     "temporalCoverage.temporalInterval.startDate",
     "topicCategory.description",
-    "topicCategory.isCurated",
+    "topicCategory.curatedBy.name",
     "topicCategory.name",
     "variableMeasured",
     "variableMeasured.name"
