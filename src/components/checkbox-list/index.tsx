@@ -43,6 +43,18 @@ interface Option {
   count?: number;
 }
 
+interface Option {
+  name: string;
+  value: string;
+  count?: number;
+}
+
+interface Option {
+  name: string;
+  value: string;
+  count?: number;
+}
+
 interface CheckboxListProps<T extends Option> extends FlexProps {
   buttonProps?: ButtonProps;
   description?: string;

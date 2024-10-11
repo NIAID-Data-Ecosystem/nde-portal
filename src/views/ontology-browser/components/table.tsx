@@ -15,6 +15,7 @@ import {
   Tag,
   Text,
   UnorderedList,
+  VStack,
 } from '@chakra-ui/react';
 import { useQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/router';
@@ -35,6 +36,8 @@ import {
 import { Link } from 'src/components/link';
 import { fetchSearchResults } from 'src/utils/api';
 import Tooltip from 'src/components/tooltip';
+import { ConfigureView } from './configure-view';
+import { useLocalStorage, useReadLocalStorage } from 'usehooks-ts';
 
 export const OntologyBrowserTable = ({
   searchList,
@@ -59,12 +62,18 @@ export const OntologyBrowserTable = ({
     >
   >;
 }) => {
+  const [configureView, setConfiguredView] = useLocalStorage(
+    'ontology-browser-view',
+    {
+      isCondensed: true,
+      includeEmptyCounts: true,
+    },
+  );
   const router = useRouter();
   const id = router.query.id || 'NCBITaxon_1';
   const [lineage, setLineage] = useState<OntologyTreeItem[] | null>(null);
 
   const [showFromIndex, setShowFromIndex] = useState(0);
-  const [viewMode, setViewMode] = useState('condensed');
 
   // Memoize the query params to avoid unnecessary recalculations on each render
   const queryParams = useMemo(() => {
@@ -94,7 +103,7 @@ export const OntologyBrowserTable = ({
   useEffect(() => {
     if (allData) {
       setLineage(allData.lineage);
-      if (viewMode === 'condensed') {
+      if (configureView.isCondensed) {
         setShowFromIndex(
           allData.lineage.length > MAX_NODES ? allData.lineage.length - 3 : 0,
         );
@@ -102,7 +111,7 @@ export const OntologyBrowserTable = ({
         setShowFromIndex(0);
       }
     }
-  }, [allData, viewMode]);
+  }, [allData, configureView.isCondensed]);
 
   // Update lineage with new children
   const updateLineageWithChildren = useCallback(
@@ -174,26 +183,65 @@ export const OntologyBrowserTable = ({
                   </Link>
                 </HStack>
               </Box>
-              {/* toggle */}
-              <Flex justifyContent='flex-end'>
-                {router.query.id && (
-                  <FormControl display='flex' alignItems='center'>
+              {/* Popover menu with options to configure the display table */}
+              <ConfigureView
+                label='Configure View'
+                buttonProps={{ size: 'sm' }}
+              >
+                <VStack lineHeight='shorter' spacing={4}>
+                  <FormControl
+                    display='flex'
+                    alignItems='center'
+                    justifyContent='space-between'
+                    mt={1}
+                  >
                     <FormLabel htmlFor='condensed-view' mb='0' fontSize='sm'>
                       Enable condensed view?
                     </FormLabel>
                     <Switch
                       id='condensed-view'
                       colorScheme='primary'
-                      isChecked={viewMode === 'condensed'}
+                      isChecked={configureView.isCondensed === true}
                       onChange={() =>
-                        setViewMode(
-                          viewMode === 'condensed' ? 'expanded' : 'condensed',
-                        )
+                        setConfiguredView(() => {
+                          return {
+                            ...configureView,
+                            isCondensed: !configureView.isCondensed,
+                          };
+                        })
                       }
                     />
                   </FormControl>
-                )}
-              </Flex>
+                  <FormControl
+                    display='flex'
+                    alignItems='center'
+                    justifyContent='space-between'
+                    mt={1}
+                  >
+                    <FormLabel
+                      htmlFor='include-empty-counts'
+                      mb='0'
+                      fontSize='sm'
+                    >
+                      Include terms with 0 associated datasets?
+                    </FormLabel>
+                    <Switch
+                      id='include-empty-counts'
+                      colorScheme='primary'
+                      isChecked={configureView.includeEmptyCounts === true}
+                      onChange={() =>
+                        setConfiguredView(() => {
+                          return {
+                            ...configureView,
+                            includeEmptyCounts:
+                              !configureView.includeEmptyCounts,
+                          };
+                        })
+                      }
+                    />
+                  </FormControl>
+                </VStack>
+              </ConfigureView>
             </Flex>
           )}
           {/* Tree Browser */}
@@ -405,6 +453,20 @@ const TreeNode = ({
       updateLineage(node.id, fetchedChildren);
     }
   }, [queryId, isToggled, fetchedChildren, node.id, updateLineage]);
+
+  // Hide nodes with no children if configured
+  const config = useReadLocalStorage<{ includeEmptyCounts: boolean }>(
+    'ontology-browser-view',
+  );
+
+  if (
+    !config?.includeEmptyCounts &&
+    count === 0 &&
+    !countIsLoading &&
+    !childrenList.length
+  ) {
+    return <></>;
+  }
 
   return (
     <ListItem>
