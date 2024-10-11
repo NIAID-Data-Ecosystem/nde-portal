@@ -4,10 +4,17 @@ import {
   Box,
   Divider,
   Flex,
+  HStack,
   ListItem,
   Skeleton,
+  Tag,
+  TagLabel,
+  TagLeftIcon,
+  Text,
   UnorderedList,
 } from '@chakra-ui/react';
+import { FaWandMagicSparkles } from 'react-icons/fa6';
+
 import { Link } from 'src/components/link';
 import {
   ResourceDates,
@@ -32,6 +39,7 @@ import { CompletenessBadgeCircle } from 'src/components/metadata-completeness-ba
 import { ResourceCatalogCollection } from './components/collection-information';
 import { DownloadMetadata } from '../download-metadata';
 import { Keywords } from './components/keywords';
+import { MetadataLabel } from '../metadata';
 
 // Metadata displayed in each section
 export const sectionMetadata: { [key: string]: (keyof FormattedResource)[] } = {
@@ -93,9 +101,11 @@ const Sections = ({
         doi={data?.doi}
         nctid={data?.nctid}
       />
-      {data?.author && <ResourceAuthors authors={data.author} />}
       {/* Banner showing data type and publish date. */}
+      {data?.author && <ResourceAuthors authors={data.author} />}
+
       <ResourceDates data={data} />
+
       {sections.map(section => {
         return (
           <Section
@@ -139,6 +149,38 @@ const Sections = ({
             {section.hash === 'overview' && (
               <>
                 <ResourceOverview isLoading={isLoading} {...data} />
+                {/*<--- AI Generated short description -->*/}
+                {data?.disambiguatingDescription && (
+                  <Flex
+                    lineHeight='short'
+                    display='flex'
+                    alignItems='baseline'
+                    flexWrap='wrap'
+                    // px={6}
+                    py={4}
+                  >
+                    <MetadataLabel label='Summary' />
+
+                    <Text
+                      lineHeight='short'
+                      pt={1}
+                      mx={1}
+                      verticalAlign='bottom'
+                    >
+                      <Tag
+                        variant='subtle'
+                        size='sm'
+                        mr={1}
+                        colorScheme='tertiary'
+                      >
+                        <TagLeftIcon as={FaWandMagicSparkles}></TagLeftIcon>
+                        <TagLabel>AI Generated</TagLabel>
+                      </Tag>
+                      {data.disambiguatingDescription}
+                    </Text>
+                  </Flex>
+                )}
+
                 <ResourceIsPartOf
                   isLoading={isLoading}
                   studies={data?.isPartOf}
