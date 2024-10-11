@@ -193,6 +193,7 @@ export const OntologyBrowserTable = ({
                     display='flex'
                     alignItems='center'
                     justifyContent='space-between'
+                    mt={1}
                   >
                     <FormLabel htmlFor='condensed-view' mb='0' fontSize='sm'>
                       Enable condensed view?
@@ -215,6 +216,7 @@ export const OntologyBrowserTable = ({
                     display='flex'
                     alignItems='center'
                     justifyContent='space-between'
+                    mt={1}
                   >
                     <FormLabel
                       htmlFor='include-empty-counts'
