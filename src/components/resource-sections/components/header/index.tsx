@@ -39,7 +39,7 @@ const Header: React.FC<HeaderProps> = ({
           as='h1'
           fontSize='2xl'
           fontWeight='semibold'
-          lineHeight={'short'}
+          lineHeight='short'
         >
           <DisplayHTMLString>{name || alternateName}</DisplayHTMLString>
           {!!name && alternateName && (

@@ -376,6 +376,7 @@ export interface FormattedResource {
   dateModified: string | null;
   datePublished: string | null;
   description: string | null;
+  disambiguatingDescription: string | null;
   discussionUrl: string[] | null;
   disease: string | null;
   distribution: Distribution[] | null;

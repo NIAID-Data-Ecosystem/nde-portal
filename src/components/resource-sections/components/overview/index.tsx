@@ -5,6 +5,9 @@ import {
   Flex,
   SimpleGrid,
   Skeleton,
+  Tag,
+  TagLabel,
+  TagLeftIcon,
   Text,
   VStack,
 } from '@chakra-ui/react';
@@ -12,6 +15,7 @@ import { FormattedResource } from 'src/utils/api/types';
 import {
   MetadataBlock,
   MetadataContent,
+  MetadataLabel,
   MetadataList,
   MetadataListItem,
   SORT_ORDER,
@@ -20,6 +24,7 @@ import {
   sortMetadataArray,
 } from 'src/components/metadata';
 import { ScrollContainer } from 'src/components/scroll-container';
+import { FaWandMagicSparkles } from 'react-icons/fa6';
 
 export interface OverviewProps extends Partial<FormattedResource> {
   isLoading: boolean;
@@ -69,7 +74,7 @@ const Overview: React.FC<OverviewProps> = ({
   );
 
   return (
-    <Flex py={2} w='100%' flexWrap='wrap' flexDirection={['column', 'row']}>
+    <Flex w='100%' flexWrap='wrap' flexDirection={['column', 'row']}>
       <Flex alignItems='center' w='100%'>
         <SimpleGrid
           minChildWidth={{ base: 'unset', sm: '280px', xl: '300px' }}
