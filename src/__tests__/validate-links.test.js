@@ -98,7 +98,16 @@ describe('Check for broken links', () => {
   let page;
 
   beforeAll(async () => {
-    browser = await puppeteer.launch({ headless: 'false' });
+    browser = await puppeteer.launch({
+      headless: 'false',
+
+      args: [
+        '--disable-gpu',
+        '--disable-setuid-sandbox',
+        '--no-sandbox',
+        '--no-zygote',
+      ],
+    });
     page = await browser.newPage();
   });
 
