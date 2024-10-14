@@ -2,7 +2,7 @@
   "sections": {
     "hero": {
       "heading": "Discovery Portal",
-      "subtitle": "Accelerate your research. Find Infectious and Immune-mediated Disease(IID) across many repositories."
+      "subtitle": "Accelerate your research. Find datasets on Infectious and Immune-mediated Diseases (IID) across many repositories."
     },
     "repositories": {
       "heading": "Currently included repositories"
