@@ -105,6 +105,27 @@ const Sections = ({
       {data?.author && <ResourceAuthors authors={data.author} />}
 
       <ResourceDates data={data} />
+      {/*<--- AI Generated short description -->*/}
+      {data?.disambiguatingDescription && (
+        <Flex
+          lineHeight='short'
+          display='flex'
+          alignItems='baseline'
+          flexWrap='wrap'
+          px={6}
+          py={4}
+        >
+          <MetadataLabel label='Summary' />
+
+          <Text lineHeight='short' pt={1} mx={1} verticalAlign='bottom'>
+            <Tag variant='subtle' size='sm' mr={1} colorScheme='tertiary'>
+              <TagLeftIcon as={FaWandMagicSparkles}></TagLeftIcon>
+              <TagLabel>AI Generated</TagLabel>
+            </Tag>
+            {data.disambiguatingDescription}
+          </Text>
+        </Flex>
+      )}
 
       {sections.map(section => {
         return (
@@ -150,7 +171,7 @@ const Sections = ({
               <>
                 <ResourceOverview isLoading={isLoading} {...data} />
                 {/*<--- AI Generated short description -->*/}
-                {data?.disambiguatingDescription && (
+                {/* {data?.disambiguatingDescription && (
                   <Flex
                     lineHeight='short'
                     display='flex'
@@ -179,7 +200,7 @@ const Sections = ({
                       {data.disambiguatingDescription}
                     </Text>
                   </Flex>
-                )}
+                )} */}
 
                 <ResourceIsPartOf
                   isLoading={isLoading}
