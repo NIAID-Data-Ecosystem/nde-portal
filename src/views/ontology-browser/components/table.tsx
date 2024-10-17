@@ -223,12 +223,12 @@ export const OntologyBrowserTable = ({
                       mb='0'
                       fontSize='sm'
                     >
-                      Include terms with 0 associated datasets?
+                      Hide terms with 0 datasets?
                     </FormLabel>
                     <Switch
                       id='include-empty-counts'
                       colorScheme='primary'
-                      isChecked={configureView.includeEmptyCounts === true}
+                      isChecked={configureView.includeEmptyCounts === false}
                       onChange={() =>
                         setConfiguredView(() => {
                           return {
