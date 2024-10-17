@@ -19,35 +19,6 @@ import {
 import React from 'react';
 import { FaCaretDown } from 'react-icons/fa6';
 import { ScrollContainer } from 'src/components/scroll-container';
-interface Option {
-  name: string;
-  value: string;
-  count?: number;
-}
-
-interface Option {
-  name: string;
-  value: string;
-  count?: number;
-}
-
-interface Option {
-  name: string;
-  value: string;
-  count?: number;
-}
-
-interface Option {
-  name: string;
-  value: string;
-  count?: number;
-}
-
-interface Option {
-  name: string;
-  value: string;
-  count?: number;
-}
 
 interface Option {
   name: string;
