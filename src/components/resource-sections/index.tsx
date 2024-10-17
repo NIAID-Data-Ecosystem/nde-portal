@@ -4,7 +4,7 @@ import {
   Box,
   Divider,
   Flex,
-  HStack,
+  Icon,
   ListItem,
   Skeleton,
   Tag,
@@ -13,7 +13,7 @@ import {
   Text,
   UnorderedList,
 } from '@chakra-ui/react';
-import { FaWandMagicSparkles } from 'react-icons/fa6';
+import { FaInfo, FaWandMagicSparkles } from 'react-icons/fa6';
 
 import { Link } from 'src/components/link';
 import {
@@ -39,7 +39,7 @@ import { CompletenessBadgeCircle } from 'src/components/metadata-completeness-ba
 import { ResourceCatalogCollection } from './components/collection-information';
 import { DownloadMetadata } from '../download-metadata';
 import { Keywords } from './components/keywords';
-import { MetadataLabel } from '../metadata';
+import Tooltip from '../tooltip';
 
 // Metadata displayed in each section
 export const sectionMetadata: { [key: string]: (keyof FormattedResource)[] } = {
@@ -115,7 +115,31 @@ const Sections = ({
           px={6}
           py={4}
         >
-          <MetadataLabel label='Summary' />
+          <Tooltip label='This summary is based on the description field using ChatGPT4.'>
+            <Link
+              href='/knowledge-center/ai-generated'
+              mx={1}
+              fontSize='13px'
+              fontWeight='medium'
+              letterSpacing='wide'
+              textTransform='uppercase'
+              whiteSpace={['unset', 'nowrap']}
+              lineHeight='inherit'
+              textDecoration='underline'
+              color='gray.800!important'
+              _hover={{ textDecoration: 'none' }}
+            >
+              SUMMARY{' '}
+              <Icon
+                as={FaInfo}
+                boxSize={3.5}
+                border='1px solid'
+                borderRadius='full'
+                p={0.5}
+                color='gray.800!important'
+              />
+            </Link>
+          </Tooltip>
 
           <Text lineHeight='short' pt={1} mx={1} verticalAlign='bottom'>
             <Tag variant='subtle' size='sm' mr={1} colorScheme='tertiary'>
