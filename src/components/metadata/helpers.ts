@@ -315,6 +315,11 @@ const createMeasurementTechniqueContent = (
               ? measurementTechnique.name.join(', ')
               : measurementTechnique.name;
 
+            const termSet = measurementTechnique?.inDefinedTermSet;
+            const ontologyLabel = termSet
+              ? `${termSet?.toUpperCase().includes('EDAM') ? 'EDAM' : termSet}`
+              : '';
+
             return {
               key: uniqueId(`${property}-${id}-${idx}`),
               name,
@@ -326,7 +331,11 @@ const createMeasurementTechniqueContent = (
                   : measurementTechnique.name,
               },
               ontologyProps: {
-                ['aria-label']: 'See ontology information.',
+                ['aria-label']: termSet
+                  ? `See ${ontologyLabel} taxonomy information.`
+                  : 'See taxonomy information.',
+                label: ontologyLabel,
+                inDefinedTermSet: measurementTechnique?.inDefinedTermSet,
                 value: measurementTechnique?.url,
               },
             };
