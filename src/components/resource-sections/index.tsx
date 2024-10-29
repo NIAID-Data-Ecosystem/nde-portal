@@ -4,17 +4,14 @@ import {
   Box,
   Divider,
   Flex,
-  Icon,
+  HStack,
   ListItem,
   Skeleton,
-  Tag,
-  TagLabel,
-  TagLeftIcon,
-  Text,
+  Stack,
+  StackDivider,
   UnorderedList,
+  VStack,
 } from '@chakra-ui/react';
-import { FaInfo, FaWandMagicSparkles } from 'react-icons/fa6';
-
 import { Link } from 'src/components/link';
 import {
   ResourceDates,
@@ -30,7 +27,10 @@ import FilesTable from './components/files-table';
 import { CitedByTable } from './components/cited-by-table';
 import { DisplayHTMLContent } from '../html-content';
 import SoftwareInformation from './components/software-information';
-import { External } from './components/sidebar/components/external';
+import {
+  ExternalAccess,
+  UsageInfo,
+} from './components/sidebar/components/external';
 import { Funding } from './components/funding';
 import { JsonViewer } from '../json-viewer';
 import ResourceIsPartOf from './components/is-part-of';
@@ -39,7 +39,7 @@ import { CompletenessBadgeCircle } from 'src/components/metadata-completeness-ba
 import { ResourceCatalogCollection } from './components/collection-information';
 import { DownloadMetadata } from '../download-metadata';
 import { Keywords } from './components/keywords';
-import Tooltip from '../tooltip';
+import { Summary } from './components/summary';
 
 // Metadata displayed in each section
 export const sectionMetadata: { [key: string]: (keyof FormattedResource)[] } = {
@@ -107,47 +107,27 @@ const Sections = ({
       <ResourceDates data={data} />
       {/*<--- AI Generated short description -->*/}
       {data?.disambiguatingDescription && (
-        <Flex
-          lineHeight='short'
-          display='flex'
-          alignItems='baseline'
-          flexWrap='wrap'
-          px={6}
-          py={4}
-        >
-          <Tooltip label='This summary is based on the description field using ChatGPT4.'>
-            <Link
-              href='/knowledge-center/ai-generated'
-              mx={1}
-              fontSize='13px'
-              fontWeight='medium'
-              letterSpacing='wide'
-              textTransform='uppercase'
-              whiteSpace={['unset', 'nowrap']}
-              lineHeight='inherit'
-              textDecoration='underline'
-              color='gray.800!important'
-              _hover={{ textDecoration: 'none' }}
-            >
-              SUMMARY{' '}
-              <Icon
-                as={FaInfo}
-                boxSize={3.5}
-                border='1px solid'
-                borderRadius='full'
-                p={0.5}
-                color='gray.800!important'
-              />
-            </Link>
-          </Tooltip>
-
-          <Text lineHeight='short' pt={1} mx={1} verticalAlign='bottom'>
-            <Tag variant='subtle' size='sm' mr={1} colorScheme='tertiary'>
-              <TagLeftIcon as={FaWandMagicSparkles}></TagLeftIcon>
-              <TagLabel>AI Generated</TagLabel>
-            </Tag>
-            {data.disambiguatingDescription}
-          </Text>
+        <Flex mx={6} my={2}>
+          <Summary
+            description={data.disambiguatingDescription}
+            tagLabel='AI Generated'
+          />
+          {/* Badge indicating completeness of metadata */}
+          {/* {data && data['_meta'] && (
+          <Flex
+            px={4}
+            py={4}
+            justifyContent='center'
+            minWidth='250px'
+            display={{ base: 'none', lg: 'flex' }}
+          >
+            <CompletenessBadgeCircle
+              type={data['@type']}
+              stats={data['_meta']}
+              size='lg'
+            />
+          </Flex>
+        )} */}
         </Flex>
       )}
 
@@ -172,59 +152,42 @@ const Sections = ({
                 flexDirection='column'
                 minWidth='250px'
               >
-                {/* Badge indicating completeness of metadata */}
-                {data && data['_meta'] && (
-                  <Flex px={4} py={4} justifyContent='center'>
-                    <CompletenessBadgeCircle
-                      type={data['@type']}
-                      stats={data['_meta']}
-                      size='lg'
-                    />
-                  </Flex>
-                )}
-
-                {/* External links to access data, documents or dataset at the source. */}
-                <External
-                  data={data}
-                  isLoading={isLoading}
-                  hasDivider={false}
-                />
+                <Stack
+                  flexWrap='wrap'
+                  direction={{ base: 'column', md: 'row' }}
+                  divider={<StackDivider borderColor='gray.100' />}
+                >
+                  {/* Badge indicating completeness of metadata */}
+                  {data && data['_meta'] && (
+                    <Flex
+                      px={4}
+                      py={4}
+                      alignItems='center'
+                      justifyContent='center'
+                      minWidth='250px'
+                      flex={1}
+                    >
+                      <CompletenessBadgeCircle
+                        type={data['@type']}
+                        stats={data['_meta']}
+                        size='lg'
+                      />
+                    </Flex>
+                  )}
+                  {/* External links to access data, documents or dataset at the source. */}
+                  <ExternalAccess
+                    data={data}
+                    isLoading={isLoading}
+                    hasDivider={false}
+                    minWidth={{ base: 'unset', sm: '350px' }}
+                  />
+                </Stack>
+                <UsageInfo data={data} isLoading={isLoading} />
               </Flex>
             )}
             {section.hash === 'overview' && (
               <>
                 <ResourceOverview isLoading={isLoading} {...data} />
-                {/*<--- AI Generated short description -->*/}
-                {/* {data?.disambiguatingDescription && (
-                  <Flex
-                    lineHeight='short'
-                    display='flex'
-                    alignItems='baseline'
-                    flexWrap='wrap'
-                    // px={6}
-                    py={4}
-                  >
-                    <MetadataLabel label='Summary' />
-
-                    <Text
-                      lineHeight='short'
-                      pt={1}
-                      mx={1}
-                      verticalAlign='bottom'
-                    >
-                      <Tag
-                        variant='subtle'
-                        size='sm'
-                        mr={1}
-                        colorScheme='tertiary'
-                      >
-                        <TagLeftIcon as={FaWandMagicSparkles}></TagLeftIcon>
-                        <TagLabel>AI Generated</TagLabel>
-                      </Tag>
-                      {data.disambiguatingDescription}
-                    </Text>
-                  </Flex>
-                )} */}
 
                 <ResourceIsPartOf
                   isLoading={isLoading}

@@ -90,9 +90,9 @@ const ResourceAuthors = ({
               >
                 <Box w='100%' flex='1' textAlign='left' mr={6}>
                   <Heading
-                    size='sm'
+                    fontSize='sm'
                     color='gray.700'
-                    fontWeight='semibold'
+                    fontWeight='light'
                     lineHeight='short'
                   >
                     {formatAuthorsList2String(authors, ',', 10)}
