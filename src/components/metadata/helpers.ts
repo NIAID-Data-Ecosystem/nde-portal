@@ -166,7 +166,10 @@ const createFundingContent = (
         return (
           funding.identifier ||
           funding.url ||
-          Array.isArray(funding.funder) ||
+          (Array.isArray(funding.funder) &&
+            funding.funder.some(funder => {
+              return funder?.name;
+            })) ||
           funding.funder?.name
         );
       }) || null
@@ -186,7 +189,7 @@ const createFundingContent = (
         fundingDetails?.map((funding, idx) => {
           const name = Array.isArray(funding.funder)
             ? funding.funder
-                .filter(funder => !!funder.name)
+                .filter(funder => !!funder?.name)
                 .slice(0, SHOW_MAX_FUNDER_NAMES)
                 .map(funder => funder.name)
                 .join(', ') +
@@ -201,7 +204,7 @@ const createFundingContent = (
               ['aria-label']: `Search for results with funding "${name}"`,
               property: 'funding.funder.name',
               value: Array.isArray(funding.funder)
-                ? funding.funder.filter(funder => !!funder.name).join('" OR "')
+                ? funding.funder.filter(funder => !!funder?.name).join('" OR "')
                 : funding?.funder?.name,
             },
             tags:

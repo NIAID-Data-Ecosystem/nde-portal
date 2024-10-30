@@ -69,20 +69,24 @@ export const Funding: React.FC<FundingProps> = ({
     () =>
       fundingData.map((funding, idx) => {
         const funderName = Array.isArray(funding?.funder)
-          ? funding?.funder?.map(f => f.name).join(', ')
+          ? funding?.funder?.map(f => f?.name).join(', ')
           : funding?.funder?.name;
         return {
           ...funding,
           key: uniqueId(`funding-${funding.identifier || idx}`),
-          name: funding.name || '',
+          name: funding?.name || '',
           funderName,
           hasRowDrawer: funding.funder
             ? Array.isArray(funding.funder)
-              ? funding.funder.some(funderItem =>
-                  Object.keys(funderItem).some(
-                    key =>
-                      key !== '@type' && key !== 'name' && key !== 'identifier',
-                  ),
+              ? funding.funder.some(
+                  funderItem =>
+                    funderItem &&
+                    Object.keys(funderItem).some(
+                      key =>
+                        key !== '@type' &&
+                        key !== 'name' &&
+                        key !== 'identifier',
+                    ),
                 )
               : Object.keys(funding.funder).some(
                   key =>
