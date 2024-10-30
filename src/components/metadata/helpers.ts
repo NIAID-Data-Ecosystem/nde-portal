@@ -166,11 +166,11 @@ const createFundingContent = (
         return (
           funding.identifier ||
           funding.url ||
-          (Array.isArray(funding.funder) &&
-            funding.funder.some(funder => {
-              return funder?.name;
-            })) ||
-          funding.funder?.name
+          (Array.isArray(funding.funder)
+            ? funding.funder.some(funder => {
+                return funder?.name;
+              })
+            : funding?.funder?.name)
         );
       }) || null
     );
