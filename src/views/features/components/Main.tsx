@@ -48,6 +48,12 @@ const Main = ({ data, isLoading }: MainContentProps) => {
       );
     },
     img: (props: ImageProps) => {
+      // Strapi image path retrieved from the API is a full path but we only need the relative path
+      const relative_url =
+        props.src && !props.src.startsWith('/')
+          ? `/uploads/${props.src.split('/uploads/')[1]}`
+          : props.src;
+
       let styles = {} as any;
       if (props.align === 'right' || props.float === 'right') {
         styles.pl = { base: 4, lg: 6 };
@@ -59,7 +65,7 @@ const Main = ({ data, isLoading }: MainContentProps) => {
           {...styles}
           {...props}
           my={2}
-          src={`${process.env.NEXT_PUBLIC_STRAPI_API_URL}${props.src}`}
+          src={`${process.env.NEXT_PUBLIC_STRAPI_API_URL}${relative_url}`}
           alt={props.alt || 'image'}
         />
       );
