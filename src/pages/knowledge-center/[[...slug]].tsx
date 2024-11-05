@@ -383,6 +383,7 @@ export async function getStaticPaths() {
       throw err;
     }
   };
+
   // Call an external API endpoint to get documentation
   const { docs } = await fetchData();
   if (!docs.length) {
@@ -393,9 +394,11 @@ export async function getStaticPaths() {
   // (slower builds, but faster initial page load)
   const paths = [
     { params: { slug: undefined } }, // handles /docs (without slug) route.
-    ...docs.map(doc => ({
-      params: { slug: [doc.attributes.slug] },
-    })),
+    ...docs
+      .filter(doc => !!doc.attributes?.slug)
+      .map(doc => ({
+        params: { slug: [doc.attributes.slug] },
+      })),
   ];
 
   // { fallback: false } means other routes should 404
