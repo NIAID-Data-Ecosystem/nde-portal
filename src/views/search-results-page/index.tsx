@@ -157,6 +157,7 @@ const SearchResultsPage = ({
         'license',
         'measurementTechnique',
         'name',
+        'programmingLanguage',
         'sdPublisher',
         'species',
         'topicCategory',
