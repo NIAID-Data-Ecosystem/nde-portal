@@ -28,7 +28,6 @@ import {
 import {
   fetchOntologyChildrenByNodeId,
   fetchOntologyTreeByTaxonId,
-  formatIdentifier,
   getChildren,
   OntologyTreeItem,
   OntologyTreeParams,
@@ -79,12 +78,13 @@ export const OntologyBrowserTable = ({
   const queryParams = useMemo(() => {
     const string_id = Array.isArray(id) ? id[0] : id;
     return {
+      q: router.query.q as string,
       id: string_id,
       ontology: (string_id.split('_')[0] === 'NCBITaxon'
         ? 'ncbitaxon'
         : 'edam') as OntologyTreeParams['ontology'],
     };
-  }, [id]);
+  }, [id, router.query.q]);
 
   // Fetch tree data
   const {
@@ -92,11 +92,17 @@ export const OntologyBrowserTable = ({
     isLoading,
     data: allData,
   } = useQuery({
-    queryKey: ['ontology-browser-tree', queryParams.id, queryParams.ontology],
+    queryKey: [
+      'ontology-browser-tree',
+      queryParams.q,
+      queryParams.id,
+      queryParams.ontology,
+    ],
     queryFn: () => fetchOntologyTreeByTaxonId(queryParams),
     refetchOnWindowFocus: false,
     enabled: router.isReady && !!queryParams.id,
   });
+  console.log(allData);
 
   const selectedNode = allData?.lineage[allData.lineage.length - 1];
   const MAX_NODES = 5;
@@ -328,6 +334,7 @@ const TreeNode = ({
         return null;
       }
       return fetchOntologyChildrenByNodeId(node.id, {
+        q: '',
         id: node.taxonId,
         ontology: node.ontology_name as OntologyTreeParams['ontology'],
       });
@@ -338,90 +345,6 @@ const TreeNode = ({
 
   // Fetch resource count for each node.
   const router = useRouter();
-
-  const {
-    isLoading: countIsLoading,
-    data: { total: termCount, facet } = { total: 0, facet: [] },
-  } = useQuery({
-    queryKey: ['fetch-count', node.id],
-    queryFn: async () => {
-      if (!node.id) {
-        return {
-          total: 0,
-          facet: [],
-        };
-      }
-
-      const id = formatIdentifier({ id: node.taxonId });
-
-      // Separate query handlers for ncbitaxon and edam
-      if (node.ontology_name === 'ncbitaxon') {
-        const species_property = 'species.identifier';
-        const infectiousAgent_property = 'infectiousAgent.identifier';
-
-        /*
-        Based on the counts (maybe by running multiple queries), we can decide which facet to use (i.e. infectiousAgent vs species) when executing the final search.
-        Then instead of "OR"ing these two general categories which could be really long depending on the onto. We can drill down further to the specific facet. (i.e. species.identifier:"####" OR species.name "-----")
-        */
-        const speciesQuery = fetchSearchResults({
-          q: `includedInDataCatalog.name:"Data Discovery Engine" AND ${
-            router.query.q ? `${router.query.q} AND ` : ''
-          }(${species_property}:"${id}")`,
-          size: 0,
-        });
-
-        const infectiousAgentQuery = fetchSearchResults({
-          q: `includedInDataCatalog.name:"Data Discovery Engine" AND ${
-            router.query.q ? `${router.query.q} AND ` : ''
-          }(${infectiousAgent_property}:"${id}")`,
-          size: 0,
-        });
-
-        // Wait for both queries to complete
-        const [speciesResult, infectiousAgentResult] = await Promise.all([
-          speciesQuery,
-          infectiousAgentQuery,
-        ]);
-
-        if (speciesResult?.total) {
-          return { total: speciesResult.total, facet: [species_property] };
-        } else if (infectiousAgentResult?.total) {
-          return {
-            total: infectiousAgentResult.total,
-            facet: [infectiousAgent_property],
-          };
-        } else {
-          return {
-            total: 0,
-            facet: [infectiousAgent_property, species_property],
-          };
-        }
-      } else if (node.ontology_name === 'edam') {
-        const topicCategory_property = 'topicCategory.identifier';
-        const edamQuery = fetchSearchResults({
-          q: `${
-            router.query.q ? `${router.query.q} AND ` : ''
-          }(${topicCategory_property}:"${id}")`,
-          size: 0,
-        });
-
-        const topicCategoryResult = await edamQuery;
-
-        return {
-          total: topicCategoryResult?.total || 0,
-          facet: [topicCategory_property],
-        };
-      }
-
-      return {
-        total: 0,
-        facet: [],
-      };
-    },
-    select: data => data,
-    refetchOnWindowFocus: false,
-    enabled: !!node.id,
-  });
 
   const {
     isLoading: lineageCountIsLoading,
@@ -491,9 +414,8 @@ const TreeNode = ({
 
   if (
     !config?.includeEmptyCounts &&
-    termCount === 0 &&
+    node.counts.term === 0 &&
     lineageCount === 0 &&
-    !countIsLoading &&
     !childrenList.length
   ) {
     return <></>;
@@ -574,16 +496,14 @@ const TreeNode = ({
           >
             <Tag
               borderRadius='full'
-              colorScheme={
-                !countIsLoading && termCount === 0 ? 'gray' : 'primary'
-              }
+              colorScheme={node.counts.term === 0 ? 'gray' : 'primary'}
               variant='subtle'
               size='sm'
             >
-              {isLoading || countIsLoading ? (
+              {isLoading ? (
                 <Spinner size='sm' color='primary.500' mx={2} />
               ) : (
-                termCount?.toLocaleString() || 0
+                node.counts.term?.toLocaleString() || 0
               )}
             </Tag>
           </Tooltip>
@@ -602,13 +522,11 @@ const TreeNode = ({
           >
             <Tag
               borderRadius='full'
-              colorScheme={
-                !countIsLoading && lineageCount === 0 ? 'gray' : 'primary'
-              }
+              colorScheme={lineageCount === 0 ? 'gray' : 'primary'}
               variant='subtle'
               size='sm'
             >
-              {isLoading || countIsLoading ? (
+              {isLoading ? (
                 <Spinner size='sm' color='primary.500' mx={2} />
               ) : (
                 lineageCount?.toLocaleString() || 0
@@ -633,8 +551,8 @@ const TreeNode = ({
                 id: node.taxonId,
                 label: node.label,
                 ontology: node.ontology_name,
-                count: termCount,
-                facet,
+                count: node.counts.term,
+                facet: node.facet,
               });
             }}
           />

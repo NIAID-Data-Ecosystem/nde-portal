@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { stratify } from '@visx/hierarchy';
+import { fetchSearchResults } from 'src/utils/api';
 import { HierarchyNode } from '@visx/hierarchy/lib/types';
 
 export type OntologyOption = {
@@ -90,6 +91,7 @@ export const searchOntologyAPI = async (
 
 export interface OntologyTreeParams {
   id: string;
+  q: string;
   ontology: 'edam' | 'ncbitaxon';
   lang?: string;
   siblings?: boolean;
@@ -114,6 +116,11 @@ export interface OntologyTreeItem
   hasChildren: boolean;
   label: string;
   taxonId: string;
+  facet: string[];
+  counts: {
+    term: number;
+    lineage: number;
+  };
 }
 
 export interface OntologyTreeResponse {
@@ -166,7 +173,6 @@ export const fetchOntologyTreeByTaxonId = async (
         // set the parent to empty string if it is the root node.
         const parent = item.parent === '#' ? '' : item.parent;
         const taxonId = iri.split('/').pop() || '';
-
         return {
           hasChildren: item.children,
           id,
@@ -183,17 +189,103 @@ export const fetchOntologyTreeByTaxonId = async (
       return { lineage };
     });
 
-  // Fetch the children data.
-  const node_id = lineage[lineage.length - 1].id;
-  const { children } = await fetchOntologyChildrenByNodeId(
-    node_id,
-    params,
-    signal,
+  // Fetch the counts for each node in the lineage
+  const lineageWithCounts = await Promise.all(
+    lineage.map(async node => {
+      if (node.ontology_name === 'ncbitaxon' || node.ontology_name === 'edam') {
+        const termCountData = await fetchTermCountsForNode(node, params);
+        // const lineageCountData = await fetchLineageCountsForNode(node);
+        return {
+          ...node,
+          facet: termCountData.facet,
+          counts: { term: termCountData.total },
+        };
+      }
+      return node;
+    }),
   );
 
-  const tree = transformArray2Tree([...lineage, ...children]);
+  // Fetch the children data.
+  const node_id = lineage[lineage.length - 1].id;
+  const children = [];
+
+  // const { children } = await fetchOntologyChildrenByNodeId(
+  //   node_id,
+  //   params,
+  //   signal,
+  // );
+
+  // const tree = transformArray2Tree([...lineage, ...children]);
   // [Note]: returning both array and hierarchy form until we decide which structure we want.
-  return { children, lineage, tree };
+  return { children, lineage: lineageWithCounts };
+};
+
+export const fetchTermCountsForNode = async (
+  node: OntologyTreeResponse['lineage'][number],
+  params: OntologyTreeParams,
+) => {
+  const id = formatIdentifier({ id: node.taxonId });
+  // Separate query handlers for ncbitaxon and edam
+  if (node.ontology_name === 'ncbitaxon') {
+    const species_property = 'species.identifier';
+    const infectiousAgent_property = 'infectiousAgent.identifier';
+
+    /*
+  Based on the counts (maybe by running multiple queries), we can decide which facet to use (i.e. infectiousAgent vs species) when executing the final search.
+  Then instead of "OR"ing these two general categories which could be really long depending on the onto. We can drill down further to the specific facet. (i.e. species.identifier:"####" OR species.name "-----")
+  */
+    const speciesQuery = fetchSearchResults({
+      q: `${params.q ? `${params.q} AND ` : ''}(${species_property}:"${id}")`,
+      size: 0,
+    });
+
+    const infectiousAgentQuery = fetchSearchResults({
+      q: `${
+        params.q ? `${params.q} AND ` : ''
+      }(${infectiousAgent_property}:"${id}")`,
+      size: 0,
+    });
+
+    // Wait for both queries to complete
+    const [speciesResult, infectiousAgentResult] = await Promise.all([
+      speciesQuery,
+      infectiousAgentQuery,
+    ]);
+
+    if (speciesResult?.total) {
+      return { total: speciesResult.total, facet: [species_property] };
+    } else if (infectiousAgentResult?.total) {
+      return {
+        total: infectiousAgentResult.total,
+        facet: [infectiousAgent_property],
+      };
+    } else {
+      return {
+        total: 0,
+        facet: [infectiousAgent_property, species_property],
+      };
+    }
+  } else if (node.ontology_name === 'edam') {
+    const topicCategory_property = 'topicCategory.identifier';
+    const edamQuery = fetchSearchResults({
+      q: `${
+        params.q ? `${params.q} AND ` : ''
+      }(${topicCategory_property}:"${id}")`,
+      size: 0,
+    });
+
+    const topicCategoryResult = await edamQuery;
+
+    return {
+      total: topicCategoryResult?.total || 0,
+      facet: [topicCategory_property],
+    };
+  }
+
+  return {
+    total: 0,
+    facet: [],
+  };
 };
 
 export const transformArray2Tree = (data: OntologyTreeItem[]) => {
