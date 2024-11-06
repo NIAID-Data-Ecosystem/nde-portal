@@ -18,6 +18,7 @@ import { FormattedResource } from 'src/utils/api/types';
 import { TypeBanner } from 'src/components/resource-sections/components';
 import MetadataAccordion from './metadata-accordion';
 import TopicCategories from './topic-categories';
+import ApplicationCategories from './application-categories';
 import ProgrammingLanguages from './programming-languages';
 import { DisplayHTMLContent } from 'src/components/html-content';
 import { AccessibleForFree, ConditionsOfAccess } from 'src/components/badges';
@@ -308,6 +309,14 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                   px={paddingCard}
                 />
               )}
+
+              {data?.applicationCategory &&
+                data?.applicationCategory.length > 0 && (
+                  <ApplicationCategories
+                    data={data.applicationCategory}
+                    px={paddingCard}
+                  />
+                )}
 
               {data?.programmingLanguage &&
                 data?.programmingLanguage.length > 0 && (

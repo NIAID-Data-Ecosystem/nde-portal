@@ -144,6 +144,7 @@ const SearchResultsPage = ({
         '_meta',
         '@type',
         'alternateName',
+        'applicationCategory',
         'author',
         'conditionsOfAccess',
         'date',
