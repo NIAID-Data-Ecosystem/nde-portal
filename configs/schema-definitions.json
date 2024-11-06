@@ -4665,7 +4665,8 @@
     "type": "object",
     "description": {
       "Dataset": "Topic of the work. This topic may be assigned by a human curator or through automated algorithms.",
-      "ResourceCatalog": "Topic of the work. This topic may be assigned by a human curator or through automated algorithms."
+      "ResourceCatalog": "Topic of the work. This topic may be assigned by a human curator or through automated algorithms.",
+      "ComputationalTool": "Topic of the work. This topic may be assigned by a human curator or through automated algorithms."
     },
     "abstract": {
       "Dataset": "topic",
