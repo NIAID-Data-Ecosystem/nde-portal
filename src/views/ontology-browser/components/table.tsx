@@ -341,7 +341,7 @@ const TreeNode = ({
 
   const {
     isLoading: countIsLoading,
-    data: { total: count, facet } = { total: 0, facet: [] },
+    data: { total: termCount, facet } = { total: 0, facet: [] },
   } = useQuery({
     queryKey: ['fetch-count', node.id],
     queryFn: async () => {
@@ -364,14 +364,14 @@ const TreeNode = ({
         Then instead of "OR"ing these two general categories which could be really long depending on the onto. We can drill down further to the specific facet. (i.e. species.identifier:"####" OR species.name "-----")
         */
         const speciesQuery = fetchSearchResults({
-          q: `${
+          q: `includedInDataCatalog.name:"Data Discovery Engine" AND ${
             router.query.q ? `${router.query.q} AND ` : ''
           }(${species_property}:"${id}")`,
           size: 0,
         });
 
         const infectiousAgentQuery = fetchSearchResults({
-          q: `${
+          q: `includedInDataCatalog.name:"Data Discovery Engine" AND ${
             router.query.q ? `${router.query.q} AND ` : ''
           }(${infectiousAgent_property}:"${id}")`,
           size: 0,
@@ -423,6 +423,36 @@ const TreeNode = ({
     enabled: !!node.id,
   });
 
+  const {
+    isLoading: lineageCountIsLoading,
+    data: { total: lineageCount } = { total: 0 },
+  } = useQuery({
+    queryKey: ['fetch-lineage-count', node.id],
+    queryFn: async () => {
+      if (!node.id) {
+        return {
+          total: 0,
+        };
+      }
+      const onto =
+        node.ontology_name == 'ncbitaxon' ? 'taxon' : node.ontology_name;
+      const id = node.taxonId.replace(/[^0-9]/g, '');
+      const query = `includedInDataCatalog.name:"Data Discovery Engine" AND _meta.lineage.${onto}:"${id}"`;
+
+      const lineageQuery = await fetchSearchResults({
+        q: query,
+        size: 0,
+      });
+      if (!lineageQuery) {
+        return { total: 0 };
+      }
+      return { total: lineageQuery.total };
+    },
+    select: data => data,
+    refetchOnWindowFocus: false,
+    enabled: !!node.id,
+  });
+
   const toggleNode = () => {
     fetchChildren();
     setIsToggled(!isToggled);
@@ -461,7 +491,8 @@ const TreeNode = ({
 
   if (
     !config?.includeEmptyCounts &&
-    count === 0 &&
+    termCount === 0 &&
+    lineageCount === 0 &&
     !countIsLoading &&
     !childrenList.length
   ) {
@@ -530,17 +561,57 @@ const TreeNode = ({
           </Box>
         </Flex>
         <HStack>
-          <Tooltip label='Number of potential matching resources in NIAID Discovery Portal'>
+          <Tooltip
+            label={
+              <>
+                Number of datasets{' '}
+                <Text as='span' textDecoration='underline'>
+                  for this term
+                </Text>{' '}
+                in the NIAID Discovery Portal
+              </>
+            }
+          >
             <Tag
               borderRadius='full'
-              colorScheme={!countIsLoading && count === 0 ? 'gray' : 'primary'}
+              colorScheme={
+                !countIsLoading && termCount === 0 ? 'gray' : 'primary'
+              }
               variant='subtle'
               size='sm'
             >
               {isLoading || countIsLoading ? (
                 <Spinner size='sm' color='primary.500' mx={2} />
               ) : (
-                count?.toLocaleString() || 0
+                termCount?.toLocaleString() || 0
+              )}
+            </Tag>
+          </Tooltip>
+          <Text>/</Text>
+
+          <Tooltip
+            label={
+              <>
+                Number of datasets{' '}
+                <Text as='span' textDecoration='underline'>
+                  for this term and sub-terms
+                </Text>{' '}
+                in the NIAID Discovery Portal
+              </>
+            }
+          >
+            <Tag
+              borderRadius='full'
+              colorScheme={
+                !countIsLoading && lineageCount === 0 ? 'gray' : 'primary'
+              }
+              variant='subtle'
+              size='sm'
+            >
+              {isLoading || countIsLoading ? (
+                <Spinner size='sm' color='primary.500' mx={2} />
+              ) : (
+                lineageCount?.toLocaleString() || 0
               )}
             </Tag>
           </Tooltip>
@@ -562,7 +633,7 @@ const TreeNode = ({
                 id: node.taxonId,
                 label: node.label,
                 ontology: node.ontology_name,
-                count,
+                count: termCount,
                 facet,
               });
             }}
