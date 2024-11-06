@@ -3,11 +3,15 @@ import { Flex, FlexProps, Icon, Text } from '@chakra-ui/react';
 import { FaMagnifyingGlass } from 'react-icons/fa6';
 import { TagWithUrl } from 'src/components/tag-with-url';
 import Tooltip from 'src/components/tooltip';
+import { SchemaDefinitions } from 'scripts/generate-schema-definitions/types';
+import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
 import { FaInfo } from 'react-icons/fa6';
 
 interface ApplicationCategoryProps extends FlexProps {
   data: string[];
 }
+
+const metadataFields = SCHEMA_DEFINITIONS as SchemaDefinitions;
 
 const ApplicationCategories: React.FC<ApplicationCategoryProps> = ({
   data,
@@ -27,7 +31,13 @@ const ApplicationCategories: React.FC<ApplicationCategoryProps> = ({
       borderBottomColor='gray.200'
       {...props}
     >
-      <Tooltip>
+      <Tooltip
+        label={
+          metadataFields['applicationCategory'].description?.[
+            'ComputationalTool'
+          ]
+        }
+      >
         <Text fontSize='xs' color='gray.800' mr={1} userSelect='none'>
           Application Categories
           <Icon

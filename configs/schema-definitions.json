@@ -277,6 +277,9 @@
     "property": "applicationCategory",
     "count": 22208,
     "type": "keyword",
+    "description": {
+      "ComputationalTool": "Type of software application, e.g. Command-line tool, Database portal, Desktop application, Library, Ontology, Plug-in, Script, SPARQL endpoint, Suite, Web application, Web API, Web service, Workbench, Workflow."
+    },
     "isAdvancedSearchField": true
   },
   "applicationSubCategory": {
@@ -4018,6 +4021,9 @@
     "property": "programmingLanguage",
     "count": 10111,
     "type": "keyword",
+    "description": {
+      "ComputationalTool": "The main programming language(s) used to build or execute the tool."
+    },
     "isAdvancedSearchField": true
   },
   "relationship": {
