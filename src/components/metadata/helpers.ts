@@ -152,6 +152,41 @@ export const generateMetadataContent = (
   return generatedContent;
 };
 
+// This function generates metadata content for computational tool cards based on the provided data
+export const generateMetadataContentforCompToolCard = (
+  data?: Data | null,
+  showItems = true,
+): MetadataContentProps[] => {
+  if (!data) {
+    return [];
+  }
+  const id = data.id as FormattedResource['id'];
+  // Define the structure for each metadata type
+  const createContentForProperty = (
+    id: FormattedResource['id'],
+    property: string,
+    data: Data,
+  ): MetadataContentProps | undefined => {
+    switch (property) {
+      case 'funding':
+        return createFundingContent(id, property, data?.funding, showItems);
+      case 'license':
+        return createLicenseContent(id, property, data?.license, showItems);
+      default:
+        return undefined;
+    }
+  };
+
+  // Generate content for each property and filter out any undefined values.
+  const generatedContent = Object.keys(data)
+    .map(property => createContentForProperty(id, property, data))
+    .filter(
+      (content): content is MetadataContentProps => content !== undefined,
+    );
+
+  return generatedContent;
+};
+
 // Generates content specific to funding.
 const createFundingContent = (
   id: FormattedResource['id'],

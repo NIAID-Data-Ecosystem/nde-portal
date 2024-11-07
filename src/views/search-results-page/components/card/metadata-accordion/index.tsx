@@ -19,6 +19,7 @@ import Tooltip from 'src/components/tooltip';
 import { getMetadataTheme } from 'src/components/icon/helpers';
 import {
   generateMetadataContent,
+  generateMetadataContentforCompToolCard,
   sortMetadataArray,
 } from 'src/components/metadata';
 import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
@@ -60,22 +61,32 @@ interface MetadataAccordionProps {
 const MetadataAccordion: React.FC<MetadataAccordionProps> = ({ data }) => {
   const paddingCard = [4, 6, 8, 10];
 
+  const type = data?.['@type'] || 'Dataset';
+
   const id = data?.id;
-  const content = generateMetadataContent({
-    id: data?.id,
-    healthCondition: data?.healthCondition,
-    infectiousAgent: data?.infectiousAgent,
-    funding: data?.funding,
-    license: data?.license,
-    measurementTechnique: data?.measurementTechnique,
-    species: data?.species,
-    usageInfo: data?.usageInfo,
-    variableMeasured: data?.variableMeasured,
-  });
+
+  const content =
+    type == 'ComputationalTool'
+      ? generateMetadataContentforCompToolCard({
+          id: data?.id,
+          funding: data?.funding,
+          license: data?.license,
+        })
+      : generateMetadataContent({
+          id: data?.id,
+          healthCondition: data?.healthCondition,
+          infectiousAgent: data?.infectiousAgent,
+          funding: data?.funding,
+          license: data?.license,
+          measurementTechnique: data?.measurementTechnique,
+          species: data?.species,
+          usageInfo: data?.usageInfo,
+          variableMeasured: data?.variableMeasured,
+        });
+
   const sortedMetadataContent = sortMetadataArray(content);
 
   const schema = SCHEMA_DEFINITIONS as SchemaDefinitions;
-  const type = data?.['@type'] || 'Dataset';
   return (
     <>
       {/* Details expandable drawer */}
