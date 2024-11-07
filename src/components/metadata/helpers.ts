@@ -176,6 +176,13 @@ export const generateMetadataContentforCompToolCard = (
         return createLicenseContent(id, property, data?.license, showItems);
       case 'output':
         return createOutputContent(id, property, data?.output, showItems);
+      case 'softwareVersion':
+        return createSoftwareVersionContent(
+          id,
+          property,
+          data?.softwareVersion,
+          showItems,
+        );
       default:
         return undefined;
     }
@@ -497,6 +504,34 @@ const createOutputContent = (
                 value: Array.isArray(output.name)
                   ? output.name.join('" OR "')
                   : output.name,
+              },
+            };
+          })
+        : [],
+  };
+};
+
+const createSoftwareVersionContent = (
+  id: FormattedResource['id'],
+  property: string,
+  softwareVersion?: FormattedResource['softwareVersion'],
+  showItems = true,
+) => {
+  return {
+    id: `${property}-${id}`,
+    label: 'Software Version',
+    property,
+    isDisabled: !softwareVersion,
+    items:
+      showItems && softwareVersion
+        ? softwareVersion.map((version, idx) => {
+            return {
+              key: uniqueId(`${property}-${id}-${idx}`),
+              name: version,
+              searchProps: {
+                ['aria-label']: `Search for results with software version "${version}"`,
+                property,
+                value: version,
               },
             };
           })

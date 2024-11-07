@@ -4,6 +4,8 @@ export const getMetadataColor = (property?: string) => {
     return 'blue.500';
   } else if (property?.toLowerCase() === 'usageinfo') {
     return 'blue.500';
+  } else if (property?.toLowerCase() === 'softwareversion') {
+    return 'cyan.700';
   } else if (property?.toLowerCase() === 'variablemeasured') {
     return 'cyan.700';
   } else if (property?.toLowerCase() === 'measurementtechnique') {
@@ -30,6 +32,8 @@ export const getMetadataTheme = (property?: string) => {
     return 'blue';
   } else if (property?.toLowerCase() === 'usageinfo') {
     return 'blue';
+  } else if (property?.toLowerCase() === 'softwareversion') {
+    return 'cyan';
   } else if (property?.toLowerCase() === 'variablemeasured') {
     return 'cyan';
   } else if (property?.toLowerCase() === 'measurementtechnique') {
