@@ -57,6 +57,8 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
     url,
   } = data || {};
 
+  console.log('data in card', data);
+
   const paddingCard = [4, 6, 8, 10];
   // lazy load large portion of cards on scroll.
   const [cardRef, inView] = useInView({ once: true });

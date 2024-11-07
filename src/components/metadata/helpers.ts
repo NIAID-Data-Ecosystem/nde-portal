@@ -170,8 +170,12 @@ export const generateMetadataContentforCompToolCard = (
     switch (property) {
       case 'funding':
         return createFundingContent(id, property, data?.funding, showItems);
+      case 'input':
+        return createInputContent(id, property, data?.input, showItems);
       case 'license':
         return createLicenseContent(id, property, data?.license, showItems);
+      case 'output':
+        return createOutputContent(id, property, data?.output, showItems);
       default:
         return undefined;
     }
@@ -308,6 +312,41 @@ const createHealthConditionContent = (
   };
 };
 
+// Generates content specific to input.
+const createInputContent = (
+  id: FormattedResource['id'],
+  property: string,
+  input?: FormattedResource['input'],
+  showItems = true,
+) => {
+  return {
+    id: `${property}-${id}`,
+    label: 'Input',
+    property,
+    isDisabled: !input || input.every(item => !item.name),
+    items:
+      showItems && input
+        ? input.map((input, idx) => {
+            const name = Array.isArray(input.name)
+              ? input.name.join(', ')
+              : input.name;
+
+            return {
+              key: uniqueId(`${property}-${id}-${idx}`),
+              name,
+              searchProps: {
+                ['aria-label']: `Search for results with input "${name}"`,
+                property: 'input.name',
+                value: Array.isArray(input.name)
+                  ? input.name.join('" OR "')
+                  : input.name,
+              },
+            };
+          })
+        : [],
+  };
+};
+
 // Generates content specific to licensing.
 const createLicenseContent = (
   id: FormattedResource['id'],
@@ -423,6 +462,41 @@ const createInfectiousAgentContent = (
                 inDefinedTermSet: pathogen?.inDefinedTermSet,
                 label: ontologyLabel,
                 value: pathogen?.url,
+              },
+            };
+          })
+        : [],
+  };
+};
+
+// Generates content specific to output.
+const createOutputContent = (
+  id: FormattedResource['id'],
+  property: string,
+  output?: FormattedResource['output'],
+  showItems = true,
+) => {
+  return {
+    id: `${property}-${id}`,
+    label: 'Output',
+    property,
+    isDisabled: !output || output.every(item => !item.name),
+    items:
+      showItems && output
+        ? output.map((output, idx) => {
+            const name = Array.isArray(output.name)
+              ? output.name.join(', ')
+              : output.name;
+
+            return {
+              key: uniqueId(`${property}-${id}-${idx}`),
+              name,
+              searchProps: {
+                ['aria-label']: `Search for results with output "${name}"`,
+                property: 'input.name',
+                value: Array.isArray(output.name)
+                  ? output.name.join('" OR "')
+                  : output.name,
               },
             };
           })

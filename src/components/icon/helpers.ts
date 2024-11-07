@@ -10,11 +10,15 @@ export const getMetadataColor = (property?: string) => {
     return 'purple.600';
   } else if (property?.toLowerCase() === 'infectiousagent') {
     return 'pink.600';
+  } else if (property?.toLowerCase() === 'output') {
+    return 'pink.600';
   } else if (property?.toLowerCase() === 'healthcondition') {
     return 'red.500';
   } else if (property?.toLowerCase() === 'funding') {
     return 'orange.500';
   } else if (property?.toLowerCase() === 'species') {
+    return 'green.500';
+  } else if (property?.toLowerCase() === 'input') {
     return 'green.500';
   } else {
     return 'gray.800';
@@ -32,10 +36,14 @@ export const getMetadataTheme = (property?: string) => {
     return 'purple';
   } else if (property?.toLowerCase() === 'infectiousagent') {
     return 'pink';
+  } else if (property?.toLowerCase() === 'output') {
+    return 'pink';
   } else if (property?.toLowerCase() === 'healthcondition') {
     return 'red';
   } else if (property?.toLowerCase() === 'funding') {
     return 'orange';
+  } else if (property?.toLowerCase() === 'input') {
+    return 'green';
   } else if (property?.toLowerCase() === 'species') {
     return 'green';
   } else if (property?.toLowerCase() === 'topiccategory') {
