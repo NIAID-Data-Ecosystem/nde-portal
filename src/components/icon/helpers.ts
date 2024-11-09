@@ -18,6 +18,8 @@ export const getMetadataColor = (property?: string) => {
     return 'red.500';
   } else if (property?.toLowerCase() === 'funding') {
     return 'orange.500';
+  } else if (property?.toLowerCase() === 'softwarerequirements') {
+    return 'orange.500';
   } else if (property?.toLowerCase() === 'species') {
     return 'green.500';
   } else if (property?.toLowerCase() === 'input') {
@@ -45,6 +47,8 @@ export const getMetadataTheme = (property?: string) => {
   } else if (property?.toLowerCase() === 'healthcondition') {
     return 'red';
   } else if (property?.toLowerCase() === 'funding') {
+    return 'orange';
+  } else if (property?.toLowerCase() === 'softwarerequirements') {
     return 'orange';
   } else if (property?.toLowerCase() === 'input') {
     return 'green';

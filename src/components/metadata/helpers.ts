@@ -176,6 +176,13 @@ export const generateMetadataContentforCompToolCard = (
         return createLicenseContent(id, property, data?.license, showItems);
       case 'output':
         return createOutputContent(id, property, data?.output, showItems);
+      case 'softwareRequirements':
+        return createSoftwareRequirementsContent(
+          id,
+          property,
+          data?.softwareRequirements,
+          showItems,
+        );
       case 'softwareVersion':
         return createSoftwareVersionContent(
           id,
@@ -504,6 +511,35 @@ const createOutputContent = (
                 value: Array.isArray(output.name)
                   ? output.name.join('" OR "')
                   : output.name,
+              },
+            };
+          })
+        : [],
+  };
+};
+
+// Generates content specific to software requirements.
+const createSoftwareRequirementsContent = (
+  id: FormattedResource['id'],
+  property: string,
+  softwareRequirements?: FormattedResource['softwareRequirements'],
+  showItems = true,
+) => {
+  return {
+    id: `${property}-${id}`,
+    label: 'Software Requirements',
+    property,
+    isDisabled: !softwareRequirements,
+    items:
+      showItems && softwareRequirements
+        ? softwareRequirements.map((requirement, idx) => {
+            return {
+              key: uniqueId(`${property}-${id}-${idx}`),
+              name: requirement,
+              searchProps: {
+                ['aria-label']: `Search for results with software requirement"${requirement}"`,
+                property,
+                value: requirement,
               },
             };
           })

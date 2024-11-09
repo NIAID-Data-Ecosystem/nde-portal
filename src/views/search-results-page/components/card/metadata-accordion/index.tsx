@@ -73,6 +73,7 @@ const MetadataAccordion: React.FC<MetadataAccordionProps> = ({ data }) => {
           input: data?.input,
           license: data?.license,
           output: data?.output,
+          softwareRequirements: data?.softwareRequirements,
           softwareVersion: data?.softwareVersion,
         })
       : generateMetadataContent({
