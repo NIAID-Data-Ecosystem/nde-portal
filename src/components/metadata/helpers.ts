@@ -168,6 +168,13 @@ export const generateMetadataContentforCompToolCard = (
     data: Data,
   ): MetadataContentProps | undefined => {
     switch (property) {
+      case 'featureList':
+        return createFeatureListContent(
+          id,
+          property,
+          data?.featureList,
+          showItems,
+        );
       case 'funding':
         return createFundingContent(id, property, data?.funding, showItems);
       case 'input':
@@ -203,6 +210,46 @@ export const generateMetadataContentforCompToolCard = (
     );
 
   return generatedContent;
+};
+
+// Generates content specific to feature list.
+const createFeatureListContent = (
+  id: FormattedResource['id'],
+  property: string,
+  featureList?: FormattedResource['featureList'],
+  showItems = true,
+) => {
+  return {
+    id: `${property}-${id}`,
+    label: 'Feature List',
+    property,
+    isDisabled: !featureList || featureList.every(item => !item.name),
+    items:
+      showItems && featureList
+        ? featureList.map((feature, idx) => {
+            const name = Array.isArray(feature.name)
+              ? feature.name.join(', ')
+              : feature.name;
+
+            return {
+              key: uniqueId(`${property}-${id}-${idx}`),
+              name,
+              searchProps: {
+                ['aria-label']: `Search for results with feature "${name}"`,
+                property: 'feature.name',
+                value: Array.isArray(feature.name)
+                  ? feature.name.join('" OR "')
+                  : feature.name,
+              },
+              ontologyProps: {
+                ['aria-label']: 'See EDAM taxonomy information.',
+                value: feature?.url,
+                label: 'EDAM',
+              },
+            };
+          })
+        : [],
+  };
 };
 
 // Generates content specific to funding.

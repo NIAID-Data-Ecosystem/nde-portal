@@ -150,6 +150,7 @@ const SearchResultsPage = ({
         'date',
         'description',
         'doi',
+        'featureList',
         'funding',
         'healthCondition',
         'includedInDataCatalog',

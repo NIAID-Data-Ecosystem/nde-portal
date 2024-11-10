@@ -330,6 +330,14 @@ export interface OutputProperties {
   encodingFormat?: string;
   url?: string;
 }
+
+export interface FeatureListProperties {
+  identifier?: string;
+  name?: string;
+  encodingFormat?: string;
+  url?: string;
+}
+
 // Formatting standardized resource fields
 export interface FormattedResource {
   [key: string]: any;
@@ -384,6 +392,7 @@ export interface FormattedResource {
   distribution: Distribution[] | null;
   doi: string | null;
   downloadUrl: { name: string }[] | null;
+  featureList: FeatureListProperties[] | null;
   funding: Funding[] | null;
   genre: Domain | null;
   hasAPI: boolean | null;

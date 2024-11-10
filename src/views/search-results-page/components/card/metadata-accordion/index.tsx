@@ -69,6 +69,7 @@ const MetadataAccordion: React.FC<MetadataAccordionProps> = ({ data }) => {
     type == 'ComputationalTool'
       ? generateMetadataContentforCompToolCard({
           id: data?.id,
+          featureList: data?.featureList,
           funding: data?.funding,
           input: data?.input,
           license: data?.license,

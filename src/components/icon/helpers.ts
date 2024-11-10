@@ -14,6 +14,8 @@ export const getMetadataColor = (property?: string) => {
     return 'pink.600';
   } else if (property?.toLowerCase() === 'output') {
     return 'pink.600';
+  } else if (property?.toLowerCase() === 'featurelist') {
+    return 'red.500';
   } else if (property?.toLowerCase() === 'healthcondition') {
     return 'red.500';
   } else if (property?.toLowerCase() === 'funding') {
@@ -44,6 +46,8 @@ export const getMetadataTheme = (property?: string) => {
     return 'pink';
   } else if (property?.toLowerCase() === 'output') {
     return 'pink';
+  } else if (property?.toLowerCase() === 'featurelist') {
+    return 'red';
   } else if (property?.toLowerCase() === 'healthcondition') {
     return 'red';
   } else if (property?.toLowerCase() === 'funding') {
