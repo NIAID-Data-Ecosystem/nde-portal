@@ -355,6 +355,11 @@ const createInputContent = (
                   ? input.name.join('" OR "')
                   : input.name,
               },
+              ontologyProps: {
+                ['aria-label']: 'See EDAM taxonomy information.',
+                value: input?.url,
+                label: 'EDAM',
+              },
             };
           })
         : [],
@@ -511,6 +516,11 @@ const createOutputContent = (
                 value: Array.isArray(output.name)
                   ? output.name.join('" OR "')
                   : output.name,
+              },
+              ontologyProps: {
+                ['aria-label']: 'See EDAM taxonomy information.',
+                value: output?.url,
+                label: 'EDAM',
               },
             };
           })
