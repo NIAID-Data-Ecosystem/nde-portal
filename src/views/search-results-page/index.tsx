@@ -146,6 +146,7 @@ const SearchResultsPage = ({
         'alternateName',
         'applicationCategory',
         'author',
+        'availableOnDevice',
         'conditionsOfAccess',
         'date',
         'description',

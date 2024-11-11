@@ -168,6 +168,13 @@ export const generateMetadataContentforCompToolCard = (
     data: Data,
   ): MetadataContentProps | undefined => {
     switch (property) {
+      case 'availableOnDevice':
+        return createAvailableOnDeviceContent(
+          id,
+          property,
+          data?.availableOnDevice,
+          showItems,
+        );
       case 'featureList':
         return createFeatureListContent(
           id,
@@ -321,6 +328,35 @@ const createFundingContent = (
           };
         })) ||
       [],
+  };
+};
+
+// Generates content specific to available on device.
+const createAvailableOnDeviceContent = (
+  id: FormattedResource['id'],
+  property: string,
+  availableOnDevice?: FormattedResource['availableOnDevice'],
+  showItems = true,
+) => {
+  return {
+    id: `${property}-${id}`,
+    label: 'Available on Device',
+    property,
+    isDisabled: !availableOnDevice,
+    items:
+      showItems && availableOnDevice
+        ? availableOnDevice.map((requirement, idx) => {
+            return {
+              key: uniqueId(`${property}-${id}-${idx}`),
+              name: requirement,
+              searchProps: {
+                ['aria-label']: `Search for results with "${availableOnDevice}" requirement`,
+                property,
+                value: requirement,
+              },
+            };
+          })
+        : [],
   };
 };
 

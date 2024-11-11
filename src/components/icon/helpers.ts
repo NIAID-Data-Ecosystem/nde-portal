@@ -1,6 +1,8 @@
 // Color associated with a given metadata property
 export const getMetadataColor = (property?: string) => {
-  if (property?.toLowerCase() === 'license') {
+  if (property?.toLowerCase() === 'availableondevice') {
+    return 'blue.500';
+  } else if (property?.toLowerCase() === 'license') {
     return 'blue.500';
   } else if (property?.toLowerCase() === 'usageinfo') {
     return 'blue.500';
@@ -32,7 +34,9 @@ export const getMetadataColor = (property?: string) => {
 };
 
 export const getMetadataTheme = (property?: string) => {
-  if (property?.toLowerCase() === 'license') {
+  if (property?.toLowerCase() === 'availableondevice') {
+    return 'blue';
+  } else if (property?.toLowerCase() === 'license') {
     return 'blue';
   } else if (property?.toLowerCase() === 'usageinfo') {
     return 'blue';

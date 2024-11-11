@@ -372,7 +372,7 @@ export interface FormattedResource {
   applicationSubCategory: ApplicationSubCategory[] | null;
   applicationSuite: string[] | null;
   author: Author[] | null;
-  availableOnDevice: string | null;
+  availableOnDevice: string[] | null;
   citation: Citation[] | null;
   citedBy: CitedBy[] | null;
   codeRepository: string[] | string | null;
