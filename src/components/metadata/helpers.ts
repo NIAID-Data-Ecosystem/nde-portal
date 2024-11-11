@@ -219,6 +219,35 @@ export const generateMetadataContentforCompToolCard = (
   return generatedContent;
 };
 
+// Generates content specific to available on device.
+const createAvailableOnDeviceContent = (
+  id: FormattedResource['id'],
+  property: string,
+  availableOnDevice?: FormattedResource['availableOnDevice'],
+  showItems = true,
+) => {
+  return {
+    id: `${property}-${id}`,
+    label: 'Available on Device',
+    property,
+    isDisabled: !availableOnDevice,
+    items:
+      showItems && availableOnDevice
+        ? availableOnDevice.map((requirement, idx) => {
+            return {
+              key: uniqueId(`${property}-${id}-${idx}`),
+              name: requirement,
+              searchProps: {
+                ['aria-label']: `Search for results with "${availableOnDevice}" requirement`,
+                property,
+                value: requirement,
+              },
+            };
+          })
+        : [],
+  };
+};
+
 // Generates content specific to feature list.
 const createFeatureListContent = (
   id: FormattedResource['id'],
@@ -328,35 +357,6 @@ const createFundingContent = (
           };
         })) ||
       [],
-  };
-};
-
-// Generates content specific to available on device.
-const createAvailableOnDeviceContent = (
-  id: FormattedResource['id'],
-  property: string,
-  availableOnDevice?: FormattedResource['availableOnDevice'],
-  showItems = true,
-) => {
-  return {
-    id: `${property}-${id}`,
-    label: 'Available on Device',
-    property,
-    isDisabled: !availableOnDevice,
-    items:
-      showItems && availableOnDevice
-        ? availableOnDevice.map((requirement, idx) => {
-            return {
-              key: uniqueId(`${property}-${id}-${idx}`),
-              name: requirement,
-              searchProps: {
-                ['aria-label']: `Search for results with "${availableOnDevice}" requirement`,
-                property,
-                value: requirement,
-              },
-            };
-          })
-        : [],
   };
 };
 
@@ -640,6 +640,7 @@ const createSoftwareRequirementsContent = (
   };
 };
 
+// Generates content specific to software version.
 const createSoftwareVersionContent = (
   id: FormattedResource['id'],
   property: string,
