@@ -559,7 +559,7 @@ const createOutputContent = (
               name,
               searchProps: {
                 ['aria-label']: `Search for results with output "${name}"`,
-                property: 'input.name',
+                property: 'output.name',
                 value: Array.isArray(output.name)
                   ? output.name.join('" OR "')
                   : output.name,
