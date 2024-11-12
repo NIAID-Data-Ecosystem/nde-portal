@@ -164,6 +164,7 @@ const SearchResultsPage = ({
         'output',
         'programmingLanguage',
         'sdPublisher',
+        'softwareHelp',
         'softwareRequirements',
         'softwareVersion',
         'species',

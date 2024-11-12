@@ -12,6 +12,8 @@ export const getMetadataColor = (property?: string) => {
     return 'cyan.700';
   } else if (property?.toLowerCase() === 'measurementtechnique') {
     return 'purple.600';
+  } else if (property?.toLowerCase() === 'softwarehelp') {
+    return 'purple.600';
   } else if (property?.toLowerCase() === 'infectiousagent') {
     return 'pink.600';
   } else if (property?.toLowerCase() === 'output') {
@@ -45,6 +47,8 @@ export const getMetadataTheme = (property?: string) => {
   } else if (property?.toLowerCase() === 'variablemeasured') {
     return 'cyan';
   } else if (property?.toLowerCase() === 'measurementtechnique') {
+    return 'purple';
+  } else if (property?.toLowerCase() === 'softwarehelp') {
     return 'purple';
   } else if (property?.toLowerCase() === 'infectiousagent') {
     return 'pink';

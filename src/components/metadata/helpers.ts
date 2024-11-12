@@ -190,6 +190,13 @@ export const generateMetadataContentforCompToolCard = (
         return createLicenseContent(id, property, data?.license, showItems);
       case 'output':
         return createOutputContent(id, property, data?.output, showItems);
+      case 'softwareHelp':
+        return createSoftwareHelpContent(
+          id,
+          property,
+          data?.softwareHelp,
+          showItems,
+        );
       case 'softwareRequirements':
         return createSoftwareRequirementsContent(
           id,
@@ -604,6 +611,42 @@ const createOutputContent = (
                 ['aria-label']: 'See EDAM taxonomy information.',
                 value: output?.url,
                 label: 'EDAM',
+              },
+            };
+          })
+        : [],
+  };
+};
+
+// Generates content specific to software help.
+const createSoftwareHelpContent = (
+  id: FormattedResource['id'],
+  property: string,
+  softwareHelp?: FormattedResource['softwareHelp'],
+  showItems = true,
+) => {
+  return {
+    id: `${property}-${id}`,
+    label: 'Software Help',
+    property,
+    isDisabled: !softwareHelp,
+    items:
+      showItems && softwareHelp
+        ? softwareHelp.map((resource, idx) => {
+            const name = Array.isArray(resource.name)
+              ? resource.name.join(', ')
+              : resource.name;
+
+            return {
+              key: uniqueId(`${property}-${id}-${idx}`),
+              name,
+              searchProps: {
+                ['aria-label']: `Search for results with software help "${name}"`,
+                property: 'resource.name',
+                value: Array.isArray(resource.name)
+                  ? resource.name.join('" OR "')
+                  : resource.name,
+                url: resource?.url,
               },
             };
           })

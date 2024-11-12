@@ -75,6 +75,7 @@ const MetadataAccordion: React.FC<MetadataAccordionProps> = ({ data }) => {
           input: data?.input,
           license: data?.license,
           output: data?.output,
+          softwareHelp: data?.softwareHelp,
           softwareRequirements: data?.softwareRequirements,
           softwareVersion: data?.softwareVersion,
         })
@@ -89,6 +90,8 @@ const MetadataAccordion: React.FC<MetadataAccordionProps> = ({ data }) => {
           usageInfo: data?.usageInfo,
           variableMeasured: data?.variableMeasured,
         });
+
+  console.log('accordion data', content);
 
   const sortedMetadataContent = sortMetadataArray(content);
 
