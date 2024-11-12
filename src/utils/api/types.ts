@@ -315,6 +315,7 @@ export interface InputProperties {
   name?: string;
   encodingFormat?: string;
   url?: string;
+  inDefinedTermSet?: string;
 }
 
 export interface CollectionSize {
@@ -329,6 +330,7 @@ export interface OutputProperties {
   name?: string;
   encodingFormat?: string;
   url?: string;
+  inDefinedTermSet?: string;
 }
 
 export interface FeatureListProperties {
@@ -336,6 +338,7 @@ export interface FeatureListProperties {
   name?: string;
   encodingFormat?: string;
   url?: string;
+  inDefinedTermSet?: string;
 }
 
 // Formatting standardized resource fields

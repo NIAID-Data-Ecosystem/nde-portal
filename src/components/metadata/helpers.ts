@@ -274,6 +274,8 @@ const createFeatureListContent = (
               ? feature.name.join(', ')
               : feature.name;
 
+            const termSet = feature?.inDefinedTermSet?.toLowerCase();
+
             return {
               key: uniqueId(`${property}-${id}-${idx}`),
               name,
@@ -285,9 +287,12 @@ const createFeatureListContent = (
                   : feature.name,
               },
               ontologyProps: {
-                ['aria-label']: 'See EDAM taxonomy information.',
+                ['aria-label']:
+                  termSet && termSet === 'other'
+                    ? 'See ontology information.'
+                    : `See ${feature?.inDefinedTermSet} ontology information.`,
                 value: feature?.url,
-                label: 'EDAM',
+                label: feature?.inDefinedTermSet,
               },
             };
           })
@@ -435,6 +440,8 @@ const createInputContent = (
               ? input.name.join(', ')
               : input.name;
 
+            const termSet = input?.inDefinedTermSet?.toLowerCase();
+
             return {
               key: uniqueId(`${property}-${id}-${idx}`),
               name,
@@ -446,9 +453,12 @@ const createInputContent = (
                   : input.name,
               },
               ontologyProps: {
-                ['aria-label']: 'See EDAM taxonomy information.',
+                ['aria-label']:
+                  termSet && termSet === 'other'
+                    ? 'See ontology information.'
+                    : `See ${input?.inDefinedTermSet} ontology information.`,
                 value: input?.url,
-                label: 'EDAM',
+                label: input?.inDefinedTermSet,
               },
             };
           })
@@ -597,6 +607,8 @@ const createOutputContent = (
               ? output.name.join(', ')
               : output.name;
 
+            const termSet = output?.inDefinedTermSet?.toLowerCase();
+
             return {
               key: uniqueId(`${property}-${id}-${idx}`),
               name,
@@ -608,9 +620,12 @@ const createOutputContent = (
                   : output.name,
               },
               ontologyProps: {
-                ['aria-label']: 'See EDAM taxonomy information.',
+                ['aria-label']:
+                  termSet && termSet === 'other'
+                    ? 'See ontology information.'
+                    : `See ${output?.inDefinedTermSet} ontology information.`,
                 value: output?.url,
-                label: 'EDAM',
+                label: output?.inDefinedTermSet,
               },
             };
           })
