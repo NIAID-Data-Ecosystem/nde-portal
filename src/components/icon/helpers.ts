@@ -6,7 +6,7 @@ export const getMetadataColor = (property?: string) => {
     return 'blue.500';
   } else if (property?.toLowerCase() === 'usageinfo') {
     return 'blue.500';
-  } else if (property?.toLowerCase() === 'softwareversion') {
+  } else if (property?.toLowerCase() === 'featurelist') {
     return 'cyan.700';
   } else if (property?.toLowerCase() === 'variablemeasured') {
     return 'cyan.700';
@@ -18,7 +18,7 @@ export const getMetadataColor = (property?: string) => {
     return 'pink.600';
   } else if (property?.toLowerCase() === 'output') {
     return 'pink.600';
-  } else if (property?.toLowerCase() === 'featurelist') {
+  } else if (property?.toLowerCase() === 'softwareversion') {
     return 'red.500';
   } else if (property?.toLowerCase() === 'healthcondition') {
     return 'red.500';
@@ -42,7 +42,7 @@ export const getMetadataTheme = (property?: string) => {
     return 'blue';
   } else if (property?.toLowerCase() === 'usageinfo') {
     return 'blue';
-  } else if (property?.toLowerCase() === 'softwareversion') {
+  } else if (property?.toLowerCase() === 'featurelist') {
     return 'cyan';
   } else if (property?.toLowerCase() === 'variablemeasured') {
     return 'cyan';
@@ -54,7 +54,7 @@ export const getMetadataTheme = (property?: string) => {
     return 'pink';
   } else if (property?.toLowerCase() === 'output') {
     return 'pink';
-  } else if (property?.toLowerCase() === 'featurelist') {
+  } else if (property?.toLowerCase() === 'softwareversion') {
     return 'red';
   } else if (property?.toLowerCase() === 'healthcondition') {
     return 'red';
