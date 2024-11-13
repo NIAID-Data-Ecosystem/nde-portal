@@ -161,6 +161,7 @@ const SearchResultsPage = ({
         'license',
         'measurementTechnique',
         'name',
+        'operatingSystem',
         'output',
         'programmingLanguage',
         'sdPublisher',

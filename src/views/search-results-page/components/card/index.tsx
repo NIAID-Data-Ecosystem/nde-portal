@@ -55,6 +55,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
     includedInDataCatalog,
     isAccessibleForFree,
     url,
+    operatingSystem,
   } = data || {};
 
   console.log('data in card', data);

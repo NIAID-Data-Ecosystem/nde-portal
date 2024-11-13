@@ -424,6 +424,7 @@ export interface FormattedResource {
   mainEntityOfPage: string | null;
   measurementTechnique: PropertyNameWithURL[] | null;
   nctid: string | null;
+  operatingSystem: string[] | null;
   output: OutputProperties[] | null;
   processorRequirements: string[] | null;
   programmingLanguage: string[] | null;
