@@ -17,6 +17,7 @@ import { Link } from 'src/components/link';
 import { FormattedResource } from 'src/utils/api/types';
 import Tooltip from 'src/components/tooltip';
 import { getMetadataTheme } from 'src/components/icon/helpers';
+import { SORT_ORDER, SORT_ORDER_COMPTOOL } from 'src/components/metadata';
 import {
   generateMetadataContent,
   generateMetadataContentforCompToolCard,
@@ -93,7 +94,12 @@ const MetadataAccordion: React.FC<MetadataAccordionProps> = ({ data }) => {
 
   console.log('accordion data', content);
 
-  const sortedMetadataContent = sortMetadataArray(content);
+  const sortedMetadataContent =
+    type == 'ComputationalTool'
+      ? sortMetadataArray(content, SORT_ORDER_COMPTOOL)
+      : sortMetadataArray(content, SORT_ORDER);
+
+  // const sortedMetadataContent = sortMetadataArray(content);
 
   const schema = SCHEMA_DEFINITIONS as SchemaDefinitions;
   return (

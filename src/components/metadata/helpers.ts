@@ -22,6 +22,18 @@ export const SORT_ORDER = [
   'topicCategory',
 ];
 
+export const SORT_ORDER_COMPTOOL = [
+  'input',
+  'featureList',
+  'output',
+  'availableOnDevice',
+  'softwareRequirements',
+  'softwareHelp',
+  'funding',
+  'license',
+  'softwareVersion',
+];
+
 // Sorts an array of metadata objects based on the [SORT_ORDER] defined above. Prioritizes the enabled items over the disabled items.
 
 export const sortMetadataArray = (
