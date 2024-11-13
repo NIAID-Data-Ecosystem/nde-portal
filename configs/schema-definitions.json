@@ -496,6 +496,9 @@
     "property": "availableOnDevice",
     "count": 0,
     "type": "text",
+    "description": {
+      "ComputationalTool": "Device or platform required to run the application, such as Bioconda, Docker, or Singularity."
+    },
     "isAdvancedSearchField": false
   },
   "citation": {
@@ -1675,6 +1678,9 @@
     "property": "featureList",
     "count": 0,
     "type": "object",
+    "description": {
+      "ComputationalTool": "Features or modules provided by this application (and possibly required by other applications)."
+    },
     "isAdvancedSearchField": false
   },
   "featureList.name": {
@@ -1805,7 +1811,8 @@
     "type": "object",
     "description": {
       "Dataset": "Funding that supports (sponsors) the collection of this dataset through some kind of financial contribution.",
-      "ResourceCatalog": "Funding that supports (sponsors) the creation or maintenance of the resource catalog through some kind of financial contribution."
+      "ResourceCatalog": "Funding that supports (sponsors) the creation or maintenance of the resource catalog through some kind of financial contribution.",
+      "ComputationalTool": "Funding that supports (sponsors) the development of this computational tool through some kind of financial contribution."
     },
     "abstract": {
       "Dataset": "funding source (grant, contract, etc.)",
@@ -2751,6 +2758,9 @@
     "property": "input",
     "count": 1077,
     "type": "object",
+    "description": {
+      "ComputationalTool": "Software input, such as a file or parameter."
+    },
     "isAdvancedSearchField": false
   },
   "input.@type": {
@@ -3823,7 +3833,8 @@
     "schemaType": "string",
     "description": {
       "Dataset": "A license document that applies to this work, typically indicated by URL.",
-      "ResourceCatalog": "A license document that applies to this work, typically indicated by URL."
+      "ResourceCatalog": "A license document that applies to this work, typically indicated by URL.",
+      "ComputationalTool": "A license document that applies to this work, typically indicated by URL."
     },
     "abstract": {
       "Dataset": "license for use",
@@ -3957,6 +3968,9 @@
     "property": "output",
     "count": 1039,
     "type": "object",
+    "description": {
+      "ComputationalTool": "Output of the computational tool."
+    },
     "isAdvancedSearchField": false
   },
   "output.@type": {
@@ -4131,6 +4145,9 @@
     "property": "softwareHelp",
     "count": 6031,
     "type": "object",
+    "description": {
+      "ComputationalTool": "URL to access software application help."
+    },
     "isAdvancedSearchField": false
   },
   "softwareHelp.name": {
@@ -4155,6 +4172,9 @@
     "property": "softwareRequirements",
     "count": 2781,
     "type": "text",
+    "description": {
+      "ComputationalTool": "Component dependency requirements for application. This includes runtime environments and shared libraries that are not included in the application distribution package, but required to run the application (Examples: DirectX, Java or .NET runtime)."
+    },
     "isAdvancedSearchField": true
   },
   "softwareVersion": {
@@ -4163,6 +4183,9 @@
     "property": "softwareVersion",
     "count": 8166,
     "type": "text",
+    "description": {
+      "ComputationalTool": "Software version."
+    },
     "isAdvancedSearchField": true
   },
   "sourceInfo": {
