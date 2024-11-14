@@ -16,6 +16,7 @@ import NextLink from 'next/link';
 import { FaCircleArrowRight, FaAngleRight, FaRegClock } from 'react-icons/fa6';
 import { FormattedResource } from 'src/utils/api/types';
 import { TypeBanner } from 'src/components/resource-sections/components';
+import OperatingSystems from './operating-systems';
 import MetadataAccordion from './metadata-accordion';
 import TopicCategories from './topic-categories';
 import ApplicationCategories from './application-categories';
@@ -232,6 +233,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                   fontWeight='semibold'
                   whiteSpace='nowrap'
                   alignItems='center'
+                  justify='space-between'
                 >
                   <Tooltip
                     label='Corresponds to the most recent of date modified, date published and date created.'
@@ -246,6 +248,29 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                       <Text fontSize='xs'>{date}</Text>
                     </Flex>
                   </Tooltip>
+
+                  {operatingSystem && (
+                    <OperatingSystems data={operatingSystem} />
+                  )}
+                </Flex>
+              )}
+
+              {!date && (
+                <Flex
+                  px={paddingCard}
+                  py={1}
+                  m={0}
+                  flex={1}
+                  borderRadius='semi'
+                  bg='secondary.50'
+                  fontWeight='semibold'
+                  whiteSpace='nowrap'
+                  alignItems='center'
+                  justify='end'
+                >
+                  {operatingSystem && (
+                    <OperatingSystems data={operatingSystem} />
+                  )}
                 </Flex>
               )}
 
