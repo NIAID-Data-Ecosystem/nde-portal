@@ -51,7 +51,9 @@ export const structureQueryData = (data: FetchSearchResultsResponse) => {
     throw new Error('No facets returned from fetchSearchResults');
   }
 
-  const terms = Object.values(facets)[0].terms;
+  const terms = Object.values(facets).filter(
+    facet => facet._type === 'terms',
+  )[0].terms;
 
   if (facets?.multi_terms_agg) {
     facets.multi_terms_agg.terms.forEach(({ term: multiTerm }) => {
