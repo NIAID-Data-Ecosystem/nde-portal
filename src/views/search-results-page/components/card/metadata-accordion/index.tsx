@@ -92,14 +92,10 @@ const MetadataAccordion: React.FC<MetadataAccordionProps> = ({ data }) => {
           variableMeasured: data?.variableMeasured,
         });
 
-  console.log('accordion data', content);
-
   const sortedMetadataContent =
     type == 'ComputationalTool'
       ? sortMetadataArray(content, SORT_ORDER_COMPTOOL)
       : sortMetadataArray(content, SORT_ORDER);
-
-  // const sortedMetadataContent = sortMetadataArray(content);
 
   const schema = SCHEMA_DEFINITIONS as SchemaDefinitions;
   return (
