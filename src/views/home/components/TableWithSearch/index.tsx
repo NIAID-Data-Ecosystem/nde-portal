@@ -209,20 +209,20 @@ export const RepositoryCells = ({
   isLoading?: boolean;
 }) => {
   const href =
-    data.type === 'Repository'
+    data.type === 'ResourceCatalog'
       ? {
+          pathname: `/resources`,
+          query: {
+            id: data._id,
+          },
+        }
+      : {
           pathname: `/search`,
           query: {
             q: '',
             filters: queryFilterObject2String({
               'includedInDataCatalog.name': [data._id],
             }),
-          },
-        }
-      : {
-          pathname: `/resources`,
-          query: {
-            id: data._id,
           },
         };
   return (

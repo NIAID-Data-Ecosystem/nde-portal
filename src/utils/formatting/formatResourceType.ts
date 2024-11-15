@@ -1,9 +1,5 @@
 // Type of resource.
 export type APIResourceType = 'Dataset' | 'ResourceCatalog';
-// | 'ComputationalTool'
-// | 'Software'
-// | 'ScholarlyArticle'
-// | 'Other';
 
 export type CollectionType =
   | 'Knowledge Base'
