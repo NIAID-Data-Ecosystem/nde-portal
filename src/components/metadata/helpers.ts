@@ -667,14 +667,7 @@ const createSoftwareHelpContent = (
             return {
               key: uniqueId(`${property}-${id}-${idx}`),
               name,
-              searchProps: {
-                ['aria-label']: `Search for results with software help "${name}"`,
-                property: 'resource.name',
-                value: Array.isArray(resource.name)
-                  ? resource.name.join('" OR "')
-                  : resource.name,
-                url: resource?.url,
-              },
+              url: resource?.url,
             };
           })
         : [],
