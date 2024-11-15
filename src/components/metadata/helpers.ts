@@ -659,17 +659,19 @@ const createSoftwareHelpContent = (
     isDisabled: !softwareHelp,
     items:
       showItems && softwareHelp
-        ? softwareHelp.map((resource, idx) => {
-            const name = Array.isArray(resource.name)
-              ? resource.name.join(', ')
-              : resource.name;
+        ? softwareHelp
+            .filter(resource => resource?.url)
+            .map((resource, idx) => {
+              const name = Array.isArray(resource.name)
+                ? resource.name.filter(Boolean).join(', ') || resource.url
+                : resource.name || resource.url;
 
-            return {
-              key: uniqueId(`${property}-${id}-${idx}`),
-              name,
-              url: resource?.url,
-            };
-          })
+              return {
+                key: uniqueId(`${property}-${id}-${idx}`),
+                name,
+                url: resource.url,
+              };
+            })
         : [],
   };
 };
