@@ -10,7 +10,7 @@ describe('useFilteredData', () => {
         abstract: 'Lorem ipsum dolor sit amet',
         domain: 'iid',
         conditionsOfAccess: 'Open',
-        type: 'ResourceCatalog',
+        types: ['Resource Catalog'],
       },
       {
         _id: 'source_02',
@@ -19,7 +19,7 @@ describe('useFilteredData', () => {
           'Orci varius natoque penatibus et magnis dis parturient montes',
         domain: 'generalist',
         conditionsOfAccess: 'Restricted',
-        type: 'Repository',
+        types: ['Dataset Repository'],
       },
     ] as any[];
 

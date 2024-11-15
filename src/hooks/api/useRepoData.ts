@@ -7,21 +7,28 @@ import {
   FormattedResource,
 } from 'src/utils/api/types';
 import axios from 'axios';
-import { APIResourceType } from 'src/utils/formatting/formatResourceType';
 
 export interface Repository {
   _id: string;
   abstract?: string;
   conditionsOfAccess?: FormattedResource['conditionsOfAccess'];
-  // [TO DO]: Update APIResourceType to be a union of all possible types
-  type: APIResourceType | 'ComputationalTool';
+  types: (
+    | 'Computational Tool Repository'
+    | 'Dataset Repository'
+    | 'Resource Catalog'
+  )[];
   icon?: string;
   name: string;
   domain?: Domain;
   url?: string | null;
 }
 
-export const fetchCompTools = async () => {
+const fetchSourcesByType = async (params: {
+  q: string;
+  facets: string;
+  facet_size: number;
+  size: number;
+}) => {
   if (!process.env.NEXT_PUBLIC_API_URL) {
     throw new Error('API url undefined');
   }
@@ -29,12 +36,7 @@ export const fetchCompTools = async () => {
     const { data } = (await axios.get(
       `${process.env.NEXT_PUBLIC_API_URL}/query?`,
       {
-        params: {
-          q: '@type:"ComputationalTool"',
-          facets: 'includedInDataCatalog.name',
-          facet_size: 1000,
-          size: 0,
-        },
+        params,
       },
     )) as { data: FetchSearchResultsResponse };
 
@@ -49,24 +51,42 @@ export function useRepoData(options: any = {}) {
     queryKey: [
       'metadata',
       '@type:"ComputationalTool"',
+      '@type:"Dataset"',
       'includedInDataCatalog.name',
     ],
     queryFn: async () => {
-      const computationalTools = await fetchCompTools().then(res =>
+      const computationalTools = await fetchSourcesByType({
+        q: '@type:"ComputationalTool"',
+        facets: 'includedInDataCatalog.name',
+        facet_size: 1000,
+        size: 0,
+      }).then(res =>
+        res.facets['includedInDataCatalog.name'].terms.map(({ term }) => term),
+      );
+
+      const datasets = await fetchSourcesByType({
+        q: '@type:"Dataset"',
+        facets: 'includedInDataCatalog.name',
+        facet_size: 1000,
+        size: 0,
+      }).then(res =>
         res.facets['includedInDataCatalog.name'].terms.map(({ term }) => term),
       );
 
       return {
         data: await fetchMetadata(),
         computationalTools,
+        datasets,
       };
     },
     select: ({
-      data,
       computationalTools,
+      data,
+      datasets,
     }: {
-      data: Metadata | undefined;
       computationalTools: string[];
+      data: Metadata | undefined;
+      datasets: string[];
     }) => {
       const sources = data?.src || [];
       const repositories = Object.values(sources).map(({ sourceInfo }) => {
@@ -84,15 +104,18 @@ export function useRepoData(options: any = {}) {
           url,
           genre,
         } = sourceInfo || {};
-
-        const isComputationalTool =
-          computationalTools.includes(identifier) ||
-          type === 'Computational Tool Repository';
+        const types = [
+          ...(datasets.includes(identifier) ? ['Dataset Repository'] : []),
+          ...(computationalTools.includes(identifier) ||
+          type === 'Computational Tool Repository'
+            ? ['Computational Tool Repository']
+            : []),
+        ].sort((a, b) => a.localeCompare(b));
 
         return {
           _id: identifier,
           abstract: abstract || '',
-          type: isComputationalTool ? 'ComputationalTool' : 'Dataset',
+          types: types,
           name: name || '',
           domain: genre,
           url,

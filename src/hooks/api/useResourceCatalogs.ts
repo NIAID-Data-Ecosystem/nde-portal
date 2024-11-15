@@ -10,7 +10,11 @@ export interface ResourceCatalog {
   _id: string;
   abstract?: string;
   conditionsOfAccess?: FormattedResource['conditionsOfAccess'];
-  type: 'ResourceCatalog';
+  types: (
+    | 'Computational Tool Repository'
+    | 'Dataset Repository'
+    | 'Resource Catalog'
+  )[];
   name: FormattedResource['name'];
   domain?: Domain;
   url?: FormattedResource['url'];
@@ -59,7 +63,7 @@ export function useResourceCatalogs({
         _id: catalog._id,
         abstract: catalog.abstract,
         conditionsOfAccess: catalog.conditionsOfAccess,
-        type: catalog['@type'],
+        types: ['Resource Catalog'],
         name: catalog.name,
         domain: catalog.genre,
         url: catalog.url,

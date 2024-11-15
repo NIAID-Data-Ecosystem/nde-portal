@@ -1,13 +1,7 @@
 import { TableData } from '.';
 
-export const formatTypeName = (type: TableData['type']) => {
-  if (type === 'ResourceCatalog') {
-    return 'Resource Catalog';
-  } else if (type === 'ComputationalTool') {
-    return 'Computational Tool Repository';
-  } else {
-    return 'Dataset Repository';
-  }
+export const formatTypeName = (type: TableData['types'][number]) => {
+  return type;
 };
 
 export const formatDomainName = (domain: TableData['domain']) => {
@@ -31,25 +25,44 @@ export const getFilterData = <T extends keyof TableData>({
 }: {
   data: TableData[];
   property: T;
-  formatName: (value: TableData[T]) => string;
+  formatName?: (value: any) => string;
 }) => {
   return data.reduce((acc, item) => {
     const value = item[property];
     if (value) {
-      // Check if this value is already accounted for
-      const existingEntry = acc.find(
-        a => a.value.toLowerCase() === value.toLowerCase(),
-      );
-      if (!existingEntry) {
-        // Add new entry for this unique value
-        acc.push({
-          name: formatName(value),
-          value: value,
-          count: 1,
+      if (Array.isArray(value)) {
+        value.forEach(v => {
+          const existingEntry = acc.find(a => {
+            return a.value.toLowerCase() === v.toLowerCase();
+          });
+          if (!existingEntry) {
+            // Add new entry for this unique value
+            acc.push({
+              name: formatName ? formatName(v) : v,
+              value: v,
+              count: 1,
+            });
+          } else {
+            // Increment count for existing entry
+            existingEntry!.count++;
+          }
         });
       } else {
-        // Increment count for existing entry
-        existingEntry!.count++;
+        // Check if this value is already accounted for
+        const existingEntry = acc.find(
+          a => a.value.toLowerCase() === value.toLowerCase(),
+        );
+        if (!existingEntry) {
+          // Add new entry for this unique value
+          acc.push({
+            name: formatName ? formatName(value) : value,
+            value: value,
+            count: 1,
+          });
+        } else {
+          // Increment count for existing entry
+          existingEntry!.count++;
+        }
       }
     }
     return acc;
