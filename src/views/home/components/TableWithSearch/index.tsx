@@ -209,8 +209,14 @@ export const RepositoryCells = ({
   isLoading?: boolean;
 }) => {
   const href =
-    data.type === 'Repository'
+    data.type === 'ResourceCatalog'
       ? {
+          pathname: `/resources`,
+          query: {
+            id: data._id,
+          },
+        }
+      : {
           pathname: `/search`,
           query: {
             q: '',
@@ -218,14 +224,7 @@ export const RepositoryCells = ({
               'includedInDataCatalog.name': [data._id],
             }),
           },
-        }
-      : {
-          pathname: `/resources`,
-          query: {
-            id: data._id,
-          },
         };
-
   return (
     <Flex id={`cell-${data._id}-${column.property}`} py={1}>
       {/* Repository/Resource Catalog name */}
