@@ -50,7 +50,7 @@ const Home: NextPage<{
   const {
     isLoading: repositoriesIsLoading,
     data: repositories,
-    error: repositoriesCatalogsError,
+    error: repositoriesError,
   } = useRepoData({ refetchOnWindowFocus: false, refetchOnMount: false });
 
   return (
@@ -117,7 +117,7 @@ const Home: NextPage<{
       </HeroBanner>
       <>
         {/**** Repositories Table section *****/}
-        {!(repositoriesCatalogsError || resourceCatalogsError) && (
+        {!(repositoriesError || resourceCatalogsError) && (
           <PageContent
             flexDirection='column'
             bg='#fff'

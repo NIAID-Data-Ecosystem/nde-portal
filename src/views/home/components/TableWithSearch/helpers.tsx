@@ -3,6 +3,8 @@ import { TableData } from '.';
 export const formatTypeName = (type: TableData['type']) => {
   if (type === 'ResourceCatalog') {
     return 'Resource Catalog';
+  } else if (type === 'ComputationalTool') {
+    return 'Computational Tool Repository';
   } else {
     return 'Dataset Repository';
   }
