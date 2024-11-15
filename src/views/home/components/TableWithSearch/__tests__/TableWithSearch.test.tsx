@@ -11,7 +11,7 @@ const mockData = [
     abstract: 'Lorem ipsum dolor sit amet',
     domain: 'IID',
     conditionsOfAccess: 'Open',
-    type: 'ResourceCatalog',
+    types: ['Resource Catalog'],
   },
   {
     _id: 'source_02',
@@ -19,7 +19,7 @@ const mockData = [
     abstract: 'Orci varius natoque penatibus et magnis dis parturient montes',
     domain: 'Generalist',
     conditionsOfAccess: 'Open',
-    type: 'Dataset',
+    types: ['Dataset Repository'],
   },
   {
     _id: 'source_03',
@@ -27,7 +27,7 @@ const mockData = [
     abstract: 'Lorem ipsum dolor sit amet',
     domain: 'IID',
     conditionsOfAccess: 'Restricted',
-    type: 'ResourceCatalog',
+    types: ['Resource Catalog'],
   },
   {
     _id: '04',
@@ -35,7 +35,7 @@ const mockData = [
     abstract: 'An abstract here',
     domain: 'Generalist',
     conditionsOfAccess: 'Unknown',
-    type: 'Dataset',
+    types: ['Dataset Repository'],
   },
 ] as TableData[];
 const mockColumns = [
