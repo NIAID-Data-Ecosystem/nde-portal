@@ -1,4 +1,3 @@
-// Type of resource.
 export type APIResourceType =
   | 'Dataset'
   | 'ResourceCatalog'
