@@ -24,14 +24,18 @@ export const DataUsage: React.FC<DataUsageProps> = ({
   if (!usageAgreement.some(ua => ua?.url) || !type) {
     return <></>;
   }
+  const description = SCHEMA_DEFINITIONS['usageInfo']?.description;
+
+  const tooltipLabel =
+    description && type && type in description
+      ? (description as Record<string, string>)[type]
+      : '';
 
   return (
     <Box>
       <HeadingWithTooltip
         label='Usage Information'
-        tooltipLabel={`${
-          SCHEMA_DEFINITIONS['usageInfo']?.description?.[type] || ''
-        }`}
+        tooltipLabel={tooltipLabel}
       />
       {usageAgreement.map((usageInfo, idx) => {
         if (!usageInfo?.url)

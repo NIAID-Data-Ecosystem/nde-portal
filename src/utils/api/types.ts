@@ -320,6 +320,8 @@ export interface InputProperties {
   identifier?: string;
   name?: string;
   encodingFormat?: string;
+  url?: string;
+  inDefinedTermSet?: string;
 }
 
 export interface CollectionSize {
@@ -333,7 +335,18 @@ export interface OutputProperties {
   identifier?: string;
   name?: string;
   encodingFormat?: string;
+  url?: string;
+  inDefinedTermSet?: string;
 }
+
+export interface FeatureListProperties {
+  identifier?: string;
+  name?: string;
+  encodingFormat?: string;
+  url?: string;
+  inDefinedTermSet?: string;
+}
+
 // Formatting standardized resource fields
 export interface FormattedResource {
   [key: string]: any;
@@ -368,7 +381,7 @@ export interface FormattedResource {
   applicationSubCategory: ApplicationSubCategory[] | null;
   applicationSuite: string[] | null;
   author: Author[] | null;
-  availableOnDevice: string | null;
+  availableOnDevice: string[] | null;
   citation: Citation[] | null;
   citedBy: CitedBy[] | null;
   codeRepository: string[] | string | null;
@@ -387,6 +400,7 @@ export interface FormattedResource {
   distribution: Distribution[] | null;
   doi: string | null;
   downloadUrl: { name: string }[] | null;
+  featureList: FeatureListProperties[] | null;
   funding: Funding[] | null;
   genre: Domain | null;
   hasAPI: boolean | null;
@@ -415,6 +429,7 @@ export interface FormattedResource {
   mainEntityOfPage: string | null;
   measurementTechnique: MeasurementTechnique[] | null;
   nctid: string | null;
+  operatingSystem: string[] | null;
   output: OutputProperties[] | null;
   processorRequirements: string[] | null;
   programmingLanguage: string[] | null;

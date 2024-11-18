@@ -10,11 +10,15 @@ import {
 } from '@chakra-ui/react';
 import { FormattedResource } from 'src/utils/api/types';
 import {
+  generateMetadataContentforCompToolCard,
+  SORT_ORDER,
+  SORT_ORDER_COMPTOOL,
+} from 'src/components/metadata';
+import {
   MetadataBlock,
   MetadataContent,
   MetadataList,
   MetadataListItem,
-  SORT_ORDER,
   generateMetadataContent,
   getMetadataDescription,
   sortMetadataArray,
@@ -24,6 +28,8 @@ import { ScrollContainer } from 'src/components/scroll-container';
 export interface OverviewProps extends Partial<FormattedResource> {
   isLoading: boolean;
 }
+
+const DATASET_SORT_ORDER = [...SORT_ORDER, 'spatialCoverage'];
 
 const Overview: React.FC<OverviewProps> = ({
   healthCondition,
@@ -40,33 +46,53 @@ const Overview: React.FC<OverviewProps> = ({
   variableMeasured,
   ...data
 }) => {
-  const content = generateMetadataContent({
-    id,
-    species,
-    infectiousAgent,
-    healthCondition,
-    variableMeasured,
-    measurementTechnique,
-    topicCategory,
-  });
-  const sortedMetadataContent = sortMetadataArray(
-    [
-      ...content,
-      {
-        id: `${id}-spatialCoverage`,
-        label: 'Spatiotemporal Coverage',
-        property: 'spatialCoverage',
-        isDisabled: !(
-          spatialCoverage ||
-          temporalCoverage?.some(coverage => coverage.temporalInterval) ===
-            true ||
-          inLanguage?.name ||
-          inLanguage?.alternateName
-        ),
-      },
-    ],
-    [...SORT_ORDER, 'spatialCoverage'],
-  );
+  const type = data?.['@type'] || 'Dataset';
+  const content =
+    type == 'ComputationalTool'
+      ? generateMetadataContentforCompToolCard({
+          id,
+          availableOnDevice: data?.availableOnDevice,
+          featureList: data?.featureList,
+          funding: data?.funding,
+          input: data?.input,
+          license: data?.license,
+          output: data?.output,
+          softwareHelp: data?.softwareHelp,
+          softwareRequirements: data?.softwareRequirements,
+          softwareVersion: data?.softwareVersion,
+        })
+      : generateMetadataContent({
+          id,
+          healthCondition,
+          infectiousAgent,
+          measurementTechnique,
+          species,
+          topicCategory,
+          variableMeasured,
+        });
+
+  const sortedMetadataContent =
+    type == 'ComputationalTool'
+      ? sortMetadataArray(content, SORT_ORDER_COMPTOOL)
+      : sortMetadataArray(
+          [
+            ...content,
+            {
+              id: `${id}-spatialCoverage`,
+              label: 'Spatiotemporal Coverage',
+              property: 'spatialCoverage',
+              isDisabled: !(
+                spatialCoverage ||
+                temporalCoverage?.some(
+                  coverage => coverage.temporalInterval,
+                ) === true ||
+                inLanguage?.name ||
+                inLanguage?.alternateName
+              ),
+            },
+          ],
+          DATASET_SORT_ORDER,
+        );
 
   return (
     <Flex py={2} w='100%' flexWrap='wrap' flexDirection={['column', 'row']}>

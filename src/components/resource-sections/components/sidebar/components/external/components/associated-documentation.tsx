@@ -8,7 +8,7 @@ import {
   UnorderedList,
   ListItem,
 } from '@chakra-ui/react';
-import { FaGithub } from 'react-icons/fa6';
+import { FaBitbucket, FaGithub } from 'react-icons/fa6';
 import { FormattedResource } from 'src/utils/api/types';
 import { HeadingWithTooltip } from './heading-with-tooltip';
 import { DisplayHTMLContent } from 'src/components/html-content';
@@ -36,9 +36,13 @@ export const AssociatedDocumentation: React.FC<AssociatedDocumentation> = ({
   if (!isLoading && !(hasPart || mainEntityOfPage || codeRepository || type)) {
     return <></>;
   }
+  const hasAssociatedDocumentation = hasPart?.some(
+    item => item.name || item.url,
+  );
+
   return (
     <>
-      {hasPart && (
+      {hasAssociatedDocumentation && (
         <Box>
           <HeadingWithTooltip
             label='Associated Documents'
@@ -47,37 +51,34 @@ export const AssociatedDocumentation: React.FC<AssociatedDocumentation> = ({
             }`}
           />
           <Flex flexDirection='column'>
-            {hasPart &&
-              hasPart.map((part, idx) => {
-                if (!part.name && !part.url)
-                  return <React.Fragment key={idx} />;
-                if (part.url) {
-                  return (
-                    <Link
-                      key={part.url}
-                      href={part.url}
-                      isExternal
-                      wordBreak='break-word'
-                      fontSize='inherit'
-                      mb={1}
-                    >
-                      {part?.name || part.url}
-                    </Link>
-                  );
-                }
+            {hasPart?.map((part, idx) => {
+              if (part.url) {
                 return (
-                  part?.name && (
-                    <Box key={part.name} sx={{ h4: { fontWeight: 'medium' } }}>
-                      <DisplayHTMLContent
-                        key={part.name}
-                        wordBreak='break-word'
-                        content={part.name}
-                        fontSize='inherit'
-                      />
-                    </Box>
-                  )
+                  <Link
+                    key={idx}
+                    href={part.url}
+                    isExternal
+                    wordBreak='break-word'
+                    fontSize='inherit'
+                    mb={1}
+                  >
+                    {part?.name || part.url}
+                  </Link>
                 );
-              })}
+              }
+              return (
+                part?.name && (
+                  <Box key={part.name} sx={{ h4: { fontWeight: 'medium' } }}>
+                    <DisplayHTMLContent
+                      key={part.name}
+                      wordBreak='break-word'
+                      content={part.name}
+                      fontSize='inherit'
+                    />
+                  </Box>
+                )
+              );
+            })}
           </Flex>
         </Box>
       )}
@@ -141,12 +142,15 @@ export const AssociatedDocumentation: React.FC<AssociatedDocumentation> = ({
               : [codeRepository]
             ).map((repo, idx) => {
               return (
-                <ListItem key={idx} alignItems='center'>
-                  {repo.includes('git') && (
-                    <Icon as={FaGithub} mx={1} boxSize={4} />
-                  )}
+                <ListItem key={idx} alignItems='start' display='flex' pb={2}>
+                  <Box mx={1} mt={1}>
+                    {repo.includes('git') && <Icon as={FaGithub} boxSize={4} />}
+                    {repo.includes('bitbucket') && (
+                      <Icon as={FaBitbucket} boxSize={4} />
+                    )}
+                  </Box>
                   {repo.includes('http') ? (
-                    <Link href={repo} isExternal wordBreak='break-word' mx={2}>
+                    <Link href={repo} isExternal wordBreak='break-word' ml={1}>
                       {repo.includes('git') ? 'View code on Github' : repo}
                     </Link>
                   ) : (

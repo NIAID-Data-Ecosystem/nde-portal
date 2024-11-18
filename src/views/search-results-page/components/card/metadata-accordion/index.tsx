@@ -17,8 +17,10 @@ import { Link } from 'src/components/link';
 import { FormattedResource } from 'src/utils/api/types';
 import Tooltip from 'src/components/tooltip';
 import { getMetadataTheme } from 'src/components/icon/helpers';
+import { SORT_ORDER, SORT_ORDER_COMPTOOL } from 'src/components/metadata';
 import {
   generateMetadataContent,
+  generateMetadataContentforCompToolCard,
   sortMetadataArray,
 } from 'src/components/metadata';
 import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
@@ -60,22 +62,42 @@ interface MetadataAccordionProps {
 const MetadataAccordion: React.FC<MetadataAccordionProps> = ({ data }) => {
   const paddingCard = [4, 6, 8, 10];
 
+  const type = data?.['@type'] || 'Dataset';
+
   const id = data?.id;
-  const content = generateMetadataContent({
-    id: data?.id,
-    healthCondition: data?.healthCondition,
-    infectiousAgent: data?.infectiousAgent,
-    funding: data?.funding,
-    license: data?.license,
-    measurementTechnique: data?.measurementTechnique,
-    species: data?.species,
-    usageInfo: data?.usageInfo,
-    variableMeasured: data?.variableMeasured,
-  });
-  const sortedMetadataContent = sortMetadataArray(content);
+
+  const content =
+    type == 'ComputationalTool'
+      ? generateMetadataContentforCompToolCard({
+          id: data?.id,
+          availableOnDevice: data?.availableOnDevice,
+          featureList: data?.featureList,
+          funding: data?.funding,
+          input: data?.input,
+          license: data?.license,
+          output: data?.output,
+          softwareHelp: data?.softwareHelp,
+          softwareRequirements: data?.softwareRequirements,
+          softwareVersion: data?.softwareVersion,
+        })
+      : generateMetadataContent({
+          id: data?.id,
+          healthCondition: data?.healthCondition,
+          infectiousAgent: data?.infectiousAgent,
+          funding: data?.funding,
+          license: data?.license,
+          measurementTechnique: data?.measurementTechnique,
+          species: data?.species,
+          usageInfo: data?.usageInfo,
+          variableMeasured: data?.variableMeasured,
+        });
+
+  const sortedMetadataContent =
+    type == 'ComputationalTool'
+      ? sortMetadataArray(content, SORT_ORDER_COMPTOOL)
+      : sortMetadataArray(content, SORT_ORDER);
 
   const schema = SCHEMA_DEFINITIONS as SchemaDefinitions;
-  const type = data?.['@type'] || 'Dataset';
   return (
     <>
       {/* Details expandable drawer */}
