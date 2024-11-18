@@ -1,5 +1,10 @@
-// Type of resource.
-export type APIResourceType = 'Dataset' | 'ResourceCatalog';
+export type APIResourceType =
+  | 'Dataset'
+  | 'ResourceCatalog'
+  | 'ComputationalTool';
+// | 'Software'
+// | 'ScholarlyArticle'
+// | 'Other';
 
 export type CollectionType =
   | 'Knowledge Base'
@@ -55,6 +60,11 @@ export const formatResourceTypeForAPI = (
     str.toLowerCase() === 'resource catalog'
   ) {
     return 'ResourceCatalog';
+  } else if (
+    str.toLowerCase() === 'computationaltool' ||
+    str.toLowerCase() === 'computational tool'
+  ) {
+    return 'ComputationalTool';
   } else {
     return str;
   }
