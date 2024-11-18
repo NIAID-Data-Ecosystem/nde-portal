@@ -21,13 +21,15 @@
     "property": "@type",
     "count": 5495861,
     "type": "keyword",
-    "enum": ["Dataset", "ResourceCatalog"],
+    "enum": ["Dataset", "ComputationalTool", "ResourceCatalog"],
     "description": {
       "Dataset": "Datasets contained in the NIAID Data Ecosystem. A dataset is a collection of data of a particular experimental type. The NIAID Data Ecosystem is an environment to find and access and infectious and immune-mediated disease data and computational tools to speed the development of diagnostics, therapeutics, and vaccines. The NIAID Data Ecosystem Discovery Portal harvests metadata from dataset repository and harmonizes them to this schema to enable easy cross-platform dataset searching and filtering.",
+      "ComputationalTool": "ComputationalTools (software, workflows, computational tools, code) contained in the NIAID Data Ecosystem. The NIAID Data Ecosystem is a secure environment to find, access and analyze immune-mediated and infectious disease data and computational tools to speed the development of diagnostics, therapeutics, and vaccines. The NIAID Data Ecosystem Discovery Portal harvests metadata from dataset repository and harmonizes them to this schema to enable easy cross-platform dataset searching and filtering.",
       "ResourceCatalog": "ResourceCatalogs (collections of scientific information or research outputs) contained in the NIAID Data Ecosystem. Resource catalogs include databases, repositories, knowledge bases, citation indices, software indices, browser-based data portals (web portals), etc. The NIAID Data Ecosystem is an environment to find and access and infectious and immune-mediated disease data, resources and computational tools to speed the development of diagnostics, therapeutics, and vaccines. The NIAID Data Ecosystem Discovery Portal harvests metadata from dataset repository and harmonizes them to this schema to enable easy cross-platform dataset searching and filtering."
     },
     "abstract": {
       "Dataset": "Datasets contained in the NIAID Data Ecosystem. A dataset is a collection of data of a particular experimental type.",
+      "ComputationalTool": "ComputationalTools (software, workflows, computational tools, code) contained in the NIAID Data Ecosystem.",
       "ResourceCatalog": "ResourceCatalogs (collections of scientific information or research outputs) contained in the NIAID Data Ecosystem. Resource catalogs include databases, repositories, knowledge bases, citation indices, software indices, browser-based data portals (web portals), etc."
     },
     "isAdvancedSearchField": true
@@ -152,6 +154,30 @@
     "type": "float",
     "isAdvancedSearchField": false
   },
+  "_meta.lineage": {
+    "name": "_meta Lineage",
+    "dotfield": "_meta.lineage",
+    "property": "lineage",
+    "count": 0,
+    "type": "object",
+    "isAdvancedSearchField": false
+  },
+  "_meta.lineage.parent_taxon": {
+    "name": "_meta Lineage Parent_taxon",
+    "dotfield": "_meta.lineage.parent_taxon",
+    "property": "parent_taxon",
+    "count": 0,
+    "type": "integer",
+    "isAdvancedSearchField": false
+  },
+  "_meta.lineage.taxon": {
+    "name": "_meta Lineage Taxon",
+    "dotfield": "_meta.lineage.taxon",
+    "property": "taxon",
+    "count": 0,
+    "type": "integer",
+    "isAdvancedSearchField": false
+  },
   "_meta.recommended_augmented_fields": {
     "name": "_meta Recommended_augmented_fields",
     "dotfield": "_meta.recommended_augmented_fields",
@@ -209,10 +235,12 @@
     "type": "object",
     "description": {
       "Dataset": "The overall rating, based on a collection of reviews or ratings, of the work. These ratings can be collected based on user reviews or through Altmetric scores of web-based citations.",
+      "ComputationalTool": "The overall rating, based on a collection of reviews or ratings, of the work. These ratings can be collected based on user reviews or through Altmetric scores of web-based citations.",
       "ResourceCatalog": "The overall rating, based on a collection of reviews or ratings, of the work. These ratings can be collected based on user reviews or through Altmetric scores of web-based citations."
     },
     "abstract": {
       "Dataset": "rating of the work",
+      "ComputationalTool": "rating of the work",
       "ResourceCatalog": "rating of the work"
     },
     "isAdvancedSearchField": false
@@ -234,6 +262,7 @@
     "schemaType": "integer",
     "description": {
       "Dataset": "Total number of ratings",
+      "ComputationalTool": "Total number of ratings",
       "ResourceCatalog": "Total number of ratings"
     },
     "isAdvancedSearchField": false
@@ -247,6 +276,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "Average rating",
+      "ComputationalTool": "Average rating",
       "ResourceCatalog": "Average rating"
     },
     "isAdvancedSearchField": false
@@ -277,6 +307,12 @@
     "property": "applicationCategory",
     "count": 22208,
     "type": "keyword",
+    "description": {
+      "ComputationalTool": "Type of software application, e.g. 'Command-line tool', 'Database portal', 'Desktop application', 'Library', 'Ontology', 'Plug-in', 'Script', 'SPARQL endpoint', 'Suite', 'Web application', 'Web API', 'Web service', 'Workbench', 'Workflow'."
+    },
+    "abstract": {
+      "ComputationalTool": "type of software application"
+    },
     "isAdvancedSearchField": true
   },
   "applicationSubCategory": {
@@ -285,6 +321,12 @@
     "property": "applicationSubCategory",
     "count": 810,
     "type": "object",
+    "description": {
+      "ComputationalTool": "A subcategory of the computational tool, like gene regulation."
+    },
+    "abstract": {
+      "ComputationalTool": "software subcategory"
+    },
     "isAdvancedSearchField": false
   },
   "applicationSubCategory.@type": {
@@ -301,6 +343,10 @@
     "property": "identifier",
     "count": 0,
     "type": "text",
+    "schemaType": "string",
+    "description": {
+      "ComputationalTool": "The identifier property represents any kind of identifier for any kind of Thing, such as ISBNs, GTIN codes, UUIDs etc. Schema.org provides dedicated properties for representing many of these, either as textual strings or as URL (URI) links. See background notes for more details."
+    },
     "isAdvancedSearchField": false
   },
   "applicationSubCategory.name": {
@@ -309,6 +355,10 @@
     "property": "name",
     "count": 810,
     "type": "keyword",
+    "schemaType": "string",
+    "description": {
+      "ComputationalTool": "The name of the item."
+    },
     "isAdvancedSearchField": true
   },
   "applicationSubCategory.url": {
@@ -317,6 +367,10 @@
     "property": "url",
     "count": 0,
     "type": "keyword",
+    "schemaType": "string",
+    "description": {
+      "ComputationalTool": "URL of the item."
+    },
     "isAdvancedSearchField": false
   },
   "applicationSuite": {
@@ -325,6 +379,12 @@
     "property": "applicationSuite",
     "count": 2937,
     "type": "text",
+    "description": {
+      "ComputationalTool": "The name of the application suite to which the application belongs (e.g. Excel belongs to Office)."
+    },
+    "abstract": {
+      "ComputationalTool": "software suite for the tool"
+    },
     "isAdvancedSearchField": true
   },
   "author": {
@@ -335,6 +395,7 @@
     "type": "object",
     "description": {
       "Dataset": "Author or creator of the work. The default field for the author or creator of the work.",
+      "ComputationalTool": "Author or creator of the work. The default field for the author or creator of the work.",
       "ResourceCatalog": "Author or creator of the work. The default field for the author or creator of the work."
     },
     "abstract": {
@@ -392,6 +453,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "Email address of the organization",
+      "ComputationalTool": "Email address of the organization",
       "ResourceCatalog": "Email address of the organization"
     },
     "isAdvancedSearchField": false
@@ -405,6 +467,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "Family name (surname) of the person",
+      "ComputationalTool": "Family name (surname) of the person",
       "ResourceCatalog": "Family name (surname) of the person"
     },
     "isAdvancedSearchField": true
@@ -418,6 +481,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "Given (first) name of the person",
+      "ComputationalTool": "Given (first) name of the person",
       "ResourceCatalog": "Given (first) name of the person"
     },
     "isAdvancedSearchField": true
@@ -431,6 +495,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "Unique identifier of the organization",
+      "ComputationalTool": "Unique identifier of the organization",
       "ResourceCatalog": "Unique identifier of the organization"
     },
     "isAdvancedSearchField": true
@@ -444,6 +509,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "Name of the organization",
+      "ComputationalTool": "Name of the organization",
       "ResourceCatalog": "Name of the organization"
     },
     "isAdvancedSearchField": true
@@ -457,6 +523,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "What role the organization played in creating the dataset",
+      "ComputationalTool": "What role the organization played in creating the dataset",
       "ResourceCatalog": "What role the organization played in creating the dataset"
     },
     "isAdvancedSearchField": false
@@ -470,6 +537,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "Title of the person",
+      "ComputationalTool": "Title of the person",
       "ResourceCatalog": "Title of the person"
     },
     "isAdvancedSearchField": false
@@ -483,6 +551,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "Link to the organization",
+      "ComputationalTool": "Link to the organization",
       "ResourceCatalog": "Link to the organization"
     },
     "isAdvancedSearchField": false
@@ -493,6 +562,12 @@
     "property": "availableOnDevice",
     "count": 0,
     "type": "text",
+    "description": {
+      "ComputationalTool": "Device or platform required to run the application, such as Bioconda, Docker, or Singularity."
+    },
+    "abstract": {
+      "ComputationalTool": "platform to run the application"
+    },
     "isAdvancedSearchField": false
   },
   "citation": {
@@ -503,10 +578,12 @@
     "type": "object",
     "description": {
       "Dataset": "A citation or reference to a publication, dataset, or computational tool which uses the dataset. Examples: a publication which describes the collection/analysis of the dataset, a publication which reuses the dataset in a secondary analysis, a dataset which extends the existing dataset, or a computational tool which relies on the dataset.",
+      "ComputationalTool": "A citation or reference to a publication, dataset, or computational tool which uses the computational tool. Examples: a publication which describes the development of the computational tool, a publication which describes the extension or use of the computational tool, a dataset which was processed or analyzed using the tool, or a computational tool which relies on the given tool.",
       "ResourceCatalog": "A citation or reference to a publication, dataset, or computational tool which uses the resource catalog. Examples: a publication which describes the creation of the resource catalog, a publication which uses information or content of the resource catalog for secondary analysis, or a computational tool which relies on the content of the resource catalog."
     },
     "abstract": {
       "Dataset": "citation to the work",
+      "ComputationalTool": "citation to the work",
       "ResourceCatalog": "citation to the work"
     },
     "isAdvancedSearchField": false
@@ -528,6 +605,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "Abstract of the referenced work",
+      "ComputationalTool": "Abstract of the referenced work",
       "ResourceCatalog": "Abstract of the referenced work"
     },
     "isAdvancedSearchField": false
@@ -540,6 +618,7 @@
     "type": "object",
     "description": {
       "Dataset": "Author(s) of the referenced work",
+      "ComputationalTool": "Author(s) of the referenced work",
       "ResourceCatalog": "Author(s) of the referenced work"
     },
     "isAdvancedSearchField": false
@@ -561,6 +640,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "Family name (surname) of the person",
+      "ComputationalTool": "Family name (surname) of the person",
       "ResourceCatalog": "Family name (surname) of the person"
     },
     "isAdvancedSearchField": true
@@ -574,6 +654,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "Given (first) name of the person",
+      "ComputationalTool": "Given (first) name of the person",
       "ResourceCatalog": "Given (first) name of the person"
     },
     "isAdvancedSearchField": true
@@ -587,6 +668,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "Name of the organization",
+      "ComputationalTool": "Name of the organization",
       "ResourceCatalog": "Name of the organization"
     },
     "isAdvancedSearchField": true
@@ -600,6 +682,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "The bibliographic citation for the referenced work as is provided",
+      "ComputationalTool": "The bibliographic citation for the referenced work as is provided",
       "ResourceCatalog": "The bibliographic citation for the referenced work as is provided"
     },
     "isAdvancedSearchField": false
@@ -613,6 +696,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "Date the referenced work was published",
+      "ComputationalTool": "Date the referenced work was published",
       "ResourceCatalog": "Date the referenced work was published"
     },
     "isAdvancedSearchField": true
@@ -626,6 +710,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "Description of the referenced work",
+      "ComputationalTool": "Description of the referenced work",
       "ResourceCatalog": "Description of the referenced work"
     },
     "isAdvancedSearchField": false
@@ -639,10 +724,12 @@
     "schemaType": "string",
     "description": {
       "Dataset": "A digital object identifier (DOI) of the referenced work",
+      "ComputationalTool": "A digital object identifier (DOI) of the referenced work",
       "ResourceCatalog": "A digital object identifier (DOI) of the referenced work"
     },
     "abstract": {
       "Dataset": "digital object identifier",
+      "ComputationalTool": "digital object identifier",
       "ResourceCatalog": "digital object identifier"
     },
     "isAdvancedSearchField": true
@@ -664,6 +751,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "An identifier associated with the work",
+      "ComputationalTool": "An identifier associated with the work",
       "ResourceCatalog": "An identifier associated with the work"
     },
     "isAdvancedSearchField": true
@@ -677,6 +765,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "Issue number where the article appears",
+      "ComputationalTool": "Issue number where the article appears",
       "ResourceCatalog": "Issue number where the article appears"
     },
     "isAdvancedSearchField": true
@@ -690,6 +779,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "Journal where the article appears",
+      "ComputationalTool": "Journal where the article appears",
       "ResourceCatalog": "Journal where the article appears"
     },
     "isAdvancedSearchField": true
@@ -703,6 +793,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "Abbreviated journal name where the article appears",
+      "ComputationalTool": "Abbreviated journal name where the article appears",
       "ResourceCatalog": "Abbreviated journal name where the article appears"
     },
     "isAdvancedSearchField": true
@@ -716,6 +807,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "Name or title",
+      "ComputationalTool": "Name or title",
       "ResourceCatalog": "Name or title"
     },
     "isAdvancedSearchField": true
@@ -729,6 +821,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "Page numbers in the journal where the article appears",
+      "ComputationalTool": "Page numbers in the journal where the article appears",
       "ResourceCatalog": "Page numbers in the journal where the article appears"
     },
     "isAdvancedSearchField": false
@@ -742,10 +835,12 @@
     "schemaType": "string",
     "description": {
       "Dataset": "A PubMed identifier (PMID) of the referenced publication",
+      "ComputationalTool": "A PubMed identifier (PMID) of the referenced publication",
       "ResourceCatalog": "A PubMed identifier (PMID) of the referenced publication"
     },
     "abstract": {
       "Dataset": "PubMed identifier",
+      "ComputationalTool": "PubMed identifier",
       "ResourceCatalog": "PubMed identifier"
     },
     "isAdvancedSearchField": true
@@ -759,6 +854,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "The url of the work",
+      "ComputationalTool": "The url of the work",
       "ResourceCatalog": "The url of the work"
     },
     "isAdvancedSearchField": false
@@ -772,6 +868,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "Volume of the journal where the article appears",
+      "ComputationalTool": "Volume of the journal where the article appears",
       "ResourceCatalog": "Volume of the journal where the article appears"
     },
     "isAdvancedSearchField": false
@@ -784,6 +881,7 @@
     "type": "object",
     "description": {
       "Dataset": "Publications, datasets, or computational tools that cite the work.",
+      "ComputationalTool": "Publications, datasets, or computational tools that cite the work.",
       "ResourceCatalog": "Publications, datasets, or computational tools that cite the work."
     },
     "isAdvancedSearchField": false
@@ -805,6 +903,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "Abstract of the referenced work",
+      "ComputationalTool": "Abstract of the referenced work",
       "ResourceCatalog": "Abstract of the referenced work"
     },
     "isAdvancedSearchField": false
@@ -817,6 +916,7 @@
     "type": "object",
     "description": {
       "Dataset": "Author(s) of the referenced work",
+      "ComputationalTool": "Author(s) of the referenced work",
       "ResourceCatalog": "Author(s) of the referenced work"
     },
     "isAdvancedSearchField": false
@@ -838,6 +938,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "Family name (surname) of the person",
+      "ComputationalTool": "Family name (surname) of the person",
       "ResourceCatalog": "Family name (surname) of the person"
     },
     "isAdvancedSearchField": false
@@ -851,6 +952,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "Given (first) name of the person",
+      "ComputationalTool": "Given (first) name of the person",
       "ResourceCatalog": "Given (first) name of the person"
     },
     "isAdvancedSearchField": false
@@ -864,6 +966,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "Name of the organization",
+      "ComputationalTool": "Name of the organization",
       "ResourceCatalog": "Name of the organization"
     },
     "isAdvancedSearchField": false
@@ -877,6 +980,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "The bibliographic citation for the referenced work as is provided",
+      "ComputationalTool": "The bibliographic citation for the referenced work as is provided",
       "ResourceCatalog": "The bibliographic citation for the referenced work as is provided"
     },
     "isAdvancedSearchField": false
@@ -890,6 +994,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "Date the referenced work was published",
+      "ComputationalTool": "Date the referenced work was published",
       "ResourceCatalog": "Date the referenced work was published"
     },
     "isAdvancedSearchField": false
@@ -903,6 +1008,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "Description of the referenced work",
+      "ComputationalTool": "Description of the referenced work",
       "ResourceCatalog": "Description of the referenced work"
     },
     "isAdvancedSearchField": false
@@ -916,10 +1022,12 @@
     "schemaType": "string",
     "description": {
       "Dataset": "A digital object identifier (DOI) of the referenced work",
+      "ComputationalTool": "A digital object identifier (DOI) of the referenced work",
       "ResourceCatalog": "A digital object identifier (DOI) of the referenced work"
     },
     "abstract": {
       "Dataset": "digital object identifier",
+      "ComputationalTool": "digital object identifier",
       "ResourceCatalog": "digital object identifier"
     },
     "isAdvancedSearchField": true
@@ -941,6 +1049,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "An identifier associated with the work",
+      "ComputationalTool": "An identifier associated with the work",
       "ResourceCatalog": "An identifier associated with the work"
     },
     "isAdvancedSearchField": false
@@ -954,6 +1063,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "Issue number where the article appears",
+      "ComputationalTool": "Issue number where the article appears",
       "ResourceCatalog": "Issue number where the article appears"
     },
     "isAdvancedSearchField": false
@@ -967,6 +1077,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "Journal where the article appears",
+      "ComputationalTool": "Journal where the article appears",
       "ResourceCatalog": "Journal where the article appears"
     },
     "isAdvancedSearchField": false
@@ -980,6 +1091,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "Abbreviated journal name where the article appears",
+      "ComputationalTool": "Abbreviated journal name where the article appears",
       "ResourceCatalog": "Abbreviated journal name where the article appears"
     },
     "isAdvancedSearchField": false
@@ -993,6 +1105,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "Name or title",
+      "ComputationalTool": "Name or title",
       "ResourceCatalog": "Name or title"
     },
     "isAdvancedSearchField": true
@@ -1006,6 +1119,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "Page numbers in the journal where the article appears",
+      "ComputationalTool": "Page numbers in the journal where the article appears",
       "ResourceCatalog": "Page numbers in the journal where the article appears"
     },
     "isAdvancedSearchField": false
@@ -1019,10 +1133,12 @@
     "schemaType": "string",
     "description": {
       "Dataset": "A PubMed identifier (PMID) of the referenced publication",
+      "ComputationalTool": "A PubMed identifier (PMID) of the referenced publication",
       "ResourceCatalog": "A PubMed identifier (PMID) of the referenced publication"
     },
     "abstract": {
       "Dataset": "PubMed identifier",
+      "ComputationalTool": "PubMed identifier",
       "ResourceCatalog": "PubMed identifier"
     },
     "isAdvancedSearchField": true
@@ -1036,6 +1152,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "The url of the work",
+      "ComputationalTool": "The url of the work",
       "ResourceCatalog": "The url of the work"
     },
     "isAdvancedSearchField": false
@@ -1049,6 +1166,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "Volume of the journal where the article appears",
+      "ComputationalTool": "Volume of the journal where the article appears",
       "ResourceCatalog": "Volume of the journal where the article appears"
     },
     "isAdvancedSearchField": false
@@ -1059,6 +1177,12 @@
     "property": "codeRepository",
     "count": 12703,
     "type": "text",
+    "description": {
+      "ComputationalTool": "Link to the source code repository of the tool such as GitHub."
+    },
+    "abstract": {
+      "ComputationalTool": "source code link"
+    },
     "isAdvancedSearchField": true
   },
   "collectionSize": {
@@ -1169,10 +1293,12 @@
     "enum": ["Closed", "Open", "Restricted", "Embargoed"],
     "description": {
       "Dataset": "Conditions that affect the availability of, or method(s) of access to, the work. Options include open (freely available), restricted (may include restrictions such as on use), closed (requires registration to access), or embargoed (unpublished).",
+      "ComputationalTool": "Conditions that affect the availability of, or method(s) of access to, the work. Options include open (freely available), restricted (may include restrictions such as on use), closed (requires registration to access), or embargoed (unpublished).",
       "ResourceCatalog": "Conditions that affect the availability of, or method(s) of access to, the work. Options include open (freely available), restricted (may include restrictions such as on use), closed (requires registration to access), or embargoed (unpublished)."
     },
     "abstract": {
       "Dataset": "accessibility of the work",
+      "ComputationalTool": "accessibility of the work",
       "ResourceCatalog": "accessibility of the work"
     },
     "isAdvancedSearchField": true
@@ -1199,6 +1325,12 @@
     "property": "contributor",
     "count": 838,
     "type": "object",
+    "description": {
+      "ComputationalTool": "A secondary contributor to the developement or maintenance of the computational tool."
+    },
+    "abstract": {
+      "ComputationalTool": "contributor to development or maintenance"
+    },
     "isAdvancedSearchField": false
   },
   "contributor.@id": {
@@ -1223,6 +1355,7 @@
     "property": "affiliation",
     "count": 22,
     "type": "text",
+    "schemaType": "object",
     "isAdvancedSearchField": false
   },
   "contributor.email": {
@@ -1231,6 +1364,10 @@
     "property": "email",
     "count": 21,
     "type": "text",
+    "schemaType": "string",
+    "description": {
+      "ComputationalTool": "Email address of the organization"
+    },
     "isAdvancedSearchField": false
   },
   "contributor.name": {
@@ -1239,6 +1376,10 @@
     "property": "name",
     "count": 816,
     "type": "text",
+    "schemaType": "string",
+    "description": {
+      "ComputationalTool": "Name of the organization"
+    },
     "isAdvancedSearchField": true
   },
   "creator": {
@@ -1249,6 +1390,7 @@
     "type": "object",
     "description": {
       "Dataset": "The creator/author of this work; equivalent to author. Please use author by default. Use creator if author/creator in a record of this work submitted elsewhere differs from the author/creator entered into the author field.",
+      "ComputationalTool": "The creator/author of this work; equivalent to author. Please use author by default. Use creator if author/creator in a record of this work submitted elsewhere differs from the author/creator entered into the author field.",
       "ResourceCatalog": "The creator/author of this work; equivalent to author. Please use author by default. Use creator if author/creator in a record of this work submitted elsewhere differs from the author/creator entered into the author field."
     },
     "abstract": {
@@ -1306,6 +1448,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "Email address of the organization",
+      "ComputationalTool": "Email address of the organization",
       "ResourceCatalog": "Email address of the organization"
     },
     "isAdvancedSearchField": false
@@ -1319,6 +1462,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "Family name (surname) of the person",
+      "ComputationalTool": "Family name (surname) of the person",
       "ResourceCatalog": "Family name (surname) of the person"
     },
     "isAdvancedSearchField": false
@@ -1332,6 +1476,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "Given (first) name of the person",
+      "ComputationalTool": "Given (first) name of the person",
       "ResourceCatalog": "Given (first) name of the person"
     },
     "isAdvancedSearchField": false
@@ -1345,6 +1490,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "Unique identifier of the organization",
+      "ComputationalTool": "Unique identifier of the organization",
       "ResourceCatalog": "Unique identifier of the organization"
     },
     "isAdvancedSearchField": false
@@ -1358,6 +1504,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "Name of the organization",
+      "ComputationalTool": "Name of the organization",
       "ResourceCatalog": "Name of the organization"
     },
     "isAdvancedSearchField": false
@@ -1371,6 +1518,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "What role the organization played in creating the dataset",
+      "ComputationalTool": "What role the organization played in creating the dataset",
       "ResourceCatalog": "What role the organization played in creating the dataset"
     },
     "isAdvancedSearchField": false
@@ -1384,6 +1532,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "Title of the person",
+      "ComputationalTool": "Title of the person",
       "ResourceCatalog": "Title of the person"
     },
     "isAdvancedSearchField": false
@@ -1397,6 +1546,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "Link to the organization",
+      "ComputationalTool": "Link to the organization",
       "ResourceCatalog": "Link to the organization"
     },
     "isAdvancedSearchField": false
@@ -1450,10 +1600,12 @@
     "schemaType": "string",
     "description": {
       "Dataset": "Date the work has changed: most recent date of dateModified, datePublished, and dateCreated.",
+      "ComputationalTool": "Date the work has changed: most recent date of dateModified, datePublished, and dateCreated.",
       "ResourceCatalog": "Date the work has changed: most recent date of dateModified, datePublished, and dateCreated."
     },
     "abstract": {
       "Dataset": "date changed",
+      "ComputationalTool": "date changed",
       "ResourceCatalog": "date changed"
     },
     "isAdvancedSearchField": true
@@ -1467,6 +1619,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "Date the work was created.",
+      "ComputationalTool": "Date the work was created.",
       "ResourceCatalog": "Date the work was created."
     },
     "isAdvancedSearchField": true
@@ -1480,6 +1633,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "Date the work was modified.",
+      "ComputationalTool": "Date the work was modified.",
       "ResourceCatalog": "Date the work was modified"
     },
     "isAdvancedSearchField": true
@@ -1493,6 +1647,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "Date the work was first published.",
+      "ComputationalTool": "Date the work was first published.",
       "ResourceCatalog": "Date the work was first published"
     },
     "isAdvancedSearchField": true
@@ -1506,6 +1661,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "A description of the dataset.",
+      "ComputationalTool": "A description of the computational tool.",
       "ResourceCatalog": "A description of the resource catalog."
     },
     "isAdvancedSearchField": true
@@ -1524,6 +1680,13 @@
     "property": "discussionUrl",
     "count": 1071,
     "type": "text",
+    "schemaType": "string",
+    "description": {
+      "ComputationalTool": "A link to a webpage containing the comments about the computational tool."
+    },
+    "abstract": {
+      "ComputationalTool": "link to tool discussion page"
+    },
     "isAdvancedSearchField": false
   },
   "distribution": {
@@ -1642,10 +1805,12 @@
     "schemaType": "string",
     "description": {
       "Dataset": "Digital Object Identifier (DOI) for the work, not any associated publications.",
+      "ComputationalTool": "Digital object identifier (DOI) for the work, not any associated publications.",
       "ResourceCatalog": "Digital Object Identifier (DOI) for the work, not any associated publications."
     },
     "abstract": {
       "Dataset": "digital object identifier",
+      "ComputationalTool": "digital object identifier",
       "ResourceCatalog": "digital object identifier"
     },
     "isAdvancedSearchField": true
@@ -1656,6 +1821,9 @@
     "property": "downloadUrl",
     "count": 6178,
     "type": "object",
+    "description": {
+      "ComputationalTool": "URL to download the computational tool."
+    },
     "isAdvancedSearchField": false
   },
   "downloadUrl.name": {
@@ -1672,6 +1840,20 @@
     "property": "featureList",
     "count": 0,
     "type": "object",
+    "description": {
+      "ComputationalTool": "Features or modules provided by this application (and possibly required by other applications)."
+    },
+    "abstract": {
+      "ComputationalTool": "features of the tool"
+    },
+    "isAdvancedSearchField": false
+  },
+  "featureList.inDefinedTermSet": {
+    "name": "Feature List In Defined Term Set",
+    "dotfield": "featureList.inDefinedTermSet",
+    "property": "inDefinedTermSet",
+    "count": 0,
+    "type": "text",
     "isAdvancedSearchField": false
   },
   "featureList.name": {
@@ -1690,110 +1872,6 @@
     "type": "text",
     "isAdvancedSearchField": false
   },
-  "funder": {
-    "name": "Funder",
-    "dotfield": "funder",
-    "property": "funder",
-    "count": 0,
-    "type": "object",
-    "isAdvancedSearchField": false
-  },
-  "funder.alternateName": {
-    "name": "Funder Alternate Name",
-    "dotfield": "funder.alternateName",
-    "property": "alternateName",
-    "count": 0,
-    "type": "keyword",
-    "isAdvancedSearchField": false
-  },
-  "funder.class": {
-    "name": "Funder Class",
-    "dotfield": "funder.class",
-    "property": "class",
-    "count": 0,
-    "type": "keyword",
-    "isAdvancedSearchField": false
-  },
-  "funder.description": {
-    "name": "Funder Description",
-    "dotfield": "funder.description",
-    "property": "description",
-    "count": 0,
-    "type": "text",
-    "isAdvancedSearchField": false
-  },
-  "funder.employee": {
-    "name": "Funder Employee",
-    "dotfield": "funder.employee",
-    "property": "employee",
-    "count": 0,
-    "type": "object",
-    "isAdvancedSearchField": false
-  },
-  "funder.employee.familyName": {
-    "name": "Funder Employee Family Name",
-    "dotfield": "funder.employee.familyName",
-    "property": "familyName",
-    "count": 0,
-    "type": "text",
-    "isAdvancedSearchField": false
-  },
-  "funder.employee.givenName": {
-    "name": "Funder Employee Given Name",
-    "dotfield": "funder.employee.givenName",
-    "property": "givenName",
-    "count": 0,
-    "type": "text",
-    "isAdvancedSearchField": false
-  },
-  "funder.employee.name": {
-    "name": "Funder Employee Name",
-    "dotfield": "funder.employee.name",
-    "property": "name",
-    "count": 0,
-    "type": "keyword",
-    "isAdvancedSearchField": false
-  },
-  "funder.identifier": {
-    "name": "Funder Identifier",
-    "dotfield": "funder.identifier",
-    "property": "identifier",
-    "count": 0,
-    "type": "text",
-    "isAdvancedSearchField": false
-  },
-  "funder.name": {
-    "name": "Funder Name",
-    "dotfield": "funder.name",
-    "property": "name",
-    "count": 0,
-    "type": "keyword",
-    "isAdvancedSearchField": false
-  },
-  "funder.parentOrganization": {
-    "name": "Funder Parent Organization",
-    "dotfield": "funder.parentOrganization",
-    "property": "parentOrganization",
-    "count": 0,
-    "type": "keyword",
-    "isAdvancedSearchField": false
-  },
-  "funder.role": {
-    "name": "Funder Role",
-    "dotfield": "funder.role",
-    "property": "role",
-    "count": 0,
-    "type": "keyword",
-    "isAdvancedSearchField": false
-  },
-  "funder.url": {
-    "name": "Funder URL",
-    "dotfield": "funder.url",
-    "property": "url",
-    "count": 0,
-    "type": "text",
-    "isAdvancedSearchField": false
-  },
   "funding": {
     "name": "Funding",
     "dotfield": "funding",
@@ -1802,10 +1880,12 @@
     "type": "object",
     "description": {
       "Dataset": "Funding that supports (sponsors) the collection of this dataset through some kind of financial contribution.",
+      "ComputationalTool": "Funding that supports (sponsors) the development of this computational tool through some kind of financial contribution.",
       "ResourceCatalog": "Funding that supports (sponsors) the creation or maintenance of the resource catalog through some kind of financial contribution."
     },
     "abstract": {
       "Dataset": "funding source (grant, contract, etc.)",
+      "ComputationalTool": "funding source (grant, contract, etc.)",
       "ResourceCatalog": "funding source (grant, contract, etc.)"
     },
     "isAdvancedSearchField": false
@@ -1826,6 +1906,7 @@
     "type": "object",
     "description": {
       "Dataset": "An organization associated with a creator or funder of a dataset",
+      "ComputationalTool": "An organization associated with a creator or funder of a computational tool",
       "ResourceCatalog": "An organization associated with a creator or funder of a resource catalog"
     },
     "isAdvancedSearchField": false
@@ -1903,6 +1984,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "An organization associated with a creator or funder of a dataset",
+      "ComputationalTool": "An organization associated with a creator or funder of a computational tool",
       "ResourceCatalog": "An organization associated with a creator or funder of a resource catalog"
     },
     "isAdvancedSearchField": true
@@ -1916,6 +1998,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "name of the parent funding organization",
+      "ComputationalTool": "name of the parent funding organization",
       "ResourceCatalog": "name of the parent funding organization"
     },
     "isAdvancedSearchField": true
@@ -1945,6 +2028,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "Unique identifier(s) for the grant(s) used to fund the Dataset",
+      "ComputationalTool": "Unique identifier(s) for the grant(s) used to fund the development of this computational tool",
       "ResourceCatalog": "Unique identifier(s) for the grant(s) used to fund the resource catalog"
     },
     "isAdvancedSearchField": true
@@ -1973,6 +2057,70 @@
     "type": "keyword",
     "isAdvancedSearchField": true
   },
+  "funding.projectNumSplit": {
+    "name": "Funding Project Num Split",
+    "dotfield": "funding.projectNumSplit",
+    "property": "projectNumSplit",
+    "count": 0,
+    "type": "object",
+    "isAdvancedSearchField": false
+  },
+  "funding.projectNumSplit.activityCode": {
+    "name": "Funding Project Num Split Activity Code",
+    "dotfield": "funding.projectNumSplit.activityCode",
+    "property": "activityCode",
+    "count": 0,
+    "type": "text",
+    "isAdvancedSearchField": false
+  },
+  "funding.projectNumSplit.applTypeCode": {
+    "name": "Funding Project Num Split Appl Type Code",
+    "dotfield": "funding.projectNumSplit.applTypeCode",
+    "property": "applTypeCode",
+    "count": 0,
+    "type": "text",
+    "isAdvancedSearchField": false
+  },
+  "funding.projectNumSplit.fullSupportYear": {
+    "name": "Funding Project Num Split Full Support Year",
+    "dotfield": "funding.projectNumSplit.fullSupportYear",
+    "property": "fullSupportYear",
+    "count": 0,
+    "type": "text",
+    "isAdvancedSearchField": false
+  },
+  "funding.projectNumSplit.icCode": {
+    "name": "Funding Project Num Split Ic Code",
+    "dotfield": "funding.projectNumSplit.icCode",
+    "property": "icCode",
+    "count": 0,
+    "type": "text",
+    "isAdvancedSearchField": false
+  },
+  "funding.projectNumSplit.serialNum": {
+    "name": "Funding Project Num Split Serial Num",
+    "dotfield": "funding.projectNumSplit.serialNum",
+    "property": "serialNum",
+    "count": 0,
+    "type": "text",
+    "isAdvancedSearchField": false
+  },
+  "funding.projectNumSplit.suffixCode": {
+    "name": "Funding Project Num Split Suffix Code",
+    "dotfield": "funding.projectNumSplit.suffixCode",
+    "property": "suffixCode",
+    "count": 0,
+    "type": "text",
+    "isAdvancedSearchField": false
+  },
+  "funding.projectNumSplit.supportYear": {
+    "name": "Funding Project Num Split Support Year",
+    "dotfield": "funding.projectNumSplit.supportYear",
+    "property": "supportYear",
+    "count": 0,
+    "type": "text",
+    "isAdvancedSearchField": false
+  },
   "funding.startDate": {
     "name": "Funding Start Date",
     "dotfield": "funding.startDate",
@@ -1990,6 +2138,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "award / grant URL",
+      "ComputationalTool": "award / grant URL",
       "ResourceCatalog": "award / grant URL"
     },
     "isAdvancedSearchField": false
@@ -2062,6 +2211,7 @@
     "type": "object",
     "description": {
       "Dataset": "Associated materials for the dataset, including data dictionaries and data limitation descriptions.",
+      "ComputationalTool": "An item that is part of this computational tool.",
       "ResourceCatalog": "Associated materials for the resource catalog, including data dictionaries and data limitation descriptions"
     },
     "abstract": {
@@ -2092,6 +2242,9 @@
     "property": "additionalType",
     "count": 11083,
     "type": "object",
+    "description": {
+      "ComputationalTool": "Additional type of the referenced work, such as a Sample, Run, Experiment, or BioProject"
+    },
     "isAdvancedSearchField": false
   },
   "hasPart.additionalType.name": {
@@ -2100,6 +2253,7 @@
     "property": "name",
     "count": 11083,
     "type": "keyword",
+    "schemaType": "string",
     "isAdvancedSearchField": false
   },
   "hasPart.additionalType.url": {
@@ -2108,6 +2262,7 @@
     "property": "url",
     "count": 0,
     "type": "text",
+    "schemaType": "string",
     "isAdvancedSearchField": false
   },
   "hasPart.author": {
@@ -2118,6 +2273,7 @@
     "type": "object",
     "description": {
       "Dataset": "Author(s) of the referenced work",
+      "ComputationalTool": "Author(s) of the referenced work",
       "ResourceCatalog": "Author(s) of the referenced work"
     },
     "isAdvancedSearchField": false
@@ -2139,6 +2295,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "Family name (surname) of the person",
+      "ComputationalTool": "Family name (surname) of the person",
       "ResourceCatalog": "Family name (surname) of the person"
     },
     "isAdvancedSearchField": false
@@ -2152,6 +2309,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "Given (first) name of the person",
+      "ComputationalTool": "Given (first) name of the person",
       "ResourceCatalog": "Given (first) name of the person"
     },
     "isAdvancedSearchField": false
@@ -2165,6 +2323,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "Name of the organization",
+      "ComputationalTool": "Name of the organization",
       "ResourceCatalog": "Name of the organization"
     },
     "isAdvancedSearchField": false
@@ -2178,6 +2337,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "Date the referenced work was published",
+      "ComputationalTool": "Date the referenced work was published",
       "ResourceCatalog": "Date the referenced work was published"
     },
     "isAdvancedSearchField": false
@@ -2207,6 +2367,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "An identifier associated with the work",
+      "ComputationalTool": "An identifier associated with the work",
       "ResourceCatalog": "An identifier associated with the work"
     },
     "isAdvancedSearchField": false
@@ -2220,6 +2381,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "Journal where the article appears",
+      "ComputationalTool": "Journal where the article appears",
       "ResourceCatalog": "Journal where the article appears"
     },
     "isAdvancedSearchField": false
@@ -2233,6 +2395,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "Name or title",
+      "ComputationalTool": "Name or title",
       "ResourceCatalog": "Name or title"
     },
     "isAdvancedSearchField": false
@@ -2246,10 +2409,12 @@
     "schemaType": "string",
     "description": {
       "Dataset": "A PubMed identifier (PMID) of the referenced publication",
+      "ComputationalTool": "A PubMed identifier (PMID) of the referenced publication",
       "ResourceCatalog": "A PubMed identifier (PMID) of the referenced publication"
     },
     "abstract": {
       "Dataset": "PubMed identifier",
+      "ComputationalTool": "PubMed identifier",
       "ResourceCatalog": "PubMed identifier"
     },
     "isAdvancedSearchField": false
@@ -2263,6 +2428,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "The url of the work",
+      "ComputationalTool": "The url of the work",
       "ResourceCatalog": "The url of the work"
     },
     "isAdvancedSearchField": false
@@ -2275,10 +2441,12 @@
     "type": "object",
     "description": {
       "Dataset": "The health condition(s) /infectious disease(s) which are the focus of the work (like COVID-19, coronavirus).",
+      "ComputationalTool": "The health condition(s) /infectious disease(s) which are the focus of the work (like COVID-19, coronavirus).",
       "ResourceCatalog": "The health condition(s) /infectious disease(s) which are the focus of the work (like COVID-19, coronavirus)."
     },
     "abstract": {
       "Dataset": "health condition/disease",
+      "ComputationalTool": "health condition/disease",
       "ResourceCatalog": "health condition/disease"
     },
     "isAdvancedSearchField": false
@@ -2299,6 +2467,7 @@
     "type": "object",
     "description": {
       "Dataset": "The person, organization, or catalog that curated this DefinedTerm for the metadata property",
+      "ComputationalTool": "The person, organization, or catalog that curated this DefinedTerm for the metadata property",
       "ResourceCatalog": "The person, organization, or catalog that curated this DefinedTerm for the metadata property"
     },
     "isAdvancedSearchField": false
@@ -2312,6 +2481,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "date the software, computational tool, or algorithm was run",
+      "ComputationalTool": "date the software, computational tool, or algorithm was run",
       "ResourceCatalog": "date the software, computational tool, or algorithm was run"
     },
     "isAdvancedSearchField": false
@@ -2325,6 +2495,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "name of the software, computational tool, or algorithm.",
+      "ComputationalTool": "name of the software, computational tool, or algorithm.",
       "ResourceCatalog": "name of the software, computational tool, or algorithm."
     },
     "isAdvancedSearchField": false
@@ -2338,6 +2509,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "url of the software, computational tool, or algorithm",
+      "ComputationalTool": "url of the software, computational tool, or algorithm",
       "ResourceCatalog": "url of the software, computational tool, or algorithm"
     },
     "isAdvancedSearchField": false
@@ -2367,6 +2539,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "The identifier property represents any kind of identifier for any kind of Thing, such as ISBNs, GTIN codes, UUIDs etc. Schema.org provides dedicated properties for representing many of these, either as textual strings or as URL (URI) links. See background notes for more details.",
+      "ComputationalTool": "The identifier property represents any kind of identifier for any kind of Thing, such as ISBNs, GTIN codes, UUIDs etc. Schema.org provides dedicated properties for representing many of these, either as textual strings or as URL (URI) links. See background notes for more details.",
       "ResourceCatalog": "The identifier property represents any kind of identifier for any kind of Thing, such as ISBNs, GTIN codes, UUIDs etc. Schema.org provides dedicated properties for representing many of these, either as textual strings or as URL (URI) links. See background notes for more details."
     },
     "isAdvancedSearchField": false
@@ -2380,6 +2553,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "A DefinedTermSet that contains this term.",
+      "ComputationalTool": "A DefinedTermSet that contains this term.",
       "ResourceCatalog": "A DefinedTermSet that contains this term."
     },
     "isAdvancedSearchField": false
@@ -2393,6 +2567,7 @@
     "schemaType": "boolean",
     "description": {
       "Dataset": "A boolean indicator describing whether or not this DefinedTerm was curated as the value of a property.",
+      "ComputationalTool": "A boolean indicator describing whether or not this DefinedTerm was curated as the value of a property.",
       "ResourceCatalog": "A boolean indicator describing whether or not this DefinedTerm was curated as the value of a property."
     },
     "isAdvancedSearchField": true
@@ -2406,6 +2581,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "The name of the item.",
+      "ComputationalTool": "The name of the item.",
       "ResourceCatalog": "The name of the item."
     },
     "isAdvancedSearchField": true
@@ -2419,6 +2595,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "The original name of the item, before any metadata standardization/normalization",
+      "ComputationalTool": "The original name of the item, before any metadata standardization/normalization",
       "ResourceCatalog": "The original name of the item, before any metadata standardization/normalization"
     },
     "isAdvancedSearchField": false
@@ -2432,6 +2609,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "URL of the item.",
+      "ComputationalTool": "URL of the item.",
       "ResourceCatalog": "URL of the item."
     },
     "isAdvancedSearchField": false
@@ -2444,6 +2622,7 @@
     "type": "text",
     "description": {
       "Dataset": "Dataset identifier or accession number, such as a digital object identifier (DOI), sequence read archive (SRA) or GenBank accession number, etc.",
+      "ComputationalTool": "Identifier for the computational tool.",
       "ResourceCatalog": "Resource catalog identifier or accession number, such as a digital object identifier (DOI),  etc."
     },
     "abstract": {
@@ -2460,6 +2639,7 @@
     "type": "object",
     "description": {
       "Dataset": "The language of the content of the dataset.",
+      "ComputationalTool": "The language of the computational tool (not programming language).",
       "ResourceCatalog": "The language of the content of the resource catalog."
     },
     "isAdvancedSearchField": false
@@ -2490,6 +2670,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "language of the work",
+      "ComputationalTool": "language of the work",
       "ResourceCatalog": "language of the work"
     },
     "isAdvancedSearchField": true
@@ -2502,10 +2683,12 @@
     "type": "object",
     "description": {
       "Dataset": "Data or tool catalog where the work is published; original source of the metadata.",
+      "ComputationalTool": "Data or tool catalog",
       "ResourceCatalog": "A resource catalog where the resource catalog is published."
     },
     "abstract": {
       "Dataset": "catalog containing the work",
+      "ComputationalTool": "catalog containing the work",
       "ResourceCatalog": "catalog containing the work"
     },
     "isAdvancedSearchField": false
@@ -2565,10 +2748,12 @@
     "type": "object",
     "description": {
       "Dataset": "Infectious agent(s) / pathogen(s) which are the focus of the work (like SARS-CoV-2).",
+      "ComputationalTool": "Infectious agent(s) / pathogen(s) which are the focus of the work (like SARS-CoV-2).",
       "ResourceCatalog": "Infectious agent(s) / pathogen(s) which are the focus of the work (like SARS-CoV-2)."
     },
     "abstract": {
       "Dataset": "infectious agent / pathogen",
+      "ComputationalTool": "infectious agent / pathogen",
       "ResourceCatalog": "infectious agent / pathogen"
     },
     "isAdvancedSearchField": false
@@ -2597,6 +2782,7 @@
     "type": "object",
     "description": {
       "Dataset": "The person, organization, or catalog that curated this DefinedTerm for the metadata property",
+      "ComputationalTool": "The person, organization, or catalog that curated this DefinedTerm for the metadata property",
       "ResourceCatalog": "The person, organization, or catalog that curated this DefinedTerm for the metadata property"
     },
     "isAdvancedSearchField": false
@@ -2610,6 +2796,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "date the software, computational tool, or algorithm was run",
+      "ComputationalTool": "date the software, computational tool, or algorithm was run",
       "ResourceCatalog": "date the software, computational tool, or algorithm was run"
     },
     "isAdvancedSearchField": false
@@ -2623,6 +2810,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "name of the software, computational tool, or algorithm.",
+      "ComputationalTool": "name of the software, computational tool, or algorithm.",
       "ResourceCatalog": "name of the software, computational tool, or algorithm."
     },
     "isAdvancedSearchField": true
@@ -2636,6 +2824,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "url of the software, computational tool, or algorithm",
+      "ComputationalTool": "url of the software, computational tool, or algorithm",
       "ResourceCatalog": "url of the software, computational tool, or algorithm"
     },
     "isAdvancedSearchField": false
@@ -2673,6 +2862,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "The identifier property represents any kind of identifier for any kind of Thing, such as ISBNs, GTIN codes, UUIDs etc. Schema.org provides dedicated properties for representing many of these, either as textual strings or as URL (URI) links. See background notes for more details.",
+      "ComputationalTool": "The identifier property represents any kind of identifier for any kind of Thing, such as ISBNs, GTIN codes, UUIDs etc. Schema.org provides dedicated properties for representing many of these, either as textual strings or as URL (URI) links. See background notes for more details.",
       "ResourceCatalog": "The identifier property represents any kind of identifier for any kind of Thing, such as ISBNs, GTIN codes, UUIDs etc. Schema.org provides dedicated properties for representing many of these, either as textual strings or as URL (URI) links. See background notes for more details."
     },
     "isAdvancedSearchField": false
@@ -2686,6 +2876,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "A DefinedTermSet that contains this term.",
+      "ComputationalTool": "A DefinedTermSet that contains this term.",
       "ResourceCatalog": "A DefinedTermSet that contains this term."
     },
     "isAdvancedSearchField": false
@@ -2699,6 +2890,7 @@
     "schemaType": "boolean",
     "description": {
       "Dataset": "A boolean indicator describing whether or not this DefinedTerm was curated as the value of a property.",
+      "ComputationalTool": "A boolean indicator describing whether or not this DefinedTerm was curated as the value of a property.",
       "ResourceCatalog": "A boolean indicator describing whether or not this DefinedTerm was curated as the value of a property."
     },
     "isAdvancedSearchField": true
@@ -2712,6 +2904,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "The name of the item.",
+      "ComputationalTool": "The name of the item.",
       "ResourceCatalog": "The name of the item."
     },
     "isAdvancedSearchField": true
@@ -2725,6 +2918,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "The original name of the item, before any metadata standardization/normalization",
+      "ComputationalTool": "The original name of the item, before any metadata standardization/normalization",
       "ResourceCatalog": "The original name of the item, before any metadata standardization/normalization"
     },
     "isAdvancedSearchField": false
@@ -2738,6 +2932,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "URL of the item.",
+      "ComputationalTool": "URL of the item.",
       "ResourceCatalog": "URL of the item."
     },
     "isAdvancedSearchField": false
@@ -2748,6 +2943,12 @@
     "property": "input",
     "count": 1077,
     "type": "object",
+    "description": {
+      "ComputationalTool": "software input, such as a file or parameter."
+    },
+    "abstract": {
+      "ComputationalTool": "input file/parameter"
+    },
     "isAdvancedSearchField": false
   },
   "input.@type": {
@@ -2764,6 +2965,10 @@
     "property": "description",
     "count": 131,
     "type": "text",
+    "schemaType": "string",
+    "description": {
+      "ComputationalTool": "A description of the item."
+    },
     "isAdvancedSearchField": true
   },
   "input.encodingFormat": {
@@ -2771,7 +2976,10 @@
     "dotfield": "input.encodingFormat",
     "property": "encodingFormat",
     "count": 669,
-    "type": "text",
+    "type": "object",
+    "description": {
+      "ComputationalTool": "File type of the software input our output"
+    },
     "isAdvancedSearchField": true
   },
   "input.encodingFormat.name": {
@@ -2780,6 +2988,10 @@
     "property": "name",
     "count": 0,
     "type": "keyword",
+    "schemaType": "string",
+    "description": {
+      "ComputationalTool": "The name of the item."
+    },
     "isAdvancedSearchField": false
   },
   "input.encodingFormat.url": {
@@ -2788,6 +3000,10 @@
     "property": "url",
     "count": 0,
     "type": "text",
+    "schemaType": "string",
+    "description": {
+      "ComputationalTool": "URL of the item."
+    },
     "isAdvancedSearchField": false
   },
   "input.identifier": {
@@ -2796,6 +3012,22 @@
     "property": "identifier",
     "count": 276,
     "type": "text",
+    "schemaType": "string",
+    "description": {
+      "ComputationalTool": "The identifier property represents any kind of identifier for any kind of Thing, such as ISBNs, GTIN codes, UUIDs etc. Schema.org provides dedicated properties for representing many of these, either as textual strings or as URL (URI) links. See background notes for more details."
+    },
+    "isAdvancedSearchField": false
+  },
+  "input.inDefinedTermSet": {
+    "name": "Input In Defined Term Set",
+    "dotfield": "input.inDefinedTermSet",
+    "property": "inDefinedTermSet",
+    "count": 0,
+    "type": "text",
+    "schemaType": "string",
+    "description": {
+      "ComputationalTool": "A DefinedTermSet that contains this term."
+    },
     "isAdvancedSearchField": false
   },
   "input.name": {
@@ -2804,6 +3036,10 @@
     "property": "name",
     "count": 998,
     "type": "text",
+    "schemaType": "string",
+    "description": {
+      "ComputationalTool": "The name of the item."
+    },
     "isAdvancedSearchField": true
   },
   "interactionStatistic": {
@@ -2814,10 +3050,12 @@
     "type": "object",
     "description": {
       "Dataset": "The number of interactions with the work, such as page views or tool downloads.",
+      "ComputationalTool": "The number of interactions with the work, such as page views or tool downloads.",
       "ResourceCatalog": "The number of interactions with the work, such as page views or tool downloads."
     },
     "abstract": {
       "Dataset": "views or downloads",
+      "ComputationalTool": "views or downloads",
       "ResourceCatalog": "views or downloads"
     },
     "isAdvancedSearchField": false
@@ -2857,10 +3095,12 @@
     "schemaType": "boolean",
     "description": {
       "Dataset": "A flag to signal that the work is accessible for free.",
+      "ComputationalTool": "A flag to signal that the work is accessible for free.",
       "ResourceCatalog": "A flag to signal that the work is accessible for free."
     },
     "abstract": {
       "Dataset": "accessible without charge",
+      "ComputationalTool": "accessible without charge",
       "ResourceCatalog": "accessible without charge"
     },
     "isAdvancedSearchField": true
@@ -2873,10 +3113,12 @@
     "type": "object",
     "description": {
       "Dataset": "A dataset, publication, or computational tool from which this work is derived, modified, or adapted.",
+      "ComputationalTool": "A dataset, publication, or computational tool from which this work is derived, modified, or adapted.",
       "ResourceCatalog": "A dataset, publication, or computational tool from which this work is derived, modified, or adapted."
     },
     "abstract": {
       "Dataset": "dataset, publication, or tool used to create the work",
+      "ComputationalTool": "dataset, publication, or tool used to create the work",
       "ResourceCatalog": "dataset, publication, or tool used to create the work"
     },
     "isAdvancedSearchField": false
@@ -2898,6 +3140,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "Abstract of the referenced work",
+      "ComputationalTool": "Abstract of the referenced work",
       "ResourceCatalog": "Abstract of the referenced work"
     },
     "isAdvancedSearchField": false
@@ -2908,6 +3151,9 @@
     "property": "additionalType",
     "count": 392740,
     "type": "object",
+    "description": {
+      "ComputationalTool": "Additional type of the referenced work, such as a Sample, Run, Experiment, or BioProject"
+    },
     "isAdvancedSearchField": false
   },
   "isBasedOn.additionalType.name": {
@@ -2916,6 +3162,7 @@
     "property": "name",
     "count": 392740,
     "type": "keyword",
+    "schemaType": "string",
     "isAdvancedSearchField": true
   },
   "isBasedOn.additionalType.url": {
@@ -2924,6 +3171,7 @@
     "property": "url",
     "count": 380574,
     "type": "text",
+    "schemaType": "string",
     "isAdvancedSearchField": false
   },
   "isBasedOn.author": {
@@ -2934,6 +3182,7 @@
     "type": "object",
     "description": {
       "Dataset": "Author(s) of the referenced work",
+      "ComputationalTool": "Author(s) of the referenced work",
       "ResourceCatalog": "Author(s) of the referenced work"
     },
     "isAdvancedSearchField": false
@@ -2955,6 +3204,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "Family name (surname) of the person",
+      "ComputationalTool": "Family name (surname) of the person",
       "ResourceCatalog": "Family name (surname) of the person"
     },
     "isAdvancedSearchField": false
@@ -2968,6 +3218,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "Given (first) name of the person",
+      "ComputationalTool": "Given (first) name of the person",
       "ResourceCatalog": "Given (first) name of the person"
     },
     "isAdvancedSearchField": false
@@ -2981,6 +3232,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "Name of the organization",
+      "ComputationalTool": "Name of the organization",
       "ResourceCatalog": "Name of the organization"
     },
     "isAdvancedSearchField": false
@@ -2994,6 +3246,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "The bibliographic citation for the referenced work as is provided",
+      "ComputationalTool": "The bibliographic citation for the referenced work as is provided",
       "ResourceCatalog": "The bibliographic citation for the referenced work as is provided"
     },
     "isAdvancedSearchField": false
@@ -3007,6 +3260,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "Date the referenced work was published",
+      "ComputationalTool": "Date the referenced work was published",
       "ResourceCatalog": "Date the referenced work was published"
     },
     "isAdvancedSearchField": false
@@ -3020,6 +3274,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "Description of the referenced work",
+      "ComputationalTool": "Description of the referenced work",
       "ResourceCatalog": "Description of the referenced work"
     },
     "isAdvancedSearchField": true
@@ -3033,10 +3288,12 @@
     "schemaType": "string",
     "description": {
       "Dataset": "A digital object identifier (DOI) of the referenced work",
+      "ComputationalTool": "A digital object identifier (DOI) of the referenced work",
       "ResourceCatalog": "A digital object identifier (DOI) of the referenced work"
     },
     "abstract": {
       "Dataset": "digital object identifier",
+      "ComputationalTool": "digital object identifier",
       "ResourceCatalog": "digital object identifier"
     },
     "isAdvancedSearchField": false
@@ -3058,6 +3315,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "An identifier associated with the work",
+      "ComputationalTool": "An identifier associated with the work",
       "ResourceCatalog": "An identifier associated with the work"
     },
     "isAdvancedSearchField": true
@@ -3071,6 +3329,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "Journal where the article appears",
+      "ComputationalTool": "Journal where the article appears",
       "ResourceCatalog": "Journal where the article appears"
     },
     "isAdvancedSearchField": false
@@ -3084,6 +3343,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "Name or title",
+      "ComputationalTool": "Name or title",
       "ResourceCatalog": "Name or title"
     },
     "isAdvancedSearchField": true
@@ -3097,10 +3357,12 @@
     "schemaType": "string",
     "description": {
       "Dataset": "A PubMed identifier (PMID) of the referenced publication",
+      "ComputationalTool": "A PubMed identifier (PMID) of the referenced publication",
       "ResourceCatalog": "A PubMed identifier (PMID) of the referenced publication"
     },
     "abstract": {
       "Dataset": "PubMed identifier",
+      "ComputationalTool": "PubMed identifier",
       "ResourceCatalog": "PubMed identifier"
     },
     "isAdvancedSearchField": false
@@ -3114,6 +3376,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "The url of the work",
+      "ComputationalTool": "The url of the work",
       "ResourceCatalog": "The url of the work"
     },
     "isAdvancedSearchField": false
@@ -3126,6 +3389,7 @@
     "type": "object",
     "description": {
       "Dataset": "A dataset which reuses the dataset.",
+      "ComputationalTool": "A computational tool which reuses the computational tool.",
       "ResourceCatalog": "A resource catalog which uses the resource catalog."
     },
     "isAdvancedSearchField": false
@@ -3146,6 +3410,7 @@
     "type": "object",
     "description": {
       "Dataset": "Author(s) of the referenced work",
+      "ComputationalTool": "Author(s) of the referenced work",
       "ResourceCatalog": "Author(s) of the referenced work"
     },
     "isAdvancedSearchField": false
@@ -3167,6 +3432,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "Family name (surname) of the person",
+      "ComputationalTool": "Family name (surname) of the person",
       "ResourceCatalog": "Family name (surname) of the person"
     },
     "isAdvancedSearchField": false
@@ -3180,6 +3446,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "Given (first) name of the person",
+      "ComputationalTool": "Given (first) name of the person",
       "ResourceCatalog": "Given (first) name of the person"
     },
     "isAdvancedSearchField": false
@@ -3193,6 +3460,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "Name of the organization",
+      "ComputationalTool": "Name of the organization",
       "ResourceCatalog": "Name of the organization"
     },
     "isAdvancedSearchField": false
@@ -3206,6 +3474,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "Date the referenced work was published",
+      "ComputationalTool": "Date the referenced work was published",
       "ResourceCatalog": "Date the referenced work was published"
     },
     "isAdvancedSearchField": false
@@ -3227,6 +3496,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "An identifier associated with the work",
+      "ComputationalTool": "An identifier associated with the work",
       "ResourceCatalog": "An identifier associated with the work"
     },
     "isAdvancedSearchField": false
@@ -3240,6 +3510,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "Journal where the article appears",
+      "ComputationalTool": "Journal where the article appears",
       "ResourceCatalog": "Journal where the article appears"
     },
     "isAdvancedSearchField": false
@@ -3253,6 +3524,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "Name or title",
+      "ComputationalTool": "Name or title",
       "ResourceCatalog": "Name or title"
     },
     "isAdvancedSearchField": false
@@ -3266,10 +3538,12 @@
     "schemaType": "string",
     "description": {
       "Dataset": "A PubMed identifier (PMID) of the referenced publication",
+      "ComputationalTool": "A PubMed identifier (PMID) of the referenced publication",
       "ResourceCatalog": "A PubMed identifier (PMID) of the referenced publication"
     },
     "abstract": {
       "Dataset": "PubMed identifier",
+      "ComputationalTool": "PubMed identifier",
       "ResourceCatalog": "PubMed identifier"
     },
     "isAdvancedSearchField": false
@@ -3283,6 +3557,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "The url of the work",
+      "ComputationalTool": "The url of the work",
       "ResourceCatalog": "The url of the work"
     },
     "isAdvancedSearchField": false
@@ -3295,10 +3570,12 @@
     "type": "object",
     "description": {
       "Dataset": "Indicates a broader study, project, or collection the work is part of.",
+      "ComputationalTool": "Indicates a broader study, project, or collection the work is part of.",
       "ResourceCatalog": "Indicates a broader study, project, or collection the work is part of."
     },
     "abstract": {
       "Dataset": "study or project including the work",
+      "ComputationalTool": "study or project including the work",
       "ResourceCatalog": "study or project including the work"
     },
     "isAdvancedSearchField": false
@@ -3335,6 +3612,7 @@
     "type": "object",
     "description": {
       "Dataset": "Author(s) of the referenced work",
+      "ComputationalTool": "Author(s) of the referenced work",
       "ResourceCatalog": "Author(s) of the referenced work"
     },
     "isAdvancedSearchField": false
@@ -3356,6 +3634,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "Family name (surname) of the person",
+      "ComputationalTool": "Family name (surname) of the person",
       "ResourceCatalog": "Family name (surname) of the person"
     },
     "isAdvancedSearchField": false
@@ -3369,6 +3648,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "Given (first) name of the person",
+      "ComputationalTool": "Given (first) name of the person",
       "ResourceCatalog": "Given (first) name of the person"
     },
     "isAdvancedSearchField": false
@@ -3382,6 +3662,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "Name of the organization",
+      "ComputationalTool": "Name of the organization",
       "ResourceCatalog": "Name of the organization"
     },
     "isAdvancedSearchField": false
@@ -3395,6 +3676,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "Date the referenced work was published",
+      "ComputationalTool": "Date the referenced work was published",
       "ResourceCatalog": "Date the referenced work was published"
     },
     "isAdvancedSearchField": false
@@ -3416,6 +3698,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "An identifier associated with the work",
+      "ComputationalTool": "An identifier associated with the work",
       "ResourceCatalog": "An identifier associated with the work"
     },
     "isAdvancedSearchField": false
@@ -3429,6 +3712,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "Journal where the article appears",
+      "ComputationalTool": "Journal where the article appears",
       "ResourceCatalog": "Journal where the article appears"
     },
     "isAdvancedSearchField": false
@@ -3442,6 +3726,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "Name or title",
+      "ComputationalTool": "Name or title",
       "ResourceCatalog": "Name or title"
     },
     "isAdvancedSearchField": false
@@ -3455,10 +3740,12 @@
     "schemaType": "string",
     "description": {
       "Dataset": "A PubMed identifier (PMID) of the referenced publication",
+      "ComputationalTool": "A PubMed identifier (PMID) of the referenced publication",
       "ResourceCatalog": "A PubMed identifier (PMID) of the referenced publication"
     },
     "abstract": {
       "Dataset": "PubMed identifier",
+      "ComputationalTool": "PubMed identifier",
       "ResourceCatalog": "PubMed identifier"
     },
     "isAdvancedSearchField": false
@@ -3472,6 +3759,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "The url of the work",
+      "ComputationalTool": "The url of the work",
       "ResourceCatalog": "The url of the work"
     },
     "isAdvancedSearchField": false
@@ -3484,10 +3772,12 @@
     "type": "object",
     "description": {
       "Dataset": "Datasets which are related to the given dataset; often datasets involved in the same study. These linkages are created via human curation.",
+      "ComputationalTool": "Computational tools which are related to the given computational tool. These linkages are created via human curation.",
       "ResourceCatalog": "Resources which are related to the given resource catalog. These linkages are created via human curation."
     },
     "abstract": {
       "Dataset": "related datasets (via curation)",
+      "ComputationalTool": "related records (via curation)",
       "ResourceCatalog": "related datasets (via curation)"
     },
     "isAdvancedSearchField": false
@@ -3509,6 +3799,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "The bibliographic citation for the referenced work as is provided",
+      "ComputationalTool": "The bibliographic citation for the referenced work as is provided",
       "ResourceCatalog": "The bibliographic citation for the referenced work as is provided"
     },
     "isAdvancedSearchField": false
@@ -3537,6 +3828,7 @@
     "type": "object",
     "description": {
       "Dataset": "A portion of the work",
+      "ComputationalTool": "A portion of the work",
       "ResourceCatalog": "A portion of the work"
     },
     "isAdvancedSearchField": false
@@ -3558,6 +3850,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "An identifier associated with the citation such as a digital object identifier (DOI), PubMed ID (PMID), or PubMed Central ID (PMCID)",
+      "ComputationalTool": "An identifier associated with the citation such as a digital object identifier (DOI), PubMed ID (PMID), or PubMed Central ID (PMCID)",
       "ResourceCatalog": "An identifier associated with the citation such as a digital object identifier (DOI), PubMed ID (PMID), or PubMed Central ID (PMCID)"
     },
     "isAdvancedSearchField": false
@@ -3571,6 +3864,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "An identifier associated with the work",
+      "ComputationalTool": "An identifier associated with the work",
       "ResourceCatalog": "An identifier associated with the work"
     },
     "isAdvancedSearchField": true
@@ -3583,6 +3877,7 @@
     "type": "object",
     "description": {
       "Dataset": "Data or tool catalog which houses the work",
+      "ComputationalTool": "Data or tool catalog which houses the work",
       "ResourceCatalog": "Data, resource or tool catalog which houses the work"
     },
     "isAdvancedSearchField": false
@@ -3604,6 +3899,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "Data or tool catalog name",
+      "ComputationalTool": "Data or tool catalog name",
       "ResourceCatalog": "Data, resource or tool catalog name"
     },
     "isAdvancedSearchField": false
@@ -3617,6 +3913,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "Link to data or tool catalog",
+      "ComputationalTool": "Link to data or tool catalog",
       "ResourceCatalog": "Link to data, resource or tool catalog"
     },
     "isAdvancedSearchField": false
@@ -3630,6 +3927,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "date the metadata was harvested from the catalog",
+      "ComputationalTool": "date the metadata was harvested from the catalog",
       "ResourceCatalog": "date the metadata was harvested from the catalog"
     },
     "isAdvancedSearchField": false
@@ -3643,6 +3941,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "Name or title",
+      "ComputationalTool": "Name or title",
       "ResourceCatalog": "Name or title"
     },
     "isAdvancedSearchField": true
@@ -3656,6 +3955,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "How the works are related",
+      "ComputationalTool": "How the works are related",
       "ResourceCatalog": "How the works are related"
     },
     "isAdvancedSearchField": false
@@ -3669,6 +3969,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "The url of the work",
+      "ComputationalTool": "The url of the work",
       "ResourceCatalog": "The url of the work"
     },
     "isAdvancedSearchField": false
@@ -3681,10 +3982,12 @@
     "type": "object",
     "description": {
       "Dataset": "Datasets or computational tools which are similar to the work, based on terms in the names, descriptions, authors, measurementTechniques, infectiousAgents, healthConditions, etc.",
+      "ComputationalTool": "Datasets or computational tools which are similar to the work, based on terms in the names, descriptions, authors, measurementTechniques, infectiousAgents, healthConditions, etc.",
       "ResourceCatalog": "Resource catalogs which are similar to the work, based on terms in the names, descriptions, authors, measurementTechniques, infectiousAgents, healthConditions, etc."
     },
     "abstract": {
       "Dataset": "similar datasets (auto-assigned)",
+      "ComputationalTool": "similar records (auto-assigned)",
       "ResourceCatalog": "similar datasets (auto-assigned)"
     },
     "isAdvancedSearchField": false
@@ -3706,6 +4009,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "An identifier associated with the work",
+      "ComputationalTool": "An identifier associated with the work",
       "ResourceCatalog": "An identifier associated with the work"
     },
     "isAdvancedSearchField": false
@@ -3718,6 +4022,7 @@
     "type": "object",
     "description": {
       "Dataset": "Data or tool catalog which houses the work",
+      "ComputationalTool": "Data or tool catalog which houses the work",
       "ResourceCatalog": "Data, resource or tool catalog which houses the work"
     },
     "isAdvancedSearchField": false
@@ -3739,6 +4044,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "Data or tool catalog name",
+      "ComputationalTool": "Data or tool catalog name",
       "ResourceCatalog": "Data, resource or tool catalog name"
     },
     "isAdvancedSearchField": false
@@ -3752,6 +4058,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "Link to data or tool catalog",
+      "ComputationalTool": "Link to data or tool catalog",
       "ResourceCatalog": "Link to data, resource or tool catalog"
     },
     "isAdvancedSearchField": false
@@ -3765,6 +4072,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "date the metadata was harvested from the catalog",
+      "ComputationalTool": "date the metadata was harvested from the catalog",
       "ResourceCatalog": "date the metadata was harvested from the catalog"
     },
     "isAdvancedSearchField": false
@@ -3778,6 +4086,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "Name or title",
+      "ComputationalTool": "Name or title",
       "ResourceCatalog": "Name or title"
     },
     "isAdvancedSearchField": false
@@ -3791,6 +4100,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "How the works are related",
+      "ComputationalTool": "How the works are related",
       "ResourceCatalog": "How the works are related"
     },
     "isAdvancedSearchField": false
@@ -3803,10 +4113,12 @@
     "type": "keyword",
     "description": {
       "Dataset": "Keywords or tags used to describe this work.",
+      "ComputationalTool": "Keywords or tags used to describe this work.",
       "ResourceCatalog": "Keywords or tags used to describe this work."
     },
     "abstract": {
       "Dataset": "keywords or tags",
+      "ComputationalTool": "keywords or tags",
       "ResourceCatalog": "keywords or tags"
     },
     "isAdvancedSearchField": true
@@ -3820,10 +4132,12 @@
     "schemaType": "string",
     "description": {
       "Dataset": "A license document that applies to this work, typically indicated by URL.",
+      "ComputationalTool": "A license document that applies to this work, typically indicated by URL.",
       "ResourceCatalog": "A license document that applies to this work, typically indicated by URL."
     },
     "abstract": {
       "Dataset": "license for use",
+      "ComputationalTool": "license for use",
       "ResourceCatalog": "license for use"
     },
     "isAdvancedSearchField": true
@@ -3836,10 +4150,12 @@
     "type": "text",
     "description": {
       "Dataset": "Website which describes the work and provides additional details.",
+      "ComputationalTool": "Website which describes the work and provides additional details.",
       "ResourceCatalog": "Website which describes the work and provides additional details."
     },
     "abstract": {
       "Dataset": "associated webpage",
+      "ComputationalTool": "associated webpage",
       "ResourceCatalog": "associated webpage"
     },
     "isAdvancedSearchField": false
@@ -3852,6 +4168,7 @@
     "type": "object",
     "description": {
       "Dataset": "A technique or technology used in a  dataset corresponding to the method used for measuring the corresponding variable(s) (described using variableMeasured). For example, if variableMeasured is molecule concentration, measurementTechnique could be: \"mass spectrometry\" or \"nmr spectroscopy\" or \"colorimetry\" or \"immunofluorescence\".",
+      "ComputationalTool": "A technique, method or technology used in an Observation, StatisticalVariable or Dataset (or DataDownload, DataCatalog), corresponding to the method used for measuring the corresponding variable(s) (for datasets, described using variableMeasured; for Observation, a StatisticalVariable). For example, if variableMeasured is: molecule concentration, measurementTechnique could be: \"mass spectrometry\" or \"nmr spectroscopy\" or \"colorimetry\" or \"immunofluorescence\". If the variableMeasured is \"depression rating\", the measurementTechnique could be \"Zung Scale\" or \"HAM-D\" or \"Beck Depression Inventory\".",
       "ResourceCatalog": "A technique or technology used in a  dataset corresponding to the method used for measuring the corresponding variable(s) (described using variableMeasured). For example, if variableMeasured is molecule concentration, measurementTechnique could be: \"mass spectrometry\" or \"nmr spectroscopy\" or \"colorimetry\" or \"immunofluorescence\"."
     },
     "abstract": {
@@ -3929,6 +4246,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "Dataset name.",
+      "ComputationalTool": "Computational tool name.",
       "ResourceCatalog": "Resource catalog name."
     },
     "isAdvancedSearchField": true
@@ -3948,12 +4266,29 @@
     },
     "isAdvancedSearchField": false
   },
+  "operatingSystem": {
+    "name": "Operating System",
+    "dotfield": "operatingSystem",
+    "property": "operatingSystem",
+    "count": 0,
+    "type": "keyword",
+    "description": {
+      "ComputationalTool": "Operating systems supported (Windows 7, OSX 10.6, Android 1.6)."
+    },
+    "abstract": {
+      "ComputationalTool": "operative systems supported"
+    },
+    "isAdvancedSearchField": false
+  },
   "output": {
     "name": "Output",
     "dotfield": "output",
     "property": "output",
     "count": 1039,
     "type": "object",
+    "description": {
+      "ComputationalTool": "Output of the computational tool."
+    },
     "isAdvancedSearchField": false
   },
   "output.@type": {
@@ -3969,7 +4304,10 @@
     "dotfield": "output.encodingFormat",
     "property": "encodingFormat",
     "count": 597,
-    "type": "text",
+    "type": "object",
+    "description": {
+      "ComputationalTool": "File type of the software input our output"
+    },
     "isAdvancedSearchField": true
   },
   "output.encodingFormat.name": {
@@ -3978,6 +4316,10 @@
     "property": "name",
     "count": 0,
     "type": "keyword",
+    "schemaType": "string",
+    "description": {
+      "ComputationalTool": "The name of the item."
+    },
     "isAdvancedSearchField": false
   },
   "output.encodingFormat.url": {
@@ -3986,6 +4328,10 @@
     "property": "url",
     "count": 0,
     "type": "text",
+    "schemaType": "string",
+    "description": {
+      "ComputationalTool": "URL of the item."
+    },
     "isAdvancedSearchField": false
   },
   "output.identifier": {
@@ -3994,6 +4340,22 @@
     "property": "identifier",
     "count": 247,
     "type": "text",
+    "schemaType": "string",
+    "description": {
+      "ComputationalTool": "The identifier property represents any kind of identifier for any kind of Thing, such as ISBNs, GTIN codes, UUIDs etc. Schema.org provides dedicated properties for representing many of these, either as textual strings or as URL (URI) links. See background notes for more details."
+    },
+    "isAdvancedSearchField": false
+  },
+  "output.inDefinedTermSet": {
+    "name": "Output In Defined Term Set",
+    "dotfield": "output.inDefinedTermSet",
+    "property": "inDefinedTermSet",
+    "count": 0,
+    "type": "text",
+    "schemaType": "string",
+    "description": {
+      "ComputationalTool": "A DefinedTermSet that contains this term."
+    },
     "isAdvancedSearchField": false
   },
   "output.name": {
@@ -4002,6 +4364,10 @@
     "property": "name",
     "count": 1005,
     "type": "text",
+    "schemaType": "string",
+    "description": {
+      "ComputationalTool": "The name of the item."
+    },
     "isAdvancedSearchField": true
   },
   "processorRequirements": {
@@ -4010,6 +4376,12 @@
     "property": "processorRequirements",
     "count": 483,
     "type": "text",
+    "description": {
+      "ComputationalTool": "Processor architecture required to run the application (e.g. IA64)."
+    },
+    "abstract": {
+      "ComputationalTool": "processor requirements"
+    },
     "isAdvancedSearchField": true
   },
   "programmingLanguage": {
@@ -4018,6 +4390,12 @@
     "property": "programmingLanguage",
     "count": 10111,
     "type": "keyword",
+    "description": {
+      "ComputationalTool": "The main programming language(s) used to build or execute the tool."
+    },
+    "abstract": {
+      "ComputationalTool": "programming language"
+    },
     "isAdvancedSearchField": true
   },
   "relationship": {
@@ -4041,6 +4419,7 @@
     "type": "text",
     "description": {
       "Dataset": "URL of additional sources for the work.",
+      "ComputationalTool": "URL of additional sources for the work.",
       "ResourceCatalog": "URL of additional sources for the work."
     },
     "isAdvancedSearchField": false
@@ -4053,10 +4432,12 @@
     "type": "object",
     "description": {
       "Dataset": "Original publisher of the dataset metadata (like GenBank, ImmPort, etc.).",
+      "ComputationalTool": "Original publisher of the computational tool metadata (like GitHub, Dockstore, etc.).",
       "ResourceCatalog": "Original publisher of the resource catalog metadata (like GenBank, ImmPort, etc.)."
     },
     "abstract": {
       "Dataset": "original metadata source",
+      "ComputationalTool": "original metadata source",
       "ResourceCatalog": "original metadata source"
     },
     "isAdvancedSearchField": false
@@ -4086,6 +4467,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "Data or tool catalog name",
+      "ComputationalTool": "Data or tool catalog name",
       "ResourceCatalog": "Data, resource or tool catalog name"
     },
     "isAdvancedSearchField": true
@@ -4099,6 +4481,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "Link to data or tool catalog",
+      "ComputationalTool": "Link to data or tool catalog",
       "ResourceCatalog": "Link to data, resource or tool catalog"
     },
     "isAdvancedSearchField": false
@@ -4109,6 +4492,9 @@
     "property": "softwareAddOn",
     "count": 84,
     "type": "object",
+    "description": {
+      "ComputationalTool": "Additional content for a software application."
+    },
     "isAdvancedSearchField": false
   },
   "softwareAddOn.identifier": {
@@ -4117,6 +4503,22 @@
     "property": "identifier",
     "count": 84,
     "type": "text",
+    "schemaType": "string",
+    "description": {
+      "ComputationalTool": "An identifier associated with the work"
+    },
+    "isAdvancedSearchField": false
+  },
+  "softwareAddOn.url": {
+    "name": "Software Add On URL",
+    "dotfield": "softwareAddOn.url",
+    "property": "url",
+    "count": 0,
+    "type": "text",
+    "schemaType": "string",
+    "description": {
+      "ComputationalTool": "The url of the work"
+    },
     "isAdvancedSearchField": false
   },
   "softwareHelp": {
@@ -4125,6 +4527,9 @@
     "property": "softwareHelp",
     "count": 6031,
     "type": "object",
+    "description": {
+      "ComputationalTool": "URL to access software application help."
+    },
     "isAdvancedSearchField": false
   },
   "softwareHelp.name": {
@@ -4141,6 +4546,7 @@
     "property": "url",
     "count": 6031,
     "type": "text",
+    "schemaType": "string",
     "isAdvancedSearchField": false
   },
   "softwareRequirements": {
@@ -4149,6 +4555,12 @@
     "property": "softwareRequirements",
     "count": 2781,
     "type": "text",
+    "description": {
+      "ComputationalTool": "Component dependency requirements for application. This includes runtime environments and shared libraries that are not included in the application distribution package, but required to run the application (Examples: DirectX, Java or .NET runtime)."
+    },
+    "abstract": {
+      "ComputationalTool": "requirements of tool"
+    },
     "isAdvancedSearchField": true
   },
   "softwareVersion": {
@@ -4157,6 +4569,10 @@
     "property": "softwareVersion",
     "count": 8166,
     "type": "text",
+    "schemaType": "string",
+    "description": {
+      "ComputationalTool": "Software version."
+    },
     "isAdvancedSearchField": true
   },
   "sourceInfo": {
@@ -4223,6 +4639,7 @@
     "type": "object",
     "description": {
       "Dataset": "The organization, research project, working group, or funded program on whose behalf the author/creator was working.",
+      "ComputationalTool": "The organization, research project, working group, or funded program on whose behalf the author/creator was working.",
       "ResourceCatalog": "The organization, research project, working group, or funded program on whose behalf the author/creator was working."
     },
     "isAdvancedSearchField": false
@@ -4243,6 +4660,7 @@
     "type": "keyword",
     "description": {
       "Dataset": "Alias of the name",
+      "ComputationalTool": "Alias of the name",
       "ResourceCatalog": "Alias of the name"
     },
     "isAdvancedSearchField": false
@@ -4264,6 +4682,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "Name of the organization",
+      "ComputationalTool": "Name of the organization",
       "ResourceCatalog": "Name of the organization"
     },
     "isAdvancedSearchField": true
@@ -4277,6 +4696,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "Name of the parent organization. For instance, the parentOrganization of NIAID is the National Institutes of health (NIH)",
+      "ComputationalTool": "Name of the parent organization. For instance, the parentOrganization of NIAID is the National Institutes of health (NIH)",
       "ResourceCatalog": "Name of the parent organization. For instance, the parentOrganization of NIAID is the National Institutes of health (NIH)"
     },
     "isAdvancedSearchField": false
@@ -4290,6 +4710,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "Link to the organization",
+      "ComputationalTool": "Link to the organization",
       "ResourceCatalog": "Link to the organization"
     },
     "isAdvancedSearchField": false
@@ -4384,10 +4805,12 @@
     "type": "object",
     "description": {
       "Dataset": "Species / host organism from which the dataset has been collected.",
+      "ComputationalTool": "Species / host organism from which the dataset has been collected.",
       "ResourceCatalog": "Species / host organism from which the dataset has been collected."
     },
     "abstract": {
       "Dataset": "species/host organism",
+      "ComputationalTool": "species/host organism",
       "ResourceCatalog": "species/host organism"
     },
     "isAdvancedSearchField": false
@@ -4440,6 +4863,7 @@
     "type": "object",
     "description": {
       "Dataset": "The person, organization, or catalog that curated this DefinedTerm for the metadata property",
+      "ComputationalTool": "The person, organization, or catalog that curated this DefinedTerm for the metadata property",
       "ResourceCatalog": "The person, organization, or catalog that curated this DefinedTerm for the metadata property"
     },
     "isAdvancedSearchField": false
@@ -4453,6 +4877,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "date the software, computational tool, or algorithm was run",
+      "ComputationalTool": "date the software, computational tool, or algorithm was run",
       "ResourceCatalog": "date the software, computational tool, or algorithm was run"
     },
     "isAdvancedSearchField": false
@@ -4466,6 +4891,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "name of the software, computational tool, or algorithm.",
+      "ComputationalTool": "name of the software, computational tool, or algorithm.",
       "ResourceCatalog": "name of the software, computational tool, or algorithm."
     },
     "isAdvancedSearchField": true
@@ -4479,6 +4905,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "url of the software, computational tool, or algorithm",
+      "ComputationalTool": "url of the software, computational tool, or algorithm",
       "ResourceCatalog": "url of the software, computational tool, or algorithm"
     },
     "isAdvancedSearchField": false
@@ -4516,6 +4943,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "The identifier property represents any kind of identifier for any kind of Thing, such as ISBNs, GTIN codes, UUIDs etc. Schema.org provides dedicated properties for representing many of these, either as textual strings or as URL (URI) links. See background notes for more details.",
+      "ComputationalTool": "The identifier property represents any kind of identifier for any kind of Thing, such as ISBNs, GTIN codes, UUIDs etc. Schema.org provides dedicated properties for representing many of these, either as textual strings or as URL (URI) links. See background notes for more details.",
       "ResourceCatalog": "The identifier property represents any kind of identifier for any kind of Thing, such as ISBNs, GTIN codes, UUIDs etc. Schema.org provides dedicated properties for representing many of these, either as textual strings or as URL (URI) links. See background notes for more details."
     },
     "isAdvancedSearchField": false
@@ -4529,6 +4957,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "A DefinedTermSet that contains this term.",
+      "ComputationalTool": "A DefinedTermSet that contains this term.",
       "ResourceCatalog": "A DefinedTermSet that contains this term."
     },
     "isAdvancedSearchField": false
@@ -4542,6 +4971,7 @@
     "schemaType": "boolean",
     "description": {
       "Dataset": "A boolean indicator describing whether or not this DefinedTerm was curated as the value of a property.",
+      "ComputationalTool": "A boolean indicator describing whether or not this DefinedTerm was curated as the value of a property.",
       "ResourceCatalog": "A boolean indicator describing whether or not this DefinedTerm was curated as the value of a property."
     },
     "isAdvancedSearchField": true
@@ -4555,6 +4985,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "The name of the item.",
+      "ComputationalTool": "The name of the item.",
       "ResourceCatalog": "The name of the item."
     },
     "isAdvancedSearchField": true
@@ -4568,6 +4999,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "The original name of the item, before any metadata standardization/normalization",
+      "ComputationalTool": "The original name of the item, before any metadata standardization/normalization",
       "ResourceCatalog": "The original name of the item, before any metadata standardization/normalization"
     },
     "isAdvancedSearchField": false
@@ -4581,6 +5013,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "URL of the item.",
+      "ComputationalTool": "URL of the item.",
       "ResourceCatalog": "URL of the item."
     },
     "isAdvancedSearchField": false
@@ -4649,12 +5082,24 @@
     "type": "date",
     "isAdvancedSearchField": true
   },
+  "temporalCoverage.temporalInterval.temporalType": {
+    "name": "Temporal Coverage Temporal Interval Temporal Type",
+    "dotfield": "temporalCoverage.temporalInterval.temporalType",
+    "property": "temporalType",
+    "count": 0,
+    "type": "text",
+    "isAdvancedSearchField": false
+  },
   "thumbnailUrl": {
     "name": "Thumbnail Url",
     "dotfield": "thumbnailUrl",
     "property": "thumbnailUrl",
     "count": 71,
     "type": "text",
+    "schemaType": "string",
+    "description": {
+      "ComputationalTool": "A thumbnail image of the computational tool."
+    },
     "isAdvancedSearchField": false
   },
   "topicCategory": {
@@ -4665,10 +5110,12 @@
     "type": "object",
     "description": {
       "Dataset": "Topic of the work. This topic may be assigned by a human curator or through automated algorithms.",
+      "ComputationalTool": "Topic of the work. This topic may be assigned by a human curator or through automated algorithms.",
       "ResourceCatalog": "Topic of the work. This topic may be assigned by a human curator or through automated algorithms."
     },
     "abstract": {
       "Dataset": "topic",
+      "ComputationalTool": "topic",
       "ResourceCatalog": "topic"
     },
     "isAdvancedSearchField": false
@@ -4681,6 +5128,7 @@
     "type": "object",
     "description": {
       "Dataset": "The person, organization, or catalog that curated this DefinedTerm for the metadata property",
+      "ComputationalTool": "The person, organization, or catalog that curated this DefinedTerm for the metadata property",
       "ResourceCatalog": "The person, organization, or catalog that curated this DefinedTerm for the metadata property"
     },
     "isAdvancedSearchField": false
@@ -4694,6 +5142,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "name of the software, computational tool, or algorithm.",
+      "ComputationalTool": "name of the software, computational tool, or algorithm.",
       "ResourceCatalog": "name of the software, computational tool, or algorithm."
     },
     "isAdvancedSearchField": false
@@ -4707,6 +5156,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "url of the software, computational tool, or algorithm",
+      "ComputationalTool": "url of the software, computational tool, or algorithm",
       "ResourceCatalog": "url of the software, computational tool, or algorithm"
     },
     "isAdvancedSearchField": false
@@ -4720,6 +5170,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "A description of the item.",
+      "ComputationalTool": "A description of the item.",
       "ResourceCatalog": "A description of the item."
     },
     "isAdvancedSearchField": true
@@ -4733,6 +5184,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "The identifier property represents any kind of identifier for any kind of Thing, such as ISBNs, GTIN codes, UUIDs etc. Schema.org provides dedicated properties for representing many of these, either as textual strings or as URL (URI) links. See background notes for more details.",
+      "ComputationalTool": "The identifier property represents any kind of identifier for any kind of Thing, such as ISBNs, GTIN codes, UUIDs etc. Schema.org provides dedicated properties for representing many of these, either as textual strings or as URL (URI) links. See background notes for more details.",
       "ResourceCatalog": "The identifier property represents any kind of identifier for any kind of Thing, such as ISBNs, GTIN codes, UUIDs etc. Schema.org provides dedicated properties for representing many of these, either as textual strings or as URL (URI) links. See background notes for more details."
     },
     "isAdvancedSearchField": false
@@ -4746,6 +5198,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "The name of the item.",
+      "ComputationalTool": "The name of the item.",
       "ResourceCatalog": "The name of the item."
     },
     "isAdvancedSearchField": true
@@ -4759,6 +5212,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "URL of the item.",
+      "ComputationalTool": "URL of the item.",
       "ResourceCatalog": "URL of the item."
     },
     "isAdvancedSearchField": false
@@ -4772,6 +5226,7 @@
     "schemaType": "string",
     "description": {
       "Dataset": "URL of the work.",
+      "ComputationalTool": "URL of the work.",
       "ResourceCatalog": "URL of the work."
     },
     "isAdvancedSearchField": false
@@ -4839,6 +5294,7 @@
     "type": "object",
     "description": {
       "Dataset": "Variables measured within the dataset.",
+      "ComputationalTool": "The variableMeasured property can indicate (repeated as necessary) the variables that are measured in some dataset, either described as text or as pairs of identifier and description using PropertyValue, or more explicitly as a StatisticalVariable.",
       "ResourceCatalog": "Variables measured within the dataset."
     },
     "isAdvancedSearchField": true

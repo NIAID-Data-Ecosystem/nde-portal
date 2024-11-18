@@ -22,6 +22,18 @@ export const SORT_ORDER = [
   'topicCategory',
 ];
 
+export const SORT_ORDER_COMPTOOL = [
+  'input',
+  'featureList',
+  'output',
+  'availableOnDevice',
+  'softwareRequirements',
+  'softwareHelp',
+  'funding',
+  'license',
+  'softwareVersion',
+];
+
 // Sorts an array of metadata objects based on the [SORT_ORDER] defined above. Prioritizes the enabled items over the disabled items.
 
 export const sortMetadataArray = (
@@ -152,6 +164,154 @@ export const generateMetadataContent = (
   return generatedContent;
 };
 
+// This function generates metadata content for computational tool cards based on the provided data
+export const generateMetadataContentforCompToolCard = (
+  data?: Data | null,
+  showItems = true,
+): MetadataContentProps[] => {
+  if (!data) {
+    return [];
+  }
+  const id = data.id as FormattedResource['id'];
+  // Define the structure for each metadata type
+  const createContentForProperty = (
+    id: FormattedResource['id'],
+    property: string,
+    data: Data,
+  ): MetadataContentProps | undefined => {
+    switch (property) {
+      case 'availableOnDevice':
+        return createAvailableOnDeviceContent(
+          id,
+          property,
+          data?.availableOnDevice,
+          showItems,
+        );
+      case 'featureList':
+        return createFeatureListContent(
+          id,
+          property,
+          data?.featureList,
+          showItems,
+        );
+      case 'funding':
+        return createFundingContent(id, property, data?.funding, showItems);
+      case 'input':
+        return createInputContent(id, property, data?.input, showItems);
+      case 'license':
+        return createLicenseContent(id, property, data?.license, showItems);
+      case 'output':
+        return createOutputContent(id, property, data?.output, showItems);
+      case 'softwareHelp':
+        return createSoftwareHelpContent(
+          id,
+          property,
+          data?.softwareHelp,
+          showItems,
+        );
+      case 'softwareRequirements':
+        return createSoftwareRequirementsContent(
+          id,
+          property,
+          data?.softwareRequirements,
+          showItems,
+        );
+      case 'softwareVersion':
+        return createSoftwareVersionContent(
+          id,
+          property,
+          data?.softwareVersion,
+          showItems,
+        );
+      default:
+        return undefined;
+    }
+  };
+
+  // Generate content for each property and filter out any undefined values.
+  const generatedContent = Object.keys(data)
+    .map(property => createContentForProperty(id, property, data))
+    .filter(
+      (content): content is MetadataContentProps => content !== undefined,
+    );
+
+  return generatedContent;
+};
+
+// Generates content specific to available on device.
+const createAvailableOnDeviceContent = (
+  id: FormattedResource['id'],
+  property: string,
+  availableOnDevice?: FormattedResource['availableOnDevice'],
+  showItems = true,
+) => {
+  return {
+    id: `${property}-${id}`,
+    label: 'Available on Device',
+    property,
+    isDisabled: !availableOnDevice,
+    items:
+      showItems && availableOnDevice
+        ? availableOnDevice.map((requirement, idx) => {
+            return {
+              key: uniqueId(`${property}-${id}-${idx}`),
+              name: requirement,
+              searchProps: {
+                ['aria-label']: `Search for results with "${availableOnDevice}" requirement`,
+                property,
+                value: requirement,
+              },
+            };
+          })
+        : [],
+  };
+};
+
+// Generates content specific to feature list.
+const createFeatureListContent = (
+  id: FormattedResource['id'],
+  property: string,
+  featureList?: FormattedResource['featureList'],
+  showItems = true,
+) => {
+  return {
+    id: `${property}-${id}`,
+    label: 'Feature List',
+    property,
+    isDisabled: !featureList || featureList.every(item => !item.name),
+    items:
+      showItems && featureList
+        ? featureList.map((feature, idx) => {
+            const name = Array.isArray(feature.name)
+              ? feature.name.join(', ')
+              : feature.name;
+
+            const termSet = feature?.inDefinedTermSet?.toLowerCase();
+
+            return {
+              key: uniqueId(`${property}-${id}-${idx}`),
+              name,
+              searchProps: {
+                ['aria-label']: `Search for results with feature "${name}"`,
+                property: 'feature.name',
+                value: Array.isArray(feature.name)
+                  ? feature.name.join('" OR "')
+                  : feature.name,
+              },
+              ontologyProps: {
+                ['aria-label']:
+                  termSet && termSet === 'other'
+                    ? 'See ontology information.'
+                    : `See ${feature?.inDefinedTermSet} ontology information.`,
+                value: feature?.url,
+                label: feature?.inDefinedTermSet,
+              },
+            };
+          })
+        : [],
+  };
+};
+
 // Generates content specific to funding.
 const createFundingContent = (
   id: FormattedResource['id'],
@@ -266,6 +426,51 @@ const createHealthConditionContent = (
                 value: healthCondition?.url,
                 label: healthCondition?.inDefinedTermSet,
                 inDefinedTermSet: healthCondition?.inDefinedTermSet,
+              },
+            };
+          })
+        : [],
+  };
+};
+
+// Generates content specific to input.
+const createInputContent = (
+  id: FormattedResource['id'],
+  property: string,
+  input?: FormattedResource['input'],
+  showItems = true,
+) => {
+  return {
+    id: `${property}-${id}`,
+    label: 'Input',
+    property,
+    isDisabled: !input || input.every(item => !item.name),
+    items:
+      showItems && input
+        ? input.map((input, idx) => {
+            const name = Array.isArray(input.name)
+              ? input.name.join(', ')
+              : input.name;
+
+            const termSet = input?.inDefinedTermSet?.toLowerCase();
+
+            return {
+              key: uniqueId(`${property}-${id}-${idx}`),
+              name,
+              searchProps: {
+                ['aria-label']: `Search for results with input "${name}"`,
+                property: 'input.name',
+                value: Array.isArray(input.name)
+                  ? input.name.join('" OR "')
+                  : input.name,
+              },
+              ontologyProps: {
+                ['aria-label']:
+                  termSet && termSet === 'other'
+                    ? 'See ontology information.'
+                    : `See ${input?.inDefinedTermSet} ontology information.`,
+                value: input?.url,
+                label: input?.inDefinedTermSet,
               },
             };
           })
@@ -388,6 +593,140 @@ const createInfectiousAgentContent = (
                 inDefinedTermSet: pathogen?.inDefinedTermSet,
                 label: ontologyLabel,
                 value: pathogen?.url,
+              },
+            };
+          })
+        : [],
+  };
+};
+
+// Generates content specific to output.
+const createOutputContent = (
+  id: FormattedResource['id'],
+  property: string,
+  output?: FormattedResource['output'],
+  showItems = true,
+) => {
+  return {
+    id: `${property}-${id}`,
+    label: 'Output',
+    property,
+    isDisabled: !output || output.every(item => !item.name),
+    items:
+      showItems && output
+        ? output.map((output, idx) => {
+            const name = Array.isArray(output.name)
+              ? output.name.join(', ')
+              : output.name;
+
+            const termSet = output?.inDefinedTermSet?.toLowerCase();
+
+            return {
+              key: uniqueId(`${property}-${id}-${idx}`),
+              name,
+              searchProps: {
+                ['aria-label']: `Search for results with output "${name}"`,
+                property: 'output.name',
+                value: Array.isArray(output.name)
+                  ? output.name.join('" OR "')
+                  : output.name,
+              },
+              ontologyProps: {
+                ['aria-label']:
+                  termSet && termSet === 'other'
+                    ? 'See ontology information.'
+                    : `See ${output?.inDefinedTermSet} ontology information.`,
+                value: output?.url,
+                label: output?.inDefinedTermSet,
+              },
+            };
+          })
+        : [],
+  };
+};
+
+// Generates content specific to software help.
+const createSoftwareHelpContent = (
+  id: FormattedResource['id'],
+  property: string,
+  softwareHelp?: FormattedResource['softwareHelp'],
+  showItems = true,
+) => {
+  return {
+    id: `${property}-${id}`,
+    label: 'Software Help',
+    property,
+    isDisabled: !softwareHelp,
+    items:
+      showItems && softwareHelp
+        ? softwareHelp
+            .filter(resource => resource?.url)
+            .map((resource, idx) => {
+              const name = Array.isArray(resource.name)
+                ? resource.name.filter(Boolean).join(', ') || resource.url
+                : resource.name || resource.url;
+
+              return {
+                key: uniqueId(`${property}-${id}-${idx}`),
+                name,
+                url: resource.url,
+              };
+            })
+        : [],
+  };
+};
+
+// Generates content specific to software requirements.
+const createSoftwareRequirementsContent = (
+  id: FormattedResource['id'],
+  property: string,
+  softwareRequirements?: FormattedResource['softwareRequirements'],
+  showItems = true,
+) => {
+  return {
+    id: `${property}-${id}`,
+    label: 'Software Requirements',
+    property,
+    isDisabled: !softwareRequirements,
+    items:
+      showItems && softwareRequirements
+        ? softwareRequirements.map((requirement, idx) => {
+            return {
+              key: uniqueId(`${property}-${id}-${idx}`),
+              name: requirement,
+              searchProps: {
+                ['aria-label']: `Search for results with software requirement"${requirement}"`,
+                property,
+                value: requirement,
+              },
+            };
+          })
+        : [],
+  };
+};
+
+// Generates content specific to software version.
+const createSoftwareVersionContent = (
+  id: FormattedResource['id'],
+  property: string,
+  softwareVersion?: FormattedResource['softwareVersion'],
+  showItems = true,
+) => {
+  return {
+    id: `${property}-${id}`,
+    label: 'Software Version',
+    property,
+    isDisabled: !softwareVersion,
+    items:
+      showItems && softwareVersion
+        ? softwareVersion.map((version, idx) => {
+            return {
+              key: uniqueId(`${property}-${id}-${idx}`),
+              name: version,
+              searchProps: {
+                ['aria-label']: `Search for results with software version "${version}"`,
+                property,
+                value: version,
               },
             };
           })
