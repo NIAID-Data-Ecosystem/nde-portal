@@ -236,6 +236,12 @@ export interface IsRelatedTo {
   relationship?: string;
 }
 
+export interface MeasurementTechnique extends PropertyWithPubtator {
+  curie?: string;
+  identifier?: string;
+  score?: number;
+}
+
 export interface PropertyNameWithURL {
   name?: string | string[];
   url?: string;
@@ -422,7 +428,7 @@ export interface FormattedResource {
   keywords: string[] | null;
   license: string | null;
   mainEntityOfPage: string | null;
-  measurementTechnique: PropertyNameWithURL[] | null;
+  measurementTechnique: MeasurementTechnique[] | null;
   nctid: string | null;
   operatingSystem: string[] | null;
   output: OutputProperties[] | null;

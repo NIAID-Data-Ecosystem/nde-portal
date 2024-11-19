@@ -6,6 +6,7 @@ import {
   Heading,
   HeadingProps,
   Skeleton,
+  SkeletonProps,
   Stack,
 } from '@chakra-ui/react';
 import { DataAccess } from './components/data-access';
@@ -16,15 +17,16 @@ import { AccessibleForFree, ConditionsOfAccess } from 'src/components/badges';
 import { HasDownload } from 'src/components/badges/components/HasDownload';
 import { HasAPI } from 'src/components/badges/components/HasAPI';
 
-export const External = ({
+interface ExternalProps extends Omit<WrapperProps, 'children'> {
+  data?: FormattedResource;
+}
+
+export const ExternalAccess = ({
   data,
   isLoading,
   hasDivider = true,
-}: {
-  isLoading: boolean;
-  data?: FormattedResource;
-  hasDivider: boolean;
-}) => {
+  ...props
+}: ExternalProps) => {
   return (
     <>
       {/* Source + data access info. */}
@@ -32,6 +34,7 @@ export const External = ({
         isLoading={isLoading}
         label='Data Access'
         hasDivider={hasDivider}
+        {...props}
       >
         {(data?.isAccessibleForFree === true ||
           data?.isAccessibleForFree === false ||
@@ -63,6 +66,19 @@ export const External = ({
           url={data?.url}
         />
       </Wrapper>
+    </>
+  );
+};
+
+export const UsageInfo = ({
+  data,
+  isLoading,
+}: {
+  isLoading: boolean;
+  data?: FormattedResource;
+}) => {
+  return (
+    <>
       <Box bg='secondary.50'>
         {/* License, usage agreement */}
         {(data?.usageInfo || data?.license) && (
@@ -98,20 +114,23 @@ export const External = ({
   );
 };
 
+interface WrapperProps extends SkeletonProps {
+  label?: string;
+  isLoading: boolean;
+  children: React.ReactNode;
+  headingProps?: HeadingProps;
+  hasDivider?: boolean;
+}
+
 export const Wrapper = ({
   label,
   isLoading,
   children,
   headingProps,
   hasDivider = true,
-}: {
-  label?: string;
-  isLoading: boolean;
-  children: React.ReactNode;
-  headingProps?: HeadingProps;
-  hasDivider?: boolean;
-}) => (
-  <Skeleton isLoaded={!isLoading} fontSize='xs' flex={1}>
+  ...props
+}: WrapperProps) => (
+  <Skeleton isLoaded={!isLoading} fontSize='xs' flex={1} {...props}>
     {hasDivider && <Divider borderColor='niaid.placeholder' />}
     {label && (
       <Heading
