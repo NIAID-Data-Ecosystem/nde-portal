@@ -13,6 +13,11 @@
       "isCollapsible": true
     },
     {
+      "title": "Application Categories",
+      "hash": "applicationCategory",
+      "isCollapsible": true
+    },
+    {
       "title": "Based On",
       "hash": "isBasedOn",
       "isCollapsible": true

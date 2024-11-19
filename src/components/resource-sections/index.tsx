@@ -41,6 +41,7 @@ import { CompletenessBadgeCircle } from 'src/components/metadata-completeness-ba
 import { ResourceCatalogCollection } from './components/collection-information';
 import { DownloadMetadata } from '../download-metadata';
 import { Keywords } from './components/keywords';
+import { ApplicationCategories } from './components/application-categories';
 import { Summary } from './components/summary';
 
 // Metadata displayed in each section
@@ -75,6 +76,7 @@ export const sectionMetadata: { [key: string]: (keyof FormattedResource)[] } = {
     'softwareVersion',
   ],
   keywords: ['keywords'],
+  applicationCategory: ['applicationCategory'],
   description: ['description'],
   provenance: ['includedInDataCatalog', 'url', 'sdPublisher', 'curatedBy'],
   downloads: ['distribution', 'downloadUrl'],
@@ -213,6 +215,18 @@ const Sections = ({
                 {data?.keywords && <Keywords keywords={data.keywords} />}
               </Skeleton>
             )}
+
+            {/* Show application category */}
+            {section.hash === 'applicationCategory' && (
+              <Skeleton isLoaded={!isLoading}>
+                {data?.applicationCategory && (
+                  <ApplicationCategories
+                    applicationCategory={data.applicationCategory}
+                  />
+                )}
+              </Skeleton>
+            )}
+
             {section.hash === 'softwareInformation' && (
               <SoftwareInformation
                 keys={sectionMetadata[section.hash]}
