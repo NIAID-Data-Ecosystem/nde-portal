@@ -42,6 +42,7 @@ import { ResourceCatalogCollection } from './components/collection-information';
 import { DownloadMetadata } from '../download-metadata';
 import { Keywords } from './components/keywords';
 import { ApplicationCategories } from './components/application-categories';
+import { ProgrammingLanguages } from './components/programming-languages';
 import { Summary } from './components/summary';
 
 // Metadata displayed in each section
@@ -77,6 +78,7 @@ export const sectionMetadata: { [key: string]: (keyof FormattedResource)[] } = {
   ],
   keywords: ['keywords'],
   applicationCategory: ['applicationCategory'],
+  programmingLanguage: ['programmingLanguage'],
   description: ['description'],
   provenance: ['includedInDataCatalog', 'url', 'sdPublisher', 'curatedBy'],
   downloads: ['distribution', 'downloadUrl'],
@@ -222,6 +224,17 @@ const Sections = ({
                 {data?.applicationCategory && (
                   <ApplicationCategories
                     applicationCategory={data.applicationCategory}
+                  />
+                )}
+              </Skeleton>
+            )}
+
+            {/* Show programming language */}
+            {section.hash === 'programmingLanguage' && (
+              <Skeleton isLoaded={!isLoading}>
+                {data?.programmingLanguage && (
+                  <ProgrammingLanguages
+                    programmingLanguage={data.programmingLanguage}
                   />
                 )}
               </Skeleton>

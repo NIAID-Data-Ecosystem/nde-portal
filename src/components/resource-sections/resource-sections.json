@@ -18,6 +18,11 @@
       "isCollapsible": true
     },
     {
+      "title": "Programming Languages",
+      "hash": "programmingLanguage",
+      "isCollapsible": true
+    },
+    {
       "title": "Based On",
       "hash": "isBasedOn",
       "isCollapsible": true
