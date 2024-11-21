@@ -27,8 +27,10 @@ import {
   FaMagnifyingGlass,
 } from 'react-icons/fa6';
 import {
+  fetchFromBioThingsAPI,
   fetchOntologyChildrenByTaxonID,
   fetchOntologyTreeByTaxonId,
+  fetchPortalCounts,
   getChildren,
   OntologyTreeItem,
   OntologyTreeParams,
@@ -64,36 +66,44 @@ export const OntologyBrowserTable = ({
     >
   >;
 }) => {
-  const [configureView, setConfiguredView] = useLocalStorage(
-    'ontology-browser-view',
-    {
-      isCondensed: true,
-      includeEmptyCounts: true,
-    },
-  );
-  const router = useRouter();
-  const id = router.query.id || 'NCBITaxon_1';
+  // Store the view configuration in local storage.
+  // [isCondensed]: Show only the selected node and its immediate parent/children.
+  // [includeEmptyCounts]: Include items without datasets in the view.
+  const [viewConfig, setViewConfig] = useLocalStorage('ontology-browser-view', {
+    isCondensed: true,
+    includeEmptyCounts: true,
+  });
+
+  // State to manage the ontology tree lineage
   const [lineage, setLineage] = useState<OntologyTreeItem[] | null>(null);
 
+  // Index of the node used for the condensed view
   const [showFromIndex, setShowFromIndex] = useState(0);
 
-  // Memoize the query params to avoid unnecessary recalculations on each render
+  // Extract the query ID from the router, defaulting to the root taxon ID
+  const router = useRouter();
+  const id = router.query.id || 'NCBITaxon_1';
+
+  // Memoize query parameters to avoid recalculating on each render
   const queryParams = useMemo(() => {
-    const string_id = Array.isArray(id) ? id[0] : id;
+    const parsedId = Array.isArray(id) ? id[0] : id;
+    const ontology =
+      parsedId
+        .match(/[a-zA-Z]+/g)
+        ?.join('')
+        .toLowerCase() || '';
     return {
-      q: router.query.q as string,
-      id: string_id,
-      ontology: (string_id.split('_')[0] === 'NCBITaxon'
-        ? 'ncbitaxon'
-        : 'edam') as OntologyTreeParams['ontology'],
+      q: (router.query.q || '__all__') as string,
+      id: parsedId,
+      ontology: ontology as OntologyTreeParams['ontology'],
     };
   }, [id, router.query.q]);
 
-  // Fetch tree data
+  // Fetch tree data using the ontology type and query parameters
   const {
     error,
     isLoading,
-    data: allData,
+    data: treeData,
   } = useQuery({
     queryKey: [
       'ontology-browser-tree',
@@ -101,25 +111,34 @@ export const OntologyBrowserTable = ({
       queryParams.id,
       queryParams.ontology,
     ],
-    queryFn: () => fetchOntologyTreeByTaxonId(queryParams),
+    queryFn: () => {
+      if (queryParams.ontology === 'ncbitaxon') {
+        return fetchFromBioThingsAPI(queryParams).then(data =>
+          fetchPortalCounts(data.lineage, queryParams),
+        );
+      }
+      return fetchOntologyTreeByTaxonId(queryParams).then(data =>
+        fetchPortalCounts(data.lineage, queryParams),
+      );
+    },
     refetchOnWindowFocus: false,
     enabled: router.isReady && !!queryParams.id,
   });
 
-  const selectedNode = allData?.lineage[allData.lineage.length - 1];
+  const selectedNode = treeData?.lineage[treeData.lineage.length - 1];
   const MAX_NODES = 5;
   useEffect(() => {
-    if (allData) {
-      setLineage(allData.lineage);
-      if (configureView.isCondensed) {
+    if (treeData) {
+      setLineage(treeData.lineage);
+      if (viewConfig.isCondensed) {
         setShowFromIndex(
-          allData.lineage.length > MAX_NODES ? allData.lineage.length - 3 : 0,
+          treeData.lineage.length > MAX_NODES ? treeData.lineage.length - 3 : 0,
         );
       } else {
         setShowFromIndex(0);
       }
     }
-  }, [allData, configureView.isCondensed]);
+  }, [treeData, viewConfig.isCondensed]);
 
   // Update lineage with new children
   const updateLineageWithChildren = useCallback(
@@ -209,12 +228,12 @@ export const OntologyBrowserTable = ({
                     <Switch
                       id='condensed-view'
                       colorScheme='primary'
-                      isChecked={configureView.isCondensed === true}
+                      isChecked={viewConfig.isCondensed === true}
                       onChange={() =>
-                        setConfiguredView(() => {
+                        setViewConfig(() => {
                           return {
-                            ...configureView,
-                            isCondensed: !configureView.isCondensed,
+                            ...viewConfig,
+                            isCondensed: !viewConfig.isCondensed,
                           };
                         })
                       }
@@ -236,13 +255,12 @@ export const OntologyBrowserTable = ({
                     <Switch
                       id='include-empty-counts'
                       colorScheme='primary'
-                      isChecked={configureView.includeEmptyCounts === false}
+                      isChecked={viewConfig.includeEmptyCounts === false}
                       onChange={() =>
-                        setConfiguredView(() => {
+                        setViewConfig(() => {
                           return {
-                            ...configureView,
-                            includeEmptyCounts:
-                              !configureView.includeEmptyCounts,
+                            ...viewConfig,
+                            includeEmptyCounts: !viewConfig.includeEmptyCounts,
                           };
                         })
                       }
