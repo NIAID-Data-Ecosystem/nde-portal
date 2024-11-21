@@ -732,11 +732,6 @@ const createSoftwareVersionContent = (
             return {
               key: uniqueId(`${property}-${id}-${idx}`),
               name: version,
-              searchProps: {
-                ['aria-label']: `Search for results with software version "${version}"`,
-                property,
-                value: version,
-              },
             };
           })
         : [],
