@@ -20,17 +20,20 @@ import {
 import { useQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/router';
 import {
+  FaAngleLeft,
   FaAngleRight,
   FaCheck,
   FaEllipsis,
   FaMagnifyingGlass,
 } from 'react-icons/fa6';
 import {
-  fetchOntologyChildrenByNodeId,
+  fetchOntologyChildrenByTaxonID,
   fetchOntologyTreeByTaxonId,
   getChildren,
   OntologyTreeItem,
   OntologyTreeParams,
+  PaginatedOntologyTreeResponse,
+  sortChildrenList,
 } from '../helpers';
 import { Link } from 'src/components/link';
 import { fetchSearchResults } from 'src/utils/api';
@@ -102,7 +105,6 @@ export const OntologyBrowserTable = ({
     refetchOnWindowFocus: false,
     enabled: router.isReady && !!queryParams.id,
   });
-  console.log(allData);
 
   const selectedNode = allData?.lineage[allData.lineage.length - 1];
   const MAX_NODES = 5;
@@ -134,7 +136,8 @@ export const OntologyBrowserTable = ({
 
         // Filter out children that are already in the prevLineage
         const filteredChildren = children.filter(
-          child => !prevLineage.some(prevNode => prevNode.id === child.id),
+          child =>
+            !prevLineage.some(prevNode => prevNode.taxonId === child.taxonId),
         );
 
         // If no children left after filtering, return previous lineage as it is
@@ -143,7 +146,6 @@ export const OntologyBrowserTable = ({
         // Merge filtered children into prevLineage
         const merged = [...prevLineage];
         merged.splice(index + 1, 0, ...filteredChildren);
-
         return merged;
       });
     },
@@ -264,6 +266,7 @@ export const OntologyBrowserTable = ({
             ) : (
               lineage && (
                 <Tree
+                  params={queryParams}
                   queryId={queryParams.id}
                   showFromIndex={showFromIndex}
                   data={lineage}
@@ -292,6 +295,8 @@ export const OntologyBrowserTable = ({
   );
 };
 const MARGIN = 16;
+const SIZE = 100;
+
 // TreeNode component
 const TreeNode = ({
   addToSearch,
@@ -299,6 +304,7 @@ const TreeNode = ({
   data,
   depth = 0,
   isIncludedInSearch,
+  params,
   queryId,
   updateLineage,
 }: {
@@ -313,6 +319,7 @@ const TreeNode = ({
   depth: number;
   isIncludedInSearch: (id: string) => boolean;
   node: OntologyTreeItem;
+  params: OntologyTreeParams;
   queryId: string;
   updateLineage: (nodeId: string, children: OntologyTreeItem[]) => void;
 }) => {
@@ -321,59 +328,37 @@ const TreeNode = ({
     [],
   );
   const [childrenList, setChildrenList] = useState<OntologyTreeItem[]>([]);
-
+  const [childrenMeta, setChildrenMeta] = useState<Pick<
+    PaginatedOntologyTreeResponse,
+    'hasMore' | 'numPage' | 'totalPages' | 'totalElements'
+  > | null>(null);
+  const [page, setPage] = useState(0);
   const {
     error,
     isLoading,
     data: childrenData,
     refetch: fetchChildren,
   } = useQuery({
-    queryKey: ['fetch-children', node.id],
+    queryKey: [
+      'fetch-descendants',
+      node.taxonId,
+      node.id,
+      node.ontology_name,
+      params.q,
+      page,
+    ],
     queryFn: () => {
-      if (!node.id) {
-        return null;
-      }
-      return fetchOntologyChildrenByNodeId(node.id, {
-        q: '',
+      return fetchOntologyChildrenByTaxonID({
+        q: params.q,
         id: node.taxonId,
         ontology: node.ontology_name as OntologyTreeParams['ontology'],
+        size: SIZE,
+        page,
+        parentId: node.id,
       });
     },
     refetchOnWindowFocus: false,
-    enabled: false,
-  });
-
-  // Fetch resource count for each node.
-  const router = useRouter();
-
-  const {
-    isLoading: lineageCountIsLoading,
-    data: { total: lineageCount } = { total: 0 },
-  } = useQuery({
-    queryKey: ['fetch-lineage-count', node.id],
-    queryFn: async () => {
-      if (!node.id) {
-        return {
-          total: 0,
-        };
-      }
-      const onto =
-        node.ontology_name == 'ncbitaxon' ? 'taxon' : node.ontology_name;
-      const id = node.taxonId.replace(/[^0-9]/g, '');
-      const query = `includedInDataCatalog.name:"Data Discovery Engine" AND _meta.lineage.${onto}:"${id}"`;
-
-      const lineageQuery = await fetchSearchResults({
-        q: query,
-        size: 0,
-      });
-      if (!lineageQuery) {
-        return { total: 0 };
-      }
-      return { total: lineageQuery.total };
-    },
-    select: data => data,
-    refetchOnWindowFocus: false,
-    enabled: !!node.id,
+    enabled: page > 0,
   });
 
   const toggleNode = () => {
@@ -382,8 +367,18 @@ const TreeNode = ({
   };
 
   useEffect(() => {
-    if (isToggled && childrenData?.children) {
+    if (
+      isToggled &&
+      childrenData?.children &&
+      childrenData?.children.length > 0
+    ) {
       setFetchedChildren(childrenData.children);
+      setChildrenMeta({
+        hasMore: childrenData.hasMore,
+        numPage: childrenData.numPage,
+        totalPages: childrenData.totalPages,
+        totalElements: childrenData.totalElements,
+      });
     } else {
       setFetchedChildren([]);
     }
@@ -415,7 +410,7 @@ const TreeNode = ({
   if (
     !config?.includeEmptyCounts &&
     node.counts.term === 0 &&
-    lineageCount === 0 &&
+    node.counts.lineage === 0 &&
     !childrenList.length
   ) {
     return <></>;
@@ -507,7 +502,6 @@ const TreeNode = ({
               )}
             </Tag>
           </Tooltip>
-          <Text>/</Text>
 
           <Tooltip
             label={
@@ -520,18 +514,13 @@ const TreeNode = ({
               </>
             }
           >
-            <Tag
-              borderRadius='full'
-              colorScheme={lineageCount === 0 ? 'gray' : 'primary'}
-              variant='subtle'
-              size='sm'
-            >
+            <Text fontSize='sm' mr={2} fontWeight='medium' color='text.body'>
               {isLoading ? (
                 <Spinner size='sm' color='primary.500' mx={2} />
               ) : (
-                lineageCount?.toLocaleString() || 0
+                '/ ' + node.counts.lineage?.toLocaleString() || 0
               )}
-            </Tag>
+            </Text>
           </Tooltip>
           <IconButton
             aria-label='Search database'
@@ -560,18 +549,109 @@ const TreeNode = ({
       </Flex>
       {isToggled && childrenList.length > 0 && (
         <UnorderedList ml={0}>
-          {childrenList.map(child => (
+          {(childrenMeta?.hasMore || (isLoading && page > 0)) && (
+            <ListItem
+              borderTop='0.25px solid'
+              borderColor='gray.200'
+              px={4}
+              py={2}
+              pl={`${(depth + 1) * MARGIN}px`}
+              bg='blackAlpha.100'
+            >
+              <Flex
+                px={4}
+                ml={4}
+                pl={10}
+                flexDirection='row'
+                alignItems='baseline'
+                flex={1}
+              >
+                <Text color='niaid.800' fontSize='13px'>
+                  Showing{' '}
+                  {childrenMeta ? SIZE * (childrenMeta.numPage + 1) : '-'} of{' '}
+                  {childrenMeta
+                    ? childrenMeta.totalElements.toLocaleString()
+                    : ' - '}{' '}
+                  children for{' '}
+                  <Text as='span' fontWeight='semibold'>
+                    {node.label}.
+                  </Text>
+                </Text>
+                <Button
+                  isLoading={isLoading}
+                  variant='link'
+                  size='sm'
+                  fontSize='13px'
+                  onClick={() => {
+                    setPage(page + 1);
+                  }}
+                  ml={2}
+                >
+                  Show {SIZE} more
+                </Button>
+              </Flex>
+            </ListItem>
+          )}
+          {sortChildrenList(childrenList).map(child => (
             <TreeNode
               key={child.id}
               addToSearch={addToSearch}
               isIncludedInSearch={isIncludedInSearch}
               queryId={queryId}
               node={child}
+              params={params}
               data={data}
               depth={depth + 1}
               updateLineage={updateLineage}
             />
           ))}
+
+          {(childrenMeta?.hasMore || (isLoading && page > 0)) && (
+            <ListItem
+              borderTop='0.25px solid'
+              borderColor='gray.200'
+              px={4}
+              py={2}
+              pl={`${(depth + 1) * MARGIN}px`}
+              bg='blackAlpha.100'
+            >
+              <Flex
+                px={4}
+                ml={4}
+                pl={10}
+                flexDirection='row'
+                alignItems='baseline'
+                flex={1}
+              >
+                <Text color='niaid.800' fontSize='13px'>
+                  Showing{' '}
+                  {childrenMeta
+                    ? (SIZE * (childrenMeta.numPage + 1)).toLocaleString()
+                    : '-'}{' '}
+                  of{' '}
+                  {childrenMeta
+                    ? childrenMeta.totalElements.toLocaleString()
+                    : ' - '}{' '}
+                  children for{' '}
+                  <Text as='span' fontWeight='semibold'>
+                    {node.label}.
+                  </Text>
+                </Text>
+                <Button
+                  isLoading={isLoading}
+                  variant='link'
+                  size='sm'
+                  fontSize='13px'
+                  onClick={() => {
+                    setPage(page + 1);
+                  }}
+                  ml={2}
+                >
+                  Show {SIZE} more
+                </Button>
+              </Flex>
+            </ListItem>
+          )}
         </UnorderedList>
       )}
     </ListItem>
@@ -583,6 +663,7 @@ const Tree = ({
   addToSearch,
   data,
   isIncludedInSearch,
+  params,
   queryId,
   showFromIndex,
   updateLineage,
@@ -596,6 +677,7 @@ const Tree = ({
     count?: number;
   }) => void;
   isIncludedInSearch: (id: string) => boolean;
+  params: OntologyTreeParams;
   queryId: string;
   data: OntologyTreeItem[];
   showFromIndex: number;
@@ -649,32 +731,36 @@ const Tree = ({
             </HStack>
           </ListItem>
           <ListItem>
-            <Flex
-              alignItems='center'
-              borderY='0.25px solid'
-              borderColor='gray.200'
-              px={4}
-              py={2}
-              pl={`${MARGIN}px`}
-              onClick={() => {
-                updateShowFromIndex(showFromIndex < 1 ? 0 : showFromIndex - 1);
-              }}
-              cursor='pointer'
-              _hover={{
-                bg: 'blackAlpha.100',
-              }}
-            >
-              <IconButton
-                aria-label='show previous nodes'
-                icon={<FaEllipsis />}
-                variant='ghost'
-                colorScheme='gray'
-                size='sm'
-                color='currentColor'
-                justifyContent='flex-start'
-                px={2}
-              />
-            </Flex>
+            <Tooltip label='Show parent'>
+              <Flex
+                alignItems='center'
+                borderY='0.25px solid'
+                borderColor='gray.200'
+                px={4}
+                py={2}
+                pl={`${MARGIN}px`}
+                onClick={() => {
+                  updateShowFromIndex(
+                    showFromIndex < 1 ? 0 : showFromIndex - 1,
+                  );
+                }}
+                cursor='pointer'
+                _hover={{
+                  bg: 'blackAlpha.100',
+                }}
+              >
+                <IconButton
+                  aria-label='show parent node'
+                  icon={<FaEllipsis />}
+                  variant='ghost'
+                  colorScheme='gray'
+                  size='sm'
+                  color='currentColor'
+                  justifyContent='flex-start'
+                  px={2}
+                />
+              </Flex>
+            </Tooltip>
           </ListItem>
         </>
       )}
@@ -686,6 +772,7 @@ const Tree = ({
           queryId={queryId}
           node={node}
           data={treeNodes}
+          params={params}
           depth={0}
           updateLineage={updateLineage}
         />

@@ -148,7 +148,7 @@ export const fetchOntologyTreeByTaxonId = async (
     throw new Error('No id provided');
   }
 
-  const { ontology, ...rest } = params;
+  const { ontology, q, ...rest } = params;
 
   const iri = formatIRI(params.id, params.ontology);
 
@@ -194,11 +194,14 @@ export const fetchOntologyTreeByTaxonId = async (
     lineage.map(async node => {
       if (node.ontology_name === 'ncbitaxon' || node.ontology_name === 'edam') {
         const termCountData = await fetchTermCountsForNode(node, params);
-        // const lineageCountData = await fetchLineageCountsForNode(node);
+        const lineageCountData = await fetchLineageCountsForNode(node, params);
         return {
           ...node,
           facet: termCountData.facet,
-          counts: { term: termCountData.total },
+          counts: {
+            term: termCountData.total,
+            lineage: lineageCountData.total,
+          },
         };
       }
       return node;
@@ -207,23 +210,52 @@ export const fetchOntologyTreeByTaxonId = async (
 
   // Fetch the children data.
   const node_id = lineage[lineage.length - 1].id;
-  const children = [];
 
-  // const { children } = await fetchOntologyChildrenByNodeId(
-  //   node_id,
-  //   params,
-  //   signal,
-  // );
+  const { children } = await fetchOntologyChildrenByNodeId(
+    node_id,
+    params,
+    signal,
+  );
 
   // const tree = transformArray2Tree([...lineage, ...children]);
   // [Note]: returning both array and hierarchy form until we decide which structure we want.
   return { children, lineage: lineageWithCounts };
 };
 
+export const sortChildrenList = (childrenList: OntologyTreeItem[]) => {
+  return childrenList.sort((a, b) => {
+    // First, sort by `counts.term` in descending order
+    if (a.counts.term !== b.counts.term) {
+      return b.counts.term - a.counts.term;
+    }
+
+    // Then, sort by `lineage` in descending order
+    if (a.counts.lineage !== b.counts.lineage) {
+      return b.counts.lineage - a.counts.lineage;
+    }
+
+    return 0;
+  });
+};
+
 export const fetchTermCountsForNode = async (
-  node: OntologyTreeResponse['lineage'][number],
+  node: {
+    taxonId: OntologyTreeItem['taxonId'];
+    ontology_name: OntologyTreeItem['ontology_name'];
+  },
   params: OntologyTreeParams,
 ) => {
+  // const id = node.taxonId.replace(/[^0-9]/g, '');
+  // const query = params.q ? params.q : '__all__';
+  // const lineageQuery = await fetchSearchResults({
+  //   q: query,
+  //   size: 0,
+  //   lineage: +id,
+  // });
+  // const total =
+  //   lineageQuery?.facets?.lineage?.children_of_lineage?.to_parent?.doc_count ||
+  //   0;
+  // return { total, facet: 'species.identifier' };
   const id = formatIdentifier({ id: node.taxonId });
   // Separate query handlers for ncbitaxon and edam
   if (node.ontology_name === 'ncbitaxon') {
@@ -288,6 +320,30 @@ export const fetchTermCountsForNode = async (
   };
 };
 
+export const fetchLineageCountsForNode = async (
+  node: {
+    taxonId: OntologyTreeItem['taxonId'];
+    ontology_name: OntologyTreeItem['ontology_name'];
+  },
+  params: OntologyTreeParams,
+) => {
+  const id = node.taxonId.replace(/[^0-9]/g, '');
+  const query = params.q ? params.q : '__all__';
+  const lineageQuery = await fetchSearchResults({
+    q: query,
+    size: 0,
+    lineage: +id,
+  });
+  const count =
+    lineageQuery?.facets?.lineage?.children_of_lineage?.to_parent?.doc_count ||
+    0;
+
+  if (!count) {
+    return { total: 0 };
+  }
+  return { total: count };
+};
+
 export const transformArray2Tree = (data: OntologyTreeItem[]) => {
   const tree = stratify<OntologyTreeItem>()
     .id(d => d.id)
@@ -344,8 +400,233 @@ export const fetchOntologyChildrenByNodeId = async (
 
       return { children };
     });
+  // Fetch the counts for each node in the lineage
+  const childrenWithCounts = await Promise.all(
+    children.map(async node => {
+      if (node.ontology_name === 'ncbitaxon' || node.ontology_name === 'edam') {
+        const termCountData = await fetchTermCountsForNode(node, params);
+        const lineageCountData = await fetchLineageCountsForNode(node, params);
+        return {
+          ...node,
+          facet: termCountData.facet,
+          counts: {
+            term: termCountData.total,
+            lineage: lineageCountData.total,
+          },
+        };
+      }
+      return node;
+    }),
+  );
+  return { children: sortChildrenList(childrenWithCounts) };
+};
 
-  return { children };
+export interface OntologyDescendantsParams {
+  id: string;
+  q: string;
+  ontology: 'edam' | 'ncbitaxon';
+  size: number;
+  page: number;
+  parentId: string;
+  lang?: string;
+}
+
+export interface OntologyDescendantsItemRaw {
+  iri: string;
+  has_children: boolean;
+  label: string;
+  ontology_name: string;
+  short_form: string;
+}
+
+export interface OntologyDescentdantsItem
+  extends Omit<OntologyDescendantsItemRaw, 'has_children' | 'short_form'> {
+  id: string;
+  hasChildren: boolean;
+  taxonId: string;
+  parentId: string;
+}
+
+export interface PaginatedOntologyTreeResponse {
+  children: OntologyTreeItem[];
+  hasMore: boolean;
+  numPage: number;
+  totalPages: number;
+  totalElements: number;
+}
+
+// export const fetchOntologyChildrenByTaxonID = async (
+//   params?: OntologyDescendantsParams,
+//   signal?: AbortSignal,
+// ): Promise<PaginatedOntologyTreeResponse> => {
+//   if (!params?.id) {
+//     throw new Error('No id provided');
+//   }
+//   const { id, ontology, parentId, ...rest } = params;
+//   const iri = formatIRI(id, ontology);
+
+//   // Note that: IRIs must be double URL encoded: https://www.ebi.ac.uk/ols4/help
+//   const encodedIri = encodeURIComponent(encodeURIComponent(iri));
+
+//   // Fetch the children data.
+//   const data = await axios
+//     .get(
+//       `${OLS_API_URL}/ontologies/${ontology}/terms/${encodedIri}/children?`,
+//       {
+//         params: {
+//           ...rest,
+//           lang: params.lang || 'en',
+//         },
+//         signal,
+//       },
+//     )
+//     .then(response => {
+//       const data = response.data;
+//       const hasMore = data.page.number < data.page.totalPages - 1;
+//       const children = data['_embedded']['terms'].map(
+//         (item: OntologyDescendantsItemRaw) => {
+//           const { iri, has_children, label, ontology_name, short_form } = item;
+
+//           const taxonId = iri.split('/').pop() || '';
+
+//           return {
+//             hasChildren: has_children,
+//             id: short_form,
+//             iri,
+//             label,
+//             ontology_name,
+//             taxonId,
+//             facet: ['species.identifier'],
+//             parent: params.parentId,
+//             state: {
+//               opened: false,
+//               selected: false,
+//             },
+//           };
+//         },
+//       );
+//       return {
+//         hasMore,
+//         numPage: data.page.number,
+//         totalPages: data.page.totalPages,
+//         totalElements: data.page.totalElements,
+//         children,
+//       };
+//     });
+
+//   const childrenWithCounts = await Promise.all(
+//     data.children.map(async node => {
+//       if (node.ontology_name === 'ncbitaxon' || node.ontology_name === 'edam') {
+//         const termCountData = await fetchTermCountsForNode(node, params);
+//         const lineageCountData = await fetchLineageCountsForNode(node, params);
+//         return {
+//           ...node,
+//           facet: 'species.identifier',
+//           counts: {
+//             term: termCountData.total,
+//             lineage: lineageCountData.total,
+//           },
+//         };
+//       }
+//       return node;
+//     }),
+//   );
+//   return { ...data, children: sortChildrenList(childrenWithCounts) };
+// };
+
+export const fetchOntologyChildrenByTaxonID = async (
+  params?: OntologyDescendantsParams,
+  signal?: AbortSignal,
+): Promise<PaginatedOntologyTreeResponse> => {
+  if (!params?.id) {
+    throw new Error('No id provided');
+  }
+
+  const { id, ontology, parentId, ...rest } = params;
+  const iri = formatIRI(id, ontology);
+
+  // Note that: IRIs must be double URL encoded: https://www.ebi.ac.uk/ols4/help
+  const encodedIri = encodeURIComponent(encodeURIComponent(iri));
+  // Fetch the children data.
+  const data = await axios
+    .get(
+      `${OLS_API_URL}/ontologies/${ontology}/terms/${encodedIri}/children?`,
+      {
+        params: {
+          ...rest,
+          lang: params.lang || 'en',
+        },
+        signal,
+      },
+    )
+    .then(response => {
+      const data = response.data;
+      const hasMore = data.page.number < data.page.totalPages - 1;
+      const children = data['_embedded']['terms'].map(
+        (item: OntologyDescendantsItemRaw) => {
+          const { iri, has_children, label, ontology_name, short_form } = item;
+
+          const taxonId = iri.split('/').pop() || '';
+
+          return {
+            hasChildren: has_children,
+            id: short_form,
+            iri,
+            label,
+            ontology_name,
+            taxonId,
+            facet: ['species.identifier'],
+            parent: params.parentId,
+            state: {
+              opened: false,
+              selected: false,
+            },
+          };
+        },
+      );
+      return {
+        hasMore,
+        numPage: data.page.number,
+        totalPages: data.page.totalPages,
+        totalElements: data.page.totalElements,
+        children,
+      };
+    });
+
+  const taxon_id = params.id.replace(/[^0-9]/g, '');
+  const query = params.q ? params.q : '__all__';
+  const lineageQuery = await fetchSearchResults({
+    q: query,
+    size: 0,
+    lineage: +taxon_id,
+  });
+  const termCountsFromNDE =
+    lineageQuery?.facets?.lineage?.children_of_lineage?.taxon_ids?.terms;
+  console.log('termCountsFromNDE', data);
+  const childrenWithCounts = await Promise.all(
+    data.children.map(async node => {
+      if (node.ontology_name === 'ncbitaxon' || node.ontology_name === 'edam') {
+        const id = node.taxonId.replace(/[^0-9]/g, '');
+        const lineageCount = termCountsFromNDE.find(
+          ({ term }) => term === +id,
+        )?.count;
+        const termCountData = await fetchTermCountsForNode(node, params);
+        // const lineageCountData = await fetchLineageCountsForNode(node, params);
+        return {
+          ...node,
+          facet: 'species.identifier',
+          counts: {
+            term: termCountData.total,
+            lineage: lineageCount || 0,
+          },
+        };
+      }
+      return node;
+    }),
+  );
+
+  console.log('children', childrenWithCounts);
+  return { ...data, children: sortChildrenList(childrenWithCounts) };
 };
 
 // Helper function to get children of a node

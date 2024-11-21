@@ -90,7 +90,6 @@ export const SearchResultsVisualizations = ({
     queryResults[selectedFacetID]?.data) as OLSOntologyResponse[];
 
   const tree = data && transformAncestorsArraysToTree(data);
-  console.log(tree);
 
   return (
     <>
