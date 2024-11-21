@@ -2,6 +2,14 @@ import axios from 'axios';
 import { stratify } from '@visx/hierarchy';
 import { fetchSearchResults } from 'src/utils/api';
 import { HierarchyNode } from '@visx/hierarchy/lib/types';
+import {
+  BioThingsDetailedLineageAPIResponseItem,
+  BioThingsLineageAPIResponseItem,
+  OLSAPIResponseItem,
+  OntologyLineageItem,
+  OntologyLineageItemWithCounts,
+  OntologyLineageRequestParams,
+} from './types';
 
 export type OntologyOption = {
   name: string;
@@ -103,63 +111,30 @@ export const searchOntologyAPI = async (
  *
  *******************************************************/
 
-export interface OntologyTreeParams {
-  id: string;
-  q: string;
-  ontology: 'edam' | 'ncbitaxon';
-  lang?: string;
-  siblings?: boolean;
-  viewMode?: string;
-}
-
-interface OntologyTreeItemRaw {
-  children: boolean;
-  id: string;
-  parent: string;
-  iri: string;
-  state: {
-    opened: boolean;
-    selected: boolean;
-  };
-  text: string;
-  ontology_name: string;
-}
-
-export interface OntologyTreeItem
-  extends Omit<OntologyTreeItemRaw, 'children'> {
-  label: string;
-  taxonId: string;
-}
-export interface OntologyTreeItemWithCounts extends OntologyTreeItem {
-  counts: {
-    term: number;
-    lineage: number;
-  };
-  hasChildren: boolean;
-}
-export interface OntologyTreeResponse {
-  children: OntologyTreeItem[];
-  lineage: OntologyTreeItem[];
-  tree: HierarchyNode<OntologyTreeItem>;
-}
-
 /**
  * [fetchFromBioThingsAPI]: Fetch lineage information for a given taxon ID from the Biothings API
  * and return structured ontology lineage items.
  *
+ * NOTE: We use the BioThings API to fetch lineage information for the NCBI Taxonomy ontology.
+ * It follows the NCBI Taxonomy more closely than the OLS API. (ex: TAXON ID 3366610 is not available in OLS)
+ *
  * @param params - The search parameters used to fetch the lineage.
  * @returns An array of lineage items.
  */
+
 export const fetchFromBioThingsAPI = async (
-  params: OntologyTreeParams,
-): Promise<{ lineage: OntologyTreeItem[] }> => {
+  params: OntologyLineageRequestParams,
+): Promise<{ lineage: OntologyLineageItem[] }> => {
+  if (!params?.id) {
+    throw new Error('No id provided');
+  }
   try {
     // Extract the numerical taxon ID from the params id.
     const numericTaxonId = params.id.replace(/[^0-9]/g, '');
 
     // Fetch lineage data from the BioThings API
-    const lineageAPIResponse = await axios.get(
-      `https://t.biothings.io/v1/taxon/${numericTaxonId}`,
+    const lineageAPIResponse: BioThingsLineageAPIResponseItem = await axios.get(
+      `${BIOTHINGS_API_URL}/taxon/${numericTaxonId}`,
     );
     const rawLineageData = lineageAPIResponse.data.lineage;
 
@@ -167,10 +142,8 @@ export const fetchFromBioThingsAPI = async (
       throw new Error('lineage data is not available or invalid');
     }
 
-    // Stringify the lineage array
-    const lineageString = rawLineageData.join(',');
-    const postData = {
-      ids: lineageString,
+    const detailedLineageParams = {
+      ids: rawLineageData.join(','), // Stringify the lineage array
       fields: [
         'common_name',
         'genbank_common_name',
@@ -182,9 +155,11 @@ export const fetchFromBioThingsAPI = async (
     };
 
     // Fetch the detailed lineage information for each taxonId
-    const { data: detailedLineageData } = await axios.post(
-      'https://t.biothings.io/v1/taxon',
-      postData,
+    const {
+      data: detailedLineageData,
+    }: { data: BioThingsDetailedLineageAPIResponseItem[] } = await axios.post(
+      `${BIOTHINGS_API_URL}/taxon`,
+      detailedLineageParams,
       {
         headers: {
           accept: 'application/json',
@@ -194,26 +169,23 @@ export const fetchFromBioThingsAPI = async (
     );
 
     const processedLineage = detailedLineageData
-      .map((item: any, idx: number) => {
+      .map((item: BioThingsDetailedLineageAPIResponseItem, idx: number) => {
         // Must set the parent to empty string if it is the root node.
         const isRootNode = item.parent_taxid === item.taxid;
+        const taxonId = item.taxid.toString();
         return {
           id: item.taxid,
-          parent: isRootNode ? '' : item.parent_taxid,
-          taxonId: item.taxid,
-          text: item.scientific_name,
-          label: item.scientific_name,
-          ontology_name: params.ontology,
-          iri: `http://purl.obolibrary.org/obo/NCBITaxon_${item.taxid}`,
+          commonName: item?.genbank_common_name || item?.common_name || '',
+          iri: formatIRI(taxonId, params.ontology),
+          label: item.scientific_name.toLowerCase(),
+          ontologyName: params.ontology,
+          parentId: isRootNode ? null : item.parent_taxid,
+          rank: item.rank,
           state: {
             opened: true,
             selected: idx == 0, // select the first node (most specific) by default
           },
-          counts: {
-            term: 0,
-            lineage: 0,
-          },
-          hasChildren: true,
+          taxonId: taxonId,
         };
       })
       .reverse(); // reverse the array to start from the root node.
@@ -221,6 +193,94 @@ export const fetchFromBioThingsAPI = async (
     return { lineage: processedLineage };
   } catch (error: any) {
     console.error('Error in fetching BioThings data:', error.message);
+    throw error;
+  }
+};
+
+/**
+ * [fetchFromOLSAPI]: Fetch lineage information for a given ontology ID from the OLS API [docs](https://www.ebi.ac.uk/ols4/help)
+ * and return structured ontology lineage items.
+ *
+ * NOTE: The OLS API does not provide lineage information for all taxon IDs. In such cases, we use the BioThings API.
+ *
+ * @param params - The search parameters used to fetch the lineage.
+ * @returns An array of lineage items.
+ */
+
+export const fetchFromOLSAPI = async (
+  params: OntologyLineageRequestParams,
+  signal?: AbortSignal,
+): Promise<{ lineage: OntologyLineageItem[] }> => {
+  if (!params?.id) {
+    throw new Error('No ID provided for the OLS API request.');
+  }
+
+  try {
+    // Note: IRIs must be double URL encoded according to OLS documentation.
+    const iri = formatIRI(params.id, params.ontology);
+    const encodedIri = encodeURIComponent(encodeURIComponent(iri));
+
+    // Fetch the term data from the main endpoint
+    const { data: termData }: { data: OLSAPIResponseItem } = await axios.get(
+      `${OLS_API_URL}/ontologies/${params.ontology}/terms/${encodedIri}`,
+      {
+        params: {
+          lang: params.lang || 'en', // Default to English
+        },
+        signal: signal,
+      },
+    );
+
+    // Fetch the ancestors data from the second endpoint
+    const ancestorsData: OLSAPIResponseItem[] = await axios
+      .get(
+        `${OLS_API_URL}/ontologies/${params.ontology}/terms/${encodedIri}/ancestors`,
+        {
+          params: {
+            lang: params.lang || 'en', // Default to English
+            size: params?.size || 100, // Default size to 100 if not provided
+          },
+          signal: signal,
+        },
+      )
+      .then(response => {
+        return response?.data?._embedded?.terms || [];
+      });
+
+    // Combine term data with ancestors into a lineage list
+    const lineageItems = [
+      termData, // Prepend the term response
+      ...ancestorsData, // Spread the terms from the ancestors response
+    ];
+
+    // Structure the lineage data.
+    const processedLineage = lineageItems
+      .map((item: OLSAPIResponseItem, idx: number) => {
+        const numericTaxonId = item.short_form.replace(/[^0-9]/g, '');
+        const parentId =
+          idx === lineageItems.length - 1
+            ? null // Last term(root) has no parent
+            : +lineageItems[idx + 1].short_form.replace(/[^0-9]/g, '');
+
+        return {
+          id: +numericTaxonId,
+          commonName: item?.synonyms?.[0] || '',
+          iri: item.iri,
+          label: item.label.toLowerCase(),
+          ontologyName: item.ontology_name,
+          parentId,
+          state: {
+            opened: true,
+            selected: idx == 0, // Mark the first item as selected
+          },
+          taxonId: item.short_form,
+        };
+      })
+      .reverse();
+
+    return { lineage: processedLineage };
+  } catch (error: any) {
+    console.error('Error in fetching from the OLS:', error.message);
     throw error;
   }
 };
@@ -237,9 +297,9 @@ export const fetchFromBioThingsAPI = async (
  */
 
 export const fetchPortalCounts = async (
-  lineage: OntologyTreeItem[],
-  params: OntologyTreeParams,
-): Promise<{ lineage: OntologyTreeItem[] }> => {
+  lineage: OntologyLineageItem[],
+  params: OntologyLineageRequestParams,
+): Promise<{ lineage: OntologyLineageItemWithCounts[] }> => {
   // fetch counts from NDE API
 
   const lineageWithCounts = await Promise.all(
@@ -282,100 +342,7 @@ export const fetchPortalCounts = async (
   return { lineage: lineageWithCounts };
 };
 
-const formatIRI = (
-  id: OntologyTreeParams['id'],
-  ontology: OntologyTreeParams['ontology'],
-) => {
-  if (ontology.toLowerCase() === 'edam') {
-    const iri_id = id.includes('EDAM') ? id.replace('EDAM_', 'topic_') : id;
-    return `http://edamontology.org/${iri_id}`;
-  }
-  return `http://purl.obolibrary.org/obo/${id}`;
-};
-
-export const fetchOntologyTreeByTaxonId = async (
-  params: OntologyTreeParams,
-  signal?: AbortSignal,
-): Promise<OntologyTreeResponse> => {
-  if (!params?.id) {
-    throw new Error('No id provided');
-  }
-
-  const { ontology, q, ...rest } = params;
-
-  const iri = formatIRI(params.id, params.ontology);
-
-  // Note that: IRIs must be double URL encoded: https://www.ebi.ac.uk/ols4/help
-  const encodedIri = encodeURIComponent(encodeURIComponent(iri));
-
-  // Fetch the tree data
-  const { lineage } = await axios
-    .get(`${OLS_API_URL}/ontologies/${ontology}/terms/${encodedIri}/jstree?`, {
-      params: {
-        lang: 'en',
-        siblings: false,
-        viewMode: 'PreferredRoots',
-        ...rest,
-      },
-      signal,
-    })
-    .then(response => {
-      const data: OntologyTreeItemRaw[] = response.data;
-      const lineage = data.map(item => {
-        const { id, iri, ontology_name, state, text } = item;
-        // set the parent to empty string if it is the root node.
-        const parent = item.parent === '#' ? '' : item.parent;
-        const taxonId = iri.split('/').pop() || '';
-        return {
-          hasChildren: item.children,
-          id,
-          iri,
-          label: item.text,
-          ontology_name,
-          parent,
-          state,
-          text,
-          taxonId,
-        };
-      });
-
-      return { lineage };
-    });
-
-  // Fetch the counts for each node in the lineage
-  const lineageWithCounts = await Promise.all(
-    lineage.map(async node => {
-      if (node.ontology_name === 'ncbitaxon' || node.ontology_name === 'edam') {
-        const termCountData = await fetchTermCountsForNode(node, params);
-        const lineageCountData = await fetchLineageCountsForNode(node, params);
-        return {
-          ...node,
-          facet: termCountData.facet,
-          counts: {
-            term: termCountData.total,
-            lineage: lineageCountData.total,
-          },
-        };
-      }
-      return node;
-    }),
-  );
-
-  // Fetch the children data.
-  const node_id = lineage[lineage.length - 1].id;
-
-  const { children } = await fetchOntologyChildrenByNodeId(
-    node_id,
-    params,
-    signal,
-  );
-
-  // const tree = transformArray2Tree([...lineage, ...children]);
-  // [Note]: returning both array and hierarchy form until we decide which structure we want.
-  return { children, lineage: lineageWithCounts };
-};
-
-export const sortChildrenList = (childrenList: OntologyTreeItem[]) => {
+export const sortChildrenList = (childrenList: OntologyLineageItem[]) => {
   return childrenList.sort((a, b) => {
     // First, sort by `counts.term` in descending order
     if (a.counts.term !== b.counts.term) {
@@ -393,10 +360,10 @@ export const sortChildrenList = (childrenList: OntologyTreeItem[]) => {
 
 export const fetchTermCountsForNode = async (
   node: {
-    taxonId: OntologyTreeItem['taxonId'];
-    ontology_name: OntologyTreeItem['ontology_name'];
+    taxonId: OntologyLineageItem['taxonId'];
+    ontology_name: OntologyLineageItem['ontology_name'];
   },
-  params: OntologyTreeParams,
+  params: OntologyLineageRequestParams,
 ) => {
   console.log(node);
   const id = node.taxonId.toString().replace(/[^0-9]/g, '');
@@ -476,10 +443,10 @@ export const fetchTermCountsForNode = async (
 
 export const fetchLineageCountsForNode = async (
   node: {
-    taxonId: OntologyTreeItem['taxonId'];
-    ontology_name: OntologyTreeItem['ontology_name'];
+    taxonId: OntologyLineageItem['taxonId'];
+    ontology_name: OntologyLineageItem['ontology_name'];
   },
-  params: OntologyTreeParams,
+  params: OntologyLineageRequestParams,
 ) => {
   const id = node.taxonId.replace(/[^0-9]/g, '');
   const query = params.q ? params.q : '__all__';
@@ -498,8 +465,8 @@ export const fetchLineageCountsForNode = async (
   return { total: count };
 };
 
-export const transformArray2Tree = (data: OntologyTreeItem[]) => {
-  const tree = stratify<OntologyTreeItem>()
+export const transformArray2Tree = (data: OntologyLineageItem[]) => {
+  const tree = stratify<OntologyLineageItem>()
     .id(d => d.id)
     .parentId(d => d.parent)(data);
 
@@ -508,7 +475,7 @@ export const transformArray2Tree = (data: OntologyTreeItem[]) => {
 
 export const fetchOntologyChildrenByNodeId = async (
   nodeId?: string,
-  params?: OntologyTreeParams,
+  params?: OntologyLineageRequestParams,
   signal?: AbortSignal,
 ): Promise<{ children: OntologyTreeResponse['children'] }> => {
   if (!nodeId || !params?.id) {
@@ -602,91 +569,25 @@ export interface OntologyDescentdantsItem
 }
 
 export interface PaginatedOntologyTreeResponse {
-  children: OntologyTreeItem[];
+  children: OntologyLineageItem[];
   hasMore: boolean;
   numPage: number;
   totalPages: number;
   totalElements: number;
 }
 
-// export const fetchOntologyChildrenByTaxonID = async (
-//   params?: OntologyDescendantsParams,
-//   signal?: AbortSignal,
-// ): Promise<PaginatedOntologyTreeResponse> => {
-//   if (!params?.id) {
-//     throw new Error('No id provided');
-//   }
-//   const { id, ontology, parentId, ...rest } = params;
-//   const iri = formatIRI(id, ontology);
-
-//   // Note that: IRIs must be double URL encoded: https://www.ebi.ac.uk/ols4/help
-//   const encodedIri = encodeURIComponent(encodeURIComponent(iri));
-
-//   // Fetch the children data.
-//   const data = await axios
-//     .get(
-//       `${OLS_API_URL}/ontologies/${ontology}/terms/${encodedIri}/children?`,
-//       {
-//         params: {
-//           ...rest,
-//           lang: params.lang || 'en',
-//         },
-//         signal,
-//       },
-//     )
-//     .then(response => {
-//       const data = response.data;
-//       const hasMore = data.page.number < data.page.totalPages - 1;
-//       const children = data['_embedded']['terms'].map(
-//         (item: OntologyDescendantsItemRaw) => {
-//           const { iri, has_children, label, ontology_name, short_form } = item;
-
-//           const taxonId = iri.split('/').pop() || '';
-
-//           return {
-//             hasChildren: has_children,
-//             id: short_form,
-//             iri,
-//             label,
-//             ontology_name,
-//             taxonId,
-//             facet: ['species.identifier'],
-//             parent: params.parentId,
-//             state: {
-//               opened: false,
-//               selected: false,
-//             },
-//           };
-//         },
-//       );
-//       return {
-//         hasMore,
-//         numPage: data.page.number,
-//         totalPages: data.page.totalPages,
-//         totalElements: data.page.totalElements,
-//         children,
-//       };
-//     });
-
-//   const childrenWithCounts = await Promise.all(
-//     data.children.map(async node => {
-//       if (node.ontology_name === 'ncbitaxon' || node.ontology_name === 'edam') {
-//         const termCountData = await fetchTermCountsForNode(node, params);
-//         const lineageCountData = await fetchLineageCountsForNode(node, params);
-//         return {
-//           ...node,
-//           facet: 'species.identifier',
-//           counts: {
-//             term: termCountData.total,
-//             lineage: lineageCountData.total,
-//           },
-//         };
-//       }
-//       return node;
-//     }),
-//   );
-//   return { ...data, children: sortChildrenList(childrenWithCounts) };
-// };
+const formatIRI = (
+  id: OntologyLineageRequestParams['id'],
+  ontology: OntologyLineageRequestParams['ontology'],
+) => {
+  if (ontology.toLowerCase() === 'edam') {
+    const iri_id = id.includes('EDAM') ? id.replace('EDAM_', 'topic_') : id;
+    return `http://edamontology.org/${iri_id}`;
+  } else if (ontology.toLowerCase() === 'ncbitaxon') {
+    return `http://purl.obolibrary.org/obo/NCBITaxon_${id}`;
+  }
+  return `http://purl.obolibrary.org/obo/${id}`;
+};
 
 export const fetchOntologyChildrenByTaxonID = async (
   params?: OntologyDescendantsParams,
@@ -785,10 +686,10 @@ export const fetchOntologyChildrenByTaxonID = async (
 
 // Helper function to get children of a node
 export const getChildren = (
-  parentId: OntologyTreeItem['id'],
-  data: OntologyTreeItem[],
+  parentId: OntologyLineageItemWithCounts['id'],
+  data: OntologyLineageItemWithCounts[],
 ) => {
-  return data.filter(item => item.parent === parentId);
+  return data.filter(item => item.parentId === parentId);
 };
 
 export const formatIdentifier = (node: { id: string }) => {
