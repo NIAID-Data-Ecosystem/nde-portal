@@ -16,8 +16,9 @@ import { FaWandMagicSparkles } from 'react-icons/fa6';
 
 import { Link } from 'src/components/link';
 import {
-  ResourceDates,
   ResourceHeader,
+  ResourceDates,
+  ResourceDatesAndOperatingSystems,
   ResourceOverview,
   ResourceProvenance,
   Section,
@@ -98,6 +99,7 @@ const Sections = ({
   data?: FormattedResource;
   sections: Route[];
 }) => {
+  const type = data?.['@type'];
   return (
     <>
       <ResourceHeader
@@ -107,10 +109,14 @@ const Sections = ({
         doi={data?.doi}
         nctid={data?.nctid}
       />
-      {/* Banner showing data type and publish date. */}
+      {/* Banner showing data type and publish date. For computational tools, operating system info is displayed when available. */}
       {data?.author && <ResourceAuthors authors={data.author} />}
+      {type === 'ComputationalTool' ? (
+        <ResourceDatesAndOperatingSystems data={data} />
+      ) : (
+        <ResourceDates data={data} />
+      )}
 
-      <ResourceDates data={data} />
       {/*<--- AI Generated short description -->*/}
       {data?.disambiguatingDescription && (
         <Flex mx={6} my={2}>

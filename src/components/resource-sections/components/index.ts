@@ -6,6 +6,7 @@ import RelatedDatasets from './related-datasets';
 import ResourceHeader from './header';
 import ResourceAuthors from './authors';
 import ResourceDates from './dates';
+import ResourceDatesAndOperatingSystems from './dates-and-operating-systems';
 import ResourceOverview from './overview';
 import ResourceFilesTable from './files-table';
 import ResourceProvenance from './provenance';
@@ -17,6 +18,7 @@ export {
   ResourceCitations,
   RelatedDatasets,
   ResourceDates,
+  ResourceDatesAndOperatingSystems,
   ResourceOverview,
   ResourceFilesTable,
   ResourceHeader,
