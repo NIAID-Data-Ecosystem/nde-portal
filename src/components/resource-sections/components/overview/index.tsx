@@ -53,7 +53,6 @@ const Overview: React.FC<OverviewProps> = ({
           id,
           availableOnDevice: data?.availableOnDevice,
           featureList: data?.featureList,
-          funding: data?.funding,
           input: data?.input,
           license: data?.license,
           output: data?.output,
