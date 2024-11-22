@@ -15,7 +15,7 @@ import {
   FaX,
 } from 'react-icons/fa6';
 import Tooltip from 'src/components/tooltip';
-import { formatIdentifier } from '../helpers';
+import { formatIdentifier } from '../utils/api-helpers';
 import { useRouter } from 'next/router';
 import { ScrollContainer } from 'src/components/scroll-container';
 

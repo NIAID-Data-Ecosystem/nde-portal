@@ -36,30 +36,36 @@ export interface OLSAPIResponseItem {
 }
 
 export interface OntologyLineageRequestParams {
-  id: string;
-  q: string;
-  ontology: 'edam' | 'ncbitaxon';
+  id: number;
+  ontology: string;
   lang?: string;
   size?: number;
 }
 
 export interface OntologyLineageItem {
-  id: number;
+  id: string;
   commonName: string;
+  hasChildren: boolean;
   iri: string;
   label: string;
   ontologyName: string;
-  parentId: number | null;
+  parentTaxonId: number | null;
   state: {
     opened: boolean;
     selected: boolean;
   };
-  taxonId: string | number;
+  taxonId: number;
 }
 export interface OntologyLineageItemWithCounts extends OntologyLineageItem {
   counts: {
     term: number;
     lineage: number;
   };
-  hasChildren: boolean;
+}
+
+export interface OntologyPagination {
+  hasMore: boolean;
+  numPage: number;
+  totalPages: number;
+  totalElements: number;
 }

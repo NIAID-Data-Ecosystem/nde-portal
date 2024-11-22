@@ -20,7 +20,7 @@ import {
   OntologyOption,
   searchOntologyAPI,
   SearchParams,
-} from '../helpers';
+} from '../utils/api-helpers';
 import {
   DropdownInput,
   InputWithDropdown,

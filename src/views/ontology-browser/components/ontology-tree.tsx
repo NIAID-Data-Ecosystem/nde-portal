@@ -4,7 +4,6 @@ import {
   Button,
   Flex,
   HStack,
-  Icon,
   IconButton,
   ListItem,
   Spinner,
@@ -13,42 +12,26 @@ import {
   UnorderedList,
 } from '@chakra-ui/react';
 import { useQuery } from '@tanstack/react-query';
-import { useRouter } from 'next/router';
+import { FaAngleRight, FaCheck, FaMagnifyingGlass } from 'react-icons/fa6';
 import {
-  FaAngleRight,
-  FaCheck,
-  FaEllipsis,
-  FaMagnifyingGlass,
-} from 'react-icons/fa6';
-import {
-  fetchOntologyChildrenByTaxonID,
-  getChildren,
-  PaginatedOntologyTreeResponse,
-  sortChildrenList,
-} from '../helpers';
+  fetchChildrenFromOLSAPI,
+  fetchPortalCounts,
+} from '../utils/api-helpers';
 import { Link } from 'src/components/link';
 import Tooltip from 'src/components/tooltip';
 import { useReadLocalStorage } from 'usehooks-ts';
 import {
-  OntologyLineageItem,
   OntologyLineageItemWithCounts,
   OntologyLineageRequestParams,
+  OntologyPagination,
 } from '../types';
 import { OntologyTreeBreadcrumbs } from './ontology-tree-breadcrumbs';
+import { getChildren, sortChildrenList } from '../utils/ontology-helpers';
 
-const MARGIN = 16;
-const SIZE = 100;
+const MARGIN = 16; // Base margin for indenting tree levels
+const SIZE = 100; // Number of items to fetch per page
 
-// Tree component that renders the entire tree
-export const Tree = ({
-  addToSearch,
-  data,
-  isIncludedInSearch,
-  params,
-  showFromIndex,
-  updateLineage,
-  updateShowFromIndex,
-}: {
+interface TreeProps {
   addToSearch: (search: {
     ontology: string;
     label: string;
@@ -57,22 +40,45 @@ export const Tree = ({
     count?: number;
   }) => void;
   isIncludedInSearch: (id: string) => boolean;
-  params: OntologyLineageRequestParams;
-  data: OntologyLineageItemWithCounts[];
+  params: {
+    q: string;
+    id: number;
+    ontology: OntologyLineageRequestParams['ontology'];
+  };
+  lineage: OntologyLineageItemWithCounts[];
   showFromIndex: number;
-  updateLineage: (nodeId: string, children: OntologyLineageItem[]) => void;
+  updateLineage: (
+    nodeId: string,
+    children: OntologyLineageItemWithCounts[],
+  ) => void;
   updateShowFromIndex: (index: number) => void;
-}) => {
-  // Only render the root nodes initially (nodes with no parent)
-  // const rootNodes = data.filter(item => !item.parent);
-  const treeNodes = data.slice(showFromIndex);
-  const rootNodes = [treeNodes[0]];
+}
+
+/**
+ * Tree Component
+ *
+ * Renders the ontology tree starting from the `showFromIndex`.
+ * It includes breadcrumb navigation for the collapsed portion of the lineage
+ * and recursively renders `TreeNode` components for each node in the visible portion of the tree.
+ */
+export const Tree = ({
+  addToSearch,
+  lineage,
+  isIncludedInSearch,
+  params,
+  showFromIndex,
+  updateLineage,
+  updateShowFromIndex,
+}: TreeProps) => {
+  const treeNodes = lineage.slice(showFromIndex); // Visible portion of the lineage
+  const rootNodes = [treeNodes[0]]; // Only render the root node initially
 
   return (
     <>
+      {/* Breadcrumbs for collapsed portion of the tree */}
       <OntologyTreeBreadcrumbs
         margin={MARGIN}
-        nodes={data.slice(0, showFromIndex)}
+        nodes={lineage.slice(0, showFromIndex)}
         showFromIndex={showFromIndex}
         updateShowFromIndex={updateShowFromIndex}
       ></OntologyTreeBreadcrumbs>
@@ -82,9 +88,8 @@ export const Tree = ({
             key={node.id}
             addToSearch={addToSearch}
             isIncludedInSearch={isIncludedInSearch}
-            queryId={params.id}
             node={node}
-            data={treeNodes}
+            lineage={treeNodes}
             params={params}
             depth={0}
             updateLineage={updateLineage}
@@ -95,15 +100,21 @@ export const Tree = ({
   );
 };
 
-// TreeNode component
+/**
+ * TreeNode Component
+ *
+ * Represents a single node in the ontology tree.
+ * - Handles toggling open/closed state to show or hide children.
+ * - Fetches child nodes when toggled open if they haven't been loaded.
+ * - Renders node details, including links, counts, and actions.
+ */
 const TreeNode = ({
   addToSearch,
   node,
-  data,
+  lineage,
   depth = 0,
   isIncludedInSearch,
   params,
-  queryId,
   updateLineage,
 }: {
   addToSearch: (search: {
@@ -113,23 +124,29 @@ const TreeNode = ({
     facet: string[];
     count?: number;
   }) => void;
-  data: OntologyLineageItem[];
+  lineage: OntologyLineageItemWithCounts[];
   depth: number;
   isIncludedInSearch: (id: string) => boolean;
   node: OntologyLineageItemWithCounts;
-  params: OntologyLineageRequestParams;
-  queryId: string;
-  updateLineage: (nodeId: string, children: OntologyLineageItem[]) => void;
+  params: TreeProps['params'];
+  updateLineage: (
+    nodeId: string,
+    children: OntologyLineageItemWithCounts[],
+  ) => void;
 }) => {
+  const queryId = params.id;
   const [isToggled, setIsToggled] = useState(node.state.opened);
-  const [fetchedChildren, setFetchedChildren] = useState<OntologyLineageItem[]>(
-    [],
+
+  const [fetchedChildren, setFetchedChildren] = useState<
+    OntologyLineageItemWithCounts[]
+  >([]);
+  const [childrenList, setChildrenList] = useState<
+    OntologyLineageItemWithCounts[]
+  >([]);
+
+  const [childrenMeta, setChildrenMeta] = useState<OntologyPagination | null>(
+    null,
   );
-  const [childrenList, setChildrenList] = useState<OntologyLineageItem[]>([]);
-  const [childrenMeta, setChildrenMeta] = useState<Pick<
-    PaginatedOntologyTreeResponse,
-    'hasMore' | 'numPage' | 'totalPages' | 'totalElements'
-  > | null>(null);
   const [page, setPage] = useState(0);
   const {
     error,
@@ -146,52 +163,66 @@ const TreeNode = ({
       page,
     ],
     queryFn: () => {
-      return fetchOntologyChildrenByTaxonID({
-        q: params.q,
-        id: node.taxonId.toString(),
-        ontology: node.ontologyName as OntologyLineageRequestParams['ontology'],
+      // [ TO DO ]: Fetch children from the BioThings API for the NCBI Taxonomy
+      // if (queryParams.ontology === 'ncbitaxon') {
+      //   return fetchChildrenFromBioThingsAPI({
+      //     id: node.taxonId,
+      //     ontology: node.ontologyName,
+      //   }).then(async data => ({
+      //     ...data,
+      //     children: await fetchPortalCounts(data.children, {
+      //       q: params.q,
+      //     }),
+      //   }));
+      // }
+      return fetchChildrenFromOLSAPI({
+        id: node.taxonId,
+        ontology: node.ontologyName,
         size: SIZE,
-        page,
-        parentId: node.id.toString(),
-      });
+      }).then(async data => ({
+        ...data,
+        children: await fetchPortalCounts(data.children, {
+          q: params.q,
+        }),
+      }));
     },
     refetchOnWindowFocus: false,
     enabled: page > 0,
   });
 
+  // Toggle the node's open/closed state and fetch children if opening
   const toggleNode = () => {
     fetchChildren();
     setIsToggled(!isToggled);
   };
 
   useEffect(() => {
-    if (
-      isToggled &&
-      childrenData?.children &&
-      childrenData?.children.length > 0
-    ) {
-      setFetchedChildren(childrenData.children);
-      setChildrenMeta({
-        hasMore: childrenData.hasMore,
-        numPage: childrenData.numPage,
-        totalPages: childrenData.totalPages,
-        totalElements: childrenData.totalElements,
-      });
-    } else {
-      setFetchedChildren([]);
+    if (childrenData) {
+      const { children, pagination } = childrenData || {};
+      if (isToggled && children && children.length > 0) {
+        setFetchedChildren(children);
+        setChildrenMeta({
+          hasMore: pagination.hasMore,
+          numPage: pagination.numPage,
+          totalPages: pagination.totalPages,
+          totalElements: pagination.totalElements,
+        });
+      } else {
+        setFetchedChildren([]);
+      }
     }
-  }, [queryId, childrenData, isToggled]);
+  }, [childrenData, isToggled, queryId]);
 
   useEffect(() => {
-    setIsToggled(node.state.opened);
+    setIsToggled(node.state.opened); // Reset toggle state when the query ID changes
     setFetchedChildren([]);
   }, [queryId, node.state.opened]);
 
   // Set children data in state with node information. Refresh when queryId changes.
   useEffect(() => {
-    const children = getChildren(node.id, data);
+    const children = getChildren(node.taxonId, lineage); // Retrieve immediate children from lineage
     setChildrenList(children);
-  }, [queryId, data, node.id]);
+  }, [queryId, lineage, node.taxonId]);
 
   // Update lineage with new children data (if there is) when toggled open
   useEffect(() => {
@@ -200,11 +231,11 @@ const TreeNode = ({
     }
   }, [queryId, isToggled, fetchedChildren, node.id, updateLineage]);
 
-  // Hide nodes with no children if configured
   const config = useReadLocalStorage<{ includeEmptyCounts: boolean }>(
     'ontology-browser-view',
   );
 
+  // Hide nodes with no children that have 0 datasets if configured to do so
   if (
     !config?.includeEmptyCounts &&
     node.counts.term === 0 &&
@@ -394,10 +425,9 @@ const TreeNode = ({
               key={child.id}
               addToSearch={addToSearch}
               isIncludedInSearch={isIncludedInSearch}
-              queryId={queryId}
               node={child}
               params={params}
-              data={data}
+              lineage={lineage}
               depth={depth + 1}
               updateLineage={updateLineage}
             />

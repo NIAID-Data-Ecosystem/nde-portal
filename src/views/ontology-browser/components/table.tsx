@@ -3,12 +3,15 @@ import { Alert, Box, Flex, Spinner } from '@chakra-ui/react';
 import { useQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/router';
 import {
-  fetchFromBioThingsAPI,
-  fetchFromOLSAPI,
+  fetchLineageFromBioThingsAPI,
+  fetchLineageFromOLSAPI,
   fetchPortalCounts,
-} from '../helpers';
+} from '../utils/api-helpers';
 import { useLocalStorage } from 'usehooks-ts';
-import { OntologyLineageItem, OntologyLineageRequestParams } from '../types';
+import {
+  OntologyLineageItemWithCounts,
+  OntologyLineageRequestParams,
+} from '../types';
 import { OntologyBrowserHeader } from './ontology-browser-header';
 import { OntologyViewPopover } from './ontology-view-popover';
 import { Tree } from './ontology-tree';
@@ -45,7 +48,9 @@ export const OntologyBrowserTable = ({
   });
 
   // State to manage the ontology tree lineage
-  const [lineage, setLineage] = useState<OntologyLineageItem[] | null>(null);
+  const [lineage, setLineage] = useState<
+    OntologyLineageItemWithCounts[] | null
+  >(null);
 
   // Index of the node used for the condensed view
   const [showFromIndex, setShowFromIndex] = useState(0);
@@ -64,7 +69,7 @@ export const OntologyBrowserTable = ({
         .toLowerCase() || '';
     return {
       q: (router.query.q || '__all__') as string,
-      id: parsedId.replace(/[^0-9]/g, ''),
+      id: +parsedId.replace(/[^0-9]/g, ''),
       ontology: ontology as OntologyLineageRequestParams['ontology'],
     };
   }, [id, router.query.q]);
@@ -83,13 +88,19 @@ export const OntologyBrowserTable = ({
     ],
     queryFn: () => {
       if (queryParams.ontology === 'ncbitaxon') {
-        return fetchFromBioThingsAPI(queryParams).then(data =>
-          fetchPortalCounts(data.lineage, queryParams),
-        );
+        return fetchLineageFromBioThingsAPI({
+          id: queryParams.id,
+          ontology: queryParams.ontology,
+        }).then(async data => ({
+          lineage: await fetchPortalCounts(data.lineage, { q: queryParams.q }),
+        }));
       }
-      return fetchFromOLSAPI(queryParams).then(data =>
-        fetchPortalCounts(data.lineage, queryParams),
-      );
+      return fetchLineageFromOLSAPI({
+        id: queryParams.id,
+        ontology: queryParams.ontology,
+      }).then(async data => ({
+        lineage: await fetchPortalCounts(data.lineage, { q: queryParams.q }),
+      }));
     },
     refetchOnWindowFocus: false,
     enabled: router.isReady && !!queryParams.id,
@@ -119,7 +130,7 @@ export const OntologyBrowserTable = ({
 
   // Update lineage with new children
   const updateLineageWithChildren = useCallback(
-    (nodeId: string, children: OntologyLineageItem[]) => {
+    (nodeId: string, children: OntologyLineageItemWithCounts[]) => {
       setLineage(prevLineage => {
         if (!prevLineage) return [];
 
@@ -127,7 +138,8 @@ export const OntologyBrowserTable = ({
         if (children.length === 0) return prevLineage;
 
         // Find the index of the node to insert children after
-        const index = prevLineage.findIndex(node => +node.id === +nodeId);
+        const index = prevLineage.findIndex(node => node.id === nodeId);
+
         if (index === -1) return prevLineage;
 
         // Filter out children that are already in the prevLineage
@@ -203,7 +215,7 @@ export const OntologyBrowserTable = ({
                 <Tree
                   params={queryParams}
                   showFromIndex={showFromIndex}
-                  data={lineage}
+                  lineage={lineage}
                   updateLineage={updateLineageWithChildren}
                   updateShowFromIndex={setShowFromIndex}
                   isIncludedInSearch={id => {
