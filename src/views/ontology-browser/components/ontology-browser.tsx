@@ -14,28 +14,22 @@ import {
 } from '../types';
 import { OntologyBrowserHeader } from './ontology-browser-header';
 import { OntologyViewPopover } from './ontology-view-popover';
-import { Tree } from './ontology-tree';
+import { Tree } from './ontology-browser-tree';
 
-export const OntologyBrowserTable = ({
+export const OntologyBrowser = ({
   searchList,
   setSearchList,
 }: {
-  searchList: {
-    ontology: string;
-    id: string;
-    label: string;
-    facet: string[];
-    count?: number;
-  }[];
+  searchList: Pick<
+    OntologyLineageItemWithCounts,
+    'ontologyName' | 'taxonId' | 'label' | 'counts'
+  >[];
   setSearchList: React.Dispatch<
     React.SetStateAction<
-      {
-        ontology: string;
-        id: string;
-        label: string;
-        facet: string[];
-        count?: number;
-      }[]
+      Pick<
+        OntologyLineageItemWithCounts,
+        'ontologyName' | 'taxonId' | 'label' | 'counts'
+      >[]
     >
   >;
 }) => {
@@ -219,15 +213,18 @@ export const OntologyBrowserTable = ({
                   updateLineage={updateLineageWithChildren}
                   updateShowFromIndex={setShowFromIndex}
                   isIncludedInSearch={id => {
-                    return searchList.some(item => item.id === id);
+                    return searchList.some(item => item.taxonId === id);
                   }}
-                  addToSearch={({ ontology, id, label, facet, count }) => {
+                  addToSearch={({ ontologyName, taxonId, label, counts }) => {
                     setSearchList(prev => {
                       //if it already exists in the list, remove it
-                      if (prev.some(item => item.id === id)) {
-                        return prev.filter(item => item.id !== id);
+                      if (prev.some(item => item.taxonId === taxonId)) {
+                        return prev.filter(item => item.taxonId !== taxonId);
                       } else {
-                        return [...prev, { ontology, id, label, facet, count }];
+                        return [
+                          ...prev,
+                          { ontologyName, taxonId, label, counts },
+                        ];
                       }
                     });
                   }}

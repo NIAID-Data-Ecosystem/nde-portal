@@ -309,7 +309,7 @@ export const fetchLineageFromOLSAPI = async (
 };
 
 /**
- * [fetchLineageFromOLSAPI]: Fetch lineage information for a given ontology ID from the OLS API [docs](https://www.ebi.ac.uk/ols4/help)
+ * [fetchChildrenFromOLSAPI]: Fetch the children information for a given ontology ID from the OLS API [docs](https://www.ebi.ac.uk/ols4/help)
  * and return structured ontology lineage items.
  *
  * NOTE: The OLS API does not provide lineage information for all taxon IDs. In such cases, we use the BioThings API.

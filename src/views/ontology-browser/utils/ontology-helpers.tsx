@@ -1,5 +1,5 @@
 import { OntologyLineageItemWithCounts } from '../types';
-
+import { Text } from '@chakra-ui/react';
 /**
  * Retrieves the child nodes of a given parent node from the ontology lineage data.
  *

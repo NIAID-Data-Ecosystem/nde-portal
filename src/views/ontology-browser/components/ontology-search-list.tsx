@@ -2,9 +2,9 @@ import {
   Box,
   Button,
   Flex,
+  HStack,
   Icon,
   IconButton,
-  Tag,
   Text,
   useDisclosure,
 } from '@chakra-ui/react';
@@ -15,19 +15,17 @@ import {
   FaX,
 } from 'react-icons/fa6';
 import Tooltip from 'src/components/tooltip';
-import { formatIdentifier } from '../utils/api-helpers';
 import { useRouter } from 'next/router';
 import { ScrollContainer } from 'src/components/scroll-container';
+import { SearchListItem } from 'src/pages/ontology-browser';
+import {
+  getTooltipLabelByCountType,
+  OntologyBrowserCountTag,
+} from './ontology-browser-count-tag';
 
-interface SearchListItem {
-  ontology: string;
-  id: string;
-  label: string;
-  facet: string[];
-  count?: number;
-}
 const WIDTH = 400;
-export const OntologyList = ({
+
+export const OntologySearchList = ({
   searchList,
   setSearchList,
 }: {
@@ -144,62 +142,69 @@ export const OntologyList = ({
                 borderColor='niaid.placeholder'
               >
                 {isOpen &&
-                  searchList.map(({ id, count, ontology, label }, index) => (
-                    <Flex
-                      key={`${ontology}-${id}`}
-                      px={2}
-                      py={1}
-                      bg={index % 2 ? 'primary.50' : 'transparent'}
-                      alignItems='center'
-                    >
-                      <Box
-                        flex={1}
-                        fontWeight='normal'
-                        lineHeight='short'
-                        textAlign='left'
-                        wordBreak='break-word'
+                  searchList.map(
+                    ({ taxonId, counts, ontologyName, label }, index) => (
+                      <Flex
+                        key={`${ontologyName}-${taxonId}`}
+                        px={2}
+                        py={1}
+                        bg={index % 2 ? 'primary.50' : 'transparent'}
+                        alignItems='center'
                       >
-                        <Text color='gray.800' fontSize='12px'>
-                          {id}
-                        </Text>
-                        <Text
-                          color='text.body'
-                          fontSize='xs'
-                          fontWeight='medium'
-                          lineHeight='inherit'
+                        <Box
+                          flex={1}
+                          fontWeight='normal'
+                          lineHeight='short'
+                          textAlign='left'
+                          wordBreak='break-word'
                         >
-                          {label}
-                        </Text>
-                      </Box>
-                      <Tooltip label='Number of potential matching resources in NIAID Discovery Portal'>
-                        <Tag
-                          borderRadius='full'
-                          colorScheme={count === 0 ? 'gray' : 'primary'}
-                          variant='subtle'
-                          size='sm'
-                        >
-                          {count?.toLocaleString() || 0}
-                        </Tag>
-                      </Tooltip>
+                          <Text color='gray.800' fontSize='12px'>
+                            {taxonId}
+                          </Text>
+                          <Text
+                            color='text.body'
+                            fontSize='xs'
+                            fontWeight='medium'
+                            lineHeight='inherit'
+                          >
+                            {label}
+                          </Text>
+                        </Box>
+                        <Flex>
+                          <OntologyBrowserCountTag
+                            colorScheme={counts.term === 0 ? 'gray' : 'primary'}
+                            label={getTooltipLabelByCountType('term')}
+                          >
+                            {counts.term?.toLocaleString() || 0}
+                          </OntologyBrowserCountTag>
 
-                      <IconButton
-                        aria-label='remove item from search'
-                        icon={<Icon as={FaX} boxSize={2.5} />}
-                        variant='ghost'
-                        colorScheme='gray'
-                        size='sm'
-                        p={1}
-                        ml={2}
-                        boxSize={6}
-                        minWidth={6}
-                        onClick={() => {
-                          setSearchList(prev =>
-                            prev.filter(item => item.label !== label),
-                          );
-                        }}
-                      />
-                    </Flex>
-                  ))}
+                          <OntologyBrowserCountTag
+                            colorScheme={'white'}
+                            label={getTooltipLabelByCountType('lineage')}
+                          >
+                            {'/ ' + counts.lineage?.toLocaleString() || 0}
+                          </OntologyBrowserCountTag>
+
+                          <IconButton
+                            ml={1}
+                            aria-label='remove item from search'
+                            icon={<Icon as={FaX} boxSize={2.5} />}
+                            variant='ghost'
+                            colorScheme='gray'
+                            size='sm'
+                            p={1}
+                            boxSize={6}
+                            minWidth={6}
+                            onClick={() => {
+                              setSearchList(prev =>
+                                prev.filter(item => item.label !== label),
+                              );
+                            }}
+                          />
+                        </Flex>
+                      </Flex>
+                    ),
+                  )}
               </Box>
               <Flex justifyContent='flex-end'>
                 <Button
@@ -207,24 +212,17 @@ export const OntologyList = ({
                   leftIcon={<FaMagnifyingGlass />}
                   size='sm'
                   onClick={() => {
-                    const termsWithFieldsString = searchList.reduce(
-                      (querystring, node) => {
-                        const id = formatIdentifier(node);
-                        const joiner = querystring ? ' AND ' : '';
-                        if (node.facet.length === 0) {
-                          return `${querystring}${joiner}${id}`;
-                        } else if (node.facet.length === 1) {
-                          return `${querystring}${joiner}${node.facet[0]}:"${id}"`;
-                        } else {
-                          return `${querystring}${joiner}(${node.facet[0]}:"${id}" OR ${node.facet[1]}:"${id}")`;
-                        }
-                      },
-                      router?.query?.q || '',
-                    );
+                    const queryString = router?.query?.q || '';
+                    const ids = searchList
+                      .map(item => item.taxonId)
+                      .join(' AND _meta.lineage.taxon:');
+
                     router.push({
                       pathname: `/search`,
                       query: {
-                        q: termsWithFieldsString,
+                        q: `${
+                          queryString ? queryString + ' AND ' : ''
+                        }_meta.lineage.taxon:${ids}`,
                       },
                     });
                   }}

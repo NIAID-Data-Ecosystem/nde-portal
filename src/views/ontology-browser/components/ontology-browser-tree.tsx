@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Box,
   Button,
@@ -6,8 +6,6 @@ import {
   HStack,
   IconButton,
   ListItem,
-  Spinner,
-  Tag,
   Text,
   UnorderedList,
 } from '@chakra-ui/react';
@@ -18,41 +16,21 @@ import {
   fetchPortalCounts,
 } from '../utils/api-helpers';
 import { Link } from 'src/components/link';
-import Tooltip from 'src/components/tooltip';
 import { useReadLocalStorage } from 'usehooks-ts';
 import {
   OntologyLineageItemWithCounts,
   OntologyLineageRequestParams,
   OntologyPagination,
 } from '../types';
-import { OntologyTreeBreadcrumbs } from './ontology-tree-breadcrumbs';
+import { OntologyTreeBreadcrumbs } from './ontology-browser-tree-breadcrumbs';
 import { getChildren, sortChildrenList } from '../utils/ontology-helpers';
+import {
+  getTooltipLabelByCountType,
+  OntologyBrowserCountTag,
+} from './ontology-browser-count-tag';
 
 const MARGIN = 16; // Base margin for indenting tree levels
 const SIZE = 100; // Number of items to fetch per page
-
-interface TreeProps {
-  addToSearch: (search: {
-    ontology: string;
-    label: string;
-    id: string;
-    facet: string[];
-    count?: number;
-  }) => void;
-  isIncludedInSearch: (id: string) => boolean;
-  params: {
-    q: string;
-    id: number;
-    ontology: OntologyLineageRequestParams['ontology'];
-  };
-  lineage: OntologyLineageItemWithCounts[];
-  showFromIndex: number;
-  updateLineage: (
-    nodeId: string,
-    children: OntologyLineageItemWithCounts[],
-  ) => void;
-  updateShowFromIndex: (index: number) => void;
-}
 
 /**
  * Tree Component
@@ -61,10 +39,33 @@ interface TreeProps {
  * It includes breadcrumb navigation for the collapsed portion of the lineage
  * and recursively renders `TreeNode` components for each node in the visible portion of the tree.
  */
+
+interface TreeProps {
+  addToSearch: (
+    searchItem: Pick<
+      OntologyLineageItemWithCounts,
+      'counts' | 'label' | 'ontologyName' | 'taxonId'
+    >,
+  ) => void;
+  isIncludedInSearch: (id: OntologyLineageItemWithCounts['taxonId']) => boolean;
+  lineage: OntologyLineageItemWithCounts[];
+  params: {
+    q: string;
+    id: number;
+    ontology: OntologyLineageRequestParams['ontology'];
+  };
+  showFromIndex: number;
+  updateLineage: (
+    nodeId: string,
+    children: OntologyLineageItemWithCounts[],
+  ) => void;
+  updateShowFromIndex: (index: number) => void;
+}
+
 export const Tree = ({
   addToSearch,
-  lineage,
   isIncludedInSearch,
+  lineage,
   params,
   showFromIndex,
   updateLineage,
@@ -110,23 +111,17 @@ export const Tree = ({
  */
 const TreeNode = ({
   addToSearch,
-  node,
-  lineage,
   depth = 0,
   isIncludedInSearch,
+  lineage,
+  node,
   params,
   updateLineage,
 }: {
-  addToSearch: (search: {
-    ontology: string;
-    label: string;
-    id: string;
-    facet: string[];
-    count?: number;
-  }) => void;
-  lineage: OntologyLineageItemWithCounts[];
-  depth: number;
-  isIncludedInSearch: (id: string) => boolean;
+  addToSearch: TreeProps['addToSearch'];
+  depth: number; //Depth level in the tree for indentation
+  isIncludedInSearch: TreeProps['isIncludedInSearch'];
+  lineage: TreeProps['lineage'];
   node: OntologyLineageItemWithCounts;
   params: TreeProps['params'];
   updateLineage: (
@@ -306,55 +301,28 @@ const TreeNode = ({
             </Link>
           </Box>
         </Flex>
-        <HStack>
-          <Tooltip
-            label={
-              <>
-                Number of datasets{' '}
-                <Text as='span' textDecoration='underline'>
-                  for this term
-                </Text>{' '}
-                in the NIAID Discovery Portal
-              </>
-            }
+        <Flex>
+          <OntologyBrowserCountTag
+            colorScheme={node.counts.term === 0 ? 'gray' : 'primary'}
+            isLoading={isLoading}
+            label={getTooltipLabelByCountType('term')}
           >
-            <Tag
-              borderRadius='full'
-              colorScheme={node.counts.term === 0 ? 'gray' : 'primary'}
-              variant='subtle'
-              size='sm'
-            >
-              {isLoading ? (
-                <Spinner size='sm' color='primary.500' mx={2} />
-              ) : (
-                node.counts.term?.toLocaleString() || 0
-              )}
-            </Tag>
-          </Tooltip>
+            {node.counts.term?.toLocaleString() || 0}
+          </OntologyBrowserCountTag>
 
-          <Tooltip
-            label={
-              <>
-                Number of datasets{' '}
-                <Text as='span' textDecoration='underline'>
-                  for this term and sub-terms
-                </Text>{' '}
-                in the NIAID Discovery Portal
-              </>
-            }
+          <OntologyBrowserCountTag
+            colorScheme={'white'}
+            isLoading={isLoading}
+            label={getTooltipLabelByCountType('lineage')}
           >
-            <Text fontSize='sm' mr={2} fontWeight='medium' color='text.body'>
-              {isLoading ? (
-                <Spinner size='sm' color='primary.500' mx={2} />
-              ) : (
-                '/ ' + node.counts.lineage?.toLocaleString() || 0
-              )}
-            </Text>
-          </Tooltip>
+            {'/ ' + node.counts.lineage?.toLocaleString() || 0}
+          </OntologyBrowserCountTag>
+
           <IconButton
+            ml={1}
             aria-label='Search database'
             icon={
-              isIncludedInSearch(node.taxonId.toString()) ? (
+              isIncludedInSearch(node.taxonId) ? (
                 <FaCheck />
               ) : (
                 <FaMagnifyingGlass />
@@ -365,15 +333,15 @@ const TreeNode = ({
             fontSize='xs'
             onClick={e => {
               e.stopPropagation();
-              // addToSearch({
-              //   id: node.taxonId.toString(),
-              //   label: node.label,
-              //   ontology: node.ontologyName,
-              //   count: node.counts.term,
-              // });
+              addToSearch({
+                counts: node.counts,
+                label: node.label,
+                ontologyName: node.ontologyName,
+                taxonId: node.taxonId,
+              });
             }}
           />
-        </HStack>
+        </Flex>
       </Flex>
       {isToggled && childrenList.length > 0 && (
         <UnorderedList ml={0}>

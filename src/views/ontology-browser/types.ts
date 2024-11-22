@@ -56,6 +56,7 @@ export interface OntologyLineageItem {
   };
   taxonId: number;
 }
+
 export interface OntologyLineageItemWithCounts extends OntologyLineageItem {
   counts: {
     term: number;
