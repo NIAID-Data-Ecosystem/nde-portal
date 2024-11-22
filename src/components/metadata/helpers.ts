@@ -223,6 +223,13 @@ export const generateMetadataContentforCompToolCard = (
           data?.softwareVersion,
           showItems,
         );
+      case 'topicCategory':
+        return createTopicCategoryContent(
+          id,
+          property,
+          data?.topicCategory,
+          showItems,
+        );
       default:
         return undefined;
     }
