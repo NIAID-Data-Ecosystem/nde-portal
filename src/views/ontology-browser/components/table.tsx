@@ -1,50 +1,17 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import {
-  Alert,
-  Box,
-  Button,
-  Flex,
-  FormControl,
-  FormLabel,
-  HStack,
-  Icon,
-  IconButton,
-  ListItem,
-  Spinner,
-  Switch,
-  Tag,
-  Text,
-  UnorderedList,
-  VStack,
-} from '@chakra-ui/react';
+import { Alert, Box, Flex, Spinner } from '@chakra-ui/react';
 import { useQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/router';
 import {
-  FaAngleLeft,
-  FaAngleRight,
-  FaCheck,
-  FaEllipsis,
-  FaMagnifyingGlass,
-} from 'react-icons/fa6';
-import {
   fetchFromBioThingsAPI,
-  fetchOntologyChildrenByTaxonID,
   fetchFromOLSAPI,
   fetchPortalCounts,
-  getChildren,
-  PaginatedOntologyTreeResponse,
-  sortChildrenList,
 } from '../helpers';
-import { Link } from 'src/components/link';
-import { fetchSearchResults } from 'src/utils/api';
-import Tooltip from 'src/components/tooltip';
-import { ConfigureView } from './configure-view';
-import { useLocalStorage, useReadLocalStorage } from 'usehooks-ts';
-import {
-  OntologyLineageItem,
-  OntologyLineageItemWithCounts,
-  OntologyLineageRequestParams,
-} from '../types';
+import { useLocalStorage } from 'usehooks-ts';
+import { OntologyLineageItem, OntologyLineageRequestParams } from '../types';
+import { OntologyBrowserHeader } from './ontology-browser-header';
+import { OntologyViewPopover } from './ontology-view-popover';
+import { Tree } from './ontology-tree';
 
 export const OntologyBrowserTable = ({
   searchList,
@@ -102,11 +69,11 @@ export const OntologyBrowserTable = ({
     };
   }, [id, router.query.q]);
 
-  // Fetch tree data using the ontology type and query parameters
+  // Fetch lineage data using the ontology type and query parameters
   const {
     error,
     isLoading,
-    data: treeData,
+    data: ontologyLineageData,
   } = useQuery({
     queryKey: [
       'ontology-browser-tree',
@@ -128,20 +95,27 @@ export const OntologyBrowserTable = ({
     enabled: router.isReady && !!queryParams.id,
   });
 
-  const selectedNode = treeData?.lineage[treeData.lineage.length - 1];
-  const MAX_NODES = 5;
+  // Maximum number of nodes to display in the condensed view
+  const MAX_VISIBLE_NODES = 5;
+
   useEffect(() => {
-    if (treeData) {
-      setLineage(treeData.lineage);
+    if (ontologyLineageData) {
+      // Update the lineage state with the fetched data
+      setLineage(ontologyLineageData.lineage);
+
       if (viewConfig.isCondensed) {
-        setShowFromIndex(
-          treeData.lineage.length > MAX_NODES ? treeData.lineage.length - 3 : 0,
-        );
+        // Determine the starting index for the condensed view
+        const condensedStartIndex =
+          ontologyLineageData.lineage.length > MAX_VISIBLE_NODES
+            ? ontologyLineageData.lineage.length - 3 // Show the last 3 nodes if exceeding the limit
+            : 0; // Show all nodes if the total is within the limit
+        setShowFromIndex(condensedStartIndex);
       } else {
+        // Show all nodes starting from the first index in expanded view
         setShowFromIndex(0);
       }
     }
-  }, [treeData, viewConfig.isCondensed]);
+  }, [ontologyLineageData, viewConfig.isCondensed]);
 
   // Update lineage with new children
   const updateLineageWithChildren = useCallback(
@@ -174,10 +148,16 @@ export const OntologyBrowserTable = ({
     [],
   );
 
+  // Get the currently selected node from the lineage data.
+  // The selected node is the last item in the lineage array, which represents the deepest taxonomic level.
+  const selectedOntologyNode = useMemo(() => {
+    return ontologyLineageData?.lineage?.at(-1) || null;
+  }, [ontologyLineageData]);
+
   if (error) {
     return (
-      <Alert status='error'>
-        Error fetching tree browser data: {error.message}
+      <Alert status='error' role='alert'>
+        Error fetching ontology browser data: {error.message}
       </Alert>
     );
   }
@@ -191,88 +171,22 @@ export const OntologyBrowserTable = ({
         flex={1}
       >
         <Box flex={2} minWidth={{ base: 'unset', md: '500px' }}>
-          {selectedNode && (
-            <Flex
-              w='100%'
-              justifyContent='space-between'
-              alignItems='flex-end'
-              mb={1}
-            >
-              <Box>
-                <Text fontWeight='normal' fontSize='sm' lineHeight='short'>
-                  Selected taxonomy:{' '}
-                </Text>
-                <HStack>
-                  <Link
-                    href={selectedNode.iri}
-                    fontWeight='medium'
-                    isExternal
-                    fontSize='sm'
-                  >
-                    {selectedNode.label}
-                  </Link>
-                </HStack>
-              </Box>
-              {/* Popover menu with options to configure the display table */}
-              <ConfigureView
-                label='Configure View'
-                buttonProps={{ size: 'sm' }}
-              >
-                <VStack lineHeight='shorter' spacing={4}>
-                  <FormControl
-                    display='flex'
-                    alignItems='center'
-                    justifyContent='space-between'
-                    mt={1}
-                  >
-                    <FormLabel htmlFor='condensed-view' mb='0' fontSize='sm'>
-                      Enable condensed view?
-                    </FormLabel>
-                    <Switch
-                      id='condensed-view'
-                      colorScheme='primary'
-                      isChecked={viewConfig.isCondensed === true}
-                      onChange={() =>
-                        setViewConfig(() => {
-                          return {
-                            ...viewConfig,
-                            isCondensed: !viewConfig.isCondensed,
-                          };
-                        })
-                      }
-                    />
-                  </FormControl>
-                  <FormControl
-                    display='flex'
-                    alignItems='center'
-                    justifyContent='space-between'
-                    mt={1}
-                  >
-                    <FormLabel
-                      htmlFor='include-empty-counts'
-                      mb='0'
-                      fontSize='sm'
-                    >
-                      Hide terms with 0 datasets?
-                    </FormLabel>
-                    <Switch
-                      id='include-empty-counts'
-                      colorScheme='primary'
-                      isChecked={viewConfig.includeEmptyCounts === false}
-                      onChange={() =>
-                        setViewConfig(() => {
-                          return {
-                            ...viewConfig,
-                            includeEmptyCounts: !viewConfig.includeEmptyCounts,
-                          };
-                        })
-                      }
-                    />
-                  </FormControl>
-                </VStack>
-              </ConfigureView>
-            </Flex>
-          )}
+          <Flex
+            w='100%'
+            justifyContent='space-between'
+            alignItems='flex-end'
+            mb={1}
+          >
+            {selectedOntologyNode && (
+              <OntologyBrowserHeader selectedNode={selectedOntologyNode} />
+            )}
+            <OntologyViewPopover
+              label='Configure View'
+              buttonProps={{ size: 'sm' }}
+              viewConfig={viewConfig}
+              setViewConfig={setViewConfig}
+            />
+          </Flex>
           {/* Tree Browser */}
           <Box
             w='100%'
@@ -288,7 +202,6 @@ export const OntologyBrowserTable = ({
               lineage && (
                 <Tree
                   params={queryParams}
-                  queryId={queryParams.id}
                   showFromIndex={showFromIndex}
                   data={lineage}
                   updateLineage={updateLineageWithChildren}
@@ -313,490 +226,5 @@ export const OntologyBrowserTable = ({
         </Box>
       </Flex>
     </>
-  );
-};
-const MARGIN = 16;
-const SIZE = 100;
-
-// TreeNode component
-const TreeNode = ({
-  addToSearch,
-  node,
-  data,
-  depth = 0,
-  isIncludedInSearch,
-  params,
-  queryId,
-  updateLineage,
-}: {
-  addToSearch: (search: {
-    ontology: string;
-    label: string;
-    id: string;
-    facet: string[];
-    count?: number;
-  }) => void;
-  data: OntologyLineageItem[];
-  depth: number;
-  isIncludedInSearch: (id: string) => boolean;
-  node: OntologyLineageItemWithCounts;
-  params: OntologyLineageRequestParams;
-  queryId: string;
-  updateLineage: (nodeId: string, children: OntologyLineageItem[]) => void;
-}) => {
-  console.log(data);
-  const [isToggled, setIsToggled] = useState(node.state.opened);
-  const [fetchedChildren, setFetchedChildren] = useState<OntologyLineageItem[]>(
-    [],
-  );
-  const [childrenList, setChildrenList] = useState<OntologyLineageItem[]>([]);
-  const [childrenMeta, setChildrenMeta] = useState<Pick<
-    PaginatedOntologyTreeResponse,
-    'hasMore' | 'numPage' | 'totalPages' | 'totalElements'
-  > | null>(null);
-  const [page, setPage] = useState(0);
-  const {
-    error,
-    isLoading,
-    data: childrenData,
-    refetch: fetchChildren,
-  } = useQuery({
-    queryKey: [
-      'fetch-descendants',
-      node.taxonId,
-      node.id,
-      node.ontologyName,
-      params.q,
-      page,
-    ],
-    queryFn: () => {
-      return fetchOntologyChildrenByTaxonID({
-        q: params.q,
-        id: node.taxonId.toString(),
-        ontology: node.ontologyName as OntologyLineageRequestParams['ontology'],
-        size: SIZE,
-        page,
-        parentId: node.id.toString(),
-      });
-    },
-    refetchOnWindowFocus: false,
-    enabled: page > 0,
-  });
-
-  const toggleNode = () => {
-    fetchChildren();
-    setIsToggled(!isToggled);
-  };
-
-  useEffect(() => {
-    if (
-      isToggled &&
-      childrenData?.children &&
-      childrenData?.children.length > 0
-    ) {
-      setFetchedChildren(childrenData.children);
-      setChildrenMeta({
-        hasMore: childrenData.hasMore,
-        numPage: childrenData.numPage,
-        totalPages: childrenData.totalPages,
-        totalElements: childrenData.totalElements,
-      });
-    } else {
-      setFetchedChildren([]);
-    }
-  }, [queryId, childrenData, isToggled]);
-
-  useEffect(() => {
-    setIsToggled(node.state.opened);
-    setFetchedChildren([]);
-  }, [queryId, node.state.opened]);
-
-  // Set children data in state with node information. Refresh when queryId changes.
-  useEffect(() => {
-    const children = getChildren(node.id, data);
-    setChildrenList(children);
-  }, [queryId, data, node.id]);
-
-  // Update lineage with new children data (if there is) when toggled open
-  useEffect(() => {
-    if (isToggled && fetchedChildren.length > 0) {
-      updateLineage(node.id.toString(), fetchedChildren);
-    }
-  }, [queryId, isToggled, fetchedChildren, node.id, updateLineage]);
-
-  // Hide nodes with no children if configured
-  const config = useReadLocalStorage<{ includeEmptyCounts: boolean }>(
-    'ontology-browser-view',
-  );
-
-  if (
-    !config?.includeEmptyCounts &&
-    node.counts.term === 0 &&
-    node.counts.lineage === 0 &&
-    !childrenList.length
-  ) {
-    return <></>;
-  }
-
-  return (
-    <ListItem>
-      <Flex
-        alignItems='center'
-        borderTop={depth !== 0 ? '0.25px solid' : 'none'}
-        borderColor='gray.200'
-        sx={{ '>*': { px: 4, py: 2 } }}
-        pl={`${(depth + 1) * MARGIN}px`}
-        _hover={{
-          bg: 'blackAlpha.50',
-        }}
-      >
-        <Flex
-          as='button'
-          alignItems='center'
-          onClick={toggleNode}
-          cursor={
-            childrenList.length > 0 || node.hasChildren ? 'pointer' : 'default'
-          }
-          flex={1}
-        >
-          {childrenList.length > 0 || node.hasChildren ? (
-            <IconButton
-              as='div'
-              aria-label='Search database'
-              icon={<FaAngleRight />}
-              variant='ghost'
-              colorScheme='gray'
-              size='sm'
-              transform={isToggled ? 'rotate(90deg)' : ''}
-              color='currentColor'
-            />
-          ) : (
-            <Box mx={4}></Box>
-          )}
-          <Box
-            alignItems='flex-start'
-            flex={1}
-            fontWeight='normal'
-            lineHeight='short'
-            ml={2}
-            textAlign='left'
-            wordBreak='break-word'
-          >
-            <Text color='gray.800' fontSize='12px'>
-              {node.taxonId}
-            </Text>
-
-            <Link href={node.iri} fontSize='xs' isExternal>
-              <Text
-                color={node.state.selected ? 'primary.500' : 'currentColor'}
-                fontWeight={node.state.selected ? 'semibold' : 'medium'}
-                lineHeight='inherit'
-                textAlign='left'
-                fontSize='xs'
-              >
-                {node.label}
-              </Text>
-            </Link>
-          </Box>
-        </Flex>
-        <HStack>
-          <Tooltip
-            label={
-              <>
-                Number of datasets{' '}
-                <Text as='span' textDecoration='underline'>
-                  for this term
-                </Text>{' '}
-                in the NIAID Discovery Portal
-              </>
-            }
-          >
-            <Tag
-              borderRadius='full'
-              colorScheme={node.counts.term === 0 ? 'gray' : 'primary'}
-              variant='subtle'
-              size='sm'
-            >
-              {isLoading ? (
-                <Spinner size='sm' color='primary.500' mx={2} />
-              ) : (
-                node.counts.term?.toLocaleString() || 0
-              )}
-            </Tag>
-          </Tooltip>
-
-          <Tooltip
-            label={
-              <>
-                Number of datasets{' '}
-                <Text as='span' textDecoration='underline'>
-                  for this term and sub-terms
-                </Text>{' '}
-                in the NIAID Discovery Portal
-              </>
-            }
-          >
-            <Text fontSize='sm' mr={2} fontWeight='medium' color='text.body'>
-              {isLoading ? (
-                <Spinner size='sm' color='primary.500' mx={2} />
-              ) : (
-                '/ ' + node.counts.lineage?.toLocaleString() || 0
-              )}
-            </Text>
-          </Tooltip>
-          <IconButton
-            aria-label='Search database'
-            icon={
-              isIncludedInSearch(node.taxonId.toString()) ? (
-                <FaCheck />
-              ) : (
-                <FaMagnifyingGlass />
-              )
-            }
-            size='sm'
-            variant='outline'
-            fontSize='xs'
-            onClick={e => {
-              e.stopPropagation();
-              // addToSearch({
-              //   id: node.taxonId.toString(),
-              //   label: node.label,
-              //   ontology: node.ontologyName,
-              //   count: node.counts.term,
-              // });
-            }}
-          />
-        </HStack>
-      </Flex>
-      {isToggled && childrenList.length > 0 && (
-        <UnorderedList ml={0}>
-          {(childrenMeta?.hasMore || (isLoading && page > 0)) && (
-            <ListItem
-              borderTop='0.25px solid'
-              borderColor='gray.200'
-              px={4}
-              py={2}
-              pl={`${(depth + 1) * MARGIN}px`}
-              bg='blackAlpha.100'
-            >
-              <Flex
-                px={4}
-                ml={4}
-                pl={10}
-                flexDirection='row'
-                alignItems='baseline'
-                flex={1}
-              >
-                <Text color='niaid.800' fontSize='13px'>
-                  Showing{' '}
-                  {childrenMeta ? SIZE * (childrenMeta.numPage + 1) : '-'} of{' '}
-                  {childrenMeta
-                    ? childrenMeta.totalElements.toLocaleString()
-                    : ' - '}{' '}
-                  children for{' '}
-                  <Text as='span' fontWeight='semibold'>
-                    {node.label}.
-                  </Text>
-                </Text>
-                <Button
-                  isLoading={isLoading}
-                  variant='link'
-                  size='sm'
-                  fontSize='13px'
-                  onClick={() => {
-                    setPage(page + 1);
-                  }}
-                  ml={2}
-                >
-                  Show {SIZE} more
-                </Button>
-              </Flex>
-            </ListItem>
-          )}
-          {sortChildrenList(childrenList).map(child => (
-            <TreeNode
-              key={child.id}
-              addToSearch={addToSearch}
-              isIncludedInSearch={isIncludedInSearch}
-              queryId={queryId}
-              node={child}
-              params={params}
-              data={data}
-              depth={depth + 1}
-              updateLineage={updateLineage}
-            />
-          ))}
-
-          {(childrenMeta?.hasMore || (isLoading && page > 0)) && (
-            <ListItem
-              borderTop='0.25px solid'
-              borderColor='gray.200'
-              px={4}
-              py={2}
-              pl={`${(depth + 1) * MARGIN}px`}
-              bg='blackAlpha.100'
-            >
-              <Flex
-                px={4}
-                ml={4}
-                pl={10}
-                flexDirection='row'
-                alignItems='baseline'
-                flex={1}
-              >
-                <Text color='niaid.800' fontSize='13px'>
-                  Showing{' '}
-                  {childrenMeta
-                    ? (SIZE * (childrenMeta.numPage + 1)).toLocaleString()
-                    : '-'}{' '}
-                  of{' '}
-                  {childrenMeta
-                    ? childrenMeta.totalElements.toLocaleString()
-                    : ' - '}{' '}
-                  children for{' '}
-                  <Text as='span' fontWeight='semibold'>
-                    {node.label}.
-                  </Text>
-                </Text>
-                <Button
-                  isLoading={isLoading}
-                  variant='link'
-                  size='sm'
-                  fontSize='13px'
-                  onClick={() => {
-                    setPage(page + 1);
-                  }}
-                  ml={2}
-                >
-                  Show {SIZE} more
-                </Button>
-              </Flex>
-            </ListItem>
-          )}
-        </UnorderedList>
-      )}
-    </ListItem>
-  );
-};
-
-// Tree component that renders the entire tree
-const Tree = ({
-  addToSearch,
-  data,
-  isIncludedInSearch,
-  params,
-  queryId,
-  showFromIndex,
-  updateLineage,
-  updateShowFromIndex,
-}: {
-  addToSearch: (search: {
-    ontology: string;
-    label: string;
-    id: string;
-    facet: string[];
-    count?: number;
-  }) => void;
-  isIncludedInSearch: (id: string) => boolean;
-  params: OntologyLineageRequestParams;
-  queryId: string;
-  data: OntologyLineageItemWithCounts[];
-  showFromIndex: number;
-  updateLineage: (nodeId: string, children: OntologyLineageItem[]) => void;
-  updateShowFromIndex: (index: number) => void;
-}) => {
-  // Only render the root nodes initially (nodes with no parent)
-  // const rootNodes = data.filter(item => !item.parent);
-  const treeNodes = data.slice(showFromIndex);
-  const rootNodes = [treeNodes[0]];
-
-  const pathNodes = data.slice(0, showFromIndex);
-  return (
-    <UnorderedList ml={0}>
-      {showFromIndex > 0 && (
-        <>
-          <ListItem>
-            {/* breadcrumb like path for treenodes */}
-            <HStack
-              alignItems='center'
-              borderColor='gray.200'
-              px={4}
-              py={2}
-              pl={`${MARGIN}px`}
-              flexWrap='wrap'
-              spacing={0}
-              divider={
-                <Icon
-                  as={FaAngleRight}
-                  color='gray.400'
-                  boxSize={3}
-                  borderLeft='none'
-                />
-              }
-            >
-              {pathNodes.map((node, index) => (
-                <React.Fragment key={node.id}>
-                  <Button
-                    colorScheme='gray'
-                    variant='ghost'
-                    size='sm'
-                    px={1}
-                    _hover={{ textDecoration: 'underline' }}
-                    onClick={() => updateShowFromIndex(index)}
-                  >
-                    {node.label}
-                  </Button>
-                </React.Fragment>
-              ))}
-            </HStack>
-          </ListItem>
-          <ListItem>
-            <Tooltip label='Show parent'>
-              <Flex
-                alignItems='center'
-                borderY='0.25px solid'
-                borderColor='gray.200'
-                px={4}
-                py={2}
-                pl={`${MARGIN}px`}
-                onClick={() => {
-                  updateShowFromIndex(
-                    showFromIndex < 1 ? 0 : showFromIndex - 1,
-                  );
-                }}
-                cursor='pointer'
-                _hover={{
-                  bg: 'blackAlpha.100',
-                }}
-              >
-                <IconButton
-                  aria-label='show parent node'
-                  icon={<FaEllipsis />}
-                  variant='ghost'
-                  colorScheme='gray'
-                  size='sm'
-                  color='currentColor'
-                  justifyContent='flex-start'
-                  px={2}
-                />
-              </Flex>
-            </Tooltip>
-          </ListItem>
-        </>
-      )}
-      {rootNodes.map(node => (
-        <TreeNode
-          key={node.id}
-          addToSearch={addToSearch}
-          isIncludedInSearch={isIncludedInSearch}
-          queryId={queryId}
-          node={node}
-          data={treeNodes}
-          params={params}
-          depth={0}
-          updateLineage={updateLineage}
-        />
-      ))}
-    </UnorderedList>
   );
 };
