@@ -21,9 +21,9 @@ import useFilteredData from './hooks/useFilteredData';
 import { queryFilterObject2String } from 'src/views/search-results-page/helpers';
 
 export interface TableData
-  extends Omit<ResourceCatalog, 'types'>,
-    Omit<Repository, 'types'> {
-  types: ResourceCatalog['types'] | Repository['types'];
+  extends Omit<ResourceCatalog, 'type'>,
+    Omit<Repository, 'type'> {
+  type: ResourceCatalog['type'] | Repository['type'];
 }
 
 interface TableWithSearchProps {
@@ -200,23 +200,22 @@ export const RepositoryCells = ({
   data: TableData;
   isLoading?: boolean;
 }) => {
-  const href =
-    data?.types && data.types.includes('Resource Catalog')
-      ? {
-          pathname: `/resources`,
-          query: {
-            id: data._id,
-          },
-        }
-      : {
-          pathname: `/search`,
-          query: {
-            q: '',
-            filters: queryFilterObject2String({
-              'includedInDataCatalog.name': [data._id],
-            }),
-          },
-        };
+  const href = data?.type?.includes('Resource Catalog')
+    ? {
+        pathname: `/resources`,
+        query: {
+          id: data._id,
+        },
+      }
+    : {
+        pathname: `/search`,
+        query: {
+          q: '',
+          filters: queryFilterObject2String({
+            'includedInDataCatalog.name': [data._id],
+          }),
+        },
+      };
   return (
     <Flex id={`cell-${data._id}-${column.property}`} py={1}>
       {/* Repository/Resource Catalog name */}
@@ -252,7 +251,7 @@ export const RepositoryCells = ({
       )}
 
       {/* Repository / Resource Catalog type, domain and conditions of access */}
-      {(column.property === 'types' ||
+      {(column.property === 'type' ||
         column.property === 'domain' ||
         column.property === 'conditionsOfAccess') && (
         <SkeletonText
@@ -264,9 +263,9 @@ export const RepositoryCells = ({
           fontSize='sm'
           noOfLines={2}
         >
-          {column.property === 'types' &&
-            (data.types
-              ? data.types
+          {column.property === 'type' &&
+            (data.type
+              ? data.type
                   .map(type => formatTypeName(type))
                   .sort((a, b) => a.localeCompare(b))
                   .join(', ')

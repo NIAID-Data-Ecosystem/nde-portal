@@ -36,7 +36,10 @@ export const CheckboxList = ({
   description,
   handleChange,
   selectedOptions,
-}: CheckboxListProps) => {
+  size = 'md',
+  buttonProps,
+  ...rest
+}: CheckboxListProps<T>) => {
   return (
     <Flex flex={{ base: 1, sm: 'unset' }} height={{ base: 'unset' }}>
       <Popover>
