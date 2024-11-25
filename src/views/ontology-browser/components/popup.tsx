@@ -9,7 +9,7 @@ import {
   ONTOLOGY_BROWSER_OPTIONS,
   searchOntologyAPI,
   SearchParams,
-} from '../helpers';
+} from '../utils/api-helpers';
 
 const extractSubstringFromQueryString = (term: string, fieldName: string) => {
   const regex = new RegExp(`${fieldName}:"([^"]+)"(?=\\s*(AND|OR|NOT|$))`);
