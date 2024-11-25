@@ -22,6 +22,7 @@ export const fetchFieldsFromMapping = async (): Promise<MappedFields[]> => {
       property: key.split('.').pop() || key,
       type: response.data[key].type,
     }));
+    console.log(fields);
     return fields;
   } catch (error: any) {
     console.error('Error fetching fields from mapping:', error.message);

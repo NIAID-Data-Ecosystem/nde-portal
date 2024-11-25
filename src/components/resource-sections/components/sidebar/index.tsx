@@ -17,7 +17,7 @@ import { Route } from 'src/components/resource-sections/helpers';
 import { useLocalStorage } from 'usehooks-ts';
 import { CardContainer } from 'src/components/resource-sections/components/related-datasets';
 import { FaMagnifyingGlass } from 'react-icons/fa6';
-import { External } from './components/external';
+import { ExternalAccess, UsageInfo } from './components/external';
 import { ScrollContainer } from 'src/components/scroll-container';
 import { ResourceData } from 'src/pages/resources';
 import { CompletenessBadgeCircle } from 'src/components/metadata-completeness-badge/Circular';
@@ -57,7 +57,8 @@ export const Sidebar = ({
             />
           )}
           {/* External links to access data, documents or dataset at the source. */}
-          <External data={data} isLoading={isLoading} hasDivider={true} />
+          <ExternalAccess data={data} isLoading={isLoading} hasDivider={true} />
+          <UsageInfo data={data} isLoading={isLoading} />
         </Card>
 
         {/* Local navigation for page */}

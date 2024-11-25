@@ -43,7 +43,7 @@ describe('API Query Functions', () => {
         missing: 0,
         other: 0,
         total: 0,
-        _type: '',
+        _type: 'terms',
       },
       multi_terms_agg: {
         terms: [
@@ -53,7 +53,7 @@ describe('API Query Functions', () => {
         missing: 0,
         other: 0,
         total: 0,
-        _type: '',
+        _type: 'terms',
       },
     },
   };

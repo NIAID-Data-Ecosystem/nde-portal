@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { FaClockRotateLeft, FaXmark } from 'react-icons/fa6';
+import React, { useEffect, useMemo, useState } from 'react';
+import { FaClockRotateLeft } from 'react-icons/fa6';
 import { uniq } from 'lodash';
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/router';
@@ -122,7 +122,10 @@ const SearchBar = ({
       query: { q: `${term.trim()}` },
     });
   };
-
+  const historyList = useMemo(
+    () => [...searchHistory].reverse(),
+    [searchHistory],
+  );
   return (
     <>
       <SearchInput
@@ -134,8 +137,8 @@ const SearchBar = ({
         onChange={setSearchTerm}
         onSubmit={handleSubmit}
         getInputValue={(idx: number): string => {
-          if (searchHistory && searchHistory[idx]) {
-            return searchHistory[idx] || '';
+          if (historyList && historyList[idx]) {
+            return historyList[idx] || '';
           }
           return '';
         }}
@@ -158,7 +161,7 @@ const SearchBar = ({
                 color='primary.600'
                 fontWeight='medium'
               >
-                {searchHistory.length
+                {historyList.length
                   ? 'Previous searches'
                   : 'No previous searches.'}
               </Text>
@@ -170,7 +173,7 @@ const SearchBar = ({
                 onClick={() => setIsOpen(false)}
               /> */}
             </ListItem>
-            {[...searchHistory].reverse().map((str, index) => {
+            {historyList.map((str, index) => {
               return (
                 <SearchHistoryItem
                   key={str}

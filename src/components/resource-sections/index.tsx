@@ -4,10 +4,16 @@ import {
   Box,
   Divider,
   Flex,
+  HStack,
   ListItem,
   Skeleton,
+  Stack,
+  StackDivider,
   UnorderedList,
+  VStack,
 } from '@chakra-ui/react';
+import { FaWandMagicSparkles } from 'react-icons/fa6';
+
 import { Link } from 'src/components/link';
 import {
   ResourceDates,
@@ -23,7 +29,10 @@ import FilesTable from './components/files-table';
 import { CitedByTable } from './components/cited-by-table';
 import { DisplayHTMLContent } from '../html-content';
 import SoftwareInformation from './components/software-information';
-import { External } from './components/sidebar/components/external';
+import {
+  ExternalAccess,
+  UsageInfo,
+} from './components/sidebar/components/external';
 import { Funding } from './components/funding';
 import { JsonViewer } from '../json-viewer';
 import ResourceIsPartOf from './components/is-part-of';
@@ -32,6 +41,7 @@ import { CompletenessBadgeCircle } from 'src/components/metadata-completeness-ba
 import { ResourceCatalogCollection } from './components/collection-information';
 import { DownloadMetadata } from '../download-metadata';
 import { Keywords } from './components/keywords';
+import { Summary } from './components/summary';
 
 // Metadata displayed in each section
 export const sectionMetadata: { [key: string]: (keyof FormattedResource)[] } = {
@@ -93,9 +103,36 @@ const Sections = ({
         doi={data?.doi}
         nctid={data?.nctid}
       />
-      {data?.author && <ResourceAuthors authors={data.author} />}
       {/* Banner showing data type and publish date. */}
+      {data?.author && <ResourceAuthors authors={data.author} />}
+
       <ResourceDates data={data} />
+      {/*<--- AI Generated short description -->*/}
+      {data?.disambiguatingDescription && (
+        <Flex mx={6} my={2}>
+          <Summary
+            description={data.disambiguatingDescription}
+            tagLabel='AI Generated'
+          />
+          {/* Badge indicating completeness of metadata */}
+          {/* {data && data['_meta'] && (
+          <Flex
+            px={4}
+            py={4}
+            justifyContent='center'
+            minWidth='250px'
+            display={{ base: 'none', lg: 'flex' }}
+          >
+            <CompletenessBadgeCircle
+              type={data['@type']}
+              stats={data['_meta']}
+              size='lg'
+            />
+          </Flex>
+        )} */}
+        </Flex>
+      )}
+
       {sections.map(section => {
         return (
           <Section
@@ -117,28 +154,43 @@ const Sections = ({
                 flexDirection='column'
                 minWidth='250px'
               >
-                {/* Badge indicating completeness of metadata */}
-                {data && data['_meta'] && (
-                  <Flex px={4} py={4} justifyContent='center'>
-                    <CompletenessBadgeCircle
-                      type={data['@type']}
-                      stats={data['_meta']}
-                      size='lg'
-                    />
-                  </Flex>
-                )}
-
-                {/* External links to access data, documents or dataset at the source. */}
-                <External
-                  data={data}
-                  isLoading={isLoading}
-                  hasDivider={false}
-                />
+                <Stack
+                  flexWrap='wrap'
+                  direction={{ base: 'column', md: 'row' }}
+                  divider={<StackDivider borderColor='gray.100' />}
+                >
+                  {/* Badge indicating completeness of metadata */}
+                  {data && data['_meta'] && (
+                    <Flex
+                      px={4}
+                      py={4}
+                      alignItems='center'
+                      justifyContent='center'
+                      minWidth='250px'
+                      flex={1}
+                    >
+                      <CompletenessBadgeCircle
+                        type={data['@type']}
+                        stats={data['_meta']}
+                        size='lg'
+                      />
+                    </Flex>
+                  )}
+                  {/* External links to access data, documents or dataset at the source. */}
+                  <ExternalAccess
+                    data={data}
+                    isLoading={isLoading}
+                    hasDivider={false}
+                    minWidth={{ base: 'unset', sm: '350px' }}
+                  />
+                </Stack>
+                <UsageInfo data={data} isLoading={isLoading} />
               </Flex>
             )}
             {section.hash === 'overview' && (
               <>
                 <ResourceOverview isLoading={isLoading} {...data} />
+
                 <ResourceIsPartOf
                   isLoading={isLoading}
                   studies={data?.isPartOf}

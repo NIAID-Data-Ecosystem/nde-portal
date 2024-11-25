@@ -21,9 +21,9 @@ import useFilteredData from './hooks/useFilteredData';
 import { queryFilterObject2String } from 'src/views/search-results-page/helpers';
 
 export interface TableData
-  extends Omit<ResourceCatalog, 'type'>,
-    Omit<Repository, 'type'> {
-  type: ResourceCatalog['type'] | Repository['type'];
+  extends Omit<ResourceCatalog, 'types'>,
+    Omit<Repository, 'types'> {
+  types: ResourceCatalog['types'] | Repository['types'];
 }
 
 interface TableWithSearchProps {
@@ -39,14 +39,6 @@ interface TableWithSearchProps {
   }) => React.ReactNode;
   searchInputProps?: Partial<SearchInputProps>;
 }
-
-export const SEARCH_FIELDS = [
-  'name',
-  'abstract',
-  'domain',
-  'conditionsOfAccess',
-  'type',
-] as (keyof TableData)[];
 
 export const TableWithSearch: React.FC<TableWithSearchProps> = ({
   data = [],
@@ -209,8 +201,14 @@ export const RepositoryCells = ({
   isLoading?: boolean;
 }) => {
   const href =
-    data.type === 'Repository'
+    data?.types && data.types.includes('Resource Catalog')
       ? {
+          pathname: `/resources`,
+          query: {
+            id: data._id,
+          },
+        }
+      : {
           pathname: `/search`,
           query: {
             q: '',
@@ -218,14 +216,7 @@ export const RepositoryCells = ({
               'includedInDataCatalog.name': [data._id],
             }),
           },
-        }
-      : {
-          pathname: `/resources`,
-          query: {
-            id: data._id,
-          },
         };
-
   return (
     <Flex id={`cell-${data._id}-${column.property}`} py={1}>
       {/* Repository/Resource Catalog name */}
@@ -260,8 +251,8 @@ export const RepositoryCells = ({
         </SkeletonText>
       )}
 
-      {/* Repository/Resource Catalog type, domain and conditions of access */}
-      {(column.property === 'type' ||
+      {/* Repository / Resource Catalog type, domain and conditions of access */}
+      {(column.property === 'types' ||
         column.property === 'domain' ||
         column.property === 'conditionsOfAccess') && (
         <SkeletonText
@@ -273,8 +264,13 @@ export const RepositoryCells = ({
           fontSize='sm'
           noOfLines={2}
         >
-          {column.property === 'type' &&
-            (data.type ? formatTypeName(data.type) : '-')}
+          {column.property === 'types' &&
+            (data.types
+              ? data.types
+                  .map(type => formatTypeName(type))
+                  .sort((a, b) => a.localeCompare(b))
+                  .join(', ')
+              : '-')}
           {column.property === 'domain' &&
             (data.domain ? formatDomainName(data.domain) : '-')}
           {column.property === 'conditionsOfAccess' &&

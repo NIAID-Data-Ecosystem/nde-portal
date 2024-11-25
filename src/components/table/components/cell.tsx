@@ -14,7 +14,7 @@ import { TableSortToggle } from './sort-toggle';
 export const Label = React.memo(({ children, ...props }: TextProps) => {
   return (
     <Text
-      fontSize='13px'
+      fontSize='xs'
       color='gray.800'
       textTransform='uppercase'
       lineHeight='short'

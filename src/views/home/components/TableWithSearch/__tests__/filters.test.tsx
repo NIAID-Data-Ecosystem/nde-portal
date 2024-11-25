@@ -11,7 +11,7 @@ describe('Landing Table Filters Component', () => {
       abstract: 'Lorem ipsum dolor sit amet',
       domain: 'iid',
       conditionsOfAccess: 'Open',
-      type: 'ResourceCatalog',
+      types: ['Resource Catalog'],
     },
     {
       _id: 'source_02',
@@ -19,7 +19,7 @@ describe('Landing Table Filters Component', () => {
       abstract: 'Orci varius natoque penatibus et magnis dis parturient montes',
       domain: 'generalist',
       conditionsOfAccess: 'Open',
-      type: 'Repository',
+      types: ['Dataset Repository'],
     },
     {
       _id: 'source_03',
@@ -27,7 +27,7 @@ describe('Landing Table Filters Component', () => {
       abstract: 'Lorem ipsum dolor sit amet',
       domain: 'iid',
       conditionsOfAccess: 'Restricted',
-      type: 'ResourceCatalog',
+      types: ['Resource Catalog'],
     },
   ] as any[];
 

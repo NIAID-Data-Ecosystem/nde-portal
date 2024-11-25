@@ -49,7 +49,10 @@ export const MetadataBlock = ({
   );
 };
 
-export const MetadataLabel = ({ label }: Pick<MetadataBlockProps, 'label'>) => {
+export const MetadataLabel = ({
+  label,
+  ...props
+}: Pick<MetadataBlockProps, 'label'>) => {
   return (
     <Text
       mx={1}
@@ -60,6 +63,7 @@ export const MetadataLabel = ({ label }: Pick<MetadataBlockProps, 'label'>) => {
       color='inherit'
       whiteSpace={['unset', 'nowrap']}
       lineHeight='inherit'
+      {...props}
     >
       {label}
     </Text>

@@ -40,6 +40,19 @@ const TypeBanner: React.FC<TypeBannerProps> = ({
   ...props
 }) => {
   const colorScheme = getTypeColor(type);
+  const abstract = SCHEMA_DEFINITIONS['@type']?.['abstract'];
+  const description = SCHEMA_DEFINITIONS['@type']?.['description'];
+
+  const abstractTooltipLabel =
+    abstract && type && type in abstract
+      ? (abstract as Record<string, string>)[type]
+      : '';
+
+  const descriptionTooltipLabel =
+    description && type && type in description
+      ? (description as Record<string, string>)[type]
+      : '';
+
   return (
     <Flex
       flexWrap='wrap'
@@ -61,7 +74,7 @@ const TypeBanner: React.FC<TypeBannerProps> = ({
               bg: colorScheme['lt'],
             }}
           >
-            <Tooltip label={SCHEMA_DEFINITIONS['@type']['abstract'][type]}>
+            <Tooltip label={abstractTooltipLabel || descriptionTooltipLabel}>
               <Text
                 fontSize='xs'
                 color='white'

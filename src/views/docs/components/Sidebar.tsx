@@ -167,6 +167,7 @@ export const SidebarMobile = ({
           return (
             <MenuGroup key={category.id} title={category.name}>
               {category.items.map(item => {
+                if (!item?.slug) return null;
                 const isSelected = selectedSlug === item.slug;
                 return (
                   <NextLink
@@ -272,7 +273,8 @@ export const SidebarDesktop = ({
                   </h2>
                   <AccordionPanel p={0}>
                     <UnorderedList ml={0}>
-                      {category.items.map((item, i) => {
+                      {category.items.map(item => {
+                        if (!item?.slug) return null;
                         const isSelected = selectedSlug === item.slug;
                         const bg = isSelected
                           ? `${colorScheme}.100`

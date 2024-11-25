@@ -104,12 +104,18 @@ export default {
     />
   ),
   img: (props: ImageProps) => {
+    // Strapi image path retrieved from the API is a full path but we only need the relative path
+    const relative_url =
+      props.src && !props.src.startsWith('/')
+        ? `/uploads/${props.src.split('/uploads/')[1]}`
+        : props.src;
+
     if (props.className === 'unstyled') {
       return (
         <Image
           {...props}
           alt={props.alt || 'image'}
-          src={`${process.env.NEXT_PUBLIC_STRAPI_API_URL}${props.src}`}
+          src={`${process.env.NEXT_PUBLIC_STRAPI_API_URL}${relative_url}`}
         />
       );
     }
@@ -129,7 +135,7 @@ export default {
           margin='0 auto'
           {...props}
           alt={props.alt || 'image'}
-          src={`${process.env.NEXT_PUBLIC_STRAPI_API_URL}${props.src}`}
+          src={`${process.env.NEXT_PUBLIC_STRAPI_API_URL}${relative_url}`}
         />
       </Box>
     );

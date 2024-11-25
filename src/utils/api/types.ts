@@ -236,6 +236,12 @@ export interface IsRelatedTo {
   relationship?: string;
 }
 
+export interface MeasurementTechnique extends PropertyWithPubtator {
+  curie?: string;
+  identifier?: string;
+  score?: number;
+}
+
 export interface PropertyNameWithURL {
   name?: string | string[];
   url?: string;
@@ -314,6 +320,8 @@ export interface InputProperties {
   identifier?: string;
   name?: string;
   encodingFormat?: string;
+  url?: string;
+  inDefinedTermSet?: string;
 }
 
 export interface CollectionSize {
@@ -327,7 +335,18 @@ export interface OutputProperties {
   identifier?: string;
   name?: string;
   encodingFormat?: string;
+  url?: string;
+  inDefinedTermSet?: string;
 }
+
+export interface FeatureListProperties {
+  identifier?: string;
+  name?: string;
+  encodingFormat?: string;
+  url?: string;
+  inDefinedTermSet?: string;
+}
+
 // Formatting standardized resource fields
 export interface FormattedResource {
   [key: string]: any;
@@ -362,7 +381,7 @@ export interface FormattedResource {
   applicationSubCategory: ApplicationSubCategory[] | null;
   applicationSuite: string[] | null;
   author: Author[] | null;
-  availableOnDevice: string | null;
+  availableOnDevice: string[] | null;
   citation: Citation[] | null;
   citedBy: CitedBy[] | null;
   codeRepository: string[] | string | null;
@@ -376,11 +395,13 @@ export interface FormattedResource {
   dateModified: string | null;
   datePublished: string | null;
   description: string | null;
+  disambiguatingDescription: string | null;
   discussionUrl: string[] | null;
   disease: string | null;
   distribution: Distribution[] | null;
   doi: string | null;
   downloadUrl: { name: string }[] | null;
+  featureList: FeatureListProperties[] | null;
   funding: Funding[] | null;
   genre: Domain | null;
   hasAPI: boolean | null;
@@ -407,8 +428,9 @@ export interface FormattedResource {
   keywords: string[] | null;
   license: string | null;
   mainEntityOfPage: string | null;
-  measurementTechnique: PropertyNameWithURL[] | null;
+  measurementTechnique: MeasurementTechnique[] | null;
   nctid: string | null;
+  operatingSystem: string[] | null;
   output: OutputProperties[] | null;
   processorRequirements: string[] | null;
   programmingLanguage: string[] | null;

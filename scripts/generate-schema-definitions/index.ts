@@ -13,6 +13,7 @@ const OUTPUT_PATH = './configs/schema-definitions.json';
 export enum ResourceType {
   Dataset,
   ResourceCatalog,
+  ComputationalTool,
 }
 
 // Array of supported resource types.

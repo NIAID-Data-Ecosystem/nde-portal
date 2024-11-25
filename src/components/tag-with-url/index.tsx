@@ -34,6 +34,7 @@ export const TagWithUrl = ({
   href,
   isExternal,
   leftIcon,
+  noOfLines = 1,
   ...props
 }: TagWithUrlProps) => {
   const Label = () =>
@@ -56,7 +57,7 @@ export const TagWithUrl = ({
   // See issue: https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/245
   if (!href)
     return (
-      <Text fontSize={props.fontSize || 'xs'} whiteSpace='nowrap' {...props}>
+      <Text fontSize={props.fontSize || 'xs'} {...props}>
         <Label />
         {children}
       </Text>
@@ -75,11 +76,12 @@ export const TagWithUrl = ({
         },
       }}
       lineHeight='shorter'
+      // whiteSpace='nowrap' // add this to prevent the tag from wrapping
       {...props}
     >
       {leftIcon && <TagLeftIcon as={leftIcon} />}
 
-      <TagLabel fontSize='inherit' lineHeight='inherit'>
+      <TagLabel fontSize='inherit' lineHeight='inherit' display='inline'>
         <Label />
         <Text
           as='span'
