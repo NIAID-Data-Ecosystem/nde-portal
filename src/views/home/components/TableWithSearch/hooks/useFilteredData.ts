@@ -7,7 +7,7 @@ export const SEARCH_FIELDS = [
   'abstract',
   'domain',
   'conditionsOfAccess',
-  'types',
+  'type',
 ] as (keyof TableData)[];
 
 // Custom hook example (placeholder, implement according to your needs)

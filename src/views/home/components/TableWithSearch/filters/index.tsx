@@ -21,7 +21,7 @@ export const Filters = ({ data, filters, updateFilter }: TableFiltersProps) => {
     () =>
       getFilterData({
         data,
-        property: 'types',
+        property: 'type',
         formatName: type => formatTypeName(type),
       }),
     [data],
@@ -57,11 +57,11 @@ export const Filters = ({ data, filters, updateFilter }: TableFiltersProps) => {
       {types.length > 0 && (
         <CheckboxList
           label='Type'
-          property='types'
+          property='type'
           description={SCHEMA_DEFINITIONS['type'].abstract['Dataset']}
           options={types.sort((a, b) => a.name.localeCompare(b.name))}
           selectedOptions={
-            filters.filter(item => item.property === 'types') || []
+            filters.filter(item => item.property === 'type') || []
           }
           handleChange={props => updateFilter({ ...props, property: 'type' })}
         />

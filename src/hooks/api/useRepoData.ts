@@ -12,7 +12,7 @@ export interface Repository {
   _id: string;
   abstract?: string;
   conditionsOfAccess?: FormattedResource['conditionsOfAccess'];
-  types: (
+  type: (
     | 'Computational Tool Repository'
     | 'Dataset Repository'
     | 'Resource Catalog'
@@ -89,39 +89,38 @@ export function useRepoData(options: any = {}) {
       datasets: string[];
     }) => {
       const sources = data?.src || [];
-      const repositories = Object.values(sources).map(({ sourceInfo }) => {
-        // [NOTE]: This is a temporary fix to handle the case where sourceInfo is an array (i.e. VeuPathCatalogs), pending further discussions with NIAID .
-        if (!sourceInfo || Array.isArray(sourceInfo)) {
-          return {};
-        }
+      const repositories = Object.values(sources)
+        .filter(
+          source => source?.sourceInfo && !Array.isArray(source.sourceInfo),
+        )
+        .map(({ sourceInfo }) => {
+          const {
+            identifier,
+            abstract,
+            conditionsOfAccess,
+            name,
+            type,
+            url,
+            genre,
+          } = sourceInfo || {};
+          const types = [
+            ...(datasets.includes(identifier) ? ['Dataset Repository'] : []),
+            ...(computationalTools.includes(identifier) ||
+            type === 'ComputationalTools'
+              ? ['Computational Tool Repository']
+              : []),
+          ].sort((a, b) => a.localeCompare(b));
 
-        const {
-          identifier,
-          abstract,
-          conditionsOfAccess,
-          name,
-          type,
-          url,
-          genre,
-        } = sourceInfo || {};
-        const types = [
-          ...(datasets.includes(identifier) ? ['Dataset Repository'] : []),
-          ...(computationalTools.includes(identifier) ||
-          type === 'Computational Tool Repository'
-            ? ['Computational Tool Repository']
-            : []),
-        ].sort((a, b) => a.localeCompare(b));
-
-        return {
-          _id: identifier,
-          abstract: abstract || '',
-          types: types,
-          name: name || '',
-          domain: genre,
-          url,
-          conditionsOfAccess: conditionsOfAccess || '',
-        };
-      });
+          return {
+            _id: identifier,
+            abstract: abstract || '',
+            type: types,
+            name: name || '',
+            domain: genre,
+            url,
+            conditionsOfAccess: conditionsOfAccess || '',
+          };
+        });
 
       return repositories;
     },

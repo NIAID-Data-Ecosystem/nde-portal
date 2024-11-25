@@ -215,7 +215,7 @@ const Home: NextPage<{
                     },
                     {
                       title: 'Type',
-                      property: 'types',
+                      property: 'type',
                       isSortable: true,
                       props: { maxW: '180px', minW: '180px' },
                     },

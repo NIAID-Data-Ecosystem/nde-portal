@@ -1,6 +1,6 @@
 import { TableData } from '.';
 
-export const formatTypeName = (type: TableData['types'][number]) => {
+export const formatTypeName = (type: TableData['type'][number]) => {
   return type;
 };
 

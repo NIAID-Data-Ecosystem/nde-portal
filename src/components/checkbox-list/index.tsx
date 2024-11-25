@@ -46,6 +46,7 @@ export const CheckboxList = <T extends Option>({
   buttonProps,
   ...rest
 }: CheckboxListProps<T>) => {
+  console.log(selectedOptions);
   return (
     <Flex flex={{ base: 1, sm: 'unset' }} height={{ base: 'unset' }} {...rest}>
       <Popover>
