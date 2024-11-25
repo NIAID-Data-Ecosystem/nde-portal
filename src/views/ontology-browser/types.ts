@@ -59,8 +59,8 @@ export interface OntologyLineageItem {
 
 export interface OntologyLineageItemWithCounts extends OntologyLineageItem {
   counts: {
-    term: number;
-    lineage: number;
+    termCount: number;
+    termAndChildrenCount: number;
   };
 }
 

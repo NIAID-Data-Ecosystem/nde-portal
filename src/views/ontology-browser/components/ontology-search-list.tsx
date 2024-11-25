@@ -170,19 +170,25 @@ export const OntologySearchList = ({
                             {label}
                           </Text>
                         </Box>
-                        <Flex>
+                        <Flex alignItems='center'>
                           <OntologyBrowserCountTag
-                            colorScheme={counts.term === 0 ? 'gray' : 'primary'}
-                            label={getTooltipLabelByCountType('term')}
+                            colorScheme={
+                              counts.termCount === 0 ? 'gray' : 'primary'
+                            }
+                            label={getTooltipLabelByCountType('termCount')}
                           >
-                            {counts.term?.toLocaleString() || 0}
+                            {counts.termCount?.toLocaleString() || 0}
                           </OntologyBrowserCountTag>
 
                           <OntologyBrowserCountTag
                             colorScheme={'white'}
-                            label={getTooltipLabelByCountType('lineage')}
+                            label={getTooltipLabelByCountType(
+                              'termAndChildrenCount',
+                            )}
                           >
-                            {'/ ' + counts.lineage?.toLocaleString() || 0}
+                            {'/ ' +
+                              counts.termAndChildrenCount?.toLocaleString() ||
+                              0}
                           </OntologyBrowserCountTag>
 
                           <IconButton

@@ -233,8 +233,8 @@ const TreeNode = ({
   // Hide nodes with no children that have 0 datasets if configured to do so
   if (
     !config?.includeEmptyCounts &&
-    node.counts.term === 0 &&
-    node.counts.lineage === 0 &&
+    node.counts.termCount === 0 &&
+    node.counts.termAndChildrenCount === 0 &&
     !childrenList.length
   ) {
     return <></>;
@@ -301,21 +301,21 @@ const TreeNode = ({
             </Link>
           </Box>
         </Flex>
-        <Flex>
+        <Flex alignItems='center'>
           <OntologyBrowserCountTag
-            colorScheme={node.counts.term === 0 ? 'gray' : 'primary'}
+            colorScheme={node.counts.termCount === 0 ? 'gray' : 'primary'}
             isLoading={isLoading}
-            label={getTooltipLabelByCountType('term')}
+            label={getTooltipLabelByCountType('termCount')}
           >
-            {node.counts.term?.toLocaleString() || 0}
+            {node.counts.termCount?.toLocaleString() || 0}
           </OntologyBrowserCountTag>
 
           <OntologyBrowserCountTag
             colorScheme={'white'}
             isLoading={isLoading}
-            label={getTooltipLabelByCountType('lineage')}
+            label={getTooltipLabelByCountType('termAndChildrenCount')}
           >
-            {'/ ' + node.counts.lineage?.toLocaleString() || 0}
+            {'/ ' + node.counts.termAndChildrenCount?.toLocaleString() || 0}
           </OntologyBrowserCountTag>
 
           <IconButton

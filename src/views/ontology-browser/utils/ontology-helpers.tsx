@@ -18,7 +18,7 @@ export const getChildren = (
 };
 
 /**
- * Sorts the children list by term count and lineage count in descending order.
+ * Sorts the children list by term count and term+children count in descending order.
  *
  * @param childrenList - The list of children nodes to sort.
  * @returns - The sorted list of children nodes.
@@ -28,13 +28,13 @@ export const sortChildrenList = (
 ) => {
   return childrenList.sort((a, b) => {
     // First, sort by `counts.term` in descending order
-    if (a.counts.term !== b.counts.term) {
-      return b.counts.term - a.counts.term;
+    if (a.counts.termCount !== b.counts.termCount) {
+      return b.counts.termCount - a.counts.termCount;
     }
 
-    // Then, sort by `lineage` in descending order
-    if (a.counts.lineage !== b.counts.lineage) {
-      return b.counts.lineage - a.counts.lineage;
+    // Then, sort by `term+children` in descending order
+    if (a.counts.termAndChildrenCount !== b.counts.termAndChildrenCount) {
+      return b.counts.termAndChildrenCount - a.counts.termAndChildrenCount;
     }
 
     return 0;

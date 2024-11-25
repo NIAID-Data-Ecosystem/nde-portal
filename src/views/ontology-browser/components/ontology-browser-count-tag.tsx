@@ -11,7 +11,7 @@ import { OntologyLineageItemWithCounts } from '../types';
 export const getTooltipLabelByCountType = (
   type: keyof OntologyLineageItemWithCounts['counts'],
 ) => {
-  if (type === 'term') {
+  if (type === 'termCount') {
     return (
       <>
         Number of datasets{' '}
@@ -21,7 +21,7 @@ export const getTooltipLabelByCountType = (
         in the NIAID Discovery Portal
       </>
     );
-  } else if (type === 'lineage') {
+  } else if (type === 'termAndChildrenCount') {
     return (
       <>
         Number of datasets{' '}

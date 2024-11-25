@@ -443,8 +443,8 @@ export const fetchPortalCounts = async (
         ...node,
         hasChildren: node.hasChildren || hasChildTaxons,
         counts: {
-          term: directTermCount,
-          lineage: directTermCount + childTermsCount,
+          termCount: directTermCount,
+          termAndChildrenCount: directTermCount + childTermsCount,
         },
       };
     }),
