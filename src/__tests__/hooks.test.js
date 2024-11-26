@@ -11,7 +11,7 @@ describe('use query hook', () => {
     });
 
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
-    const { _id, abstract, conditionsOfAccess, name, types, url, domain } =
+    const { _id, abstract, conditionsOfAccess, name, type, url, domain } =
       result.current.data[0];
 
     expect(result.current.data).toEqual(
@@ -19,7 +19,7 @@ describe('use query hook', () => {
         expect.objectContaining({
           _id,
           abstract,
-          types,
+          type,
           name: name || '',
           domain,
           url,
