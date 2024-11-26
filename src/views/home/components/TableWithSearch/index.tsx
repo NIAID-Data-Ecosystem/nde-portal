@@ -63,8 +63,15 @@ export const TableWithSearch: React.FC<TableWithSearchProps> = ({
   const filteredData = useFilteredData(data, searchTerm, filters);
 
   const updateFilters = useCallback(
-    (newFilter: { name: string; value: string; property: string }) => {
+    (
+      newFilter:
+        | { name: string; value: string; property: string }
+        | { name: string; value: string; property: string }[],
+    ) => {
       setFilters(prevFilters => {
+        if (Array.isArray(newFilter)) {
+          return newFilter;
+        }
         // Check if filter is already added
         const index = prevFilters.findIndex(
           f => f.property === newFilter.property && f.value === newFilter.value,

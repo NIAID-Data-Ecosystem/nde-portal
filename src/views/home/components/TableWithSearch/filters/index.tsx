@@ -8,11 +8,19 @@ import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
 interface TableFiltersProps {
   data: TableData[];
   filters: { name: string; value: string; property: string }[];
-  updateFilter: (filters: {
-    name: string;
-    value: string;
-    property: string;
-  }) => void;
+  updateFilter: (
+    filters:
+      | {
+          name: string;
+          value: string;
+          property: string;
+        }
+      | {
+          name: string;
+          value: string;
+          property: string;
+        }[],
+  ) => void;
 }
 
 export const Filters = ({ data, filters, updateFilter }: TableFiltersProps) => {
@@ -63,7 +71,7 @@ export const Filters = ({ data, filters, updateFilter }: TableFiltersProps) => {
           selectedOptions={
             filters.filter(item => item.property === 'type') || []
           }
-          handleChange={props => updateFilter({ ...props, property: 'type' })}
+          handleChange={items => updateFilter(items)}
         />
       )}
 
@@ -76,7 +84,7 @@ export const Filters = ({ data, filters, updateFilter }: TableFiltersProps) => {
           selectedOptions={
             filters.filter(item => item.property === 'domain') || []
           }
-          handleChange={props => updateFilter({ ...props, property: 'domain' })}
+          handleChange={items => updateFilter(items)}
         />
       )}
 
@@ -99,9 +107,7 @@ export const Filters = ({ data, filters, updateFilter }: TableFiltersProps) => {
           selectedOptions={
             filters.filter(item => item.property === 'conditionsOfAccess') || []
           }
-          handleChange={props =>
-            updateFilter({ ...props, property: 'conditionsOfAccess' })
-          }
+          handleChange={items => updateFilter(items)}
         />
       )}
     </>

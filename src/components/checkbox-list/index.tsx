@@ -24,15 +24,16 @@ interface Option {
   name: string;
   value: string;
   count?: number;
+  property?: string;
 }
 
 interface CheckboxListProps<T extends Option> extends FlexProps {
   buttonProps?: ButtonProps;
   description?: string;
-  handleChange: (filters: T) => void;
+  handleChange: (filters: T | T[]) => void;
   label: string | React.ReactNode;
   options: T[];
-  selectedOptions: Pick<T, 'name' | 'value'>[];
+  selectedOptions: Pick<T, 'name' | 'value' | 'property'>[];
   size?: PopoverProps['size'];
 }
 
@@ -93,6 +94,23 @@ export const CheckboxList = <T extends Option>({
             )}
           </PopoverHeader>
           <PopoverBody>
+            <Flex justifyContent='flex-end'>
+              <Button
+                size='xs'
+                variant='link'
+                onClick={() => {
+                  if (selectedOptions.length === options.length) {
+                    handleChange([]);
+                  } else {
+                    handleChange(options);
+                  }
+                }}
+              >
+                {selectedOptions.length === options.length
+                  ? 'Clear all'
+                  : 'Select all'}
+              </Button>
+            </Flex>
             <ScrollContainer maxHeight='300px'>
               <CheckboxGroup
                 colorScheme='blue'
@@ -107,6 +125,7 @@ export const CheckboxList = <T extends Option>({
                         handleChange({
                           name: option.name,
                           value: e.target.value,
+                          property: option?.property || '',
                         } as T);
                       }}
                       px={1}

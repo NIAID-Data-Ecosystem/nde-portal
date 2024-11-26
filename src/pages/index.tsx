@@ -31,7 +31,6 @@ import { fetchAllFeaturedPages } from 'src/views/features/helpers';
 import { HeroBanner } from 'src/views/home/components/HeroBanner';
 import { TagWithUrl } from 'src/components/tag-with-url';
 import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
-import { borderRadius } from 'styled-system';
 
 const Home: NextPage<{
   data: {
