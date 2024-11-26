@@ -201,6 +201,7 @@ export const PageContainer: React.FC<PageContainerProps> = ({
                   ariaLabel='Search for datasets'
                   placeholder='Search for datasets'
                   size='md'
+                  showSearchHistory
                 />
               </Stack>
             </Flex>
