@@ -271,14 +271,6 @@ const Sections = ({
                   caption='Datasets or tools that this dataset/tool is a dependency for.'
                   isLoading={isLoading}
                   items={data.isBasisFor}
-                  columns={[
-                    { key: 'name', title: 'Name', props: { maxW: '50%' } },
-                    {
-                      key: 'type',
-                      title: 'Type',
-                      props: { w: '200px' },
-                    },
-                  ]}
                 />
               </Box>
             )}
