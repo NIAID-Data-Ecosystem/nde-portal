@@ -24,6 +24,7 @@ import {
 } from '../input-with-dropdown';
 import { SearchHistoryItem } from './components/search-history-item';
 import { CheckboxList } from '../checkbox-list';
+import { queryFilterObject2String } from 'src/views/search-results-page/helpers';
 
 const DropdownContent = dynamic(() =>
   import('src/components/input-with-dropdown/components/DropdownContent').then(
@@ -53,19 +54,7 @@ const SearchInput = ({
         return (
           <HStack height='100%'>
             {showOptionsMenu && (
-              <CheckboxList
-                {...optionMenuProps}
-                selectedOptions={[]}
-                handleChange={() => {}}
-                // label='Type'
-                // property='@type'
-                // description={SCHEMA_DEFINITIONS['type'].abstract['Dataset']}
-                // options={options}
-                // selectedOptions={
-                //   filters.filter(item => item.property === '@type') || []
-                // }
-                // handleChange={setFilters}
-              ></CheckboxList>
+              <CheckboxList {...optionMenuProps}></CheckboxList>
             )}
             <Button
               colorScheme={inputProps.colorScheme}
@@ -126,6 +115,11 @@ const SearchBar = ({
   // Search term entered in search bar.
   const [searchTerm, setSearchTerm] = useState<string>('');
 
+  /****** Handle query filters ******/
+  const [queryFilters, setQueryFilters] = useState<
+    { name: string; value: string; property: string }[]
+  >([]);
+
   // Update value when changed.
   useEffect(() => {
     const { q } = router.query;
@@ -151,7 +145,14 @@ const SearchBar = ({
     });
     router.push({
       pathname: `/search`,
-      query: { q: `${term.trim()}` },
+      query: {
+        q: `${term.trim()}`,
+        filters: queryFilterObject2String({
+          '@type': queryFilters
+            .filter(item => item.property === '@type')
+            ?.map(filter => filter.value),
+        }),
+      },
     });
   };
   const historyList = useMemo(
@@ -170,7 +171,12 @@ const SearchBar = ({
         type='text'
         showSearchHistory={showSearchHistory}
         showOptionsMenu={showOptionsMenu}
-        optionMenuProps={optionMenuProps}
+        optionMenuProps={{
+          ...optionMenuProps,
+          selectedOptions:
+            queryFilters?.filter(item => item.property === '@type') || [],
+          handleChange: setQueryFilters,
+        }}
         onChange={setSearchTerm}
         onSubmit={handleSubmit}
         getInputValue={(idx: number): string => {

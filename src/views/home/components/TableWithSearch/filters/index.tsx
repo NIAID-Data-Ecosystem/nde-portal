@@ -9,17 +9,11 @@ interface TableFiltersProps {
   data: TableData[];
   filters: { name: string; value: string; property: string }[];
   updateFilter: (
-    filters:
-      | {
-          name: string;
-          value: string;
-          property: string;
-        }
-      | {
-          name: string;
-          value: string;
-          property: string;
-        }[],
+    filters: {
+      name: string;
+      value: string;
+      property: string;
+    }[],
   ) => void;
 }
 
@@ -71,7 +65,7 @@ export const Filters = ({ data, filters, updateFilter }: TableFiltersProps) => {
           selectedOptions={
             filters.filter(item => item.property === 'type') || []
           }
-          handleChange={items => updateFilter(items)}
+          handleChange={updateFilter}
         />
       )}
 
@@ -84,7 +78,7 @@ export const Filters = ({ data, filters, updateFilter }: TableFiltersProps) => {
           selectedOptions={
             filters.filter(item => item.property === 'domain') || []
           }
-          handleChange={items => updateFilter(items)}
+          handleChange={updateFilter}
         />
       )}
 
@@ -107,7 +101,7 @@ export const Filters = ({ data, filters, updateFilter }: TableFiltersProps) => {
           selectedOptions={
             filters.filter(item => item.property === 'conditionsOfAccess') || []
           }
-          handleChange={items => updateFilter(items)}
+          handleChange={updateFilter}
         />
       )}
     </>

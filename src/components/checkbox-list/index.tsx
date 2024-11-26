@@ -30,7 +30,7 @@ interface Option {
 interface CheckboxListProps<T extends Option> extends FlexProps {
   buttonProps?: ButtonProps;
   description?: string;
-  handleChange: (filters: T | T[]) => void;
+  handleChange: (filters: Pick<T, 'name' | 'value' | 'property'>[]) => void;
   label: string | React.ReactNode;
   options: T[];
   selectedOptions: Pick<T, 'name' | 'value' | 'property'>[];
@@ -122,11 +122,29 @@ export const CheckboxList = <T extends Option>({
                       key={option.value}
                       value={option.value}
                       onChange={e => {
-                        handleChange({
+                        const newFilterItem = {
                           name: option.name,
-                          value: e.target.value,
-                          property: option?.property || '',
-                        } as T);
+                          property: option.property,
+                          value: option.value,
+                        } as T;
+                        // Check if filter is already selected
+                        const index = selectedOptions.findIndex(
+                          f =>
+                            f.property === newFilterItem.property &&
+                            f.value === newFilterItem.value,
+                        );
+                        if (index === -1) {
+                          // Add new filter
+                          return handleChange([
+                            ...selectedOptions,
+                            newFilterItem,
+                          ]);
+                        } else {
+                          // Remove filter if it's already selected
+                          return handleChange(
+                            selectedOptions.filter((_, i) => i !== index),
+                          );
+                        }
                       }}
                       px={1}
                       _hover={{ bg: 'tertiary.50' }}

@@ -87,6 +87,7 @@ export const TableWithSearch: React.FC<TableWithSearchProps> = ({
     },
     [],
   );
+
   return (
     <>
       {!isLoading && !data?.length ? (
@@ -114,11 +115,7 @@ export const TableWithSearch: React.FC<TableWithSearchProps> = ({
               onClose={() => setSearchTerm('')}
             />
             {/* <!-- Filters --> */}
-            <Filters
-              data={data}
-              filters={filters}
-              updateFilter={updateFilters}
-            />
+            <Filters data={data} filters={filters} updateFilter={setFilters} />
           </Stack>
 
           <Stack direction='column' flexWrap='wrap' py={2} spacing={2}>
