@@ -268,8 +268,28 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
             {...props}
           ></Flex>
         );
+      } else if (classNames?.includes('leftImage')) {
+        return (
+          <Flex
+            display='flex'
+            flexDirection={{ base: 'column', xl: 'row-reverse' }}
+            __css={{
+              span: { mt: 0 },
+              '.img-border': {
+                minW: 'unset',
+                minWidth: { base: '200px', xl: '300px' },
+                maxWidth: '400px',
+                flex: 1,
+                mb: 4,
+                mr: [0, 0, 6],
+                mt: [4, 4, 0],
+              },
+            }}
+            {...props}
+          ></Flex>
+        );
       }
-      return <Box {...props} bg='red' />;
+      return <Box {...props} />;
     },
     strong: (props: any) => (
       <Box as='strong' fontWeight='semibold' {...props} />

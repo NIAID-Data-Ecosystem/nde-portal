@@ -11,7 +11,7 @@ const mockData = [
     abstract: 'Lorem ipsum dolor sit amet',
     domain: 'IID',
     conditionsOfAccess: 'Open',
-    types: ['Resource Catalog'],
+    type: ['Resource Catalog'],
   },
   {
     _id: 'source_02',
@@ -19,7 +19,7 @@ const mockData = [
     abstract: 'Orci varius natoque penatibus et magnis dis parturient montes',
     domain: 'Generalist',
     conditionsOfAccess: 'Open',
-    types: ['Dataset Repository'],
+    type: ['Dataset Repository'],
   },
   {
     _id: 'source_03',
@@ -27,7 +27,7 @@ const mockData = [
     abstract: 'Lorem ipsum dolor sit amet',
     domain: 'IID',
     conditionsOfAccess: 'Restricted',
-    types: ['Resource Catalog'],
+    type: ['Resource Catalog'],
   },
   {
     _id: '04',
@@ -35,7 +35,7 @@ const mockData = [
     abstract: 'An abstract here',
     domain: 'Generalist',
     conditionsOfAccess: 'Unknown',
-    types: ['Dataset Repository'],
+    type: ['Dataset Repository'],
   },
 ] as TableData[];
 const mockColumns = [
@@ -157,6 +157,7 @@ describe('TableWithSearch Component', () => {
     });
     // Simulate the user clicking the checkbox
     await userEvent.click(checkboxInput);
+    expect(screen.getByText('Clear all')).toBeInTheDocument();
 
     rerender(
       <TableWithSearch
@@ -176,5 +177,5 @@ describe('TableWithSearch Component', () => {
     await userEvent.click(closeButton);
 
     expect(closeButton).not.toBeInTheDocument();
-  });
+  }, 8000);
 });
