@@ -5,7 +5,6 @@ import dynamic from 'next/dynamic';
 import { useRouter } from 'next/router';
 import {
   Button,
-  Divider,
   Flex,
   HStack,
   Icon,
@@ -23,7 +22,7 @@ import {
   useDropdownContext,
 } from '../input-with-dropdown';
 import { SearchHistoryItem } from './components/search-history-item';
-import { CheckboxList } from '../checkbox-list';
+import { CheckboxList, CheckboxListProps } from '../checkbox-list';
 import { queryFilterObject2String } from 'src/views/search-results-page/helpers';
 
 const DropdownContent = dynamic(() =>
@@ -35,7 +34,7 @@ const DropdownContent = dynamic(() =>
 interface SearchInputProps extends DropdownInputProps {
   showSearchHistory?: boolean;
   showOptionsMenu?: boolean;
-  optionMenuProps?: any;
+  optionMenuProps?: CheckboxListProps<OptionProps>;
 }
 const SearchInput = ({
   showSearchHistory,
@@ -53,7 +52,7 @@ const SearchInput = ({
       renderSubmitButton={() => {
         return (
           <HStack height='100%'>
-            {showOptionsMenu && (
+            {showOptionsMenu && optionMenuProps && (
               <CheckboxList {...optionMenuProps}></CheckboxList>
             )}
             <Button
@@ -171,12 +170,16 @@ const SearchBar = ({
         type='text'
         showSearchHistory={showSearchHistory}
         showOptionsMenu={showOptionsMenu}
-        optionMenuProps={{
-          ...optionMenuProps,
-          selectedOptions:
-            queryFilters?.filter(item => item.property === '@type') || [],
-          handleChange: setQueryFilters,
-        }}
+        optionMenuProps={
+          optionMenuProps
+            ? {
+                selectedOptions:
+                  queryFilters?.filter(item => item.property === '@type') || [],
+                handleChange: setQueryFilters,
+                ...optionMenuProps,
+              }
+            : undefined
+        }
         onChange={setSearchTerm}
         onSubmit={handleSubmit}
         getInputValue={(idx: number): string => {
@@ -235,6 +238,13 @@ const SearchBar = ({
   );
 };
 
+// Define the type for individual options in the checkbox list
+interface OptionProps {
+  name: string; // Display name for the option
+  value: string; // Unique value identifier for the option
+  property: string; // Associated property name (e.g., type, domain)
+}
+
 interface SearchBarWithDropdownProps {
   value?: string;
   ariaLabel: string;
@@ -243,7 +253,17 @@ interface SearchBarWithDropdownProps {
   size?: string;
   showSearchHistory?: boolean;
   showOptionsMenu?: boolean;
-  optionMenuProps?: any;
+  // Start with all properties from CheckboxListProps<OptionProps>,
+  // except 'handleChange' and 'selectedOptions'
+  optionMenuProps?: Omit<
+    CheckboxListProps<OptionProps>,
+    'handleChange' | 'selectedOptions'
+  > & {
+    // Optionally reintroduce 'handleChange' and 'selectedOptions' as  optional properties
+    // since we create default values in <SearchBar/>, and we want to allow the user to override them.
+    handleChange?: CheckboxListProps<OptionProps>['handleChange'];
+    selectedOptions?: CheckboxListProps<OptionProps>['selectedOptions'];
+  };
 }
 
 export const SearchBarWithDropdown = (props: SearchBarWithDropdownProps) => {

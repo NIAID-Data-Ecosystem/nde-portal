@@ -26,7 +26,7 @@ interface Option {
   [key: string]: any; // Allows other optional fields
 }
 
-interface CheckboxListProps<T extends Option> extends FlexProps {
+export interface CheckboxListProps<T extends Option> extends FlexProps {
   buttonProps?: ButtonProps;
   description?: string;
   handleChange: (filters: T[]) => void;
