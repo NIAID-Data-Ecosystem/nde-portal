@@ -36,7 +36,7 @@ export interface OLSAPIResponseItem {
 }
 
 export interface OntologyLineageRequestParams {
-  id: number;
+  id: string;
   ontology: string;
   lang?: string;
   size?: number;
@@ -49,12 +49,12 @@ export interface OntologyLineageItem {
   iri: string;
   label: string;
   ontologyName: string;
-  parentTaxonId: number | null;
+  parentTaxonId: string | null;
   state: {
     opened: boolean;
     selected: boolean;
   };
-  taxonId: number;
+  taxonId: string;
 }
 
 export interface OntologyLineageItemWithCounts extends OntologyLineageItem {

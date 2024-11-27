@@ -51,7 +51,7 @@ interface TreeProps {
   lineage: OntologyLineageItemWithCounts[];
   params: {
     q: string;
-    id: number;
+    id: string;
     ontology: OntologyLineageRequestParams['ontology'];
   };
   showFromIndex: number;

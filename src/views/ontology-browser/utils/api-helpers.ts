@@ -193,15 +193,15 @@ export const fetchLineageFromBioThingsAPI = async (
       .map((item: BioThingsDetailedLineageAPIResponseItem, idx: number) => {
         // Must set the parent to empty string if it is the root node.
         const isRootNode = item.parent_taxid === item.taxid;
-        const taxonId = +item.taxid;
+        const taxonId = item.taxid.toString();
         return {
-          id: item.taxid.toString(),
+          id: taxonId,
           commonName: item?.genbank_common_name || item?.common_name || '',
           hasChildren: true, // [TO DO]:BioThings API does not provide this information
           iri: formatIRI(taxonId, params.ontology),
           label: item.scientific_name.toLowerCase(),
           ontologyName: params.ontology,
-          parentTaxonId: isRootNode ? null : +item.parent_taxid,
+          parentTaxonId: isRootNode ? null : item.parent_taxid.toString(),
           rank: item.rank,
           state: {
             opened: idx != 0, // Open all nodes except the deepest one
@@ -278,11 +278,11 @@ export const fetchLineageFromOLSAPI = async (
     // Structure the lineage data.
     const processedLineage = lineageItems
       .map((item: OLSAPIResponseItem, idx: number) => {
-        const numericTaxonId = item.short_form.replace(/[^0-9]/g, '');
+        const taxonId = item.short_form.replace(/[^0-9]/g, '');
         const parentTaxonId =
           idx === lineageItems.length - 1
             ? null // Last term(root) has no parent
-            : +lineageItems[idx + 1].short_form.replace(/[^0-9]/g, '');
+            : lineageItems[idx + 1].short_form.replace(/[^0-9]/g, '');
 
         return {
           id: item.short_form,
@@ -296,7 +296,7 @@ export const fetchLineageFromOLSAPI = async (
             opened: idx != 0, // Open all nodes except the deepest one
             selected: idx == 0, // Mark the first item as selected
           },
-          taxonId: +numericTaxonId,
+          taxonId,
         };
       })
       .reverse();
@@ -372,7 +372,7 @@ export const fetchChildrenFromOLSAPI = async (
 
     // Structure the children data.
     const processedChildren = items.map((item: OLSAPIResponseItem) => {
-      const numericTaxonId = item.short_form.replace(/[^0-9]/g, '');
+      const taxonId = item.short_form.replace(/[^0-9]/g, '');
       return {
         id: item.short_form,
         commonName: item?.synonyms?.[0] || '',
@@ -385,7 +385,7 @@ export const fetchChildrenFromOLSAPI = async (
           opened: false,
           selected: false, // Mark the first item as selected
         },
-        taxonId: +numericTaxonId,
+        taxonId,
       };
     });
     return { children: processedChildren, pagination: childrenData.pagination };
@@ -415,12 +415,12 @@ export const fetchPortalCounts = async (
   const lineageWithCounts = await Promise.all(
     lineage.map(async node => {
       // Extract the numeric taxon ID from the node
-      const numericTaxonId = node.taxonId.toString().replace(/[^0-9]/g, '');
+      const numericTaxonId = +node.taxonId.replace(/[^0-9]/g, '');
 
       const lineageQueryResponse = await fetchSearchResults({
         q: params.q ? params.q : '__all__',
         size: 0,
-        lineage: +numericTaxonId,
+        lineage: numericTaxonId,
       });
 
       // Extract counts for datasets directly related to this taxon ID

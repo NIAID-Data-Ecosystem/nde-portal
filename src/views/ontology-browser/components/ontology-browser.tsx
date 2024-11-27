@@ -63,7 +63,7 @@ export const OntologyBrowser = ({
         .toLowerCase() || '';
     return {
       q: (router.query.q || '__all__') as string,
-      id: +parsedId.replace(/[^0-9]/g, ''),
+      id: parsedId.replace(/[^0-9]/g, ''),
       ontology: ontology as OntologyLineageRequestParams['ontology'],
     };
   }, [id, router.query.q]);
