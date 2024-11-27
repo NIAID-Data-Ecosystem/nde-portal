@@ -87,7 +87,7 @@ const Home: NextPage<{
                 },
                 label: 'Type',
                 description: SCHEMA_DEFINITIONS['type'].abstract['Dataset'],
-                property: '@type',
+                showSelectAll: true,
                 options: [
                   {
                     name: 'Computational Tool Repository',

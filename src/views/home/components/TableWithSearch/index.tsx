@@ -62,16 +62,9 @@ export const TableWithSearch: React.FC<TableWithSearchProps> = ({
   /****** Handle filtering and search on data ******/
   const filteredData = useFilteredData(data, searchTerm, filters);
 
-  const updateFilters = useCallback(
-    (
-      newFilter:
-        | { name: string; value: string; property: string }
-        | { name: string; value: string; property: string }[],
-    ) => {
+  const removeSingleFilter = useCallback(
+    (newFilter: { name: string; value: string; property: string }) => {
       setFilters(prevFilters => {
-        if (Array.isArray(newFilter)) {
-          return newFilter;
-        }
         // Check if filter is already added
         const index = prevFilters.findIndex(
           f => f.property === newFilter.property && f.value === newFilter.value,
@@ -115,7 +108,7 @@ export const TableWithSearch: React.FC<TableWithSearchProps> = ({
               onClose={() => setSearchTerm('')}
             />
             {/* <!-- Filters --> */}
-            <Filters data={data} filters={filters} updateFilter={setFilters} />
+            <Filters data={data} filters={filters} setFilters={setFilters} />
           </Stack>
 
           <Stack direction='column' flexWrap='wrap' py={2} spacing={2}>
@@ -161,7 +154,9 @@ export const TableWithSearch: React.FC<TableWithSearchProps> = ({
                     colorScheme='primary'
                   >
                     <TagLabel fontWeight='medium'>{name}</TagLabel>
-                    <TagCloseButton onClick={() => updateFilters(filter)} />
+                    <TagCloseButton
+                      onClick={() => removeSingleFilter(filter)}
+                    />
                   </Tag>
                 );
               })}

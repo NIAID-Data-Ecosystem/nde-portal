@@ -23,18 +23,18 @@ import { ScrollContainer } from 'src/components/scroll-container';
 interface Option {
   name: string;
   value: string;
-  count?: number;
-  property?: string;
+  [key: string]: any; // Allows other optional fields
 }
 
 interface CheckboxListProps<T extends Option> extends FlexProps {
   buttonProps?: ButtonProps;
   description?: string;
-  handleChange: (filters: Pick<T, 'name' | 'value' | 'property'>[]) => void;
+  handleChange: (filters: T[]) => void;
   label: string | React.ReactNode;
   options: T[];
-  selectedOptions: Pick<T, 'name' | 'value' | 'property'>[];
+  selectedOptions: T[];
   size?: PopoverProps['size'];
+  showSelectAll?: boolean;
 }
 
 export const CheckboxList = <T extends Option>({
@@ -45,6 +45,7 @@ export const CheckboxList = <T extends Option>({
   selectedOptions,
   size = 'md',
   buttonProps,
+  showSelectAll,
   ...rest
 }: CheckboxListProps<T>) => {
   return (
@@ -94,23 +95,25 @@ export const CheckboxList = <T extends Option>({
             )}
           </PopoverHeader>
           <PopoverBody>
-            <Flex justifyContent='flex-end'>
-              <Button
-                size='xs'
-                variant='link'
-                onClick={() => {
-                  if (selectedOptions.length === options.length) {
-                    handleChange([]);
-                  } else {
-                    handleChange(options);
-                  }
-                }}
-              >
-                {selectedOptions.length === options.length
-                  ? 'Clear all'
-                  : 'Select all'}
-              </Button>
-            </Flex>
+            {showSelectAll && (
+              <Flex justifyContent='flex-end'>
+                <Button
+                  size='xs'
+                  variant='link'
+                  onClick={() => {
+                    if (selectedOptions.length === options.length) {
+                      handleChange([]);
+                    } else {
+                      handleChange(options);
+                    }
+                  }}
+                >
+                  {selectedOptions.length === options.length
+                    ? 'Clear all'
+                    : 'Select all'}
+                </Button>
+              </Flex>
+            )}
             <ScrollContainer maxHeight='300px'>
               <CheckboxGroup
                 colorScheme='blue'
@@ -121,12 +124,8 @@ export const CheckboxList = <T extends Option>({
                     <Checkbox
                       key={option.value}
                       value={option.value}
-                      onChange={e => {
-                        const newFilterItem = {
-                          name: option.name,
-                          property: option.property,
-                          value: option.value,
-                        } as T;
+                      onChange={() => {
+                        const newFilterItem = option;
                         // Check if filter is already selected
                         const index = selectedOptions.findIndex(
                           f =>
