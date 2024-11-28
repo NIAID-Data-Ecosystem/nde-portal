@@ -5,44 +5,44 @@ import { formatNumber } from 'src/utils/helpers';
 import { ScrollContainer } from 'src/components/scroll-container';
 import { TagWithUrl } from 'src/components/tag-with-url';
 
-interface ProgrammingLanguagesProps {
-  programmingLanguage: string[];
+interface SearchableItemsProps {
+  searchableItems: string[];
+  itemType: string;
 }
 
-export const ProgrammingLanguages: React.FC<ProgrammingLanguagesProps> = ({
-  programmingLanguage,
+export const SearchableItems: React.FC<SearchableItemsProps> = ({
+  searchableItems,
+  itemType,
 }) => {
   const DEFAULT_LIMIT = 20;
   const [limit, setLimit] = useState(DEFAULT_LIMIT);
   const buttonText =
-    limit === programmingLanguage.length
-      ? 'Show fewer languages'
-      : `Show all languages (${formatNumber(
-          programmingLanguage.length - limit,
-        )} more)`;
+    limit === searchableItems.length
+      ? 'Show fewer items'
+      : `Show all items (${formatNumber(searchableItems.length - limit)} more)`;
   return (
     <>
       <ScrollContainer maxHeight='300px'>
-        {programmingLanguage &&
-          programmingLanguage.slice(0, limit).map((language, idx) => {
+        {searchableItems &&
+          searchableItems.slice(0, limit).map((item, idx) => {
             return (
               <TagWithUrl
-                key={idx + language}
+                key={idx + item}
                 colorScheme='primary'
                 href={{
                   pathname: '/search',
                   query: {
-                    q: `programmingLanguage:"${language.trim().toLowerCase()}"`,
+                    q: `${itemType}:"${item.trim().toLowerCase()}"`,
                   },
                 }}
                 m={0.5}
                 leftIcon={FaMagnifyingGlass}
               >
-                {language}
+                {item}
               </TagWithUrl>
             );
           })}
-        {programmingLanguage && programmingLanguage?.length > DEFAULT_LIMIT && (
+        {searchableItems && searchableItems?.length > DEFAULT_LIMIT && (
           <Button
             size='xs'
             variant='link'
@@ -50,10 +50,10 @@ export const ProgrammingLanguages: React.FC<ProgrammingLanguagesProps> = ({
             m={1}
             onClick={() => {
               setLimit(prev => {
-                if (prev === programmingLanguage.length) {
+                if (prev === searchableItems.length) {
                   return DEFAULT_LIMIT;
                 }
-                return programmingLanguage.length;
+                return searchableItems.length;
               });
             }}
           >

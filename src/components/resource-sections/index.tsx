@@ -40,9 +40,7 @@ import BasedOnTable from './components/based-on';
 import { CompletenessBadgeCircle } from 'src/components/metadata-completeness-badge/Circular';
 import { ResourceCatalogCollection } from './components/collection-information';
 import { DownloadMetadata } from '../download-metadata';
-import { Keywords } from './components/keywords';
-import { ApplicationCategories } from './components/application-categories';
-import { ProgrammingLanguages } from './components/programming-languages';
+import { SearchableItems } from './components/searchable-items';
 import { Summary } from './components/summary';
 
 // Metadata displayed in each section
@@ -216,29 +214,38 @@ const Sections = ({
             {/* Show keywords */}
             {section.hash === 'keywords' && (
               <Skeleton isLoaded={!isLoading}>
-                {data?.keywords && <Keywords keywords={data.keywords} />}
+                {data?.keywords && data?.keywords?.length > 0 && (
+                  <SearchableItems
+                    searchableItems={data?.keywords}
+                    itemType='keywords'
+                  />
+                )}
               </Skeleton>
             )}
 
             {/* Show application category */}
             {section.hash === 'applicationCategory' && (
               <Skeleton isLoaded={!isLoading}>
-                {data?.applicationCategory && (
-                  <ApplicationCategories
-                    applicationCategory={data.applicationCategory}
-                  />
-                )}
+                {data?.applicationCategory &&
+                  data?.applicationCategory?.length > 0 && (
+                    <SearchableItems
+                      searchableItems={data?.applicationCategory}
+                      itemType='applicationCategory'
+                    />
+                  )}
               </Skeleton>
             )}
 
             {/* Show programming language */}
             {section.hash === 'programmingLanguage' && (
               <Skeleton isLoaded={!isLoading}>
-                {data?.programmingLanguage && (
-                  <ProgrammingLanguages
-                    programmingLanguage={data.programmingLanguage}
-                  />
-                )}
+                {data?.programmingLanguage &&
+                  data?.programmingLanguage?.length > 0 && (
+                    <SearchableItems
+                      searchableItems={data?.programmingLanguage}
+                      itemType='programmingLanguage'
+                    />
+                  )}
               </Skeleton>
             )}
 
