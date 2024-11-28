@@ -17,8 +17,7 @@ import { FaWandMagicSparkles } from 'react-icons/fa6';
 import { Link } from 'src/components/link';
 import {
   ResourceHeader,
-  ResourceDates,
-  ResourceDatesAndOperatingSystems,
+  ResourceBanner,
   ResourceOverview,
   ResourceProvenance,
   Section,
@@ -111,11 +110,8 @@ const Sections = ({
       />
       {/* Banner showing data type and publish date. For computational tools, operating system info is displayed when available. */}
       {data?.author && <ResourceAuthors authors={data.author} />}
-      {type === 'ComputationalTool' ? (
-        <ResourceDatesAndOperatingSystems data={data} />
-      ) : (
-        <ResourceDates data={data} />
-      )}
+
+      <ResourceBanner data={data} />
 
       {/*<--- AI Generated short description -->*/}
       {data?.disambiguatingDescription && (
