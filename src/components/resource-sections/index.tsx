@@ -216,8 +216,15 @@ const Sections = ({
               <Skeleton isLoaded={!isLoading}>
                 {data?.keywords && data?.keywords?.length > 0 && (
                   <SearchableItems
+                    generateButtonLabel={(limit, length) => {
+                      return limit === length
+                        ? 'Show fewer keywords'
+                        : `Show all keywords (${(
+                            length - limit
+                          ).toLocaleString()} more)`;
+                    }}
                     searchableItems={data?.keywords}
-                    itemType='keywords'
+                    fieldName='keywords'
                   />
                 )}
               </Skeleton>
@@ -230,7 +237,7 @@ const Sections = ({
                   data?.applicationCategory?.length > 0 && (
                     <SearchableItems
                       searchableItems={data?.applicationCategory}
-                      itemType='applicationCategory'
+                      fieldName='applicationCategory'
                     />
                   )}
               </Skeleton>
@@ -243,7 +250,7 @@ const Sections = ({
                   data?.programmingLanguage?.length > 0 && (
                     <SearchableItems
                       searchableItems={data?.programmingLanguage}
-                      itemType='programmingLanguage'
+                      fieldName='programmingLanguage'
                     />
                   )}
               </Skeleton>
