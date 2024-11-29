@@ -1,15 +1,10 @@
 import React from 'react';
 import { Flex, FlexProps, Icon, Text } from '@chakra-ui/react';
-import { FaRegClock } from 'react-icons/fa6';
+import { FaRegClock, FaComputer } from 'react-icons/fa6';
 import TypeBanner from '../type-banner';
 import { FormattedResource } from 'src/utils/api/types';
 import { isSourceFundedByNiaid } from 'src/utils/helpers/sources';
-
-/*
-[COMPONENT INFO]:
-  Display (publishes, created, modified) dates if available for a given resource.
-  The ["date"] field in the api is general. It represents either the latest value between published, created and modified dates OR is a unique field provided from the source repo. Therefore, if the date field is the same as one of the other fields we can remove it.
-*/
+import { operatingSystemIcons } from 'src/utils/helpers/operating-system-icons';
 
 interface DateTagProps extends FlexProps {
   type?: string;
@@ -37,7 +32,7 @@ export const DateTag: React.FC<DateTagProps> = ({ type, date, ...props }) => {
   );
 };
 
-interface ResourceDates {
+interface ResourceBannerProps {
   data?: FormattedResource;
 }
 
@@ -48,7 +43,7 @@ const date_fields = [
   { property: 'dateModified', name: 'Modified' },
 ];
 
-const ResourceDates: React.FC<ResourceDates> = ({ data }) => {
+const ResourceBanner: React.FC<ResourceBannerProps> = ({ data }) => {
   if (!data) {
     return null;
   }
@@ -69,9 +64,11 @@ const ResourceDates: React.FC<ResourceDates> = ({ data }) => {
       return value;
     });
 
+  const type = data?.['@type'];
+
   return (
     <TypeBanner
-      type={data?.['@type']}
+      type={type}
       bg='status.info_lt'
       isNiaidFunded={isSourceFundedByNiaid(data.includedInDataCatalog)}
     >
@@ -80,8 +77,34 @@ const ResourceDates: React.FC<ResourceDates> = ({ data }) => {
           return <DateTag key={i} type={date.name} date={date.value} />;
         })}
       </Flex>
+
+      {type === 'ComputationalTool' && (
+        <Flex
+          alignItems='center'
+          mt={1}
+          mb={1}
+          ml={1}
+          bg='secondary.50'
+          borderRadius='semi'
+        >
+          {data.operatingSystem &&
+            data.operatingSystem.map((os, i) => {
+              const osIcon = operatingSystemIcons.find(
+                obj => obj.os === os,
+              )?.icon;
+              return (
+                <Icon
+                  key={i}
+                  as={osIcon || FaComputer}
+                  ml={i === 0 ? 2 : 0}
+                  mr={2}
+                />
+              );
+            })}
+        </Flex>
+      )}
     </TypeBanner>
   );
 };
 
-export default ResourceDates;
+export default ResourceBanner;

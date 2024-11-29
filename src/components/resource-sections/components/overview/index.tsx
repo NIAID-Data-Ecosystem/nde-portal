@@ -44,6 +44,14 @@ const Overview: React.FC<OverviewProps> = ({
   topicCategory,
   temporalCoverage,
   variableMeasured,
+  availableOnDevice,
+  featureList,
+  input,
+  license,
+  output,
+  softwareHelp,
+  softwareRequirements,
+  softwareVersion,
   ...data
 }) => {
   const type = data?.['@type'] || 'Dataset';
@@ -51,15 +59,15 @@ const Overview: React.FC<OverviewProps> = ({
     type == 'ComputationalTool'
       ? generateMetadataContentforCompToolCard({
           id,
-          availableOnDevice: data?.availableOnDevice,
-          featureList: data?.featureList,
-          funding: data?.funding,
-          input: data?.input,
-          license: data?.license,
-          output: data?.output,
-          softwareHelp: data?.softwareHelp,
-          softwareRequirements: data?.softwareRequirements,
-          softwareVersion: data?.softwareVersion,
+          availableOnDevice,
+          featureList,
+          input,
+          license,
+          output,
+          softwareHelp,
+          softwareRequirements,
+          softwareVersion,
+          topicCategory,
         })
       : generateMetadataContent({
           id,
