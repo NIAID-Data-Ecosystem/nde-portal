@@ -223,6 +223,13 @@ export const generateMetadataContentforCompToolCard = (
           data?.softwareVersion,
           showItems,
         );
+      case 'topicCategory':
+        return createTopicCategoryContent(
+          id,
+          property,
+          data?.topicCategory,
+          showItems,
+        );
       default:
         return undefined;
     }
@@ -732,11 +739,6 @@ const createSoftwareVersionContent = (
             return {
               key: uniqueId(`${property}-${id}-${idx}`),
               name: version,
-              searchProps: {
-                ['aria-label']: `Search for results with software version "${version}"`,
-                property,
-                value: version,
-              },
             };
           })
         : [],

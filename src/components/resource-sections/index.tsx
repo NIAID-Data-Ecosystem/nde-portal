@@ -14,8 +14,8 @@ import {
 } from '@chakra-ui/react';
 import { Link } from 'src/components/link';
 import {
-  ResourceDates,
   ResourceHeader,
+  ResourceBanner,
   ResourceOverview,
   ResourceProvenance,
   Section,
@@ -38,7 +38,7 @@ import BasedOnTable from './components/based-on';
 import { CompletenessBadgeCircle } from 'src/components/metadata-completeness-badge/Circular';
 import { ResourceCatalogCollection } from './components/collection-information';
 import { DownloadMetadata } from '../download-metadata';
-import { Keywords } from './components/keywords';
+import { SearchableItems } from './components/searchable-items';
 import { Summary } from './components/summary';
 
 // Metadata displayed in each section
@@ -73,6 +73,8 @@ export const sectionMetadata: { [key: string]: (keyof FormattedResource)[] } = {
     'softwareVersion',
   ],
   keywords: ['keywords'],
+  applicationCategory: ['applicationCategory'],
+  programmingLanguage: ['programmingLanguage'],
   description: ['description'],
   provenance: ['includedInDataCatalog', 'url', 'sdPublisher', 'curatedBy'],
   downloads: ['distribution', 'downloadUrl'],
@@ -92,6 +94,7 @@ const Sections = ({
   data?: FormattedResource;
   sections: Route[];
 }) => {
+  const type = data?.['@type'];
   return (
     <>
       <ResourceHeader
@@ -101,10 +104,11 @@ const Sections = ({
         doi={data?.doi}
         nctid={data?.nctid}
       />
-      {/* Banner showing data type and publish date. */}
+      {/* Banner showing data type and publish date. For computational tools, operating system info is displayed when available. */}
       {data?.author && <ResourceAuthors authors={data.author} />}
 
-      <ResourceDates data={data} />
+      <ResourceBanner data={data} />
+
       {/*<--- AI Generated short description -->*/}
       {data?.disambiguatingDescription && (
         <Flex mx={6} my={2}>
@@ -208,9 +212,48 @@ const Sections = ({
             {/* Show keywords */}
             {section.hash === 'keywords' && (
               <Skeleton isLoaded={!isLoading}>
-                {data?.keywords && <Keywords keywords={data.keywords} />}
+                {data?.keywords && data?.keywords?.length > 0 && (
+                  <SearchableItems
+                    generateButtonLabel={(limit, length) => {
+                      return limit === length
+                        ? 'Show fewer keywords'
+                        : `Show all keywords (${(
+                            length - limit
+                          ).toLocaleString()} more)`;
+                    }}
+                    searchableItems={data?.keywords}
+                    fieldName='keywords'
+                  />
+                )}
               </Skeleton>
             )}
+
+            {/* Show application category */}
+            {section.hash === 'applicationCategory' && (
+              <Skeleton isLoaded={!isLoading}>
+                {data?.applicationCategory &&
+                  data?.applicationCategory?.length > 0 && (
+                    <SearchableItems
+                      searchableItems={data?.applicationCategory}
+                      fieldName='applicationCategory'
+                    />
+                  )}
+              </Skeleton>
+            )}
+
+            {/* Show programming language */}
+            {section.hash === 'programmingLanguage' && (
+              <Skeleton isLoaded={!isLoading}>
+                {data?.programmingLanguage &&
+                  data?.programmingLanguage?.length > 0 && (
+                    <SearchableItems
+                      searchableItems={data?.programmingLanguage}
+                      fieldName='programmingLanguage'
+                    />
+                  )}
+              </Skeleton>
+            )}
+
             {section.hash === 'softwareInformation' && (
               <SoftwareInformation
                 keys={sectionMetadata[section.hash]}
@@ -236,14 +279,6 @@ const Sections = ({
                   caption='Datasets or tools that this dataset/tool is a dependency for.'
                   isLoading={isLoading}
                   items={data.isBasisFor}
-                  columns={[
-                    { key: 'name', title: 'Name', props: { maxW: '50%' } },
-                    {
-                      key: 'type',
-                      title: 'Type',
-                      props: { w: '200px' },
-                    },
-                  ]}
                 />
               </Box>
             )}
