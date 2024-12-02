@@ -1,21 +1,19 @@
 import { TableData } from '..';
 import { useMemo } from 'react';
 import { getFilterData } from '../helpers';
-import { CheckboxList } from './checkbox-list';
+import { CheckboxList } from 'src/components/checkbox-list';
 import { formatDomainName, formatTypeName } from '../helpers';
 import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
 
 interface TableFiltersProps {
   data: TableData[];
   filters: { name: string; value: string; property: string }[];
-  updateFilter: (filters: {
-    name: string;
-    value: string;
-    property: string;
-  }) => void;
+  setFilters: React.Dispatch<
+    React.SetStateAction<{ name: string; value: string; property: string }[]>
+  >;
 }
 
-export const Filters = ({ data, filters, updateFilter }: TableFiltersProps) => {
+export const Filters = ({ data, filters, setFilters }: TableFiltersProps) => {
   // Data types: ResourceCatalog, Repository
   const types = useMemo(
     () =>
@@ -51,19 +49,35 @@ export const Filters = ({ data, filters, updateFilter }: TableFiltersProps) => {
     [data],
   );
 
+  // Helper function to update filters for a specific property
+  const handleFilterChange = (
+    property: string,
+    newFilters: { name: string; value: string; property: string }[],
+  ) => {
+    setFilters(prevFilters => {
+      // Remove filters for the specific property
+      const otherFilters = prevFilters.filter(
+        filter => filter.property !== property,
+      );
+      // Combine other filters with the new ones
+      const updatedFilters = [...otherFilters, ...newFilters];
+      return updatedFilters;
+    });
+  };
+
   return (
     <>
       {/* <!-- Types checkboxes --> */}
       {types.length > 0 && (
         <CheckboxList
           label='Type'
-          property='type'
           description={SCHEMA_DEFINITIONS['type'].abstract['Dataset']}
           options={types.sort((a, b) => a.name.localeCompare(b.name))}
           selectedOptions={
             filters.filter(item => item.property === 'type') || []
           }
-          handleChange={updateFilter}
+          handleChange={newFilters => handleFilterChange('type', newFilters)}
+          showSelectAll
         />
       )}
 
@@ -71,13 +85,13 @@ export const Filters = ({ data, filters, updateFilter }: TableFiltersProps) => {
       {domains.length > 0 && (
         <CheckboxList
           label='Research Domain'
-          property='domain'
           description={SCHEMA_DEFINITIONS['domain'].abstract['Dataset']}
           options={domains.sort((a, b) => a.name.localeCompare(b.name))}
           selectedOptions={
             filters.filter(item => item.property === 'domain') || []
           }
-          handleChange={updateFilter}
+          handleChange={newFilters => handleFilterChange('domain', newFilters)}
+          showSelectAll
         />
       )}
 
@@ -85,7 +99,6 @@ export const Filters = ({ data, filters, updateFilter }: TableFiltersProps) => {
       {conditionsOfAccess.length > 0 && (
         <CheckboxList
           label='Access'
-          property='conditionsOfAccess'
           description={
             SCHEMA_DEFINITIONS['conditionsOfAccess'].abstract['Dataset']
               .charAt(0)
@@ -101,7 +114,10 @@ export const Filters = ({ data, filters, updateFilter }: TableFiltersProps) => {
           selectedOptions={
             filters.filter(item => item.property === 'conditionsOfAccess') || []
           }
-          handleChange={updateFilter}
+          handleChange={newFilters =>
+            handleFilterChange('conditionsOfAccess', newFilters)
+          }
+          showSelectAll
         />
       )}
     </>

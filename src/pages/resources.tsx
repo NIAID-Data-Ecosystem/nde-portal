@@ -147,6 +147,7 @@ const ResourcePage: NextPage = () => {
               }`
             : undefined
         }
+        includeSearchBar
       >
         <PageContent>
           <Flex

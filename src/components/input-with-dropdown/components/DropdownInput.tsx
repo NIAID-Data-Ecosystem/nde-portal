@@ -78,7 +78,7 @@ export const DropdownInput: React.FC<DropdownInputProps> = ({
       </VisuallyHidden>
 
       {/* Search input */}
-      <InputGroup size={size}>
+      <InputGroup size={size} zIndex='banner'>
         {/* Loading spinner/Search icon */}
         <InputLeftElement
           pointerEvents='none'

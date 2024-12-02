@@ -39,6 +39,7 @@ export const getFilterData = <T extends keyof TableData>({
             // Add new entry for this unique value
             acc.push({
               name: formatName ? formatName(v) : v,
+              property,
               value: v,
               count: 1,
             });
@@ -56,6 +57,8 @@ export const getFilterData = <T extends keyof TableData>({
           // Add new entry for this unique value
           acc.push({
             name: formatName ? formatName(value) : value,
+            property,
+
             value: value,
             count: 1,
           });
@@ -66,5 +69,5 @@ export const getFilterData = <T extends keyof TableData>({
       }
     }
     return acc;
-  }, [] as { name: string; value: string; count: number }[]);
+  }, [] as { name: string; property: string; value: string; count: number }[]);
 };
