@@ -80,7 +80,7 @@ export const DataAccess: React.FC<DataAccessProps> = ({
                     size='sm'
                     rightIcon={<FaArrowRight />}
                   >
-                    Access Data
+                    Resource Access
                   </Button>
                 </NextLink>
               </Flex>

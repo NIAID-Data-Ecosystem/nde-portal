@@ -32,7 +32,7 @@ export const ExternalAccess = ({
       {/* Source + data access info. */}
       <Wrapper
         isLoading={isLoading}
-        label='Data Access'
+        label='Resource Access'
         hasDivider={hasDivider}
         {...props}
       >
