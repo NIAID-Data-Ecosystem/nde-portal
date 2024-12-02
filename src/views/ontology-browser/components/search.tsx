@@ -91,28 +91,6 @@ export const OntologyBrowserSearch = ({
     setHasNoMatch(false);
   };
 
-  const updateOntologySelection = useCallback(
-    (newSelection: OntologyOption) => {
-      setSelectedOntologies(prevOntologies => {
-        // Check if selection is already included.
-        const index = prevOntologies.findIndex(
-          item => item.value === newSelection.value,
-        );
-        if (index === -1) {
-          // Add new selection
-          return [...prevOntologies, newSelection];
-        } else {
-          // If only one selection is there, don't remove it
-          if (prevOntologies.length === 1) {
-            return prevOntologies;
-          }
-          // Remove selection if it's already there
-          return prevOntologies.filter((_, i) => i !== index);
-        }
-      });
-    },
-    [],
-  );
   return (
     <VStack w='100%' alignItems='flex-start' spacing={1}>
       <HStack
@@ -250,7 +228,7 @@ export const OntologyBrowserSearch = ({
           description=''
           options={ONTOLOGY_BROWSER_OPTIONS}
           selectedOptions={selectedOntologies}
-          handleChange={updateOntologySelection}
+          handleChange={setSelectedOntologies}
         />
       </HStack>
       {hasNoMatch && (

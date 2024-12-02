@@ -22,6 +22,7 @@ const OntologyBrowserPage: NextPage = () => {
       metaDescription='NDE Discovery Portal - Search results list based on query.'
       px={0}
       py={0}
+      includeSearchBar
     >
       <PageContent
         alignItems='center'

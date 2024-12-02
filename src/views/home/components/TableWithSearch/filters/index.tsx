@@ -8,14 +8,12 @@ import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
 interface TableFiltersProps {
   data: TableData[];
   filters: { name: string; value: string; property: string }[];
-  updateFilter: (filters: {
-    name: string;
-    value: string;
-    property: string;
-  }) => void;
+  setFilters: React.Dispatch<
+    React.SetStateAction<{ name: string; value: string; property: string }[]>
+  >;
 }
 
-export const Filters = ({ data, filters, updateFilter }: TableFiltersProps) => {
+export const Filters = ({ data, filters, setFilters }: TableFiltersProps) => {
   // Data types: ResourceCatalog, Repository
   const types = useMemo(
     () =>
@@ -51,19 +49,35 @@ export const Filters = ({ data, filters, updateFilter }: TableFiltersProps) => {
     [data],
   );
 
+  // Helper function to update filters for a specific property
+  const handleFilterChange = (
+    property: string,
+    newFilters: { name: string; value: string; property: string }[],
+  ) => {
+    setFilters(prevFilters => {
+      // Remove filters for the specific property
+      const otherFilters = prevFilters.filter(
+        filter => filter.property !== property,
+      );
+      // Combine other filters with the new ones
+      const updatedFilters = [...otherFilters, ...newFilters];
+      return updatedFilters;
+    });
+  };
+
   return (
     <>
       {/* <!-- Types checkboxes --> */}
       {types.length > 0 && (
         <CheckboxList
           label='Type'
-          property='type'
           description={SCHEMA_DEFINITIONS['type'].abstract['Dataset']}
           options={types.sort((a, b) => a.name.localeCompare(b.name))}
           selectedOptions={
             filters.filter(item => item.property === 'type') || []
           }
-          handleChange={props => updateFilter({ ...props, property: 'type' })}
+          handleChange={newFilters => handleFilterChange('type', newFilters)}
+          showSelectAll
         />
       )}
 
@@ -76,7 +90,8 @@ export const Filters = ({ data, filters, updateFilter }: TableFiltersProps) => {
           selectedOptions={
             filters.filter(item => item.property === 'domain') || []
           }
-          handleChange={props => updateFilter({ ...props, property: 'domain' })}
+          handleChange={newFilters => handleFilterChange('domain', newFilters)}
+          showSelectAll
         />
       )}
 
@@ -99,9 +114,10 @@ export const Filters = ({ data, filters, updateFilter }: TableFiltersProps) => {
           selectedOptions={
             filters.filter(item => item.property === 'conditionsOfAccess') || []
           }
-          handleChange={props =>
-            updateFilter({ ...props, property: 'conditionsOfAccess' })
+          handleChange={newFilters =>
+            handleFilterChange('conditionsOfAccess', newFilters)
           }
+          showSelectAll
         />
       )}
     </>

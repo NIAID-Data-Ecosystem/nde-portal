@@ -10,7 +10,6 @@ const ScratchPad: NextPage = () => {
       metaDescription='Scratch Pad page.'
       px={0}
       py={0}
-      disableSearchBar
     >
       <PageContent
         w='100%'

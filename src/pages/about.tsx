@@ -74,7 +74,13 @@ const About: NextPage<AboutProps> = props => {
   }, [content, data]);
 
   return (
-    <PageContainer title='About' metaDescription='About page.' px={0} py={0}>
+    <PageContainer
+      title='About'
+      metaDescription='About page.'
+      px={0}
+      py={0}
+      includeSearchBar
+    >
       {contentError && !content && (
         <Error>
           <Text fontWeight='light' color='gray.600' fontSize='lg'>
