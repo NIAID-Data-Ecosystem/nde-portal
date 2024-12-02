@@ -102,7 +102,7 @@ const Provenance: React.FC<Provenance> = ({
                 rightIcon={<FaArrowRight />}
                 mt={2}
               >
-                Access Data
+                Access Resource
               </Button>
             </NextLink>
           </Flex>
