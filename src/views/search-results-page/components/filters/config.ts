@@ -89,7 +89,14 @@ export const FILTER_CONFIGS: FilterConfig[] = [
     property: '@type',
     description:
       'Type is used to categorize the nature of the content of the resource',
-    createQueries: buildQueries(),
+    createQueries: (id, params, options) => [
+      createCommonQuery({
+        id,
+        queryKey: options?.queryKey || [],
+        params,
+        ...options,
+      }),
+    ],
     transformData: (item): FacetTermWithDetails => ({
       ...item,
       label:
@@ -116,11 +123,13 @@ export const FILTER_CONFIGS: FilterConfig[] = [
   },
   {
     _id: 'sourceOrganization.name',
-    name: 'Program Collections',
+    name: 'Program Collection',
     property: 'sourceOrganization.name',
     description: getSchemaDescription('sourceOrganization.name'),
-    createQueries: (id, params, options) => {
-      return buildQueries({
+    createQueries: (id, params, options) => [
+      createCommonQuery({
+        id,
+        queryKey: options?.queryKey || [],
         params: {
           ...params,
           facets: 'sourceOrganization.name.raw',
@@ -128,8 +137,9 @@ export const FILTER_CONFIGS: FilterConfig[] = [
             'sourceOrganization.parentOrganization,sourceOrganization.name.raw',
           multi_terms_size: '100',
         },
-      })(id, params, options);
-    },
+        ...options,
+      }),
+    ],
     // transformData: (item): FacetTermWithDetails => {
     //   let label = item.label || item.term;
     //   if (label.toLocaleLowerCase().includes('creid')) {
