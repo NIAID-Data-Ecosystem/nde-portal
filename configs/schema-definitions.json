@@ -21,11 +21,7 @@
     "property": "@type",
     "count": 5590238,
     "type": "keyword",
-    "enum": [
-      "Dataset",
-      "ComputationalTool",
-      "ResourceCatalog"
-    ],
+    "enum": ["Dataset", "ComputationalTool", "ResourceCatalog"],
     "description": {
       "Dataset": "Datasets contained in the NIAID Data Ecosystem. A dataset is a collection of data of a particular experimental type. The NIAID Data Ecosystem is an environment to find and access and infectious and immune-mediated disease data and computational tools to speed the development of diagnostics, therapeutics, and vaccines. The NIAID Data Ecosystem Discovery Portal harvests metadata from dataset repository and harmonizes them to this schema to enable easy cross-platform dataset searching and filtering.",
       "ComputationalTool": "ComputationalTools (software, workflows, computational tools, code) contained in the NIAID Data Ecosystem. The NIAID Data Ecosystem is a secure environment to find, access and analyze immune-mediated and infectious disease data and computational tools to speed the development of diagnostics, therapeutics, and vaccines. The NIAID Data Ecosystem Discovery Portal harvests metadata from dataset repository and harmonizes them to this schema to enable easy cross-platform dataset searching and filtering.",
@@ -929,7 +925,7 @@
     "name": "Cited By Author Type",
     "dotfield": "citedBy.author.@type",
     "property": "@type",
-    "count": 11,
+    "count": 8,
     "type": "text",
     "isAdvancedSearchField": false
   },
@@ -1007,7 +1003,7 @@
     "name": "Cited By Description",
     "dotfield": "citedBy.description",
     "property": "description",
-    "count": 2,
+    "count": 1,
     "type": "text",
     "schemaType": "string",
     "description": {
@@ -1040,7 +1036,7 @@
     "name": "Cited By From PMID",
     "dotfield": "citedBy.fromPMID",
     "property": "fromPMID",
-    "count": 10,
+    "count": 7,
     "type": "boolean",
     "isAdvancedSearchField": false
   },
@@ -1048,7 +1044,7 @@
     "name": "Cited By Identifier",
     "dotfield": "citedBy.identifier",
     "property": "identifier",
-    "count": 10,
+    "count": 7,
     "type": "keyword",
     "schemaType": "string",
     "description": {
@@ -1076,7 +1072,7 @@
     "name": "Cited By Journal Name",
     "dotfield": "citedBy.journalName",
     "property": "journalName",
-    "count": 10,
+    "count": 7,
     "type": "keyword",
     "schemaType": "string",
     "description": {
@@ -1193,7 +1189,7 @@
     "name": "Collection Size",
     "dotfield": "collectionSize",
     "property": "collectionSize",
-    "count": 26,
+    "count": 20,
     "type": "object",
     "description": {
       "ResourceCatalog": "The number of records, datasets, tools, items, pages, etc. in the resource catalog. Min/max estimates can be used in lieu of actual number. If completely unknown, set value = 0, and unitText = 'unknown'"
@@ -1204,7 +1200,7 @@
     "name": "Collection Size Type",
     "dotfield": "collectionSize.@type",
     "property": "@type",
-    "count": 24,
+    "count": 18,
     "type": "keyword",
     "isAdvancedSearchField": false
   },
@@ -1224,7 +1220,7 @@
     "name": "Collection Size Min Value",
     "dotfield": "collectionSize.minValue",
     "property": "minValue",
-    "count": 25,
+    "count": 19,
     "type": "integer",
     "schemaType": "number",
     "description": {
@@ -1236,7 +1232,7 @@
     "name": "Collection Size Unit Text",
     "dotfield": "collectionSize.unitText",
     "property": "unitText",
-    "count": 26,
+    "count": 20,
     "type": "text",
     "schemaType": "string",
     "description": {
@@ -1260,7 +1256,7 @@
     "name": "Collection Type",
     "dotfield": "collectionType",
     "property": "collectionType",
-    "count": 26,
+    "count": 20,
     "type": "keyword",
     "enum": [
       "Knowledge Base",
@@ -1294,12 +1290,7 @@
     "count": 129940,
     "type": "keyword",
     "schemaType": "string",
-    "enum": [
-      "Closed",
-      "Open",
-      "Restricted",
-      "Embargoed"
-    ],
+    "enum": ["Closed", "Open", "Restricted", "Embargoed"],
     "description": {
       "Dataset": "Conditions that affect the availability of, or method(s) of access to, the work. Options include open (freely available), restricted (may include restrictions such as on use), closed (requires registration to access), or embargoed (unpublished).",
       "ComputationalTool": "Conditions that affect the availability of, or method(s) of access to, the work. Options include open (freely available), restricted (may include restrictions such as on use), closed (requires registration to access), or embargoed (unpublished).",
@@ -2156,7 +2147,7 @@
     "name": "Genre",
     "dotfield": "genre",
     "property": "genre",
-    "count": 26,
+    "count": 20,
     "type": "keyword",
     "schemaType": "string",
     "enum": [
@@ -2179,7 +2170,7 @@
     "name": "Has API",
     "dotfield": "hasAPI",
     "property": "hasAPI",
-    "count": 25,
+    "count": 19,
     "type": "boolean",
     "schemaType": "boolean",
     "description": {
@@ -2194,7 +2185,7 @@
     "name": "Has Download",
     "dotfield": "hasDownload",
     "property": "hasDownload",
-    "count": 24,
+    "count": 18,
     "type": "text",
     "schemaType": "string",
     "enum": [
@@ -2657,7 +2648,7 @@
     "name": "In Language Type",
     "dotfield": "inLanguage.@type",
     "property": "@type",
-    "count": 26,
+    "count": 20,
     "type": "text",
     "isAdvancedSearchField": false
   },
@@ -3200,7 +3191,7 @@
     "name": "Is Based On Author Type",
     "dotfield": "isBasedOn.author.@type",
     "property": "@type",
-    "count": 5,
+    "count": 4,
     "type": "text",
     "isAdvancedSearchField": false
   },
@@ -3311,7 +3302,7 @@
     "name": "Is Based On From PMID",
     "dotfield": "isBasedOn.fromPMID",
     "property": "fromPMID",
-    "count": 5,
+    "count": 4,
     "type": "boolean",
     "isAdvancedSearchField": false
   },
@@ -3333,7 +3324,7 @@
     "name": "Is Based On Journal Name",
     "dotfield": "isBasedOn.journalName",
     "property": "journalName",
-    "count": 5,
+    "count": 4,
     "type": "keyword",
     "schemaType": "string",
     "description": {
@@ -3407,7 +3398,7 @@
     "name": "Is Basis For Type",
     "dotfield": "isBasisFor.@type",
     "property": "@type",
-    "count": 12,
+    "count": 7,
     "type": "keyword",
     "isAdvancedSearchField": false
   },
@@ -3561,7 +3552,7 @@
     "name": "Is Basis For URL",
     "dotfield": "isBasisFor.url",
     "property": "url",
-    "count": 12,
+    "count": 7,
     "type": "text",
     "schemaType": "string",
     "description": {
@@ -3987,7 +3978,7 @@
     "name": "Is Similar To",
     "dotfield": "isSimilarTo",
     "property": "isSimilarTo",
-    "count": 2,
+    "count": 1,
     "type": "object",
     "description": {
       "Dataset": "Datasets or computational tools which are similar to the work, based on terms in the names, descriptions, authors, measurementTechniques, infectiousAgents, healthConditions, etc.",
@@ -4005,7 +3996,7 @@
     "name": "Is Similar To Type",
     "dotfield": "isSimilarTo.@type",
     "property": "@type",
-    "count": 2,
+    "count": 1,
     "type": "text",
     "isAdvancedSearchField": false
   },
@@ -4090,7 +4081,7 @@
     "name": "Is Similar To Name",
     "dotfield": "isSimilarTo.name",
     "property": "name",
-    "count": 2,
+    "count": 1,
     "type": "text",
     "schemaType": "string",
     "description": {
@@ -5465,7 +5456,7 @@
     "name": "Variable Measured URL",
     "dotfield": "variableMeasured.url",
     "property": "url",
-    "count": 23,
+    "count": 17,
     "type": "text",
     "schemaType": "string",
     "description": {
