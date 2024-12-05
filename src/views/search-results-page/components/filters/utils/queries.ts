@@ -67,7 +67,7 @@ export const structureQueryData = (data: FetchSearchResultsResponse) => {
 
   return [
     {
-      label: 'Any Specified',
+      label: 'Any',
       term: '_exists_',
       count: total,
     },
@@ -96,7 +96,7 @@ export const createCommonQuery = ({
   queryKey,
   ...options
 }: QueryArgs) => {
-  // add exists to get total count for "Any Specified"
+  // add exists to get total count for "Any"
   const extraFilterWithFacets = params.extra_filter
     ? `${params.extra_filter}${
         params.facets ? ` AND _exists_:${params.facets}` : ''
@@ -187,7 +187,7 @@ export const createNotExistsQuery = ({
           ? []
           : [
               {
-                label: 'Not Specified',
+                label: 'No',
                 term: '-_exists_',
                 count: data.total,
               },

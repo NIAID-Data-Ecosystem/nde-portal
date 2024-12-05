@@ -54,9 +54,7 @@ export const FilterTags: React.FC<FilterTagsProps> = ({
           let value = v as SelectedFilterTypeValue | SelectedFilterTypeValue[];
           if (typeof value === 'object') {
             const objectKey = Object.keys(value)[0];
-            displayValue = objectKey.startsWith('-_exists_')
-              ? 'Not Specified'
-              : 'Any Specified';
+            displayValue = objectKey.startsWith('-_exists_') ? 'None' : 'Any';
           } else if (
             key === 'date' &&
             values.length === 2 &&
@@ -73,6 +71,10 @@ export const FilterTags: React.FC<FilterTagsProps> = ({
             displayValue = `${
               scientificName.charAt(0).toUpperCase() + scientificName.slice(1)
             } ( ${commonName.charAt(0).toUpperCase() + commonName.slice(1)} )`;
+          } else if (key === '@type') {
+            displayValue = filterConfig?.transformData
+              ? filterConfig.transformData({ term: value, count: 0 })?.label
+              : '';
           } else {
             displayValue = value;
           }
