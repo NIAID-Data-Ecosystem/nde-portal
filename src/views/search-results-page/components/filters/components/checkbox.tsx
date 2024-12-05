@@ -50,7 +50,7 @@ export const Checkbox: React.FC<FilterCheckboxProps> = React.memo(
   }) => {
     let label = props.label;
     let subLabel = '';
-
+    // Note: Requested by Andrew to track the usage of this filter option.
     const trackGAEvent = useCallback((value: string, filterName: string) => {
       if (value.includes('_exists_') || value.includes('-_exists_')) {
         sendGTMEvent({
@@ -89,6 +89,8 @@ export const Checkbox: React.FC<FilterCheckboxProps> = React.memo(
       const [scientificName, commonName] = props.label.split(' | ');
       label = commonName || props.label;
       subLabel = scientificName;
+    } else if (term.includes('_exists_')) {
+      label = `${props.label} ${filterName.toLowerCase()}`;
     }
 
     return (

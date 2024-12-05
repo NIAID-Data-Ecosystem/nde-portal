@@ -129,7 +129,7 @@ describe('API Query Functions', () => {
         facet: params.facets,
         results: [
           {
-            label: 'Any Specified',
+            label: 'Any',
             term: '_exists_',
             count: 100,
           },
@@ -270,7 +270,7 @@ describe('API Query Functions', () => {
         facet: 'facet',
         results: [
           {
-            label: 'Not Specified',
+            label: 'No',
             term: '-_exists_',
             count: 100,
           },
