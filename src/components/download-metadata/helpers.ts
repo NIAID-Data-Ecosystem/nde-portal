@@ -37,13 +37,31 @@ export const downloadAsCsv = (
   const data = Array.isArray(dataObject) ? dataObject : [dataObject];
   const headers = getColumnHeaders(data);
 
+  // Metadata fields that should be prioritized according to https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/263
+  const priorityOrder = [
+    'identifier',
+    'name',
+    'description',
+    '@type',
+    'healthCondition.name',
+    'infectiousAgent.name',
+    'species.name',
+    'author.name',
+  ];
+
+  // Reorder headers
+  const reorderedHeaders = [
+    ...priorityOrder.filter(header => headers.includes(header)),
+    ...headers.filter(header => !priorityOrder.includes(header)),
+  ];
+
   // Replacer value for null/empty properties
   const replacer = (_: string, value: any) => (value === null ? '' : value);
 
   const csv = [
-    headers.join(','), // header row first
+    reorderedHeaders.join(','), // header row first
     ...data.map(row =>
-      headers
+      reorderedHeaders
         .map(fieldName => {
           let stringified_value =
             JSON.stringify(row[fieldName], replacer) || '';
