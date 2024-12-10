@@ -20,10 +20,13 @@ const TopicCategories: React.FC<TopicCategoryProps> = ({
   type,
   ...props
 }) => {
-  const topicCategoryNames = data
-    ?.filter(element => element.name !== undefined)
-    .map(element => element.name!)
-    .sort();
+  const topicCategoryNames =
+    data
+      ?.flatMap(topic =>
+        topic?.name && typeof topic.name === 'string' ? [topic.name] : [],
+      )
+      .sort() || [];
+
   if (topicCategoryNames?.length === 0) return null;
   return (
     <Flex
