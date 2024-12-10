@@ -11,6 +11,7 @@ module.exports = {
         allow: '/',
       },
       { userAgent: 'bingbot', allow: '/' },
+      { userAgent: 'DuckDuckBot', allow: '/' },
     ],
     additionalSitemaps: [`${process.env.BASE_URL}/sitemap-datasets.xml`],
   },
