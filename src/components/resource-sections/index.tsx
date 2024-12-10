@@ -223,7 +223,9 @@ const Sections = ({
                             length - limit
                           ).toLocaleString()} more)`;
                     }}
-                    searchableItems={data?.keywords}
+                    searchableItems={data?.keywords.sort((a, b) => {
+                      return a.toLowerCase().localeCompare(b.toLowerCase());
+                    })}
                     fieldName='keywords'
                   />
                 )}
