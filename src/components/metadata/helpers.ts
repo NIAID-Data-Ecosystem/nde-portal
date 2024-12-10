@@ -811,29 +811,24 @@ const createTopicCategoryContent = (
   showItems = true,
 ) => {
   // Sorts topic categories alphabetically
-  if (
-    topicCategory != null &&
+  const filteredTopicCategories =
     topicCategory
-      ?.filter(item => item.name !== undefined)
-      .every(item => typeof item.name === 'string')
-  )
-    topicCategory.sort((a, b) =>
-      (a.name as string).localeCompare(b.name as string),
-    );
-
+      ?.filter(item => !!item.name && typeof item.name === 'string')
+      .sort((a, b) => (a.name as string).localeCompare(b.name as string)) || [];
   return {
     id: `${property}-${id}`,
     label: 'Topic Category',
     property,
-    isDisabled: !topicCategory || topicCategory.every(item => !item.name),
+    isDisabled:
+      !filteredTopicCategories.length ||
+      filteredTopicCategories.every(item => !item.name),
     items:
-      showItems && topicCategory
-        ? topicCategory.map((topicCategory, idx) => {
+      showItems && filteredTopicCategories
+        ? filteredTopicCategories.map((topicCategory, idx) => {
             const name = Array.isArray(topicCategory.name)
               ? topicCategory.name.join(', ')
               : topicCategory.name;
             const termSet = topicCategory?.inDefinedTermSet;
-
             return {
               key: uniqueId(`${property}-${id}-${idx}`),
               name,
