@@ -11,6 +11,7 @@ import { FaInfo } from 'react-icons/fa6';
 interface TopicCategoryProps extends FlexProps {
   data?: TopicCategory[] | null;
   type: FormattedResource['@type'];
+  limit?: number;
 }
 
 const metadataFields = SCHEMA_DEFINITIONS as SchemaDefinitions;
@@ -18,6 +19,7 @@ const metadataFields = SCHEMA_DEFINITIONS as SchemaDefinitions;
 const TopicCategories: React.FC<TopicCategoryProps> = ({
   data,
   type,
+  limit = 10,
   ...props
 }) => {
   const topicCategoryNames =
@@ -53,7 +55,7 @@ const TopicCategories: React.FC<TopicCategoryProps> = ({
         </Text>
       </Tooltip>
 
-      {topicCategoryNames?.map(name => {
+      {topicCategoryNames?.slice(0, limit).map(name => {
         return (
           <TagWithUrl
             key={name}
