@@ -35,7 +35,6 @@ const FrequentlyAsked: NextPage<FrequentlyAskedProps> = props => {
       metaDescription='Frequenty asked questions.'
       px={0}
       py={0}
-      disableSearchBar
     >
       <PageContent justifyContent='center'>
         {error ? (

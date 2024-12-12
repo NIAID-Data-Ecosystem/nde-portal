@@ -10,7 +10,6 @@ const AdvancedSearchPage: NextPage = () => {
       metaDescription='Advanced Search page.'
       px={0}
       py={0}
-      disableSearchBar
     >
       <PageContent
         w='100%'
