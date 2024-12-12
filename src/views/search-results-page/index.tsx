@@ -46,7 +46,7 @@ const SearchResultsPage = ({
   results: FormattedResource[];
   total: number;
 }) => {
-  const [shouldUseMetadataScore, setShouldUseMetadataScore] = useState(false);
+  const [shouldUseMetadataScore] = useState(true);
 
   const router = useRouter();
 
@@ -192,11 +192,6 @@ const SearchResultsPage = ({
     [router],
   );
 
-  const handleMetadataScoreToggle = useCallback(
-    () => setShouldUseMetadataScore(prev => !prev),
-    [],
-  );
-
   const numCards = useMemo(
     () =>
       Math.min(
@@ -220,11 +215,6 @@ const SearchResultsPage = ({
       {/* Search results controls */}
       {numCards > 0 && (
         <Stack borderRadius='semi' boxShadow='base' bg='white' px={4} py={2}>
-          {/* <MetadataScoreToggle
-            isChecked={shouldUseMetadataScore}
-            isDisabled={sortOrder !== '_score'}
-            handleToggle={handleMetadataScoreToggle}
-          /> */}
           <Flex
             borderBottom={{ base: '1px solid' }}
             borderColor={{ base: 'page.alt' }}
