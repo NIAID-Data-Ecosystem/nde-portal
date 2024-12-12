@@ -47,7 +47,6 @@ const FeaturedPage: NextPage<{
       metaDescription='Featured content for the portal.'
       px={0}
       py={0}
-      disableSearchBar
     >
       <Flex>
         {/* Banner img */}

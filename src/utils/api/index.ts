@@ -18,7 +18,6 @@ export interface Params {
   show_meta?: boolean;
   size?: string | number;
   sort?: string;
-  use_metadata_score?: string;
   multi_terms_fields?: string;
   multi_terms_size?: string;
 }

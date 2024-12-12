@@ -21,11 +21,7 @@
     "property": "@type",
     "count": 3371835,
     "type": "keyword",
-    "enum": [
-      "Dataset",
-      "ComputationalTool",
-      "ResourceCatalog"
-    ],
+    "enum": ["Dataset", "ComputationalTool", "ResourceCatalog"],
     "description": {
       "Dataset": "Datasets contained in the NIAID Data Ecosystem. A dataset is a collection of data of a particular experimental type. The NIAID Data Ecosystem is an environment to find and access and infectious and immune-mediated disease data and computational tools to speed the development of diagnostics, therapeutics, and vaccines. The NIAID Data Ecosystem Discovery Portal harvests metadata from dataset repository and harmonizes them to this schema to enable easy cross-platform dataset searching and filtering.",
       "ComputationalTool": "ComputationalTools (software, workflows, computational tools, code) contained in the NIAID Data Ecosystem. The NIAID Data Ecosystem is a secure environment to find, access and analyze immune-mediated and infectious disease data and computational tools to speed the development of diagnostics, therapeutics, and vaccines. The NIAID Data Ecosystem Discovery Portal harvests metadata from dataset repository and harmonizes them to this schema to enable easy cross-platform dataset searching and filtering.",
@@ -1294,12 +1290,7 @@
     "count": 78057,
     "type": "keyword",
     "schemaType": "string",
-    "enum": [
-      "Closed",
-      "Open",
-      "Restricted",
-      "Embargoed"
-    ],
+    "enum": ["Closed", "Open", "Restricted", "Embargoed"],
     "description": {
       "Dataset": "Conditions that affect the availability of, or method(s) of access to, the work. Options include open (freely available), restricted (may include restrictions such as on use), closed (requires registration to access), or embargoed (unpublished).",
       "ComputationalTool": "Conditions that affect the availability of, or method(s) of access to, the work. Options include open (freely available), restricted (may include restrictions such as on use), closed (requires registration to access), or embargoed (unpublished).",
@@ -4236,14 +4227,6 @@
       "Dataset": "URL of the item.",
       "ResourceCatalog": "URL of the item."
     },
-    "isAdvancedSearchField": false
-  },
-  "metadata_score": {
-    "name": "Metadata_score",
-    "dotfield": "metadata_score",
-    "property": "metadata_score",
-    "count": 0,
-    "type": "float",
     "isAdvancedSearchField": false
   },
   "name": {

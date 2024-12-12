@@ -128,7 +128,6 @@ const Docs: NextPage<{
       metaDescription='Documentation for the portal.'
       px={0}
       py={0}
-      disableSearchBar
     >
       <HeroBanner
         title={DOCUMENTATION_COPY.sections.hero.heading}

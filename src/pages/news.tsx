@@ -232,7 +232,6 @@ const News: NextPage<NewsProps> = props => {
       metaDescription='Latest news and updates for the NIAID Data Discovery Portal.'
       px={0}
       py={0}
-      disableSearchBar
     >
       <HeroBannerContainer
         justifyContent={{ base: 'flex-start', md: 'center' }}
