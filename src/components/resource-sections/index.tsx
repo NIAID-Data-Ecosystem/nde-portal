@@ -12,6 +12,8 @@ import {
   UnorderedList,
   VStack,
 } from '@chakra-ui/react';
+import { FaWandMagicSparkles } from 'react-icons/fa6';
+
 import { Link } from 'src/components/link';
 import {
   ResourceHeader,
