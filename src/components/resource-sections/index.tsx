@@ -213,17 +213,18 @@ const Sections = ({
               <Skeleton isLoaded={!isLoading}>
                 {data?.keywords && data?.keywords?.length > 0 && (
                   <SearchableItems
-                    items={data?.keywords}
-                    itemLimit={20}
                     fieldName='keywords'
-                    itemLabel='keywords'
-                    customizeButtonLabel={(limit, length, itemLabel) =>
+                    generateButtonLabel={(
+                      limit,
+                      length,
+                      itemLabel = 'keywords',
+                    ) =>
                       limit === length
                         ? `Show fewer ${itemLabel}`
                         : `Show all ${itemLabel} (${length - limit} more)`
                     }
-                    showTooltip={false}
-                    utilizeFlexContainer={false}
+                    itemLimit={20}
+                    items={data?.keywords}
                   />
                 )}
               </Skeleton>
@@ -234,15 +235,18 @@ const Sections = ({
                 {data?.applicationCategory &&
                   data?.applicationCategory?.length > 0 && (
                     <SearchableItems
-                      items={data?.applicationCategory}
-                      itemLimit={10}
                       fieldName='applicationCategory'
-                      itemLabel='categories'
-                      customizeButtonLabel={(limit, length, itemLabel) =>
+                      generateButtonLabel={(
+                        limit,
+                        length,
+                        itemLabel = 'application categories',
+                      ) =>
                         limit === length
                           ? `Show fewer ${itemLabel}`
                           : `Show all ${itemLabel} (${length - limit} more)`
                       }
+                      itemLimit={10}
+                      items={data?.applicationCategory}
                     />
                   )}
               </Skeleton>
@@ -253,15 +257,18 @@ const Sections = ({
                 {data?.programmingLanguage &&
                   data?.programmingLanguage?.length > 0 && (
                     <SearchableItems
-                      items={data?.programmingLanguage}
-                      itemLimit={10}
                       fieldName='programmingLanguage'
-                      itemLabel='languages'
-                      customizeButtonLabel={(limit, length, itemLabel) =>
+                      generateButtonLabel={(
+                        limit,
+                        length,
+                        itemLabel = 'languages',
+                      ) =>
                         limit === length
                           ? `Show fewer ${itemLabel}`
                           : `Show all ${itemLabel} (${length - limit} more)`
                       }
+                      items={data?.programmingLanguage}
+                      itemLimit={10}
                     />
                   )}
               </Skeleton>

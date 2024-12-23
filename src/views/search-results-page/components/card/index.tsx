@@ -30,6 +30,7 @@ import { Skeleton } from 'src/components/skeleton';
 import { filterWords } from './helpers';
 import { SchemaDefinitions } from 'scripts/generate-schema-definitions/types';
 import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
+import { InfoLabel } from 'src/components/info-label';
 
 interface SearchResultCardProps {
   isLoading?: boolean;
@@ -331,77 +332,115 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
               <MetadataAccordion data={data} />
 
               {data?.topicCategory && data?.topicCategory.length > 0 && (
-                <SearchableItems
-                  items={data.topicCategory?.flatMap(
-                    (topic: { name?: string }) =>
-                      topic?.name && typeof topic.name === 'string'
-                        ? [topic.name]
-                        : [],
-                  )}
-                  itemLimit={3}
-                  fieldName='topicCategory.name'
-                  itemLabel='categories'
-                  customizeButtonLabel={(limit, length, itemLabel) =>
-                    limit === length
-                      ? `Show fewer ${itemLabel}`
-                      : `Show all ${itemLabel} (${length - limit} more)`
-                  }
-                  title='Topic Categories'
-                  tooltipText={
-                    metadataFields['topicCategory'].description?.[data['@type']]
-                  }
-                  showTooltip={true}
-                  utilizeFlexContainer={true}
+                <Flex
+                  borderBottom='1px solid'
+                  borderBottomColor='gray.200'
+                  my={0}
                   px={paddingCard}
-                />
+                  py={1}
+                >
+                  <SearchableItems
+                    fieldName='topicCategory.name'
+                    generateButtonLabel={(
+                      limit,
+                      length,
+                      itemLabel = 'topics',
+                    ) =>
+                      limit === length
+                        ? `Show fewer ${itemLabel}`
+                        : `Show all ${itemLabel} (${length - limit} more)`
+                    }
+                    itemLimit={3}
+                    items={data.topicCategory?.flatMap(
+                      (topic: { name?: string }) =>
+                        topic?.name && typeof topic.name === 'string'
+                          ? [topic.name]
+                          : [],
+                    )}
+                    name={
+                      <InfoLabel
+                        title='Topic Categories'
+                        tooltipText={
+                          metadataFields['topicCategory'].description?.[
+                            data['@type']
+                          ]
+                        }
+                      />
+                    }
+                  />
+                </Flex>
               )}
 
               {data?.applicationCategory &&
                 data?.applicationCategory.length > 0 && (
-                  <SearchableItems
-                    items={data.applicationCategory}
-                    itemLimit={3}
-                    fieldName='applicationCategory'
-                    itemLabel='categories'
-                    customizeButtonLabel={(limit, length, itemLabel) =>
-                      limit === length
-                        ? `Show fewer ${itemLabel}`
-                        : `Show all ${itemLabel} (${length - limit} more)`
-                    }
-                    title='Application Categories'
-                    tooltipText={
-                      metadataFields['applicationCategory'].description?.[
-                        data['@type']
-                      ]
-                    }
-                    showTooltip={true}
-                    utilizeFlexContainer={true}
+                  <Flex
+                    borderBottom='1px solid'
+                    borderBottomColor='gray.200'
+                    my={0}
                     px={paddingCard}
-                  />
+                    py={1}
+                  >
+                    <SearchableItems
+                      fieldName='applicationCategory'
+                      generateButtonLabel={(
+                        limit,
+                        length,
+                        itemLabel = 'Application Categories',
+                      ) =>
+                        limit === length
+                          ? `Show fewer ${itemLabel}`
+                          : `Show all ${itemLabel} (${length - limit} more)`
+                      }
+                      itemLimit={3}
+                      items={data.applicationCategory}
+                      name={
+                        <InfoLabel
+                          title='Application Categories'
+                          tooltipText={
+                            metadataFields['applicationCategory'].description?.[
+                              data['@type']
+                            ]
+                          }
+                        />
+                      }
+                    />
+                  </Flex>
                 )}
 
               {data?.programmingLanguage &&
                 data?.programmingLanguage.length > 0 && (
-                  <SearchableItems
-                    items={data.programmingLanguage}
-                    itemLimit={6}
-                    fieldName='programmingLanguage'
-                    itemLabel='languages'
-                    customizeButtonLabel={(limit, length, itemLabel) =>
-                      limit === length
-                        ? `Show fewer ${itemLabel}`
-                        : `Show all ${itemLabel} (${length - limit} more)`
-                    }
-                    title='Programming Languages'
-                    tooltipText={
-                      metadataFields['programmingLanguage'].description?.[
-                        data['@type']
-                      ]
-                    }
-                    showTooltip={true}
-                    utilizeFlexContainer={true}
+                  <Flex
+                    borderBottom='1px solid'
+                    borderBottomColor='gray.200'
+                    my={0}
                     px={paddingCard}
-                  />
+                    py={1}
+                  >
+                    <SearchableItems
+                      fieldName='programmingLanguage'
+                      generateButtonLabel={(
+                        limit,
+                        length,
+                        itemLabel = 'languages',
+                      ) =>
+                        limit === length
+                          ? `Show fewer ${itemLabel}`
+                          : `Show all ${itemLabel} (${length - limit} more)`
+                      }
+                      itemLimit={3}
+                      items={data.programmingLanguage}
+                      name={
+                        <InfoLabel
+                          title='Programming Languages'
+                          tooltipText={
+                            metadataFields['programmingLanguage'].description?.[
+                              data['@type']
+                            ]
+                          }
+                        />
+                      }
+                    />
+                  </Flex>
                 )}
               <Stack
                 flex={1}

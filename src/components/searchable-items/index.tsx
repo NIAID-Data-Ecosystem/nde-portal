@@ -1,43 +1,22 @@
 import React, { useMemo, useState } from 'react';
-import {
-  Flex,
-  FlexProps,
-  Icon,
-  Text,
-  Button,
-  TagProps,
-} from '@chakra-ui/react';
-import { FaMagnifyingGlass, FaInfo } from 'react-icons/fa6';
+import { FlexProps, Button, TagProps } from '@chakra-ui/react';
+import { FaMagnifyingGlass } from 'react-icons/fa6';
 import { ScrollContainer } from 'src/components/scroll-container';
 import { TagWithUrl } from 'src/components/tag-with-url';
-import Tooltip from 'src/components/tooltip';
 
 interface SearchableItemsProps extends FlexProps {
+  colorScheme?: TagProps['colorScheme'];
+  fieldName: string;
+  generateButtonLabel?: (limit: number, length: number) => string;
   items: string[] | null | undefined;
   itemLimit?: number;
-  fieldName: string;
-  itemLabel?: string;
-  generateButtonLabel?: (limit: number, length: number) => string;
-  customizeButtonLabel?: (
-    limit: number,
-    length: number,
-    itemLabel: string,
-  ) => string;
-  colorScheme?: TagProps['colorScheme'];
-  title?: string;
-  tooltipText?: string;
-  showTooltip?: boolean;
-  utilizeFlexContainer?: boolean;
+  name?: React.ReactNode;
 }
 
-const generateDefaultLabel = (
-  limit: number,
-  length: number,
-  itemLabel: string,
-) => {
+const generateDefaultLabel = (limit: number, length: number) => {
   return limit === length
-    ? `Show fewer ${itemLabel}`
-    : `Show all ${itemLabel} (${length - limit} more)`;
+    ? 'Show fewer items'
+    : `Show all items (${(length - limit).toLocaleString()} more)`;
 };
 
 /*
@@ -46,17 +25,12 @@ const generateDefaultLabel = (
  * Includes a "show more/show fewer" button for toggling the visible item count.
  */
 export const SearchableItems: React.FC<SearchableItemsProps> = ({
-  items,
-  itemLimit = 3,
-  fieldName,
-  itemLabel = 'items',
-  generateButtonLabel = generateDefaultLabel,
-  customizeButtonLabel,
   colorScheme = 'primary',
-  title,
-  tooltipText,
-  showTooltip = false,
-  utilizeFlexContainer = false,
+  fieldName,
+  generateButtonLabel = generateDefaultLabel,
+  itemLimit = 3,
+  items,
+  name,
   ...props
 }) => {
   const uniqueItems = useMemo(
@@ -77,12 +51,18 @@ export const SearchableItems: React.FC<SearchableItemsProps> = ({
 
   if (!uniqueItems.length) return null;
 
-  const buttonLabel = customizeButtonLabel
-    ? customizeButtonLabel(limit, uniqueItems.length, itemLabel)
-    : generateButtonLabel(limit, uniqueItems.length, itemLabel);
+  const buttonLabel = generateButtonLabel(limit, uniqueItems.length);
 
-  const content = (
-    <>
+  return (
+    <ScrollContainer
+      maxHeight='300px'
+      m={0}
+      p={0}
+      display='flex'
+      flexWrap='wrap'
+      {...props}
+    >
+      {name}
       {uniqueItems.slice(0, limit).map(item => (
         <TagWithUrl
           key={item}
@@ -101,6 +81,7 @@ export const SearchableItems: React.FC<SearchableItemsProps> = ({
       ))}
       {uniqueItems.length > itemLimit && (
         <Button
+          colorScheme={colorScheme}
           size='xs'
           variant='link'
           justifyContent='flex-end'
@@ -109,44 +90,6 @@ export const SearchableItems: React.FC<SearchableItemsProps> = ({
         >
           {buttonLabel}
         </Button>
-      )}
-    </>
-  );
-
-  return (
-    <ScrollContainer maxHeight='300px' m={0} p={0}>
-      {utilizeFlexContainer ? (
-        <Flex
-          flexWrap='wrap'
-          my={0}
-          py={1}
-          borderBottom='1px solid'
-          borderBottomColor='gray.200'
-          {...props}
-        >
-          {title && (
-            <Tooltip label={tooltipText}>
-              <Text fontSize='xs' color='gray.800' mr={1} userSelect='none'>
-                {title}
-                {showTooltip && (
-                  <Icon
-                    as={FaInfo}
-                    boxSize={3.5}
-                    border='1px solid'
-                    borderRadius='full'
-                    p={0.5}
-                    mx={1}
-                    color='gray.800!important'
-                  />
-                )}
-                :
-              </Text>
-            </Tooltip>
-          )}
-          {content}
-        </Flex>
-      ) : (
-        content
       )}
     </ScrollContainer>
   );
