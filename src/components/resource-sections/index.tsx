@@ -12,8 +12,6 @@ import {
   UnorderedList,
   VStack,
 } from '@chakra-ui/react';
-import { FaWandMagicSparkles } from 'react-icons/fa6';
-
 import { Link } from 'src/components/link';
 import {
   ResourceHeader,
@@ -40,7 +38,7 @@ import BasedOnTable from './components/based-on';
 import { CompletenessBadgeCircle } from 'src/components/metadata-completeness-badge/Circular';
 import { ResourceCatalogCollection } from './components/collection-information';
 import { DownloadMetadata } from '../download-metadata';
-import { SearchableItems } from './components/searchable-items';
+import { SearchableItems } from 'src/components/searchable-items';
 import { Summary } from './components/summary';
 
 // Metadata displayed in each section
@@ -210,54 +208,64 @@ const Sections = ({
                 />
               </>
             )}
-
             {/* Show keywords */}
             {section.hash === 'keywords' && (
               <Skeleton isLoaded={!isLoading}>
                 {data?.keywords && data?.keywords?.length > 0 && (
                   <SearchableItems
-                    generateButtonLabel={(limit, length) => {
-                      return limit === length
-                        ? 'Show fewer keywords'
-                        : `Show all keywords (${(
-                            length - limit
-                          ).toLocaleString()} more)`;
-                    }}
-                    searchableItems={data?.keywords.sort((a, b) => {
-                      return a.toLowerCase().localeCompare(b.toLowerCase());
-                    })}
+                    items={data?.keywords}
+                    itemLimit={20}
                     fieldName='keywords'
+                    itemLabel='keywords'
+                    customizeButtonLabel={(limit, length, itemLabel) =>
+                      limit === length
+                        ? `Show fewer ${itemLabel}`
+                        : `Show all ${itemLabel} (${length - limit} more)`
+                    }
+                    showTooltip={false}
+                    utilizeFlexContainer={false}
                   />
                 )}
               </Skeleton>
             )}
-
             {/* Show application category */}
             {section.hash === 'applicationCategory' && (
               <Skeleton isLoaded={!isLoading}>
                 {data?.applicationCategory &&
                   data?.applicationCategory?.length > 0 && (
                     <SearchableItems
-                      searchableItems={data?.applicationCategory}
+                      items={data?.applicationCategory}
+                      itemLimit={10}
                       fieldName='applicationCategory'
+                      itemLabel='categories'
+                      customizeButtonLabel={(limit, length, itemLabel) =>
+                        limit === length
+                          ? `Show fewer ${itemLabel}`
+                          : `Show all ${itemLabel} (${length - limit} more)`
+                      }
                     />
                   )}
               </Skeleton>
             )}
-
             {/* Show programming language */}
             {section.hash === 'programmingLanguage' && (
               <Skeleton isLoaded={!isLoading}>
                 {data?.programmingLanguage &&
                   data?.programmingLanguage?.length > 0 && (
                     <SearchableItems
-                      searchableItems={data?.programmingLanguage}
+                      items={data?.programmingLanguage}
+                      itemLimit={10}
                       fieldName='programmingLanguage'
+                      itemLabel='languages'
+                      customizeButtonLabel={(limit, length, itemLabel) =>
+                        limit === length
+                          ? `Show fewer ${itemLabel}`
+                          : `Show all ${itemLabel} (${length - limit} more)`
+                      }
                     />
                   )}
               </Skeleton>
             )}
-
             {section.hash === 'softwareInformation' && (
               <SoftwareInformation
                 keys={sectionMetadata[section.hash]}

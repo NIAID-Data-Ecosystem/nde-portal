@@ -16,11 +16,9 @@ import NextLink from 'next/link';
 import { FaCircleArrowRight, FaAngleRight, FaRegClock } from 'react-icons/fa6';
 import { FormattedResource } from 'src/utils/api/types';
 import { TypeBanner } from 'src/components/resource-sections/components';
-import OperatingSystems from './operating-systems';
 import MetadataAccordion from './metadata-accordion';
-import TopicCategories from './topic-categories';
-import ApplicationCategories from './application-categories';
-import ProgrammingLanguages from './programming-languages';
+import OperatingSystems from './operating-systems';
+import { SearchableItems } from 'src/components/searchable-items';
 import { DisplayHTMLContent } from 'src/components/html-content';
 import { AccessibleForFree, ConditionsOfAccess } from 'src/components/badges';
 import { SourceLogo, getSourceDetails } from './source-logo';
@@ -30,6 +28,8 @@ import { formatAuthorsList2String } from 'src/utils/helpers/authors';
 import { isSourceFundedByNiaid } from 'src/utils/helpers/sources';
 import { Skeleton } from 'src/components/skeleton';
 import { filterWords } from './helpers';
+import { SchemaDefinitions } from 'scripts/generate-schema-definitions/types';
+import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
 
 interface SearchResultCardProps {
   isLoading?: boolean;
@@ -37,6 +37,8 @@ interface SearchResultCardProps {
   referrerPath?: string;
   querystring: string;
 }
+
+const metadataFields = SCHEMA_DEFINITIONS as SchemaDefinitions;
 
 const SearchResultCard: React.FC<SearchResultCardProps> = ({
   isLoading,
@@ -329,29 +331,78 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
               <MetadataAccordion data={data} />
 
               {data?.topicCategory && data?.topicCategory.length > 0 && (
-                <TopicCategories
-                  type={data['@type']}
-                  data={data.topicCategory}
+                <SearchableItems
+                  items={data.topicCategory?.flatMap(
+                    (topic: { name?: string }) =>
+                      topic?.name && typeof topic.name === 'string'
+                        ? [topic.name]
+                        : [],
+                  )}
+                  itemLimit={3}
+                  fieldName='topicCategory.name'
+                  itemLabel='categories'
+                  customizeButtonLabel={(limit, length, itemLabel) =>
+                    limit === length
+                      ? `Show fewer ${itemLabel}`
+                      : `Show all ${itemLabel} (${length - limit} more)`
+                  }
+                  title='Topic Categories'
+                  tooltipText={
+                    metadataFields['topicCategory'].description?.[data['@type']]
+                  }
+                  showTooltip={true}
+                  utilizeFlexContainer={true}
                   px={paddingCard}
                 />
               )}
 
               {data?.applicationCategory &&
                 data?.applicationCategory.length > 0 && (
-                  <ApplicationCategories
-                    data={data.applicationCategory}
+                  <SearchableItems
+                    items={data.applicationCategory}
+                    itemLimit={3}
+                    fieldName='applicationCategory'
+                    itemLabel='categories'
+                    customizeButtonLabel={(limit, length, itemLabel) =>
+                      limit === length
+                        ? `Show fewer ${itemLabel}`
+                        : `Show all ${itemLabel} (${length - limit} more)`
+                    }
+                    title='Application Categories'
+                    tooltipText={
+                      metadataFields['applicationCategory'].description?.[
+                        data['@type']
+                      ]
+                    }
+                    showTooltip={true}
+                    utilizeFlexContainer={true}
                     px={paddingCard}
                   />
                 )}
 
               {data?.programmingLanguage &&
                 data?.programmingLanguage.length > 0 && (
-                  <ProgrammingLanguages
-                    data={data.programmingLanguage}
+                  <SearchableItems
+                    items={data.programmingLanguage}
+                    itemLimit={6}
+                    fieldName='programmingLanguage'
+                    itemLabel='languages'
+                    customizeButtonLabel={(limit, length, itemLabel) =>
+                      limit === length
+                        ? `Show fewer ${itemLabel}`
+                        : `Show all ${itemLabel} (${length - limit} more)`
+                    }
+                    title='Programming Languages'
+                    tooltipText={
+                      metadataFields['programmingLanguage'].description?.[
+                        data['@type']
+                      ]
+                    }
+                    showTooltip={true}
+                    utilizeFlexContainer={true}
                     px={paddingCard}
                   />
                 )}
-
               <Stack
                 flex={1}
                 p={1}
