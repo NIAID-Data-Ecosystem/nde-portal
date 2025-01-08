@@ -12,6 +12,7 @@ import {
 import { useQuery } from '@tanstack/react-query';
 import { FaAngleRight, FaCheck, FaMagnifyingGlass } from 'react-icons/fa6';
 import {
+  fetchChildrenFromBioThingsAPI,
   fetchChildrenFromOLSAPI,
   fetchPortalCounts,
 } from '../utils/api-helpers';
@@ -158,18 +159,19 @@ const TreeNode = ({
       page,
     ],
     queryFn: () => {
-      // [ TO DO ]: Fetch children from the BioThings API for the NCBI Taxonomy
-      // if (queryParams.ontology === 'ncbitaxon') {
-      //   return fetchChildrenFromBioThingsAPI({
-      //     id: node.taxonId,
-      //     ontology: node.ontologyName,
-      //   }).then(async data => ({
-      //     ...data,
-      //     children: await fetchPortalCounts(data.children, {
-      //       q: params.q,
-      //     }),
-      //   }));
-      // }
+      // Fetch children from the BioThings API for the NCBI Taxonomy
+      if (node.ontologyName === 'ncbitaxon') {
+        return fetchChildrenFromBioThingsAPI({
+          id: node.taxonId,
+          ontology: node.ontologyName,
+          size: SIZE,
+        }).then(async data => ({
+          ...data,
+          children: await fetchPortalCounts(data.children, {
+            q: params.q,
+          }),
+        }));
+      }
       return fetchChildrenFromOLSAPI({
         id: node.taxonId,
         ontology: node.ontologyName,

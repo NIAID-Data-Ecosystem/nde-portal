@@ -3,6 +3,7 @@ export interface BioThingsLineageAPIResponseItem {
     _id: string;
     _version: number;
     authority: string[];
+    children: number[];
     genbank_common_name: string;
     has_gene: true;
     lineage: number[];
@@ -39,6 +40,7 @@ export interface OntologyLineageRequestParams {
   id: number;
   ontology: string;
   lang?: string;
+  from?: number;
   size?: number;
 }
 
