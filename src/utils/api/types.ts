@@ -41,6 +41,7 @@ export type AccessTypes =
   | 'Open'
   | 'Controlled'
   | 'Embargoed'
+  | 'Registered'
   | 'Restricted'
   | 'Varied'
   | 'Unknown';

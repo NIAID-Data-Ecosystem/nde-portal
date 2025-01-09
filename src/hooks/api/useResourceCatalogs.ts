@@ -5,6 +5,10 @@ import {
   FetchSearchResultsResponse,
   FormattedResource,
 } from 'src/utils/api/types';
+import {
+  formatConditionsOfAccess,
+  transformConditionsOfAccessLabel,
+} from 'src/utils/formatting/formatConditionsOfAccess';
 
 export interface ResourceCatalog {
   _id: string;
@@ -62,7 +66,9 @@ export function useResourceCatalogs({
       return catalogs.map(catalog => ({
         _id: catalog._id,
         abstract: catalog.abstract,
-        conditionsOfAccess: catalog.conditionsOfAccess,
+        conditionsOfAccess: transformConditionsOfAccessLabel(
+          formatConditionsOfAccess(catalog.conditionsOfAccess),
+        ),
         type: ['Resource Catalog'],
         name: catalog.name,
         domain: catalog.genre,
