@@ -71,7 +71,7 @@ export const FilterTags: React.FC<FilterTagsProps> = ({
             displayValue = `${
               scientificName.charAt(0).toUpperCase() + scientificName.slice(1)
             } ( ${commonName.charAt(0).toUpperCase() + commonName.slice(1)} )`;
-          } else if (key === '@type') {
+          } else if (key === '@type' || key === 'conditionsOfAccess') {
             displayValue = filterConfig?.transformData
               ? filterConfig.transformData({ term: value, count: 0 })?.label
               : '';

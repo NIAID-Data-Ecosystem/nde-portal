@@ -1,10 +1,5 @@
-import {
-  Author,
-  Citation,
-  Distribution,
-  FormattedResource,
-  AccessTypes,
-} from './types';
+import { formatConditionsOfAccess } from '../formatting/formatConditionsOfAccess';
+import { Author, Citation, Distribution, FormattedResource } from './types';
 
 interface APIAuthor {
   identifier?: string; // orcid id
@@ -167,32 +162,6 @@ export const formatDate = (date?: string | Date) => {
 // Standardizes value to be an array.
 const convertToArray = (property: any) => {
   return property ? (Array.isArray(property) ? property : [property]) : null;
-};
-
-/*
- Stardized conditions of access value. Feedback provided by NIAID proposes "controlled" access instead of "closed" or "restricted".
- See issue #59 for more information.
-*/
-type APIAccessTypes = 'Open' | 'Closed' | 'Embargoed' | 'Restricted';
-
-const formatConditionsOfAccess = (
-  access: APIAccessTypes,
-): AccessTypes | null => {
-  if (!access || access === undefined) {
-    return null;
-  } else if (
-    access === 'Closed' ||
-    access.toLowerCase().includes('closed') ||
-    access.toLowerCase().includes('restricted')
-  ) {
-    /*
-     Group "closed" and "restricted" access types as "controlled".
-     https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/59
-    */
-    return 'Controlled';
-  } else {
-    return access;
-  }
 };
 
 export const formatAPIResource = (data: any) => {

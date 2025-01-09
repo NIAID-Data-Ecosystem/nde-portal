@@ -216,6 +216,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                       mx={1}
                     />
                     <ConditionsOfAccess
+                      type={data?.['@type']}
                       conditionsOfAccess={conditionsOfAccess}
                       mx={1}
                     />
@@ -332,45 +333,46 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
 
               <MetadataAccordion data={data} />
 
-              {data?.topicCategory && data?.topicCategory.length > 0 && (
-                <Flex
-                  borderBottom='1px solid'
-                  borderBottomColor='gray.200'
-                  my={0}
-                  px={paddingCard}
-                  py={1}
-                >
-                  <SearchableItems
-                    fieldName='topicCategory.name'
-                    generateButtonLabel={(
-                      limit,
-                      length,
-                      itemLabel = 'topics',
-                    ) =>
-                      limit === length
-                        ? `Show fewer ${itemLabel}`
-                        : `Show all ${itemLabel} (${length - limit} more)`
-                    }
-                    itemLimit={3}
-                    items={data.topicCategory?.flatMap(
-                      (topic: { name?: string }) =>
-                        topic?.name && typeof topic.name === 'string'
-                          ? [topic.name]
-                          : [],
-                    )}
-                    name={
-                      <InfoLabel
-                        title='Topic Categories'
-                        tooltipText={
-                          metadataFields['topicCategory'].description?.[
-                            data['@type']
-                          ]
-                        }
-                      />
-                    }
-                  />
-                </Flex>
-              )}
+              {data?.topicCategory &&
+                data?.topicCategory.some(topic => topic.name) && (
+                  <Flex
+                    borderBottom='1px solid'
+                    borderBottomColor='gray.200'
+                    my={0}
+                    px={paddingCard}
+                    py={1}
+                  >
+                    <SearchableItems
+                      fieldName='topicCategory.name'
+                      generateButtonLabel={(
+                        limit,
+                        length,
+                        itemLabel = 'topics',
+                      ) =>
+                        limit === length
+                          ? `Show fewer ${itemLabel}`
+                          : `Show all ${itemLabel} (${length - limit} more)`
+                      }
+                      itemLimit={3}
+                      items={data.topicCategory?.flatMap(
+                        (topic: { name?: string }) =>
+                          topic?.name && typeof topic.name === 'string'
+                            ? [topic.name]
+                            : [],
+                      )}
+                      name={
+                        <InfoLabel
+                          title='Topic Categories'
+                          tooltipText={
+                            metadataFields['topicCategory'].description?.[
+                              data['@type']
+                            ]
+                          }
+                        />
+                      }
+                    />
+                  </Flex>
+                )}
 
               {data?.applicationCategory &&
                 data?.applicationCategory.length > 0 && (

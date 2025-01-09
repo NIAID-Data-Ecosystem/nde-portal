@@ -273,10 +273,7 @@ export const RepositoryCells = ({
             (data.domain ? formatDomainName(data.domain) : '-')}
           {column.property === 'conditionsOfAccess' &&
             (data['conditionsOfAccess']
-              ? `${
-                  data['conditionsOfAccess'].charAt(0) +
-                  data['conditionsOfAccess'].slice(1)
-                } Access`
+              ? `${data['conditionsOfAccess']}`
               : '-')}
         </SkeletonText>
       )}
