@@ -100,7 +100,7 @@ const Home: NextPage<{
                     property: '@type',
                   },
                   {
-                    name: 'Resource Catalog Repository',
+                    name: 'Resource Catalog',
                     value: 'ResourceCatalog',
                     property: '@type',
                   },
