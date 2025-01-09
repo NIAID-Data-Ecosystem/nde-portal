@@ -5,7 +5,7 @@ import {
 import { FilterConfig, FacetTermWithDetails } from './types';
 import { buildQueries, buildSourceQueries } from './utils/query-builders';
 import { formatDate, formatISOString } from 'src/utils/api/helpers';
-import { FetchSearchResultsResponse } from 'src/utils/api/types';
+import { AccessTypes, FetchSearchResultsResponse } from 'src/utils/api/types';
 import {
   createCommonQuery,
   createNotExistsQuery,
@@ -13,6 +13,10 @@ import {
 } from './utils/queries';
 import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
 import { SchemaDefinitions } from 'scripts/generate-schema-definitions/types';
+import {
+  formatConditionsOfAccess,
+  transformConditionsOfAccessLabel,
+} from 'src/utils/formatting/formatConditionsOfAccess';
 
 const schema = SCHEMA_DEFINITIONS as SchemaDefinitions;
 
@@ -185,6 +189,19 @@ export const FILTER_CONFIGS: FilterConfig[] = [
     property: 'conditionsOfAccess',
     description: getSchemaDescription('conditionsOfAccess'),
     createQueries: buildQueries(),
+    transformData: (item): FacetTermWithDetails => {
+      let term = item.label || item.term;
+      // Ignore any and non specified
+      if (item.term.includes('_exists_')) {
+        return { ...item, label: item.label || '' };
+      }
+      return {
+        ...item,
+        label:
+          transformConditionsOfAccessLabel(formatConditionsOfAccess(term)) ||
+          '',
+      };
+    },
   },
   {
     _id: 'variableMeasured.name.raw',

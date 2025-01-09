@@ -7,6 +7,10 @@ import {
   FormattedResource,
 } from 'src/utils/api/types';
 import axios from 'axios';
+import {
+  formatConditionsOfAccess,
+  transformConditionsOfAccessLabel,
+} from 'src/utils/formatting/formatConditionsOfAccess';
 
 export interface Repository {
   _id: string;
@@ -118,7 +122,11 @@ export function useRepoData(options: any = {}) {
             name: name || '',
             domain: genre,
             url,
-            conditionsOfAccess: conditionsOfAccess || '',
+            conditionsOfAccess: conditionsOfAccess
+              ? transformConditionsOfAccessLabel(
+                  formatConditionsOfAccess(conditionsOfAccess),
+                )
+              : '',
           };
         });
 
