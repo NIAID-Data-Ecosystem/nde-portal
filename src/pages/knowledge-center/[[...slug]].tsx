@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   Box,
   Flex,
@@ -122,6 +122,17 @@ const Docs: NextPage<{
   }, {} as SidebarContent['items'][0]);
 
   const MAX_PAGES_PER_SECTION = 3;
+
+  // Redirect to new "compatibility" slug if user is going to old "completeness" slug
+  useEffect(() => {
+    if (
+      router.query.slug &&
+      router.query.slug[0] === 'metadata-completeness-score'
+    ) {
+      router.push('/knowledge-center/metadata-compatibility-score');
+    }
+  });
+
   return (
     <PageContainer
       title='Knowledge Center'
@@ -393,6 +404,7 @@ export async function getStaticPaths() {
   // (slower builds, but faster initial page load)
   const paths = [
     { params: { slug: undefined } }, // handles /docs (without slug) route.
+    { params: { slug: ['metadata-completeness-score'] } }, // handle removed completeness page
     ...docs
       .filter(doc => !!doc.attributes?.slug)
       .map(doc => ({
