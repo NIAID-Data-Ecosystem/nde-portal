@@ -62,7 +62,7 @@ export const TooltipContent = ({ data }: TooltipContentProps) => {
   return (
     <Flex flexDirection='column' p={1} minW={200}>
       <Text fontWeight='semibold' fontSize='sm'>
-        Metadata Completeness
+        Metadata Compatibility
       </Text>
       {/* Total score */}
       <Flex my={1}>
