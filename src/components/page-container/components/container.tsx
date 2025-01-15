@@ -198,8 +198,8 @@ export const PageContainer: React.FC<PageContainerProps> = ({
                   </Button>
                 </NextLink>
                 <SearchBarWithDropdown
-                  ariaLabel='Search for datasets'
-                  placeholder='Search for datasets'
+                  ariaLabel='Search for resources'
+                  placeholder='Search for resources'
                   size='md'
                   showSearchHistory
                 />
