@@ -74,8 +74,8 @@ const Home: NextPage<{
         >
           <Flex w='100%' flexDirection='column' maxWidth='1000px'>
             <SearchBarWithDropdown
-              placeholder='Search for datasets'
-              ariaLabel='Search for datasets'
+              placeholder='Search for resources'
+              ariaLabel='Search for resources'
               size='md'
               showOptionsMenu
               showSearchHistory
