@@ -138,7 +138,7 @@ const SearchResultsPage = ({
       size: `${selectedPerPage}`,
       from: `${(selectedPage - 1) * selectedPerPage}`,
       sort: sortOrder,
-      use_metadata_score: shouldUseMetadataScore ? 'true' : 'false',
+      // use_metadata_score: shouldUseMetadataScore ? 'true' : 'false',
       show_meta: true,
       fields: [
         '_meta',
