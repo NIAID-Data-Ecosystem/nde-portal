@@ -137,9 +137,9 @@ export const FILTER_CONFIGS: FilterConfig[] = [
         params: {
           ...params,
           facets: 'sourceOrganization.name.raw',
-          multi_terms_fields:
-            'sourceOrganization.parentOrganization,sourceOrganization.name.raw',
-          multi_terms_size: '100',
+          // multi_terms_fields:
+          //   'sourceOrganization.parentOrganization,sourceOrganization.name.raw',
+          // multi_terms_size: '100',
         },
         ...options,
       }),
