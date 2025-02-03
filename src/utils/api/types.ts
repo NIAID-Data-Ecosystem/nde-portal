@@ -437,7 +437,7 @@ export interface FormattedResource {
   programmingLanguage: string[] | null;
   publisher: Publisher | null;
   rawData?: any;
-  sameAs: string | null;
+  sameAs: string | string[] | null;
   softwareAddOn: { identifier: string }[] | null;
   softwareHelp: { name?: string; url: string }[] | null;
   softwareRequirements: string[] | null;

@@ -20,6 +20,7 @@ import {
   ResourceProvenance,
   Section,
   ResourceCitations,
+  DuplicateResources,
   ResourceAuthors,
 } from './components';
 import { Route } from './helpers';
@@ -104,9 +105,12 @@ const Sections = ({
         doi={data?.doi}
         nctid={data?.nctid}
       />
+
+      {/* Show links to duplicate records */}
+      {data?.sameAs && <DuplicateResources sameAs={data.sameAs} />}
+
       {/* Banner showing data type and publish date. For computational tools, operating system info is displayed when available. */}
       {data?.author && <ResourceAuthors authors={data.author} />}
-
       <ResourceBanner data={data} />
 
       {/*<--- AI Generated short description -->*/}
