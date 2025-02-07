@@ -18,6 +18,7 @@ interface DataAccessProps {
   isLoading: boolean;
   includedInDataCatalog?: FormattedResource['includedInDataCatalog'];
   url?: FormattedResource['url'];
+  recordType?: string | null;
   children?: React.ReactNode;
   colorScheme?: ButtonProps['colorScheme'];
 }
@@ -26,6 +27,7 @@ export const DataAccess: React.FC<DataAccessProps> = ({
   isLoading,
   includedInDataCatalog,
   url,
+  recordType,
   colorScheme = 'primary',
 }) => {
   const prefersReducedMotion = usePrefersReducedMotion();
@@ -35,7 +37,7 @@ export const DataAccess: React.FC<DataAccessProps> = ({
   }
 
   const sources =
-    !isLoading && includedInDataCatalog
+    !isLoading && includedInDataCatalog && recordType !== 'ResourceCatalog'
       ? getSourceDetails(includedInDataCatalog)
       : [];
 
@@ -54,7 +56,7 @@ export const DataAccess: React.FC<DataAccessProps> = ({
                 mb: 1,
               }}
             />
-            {url ? (
+            {source.dataset ? (
               <Flex
                 w='100%'
                 mt={2}
@@ -74,7 +76,7 @@ export const DataAccess: React.FC<DataAccessProps> = ({
                       },
                 }}
               >
-                <NextLink href={url} target='_blank'>
+                <NextLink href={source.dataset} target='_blank'>
                   <Button
                     colorScheme={colorScheme}
                     size='sm'
