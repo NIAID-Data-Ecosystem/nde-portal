@@ -23,6 +23,19 @@ interface DataAccessProps {
   colorScheme?: ButtonProps['colorScheme'];
 }
 
+const AccessResourceButton: React.FC<{ url: string; colorScheme: string }> = ({
+  url,
+  colorScheme,
+}) => (
+  <Flex mt={4} flexDirection='column' alignItems='flex-start'>
+    <NextLink href={url} target='_blank'>
+      <Button colorScheme={colorScheme} size='sm' rightIcon={<FaArrowRight />}>
+        Access Resource
+      </Button>
+    </NextLink>
+  </Flex>
+);
+
 export const DataAccess: React.FC<DataAccessProps> = ({
   isLoading,
   includedInDataCatalog,
@@ -35,19 +48,7 @@ export const DataAccess: React.FC<DataAccessProps> = ({
   if (!isLoading) {
     if (!includedInDataCatalog) return null;
     if (recordType === 'ResourceCatalog' && url) {
-      return (
-        <Flex mt={4} flexDirection='column' alignItems='flex-start'>
-          <NextLink href={url} target='_blank'>
-            <Button
-              colorScheme={colorScheme}
-              size='sm'
-              rightIcon={<FaArrowRight />}
-            >
-              Access Resource
-            </Button>
-          </NextLink>
-        </Flex>
-      );
+      return <AccessResourceButton url={url} colorScheme={colorScheme} />;
     }
   }
 
@@ -90,15 +91,10 @@ export const DataAccess: React.FC<DataAccessProps> = ({
                     },
               }}
             >
-              <NextLink href={source.dataset} target='_blank'>
-                <Button
-                  colorScheme={colorScheme}
-                  size='sm'
-                  rightIcon={<FaArrowRight />}
-                >
-                  Access Resource
-                </Button>
-              </NextLink>
+              <AccessResourceButton
+                url={source.dataset}
+                colorScheme={colorScheme}
+              />
             </Flex>
           )}
         </React.Fragment>
