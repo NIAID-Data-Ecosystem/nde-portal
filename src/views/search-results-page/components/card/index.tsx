@@ -207,10 +207,11 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                     justifyContent={['flex-end']}
                     alignItems='center'
                     w={['100%', 'unset']}
-                    flex={[1, 'unset']}
+                    flex={[1]}
                     p={[0.5, 2]}
                   >
                     <AccessibleForFree
+                      type={data?.['@type']}
                       isAccessibleForFree={isAccessibleForFree}
                       mx={1}
                     />
