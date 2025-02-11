@@ -21,7 +21,7 @@ export const DataUsage: React.FC<DataUsageProps> = ({
   }
   const usageAgreement = Array.isArray(usageInfo) ? usageInfo : [usageInfo];
   // If there are no usage agreements, don't render anything.
-  if (!usageAgreement.some(ua => ua?.url || ua.name) || !type) {
+  if (!usageAgreement.some(ua => ua?.url || ua?.name) || !type) {
     return <></>;
   }
   const description = SCHEMA_DEFINITIONS['usageInfo']?.description;
