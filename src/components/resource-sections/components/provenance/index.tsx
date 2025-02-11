@@ -51,9 +51,16 @@ const Provenance: React.FC<Provenance> = ({
     children: React.ReactNode;
     label?: string;
     url?: string | null;
+    sourceRecordUrl?: string | null;
   }
 
-  const Block = ({ children, label, url, ...props }: BlockProps) => {
+  const Block = ({
+    children,
+    label,
+    url,
+    sourceRecordUrl,
+    ...props
+  }: BlockProps) => {
     return (
       <Flex
         border='1px solid'
@@ -75,7 +82,7 @@ const Provenance: React.FC<Provenance> = ({
           </>
         )}
         <>{children}</>
-        {url ? (
+        {sourceRecordUrl ? (
           <Flex
             mt={2}
             justifyContent='flex-end'
@@ -94,7 +101,7 @@ const Provenance: React.FC<Provenance> = ({
                   },
             }}
           >
-            <NextLink href={url} target='_blank'>
+            <NextLink href={sourceRecordUrl} target='_blank'>
               <Button
                 as='span'
                 variant='outline'
@@ -163,6 +170,7 @@ const Provenance: React.FC<Provenance> = ({
               key={includedInDataCatalog.name}
               label='Provided By'
               url={url}
+              sourceRecordUrl={includedInDataCatalog.dataset}
               mr={3}
               ml={0}
             >
