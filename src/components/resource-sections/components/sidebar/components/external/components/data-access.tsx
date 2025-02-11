@@ -27,13 +27,11 @@ const AccessResourceButton: React.FC<{ url: string; colorScheme: string }> = ({
   url,
   colorScheme,
 }) => (
-  <Flex mt={4} flexDirection='column' alignItems='flex-start'>
-    <NextLink href={url} target='_blank'>
-      <Button colorScheme={colorScheme} size='sm' rightIcon={<FaArrowRight />}>
-        Access Resource
-      </Button>
-    </NextLink>
-  </Flex>
+  <NextLink href={url} target='_blank'>
+    <Button colorScheme={colorScheme} size='sm' rightIcon={<FaArrowRight />}>
+      Access Resource
+    </Button>
+  </NextLink>
 );
 
 export const DataAccess: React.FC<DataAccessProps> = ({
