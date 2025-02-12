@@ -60,14 +60,14 @@ export const DataAccess: React.FC<DataAccessProps> = ({
       {sources.map(source => (
         <React.Fragment key={source.name}>
           <SourceLogo
-            sources={[source]}
-            url={source.url}
             imageProps={{
               width: 'auto',
               height: 'unset',
               maxHeight: '80px',
               mb: 1,
             }}
+            source={source}
+            url={source.dataset}
           />
           {source.dataset && (
             <Flex
