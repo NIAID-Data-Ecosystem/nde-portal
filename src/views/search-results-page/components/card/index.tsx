@@ -444,6 +444,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                     />
                   </Flex>
                 )}
+
               <Stack
                 flex={1}
                 p={1}
@@ -455,12 +456,19 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                 pb={[2, 4]}
                 my={1}
               >
-                <SourceLogo
-                  display={{ base: 'none', sm: 'flex' }}
-                  sources={sources}
-                  url={url}
-                  flex={1}
-                />
+                {sources.map(source => (
+                  <SourceLogo
+                    key={source.name}
+                    sources={[source]}
+                    display={{ base: 'none', sm: 'flex' }}
+                    url={
+                      data?.['@type'] == 'ResourceCatalog'
+                        ? data?.url
+                        : source.dataset
+                    }
+                    flex={1}
+                  />
+                ))}
                 <Flex
                   flex={{ base: 1, sm: 'unset' }}
                   mt={[2, 0]}
