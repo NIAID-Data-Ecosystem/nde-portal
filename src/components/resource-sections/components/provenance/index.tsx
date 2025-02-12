@@ -24,7 +24,6 @@ import Tooltip from 'src/components/tooltip';
 interface Provenance {
   isLoading: boolean;
   includedInDataCatalog?: FormattedResource['includedInDataCatalog'];
-  url?: FormattedResource['url'];
   sdPublisher?: FormattedResource['sdPublisher'];
   sourceOrganization?: FormattedResource['sourceOrganization'];
   curatedBy?: FormattedResource['curatedBy'];
@@ -33,7 +32,6 @@ interface Provenance {
 const Provenance: React.FC<Provenance> = ({
   includedInDataCatalog,
   isLoading,
-  url,
   sourceOrganization,
   sdPublisher,
   curatedBy,
@@ -50,14 +48,12 @@ const Provenance: React.FC<Provenance> = ({
   interface BlockProps extends FlexProps {
     children: React.ReactNode;
     label?: string;
-    url?: string | null;
     sourceRecordUrl?: string | null;
   }
 
   const Block = ({
     children,
     label,
-    url,
     sourceRecordUrl,
     ...props
   }: BlockProps) => {
@@ -169,7 +165,6 @@ const Provenance: React.FC<Provenance> = ({
             <Block
               key={includedInDataCatalog.name}
               label='Provided By'
-              url={url}
               sourceRecordUrl={includedInDataCatalog.dataset}
               mr={3}
               ml={0}
