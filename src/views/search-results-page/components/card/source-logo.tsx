@@ -76,7 +76,24 @@ export const SourceLogo = ({
             <Image
               objectFit='contain'
               objectPosition='left'
-              fallbackSrc='/assets/resources/empty-source.png'
+              fallback={
+                <Flex minHeight='40px' color='text.heading' alignItems='center'>
+                  <Text
+                    borderBottom='none!important'
+                    color='inherit!important'
+                    fontSize='xl'
+                    fontWeight='bold'
+                    lineHeight='shorter'
+                    _hover={{
+                      borderBottom: 'none!important',
+                    }}
+                    _visited={{ color: 'inherit!important' }}
+                  >
+                    {source.name}
+                  </Text>
+                </Flex>
+              }
+              // fallbackSrc='/assets/resources/empty-source.png'
               w='100%'
               h='40px'
               mr={4}
