@@ -327,7 +327,7 @@ const Sections = ({
               )}
             {/* Show provenance */}
             {section.hash === 'provenance' && (
-              <ResourceProvenance isLoading={isLoading} {...data} />
+              <ResourceProvenance isLoading={isLoading} type={type} {...data} />
             )}
 
             {/* Show downloads */}

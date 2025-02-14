@@ -27,6 +27,7 @@ interface Provenance {
   sdPublisher?: FormattedResource['sdPublisher'];
   sourceOrganization?: FormattedResource['sourceOrganization'];
   curatedBy?: FormattedResource['curatedBy'];
+  type?: FormattedResource['@type'];
 }
 
 const Provenance: React.FC<Provenance> = ({
@@ -35,6 +36,7 @@ const Provenance: React.FC<Provenance> = ({
   sourceOrganization,
   sdPublisher,
   curatedBy,
+  type,
 }) => {
   const provenanceCatalogs =
     !isLoading && includedInDataCatalog
@@ -49,12 +51,14 @@ const Provenance: React.FC<Provenance> = ({
     children: React.ReactNode;
     label?: string;
     sourceRecordUrl?: string | null;
+    type?: string | null;
   }
 
   const Block = ({
     children,
     label,
     sourceRecordUrl,
+    type,
     ...props
   }: BlockProps) => {
     return (
@@ -78,7 +82,7 @@ const Provenance: React.FC<Provenance> = ({
           </>
         )}
         <>{children}</>
-        {sourceRecordUrl ? (
+        {type === 'ResourceCatalog' && sourceRecordUrl ? (
           <Flex
             mt={2}
             justifyContent='flex-end'
@@ -166,6 +170,7 @@ const Provenance: React.FC<Provenance> = ({
               key={includedInDataCatalog.name}
               label='Provided By'
               sourceRecordUrl={includedInDataCatalog.dataset}
+              type={type}
               mr={3}
               ml={0}
             >
