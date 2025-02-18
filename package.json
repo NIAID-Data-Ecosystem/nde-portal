@@ -32,7 +32,7 @@
     "framer-motion": "^10.18.0",
     "jest-environment-jsdom": "^29.7.0",
     "next-sitemap": "^4.1.8",
-    "next": "^14.2.10",
+    "next": "^14.2.21",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-window": "^1.8.10"
@@ -101,7 +101,9 @@
     "braces": "^3.0.3",
     "cookie": "^0.7.0",
     "cross-spawn": "^7.0.5",
+    "esbuild": "^0.25.0",
     "micromatch": "^4.0.8",
+    "nanoid": "^3.3.8",
     "path-to-regexp": "^6.3.0",
     "semver": "^7.5.2",
     "tough-cookie": "^4.1.3",
