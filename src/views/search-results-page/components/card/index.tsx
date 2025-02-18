@@ -21,7 +21,7 @@ import OperatingSystems from './operating-systems';
 import { SearchableItems } from 'src/components/searchable-items';
 import { DisplayHTMLContent } from 'src/components/html-content';
 import { AccessibleForFree, ConditionsOfAccess } from 'src/components/badges';
-import { SourceLogo, getSourceDetails } from './source-logo';
+import { SourceLogo, SourceLogoWrapper, getSourceDetails } from './source-logo';
 import { CompletenessBadgeCircle } from 'src/components/metadata-completeness-badge/Circular';
 import { ToggleContainer } from 'src/components/toggle-container';
 import { formatAuthorsList2String } from 'src/utils/helpers/authors';
@@ -59,8 +59,8 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
     conditionsOfAccess,
     includedInDataCatalog,
     isAccessibleForFree,
-    url,
     operatingSystem,
+    url,
   } = data || {};
 
   const paddingCard = [4, 6, 8, 10];
@@ -306,7 +306,23 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                   borderRadius='semi'
                   justifyContent='center'
                 >
-                  <SourceLogo sources={sources} url={url} />
+                  <SourceLogoWrapper>
+                    {sources?.length > 0 &&
+                      sources.map(source => {
+                        return (
+                          <SourceLogo
+                            key={source.name}
+                            source={source}
+                            type={type}
+                            url={
+                              type === 'ResourceCatalog'
+                                ? source.url
+                                : source.dataset
+                            }
+                          />
+                        );
+                      })}
+                  </SourceLogoWrapper>
                 </Flex>
 
                 {description && (
@@ -446,6 +462,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                     />
                   </Flex>
                 )}
+
               <Stack
                 flex={1}
                 p={1}
@@ -457,12 +474,27 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                 pb={[2, 4]}
                 my={1}
               >
-                <SourceLogo
+                <SourceLogoWrapper
                   display={{ base: 'none', sm: 'flex' }}
-                  sources={sources}
-                  url={url}
                   flex={1}
-                />
+                >
+                  {sources?.length > 0 &&
+                    sources.map(source => {
+                      return (
+                        <SourceLogo
+                          key={source.name}
+                          source={source}
+                          type={type}
+                          url={
+                            type === 'ResourceCatalog'
+                              ? source.url
+                              : source.dataset
+                          }
+                        />
+                      );
+                    })}
+                </SourceLogoWrapper>
+
                 <Flex
                   flex={{ base: 1, sm: 'unset' }}
                   mt={[2, 0]}

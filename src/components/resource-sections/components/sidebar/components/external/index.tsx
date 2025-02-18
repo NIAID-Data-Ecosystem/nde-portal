@@ -61,6 +61,7 @@ export const External = ({
           isLoading={isLoading}
           includedInDataCatalog={data?.includedInDataCatalog}
           url={data?.url}
+          recordType={data?.['@type']}
         />
       </Wrapper>
       <Box bg='secondary.50'>

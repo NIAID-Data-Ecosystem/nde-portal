@@ -18,20 +18,36 @@ interface DataAccessProps {
   isLoading: boolean;
   includedInDataCatalog?: FormattedResource['includedInDataCatalog'];
   url?: FormattedResource['url'];
+  recordType?: string | null;
   children?: React.ReactNode;
   colorScheme?: ButtonProps['colorScheme'];
 }
+
+const AccessResourceButton: React.FC<{ url: string; colorScheme: string }> = ({
+  url,
+  colorScheme,
+}) => (
+  <NextLink href={url} target='_blank'>
+    <Button colorScheme={colorScheme} size='sm' rightIcon={<FaArrowRight />}>
+      Access Resource
+    </Button>
+  </NextLink>
+);
 
 export const DataAccess: React.FC<DataAccessProps> = ({
   isLoading,
   includedInDataCatalog,
   url,
+  recordType,
   colorScheme = 'primary',
 }) => {
   const prefersReducedMotion = usePrefersReducedMotion();
 
-  if (!isLoading && !includedInDataCatalog) {
-    return <></>;
+  if (!isLoading) {
+    if (!includedInDataCatalog) return null;
+    if (recordType === 'ResourceCatalog' && url) {
+      return <AccessResourceButton url={url} colorScheme={colorScheme} />;
+    }
   }
 
   const sources =
@@ -41,55 +57,46 @@ export const DataAccess: React.FC<DataAccessProps> = ({
 
   return (
     <Stack mt={4} flexDirection='column' alignItems='flex-start' spacing={4}>
-      {sources.map(source => {
-        return (
-          <React.Fragment key={source.name}>
-            <SourceLogo
-              sources={[source]}
-              url={source.url}
-              imageProps={{
-                width: 'auto',
-                height: 'unset',
-                maxHeight: '80px',
-                mb: 1,
+      {sources.map(source => (
+        <React.Fragment key={source.name}>
+          <SourceLogo
+            imageProps={{
+              width: 'auto',
+              height: 'unset',
+              maxHeight: '80px',
+              mb: 1,
+            }}
+            source={source}
+            url={source.dataset}
+          />
+          {source.dataset && (
+            <Flex
+              w='100%'
+              mt={2}
+              justifyContent='flex-end'
+              sx={{
+                svg: {
+                  transform: 'translateX(-2px)',
+                  transition: 'transform 0.2s ease-in-out',
+                },
               }}
-            />
-            {url ? (
-              <Flex
-                w='100%'
-                mt={2}
-                justifyContent='flex-end'
-                sx={{
-                  svg: {
-                    transform: 'translateX(-2px)',
-                    transition: 'transform 0.2s ease-in-out',
-                  },
-                }}
-                _hover={{
-                  svg: prefersReducedMotion
-                    ? {}
-                    : {
-                        transform: 'translateX(4px)',
-                        transition: 'transform 0.2s ease-in-out',
-                      },
-                }}
-              >
-                <NextLink href={url} target='_blank'>
-                  <Button
-                    colorScheme={colorScheme}
-                    size='sm'
-                    rightIcon={<FaArrowRight />}
-                  >
-                    Access Resource
-                  </Button>
-                </NextLink>
-              </Flex>
-            ) : (
-              <></>
-            )}
-          </React.Fragment>
-        );
-      })}
+              _hover={{
+                svg: prefersReducedMotion
+                  ? {}
+                  : {
+                      transform: 'translateX(4px)',
+                      transition: 'transform 0.2s ease-in-out',
+                    },
+              }}
+            >
+              <AccessResourceButton
+                url={source.dataset}
+                colorScheme={colorScheme}
+              />
+            </Flex>
+          )}
+        </React.Fragment>
+      ))}
     </Stack>
   );
 };

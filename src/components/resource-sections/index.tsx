@@ -87,7 +87,6 @@ const Sections = ({
   data?: FormattedResource;
   sections: Route[];
 }) => {
-  const type = data?.['@type'];
   return (
     <>
       <ResourceHeader
@@ -304,7 +303,11 @@ const Sections = ({
               )}
             {/* Show provenance */}
             {section.hash === 'provenance' && (
-              <ResourceProvenance isLoading={isLoading} {...data} />
+              <ResourceProvenance
+                isLoading={isLoading}
+                type={data?.['@type']}
+                {...data}
+              />
             )}
 
             {/* Show downloads */}
