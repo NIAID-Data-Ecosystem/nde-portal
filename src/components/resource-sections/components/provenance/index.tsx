@@ -165,44 +165,6 @@ const Provenance: React.FC<Provenance> = ({
                     : undefined}
                 </Field>
               </dl>
-
-              {type === 'ResourceCatalog' && includedInDataCatalog.dataset ? (
-                <Flex
-                  mt={2}
-                  justifyContent='flex-end'
-                  sx={{
-                    svg: {
-                      transform: 'translateX(-2px)',
-                      transition: 'transform 0.2s ease-in-out',
-                    },
-                  }}
-                  _hover={{
-                    svg: prefersReducedMotion
-                      ? {}
-                      : {
-                          transform: 'translateX(4px)',
-                          transition: 'transform 0.2s ease-in-out',
-                        },
-                  }}
-                >
-                  <NextLink
-                    href={includedInDataCatalog.dataset}
-                    target='_blank'
-                  >
-                    <Button
-                      as='span'
-                      variant='outline'
-                      size='sm'
-                      rightIcon={<FaArrowRight />}
-                      mt={2}
-                    >
-                      Access Resource
-                    </Button>
-                  </NextLink>
-                </Flex>
-              ) : (
-                <></>
-              )}
             </Block>
           );
         })}
