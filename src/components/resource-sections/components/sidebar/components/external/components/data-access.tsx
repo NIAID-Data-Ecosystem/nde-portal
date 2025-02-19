@@ -39,7 +39,7 @@ export const DataAccess: React.FC<DataAccessProps> = ({
   includedInDataCatalog,
   url,
   recordType,
-  colorScheme = 'primary',
+  colorScheme = 'secondary',
 }) => {
   const prefersReducedMotion = usePrefersReducedMotion();
 

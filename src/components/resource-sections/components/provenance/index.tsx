@@ -10,7 +10,6 @@ import {
   Stack,
   Tag,
   Text,
-  usePrefersReducedMotion,
 } from '@chakra-ui/react';
 import { FormattedResource } from 'src/utils/api/types';
 import { getRepositoryImage } from 'src/utils/helpers';
@@ -44,8 +43,6 @@ const Provenance: React.FC<Provenance> = ({
         ? includedInDataCatalog
         : [includedInDataCatalog]
       : [];
-
-  const prefersReducedMotion = usePrefersReducedMotion();
 
   interface BlockProps extends FlexProps {
     children: React.ReactNode;
