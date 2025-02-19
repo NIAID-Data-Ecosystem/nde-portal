@@ -94,6 +94,7 @@ export const HeroBannerContainer = ({
       }}
       justifyContent={{ base: 'flex-start', '2xl': 'center' }}
       px={{ base: 2, sm: 6, lg: 10, xl: '5vw' }}
+      overflow='hidden'
       {...rest}
     >
       {children}
