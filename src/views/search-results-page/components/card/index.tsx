@@ -315,9 +315,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                             source={source}
                             type={type}
                             url={
-                              type === 'ResourceCatalog'
-                                ? source.url
-                                : source.dataset
+                              type === 'ResourceCatalog' ? '' : source.dataset
                             }
                           />
                         );
@@ -485,11 +483,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                           key={source.name}
                           source={source}
                           type={type}
-                          url={
-                            type === 'ResourceCatalog'
-                              ? source.url
-                              : source.dataset
-                          }
+                          url={type === 'ResourceCatalog' ? '' : source.dataset}
                         />
                       );
                     })}
