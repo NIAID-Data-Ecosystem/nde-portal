@@ -4,6 +4,7 @@ import {
   BioThingsDetailedLineageAPIResponseItem,
   BioThingsLineageAPIResponseItem,
   OLSAPIResponseItem,
+  OntologyChildrenRequestParams,
   OntologyLineageItem,
   OntologyLineageItemWithCounts,
   OntologyLineageRequestParams,
@@ -230,7 +231,7 @@ export const fetchLineageFromBioThingsAPI = async (
  */
 
 export const fetchChildrenFromBioThingsAPI = async (
-  params: OntologyLineageRequestParams,
+  params: OntologyChildrenRequestParams,
   signal?: AbortSignal,
 ): Promise<{
   children: OntologyLineageItem[];
@@ -421,7 +422,7 @@ export const fetchLineageFromOLSAPI = async (
  */
 
 export const fetchChildrenFromOLSAPI = async (
-  params: OntologyLineageRequestParams,
+  params: OntologyChildrenRequestParams,
   signal?: AbortSignal,
 ): Promise<{
   children: OntologyLineageItem[];

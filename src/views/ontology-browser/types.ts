@@ -37,12 +37,18 @@ export interface OLSAPIResponseItem {
   has_children: boolean;
 }
 
-export interface OntologyLineageRequestParams {
+export interface OntologyChildrenRequestParams {
   id: string;
   ontology: string;
   from: number;
   lang?: string;
   size: number;
+}
+
+export interface OntologyLineageRequestParams {
+  id: string;
+  ontology: string;
+  lang?: string;
 }
 
 export interface OntologyLineageItem {

@@ -30,7 +30,7 @@ import {
 } from './ontology-browser-count-tag';
 
 const MARGIN = 16; // Base margin for indenting tree levels
-const SIZE = 100; // Number of items to fetch per page
+const SIZE = 10; // Number of items to fetch per page
 
 /**
  * Tree Component
@@ -142,7 +142,8 @@ const TreeNode = ({
   const [childrenMeta, setChildrenMeta] = useState<OntologyPagination | null>(
     null,
   );
-  const [page, setPage] = useState(0);
+  const [pageFrom, setPageFrom] = useState(0);
+  const [pageSize, setPageSize] = useState(SIZE);
   const {
     error,
     isLoading,
@@ -155,7 +156,8 @@ const TreeNode = ({
       node.id,
       node.ontologyName,
       params.q,
-      page,
+      pageFrom,
+      pageSize,
     ],
     queryFn: () => {
       //  Fetch children from the BioThings API for the NCBI Taxonomy
@@ -163,8 +165,8 @@ const TreeNode = ({
         return fetchChildrenFromBioThingsAPI({
           id: node.taxonId,
           ontology: node.ontologyName,
-          size: SIZE,
-          from: page,
+          size: pageSize,
+          from: pageFrom,
         }).then(async data => {
           return {
             ...data,
@@ -177,8 +179,8 @@ const TreeNode = ({
       return fetchChildrenFromOLSAPI({
         id: node.taxonId,
         ontology: node.ontologyName,
-        size: SIZE,
-        from: page,
+        size: pageSize,
+        from: pageFrom,
       }).then(async data => ({
         ...data,
         children: await fetchPortalCounts(data.children, {
@@ -187,7 +189,7 @@ const TreeNode = ({
       }));
     },
     refetchOnWindowFocus: false,
-    enabled: page > 0,
+    enabled: pageFrom > 0,
   });
 
   // Toggle the node's open/closed state and fetch children if opening
@@ -221,6 +223,7 @@ const TreeNode = ({
   // Set children data in state with node information. Refresh when queryId changes.
   useEffect(() => {
     const children = getChildren(node.taxonId, lineage); // Retrieve immediate children from lineage
+
     setChildrenList(children);
   }, [queryId, lineage, node.taxonId]);
 
@@ -350,7 +353,7 @@ const TreeNode = ({
       </Flex>
       {isToggled && childrenList.length > 0 && (
         <UnorderedList ml={0}>
-          {(childrenMeta?.hasMore || (isLoading && page > 0)) && (
+          {(childrenMeta?.hasMore || (isLoading && pageFrom > 0)) && (
             <ListItem
               borderTop='0.25px solid'
               borderColor='gray.200'
@@ -369,7 +372,8 @@ const TreeNode = ({
               >
                 <Text color='niaid.800' fontSize='13px'>
                   Showing{' '}
-                  {childrenMeta ? SIZE * (childrenMeta.numPage + 1) : '-'} of{' '}
+                  {childrenMeta ? pageSize * (childrenMeta.numPage + 1) : '-'}{' '}
+                  of{' '}
                   {childrenMeta
                     ? childrenMeta.totalElements.toLocaleString()
                     : ' - '}{' '}
@@ -384,11 +388,11 @@ const TreeNode = ({
                   size='sm'
                   fontSize='13px'
                   onClick={() => {
-                    setPage(page + 1);
+                    setPageFrom(pageFrom + 1);
                   }}
                   ml={2}
                 >
-                  Show {SIZE} more
+                  Show {pageSize} more
                 </Button>
               </Flex>
             </ListItem>
@@ -406,7 +410,7 @@ const TreeNode = ({
             />
           ))}
 
-          {(childrenMeta?.hasMore || (isLoading && page > 0)) && (
+          {(childrenMeta?.hasMore || (isLoading && pageFrom > 0)) && (
             <ListItem
               borderTop='0.25px solid'
               borderColor='gray.200'
@@ -425,9 +429,7 @@ const TreeNode = ({
               >
                 <Text color='niaid.800' fontSize='13px'>
                   Showing{' '}
-                  {childrenMeta
-                    ? (SIZE * (childrenMeta.numPage + 1)).toLocaleString()
-                    : '-'}{' '}
+                  {childrenMeta ? pageSize * (childrenMeta.numPage + 1) : '-'}{' '}
                   of{' '}
                   {childrenMeta
                     ? childrenMeta.totalElements.toLocaleString()
@@ -443,11 +445,11 @@ const TreeNode = ({
                   size='sm'
                   fontSize='13px'
                   onClick={() => {
-                    setPage(page + 1);
+                    setPageFrom(pageFrom + 1);
                   }}
                   ml={2}
                 >
-                  Show {SIZE} more
+                  Show {pageSize} more
                 </Button>
               </Flex>
             </ListItem>
