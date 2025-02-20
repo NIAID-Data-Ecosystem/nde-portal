@@ -43,16 +43,19 @@ export const DataAccess: React.FC<DataAccessProps> = ({
 }) => {
   const prefersReducedMotion = usePrefersReducedMotion();
 
-  if (!isLoading) {
-    if (!includedInDataCatalog) return null;
-    if (recordType === 'ResourceCatalog' && url) {
-      return <AccessResourceButton url={url} colorScheme={colorScheme} />;
-    }
-  }
-
   const sources =
     !isLoading && includedInDataCatalog
-      ? getSourceDetails(includedInDataCatalog)
+      ? getSourceDetails(
+          recordType === 'ResourceCatalog'
+            ? (Array.isArray(includedInDataCatalog)
+                ? includedInDataCatalog.find(
+                    source => source.name === 'Data Discovery Engine',
+                  )
+                : includedInDataCatalog.name === 'Data Discovery Engine'
+                ? includedInDataCatalog
+                : null) ?? []
+            : includedInDataCatalog,
+        )
       : [];
 
   return (
@@ -90,7 +93,9 @@ export const DataAccess: React.FC<DataAccessProps> = ({
               }}
             >
               <AccessResourceButton
-                url={source.dataset}
+                url={
+                  recordType === 'ResourceCatalog' ? url ?? '' : source.dataset
+                }
                 colorScheme={colorScheme}
               />
             </Flex>
