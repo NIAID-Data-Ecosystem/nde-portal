@@ -1,5 +1,4 @@
 import { OntologyLineageItemWithCounts } from '../types';
-import { Text } from '@chakra-ui/react';
 /**
  * Retrieves the child nodes of a given parent node from the ontology lineage data.
  *
@@ -26,7 +25,7 @@ export const getChildren = (
 export const sortChildrenList = (
   childrenList: OntologyLineageItemWithCounts[],
 ) => {
-  return childrenList.sort((a, b) => {
+  const sorted = childrenList.sort((a, b) => {
     // First, sort by `counts.term` in descending order
     if (a.counts.termCount !== b.counts.termCount) {
       return b.counts.termCount - a.counts.termCount;
@@ -39,4 +38,5 @@ export const sortChildrenList = (
 
     return 0;
   });
+  return sorted;
 };

@@ -162,7 +162,6 @@ export const fetchLineageFromBioThingsAPI = async (
     if (!Array.isArray(rawLineageData)) {
       throw new Error('lineage data is not available or invalid');
     }
-
     const detailedLineageParams = {
       ids: rawLineageData.join(','), // Stringify the lineage array
       fields: [
@@ -172,6 +171,7 @@ export const fetchLineageFromBioThingsAPI = async (
         'rank',
         'scientific_name',
         'taxid',
+        'children',
       ],
     };
 
@@ -197,7 +197,7 @@ export const fetchLineageFromBioThingsAPI = async (
         return {
           id: taxonId,
           commonName: item?.genbank_common_name || item?.common_name || '',
-          hasChildren: true, // [TO DO]:BioThings API does not provide this information
+          hasChildren: item?.children.length > 0, // [TO DO]:BioThings API does not provide this information
           iri: formatIRI(taxonId, params.ontology),
           label: item.scientific_name.toLowerCase(),
           ontologyName: params.ontology,
@@ -215,6 +215,108 @@ export const fetchLineageFromBioThingsAPI = async (
     return { lineage: processedLineage };
   } catch (error: any) {
     console.error('Error in fetching BioThings data:', error.message);
+    throw error;
+  }
+};
+
+/**
+ * [fetchChildrenFromBioThingsAPI]: Fetch the children information for a given ontology ID from the OLS API [docs](https://www.ebi.ac.uk/ols4/help)
+ * and return structured ontology lineage items.
+ *
+ * NOTE: The OLS API does not provide lineage information for all taxon IDs. In such cases, we use the BioThings API.
+ *
+ * @param params - The search parameters used to fetch the lineage.
+ * @returns An array of lineage items.
+ */
+
+export const fetchChildrenFromBioThingsAPI = async (
+  params: OntologyLineageRequestParams,
+  signal?: AbortSignal,
+): Promise<{
+  children: OntologyLineageItem[];
+  pagination: OntologyPagination;
+}> => {
+  if (!params?.id) {
+    throw new Error('No ID provided for the OLS API request.');
+  }
+
+  try {
+    // Fetch children data from the BioThings API
+    const childrenAPIResponse: BioThingsLineageAPIResponseItem =
+      await axios.get(
+        `${BIOTHINGS_API_URL}/taxon/${params.id}?include_children`,
+      );
+
+    const allChildrenIds = childrenAPIResponse.data.children;
+    if (!Array.isArray(allChildrenIds)) {
+      throw new Error('children data is not available or invalid');
+    }
+
+    // select children ids based on pagination parameters
+    const selectedChildrenIds = allChildrenIds.slice(
+      params.from * params.size,
+      (params.from + 1) * params.size,
+    );
+
+    // Fetch the detailed children information for each taxonId
+    const {
+      data: detailedLineageData,
+    }: { data: BioThingsDetailedLineageAPIResponseItem[] } = await axios.post(
+      `${BIOTHINGS_API_URL}/taxon`,
+      {
+        ids: selectedChildrenIds.join(','), // Stringify the lineage array
+        fields: [
+          'common_name',
+          'genbank_common_name',
+          'parent_taxid',
+          'rank',
+          'scientific_name',
+          'taxid',
+          'children',
+        ],
+      },
+      {
+        headers: {
+          accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+      },
+    );
+
+    const processedChildrenData = detailedLineageData
+      .map((item: BioThingsDetailedLineageAPIResponseItem, idx: number) => {
+        // Must set the parent to empty string if it is the root node.
+        const isRootNode = item.parent_taxid === item.taxid;
+        const taxonId = item.taxid.toString();
+        return {
+          id: taxonId,
+          commonName: item?.genbank_common_name || item?.common_name || '',
+          hasChildren: item?.children.length > 0, // [TO DO]:BioThings API does not provide this information
+          iri: formatIRI(taxonId, params.ontology),
+          label: item.scientific_name.toLowerCase(),
+          ontologyName: params.ontology,
+          parentTaxonId: isRootNode ? null : item.parent_taxid.toString(),
+          rank: item.rank,
+          state: {
+            opened: idx != 0, // Open all nodes except the deepest one
+            selected: idx == 0, // select the first node (most specific) by default
+          },
+          taxonId,
+        };
+      })
+      .reverse(); // reverse the array to start from the root node.
+    // Return or process the POST response
+    return {
+      children: processedChildrenData,
+      pagination: {
+        hasMore: allChildrenIds.length > (params.from + 1) * params.size,
+        numPage: params.from,
+        totalPages: Math.ceil(allChildrenIds.length / params.size),
+        totalElements: allChildrenIds.length,
+      },
+    };
+  } catch (error: any) {
+    console.error('Error in fetching from the OLS:', error.message);
     throw error;
   }
 };
