@@ -293,7 +293,7 @@ const TreeNode = ({
             wordBreak='break-word'
           >
             <Text color='gray.800' fontSize='12px'>
-              {node.taxonId}
+              {node.ontologyName} | {node.taxonId}
             </Text>
 
             <Link href={node.iri} fontSize='xs' isExternal>

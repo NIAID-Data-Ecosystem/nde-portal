@@ -51,22 +51,17 @@ export const OntologyBrowser = ({
 
   // Extract the query ID from the router, defaulting to the root taxon ID
   const router = useRouter();
-  const id = router.query.id || 'NCBITaxon_1';
+  const id = router.query.id || '1';
+  const ontology = router.query.ontology || 'ncbitaxon';
 
   // Memoize query parameters to avoid recalculating on each render
   const queryParams = useMemo(() => {
-    const parsedId = Array.isArray(id) ? id[0] : id;
-    const ontology =
-      parsedId
-        .match(/[a-zA-Z]+/g)
-        ?.join('')
-        .toLowerCase() || '';
     return {
       q: (router.query.q || '__all__') as string,
-      id: parsedId.replace(/[^0-9]/g, ''),
+      id: Array.isArray(id) ? id[0] : id,
       ontology: ontology as OntologyLineageRequestParams['ontology'],
     };
-  }, [id, router.query.q]);
+  }, [id, router.query.q, ontology]);
 
   // Fetch lineage data using the ontology type and query parameters
   const {

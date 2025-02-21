@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Box,
   Button,
@@ -17,7 +17,6 @@ import { useRouter } from 'next/router';
 import { useQuery } from '@tanstack/react-query';
 import {
   ONTOLOGY_BROWSER_OPTIONS,
-  OntologyOption,
   searchOntologyAPI,
   SearchParams,
 } from '../utils/api-helpers';
@@ -77,15 +76,16 @@ export const OntologyBrowserSearch = ({
         ontology: selectedOntologies.map(
           o => o.value,
         ) as SearchParams['ontology'],
-        queryFields: ['label', 'short_form', 'obo_id', 'iri'],
+        biothingsFields: ['_id', 'rank', 'scientific_name'],
+        olsFields: ['iri', 'label', 'ontology_name', 'short_form', 'type'],
       }),
     refetchOnWindowFocus: false,
   });
 
-  const handleSubmit = ({ id }: { id: string }) => {
+  const handleSubmit = ({ id, ontology }: { id: string; ontology: string }) => {
     router.push({
       pathname: `/ontology-browser`,
-      query: { ...router.query, id },
+      query: { ...router.query, id, ontology },
     });
     setSearchTerm('');
     setHasNoMatch(false);
@@ -139,7 +139,10 @@ export const OntologyBrowserSearch = ({
                 const suggestion = suggestions?.find(s => s.label === str);
 
                 if (suggestion) {
-                  handleSubmit({ id: suggestion.short_form });
+                  handleSubmit({
+                    id: suggestion._id,
+                    ontology: suggestion.definingOntology,
+                  });
                 } else {
                   setHasNoMatch(true);
                 }
@@ -173,12 +176,17 @@ export const OntologyBrowserSearch = ({
                 {suggestions?.map((suggestion, index) => {
                   return (
                     <DropdownListItem
-                      key={suggestion.iri}
-                      handleSubmit={handleSubmit}
+                      key={`${suggestion.definingOntology}-${suggestion._id}`}
+                      handleSubmit={() =>
+                        handleSubmit({
+                          id: suggestion._id,
+                          ontology: suggestion.definingOntology,
+                        })
+                      }
                       highlight={debouncedTerm}
-                      id={suggestion.short_form}
+                      id={suggestion._id}
                       index={index}
-                      ontology={suggestion.ontology_prefix}
+                      ontology={suggestion.definingOntology}
                     >
                       {suggestion.label}
                     </DropdownListItem>
@@ -252,7 +260,7 @@ const DropdownListItem = ({
 }: {
   children: string;
   colorScheme?: string;
-  handleSubmit: (arg: { id: string }) => void;
+  handleSubmit: () => void;
   id: string;
   index: number;
   ontology?: string;
@@ -271,7 +279,7 @@ const DropdownListItem = ({
         index,
         value: `/ontology-browser/${id}`,
         isSelected: cursor === index,
-        onClick: () => handleSubmit({ id }),
+        onClick: () => handleSubmit(),
       })}
     >
       <Icon
@@ -291,7 +299,7 @@ const DropdownListItem = ({
             fontWeight='light'
             textAlign='left'
           >
-            {ontology}
+            {ontology} | {id}
           </Text>
         )}
 

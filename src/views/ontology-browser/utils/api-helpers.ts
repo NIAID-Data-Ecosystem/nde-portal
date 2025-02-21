@@ -55,7 +55,8 @@ const BIOTHINGS_API_URL = 'https://t.biothings.io/v1';
 export interface SearchParams {
   q: string;
   ontology: ('edam' | 'ncbitaxon')[];
-  queryFields: ('label' | 'short_form' | 'obo_id' | 'iri')[];
+  biothingsFields: ('_id' | 'rank' | 'scientific_name')[];
+  olsFields: ('iri' | 'label' | 'ontology_name' | 'short_form' | 'type')[];
   exact?: boolean;
   obsoletes?: boolean;
   local?: boolean;
@@ -66,15 +67,103 @@ export interface SearchParams {
 }
 
 interface SearchResponse {
-  iri: string;
-  ontology_name: string;
-  ontology_prefix: string;
-  short_form: string;
-  description: [];
+  _id: string;
+  definingOntology: string;
   label: string;
-  obo_id: string;
-  type: string;
+  rank: string;
+  definingAPI: 'biothings' | 'ols';
 }
+
+export const fetchOLSSearchAPI = async (
+  params: SearchParams,
+  signal?: AbortSignal,
+): Promise<SearchResponse[]> => {
+  if (!params.q) {
+    return [];
+  }
+  const { q, olsFields } = params;
+  try {
+    const { data } = await axios.get(`${OLS_API_URL}/search?`, {
+      params: {
+        q: q + '*',
+        ontology: params.ontology.join(','),
+        queryFields: olsFields.join(','),
+        exact: params?.exact || false,
+        obsoletes: params?.obsoletes || false,
+        local: params?.local || false,
+        rows: params?.rows || 5,
+        start: params?.start || 0,
+        format: params?.format || 'json',
+        lang: params?.lang || 'en',
+      },
+      signal,
+    });
+    const results = await data.response.docs
+      .map(
+        (result: {
+          iri: string;
+          label: string;
+          ontology_name: string;
+          short_form: string;
+          type: string;
+        }) => {
+          return {
+            _id: result.iri.split('/').pop() || result.short_form,
+            definingAPI: 'ols',
+            definingOntology: result.ontology_name,
+            label: result.label,
+            rank: result.type,
+          };
+        },
+      )
+      .filter((result: SearchResponse) => result.rank === 'class');
+    return results;
+  } catch (err: any) {
+    console.error(
+      'Error in fetching search results from the OLS API:',
+      err.message,
+    );
+    throw err;
+  }
+};
+
+export const fetchBioThingsSearchAPI = async (
+  params: SearchParams,
+  signal?: AbortSignal,
+): Promise<SearchResponse[]> => {
+  if (!params.q) {
+    return [];
+  }
+  const { q, biothingsFields } = params;
+  try {
+    const { data } = await axios.get(`${BIOTHINGS_API_URL}/query?q=`, {
+      params: {
+        q: q + '*',
+        fields: biothingsFields.join(','),
+        size: 5,
+      },
+      signal,
+    });
+    const results = await data.hits.map(
+      (result: { _id: string; scientific_name: string; rank: string }) => {
+        return {
+          _id: result._id,
+          definingAPI: 'biothings',
+          definingOntology: 'ncbitaxon',
+          label: result.scientific_name,
+          rank: result.rank,
+        };
+      },
+    );
+    return results;
+  } catch (error: any) {
+    console.error(
+      'Error in fetching search results from the BioThings API:',
+      error.message,
+    );
+    throw error;
+  }
+};
 
 export const searchOntologyAPI = async (
   params: SearchParams,
@@ -83,26 +172,21 @@ export const searchOntologyAPI = async (
   if (!params.q) {
     return [];
   }
-  const { q, ontology, queryFields, ...rest } = params;
+  const searchResults = [];
+  if (params.ontology.includes('ncbitaxon')) {
+    const biothingsResults = await fetchBioThingsSearchAPI(
+      { ...params, ontology: ['ncbitaxon'] },
+      signal,
+    );
+    searchResults.push(...biothingsResults);
+  }
+  const ontology = params.ontology.filter(ontology => ontology !== 'ncbitaxon');
+  if (ontology.length > 0) {
+    const olsResults = await fetchOLSSearchAPI({ ...params, ontology }, signal);
+    searchResults.push(...olsResults);
+  }
 
-  const { data } = await axios.get(`${OLS_API_URL}/search?`, {
-    params: {
-      q,
-      ontology: ontology.join(','),
-      queryFields: queryFields.join(','),
-      exact: false,
-      obsoletes: false,
-      local: false,
-      rows: 5,
-      start: 0,
-      format: 'json',
-      lang: 'en',
-      ...rest,
-    },
-    signal,
-  });
-
-  return data.response.docs;
+  return searchResults;
 };
 
 /********************************************************
@@ -125,8 +209,7 @@ export const formatIRI = (
 ): string => {
   // Handle "edam" ontology, formatting the ID with a "topic_" prefix
   if (ontology.toLowerCase() === 'edam') {
-    const iri_id = `topic_${id}`;
-    return `http://edamontology.org/${iri_id}`;
+    return `http://edamontology.org/${id}`;
   }
   // Handle "ncbitaxon" ontology, formatting the ID with the "NCBITaxon_" prefix
   else if (ontology.toLowerCase() === 'ncbitaxon') {
