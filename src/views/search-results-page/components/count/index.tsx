@@ -8,7 +8,6 @@ interface ResultsCount extends TextProps {
   // Total number of results
   total: number;
   // Data loading mechanism
-
   isLoading: boolean;
 }
 
@@ -18,7 +17,16 @@ const ResultsCount: React.FC<ResultsCount> = ({
   ...props
 }) => {
   return (
-    <>
+    <Flex
+      w='100%'
+      borderBottom='2px solid'
+      borderColor='gray.700'
+      flexWrap={{ base: 'wrap-reverse', sm: 'wrap' }}
+      alignItems='baseline'
+      fontSize='md'
+      fontWeight='semibold'
+      lineHeight='short'
+    >
       {isLoading ? (
         <Spinner
           color='primary.500'
@@ -27,23 +35,14 @@ const ResultsCount: React.FC<ResultsCount> = ({
           speed='0.5s'
           thickness='1px'
           mr={2}
-          mb={1}
         />
       ) : (
-        <Text mr={1} fontSize='2xl' fontWeight='semibold' {...props}>
+        <Text mr={1} fontSize='2xl' fontWeight='inherit' {...props}>
           {formatNumber(total)}
-          <Text
-            as='span'
-            fontSize='md'
-            fontWeight='semibold'
-            lineHeight='short'
-            ml={1}
-          >
-            Result{total !== 1 ? 's' : ' '}
-          </Text>
         </Text>
       )}
-    </>
+      Result{total !== 1 ? 's' : ' '}
+    </Flex>
   );
 };
 

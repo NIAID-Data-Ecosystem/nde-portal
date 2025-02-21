@@ -1,9 +1,6 @@
 {
   "compilerOptions": {
     "baseUrl": ".",
-    "paths": {
-      "src/*": ["src/*"]
-    },
     "removeComments": true,
     "target": "es2015",
     "downlevelIteration": true,

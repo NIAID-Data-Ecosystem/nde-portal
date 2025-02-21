@@ -26,7 +26,6 @@ interface Provenance {
   sdPublisher?: FormattedResource['sdPublisher'];
   sourceOrganization?: FormattedResource['sourceOrganization'];
   curatedBy?: FormattedResource['curatedBy'];
-  type?: FormattedResource['@type'];
 }
 
 const Provenance: React.FC<Provenance> = ({
@@ -35,7 +34,6 @@ const Provenance: React.FC<Provenance> = ({
   sourceOrganization,
   sdPublisher,
   curatedBy,
-  type,
 }) => {
   const provenanceCatalogs =
     !isLoading && includedInDataCatalog

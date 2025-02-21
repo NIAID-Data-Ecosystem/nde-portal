@@ -12,9 +12,8 @@ export interface Params {
   facets?: string;
   facet_size?: number;
   fields?: string[];
-  from?: string;
   hist?: string;
-  lineage?: number;
+  from?: string;
   scroll_id?: string;
   show_meta?: boolean;
   size?: string | number;
