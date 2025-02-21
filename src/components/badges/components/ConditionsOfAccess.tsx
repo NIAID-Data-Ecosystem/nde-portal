@@ -3,6 +3,7 @@ import { Icon } from '@chakra-ui/react';
 import { FaLock, FaUnlock } from 'react-icons/fa6';
 import { BadgeWithTooltip, BadgeWithTooltipProps } from 'src/components/badges';
 import SchemaDefinitions from 'configs/schema-definitions.json';
+import { transformConditionsOfAccessLabel } from 'src/utils/formatting/formatConditionsOfAccess';
 
 interface ConditionsOfAccessProps extends Omit<BadgeWithTooltipProps, 'value'> {
   conditionsOfAccess?: FormattedResource['conditionsOfAccess'];
@@ -24,15 +25,19 @@ export const ConditionsOfAccess = ({
   const getColorScheme = (
     conditionsOfAccess: ConditionsOfAccessProps['conditionsOfAccess'],
   ) => {
-    if (conditionsOfAccess === 'Open') {
+    if (conditionsOfAccess?.includes('Open')) {
       return 'green';
-    } else if (conditionsOfAccess === 'Restricted') {
+    } else if (conditionsOfAccess?.includes('Restricted')) {
       return 'red';
-    } else if (conditionsOfAccess === 'Controlled') {
+    } else if (
+      conditionsOfAccess?.includes('Controlled') ||
+      conditionsOfAccess?.includes('Unknown') ||
+      conditionsOfAccess?.includes('Registered')
+    ) {
       return 'gray';
     } else if (
-      conditionsOfAccess === 'Embargoed' ||
-      conditionsOfAccess === 'Varied'
+      conditionsOfAccess?.includes('Embargoed') ||
+      conditionsOfAccess?.includes('Varied')
     ) {
       return 'orange';
     } else {
@@ -43,22 +48,26 @@ export const ConditionsOfAccess = ({
   const getIcon = (
     conditionsOfAccess: ConditionsOfAccessProps['conditionsOfAccess'],
   ) => {
-    if (conditionsOfAccess === 'Open') {
+    if (conditionsOfAccess?.includes('Open')) {
       return <Icon as={FaUnlock}></Icon>;
     } else if (
-      conditionsOfAccess === 'Restricted' ||
-      conditionsOfAccess === 'Controlled' ||
-      conditionsOfAccess === 'Embargoed'
+      conditionsOfAccess?.includes('Embargoed') ||
+      conditionsOfAccess?.includes('Registered') ||
+      conditionsOfAccess?.includes('Restricted') ||
+      conditionsOfAccess?.includes('Controlled')
     ) {
       return <Icon as={FaLock}></Icon>;
-    } else if (conditionsOfAccess === 'Varied') {
+    } else if (
+      conditionsOfAccess?.includes('Varied') ||
+      conditionsOfAccess?.includes('Unknown')
+    ) {
       return <Icon as={FaUnlock}></Icon>;
     }
   };
   return (
     <BadgeWithTooltip
       colorScheme={getColorScheme(conditionsOfAccess)}
-      value={conditionsOfAccess}
+      value={transformConditionsOfAccessLabel(conditionsOfAccess)}
       tooltipLabel={property?.description[type]}
       leftIcon={getIcon(conditionsOfAccess)}
       {...props}

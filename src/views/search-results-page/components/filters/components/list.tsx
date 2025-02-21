@@ -121,7 +121,7 @@ export const sortTerms = (terms: FilterItem[], selectedFilters: string[]) => {
     const bSelected = selectedSet.has(b.term);
 
     if (aSelected !== bSelected) return aSelected ? -1 : 1;
-    // Terms -_exists_ (labelled as Not Specified) is always first followed by _exists_ (labelled as Any Specified) - no matter the count.
+    // Terms -_exists_ (labelled as Not Specified) is always first followed by _exists_ (labelled as Any) - no matter the count.
     if (a.term.includes('-_exists_') !== b.term.includes('-_exists_'))
       return a.term.includes('-_exists_') ? -1 : 1;
 

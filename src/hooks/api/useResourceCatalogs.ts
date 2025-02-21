@@ -5,12 +5,16 @@ import {
   FetchSearchResultsResponse,
   FormattedResource,
 } from 'src/utils/api/types';
+import {
+  formatConditionsOfAccess,
+  transformConditionsOfAccessLabel,
+} from 'src/utils/formatting/formatConditionsOfAccess';
 
 export interface ResourceCatalog {
   _id: string;
   abstract?: string;
   conditionsOfAccess?: FormattedResource['conditionsOfAccess'];
-  types: (
+  type: (
     | 'Computational Tool Repository'
     | 'Dataset Repository'
     | 'Resource Catalog'
@@ -62,8 +66,10 @@ export function useResourceCatalogs({
       return catalogs.map(catalog => ({
         _id: catalog._id,
         abstract: catalog.abstract,
-        conditionsOfAccess: catalog.conditionsOfAccess,
-        types: ['Resource Catalog'],
+        conditionsOfAccess: transformConditionsOfAccessLabel(
+          formatConditionsOfAccess(catalog.conditionsOfAccess),
+        ),
+        type: ['Resource Catalog'],
         name: catalog.name,
         domain: catalog.genre,
         url: catalog.url,

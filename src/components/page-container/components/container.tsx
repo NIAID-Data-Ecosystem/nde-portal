@@ -15,7 +15,7 @@ interface PageContainerProps extends FlexProps {
   metaCanonical?: string;
   metaDescription: string;
   keywords?: string;
-  disableSearchBar?: boolean;
+  includeSearchBar?: boolean;
 }
 
 export interface NoticeProps {
@@ -35,7 +35,7 @@ export const PageContainer: React.FC<PageContainerProps> = ({
   title,
   metaCanonical,
   metaDescription,
-  disableSearchBar,
+  includeSearchBar,
   ...props
 }) => {
   // Fetch Notices from STRAPI API.
@@ -153,7 +153,7 @@ export const PageContainer: React.FC<PageContainerProps> = ({
           <Breadcrumbs />
 
           {/* <!-- Search bar for datasets across site --> */}
-          {!disableSearchBar && (
+          {includeSearchBar && (
             <Flex
               justifyContent='center'
               px={{ base: 4, sm: 4, lg: 6, xl: '5vw' }}
@@ -198,9 +198,10 @@ export const PageContainer: React.FC<PageContainerProps> = ({
                   </Button>
                 </NextLink>
                 <SearchBarWithDropdown
-                  ariaLabel='Search for datasets'
-                  placeholder='Search for datasets'
+                  ariaLabel='Search for resources'
+                  placeholder='Search for resources'
                   size='md'
+                  showSearchHistory
                 />
               </Stack>
             </Flex>

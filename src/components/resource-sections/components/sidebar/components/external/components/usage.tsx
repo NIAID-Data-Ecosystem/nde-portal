@@ -21,7 +21,7 @@ export const DataUsage: React.FC<DataUsageProps> = ({
   }
   const usageAgreement = Array.isArray(usageInfo) ? usageInfo : [usageInfo];
   // If there are no usage agreements, don't render anything.
-  if (!usageAgreement.some(ua => ua?.url) || !type) {
+  if (!usageAgreement.some(ua => ua?.url || ua?.name) || !type) {
     return <></>;
   }
   const description = SCHEMA_DEFINITIONS['usageInfo']?.description;
@@ -39,7 +39,11 @@ export const DataUsage: React.FC<DataUsageProps> = ({
       />
       {usageAgreement.map((usageInfo, idx) => {
         if (!usageInfo?.url)
-          return <React.Fragment key={'ua' + idx}></React.Fragment>;
+          return (
+            <React.Fragment key={'ua' + idx}>
+              {usageInfo?.name || 'View usage agreement'}
+            </React.Fragment>
+          );
         return (
           <Link key={'ua' + idx} href={usageInfo?.url} fontSize='xs' isExternal>
             {usageInfo?.name || 'View usage agreement'}

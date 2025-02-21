@@ -12,12 +12,10 @@ import {
   UnorderedList,
   VStack,
 } from '@chakra-ui/react';
-import { FaWandMagicSparkles } from 'react-icons/fa6';
-
 import { Link } from 'src/components/link';
 import {
-  ResourceDates,
   ResourceHeader,
+  ResourceBanner,
   ResourceOverview,
   ResourceProvenance,
   Section,
@@ -40,7 +38,7 @@ import BasedOnTable from './components/based-on';
 import { CompletenessBadgeCircle } from 'src/components/metadata-completeness-badge/Circular';
 import { ResourceCatalogCollection } from './components/collection-information';
 import { DownloadMetadata } from '../download-metadata';
-import { Keywords } from './components/keywords';
+import { SearchableItems } from 'src/components/searchable-items';
 import { Summary } from './components/summary';
 
 // Metadata displayed in each section
@@ -75,6 +73,8 @@ export const sectionMetadata: { [key: string]: (keyof FormattedResource)[] } = {
     'softwareVersion',
   ],
   keywords: ['keywords'],
+  applicationCategory: ['applicationCategory'],
+  programmingLanguage: ['programmingLanguage'],
   description: ['description'],
   provenance: ['includedInDataCatalog', 'url', 'sdPublisher', 'curatedBy'],
   downloads: ['distribution', 'downloadUrl'],
@@ -103,10 +103,11 @@ const Sections = ({
         doi={data?.doi}
         nctid={data?.nctid}
       />
-      {/* Banner showing data type and publish date. */}
+      {/* Banner showing data type and publish date. For computational tools, operating system info is displayed when available. */}
       {data?.author && <ResourceAuthors authors={data.author} />}
 
-      <ResourceDates data={data} />
+      <ResourceBanner data={data} />
+
       {/*<--- AI Generated short description -->*/}
       {data?.disambiguatingDescription && (
         <Flex mx={6} my={2}>
@@ -206,11 +207,69 @@ const Sections = ({
                 />
               </>
             )}
-
             {/* Show keywords */}
             {section.hash === 'keywords' && (
               <Skeleton isLoaded={!isLoading}>
-                {data?.keywords && <Keywords keywords={data.keywords} />}
+                {data?.keywords && data?.keywords?.length > 0 && (
+                  <SearchableItems
+                    fieldName='keywords'
+                    generateButtonLabel={(
+                      limit,
+                      length,
+                      itemLabel = 'keywords',
+                    ) =>
+                      limit === length
+                        ? `Show fewer ${itemLabel}`
+                        : `Show all ${itemLabel} (${length - limit} more)`
+                    }
+                    itemLimit={20}
+                    items={data?.keywords}
+                  />
+                )}
+              </Skeleton>
+            )}
+            {/* Show application category */}
+            {section.hash === 'applicationCategory' && (
+              <Skeleton isLoaded={!isLoading}>
+                {data?.applicationCategory &&
+                  data?.applicationCategory?.length > 0 && (
+                    <SearchableItems
+                      fieldName='applicationCategory'
+                      generateButtonLabel={(
+                        limit,
+                        length,
+                        itemLabel = 'application categories',
+                      ) =>
+                        limit === length
+                          ? `Show fewer ${itemLabel}`
+                          : `Show all ${itemLabel} (${length - limit} more)`
+                      }
+                      itemLimit={10}
+                      items={data?.applicationCategory}
+                    />
+                  )}
+              </Skeleton>
+            )}
+            {/* Show programming language */}
+            {section.hash === 'programmingLanguage' && (
+              <Skeleton isLoaded={!isLoading}>
+                {data?.programmingLanguage &&
+                  data?.programmingLanguage?.length > 0 && (
+                    <SearchableItems
+                      fieldName='programmingLanguage'
+                      generateButtonLabel={(
+                        limit,
+                        length,
+                        itemLabel = 'languages',
+                      ) =>
+                        limit === length
+                          ? `Show fewer ${itemLabel}`
+                          : `Show all ${itemLabel} (${length - limit} more)`
+                      }
+                      items={data?.programmingLanguage}
+                      itemLimit={10}
+                    />
+                  )}
               </Skeleton>
             )}
             {section.hash === 'softwareInformation' && (
@@ -238,14 +297,6 @@ const Sections = ({
                   caption='Datasets or tools that this dataset/tool is a dependency for.'
                   isLoading={isLoading}
                   items={data.isBasisFor}
-                  columns={[
-                    { key: 'name', title: 'Name', props: { maxW: '50%' } },
-                    {
-                      key: 'type',
-                      title: 'Type',
-                      props: { w: '200px' },
-                    },
-                  ]}
                 />
               </Box>
             )}
@@ -275,7 +326,11 @@ const Sections = ({
               )}
             {/* Show provenance */}
             {section.hash === 'provenance' && (
-              <ResourceProvenance isLoading={isLoading} {...data} />
+              <ResourceProvenance
+                isLoading={isLoading}
+                type={data?.['@type']}
+                {...data}
+              />
             )}
 
             {/* Show downloads */}

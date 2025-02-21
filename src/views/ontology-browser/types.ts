@@ -49,6 +49,7 @@ export interface OntologyLineageRequestParams {
   id: string;
   ontology: string;
   lang?: string;
+  size?: string;
 }
 
 export interface OntologyLineageItem {

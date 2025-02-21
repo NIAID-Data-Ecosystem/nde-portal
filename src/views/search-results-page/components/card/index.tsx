@@ -16,20 +16,21 @@ import NextLink from 'next/link';
 import { FaCircleArrowRight, FaAngleRight, FaRegClock } from 'react-icons/fa6';
 import { FormattedResource } from 'src/utils/api/types';
 import { TypeBanner } from 'src/components/resource-sections/components';
-import OperatingSystems from './operating-systems';
 import MetadataAccordion from './metadata-accordion';
-import TopicCategories from './topic-categories';
-import ApplicationCategories from './application-categories';
-import ProgrammingLanguages from './programming-languages';
+import OperatingSystems from './operating-systems';
+import { SearchableItems } from 'src/components/searchable-items';
 import { DisplayHTMLContent } from 'src/components/html-content';
 import { AccessibleForFree, ConditionsOfAccess } from 'src/components/badges';
-import { SourceLogo, getSourceDetails } from './source-logo';
+import { SourceLogo, SourceLogoWrapper, getSourceDetails } from './source-logo';
 import { CompletenessBadgeCircle } from 'src/components/metadata-completeness-badge/Circular';
 import { ToggleContainer } from 'src/components/toggle-container';
 import { formatAuthorsList2String } from 'src/utils/helpers/authors';
 import { isSourceFundedByNiaid } from 'src/utils/helpers/sources';
 import { Skeleton } from 'src/components/skeleton';
 import { filterWords } from './helpers';
+import { SchemaDefinitions } from 'scripts/generate-schema-definitions/types';
+import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
+import { InfoLabel } from 'src/components/info-label';
 
 interface SearchResultCardProps {
   isLoading?: boolean;
@@ -37,6 +38,8 @@ interface SearchResultCardProps {
   referrerPath?: string;
   querystring: string;
 }
+
+const metadataFields = SCHEMA_DEFINITIONS as SchemaDefinitions;
 
 const SearchResultCard: React.FC<SearchResultCardProps> = ({
   isLoading,
@@ -55,8 +58,8 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
     conditionsOfAccess,
     includedInDataCatalog,
     isAccessibleForFree,
-    url,
     operatingSystem,
+    url,
   } = data || {};
 
   const paddingCard = [4, 6, 8, 10];
@@ -204,14 +207,16 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                     justifyContent={['flex-end']}
                     alignItems='center'
                     w={['100%', 'unset']}
-                    flex={[1, 'unset']}
+                    flex={[1]}
                     p={[0.5, 2]}
                   >
                     <AccessibleForFree
+                      type={data?.['@type']}
                       isAccessibleForFree={isAccessibleForFree}
                       mx={1}
                     />
                     <ConditionsOfAccess
+                      type={data?.['@type']}
                       conditionsOfAccess={conditionsOfAccess}
                       mx={1}
                     />
@@ -300,7 +305,21 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                   borderRadius='semi'
                   justifyContent='center'
                 >
-                  <SourceLogo sources={sources} url={url} />
+                  <SourceLogoWrapper>
+                    {sources?.length > 0 &&
+                      sources.map(source => {
+                        return (
+                          <SourceLogo
+                            key={source.name}
+                            source={source}
+                            type={type}
+                            url={
+                              type === 'ResourceCatalog' ? '' : source.dataset
+                            }
+                          />
+                        );
+                      })}
+                  </SourceLogoWrapper>
                 </Flex>
 
                 {description && (
@@ -328,28 +347,117 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
 
               <MetadataAccordion data={data} />
 
-              {data?.topicCategory && data?.topicCategory.length > 0 && (
-                <TopicCategories
-                  type={data['@type']}
-                  data={data.topicCategory}
-                  px={paddingCard}
-                />
-              )}
+              {data?.topicCategory &&
+                data?.topicCategory.some(topic => topic.name) && (
+                  <Flex
+                    borderBottom='1px solid'
+                    borderBottomColor='gray.200'
+                    my={0}
+                    px={paddingCard}
+                    py={1}
+                  >
+                    <SearchableItems
+                      fieldName='topicCategory.name'
+                      generateButtonLabel={(
+                        limit,
+                        length,
+                        itemLabel = 'topics',
+                      ) =>
+                        limit === length
+                          ? `Show fewer ${itemLabel}`
+                          : `Show all ${itemLabel} (${length - limit} more)`
+                      }
+                      itemLimit={3}
+                      items={data.topicCategory?.flatMap(
+                        (topic: { name?: string }) =>
+                          topic?.name && typeof topic.name === 'string'
+                            ? [topic.name]
+                            : [],
+                      )}
+                      name={
+                        <InfoLabel
+                          title='Topic Categories'
+                          tooltipText={
+                            metadataFields['topicCategory'].description?.[
+                              data['@type']
+                            ]
+                          }
+                        />
+                      }
+                    />
+                  </Flex>
+                )}
 
               {data?.applicationCategory &&
                 data?.applicationCategory.length > 0 && (
-                  <ApplicationCategories
-                    data={data.applicationCategory}
+                  <Flex
+                    borderBottom='1px solid'
+                    borderBottomColor='gray.200'
+                    my={0}
                     px={paddingCard}
-                  />
+                    py={1}
+                  >
+                    <SearchableItems
+                      fieldName='applicationCategory'
+                      generateButtonLabel={(
+                        limit,
+                        length,
+                        itemLabel = 'Application Categories',
+                      ) =>
+                        limit === length
+                          ? `Show fewer ${itemLabel}`
+                          : `Show all ${itemLabel} (${length - limit} more)`
+                      }
+                      itemLimit={3}
+                      items={data.applicationCategory}
+                      name={
+                        <InfoLabel
+                          title='Application Categories'
+                          tooltipText={
+                            metadataFields['applicationCategory'].description?.[
+                              data['@type']
+                            ]
+                          }
+                        />
+                      }
+                    />
+                  </Flex>
                 )}
 
               {data?.programmingLanguage &&
                 data?.programmingLanguage.length > 0 && (
-                  <ProgrammingLanguages
-                    data={data.programmingLanguage}
+                  <Flex
+                    borderBottom='1px solid'
+                    borderBottomColor='gray.200'
+                    my={0}
                     px={paddingCard}
-                  />
+                    py={1}
+                  >
+                    <SearchableItems
+                      fieldName='programmingLanguage'
+                      generateButtonLabel={(
+                        limit,
+                        length,
+                        itemLabel = 'languages',
+                      ) =>
+                        limit === length
+                          ? `Show fewer ${itemLabel}`
+                          : `Show all ${itemLabel} (${length - limit} more)`
+                      }
+                      itemLimit={3}
+                      items={data.programmingLanguage}
+                      name={
+                        <InfoLabel
+                          title='Programming Languages'
+                          tooltipText={
+                            metadataFields['programmingLanguage'].description?.[
+                              data['@type']
+                            ]
+                          }
+                        />
+                      }
+                    />
+                  </Flex>
                 )}
 
               <Stack
@@ -363,12 +471,23 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                 pb={[2, 4]}
                 my={1}
               >
-                <SourceLogo
+                <SourceLogoWrapper
                   display={{ base: 'none', sm: 'flex' }}
-                  sources={sources}
-                  url={url}
                   flex={1}
-                />
+                >
+                  {sources?.length > 0 &&
+                    sources.map(source => {
+                      return (
+                        <SourceLogo
+                          key={source.name}
+                          source={source}
+                          type={type}
+                          url={type === 'ResourceCatalog' ? '' : source.dataset}
+                        />
+                      );
+                    })}
+                </SourceLogoWrapper>
+
                 <Flex
                   flex={{ base: 1, sm: 'unset' }}
                   mt={[2, 0]}

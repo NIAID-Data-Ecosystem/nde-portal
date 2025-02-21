@@ -9,6 +9,7 @@ const NotFoundPage: NextPage = () => {
     <PageContainer
       title='Page Not Found'
       metaDescription='404 Error: Page Not Found.'
+      includeSearchBar
     >
       <PageContent h='100vh' alignItems='center' justifyContent='center'>
         <Flex flexDirection='column' alignItems='center'>

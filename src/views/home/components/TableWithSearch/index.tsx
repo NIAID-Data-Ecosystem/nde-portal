@@ -21,9 +21,9 @@ import useFilteredData from './hooks/useFilteredData';
 import { queryFilterObject2String } from 'src/views/search-results-page/helpers';
 
 export interface TableData
-  extends Omit<ResourceCatalog, 'types'>,
-    Omit<Repository, 'types'> {
-  types: ResourceCatalog['types'] | Repository['types'];
+  extends Omit<ResourceCatalog, 'type'>,
+    Omit<Repository, 'type'> {
+  type: ResourceCatalog['type'] | Repository['type'];
 }
 
 interface TableWithSearchProps {
@@ -62,7 +62,7 @@ export const TableWithSearch: React.FC<TableWithSearchProps> = ({
   /****** Handle filtering and search on data ******/
   const filteredData = useFilteredData(data, searchTerm, filters);
 
-  const updateFilters = useCallback(
+  const removeSingleFilter = useCallback(
     (newFilter: { name: string; value: string; property: string }) => {
       setFilters(prevFilters => {
         // Check if filter is already added
@@ -80,6 +80,7 @@ export const TableWithSearch: React.FC<TableWithSearchProps> = ({
     },
     [],
   );
+
   return (
     <>
       {!isLoading && !data?.length ? (
@@ -107,11 +108,7 @@ export const TableWithSearch: React.FC<TableWithSearchProps> = ({
               onClose={() => setSearchTerm('')}
             />
             {/* <!-- Filters --> */}
-            <Filters
-              data={data}
-              filters={filters}
-              updateFilter={updateFilters}
-            />
+            <Filters data={data} filters={filters} setFilters={setFilters} />
           </Stack>
 
           <Stack direction='column' flexWrap='wrap' py={2} spacing={2}>
@@ -157,7 +154,9 @@ export const TableWithSearch: React.FC<TableWithSearchProps> = ({
                     colorScheme='primary'
                   >
                     <TagLabel fontWeight='medium'>{name}</TagLabel>
-                    <TagCloseButton onClick={() => updateFilters(filter)} />
+                    <TagCloseButton
+                      onClick={() => removeSingleFilter(filter)}
+                    />
                   </Tag>
                 );
               })}
@@ -200,23 +199,22 @@ export const RepositoryCells = ({
   data: TableData;
   isLoading?: boolean;
 }) => {
-  const href =
-    data?.types && data.types.includes('Resource Catalog')
-      ? {
-          pathname: `/resources`,
-          query: {
-            id: data._id,
-          },
-        }
-      : {
-          pathname: `/search`,
-          query: {
-            q: '',
-            filters: queryFilterObject2String({
-              'includedInDataCatalog.name': [data._id],
-            }),
-          },
-        };
+  const href = data?.type?.includes('Resource Catalog')
+    ? {
+        pathname: `/resources`,
+        query: {
+          id: data._id,
+        },
+      }
+    : {
+        pathname: `/search`,
+        query: {
+          q: '',
+          filters: queryFilterObject2String({
+            'includedInDataCatalog.name': [data._id],
+          }),
+        },
+      };
   return (
     <Flex id={`cell-${data._id}-${column.property}`} py={1}>
       {/* Repository/Resource Catalog name */}
@@ -252,7 +250,7 @@ export const RepositoryCells = ({
       )}
 
       {/* Repository / Resource Catalog type, domain and conditions of access */}
-      {(column.property === 'types' ||
+      {(column.property === 'type' ||
         column.property === 'domain' ||
         column.property === 'conditionsOfAccess') && (
         <SkeletonText
@@ -264,9 +262,9 @@ export const RepositoryCells = ({
           fontSize='sm'
           noOfLines={2}
         >
-          {column.property === 'types' &&
-            (data.types
-              ? data.types
+          {column.property === 'type' &&
+            (data.type
+              ? data.type
                   .map(type => formatTypeName(type))
                   .sort((a, b) => a.localeCompare(b))
                   .join(', ')
@@ -275,10 +273,7 @@ export const RepositoryCells = ({
             (data.domain ? formatDomainName(data.domain) : '-')}
           {column.property === 'conditionsOfAccess' &&
             (data['conditionsOfAccess']
-              ? `${
-                  data['conditionsOfAccess'].charAt(0) +
-                  data['conditionsOfAccess'].slice(1)
-                } Access`
+              ? `${data['conditionsOfAccess']}`
               : '-')}
         </SkeletonText>
       )}

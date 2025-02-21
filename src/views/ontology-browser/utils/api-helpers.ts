@@ -156,7 +156,7 @@ export const fetchLineageFromBioThingsAPI = async (
   try {
     // Fetch lineage data from the BioThings API
     const lineageAPIResponse: BioThingsLineageAPIResponseItem = await axios.get(
-      `${BIOTHINGS_API_URL}/taxon/${params.id}`,
+      `${BIOTHINGS_API_URL}/taxon/${params.id}?include_children`,
     );
     const rawLineageData = lineageAPIResponse.data.lineage;
 
@@ -168,6 +168,7 @@ export const fetchLineageFromBioThingsAPI = async (
       fields: [
         'common_name',
         'genbank_common_name',
+        'children',
         'parent_taxid',
         'rank',
         'scientific_name',
@@ -189,7 +190,6 @@ export const fetchLineageFromBioThingsAPI = async (
         },
       },
     );
-
     const processedLineage = detailedLineageData
       .map((item: BioThingsDetailedLineageAPIResponseItem, idx: number) => {
         // Must set the parent to empty string if it is the root node.

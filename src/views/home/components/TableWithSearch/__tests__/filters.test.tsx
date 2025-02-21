@@ -11,7 +11,7 @@ describe('Landing Table Filters Component', () => {
       abstract: 'Lorem ipsum dolor sit amet',
       domain: 'iid',
       conditionsOfAccess: 'Open',
-      types: ['Resource Catalog'],
+      type: ['Resource Catalog'],
     },
     {
       _id: 'source_02',
@@ -19,7 +19,7 @@ describe('Landing Table Filters Component', () => {
       abstract: 'Orci varius natoque penatibus et magnis dis parturient montes',
       domain: 'generalist',
       conditionsOfAccess: 'Open',
-      types: ['Dataset Repository'],
+      type: ['Dataset Repository'],
     },
     {
       _id: 'source_03',
@@ -27,7 +27,7 @@ describe('Landing Table Filters Component', () => {
       abstract: 'Lorem ipsum dolor sit amet',
       domain: 'iid',
       conditionsOfAccess: 'Restricted',
-      types: ['Resource Catalog'],
+      type: ['Resource Catalog'],
     },
   ] as any[];
 
@@ -41,7 +41,7 @@ describe('Landing Table Filters Component', () => {
       <Filters
         data={mockData}
         filters={mockFilters}
-        updateFilter={mockUpdateFilter}
+        setFilters={mockUpdateFilter}
       />,
     );
 
@@ -56,7 +56,7 @@ describe('Landing Table Filters Component', () => {
       <Filters
         data={mockData}
         filters={mockFilters}
-        updateFilter={mockUpdateFilter}
+        setFilters={mockUpdateFilter}
       />,
     );
     // Find the button and simulate a click
@@ -76,6 +76,11 @@ describe('Landing Table CheckboxList Component', () => {
   const mockOptions = [
     { name: 'Resource Catalog', value: 'ResourceCatalog', count: 10 },
     { name: 'Dataset Repository', value: 'Repository', count: 5 },
+    {
+      name: 'Computational Tools Repository',
+      value: 'ComputationalTools',
+      count: 5,
+    },
   ];
   const mockSelectedOptions = [
     { name: 'Dataset Repository', value: 'Repository' },
@@ -107,9 +112,11 @@ describe('Landing Table CheckboxList Component', () => {
     );
 
     fireEvent.click(screen.getByText('Resource Catalog'));
-    expect(mockHandleChange).toHaveBeenCalledWith({
-      name: 'Resource Catalog',
-      value: 'ResourceCatalog',
-    });
+
+    const newSelectedOptions = [
+      ...mockSelectedOptions,
+      ...mockOptions.filter(item => item.value === 'ResourceCatalog'),
+    ];
+    expect(mockHandleChange).toHaveBeenCalledWith(newSelectedOptions);
   });
 });

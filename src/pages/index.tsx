@@ -30,6 +30,7 @@ import { useResourceCatalogs } from 'src/hooks/api/useResourceCatalogs';
 import { fetchAllFeaturedPages } from 'src/views/features/helpers';
 import { HeroBanner } from 'src/views/home/components/HeroBanner';
 import { TagWithUrl } from 'src/components/tag-with-url';
+import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
 
 const Home: NextPage<{
   data: {
@@ -58,7 +59,6 @@ const Home: NextPage<{
       title='Home'
       metaDescription='Find and access allergic, infectious and immune-mediated disease data by searching across biomedical data repositories with the NIAID Data Discovery Portal'
       keywords='omics, data, infectious disease, epidemiology, clinical trial, immunology, bioinformatics, surveillance, search, repository'
-      disableSearchBar
     >
       {/**** Hero banner + search bar *****/}
       <HeroBanner
@@ -74,9 +74,38 @@ const Home: NextPage<{
         >
           <Flex w='100%' flexDirection='column' maxWidth='1000px'>
             <SearchBarWithDropdown
-              placeholder='Search for datasets'
-              ariaLabel='Search for datasets'
+              placeholder='Search for resources'
+              ariaLabel='Search for resources'
               size='md'
+              showOptionsMenu
+              showSearchHistory
+              optionMenuProps={{
+                buttonProps: {
+                  borderRadius: 'full',
+                  colorScheme: 'primary',
+                  my: 2,
+                },
+                label: 'Type',
+                description: SCHEMA_DEFINITIONS['type'].abstract['Dataset'],
+                showSelectAll: true,
+                options: [
+                  {
+                    name: 'Computational Tool Repository',
+                    value: 'ComputationalTool',
+                    property: '@type',
+                  },
+                  {
+                    name: 'Dataset Repository',
+                    value: 'Dataset',
+                    property: '@type',
+                  },
+                  {
+                    name: 'Resource Catalog',
+                    value: 'ResourceCatalog',
+                    property: '@type',
+                  },
+                ],
+              }}
             />
           </Flex>
           <Box>
@@ -215,7 +244,7 @@ const Home: NextPage<{
                     },
                     {
                       title: 'Type',
-                      property: 'types',
+                      property: 'type',
                       isSortable: true,
                       props: { maxW: '180px', minW: '180px' },
                     },

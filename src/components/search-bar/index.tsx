@@ -5,8 +5,8 @@ import dynamic from 'next/dynamic';
 import { useRouter } from 'next/router';
 import {
   Button,
-  Divider,
   Flex,
+  HStack,
   Icon,
   IconButton,
   ListItem,
@@ -22,6 +22,8 @@ import {
   useDropdownContext,
 } from '../input-with-dropdown';
 import { SearchHistoryItem } from './components/search-history-item';
+import { CheckboxList, CheckboxListProps } from '../checkbox-list';
+import { queryFilterObject2String } from 'src/views/search-results-page/helpers';
 
 const DropdownContent = dynamic(() =>
   import('src/components/input-with-dropdown/components/DropdownContent').then(
@@ -29,7 +31,17 @@ const DropdownContent = dynamic(() =>
   ),
 );
 
-const SearchInput = (inputProps: DropdownInputProps) => {
+interface SearchInputProps extends DropdownInputProps {
+  showSearchHistory?: boolean;
+  showOptionsMenu?: boolean;
+  optionMenuProps?: CheckboxListProps<OptionProps>;
+}
+const SearchInput = ({
+  showSearchHistory,
+  showOptionsMenu,
+  optionMenuProps,
+  ...inputProps
+}: SearchInputProps) => {
   const { isOpen, setIsOpen } = useDropdownContext();
   return (
     <DropdownInput
@@ -39,7 +51,10 @@ const SearchInput = (inputProps: DropdownInputProps) => {
       }}
       renderSubmitButton={() => {
         return (
-          <>
+          <HStack height='100%'>
+            {showOptionsMenu && optionMenuProps && (
+              <CheckboxList {...optionMenuProps}></CheckboxList>
+            )}
             <Button
               colorScheme={inputProps.colorScheme}
               aria-label={inputProps.ariaLabel}
@@ -49,22 +64,24 @@ const SearchInput = (inputProps: DropdownInputProps) => {
             >
               Search
             </Button>
-            <Divider orientation='vertical' borderColor='gray.200' m={1} />
-
-            <Tooltip label='Toggle search history.'>
-              <IconButton
-                variant='ghost'
-                size={inputProps.size}
-                aria-label='Toggle search history.'
-                icon={
-                  <Flex px={2}>
-                    <Icon as={FaClockRotateLeft} />
-                  </Flex>
-                }
-                onClick={() => setIsOpen(!isOpen)}
-              />
-            </Tooltip>
-          </>
+            {showSearchHistory && (
+              <Flex borderLeft='1px solid' borderLeftColor='gray.200' pl={1}>
+                <Tooltip label='Toggle search history.'>
+                  <IconButton
+                    variant='ghost'
+                    size={inputProps.size}
+                    aria-label='Toggle search history.'
+                    icon={
+                      <Flex px={2}>
+                        <Icon as={FaClockRotateLeft} />
+                      </Flex>
+                    }
+                    onClick={() => setIsOpen(!isOpen)}
+                  />
+                </Tooltip>
+              </Flex>
+            )}
+          </HStack>
         );
       }}
     />
@@ -77,7 +94,7 @@ interface SearchBarProps extends SearchBarWithDropdownProps {
   placeholder: string;
   colorScheme?: string;
   size?: string;
-  searchHistory: string[];
+  searchHistory?: string[];
   setSearchHistory: React.Dispatch<React.SetStateAction<string[]>>;
 }
 
@@ -86,13 +103,21 @@ const SearchBar = ({
   placeholder,
   colorScheme = 'primary',
   size = 'md',
+  optionMenuProps,
   searchHistory,
   setSearchHistory,
+  showOptionsMenu,
+  showSearchHistory,
 }: SearchBarProps) => {
   const router = useRouter();
   const { isOpen, setIsOpen } = useDropdownContext();
   // Search term entered in search bar.
   const [searchTerm, setSearchTerm] = useState<string>('');
+
+  /****** Handle query filters ******/
+  const [queryFilters, setQueryFilters] = useState<
+    { name: string; value: string; property: string }[]
+  >([]);
 
   // Update value when changed.
   useEffect(() => {
@@ -119,13 +144,22 @@ const SearchBar = ({
     });
     router.push({
       pathname: `/search`,
-      query: { q: `${term.trim()}` },
+      query: {
+        q: `${term.trim()}`,
+        filters: queryFilterObject2String({
+          '@type': queryFilters
+            .filter(item => item.property === '@type')
+            ?.map(filter => filter.value),
+        }),
+      },
     });
   };
   const historyList = useMemo(
-    () => [...searchHistory].reverse(),
-    [searchHistory],
+    () =>
+      showSearchHistory && searchHistory ? [...searchHistory].reverse() : [],
+    [searchHistory, showSearchHistory],
   );
+
   return (
     <>
       <SearchInput
@@ -134,6 +168,18 @@ const SearchBar = ({
         placeholder={placeholder}
         size={size}
         type='text'
+        showSearchHistory={showSearchHistory}
+        showOptionsMenu={showOptionsMenu}
+        optionMenuProps={
+          optionMenuProps
+            ? {
+                selectedOptions:
+                  queryFilters?.filter(item => item.property === '@type') || [],
+                handleChange: setQueryFilters,
+                ...optionMenuProps,
+              }
+            : undefined
+        }
         onChange={setSearchTerm}
         onSubmit={handleSubmit}
         getInputValue={(idx: number): string => {
@@ -144,7 +190,7 @@ const SearchBar = ({
         }}
       />
 
-      {isOpen && (
+      {isOpen && showSearchHistory && historyList && (
         <DropdownContent>
           <UnorderedList ml={0}>
             <ListItem
@@ -192,12 +238,32 @@ const SearchBar = ({
   );
 };
 
+// Define the type for individual options in the checkbox list
+interface OptionProps {
+  name: string; // Display name for the option
+  value: string; // Unique value identifier for the option
+  property: string; // Associated property name (e.g., type, domain)
+}
+
 interface SearchBarWithDropdownProps {
   value?: string;
   ariaLabel: string;
   placeholder: string;
   colorScheme?: string;
   size?: string;
+  showSearchHistory?: boolean;
+  showOptionsMenu?: boolean;
+  // Start with all properties from CheckboxListProps<OptionProps>,
+  // except 'handleChange' and 'selectedOptions'
+  optionMenuProps?: Omit<
+    CheckboxListProps<OptionProps>,
+    'handleChange' | 'selectedOptions'
+  > & {
+    // Optionally reintroduce 'handleChange' and 'selectedOptions' as  optional properties
+    // since we create default values in <SearchBar/>, and we want to allow the user to override them.
+    handleChange?: CheckboxListProps<OptionProps>['handleChange'];
+    selectedOptions?: CheckboxListProps<OptionProps>['selectedOptions'];
+  };
 }
 
 export const SearchBarWithDropdown = (props: SearchBarWithDropdownProps) => {
@@ -220,6 +286,8 @@ export const SearchBarWithDropdown = (props: SearchBarWithDropdownProps) => {
       <SearchBar
         searchHistory={searchHistory}
         setSearchHistory={setSearchHistory}
+        showSearchHistory={props.showSearchHistory}
+        showOptionsMenu={props.showOptionsMenu}
         {...props}
       />
     </InputWithDropdown>

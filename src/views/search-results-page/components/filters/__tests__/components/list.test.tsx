@@ -41,7 +41,7 @@ jest.mock('src/components/search-input', () => ({
 const mockTerms: FilterItem[] = [
   { term: 'term1', label: 'Term 1', count: 5 },
   { term: 'term2', label: 'Term 2', count: 3 },
-  { term: '-_exists_', label: 'Not Specified', count: 1 },
+  { term: '-_exists_', label: 'Not', count: 1 },
 ];
 
 describe('FiltersList', () => {
@@ -123,7 +123,11 @@ describe('FiltersList', () => {
     render(<FiltersList {...defaultProps} />);
     const term1Label = screen.getByText('Term 1');
     const term2Label = screen.getByText('Term 2');
-    const notSpecifiedLabel = screen.getByText('Not Specified');
+    const not_exists = mockTerms.find(term => term.term === '-_exists_');
+
+    const notSpecifiedLabel = screen.getByText(
+      not_exists?.label + ' ' + defaultProps.config.name.toLowerCase(),
+    );
 
     expect(term1Label).toBeInTheDocument();
     expect(term2Label).toBeInTheDocument();
@@ -164,7 +168,7 @@ describe('FiltersList', () => {
       { term: 'term3', label: 'Term 3', count: 25, groupBy: 'Vegetables' },
       { term: 'term4', label: 'Term 4', count: 23, groupBy: 'Fruits' },
       { term: 'term5', label: 'Term 5', count: 0, groupBy: 'Fruits' },
-      { term: '-_exists_', label: 'Not Specified', count: 1 },
+      { term: '-_exists_', label: 'Not', count: 1 },
     ];
 
     render(<FiltersList {...defaultProps} terms={termsWithGrouping} />);
@@ -182,10 +186,7 @@ describe('FiltersList', () => {
   });
 
   it('_exists_ terms are ordered first', () => {
-    const terms = [
-      ...mockTerms,
-      { term: '_exists_', label: 'Any Specified', count: 1 },
-    ];
+    const terms = [...mockTerms, { term: '_exists_', label: 'Any', count: 1 }];
 
     render(<FiltersList {...defaultProps} terms={terms} />);
     const checkboxes = screen.getAllByRole('checkbox');
@@ -268,15 +269,15 @@ describe('groupTerms', () => {
   it('places _exists_ terms first', () => {
     const terms: FacetTermWithDetails[] = [
       { term: 'term1', label: 'Term 1', count: 5 },
-      { term: '-_exists_', label: 'Not Specified', count: 1 },
+      { term: '-_exists_', label: 'Not', count: 1 },
       { term: 'term2', label: 'Term 2', count: 3, groupBy: 'Group 1' },
-      { term: '_exists_', label: 'Any Specified', count: 2 },
+      { term: '_exists_', label: 'Any', count: 2 },
     ];
 
     const result = groupTerms(terms, selectedFilters);
     expect(result).toEqual([
-      { term: '-_exists_', label: 'Not Specified', count: 1 },
-      { term: '_exists_', label: 'Any Specified', count: 2 },
+      { term: '-_exists_', label: 'Not', count: 1 },
+      { term: '_exists_', label: 'Any', count: 2 },
       { label: 'Group 1', count: 1, term: 'Group 1', isHeader: true },
       { term: 'term2', label: 'Term 2', count: 3, groupBy: 'Group 1' },
       { term: 'term1', label: 'Term 1', count: 5 },
@@ -300,8 +301,8 @@ describe('groupTerms', () => {
 
   it('places selected filters right after _exists_', () => {
     const terms: FacetTermWithDetails[] = [
-      { term: '-_exists_', label: 'Not Specified', count: 1 },
-      { term: '_exists_', label: 'Any Specified', count: 2 },
+      { term: '-_exists_', label: 'Not', count: 1 },
+      { term: '_exists_', label: 'Any', count: 2 },
       { term: 'term1', label: 'Term 1', count: 1 },
       { term: 'term2', label: 'Term 2', count: 100 },
       { term: 'selected1', label: 'Selected Term 1', count: 23 },
@@ -309,8 +310,8 @@ describe('groupTerms', () => {
 
     const result = groupTerms(terms, selectedFilters);
     expect(result).toEqual([
-      { term: '-_exists_', label: 'Not Specified', count: 1 },
-      { term: '_exists_', label: 'Any Specified', count: 2 },
+      { term: '-_exists_', label: 'Not', count: 1 },
+      { term: '_exists_', label: 'Any', count: 2 },
       { term: 'selected1', label: 'Selected Term 1', count: 23 },
       { term: 'term2', label: 'Term 2', count: 100 },
       { term: 'term1', label: 'Term 1', count: 1 },

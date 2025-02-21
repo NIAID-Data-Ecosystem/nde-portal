@@ -15,7 +15,7 @@ const config = [
       // Destructure options to exclude queryKey and gather other options, with defaults
       const { queryKey = [] } = options || {};
 
-      // add exists to get total count for "Any Specified"
+      // add exists to get total count for resource with category
       const extraFilterWithFacets = params.extra_filter
         ? `${params.extra_filter}${
             params.facets ? ` AND _exists_:${params.facets}` : ''

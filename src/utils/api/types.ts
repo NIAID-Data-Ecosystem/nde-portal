@@ -41,6 +41,7 @@ export type AccessTypes =
   | 'Open'
   | 'Controlled'
   | 'Embargoed'
+  | 'Registered'
   | 'Restricted'
   | 'Varied'
   | 'Unknown';
@@ -184,6 +185,7 @@ export interface IncludedInDataCatalog {
   name: string;
   url?: string | null; //source repo url
   versionDate?: string | null;
+  dataset: string | null;
 }
 
 export interface InfectiousAgent extends PropertyWithPubtator {

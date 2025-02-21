@@ -52,27 +52,23 @@ export const SearchInput: React.FC<SearchInputProps> = ({
   const [showInput, setShowInput] = useState(false);
 
   const sizeConfig: {
-    [key in SizeOptions]: { width: string; height: string; padding: number };
+    [key in SizeOptions]: { width: string; height: string };
   } = {
     xs: {
       width: '4rem',
       height: '1.25rem',
-      padding: 0.5,
     },
     sm: {
       width: '5.5rem',
       height: '1.75rem',
-      padding: 0.5,
     },
     md: {
       width: '5.5rem',
-      height: '3rem',
-      padding: 1,
+      height: '2.5rem',
     },
     lg: {
       width: '6.5rem',
       height: '3rem',
-      padding: 1,
     },
   };
 
@@ -120,11 +116,7 @@ export const SearchInput: React.FC<SearchInputProps> = ({
 
         {/* If handle submit function is provided we show a button. */}
         {(onClose || handleSubmit) && (
-          <InputRightElement
-            height={sizeConfig[size].height}
-            padding={sizeConfig[size].padding}
-            width='unset'
-          >
+          <InputRightElement p={1} height={sizeConfig[size].height}>
             {onClose && props.value && (
               <CloseButton
                 onClick={() => {
@@ -142,7 +134,6 @@ export const SearchInput: React.FC<SearchInputProps> = ({
                 aria-label='search'
                 type='submit'
                 display='flex'
-                height='100%'
                 // set padding top and bottom for safari, do not remove.
                 py={0}
               >

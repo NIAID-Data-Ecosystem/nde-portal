@@ -45,6 +45,38 @@ export const getMetadataListByType = (type: FormattedResource['@type']) => {
       'hasDownload',
     ]);
     return { required, recommended };
+  } else if (type === 'ComputationalTool') {
+    const required = [
+      'date',
+      'includedInDataCatalog',
+      'funding',
+      'author',
+      'description',
+      'name',
+    ];
+    const recommended = [
+      'citedBy',
+      'doi',
+      'topicCategory',
+      'codeRepository',
+      'programmingLanguage',
+      'applicationCategory',
+      'applicationSubCategory',
+      'input',
+      'output',
+      'featureList',
+      'operatingSystem',
+      'softwareRequirements',
+      'softwareVersion',
+      'citation',
+      'conditionsOfAccess',
+      'dateModified',
+      'interactionStatistic',
+      'license',
+      'identifier',
+      'url',
+    ];
+    return { required, recommended };
   }
 
   return { required: REQUIRED_FIELDS, recommended: RECOMMENDED_FIELDS };

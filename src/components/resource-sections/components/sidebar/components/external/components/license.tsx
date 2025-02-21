@@ -17,7 +17,7 @@ export const License: React.FC<LicenseProps> = ({
   license,
   type,
 }) => {
-  if (!isLoading && !(license || type)) {
+  if (!isLoading && !(license && type)) {
     return <></>;
   }
   const licenseInfo = license ? formatLicense(license) : null;

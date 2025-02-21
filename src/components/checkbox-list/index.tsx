@@ -23,17 +23,18 @@ import { ScrollContainer } from 'src/components/scroll-container';
 interface Option {
   name: string;
   value: string;
-  count?: number;
+  [key: string]: any; // Allows other optional fields
 }
 
-interface CheckboxListProps<T extends Option> extends FlexProps {
+export interface CheckboxListProps<T extends Option> extends FlexProps {
   buttonProps?: ButtonProps;
   description?: string;
-  handleChange: (filters: T) => void;
+  handleChange: (filters: T[]) => void;
   label: string | React.ReactNode;
   options: T[];
-  selectedOptions: Pick<T, 'name' | 'value'>[];
+  selectedOptions: T[];
   size?: PopoverProps['size'];
+  showSelectAll?: boolean;
 }
 
 export const CheckboxList = <T extends Option>({
@@ -44,10 +45,17 @@ export const CheckboxList = <T extends Option>({
   selectedOptions,
   size = 'md',
   buttonProps,
+  showSelectAll,
   ...rest
 }: CheckboxListProps<T>) => {
   return (
-    <Flex flex={{ base: 1, sm: 'unset' }} height={{ base: 'unset' }} {...rest}>
+    <Flex
+      flex={{ base: 1, sm: 'unset' }}
+      height={{ base: 'unset' }}
+      zIndex='popover'
+      alignItems='center'
+      {...rest}
+    >
       <Popover>
         <PopoverTrigger>
           <Button
@@ -87,6 +95,25 @@ export const CheckboxList = <T extends Option>({
             )}
           </PopoverHeader>
           <PopoverBody>
+            {showSelectAll && (
+              <Flex justifyContent='flex-end'>
+                <Button
+                  size='xs'
+                  variant='link'
+                  onClick={() => {
+                    if (selectedOptions.length === options.length) {
+                      handleChange([]);
+                    } else {
+                      handleChange(options);
+                    }
+                  }}
+                >
+                  {selectedOptions.length === options.length
+                    ? 'Clear all'
+                    : 'Select all'}
+                </Button>
+              </Flex>
+            )}
             <ScrollContainer maxHeight='300px'>
               <CheckboxGroup
                 colorScheme='blue'
@@ -97,11 +124,26 @@ export const CheckboxList = <T extends Option>({
                     <Checkbox
                       key={option.value}
                       value={option.value}
-                      onChange={e => {
-                        handleChange({
-                          name: option.name,
-                          value: e.target.value,
-                        } as T);
+                      onChange={() => {
+                        const newFilterItem = option;
+                        // Check if filter is already selected
+                        const index = selectedOptions.findIndex(
+                          f =>
+                            f.property === newFilterItem.property &&
+                            f.value === newFilterItem.value,
+                        );
+                        if (index === -1) {
+                          // Add new filter
+                          return handleChange([
+                            ...selectedOptions,
+                            newFilterItem,
+                          ]);
+                        } else {
+                          // Remove filter if it's already selected
+                          return handleChange(
+                            selectedOptions.filter((_, i) => i !== index),
+                          );
+                        }
                       }}
                       px={1}
                       _hover={{ bg: 'tertiary.50' }}

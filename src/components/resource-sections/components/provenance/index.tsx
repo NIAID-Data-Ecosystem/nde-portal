@@ -10,7 +10,6 @@ import {
   Stack,
   Tag,
   Text,
-  usePrefersReducedMotion,
 } from '@chakra-ui/react';
 import { FormattedResource } from 'src/utils/api/types';
 import { getRepositoryImage } from 'src/utils/helpers';
@@ -24,19 +23,19 @@ import Tooltip from 'src/components/tooltip';
 interface Provenance {
   isLoading: boolean;
   includedInDataCatalog?: FormattedResource['includedInDataCatalog'];
-  url?: FormattedResource['url'];
   sdPublisher?: FormattedResource['sdPublisher'];
   sourceOrganization?: FormattedResource['sourceOrganization'];
   curatedBy?: FormattedResource['curatedBy'];
+  type?: FormattedResource['@type'];
 }
 
 const Provenance: React.FC<Provenance> = ({
   includedInDataCatalog,
   isLoading,
-  url,
   sourceOrganization,
   sdPublisher,
   curatedBy,
+  type,
 }) => {
   const provenanceCatalogs =
     !isLoading && includedInDataCatalog
@@ -45,15 +44,12 @@ const Provenance: React.FC<Provenance> = ({
         : [includedInDataCatalog]
       : [];
 
-  const prefersReducedMotion = usePrefersReducedMotion();
-
   interface BlockProps extends FlexProps {
     children: React.ReactNode;
     label?: string;
-    url?: string | null;
   }
 
-  const Block = ({ children, label, url, ...props }: BlockProps) => {
+  const Block = ({ children, label, ...props }: BlockProps) => {
     return (
       <Flex
         border='1px solid'
@@ -75,43 +71,10 @@ const Provenance: React.FC<Provenance> = ({
           </>
         )}
         <>{children}</>
-        {url ? (
-          <Flex
-            mt={2}
-            justifyContent='flex-end'
-            sx={{
-              svg: {
-                transform: 'translateX(-2px)',
-                transition: 'transform 0.2s ease-in-out',
-              },
-            }}
-            _hover={{
-              svg: prefersReducedMotion
-                ? {}
-                : {
-                    transform: 'translateX(4px)',
-                    transition: 'transform 0.2s ease-in-out',
-                  },
-            }}
-          >
-            <NextLink href={url} target='_blank'>
-              <Button
-                as='span'
-                variant='outline'
-                size='sm'
-                rightIcon={<FaArrowRight />}
-                mt={2}
-              >
-                Access Data
-              </Button>
-            </NextLink>
-          </Flex>
-        ) : (
-          <></>
-        )}
       </Flex>
     );
   };
+
   const Field = ({
     label,
     children,
@@ -162,7 +125,6 @@ const Provenance: React.FC<Provenance> = ({
             <Block
               key={includedInDataCatalog.name}
               label='Provided By'
-              url={url}
               mr={3}
               ml={0}
             >
@@ -218,7 +180,9 @@ const Provenance: React.FC<Provenance> = ({
                 <dl>
                   <Field label='Name'>
                     {curatedBy?.url ? (
-                      <Link isExternal>{curatedBy?.name}</Link>
+                      <Link isExternal href={curatedBy?.url}>
+                        {curatedBy?.name}
+                      </Link>
                     ) : (
                       curatedBy?.name
                     )}

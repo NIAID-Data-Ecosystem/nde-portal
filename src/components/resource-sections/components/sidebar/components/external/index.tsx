@@ -32,7 +32,7 @@ export const ExternalAccess = ({
       {/* Source + data access info. */}
       <Wrapper
         isLoading={isLoading}
-        label='Data Access'
+        label='Resource Access'
         hasDivider={hasDivider}
         {...props}
       >
@@ -64,6 +64,7 @@ export const ExternalAccess = ({
           isLoading={isLoading}
           includedInDataCatalog={data?.includedInDataCatalog}
           url={data?.url}
+          recordType={data?.['@type']}
         />
       </Wrapper>
     </>
