@@ -99,6 +99,11 @@ export const OntologyBrowserSearch = ({
         flexDirection={{ base: 'column', md: 'row' }}
         flexWrap='wrap'
         justifyContent='flex-end'
+        sx={{
+          '> div': {
+            zIndex: 'docked',
+          },
+        }}
       >
         <Flex
           flex={3}
