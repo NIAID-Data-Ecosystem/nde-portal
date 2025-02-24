@@ -111,7 +111,6 @@ export const OntologyBrowserPopup = ({
     { querystring, filters: selectedFilters },
     ONTOLOGY_BROWSER_OPTIONS,
   );
-
   // Fetch suggestions based on found value.
   const {
     error,
@@ -133,7 +132,7 @@ export const OntologyBrowserPopup = ({
     enabled: hasOntology && !!term && !!ontology?.value,
   });
 
-  if (!hasOntology) {
+  if (!hasOntology || error?.message) {
     return null;
   }
 
@@ -161,6 +160,7 @@ export const OntologyBrowserPopup = ({
           borderRadius: 'semi',
           bg: 'blue.50',
         }}
+        isLoading={isLoading}
       >
         use ontology browser?
       </Button>
