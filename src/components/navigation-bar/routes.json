@@ -31,11 +31,6 @@
           "href": "/sources"
         },
         {
-          "label": "Knowledge Center",
-          "subLabel": "Guides and documentation to help navigate and use the Discovery Portal",
-          "href": "/knowledge-center"
-        },
-        {
           "label": "News & Updates",
           "subLabel": "Latest news and updates from the NIAID Data Ecosystem",
           "href": "/news"
