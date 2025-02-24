@@ -52,7 +52,7 @@ export const OntologyBrowser = ({
   // Extract the query ID from the router, defaulting to the root taxon ID
   const router = useRouter();
   const id = router.query.id || '1';
-  const ontology = router.query.ontology || 'ncbitaxon';
+  const ontology = router.query.onto || 'ncbitaxon';
 
   // Memoize query parameters to avoid recalculating on each render
   const queryParams = useMemo(() => {

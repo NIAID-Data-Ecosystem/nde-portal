@@ -163,20 +163,22 @@ const TreeNode = ({
       //  Fetch children from the BioThings API for the NCBI Taxonomy
       if (node.ontologyName === 'ncbitaxon') {
         return fetchChildrenFromBioThingsAPI({
+          node,
+          q: params.q,
           id: node.taxonId,
           ontology: node.ontologyName,
           size: pageSize,
           from: pageFrom,
-        }).then(async data => {
-          return {
-            ...data,
-            children: await fetchPortalCounts(data.children, {
-              q: params.q,
-            }),
-          };
-        });
+        }).then(async data => ({
+          ...data,
+          children: await fetchPortalCounts(data.children, {
+            q: params.q,
+          }),
+        }));
       }
       return fetchChildrenFromOLSAPI({
+        node,
+        q: params.q,
         id: node.taxonId,
         ontology: node.ontologyName,
         size: pageSize,

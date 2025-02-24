@@ -38,6 +38,8 @@ export interface OLSAPIResponseItem {
 }
 
 export interface OntologyChildrenRequestParams {
+  node: OntologyLineageItem;
+  q: string;
   id: string;
   ontology: string;
   from: number;

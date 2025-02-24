@@ -325,13 +325,36 @@ export const fetchChildrenFromBioThingsAPI = async (
   }
 
   try {
-    // Fetch children data from the BioThings API
-    const childrenAPIResponse: BioThingsLineageAPIResponseItem =
-      await axios.get(
-        `${BIOTHINGS_API_URL}/taxon/${params.id}?include_children`,
-      );
+    // Fetch the children with counts from the portal data.
+    const childrenWithCounts: { term: number; count: number }[] =
+      await fetchSearchResults({
+        q: params.q ? params.q : '__all__',
+        size: 0,
+        lineage: +params.node.id,
+      }).then(response => {
+        return response?.facets.lineage.children_of_lineage.taxon_ids.terms;
+      });
 
-    const allChildrenIds = childrenAPIResponse.data.children;
+    // Fetch children data from the BioThings API
+    const childrenFromBiothingsIds: BioThingsLineageAPIResponseItem =
+      await axios
+        .get(`${BIOTHINGS_API_URL}/taxon/${params.id}?include_children`)
+        .then(res =>
+          res?.data?.children?.filter((child: number) => {
+            // filter out ids that are in children with counts
+            return !childrenWithCounts.find(({ term }) => +term === +child);
+          }),
+        );
+
+    const allChildrenIds = [
+      ...childrenWithCounts.map(({ term, count }) => {
+        return term;
+      }),
+      ...(Array.isArray(childrenFromBiothingsIds)
+        ? childrenFromBiothingsIds
+        : []),
+    ];
+
     if (!Array.isArray(allChildrenIds)) {
       throw new Error('children data is not available or invalid');
     }
@@ -372,6 +395,11 @@ export const fetchChildrenFromBioThingsAPI = async (
         // Must set the parent to empty string if it is the root node.
         const isRootNode = item.parent_taxid === item.taxid;
         const taxonId = item.taxid.toString();
+        // get counts from portal if not 0
+        const portalDetails = childrenWithCounts.find(
+          ({ term }) => term === item.taxid,
+        );
+
         return {
           id: taxonId,
           commonName: item?.genbank_common_name || item?.common_name || '',
