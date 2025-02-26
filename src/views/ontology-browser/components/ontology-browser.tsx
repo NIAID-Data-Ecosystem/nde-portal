@@ -36,10 +36,13 @@ export const OntologyBrowser = ({
   // Store the view configuration in local storage.
   // [isCondensed]: Show only the selected node and its immediate parent/children.
   // [includeEmptyCounts]: Include items without datasets in the view.
-  const [viewConfig, setViewConfig] = useLocalStorage('ontology-browser-view', {
-    isCondensed: true,
-    includeEmptyCounts: true,
-  });
+  const [viewConfig, setViewConfig] = useLocalStorage(
+    'ontology-browser-view',
+    () => ({
+      isCondensed: true,
+      includeEmptyCounts: true,
+    }),
+  );
 
   // State to manage the ontology tree lineage
   const [lineage, setLineage] = useState<
