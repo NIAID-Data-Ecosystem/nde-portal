@@ -30,7 +30,7 @@ import {
 } from './ontology-browser-count-tag';
 
 const MARGIN = 16; // Base margin for indenting tree levels
-const SIZE = 10; // Number of items to fetch per page
+const SIZE = 20; // Number of items to fetch per page
 
 /**
  * Tree Component
@@ -225,7 +225,6 @@ const TreeNode = ({
   // Set children data in state with node information. Refresh when queryId changes.
   useEffect(() => {
     const children = getChildren(node.taxonId, lineage); // Retrieve immediate children from lineage
-
     setChildrenList(children);
   }, [queryId, lineage, node.taxonId]);
 
@@ -355,50 +354,6 @@ const TreeNode = ({
       </Flex>
       {isToggled && childrenList.length > 0 && (
         <UnorderedList ml={0}>
-          {(childrenMeta?.hasMore || (isLoading && pageFrom > 0)) && (
-            <ListItem
-              borderTop='0.25px solid'
-              borderColor='gray.200'
-              px={4}
-              py={2}
-              pl={`${(depth + 1) * MARGIN}px`}
-              bg='blackAlpha.100'
-            >
-              <Flex
-                px={4}
-                ml={4}
-                pl={10}
-                flexDirection='row'
-                alignItems='baseline'
-                flex={1}
-              >
-                <Text color='niaid.800' fontSize='13px'>
-                  Showing{' '}
-                  {childrenMeta ? pageSize * (childrenMeta.numPage + 1) : '-'}{' '}
-                  of{' '}
-                  {childrenMeta
-                    ? childrenMeta.totalElements.toLocaleString()
-                    : ' - '}{' '}
-                  children for{' '}
-                  <Text as='span' fontWeight='semibold'>
-                    {node.label}.
-                  </Text>
-                </Text>
-                <Button
-                  isLoading={isLoading}
-                  variant='link'
-                  size='sm'
-                  fontSize='13px'
-                  onClick={() => {
-                    setPageFrom(pageFrom + 1);
-                  }}
-                  ml={2}
-                >
-                  Show {pageSize} more
-                </Button>
-              </Flex>
-            </ListItem>
-          )}
           {sortChildrenList(childrenList).map(child => (
             <TreeNode
               key={child.id}
@@ -417,19 +372,20 @@ const TreeNode = ({
               borderTop='0.25px solid'
               borderColor='gray.200'
               px={4}
-              py={2}
-              pl={`${(depth + 1) * MARGIN}px`}
-              bg='blackAlpha.100'
+              py={1}
+              pl={`${(depth + 2) * MARGIN}px`}
+              bg='#fff'
             >
               <Flex
                 px={4}
                 ml={4}
                 pl={10}
-                flexDirection='row'
-                alignItems='baseline'
+                flexDirection='column'
+                alignItems='flex-start'
                 flex={1}
+                lineHeight='shorter'
               >
-                <Text color='niaid.800' fontSize='13px'>
+                <Text fontSize='12px'>
                   Showing{' '}
                   {childrenMeta ? pageSize * (childrenMeta.numPage + 1) : '-'}{' '}
                   of{' '}
@@ -445,13 +401,13 @@ const TreeNode = ({
                   isLoading={isLoading}
                   variant='link'
                   size='sm'
-                  fontSize='13px'
+                  fontSize='12px'
                   onClick={() => {
                     setPageFrom(pageFrom + 1);
                   }}
-                  ml={2}
+                  mt={1}
                 >
-                  Show {pageSize} more
+                  Show more
                 </Button>
               </Flex>
             </ListItem>

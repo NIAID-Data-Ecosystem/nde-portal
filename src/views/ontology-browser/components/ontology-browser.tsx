@@ -130,6 +130,7 @@ export const OntologyBrowser = ({
         if (children.length === 0) return prevLineage;
 
         // Find the index of the node to insert children after
+        // [TO DO]:Remove? not using this to merge any more
         const index = prevLineage.findIndex(node => node.id === nodeId);
 
         if (index === -1) return prevLineage;
@@ -144,8 +145,8 @@ export const OntologyBrowser = ({
         if (filteredChildren.length === 0) return prevLineage;
 
         // Merge filtered children into prevLineage
-        const merged = [...prevLineage];
-        merged.splice(index + 1, 0, ...filteredChildren);
+        const merged = [...prevLineage, ...filteredChildren];
+        // merged.splice(index + 1, 0, ...filteredChildren);
         return merged;
       });
     },
