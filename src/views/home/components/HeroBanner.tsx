@@ -25,7 +25,13 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
   return (
     <HeroBannerContainer>
       {/* Nodes background image */}
-      <Box width='100%' height='100%' overflow='hidden' position='absolute'>
+      <Box
+        width='100%'
+        height='100%'
+        overflow='hidden'
+        position='absolute'
+        left={0}
+      >
         <Image
           alt='A complex network of interconnected lines and nodes, resembling a molecular or neural network structure. The image features various shades of blue and white, with nodes of different sizes connected by thin lines, creating a web-like pattern.'
           src='/assets/homepage/ecosystem-hero-nodes.png'
@@ -40,7 +46,6 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
           opacity={{ base: 0.2, lg: 0.35 }}
         />
       </Box>
-
       <VStack
         px={{ base: 4 }}
         py={{ base: 4, sm: 10 }}
@@ -92,9 +97,9 @@ export const HeroBannerContainer = ({
         sm: '360px',
         md: '350px',
       }}
+      width='100%'
       justifyContent={{ base: 'flex-start', '2xl': 'center' }}
       px={{ base: 2, sm: 6, lg: 10, xl: '5vw' }}
-      overflow='hidden'
       {...rest}
     >
       {children}
@@ -107,6 +112,7 @@ interface HeroBannerTextProps extends StackProps {
   subtitle?: HeroBannerProps['subtitle'];
   body?: HeroBannerProps['body'];
 }
+
 export const HeroBannerText = ({
   title,
   subtitle,
