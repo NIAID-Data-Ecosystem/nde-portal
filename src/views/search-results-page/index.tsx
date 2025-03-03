@@ -210,7 +210,7 @@ const SearchResultsPage = ({
   const numCards = useMemo(
     () =>
       Math.min(
-        isLoading ? selectedPerPage : data?.results.length || 0,
+        isLoading ? selectedPerPage : data?.results?.length || 0,
         selectedPerPage,
       ),
     [isLoading, data?.results?.length, selectedPerPage],
@@ -294,8 +294,8 @@ const SearchResultsPage = ({
       </Collapse>
 
       {/* Empty state if no results found */}
-      {!isLoading && (!data || data.results.length === 0) && (
-        <Empty message='No results found.' alignSelf='center' h='50vh'>
+      {!isLoading && (!data || data?.results?.length === 0) && (
+        <Empty message='No results found.' alignSelf='center'>
           <Text>No results found. Please try again.</Text>
           <Box
             p={4}
