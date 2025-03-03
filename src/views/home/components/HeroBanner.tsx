@@ -100,6 +100,7 @@ export const HeroBannerContainer = ({
       width='100%'
       justifyContent={{ base: 'flex-start', '2xl': 'center' }}
       px={{ base: 2, sm: 6, lg: 10, xl: '5vw' }}
+      zIndex='dropdown'
       {...rest}
     >
       {children}
