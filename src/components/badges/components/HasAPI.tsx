@@ -1,21 +1,22 @@
 import { FormattedResource } from 'src/utils/api/types';
 import { Icon } from '@chakra-ui/react';
 import { BadgeWithTooltip, BadgeWithTooltipProps } from 'src/components/badges';
-import { FaCircleCheck, FaCircleXmark } from 'react-icons/fa6';
 import SchemaDefinitions from 'configs/schema-definitions.json';
-import { SchemaDefinition } from 'scripts/generate-schema-definitions/types';
+import { FaCircleCheck, FaCircleXmark } from 'react-icons/fa6';
+import { SchemaDefinitions as SchemaDefinitionsType } from 'scripts/generate-schema-definitions/types';
 
 interface HasDownloadProps extends Omit<BadgeWithTooltipProps, 'value'> {
   hasAPI?: FormattedResource['hasAPI'];
   type?: FormattedResource['@type'];
   tooltipLabel?: string;
 }
+const schema = SchemaDefinitions as SchemaDefinitionsType;
 
 export const HasAPI = ({ hasAPI, type, ...props }: HasDownloadProps) => {
   if (!type) {
     return <></>;
   }
-  const property = SchemaDefinitions['hasAPI'] as SchemaDefinition;
+  const property = schema['hasAPI'];
 
   return (
     <BadgeWithTooltip
@@ -29,7 +30,7 @@ export const HasAPI = ({ hasAPI, type, ...props }: HasDownloadProps) => {
       ) : (
         <Icon as={FaCircleXmark} mr={1} />
       )}
-      API Available
+      {hasAPI ? 'API Available' : 'API Not Available'}
     </BadgeWithTooltip>
   );
 };
