@@ -49,13 +49,14 @@ export const Tag = {
     md: {
       container: {
         gap: '1',
+        py: 1,
         '--tag-font-size': 'fontSizes.xs',
         '--tag-min-height': 'space.5',
-        '--tag-padding-inline': 'space.1.5',
+        '--tag-padding-inline': 'space.2',
 
         svg: {
-          width: '3.5',
-          height: '3.5',
+          width: '3',
+          height: '3',
         },
       },
     },
@@ -65,7 +66,7 @@ export const Tag = {
         py: 1,
         '--tag-font-size': 'fontSizes.xs',
         '--tag-min-height': 'space.6',
-        '--tag-padding-inline': 'space.2',
+        '--tag-padding-inline': 'space.2.5',
         svg: {
           width: '4',
           height: '4',
@@ -80,8 +81,8 @@ export const Tag = {
         '--tag-padding-inline': 'space.2.5',
 
         svg: {
-          width: '5',
-          height: '5',
+          width: '4',
+          height: '4',
         },
       },
     },
