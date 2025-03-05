@@ -117,7 +117,7 @@ interface CuratedBy {
 }
 
 export interface Distribution {
-  encodingFormat: string | null;
+  encodingFormat: string[] | string | null;
   contentSize: number | null;
   contentUrl: string | null;
   dateCreated: string | null;
@@ -174,7 +174,7 @@ export interface Funding {
 export interface HasPart {
   '@id'?: string;
   '@type'?: string;
-  encodingFormat?: string;
+  encodingFormat?: string | string[];
   identifier?: string;
   name?: string;
   url?: string;
@@ -320,7 +320,7 @@ export interface InputProperties {
   description?: string;
   identifier?: string;
   name?: string;
-  encodingFormat?: string;
+  encodingFormat?: string | string[];
   url?: string;
   inDefinedTermSet?: string;
 }
@@ -335,7 +335,7 @@ export interface CollectionSize {
 export interface OutputProperties {
   identifier?: string;
   name?: string;
-  encodingFormat?: string;
+  encodingFormat?: string | string[];
   url?: string;
   inDefinedTermSet?: string;
 }
@@ -343,7 +343,7 @@ export interface OutputProperties {
 export interface FeatureListProperties {
   identifier?: string;
   name?: string;
-  encodingFormat?: string;
+  encodingFormat?: string | string[];
   url?: string;
   inDefinedTermSet?: string;
 }
