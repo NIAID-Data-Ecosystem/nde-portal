@@ -133,13 +133,13 @@ export const TableWithSearch: React.FC<TableWithSearchProps> = ({
               {filters.length > 0 && (
                 <Tag
                   key='clear'
-                  size='sm'
+                  size='lg'
                   variant='outline'
                   borderRadius='full'
                   colorScheme='primary'
                   borderColor='primary.100'
                 >
-                  <TagLabel fontWeight='medium'>Clear all</TagLabel>
+                  <TagLabel>Clear all</TagLabel>
                   <TagCloseButton onClick={() => setFilters([])} />
                 </Tag>
               )}
@@ -148,7 +148,7 @@ export const TableWithSearch: React.FC<TableWithSearchProps> = ({
                 return (
                   <Tag
                     key={property + '-' + value}
-                    size='sm'
+                    size='lg'
                     variant='subtle'
                     borderRadius='full'
                     colorScheme='primary'
