@@ -18,7 +18,7 @@ import HOMEPAGE_COPY from 'configs/homepage.json';
 import HOME_QUERIES from 'configs/queries/home-queries.json';
 import NextLink from 'next/link';
 import { SearchBarWithDropdown } from 'src/components/search-bar';
-import { FaRegEnvelope, FaGithub, FaMagnifyingGlass } from 'react-icons/fa6';
+import { FaRegEnvelope, FaGithub } from 'react-icons/fa6';
 import { useRepoData } from 'src/hooks/api/useRepoData';
 import {
   NewsCarousel,
@@ -29,6 +29,7 @@ import { TableWithSearch } from 'src/views/home/components/TableWithSearch/';
 import { useResourceCatalogs } from 'src/hooks/api/useResourceCatalogs';
 import { fetchAllFeaturedPages } from 'src/views/features/helpers';
 import { HeroBanner } from 'src/views/home/components/HeroBanner';
+import { ButtonWithMagnifyingGlass } from 'src/views/home/components/ButtonWithMagnifyingGlass';
 import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
 
 const Home: NextPage<{
@@ -113,35 +114,23 @@ const Home: NextPage<{
             <Stack flexDirection='row' flexWrap={'wrap'}>
               {HOME_QUERIES.map(query => {
                 return (
-                  <Button
+                  <ButtonWithMagnifyingGlass
                     key={query.title}
-                    as={NextLink}
                     href={{
-                      pathname: `/search`,
+                      pathname: '/search',
                       query: { q: query.searchTerms.join(' OR ') },
                     }}
-                    size={{ base: 'sm', sm: 'xs' }}
-                    leftIcon={<FaMagnifyingGlass />}
                     colorScheme='niaid'
                   >
                     {query.title}
-                  </Button>
+                  </ButtonWithMagnifyingGlass>
                 );
               })}
             </Stack>
           </Box>
-          <Button
-            as={NextLink}
-            href={{ pathname: '/advanced-search' }}
-            size={{ base: 'sm', sm: 'xs' }}
-            height={{ base: 'unset', sm: '25.5px' }}
-            leftIcon={<FaMagnifyingGlass />}
-            mt={2}
-            fontWeight='medium'
-            lineHeight='shorter'
-          >
+          <ButtonWithMagnifyingGlass href='/advanced-search' mt={2}>
             Advanced Search
-          </Button>
+          </ButtonWithMagnifyingGlass>
         </Stack>
       </HeroBanner>
       <>
