@@ -29,7 +29,6 @@ import { TableWithSearch } from 'src/views/home/components/TableWithSearch/';
 import { useResourceCatalogs } from 'src/hooks/api/useResourceCatalogs';
 import { fetchAllFeaturedPages } from 'src/views/features/helpers';
 import { HeroBanner } from 'src/views/home/components/HeroBanner';
-import { TagWithUrl } from 'src/components/tag-with-url';
 import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
 
 const Home: NextPage<{
@@ -114,19 +113,19 @@ const Home: NextPage<{
             <Stack flexDirection='row' flexWrap={'wrap'}>
               {HOME_QUERIES.map(query => {
                 return (
-                  <TagWithUrl
+                  <Button
                     key={query.title}
-                    label={query.title}
+                    as={NextLink}
                     href={{
                       pathname: `/search`,
                       query: { q: query.searchTerms.join(' OR ') },
                     }}
-                    colorScheme='tertiary'
-                    variant='solid'
-                    bg='niaid.color'
-                    leftIcon={FaMagnifyingGlass}
-                    size={{ base: 'md', sm: 'sm' }}
-                  />
+                    size={{ base: 'sm', sm: 'xs' }}
+                    leftIcon={<FaMagnifyingGlass />}
+                    colorScheme='niaid'
+                  >
+                    {query.title}
+                  </Button>
                 );
               })}
             </Stack>
