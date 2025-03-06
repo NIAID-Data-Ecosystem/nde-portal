@@ -326,13 +326,13 @@ export const fetchChildrenFromBioThingsAPI = async (
 
   try {
     // Fetch the children with counts from the portal data.
-    const childrenWithCounts: { term: number; count: number }[] =
+    const childrenWithCounts: { taxonId: number; count: number }[] =
       await fetchSearchResults({
         q: params.q ? params.q : '__all__',
         size: 0,
         lineage: +params.node.id,
       }).then(response => {
-        return response?.facets.lineage.children_of_lineage.taxon_ids.terms;
+        return response?.facets.lineage.children.childTaxonCounts;
       });
 
     // Fetch children data from the BioThings API
@@ -342,13 +342,15 @@ export const fetchChildrenFromBioThingsAPI = async (
         .then(res =>
           res?.data?.children?.filter((child: number) => {
             // filter out ids that are in children with counts
-            return !childrenWithCounts.find(({ term }) => +term === +child);
+            return !childrenWithCounts.find(
+              ({ taxonId }) => +taxonId === +child,
+            );
           }),
         );
 
     const allChildrenIds = [
-      ...childrenWithCounts.map(({ term, count }) => {
-        return term;
+      ...childrenWithCounts.map(({ taxonId }) => {
+        return taxonId;
       }),
       ...(Array.isArray(childrenFromBiothingsIds)
         ? childrenFromBiothingsIds
@@ -397,7 +399,7 @@ export const fetchChildrenFromBioThingsAPI = async (
         const taxonId = item.taxid.toString();
         // get counts from portal if not 0
         const portalDetails = childrenWithCounts.find(
-          ({ term }) => term === item.taxid,
+          ({ taxonId }) => taxonId === item.taxid,
         );
 
         return {
@@ -428,7 +430,7 @@ export const fetchChildrenFromBioThingsAPI = async (
       },
     };
   } catch (error: any) {
-    console.error('Error in fetching from the OLS:', error.message);
+    console.error('Error in fetching from the BioThings API:', error.message);
     throw error;
   }
 };
@@ -639,18 +641,18 @@ export const fetchPortalCounts = async (
 
       // Extract counts for datasets directly related to this taxon ID
       const directTermCount =
-        lineageQueryResponse?.facets?.lineage_doc_count?.doc_count || 0;
+        lineageQueryResponse?.facets?.lineage?.totalRecords || 0;
 
       // Extract counts for datasets where this taxon ID is a parent
       const childTermsCount =
-        lineageQueryResponse?.facets?.lineage?.children_of_lineage?.to_parent
-          ?.doc_count || 0;
+        lineageQueryResponse?.facets?.lineage?.children
+          .totalUniqueChildRecords || 0;
 
       // Determine if the node has child taxon IDs.
       // [NOTE]: This only checks if the node has children in the NDE API.
       const hasChildTaxons =
-        lineageQueryResponse?.facets?.lineage?.children_of_lineage?.taxon_ids
-          ?.terms?.length > 0;
+        lineageQueryResponse?.facets?.lineage?.children?.childTaxonCounts
+          ?.length > 0;
 
       // Return the updated node with counts and child status
       return {
