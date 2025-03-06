@@ -30,7 +30,7 @@ export const HasAPI = ({ hasAPI, type, ...props }: HasDownloadProps) => {
       ) : (
         <Icon as={FaCircleXmark} mr={1} />
       )}
-      API Available
+      {hasAPI ? 'API Available' : 'API Not Available'}
     </BadgeWithTooltip>
   );
 };
