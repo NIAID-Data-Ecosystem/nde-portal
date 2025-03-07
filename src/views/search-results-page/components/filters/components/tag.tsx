@@ -119,7 +119,7 @@ export const FilterTags: React.FC<FilterTagsProps> = ({
     <Flex pb={[4, 6]} flexWrap='wrap' {...props}>
       <Button
         m={1}
-        variant='outline'
+        variant='solid'
         size='md'
         px={3}
         py={2}
@@ -131,7 +131,7 @@ export const FilterTags: React.FC<FilterTagsProps> = ({
         Clear All
       </Button>
       {tags.map(({ key, name, value, displayValue, filterKey }) => (
-        <Tag key={key} colorScheme='secondary' size='md' m={1}>
+        <Tag key={key} variant='subtle' colorScheme='secondary' size='md' m={1}>
           <TagLabel>{`${name}: ${
             typeof displayValue === 'string'
               ? displayValue

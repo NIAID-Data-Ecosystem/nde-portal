@@ -1,5 +1,4 @@
 import { FormattedResource } from 'src/utils/api/types';
-import { Icon } from '@chakra-ui/react';
 import { FaDollarSign } from 'react-icons/fa6';
 import { BadgeWithTooltip, BadgeWithTooltipProps } from 'src/components/badges';
 import SchemaDefinitions from 'configs/schema-definitions.json';
@@ -19,12 +18,10 @@ export const AccessibleForFree = ({
     const property = SchemaDefinitions['isAccessibleForFree'];
     return (
       <BadgeWithTooltip
-        variant='solid'
-        fontWeight='semibold'
-        bg={isAccessibleForFree ? 'green.600' : 'gray.800'}
+        colorScheme={isAccessibleForFree ? 'green' : 'gray'}
         value={isAccessibleForFree ? 'Free Access' : 'Paid  Access'}
         tooltipLabel={property?.description[type]}
-        leftIcon={<Icon as={FaDollarSign}></Icon>}
+        leftIcon={FaDollarSign}
         {...props}
       />
     );
