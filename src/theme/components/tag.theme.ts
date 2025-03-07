@@ -19,6 +19,9 @@ export const Tag = {
         lineHeight: '1rem',
       },
       closeButton: {
+        fontSize: 'lg',
+        w: '5',
+        h: '5',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -28,6 +31,10 @@ export const Tag = {
         color: 'currentColor',
         focusVisibleRing: 'inside',
         focusRingWidth: '2px',
+        svg: {
+          width: '1em',
+          height: '1em',
+        },
       },
     };
     return baseStyles;
