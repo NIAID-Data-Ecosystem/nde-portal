@@ -75,10 +75,9 @@ export const TagWithUrl = ({
         },
       }}
       lineHeight='shorter'
-      // whiteSpace='nowrap' // add this to prevent the tag from wrapping
       {...props}
     >
-      {leftIcon && <TagLeftIcon as={leftIcon} />}
+      {leftIcon && <TagLeftIcon as={leftIcon} mr={0} />}
 
       <TagLabel fontSize='inherit' lineHeight='inherit' display='inline'>
         <Label />
