@@ -122,7 +122,6 @@ const Home: NextPage<{
                     }}
                     leftIcon={<FaMagnifyingGlass />}
                     size={{ base: 'sm', sm: 'xs' }}
-                    height={{ base: 'unset', sm: '25.5px' }}
                     colorScheme='niaid'
                   >
                     {query.title}
@@ -136,7 +135,6 @@ const Home: NextPage<{
             href={{ pathname: '/advanced-search' }}
             leftIcon={<FaMagnifyingGlass />}
             size={{ base: 'sm', sm: 'xs' }}
-            height={{ base: 'unset', sm: '25.5px' }}
             mt={2}
           >
             Advanced Search
