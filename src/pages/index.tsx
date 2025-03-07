@@ -123,6 +123,7 @@ const Home: NextPage<{
                     leftIcon={<FaMagnifyingGlass />}
                     size={{ base: 'sm', sm: 'xs' }}
                     colorScheme='niaid'
+                    fontWeight='semibold'
                   >
                     {query.title}
                   </Button>
