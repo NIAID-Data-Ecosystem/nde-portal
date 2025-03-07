@@ -11,8 +11,6 @@ export const Button = {
   sizes: {
     sm: {
       fontSize: 'sm',
-      px: 4,
-      py: 3,
     },
     md: {
       fontSize: 'md',

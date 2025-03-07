@@ -20,16 +20,11 @@ export const HasAPI = ({ hasAPI, type, ...props }: HasDownloadProps) => {
 
   return (
     <BadgeWithTooltip
-      variant='outline'
       colorScheme={hasAPI ? 'green' : 'gray'}
       tooltipLabel={type ? property?.description?.[type] || '' : ''}
+      leftIcon={hasAPI ? FaCircleCheck : FaCircleXmark}
       {...props}
     >
-      {hasAPI ? (
-        <Icon as={FaCircleCheck} mr={1} />
-      ) : (
-        <Icon as={FaCircleXmark} mr={1} />
-      )}
       {hasAPI ? 'API Available' : 'API Not Available'}
     </BadgeWithTooltip>
   );

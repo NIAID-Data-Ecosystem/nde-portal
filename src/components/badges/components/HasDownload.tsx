@@ -39,11 +39,8 @@ export const HasDownload = ({
 
   return (
     <BadgeWithTooltip
-      variant='outline'
       colorScheme={getColorScheme()}
       tooltipLabel={type ? property?.description?.[type] || '' : ''}
-      whiteSpace='wrap'
-      alignItems='center'
       {...props}
     >
       <Icon as={FaDownload} mr={1} />
