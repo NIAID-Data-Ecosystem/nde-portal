@@ -358,100 +358,104 @@ const TreeNode = ({
       </Flex>
 
       {/* If there are only children with 0 counts and the conmfiguration hides them, show a note */}
-      {isToggled &&
-      childrenList.length > 0 &&
-      isToggled &&
-      !config?.includeEmptyCounts &&
-      node.counts.termCount === node.counts.termAndChildrenCount ? (
-        <Flex
-          bg='tertiary.50'
-          fontSize='xs'
-          px={4}
-          py={2}
-          pl={`${(depth + 2) * MARGIN}px`}
-        >
-          <Flex ml={10} flexDirection='column' alignItems='flex-start'>
-            <Text pr={4}>
-              <Text as='span' fontWeight='semibold'>
-                {node.label} (Taxon ID: {node.taxonId})
-              </Text>{' '}
-              has{' '}
-              {childrenList.length > 1
-                ? `${childrenList.length} children, but all have 0 associated datasets.`
-                : `${childrenList.length} child, which has 0 associated datasets.`}{' '}
-            </Text>
-            <Button
-              variant='link'
-              size='sm'
-              onClick={() => setViewConfig({ ...viewConfig, isMenuOpen: true })}
-              fontSize='inherit'
-            >
-              Adjust your configuration settings to view them.
-            </Button>
-          </Flex>
-        </Flex>
-      ) : (
-        <UnorderedList ml={0}>
-          {sortChildrenList(childrenList).map(child => (
-            <TreeNode
-              key={child.id}
-              addToSearch={addToSearch}
-              isIncludedInSearch={isIncludedInSearch}
-              node={child}
-              params={params}
-              lineage={lineage}
-              depth={depth + 1}
-              updateLineage={updateLineage}
-            />
-          ))}
-
-          {(childrenMeta?.hasMore || (isLoading && pageFrom > 0)) && (
-            <ListItem
-              borderTop='0.25px solid'
-              borderColor='gray.200'
-              px={4}
-              py={2}
-              pl={`${(depth + 2) * MARGIN}px`}
-              bg='tertiary.50'
-            >
-              <Flex
-                ml={4}
-                pl={10}
-                pr={4}
-                flexDirection='row'
-                alignItems='baseline'
-                flex={1}
-                fontSize='xs'
-                lineHeight='shorter'
+      {isToggled && childrenList.length > 0 ? (
+        isToggled &&
+        !config?.includeEmptyCounts &&
+        node.counts.termCount === node.counts.termAndChildrenCount ? (
+          <Flex
+            bg='tertiary.50'
+            fontSize='xs'
+            px={4}
+            py={2}
+            pl={`${(depth + 2) * MARGIN}px`}
+          >
+            <Flex ml={10} flexDirection='column' alignItems='flex-start'>
+              <Text pr={4}>
+                <Text as='span' fontWeight='semibold'>
+                  {node.label} (Taxon ID: {node.taxonId})
+                </Text>{' '}
+                has{' '}
+                {childrenList.length > 1
+                  ? `${childrenList.length} children, but all have 0 associated datasets.`
+                  : `${childrenList.length} child, which has 0 associated datasets.`}{' '}
+              </Text>
+              <Button
+                variant='link'
+                size='sm'
+                onClick={() =>
+                  setViewConfig({ ...viewConfig, isMenuOpen: true })
+                }
+                fontSize='inherit'
               >
-                <Text>
-                  Showing{' '}
-                  {childrenMeta ? pageSize * (childrenMeta.numPage + 1) : '-'}{' '}
-                  of{' '}
-                  {childrenMeta
-                    ? childrenMeta.totalElements.toLocaleString()
-                    : ' - '}{' '}
-                  children for{' '}
-                  <Text as='span' fontWeight='semibold'>
-                    {node.label} (Taxon ID: {node.taxonId}).
-                  </Text>
-                </Text>
-                <Button
-                  isLoading={isLoading}
-                  variant='link'
-                  size='sm'
-                  onClick={() => {
-                    setPageFrom(pageFrom + 1);
-                  }}
-                  fontSize='inherit'
-                  mx={2}
+                Adjust your configuration settings to view them.
+              </Button>
+            </Flex>
+          </Flex>
+        ) : (
+          <UnorderedList ml={0}>
+            {sortChildrenList(childrenList).map(child => (
+              <TreeNode
+                key={child.id}
+                addToSearch={addToSearch}
+                isIncludedInSearch={isIncludedInSearch}
+                node={child}
+                params={params}
+                lineage={lineage}
+                depth={depth + 1}
+                updateLineage={updateLineage}
+              />
+            ))}
+
+            {(childrenMeta?.hasMore || (isLoading && pageFrom > 0)) && (
+              <ListItem
+                borderTop='0.25px solid'
+                borderColor='gray.200'
+                px={4}
+                py={2}
+                pl={`${(depth + 2) * MARGIN}px`}
+                bg='tertiary.50'
+              >
+                <Flex
+                  ml={4}
+                  pl={10}
+                  pr={4}
+                  flexDirection='row'
+                  alignItems='baseline'
+                  flex={1}
+                  fontSize='xs'
+                  lineHeight='shorter'
                 >
-                  Show more
-                </Button>
-              </Flex>
-            </ListItem>
-          )}
-        </UnorderedList>
+                  <Text>
+                    Showing{' '}
+                    {childrenMeta ? pageSize * (childrenMeta.numPage + 1) : '-'}{' '}
+                    of{' '}
+                    {childrenMeta
+                      ? childrenMeta.totalElements.toLocaleString()
+                      : ' - '}{' '}
+                    children for{' '}
+                    <Text as='span' fontWeight='semibold'>
+                      {node.label} (Taxon ID: {node.taxonId}).
+                    </Text>
+                  </Text>
+                  <Button
+                    isLoading={isLoading}
+                    variant='link'
+                    size='sm'
+                    onClick={() => {
+                      setPageFrom(pageFrom + 1);
+                    }}
+                    fontSize='inherit'
+                    mx={2}
+                  >
+                    Show more
+                  </Button>
+                </Flex>
+              </ListItem>
+            )}
+          </UnorderedList>
+        )
+      ) : (
+        <></>
       )}
     </ListItem>
   );
