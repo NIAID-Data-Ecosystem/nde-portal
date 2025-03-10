@@ -347,7 +347,6 @@ export const fetchChildrenFromBioThingsAPI = async (
             );
           }),
         );
-
     const allChildrenIds = [
       ...childrenWithCounts.map(({ taxonId }) => {
         return taxonId;

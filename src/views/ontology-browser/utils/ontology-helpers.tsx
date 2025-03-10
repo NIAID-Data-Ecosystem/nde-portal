@@ -31,10 +31,10 @@ export const sortChildrenList = (
       return b.counts.termCount - a.counts.termCount;
     }
 
-    // Then, sort by `term+children` in descending order
-    if (a.counts.termAndChildrenCount !== b.counts.termAndChildrenCount) {
-      return b.counts.termAndChildrenCount - a.counts.termAndChildrenCount;
-    }
+    // // Then, sort by `term+children` in descending order
+    // if (a.counts.termAndChildrenCount !== b.counts.termAndChildrenCount) {
+    //   return b.counts.termAndChildrenCount - a.counts.termAndChildrenCount;
+    // }
 
     return 0;
   });

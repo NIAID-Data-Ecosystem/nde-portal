@@ -51,19 +51,9 @@ export const OntologyViewPopover: React.FC<OntologyPopoverProps> = ({
   setViewConfig,
   ...rest
 }) => {
-  const onToggleMenu = () => {
-    setViewConfig({
-      ...viewConfig,
-      isMenuOpen: !viewConfig.isMenuOpen,
-    });
-  };
-
   return (
     <Flex flex={{ base: 1, sm: 'unset' }} height={{ base: 'unset' }} {...rest}>
-      <Popover
-        isOpen={viewConfig.isMenuOpen}
-        onClose={() => setViewConfig({ ...viewConfig, isMenuOpen: false })}
-      >
+      <Popover>
         <PopoverTrigger>
           <Button
             colorScheme='gray'
@@ -75,7 +65,6 @@ export const OntologyViewPopover: React.FC<OntologyPopoverProps> = ({
             rightIcon={<FaCaretDown />}
             variant='outline'
             justifyContent='space-between'
-            onClick={onToggleMenu}
             {...buttonProps}
           >
             {buttonProps?.children || label}

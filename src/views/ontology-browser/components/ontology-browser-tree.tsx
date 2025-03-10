@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   Box,
   Button,
@@ -153,6 +153,7 @@ const TreeNode = ({
   } = useQuery({
     queryKey: [
       'fetch-descendants',
+      node,
       node.taxonId,
       node.id,
       node.ontologyName,
@@ -192,6 +193,7 @@ const TreeNode = ({
       }));
     },
     refetchOnWindowFocus: false,
+    refetchOnMount: true,
     enabled: pageFrom > 0,
   });
 
@@ -241,8 +243,36 @@ const TreeNode = ({
   );
   const [viewConfig, setViewConfig] = useLocalStorage(
     'ontology-browser-view',
-    () => config || {},
+    () => config || { includeEmptyCounts: false },
   );
+
+  const numChildrenItemsDisplayed = useMemo(
+    () =>
+      childrenList.filter(item => {
+        if (config?.includeEmptyCounts) {
+          return true;
+        }
+        return item.counts.termCount > 0;
+      }).length,
+    [childrenList, config?.includeEmptyCounts],
+  );
+
+  const showHiddenElementsWarning = useMemo(
+    () =>
+      Boolean(
+        isToggled &&
+          !config?.includeEmptyCounts &&
+          childrenList.some(item => !item.counts.termCount),
+      ),
+    [childrenList, config?.includeEmptyCounts, isToggled],
+  );
+
+  const showPagination = useMemo(
+    () => childrenMeta?.hasMore || (isLoading && pageFrom > 0),
+    [childrenMeta, isLoading, pageFrom],
+  );
+  console.log('re-rendering');
+
   // Hide nodes with no children that have 0 datasets if configured to do so
   if (
     !config?.includeEmptyCounts &&
@@ -252,7 +282,6 @@ const TreeNode = ({
   ) {
     return <></>;
   }
-
   return (
     <ListItem>
       <Flex
@@ -359,101 +388,120 @@ const TreeNode = ({
 
       {/* If there are only children with 0 counts and the conmfiguration hides them, show a note */}
       {isToggled && childrenList.length > 0 ? (
-        isToggled &&
-        !config?.includeEmptyCounts &&
-        node.counts.termCount === node.counts.termAndChildrenCount ? (
-          <Flex
-            bg='tertiary.50'
-            fontSize='xs'
-            px={4}
-            py={2}
-            pl={`${(depth + 2) * MARGIN}px`}
-          >
-            <Flex ml={10} flexDirection='column' alignItems='flex-start'>
-              <Text pr={4}>
-                <Text as='span' fontWeight='semibold'>
-                  {node.label} (Taxon ID: {node.taxonId})
-                </Text>{' '}
-                has{' '}
-                {childrenList.length > 1
-                  ? `${childrenList.length} children, but all have 0 associated datasets.`
-                  : `${childrenList.length} child, which has 0 associated datasets.`}{' '}
-              </Text>
-              <Button
-                variant='link'
-                size='sm'
-                onClick={() =>
-                  setViewConfig({ ...viewConfig, isMenuOpen: true })
-                }
-                fontSize='inherit'
-              >
-                Adjust your configuration settings to view them.
-              </Button>
-            </Flex>
-          </Flex>
-        ) : (
-          <UnorderedList ml={0}>
-            {sortChildrenList(childrenList).map(child => (
-              <TreeNode
-                key={child.id}
-                addToSearch={addToSearch}
-                isIncludedInSearch={isIncludedInSearch}
-                node={child}
-                params={params}
-                lineage={lineage}
-                depth={depth + 1}
-                updateLineage={updateLineage}
-              />
-            ))}
-
-            {(childrenMeta?.hasMore || (isLoading && pageFrom > 0)) && (
+        <UnorderedList ml={0}>
+          {sortChildrenList(childrenList).map(child => (
+            <TreeNode
+              key={child.id}
+              addToSearch={addToSearch}
+              isIncludedInSearch={isIncludedInSearch}
+              node={child}
+              params={params}
+              lineage={lineage}
+              depth={depth + 1}
+              updateLineage={updateLineage}
+            />
+          ))}
+          {/* warning about hidden items */}
+          {showHiddenElementsWarning &&
+            (showPagination ||
+              (numChildrenItemsDisplayed === 0 && childrenList.length > 0)) && (
               <ListItem
-                borderTop='0.25px solid'
-                borderColor='gray.200'
+                bg='status.warning_lt'
+                fontSize='xs'
                 px={4}
                 py={2}
                 pl={`${(depth + 2) * MARGIN}px`}
-                bg='tertiary.50'
               >
                 <Flex
                   ml={4}
                   pl={10}
                   pr={4}
-                  flexDirection='row'
-                  alignItems='baseline'
-                  flex={1}
-                  fontSize='xs'
+                  flexDirection='column'
+                  alignItems='flex-start'
                   lineHeight='shorter'
                 >
-                  <Text>
-                    Showing{' '}
-                    {childrenMeta ? pageSize * (childrenMeta.numPage + 1) : '-'}{' '}
-                    of{' '}
-                    {childrenMeta
-                      ? childrenMeta.totalElements.toLocaleString()
-                      : ' - '}{' '}
-                    children for{' '}
+                  <Text pr={4}>
                     <Text as='span' fontWeight='semibold'>
-                      {node.label} (Taxon ID: {node.taxonId}).
-                    </Text>
+                      {node.label} (Taxon ID: {node.taxonId})
+                    </Text>{' '}
+                    has hidden children with 0 associated datasets.{' '}
                   </Text>
+                  {/* Button to update config to show hidden dataset */}
                   <Button
-                    isLoading={isLoading}
                     variant='link'
+                    color='yellow.700'
                     size='sm'
                     onClick={() => {
-                      setPageFrom(pageFrom + 1);
+                      if (viewConfig?.includeEmptyCounts === false) {
+                        setViewConfig({
+                          ...viewConfig,
+                          includeEmptyCounts: true,
+                        });
+                      }
+                    }}
+                    fontSize='inherit'
+                  >
+                    Show hidden terms
+                  </Button>
+                </Flex>
+              </ListItem>
+            )}
+          {/* Handles pagination */}
+          {showPagination && (
+            <ListItem
+              borderTop='0.25px solid'
+              borderColor='gray.200'
+              px={4}
+              py={2}
+              pl={`${(depth + 2) * MARGIN}px`}
+              bg='tertiary.50'
+            >
+              <Flex
+                ml={4}
+                pl={10}
+                pr={4}
+                flexDirection='row'
+                alignItems='baseline'
+                flex={1}
+                fontSize='xs'
+                lineHeight='shorter'
+              >
+                <Text>
+                  Displaying {numChildrenItemsDisplayed || '-'} of{' '}
+                  {childrenMeta
+                    ? childrenMeta.totalElements.toLocaleString()
+                    : ' - '}{' '}
+                  children for{' '}
+                  <Text as='span' fontWeight='semibold'>
+                    {node.label} (Taxon ID: {node.taxonId}).
+                  </Text>
+                </Text>
+                {numChildrenItemsDisplayed < childrenList.length ? (
+                  <></>
+                ) : (
+                  <Button
+                    isDisabled={
+                      isLoading ||
+                      !childrenMeta ||
+                      childrenList.length === childrenMeta?.totalElements
+                    }
+                    isLoading={isLoading}
+                    size='sm'
+                    variant='link'
+                    onClick={() => {
+                      const page = Math.floor(childrenList.length / pageSize);
+                      setPageFrom(page);
                     }}
                     fontSize='inherit'
                     mx={2}
                   >
                     Show more
                   </Button>
-                </Flex>
-              </ListItem>
-            )}
-          </UnorderedList>
-        )
+                )}
+              </Flex>
+            </ListItem>
+          )}
+        </UnorderedList>
       ) : (
         <></>
       )}
