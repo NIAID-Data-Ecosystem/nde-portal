@@ -27,6 +27,12 @@ export interface BioThingsDetailedLineageAPIResponseItem {
   taxid: number;
 }
 
+export interface LocalStorageConfig {
+  isCondensed: boolean;
+  includeEmptyCounts: boolean;
+  isMenuOpen: boolean;
+}
+
 export interface OLSAPIResponseItem {
   iri: string;
   label: string;

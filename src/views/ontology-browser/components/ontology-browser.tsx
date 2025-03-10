@@ -41,6 +41,7 @@ export const OntologyBrowser = ({
     () => ({
       isCondensed: true,
       includeEmptyCounts: true,
+      isMenuOpen: false,
     }),
   );
 
@@ -95,6 +96,7 @@ export const OntologyBrowser = ({
       }));
     },
     refetchOnWindowFocus: false,
+    refetchOnMount: true,
     enabled: router.isReady && !!queryParams.id,
   });
 

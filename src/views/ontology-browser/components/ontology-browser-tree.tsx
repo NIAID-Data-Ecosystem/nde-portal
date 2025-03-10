@@ -16,8 +16,9 @@ import {
   fetchPortalCounts,
 } from '../utils/api-helpers';
 import { Link } from 'src/components/link';
-import { useReadLocalStorage } from 'usehooks-ts';
+import { useReadLocalStorage, useLocalStorage } from 'usehooks-ts';
 import {
+  LocalStorageConfig,
   OntologyLineageItemWithCounts,
   OntologyLineageRequestParams,
   OntologyPagination,
@@ -235,10 +236,13 @@ const TreeNode = ({
     }
   }, [queryId, isToggled, fetchedChildren, node.id, updateLineage]);
 
-  const config = useReadLocalStorage<{ includeEmptyCounts: boolean }>(
+  const config = useReadLocalStorage<LocalStorageConfig>(
     'ontology-browser-view',
   );
-
+  const [viewConfig, setViewConfig] = useLocalStorage(
+    'ontology-browser-view',
+    () => config || {},
+  );
   // Hide nodes with no children that have 0 datasets if configured to do so
   if (
     !config?.includeEmptyCounts &&
@@ -352,7 +356,41 @@ const TreeNode = ({
           />
         </Flex>
       </Flex>
-      {isToggled && childrenList.length > 0 && (
+
+      {/* If there are only children with 0 counts and the conmfiguration hides them, show a note */}
+      {isToggled &&
+      childrenList.length > 0 &&
+      isToggled &&
+      !config?.includeEmptyCounts &&
+      node.counts.termCount === node.counts.termAndChildrenCount ? (
+        <Flex
+          bg='tertiary.50'
+          fontSize='xs'
+          px={4}
+          py={2}
+          pl={`${(depth + 2) * MARGIN}px`}
+        >
+          <Flex ml={10} flexDirection='column' alignItems='flex-start'>
+            <Text pr={4}>
+              <Text as='span' fontWeight='semibold'>
+                {node.label} (Taxon ID: {node.taxonId})
+              </Text>{' '}
+              has{' '}
+              {childrenList.length > 1
+                ? `${childrenList.length} children, but all have 0 associated datasets.`
+                : `${childrenList.length} child, which has 0 associated datasets.`}{' '}
+            </Text>
+            <Button
+              variant='link'
+              size='sm'
+              onClick={() => setViewConfig({ ...viewConfig, isMenuOpen: true })}
+              fontSize='inherit'
+            >
+              Adjust your configuration settings to view them.
+            </Button>
+          </Flex>
+        </Flex>
+      ) : (
         <UnorderedList ml={0}>
           {sortChildrenList(childrenList).map(child => (
             <TreeNode
@@ -372,20 +410,21 @@ const TreeNode = ({
               borderTop='0.25px solid'
               borderColor='gray.200'
               px={4}
-              py={1}
+              py={2}
               pl={`${(depth + 2) * MARGIN}px`}
-              bg='#fff'
+              bg='tertiary.50'
             >
               <Flex
-                px={4}
                 ml={4}
                 pl={10}
-                flexDirection='column'
-                alignItems='flex-start'
+                pr={4}
+                flexDirection='row'
+                alignItems='baseline'
                 flex={1}
+                fontSize='xs'
                 lineHeight='shorter'
               >
-                <Text fontSize='12px'>
+                <Text>
                   Showing{' '}
                   {childrenMeta ? pageSize * (childrenMeta.numPage + 1) : '-'}{' '}
                   of{' '}
@@ -394,18 +433,18 @@ const TreeNode = ({
                     : ' - '}{' '}
                   children for{' '}
                   <Text as='span' fontWeight='semibold'>
-                    {node.label}.
+                    {node.label} (Taxon ID: {node.taxonId}).
                   </Text>
                 </Text>
                 <Button
                   isLoading={isLoading}
                   variant='link'
                   size='sm'
-                  fontSize='12px'
                   onClick={() => {
                     setPageFrom(pageFrom + 1);
                   }}
-                  mt={1}
+                  fontSize='inherit'
+                  mx={2}
                 >
                   Show more
                 </Button>

@@ -412,7 +412,7 @@ export const fetchChildrenFromBioThingsAPI = async (
           parentTaxonId: isRootNode ? null : item.parent_taxid.toString(),
           rank: item.rank,
           state: {
-            opened: idx != 0, // Open all nodes except the deepest one
+            opened: false,
             selected: idx == 0, // select the first node (most specific) by default
           },
           taxonId,
