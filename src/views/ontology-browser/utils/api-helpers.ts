@@ -32,14 +32,14 @@ export const ONTOLOGY_BROWSER_OPTIONS = [
       'species.name',
     ],
   },
-  {
-    name: 'EDAM',
-    value: 'edam',
-    relatedPortalSchemaProperties: [
-      'topicCategory.identifier',
-      'topicCategory.name',
-    ],
-  },
+  // {
+  //   name: 'EDAM',
+  //   value: 'edam',
+  //   relatedPortalSchemaProperties: [
+  //     'topicCategory.identifier',
+  //     'topicCategory.name',
+  //   ],
+  // },
 ] as OntologyOption[];
 
 const OLS_API_URL = 'https://www.ebi.ac.uk/ols4/api';
