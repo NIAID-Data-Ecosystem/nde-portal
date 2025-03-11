@@ -136,7 +136,7 @@ export const fetchBioThingsSearchAPI = async (
   }
   const { q, biothingsFields } = params;
   try {
-    const { data } = await axios.get(`${BIOTHINGS_API_URL}/query?q=`, {
+    const { data } = await axios.get(`${BIOTHINGS_API_URL}/query?`, {
       params: {
         q: `"${q}"`,
         fields: biothingsFields.join(','),
@@ -644,8 +644,7 @@ export const fetchPortalCounts = async (
 
       // Extract counts for datasets where this taxon ID is a parent
       const childTermsCount =
-        lineageQueryResponse?.facets?.lineage?.children
-          .totalUniqueChildRecords || 0;
+        lineageQueryResponse?.facets?.lineage?.filteredRecords || 0;
 
       // Determine if the node has child taxon IDs.
       // [NOTE]: This only checks if the node has children in the NDE API.
