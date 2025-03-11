@@ -1,14 +1,16 @@
-import { Badge, BadgeProps, Flex } from '@chakra-ui/react';
+import { BadgeProps, Tag, TagLabel, TagLeftIcon } from '@chakra-ui/react';
 import React from 'react';
+import { IconType } from 'react-icons';
 import Tooltip from 'src/components/tooltip';
 
 export interface BadgeWithTooltipProps extends BadgeProps {
   value?: string;
   tooltipLabel?: string;
-  leftIcon?: React.ReactNode;
+  leftIcon?: IconType;
 }
 export const BadgeWithTooltip = ({
   children,
+  colorScheme,
   tooltipLabel,
   leftIcon,
   value,
@@ -16,26 +18,17 @@ export const BadgeWithTooltip = ({
 }: BadgeWithTooltipProps) => {
   return (
     <Tooltip label={tooltipLabel}>
-      <Badge
-        size='xs'
-        display='flex'
-        alignItems='center'
-        px={2}
-        py={0.5}
+      <Tag
+        size='md'
+        colorScheme={colorScheme}
+        borderRadius='full'
+        variant='subtle'
         {...props}
       >
-        {leftIcon && (
-          <Flex
-            alignItems='center'
-            pr={0.5}
-            pb={0.5}
-            sx={{ svg: { boxSize: 3, pr: 0.5 } }}
-          >
-            {leftIcon}
-          </Flex>
-        )}
-        {value || children}
-      </Badge>
+        {leftIcon && <TagLeftIcon as={leftIcon} mr={0} />}
+
+        <TagLabel>{value || children}</TagLabel>
+      </Tag>
     </Tooltip>
   );
 };

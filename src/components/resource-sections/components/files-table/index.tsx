@@ -91,10 +91,21 @@ export const DistributionCells = ({
   if (!data?.[column.property as keyof Distribution]) {
     return <EmptyCell />;
   }
-  const { icon: formatIcon, color } =
-    column.property === 'encodingFormat' && data?.encodingFormat
-      ? getFileIcon(data?.encodingFormat)
-      : { icon: null, color: null };
+
+  const encodingFormats = (
+    Array.isArray(data?.encodingFormat)
+      ? data?.encodingFormat
+      : [data?.encodingFormat]
+  ).map(format => {
+    if (format == null) {
+      return { name: '' };
+    }
+
+    return {
+      name: format,
+      icon: getFileIcon(format),
+    };
+  });
   return (
     <>
       <Flex
@@ -121,10 +132,20 @@ export const DistributionCells = ({
           <Box>
             {column.property === 'encodingFormat' && (
               <Text size='sm' fontSize='xs' mb={1}>
-                {data[column.property]}
-                {formatIcon && (
-                  <Icon as={formatIcon} color={color || undefined} ml={2} />
-                )}
+                {encodingFormats.map(format => {
+                  return (
+                    <Text key={format.name} size='sm' fontSize='xs' mb={1}>
+                      {format.name}
+                      {format?.icon && format?.icon?.icon && (
+                        <Icon
+                          as={format.icon.icon}
+                          color={format.icon.color || undefined}
+                          ml={2}
+                        />
+                      )}
+                    </Text>
+                  );
+                })}
               </Text>
             )}
             {data?.['contentSize'] && (

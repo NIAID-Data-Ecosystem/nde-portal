@@ -164,13 +164,10 @@ export const Checkbox: React.FC<FilterCheckboxProps> = React.memo(
             as='span'
             className='tag-count'
             variant='subtle'
-            bg={`${colorScheme}.50`}
+            size='sm'
             colorScheme={colorScheme}
             borderRadius='full'
-            fontSize='xs'
             alignSelf='flex-start'
-            lineHeight={1.2}
-            size='sm'
           >
             {count?.toLocaleString('en-US')}
           </Tag>

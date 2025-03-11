@@ -131,7 +131,7 @@ export const FilterTags: React.FC<FilterTagsProps> = ({
         Clear All
       </Button>
       {tags.map(({ key, name, value, displayValue, filterKey }) => (
-        <Tag key={key} colorScheme='secondary' size='md' m={1}>
+        <Tag key={key} variant='solid' colorScheme='secondary' size='md' m={1}>
           <TagLabel>{`${name}: ${
             typeof displayValue === 'string'
               ? displayValue

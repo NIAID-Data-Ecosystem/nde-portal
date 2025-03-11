@@ -18,7 +18,7 @@ import HOMEPAGE_COPY from 'configs/homepage.json';
 import HOME_QUERIES from 'configs/queries/home-queries.json';
 import NextLink from 'next/link';
 import { SearchBarWithDropdown } from 'src/components/search-bar';
-import { FaRegEnvelope, FaGithub, FaMagnifyingGlass } from 'react-icons/fa6';
+import { FaMagnifyingGlass, FaRegEnvelope, FaGithub } from 'react-icons/fa6';
 import { useRepoData } from 'src/hooks/api/useRepoData';
 import {
   NewsCarousel,
@@ -29,7 +29,6 @@ import { TableWithSearch } from 'src/views/home/components/TableWithSearch/';
 import { useResourceCatalogs } from 'src/hooks/api/useResourceCatalogs';
 import { fetchAllFeaturedPages } from 'src/views/features/helpers';
 import { HeroBanner } from 'src/views/home/components/HeroBanner';
-import { TagWithUrl } from 'src/components/tag-with-url';
 import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
 
 const Home: NextPage<{
@@ -59,6 +58,7 @@ const Home: NextPage<{
       title='Home'
       metaDescription='Find and access allergic, infectious and immune-mediated disease data by searching across biomedical data repositories with the NIAID Data Discovery Portal'
       keywords='omics, data, infectious disease, epidemiology, clinical trial, immunology, bioinformatics, surveillance, search, repository'
+      overflowX='hidden'
     >
       {/**** Hero banner + search bar *****/}
       <HeroBanner
@@ -113,19 +113,20 @@ const Home: NextPage<{
             <Stack flexDirection='row' flexWrap={'wrap'}>
               {HOME_QUERIES.map(query => {
                 return (
-                  <TagWithUrl
+                  <Button
                     key={query.title}
-                    label={query.title}
+                    as={NextLink}
                     href={{
                       pathname: `/search`,
                       query: { q: query.searchTerms.join(' OR ') },
                     }}
-                    colorScheme='tertiary'
-                    variant='solid'
-                    bg='niaid.color'
-                    leftIcon={FaMagnifyingGlass}
-                    size={{ base: 'md', sm: 'sm' }}
-                  />
+                    leftIcon={<FaMagnifyingGlass />}
+                    size={{ base: 'sm', sm: 'xs' }}
+                    colorScheme='niaid'
+                    fontWeight='semibold'
+                  >
+                    {query.title}
+                  </Button>
                 );
               })}
             </Stack>
@@ -133,12 +134,9 @@ const Home: NextPage<{
           <Button
             as={NextLink}
             href={{ pathname: '/advanced-search' }}
-            size={{ base: 'sm', sm: 'xs' }}
-            height={{ base: 'unset', sm: '25.5px' }}
             leftIcon={<FaMagnifyingGlass />}
+            size={{ base: 'sm', sm: 'xs' }}
             mt={2}
-            fontWeight='medium'
-            lineHeight='shorter'
           >
             Advanced Search
           </Button>

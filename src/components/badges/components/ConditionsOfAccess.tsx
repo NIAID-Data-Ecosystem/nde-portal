@@ -1,5 +1,4 @@
 import { FormattedResource } from 'src/utils/api/types';
-import { Icon } from '@chakra-ui/react';
 import { FaLock, FaUnlock } from 'react-icons/fa6';
 import { BadgeWithTooltip, BadgeWithTooltipProps } from 'src/components/badges';
 import SchemaDefinitions from 'configs/schema-definitions.json';
@@ -49,19 +48,19 @@ export const ConditionsOfAccess = ({
     conditionsOfAccess: ConditionsOfAccessProps['conditionsOfAccess'],
   ) => {
     if (conditionsOfAccess?.includes('Open')) {
-      return <Icon as={FaUnlock}></Icon>;
+      return FaUnlock;
     } else if (
       conditionsOfAccess?.includes('Embargoed') ||
       conditionsOfAccess?.includes('Registered') ||
       conditionsOfAccess?.includes('Restricted') ||
       conditionsOfAccess?.includes('Controlled')
     ) {
-      return <Icon as={FaLock}></Icon>;
+      return FaLock;
     } else if (
       conditionsOfAccess?.includes('Varied') ||
       conditionsOfAccess?.includes('Unknown')
     ) {
-      return <Icon as={FaUnlock}></Icon>;
+      return FaUnlock;
     }
   };
   return (

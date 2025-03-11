@@ -132,7 +132,7 @@ const MetadataAccordion: React.FC<MetadataAccordionProps> = ({ data }) => {
                         return (
                           <Tag
                             key={`tag-${id}-${label}`}
-                            size='sm'
+                            size='md'
                             variant='subtle'
                             borderRadius='full'
                             colorScheme={colorScheme}
@@ -152,10 +152,8 @@ const MetadataAccordion: React.FC<MetadataAccordionProps> = ({ data }) => {
                               }
                             >
                               <Flex alignItems='center'>
-                                <TagLabel lineHeight='none'>
-                                  <Text fontSize='xs' m={0.5} color='inherit'>
-                                    {label}
-                                  </Text>
+                                <TagLabel>
+                                  <Text color='inherit'>{label}</Text>
                                 </TagLabel>
                               </Flex>
                             </Tooltip>
