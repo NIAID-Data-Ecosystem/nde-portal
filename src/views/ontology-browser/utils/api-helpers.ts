@@ -138,9 +138,9 @@ export const fetchBioThingsSearchAPI = async (
   try {
     const { data } = await axios.get(`${BIOTHINGS_API_URL}/query?q=`, {
       params: {
-        q: q + '*',
+        q: `"${q}"`,
         fields: biothingsFields.join(','),
-        size: 5,
+        size: 8,
       },
       signal,
     });
@@ -180,11 +180,11 @@ export const searchOntologyAPI = async (
     );
     searchResults.push(...biothingsResults);
   }
-  const ontology = params.ontology.filter(ontology => ontology !== 'ncbitaxon');
-  if (ontology.length > 0) {
-    const olsResults = await fetchOLSSearchAPI({ ...params, ontology }, signal);
-    searchResults.push(...olsResults);
-  }
+  // const ontology = params.ontology.filter(ontology => ontology !== 'ncbitaxon');
+  // if (ontology.length > 0) {
+  //   const olsResults = await fetchOLSSearchAPI({ ...params, ontology }, signal);
+  //   searchResults.push(...olsResults);
+  // }
 
   return searchResults;
 };

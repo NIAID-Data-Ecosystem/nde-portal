@@ -245,10 +245,30 @@ export const OntologyBrowserSearch = ({
         />
       </HStack>
       {hasNoMatch && (
-        <Text color='red.500' fontStyle='italic' fontSize='sm'>
-          Search term : {debouncedTerm ? `"${debouncedTerm}"` : ''} not found in
-          selected ontologies
-        </Text>
+        <Flex bg='red.100' px={4} flex={1}>
+          <Text color='red.500' fontSize='sm'>
+            <Text
+              as='span'
+              fontWeight='semibold'
+              mr={1}
+              color='inherit'
+              fontSize='inherit'
+            >
+              Error:
+            </Text>
+            Search term{' '}
+            <Text
+              as='span'
+              fontWeight='semibold'
+              mr={1}
+              color='inherit'
+              fontSize='inherit'
+            >
+              {debouncedTerm ? `${debouncedTerm}` : ''}
+            </Text>
+            not found in selected ontologies.
+          </Text>
+        </Flex>
       )}
     </VStack>
   );
