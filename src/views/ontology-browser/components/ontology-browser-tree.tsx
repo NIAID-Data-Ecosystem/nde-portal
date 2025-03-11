@@ -350,13 +350,13 @@ const TreeNode = ({
           >
             {node.counts.termCount?.toLocaleString() || 0}
           </OntologyBrowserCountTag>
-
+          {'/ '}
           <OntologyBrowserCountTag
             colorScheme={'white'}
             isLoading={isLoading}
             label={getTooltipLabelByCountType('termAndChildrenCount')}
           >
-            {'/ ' + node.counts.termAndChildrenCount?.toLocaleString() || 0}
+            {node.counts.termAndChildrenCount?.toLocaleString() || 0}
           </OntologyBrowserCountTag>
 
           <IconButton
