@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   Box,
   Button,
   Flex,
-  HStack,
   IconButton,
   ListItem,
   Text,
@@ -17,8 +16,9 @@ import {
   fetchPortalCounts,
 } from '../utils/api-helpers';
 import { Link } from 'src/components/link';
-import { useReadLocalStorage } from 'usehooks-ts';
+import { useReadLocalStorage, useLocalStorage } from 'usehooks-ts';
 import {
+  LocalStorageConfig,
   OntologyLineageItemWithCounts,
   OntologyLineageRequestParams,
   OntologyPagination,
@@ -31,7 +31,7 @@ import {
 } from './ontology-browser-count-tag';
 
 const MARGIN = 16; // Base margin for indenting tree levels
-const SIZE = 100; // Number of items to fetch per page
+const SIZE = 20; // Number of items to fetch per page
 
 /**
  * Tree Component
@@ -52,7 +52,7 @@ interface TreeProps {
   lineage: OntologyLineageItemWithCounts[];
   params: {
     q: string;
-    id: number;
+    id: string;
     ontology: OntologyLineageRequestParams['ontology'];
   };
   showFromIndex: number;
@@ -143,7 +143,8 @@ const TreeNode = ({
   const [childrenMeta, setChildrenMeta] = useState<OntologyPagination | null>(
     null,
   );
-  const [page, setPage] = useState(0);
+  const [pageFrom, setPageFrom] = useState(0);
+  const [pageSize, setPageSize] = useState(SIZE);
   const {
     error,
     isLoading,
@@ -152,19 +153,24 @@ const TreeNode = ({
   } = useQuery({
     queryKey: [
       'fetch-descendants',
+      node,
       node.taxonId,
       node.id,
       node.ontologyName,
       params.q,
-      page,
+      pageFrom,
+      pageSize,
     ],
     queryFn: () => {
-      // Fetch children from the BioThings API for the NCBI Taxonomy
+      //  Fetch children from the BioThings API for the NCBI Taxonomy
       if (node.ontologyName === 'ncbitaxon') {
         return fetchChildrenFromBioThingsAPI({
+          node,
+          q: params.q,
           id: node.taxonId,
           ontology: node.ontologyName,
-          size: SIZE,
+          size: pageSize,
+          from: pageFrom,
         }).then(async data => ({
           ...data,
           children: await fetchPortalCounts(data.children, {
@@ -173,9 +179,12 @@ const TreeNode = ({
         }));
       }
       return fetchChildrenFromOLSAPI({
+        node,
+        q: params.q,
         id: node.taxonId,
         ontology: node.ontologyName,
-        size: SIZE,
+        size: pageSize,
+        from: pageFrom,
       }).then(async data => ({
         ...data,
         children: await fetchPortalCounts(data.children, {
@@ -184,7 +193,8 @@ const TreeNode = ({
       }));
     },
     refetchOnWindowFocus: false,
-    enabled: page > 0,
+    refetchOnMount: true,
+    enabled: pageFrom > 0,
   });
 
   // Toggle the node's open/closed state and fetch children if opening
@@ -228,8 +238,38 @@ const TreeNode = ({
     }
   }, [queryId, isToggled, fetchedChildren, node.id, updateLineage]);
 
-  const config = useReadLocalStorage<{ includeEmptyCounts: boolean }>(
+  const config = useReadLocalStorage<LocalStorageConfig>(
     'ontology-browser-view',
+  );
+  const [viewConfig, setViewConfig] = useLocalStorage(
+    'ontology-browser-view',
+    () => config || { includeEmptyCounts: false },
+  );
+
+  const numChildrenItemsDisplayed = useMemo(
+    () =>
+      childrenList.filter(item => {
+        if (config?.includeEmptyCounts) {
+          return true;
+        }
+        return item.counts.termCount > 0;
+      }).length,
+    [childrenList, config?.includeEmptyCounts],
+  );
+
+  const showHiddenElementsWarning = useMemo(
+    () =>
+      Boolean(
+        isToggled &&
+          !config?.includeEmptyCounts &&
+          childrenList.some(item => !item.counts.termCount),
+      ),
+    [childrenList, config?.includeEmptyCounts, isToggled],
+  );
+
+  const showPagination = useMemo(
+    () => childrenMeta?.hasMore || (isLoading && pageFrom > 0),
+    [childrenMeta, isLoading, pageFrom],
   );
 
   // Hide nodes with no children that have 0 datasets if configured to do so
@@ -241,7 +281,6 @@ const TreeNode = ({
   ) {
     return <></>;
   }
-
   return (
     <ListItem>
       <Flex
@@ -287,7 +326,7 @@ const TreeNode = ({
             wordBreak='break-word'
           >
             <Text color='gray.800' fontSize='12px'>
-              {node.taxonId}
+              {node.ontologyName} | {node.taxonId}
             </Text>
 
             <Link href={node.iri} fontSize='xs' isExternal>
@@ -345,51 +384,10 @@ const TreeNode = ({
           />
         </Flex>
       </Flex>
-      {isToggled && childrenList.length > 0 && (
+
+      {/* If there are only children with 0 counts and the conmfiguration hides them, show a note */}
+      {isToggled && childrenList.length > 0 ? (
         <UnorderedList ml={0}>
-          {(childrenMeta?.hasMore || (isLoading && page > 0)) && (
-            <ListItem
-              borderTop='0.25px solid'
-              borderColor='gray.200'
-              px={4}
-              py={2}
-              pl={`${(depth + 1) * MARGIN}px`}
-              bg='blackAlpha.100'
-            >
-              <Flex
-                px={4}
-                ml={4}
-                pl={10}
-                flexDirection='row'
-                alignItems='baseline'
-                flex={1}
-              >
-                <Text color='niaid.800' fontSize='13px'>
-                  Showing{' '}
-                  {childrenMeta ? SIZE * (childrenMeta.numPage + 1) : '-'} of{' '}
-                  {childrenMeta
-                    ? childrenMeta.totalElements.toLocaleString()
-                    : ' - '}{' '}
-                  children for{' '}
-                  <Text as='span' fontWeight='semibold'>
-                    {node.label}.
-                  </Text>
-                </Text>
-                <Button
-                  isLoading={isLoading}
-                  variant='link'
-                  size='sm'
-                  fontSize='13px'
-                  onClick={() => {
-                    setPage(page + 1);
-                  }}
-                  ml={2}
-                >
-                  Show {SIZE} more
-                </Button>
-              </Flex>
-            </ListItem>
-          )}
           {sortChildrenList(childrenList).map(child => (
             <TreeNode
               key={child.id}
@@ -402,54 +400,109 @@ const TreeNode = ({
               updateLineage={updateLineage}
             />
           ))}
-
-          {(childrenMeta?.hasMore || (isLoading && page > 0)) && (
+          {/* warning about hidden items */}
+          {showHiddenElementsWarning &&
+            (showPagination ||
+              (numChildrenItemsDisplayed === 0 && childrenList.length > 0)) && (
+              <ListItem
+                bg='status.warning_lt'
+                fontSize='xs'
+                px={4}
+                py={2}
+                pl={`${(depth + 2) * MARGIN}px`}
+              >
+                <Flex
+                  ml={4}
+                  pl={10}
+                  pr={4}
+                  flexDirection='column'
+                  alignItems='flex-start'
+                  lineHeight='shorter'
+                >
+                  <Text pr={4}>
+                    <Text as='span' fontWeight='semibold'>
+                      {node.label} (Taxon ID: {node.taxonId})
+                    </Text>{' '}
+                    has hidden children with 0 associated datasets.{' '}
+                  </Text>
+                  {/* Button to update config to show hidden dataset */}
+                  <Button
+                    variant='link'
+                    color='yellow.700'
+                    size='sm'
+                    onClick={() => {
+                      if (viewConfig?.includeEmptyCounts === false) {
+                        setViewConfig({
+                          ...viewConfig,
+                          includeEmptyCounts: true,
+                        });
+                      }
+                    }}
+                    fontSize='inherit'
+                  >
+                    Show hidden terms
+                  </Button>
+                </Flex>
+              </ListItem>
+            )}
+          {/* Handles pagination */}
+          {showPagination && (
             <ListItem
               borderTop='0.25px solid'
               borderColor='gray.200'
               px={4}
               py={2}
-              pl={`${(depth + 1) * MARGIN}px`}
-              bg='blackAlpha.100'
+              pl={`${(depth + 2) * MARGIN}px`}
+              bg='tertiary.50'
             >
               <Flex
-                px={4}
                 ml={4}
                 pl={10}
+                pr={4}
                 flexDirection='row'
                 alignItems='baseline'
                 flex={1}
+                fontSize='xs'
+                lineHeight='shorter'
               >
-                <Text color='niaid.800' fontSize='13px'>
-                  Showing{' '}
-                  {childrenMeta
-                    ? (SIZE * (childrenMeta.numPage + 1)).toLocaleString()
-                    : '-'}{' '}
-                  of{' '}
+                <Text>
+                  Displaying {numChildrenItemsDisplayed || '-'} of{' '}
                   {childrenMeta
                     ? childrenMeta.totalElements.toLocaleString()
                     : ' - '}{' '}
                   children for{' '}
                   <Text as='span' fontWeight='semibold'>
-                    {node.label}.
+                    {node.label} (Taxon ID: {node.taxonId}).
                   </Text>
                 </Text>
-                <Button
-                  isLoading={isLoading}
-                  variant='link'
-                  size='sm'
-                  fontSize='13px'
-                  onClick={() => {
-                    setPage(page + 1);
-                  }}
-                  ml={2}
-                >
-                  Show {SIZE} more
-                </Button>
+                {numChildrenItemsDisplayed < childrenList.length ? (
+                  <></>
+                ) : (
+                  <Button
+                    isDisabled={
+                      isLoading ||
+                      !childrenMeta ||
+                      childrenList.length === childrenMeta?.totalElements
+                    }
+                    isLoading={isLoading}
+                    size='sm'
+                    variant='link'
+                    onClick={() => {
+                      const page = Math.floor(childrenList.length / pageSize);
+                      setPageFrom(page);
+                    }}
+                    fontSize='inherit'
+                    mx={2}
+                  >
+                    Show more
+                  </Button>
+                )}
               </Flex>
             </ListItem>
           )}
         </UnorderedList>
+      ) : (
+        <></>
       )}
     </ListItem>
   );

@@ -111,7 +111,6 @@ export const OntologyBrowserPopup = ({
     { querystring, filters: selectedFilters },
     ONTOLOGY_BROWSER_OPTIONS,
   );
-
   // Fetch suggestions based on found value.
   const {
     error,
@@ -119,19 +118,21 @@ export const OntologyBrowserPopup = ({
     data: suggestions,
   } = useQuery({
     queryKey: ['ontology-browser-search', term, ontology?.value],
-    queryFn: () =>
-      searchOntologyAPI({
+    queryFn: () => {
+      return searchOntologyAPI({
         q: term || '',
         ontology: (ontology?.value
           ? [ontology?.value]
           : []) as SearchParams['ontology'],
-        queryFields: ['label', 'short_form', 'obo_id', 'iri'],
-      }),
+        biothingsFields: ['_id', 'rank', 'scientific_name'],
+        olsFields: ['iri', 'label', 'ontology_name', 'short_form', 'type'],
+      });
+    },
     refetchOnWindowFocus: false,
     enabled: hasOntology && !!term && !!ontology?.value,
   });
 
-  if (!hasOntology) {
+  if (!hasOntology || error?.message) {
     return null;
   }
 
@@ -141,8 +142,8 @@ export const OntologyBrowserPopup = ({
         pathname: `/ontology-browser`,
         query: {
           q: querystring,
-          id: suggestions?.[0]?.short_form || '',
-          onto: ontology?.value,
+          id: suggestions?.[0]?._id || '',
+          onto: suggestions?.[0]?.definingOntology || '',
         },
       }}
     >
@@ -159,6 +160,7 @@ export const OntologyBrowserPopup = ({
           borderRadius: 'semi',
           bg: 'blue.50',
         }}
+        isLoading={isLoading}
       >
         use ontology browser?
       </Button>

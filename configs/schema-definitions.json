@@ -3030,6 +3030,14 @@
     },
     "isAdvancedSearchField": false
   },
+  "input.inDefinedTermSet": {
+    "name": "Input In Defined Term Set",
+    "dotfield": "input.inDefinedTermSet",
+    "property": "inDefinedTermSet",
+    "count": 0,
+    "type": "text",
+    "isAdvancedSearchField": false
+  },
   "input.name": {
     "name": "Input Name",
     "dotfield": "input.name",
@@ -4358,6 +4366,14 @@
     },
     "isAdvancedSearchField": false
   },
+  "output.inDefinedTermSet": {
+    "name": "Output In Defined Term Set",
+    "dotfield": "output.inDefinedTermSet",
+    "property": "inDefinedTermSet",
+    "count": 0,
+    "type": "text",
+    "isAdvancedSearchField": false
+  },
   "output.name": {
     "name": "Output Name",
     "dotfield": "output.name",
@@ -4519,6 +4535,14 @@
     "description": {
       "ComputationalTool": "The url of the work"
     },
+    "isAdvancedSearchField": false
+  },
+  "softwareAddOn.url": {
+    "name": "Software Add On URL",
+    "dotfield": "softwareAddOn.url",
+    "property": "url",
+    "count": 0,
+    "type": "text",
     "isAdvancedSearchField": false
   },
   "softwareHelp": {

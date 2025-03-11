@@ -4,6 +4,7 @@ import {
   BioThingsDetailedLineageAPIResponseItem,
   BioThingsLineageAPIResponseItem,
   OLSAPIResponseItem,
+  OntologyChildrenRequestParams,
   OntologyLineageItem,
   OntologyLineageItemWithCounts,
   OntologyLineageRequestParams,
@@ -31,14 +32,14 @@ export const ONTOLOGY_BROWSER_OPTIONS = [
       'species.name',
     ],
   },
-  {
-    name: 'EDAM',
-    value: 'edam',
-    relatedPortalSchemaProperties: [
-      'topicCategory.identifier',
-      'topicCategory.name',
-    ],
-  },
+  // {
+  //   name: 'EDAM',
+  //   value: 'edam',
+  //   relatedPortalSchemaProperties: [
+  //     'topicCategory.identifier',
+  //     'topicCategory.name',
+  //   ],
+  // },
 ] as OntologyOption[];
 
 const OLS_API_URL = 'https://www.ebi.ac.uk/ols4/api';
@@ -54,7 +55,8 @@ const BIOTHINGS_API_URL = 'https://t.biothings.io/v1';
 export interface SearchParams {
   q: string;
   ontology: ('edam' | 'ncbitaxon')[];
-  queryFields: ('label' | 'short_form' | 'obo_id' | 'iri')[];
+  biothingsFields: ('_id' | 'rank' | 'scientific_name')[];
+  olsFields: ('iri' | 'label' | 'ontology_name' | 'short_form' | 'type')[];
   exact?: boolean;
   obsoletes?: boolean;
   local?: boolean;
@@ -65,15 +67,103 @@ export interface SearchParams {
 }
 
 interface SearchResponse {
-  iri: string;
-  ontology_name: string;
-  ontology_prefix: string;
-  short_form: string;
-  description: [];
+  _id: string;
+  definingOntology: string;
   label: string;
-  obo_id: string;
-  type: string;
+  rank: string;
+  definingAPI: 'biothings' | 'ols';
 }
+
+export const fetchOLSSearchAPI = async (
+  params: SearchParams,
+  signal?: AbortSignal,
+): Promise<SearchResponse[]> => {
+  if (!params.q) {
+    return [];
+  }
+  const { q, olsFields } = params;
+  try {
+    const { data } = await axios.get(`${OLS_API_URL}/search?`, {
+      params: {
+        q: q + '*',
+        ontology: params.ontology.join(','),
+        queryFields: olsFields.join(','),
+        exact: params?.exact || false,
+        obsoletes: params?.obsoletes || false,
+        local: params?.local || false,
+        rows: params?.rows || 5,
+        start: params?.start || 0,
+        format: params?.format || 'json',
+        lang: params?.lang || 'en',
+      },
+      signal,
+    });
+    const results = await data.response.docs
+      .map(
+        (result: {
+          iri: string;
+          label: string;
+          ontology_name: string;
+          short_form: string;
+          type: string;
+        }) => {
+          return {
+            _id: result.iri.split('/').pop() || result.short_form,
+            definingAPI: 'ols',
+            definingOntology: result.ontology_name,
+            label: result.label,
+            rank: result.type,
+          };
+        },
+      )
+      .filter((result: SearchResponse) => result.rank === 'class');
+    return results;
+  } catch (err: any) {
+    console.error(
+      'Error in fetching search results from the OLS API:',
+      err.message,
+    );
+    throw err;
+  }
+};
+
+export const fetchBioThingsSearchAPI = async (
+  params: SearchParams,
+  signal?: AbortSignal,
+): Promise<SearchResponse[]> => {
+  if (!params.q) {
+    return [];
+  }
+  const { q, biothingsFields } = params;
+  try {
+    const { data } = await axios.get(`${BIOTHINGS_API_URL}/query?q=`, {
+      params: {
+        q: `"${q}"`,
+        fields: biothingsFields.join(','),
+        size: 8,
+      },
+      signal,
+    });
+    const results = await data.hits.map(
+      (result: { _id: string; scientific_name: string; rank: string }) => {
+        return {
+          _id: result._id,
+          definingAPI: 'biothings',
+          definingOntology: 'ncbitaxon',
+          label: result.scientific_name,
+          rank: result.rank,
+        };
+      },
+    );
+    return results;
+  } catch (error: any) {
+    console.error(
+      'Error in fetching search results from the BioThings API:',
+      error.message,
+    );
+    throw error;
+  }
+};
 
 export const searchOntologyAPI = async (
   params: SearchParams,
@@ -82,26 +172,21 @@ export const searchOntologyAPI = async (
   if (!params.q) {
     return [];
   }
-  const { q, ontology, queryFields, ...rest } = params;
+  const searchResults = [];
+  if (params.ontology.includes('ncbitaxon')) {
+    const biothingsResults = await fetchBioThingsSearchAPI(
+      { ...params, ontology: ['ncbitaxon'] },
+      signal,
+    );
+    searchResults.push(...biothingsResults);
+  }
+  // const ontology = params.ontology.filter(ontology => ontology !== 'ncbitaxon');
+  // if (ontology.length > 0) {
+  //   const olsResults = await fetchOLSSearchAPI({ ...params, ontology }, signal);
+  //   searchResults.push(...olsResults);
+  // }
 
-  const { data } = await axios.get(`${OLS_API_URL}/search?`, {
-    params: {
-      q,
-      ontology: ontology.join(','),
-      queryFields: queryFields.join(','),
-      exact: false,
-      obsoletes: false,
-      local: false,
-      rows: 5,
-      start: 0,
-      format: 'json',
-      lang: 'en',
-      ...rest,
-    },
-    signal,
-  });
-
-  return data.response.docs;
+  return searchResults;
 };
 
 /********************************************************
@@ -124,8 +209,7 @@ export const formatIRI = (
 ): string => {
   // Handle "edam" ontology, formatting the ID with a "topic_" prefix
   if (ontology.toLowerCase() === 'edam') {
-    const iri_id = `topic_${id}`;
-    return `http://edamontology.org/${iri_id}`;
+    return `http://edamontology.org/${id}`;
   }
   // Handle "ncbitaxon" ontology, formatting the ID with the "NCBITaxon_" prefix
   else if (ontology.toLowerCase() === 'ncbitaxon') {
@@ -162,7 +246,6 @@ export const fetchLineageFromBioThingsAPI = async (
     if (!Array.isArray(rawLineageData)) {
       throw new Error('lineage data is not available or invalid');
     }
-
     const detailedLineageParams = {
       ids: rawLineageData.join(','), // Stringify the lineage array
       fields: [
@@ -173,6 +256,7 @@ export const fetchLineageFromBioThingsAPI = async (
         'rank',
         'scientific_name',
         'taxid',
+        'children',
       ],
     };
 
@@ -193,16 +277,15 @@ export const fetchLineageFromBioThingsAPI = async (
       .map((item: BioThingsDetailedLineageAPIResponseItem, idx: number) => {
         // Must set the parent to empty string if it is the root node.
         const isRootNode = item.parent_taxid === item.taxid;
-        const taxonId = +item.taxid;
+        const taxonId = item.taxid.toString();
         return {
-          id: item.taxid.toString(),
+          id: taxonId,
           commonName: item?.genbank_common_name || item?.common_name || '',
-          hasChildren: true, // [TO DO]:BioThings API does not provide this information see below when Dylan makes API changes
-          // hasChildren: item.children.length>0,
+          hasChildren: item?.children.length > 0, // [TO DO]:BioThings API does not provide this information
           iri: formatIRI(taxonId, params.ontology),
           label: item.scientific_name.toLowerCase(),
           ontologyName: params.ontology,
-          parentTaxonId: isRootNode ? null : +item.parent_taxid,
+          parentTaxonId: isRootNode ? null : item.parent_taxid.toString(),
           rank: item.rank,
           state: {
             opened: idx != 0, // Open all nodes except the deepest one
@@ -221,73 +304,85 @@ export const fetchLineageFromBioThingsAPI = async (
 };
 
 /**
- * [fetchChildrenFromBioThingsAPI]: Fetch children information for a given taxon ID from the Biothings API
+ * [fetchChildrenFromBioThingsAPI]: Fetch the children information for a given ontology ID from the OLS API [docs](https://www.ebi.ac.uk/ols4/help)
  * and return structured ontology lineage items.
  *
- * NOTE: We use the BioThings API to fetch lineage information for the NCBI Taxonomy ontology.
- * It follows the NCBI Taxonomy more closely than the OLS API. (ex: TAXON ID 3366610 is not available in OLS)
+ * NOTE: The OLS API does not provide lineage information for all taxon IDs. In such cases, we use the BioThings API.
  *
  * @param params - The search parameters used to fetch the lineage.
  * @returns An array of lineage items.
  */
 
 export const fetchChildrenFromBioThingsAPI = async (
-  params: OntologyLineageRequestParams,
+  params: OntologyChildrenRequestParams,
   signal?: AbortSignal,
 ): Promise<{
   children: OntologyLineageItem[];
   pagination: OntologyPagination;
 }> => {
   if (!params?.id) {
-    throw new Error('No ID provided for the BioThings API request.');
+    throw new Error('No ID provided for the OLS API request.');
   }
 
   try {
-    const size = params.size || 100; // Default size to 100 if not provided
-    // Fetch lineage data from the BioThings API
-    const lineageAPIResponse: BioThingsLineageAPIResponseItem = await axios.get(
-      `${BIOTHINGS_API_URL}/taxon/${params.id}?include_children`,
-    );
+    // Fetch the children with counts from the portal data.
+    const childrenWithCounts: { taxonId: number; count: number }[] =
+      await fetchSearchResults({
+        q: params.q ? params.q : '__all__',
+        size: 0,
+        lineage: +params.node.id,
+      }).then(response => {
+        return response?.facets.lineage.children.childTaxonCounts;
+      });
 
-    const childrenItems = lineageAPIResponse.data.children || [];
-    // Calculate the items for the current page
-    // const start = params.from * size;
-    // const end = start + size;
-    // const currentItems = childrenItems.slice(start, end);
+    // Fetch children data from the BioThings API
+    const childrenFromBiothingsIds: BioThingsLineageAPIResponseItem =
+      await axios
+        .get(`${BIOTHINGS_API_URL}/taxon/${params.id}?include_children`)
+        .then(res =>
+          res?.data?.children?.filter((child: number) => {
+            // filter out ids that are in children with counts
+            return !childrenWithCounts.find(
+              ({ taxonId }) => +taxonId === +child,
+            );
+          }),
+        );
+    const allChildrenIds = [
+      ...childrenWithCounts.map(({ taxonId }) => {
+        return taxonId;
+      }),
+      ...(Array.isArray(childrenFromBiothingsIds)
+        ? childrenFromBiothingsIds
+        : []),
+    ];
 
-    const totalElements = childrenItems.length;
-    const totalPages = Math.ceil(totalElements / size);
-    const numPage = params.from || 0;
-    const pagination = {
-      hasMore: numPage < totalPages - 1,
-      numPage,
-      totalPages,
-      totalElements,
-    };
-    // if the children array is empty, return an empty array
-    if (!childrenItems.length) {
-      return { children: [], pagination: pagination };
+    if (!Array.isArray(allChildrenIds)) {
+      throw new Error('children data is not available or invalid');
     }
 
-    const paramsForChildrenData = {
-      ids: childrenItems.join(','), // Stringify the children ids array
-      fields: [
-        'common_name',
-        'genbank_common_name',
-        'children',
-        'parent_taxid',
-        'rank',
-        'scientific_name',
-        'taxid',
-      ],
-    };
+    // select children ids based on pagination parameters
+    const selectedChildrenIds = allChildrenIds.slice(
+      params.from * params.size,
+      (params.from + 1) * params.size,
+    );
 
-    // Fetch the detailed lineage information for each taxonId
+    // Fetch the detailed children information for each taxonId
     const {
-      data: childrenData,
+      data: detailedLineageData,
     }: { data: BioThingsDetailedLineageAPIResponseItem[] } = await axios.post(
       `${BIOTHINGS_API_URL}/taxon`,
-      paramsForChildrenData,
+      {
+        ids: selectedChildrenIds.join(','), // Stringify the lineage array
+        fields: [
+          'common_name',
+          'genbank_common_name',
+          'parent_taxid',
+          'rank',
+          'scientific_name',
+          'taxid',
+          'children',
+        ],
+      },
       {
         headers: {
           accept: 'application/json',
@@ -295,36 +390,46 @@ export const fetchChildrenFromBioThingsAPI = async (
         },
       },
     );
-    const detailedChildrenData = childrenData.map(
-      (item: BioThingsDetailedLineageAPIResponseItem, idx: number) => {
+
+    const processedChildrenData = detailedLineageData
+      .map((item: BioThingsDetailedLineageAPIResponseItem, idx: number) => {
         // Must set the parent to empty string if it is the root node.
         const isRootNode = item.parent_taxid === item.taxid;
-        const taxonId = +item.taxid;
+        const taxonId = item.taxid.toString();
+        // get counts from portal if not 0
+        const portalDetails = childrenWithCounts.find(
+          ({ taxonId }) => taxonId === item.taxid,
+        );
+
         return {
-          id: item.taxid.toString(),
+          id: taxonId,
           commonName: item?.genbank_common_name || item?.common_name || '',
-          hasChildren: true, // [TO DO]:BioThings API does not provide this information see below when Dylan makes API changes
-          // hasChildren: item.children.length>0,
+          hasChildren: item?.children.length > 0, // [TO DO]:BioThings API does not provide this information
           iri: formatIRI(taxonId, params.ontology),
           label: item.scientific_name.toLowerCase(),
           ontologyName: params.ontology,
-          parentTaxonId: isRootNode ? null : +item.parent_taxid,
+          parentTaxonId: isRootNode ? null : item.parent_taxid.toString(),
           rank: item.rank,
           state: {
-            opened: idx != 0, // Open all nodes except the deepest one
+            opened: false,
             selected: idx == 0, // select the first node (most specific) by default
           },
           taxonId,
         };
+      })
+      .reverse(); // reverse the array to start from the root node.
+    // Return or process the POST response
+    return {
+      children: processedChildrenData,
+      pagination: {
+        hasMore: allChildrenIds.length > (params.from + 1) * params.size,
+        numPage: params.from,
+        totalPages: Math.ceil(allChildrenIds.length / params.size),
+        totalElements: allChildrenIds.length,
       },
-    );
-
-    return { children: detailedChildrenData, pagination: pagination };
+    };
   } catch (error: any) {
-    console.error(
-      'Error in fetching children in BioThings data:',
-      error.message,
-    );
+    console.error('Error in fetching from the BioThings API:', error.message);
     throw error;
   }
 };
@@ -388,11 +493,11 @@ export const fetchLineageFromOLSAPI = async (
     // Structure the lineage data.
     const processedLineage = lineageItems
       .map((item: OLSAPIResponseItem, idx: number) => {
-        const numericTaxonId = item.short_form.replace(/[^0-9]/g, '');
+        const taxonId = item.short_form.replace(/[^0-9]/g, '');
         const parentTaxonId =
           idx === lineageItems.length - 1
             ? null // Last term(root) has no parent
-            : +lineageItems[idx + 1].short_form.replace(/[^0-9]/g, '');
+            : lineageItems[idx + 1].short_form.replace(/[^0-9]/g, '');
 
         return {
           id: item.short_form,
@@ -406,7 +511,7 @@ export const fetchLineageFromOLSAPI = async (
             opened: idx != 0, // Open all nodes except the deepest one
             selected: idx == 0, // Mark the first item as selected
           },
-          taxonId: +numericTaxonId,
+          taxonId,
         };
       })
       .reverse();
@@ -429,7 +534,7 @@ export const fetchLineageFromOLSAPI = async (
  */
 
 export const fetchChildrenFromOLSAPI = async (
-  params: OntologyLineageRequestParams,
+  params: OntologyChildrenRequestParams,
   signal?: AbortSignal,
 ): Promise<{
   children: OntologyLineageItem[];
@@ -482,7 +587,7 @@ export const fetchChildrenFromOLSAPI = async (
 
     // Structure the children data.
     const processedChildren = items.map((item: OLSAPIResponseItem) => {
-      const numericTaxonId = item.short_form.replace(/[^0-9]/g, '');
+      const taxonId = item.short_form.replace(/[^0-9]/g, '');
       return {
         id: item.short_form,
         commonName: item?.synonyms?.[0] || '',
@@ -495,7 +600,7 @@ export const fetchChildrenFromOLSAPI = async (
           opened: false,
           selected: false, // Mark the first item as selected
         },
-        taxonId: +numericTaxonId,
+        taxonId,
       };
     });
     return { children: processedChildren, pagination: childrenData.pagination };
@@ -525,28 +630,28 @@ export const fetchPortalCounts = async (
   const lineageWithCounts = await Promise.all(
     lineage.map(async node => {
       // Extract the numeric taxon ID from the node
-      const numericTaxonId = node.taxonId.toString().replace(/[^0-9]/g, '');
+      const numericTaxonId = +node.taxonId.replace(/[^0-9]/g, '');
 
       const lineageQueryResponse = await fetchSearchResults({
         q: params.q ? params.q : '__all__',
         size: 0,
-        lineage: +numericTaxonId,
+        lineage: numericTaxonId,
       });
 
       // Extract counts for datasets directly related to this taxon ID
       const directTermCount =
-        lineageQueryResponse?.facets?.lineage_doc_count?.doc_count || 0;
+        lineageQueryResponse?.facets?.lineage?.totalRecords || 0;
 
       // Extract counts for datasets where this taxon ID is a parent
       const childTermsCount =
-        lineageQueryResponse?.facets?.lineage?.children_of_lineage?.to_parent
-          ?.doc_count || 0;
+        lineageQueryResponse?.facets?.lineage?.children
+          .totalUniqueChildRecords || 0;
 
       // Determine if the node has child taxon IDs.
       // [NOTE]: This only checks if the node has children in the NDE API.
       const hasChildTaxons =
-        lineageQueryResponse?.facets?.lineage?.children_of_lineage?.taxon_ids
-          ?.terms?.length > 0;
+        lineageQueryResponse?.facets?.lineage?.children?.childTaxonCounts
+          ?.length > 0;
 
       // Return the updated node with counts and child status
       return {

@@ -2,7 +2,6 @@ import {
   Box,
   Button,
   Flex,
-  HStack,
   Icon,
   IconButton,
   Text,
@@ -22,6 +21,8 @@ import {
   getTooltipLabelByCountType,
   OntologyBrowserCountTag,
 } from './ontology-browser-count-tag';
+import NextLink from 'next/link';
+import React from 'react';
 
 const WIDTH = 400;
 
@@ -38,7 +39,10 @@ export const OntologySearchList = ({
   if (!searchList.length) {
     return <></>;
   }
-
+  const queryString = router?.query?.q || '';
+  const search_ids = searchList
+    .map(item => item.taxonId)
+    .join(' AND _meta.lineage.taxon:');
   return (
     <>
       <Flex
@@ -118,10 +122,10 @@ export const OntologySearchList = ({
               borderTop='1px solid'
               borderColor='gray.200'
               pb={4}
-              px={6}
+              pr={0}
             >
               {/*<--- Search List --->*/}
-              <Flex justifyContent='flex-end' w='100%' px={1} py={2}>
+              <Flex justifyContent='flex-end' w='100%' px={4} py={2}>
                 <Button
                   size='sm'
                   onClick={() => setSearchList([])}
@@ -132,34 +136,29 @@ export const OntologySearchList = ({
               </Flex>
 
               {/* Search list */}
-              <Box
-                flex={1}
-                w='100%'
-                flexDirection='column'
-                bg='white'
-                border='1px solid'
-                borderRadius='semi'
-                borderColor='niaid.placeholder'
-              >
+              <Box flex={1} w='100%' flexDirection='column' bg='white'>
                 {isOpen &&
                   searchList.map(
                     ({ taxonId, counts, ontologyName, label }, index) => (
                       <Flex
                         key={`${ontologyName}-${taxonId}`}
                         px={2}
+                        pl={6}
                         py={1}
-                        bg={index % 2 ? 'primary.50' : 'transparent'}
+                        bg={index % 2 ? 'tertiary.50' : 'transparent'}
                         alignItems='center'
                       >
-                        <Box
+                        <Flex
                           flex={1}
                           fontWeight='normal'
                           lineHeight='short'
                           textAlign='left'
                           wordBreak='break-word'
+                          alignItems='center'
+                          justifyContent='space-between'
                         >
                           <Text color='gray.800' fontSize='12px'>
-                            {taxonId}
+                            {ontologyName} | {taxonId}
                           </Text>
                           <Text
                             color='text.body'
@@ -169,9 +168,9 @@ export const OntologySearchList = ({
                           >
                             {label}
                           </Text>
-                        </Box>
+                        </Flex>
                         <Flex alignItems='center'>
-                          <OntologyBrowserCountTag
+                          {/* <OntologyBrowserCountTag
                             colorScheme={
                               counts.termCount === 0 ? 'gray' : 'primary'
                             }
@@ -189,11 +188,11 @@ export const OntologySearchList = ({
                             {'/ ' +
                               counts.termAndChildrenCount?.toLocaleString() ||
                               0}
-                          </OntologyBrowserCountTag>
+                          </OntologyBrowserCountTag> */}
 
                           <IconButton
-                            ml={1}
-                            aria-label='remove item from search'
+                            ml={4}
+                            aria-label={`remove ${label} from search`}
                             icon={<Icon as={FaX} boxSize={2.5} />}
                             variant='ghost'
                             colorScheme='gray'
@@ -212,26 +211,36 @@ export const OntologySearchList = ({
                     ),
                   )}
               </Box>
-              <Flex justifyContent='flex-end'>
-                <Button
-                  mt={2}
-                  leftIcon={<FaMagnifyingGlass />}
-                  size='sm'
-                  onClick={() => {
-                    const queryString = router?.query?.q || '';
-                    const ids = searchList
-                      .map(item => item.taxonId)
-                      .join(' AND _meta.lineage.taxon:');
 
-                    router.push({
-                      pathname: `/search`,
-                      query: {
-                        q: `${
-                          queryString ? queryString + ' AND ' : ''
-                        }_meta.lineage.taxon:${ids}`,
-                      },
-                    });
+              <Text mt={4} px={6} lineHeight='short' fontSize='sm'>
+                Search for resources associated with{' '}
+                {searchList.map((item, idx) => {
+                  return (
+                    <React.Fragment key={item.taxonId}>
+                      <Text as='span' fontWeight='semibold'>
+                        {item.label}
+                      </Text>
+                      <Text as='span' fontStyle='italic'>
+                        {idx < searchList.length - 1 ? ' and ' : '.'}
+                      </Text>
+                    </React.Fragment>
+                  );
+                })}
+              </Text>
+              <Flex justifyContent='flex-end' px={4}>
+                <Button
+                  as={NextLink}
+                  href={{
+                    pathname: `/search`,
+                    query: {
+                      q: `${
+                        queryString ? queryString + ' AND ' : ''
+                      }_meta.lineage.taxon:${search_ids}`,
+                    },
                   }}
+                  leftIcon={<FaMagnifyingGlass />}
+                  mt={2}
+                  size='sm'
                 >
                   Search resources
                 </Button>

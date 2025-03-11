@@ -3,7 +3,7 @@ export interface BioThingsLineageAPIResponseItem {
     _id: string;
     _version: number;
     authority: string[];
-    children: number[];
+    children?: number[];
     genbank_common_name: string;
     has_gene: true;
     lineage: number[];
@@ -18,12 +18,19 @@ export interface BioThingsLineageAPIResponseItem {
 export interface BioThingsDetailedLineageAPIResponseItem {
   _id: string;
   _version: number;
+  children: number[];
   common_name?: string;
   genbank_common_name?: string;
   parent_taxid: number;
   rank: string;
   scientific_name: string;
   taxid: number;
+}
+
+export interface LocalStorageConfig {
+  isCondensed: boolean;
+  includeEmptyCounts: boolean;
+  isMenuOpen: boolean;
 }
 
 export interface OLSAPIResponseItem {
@@ -36,12 +43,21 @@ export interface OLSAPIResponseItem {
   has_children: boolean;
 }
 
+export interface OntologyChildrenRequestParams {
+  node: OntologyLineageItem;
+  q: string;
+  id: string;
+  ontology: string;
+  from: number;
+  lang?: string;
+  size: number;
+}
+
 export interface OntologyLineageRequestParams {
-  id: number;
+  id: string;
   ontology: string;
   lang?: string;
-  from?: number;
-  size?: number;
+  size?: string;
 }
 
 export interface OntologyLineageItem {
@@ -51,12 +67,12 @@ export interface OntologyLineageItem {
   iri: string;
   label: string;
   ontologyName: string;
-  parentTaxonId: number | null;
+  parentTaxonId: string | null;
   state: {
     opened: boolean;
     selected: boolean;
   };
-  taxonId: number;
+  taxonId: string;
 }
 
 export interface OntologyLineageItemWithCounts extends OntologyLineageItem {

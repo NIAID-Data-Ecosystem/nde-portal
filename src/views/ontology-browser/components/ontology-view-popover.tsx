@@ -19,15 +19,14 @@ import {
 } from '@chakra-ui/react';
 import { FaCaretDown } from 'react-icons/fa6';
 import { ScrollContainer } from 'src/components/scroll-container';
+import { LocalStorageConfig } from '../types';
 
 interface OntologyPopoverProps extends FlexProps {
   label: string;
   buttonProps: ButtonProps;
   description?: string;
-  viewConfig: { isCondensed: boolean; includeEmptyCounts: boolean };
-  setViewConfig: React.Dispatch<
-    React.SetStateAction<{ isCondensed: boolean; includeEmptyCounts: boolean }>
-  >;
+  viewConfig: LocalStorageConfig;
+  setViewConfig: React.Dispatch<React.SetStateAction<LocalStorageConfig>>;
 }
 
 /**

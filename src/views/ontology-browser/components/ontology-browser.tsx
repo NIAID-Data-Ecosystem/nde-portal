@@ -36,10 +36,14 @@ export const OntologyBrowser = ({
   // Store the view configuration in local storage.
   // [isCondensed]: Show only the selected node and its immediate parent/children.
   // [includeEmptyCounts]: Include items without datasets in the view.
-  const [viewConfig, setViewConfig] = useLocalStorage('ontology-browser-view', {
-    isCondensed: true,
-    includeEmptyCounts: true,
-  });
+  const [viewConfig, setViewConfig] = useLocalStorage(
+    'ontology-browser-view',
+    () => ({
+      isCondensed: true,
+      includeEmptyCounts: true,
+      isMenuOpen: false,
+    }),
+  );
 
   // State to manage the ontology tree lineage
   const [lineage, setLineage] = useState<
@@ -51,22 +55,17 @@ export const OntologyBrowser = ({
 
   // Extract the query ID from the router, defaulting to the root taxon ID
   const router = useRouter();
-  const id = router.query.id || 'NCBITaxon_1';
+  const id = router.query.id || '1';
+  const ontology = router.query.onto || 'ncbitaxon';
 
   // Memoize query parameters to avoid recalculating on each render
   const queryParams = useMemo(() => {
-    const parsedId = Array.isArray(id) ? id[0] : id;
-    const ontology =
-      parsedId
-        .match(/[a-zA-Z]+/g)
-        ?.join('')
-        .toLowerCase() || '';
     return {
       q: (router.query.q || '__all__') as string,
-      id: +parsedId.replace(/[^0-9]/g, ''),
+      id: Array.isArray(id) ? id[0] : id,
       ontology: ontology as OntologyLineageRequestParams['ontology'],
     };
-  }, [id, router.query.q]);
+  }, [id, router.query.q, ontology]);
 
   // Fetch lineage data using the ontology type and query parameters
   const {
@@ -97,6 +96,7 @@ export const OntologyBrowser = ({
       }));
     },
     refetchOnWindowFocus: false,
+    refetchOnMount: true,
     enabled: router.isReady && !!queryParams.id,
   });
 
@@ -132,9 +132,10 @@ export const OntologyBrowser = ({
         if (children.length === 0) return prevLineage;
 
         // Find the index of the node to insert children after
-        const index = prevLineage.findIndex(node => node.id === nodeId);
+        // [TO DO]:Remove? not using this to merge any more
+        // const index = prevLineage.findIndex(node => node.id === nodeId);
 
-        if (index === -1) return prevLineage;
+        // if (index === -1) return prevLineage;
 
         // Filter out children that are already in the prevLineage
         const filteredChildren = children.filter(
@@ -146,8 +147,8 @@ export const OntologyBrowser = ({
         if (filteredChildren.length === 0) return prevLineage;
 
         // Merge filtered children into prevLineage
-        const merged = [...prevLineage];
-        merged.splice(index + 1, 0, ...filteredChildren);
+        const merged = [...prevLineage, ...filteredChildren];
+        // merged.splice(index + 1, 0, ...filteredChildren);
         return merged;
       });
     },
