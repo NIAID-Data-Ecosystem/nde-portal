@@ -271,7 +271,6 @@ const TreeNode = ({
     () => childrenMeta?.hasMore || (isLoading && pageFrom > 0),
     [childrenMeta, isLoading, pageFrom],
   );
-  console.log('re-rendering');
 
   // Hide nodes with no children that have 0 datasets if configured to do so
   if (
