@@ -141,7 +141,10 @@ export const OntologyBrowserSearch = ({
                 setSearchTerm('');
               }}
               onSubmit={str => {
-                const suggestion = suggestions?.find(s => s.label === str);
+                const suggestion = suggestions?.find(
+                  suggestion =>
+                    str === suggestion.label || str === suggestion._id,
+                );
 
                 if (suggestion) {
                   handleSubmit({

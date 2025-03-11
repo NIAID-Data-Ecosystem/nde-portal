@@ -350,9 +350,11 @@ const TreeNode = ({
           >
             {node.counts.termCount?.toLocaleString() || 0}
           </OntologyBrowserCountTag>
-          {'/ '}
+          <Text mx={0.5} fontWeight='bold' color='niaid.placeholder'>
+            {' / '}
+          </Text>
           <OntologyBrowserCountTag
-            colorScheme={'white'}
+            colorScheme='white'
             isLoading={isLoading}
             label={getTooltipLabelByCountType('termAndChildrenCount')}
           >
