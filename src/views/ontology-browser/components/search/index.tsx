@@ -12,7 +12,7 @@ import {
 import { useRouter } from 'next/router';
 import { useQuery } from '@tanstack/react-query';
 import {
-  ONTOLOGY_BROWSER_OPTIONS,
+  OntologyOption,
   searchOntologyAPI,
   SearchParams,
 } from '../../utils/api-helpers';
@@ -28,6 +28,7 @@ import { DropdownListItem } from './dropdown-list-item';
 interface OntologyBrowserSearchProps {
   colorScheme?: string;
   size?: 'sm' | 'md' | 'lg';
+  ontologyMenuOptions?: OntologyOption[];
 }
 
 const ErrorMessage = ({
@@ -58,26 +59,27 @@ const ErrorMessage = ({
 export const OntologyBrowserSearch = ({
   colorScheme = 'primary',
   size = 'md',
+  ontologyMenuOptions = [],
 }: OntologyBrowserSearchProps) => {
   const router = useRouter();
 
   const [hasNoMatch, setHasNoMatch] = useState(false);
-  const [selectedOntologies, setSelectedOntologies] = useState(
-    ONTOLOGY_BROWSER_OPTIONS,
-  );
+  const [selectedOntologies, setSelectedOntologies] =
+    useState(ontologyMenuOptions);
 
   const [debouncedTerm, setSearchTerm] = useDebounceValue('', 300);
 
   useEffect(() => {
-    if (router?.query?.onto) {
+    if (router?.query?.ontology) {
       setSelectedOntologies(
-        ONTOLOGY_BROWSER_OPTIONS.filter(
+        ontologyMenuOptions.filter(
           option =>
-            router?.query?.onto && router?.query?.onto.includes(option.value),
+            router?.query?.ontology &&
+            router?.query?.ontology.includes(option.value),
         ),
       );
     }
-  }, [router?.query?.onto]);
+  }, [router?.query?.ontology, ontologyMenuOptions]);
 
   // Fetch suggestions based on search term
   const {
@@ -258,12 +260,12 @@ export const OntologyBrowserSearch = ({
           }
           size='lg'
           description=''
-          options={ONTOLOGY_BROWSER_OPTIONS}
+          options={ontologyMenuOptions}
           selectedOptions={selectedOntologies}
           handleChange={setSelectedOntologies}
         />
       </HStack>
-      {error && <ErrorMessage title='  Error:'>{error.message}</ErrorMessage>}
+      {error && <ErrorMessage title='Error:'>{error.message}</ErrorMessage>}
       {hasNoMatch && (
         <ErrorMessage title='No Match:'>
           Search term{' '}
@@ -274,7 +276,7 @@ export const OntologyBrowserSearch = ({
             color='inherit'
             fontSize='inherit'
           >
-            {debouncedTerm ? `${debouncedTerm}` : ''}
+            {debouncedTerm}
           </Text>
           not found in selected ontologies.
         </ErrorMessage>
