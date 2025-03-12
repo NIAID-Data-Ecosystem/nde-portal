@@ -6,7 +6,7 @@ import { OntologyBrowserSearch } from 'src/views/ontology-browser/components/sea
 import { OntologyLineageItemWithCounts } from 'src/views/ontology-browser/types';
 import { OntologySearchList } from 'src/views/ontology-browser/components/ontology-search-list';
 import { OntologyBrowser } from 'src/views/ontology-browser/components/ontology-browser';
-import { ONTOLOGY_BROWSER_OPTIONS } from 'src/views/ontology-browser/helpers';
+import { ONTOLOGY_BROWSER_OPTIONS } from 'src/views/ontology-browser/utils/api-helpers';
 
 export interface SearchListItem
   extends Pick<
