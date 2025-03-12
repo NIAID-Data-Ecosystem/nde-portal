@@ -30,6 +30,31 @@ interface OntologyBrowserSearchProps {
   size?: 'sm' | 'md' | 'lg';
 }
 
+const ErrorMessage = ({
+  title,
+  children,
+}: {
+  title: string;
+  children: React.ReactNode;
+}) => {
+  return (
+    <Flex bg='red.100' px={4} flex={1}>
+      <Text color='red.500' fontSize='sm'>
+        <Text
+          as='span'
+          fontWeight='semibold'
+          mr={1}
+          color='inherit'
+          fontSize='inherit'
+        >
+          {title}
+        </Text>
+        {children}
+      </Text>
+    </Flex>
+  );
+};
+
 export const OntologyBrowserSearch = ({
   colorScheme = 'primary',
   size = 'md',
@@ -238,47 +263,21 @@ export const OntologyBrowserSearch = ({
           handleChange={setSelectedOntologies}
         />
       </HStack>
-      {error && (
-        <Flex bg='red.100' px={4} flex={1}>
-          <Text color='red.500' fontSize='sm'>
-            <Text
-              as='span'
-              fontWeight='semibold'
-              mr={1}
-              color='inherit'
-              fontSize='inherit'
-            >
-              Error:
-            </Text>
-            {error.message}
-          </Text>
-        </Flex>
-      )}
+      {error && <ErrorMessage title='  Error:'>{error.message}</ErrorMessage>}
       {hasNoMatch && (
-        <Flex bg='red.100' px={4} flex={1}>
-          <Text color='red.500' fontSize='sm'>
-            <Text
-              as='span'
-              fontWeight='semibold'
-              mr={1}
-              color='inherit'
-              fontSize='inherit'
-            >
-              No Match:
-            </Text>
-            Search term{' '}
-            <Text
-              as='span'
-              fontWeight='semibold'
-              mr={1}
-              color='inherit'
-              fontSize='inherit'
-            >
-              {debouncedTerm ? `${debouncedTerm}` : ''}
-            </Text>
-            not found in selected ontologies.
+        <ErrorMessage title='No Match:'>
+          Search term{' '}
+          <Text
+            as='span'
+            fontWeight='semibold'
+            mr={1}
+            color='inherit'
+            fontSize='inherit'
+          >
+            {debouncedTerm ? `${debouncedTerm}` : ''}
           </Text>
-        </Flex>
+          not found in selected ontologies.
+        </ErrorMessage>
       )}
     </VStack>
   );
