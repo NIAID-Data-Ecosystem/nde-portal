@@ -140,6 +140,7 @@ export const DropdownInput: React.FC<DropdownInputProps> = ({
                 mr={2}
                 size='md'
                 colorScheme='primary'
+                aria-label='Clear search input'
               />
             )}
             {renderSubmitButton &&

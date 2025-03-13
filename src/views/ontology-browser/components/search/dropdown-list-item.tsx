@@ -31,6 +31,7 @@ export const DropdownListItem = React.memo(
         my={1}
         {...getListItemProps({
           index,
+          id: `ontology-browser-search-${id}`,
           value: `/ontology-browser/${id}`,
           isSelected: cursor === index,
           onClick: () => handleSubmit(),

@@ -107,6 +107,7 @@ export const OntologyBrowserSearch = ({
         query: { ...router.query, id, ontology },
       });
       setSearchTerm('');
+
       setHasNoMatch(false);
     },
     [router, setSearchTerm, setHasNoMatch],
@@ -132,30 +133,32 @@ export const OntologyBrowserSearch = ({
         id: suggestion._id,
         ontology: suggestion.definingOntology,
       });
+      setSearchTerm('');
     } else {
       setHasNoMatch(true);
     }
   };
 
   return (
-    <VStack w='100%' alignItems='flex-start' spacing={1}>
+    <VStack
+      className='ontology-search'
+      w='100%'
+      alignItems='flex-start'
+      spacing={1}
+    >
       <HStack
         w='100%'
         alignItems='flex-end'
         flexDirection={{ base: 'column', md: 'row' }}
         flexWrap='wrap'
         justifyContent='flex-end'
-        sx={{
-          '> div': {
-            zIndex: 'docked',
-          },
-        }}
       >
         <Flex
           flex={3}
           flexDirection='column'
           width={{ base: '100%', md: 'unset' }}
           minWidth={{ base: 'unset', md: '450px' }}
+          zIndex='sticky'
         >
           <Text
             as='label'
@@ -205,6 +208,7 @@ export const OntologyBrowserSearch = ({
                 {suggestions?.map((suggestion, index) => (
                   <DropdownListItem
                     key={`${suggestion.definingOntology}-${suggestion._id}`}
+                    id={suggestion._id}
                     handleSubmit={() =>
                       handleSubmit({
                         id: suggestion._id,
@@ -212,7 +216,6 @@ export const OntologyBrowserSearch = ({
                       })
                     }
                     highlight={debouncedTerm}
-                    id={suggestion._id}
                     index={index}
                     ontology={suggestion.definingOntology}
                   >
@@ -233,6 +236,7 @@ export const OntologyBrowserSearch = ({
             width: '250px',
             overflow: 'hidden',
           }}
+          zIndex='docked'
           label={
             <Text
               as='span'
