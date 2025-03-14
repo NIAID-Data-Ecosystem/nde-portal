@@ -145,7 +145,7 @@ export const OntologySearchList = ({
                         px={2}
                         pl={6}
                         py={1}
-                        bg={index % 2 ? 'tertiary.50' : 'transparent'}
+                        bg={index % 2 ? 'niaid.50' : 'transparent'}
                         alignItems='center'
                       >
                         <Flex
