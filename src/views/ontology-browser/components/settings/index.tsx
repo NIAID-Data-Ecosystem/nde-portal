@@ -1,7 +1,10 @@
 import React from 'react';
 import {
   Button,
+  ButtonProps,
   Flex,
+  FlexProps,
+  Icon,
   Popover,
   PopoverTrigger,
   PopoverContent,
@@ -10,20 +13,32 @@ import {
   PopoverBody,
   PopoverArrow,
   Text,
-  FlexProps,
-  ButtonProps,
 } from '@chakra-ui/react';
-import { FaCaretDown } from 'react-icons/fa6';
+import { FaCaretDown, FaGear } from 'react-icons/fa6';
 import { ScrollContainer } from 'src/components/scroll-container';
+import { OntologyViewSettings } from './components/ontology-view-settings';
 
-interface ConfigureViewProps extends FlexProps {
+/**
+ * OntologyBrowserSettings
+ *
+ * A popover component for configuring the ontology browser view.
+ * It provides a dropdown menu with options to enable or disable a condensed view
+ * and to include or exclude terms with zero datasets in the ontology tree.
+ *
+ * @param label - The label displayed on the trigger button of the popover.
+ * @param buttonProps - Additional properties for the trigger button.
+ * @param description - An optional description displayed in the popover header.
+ * @param rest - Additional `Flex` container properties.
+ */
+
+interface OntologyPopoverProps extends FlexProps {
   label: string;
   buttonProps: ButtonProps;
   description?: string;
 }
-export const ConfigureView: React.FC<ConfigureViewProps> = ({
+
+export const OntologyBrowserSettings: React.FC<OntologyPopoverProps> = ({
   buttonProps,
-  children,
   description,
   label,
   ...rest
@@ -33,12 +48,13 @@ export const ConfigureView: React.FC<ConfigureViewProps> = ({
       <Popover>
         <PopoverTrigger>
           <Button
-            colorScheme='gray'
+            colorScheme='primary'
             flex={1}
             fontWeight='medium'
             fontSize='inherit'
             lineHeight='shorter'
             px={4}
+            leftIcon={<Icon as={FaGear} color='inherit' />}
             rightIcon={<FaCaretDown />}
             variant='outline'
             justifyContent='space-between'
@@ -68,7 +84,9 @@ export const ConfigureView: React.FC<ConfigureViewProps> = ({
             )}
           </PopoverHeader>
           <PopoverBody>
-            <ScrollContainer maxHeight='300px'>{children}</ScrollContainer>
+            <ScrollContainer maxHeight='300px'>
+              <OntologyViewSettings />
+            </ScrollContainer>
           </PopoverBody>
         </PopoverContent>
       </Popover>

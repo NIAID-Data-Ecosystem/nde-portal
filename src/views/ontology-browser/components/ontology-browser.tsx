@@ -7,13 +7,14 @@ import {
   fetchLineageFromOLSAPI,
   fetchPortalCounts,
 } from '../utils/api-helpers';
-import { useLocalStorage } from 'usehooks-ts';
+import { useReadLocalStorage } from 'usehooks-ts';
 import {
+  LocalStorageConfig,
   OntologyLineageItemWithCounts,
   OntologyLineageRequestParams,
 } from '../types';
 import { OntologyBrowserHeader } from './ontology-browser-header';
-import { OntologyViewPopover } from './ontology-view-popover';
+import { OntologyBrowserSettings } from './settings';
 import { Tree } from './ontology-browser-tree';
 
 export const OntologyBrowser = ({
@@ -33,16 +34,8 @@ export const OntologyBrowser = ({
     >
   >;
 }) => {
-  // Store the view configuration in local storage.
-  // [isCondensed]: Show only the selected node and its immediate parent/children.
-  // [includeEmptyCounts]: Include items without datasets in the view.
-  const [viewConfig, setViewConfig] = useLocalStorage(
+  const viewSettings = useReadLocalStorage<LocalStorageConfig>(
     'ontology-browser-view',
-    () => ({
-      isCondensed: true,
-      includeEmptyCounts: true,
-      isMenuOpen: false,
-    }),
   );
 
   // State to manage the ontology tree lineage
@@ -108,7 +101,7 @@ export const OntologyBrowser = ({
       // Update the lineage state with the fetched data
       setLineage(ontologyLineageData.lineage);
 
-      if (viewConfig.isCondensed) {
+      if (viewSettings?.isCondensed) {
         // Determine the starting index for the condensed view
         const condensedStartIndex =
           ontologyLineageData.lineage.length > MAX_VISIBLE_NODES
@@ -120,7 +113,7 @@ export const OntologyBrowser = ({
         setShowFromIndex(0);
       }
     }
-  }, [ontologyLineageData, viewConfig.isCondensed]);
+  }, [ontologyLineageData, viewSettings?.isCondensed]);
 
   // Update lineage with new children
   const updateLineageWithChildren = useCallback(
@@ -187,11 +180,9 @@ export const OntologyBrowser = ({
             {selectedOntologyNode && (
               <OntologyBrowserHeader selectedNode={selectedOntologyNode} />
             )}
-            <OntologyViewPopover
+            <OntologyBrowserSettings
               label='Configure View'
               buttonProps={{ size: 'sm' }}
-              viewConfig={viewConfig}
-              setViewConfig={setViewConfig}
             />
           </Flex>
           {/* Tree Browser */}
