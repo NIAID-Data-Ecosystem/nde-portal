@@ -5,10 +5,7 @@ import { useRouter } from 'next/router';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ChakraProvider } from '@chakra-ui/react';
 import { OntologyBrowserSearch } from './index';
-import {
-  ONTOLOGY_BROWSER_OPTIONS,
-  searchOntologyAPI,
-} from '../../utils/api-helpers';
+import { searchOntologyAPI } from '../../utils/api-helpers';
 
 jest.mock('../../utils/api-helpers', () => {
   return {
@@ -77,6 +74,9 @@ describe('OntologyBrowserSearch', () => {
       <ChakraProvider>{children}</ChakraProvider>
     </QueryClientProvider>
   );
+  const renderComponent = (props = {}) => {
+    return render(<OntologyBrowserSearch {...props} />, { wrapper });
+  };
 
   beforeEach(() => {
     // Mock the useRouter hook to simulate the router
@@ -96,7 +96,7 @@ describe('OntologyBrowserSearch', () => {
   });
 
   it('renders the search input and button', () => {
-    render(<OntologyBrowserSearch />, { wrapper });
+    renderComponent();
 
     expect(
       screen.getByLabelText('Search taxonomy browser'),
@@ -110,12 +110,9 @@ describe('OntologyBrowserSearch', () => {
   });
 
   it('renders the selected ontologies menu with correct amount of ontologies', () => {
-    render(
-      <OntologyBrowserSearch ontologyMenuOptions={ONTOLOGY_BROWSER_OPTIONS} />,
-      { wrapper },
-    );
+    renderComponent({ ontologyMenuOptions: ontologyMockOptions });
 
-    const name = `Selected ontologies ${ONTOLOGY_BROWSER_OPTIONS.length}`;
+    const name = `Selected ontologies ${ontologyMockOptions.length}`;
     const button = screen.getByRole('button', { name });
 
     expect(button).toBeInTheDocument();
@@ -126,7 +123,7 @@ describe('OntologyBrowserSearch', () => {
       new Error('Error fetching data'),
     );
 
-    render(<OntologyBrowserSearch />, { wrapper });
+    renderComponent();
 
     // Wait for the error message to appear
     await waitFor(() => {
@@ -136,7 +133,7 @@ describe('OntologyBrowserSearch', () => {
   });
 
   it('displays no match message when no suggestions match', async () => {
-    render(<OntologyBrowserSearch />, { wrapper });
+    renderComponent();
 
     const input = screen.getByPlaceholderText(
       'Enter a taxonomy name or identifier',
@@ -161,7 +158,7 @@ describe('OntologyBrowserSearch', () => {
       },
     ]);
 
-    render(<OntologyBrowserSearch />, { wrapper });
+    renderComponent();
 
     const input = screen.getByPlaceholderText(
       'Enter a taxonomy name or identifier',
@@ -182,10 +179,7 @@ describe('OntologyBrowserSearch', () => {
   });
 
   it('displays the correct number of selected ontologies on load', () => {
-    render(
-      <OntologyBrowserSearch ontologyMenuOptions={ontologyMockOptions} />,
-      { wrapper },
-    );
+    renderComponent({ ontologyMenuOptions: ontologyMockOptions });
 
     // Verify the selected ontologies count is applied to ontology menu
     const expectedCount = ontologyMockOptions.length;
@@ -197,10 +191,7 @@ describe('OntologyBrowserSearch', () => {
   });
 
   it('updates selected ontologies when user selects a different one', async () => {
-    render(
-      <OntologyBrowserSearch ontologyMenuOptions={ontologyMockOptions} />,
-      { wrapper },
-    );
+    renderComponent({ ontologyMenuOptions: ontologyMockOptions });
     const initialCount = ontologyMockOptions.length;
 
     // Open the ontology selection dropdown
@@ -232,10 +223,7 @@ describe('OntologyBrowserSearch', () => {
       push: mockPush,
     });
 
-    render(
-      <OntologyBrowserSearch ontologyMenuOptions={ontologyMockOptions} />,
-      { wrapper },
-    );
+    renderComponent({ ontologyMenuOptions: ontologyMockOptions });
 
     // Expect only the ontology from router query to be selected
     const button = screen.getByRole('button', {
@@ -264,10 +252,7 @@ describe('OntologyBrowserSearch', () => {
       push: mockPush,
     });
 
-    render(
-      <OntologyBrowserSearch ontologyMenuOptions={ontologyMockOptions} />,
-      { wrapper },
-    );
+    renderComponent({ ontologyMenuOptions: ontologyMockOptions });
 
     // Expect only the ontology from router query to be selected
     const button = screen.getByRole('button', {
@@ -289,10 +274,7 @@ describe('OntologyBrowserSearch', () => {
   });
 
   it('clears search term on close', () => {
-    render(
-      <OntologyBrowserSearch ontologyMenuOptions={ontologyMockOptions} />,
-      { wrapper },
-    );
+    renderComponent({ ontologyMenuOptions: ontologyMockOptions });
 
     const input = screen.getByPlaceholderText(
       'Enter a taxonomy name or identifier',
@@ -314,10 +296,7 @@ describe('OntologyBrowserSearch', () => {
   });
 
   it('handles input change correctly', () => {
-    render(
-      <OntologyBrowserSearch ontologyMenuOptions={ontologyMockOptions} />,
-      { wrapper },
-    );
+    renderComponent({ ontologyMenuOptions: ontologyMockOptions });
 
     const input = screen.getByPlaceholderText(
       'Enter a taxonomy name or identifier',
@@ -338,10 +317,7 @@ describe('OntologyBrowserSearch', () => {
       },
     ]);
 
-    render(
-      <OntologyBrowserSearch ontologyMenuOptions={ontologyMockOptions} />,
-      { wrapper },
-    );
+    renderComponent({ ontologyMenuOptions: ontologyMockOptions });
 
     const input = screen.getByPlaceholderText(
       'Enter a taxonomy name or identifier',
@@ -376,10 +352,7 @@ describe('OntologyBrowserSearch', () => {
       },
     ]);
 
-    render(
-      <OntologyBrowserSearch ontologyMenuOptions={ontologyMockOptions} />,
-      { wrapper },
-    );
+    renderComponent({ ontologyMenuOptions: ontologyMockOptions });
 
     const input = screen.getByPlaceholderText(
       'Enter a taxonomy name or identifier',
@@ -445,10 +418,7 @@ describe('OntologyBrowserSearch', () => {
       },
     ]);
 
-    render(
-      <OntologyBrowserSearch ontologyMenuOptions={ontologyMockOptions} />,
-      { wrapper },
-    );
+    renderComponent({ ontologyMenuOptions: ontologyMockOptions });
     const input = screen.getByPlaceholderText(
       'Enter a taxonomy name or identifier',
     );
@@ -485,10 +455,7 @@ describe('OntologyBrowserSearch', () => {
 
     (searchOntologyAPI as jest.Mock).mockResolvedValue(mockSuggestions);
 
-    render(
-      <OntologyBrowserSearch ontologyMenuOptions={ontologyMockOptions} />,
-      { wrapper },
-    );
+    renderComponent({ ontologyMenuOptions: ontologyMockOptions });
 
     const input = screen.getByPlaceholderText(
       'Enter a taxonomy name or identifier',
