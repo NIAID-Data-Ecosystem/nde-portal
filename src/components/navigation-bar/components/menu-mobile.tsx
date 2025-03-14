@@ -29,20 +29,22 @@ export const MobileNavItem = ({
           py={2}
           href={href}
           w='100%'
-          color='tertiary.800'
+          color='niaid.800'
           variant='unstyled'
           rounded='md'
           _hover={{
-            bg: 'tertiary.50',
-            color: 'tertiary.600',
-            '.label': { color: 'tertiary.600' },
+            bg: 'niaid.50',
+            color: 'niaid.600',
+            '.label': { color: 'niaid.500' },
             '.icon': { opacity: '100%', transform: 'translateX(0)' },
           }}
-          _visited={{ color: 'tertiary.800' }}
+          _visited={{ color: 'niaid.800' }}
           target={isExternal ? '_blank' : '_self'}
         >
           <Flex opacity={1} justify='space-between' align='center'>
-            <Text fontWeight={600}>{label}</Text>
+            <Text className='label' fontWeight={600}>
+              {label}
+            </Text>
             <Icon
               as={FaAngleRight}
               className='icon'
@@ -50,7 +52,7 @@ export const MobileNavItem = ({
               transform='translateX(-10px)'
               transition='all .3s ease'
               sx={{
-                '> *': { color: 'tertiary.700' },
+                '> *': { color: 'niaid.700' },
               }}
               w={3}
               h={3}
@@ -67,7 +69,7 @@ export const MobileNavItem = ({
           color='gray.900'
           rounded='md'
           _hover={{
-            bg: 'tertiary.50',
+            bg: 'niaid.50',
             color: 'gray.900',
           }}
         >
@@ -79,7 +81,7 @@ export const MobileNavItem = ({
           {routes && (
             <Icon
               sx={{
-                '> *': { color: 'tertiary.700' },
+                '> *': { color: 'niaid.700' },
               }}
               as={FaAngleDown}
               transition={'all .25s ease-in-out'}
