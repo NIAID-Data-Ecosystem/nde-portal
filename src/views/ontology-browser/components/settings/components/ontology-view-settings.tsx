@@ -1,7 +1,7 @@
 import React from 'react';
 import { FormControl, FormLabel, Switch, VStack } from '@chakra-ui/react';
 import { useLocalStorage } from 'usehooks-ts';
-import { LocalStorageConfig } from 'src/views/ontology-browser/types';
+import { BrowserSettings } from '..';
 
 /**
  * OntologyViewSettings
@@ -10,69 +10,56 @@ import { LocalStorageConfig } from 'src/views/ontology-browser/types';
  * Allows toggling between a condensed view and hiding terms with zero datasets.
  *
  */
-export const DEFAULT_ONTOLOGY_BROWSER_SETTINGS = {
-  isCondensed: true,
-  includeEmptyCounts: true,
-  isMenuOpen: false,
+
+// Derive LocalStorageConfig based on the structure of `settings`
+export type LocalStorageConfig = {
+  [key in keyof BrowserSettings]: boolean;
 };
 
-export const OntologyViewSettings = () => {
+export const OntologyViewSettings = ({
+  settings,
+}: {
+  settings: BrowserSettings;
+}) => {
   // Store the view configuration in local storage.
-  // [isCondensed]: Show only the selected node and its immediate parent/children.
-  // [includeEmptyCounts]: Include items without datasets in the view.
   const [viewConfig, setViewConfig] = useLocalStorage<LocalStorageConfig>(
     'ontology-browser-view',
-    () => DEFAULT_ONTOLOGY_BROWSER_SETTINGS,
+    () => transformSettingsToLocalStorageConfig(settings),
   );
-
   return (
     <VStack lineHeight='shorter' spacing={4}>
-      <FormControl
-        display='flex'
-        alignItems='center'
-        justifyContent='space-between'
-        mt={1}
-      >
-        <FormLabel htmlFor='condensed-view' mb='0' fontSize='sm'>
-          Enable condensed view?
-        </FormLabel>
-        <Switch
-          id='condensed-view'
-          colorScheme='primary'
-          isChecked={viewConfig.isCondensed === true}
-          onChange={() =>
-            setViewConfig(() => {
-              return {
+      {Object.entries(settings).map(([key, setting]) => (
+        <FormControl
+          key={key}
+          display='flex'
+          alignItems='center'
+          justifyContent='space-between'
+          mt={1}
+          cursor='pointer'
+        >
+          <FormLabel htmlFor={`switch-${key}`} mb='0' fontSize='sm'>
+            {setting.label}
+          </FormLabel>
+          <Switch
+            id={`switch-${key}`}
+            colorScheme='primary'
+            isChecked={viewConfig[key as keyof LocalStorageConfig]}
+            onChange={() =>
+              setViewConfig({
                 ...viewConfig,
-                isCondensed: !viewConfig.isCondensed,
-              };
-            })
-          }
-        />
-      </FormControl>
-      <FormControl
-        display='flex'
-        alignItems='center'
-        justifyContent='space-between'
-        mt={1}
-      >
-        <FormLabel htmlFor='include-empty-counts' mb='0' fontSize='sm'>
-          Hide terms with 0 datasets?
-        </FormLabel>
-        <Switch
-          id='include-empty-counts'
-          colorScheme='primary'
-          isChecked={viewConfig.includeEmptyCounts === false}
-          onChange={() =>
-            setViewConfig(() => {
-              return {
-                ...viewConfig,
-                includeEmptyCounts: !viewConfig.includeEmptyCounts,
-              };
-            })
-          }
-        />
-      </FormControl>
+                [key]: !viewConfig[key as keyof LocalStorageConfig],
+              })
+            }
+          />
+        </FormControl>
+      ))}
     </VStack>
   );
 };
+
+export const transformSettingsToLocalStorageConfig = (
+  settings: BrowserSettings,
+): LocalStorageConfig =>
+  Object.fromEntries(
+    Object.entries(settings).map(([key, setting]) => [key, setting.value]),
+  ) as LocalStorageConfig;

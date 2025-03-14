@@ -9,13 +9,13 @@ import {
 } from '../utils/api-helpers';
 import { useReadLocalStorage } from 'usehooks-ts';
 import {
-  LocalStorageConfig,
   OntologyLineageItemWithCounts,
   OntologyLineageRequestParams,
 } from '../types';
 import { OntologyBrowserHeader } from './ontology-browser-header';
 import { OntologyBrowserSettings } from './settings';
 import { Tree } from './ontology-browser-tree';
+import { LocalStorageConfig } from './settings/components/ontology-view-settings';
 
 export const OntologyBrowser = ({
   searchList,

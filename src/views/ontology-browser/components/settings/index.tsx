@@ -31,16 +31,38 @@ import { OntologyViewSettings } from './components/ontology-view-settings';
  * @param rest - Additional `Flex` container properties.
  */
 
-interface OntologyPopoverProps extends FlexProps {
+export const DEFAULT_ONTOLOGY_BROWSER_SETTINGS = {
+  // [isCondensed]: Show only the selected node and its immediate parent/children.
+  ['isCondensed']: {
+    label: 'Enable condensed view?',
+    value: true,
+  },
+  // [includeEmptyCounts]: Include items without datasets in the view.
+  ['includeEmptyCounts']: {
+    label: 'Hide terms with 0 datasets?',
+    value: true,
+  },
+} as const;
+
+export type BrowserSettings = {
+  [key in keyof typeof DEFAULT_ONTOLOGY_BROWSER_SETTINGS]: {
+    label: string;
+    value: boolean;
+  };
+};
+
+export type OntologyPopoverProps = FlexProps & {
   label: string;
   buttonProps: ButtonProps;
   description?: string;
-}
+  settings?: BrowserSettings;
+};
 
 export const OntologyBrowserSettings: React.FC<OntologyPopoverProps> = ({
   buttonProps,
   description,
   label,
+  settings = DEFAULT_ONTOLOGY_BROWSER_SETTINGS,
   ...rest
 }) => {
   return (
@@ -85,7 +107,7 @@ export const OntologyBrowserSettings: React.FC<OntologyPopoverProps> = ({
           </PopoverHeader>
           <PopoverBody>
             <ScrollContainer maxHeight='300px'>
-              <OntologyViewSettings />
+              <OntologyViewSettings settings={settings} />
             </ScrollContainer>
           </PopoverBody>
         </PopoverContent>
