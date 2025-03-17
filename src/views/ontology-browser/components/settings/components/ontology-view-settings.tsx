@@ -1,7 +1,11 @@
 import React from 'react';
 import { FormControl, FormLabel, Switch, VStack } from '@chakra-ui/react';
 import { useLocalStorage } from 'usehooks-ts';
-import { BrowserSettings } from '..';
+import { BrowserSettings } from '../index';
+import {
+  LocalStorageConfig,
+  transformSettingsToLocalStorageConfig,
+} from '../helpers';
 
 /**
  * OntologyViewSettings
@@ -12,23 +16,21 @@ import { BrowserSettings } from '..';
  */
 
 // Derive LocalStorageConfig based on the structure of `settings`
-export type LocalStorageConfig = {
-  [key in keyof BrowserSettings]: boolean;
-};
 
 export const OntologyViewSettings = ({
-  settings,
+  settings: defaultSettings,
 }: {
   settings: BrowserSettings;
 }) => {
   // Store the view configuration in local storage.
-  const [viewConfig, setViewConfig] = useLocalStorage<LocalStorageConfig>(
+  const [viewSettings, setViewSettings] = useLocalStorage<LocalStorageConfig>(
     'ontology-browser-view',
-    () => transformSettingsToLocalStorageConfig(settings),
+    () => transformSettingsToLocalStorageConfig(defaultSettings),
   );
+
   return (
     <VStack lineHeight='shorter' spacing={4}>
-      {Object.entries(settings).map(([key, setting]) => (
+      {Object.entries(defaultSettings).map(([key, setting]) => (
         <FormControl
           key={key}
           display='flex'
@@ -43,11 +45,11 @@ export const OntologyViewSettings = ({
           <Switch
             id={`switch-${key}`}
             colorScheme='primary'
-            isChecked={viewConfig[key as keyof LocalStorageConfig]}
+            isChecked={viewSettings[key as keyof LocalStorageConfig]}
             onChange={() =>
-              setViewConfig({
-                ...viewConfig,
-                [key]: !viewConfig[key as keyof LocalStorageConfig],
+              setViewSettings({
+                ...viewSettings,
+                [key]: !viewSettings[key as keyof LocalStorageConfig],
               })
             }
           />
@@ -56,10 +58,3 @@ export const OntologyViewSettings = ({
     </VStack>
   );
 };
-
-export const transformSettingsToLocalStorageConfig = (
-  settings: BrowserSettings,
-): LocalStorageConfig =>
-  Object.fromEntries(
-    Object.entries(settings).map(([key, setting]) => [key, setting.value]),
-  ) as LocalStorageConfig;

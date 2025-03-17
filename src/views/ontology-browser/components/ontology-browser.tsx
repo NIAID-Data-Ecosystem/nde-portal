@@ -15,8 +15,8 @@ import {
 import { OntologyBrowserHeader } from './ontology-browser-header';
 import { OntologyBrowserSettings } from './settings';
 import { Tree } from './tree';
-import { LocalStorageConfig } from './settings/components/ontology-view-settings';
 import { OntologyTreeBreadcrumbs } from './tree/components/breadcrumbs';
+import { LocalStorageConfig } from './settings/helpers';
 
 export const OntologyBrowser = ({
   searchList,

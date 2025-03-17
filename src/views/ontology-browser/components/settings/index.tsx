@@ -37,8 +37,8 @@ export const DEFAULT_ONTOLOGY_BROWSER_SETTINGS = {
     label: 'Enable condensed view?',
     value: true,
   },
-  // [includeEmptyCounts]: Include items without datasets in the view.
-  ['includeEmptyCounts']: {
+  // [hideEmptyCounts]: Include items without datasets in the view.
+  ['hideEmptyCounts']: {
     label: 'Hide terms with 0 datasets?',
     value: true,
   },

@@ -2,12 +2,10 @@ import React from 'react';
 import { act, fireEvent, render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import { OntologyBrowserSettings } from './';
-import {
-  OntologyViewSettings,
-  transformSettingsToLocalStorageConfig,
-} from './components/ontology-view-settings';
+import { OntologyViewSettings } from './components/ontology-view-settings';
 import { ChakraProvider } from '@chakra-ui/react';
 import { useLocalStorage } from 'usehooks-ts';
+import { transformSettingsToLocalStorageConfig } from './helpers';
 
 jest.mock('usehooks-ts', () => ({
   useLocalStorage: jest.fn(),
@@ -29,7 +27,7 @@ describe('OntologyBrowserSettings', () => {
           label: 'Enable condensed view?',
           value: true,
         },
-        ['includeEmptyCounts']: {
+        ['hideEmptyCounts']: {
           label: 'Hide terms with 0 datasets?',
           value: false,
         },
@@ -76,7 +74,7 @@ describe('OntologyBrowserSettings', () => {
               label: 'Enable condensed view?',
               value: true,
             },
-            ['includeEmptyCounts']: {
+            ['hideEmptyCounts']: {
               label: 'Hide terms with 0 datasets?',
               value: true,
             },
@@ -103,7 +101,7 @@ describe('OntologyViewSettings', () => {
       label: 'a checked switch?',
       value: true,
     },
-    ['includeEmptyCounts']: {
+    ['hideEmptyCounts']: {
       label: 'an unchecked switch?',
       value: false,
     },
@@ -160,7 +158,7 @@ describe('OntologyViewSettings', () => {
     });
 
     expect(mockSetViewConfig).toHaveBeenCalledWith(
-      expect.objectContaining({ includeEmptyCounts: true }),
+      expect.objectContaining({ hideEmptyCounts: true }),
     );
     expect(mockSetViewConfig).toHaveBeenCalledTimes(1);
   });
