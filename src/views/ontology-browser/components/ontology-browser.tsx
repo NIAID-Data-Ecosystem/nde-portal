@@ -16,6 +16,7 @@ import { OntologyBrowserHeader } from './ontology-browser-header';
 import { OntologyBrowserSettings } from './settings';
 import { Tree } from './tree';
 import { LocalStorageConfig } from './settings/components/ontology-view-settings';
+import { OntologyTreeBreadcrumbs } from './tree/components/breadcrumbs';
 
 export const OntologyBrowser = ({
   searchList,
@@ -198,29 +199,38 @@ export const OntologyBrowser = ({
               <Spinner size='md' color='primary.500' m={4} />
             ) : (
               lineage && (
-                <Tree
-                  params={queryParams}
-                  showFromIndex={showFromIndex}
-                  lineage={lineage}
-                  updateLineage={updateLineageWithChildren}
-                  updateShowFromIndex={setShowFromIndex}
-                  isIncludedInSearch={id => {
-                    return searchList.some(item => item.taxonId === id);
-                  }}
-                  addToSearch={({ ontologyName, taxonId, label, counts }) => {
-                    setSearchList(prev => {
-                      //if it already exists in the list, remove it
-                      if (prev.some(item => item.taxonId === taxonId)) {
-                        return prev.filter(item => item.taxonId !== taxonId);
-                      } else {
-                        return [
-                          ...prev,
-                          { ontologyName, taxonId, label, counts },
-                        ];
-                      }
-                    });
-                  }}
-                />
+                <>
+                  {showFromIndex > 0 && (
+                    <OntologyTreeBreadcrumbs
+                      lineageNodes={lineage.slice(0, showFromIndex)}
+                      showFromIndex={showFromIndex}
+                      updateShowFromIndex={setShowFromIndex}
+                    />
+                  )}
+
+                  <Tree
+                    params={queryParams}
+                    showFromIndex={showFromIndex}
+                    lineage={lineage}
+                    updateLineage={updateLineageWithChildren}
+                    isIncludedInSearch={id => {
+                      return searchList.some(item => item.taxonId === id);
+                    }}
+                    addToSearch={({ ontologyName, taxonId, label, counts }) => {
+                      setSearchList(prev => {
+                        //if it already exists in the list, remove it
+                        if (prev.some(item => item.taxonId === taxonId)) {
+                          return prev.filter(item => item.taxonId !== taxonId);
+                        } else {
+                          return [
+                            ...prev,
+                            { ontologyName, taxonId, label, counts },
+                          ];
+                        }
+                      });
+                    }}
+                  />
+                </>
               )
             )}
           </Box>
