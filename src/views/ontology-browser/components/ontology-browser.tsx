@@ -14,7 +14,7 @@ import {
 } from '../types';
 import { OntologyBrowserHeader } from './ontology-browser-header';
 import { OntologyBrowserSettings } from './settings';
-import { Tree } from './ontology-browser-tree';
+import { Tree } from './tree';
 import { LocalStorageConfig } from './settings/components/ontology-view-settings';
 
 export const OntologyBrowser = ({

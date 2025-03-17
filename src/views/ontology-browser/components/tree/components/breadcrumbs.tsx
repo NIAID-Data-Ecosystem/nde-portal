@@ -2,7 +2,7 @@ import React from 'react';
 import { FaAngleRight, FaEllipsis } from 'react-icons/fa6';
 import { Button, Flex, HStack, Icon, IconButton } from '@chakra-ui/react';
 import Tooltip from 'src/components/tooltip';
-import { OntologyLineageItemWithCounts } from '../types';
+import { OntologyLineageItemWithCounts } from '../../../types';
 
 /**
  * OntologyTreeBreadcrumbs

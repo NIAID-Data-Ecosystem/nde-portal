@@ -14,21 +14,21 @@ import {
   fetchChildrenFromBioThingsAPI,
   fetchChildrenFromOLSAPI,
   fetchPortalCounts,
-} from '../utils/api-helpers';
+} from '../../utils/api-helpers';
 import { Link } from 'src/components/link';
 import { useReadLocalStorage, useLocalStorage } from 'usehooks-ts';
 import {
   OntologyLineageItemWithCounts,
   OntologyLineageRequestParams,
   OntologyPagination,
-} from '../types';
-import { OntologyTreeBreadcrumbs } from './ontology-browser-tree-breadcrumbs';
-import { getChildren, sortChildrenList } from '../utils/ontology-helpers';
+} from '../../types';
+import { OntologyTreeBreadcrumbs } from './components/breadcrumbs';
+import { getChildren, sortChildrenList } from '../../utils/ontology-helpers';
 import {
   getTooltipLabelByCountType,
   OntologyBrowserCountTag,
-} from './ontology-browser-count-tag';
-import { LocalStorageConfig } from './settings/components/ontology-view-settings';
+} from '../ontology-browser-count-tag';
+import { LocalStorageConfig } from '../settings/components/ontology-view-settings';
 
 const MARGIN = 16; // Base margin for indenting tree levels
 const SIZE = 20; // Number of items to fetch per page
