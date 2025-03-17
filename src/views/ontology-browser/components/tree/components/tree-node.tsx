@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   Box,
   Flex,
@@ -16,7 +16,10 @@ import {
 } from '../../../utils/api-helpers';
 import { Link } from 'src/components/link';
 import { useLocalStorage } from 'usehooks-ts';
-import { OntologyLineageItemWithCounts } from '../../../types';
+import {
+  OntologyLineageItemWithCounts,
+  OntologyPagination,
+} from '../../../types';
 import { getChildren, sortChildrenList } from '../../../utils/ontology-helpers';
 import {
   getTooltipLabelByCountType,
@@ -27,6 +30,7 @@ import { Warning } from '../components/warning';
 import { TreeProps, MARGIN, SIZE } from '..';
 import { transformSettingsToLocalStorageConfig } from '../../settings/helpers';
 import { DEFAULT_ONTOLOGY_BROWSER_SETTINGS } from '../../settings';
+import { ErrorMessage } from '../../error-message';
 
 /**
  * TreeNode Component
@@ -56,21 +60,26 @@ export const TreeNode = ({
     children: OntologyLineageItemWithCounts[],
   ) => void;
 }) => {
+  // Retrieve view settings from local storage
   const [viewSettings, setViewSettings] = useLocalStorage(
     'ontology-browser-view',
     () =>
       transformSettingsToLocalStorageConfig(DEFAULT_ONTOLOGY_BROWSER_SETTINGS),
   );
 
-  const queryId = params.id;
+  // Toggle the node's open/closed state and fetch children if open.
   const [isToggled, setIsToggled] = useState(node.state.opened);
 
+  // State to manage the children fetched from the API
   const [fetchedChildren, setFetchedChildren] = useState<
     OntologyLineageItemWithCounts[]
   >([]);
-  const [childrenList, setChildrenList] = useState<
-    OntologyLineageItemWithCounts[]
-  >([]);
+
+  // State to manage the pagination fetched from the API
+  const [pagination, setPagination] = useState<Pick<
+    OntologyPagination,
+    'hasMore' | 'totalElements'
+  > | null>(null);
 
   const [pageFrom, setPageFrom] = useState(0);
   const [pageSize] = useState(SIZE);
@@ -123,20 +132,27 @@ export const TreeNode = ({
     },
     refetchOnWindowFocus: false,
     refetchOnMount: true,
-    enabled: pageFrom > 0,
+    enabled: node.hasChildren && pageFrom > 0,
   });
 
   // Toggle the node's open/closed state and fetch children if opening
   const toggleNode = () => {
-    fetchChildren();
+    if (node.hasChildren && !isToggled) {
+      fetchChildren();
+    }
     setIsToggled(!isToggled);
   };
+  const queryId = params.id;
 
   useEffect(() => {
     if (childrenData) {
-      const { children } = childrenData || {};
+      const { children, pagination } = childrenData || {};
       if (isToggled && children && children.length > 0) {
         setFetchedChildren(children);
+        setPagination({
+          hasMore: pagination.hasMore,
+          totalElements: pagination.totalElements,
+        });
       } else {
         setFetchedChildren([]);
       }
@@ -144,19 +160,22 @@ export const TreeNode = ({
   }, [childrenData, isToggled, queryId]);
 
   useEffect(() => {
-    setIsToggled(node.state.opened); // Reset toggle state when the query ID changes
-    setFetchedChildren([]);
-  }, [queryId, node.state.opened]);
+    if (queryId !== node.id.toString()) {
+      console.log('happened', node.id);
+      setIsToggled(node.state.opened); // Reset toggle state when the query ID changes
+      setFetchedChildren([]);
+    }
+  }, [queryId, node.state.opened, node.id]);
 
   // Set children data in state with node information. Refresh when queryId changes.
-  useEffect(() => {
-    const children = getChildren(node.taxonId, lineage); // Retrieve immediate children from lineage
-    setChildrenList(children);
-  }, [queryId, lineage, node.taxonId]);
+  // useEffect(() => {
+  //   const children = getChildren(node.taxonId, lineage); // Retrieve immediate children from lineage
+  //   setChildrenList(children);
+  // }, [queryId, lineage, node.taxonId]);
 
   const sortedChildrenList = useMemo(
-    () => sortChildrenList(childrenList),
-    [childrenList],
+    () => sortChildrenList(getChildren(node.taxonId, lineage)),
+    [node.taxonId, lineage],
   );
 
   // Update lineage with new children data (if there is) when toggled open
@@ -166,16 +185,16 @@ export const TreeNode = ({
     }
   }, [queryId, isToggled, fetchedChildren, node.id, updateLineage]);
 
-  const numChildrenItemsDisplayed = useMemo(
-    () =>
-      childrenList.filter(item => {
-        if (viewSettings?.hideEmptyCounts) {
-          return item.counts.termCount > 0;
-        }
-        return true;
-      }).length,
-    [childrenList, viewSettings?.hideEmptyCounts],
-  );
+  const numChildrenItemsDisplayed = useMemo(() => {
+    const filterChildrenItems = (item: OntologyLineageItemWithCounts) => {
+      if (viewSettings?.hideEmptyCounts) {
+        return item.counts.termCount > 0;
+      }
+      return true;
+    };
+
+    return sortedChildrenList.filter(filterChildrenItems).length;
+  }, [sortedChildrenList, viewSettings?.hideEmptyCounts]);
 
   // Show a warning when there are hidden elements due to the hideEmptyCounts configuration
   const showHiddenElementsWarning = useMemo(
@@ -183,25 +202,32 @@ export const TreeNode = ({
       Boolean(
         isToggled &&
           viewSettings?.hideEmptyCounts &&
-          childrenList.some(item => !item.counts.termCount),
+          sortedChildrenList.some(item => !item.counts.termCount),
       ),
-    [childrenList, viewSettings?.hideEmptyCounts, isToggled],
+    [sortedChildrenList, viewSettings?.hideEmptyCounts, isToggled],
   );
-
-  const { hasMore, totalElements } = childrenData?.pagination || {};
 
   const showPagination = useMemo(
-    () => hasMore || (isLoading && pageFrom > 0),
-    [hasMore, isLoading, pageFrom],
+    () => pagination?.hasMore || (isLoading && pageFrom > 0),
+    [pagination?.hasMore, isLoading, pageFrom],
   );
 
-  // Hide nodes with no children that have 0 datasets if configured to do so
-  if (
+  // Function to determine if a node should be hidden
+  const shouldHideNode =
     viewSettings?.hideEmptyCounts &&
     node.counts.termCount === 0 &&
     node.counts.termAndChildrenCount === 0 &&
-    childrenList.length === 0
-  ) {
+    sortedChildrenList.length === 0;
+
+  if (error) {
+    return (
+      <ErrorMessage title={error.message}>
+        Something went wrong, try refreshing the page.
+      </ErrorMessage>
+    );
+  }
+  // Hide nodes with no children that have 0 datasets if configured to do so
+  if (shouldHideNode) {
     return <></>;
   }
   return (
@@ -221,11 +247,13 @@ export const TreeNode = ({
           alignItems='center'
           onClick={toggleNode}
           cursor={
-            childrenList.length > 0 || node.hasChildren ? 'pointer' : 'default'
+            sortedChildrenList.length > 0 || node.hasChildren
+              ? 'pointer'
+              : 'default'
           }
           flex={1}
         >
-          {childrenList.length > 0 || node.hasChildren ? (
+          {sortedChildrenList.length > 0 || node.hasChildren ? (
             <IconButton
               as='div'
               aria-label='Search database'
@@ -310,8 +338,7 @@ export const TreeNode = ({
         </Flex>
       </Flex>
 
-      {/* If there are only children with 0 counts and the conmfiguration hides them, show a note */}
-      {isToggled && childrenList.length > 0 ? (
+      {isToggled && sortedChildrenList.length > 0 ? (
         <UnorderedList ml={0}>
           {sortedChildrenList.map(child => (
             <TreeNode
@@ -325,10 +352,11 @@ export const TreeNode = ({
               updateLineage={updateLineage}
             />
           ))}
-          {/* warning about hidden items */}
+          {/* If there are only children with 0 counts and the conmfiguration hides them, show a note */}
           {showHiddenElementsWarning &&
             (showPagination ||
-              (numChildrenItemsDisplayed === 0 && childrenList.length > 0)) && (
+              (numChildrenItemsDisplayed === 0 &&
+                sortedChildrenList.length > 0)) && (
               <ListItem
                 bg='status.warning_lt'
                 fontSize='xs'
@@ -361,16 +389,21 @@ export const TreeNode = ({
               bg='tertiary.50'
             >
               <Pagination
-                hasMore={!(numChildrenItemsDisplayed < childrenList.length)}
-                isDisabled={isLoading || childrenList.length === totalElements}
+                hasMore={
+                  !(numChildrenItemsDisplayed < sortedChildrenList.length)
+                }
+                isDisabled={
+                  isLoading ||
+                  sortedChildrenList.length === pagination?.totalElements
+                }
                 isLoading={isLoading}
                 node={node}
                 numChildrenDisplayed={numChildrenItemsDisplayed}
                 onShowMore={() => {
-                  const page = Math.floor(childrenList.length / pageSize);
+                  const page = Math.floor(sortedChildrenList.length / pageSize);
                   setPageFrom(page);
                 }}
-                totalElements={totalElements || 0}
+                totalElements={pagination?.totalElements || 0}
               />
             </ListItem>
           )}

@@ -655,7 +655,7 @@ export const fetchPortalCounts = async (
       // Return the updated node with counts and child status
       return {
         ...node,
-        hasChildren: node.hasChildren || hasChildTaxons,
+        hasChildren: node.hasChildren || hasChildTaxons || childTermsCount > 0,
         counts: {
           termCount: directTermCount,
           termAndChildrenCount: directTermCount + childTermsCount,

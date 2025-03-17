@@ -7,16 +7,19 @@ import {
   fetchLineageFromOLSAPI,
   fetchPortalCounts,
 } from '../utils/api-helpers';
-import { useReadLocalStorage } from 'usehooks-ts';
+import { useLocalStorage } from 'usehooks-ts';
 import {
   OntologyLineageItemWithCounts,
   OntologyLineageRequestParams,
 } from '../types';
 import { OntologyBrowserHeader } from './ontology-browser-header';
-import { OntologyBrowserSettings } from './settings';
+import {
+  DEFAULT_ONTOLOGY_BROWSER_SETTINGS,
+  OntologyBrowserSettings,
+} from './settings';
 import { Tree } from './tree';
 import { OntologyTreeBreadcrumbs } from './tree/components/breadcrumbs';
-import { LocalStorageConfig } from './settings/helpers';
+import { transformSettingsToLocalStorageConfig } from './settings/helpers';
 
 export const OntologyBrowser = ({
   searchList,
@@ -35,8 +38,9 @@ export const OntologyBrowser = ({
     >
   >;
 }) => {
-  const viewSettings = useReadLocalStorage<LocalStorageConfig>(
-    'ontology-browser-view',
+  // Retrieve view settings from local storage
+  const [viewSettings] = useLocalStorage('ontology-browser-view', () =>
+    transformSettingsToLocalStorageConfig(DEFAULT_ONTOLOGY_BROWSER_SETTINGS),
   );
 
   // State to manage the ontology tree lineage

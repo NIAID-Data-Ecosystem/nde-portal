@@ -24,37 +24,13 @@ import { DropdownContent } from 'src/components/input-with-dropdown/components/D
 import { CheckboxList } from 'src/components/checkbox-list';
 import { useDebounceValue } from 'usehooks-ts';
 import { DropdownListItem } from './dropdown-list-item';
+import { ErrorMessage } from '../error-message';
 
 interface OntologyBrowserSearchProps {
   colorScheme?: string;
   size?: 'sm' | 'md' | 'lg';
   ontologyMenuOptions?: OntologyOption[];
 }
-
-const ErrorMessage = ({
-  title,
-  children,
-}: {
-  title: string;
-  children: React.ReactNode;
-}) => {
-  return (
-    <Flex bg='red.100' px={4} flex={1}>
-      <Text color='red.500' fontSize='sm'>
-        <Text
-          as='span'
-          fontWeight='semibold'
-          mr={1}
-          color='inherit'
-          fontSize='inherit'
-        >
-          {title}
-        </Text>
-        {children}
-      </Text>
-    </Flex>
-  );
-};
 
 export const OntologyBrowserSearch = ({
   colorScheme = 'primary',
