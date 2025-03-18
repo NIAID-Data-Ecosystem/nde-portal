@@ -32,10 +32,7 @@ export interface TreeProps {
     ontology: OntologyLineageRequestParams['ontology'];
   };
   showFromIndex: number;
-  updateLineage: (
-    nodeId: string,
-    children: OntologyLineageItemWithCounts[],
-  ) => void;
+  updateLineage: (children: OntologyLineageItemWithCounts[]) => void;
 }
 
 export const Tree = ({
@@ -51,7 +48,6 @@ export const Tree = ({
   return (
     <>
       {/* Breadcrumbs for collapsed portion of the tree */}
-
       <UnorderedList ml={0}>
         {rootNodes.map(node => (
           <TreeNode

@@ -231,14 +231,6 @@ export const fetchOntologyChildrenByNodeId = async (
   return { children };
 };
 
-// Helper function to get children of a node
-export const getChildren = (
-  parentId: OntologyTreeItem['id'],
-  data: OntologyTreeItem[],
-) => {
-  return data.filter(item => item.parent === parentId);
-};
-
 export const formatIdentifier = (node: { id: string }) => {
   if (node.id.includes('NCBITaxon')) {
     return node.id.split('_')[1];

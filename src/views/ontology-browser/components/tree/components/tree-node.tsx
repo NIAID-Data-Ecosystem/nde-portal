@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   Box,
   Flex,
@@ -11,7 +11,6 @@ import { useQuery } from '@tanstack/react-query';
 import { FaAngleRight, FaCheck, FaMagnifyingGlass } from 'react-icons/fa6';
 import {
   fetchChildrenFromBioThingsAPI,
-  fetchChildrenFromOLSAPI,
   fetchPortalCounts,
 } from '../../../utils/api-helpers';
 import { Link } from 'src/components/link';
@@ -40,26 +39,25 @@ import { ErrorMessage } from '../../error-message';
  * - Fetches child nodes when toggled open if they haven't been loaded.
  * - Renders node details, including links, counts, and actions.
  */
-export const TreeNode = ({
-  addToSearch,
-  depth = 0,
-  isIncludedInSearch,
-  lineage,
-  node,
-  params,
-  updateLineage,
-}: {
+export const TreeNode = (props: {
   addToSearch: TreeProps['addToSearch'];
   depth: number; //Depth level in the tree for indentation
   isIncludedInSearch: TreeProps['isIncludedInSearch'];
   lineage: TreeProps['lineage'];
   node: OntologyLineageItemWithCounts;
   params: TreeProps['params'];
-  updateLineage: (
-    nodeId: string,
-    children: OntologyLineageItemWithCounts[],
-  ) => void;
+  updateLineage: (children: OntologyLineageItemWithCounts[]) => void;
 }) => {
+  const {
+    addToSearch,
+    depth = 0,
+    isIncludedInSearch,
+    lineage,
+    node,
+    params,
+    updateLineage,
+  } = props;
+
   // Retrieve view settings from local storage
   const [viewSettings, setViewSettings] = useLocalStorage(
     'ontology-browser-view',
@@ -101,34 +99,34 @@ export const TreeNode = ({
     ],
     queryFn: () => {
       //  Fetch children from the BioThings API for the NCBI Taxonomy
-      if (node.ontologyName === 'ncbitaxon') {
-        return fetchChildrenFromBioThingsAPI({
-          node,
-          q: params.q,
-          id: node.taxonId,
-          ontology: node.ontologyName,
-          size: pageSize,
-          from: pageFrom,
-        }).then(async data => ({
-          ...data,
-          children: await fetchPortalCounts(data.children, {
-            q: params.q,
-          }),
-        }));
-      }
-      return fetchChildrenFromOLSAPI({
+      return fetchChildrenFromBioThingsAPI({
         node,
         q: params.q,
         id: node.taxonId,
         ontology: node.ontologyName,
         size: pageSize,
         from: pageFrom,
-      }).then(async data => ({
-        ...data,
-        children: await fetchPortalCounts(data.children, {
-          q: params.q,
-        }),
-      }));
+      }).then(async data => {
+        return {
+          ...data,
+          children: await fetchPortalCounts(data.children, {
+            q: params.q,
+          }),
+        };
+      });
+      // return fetchChildrenFromOLSAPI({
+      //   node,
+      //   q: params.q,
+      //   id: node.taxonId,
+      //   ontology: node.ontologyName,
+      //   size: pageSize,
+      //   from: pageFrom,
+      // }).then(async data => ({
+      //   ...data,
+      //   children: await fetchPortalCounts(data.children, {
+      //     q: params.q,
+      //   }),
+      // }));
     },
     refetchOnWindowFocus: false,
     refetchOnMount: true,
@@ -161,7 +159,6 @@ export const TreeNode = ({
 
   useEffect(() => {
     if (queryId !== node.id.toString()) {
-      console.log('happened', node.id);
       setIsToggled(node.state.opened); // Reset toggle state when the query ID changes
       setFetchedChildren([]);
     }
@@ -172,29 +169,31 @@ export const TreeNode = ({
   //   const children = getChildren(node.taxonId, lineage); // Retrieve immediate children from lineage
   //   setChildrenList(children);
   // }, [queryId, lineage, node.taxonId]);
-
-  const sortedChildrenList = useMemo(
-    () => sortChildrenList(getChildren(node.taxonId, lineage)),
-    [node.taxonId, lineage],
-  );
-
   // Update lineage with new children data (if there is) when toggled open
   useEffect(() => {
     if (isToggled && fetchedChildren.length > 0) {
-      updateLineage(node.id.toString(), fetchedChildren);
+      updateLineage(fetchedChildren);
     }
   }, [queryId, isToggled, fetchedChildren, node.id, updateLineage]);
 
-  const numChildrenItemsDisplayed = useMemo(() => {
+  const sortedChildrenList = useMemo(() => {
     const filterChildrenItems = (item: OntologyLineageItemWithCounts) => {
       if (viewSettings?.hideEmptyCounts) {
-        return item.counts.termCount > 0;
+        return (
+          item.counts.termCount > 0 || item.counts.termAndChildrenCount > 0
+        );
       }
       return true;
     };
+    const newChildren = sortChildrenList(
+      getChildren(node.taxonId, lineage),
+    ).filter(filterChildrenItems);
+    return newChildren;
+  }, [node.taxonId, lineage, viewSettings?.hideEmptyCounts]);
 
-    return sortedChildrenList.filter(filterChildrenItems).length;
-  }, [sortedChildrenList, viewSettings?.hideEmptyCounts]);
+  const numChildrenItemsDisplayed = useMemo(() => {
+    return sortedChildrenList.length;
+  }, [sortedChildrenList]);
 
   // Show a warning when there are hidden elements due to the hideEmptyCounts configuration
   const showHiddenElementsWarning = useMemo(
@@ -212,7 +211,7 @@ export const TreeNode = ({
     [pagination?.hasMore, isLoading, pageFrom],
   );
 
-  // Function to determine if a node should be hidden
+  // Determine if a node should be hidden if the view config is set to hide empty counts and the node has no datasets AND children have no datasets
   const shouldHideNode =
     viewSettings?.hideEmptyCounts &&
     node.counts.termCount === 0 &&
@@ -256,7 +255,7 @@ export const TreeNode = ({
           {sortedChildrenList.length > 0 || node.hasChildren ? (
             <IconButton
               as='div'
-              aria-label='Search database'
+              aria-label={`Show all children of ${node.label}`}
               icon={<FaAngleRight />}
               variant='ghost'
               colorScheme='gray'
@@ -314,7 +313,11 @@ export const TreeNode = ({
 
           <IconButton
             ml={1}
-            aria-label='Search database'
+            aria-label={
+              isIncludedInSearch(node.taxonId)
+                ? `Remove ${node.label} from search list`
+                : `Search portal for resources related to ${node.label}`
+            }
             icon={
               isIncludedInSearch(node.taxonId) ? (
                 <FaCheck />
@@ -339,7 +342,7 @@ export const TreeNode = ({
       </Flex>
 
       {isToggled && sortedChildrenList.length > 0 ? (
-        <UnorderedList ml={0}>
+        <UnorderedList id='children-list' ml={0}>
           {sortedChildrenList.map(child => (
             <TreeNode
               key={child.id}
@@ -358,6 +361,7 @@ export const TreeNode = ({
               (numChildrenItemsDisplayed === 0 &&
                 sortedChildrenList.length > 0)) && (
               <ListItem
+                className='hiddenElementsWarning'
                 bg='status.warning_lt'
                 fontSize='xs'
                 px={4}

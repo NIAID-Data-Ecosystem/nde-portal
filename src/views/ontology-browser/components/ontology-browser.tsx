@@ -20,6 +20,7 @@ import {
 import { Tree } from './tree';
 import { OntologyTreeBreadcrumbs } from './tree/components/breadcrumbs';
 import { transformSettingsToLocalStorageConfig } from './settings/helpers';
+import { mergePreviousLineageWithChildrenData } from '../utils/ontology-helpers';
 
 export const OntologyBrowser = ({
   searchList,
@@ -78,15 +79,7 @@ export const OntologyBrowser = ({
       queryParams.ontology,
     ],
     queryFn: () => {
-      if (queryParams.ontology === 'ncbitaxon') {
-        return fetchLineageFromBioThingsAPI({
-          id: queryParams.id,
-          ontology: queryParams.ontology,
-        }).then(async data => ({
-          lineage: await fetchPortalCounts(data.lineage, { q: queryParams.q }),
-        }));
-      }
-      return fetchLineageFromOLSAPI({
+      return fetchLineageFromBioThingsAPI({
         id: queryParams.id,
         ontology: queryParams.ontology,
       }).then(async data => ({
@@ -120,35 +113,9 @@ export const OntologyBrowser = ({
     }
   }, [ontologyLineageData, viewSettings?.isCondensed]);
 
-  // Update lineage with new children
   const updateLineageWithChildren = useCallback(
-    (nodeId: string, children: OntologyLineageItemWithCounts[]) => {
-      setLineage(prevLineage => {
-        if (!prevLineage) return [];
-
-        // If no children, return previous lineage as it is
-        if (children.length === 0) return prevLineage;
-
-        // Find the index of the node to insert children after
-        // [TO DO]:Remove? not using this to merge any more
-        // const index = prevLineage.findIndex(node => node.id === nodeId);
-
-        // if (index === -1) return prevLineage;
-
-        // Filter out children that are already in the prevLineage
-        const filteredChildren = children.filter(
-          child =>
-            !prevLineage.some(prevNode => prevNode.taxonId === child.taxonId),
-        );
-
-        // If no children left after filtering, return previous lineage as it is
-        if (filteredChildren.length === 0) return prevLineage;
-
-        // Merge filtered children into prevLineage
-        const merged = [...prevLineage, ...filteredChildren];
-        // merged.splice(index + 1, 0, ...filteredChildren);
-        return merged;
-      });
+    (children: OntologyLineageItemWithCounts[]) => {
+      setLineage(prev => mergePreviousLineageWithChildrenData(prev, children));
     },
     [],
   );

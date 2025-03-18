@@ -40,3 +40,26 @@ export const sortChildrenList = (
   });
   return sorted;
 };
+
+// Update lineage with new children
+export const mergePreviousLineageWithChildrenData = (
+  previousLineage: OntologyLineageItemWithCounts[] | null,
+  childrenData: OntologyLineageItemWithCounts[],
+) => {
+  if (!previousLineage) return [];
+
+  // If no children, return previous lineage as it is
+  if (childrenData.length === 0) return previousLineage;
+
+  // Use a Set for faster lookup of existing taxonId values
+  const existingTaxonIds = new Set(previousLineage.map(node => node.taxonId));
+
+  // Filter out childrenData that are already in the previousLineage
+  const filteredChildren = childrenData.filter(
+    child => !existingTaxonIds.has(child.taxonId),
+  );
+
+  // If no childrenData left after filtering, return previous lineage as it is
+  if (filteredChildren.length === 0) return previousLineage;
+  return [...previousLineage, ...filteredChildren];
+};
