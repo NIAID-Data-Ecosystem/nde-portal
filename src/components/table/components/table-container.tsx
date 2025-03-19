@@ -19,7 +19,7 @@ export const TableContainer = (props: TableContainerProps) => {
         },
         _hover: {
           '&::-webkit-scrollbar-thumb': {
-            background: 'niaid.placeholder',
+            background: 'page.placeholder',
           },
         },
       }}

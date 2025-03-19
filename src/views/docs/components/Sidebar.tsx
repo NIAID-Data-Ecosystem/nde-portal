@@ -141,7 +141,7 @@ export const SidebarMobile = ({
         <MenuButton
           bg='blackAlpha.100'
           borderRadius='semi'
-          color='niaid.placeholder'
+          color='page.placeholder'
           mx={2}
           my={2}
           flex={1}
