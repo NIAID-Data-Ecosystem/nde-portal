@@ -303,7 +303,7 @@ const SearchResultsPage = ({
             border='1px solid'
             borderRadius='semi'
             borderColor='niaid.placeholder'
-            bg='tertiary.50'
+            bg='niaid.50'
           >
             <Text fontWeight='medium'>Suggestions:</Text>
             <UnorderedList styleType='disc' spacing={1} lineHeight='short'>
