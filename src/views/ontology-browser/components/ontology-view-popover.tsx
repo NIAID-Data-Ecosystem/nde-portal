@@ -79,7 +79,7 @@ export const OntologyViewPopover: React.FC<OntologyPopoverProps> = ({
             </Text>
             {description && (
               <Text
-                color='niaid.placeholder'
+                color='page.placeholder'
                 fontSize='sm'
                 fontStyle='italic'
                 fontWeight='normal'

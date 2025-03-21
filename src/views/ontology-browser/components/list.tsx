@@ -141,7 +141,7 @@ export const OntologyList = ({
                 bg='white'
                 border='1px solid'
                 borderRadius='semi'
-                borderColor='niaid.placeholder'
+                borderColor='page.placeholder'
               >
                 {isOpen &&
                   searchList.map(({ id, count, ontology, label }, index) => (

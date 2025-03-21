@@ -129,7 +129,7 @@ export const SidebarMobile = ({
   menuTitle,
   sections,
   selectedSlug,
-  colorScheme = 'tertiary',
+  colorScheme = 'niaid',
 }: {
   isLoading: boolean;
   menuTitle?: string;
@@ -143,7 +143,7 @@ export const SidebarMobile = ({
         <MenuButton
           bg='blackAlpha.100'
           borderRadius='semi'
-          color='niaid.placeholder'
+          color='page.placeholder'
           mx={2}
           my={2}
           flex={1}
@@ -201,7 +201,7 @@ export const SidebarDesktop = ({
   isLoading,
   sections,
   selectedSlug,
-  colorScheme = 'tertiary',
+  colorScheme = 'niaid',
 }: {
   isLoading: boolean;
   sections?: SidebarContent[];

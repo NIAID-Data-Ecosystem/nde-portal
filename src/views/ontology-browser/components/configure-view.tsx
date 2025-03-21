@@ -56,7 +56,7 @@ export const ConfigureView: React.FC<ConfigureViewProps> = ({
             </Text>
             {description && (
               <Text
-                color='niaid.placeholder'
+                color='page.placeholder'
                 fontSize='sm'
                 fontStyle='italic'
                 fontWeight='normal'

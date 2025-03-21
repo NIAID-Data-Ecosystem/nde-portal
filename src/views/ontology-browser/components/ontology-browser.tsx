@@ -200,7 +200,7 @@ export const OntologyBrowser = ({
             bg='white'
             border='1px solid'
             borderRadius='semi'
-            borderColor='niaid.placeholder'
+            borderColor='page.placeholder'
             overflow='hidden'
           >
             {isLoading || !router.isReady ? (
