@@ -1,5 +1,4 @@
 import { FormattedResource } from 'src/utils/api/types';
-import { FaLock, FaUnlock } from 'react-icons/fa6';
 import { BadgeWithTooltip, BadgeWithTooltipProps } from 'src/components/badges';
 import SchemaDefinitions from 'configs/schema-definitions.json';
 import { transformConditionsOfAccessLabel } from 'src/utils/formatting/formatConditionsOfAccess';
@@ -44,31 +43,11 @@ export const ConditionsOfAccess = ({
     }
   };
 
-  const getIcon = (
-    conditionsOfAccess: ConditionsOfAccessProps['conditionsOfAccess'],
-  ) => {
-    if (conditionsOfAccess?.includes('Open')) {
-      return FaUnlock;
-    } else if (
-      conditionsOfAccess?.includes('Embargoed') ||
-      conditionsOfAccess?.includes('Registered') ||
-      conditionsOfAccess?.includes('Restricted') ||
-      conditionsOfAccess?.includes('Controlled')
-    ) {
-      return FaLock;
-    } else if (
-      conditionsOfAccess?.includes('Varied') ||
-      conditionsOfAccess?.includes('Unknown')
-    ) {
-      return FaUnlock;
-    }
-  };
   return (
     <BadgeWithTooltip
       colorScheme={getColorScheme(conditionsOfAccess)}
       value={transformConditionsOfAccessLabel(conditionsOfAccess)}
       tooltipLabel={property?.description[type]}
-      leftIcon={getIcon(conditionsOfAccess)}
       {...props}
     />
   );
