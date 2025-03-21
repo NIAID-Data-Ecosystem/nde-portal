@@ -1,5 +1,4 @@
 import { FormattedResource } from 'src/utils/api/types';
-import { FaDollarSign } from 'react-icons/fa6';
 import { BadgeWithTooltip, BadgeWithTooltipProps } from 'src/components/badges';
 import SchemaDefinitions from 'configs/schema-definitions.json';
 
@@ -21,7 +20,6 @@ export const AccessibleForFree = ({
         colorScheme={isAccessibleForFree ? 'green' : 'gray'}
         value={isAccessibleForFree ? 'Free Access' : 'Paid  Access'}
         tooltipLabel={property?.description[type]}
-        leftIcon={FaDollarSign}
         {...props}
       />
     );
