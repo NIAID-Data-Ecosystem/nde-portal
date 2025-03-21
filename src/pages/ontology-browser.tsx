@@ -6,6 +6,7 @@ import { OntologyBrowserSearch } from 'src/views/ontology-browser/components/sea
 import { OntologyLineageItemWithCounts } from 'src/views/ontology-browser/types';
 import { OntologySearchList } from 'src/views/ontology-browser/components/ontology-search-list';
 import { OntologyBrowser } from 'src/views/ontology-browser/components/ontology-browser';
+import { ONTOLOGY_BROWSER_OPTIONS } from 'src/views/ontology-browser/utils/api-helpers';
 
 export interface SearchListItem
   extends Pick<
@@ -37,7 +38,9 @@ const OntologyBrowserPage: NextPage = () => {
           flexDirection={{ base: 'column-reverse', lg: 'row' }}
         >
           <VStack w='100%' flex={1} spacing={4} p={4}>
-            <OntologyBrowserSearch />
+            <OntologyBrowserSearch
+              ontologyMenuOptions={ONTOLOGY_BROWSER_OPTIONS}
+            />
             <OntologyBrowser
               searchList={searchList}
               setSearchList={setSearchList}

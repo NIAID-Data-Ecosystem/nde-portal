@@ -2,45 +2,45 @@ import React from 'react';
 import { FaAngleRight, FaEllipsis } from 'react-icons/fa6';
 import { Button, Flex, HStack, Icon, IconButton } from '@chakra-ui/react';
 import Tooltip from 'src/components/tooltip';
-import { OntologyLineageItemWithCounts } from '../types';
+import { OntologyLineageItemWithCounts } from '../../../types';
 
 /**
  * OntologyTreeBreadcrumbs
  *
  * A component that displays a breadcrumb-style navigation for the ontology tree.
- * - Shows the lineage of ontology nodes as clickable buttons.
+ * - Shows the lineage of ontology lineageNodes as clickable buttons.
  * - Allows navigation to a specific node by clicking on its label.
- * - Includes a "Show parent" button to navigate to higher-level parent nodes.
+ * - Includes a "Show parent" button to navigate to higher-level parent lineageNodes.
  * - Dynamically updates the view based on the selected node index.
  *
  * Props:
  * @param margin: number - The left margin for the breadcrumbs.
- * @param nodes: OntologyLineageItemWithCounts[] - The lineage nodes to display.
+ * @param lineageNodes: OntologyLineageItemWithCounts[] - The lineage nodes to display.
  * @param showFromIndex: number - The index of the selected node in the lineage.
  * @param updateShowFromIndex: (index: number) => void - Function to update the selected node index.
  */
 export const OntologyTreeBreadcrumbs = ({
-  margin: MARGIN,
-  nodes,
+  lineageNodes,
   showFromIndex,
   updateShowFromIndex,
 }: {
-  margin: number;
-  nodes: OntologyLineageItemWithCounts[];
+  lineageNodes: OntologyLineageItemWithCounts[];
   showFromIndex: number;
   updateShowFromIndex: (index: number) => void;
 }) => {
-  if (showFromIndex === 0) {
-    return <></>;
-  }
   return (
     <>
+      {/*
+      Render the lineage nodes as clickable buttons with an arrow divider.
+      - The buttons display the label of each node.
+      - Clicking on a button updates the selected node index.
+      */}
       <HStack
         alignItems='center'
         borderColor='gray.200'
         px={4}
         py={2}
-        pl={`${MARGIN}px`}
+        pl={4}
         flexWrap='wrap'
         spacing={0}
         divider={
@@ -52,7 +52,7 @@ export const OntologyTreeBreadcrumbs = ({
           />
         }
       >
-        {nodes.map((node, index) => (
+        {lineageNodes.map((node, index) => (
           <React.Fragment key={node.id}>
             <Button
               colorScheme='gray'
@@ -60,6 +60,7 @@ export const OntologyTreeBreadcrumbs = ({
               size='sm'
               px={1}
               _hover={{ textDecoration: 'underline' }}
+              // Update the selected node index when clicked
               onClick={() => updateShowFromIndex(index)}
             >
               {node.label}
@@ -67,6 +68,11 @@ export const OntologyTreeBreadcrumbs = ({
           </React.Fragment>
         ))}
       </HStack>
+      {/*
+      Include a "Show parent" button to navigate to higher-level parent lineageNodes.
+      - The button updates the selected node index to show the parent node.
+      - The button is disabled when the selected node is the root node.
+      */}
       <Tooltip label='Show parent'>
         <Flex
           alignItems='center'
@@ -74,7 +80,7 @@ export const OntologyTreeBreadcrumbs = ({
           borderColor='gray.200'
           px={4}
           py={2}
-          pl={`${MARGIN}px`}
+          pl={4}
           onClick={() => {
             updateShowFromIndex(showFromIndex < 1 ? 0 : showFromIndex - 1);
           }}

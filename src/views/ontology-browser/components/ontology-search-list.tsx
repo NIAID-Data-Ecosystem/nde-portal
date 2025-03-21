@@ -1,3 +1,5 @@
+import React from 'react';
+import NextLink from 'next/link';
 import {
   Box,
   Button,
@@ -17,12 +19,6 @@ import Tooltip from 'src/components/tooltip';
 import { useRouter } from 'next/router';
 import { ScrollContainer } from 'src/components/scroll-container';
 import { SearchListItem } from 'src/pages/ontology-browser';
-import {
-  getTooltipLabelByCountType,
-  OntologyBrowserCountTag,
-} from './ontology-browser-count-tag';
-import NextLink from 'next/link';
-import React from 'react';
 
 const WIDTH = 400;
 
@@ -138,78 +134,56 @@ export const OntologySearchList = ({
               {/* Search list */}
               <Box flex={1} w='100%' flexDirection='column' bg='white'>
                 {isOpen &&
-                  searchList.map(
-                    ({ taxonId, counts, ontologyName, label }, index) => (
+                  searchList.map(({ taxonId, ontologyName, label }, index) => (
+                    <Flex
+                      key={`${ontologyName}-${taxonId}`}
+                      px={2}
+                      pl={6}
+                      py={1}
+                      bg={index % 2 ? 'niaid.50' : 'transparent'}
+                      alignItems='center'
+                    >
                       <Flex
-                        key={`${ontologyName}-${taxonId}`}
-                        px={2}
-                        pl={6}
-                        py={1}
-                        bg={index % 2 ? 'niaid.50' : 'transparent'}
+                        flex={1}
+                        fontWeight='normal'
+                        lineHeight='short'
+                        textAlign='left'
+                        wordBreak='break-word'
                         alignItems='center'
+                        justifyContent='space-between'
                       >
-                        <Flex
-                          flex={1}
-                          fontWeight='normal'
-                          lineHeight='short'
-                          textAlign='left'
-                          wordBreak='break-word'
-                          alignItems='center'
-                          justifyContent='space-between'
+                        <Text color='gray.800' fontSize='12px'>
+                          {ontologyName} | {taxonId}
+                        </Text>
+                        <Text
+                          color='text.body'
+                          fontSize='xs'
+                          fontWeight='medium'
+                          lineHeight='inherit'
                         >
-                          <Text color='gray.800' fontSize='12px'>
-                            {ontologyName} | {taxonId}
-                          </Text>
-                          <Text
-                            color='text.body'
-                            fontSize='xs'
-                            fontWeight='medium'
-                            lineHeight='inherit'
-                          >
-                            {label}
-                          </Text>
-                        </Flex>
-                        <Flex alignItems='center'>
-                          {/* <OntologyBrowserCountTag
-                            colorScheme={
-                              counts.termCount === 0 ? 'gray' : 'primary'
-                            }
-                            label={getTooltipLabelByCountType('termCount')}
-                          >
-                            {counts.termCount?.toLocaleString() || 0}
-                          </OntologyBrowserCountTag>
-
-                          <OntologyBrowserCountTag
-                            colorScheme={'white'}
-                            label={getTooltipLabelByCountType(
-                              'termAndChildrenCount',
-                            )}
-                          >
-                            {'/ ' +
-                              counts.termAndChildrenCount?.toLocaleString() ||
-                              0}
-                          </OntologyBrowserCountTag> */}
-
-                          <IconButton
-                            ml={4}
-                            aria-label={`remove ${label} from search`}
-                            icon={<Icon as={FaX} boxSize={2.5} />}
-                            variant='ghost'
-                            colorScheme='gray'
-                            size='sm'
-                            p={1}
-                            boxSize={6}
-                            minWidth={6}
-                            onClick={() => {
-                              setSearchList(prev =>
-                                prev.filter(item => item.label !== label),
-                              );
-                            }}
-                          />
-                        </Flex>
+                          {label}
+                        </Text>
                       </Flex>
-                    ),
-                  )}
+                      <Flex alignItems='center'>
+                        <IconButton
+                          ml={4}
+                          aria-label={`remove ${label} from search`}
+                          icon={<Icon as={FaX} boxSize={2.5} />}
+                          variant='ghost'
+                          colorScheme='gray'
+                          size='sm'
+                          p={1}
+                          boxSize={6}
+                          minWidth={6}
+                          onClick={() => {
+                            setSearchList(prev =>
+                              prev.filter(item => item.label !== label),
+                            );
+                          }}
+                        />
+                      </Flex>
+                    </Flex>
+                  ))}
               </Box>
 
               <Text mt={4} px={6} lineHeight='short' fontSize='sm'>

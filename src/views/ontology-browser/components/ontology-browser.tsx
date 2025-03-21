@@ -4,7 +4,6 @@ import { useQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/router';
 import {
   fetchLineageFromBioThingsAPI,
-  fetchLineageFromOLSAPI,
   fetchPortalCounts,
 } from '../utils/api-helpers';
 import { useLocalStorage } from 'usehooks-ts';
@@ -13,8 +12,14 @@ import {
   OntologyLineageRequestParams,
 } from '../types';
 import { OntologyBrowserHeader } from './ontology-browser-header';
-import { OntologyViewPopover } from './ontology-view-popover';
-import { Tree } from './ontology-browser-tree';
+import {
+  DEFAULT_ONTOLOGY_BROWSER_SETTINGS,
+  OntologyBrowserSettings,
+} from './settings';
+import { Tree } from './tree';
+import { OntologyTreeBreadcrumbs } from './tree/components/breadcrumbs';
+import { transformSettingsToLocalStorageConfig } from './settings/helpers';
+import { mergePreviousLineageWithChildrenData } from '../utils/ontology-helpers';
 
 export const OntologyBrowser = ({
   searchList,
@@ -33,16 +38,9 @@ export const OntologyBrowser = ({
     >
   >;
 }) => {
-  // Store the view configuration in local storage.
-  // [isCondensed]: Show only the selected node and its immediate parent/children.
-  // [includeEmptyCounts]: Include items without datasets in the view.
-  const [viewConfig, setViewConfig] = useLocalStorage(
-    'ontology-browser-view',
-    () => ({
-      isCondensed: true,
-      includeEmptyCounts: true,
-      isMenuOpen: false,
-    }),
+  // Retrieve view settings from local storage
+  const [viewSettings] = useLocalStorage('ontology-browser-view', () =>
+    transformSettingsToLocalStorageConfig(DEFAULT_ONTOLOGY_BROWSER_SETTINGS),
   );
 
   // State to manage the ontology tree lineage
@@ -56,7 +54,7 @@ export const OntologyBrowser = ({
   // Extract the query ID from the router, defaulting to the root taxon ID
   const router = useRouter();
   const id = router.query.id || '1';
-  const ontology = router.query.onto || 'ncbitaxon';
+  const ontology = router.query.ontology || 'ncbitaxon';
 
   // Memoize query parameters to avoid recalculating on each render
   const queryParams = useMemo(() => {
@@ -80,15 +78,7 @@ export const OntologyBrowser = ({
       queryParams.ontology,
     ],
     queryFn: () => {
-      if (queryParams.ontology === 'ncbitaxon') {
-        return fetchLineageFromBioThingsAPI({
-          id: queryParams.id,
-          ontology: queryParams.ontology,
-        }).then(async data => ({
-          lineage: await fetchPortalCounts(data.lineage, { q: queryParams.q }),
-        }));
-      }
-      return fetchLineageFromOLSAPI({
+      return fetchLineageFromBioThingsAPI({
         id: queryParams.id,
         ontology: queryParams.ontology,
       }).then(async data => ({
@@ -108,7 +98,7 @@ export const OntologyBrowser = ({
       // Update the lineage state with the fetched data
       setLineage(ontologyLineageData.lineage);
 
-      if (viewConfig.isCondensed) {
+      if (viewSettings?.isCondensed) {
         // Determine the starting index for the condensed view
         const condensedStartIndex =
           ontologyLineageData.lineage.length > MAX_VISIBLE_NODES
@@ -120,37 +110,11 @@ export const OntologyBrowser = ({
         setShowFromIndex(0);
       }
     }
-  }, [ontologyLineageData, viewConfig.isCondensed]);
+  }, [ontologyLineageData, viewSettings?.isCondensed]);
 
-  // Update lineage with new children
   const updateLineageWithChildren = useCallback(
-    (nodeId: string, children: OntologyLineageItemWithCounts[]) => {
-      setLineage(prevLineage => {
-        if (!prevLineage) return [];
-
-        // If no children, return previous lineage as it is
-        if (children.length === 0) return prevLineage;
-
-        // Find the index of the node to insert children after
-        // [TO DO]:Remove? not using this to merge any more
-        // const index = prevLineage.findIndex(node => node.id === nodeId);
-
-        // if (index === -1) return prevLineage;
-
-        // Filter out children that are already in the prevLineage
-        const filteredChildren = children.filter(
-          child =>
-            !prevLineage.some(prevNode => prevNode.taxonId === child.taxonId),
-        );
-
-        // If no children left after filtering, return previous lineage as it is
-        if (filteredChildren.length === 0) return prevLineage;
-
-        // Merge filtered children into prevLineage
-        const merged = [...prevLineage, ...filteredChildren];
-        // merged.splice(index + 1, 0, ...filteredChildren);
-        return merged;
-      });
+    (children: OntologyLineageItemWithCounts[]) => {
+      setLineage(prev => mergePreviousLineageWithChildrenData(prev, children));
     },
     [],
   );
@@ -187,11 +151,9 @@ export const OntologyBrowser = ({
             {selectedOntologyNode && (
               <OntologyBrowserHeader selectedNode={selectedOntologyNode} />
             )}
-            <OntologyViewPopover
+            <OntologyBrowserSettings
               label='Configure View'
               buttonProps={{ size: 'sm' }}
-              viewConfig={viewConfig}
-              setViewConfig={setViewConfig}
             />
           </Flex>
           {/* Tree Browser */}
@@ -207,29 +169,38 @@ export const OntologyBrowser = ({
               <Spinner size='md' color='primary.500' m={4} />
             ) : (
               lineage && (
-                <Tree
-                  params={queryParams}
-                  showFromIndex={showFromIndex}
-                  lineage={lineage}
-                  updateLineage={updateLineageWithChildren}
-                  updateShowFromIndex={setShowFromIndex}
-                  isIncludedInSearch={id => {
-                    return searchList.some(item => item.taxonId === id);
-                  }}
-                  addToSearch={({ ontologyName, taxonId, label, counts }) => {
-                    setSearchList(prev => {
-                      //if it already exists in the list, remove it
-                      if (prev.some(item => item.taxonId === taxonId)) {
-                        return prev.filter(item => item.taxonId !== taxonId);
-                      } else {
-                        return [
-                          ...prev,
-                          { ontologyName, taxonId, label, counts },
-                        ];
-                      }
-                    });
-                  }}
-                />
+                <>
+                  {showFromIndex > 0 && (
+                    <OntologyTreeBreadcrumbs
+                      lineageNodes={lineage.slice(0, showFromIndex)}
+                      showFromIndex={showFromIndex}
+                      updateShowFromIndex={setShowFromIndex}
+                    />
+                  )}
+
+                  <Tree
+                    params={queryParams}
+                    showFromIndex={showFromIndex}
+                    lineage={lineage}
+                    updateLineage={updateLineageWithChildren}
+                    isIncludedInSearch={id => {
+                      return searchList.some(item => item.taxonId === id);
+                    }}
+                    addToSearch={({ ontologyName, taxonId, label, counts }) => {
+                      setSearchList(prev => {
+                        //if it already exists in the list, remove it
+                        if (prev.some(item => item.taxonId === taxonId)) {
+                          return prev.filter(item => item.taxonId !== taxonId);
+                        } else {
+                          return [
+                            ...prev,
+                            { ontologyName, taxonId, label, counts },
+                          ];
+                        }
+                      });
+                    }}
+                  />
+                </>
               )
             )}
           </Box>

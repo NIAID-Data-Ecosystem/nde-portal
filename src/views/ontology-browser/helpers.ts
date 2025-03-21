@@ -8,31 +8,6 @@ export type OntologyOption = {
   relatedPortalSchemaProperties: string[];
 };
 
-export const ONTOLOGY_BROWSER_OPTIONS = [
-  {
-    name: 'NCBI Taxonomy',
-    value: 'ncbitaxon',
-    relatedPortalSchemaProperties: [
-      'infectiousAgent.displayName',
-      'infectiousAgent.displayName.raw',
-      'infectiousAgent.identifier',
-      'infectiousAgent.name',
-      'species.displayName',
-      'species.displayName.raw',
-      'species.identifier',
-      'species.name',
-    ],
-  },
-  {
-    name: 'EDAM',
-    value: 'edam',
-    relatedPortalSchemaProperties: [
-      'topicCategory.identifier',
-      'topicCategory.name',
-    ],
-  },
-] as OntologyOption[];
-
 const OLS_API_URL = 'https://www.ebi.ac.uk/ols4/api';
 
 export interface SearchParams {
@@ -254,14 +229,6 @@ export const fetchOntologyChildrenByNodeId = async (
     });
 
   return { children };
-};
-
-// Helper function to get children of a node
-export const getChildren = (
-  parentId: OntologyTreeItem['id'],
-  data: OntologyTreeItem[],
-) => {
-  return data.filter(item => item.parent === parentId);
 };
 
 export const formatIdentifier = (node: { id: string }) => {

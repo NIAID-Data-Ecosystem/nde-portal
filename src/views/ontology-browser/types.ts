@@ -62,7 +62,7 @@ export interface OntologyLineageRequestParams {
 
 export interface OntologyLineageItem {
   id: string;
-  commonName: string;
+  commonName: string | string[];
   hasChildren: boolean;
   iri: string;
   label: string;

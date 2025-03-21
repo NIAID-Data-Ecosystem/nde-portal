@@ -143,7 +143,7 @@ export const OntologyBrowserPopup = ({
         query: {
           q: querystring,
           id: suggestions?.[0]?._id || '',
-          onto: suggestions?.[0]?.definingOntology || '',
+          ontology: suggestions?.[0]?.definingOntology || '',
         },
       }}
     >
