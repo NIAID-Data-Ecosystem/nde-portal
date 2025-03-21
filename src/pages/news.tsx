@@ -313,10 +313,10 @@ const News: NextPage<NewsProps> = props => {
                         ) : (
                           <Empty
                             message='No news to display'
-                            color='niaid.placeholder'
+                            color='page.placeholder'
                             headingProps={{ size: 'sm' }}
                             iconProps={{
-                              color: 'niaid.placeholder',
+                              color: 'page.placeholder',
                               opacity: 0.7,
                             }}
                           />
@@ -359,10 +359,10 @@ const News: NextPage<NewsProps> = props => {
                         ) : (
                           <Empty
                             message='No events to display'
-                            color='niaid.placeholder'
+                            color='page.placeholder'
                             headingProps={{ size: 'sm' }}
                             iconProps={{
-                              color: 'niaid.placeholder',
+                              color: 'page.placeholder',
                               opacity: 0.7,
                             }}
                           />
@@ -563,7 +563,7 @@ const News: NextPage<NewsProps> = props => {
                                   <Icon
                                     as={icon}
                                     boxSize={6}
-                                    fill='niaid.placeholder'
+                                    fill='page.placeholder'
                                     _hover={{ fill: `${platform}.500` }}
                                   />
                                 </Link>

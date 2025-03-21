@@ -292,8 +292,8 @@ const Docs: NextPage<{
                                           bg='transparent'
                                           lineHeight='tall'
                                           _selected={{
-                                            color: 'tertiary.600!important',
-                                            bg: 'tertiary.100',
+                                            color: 'niaid.600!important',
+                                            bg: 'niaid.100',
                                           }}
                                           _hover={{
                                             [`&[aria-selected=false]`]: {

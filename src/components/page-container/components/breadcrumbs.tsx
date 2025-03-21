@@ -28,7 +28,7 @@ export const BreadcrumbItem = ({
       cursor={isCurrentPage ? 'default' : 'pointer'}
       alignItems='center'
       spacing={2}
-      color={isCurrentPage ? 'gray.800' : 'niaid.color'}
+      color={isCurrentPage ? 'gray.800' : 'niaid.500'}
       py={1}
       px={2}
       _hover={{
@@ -39,7 +39,7 @@ export const BreadcrumbItem = ({
       }}
     >
       {path?.icon && (
-        <Icon as={path.icon} boxSize={4} mb={0.5} fill='niaid.color' />
+        <Icon as={path.icon} boxSize={4} mb={0.5} fill='niaid.500' />
       )}
       <Text
         lineHeight='shorter'

@@ -25,16 +25,16 @@ const DesktopSubNavItem = ({
       role='tab'
       href={href}
       p={2}
-      color='tertiary.800'
+      color='niaid.800'
       variant='unstyled'
       rounded='md'
       _hover={{
-        bg: 'tertiary.50',
-        color: 'tertiary.600',
-        '.label': { color: 'tertiary.600' },
+        bg: 'niaid.50',
+        color: 'niaid.600',
+        '.label': { color: 'niaid.500' },
         '.icon': { opacity: '100%', transform: 'translateX(0)' },
       }}
-      _visited={{ color: 'tertiary.800' }}
+      _visited={{ color: 'niaid.800' }}
       target={isExternal ? '_blank' : '_self'}
     >
       <Flex justifyContent='space-between'>
@@ -42,7 +42,7 @@ const DesktopSubNavItem = ({
           <Text
             className='label'
             transition='all .3s ease'
-            _groupHover={{ color: 'tertiary.700' }}
+            _groupHover={{ color: 'niaid.700' }}
             fontWeight={600}
           >
             {label}
@@ -62,7 +62,7 @@ const DesktopSubNavItem = ({
         >
           <Icon
             sx={{
-              '> *': { color: 'tertiary.700' },
+              '> *': { color: 'niaid.700' },
             }}
             w={3}
             h={3}

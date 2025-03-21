@@ -132,7 +132,7 @@ export const Wrapper = ({
   ...props
 }: WrapperProps) => (
   <Skeleton isLoaded={!isLoading} fontSize='xs' flex={1} {...props}>
-    {hasDivider && <Divider borderColor='niaid.placeholder' />}
+    {hasDivider && <Divider borderColor='page.placeholder' />}
     {label && (
       <Heading
         as='h2'

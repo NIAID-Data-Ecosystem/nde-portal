@@ -99,7 +99,7 @@ export const SearchInput: React.FC<SearchInputProps> = ({
         }}
       >
         <InputLeftElement pointerEvents='none' height={sizeConfig[size].height}>
-          <Icon as={FaMagnifyingGlass} color='niaid.placeholder' boxSize={4} />
+          <Icon as={FaMagnifyingGlass} color='page.placeholder' boxSize={4} />
         </InputLeftElement>
         <Input
           id={ariaLabel}

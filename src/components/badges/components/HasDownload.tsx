@@ -1,8 +1,6 @@
 import { FormattedResource } from 'src/utils/api/types';
-import { Icon } from '@chakra-ui/react';
 import { BadgeWithTooltip, BadgeWithTooltipProps } from 'src/components/badges';
 import SchemaDefinitions from 'configs/schema-definitions.json';
-import { FaDownload } from 'react-icons/fa6';
 import { SchemaDefinitions as SchemaDefinitionsType } from 'scripts/generate-schema-definitions/types';
 
 interface HasDownloadProps extends Omit<BadgeWithTooltipProps, 'value'> {
@@ -44,7 +42,6 @@ export const HasDownload = ({
       tooltipLabel={type ? property?.description?.[type] || '' : ''}
       {...props}
     >
-      <Icon as={FaDownload} mr={1} />
       Has Download: {hasDownload}
     </BadgeWithTooltip>
   );

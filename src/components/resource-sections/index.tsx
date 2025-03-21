@@ -4,8 +4,8 @@ import {
   Box,
   Divider,
   Flex,
-  HStack,
   ListItem,
+  SimpleGrid,
   Skeleton,
   Stack,
   StackDivider,
@@ -40,6 +40,10 @@ import { ResourceCatalogCollection } from './components/collection-information';
 import { DownloadMetadata } from '../download-metadata';
 import { SearchableItems } from 'src/components/searchable-items';
 import { Summary } from './components/summary';
+import { OverviewSectionWrapper } from './components/overview-section-wrapper';
+import { getMetadataDescription } from '../metadata';
+import { TagWithUrl } from '../tag-with-url';
+import { FaMagnifyingGlass } from 'react-icons/fa6';
 
 // Metadata displayed in each section
 export const sectionMetadata: { [key: string]: (keyof FormattedResource)[] } = {
@@ -191,20 +195,139 @@ const Sections = ({
             {section.hash === 'overview' && (
               <>
                 <ResourceOverview isLoading={isLoading} {...data} />
+                {/* Overview secondary section */}
+                {(data?.genre || data?.about || data?.collectionSize) && (
+                  <SimpleGrid
+                    alignItems='flex-start'
+                    minChildWidth={{ base: 'unset', sm: '350px' }}
+                    mt={4}
+                    px={2}
+                    spacingX={14}
+                    spacingY={10}
+                    w='100%'
+                  >
+                    {/* Content Types */}
+                    <VStack>
+                      {data?.genre && (
+                        <OverviewSectionWrapper
+                          isLoading={isLoading}
+                          label='Research Domain'
+                          scrollContainerProps={{
+                            border: 'none',
+                            py: 0,
+                          }}
+                        >
+                          <TagWithUrl
+                            colorScheme='primary'
+                            href={{
+                              pathname: '/search',
+                              query: {
+                                q: `genre:"${data?.genre}"`,
+                              },
+                            }}
+                            m={0.5}
+                            leftIcon={FaMagnifyingGlass}
+                          >
+                            {data?.genre}
+                          </TagWithUrl>
+                        </OverviewSectionWrapper>
+                      )}
+                      {data?.about && data?.about?.length > 0 && (
+                        <OverviewSectionWrapper
+                          isLoading={isLoading}
+                          label='Content Types'
+                          scrollContainerProps={{
+                            border: 'none',
+                            py: 0,
+                            maxHeight: 'unset',
+                          }}
+                        >
+                          <SearchableItems
+                            fieldName='about'
+                            generateButtonLabel={(
+                              limit,
+                              length,
+                              itemLabel = 'about',
+                            ) =>
+                              limit === length
+                                ? `Show fewer ${itemLabel}`
+                                : `Show all ${itemLabel} (${
+                                    length - limit
+                                  } more)`
+                            }
+                            itemLimit={20}
+                            items={data?.about.map(item => item.displayName)}
+                          />
+                        </OverviewSectionWrapper>
+                      )}
+                    </VStack>
+                    {/* Size of collection */}
+                    {data?.collectionSize && (
+                      <OverviewSectionWrapper
+                        isLoading={isLoading}
+                        label='Collection Size Details'
+                        scrollContainerProps={{
+                          maxHeight: 'unset',
+                          py: 0,
+                        }}
+                      >
+                        <ResourceCatalogCollection
+                          collectionSize={data?.collectionSize}
+                        />
+                      </OverviewSectionWrapper>
+                    )}
+                    {/* <Box></Box> */}
+                  </SimpleGrid>
+                )}
 
-                <ResourceIsPartOf
-                  isLoading={isLoading}
-                  studies={data?.isPartOf}
-                />
-                <ResourceCitations
-                  isLoading={isLoading}
-                  type={data?.['@type']}
-                  citations={data?.citation}
-                />
-                <ResourceCatalogCollection
-                  isLoading={isLoading}
-                  collectionSize={data?.collectionSize}
-                />
+                {/* External links to access data, documents or dataset at the source. */}
+                <SimpleGrid
+                  alignItems='flex-start'
+                  minChildWidth={{ base: 'unset', sm: '280px', xl: '300px' }}
+                  mt={4}
+                  px={2}
+                  spacingX={14}
+                  spacingY={10}
+                  w='100%'
+                >
+                  {/* Studies that resource is a part of */}
+                  {data?.isPartOf?.some(
+                    item => item.name || item.identifier,
+                  ) && (
+                    <OverviewSectionWrapper
+                      isLoading={isLoading}
+                      label={`Part of ${
+                        data?.isPartOf.length > 1
+                          ? `(${data?.isPartOf.length})`
+                          : ''
+                      }`}
+                      tooltipLabel={getMetadataDescription(
+                        'isPartOf',
+                        data?.['@type'],
+                      )}
+                    >
+                      <ResourceIsPartOf studies={data?.isPartOf} />
+                    </OverviewSectionWrapper>
+                  )}
+
+                  {/* Resource citation(s) */}
+                  {data?.citation && (
+                    <OverviewSectionWrapper
+                      isLoading={isLoading}
+                      label={`Citation${
+                        data?.citation.length > 1
+                          ? `s (${data?.citation.length})`
+                          : ''
+                      }`}
+                      tooltipLabel={getMetadataDescription(
+                        'citation',
+                        data?.['@type'],
+                      )}
+                    >
+                      <ResourceCitations citations={data?.citation} />
+                    </OverviewSectionWrapper>
+                  )}
+                </SimpleGrid>
               </>
             )}
             {/* Show keywords */}

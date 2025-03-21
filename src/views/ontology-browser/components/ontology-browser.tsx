@@ -4,7 +4,6 @@ import { useQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/router';
 import {
   fetchLineageFromBioThingsAPI,
-  fetchLineageFromOLSAPI,
   fetchPortalCounts,
 } from '../utils/api-helpers';
 import { useLocalStorage } from 'usehooks-ts';
@@ -163,7 +162,7 @@ export const OntologyBrowser = ({
             bg='white'
             border='1px solid'
             borderRadius='semi'
-            borderColor='niaid.placeholder'
+            borderColor='page.placeholder'
             overflow='hidden'
           >
             {isLoading || !router.isReady ? (

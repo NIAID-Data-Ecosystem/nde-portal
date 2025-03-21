@@ -83,7 +83,7 @@ export const CheckboxList = <T extends Option>({
             </Text>
             {description && (
               <Text
-                color='niaid.placeholder'
+                color='page.placeholder'
                 fontSize='sm'
                 fontStyle='italic'
                 fontWeight='normal'
@@ -146,7 +146,7 @@ export const CheckboxList = <T extends Option>({
                         }
                       }}
                       px={1}
-                      _hover={{ bg: 'tertiary.50' }}
+                      _hover={{ bg: 'niaid.50' }}
                     >
                       <Text fontSize='sm'>{option.name}</Text>
                     </Checkbox>

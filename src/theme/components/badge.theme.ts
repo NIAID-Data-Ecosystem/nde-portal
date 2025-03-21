@@ -8,7 +8,7 @@ export const Badge = {
     solid: ({ colorScheme }: { colorScheme: string }) => {
       let bg;
       let color = 'white';
-      if (colorScheme === 'tertiary') {
+      if (colorScheme === 'niaid') {
         bg = 'black';
       }
       if (colorScheme === 'gray') {
@@ -65,7 +65,7 @@ export const Badge = {
         boxShadow = theme.colors.gray[900];
         color = theme.colors.gray[700];
       }
-      if (colorScheme === 'tertiary') {
+      if (colorScheme === 'niaid') {
         boxShadow = theme.colors.black;
         color = theme.colors.text.heading;
       }

@@ -51,7 +51,7 @@ export const Navigation: React.FC<FlexProps> = props => {
       {...props}
     >
       <Flex
-        bg='tertiary.700'
+        bg='niaid.500'
         color='white'
         minH='60px'
         // h={['105px', '77px', '89px']}
@@ -105,7 +105,7 @@ export const Navigation: React.FC<FlexProps> = props => {
               )
             }
             onClick={onToggle}
-            colorScheme='tertiary'
+            colorScheme='niaid'
             color='#fff'
             _hover={{ bg: 'whiteAlpha.500' }}
             variant='ghost'

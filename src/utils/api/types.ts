@@ -376,6 +376,14 @@ export interface FormattedResource {
   id: string;
   '@type': APIResourceType; // "Dataset" | "ComputationalTool" | "Resource Catalog"
   name: string;
+  about:
+    | {
+        description: string;
+        displayName: string;
+        name: string;
+        url: string;
+      }[]
+    | null;
   abstract: string | null;
   aggregateRating: AggregateRating | null;
   alternateName: string | null;

@@ -1,70 +1,77 @@
 import { FormattedResource } from 'src/utils/api/types';
-import { Flex, Skeleton, Text } from '@chakra-ui/react';
-import { Link } from 'src/components/link';
-import { MetadataLabel } from 'src/components/metadata';
-import { ScrollContainer } from 'src/components/scroll-container';
+import { Box, Table, Thead, Tbody, Tr, Th, Td } from '@chakra-ui/react';
 
 interface ResourceCatalogCollectionProps {
-  isLoading: boolean;
   collectionSize?: FormattedResource['collectionSize'];
 }
 
+const thStyles = {
+  borderBottom: '1px!important',
+  borderBottomColor: 'gray.200!important',
+  color: 'text.heading!important',
+  fontWeight: 'medium!important',
+  textTransform: 'none!important',
+  p: '2!important',
+};
+
+const tdStyles = {
+  p: '2!important',
+  borderBottom: '1px!important',
+  borderBottomColor: 'gray.100!important',
+  fontSize: 'xs!important',
+};
 export const ResourceCatalogCollection = ({
   collectionSize,
-  isLoading,
 }: ResourceCatalogCollectionProps) => {
   if (!collectionSize) return <></>;
 
-  return (
-    <Skeleton isLoaded={!isLoading} mx={1} py={2}>
-      <Flex alignItems='baseline' lineHeight='short' mb={1}>
-        <MetadataLabel label='Collection Size Details' />
-      </Flex>
-      <ScrollContainer
-        overflow='auto'
-        maxHeight='200px'
-        border='1px solid'
-        borderColor='gray.100'
-        borderRadius='semi'
-        my={2}
-        py={2}
-        px={0}
-      >
-        {collectionSize.map((collection, idx) => {
-          if (collection?.value) {
-            return (
-              <Text
-                key={idx}
-                bg={idx % 2 ? 'tertiary.50' : 'transparent'}
-                lineHeight='tall'
-                fontSize='sm'
-                px={2}
-                py={collectionSize.length > 1 ? 2 : 0}
-              >
-                {collection.value?.toLocaleString()}
+  const collectionSizeRows = collectionSize
+    .map(collection => {
+      let valueText = 'Unknown';
+      let value = 0;
+      if (collection?.minValue) {
+        value = collection.minValue;
+        valueText = '> ' + collection.minValue.toLocaleString();
+      } else if (collection?.maxValue) {
+        value = collection.maxValue;
 
-                {collection?.unitText}
-              </Text>
+        valueText = '< ' + collection.maxValue.toLocaleString();
+      } else if (collection?.value) {
+        value = collection.value;
+        valueText = collection.value.toLocaleString();
+      }
+
+      return { value, valueText, unitText: collection?.unitText };
+    })
+    .filter(collection => collection.unitText)
+    .sort((a, b) => b.value - a.value);
+
+  return (
+    <Box>
+      <Table size='sm'>
+        <Thead>
+          <Tr>
+            <Th {...thStyles} textTransform='none' isNumeric>
+              Quantity
+            </Th>
+            <Th {...thStyles} textTransform='none'>
+              Type
+            </Th>
+          </Tr>
+        </Thead>
+        <Tbody>
+          {collectionSizeRows.map((collection, idx) => {
+            return (
+              <Tr key={idx}>
+                <Td isNumeric {...tdStyles}>
+                  {collection?.valueText}
+                </Td>
+                <Td {...tdStyles}>{collection?.unitText}</Td>
+              </Tr>
             );
-          }
-          return (
-            <Text
-              key={idx}
-              bg={idx % 2 ? 'tertiary.50' : 'transparent'}
-              lineHeight='tall'
-              fontSize='sm'
-              px={2}
-              py={collectionSize.length > 1 ? 2 : 0}
-            >
-              {collection.minValue?.toLocaleString()}
-              {collection?.maxValue
-                ? '- ' + collection.maxValue.toLocaleString()
-                : ''}{' '}
-              {collection?.unitText}
-            </Text>
-          );
-        })}
-      </ScrollContainer>
-    </Skeleton>
+          })}
+        </Tbody>
+      </Table>
+    </Box>
   );
 };

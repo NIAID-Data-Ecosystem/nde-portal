@@ -19,7 +19,7 @@ export const Input = {
       field: {
         fontWeight: 'light',
         _placeholder: {
-          color: 'niaid.placeholder',
+          color: 'page.placeholder',
         },
       },
     };
@@ -103,6 +103,6 @@ export const Input = {
     size: 'sm',
     variant: 'outline',
     colorScheme: 'gray',
-    _placeholder: { color: 'niaid.placeholder' },
+    _placeholder: { color: 'page.placeholder' },
   },
 };

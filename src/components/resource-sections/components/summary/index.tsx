@@ -72,7 +72,7 @@ export const Summary = ({
           variant='solid'
           size='sm'
           mr={1.5}
-          colorScheme='tertiary'
+          colorScheme='niaid'
           bg='status.info'
         >
           <TagLeftIcon as={FaWandMagicSparkles}></TagLeftIcon>

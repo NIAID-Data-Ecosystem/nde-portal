@@ -49,7 +49,7 @@ export const PaginationButtonGroup: React.FC<PaginationButtonGroupProps> = ({
 
       const Ellipsis = ({ isVisible }: { isVisible: boolean }) => {
         return (
-          <Flex mx={4} alignItems='end' color='niaid.placeholder'>
+          <Flex mx={4} alignItems='end' color='page.placeholder'>
             {isVisible ? '...' : ''}
           </Flex>
         );

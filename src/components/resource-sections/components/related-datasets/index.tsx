@@ -32,7 +32,7 @@ export const CardContainer: React.FC<CardContainerProps> = ({
           size='sm'
           fontWeight='semibold'
           borderBottom='0.5px solid'
-          borderColor='niaid.placeholder'
+          borderColor='page.placeholder'
         >
           {heading}
         </Heading>
