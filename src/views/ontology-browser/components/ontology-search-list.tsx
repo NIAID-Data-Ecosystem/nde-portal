@@ -1,3 +1,5 @@
+import React from 'react';
+import NextLink from 'next/link';
 import {
   Box,
   Button,
@@ -17,12 +19,6 @@ import Tooltip from 'src/components/tooltip';
 import { useRouter } from 'next/router';
 import { ScrollContainer } from 'src/components/scroll-container';
 import { SearchListItem } from 'src/pages/ontology-browser';
-import {
-  getTooltipLabelByCountType,
-  OntologyBrowserCountTag,
-} from './ontology-browser-count-tag';
-import NextLink from 'next/link';
-import React from 'react';
 
 const WIDTH = 400;
 
