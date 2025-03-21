@@ -63,7 +63,7 @@ export const DownloadMetadataProgress: React.FC<DownloadMetadataProgressProps> =
                   />
                   <Text
                     fontSize='xs'
-                    color='niaid.placeholder'
+                    color='page.placeholder'
                     textAlign='end'
                     fontWeight='medium'
                     ml={1}

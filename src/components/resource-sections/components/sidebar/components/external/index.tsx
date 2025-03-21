@@ -104,6 +104,7 @@ export const Wrapper = ({
   children,
   headingProps,
   hasDivider = true,
+  ...props
 }: {
   label?: string;
   isLoading: boolean;
@@ -111,8 +112,8 @@ export const Wrapper = ({
   headingProps?: HeadingProps;
   hasDivider?: boolean;
 }) => (
-  <Skeleton isLoaded={!isLoading} fontSize='xs' flex={1}>
-    {hasDivider && <Divider borderColor='niaid.placeholder' />}
+  <Skeleton isLoaded={!isLoading} fontSize='xs' flex={1} {...props}>
+    {hasDivider && <Divider borderColor='page.placeholder' />}
     {label && (
       <Heading
         as='h2'

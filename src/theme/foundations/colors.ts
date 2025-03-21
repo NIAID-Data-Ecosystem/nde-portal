@@ -32,18 +32,6 @@ export const colors = {
     800: '#100A45',
     900: '#06031D',
   },
-  tertiary: {
-    50: '#F6FAFD', //alternate: #f8fafa
-    100: '#EAF4FB',
-    200: '#BDDEF4',
-    300: '#96C8E9',
-    400: '#479CD4',
-    500: '#3082BC',
-    600: '#236593',
-    700: '#20558A',
-    800: '#0B2536',
-    900: '#000F1A',
-  },
   niaid: {
     50: '#F6FAFD',
     100: '#EAF2FA',
@@ -55,8 +43,6 @@ export const colors = {
     700: '#1b3451',
     800: '#0A1929',
     900: '#020c19',
-    placeholder: '#9AA6B5',
-    color: '#20558A',
   },
   accent: {
     50: '#F9DFE9',
