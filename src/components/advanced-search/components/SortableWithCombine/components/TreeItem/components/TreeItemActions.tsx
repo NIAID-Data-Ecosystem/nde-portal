@@ -44,7 +44,7 @@ export const TreeItemActions = React.memo(
           {...handleProps}
           aria-label='drag item'
           className='tree-item-handle'
-          color='niaid.placeholder'
+          color='page.placeholder'
         />
 
         {/* Collapse children items */}
@@ -55,7 +55,7 @@ export const TreeItemActions = React.memo(
             handleClick={onCollapse}
             colorScheme='gray'
             variant='ghost'
-            color='niaid.placeholder'
+            color='page.placeholder'
             mx={1}
             icon={collapseIcon}
           />
@@ -70,7 +70,7 @@ export const TreeItemActions = React.memo(
             handleClick={onUpdate}
             colorScheme='gray'
             variant='ghost'
-            color='niaid.placeholder'
+            color='page.placeholder'
             mx={1}
             icon={<Icon as={FaRegPenToSquare} />}
           />

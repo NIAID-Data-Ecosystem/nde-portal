@@ -179,7 +179,7 @@ export const DownloadMetadata: React.FC<DownloadMetadataProps> = ({
               />
               <Text
                 fontSize='xs'
-                color='niaid.placeholder'
+                color='page.placeholder'
                 textAlign='end'
                 fontWeight='medium'
                 ml={1}

@@ -49,7 +49,7 @@ export const SearchLabel = ({
         variant='outline'
         borderRadius='semi'
         mb={2}
-        _focus={{ borderColor: 'niaid.placeholder' }}
+        _focus={{ borderColor: 'page.placeholder' }}
         _hover={{ bg: 'page.alt' }}
         value={selectedSearchType.id}
         onChange={e => {

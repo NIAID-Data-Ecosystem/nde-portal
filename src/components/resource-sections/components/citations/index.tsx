@@ -39,7 +39,7 @@ const ResourceCitations = ({ citations }: ResourceCitationsProps) => {
         return (
           <Text
             key={idx}
-            bg={idx % 2 ? 'tertiary.50' : 'transparent'}
+            bg={idx % 2 ? 'niaid.50' : 'transparent'}
             lineHeight='tall'
             fontSize='inherit'
             px={2}
