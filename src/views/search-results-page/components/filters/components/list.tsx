@@ -87,7 +87,7 @@ const VirtualizedList = React.memo(
             borderRadius: '8px',
           },
           '&:hover>.virtualized-list::-webkit-scrollbar-thumb': {
-            background: 'niaid.placeholder',
+            background: 'page.placeholder',
           },
         }}
       >

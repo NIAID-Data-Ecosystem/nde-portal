@@ -35,7 +35,7 @@ export const ResourceCatalogCollection = ({
             return (
               <Text
                 key={idx}
-                bg={idx % 2 ? 'tertiary.50' : 'transparent'}
+                bg={idx % 2 ? 'niaid.50' : 'transparent'}
                 lineHeight='tall'
                 fontSize='sm'
                 px={2}
@@ -50,7 +50,7 @@ export const ResourceCatalogCollection = ({
           return (
             <Text
               key={idx}
-              bg={idx % 2 ? 'tertiary.50' : 'transparent'}
+              bg={idx % 2 ? 'niaid.50' : 'transparent'}
               lineHeight='tall'
               fontSize='sm'
               px={2}
