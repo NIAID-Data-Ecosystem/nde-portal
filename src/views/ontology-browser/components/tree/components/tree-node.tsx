@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   Box,
   Flex,
@@ -31,6 +31,9 @@ import { transformSettingsToLocalStorageConfig } from '../../settings/helpers';
 import { DEFAULT_ONTOLOGY_BROWSER_SETTINGS } from '../../settings';
 import { ErrorMessage } from '../../error-message';
 
+const hasZeroCounts = (node: OntologyLineageItemWithCounts) =>
+  node.counts.termCount === 0 && node.counts.termAndChildrenCount === 0;
+
 /**
  * TreeNode Component
  *
@@ -39,6 +42,7 @@ import { ErrorMessage } from '../../error-message';
  * - Fetches child nodes when toggled open if they haven't been loaded.
  * - Renders node details, including links, counts, and actions.
  */
+
 export const TreeNode = (props: {
   addToSearch: TreeProps['addToSearch'];
   depth: number; //Depth level in the tree for indentation
@@ -133,14 +137,13 @@ export const TreeNode = (props: {
     enabled: node.hasChildren && pageFrom > 0,
   });
 
-  // Toggle the node's open/closed state and fetch children if opening
-  const toggleNode = () => {
+  // Toggle the node's open/closed state and fetch children if opening.
+  const toggleNode = useCallback(() => {
     if (node.hasChildren && !isToggled) {
       fetchChildren();
     }
     setIsToggled(!isToggled);
-  };
-  const queryId = params.id;
+  }, [fetchChildren, isToggled, node.hasChildren]);
 
   useEffect(() => {
     if (childrenData) {
@@ -155,68 +158,61 @@ export const TreeNode = (props: {
         setFetchedChildren([]);
       }
     }
-  }, [childrenData, isToggled, queryId]);
+  }, [childrenData, isToggled, params.id]);
 
-  useEffect(() => {
-    if (queryId !== node.id.toString()) {
-      setIsToggled(node.state.opened); // Reset toggle state when the query ID changes
-      setFetchedChildren([]);
-    }
-  }, [queryId, node.state.opened, node.id]);
-
-  // Set children data in state with node information. Refresh when queryId changes.
-  // useEffect(() => {
-  //   const children = getChildren(node.taxonId, lineage); // Retrieve immediate children from lineage
-  //   setChildrenList(children);
-  // }, [queryId, lineage, node.taxonId]);
-  // Update lineage with new children data (if there is) when toggled open
+  // Update the lineage when the children are fetched.
   useEffect(() => {
     if (isToggled && fetchedChildren.length > 0) {
       updateLineage(fetchedChildren);
     }
-  }, [queryId, isToggled, fetchedChildren, node.id, updateLineage]);
+  }, [params.id, isToggled, fetchedChildren, node.id, updateLineage]);
 
+  // Reset the toggle state the params.id changes
+  useEffect(() => {
+    if (params.id !== node.id.toString()) {
+      setIsToggled(node.state.opened);
+      setFetchedChildren([]);
+    }
+  }, [node.id, node.state.opened, params.id]);
+
+  // List of children nodes sorted by term count and filtered by hideEmptyCounts configuration
   const sortedChildrenList = useMemo(() => {
-    const filterChildrenItems = (item: OntologyLineageItemWithCounts) => {
+    const filterChildrenItems = (node: OntologyLineageItemWithCounts) => {
+      // Filter out items with 0 counts if configured to do so
       if (viewSettings?.hideEmptyCounts) {
-        return (
-          item.counts.termCount > 0 || item.counts.termAndChildrenCount > 0
-        );
+        return !hasZeroCounts(node);
       }
       return true;
     };
-    const newChildren = sortChildrenList(
-      getChildren(node.taxonId, lineage),
-    ).filter(filterChildrenItems);
-    return newChildren;
-  }, [node.taxonId, lineage, viewSettings?.hideEmptyCounts]);
+    // Sort the children list by descending termCount and filter out items with 0 counts if configured to do so
+    const sorted = sortChildrenList(
+      getChildren(node.taxonId, lineage).filter(filterChildrenItems),
+    );
+    return sorted;
+  }, [lineage, node.taxonId, viewSettings?.hideEmptyCounts]);
 
-  const numChildrenItemsDisplayed = useMemo(() => {
-    return sortedChildrenList.length;
-  }, [sortedChildrenList]);
+  // Show pagination if there are more children to fetch or if the loading state is active
+  const showPagination = useMemo(() => {
+    return pagination?.hasMore || (isLoading && pageFrom > 0);
+  }, [isLoading, pageFrom, pagination?.hasMore]);
 
-  // Show a warning when there are hidden elements due to the hideEmptyCounts configuration
+  // Show a warning when there are hidden elements due to the hideEmptyCounts configuration and the children list contains some items with 0 counts
   const showHiddenElementsWarning = useMemo(
     () =>
       Boolean(
         isToggled &&
           viewSettings?.hideEmptyCounts &&
-          sortedChildrenList.some(item => !item.counts.termCount),
+          fetchedChildren.some(node => hasZeroCounts(node)),
       ),
-    [sortedChildrenList, viewSettings?.hideEmptyCounts, isToggled],
-  );
-
-  const showPagination = useMemo(
-    () => pagination?.hasMore || (isLoading && pageFrom > 0),
-    [pagination?.hasMore, isLoading, pageFrom],
+    [fetchedChildren, viewSettings?.hideEmptyCounts, isToggled],
   );
 
   // Determine if a node should be hidden if the view config is set to hide empty counts and the node has no datasets AND children have no datasets
-  const shouldHideNode =
-    viewSettings?.hideEmptyCounts &&
-    node.counts.termCount === 0 &&
-    node.counts.termAndChildrenCount === 0 &&
-    sortedChildrenList.length === 0;
+  const shouldHideNode = useMemo(() => {
+    return (
+      viewSettings?.hideEmptyCounts && hasZeroCounts(node) && !node.hasChildren
+    );
+  }, [node, viewSettings?.hideEmptyCounts]);
 
   if (error) {
     return (
@@ -225,6 +221,7 @@ export const TreeNode = (props: {
       </ErrorMessage>
     );
   }
+
   // Hide nodes with no children that have 0 datasets if configured to do so
   if (shouldHideNode) {
     return <></>;
@@ -356,31 +353,28 @@ export const TreeNode = (props: {
             />
           ))}
           {/* If there are only children with 0 counts and the conmfiguration hides them, show a note */}
-          {showHiddenElementsWarning &&
-            (showPagination ||
-              (numChildrenItemsDisplayed === 0 &&
-                sortedChildrenList.length > 0)) && (
-              <ListItem
-                className='hiddenElementsWarning'
-                bg='status.warning_lt'
-                fontSize='xs'
-                px={4}
-                py={2}
-                pl={`${(depth + 2) * MARGIN}px`}
-              >
-                <Warning
-                  node={node}
-                  onClick={() => {
-                    if (viewSettings?.hideEmptyCounts) {
-                      setViewSettings({
-                        ...viewSettings,
-                        hideEmptyCounts: false,
-                      });
-                    }
-                  }}
-                />
-              </ListItem>
-            )}
+          {showHiddenElementsWarning && (
+            <ListItem
+              className='hiddenElementsWarning'
+              bg='status.warning_lt'
+              fontSize='xs'
+              px={4}
+              py={2}
+              pl={`${(depth + 2) * MARGIN}px`}
+            >
+              <Warning
+                node={node}
+                onClick={() => {
+                  if (viewSettings?.hideEmptyCounts) {
+                    setViewSettings({
+                      ...viewSettings,
+                      hideEmptyCounts: false,
+                    });
+                  }
+                }}
+              />
+            </ListItem>
+          )}
 
           {/* Handles pagination when children items exceed the SIZE value */}
           {showPagination && (
@@ -393,21 +387,17 @@ export const TreeNode = (props: {
               bg='tertiary.50'
             >
               <Pagination
-                hasMore={
-                  !(numChildrenItemsDisplayed < sortedChildrenList.length)
-                }
-                isDisabled={
-                  isLoading ||
-                  sortedChildrenList.length === pagination?.totalElements
-                }
+                hasMore={showPagination}
                 isLoading={isLoading}
                 node={node}
-                numChildrenDisplayed={numChildrenItemsDisplayed}
+                numChildrenDisplayed={sortedChildrenList.length}
+                totalElements={pagination?.totalElements || 0}
+                isDisabled={isLoading || sortedChildrenList.length < pageSize}
                 onShowMore={() => {
+                  // page + 1?
                   const page = Math.floor(sortedChildrenList.length / pageSize);
                   setPageFrom(page);
                 }}
-                totalElements={pagination?.totalElements || 0}
               />
             </ListItem>
           )}
