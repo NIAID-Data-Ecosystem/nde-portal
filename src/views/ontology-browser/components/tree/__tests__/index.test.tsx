@@ -1,16 +1,45 @@
 import React, { useState } from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import {
+  act,
+  render,
+  screen,
+  fireEvent,
+  waitFor,
+} from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ChakraProvider } from '@chakra-ui/react';
 import {
   fetchChildrenFromBioThingsAPI,
   fetchPortalCounts,
 } from '../../../utils/api-helpers';
-import { mockBiothingsChildrenApiResponse } from '../__mocks__/mockBiothingsChildrenApiResponse';
+import {
+  mockBiothingsChildrenApiResponse,
+  mockBiothingsChildrenPaginatedApiResponse,
+} from '../__mocks__/mockBiothingsChildrenApiResponse';
 import { mockPortalCountsResponse } from '../__mocks__/mockPortalCountsResponse';
 import { Tree } from '..';
 import { mergePreviousLineageWithChildrenData } from 'src/views/ontology-browser/utils/ontology-helpers';
 import { OntologyLineageItemWithCounts } from 'src/views/ontology-browser/types';
+import { mockBiothingsLineageFromBioThingsAPIResponse } from '../__mocks__/mockBiothingsLineageFromBioThingsAPIResponse';
+import { transformSettingsToLocalStorageConfig } from '../../settings/helpers';
+import { useLocalStorage } from 'usehooks-ts';
+
+let viewSettingsMock = transformSettingsToLocalStorageConfig({
+  isCondensed: { label: 'Show condensed view?', value: true },
+  hideEmptyCounts: { label: 'Hide Empty counts?', value: true },
+});
+
+const mockSetViewConfig = jest.fn();
+
+jest.mock('usehooks-ts', () => ({
+  useLocalStorage: jest.fn(key => [
+    viewSettingsMock,
+    (newValue: any) => {
+      viewSettingsMock = newValue; // Persist the new value
+      mockSetViewConfig(newValue); // Call the mock function too
+    },
+  ]),
+}));
 
 jest.mock('../../../utils/api-helpers', () => ({
   ...jest.requireActual('../../../utils/api-helpers'),
@@ -702,6 +731,11 @@ describe('Tree', () => {
   beforeEach(() => {
     jest.clearAllMocks();
 
+    viewSettingsMock = transformSettingsToLocalStorageConfig({
+      isCondensed: { label: 'Show condensed view?', value: true },
+      hideEmptyCounts: { label: 'Hide Empty counts?', value: true },
+    });
+
     (fetchChildrenFromBioThingsAPI as jest.Mock).mockResolvedValue(
       mockBiothingsChildrenApiResponse,
     );
@@ -712,6 +746,237 @@ describe('Tree', () => {
 
     queryClient.clear();
     queryClient = createQueryClient();
+  });
+
+  it('renders pagination correctly when items with 0 counts are hidden', async () => {
+    const TreeWithSimulatedLineageState = () => {
+      const queryParams = {
+        q: '',
+        id: '2759',
+        ontology: 'ncbitaxon',
+      };
+      const [lineage, setLineage] = useState<OntologyLineageItemWithCounts[]>(
+        mockBiothingsLineageFromBioThingsAPIResponse(queryParams),
+      );
+      const updateLineage = (children: OntologyLineageItemWithCounts[]) => {
+        setLineage(prevLineage =>
+          mergePreviousLineageWithChildrenData(prevLineage, children),
+        );
+      };
+      // Select a lineage item that is two ancestors up 9606.
+      const showFromIndex =
+        lineage.findIndex(item => item.taxonId === queryParams.id) - 2;
+      return (
+        <Tree
+          addToSearch={addToSearch}
+          isIncludedInSearch={isIncludedInSearch}
+          lineage={lineage}
+          params={queryParams}
+          showFromIndex={showFromIndex}
+          updateLineage={updateLineage}
+        />
+      );
+    };
+    const { rerender } = render(<TreeWithSimulatedLineageState />, {
+      wrapper,
+    });
+
+    await waitFor(() => {
+      expect(viewSettingsMock.hideEmptyCounts).toBe(true);
+    });
+
+    // Verify that the node ncbitaxon | 2759 is rendered
+    expect(screen.getByText('ncbitaxon | 2759')).toBeInTheDocument();
+
+    // Mock a pagination response
+    (fetchChildrenFromBioThingsAPI as jest.Mock).mockResolvedValue(
+      mockBiothingsChildrenPaginatedApiResponse,
+    );
+
+    let nodeWithNoChildrenAndZeroDatasets: OntologyLineageItemWithCounts[] = [];
+    let responseTaxonomyItems: OntologyLineageItemWithCounts[] = [];
+
+    (fetchPortalCounts as jest.Mock).mockImplementation(children => {
+      const response = mockPortalCountsResponse(children);
+      // Count the number of children with 0 counts
+      responseTaxonomyItems = response;
+      nodeWithNoChildrenAndZeroDatasets = response.filter(
+        child =>
+          child.counts.termCount === 0 &&
+          child.counts.termAndChildrenCount === 0 &&
+          !child.hasChildren,
+      );
+      // console.log('____RESPONSE____', response);
+      return Promise.resolve(response);
+    });
+
+    const toggleButton = screen.getByRole('button', {
+      name: /Show all children of eukaryota/i,
+    });
+
+    expect(toggleButton).toBeInTheDocument();
+    expect(screen.getByText('498')).toBeInTheDocument();
+
+    // Click to toggle closed then open, which loads the children
+    act(() => {
+      toggleButton.click();
+    });
+
+    await waitFor(() => {
+      // Verify that the node sar is rendered
+      expect(screen.getByText(/sar/i)).toBeInTheDocument();
+      // Verify that the pagination is rendered with the correct counts
+      expect(
+        screen.getByText(
+          new RegExp(
+            `Displaying ${nodeWithNoChildrenAndZeroDatasets.length} of 21 children for`,
+            'i',
+          ),
+        ),
+      ).toBeInTheDocument();
+      // Verify that the nodes with 0 counts are NOT rendered.
+      nodeWithNoChildrenAndZeroDatasets.forEach(node => {
+        expect(
+          screen.queryByText(new RegExp(node.label, 'i')),
+        ).not.toBeInTheDocument();
+      });
+    });
+
+    // Expect that hidden children warning will appear.
+    const warningHiddenCountsElement = document.querySelector(
+      '.hiddenElementsWarning',
+    );
+    expect(warningHiddenCountsElement).toBeInTheDocument();
+    expect(warningHiddenCountsElement).toHaveTextContent(
+      /eukaryota \(Taxon ID: 2759\)/,
+    );
+    expect(warningHiddenCountsElement).toHaveTextContent(
+      /has hidden children with 0 associated datasets\./,
+    );
+
+    // Find and click the "Show hidden terms" button
+    const showHiddenTermsButton = (
+      warningHiddenCountsElement as Element
+    ).querySelector('button');
+    expect(showHiddenTermsButton).toBeInTheDocument();
+
+    act(() => {
+      fireEvent.click(showHiddenTermsButton as Element);
+    });
+    await waitFor(() => {
+      expect(viewSettingsMock.hideEmptyCounts).toBe(false);
+    });
+
+    rerender(<TreeWithSimulatedLineageState />);
+    // Expect that the hidden children are now visible
+    await waitFor(() => {
+      expect(
+        screen.getByText(
+          new RegExp(
+            `Displaying ${responseTaxonomyItems.length} of 21 children for`,
+            'i',
+          ),
+        ),
+      ).toBeInTheDocument();
+    });
+  });
+  it('renders pagination correctly', async () => {
+    // Ensure that the empty counts are shown
+    const settings = {
+      ['isCondensed']: {
+        label: 'Enable condensed view?',
+        value: true,
+      },
+      ['hideEmptyCounts']: {
+        label: 'Hide terms with 0 datasets?',
+        value: false,
+      },
+    };
+    (useLocalStorage as jest.Mock).mockReturnValue([
+      transformSettingsToLocalStorageConfig(settings),
+      mockSetViewConfig,
+    ]);
+
+    const TreeWithSimulatedLineageState = () => {
+      const queryParams = {
+        q: '',
+        id: '2759',
+        ontology: 'ncbitaxon',
+      };
+      const [lineage, setLineage] = useState<OntologyLineageItemWithCounts[]>(
+        mockBiothingsLineageFromBioThingsAPIResponse(queryParams),
+      );
+      const updateLineage = (children: OntologyLineageItemWithCounts[]) => {
+        setLineage(prevLineage =>
+          mergePreviousLineageWithChildrenData(prevLineage, children),
+        );
+      };
+      // Select a lineage item that is two ancestors up 9606.
+      const showFromIndex =
+        lineage.findIndex(item => item.taxonId === queryParams.id) - 2;
+      return (
+        <Tree
+          addToSearch={addToSearch}
+          isIncludedInSearch={isIncludedInSearch}
+          lineage={lineage}
+          params={queryParams}
+          showFromIndex={showFromIndex}
+          updateLineage={updateLineage}
+        />
+      );
+    };
+
+    render(<TreeWithSimulatedLineageState />, { wrapper });
+
+    // Verify that the node ncbitaxon | 2759 is rendered
+    expect(screen.getByText('ncbitaxon | 2759')).toBeInTheDocument();
+
+    // Mock a pagination response
+    (fetchChildrenFromBioThingsAPI as jest.Mock).mockResolvedValue(
+      mockBiothingsChildrenPaginatedApiResponse,
+    );
+
+    let responseTaxonomyItems: OntologyLineageItemWithCounts[] = [];
+
+    (fetchPortalCounts as jest.Mock).mockImplementation(children => {
+      const response = mockPortalCountsResponse(children);
+      responseTaxonomyItems = response;
+      // console.log('____RESPONSE____', response);
+      return Promise.resolve(response);
+    });
+
+    const toggleButton = screen.getByRole('button', {
+      name: /Show all children of eukaryota/i,
+    });
+
+    expect(toggleButton).toBeInTheDocument();
+    expect(screen.getByText('498')).toBeInTheDocument();
+
+    // Click to toggle closed then open, which loads the children
+    act(() => {
+      toggleButton.click();
+    });
+
+    await waitFor(() => {
+      // Verify that the node sar is rendered
+      expect(screen.getByText(/sar/i)).toBeInTheDocument();
+      // Verify that the pagination is rendered with the correct counts
+      expect(
+        screen.getByText(
+          new RegExp(
+            `Displaying ${responseTaxonomyItems.length} of 21 children for`,
+            'i',
+          ),
+        ),
+      ).toBeInTheDocument();
+
+      // Verify that all the nodes are rendered (including the nodes with no children and 0 datasets)
+      responseTaxonomyItems.forEach(node => {
+        expect(
+          screen.queryByText(new RegExp(node.label, 'i')),
+        ).toBeInTheDocument();
+      });
+    });
   });
 
   it('renders the root node correctly', async () => {
