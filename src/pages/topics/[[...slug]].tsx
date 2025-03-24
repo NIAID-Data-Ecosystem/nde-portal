@@ -1,4 +1,14 @@
-import { Box, Heading } from '@chakra-ui/react';
+import {
+  Box,
+  Flex,
+  Heading,
+  HStack,
+  SkeletonText,
+  Text,
+  VStack,
+} from '@chakra-ui/react';
+import { Error } from 'src/components/error';
+import { useQuery } from '@tanstack/react-query';
 import { GetStaticPaths, GetStaticProps, NextPage } from 'next';
 import { PageContainer, PageContent } from 'src/components/page-container';
 import { TopicPageProps } from 'src/views/topics/types';
@@ -8,8 +18,10 @@ const MOCK_DATA = {
   id: 1,
   attributes: {
     title: 'Influenza Datasets in the NIAID Data Ecosystem',
-    subtitle: null,
-    description: '',
+    subtitle:
+      'Lorem ipsum dolor sit amet, consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+    description:
+      "Influenza is a viral infection that attacks your respiratory system — your nose, throat and lungs. Influenza, commonly called the flu, is not the same as the stomach 'flu' viruses that cause diarrhea and vomiting.",
     query: {
       q: '',
       facet_size: 1000,
@@ -60,26 +72,118 @@ const TopicPage: NextPage<{
   slug: string[];
   data: TopicPageProps;
 }> = props => {
-  const { data } = props;
+  const { data: initialData, slug } = props;
+
+  const { data, isLoading, error } = useQuery<TopicPageProps, Error>({
+    queryKey: ['topic', { slug }],
+    queryFn: () => fetchTopicContent(slug),
+    placeholderData: initialData,
+    refetchOnWindowFocus: true,
+  });
+
   return (
     <PageContainer
+      id='topic-page'
       title='Topic'
       metaDescription='Spotlight on a program collection or disease topic.'
       px={0}
       py={0}
     >
-      <PageContent bg='#fff'>
-        <Box>
-          <Heading as='h1' size='xl'>
-            {data.attributes.title}
-          </Heading>
-          <Box
-            w={20}
-            h={1.5}
-            my={4}
-            bgGradient='linear(to-r, secondary.500, primary.400)'
-          />
-        </Box>
+      <PageContent
+        id='topic-page-content'
+        bg='#fff'
+        justifyContent='center'
+        maxW={{ base: 'unset', lg: '1600px' }}
+        margin='0 auto'
+        px={4}
+        py={4}
+        mb={32}
+        mt={16}
+        flex={1}
+      >
+        {error ? (
+          <Error>
+            <Flex flexDirection='column' justifyContent='center'>
+              <Text fontWeight='light' color='gray.600' fontSize='lg'>
+                API Request:{' '}
+                {error?.message ||
+                  'It’s possible that the server is experiencing some issues.'}{' '}
+              </Text>
+            </Flex>
+          </Error>
+        ) : (
+          <Flex
+            flexDirection='column'
+            flex={1}
+            pb={32}
+            maxW={{ base: 'unset', lg: '70%' }}
+            width='100%'
+            m='0 auto'
+          >
+            {/* Header section */}
+            <HStack alignItems='flex-start' spacing={6} flexWrap='wrap'>
+              <VStack
+                spacing={4}
+                alignItems='flex-start'
+                flex={3}
+                minWidth={{ base: '100%', md: '500px' }}
+              >
+                {/* Title */}
+                <SkeletonText
+                  isLoaded={!isLoading}
+                  noOfLines={1}
+                  skeletonHeight={10}
+                >
+                  <Heading as='h1' size='xl'>
+                    {data?.attributes?.title}
+                  </Heading>
+                </SkeletonText>
+
+                {/* Divider */}
+                <Box
+                  w={20}
+                  h={1.5}
+                  bgGradient='linear(to-r, secondary.500, primary.400)'
+                />
+
+                {/* Subtitle */}
+                {(data?.attributes?.subtitle || isLoading) && (
+                  <SkeletonText
+                    isLoaded={!isLoading}
+                    noOfLines={2}
+                    skeletonHeight={5}
+                  >
+                    <Text color='gray.700' lineHeight='short'>
+                      {data?.attributes.subtitle}
+                    </Text>
+                  </SkeletonText>
+                )}
+
+                {/* Description */}
+                {(data?.attributes?.description || isLoading) && (
+                  <SkeletonText
+                    isLoaded={!isLoading}
+                    noOfLines={5}
+                    skeletonHeight={4}
+                  >
+                    <Text>{data?.attributes.description}</Text>
+                  </SkeletonText>
+                )}
+              </VStack>
+
+              {/* Sidebar */}
+              <VStack
+                spacing={4}
+                alignItems='flex-start'
+                flex={1}
+                minWidth='300px'
+              >
+                {/* <Text>TO DO: Add sidebar content</Text> */}
+                {/* TO DO: Add either contact section for program collections or image for disease page. Pending feedback. */}
+              </VStack>
+            </HStack>
+          </Flex>
+        )}
       </PageContent>
     </PageContainer>
   );
