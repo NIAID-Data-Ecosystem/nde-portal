@@ -392,7 +392,7 @@ export const TreeNode = (props: {
                 node={node}
                 numChildrenDisplayed={sortedChildrenList.length}
                 totalElements={pagination?.totalElements || 0}
-                isDisabled={isLoading || sortedChildrenList.length <= pageSize}
+                isDisabled={isLoading || sortedChildrenList.length < pageSize}
                 onShowMore={() => {
                   // page + 1?
                   const page = Math.floor(sortedChildrenList.length / pageSize);
