@@ -1,6 +1,6 @@
-import { Box, Heading, SkeletonText, Text, VStack } from '@chakra-ui/react';
-
+import { Box, SkeletonText, Text, VStack } from '@chakra-ui/react';
 import { TopicPageProps } from 'src/views/topics/types';
+import { SectionTitle } from './section';
 
 interface IntroSectionProps {
   title?: TopicPageProps['attributes']['title'];
@@ -22,18 +22,10 @@ export const IntroSection: React.FC<IntroSectionProps> = ({
       minWidth={{ base: '100%', md: '500px' }}
     >
       {/* Title */}
-      <SkeletonText isLoaded={!isLoading} noOfLines={1} skeletonHeight={10}>
-        <Heading as='h1' size='xl'>
-          {title}
-        </Heading>
-      </SkeletonText>
+      <SectionTitle as='h1' isLoading={isLoading} title={title} />
 
       {/* Divider */}
-      <Box
-        w={20}
-        h={1.5}
-        bgGradient='linear(to-r, secondary.500, primary.400)'
-      />
+      <Box w={20} h={1} bgGradient='linear(to-r, secondary.500, primary.400)' />
 
       {/* Subtitle */}
       {(subtitle || isLoading) && (

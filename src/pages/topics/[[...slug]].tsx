@@ -13,6 +13,8 @@ import { GetStaticPaths, GetStaticProps, NextPage } from 'next';
 import { PageContainer, PageContent } from 'src/components/page-container';
 import { TopicPageProps } from 'src/views/topics/types';
 import { IntroSection } from 'src/views/topics/layouts/intro';
+import { SectionWrapper } from 'src/views/topics/layouts/section';
+import { Link } from 'src/components/link';
 
 // Fetch Disease content from strapi
 const MOCK_DATA = {
@@ -24,7 +26,7 @@ const MOCK_DATA = {
     description:
       "Influenza is a viral infection that attacks your respiratory system — your nose, throat and lungs. Influenza, commonly called the flu, is not the same as the stomach 'flu' viruses that cause diarrhea and vomiting.",
     query: {
-      q: '',
+      q: '%22Influenza%22+OR+%22Flu%22',
       facet_size: 1000,
       size: 0,
     },
@@ -81,6 +83,11 @@ const TopicPage: NextPage<{
     placeholderData: initialData,
     refetchOnWindowFocus: true,
   });
+  const topic =
+    data?.attributes.topic
+      .charAt(0)
+      .toUpperCase()
+      .concat(data?.attributes.topic.slice(1)) || 'Topic';
 
   return (
     <PageContainer
@@ -141,7 +148,24 @@ const TopicPage: NextPage<{
                 {/* TO DO: Add either contact section for program collections or image for disease page. Pending feedback. */}
               </VStack>
             </HStack>
-            {/* Data Provenance */}
+
+            <SectionWrapper
+              id='about-datasets'
+              title={`${topic} Datasets in the NIAID Data Ecosystem`}
+            >
+              <Text mb={2}>
+                This section provides a visual summary of the resources
+                available within the NIAID Discovery Portal for {topic}{' '}
+                research.{' '}
+                <Link href={`/search?q=${data?.attributes.query.q}`}>
+                  View all search results related to {topic}.
+                </Link>
+              </Text>
+              {/* Overview Section */}
+              <SectionWrapper as='h3' id='overview' title='Overview'>
+                {/* TO DO: Add visualisations */}
+              </SectionWrapper>
+            </SectionWrapper>
           </Flex>
         )}
       </PageContent>
