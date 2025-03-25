@@ -12,6 +12,7 @@ import { useQuery } from '@tanstack/react-query';
 import { GetStaticPaths, GetStaticProps, NextPage } from 'next';
 import { PageContainer, PageContent } from 'src/components/page-container';
 import { TopicPageProps } from 'src/views/topics/types';
+import { IntroSection } from 'src/views/topics/layouts/intro';
 
 // Fetch Disease content from strapi
 const MOCK_DATA = {
@@ -122,54 +123,12 @@ const TopicPage: NextPage<{
           >
             {/* Header section */}
             <HStack alignItems='flex-start' spacing={6} flexWrap='wrap'>
-              <VStack
-                spacing={4}
-                alignItems='flex-start'
-                flex={3}
-                minWidth={{ base: '100%', md: '500px' }}
-              >
-                {/* Title */}
-                <SkeletonText
-                  isLoaded={!isLoading}
-                  noOfLines={1}
-                  skeletonHeight={10}
-                >
-                  <Heading as='h1' size='xl'>
-                    {data?.attributes?.title}
-                  </Heading>
-                </SkeletonText>
-
-                {/* Divider */}
-                <Box
-                  w={20}
-                  h={1.5}
-                  bgGradient='linear(to-r, secondary.500, primary.400)'
-                />
-
-                {/* Subtitle */}
-                {(data?.attributes?.subtitle || isLoading) && (
-                  <SkeletonText
-                    isLoaded={!isLoading}
-                    noOfLines={2}
-                    skeletonHeight={5}
-                  >
-                    <Text color='gray.700' lineHeight='short'>
-                      {data?.attributes.subtitle}
-                    </Text>
-                  </SkeletonText>
-                )}
-
-                {/* Description */}
-                {(data?.attributes?.description || isLoading) && (
-                  <SkeletonText
-                    isLoaded={!isLoading}
-                    noOfLines={5}
-                    skeletonHeight={4}
-                  >
-                    <Text>{data?.attributes.description}</Text>
-                  </SkeletonText>
-                )}
-              </VStack>
+              <IntroSection
+                title={data?.attributes.title}
+                subtitle={data?.attributes.subtitle}
+                description={data?.attributes.description}
+                isLoading={isLoading}
+              />
 
               {/* Sidebar */}
               <VStack
@@ -182,6 +141,7 @@ const TopicPage: NextPage<{
                 {/* TO DO: Add either contact section for program collections or image for disease page. Pending feedback. */}
               </VStack>
             </HStack>
+            {/* Data Provenance */}
           </Flex>
         )}
       </PageContent>
