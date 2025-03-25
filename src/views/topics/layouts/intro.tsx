@@ -22,7 +22,9 @@ export const IntroSection: React.FC<IntroSectionProps> = ({
       minWidth={{ base: '100%', md: '500px' }}
     >
       {/* Title */}
-      <SectionTitle as='h1' isLoading={isLoading} title={title} />
+      <SectionTitle as='h1' isLoading={isLoading}>
+        {title}
+      </SectionTitle>
 
       {/* Divider */}
       <Box w={20} h={1} bgGradient='linear(to-r, secondary.500, primary.400)' />

@@ -3,19 +3,19 @@ import { Divider, Flex, Heading, SkeletonText, Text } from '@chakra-ui/react';
 
 export const SectionTitle = ({
   as,
-  title,
+  children,
   isLoading,
 }: {
   as?: 'h1' | 'h2' | 'h3' | 'h4';
-  title?: string;
+  children?: string;
   isLoading?: boolean;
 }) => {
-  if (!title && !isLoading) return null;
+  if (!children && !isLoading) return null;
   if (as === 'h1') {
     return (
       <SkeletonText isLoaded={!isLoading} noOfLines={1} skeletonHeight={10}>
         <Heading as='h1' fontSize='4xl'>
-          {title}
+          {children}
         </Heading>
       </SkeletonText>
     );
@@ -29,7 +29,7 @@ export const SectionTitle = ({
         mb={4}
       >
         <Heading as='h2' fontSize='2xl'>
-          {title}
+          {children}
         </Heading>
       </SkeletonText>
     );
@@ -43,7 +43,7 @@ export const SectionTitle = ({
           width='100%'
         >
           <Heading as='h3' fontSize='lg'>
-            {title}
+            {children}
           </Heading>
         </SkeletonText>
         <Divider mt={2} mb={4} borderColor='page.placeholder' />
@@ -54,12 +54,12 @@ export const SectionTitle = ({
       <SkeletonText
         isLoaded={!isLoading}
         noOfLines={1}
-        skeletonHeight={6}
+        skeletonHeight={5}
         width='100%'
         mb={2}
       >
         <Heading as='h4' fontSize='md' fontWeight='semibold'>
-          {title}
+          {children}
         </Heading>
       </SkeletonText>
     );
@@ -71,7 +71,7 @@ export const SectionTitle = ({
       skeletonHeight={4}
       width='100%'
     >
-      <Text>{title}</Text>
+      <Text>{children}</Text>
     </SkeletonText>
   );
 };
@@ -85,7 +85,9 @@ export const SectionWrapper: React.FC<{
 }> = ({ as = 'h2', id, children, isLoading, title }) => {
   return (
     <Flex as='section' id={id} mt={4} mb={4} flexDirection='column'>
-      <SectionTitle as={as} isLoading={isLoading} title={title} />
+      <SectionTitle as={as} isLoading={isLoading}>
+        {title}
+      </SectionTitle>
       {children}
     </Flex>
   );
