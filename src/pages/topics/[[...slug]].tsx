@@ -104,11 +104,7 @@ const TopicPage: NextPage<{
       .charAt(0)
       .toUpperCase()
       .concat(data?.attributes.topic.slice(1)) || 'Topic';
-  console.log(
-    'q',
-    data?.attributes.query.q,
-    encodeString(data?.attributes.query.q || ''),
-  );
+
   return (
     <PageContainer
       id='topic-page'
