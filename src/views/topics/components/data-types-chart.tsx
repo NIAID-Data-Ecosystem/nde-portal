@@ -6,7 +6,7 @@ import { TopicPageProps } from '../types';
 import { fetchSearchResults } from 'src/utils/api';
 import { useQuery } from '@tanstack/react-query';
 import { FacetTerm, FetchSearchResultsResponse } from 'src/utils/api/types';
-import { DonutChart } from '../visualizations/other-donut-chart';
+import { DonutChart } from '../visualizations/donut-chart';
 import { scaleOrdinal } from '@visx/scale';
 import {
   APIResourceType,
@@ -48,7 +48,7 @@ export const DataTypesChart = ({ query, topic }: DataTypesChartProps) => {
   return (
     <Box maxWidth='50%'>
       <SectionTitle as='h4'>Data Types</SectionTitle>
-      <Text>
+      <Text lineHeight='short'>
         An overview of resource types retrieved from a search on{' '}
         <Link href={`/search?q=${query.q}`}>{topic}</Link>.
       </Text>
