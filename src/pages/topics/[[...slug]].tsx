@@ -17,6 +17,7 @@ import { SectionTitle, SectionWrapper } from 'src/views/topics/layouts/section';
 import { Link } from 'src/components/link';
 import { CardWrapper } from 'src/views/topics/layouts/card';
 import { DataTypesChart } from 'src/views/topics/components/data-types-chart';
+import { encodeString } from 'src/utils/querystring-helpers';
 
 // Fetch Disease content from strapi
 const MOCK_DATA = {
@@ -28,7 +29,7 @@ const MOCK_DATA = {
     description:
       "Influenza is a viral infection that attacks your respiratory system — your nose, throat and lungs. Influenza, commonly called the flu, is not the same as the stomach 'flu' viruses that cause diarrhea and vomiting.",
     query: {
-      q: '%22Influenza%22+OR+%22Flu%22',
+      q: '"Influenza" OR "Flu"',
       facet_size: 1000,
       size: 0,
     },
@@ -73,6 +74,19 @@ const fetchTopicContent = async (
   }
 };
 
+/**
+ * TopicPage fetches topic-specific and displays it in a structured layout.
+ *
+ *
+ * @example
+ * ```tsx
+ * <TopicPage slug={['malaria']} data={initialData} />
+ * ```
+ *
+ * @todo
+ * - Add sidebar content for program collections or disease pages.
+ * - Add visualizations to the overview section.
+ */
 const TopicPage: NextPage<{
   slug: string[];
   data: TopicPageProps;
@@ -90,7 +104,11 @@ const TopicPage: NextPage<{
       .charAt(0)
       .toUpperCase()
       .concat(data?.attributes.topic.slice(1)) || 'Topic';
-
+  console.log(
+    'q',
+    data?.attributes.query.q,
+    encodeString(data?.attributes.query.q || ''),
+  );
   return (
     <PageContainer
       id='topic-page'
