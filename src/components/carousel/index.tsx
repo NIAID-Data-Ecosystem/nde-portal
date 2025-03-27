@@ -125,13 +125,13 @@ export const Carousel = ({
   const handleDecrementClick = () => {
     setTrackIsActive(true);
     !(activeItem === positions.length - positions.length) &&
-      setActiveItem(prev => prev - 1);
+      setActiveItem(prev => prev - constraint);
   };
 
   const handleIncrementClick = () => {
     setTrackIsActive(true);
     !(activeItem === positions.length - constraint) &&
-      setActiveItem(prev => prev + 1);
+      setActiveItem(prev => prev + constraint);
   };
 
   return (
@@ -325,13 +325,13 @@ const Track = ({
         if (activeItem < positions.length - constraint) {
           if (event.key === 'ArrowRight' || event.key === 'ArrowUp') {
             event.preventDefault();
-            setActiveItem(prev => prev + 1);
+            setActiveItem(prev => prev + constraint);
           }
         }
         if (activeItem > positions.length - positions.length) {
           if (event.key === 'ArrowLeft' || event.key === 'ArrowDown') {
             event.preventDefault();
-            setActiveItem(prev => prev - 1);
+            setActiveItem(prev => prev - constraint);
           }
         }
       }
