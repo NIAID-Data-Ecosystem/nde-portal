@@ -13,7 +13,7 @@ import {
   formatResourceTypeForDisplay,
 } from 'src/utils/formatting/formatResourceType';
 
-interface DataTypesChartProps {
+interface DataTypesProps {
   query: TopicPageProps['attributes']['query'];
   topic: string;
 }
@@ -23,7 +23,7 @@ const getFillColor = scaleOrdinal({
   range: ['#e8c543', '#ff8359', '#6e95fc'],
 });
 
-export const DataTypesChart = ({ query, topic }: DataTypesChartProps) => {
+export const DataTypes = ({ query, topic }: DataTypesProps) => {
   // Fetch data types for query.
   const params = {
     q: query.q,

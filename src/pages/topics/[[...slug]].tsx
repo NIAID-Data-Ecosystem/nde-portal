@@ -16,7 +16,7 @@ import { IntroSection } from 'src/views/topics/layouts/intro';
 import { SectionTitle, SectionWrapper } from 'src/views/topics/layouts/section';
 import { Link } from 'src/components/link';
 import { CardWrapper } from 'src/views/topics/layouts/card';
-import { DataTypesChart } from 'src/views/topics/components/data-types-chart';
+import { DataTypes } from 'src/views/topics/components/data-types';
 import { encodeString } from 'src/utils/querystring-helpers';
 
 // Fetch Disease content from strapi
@@ -180,10 +180,9 @@ const TopicPage: NextPage<{
               {/* Overview Section */}
               <SectionWrapper as='h3' id='overview' title='Overview'>
                 <CardWrapper>
-                  <DataTypesChart
-                    query={data?.attributes.query}
-                    topic={topic}
-                  />
+                  {data?.attributes.query && (
+                    <DataTypes query={data.attributes.query} topic={topic} />
+                  )}
                 </CardWrapper>
                 {/* TO DO: Add visualisations */}
               </SectionWrapper>
