@@ -8,8 +8,9 @@ import { Box, Checkbox, Flex, Text } from '@chakra-ui/react';
 import { InfoLabel } from 'src/components/info-label';
 import { useTooltip, useTooltipInPortal } from '@visx/tooltip';
 import { localPoint } from '@visx/event';
-import { FaMagnifyingGlass } from 'react-icons/fa6';
 import { TooltipWrapper } from '../components/tooltip';
+import NextLink from 'next/link';
+import { UrlObject } from 'url';
 
 interface Datum {
   count: number;
@@ -36,14 +37,17 @@ export interface DonutChartProps {
   /** Height of the chart in pixels. @default 400 */
   height?: number;
 
-  /** Thickness of the donut's inner radius. @default 50 */
-  donutThickness?: number;
-
   /** Array of data values used to generate the chart. */
   data: FacetTerm[];
 
+  /** Thickness of the donut's inner radius. @default 50 */
+  donutThickness?: number;
+
   /** Function to determine the fill color of each slice by term. */
   getFillColor: (term: string) => string;
+
+  /** Function to handle slice click events. */
+  getRoute: (term: string) => UrlObject;
 
   /** Optional label style and transform function. */
   labelStyles?: LabelProps;
@@ -81,6 +85,7 @@ export const DonutChart = ({
   data,
   donutThickness = 50,
   getFillColor,
+  getRoute,
   labelStyles,
   margin = defaultMargin,
   animate = true,
@@ -181,6 +186,7 @@ export const DonutChart = ({
         <svg width={width} height={height}>
           <Group top={centerY + margin.top} left={centerX + margin.left}>
             <Pie
+              cornerRadius={2}
               data={
                 selectedResourceType
                   ? transformedData.filter(
@@ -188,32 +194,32 @@ export const DonutChart = ({
                     )
                   : transformedData
               }
-              pieValue={usage}
-              outerRadius={radius}
               innerRadius={Math.max(1, radius - donutThickness)}
-              cornerRadius={2}
+              outerRadius={radius}
               padAngle={0.005}
+              pieValue={usage}
             >
               {pie => (
                 <AnimatedPie<Datum>
                   {...pie}
                   animate={animate}
                   getKey={arc => arc.data.term}
-                  onClickDatum={({ data: { term } }) =>
-                    animate &&
-                    setSelectedResourceType(
-                      selectedResourceType && selectedResourceType === term
-                        ? null
-                        : term,
-                    )
-                  }
                   getColor={arc => getFillColor(arc.data.term)}
-                  labelStyles={labelStyles}
+                  getRoute={getRoute}
                   handleMouseOver={handleMouseOver}
-                  hoveredTerm={hoveredTerm}
                   handleMouseOut={() => {
                     hideTooltip();
                     setHoveredTerm(null);
+                  }}
+                  hoveredTerm={hoveredTerm}
+                  labelStyles={labelStyles}
+                  onClickDatum={({ data: { term } }) => {
+                    animate &&
+                      setSelectedResourceType(
+                        selectedResourceType && selectedResourceType === term
+                          ? null
+                          : term,
+                      );
                   }}
                 />
               )}
@@ -267,17 +273,37 @@ const enterUpdateTransition = ({ startAngle, endAngle }: PieArcDatum<any>) => ({
 });
 
 type AnimatedPieProps<Datum> = ProvidedProps<Datum> & {
+  /** Whether to animate the pie chart transitions. */
   animate?: boolean;
-  delay?: number;
+
+  /** Array of pie arc data. */
+  arcs: PieArcDatum<Datum>[];
+
+  /** The term currently being hovered over, or `null` if none. */
   hoveredTerm: string | null;
+
+  /** Styles for the labels displayed on the pie chart. */
   labelStyles: DonutChartProps['labelStyles'];
-  getKey: (d: PieArcDatum<Datum>) => string;
+
+  /** Function to determine the color of each pie slice. */
   getColor: (d: PieArcDatum<Datum>) => string;
+
+  /** Function to generate a unique key for each pie slice. */
+  getKey: (d: PieArcDatum<Datum>) => string;
+
+  /** Function to determine the route associated with a pie slice. */
+  getRoute: DonutChartProps['getRoute'];
+
+  /** Callback for handling mouse-over events on a pie slice. */
   handleMouseOver: (
     e: React.PointerEvent<SVGPathElement>,
     d: PieArcDatum<Datum>['data'],
   ) => void;
+
+  /** Callback for handling mouse-out events from a pie slice. */
   handleMouseOut: () => void;
+
+  /** Callback for handling click events on a pie slice. */
   onClickDatum: (d: PieArcDatum<Datum>) => void;
 };
 
@@ -290,9 +316,9 @@ function AnimatedPie<Datum>({
   labelStyles,
   getKey,
   getColor,
+  getRoute,
   handleMouseOver,
   handleMouseOut,
-  onClickDatum,
 }: AnimatedPieProps<Datum>) {
   const transitions = useTransition<PieArcDatum<Datum>, AnimatedStyles>(arcs, {
     from: animate ? fromLeaveTransition : enterUpdateTransition,
@@ -311,35 +337,36 @@ function AnimatedPie<Datum>({
 
     return (
       <g key={key}>
-        <animated.path
-          style={{
-            cursor: 'pointer',
-            // prevent accidental text selection
-            userSelect: 'none',
-            transition: 'fill 0.2s, opacity 0.2s',
-            opacity: !hoveredTerm || getKey(arc) === hoveredTerm ? 1 : 0.5, // dim non-hovered arcs
-          }}
-          // compute interpolated path d attribute from intermediate angle values
-          d={to([props.startAngle, props.endAngle], (startAngle, endAngle) =>
-            path({
-              ...arc,
-              startAngle,
-              endAngle,
-            }),
-          )}
-          fill={getColor(arc)}
-          onClick={() => {
-            handleMouseOut();
-            onClickDatum(arc);
-          }}
-          onTouchStart={() => onClickDatum(arc)}
-          onPointerMove={e => {
-            handleMouseOver(e, arc.data);
-          }}
-          onMouseOut={handleMouseOut}
-        />
-        {/* Optional labels */}
-        {/* {hasSpaceForLabel && (
+        <NextLink href={getRoute(getKey(arc))} passHref>
+          <animated.path
+            style={{
+              cursor: 'pointer',
+              // prevent accidental text selection
+              userSelect: 'none',
+              transition: 'fill 0.2s, opacity 0.2s',
+              opacity: !hoveredTerm || getKey(arc) === hoveredTerm ? 1 : 0.5, // dim non-hovered arcs
+            }}
+            // compute interpolated path d attribute from intermediate angle values
+            d={to([props.startAngle, props.endAngle], (startAngle, endAngle) =>
+              path({
+                ...arc,
+                startAngle,
+                endAngle,
+              }),
+            )}
+            fill={getColor(arc)}
+            onClick={() => {
+              handleMouseOut();
+              // onClickDatum(arc);
+            }}
+            // onTouchStart={() => onClickDatum(arc)}
+            onPointerMove={e => {
+              handleMouseOver(e, arc.data);
+            }}
+            onMouseOut={handleMouseOut}
+          />
+          {/* Optional labels */}
+          {/* {hasSpaceForLabel && (
           <animated.g style={{ opacity: props.opacity }}>
             <text
               fill='#2f2f2f'
@@ -355,6 +382,7 @@ function AnimatedPie<Datum>({
             </text>
           </animated.g>
         )} */}
+        </NextLink>
       </g>
     );
   });
