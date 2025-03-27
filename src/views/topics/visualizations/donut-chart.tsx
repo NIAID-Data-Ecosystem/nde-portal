@@ -25,18 +25,56 @@ const defaultMargin = { top: 20, right: 20, bottom: 20, left: 20 };
 type LabelProps = React.SVGProps<SVGTextElement> & {
   transformLabel?: (label: string) => string;
 };
-export type PieProps = {
-  width: number;
-  height: number;
-  donutThickness: number;
-  margin?: typeof defaultMargin;
-  animate?: boolean;
-  data: FacetTerm[];
-  getFillColor: (term: string) => string;
-  labelStyles?: LabelProps;
-  useLogScale?: boolean;
-};
 
+/**
+ * Props for the DonutChart component.
+ */
+export interface DonutChartProps {
+  /** Width of the chart in pixels. @default 400 */
+  width?: number;
+
+  /** Height of the chart in pixels. @default 400 */
+  height?: number;
+
+  /** Thickness of the donut's inner radius. @default 50 */
+  donutThickness?: number;
+
+  /** Array of data values used to generate the chart. */
+  data: FacetTerm[];
+
+  /** Function to determine the fill color of each slice by term. */
+  getFillColor: (term: string) => string;
+
+  /** Optional label style and transform function. */
+  labelStyles?: LabelProps;
+
+  /** @default "{ top: 20, right: 20, bottom: 20, left: 20 }" */
+  margin?: typeof defaultMargin;
+
+  /** Whether to animate the chart transitions. @default true */
+  animate?: boolean;
+
+  /** Whether to apply logarithmic scaling to values. @default true */
+  useLogScale?: boolean;
+}
+
+/**
+ * Renders a donut chart visualization with animations, tooltips,
+ * logarithmic scaling, and slice selection/hovering.
+ *
+ * @param props - {@link DonutChartProps} to configure the chart.
+ * @returns A React donut chart component.
+ *
+ * @example
+ * ```tsx
+ * <DonutChart
+ *   width={500}
+ *   height={500}
+ *   data={[{ term: 'Dataset', count: 100 }]}
+ *   getFillColor={(term) => (term === 'Dataset' ? 'blue' : 'gray')}
+ * />
+ * ```
+ */
 export const DonutChart = ({
   width = 400,
   height = 400,
@@ -47,7 +85,7 @@ export const DonutChart = ({
   margin = defaultMargin,
   animate = true,
   useLogScale = true,
-}: PieProps) => {
+}: DonutChartProps) => {
   // State: whether to apply log scale or raw counts
   const [applyLogScale, setApplyLogScale] = useState<boolean>(useLogScale);
 
@@ -232,7 +270,7 @@ type AnimatedPieProps<Datum> = ProvidedProps<Datum> & {
   animate?: boolean;
   delay?: number;
   hoveredTerm: string | null;
-  labelStyles: PieProps['labelStyles'];
+  labelStyles: DonutChartProps['labelStyles'];
   getKey: (d: PieArcDatum<Datum>) => string;
   getColor: (d: PieArcDatum<Datum>) => string;
   handleMouseOver: (
