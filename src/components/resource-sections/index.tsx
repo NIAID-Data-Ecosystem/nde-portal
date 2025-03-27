@@ -4,6 +4,7 @@ import {
   Box,
   Divider,
   Flex,
+  HStack,
   ListItem,
   SimpleGrid,
   Skeleton,
@@ -198,15 +199,13 @@ const Sections = ({
                 {/* Overview secondary section */}
                 {(data?.genre || data?.about || data?.collectionSize) && (
                   <SimpleGrid
-                    alignItems='flex-start'
-                    minChildWidth={{ base: 'unset', sm: '350px' }}
-                    mt={4}
-                    px={2}
+                    minChildWidth={{ base: 'unset', sm: '280px', xl: '300px' }}
                     spacingX={14}
                     spacingY={10}
+                    p={4}
                     w='100%'
                   >
-                    {/* Content Types */}
+                    {/* Col 1: Genre & Content Types */}
                     <VStack>
                       {data?.genre && (
                         <OverviewSectionWrapper
@@ -261,11 +260,12 @@ const Sections = ({
                         </OverviewSectionWrapper>
                       )}
                     </VStack>
-                    {/* Size of collection */}
+                    {/* Col 2: Size of collection */}
                     {data?.collectionSize && (
                       <OverviewSectionWrapper
                         isLoading={isLoading}
                         label='Collection Size Details'
+                        maxWidth={{ base: 'unset', xl: '500px' }}
                         scrollContainerProps={{
                           maxHeight: 'unset',
                           py: 0,
@@ -276,58 +276,30 @@ const Sections = ({
                         />
                       </OverviewSectionWrapper>
                     )}
-                    {/* <Box></Box> */}
+                    {/* Empty placeholder for third column at xl screens */}
+                    <Box display={{ base: 'none', xl: 'block' }} aria-hidden />
                   </SimpleGrid>
                 )}
 
-                {/* External links to access data, documents or dataset at the source. */}
-                <SimpleGrid
-                  alignItems='flex-start'
-                  minChildWidth={{ base: 'unset', sm: '280px', xl: '300px' }}
-                  mt={4}
-                  px={2}
-                  spacingX={14}
-                  spacingY={10}
-                  w='100%'
-                >
-                  {/* Studies that resource is a part of */}
-                  {data?.isPartOf?.some(
-                    item => item.name || item.identifier,
-                  ) && (
-                    <OverviewSectionWrapper
-                      isLoading={isLoading}
-                      label={`Part of ${
-                        data?.isPartOf.length > 1
-                          ? `(${data?.isPartOf.length})`
-                          : ''
-                      }`}
-                      tooltipLabel={getMetadataDescription(
-                        'isPartOf',
-                        data?.['@type'],
-                      )}
-                    >
-                      <ResourceIsPartOf studies={data?.isPartOf} />
-                    </OverviewSectionWrapper>
-                  )}
-
-                  {/* Resource citation(s) */}
-                  {data?.citation && (
-                    <OverviewSectionWrapper
-                      isLoading={isLoading}
-                      label={`Citation${
-                        data?.citation.length > 1
-                          ? `s (${data?.citation.length})`
-                          : ''
-                      }`}
-                      tooltipLabel={getMetadataDescription(
-                        'citation',
-                        data?.['@type'],
-                      )}
-                    >
-                      <ResourceCitations citations={data?.citation} />
-                    </OverviewSectionWrapper>
-                  )}
-                </SimpleGrid>
+                {/* Resource citation(s) */}
+                {data?.citation && (
+                  <OverviewSectionWrapper
+                    isLoading={isLoading}
+                    label={`Citation${
+                      data?.citation.length > 1
+                        ? `s (${data?.citation.length})`
+                        : ''
+                    }`}
+                    tooltipLabel={getMetadataDescription(
+                      'citation',
+                      data?.['@type'],
+                    )}
+                    my={4}
+                    px={4}
+                  >
+                    <ResourceCitations citations={data?.citation} />
+                  </OverviewSectionWrapper>
+                )}
               </>
             )}
             {/* Show keywords */}
