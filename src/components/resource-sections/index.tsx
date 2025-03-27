@@ -45,7 +45,10 @@ import { OverviewSectionWrapper } from './components/overview-section-wrapper';
 import { getMetadataDescription } from '../metadata';
 import { TagWithUrl } from '../tag-with-url';
 import { FaMagnifyingGlass } from 'react-icons/fa6';
+import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
+import { SchemaDefinitions } from 'scripts/generate-schema-definitions/types';
 
+const schema = SCHEMA_DEFINITIONS as SchemaDefinitions;
 // Metadata displayed in each section
 export const sectionMetadata: { [key: string]: (keyof FormattedResource)[] } = {
   overview: [
@@ -69,7 +72,6 @@ export const sectionMetadata: { [key: string]: (keyof FormattedResource)[] } = {
     'discussionUrl',
     'input',
     'output',
-    'isBasisFor',
     'processorRequirements',
     'programmingLanguage',
     'softwareAddOn',
@@ -99,6 +101,7 @@ const Sections = ({
   data?: FormattedResource;
   sections: Route[];
 }) => {
+  const type = data?.['@type'] || 'Dataset';
   return (
     <>
       <ResourceHeader
@@ -374,27 +377,7 @@ const Sections = ({
                 {...data}
               />
             )}
-            {section.hash === 'isBasedOn' && data?.isBasedOn && (
-              <BasedOnTable
-                id='software-information-is-based-on'
-                title='Imports'
-                caption='Imports used by this dataset/tool.'
-                isLoading={isLoading}
-                items={data?.isBasedOn}
-              />
-            )}
 
-            {section.hash === 'isBasedOn' && data?.isBasisFor && (
-              <Box mt={4}>
-                <BasedOnTable
-                  id='software-information-dependency-for'
-                  title='Dependency for'
-                  caption='Datasets or tools that this dataset/tool is a dependency for.'
-                  isLoading={isLoading}
-                  items={data.isBasisFor}
-                />
-              </Box>
-            )}
             {/* Show description */}
             {section.hash === 'description' &&
               (data?.description || data?.abstract) && (
@@ -450,14 +433,29 @@ const Sections = ({
                 )}
               </>
             )}
-            {/* Show funding */}
 
+            {/* Show funding */}
             {section.hash === 'funding' && (
               <Funding isLoading={isLoading} data={data?.funding || []} />
             )}
+
+            {/* Show Based On information */}
+            {section.hash === 'isBasedOn' && data?.isBasedOn && (
+              <BasedOnTable
+                id='software-information-is-based-on'
+                title={schema['isBasedOn']['description']?.[type]}
+                caption='Table showing resources that this resource is based on.'
+                isLoading={isLoading}
+                items={data?.isBasedOn}
+              />
+            )}
             {/* Show citedBy */}
             {section.hash === 'citedBy' && (
-              <CitedByTable isLoading={isLoading} data={data?.citedBy || []} />
+              <CitedByTable
+                isLoading={isLoading}
+                data={data?.citedBy || []}
+                title={schema['citedBy']['description']?.[type]}
+              />
             )}
             {/* Show raw metadata */}
             {section.hash === 'metadata' && data?.rawData && (

@@ -10,7 +10,6 @@ import {
 } from '@chakra-ui/react';
 import { StyledSectionHead, StyledSectionHeading } from './styles';
 import { FaMinus, FaPlus } from 'react-icons/fa6';
-import { getSectionIcon } from '../../helpers';
 
 interface SectionProps extends BoxProps {
   id: string;
@@ -46,16 +45,6 @@ const Section: React.FC<SectionProps> = ({
     );
   };
 
-  // Show an icon for the section if available
-  const SectionIcon = () => {
-    let icon = getSectionIcon(id);
-    return icon ? (
-      <Icon as={icon} boxSize={4} color='text.heading' mr={4} />
-    ) : (
-      <></>
-    );
-  };
-
   // if collapsible, the section is an accordion with the section name as the button.
   if (isCollapsible) {
     return (
@@ -79,7 +68,6 @@ const Section: React.FC<SectionProps> = ({
                         borderColor: 'page.alt',
                       }}
                     >
-                      <SectionIcon />
                       {name && (
                         <StyledSectionHeading flex={1} textAlign='left'>
                           {name}
@@ -104,10 +92,7 @@ const Section: React.FC<SectionProps> = ({
     <section id={id} style={{ padding: 0 }}>
       {name && (
         <StyledSectionHead color={color} px={4}>
-          <StyledSectionHeading>
-            <SectionIcon />
-            {name}
-          </StyledSectionHeading>
+          <StyledSectionHeading>{name}</StyledSectionHeading>
         </StyledSectionHead>
       )}
 
