@@ -22,10 +22,16 @@ import { FaAngleLeft, FaAngleRight } from 'react-icons/fa6';
 const MotionFlex = motion(Flex);
 
 const transitionProps = {
-  stiffness: 200,
   type: 'spring',
+  stiffness: 200,
   damping: 60,
   mass: 3,
+};
+
+const touchpadTransitionProps = {
+  type: 'ease',
+  ease: 'easeInOut',
+  duration: 0.4,
 };
 
 interface CarouselProps {
@@ -191,7 +197,6 @@ export const Carousel = ({
             onFocus={handleFocus}
             isDisabled={
               // disable the 'next' button when there all items fit in view or at last index item
-
               children.length < constraint ||
               activeItem === positions.length - constraint
             }
@@ -339,16 +344,48 @@ const Track = ({
     [trackIsActive, setActiveItem, activeItem, constraint, positions.length],
   );
 
+  const handleWheel = useCallback(
+    (event: WheelEvent) => {
+      if (Math.abs(event.deltaX) < Math.abs(event.deltaY)) return;
+
+      event.preventDefault();
+      let newX = x.get() - event.deltaX;
+      const minPosition = positions[0];
+      const maxPosition = positions[positions.length - constraint];
+
+      newX = Math.max(Math.min(newX, minPosition), maxPosition);
+
+      x.set(newX);
+
+      controls.start({
+        x: newX,
+        transition: touchpadTransitionProps,
+      });
+
+      const newActiveIndex = positions.reduce((prevIndex, _, index) => {
+        return Math.abs(positions[index] - newX) <
+          Math.abs(positions[prevIndex] - newX)
+          ? index
+          : prevIndex;
+      }, activeItem);
+
+      setActiveItem(newActiveIndex);
+    },
+    [activeItem, setActiveItem, x, controls, constraint, positions],
+  );
+
   useEffect(() => {
     handleResize();
 
     document.addEventListener('keydown', handleKeyDown);
     document.addEventListener('mousedown', handleClick);
+    document.addEventListener('wheel', handleWheel);
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
       document.removeEventListener('mousedown', handleClick);
+      document.removeEventListener('wheel', handleWheel);
     };
-  }, [handleClick, handleResize, handleKeyDown, positions]);
+  }, [handleClick, handleResize, handleKeyDown, handleWheel, positions]);
 
   return (
     <>
@@ -358,6 +395,7 @@ const Track = ({
             dragConstraints={node}
             onDragStart={handleDragStart}
             onDragEnd={handleDragEnd}
+            onWheel={handleWheel}
             animate={controls}
             style={{ x }}
             drag='x'
