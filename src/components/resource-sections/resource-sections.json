@@ -57,6 +57,11 @@
       "isCollapsible": true
     },
     {
+      "title": "Related Resources",
+      "hash": "relatedResources",
+      "isCollapsible": true
+    },
+    {
       "title": "Metadata",
       "hash": "metadata",
       "isCollapsible": true

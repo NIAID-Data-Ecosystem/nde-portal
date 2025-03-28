@@ -52,6 +52,18 @@ const ResourceCitations = ({ citations }: ResourceCitationsProps) => {
               </span>
             ))}
             {citationComponents.length > 0 && <br />}
+            {citation.abstract && (
+              <>
+                <strong>Abstract:</strong> {citation.abstract}
+                <br />
+              </>
+            )}
+            {citation.description && (
+              <>
+                <strong>Description:</strong> {citation.description}
+                <br />
+              </>
+            )}
             {citation.url && (
               <>
                 Available from:{' '}

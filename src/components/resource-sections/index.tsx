@@ -4,7 +4,8 @@ import {
   Box,
   Divider,
   Flex,
-  HStack,
+  Grid,
+  GridItem,
   ListItem,
   SimpleGrid,
   Skeleton,
@@ -34,7 +35,6 @@ import {
 } from './components/sidebar/components/external';
 import { Funding } from './components/funding';
 import { JsonViewer } from '../json-viewer';
-import ResourceIsPartOf from './components/is-part-of';
 import BasedOnTable from './components/based-on';
 import { CompletenessBadgeCircle } from 'src/components/metadata-completeness-badge/Circular';
 import { ResourceCatalogCollection } from './components/collection-information';
@@ -47,6 +47,7 @@ import { TagWithUrl } from '../tag-with-url';
 import { FaMagnifyingGlass } from 'react-icons/fa6';
 import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
 import { SchemaDefinitions } from 'scripts/generate-schema-definitions/types';
+import { RelatedResources } from './components/related-resources';
 
 const schema = SCHEMA_DEFINITIONS as SchemaDefinitions;
 // Metadata displayed in each section
@@ -88,6 +89,7 @@ export const sectionMetadata: { [key: string]: (keyof FormattedResource)[] } = {
   funding: ['funding'],
   isBasedOn: ['isBasedOn'],
   citedBy: ['citedBy'],
+  relatedResources: ['hasPart', 'isBasisFor', 'isRelatedTo', 'isPartOf'],
   metadata: ['rawData'],
 };
 
@@ -102,6 +104,7 @@ const Sections = ({
   sections: Route[];
 }) => {
   const type = data?.['@type'] || 'Dataset';
+
   return (
     <>
       <ResourceHeader
@@ -205,7 +208,7 @@ const Sections = ({
                     minChildWidth={{ base: 'unset', sm: '280px', xl: '300px' }}
                     spacingX={14}
                     spacingY={10}
-                    p={4}
+                    py={4}
                     w='100%'
                   >
                     {/* Col 1: Genre & Content Types */}
@@ -298,7 +301,6 @@ const Sections = ({
                       data?.['@type'],
                     )}
                     my={4}
-                    px={4}
                   >
                     <ResourceCitations citations={data?.citation} />
                   </OverviewSectionWrapper>
@@ -449,6 +451,7 @@ const Sections = ({
                 items={data?.isBasedOn}
               />
             )}
+
             {/* Show citedBy */}
             {section.hash === 'citedBy' && (
               <CitedByTable
@@ -457,6 +460,22 @@ const Sections = ({
                 title={schema['citedBy']['description']?.[type]}
               />
             )}
+
+            {/* Show related resources */}
+            {section.hash === 'relatedResources' && (
+              <RelatedResources
+                data={
+                  data && {
+                    '@type': data?.['@type'],
+                    hasPart: data?.hasPart,
+                    isBasisFor: data?.isBasisFor,
+                    isPartOf: data?.isPartOf,
+                    isRelatedTo: data?.isRelatedTo,
+                  }
+                }
+              />
+            )}
+
             {/* Show raw metadata */}
             {section.hash === 'metadata' && data?.rawData && (
               <>

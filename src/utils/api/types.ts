@@ -65,33 +65,35 @@ interface ApplicationSubCategory {
 }
 
 export interface Author {
-  identifier: string | null; // orcid id
-  type: string | null;
-  affiliation: { name: string; sameAs?: string } | null;
-  name: string | null;
-  email: string | null;
-  familyName: string | null;
-  givenName: string | null;
-  role: string | null;
-  title: string | null;
-  url: string | null;
+  identifier?: string | null; // orcid id
+  type?: string | null;
+  affiliation?: { name: string; sameAs?: string } | null;
+  name?: string | null;
+  email?: string | null;
+  familyName?: string | null;
+  givenName?: string | null;
+  role?: string | null;
+  title?: string | null;
+  url?: string | null;
 }
 
 export interface Citation {
-  id: string | null;
-  url: string | null;
-  name: string | null;
-  citation?: string | null;
+  abstract?: string | null;
   author: Author[] | null;
-  journalName: string | null;
-  journalNameAbbrev: string | null;
-  date: string | null;
-  datePublished: string | null;
-  pmid: string | null;
-  doi: string | null;
-  issueNumber: string | null;
-  volumeNumber: string | null;
-  pagination: string | null;
+  citation?: string | null;
+  datePublished?: string | null;
+  description?: string | null;
+  doi?: string | null;
+  id?: string | null;
+  issueNumber?: string | null;
+  journalName?: string | null;
+  journalNameAbbrev?: string | null;
+  name?: string | null;
+  pagination?: string | null;
+  pmcid?: string | null;
+  pmid?: string | null;
+  url?: string | null;
+  volumeNumber?: string | null;
 }
 
 export interface CitedBy {
@@ -174,9 +176,14 @@ export interface Funding {
 export interface HasPart {
   '@id'?: string;
   '@type'?: string;
+  additionalType?: AdditionalType;
+  author?: Author | Author[];
+  datePublished?: string;
   encodingFormat?: string | string[];
   identifier?: string;
+  journalName?: string;
   name?: string;
+  pmid?: string;
   url?: string;
 }
 
@@ -215,27 +222,47 @@ export interface IsBasedOn {
 }
 
 export interface IsBasisFor {
+  '@type'?: string;
+  author?: Author | Author[];
+  datePublished?: string;
+  fromPMID?: boolean;
   identifier?: string;
+  journalName?: string;
   name?: string;
+  doi?: string;
+  pmid?: string;
+  pmcid?: string;
   url?: string;
 }
 
 export interface IsPartOf {
-  id?: string;
   '@type'?: string;
+  alternateName?: string;
+  author?: Author | Author[];
+  datePublished?: string;
   name?: string;
+  id?: string;
   identifier?: string;
+  journalName?: string;
+  pmid?: string;
   url?: string;
 }
 
 export interface IsRelatedTo {
-  _id?: string;
   '@type'?: string;
-  hasPart: HasPart;
+  citation?: {
+    pmid?: string;
+    url?: string;
+  };
   identifier?: string;
-  includedInDataCatalog?: IncludedInDataCatalog;
   name?: string;
+  includedInDataCatalog?: IncludedInDataCatalog;
+  hasPart?: {
+    '@type'?: string;
+    identifier?: string;
+  };
   relationship?: string;
+  url?: string;
 }
 
 export interface MeasurementTechnique extends PropertyWithPubtator {
