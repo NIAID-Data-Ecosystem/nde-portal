@@ -11,7 +11,6 @@ import {
   Button,
   Flex,
   Icon,
-  Progress,
   useMediaQuery,
   VStack,
 } from '@chakra-ui/react';
@@ -140,8 +139,10 @@ export const Carousel = ({
       setActiveItem(prev => prev + constraint);
   };
 
+  const handleDotClick = (index: number) => setActiveItem(index * constraint);
+
   return (
-    <Flex ref={ref}>
+    <Flex ref={ref} direction='column' align='center'>
       <Box className='padded-carousel' w='100%' overflow='hidden' p={2}>
         <Track {...trackProps}>
           {children.map((child, index) => {
@@ -157,6 +158,7 @@ export const Carousel = ({
           mt={`${gap}px`}
           mx='auto'
           alignItems='center'
+          justify='center'
         >
           <Button
             aria-label='previous carousel item'
@@ -176,20 +178,34 @@ export const Carousel = ({
             <Icon as={FaAngleLeft} boxSize={4} />
           </Button>
 
-          <Progress
-            aria-label='carousel progress bar'
-            value={100 / ((positions.length - constraint) / activeItem)}
-            alignSelf='center'
-            borderRadius='2px'
-            bg={`${colorScheme}.200`}
-            flex={1}
-            h='3px'
-            sx={{
-              '> div': {
-                backgroundColor: `${colorScheme}.400`,
+          <Flex>
+            {Array.from(
+              {
+                length: Math.ceil(
+                  (children?.length || 1) / Math.max(constraint, 1),
+                ),
               },
-            }}
-          />
+              (_, i) => (
+                <Box
+                  aria-label={`carousel indicator ${i}`}
+                  key={i}
+                  w={3}
+                  h={3}
+                  mx={1}
+                  borderRadius='50%'
+                  borderWidth='1px'
+                  borderColor={`${colorScheme}.500`}
+                  bg={
+                    i === Math.floor(activeItem / constraint)
+                      ? `${colorScheme}.500`
+                      : '#ffffff'
+                  }
+                  cursor='pointer'
+                  onClick={() => handleDotClick(i)}
+                />
+              ),
+            )}
+          </Flex>
 
           <Button
             aria-label='next carousel item'
@@ -380,6 +396,7 @@ const Track = ({
     document.addEventListener('keydown', handleKeyDown);
     document.addEventListener('mousedown', handleClick);
     document.addEventListener('wheel', handleWheel);
+
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
       document.removeEventListener('mousedown', handleClick);
