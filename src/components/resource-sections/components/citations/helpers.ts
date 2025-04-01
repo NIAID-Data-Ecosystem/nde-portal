@@ -29,8 +29,19 @@ export const getCitationComponents = (citation: Citation) => {
   const year = citation.datePublished
     ? new Date(citation.datePublished).getUTCFullYear().toString()
     : '';
-  const pmid = citation.pmid ? `PubMed PMID: ${citation.pmid}` : '';
+  const pmid = citation.pmid ? `PubMed ID (PMID): ${citation.pmid}` : '';
+  const pmcid = citation.pmcid
+    ? `PubMed Central ID (PMCID): ${citation.pmcid}`
+    : '';
   const doi = citation.doi ? `DOI: ${citation.doi}` : '';
-
-  return [authors, citation.name, citation?.citation, journal, year, pmid, doi];
+  return [
+    authors,
+    citation.name,
+    citation?.citation,
+    journal,
+    year,
+    pmid,
+    pmcid,
+    doi,
+  ];
 };

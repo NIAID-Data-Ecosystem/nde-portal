@@ -33,26 +33,3 @@ export const showSection = (section: Route, data?: FormattedResource) => {
   // only show properties that are not empty unless we want that section to display while empty
   return !isEmpty || (isEmpty && section.showEmpty);
 };
-
-// Display icon for each section
-export const getSectionIcon = (sectionId: string) => {
-  let icon;
-  if (sectionId === 'description') {
-    icon = FaAlignLeft;
-  } else if (sectionId === 'metadata') {
-    icon = FaRegFile;
-  } else if (sectionId === 'provenance') {
-    icon = FaDatabase;
-  } else if (sectionId === 'downloads') {
-    icon = FaDownload;
-  } else if (sectionId === 'funding') {
-    icon = FaMagnifyingGlassDollar;
-  } else if (sectionId === 'citedBy') {
-    icon = FaIndent;
-  } else if (sectionId === 'isBasedOn') {
-    icon = FaClipboardList;
-  } else if (sectionId === 'softwareInformation') {
-    icon = FaComputer;
-  }
-  return icon;
-};

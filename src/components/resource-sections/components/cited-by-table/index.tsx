@@ -42,12 +42,14 @@ interface Row extends CitedByType {
 interface CitedByTable {
   isLoading: boolean;
   data: CitedByType[];
+  title?: string;
 }
 
 // Renders a table with citedby data.
 export const CitedByTable: React.FC<CitedByTable> = ({
   data: citedByData,
   isLoading,
+  title,
 }) => {
   // create custom [properties] for sorting. This is needed because the data is nested.
   const citedBy = useMemo(
@@ -90,9 +92,11 @@ export const CitedByTable: React.FC<CitedByTable> = ({
 
   return (
     <Skeleton isLoaded={!isLoading} overflow='auto'>
-      <Heading as='h4' fontSize='sm' mx={1} mb={4} fontWeight='semibold'>
-        Publications that cite the work.
-      </Heading>
+      {title && (
+        <Heading as='h4' fontSize='sm' mx={1} mb={4} fontWeight='semibold'>
+          {title}
+        </Heading>
+      )}
       <TableWrapper colorScheme='gray'>
         <TableContainer>
           <Table
