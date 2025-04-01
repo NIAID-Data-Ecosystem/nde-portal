@@ -208,7 +208,7 @@ const Sections = ({
                     minChildWidth={{ base: 'unset', sm: '280px', xl: '300px' }}
                     spacingX={14}
                     spacingY={10}
-                    py={4}
+                    mt={4}
                     w='100%'
                   >
                     {/* Col 1: Genre & Content Types */}
