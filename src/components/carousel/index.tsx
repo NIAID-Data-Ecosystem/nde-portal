@@ -122,6 +122,7 @@ export const Carousel = ({
     constraint,
     itemWidth,
     positions,
+    children: children,
   };
 
   // Handle arrow clicks
@@ -129,17 +130,34 @@ export const Carousel = ({
 
   const handleDecrementClick = () => {
     setTrackIsActive(true);
-    !(activeItem === positions.length - positions.length) &&
-      setActiveItem(prev => prev - constraint);
+    !(activeItem === 0) &&
+      setActiveItem(prev => Math.max(0, prev - constraint));
   };
 
   const handleIncrementClick = () => {
     setTrackIsActive(true);
-    !(activeItem === positions.length - constraint) &&
-      setActiveItem(prev => prev + constraint);
+    const maxActiveItem = children.length - constraint;
+    !(activeItem >= maxActiveItem) &&
+      setActiveItem(prev => Math.min(maxActiveItem, prev + constraint));
   };
 
-  const handleDotClick = (index: number) => setActiveItem(index * constraint);
+  const handleDotClick = (index: number) => {
+    // Calculate the target active item based on the dot index
+    const targetActiveItem = Math.min(
+      index * constraint,
+      children.length - constraint,
+    );
+    setActiveItem(targetActiveItem);
+  };
+
+  // Calculate the maximum active item index
+  const maxActiveItem = Math.max(0, children.length - constraint);
+
+  // Calculate total number of dots needed
+  const totalDots = Math.max(
+    1,
+    Math.ceil(children.length / Math.max(1, constraint)),
+  );
 
   return (
     <Flex ref={ref} direction='column' align='center'>
@@ -165,9 +183,8 @@ export const Carousel = ({
             onClick={handleDecrementClick}
             onFocus={handleFocus}
             isDisabled={
-              // disable the 'prev' button when there all items fit in view or at first index item
-              children.length < constraint ||
-              activeItem === positions.length - positions.length
+              // disable the 'prev' button when all items fit in view or at first index item
+              children.length <= constraint || activeItem <= 0
             }
             mr={`${gap / 3}px`}
             color={`${colorScheme}.800`}
@@ -179,13 +196,18 @@ export const Carousel = ({
           </Button>
 
           <Flex>
-            {Array.from(
-              {
-                length: Math.ceil(
-                  (children?.length || 1) / Math.max(constraint, 1),
-                ),
-              },
-              (_, i) => (
+            {Array.from({ length: totalDots }, (_, i) => {
+              // Calculate which group of items is currently active
+              const currentGroup = Math.floor(activeItem / constraint);
+
+              const isLastGroup = activeItem >= children.length - constraint;
+
+              // Highlight the correct dot
+              const shouldHighlight = isLastGroup
+                ? i === totalDots - 1
+                : i === currentGroup;
+
+              return (
                 <Box
                   aria-label={`carousel indicator ${i}`}
                   key={i}
@@ -195,16 +217,12 @@ export const Carousel = ({
                   borderRadius='50%'
                   borderWidth='1px'
                   borderColor={`${colorScheme}.500`}
-                  bg={
-                    i === Math.floor(activeItem / constraint)
-                      ? `${colorScheme}.500`
-                      : '#ffffff'
-                  }
+                  bg={shouldHighlight ? `${colorScheme}.500` : '#ffffff'}
                   cursor='pointer'
                   onClick={() => handleDotClick(i)}
                 />
-              ),
-            )}
+              );
+            })}
           </Flex>
 
           <Button
@@ -212,9 +230,8 @@ export const Carousel = ({
             onClick={handleIncrementClick}
             onFocus={handleFocus}
             isDisabled={
-              // disable the 'next' button when there all items fit in view or at last index item
-              children.length < constraint ||
-              activeItem === positions.length - constraint
+              // disable the 'next' button when all items fit in view or at last index item
+              children.length <= constraint || activeItem >= maxActiveItem
             }
             ml={`${gap / 3}px`}
             color={`${colorScheme}.800`}
@@ -239,7 +256,7 @@ interface TrackProps {
   multiplier?: number;
   itemWidth: number;
   positions: number[];
-  children: React.ReactNode;
+  children: React.ReactNode[];
 }
 
 const Track = ({
@@ -298,8 +315,25 @@ const Track = ({
         : prev;
     }, 0);
 
-    if (!(closestPosition < positions[positions.length - constraint])) {
-      setActiveItem(positions.indexOf(closestPosition));
+    const closestPositionIndex = positions.indexOf(closestPosition);
+
+    const maxPosition = positions[positions.length - constraint];
+    const isNearEnd = Math.abs(extrapolatedPosition - maxPosition) < 10;
+
+    if (isNearEnd) {
+      // Set to last valid position
+      const lastValidIndex = positions.length - constraint;
+      setActiveItem(lastValidIndex);
+      controls.start({
+        x: positions[lastValidIndex],
+        transition: {
+          velocity: info.velocity.x,
+          ...transitionProps,
+        },
+      });
+    } else if (closestPositionIndex <= positions.length - constraint) {
+      // Normal case
+      setActiveItem(closestPositionIndex);
       controls.start({
         x: closestPosition,
         transition: {
@@ -308,9 +342,11 @@ const Track = ({
         },
       });
     } else {
-      setActiveItem(positions.length - constraint);
+      // Fallback to last valid position
+      const lastValidIndex = positions.length - constraint;
+      setActiveItem(lastValidIndex);
       controls.start({
-        x: positions[positions.length - constraint],
+        x: positions[lastValidIndex],
         transition: {
           velocity: info.velocity.x,
           ...transitionProps,
@@ -343,16 +379,18 @@ const Track = ({
   const handleKeyDown = useCallback(
     (event: KeyboardEvent) => {
       if (trackIsActive) {
-        if (activeItem < positions.length - constraint) {
+        const maxActiveItem = positions.length - constraint;
+
+        if (activeItem < maxActiveItem) {
           if (event.key === 'ArrowRight' || event.key === 'ArrowUp') {
             event.preventDefault();
-            setActiveItem(prev => prev + constraint);
+            setActiveItem(prev => Math.min(prev + constraint, maxActiveItem));
           }
         }
-        if (activeItem > positions.length - positions.length) {
+        if (activeItem > 0) {
           if (event.key === 'ArrowLeft' || event.key === 'ArrowDown') {
             event.preventDefault();
-            setActiveItem(prev => prev - constraint);
+            setActiveItem(prev => Math.max(prev - constraint, 0));
           }
         }
       }
@@ -364,28 +402,36 @@ const Track = ({
     (event: WheelEvent) => {
       if (Math.abs(event.deltaX) < Math.abs(event.deltaY)) return;
 
-      event.preventDefault();
-      let newX = x.get() - event.deltaX;
       const minPosition = positions[0];
       const maxPosition = positions[positions.length - constraint];
 
+      let newX = x.get() - event.deltaX;
       newX = Math.max(Math.min(newX, minPosition), maxPosition);
 
       x.set(newX);
-
       controls.start({
         x: newX,
         transition: touchpadTransitionProps,
       });
 
-      const newActiveIndex = positions.reduce((prevIndex, _, index) => {
-        return Math.abs(positions[index] - newX) <
-          Math.abs(positions[prevIndex] - newX)
-          ? index
-          : prevIndex;
-      }, activeItem);
+      const isNearEnd = Math.abs(newX - maxPosition) < 20;
 
-      setActiveItem(newActiveIndex);
+      if (isNearEnd) {
+        setActiveItem(positions.length - constraint);
+      } else {
+        // Find the position index closest to the current position
+        const newActiveIndex = positions.reduce(
+          (prevIndex, position, index) => {
+            return Math.abs(position - newX) <
+              Math.abs(positions[prevIndex] - newX)
+              ? index
+              : prevIndex;
+          },
+          activeItem,
+        );
+
+        setActiveItem(Math.min(newActiveIndex, positions.length - constraint));
+      }
     },
     [activeItem, setActiveItem, x, controls, constraint, positions],
   );
@@ -431,10 +477,19 @@ const Track = ({
   );
 };
 
-interface ItemProps extends TrackProps {
+interface ItemProps {
+  setTrackIsActive: React.Dispatch<React.SetStateAction<boolean>>;
+  setActiveItem: React.Dispatch<React.SetStateAction<number>>;
+  activeItem: number;
+  trackIsActive: boolean;
+  constraint: number;
+  itemWidth: number;
+  positions: number[];
+  children: React.ReactNode;
   index: number;
   gap: number;
 }
+
 const Item = ({
   setTrackIsActive,
   setActiveItem,
@@ -455,10 +510,14 @@ const Item = ({
     setUserDidTab(false);
   };
 
-  const handleKeyUp = (event: React.KeyboardEvent<HTMLDivElement>) =>
-    event.key === 'Tab' &&
-    !(activeItem === positions.length - constraint) &&
-    setActiveItem(index);
+  const handleKeyUp = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    if (event.key === 'Tab') {
+      const maxActiveItem = positions.length - constraint;
+      if (index <= maxActiveItem) {
+        setActiveItem(index);
+      }
+    }
+  };
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) =>
     event.key === 'Tab' && setUserDidTab(true);
