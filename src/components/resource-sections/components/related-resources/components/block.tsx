@@ -27,9 +27,24 @@ export const RelatedResourceBlock = ({
   data,
   ...props
 }: RelatedResourceBlockProps) => {
+  // Type of the resource: @type, additionalType
   const type = data?.['@type'];
   const additionalType = 'additionalType' in data && data?.additionalType?.name;
-  const label = data?.name || data?.identifier || data?.url;
+
+  // Label: name or identifier or url
+  // If name is not available, we use identifier or url
+  // If identifier is not available, we use url
+  const label = data?.name || data?.identifier || data?.url || '';
+  // URL: _id or url
+  // If _id is available, we prioritize the use of it to link to a record within the portal
+  // If _id is not available, we use url which is an external link
+  const linkProps =
+    '_id' in data && data._id
+      ? { href: `/resources?id=${data._id}`, isExternal: false }
+      : data?.url
+      ? { href: data.url, isExternal: true }
+      : undefined;
+
   const authors =
     'author' in data && data.author
       ? Array.isArray(data.author)
@@ -37,6 +52,7 @@ export const RelatedResourceBlock = ({
         : data.author.name
       : undefined;
 
+  // Identifiers: doi, pmid
   const doi = 'doi' in data && data?.doi;
   const pmid = 'pmid' in data && data?.pmid;
 
@@ -57,10 +73,8 @@ export const RelatedResourceBlock = ({
               {/* Label: name or identifier or url*/}
               {label && (
                 <Text as='span' mr={1.5} lineHeight='short' fontWeight='medium'>
-                  {data?.url ? (
-                    <Link href={data.url} isExternal>
-                      {label}
-                    </Link>
+                  {linkProps ? (
+                    <Link {...linkProps}>{label}</Link>
                   ) : (
                     <>{label}</>
                   )}

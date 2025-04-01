@@ -250,6 +250,7 @@ export interface IsPartOf {
 
 export interface IsRelatedTo {
   '@type'?: string;
+  _id?: string; // a unique NDE identifier for the resource
   citation?: {
     pmid?: string;
     url?: string;
