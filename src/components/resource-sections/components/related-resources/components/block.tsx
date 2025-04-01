@@ -19,6 +19,26 @@ interface RelatedResourceBlockProps extends StackProps {
   data: IsBasisFor | IsRelatedTo | IsPartOf | HasPart;
 }
 
+const formatType = (type: string) => {
+  if (type.toLowerCase() === 'dataset') {
+    return 'Dataset';
+  } else if (type.toLowerCase() === 'resourcecatalog') {
+    return 'Resource Catalog';
+  } else if (type.toLowerCase() === 'computationaltool') {
+    return 'Computational Tool';
+  } else if (type.toLowerCase() === 'scholarlyarticle') {
+    return 'Scholarly Article';
+  } else if (type.toLowerCase() === 'creativework') {
+    return 'Creative Work';
+  } else if (type.toLowerCase() === 'videoobject') {
+    return 'Video Object';
+  } else if (type.toLowerCase() === 'website') {
+    return 'Website';
+  } else {
+    return type;
+  }
+};
+
 /**
  * A block component for displaying related resources.
  * It includes various properties such as label, DOI, PMID, etc.
@@ -28,8 +48,11 @@ export const RelatedResourceBlock = ({
   ...props
 }: RelatedResourceBlockProps) => {
   // Type of the resource: @type, additionalType
-  const type = data?.['@type'];
-  const additionalType = 'additionalType' in data && data?.additionalType?.name;
+  const type = data?.['@type'] ? formatType(data['@type']) : undefined;
+  const additionalType =
+    'additionalType' in data && data?.additionalType?.name
+      ? formatType(data.additionalType.name)
+      : undefined;
 
   // Label: name or identifier or url
   // If name is not available, we use identifier or url
@@ -63,20 +86,25 @@ export const RelatedResourceBlock = ({
       px={2}
       py={2}
       spacing={1.5}
+      w='100%'
       {...props}
     >
       {/* Label and URL if available */}
       {(label || type || additionalType) && (
-        <RelatedResourceBlockItem label=''>
+        <RelatedResourceBlockItem label='' w='100%'>
           {(additionalType || label || type) && (
-            <Text>
+            <Text w='100%' lineHeight='short' fontWeight='medium'>
               {/* Label: name or identifier or url*/}
               {label && (
-                <Text as='span' mr={1.5} lineHeight='short' fontWeight='medium'>
+                <>
                   {linkProps ? (
-                    <Link {...linkProps}>{label}</Link>
+                    <Link noOfLines={3} mr={1.5} display='unset' {...linkProps}>
+                      {label}
+                    </Link>
                   ) : (
-                    <>{label}</>
+                    <Text as='span' mr={1.5}>
+                      {label}
+                    </Text>
                   )}
 
                   {/* Alternate Name */}
@@ -85,7 +113,7 @@ export const RelatedResourceBlock = ({
                       ({data?.alternateName})
                     </Text>
                   )}
-                </Text>
+                </>
               )}
               {/* Type */}
               {type && (

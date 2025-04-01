@@ -100,7 +100,7 @@ export const UsageInfo = ({
         )}
         {/* Reference documents and code repositories */}
         {(data?.mainEntityOfPage || data?.codeRepository) && (
-          <Wrapper isLoading={isLoading} label='Documents'>
+          <Wrapper isLoading={isLoading} label=''>
             <AssociatedDocumentation
               isLoading={isLoading}
               type={data?.['@type']}
