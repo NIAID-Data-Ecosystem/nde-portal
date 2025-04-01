@@ -384,7 +384,7 @@ export const TreeNode = (props: {
               px={4}
               py={2}
               pl={`${(depth + 2) * MARGIN}px`}
-              bg='tertiary.50'
+              bg='niaid.50'
             >
               <Pagination
                 hasMore={showPagination}
