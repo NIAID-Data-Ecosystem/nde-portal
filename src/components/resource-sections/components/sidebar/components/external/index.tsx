@@ -99,11 +99,10 @@ export const UsageInfo = ({
           </Wrapper>
         )}
         {/* Reference documents and code repositories */}
-        {(data?.hasPart || data?.mainEntityOfPage || data?.codeRepository) && (
-          <Wrapper isLoading={isLoading} label='Documents'>
+        {(data?.mainEntityOfPage || data?.codeRepository) && (
+          <Wrapper isLoading={isLoading} label=''>
             <AssociatedDocumentation
               isLoading={isLoading}
-              hasPart={data?.hasPart}
               type={data?.['@type']}
               mainEntityOfPage={data?.mainEntityOfPage}
               codeRepository={data?.codeRepository}

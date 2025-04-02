@@ -14,7 +14,6 @@ import { Link } from 'src/components/link';
 import { FormattedResource } from 'src/utils/api/types';
 import { FaFileExport, FaFileImport } from 'react-icons/fa6';
 import InputOutput from './components/input-output';
-import BasedOnTable from '../based-on';
 
 interface SoftwareInformation {
   isLoading: boolean;
@@ -22,7 +21,6 @@ interface SoftwareInformation {
   applicationCategory?: FormattedResource['applicationCategory'];
   discussionUrl?: FormattedResource['discussionUrl'];
   input?: FormattedResource['input'];
-  isBasisFor?: FormattedResource['isBasisFor'];
   output?: FormattedResource['output'];
   processorRequirements?: FormattedResource['processorRequirements'];
   programmingLanguage?: FormattedResource['programmingLanguage'];
@@ -43,13 +41,10 @@ const SoftwareInformation: React.FC<SoftwareInformation> = ({
     applicationCategory,
     discussionUrl,
     input,
-    isBasisFor,
     output,
     processorRequirements,
     programmingLanguage,
-    softwareAddOn,
     softwareHelp,
-    softwareRequirements,
     softwareVersion,
   } = props || {};
 
@@ -168,17 +163,6 @@ const SoftwareInformation: React.FC<SoftwareInformation> = ({
                 </UnorderedList>
               </dd>
             </Stat>
-          )}
-
-          {/* Other tools which use this tool as import. */}
-          {isBasisFor && (
-            <BasedOnTable
-              id='software-information-dependency-for'
-              title='Dependency for'
-              caption='Datasets or tools that this dataset/tool is a dependency for.'
-              isLoading={isLoading}
-              items={isBasisFor}
-            />
           )}
 
           {/* Software input such as file or parameter. */}
