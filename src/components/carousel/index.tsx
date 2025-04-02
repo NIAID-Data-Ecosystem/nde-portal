@@ -221,6 +221,12 @@ export const Carousel = ({
                   borderColor={`${colorScheme}.500`}
                   bg={shouldHighlight ? `${colorScheme}.500` : '#ffffff'}
                   cursor='pointer'
+                  _hover={{
+                    bg: shouldHighlight
+                      ? `${colorScheme}.600`
+                      : `${colorScheme}.200`,
+                    borderColor: `${colorScheme}.600`,
+                  }}
                   onClick={() => handleDotClick(i)}
                 />
               );
