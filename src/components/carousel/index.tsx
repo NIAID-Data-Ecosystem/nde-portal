@@ -209,7 +209,9 @@ export const Carousel = ({
 
               return (
                 <Box
-                  aria-label={`carousel indicator ${i}`}
+                  aria-label={`carousel indicator ${i} ${
+                    shouldHighlight ? 'highlighted' : ''
+                  }`}
                   key={i}
                   w={3}
                   h={3}
