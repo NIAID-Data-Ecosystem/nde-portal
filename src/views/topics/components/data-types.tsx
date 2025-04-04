@@ -29,7 +29,7 @@ const getFillColor = scaleOrdinal({
 });
 
 // Helper function to generate a URL object for search results.
-const getSearchResultsRoute = ({
+export const getSearchResultsRoute = ({
   querystring,
   facet,
   term,
