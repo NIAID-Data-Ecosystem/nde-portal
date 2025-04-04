@@ -1,7 +1,6 @@
 import React from 'react';
-import { Box, Flex, Skeleton, Text } from '@chakra-ui/react';
+import { Box, Flex } from '@chakra-ui/react';
 import NextLink from 'next/link';
-import { SectionTitle } from '../layouts/section';
 import { Link } from 'src/components/link';
 import { TopicPageProps } from '../types';
 import { fetchSearchResults } from 'src/utils/api';
@@ -16,7 +15,7 @@ import {
 import { LegendContainer, LegendItem } from './legend';
 import { queryFilterObject2String } from 'src/views/search-results-page/helpers';
 import { UrlObject } from 'url';
-import { ErrorMessage } from 'src/components/error';
+import { ChartWrapper } from '../layouts/chart-wrapper';
 
 interface DataTypesProps {
   query: TopicPageProps['attributes']['query'];
@@ -74,16 +73,22 @@ export const DataTypes = ({ query, topic }: DataTypesProps) => {
 
   return (
     <Flex>
-      <Box flex={3}>
-        <SectionTitle as='h4'>Data Types</SectionTitle>
-        <Text lineHeight='short'>
-          An overview of resource types retrieved from a search on{' '}
-          <Link href={`/search?q=${query.q}`}>{topic}</Link>.
-        </Text>
-
-        {/* Donut Chart */}
-        <Skeleton width={200} height={200} isLoaded={!isLoading}>
-          {!data && error && <ErrorMessage message={error.message} my={4} />}
+      <Flex flex={3} flexDirection='column'>
+        <ChartWrapper
+          title='Data Types'
+          description={
+            <>
+              An overview of resource types retrieved from a search on{' '}
+              <Link href={`/search?q=${query.q}`}>{topic}</Link>.
+            </>
+          }
+          error={error}
+          isLoading={isLoading}
+          skeletonProps={{
+            minHeight: '200px',
+            width: '100%',
+          }}
+        >
           {data && (
             <DonutChart
               width={200}
@@ -105,8 +110,8 @@ export const DataTypes = ({ query, topic }: DataTypesProps) => {
               }}
             />
           )}
-        </Skeleton>
-      </Box>
+        </ChartWrapper>
+      </Flex>
       <Box flex={1} p={4}>
         <LegendContainer>
           {data?.map(({ term, count }) => {
