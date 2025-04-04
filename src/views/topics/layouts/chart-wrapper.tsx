@@ -27,6 +27,7 @@ export const ChartWrapper = ({
 
       {/* Skeleton loader */}
       <Skeleton
+        role='status'
         width='100%'
         height='100%'
         isLoaded={!isLoading}

@@ -14,7 +14,7 @@ export const SectionTitle = ({
   if (as === 'h1') {
     return (
       <SkeletonText isLoaded={!isLoading} noOfLines={1} skeletonHeight={10}>
-        <Heading as='h1' fontSize='4xl'>
+        <Heading as={as} fontSize='4xl'>
           {children}
         </Heading>
       </SkeletonText>
@@ -28,7 +28,7 @@ export const SectionTitle = ({
         width='100%'
         mb={4}
       >
-        <Heading as='h2' fontSize='2xl'>
+        <Heading as={as} fontSize='2xl'>
           {children}
         </Heading>
       </SkeletonText>
@@ -42,7 +42,7 @@ export const SectionTitle = ({
           skeletonHeight={6}
           width='100%'
         >
-          <Heading as='h3' fontSize='lg'>
+          <Heading as={as} fontSize='lg'>
             {children}
           </Heading>
         </SkeletonText>
@@ -58,7 +58,7 @@ export const SectionTitle = ({
         width='100%'
         mb={2}
       >
-        <Heading as='h4' fontSize='md' fontWeight='semibold'>
+        <Heading as={as} fontSize='md' fontWeight='semibold'>
           {children}
         </Heading>
       </SkeletonText>
