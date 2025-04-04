@@ -4,7 +4,7 @@ import { scaleLog } from '@visx/scale';
 import { Group } from '@visx/group';
 import { animated, useTransition, to } from '@react-spring/web';
 import { FacetTerm } from 'src/utils/api/types';
-import { Box, Checkbox, Flex, Text } from '@chakra-ui/react';
+import { Box, Checkbox, Flex, Text, VisuallyHidden } from '@chakra-ui/react';
 import { InfoLabel } from 'src/components/info-label';
 import { useTooltip, useTooltipInPortal } from '@visx/tooltip';
 import { localPoint } from '@visx/event';
@@ -60,6 +60,11 @@ export interface DonutChartProps {
 
   /** Whether to apply logarithmic scaling to values. @default true */
   useLogScale?: boolean;
+
+  /** Accessibilty title for the chart. */
+  title: string;
+  /** Accessibility description for the chart. */
+  description: string;
 }
 
 /**
@@ -80,6 +85,8 @@ export interface DonutChartProps {
  * ```
  */
 export const DonutChart = ({
+  title,
+  description,
   width = 400,
   height = 400,
   data,
@@ -94,11 +101,8 @@ export const DonutChart = ({
   // State: whether to apply log scale or raw counts
   const [applyLogScale, setApplyLogScale] = useState<boolean>(useLogScale);
 
-  // State: currently selected slice (for filtering)
-  const [selectedResourceType, setSelectedResourceType] = useState<
-    string | null
-  >(null);
-
+  // State: currently selected slice (for filtering, interaction between the data visualizations)
+  // const [selection, setSelection] = useState<string | null>(null);
   // State: currently hovered slice (for opacity highlighting)
   const [hoveredTerm, setHoveredTerm] = useState<string | null>(null);
 
@@ -135,12 +139,13 @@ export const DonutChart = ({
 
   // Show tooltip and track hovered term on pointer move
   const handleMouseOver = (
-    event: React.PointerEvent<SVGPathElement>,
+    event:
+      | React.PointerEvent<SVGPathElement>
+      | React.FocusEvent<SVGGElement, Element>,
     datum: Datum,
   ) => {
     const targetEl = (event.target as SVGPathElement)?.ownerSVGElement;
     if (!targetEl) return;
-
     const coords = localPoint(targetEl, event);
     setHoveredTerm(datum.term);
 
@@ -183,16 +188,25 @@ export const DonutChart = ({
 
       {/* Donut Chart */}
       <Box ref={containerRef} width={width} height={height}>
-        <svg width={width} height={height}>
+        <svg
+          role='img'
+          width={width}
+          height={height}
+          aria-labelledby='donut-chart-title donut-chart-desc'
+        >
+          <VisuallyHidden>
+            <title id='donut-chart-title'>{title}</title>
+            <desc id='donut-chart-desc'>{description}</desc>
+          </VisuallyHidden>
           <Group top={centerY + margin.top} left={centerX + margin.left}>
             <Pie
               cornerRadius={2}
               data={
-                selectedResourceType
-                  ? transformedData.filter(
-                      ({ term }) => term === selectedResourceType,
-                    )
-                  : transformedData
+                transformedData
+                // Uncomment to filter data based on selection
+                //  selection
+                //   ? transformedData.filter(({ term }) => term === selection)
+                //   : transformedData
               }
               innerRadius={Math.max(1, radius - donutThickness)}
               outerRadius={radius}
@@ -213,14 +227,12 @@ export const DonutChart = ({
                   }}
                   hoveredTerm={hoveredTerm}
                   labelStyles={labelStyles}
-                  onClickDatum={({ data: { term } }) => {
-                    animate &&
-                      setSelectedResourceType(
-                        selectedResourceType && selectedResourceType === term
-                          ? null
-                          : term,
-                      );
-                  }}
+                  // onClickDatum={({ data: { term } }) => {
+                  //   animate &&
+                  //     setSelection(
+                  //       selection && selection === term ? null : term,
+                  //     );
+                  // }}
                 />
               )}
             </Pie>
@@ -231,6 +243,7 @@ export const DonutChart = ({
       {/* Tooltip */}
       {tooltipOpen && tooltipData && (
         <TooltipInPortal
+          data-testid='tooltip'
           // set this to random so it correctly updates with parent bounds
           key={Math.random()}
           style={{
@@ -238,6 +251,7 @@ export const DonutChart = ({
             top: tooltipTop,
             left: tooltipLeft,
           }}
+          aria-live='polite'
         >
           <TooltipWrapper
             borderColor={getFillColor(tooltipData.term)}
@@ -296,7 +310,9 @@ type AnimatedPieProps<Datum> = ProvidedProps<Datum> & {
 
   /** Callback for handling mouse-over events on a pie slice. */
   handleMouseOver: (
-    e: React.PointerEvent<SVGPathElement>,
+    e:
+      | React.PointerEvent<SVGPathElement>
+      | React.FocusEvent<SVGGElement, Element>,
     d: PieArcDatum<Datum>['data'],
   ) => void;
 
@@ -304,7 +320,7 @@ type AnimatedPieProps<Datum> = ProvidedProps<Datum> & {
   handleMouseOut: () => void;
 
   /** Callback for handling click events on a pie slice. */
-  onClickDatum: (d: PieArcDatum<Datum>) => void;
+  // onClickDatum: (d: PieArcDatum<Datum>) => void;
 };
 
 // Arc rendering with animated transitions
@@ -328,17 +344,28 @@ function AnimatedPie<Datum>({
     keys: getKey,
   });
   return transitions((props, arc, { key }) => {
-    const [centroidX, centroidY] = path.centroid(arc);
-    const hasSpaceForLabel = arc.endAngle - arc.startAngle >= 0.1;
     const { transformLabel, ...svgTextProps } = labelStyles || {};
-    const displayLabel = transformLabel
-      ? transformLabel(getKey(arc))
-      : getKey(arc);
+    // For label positioning
+    // const [centroidX, centroidY] = path.centroid(arc);
+    // const hasSpaceForLabel = arc.endAngle - arc.startAngle >= 0.1;
+    // const displayLabel = transformLabel
+    //   ? transformLabel(getKey(arc))
+    //   : getKey(arc);
 
     return (
-      <g key={key}>
+      <g
+        key={key}
+        tabIndex={arc.index}
+        onFocus={e => {
+          handleMouseOver(e, arc.data);
+        }}
+        onBlur={() => {
+          handleMouseOut();
+        }}
+      >
         <NextLink href={getRoute(getKey(arc))} passHref>
           <animated.path
+            data-testid={`${getKey(arc)}-path`}
             style={{
               cursor: 'pointer',
               // prevent accidental text selection
@@ -359,7 +386,6 @@ function AnimatedPie<Datum>({
               handleMouseOut();
               // onClickDatum(arc);
             }}
-            // onTouchStart={() => onClickDatum(arc)}
             onPointerMove={e => {
               handleMouseOver(e, arc.data);
             }}
