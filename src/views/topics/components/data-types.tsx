@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Flex, Text } from '@chakra-ui/react';
+import { Box, Flex, Skeleton, Text } from '@chakra-ui/react';
 import NextLink from 'next/link';
 import { SectionTitle } from '../layouts/section';
 import { Link } from 'src/components/link';
@@ -16,6 +16,7 @@ import {
 import { LegendContainer, LegendItem } from './legend';
 import { queryFilterObject2String } from 'src/views/search-results-page/helpers';
 import { UrlObject } from 'url';
+import { ErrorMessage } from 'src/components/error';
 
 interface DataTypesProps {
   query: TopicPageProps['attributes']['query'];
@@ -57,7 +58,7 @@ export const DataTypes = ({ query, topic }: DataTypesProps) => {
     facets: '@type',
     size: 0,
   };
-  const { data, isLoading } = useQuery<
+  const { data, isLoading, error } = useQuery<
     FetchSearchResultsResponse | undefined,
     Error,
     FacetTerm[]
@@ -81,31 +82,32 @@ export const DataTypes = ({ query, topic }: DataTypesProps) => {
         </Text>
 
         {/* Donut Chart */}
-        {data && (
-          <DonutChart
-            width={200}
-            height={200}
-            donutThickness={20}
-            data={data}
-            getFillColor={getFillColor}
-            labelStyles={{
-              fill: '#2f2f2f',
-              transformLabel: term =>
-                formatResourceTypeForDisplay(term as APIResourceType),
-            }}
-            getRoute={term => {
-              return getSearchResultsRoute({
-                facet: params.facets,
-                querystring: query.q,
-                term,
-              });
-            }}
-          />
-        )}
-        {/* TO DO: Add Error state */}
-        {/* TO DO: Add Loading state */}
+        <Skeleton width={200} height={200} isLoaded={!isLoading}>
+          {!data && error && <ErrorMessage message={error.message} my={4} />}
+          {data && (
+            <DonutChart
+              width={200}
+              height={200}
+              donutThickness={20}
+              data={data}
+              getFillColor={getFillColor}
+              labelStyles={{
+                fill: '#2f2f2f',
+                transformLabel: term =>
+                  formatResourceTypeForDisplay(term as APIResourceType),
+              }}
+              getRoute={term => {
+                return getSearchResultsRoute({
+                  facet: params.facets,
+                  querystring: query.q,
+                  term,
+                });
+              }}
+            />
+          )}
+        </Skeleton>
       </Box>
-      <Box flex={1}>
+      <Box flex={1} p={4}>
         <LegendContainer>
           {data?.map(({ term, count }) => {
             return (
@@ -122,7 +124,7 @@ export const DataTypes = ({ query, topic }: DataTypesProps) => {
                   })}
                   passHref
                 >
-                  <Link>
+                  <Link as='p'>
                     {formatResourceTypeForDisplay(term as APIResourceType)}
                   </Link>
                 </NextLink>

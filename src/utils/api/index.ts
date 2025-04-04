@@ -99,7 +99,7 @@ export const fetchSearchResults = async (
 
     return { results, total, facets };
   } catch (err: any) {
-    throw err.response;
+    throw err;
   }
 };
 

@@ -6,19 +6,21 @@ import {
   Heading,
   HeadingProps,
   Stack,
+  StackProps,
   Text,
+  VStack,
 } from '@chakra-ui/react';
 import { PageContent } from 'src/components/page-container';
 import NextLink from 'next/link';
 
-interface Error extends FlexProps {
+interface Error {
   title?: string;
   message?: string;
   headingProps?: HeadingProps;
 }
 
 // Default error container.
-export const Error: React.FC<Error> = ({
+export const Error: React.FC<Error & FlexProps> = ({
   children,
   message,
   headingProps,
@@ -67,5 +69,44 @@ export const ErrorCTA: React.FC<{ children: React.ReactNode }> = ({
         </Button>
       </NextLink>
     </Stack>
+  );
+};
+
+// Basic error message
+export const ErrorMessage: React.FC<Error & StackProps> = ({
+  children,
+  message,
+  headingProps,
+  title = 'Error:  ',
+  ...props
+}) => {
+  return (
+    <VStack
+      px={2}
+      bg='status.error_lt'
+      color='red.500'
+      flex={1}
+      alignItems='flex-start'
+      spacing={1}
+      {...props}
+    >
+      <Text fontSize='sm' color='inherit'>
+        <Text
+          as='span'
+          fontWeight='semibold'
+          mr={1}
+          color='inherit'
+          fontSize='inherit'
+        >
+          {title}
+        </Text>
+        {message}
+      </Text>
+      {children && (
+        <Flex flex={1} w='100%' fontSize='sm'>
+          {children}
+        </Flex>
+      )}
+    </VStack>
   );
 };
