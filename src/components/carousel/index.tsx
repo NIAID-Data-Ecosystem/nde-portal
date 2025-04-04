@@ -399,6 +399,9 @@ const Track = ({
     (event: WheelEvent) => {
       if (Math.abs(event.deltaX) < Math.abs(event.deltaY)) return;
 
+      event.preventDefault();
+      event.stopPropagation();
+
       const minPosition = positions[0];
       const maxPosition = positions[maxActiveItem];
 
@@ -438,7 +441,7 @@ const Track = ({
 
     document.addEventListener('keydown', handleKeyDown);
     document.addEventListener('mousedown', handleClick);
-    document.addEventListener('wheel', handleWheel);
+    document.addEventListener('wheel', handleWheel, { passive: false });
 
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
