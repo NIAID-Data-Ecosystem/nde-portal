@@ -1,16 +1,17 @@
 import React from 'react';
-import { Box } from '@chakra-ui/react';
+import { Box, BoxProps } from '@chakra-ui/react';
 
-export const CardWrapper: React.FC<{ children: React.ReactNode }> = ({
-  children,
-}) => {
+export const CardWrapper: React.FC<
+  { children: React.ReactNode } & BoxProps
+> = ({ children, ...props }) => {
   return (
     <Box
-      boxShadow='base'
+      boxShadow='sm'
       borderRadius='semi'
       borderWidth={1}
       borderColor='gray.100'
       p={4}
+      {...props}
     >
       {children}
     </Box>

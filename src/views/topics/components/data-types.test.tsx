@@ -1,9 +1,10 @@
 import { render, screen } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ChakraProvider } from '@chakra-ui/react';
-import { DataTypes, getSearchResultsRoute } from './data-types';
+import { DataTypes } from './data-types';
 import { fetchSearchResults } from 'src/utils/api';
 import { FetchSearchResultsResponse } from 'src/utils/api/types';
+import { getSearchResultsRoute } from 'src/views/topics/helpers';
 
 jest.mock('src/utils/api', () => ({
   __esModule: true,

@@ -13,8 +13,7 @@ import {
   formatResourceTypeForDisplay,
 } from 'src/utils/formatting/formatResourceType';
 import { LegendContainer, LegendItem } from './legend';
-import { queryFilterObject2String } from 'src/views/search-results-page/helpers';
-import { UrlObject } from 'url';
+import { getSearchResultsRoute } from 'src/views/topics/helpers';
 import { ChartWrapper } from '../layouts/chart-wrapper';
 
 interface DataTypesProps {
@@ -27,35 +26,6 @@ const getFillColor = scaleOrdinal({
   domain: ['Dataset', 'ComputationalTool', 'ResourceCatalog'],
   range: ['#e8c543', '#ff8359', '#6e95fc'],
 });
-
-// Helper function to generate a URL object for search results.
-export const getSearchResultsRoute = ({
-  querystring,
-  facet,
-  term,
-}: {
-  querystring: string;
-  facet?: string;
-  term?: string;
-}): UrlObject => {
-  if (!facet || !term) {
-    return {
-      pathname: `/search`,
-      query: {
-        q: querystring,
-      },
-    };
-  }
-  return {
-    pathname: `/search`,
-    query: {
-      q: querystring,
-      filters: queryFilterObject2String({
-        [facet]: [term],
-      }),
-    },
-  };
-};
 
 export const DataTypes = ({ query, topic }: DataTypesProps) => {
   // Fetch data types for query.
