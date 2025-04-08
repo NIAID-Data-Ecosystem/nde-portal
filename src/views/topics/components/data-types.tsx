@@ -13,8 +13,7 @@ import {
   formatResourceTypeForDisplay,
 } from 'src/utils/formatting/formatResourceType';
 import { LegendContainer, LegendItem } from './legend';
-import { queryFilterObject2String } from 'src/views/search-results-page/helpers';
-import { UrlObject } from 'url';
+import { getSearchResultsRoute } from 'src/views/topics/helpers';
 import { ChartWrapper } from '../layouts/chart-wrapper';
 
 interface DataTypesProps {
@@ -28,35 +27,6 @@ const getFillColor = scaleOrdinal({
   range: ['#e8c543', '#ff8359', '#6e95fc'],
 });
 
-// Helper function to generate a URL object for search results.
-export const getSearchResultsRoute = ({
-  querystring,
-  facet,
-  term,
-}: {
-  querystring: string;
-  facet?: string;
-  term?: string;
-}): UrlObject => {
-  if (!facet || !term) {
-    return {
-      pathname: `/search`,
-      query: {
-        q: querystring,
-      },
-    };
-  }
-  return {
-    pathname: `/search`,
-    query: {
-      q: querystring,
-      filters: queryFilterObject2String({
-        [facet]: [term],
-      }),
-    },
-  };
-};
-
 export const DataTypes = ({ query, topic }: DataTypesProps) => {
   // Fetch data types for query.
   const params = {
@@ -65,7 +35,7 @@ export const DataTypes = ({ query, topic }: DataTypesProps) => {
     facets: '@type',
     size: 0,
   };
-  const { data, isLoading, error } = useQuery<
+  const { data, isLoading, isPlaceholderData, error } = useQuery<
     FetchSearchResultsResponse | undefined,
     Error,
     { terms: FacetTerm[]; total: number }
@@ -79,8 +49,33 @@ export const DataTypes = ({ query, topic }: DataTypesProps) => {
         total: data?.total || 0,
       };
     },
+    placeholderData: () => {
+      return {
+        results: [],
+        total: 0,
+        facets: {
+          '@type': {
+            _type: 'terms',
+            terms: [
+              {
+                count: 0,
+                term: 'Dataset',
+              },
+              {
+                count: 0,
+                term: 'ComputationalTool',
+              },
+            ],
+            other: 0,
+            missing: 0,
+            total: 0,
+          },
+        },
+      };
+    },
     enabled: !!query.q,
   });
+
   return (
     <Flex>
       <Flex flex={3} flexDirection='column'>
@@ -93,7 +88,7 @@ export const DataTypes = ({ query, topic }: DataTypesProps) => {
             </>
           }
           error={error}
-          isLoading={isLoading}
+          isLoading={isLoading || isPlaceholderData}
           skeletonProps={{
             minHeight: '200px',
             width: '100%',
@@ -133,6 +128,7 @@ export const DataTypes = ({ query, topic }: DataTypesProps) => {
               <LegendItem
                 key={term}
                 count={count}
+                isLoading={isLoading || isPlaceholderData}
                 swatchBg={getFillColor(term)}
               >
                 <NextLink
@@ -150,7 +146,11 @@ export const DataTypes = ({ query, topic }: DataTypesProps) => {
               </LegendItem>
             );
           })}
-          <LegendItem key='total' count={data?.total}>
+          <LegendItem
+            key='total'
+            count={data?.total}
+            isLoading={isLoading || isPlaceholderData}
+          >
             <NextLink
               href={getSearchResultsRoute({
                 querystring: query.q,

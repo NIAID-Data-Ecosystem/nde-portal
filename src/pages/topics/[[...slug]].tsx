@@ -20,6 +20,7 @@ import { DataTypes } from 'src/views/topics/components/data-types';
 import { encodeString } from 'src/utils/querystring-helpers';
 import { fetchSearchResults } from 'src/utils/api';
 import { FacetTerm, FetchSearchResultsResponse } from 'src/utils/api/types';
+import { PropertyTreemapLists } from 'src/views/topics/components/property-treemap-lists';
 
 // Fetch Disease content from strapi
 const MOCK_DATA = {
@@ -167,8 +168,8 @@ const TopicPage: NextPage<{
             flexDirection='column'
             flex={1}
             pb={32}
-            maxW={{ base: 'unset', lg: '70%' }}
             width='100%'
+            // maxW={{ base: 'unset', lg: '70%' }}
             m='0 auto'
           >
             {/* Header section */}
@@ -211,9 +212,17 @@ const TopicPage: NextPage<{
                 title={`${totalQuery.data?.total.toLocaleString()} ${topic} Related Resources`}
               >
                 <CardWrapper>
+                  {/* Chart: Resource types */}
                   {query && <DataTypes query={query} topic={topic} />}
+                  {/* TO DO: Add visualisations */}
                 </CardWrapper>
-                {/* TO DO: Add visualisations */}
+
+                <CardWrapper mt={4}>
+                  {/* Chart: Property Treemap/Brushable List*/}
+                  {query && (
+                    <PropertyTreemapLists query={query} topic={topic} />
+                  )}
+                </CardWrapper>
               </SectionWrapper>
             </SectionWrapper>
           </Flex>

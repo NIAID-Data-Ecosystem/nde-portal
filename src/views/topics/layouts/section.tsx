@@ -1,20 +1,27 @@
 import React from 'react';
-import { Divider, Flex, Heading, SkeletonText, Text } from '@chakra-ui/react';
+import {
+  Divider,
+  Flex,
+  Heading,
+  SkeletonText,
+  Text,
+  TextProps,
+} from '@chakra-ui/react';
 
 export const SectionTitle = ({
   as,
   children,
   isLoading,
+  ...props
 }: {
-  as?: 'h1' | 'h2' | 'h3' | 'h4';
   children?: string;
   isLoading?: boolean;
-}) => {
+} & TextProps) => {
   if (!children && !isLoading) return null;
   if (as === 'h1') {
     return (
       <SkeletonText isLoaded={!isLoading} noOfLines={1} skeletonHeight={10}>
-        <Heading as={as} fontSize='4xl'>
+        <Heading as={as} fontSize='4xl' {...props}>
           {children}
         </Heading>
       </SkeletonText>
@@ -28,7 +35,7 @@ export const SectionTitle = ({
         width='100%'
         mb={4}
       >
-        <Heading as={as} fontSize='2xl'>
+        <Heading as={as} fontSize='2xl' {...props}>
           {children}
         </Heading>
       </SkeletonText>
@@ -42,7 +49,7 @@ export const SectionTitle = ({
           skeletonHeight={6}
           width='100%'
         >
-          <Heading as={as} fontSize='lg'>
+          <Heading as={as} fontSize='lg' {...props}>
             {children}
           </Heading>
         </SkeletonText>
@@ -58,7 +65,27 @@ export const SectionTitle = ({
         width='100%'
         mb={2}
       >
-        <Heading as={as} fontSize='md' fontWeight='semibold'>
+        <Heading as={as} fontSize='md' fontWeight='semibold' {...props}>
+          {children}
+        </Heading>
+      </SkeletonText>
+    );
+  } else if (as === 'h5') {
+    return (
+      <SkeletonText
+        isLoaded={!isLoading}
+        noOfLines={1}
+        skeletonHeight={5}
+        width='100%'
+        mb={2}
+      >
+        <Heading
+          as={as}
+          fontSize='sm'
+          fontWeight='medium'
+          color='text.body'
+          {...props}
+        >
           {children}
         </Heading>
       </SkeletonText>
@@ -71,7 +98,9 @@ export const SectionTitle = ({
       skeletonHeight={4}
       width='100%'
     >
-      <Text>{children}</Text>
+      <Text as={as} {...props}>
+        {children}
+      </Text>
     </SkeletonText>
   );
 };

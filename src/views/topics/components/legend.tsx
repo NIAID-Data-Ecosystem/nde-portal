@@ -4,6 +4,7 @@ import {
   Flex,
   Heading,
   HStack,
+  Skeleton,
   Text,
   VStack,
 } from '@chakra-ui/react';
@@ -65,28 +66,36 @@ export const LegendContainer = ({
 export const LegendItem = ({
   children,
   count,
+  isLoading,
   swatchBg,
 }: {
   children?: React.ReactNode;
   count?: number;
+  isLoading?: boolean;
   swatchBg?: string;
 }) => {
   return (
-    <HStack
-      alignItems='flex-start'
-      fontSize='xs'
-      lineHeight='short'
-      justifyContent='flex-start'
-      spacing={1.5}
+    <Skeleton
+      isLoaded={!isLoading}
       width='100%'
+      height={isLoading ? '20px' : 'unset'}
     >
-      {swatchBg && <Box width={4} height={4} bg={swatchBg} m={0.5} />}
-      <Flex flex={1}>{children}</Flex>
-      {count && (
-        <Text textAlign='end' fontSize='inherit'>
-          {count?.toLocaleString()}
-        </Text>
-      )}
-    </HStack>
+      <HStack
+        alignItems='flex-start'
+        fontSize='xs'
+        lineHeight='short'
+        justifyContent='flex-start'
+        spacing={1.5}
+        width='100%'
+      >
+        {swatchBg && <Box width={4} height={4} bg={swatchBg} m={0.5} />}
+        <Flex flex={1}>{children}</Flex>
+        {count && (
+          <Text textAlign='end' fontSize='inherit'>
+            {count?.toLocaleString()}
+          </Text>
+        )}
+      </HStack>
+    </Skeleton>
   );
 };
