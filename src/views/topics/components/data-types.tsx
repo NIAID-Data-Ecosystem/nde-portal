@@ -34,10 +34,18 @@ export const getSearchResultsRoute = ({
   facet,
   term,
 }: {
-  facet: string;
   querystring: string;
-  term: string;
+  facet?: string;
+  term?: string;
 }): UrlObject => {
+  if (!facet || !term) {
+    return {
+      pathname: `/search`,
+      query: {
+        q: querystring,
+      },
+    };
+  }
   return {
     pathname: `/search`,
     query: {
@@ -60,17 +68,19 @@ export const DataTypes = ({ query, topic }: DataTypesProps) => {
   const { data, isLoading, error } = useQuery<
     FetchSearchResultsResponse | undefined,
     Error,
-    FacetTerm[]
+    { terms: FacetTerm[]; total: number }
   >({
     queryKey: ['search-results', params],
     queryFn: async () => await fetchSearchResults(params),
     select: data => {
-      if (!data) return [];
-      return data.facets['@type'].terms || [];
+      if (!data) return { terms: [], total: 0 };
+      return {
+        terms: data.facets?.['@type']?.terms || [],
+        total: data?.total || 0,
+      };
     },
     enabled: !!query.q,
   });
-
   return (
     <Flex>
       <Flex flex={3} flexDirection='column'>
@@ -89,7 +99,7 @@ export const DataTypes = ({ query, topic }: DataTypesProps) => {
             width: '100%',
           }}
         >
-          {data && (
+          {data?.terms && (
             <DonutChart
               title='Resource Type Distribution'
               description=' A donut chart showing the distribution of different resource types
@@ -98,7 +108,7 @@ export const DataTypes = ({ query, topic }: DataTypesProps) => {
               width={200}
               height={200}
               donutThickness={20}
-              data={data}
+              data={data.terms}
               getFillColor={getFillColor}
               labelStyles={{
                 fill: '#2f2f2f',
@@ -118,7 +128,7 @@ export const DataTypes = ({ query, topic }: DataTypesProps) => {
       </Flex>
       <Box flex={1} p={4}>
         <LegendContainer>
-          {data?.map(({ term, count }) => {
+          {data?.terms?.map(({ term, count }) => {
             return (
               <LegendItem
                 key={term}
@@ -140,6 +150,16 @@ export const DataTypes = ({ query, topic }: DataTypesProps) => {
               </LegendItem>
             );
           })}
+          <LegendItem key='total' count={data?.total}>
+            <NextLink
+              href={getSearchResultsRoute({
+                querystring: query.q,
+              })}
+              passHref
+            >
+              <Link as='p'>Total</Link>
+            </NextLink>
+          </LegendItem>
         </LegendContainer>
       </Box>
     </Flex>

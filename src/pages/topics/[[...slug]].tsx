@@ -18,12 +18,14 @@ import { Link } from 'src/components/link';
 import { CardWrapper } from 'src/views/topics/layouts/card';
 import { DataTypes } from 'src/views/topics/components/data-types';
 import { encodeString } from 'src/utils/querystring-helpers';
+import { fetchSearchResults } from 'src/utils/api';
+import { FacetTerm, FetchSearchResultsResponse } from 'src/utils/api/types';
 
 // Fetch Disease content from strapi
 const MOCK_DATA = {
   id: 1,
   attributes: {
-    title: 'Influenza Datasets in the NIAID Data Ecosystem',
+    title: 'Influenza',
     subtitle:
       'Lorem ipsum dolor sit amet, consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
     description:
@@ -99,11 +101,36 @@ const TopicPage: NextPage<{
     placeholderData: initialData,
     refetchOnWindowFocus: true,
   });
+
+  const query = data?.attributes.query;
   const topic =
     data?.attributes.topic
       .charAt(0)
       .toUpperCase()
       .concat(data?.attributes.topic.slice(1)) || 'Topic';
+
+  // Fetch total number of results for the topic
+  const params = {
+    q: query?.q || '',
+    facet_size: query?.facet_size,
+    facets: '@type',
+    size: 0,
+  };
+
+  const totalQuery = useQuery<
+    FetchSearchResultsResponse | undefined,
+    Error,
+    { total: number }
+  >({
+    queryKey: ['search-results', params],
+    queryFn: async () => {
+      if (!params.q) {
+        return undefined;
+      }
+      return await fetchSearchResults(params);
+    },
+    enabled: params.q !== undefined,
+  });
 
   return (
     <PageContainer
@@ -166,7 +193,7 @@ const TopicPage: NextPage<{
 
             <SectionWrapper
               id='about-datasets'
-              title={`${topic} Datasets in the NIAID Data Ecosystem`}
+              title={`${topic} Resources in the NIAID Data Ecosystem`}
             >
               <Text mb={2}>
                 This section provides a visual summary of the resources
@@ -178,11 +205,13 @@ const TopicPage: NextPage<{
                 .
               </Text>
               {/* Overview Section */}
-              <SectionWrapper as='h3' id='overview' title='Overview'>
+              <SectionWrapper
+                as='h3'
+                id='overview'
+                title={`${totalQuery.data?.total.toLocaleString()} ${topic} Related Resources`}
+              >
                 <CardWrapper>
-                  {data?.attributes.query && (
-                    <DataTypes query={data.attributes.query} topic={topic} />
-                  )}
+                  {query && <DataTypes query={query} topic={topic} />}
                 </CardWrapper>
                 {/* TO DO: Add visualisations */}
               </SectionWrapper>
