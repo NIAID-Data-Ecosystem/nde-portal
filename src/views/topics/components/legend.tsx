@@ -65,7 +65,7 @@ export const LegendContainer = ({
 export const LegendItem = ({
   children,
   count,
-  swatchBg = 'gray.500',
+  swatchBg,
 }: {
   children?: React.ReactNode;
   count?: number;
@@ -80,7 +80,7 @@ export const LegendItem = ({
       spacing={1.5}
       width='100%'
     >
-      <Box width={4} height={4} bg={swatchBg} m={0.5} />
+      {swatchBg && <Box width={4} height={4} bg={swatchBg} m={0.5} />}
       <Flex flex={1}>{children}</Flex>
       {count && (
         <Text textAlign='end' fontSize='inherit'>
