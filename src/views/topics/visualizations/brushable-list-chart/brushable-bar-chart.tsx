@@ -52,7 +52,7 @@ export const BrushableBarChart = ({
     () =>
       scaleLinear<number>({
         domain: [0, yMax],
-        range: [innerHeight, 0],
+        range: [innerHeight - 1, 0],
       }),
     [yMax, innerHeight],
   );
