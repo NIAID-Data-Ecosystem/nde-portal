@@ -1,31 +1,29 @@
 import NextLink from 'next/link';
 import {
   Box,
-  Flex,
-  HStack,
   ListItem,
   Text,
+  ThemingProps,
   UnorderedList,
 } from '@chakra-ui/react';
 import { FacetTerm } from 'src/utils/api/types';
 import { SectionTitle } from '../../layouts/section';
-import { getSearchResultsRoute } from '../../helpers';
-import { TopicPageProps } from '../../types';
 import { Link } from 'src/components/link';
 import { UrlObject } from 'url';
 import { ScrollContainer } from 'src/components/scroll-container';
 import { BrushableBarChart } from './brushable-bar-chart';
 import { useState } from 'react';
 
-interface Facet {
+export interface FacetProps {
   label: string;
   value: string;
   fill: string;
+  colorScheme: ThemingProps<any>['colorScheme'];
 }
 
 interface BrushableListChartProps {
   data: FacetTerm[];
-  facet: Facet;
+  facet: FacetProps;
   getSearchRoute: (term: string) => UrlObject;
 }
 
@@ -50,7 +48,7 @@ export const BrushableListChart = ({
       {/* Add Brush */}
       <BrushableBarChart
         data={data}
-        fill={facet.fill}
+        colorScheme={facet.colorScheme}
         onBrushSelection={selected => setSelectedData(selected)}
         {...chartDimensions}
       />

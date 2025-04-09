@@ -5,9 +5,9 @@ import { Brush } from '@visx/brush';
 import { Bar } from '@visx/shape';
 import { FacetTerm } from 'src/utils/api/types';
 import { max } from 'd3-array';
-import { useParentSize } from '@visx/responsive';
 import { BrushHandleRenderProps } from '@visx/brush/lib/BrushHandle';
 import { Bounds } from '@visx/brush/lib/types';
+import { FacetProps } from '.';
 
 interface BrushableBarChartProps {
   data: FacetTerm[];
@@ -20,18 +20,19 @@ interface BrushableBarChartProps {
     bottom: number;
     left: number;
   };
-  fill: string;
+  colorScheme: FacetProps['colorScheme'];
 }
 const getTerm = (d: FacetTerm) => d.term;
 export const BrushableBarChart = ({
   data,
   onBrushSelection,
   height: defaultHeight,
-  fill,
+  colorScheme,
   width = 480,
   height = 80,
   margin = { top: 10, right: 10, bottom: 0, left: 10 },
 }: BrushableBarChartProps) => {
+  const [selected, setSelected] = React.useState<FacetTerm[]>(data);
   const innerWidth = width - margin.left - margin.right;
   const innerHeight = height - margin.top - margin.bottom;
 
@@ -75,6 +76,7 @@ export const BrushableBarChart = ({
     }),
     [data, xScale],
   );
+
   const handleBrushChange = useCallback(
     (bounds: Bounds | null) => {
       //  using xValues instead of x0 and x1 to get the selected range because x0 and x1 work better with continuous scales
@@ -83,10 +85,14 @@ export const BrushableBarChart = ({
       const selectedTerms = bounds.xValues as string[];
 
       const selected = data.filter(d => selectedTerms.includes(d.term));
-      onBrushSelection(selected);
+      setSelected(selected);
     },
-    [data, onBrushSelection],
+    [data],
   );
+
+  useEffect(() => {
+    onBrushSelection(selected);
+  }, [onBrushSelection, selected]);
 
   return (
     <svg width={width} height={height}>
@@ -101,7 +107,11 @@ export const BrushableBarChart = ({
               y={yScale(d.count)}
               width={xScale.bandwidth()}
               height={barHeight}
-              fill={fill}
+              fill={
+                selected.some(selectedItem => selectedItem.term === d.term)
+                  ? colorScheme?.[300] || '#cccccc'
+                  : '#f2f2f2'
+              }
             />
           ) : null;
         })}

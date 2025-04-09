@@ -1,27 +1,16 @@
 import React from 'react';
-import { Box, Flex, HStack } from '@chakra-ui/react';
-import NextLink from 'next/link';
-import { Link } from 'src/components/link';
+import { Flex, HStack } from '@chakra-ui/react';
 import { TopicPageProps } from '../types';
 import { fetchSearchResults } from 'src/utils/api';
 import { useQuery } from '@tanstack/react-query';
 import { FacetTerm, FetchSearchResultsResponse } from 'src/utils/api/types';
-import { DonutChart } from '../visualizations/donut-chart';
-import { scaleOrdinal } from '@visx/scale';
-import {
-  APIResourceType,
-  formatResourceTypeForDisplay,
-} from 'src/utils/formatting/formatResourceType';
-import { LegendContainer, LegendItem } from './legend';
-import { queryFilterObject2String } from 'src/views/search-results-page/helpers';
-import { UrlObject } from 'url';
 import { ChartWrapper } from '../layouts/chart-wrapper';
-import { BrushableListChart } from '../visualizations/brushable-list-chart';
-import { getSearchResultsRoute } from '../helpers';
 import {
-  getMetadataColor,
-  getMetadataTheme,
-} from 'src/components/icon/helpers';
+  BrushableListChart,
+  FacetProps,
+} from '../visualizations/brushable-list-chart';
+import { getSearchResultsRoute } from '../helpers';
+import { getMetadataTheme } from 'src/components/icon/helpers';
 import { theme } from 'src/theme';
 
 interface DataTypesProps {
@@ -34,18 +23,21 @@ const facets = [
     label: 'Pathogen',
     value: 'infectiousAgent.name',
     fill: theme.colors[getMetadataTheme('infectiousAgent')][300] as string,
+    colorScheme: theme.colors[getMetadataTheme('infectiousAgent')],
   },
   {
     label: 'Measurement Technique',
     value: 'measurementTechnique.name',
     fill: theme.colors[getMetadataTheme('measurementTechnique')][300] as string,
+    colorScheme: theme.colors[getMetadataTheme('measurementTechnique')],
   },
   {
     label: 'Health Condition',
     value: 'healthCondition.name',
     fill: theme.colors[getMetadataTheme('healthCondition')][300] as string,
+    colorScheme: theme.colors[getMetadataTheme('healthCondition')],
   },
-];
+] as FacetProps[];
 
 export const PropertyTreemapLists = ({ query, topic }: DataTypesProps) => {
   // Fetch data types for query.
@@ -59,12 +51,13 @@ export const PropertyTreemapLists = ({ query, topic }: DataTypesProps) => {
   const { data, isLoading, error } = useQuery<
     FetchSearchResultsResponse | undefined,
     Error,
-    { label: string; fill: string; value: string; terms: FacetTerm[] }[]
+    Array<FacetProps & { terms: FacetTerm[] }>
   >({
     queryKey: ['search-results', params],
     queryFn: async () => await fetchSearchResults(params),
     select: data => {
-      if (!data) return [{ fill: '', label: '', value: '', terms: [] }];
+      if (!data)
+        return [{ colorScheme: '', fill: '', label: '', value: '', terms: [] }];
       // Get the terms for each facet.
       const terms = facets.map(facet => {
         const facetTerms = data.facets?.[facet.value]?.terms || [];
