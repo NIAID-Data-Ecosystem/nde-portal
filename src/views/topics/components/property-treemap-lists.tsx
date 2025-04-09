@@ -1,5 +1,5 @@
 import React from 'react';
-import { Flex, HStack } from '@chakra-ui/react';
+import { Box, Flex, HStack } from '@chakra-ui/react';
 import { FacetProps, TopicPageProps } from '../types';
 import { fetchSearchResults } from 'src/utils/api';
 import { useQuery } from '@tanstack/react-query';
@@ -38,7 +38,7 @@ const facets = [
 ] as FacetProps[];
 
 export const PropertyTreemapLists = ({ query, topic }: DataTypesProps) => {
-  const [listView, setListView] = React.useState(false);
+  const [listView, setListView] = React.useState(true);
 
   // Fetch data types for query.
   const params = {
@@ -72,55 +72,53 @@ export const PropertyTreemapLists = ({ query, topic }: DataTypesProps) => {
     enabled: !!query.q,
   });
   return (
-    <Flex>
-      <Flex flex={3} flexDirection='column'>
-        <ChartWrapper
-          title={`Resources mentioning ${topic} also mentioned the following:`}
-          description={
-            'Click on rectangle to view all related results within the portal.'
-          }
-          error={error}
-          isLoading={isLoading}
-          skeletonProps={{
-            minHeight: '200px',
-            width: '100%',
-          }}
-        >
-          {/* Add toggle for charts */}
-          {/* Add charts */}
-          <HStack mt={4} alignItems='flex-start' spacing={6} flexWrap='wrap'>
-            {data?.map(({ terms, ...facet }) => {
-              return listView ? (
-                <BrushableListChart
-                  key={facet.value}
-                  facet={facet}
-                  data={terms}
-                  getSearchRoute={(term: string) => {
-                    return getSearchResultsRoute({
-                      facet: facet.value,
-                      querystring: query.q,
-                      term,
-                    });
-                  }}
-                />
-              ) : (
-                <TreemapChart
-                  key={facet.value}
-                  facet={facet}
-                  data={terms}
-                  getSearchRoute={(term: string) => {
-                    return getSearchResultsRoute({
-                      facet: facet.value,
-                      querystring: query.q,
-                      term,
-                    });
-                  }}
-                />
-              );
-            })}
-          </HStack>
-        </ChartWrapper>
-      </Flex>
+    <Flex flexDirection='column'>
+      <ChartWrapper
+        title={`Resources mentioning ${topic} also mentioned the following:`}
+        description={
+          listView
+            ? `Explore the table by dragging the blue box horizontally on the bar chart to scroll through most popular metadata properties (100 top results) or resize it to filter a specific range. The list rows updates dynamically based on the selection.`
+            : 'Click on rectangle to view all related results within the portal.'
+        }
+        error={error}
+        isLoading={isLoading}
+        skeletonProps={{
+          minHeight: '200px',
+          width: '100%',
+        }}
+      >
+        {/* Add toggle for charts */}
+        {/* Add charts */}
+        <HStack mt={4} alignItems='flex-start' spacing={6} flexWrap='wrap'>
+          {data?.map(({ terms, ...facet }) => {
+            const props = {
+              facet,
+              data: terms,
+              getSearchRoute: (term: string) => {
+                return getSearchResultsRoute({
+                  facet: facet.value,
+                  querystring: query.q,
+                  term,
+                });
+              },
+            };
+            return (
+              <Box
+                key={facet.value}
+                flex={1}
+                minWidth={{ base: '100%', sm: '380px' }}
+                maxWidth={{ base: 'unset', lg: '500px' }}
+              >
+                {listView ? (
+                  <BrushableListChart {...props} />
+                ) : (
+                  <TreemapChart {...props} />
+                )}
+              </Box>
+            );
+          })}
+        </HStack>
+      </ChartWrapper>
     </Flex>
   );
 };

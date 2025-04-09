@@ -1,5 +1,5 @@
 import NextLink from 'next/link';
-import { Box, ListItem, Text, UnorderedList } from '@chakra-ui/react';
+import { Box, Flex, ListItem, Text, UnorderedList } from '@chakra-ui/react';
 import { FacetTerm } from 'src/utils/api/types';
 import { SectionTitle } from '../../layouts/section';
 import { Link } from 'src/components/link';
@@ -25,13 +25,13 @@ export const BrushableListChart = ({
   //  Data that is selected using the brush mechanism
   const [selectedData, setSelectedData] = useState<FacetTerm[]>(data);
   const chartDimensions = {
-    width: 480,
-    height: 80,
+    defaultWidth: 480,
+    defaultHeight: 80,
     margin: { top: 0, right: 5, bottom: 0, left: 7 },
   };
 
   return (
-    <Box flex={1} width='400px' minWidth='400px' maxWidth='480px'>
+    <>
       <SectionTitle as='h5'>{facet.label}</SectionTitle>
       {/* Add Brush */}
       <BrushableBarChart
@@ -40,37 +40,52 @@ export const BrushableListChart = ({
         onBrushSelection={selected => setSelectedData(selected)}
         {...chartDimensions}
       />
-      {/* List of terms and associated counts */}
-      <ScrollContainer
-        as={UnorderedList}
-        ml={1}
-        mt={4}
-        maxHeight={`${SCROLL_HEIGHT}px`}
-      >
-        {selectedData.map(item => (
-          <ListItem
-            key={item.term}
-            fontSize='sm'
-            color='gray.500'
-            display='flex'
-            justifyContent='space-between'
-            pr={4}
-            pl={1}
-            py={1}
-            borderBottom='1px solid'
-            borderBottomColor='#ededed'
-            lineHeight='short'
-          >
-            {/* Term: Links to search results */}
-            <NextLink href={getSearchRoute(item.term)} passHref>
-              <Link as='p'>{item.term}</Link>
-            </NextLink>
+      <Box width='100%' mt={4}>
+        <Flex
+          fontSize='sm'
+          fontWeight='semibold'
+          justifyContent='space-between'
+          mr={4}
+          ml={1}
+          lineHeight='short'
+          borderBottom='1px solid'
+          borderBottomColor='niaid.placeholder'
+        >
+          <Text>Terms</Text>
+          <Text mr={4}>Count</Text>
+        </Flex>
+        {/* List of terms and associated counts */}
+        <ScrollContainer
+          as={UnorderedList}
+          ml={1}
+          mt={1}
+          maxHeight={`${SCROLL_HEIGHT}px`}
+        >
+          {selectedData.map(item => (
+            <ListItem
+              key={item.term}
+              fontSize='sm'
+              color='gray.500'
+              display='flex'
+              justifyContent='space-between'
+              pr={4}
+              pl={1}
+              py={1}
+              borderBottom='1px solid'
+              borderBottomColor='#ededed'
+              lineHeight='short'
+            >
+              {/* Term: Links to search results */}
+              <NextLink href={getSearchRoute(item.term)} passHref>
+                <Link as='p'>{item.term}</Link>
+              </NextLink>
 
-            {/* Count */}
-            <Text>{item.count.toLocaleString()}</Text>
-          </ListItem>
-        ))}
-      </ScrollContainer>
-    </Box>
+              {/* Count */}
+              <Text>{item.count.toLocaleString()}</Text>
+            </ListItem>
+          ))}
+        </ScrollContainer>
+      </Box>
+    </>
   );
 };

@@ -168,9 +168,9 @@ const TopicPage: NextPage<{
             flexDirection='column'
             flex={1}
             pb={32}
-            maxW={{ base: 'unset', lg: '70%' }}
             width='100%'
-            m='0 auto'
+            // maxW={{ base: 'unset', lg: '70%' }}
+            // m='0 auto'
           >
             {/* Header section */}
             <HStack alignItems='flex-start' spacing={6} flexWrap='wrap'>

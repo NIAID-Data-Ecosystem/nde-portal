@@ -8,12 +8,13 @@ import { max } from 'd3-array';
 import { BrushHandleRenderProps } from '@visx/brush/lib/BrushHandle';
 import { Bounds } from '@visx/brush/lib/types';
 import { FacetProps } from '../../types';
+import { useParentSize } from '@visx/responsive';
 
 interface BrushableBarChartProps {
   data: FacetTerm[];
   onBrushSelection: (selected: FacetTerm[]) => void;
-  width?: number;
-  height?: number;
+  defaultWidth?: number;
+  defaultHeight?: number;
   margin?: {
     top: number;
     right: number;
@@ -22,19 +23,28 @@ interface BrushableBarChartProps {
   };
   colorScheme: FacetProps['colorScheme'];
 }
+// Term data accessor
 const getTerm = (d: FacetTerm) => d.term;
+
 export const BrushableBarChart = ({
   data,
   onBrushSelection,
-  height: defaultHeight,
   colorScheme,
-  width = 480,
-  height = 80,
+  defaultWidth = 480,
+  defaultHeight = 80,
   margin = { top: 10, right: 10, bottom: 0, left: 10 },
 }: BrushableBarChartProps) => {
+  const { parentRef, width } = useParentSize({
+    debounceTime: 150,
+    initialSize: {
+      width: defaultWidth,
+      height: defaultHeight,
+    },
+    ignoreDimensions: ['height'],
+  });
   const [selected, setSelected] = React.useState<FacetTerm[]>(data);
   const innerWidth = width - margin.left - margin.right;
-  const innerHeight = height - margin.top - margin.bottom;
+  const innerHeight = defaultHeight - margin.top - margin.bottom;
 
   const xScale = useMemo(
     () =>
@@ -95,48 +105,53 @@ export const BrushableBarChart = ({
   }, [onBrushSelection, selected]);
 
   return (
-    <svg width={width} height={height}>
-      <Group left={margin.left} top={margin.top}>
-        {data.map(d => {
-          const x = xScale(d.term);
-          const barHeight = innerHeight - yScale(d.count);
-          return x !== undefined ? (
-            <Bar
-              key={d.term}
-              x={x}
-              y={yScale(d.count)}
-              width={xScale.bandwidth()}
-              height={barHeight}
-              fill={
-                selected.some(selectedItem => selectedItem.term === d.term)
-                  ? colorScheme?.[300] || '#cccccc'
-                  : '#f2f2f2'
-              }
-            />
-          ) : null;
-        })}
-        <Brush
-          xScale={xScale}
-          yScale={yScale}
-          width={xBrushMax}
-          height={yBrushMax}
-          initialBrushPosition={initialBrushPosition}
-          brushDirection='horizontal'
-          handleSize={8}
-          margin={brushMargin}
-          onChange={handleBrushChange}
-          useWindowMoveEvents
-          selectedBoxStyle={{
-            fillOpacity: 0.2,
-            fill: 'steelblue',
-            stroke: 'steelblue',
-            strokeOpacity: 0.8,
-            strokeWidth: 0.5,
-          }}
-          renderBrushHandle={props => <BrushHandle {...props} />}
-        />
-      </Group>
-    </svg>
+    <div
+      ref={parentRef}
+      style={{ width: '100%', height: `${defaultHeight}px` }}
+    >
+      <svg width={width} height={defaultHeight}>
+        <Group left={margin.left} top={margin.top}>
+          {data.map(d => {
+            const x = xScale(d.term);
+            const barHeight = innerHeight - yScale(d.count);
+            return x !== undefined ? (
+              <Bar
+                key={d.term}
+                x={x}
+                y={yScale(d.count)}
+                width={xScale.bandwidth()}
+                height={barHeight}
+                fill={
+                  selected.some(selectedItem => selectedItem.term === d.term)
+                    ? colorScheme?.[300] || '#cccccc'
+                    : '#f2f2f2'
+                }
+              />
+            ) : null;
+          })}
+          <Brush
+            xScale={xScale}
+            yScale={yScale}
+            width={xBrushMax}
+            height={yBrushMax}
+            initialBrushPosition={initialBrushPosition}
+            brushDirection='horizontal'
+            handleSize={8}
+            margin={brushMargin}
+            onChange={handleBrushChange}
+            useWindowMoveEvents
+            selectedBoxStyle={{
+              fillOpacity: 0.2,
+              fill: 'steelblue',
+              stroke: 'steelblue',
+              strokeOpacity: 0.8,
+              strokeWidth: 0.5,
+            }}
+            renderBrushHandle={props => <BrushHandle {...props} />}
+          />
+        </Group>
+      </svg>
+    </div>
   );
 };
 
