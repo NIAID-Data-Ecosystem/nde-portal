@@ -188,16 +188,17 @@ export const DonutChart = ({
 
       {/* Donut Chart */}
       <Box ref={containerRef} width={width} height={height}>
+        <VisuallyHidden>
+          <p id='donut-chart-title'>{title}</p>
+          <p id='donut-chart-desc'>{description}</p>
+        </VisuallyHidden>
         <svg
           role='img'
           width={width}
           height={height}
-          aria-labelledby='donut-chart-title donut-chart-desc'
+          aria-labelledby='donut-chart-title'
+          aria-describedby='donut-chart-desc'
         >
-          <VisuallyHidden>
-            <title id='donut-chart-title'>{title}</title>
-            <desc id='donut-chart-desc'>{description}</desc>
-          </VisuallyHidden>
           <Group top={centerY + margin.top} left={centerX + margin.left}>
             <Pie
               cornerRadius={2}

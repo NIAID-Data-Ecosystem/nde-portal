@@ -35,7 +35,7 @@ export const DataTypes = ({ query, topic }: DataTypesProps) => {
     facets: '@type',
     size: 0,
   };
-  const { data, isLoading, error } = useQuery<
+  const { data, isLoading, isPlaceholderData, error } = useQuery<
     FetchSearchResultsResponse | undefined,
     Error,
     { terms: FacetTerm[]; total: number }
@@ -49,8 +49,33 @@ export const DataTypes = ({ query, topic }: DataTypesProps) => {
         total: data?.total || 0,
       };
     },
+    placeholderData: () => {
+      return {
+        results: [],
+        total: 0,
+        facets: {
+          '@type': {
+            _type: 'terms',
+            terms: [
+              {
+                count: 0,
+                term: 'Dataset',
+              },
+              {
+                count: 0,
+                term: 'ComputationalTool',
+              },
+            ],
+            other: 0,
+            missing: 0,
+            total: 0,
+          },
+        },
+      };
+    },
     enabled: !!query.q,
   });
+
   return (
     <Flex>
       <Flex flex={3} flexDirection='column'>
@@ -63,7 +88,7 @@ export const DataTypes = ({ query, topic }: DataTypesProps) => {
             </>
           }
           error={error}
-          isLoading={isLoading}
+          isLoading={isLoading || isPlaceholderData}
           skeletonProps={{
             minHeight: '200px',
             width: '100%',
@@ -103,6 +128,7 @@ export const DataTypes = ({ query, topic }: DataTypesProps) => {
               <LegendItem
                 key={term}
                 count={count}
+                isLoading={isLoading || isPlaceholderData}
                 swatchBg={getFillColor(term)}
               >
                 <NextLink
@@ -120,7 +146,11 @@ export const DataTypes = ({ query, topic }: DataTypesProps) => {
               </LegendItem>
             );
           })}
-          <LegendItem key='total' count={data?.total}>
+          <LegendItem
+            key='total'
+            count={data?.total}
+            isLoading={isLoading || isPlaceholderData}
+          >
             <NextLink
               href={getSearchResultsRoute({
                 querystring: query.q,
