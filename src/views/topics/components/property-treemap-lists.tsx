@@ -1,5 +1,13 @@
 import React from 'react';
-import { Box, Flex, HStack } from '@chakra-ui/react';
+import {
+  Box,
+  Flex,
+  HStack,
+  Radio,
+  RadioGroup,
+  Stack,
+  Text,
+} from '@chakra-ui/react';
 import { FacetProps, TopicPageProps } from '../types';
 import { fetchSearchResults } from 'src/utils/api';
 import { useQuery } from '@tanstack/react-query';
@@ -75,11 +83,6 @@ export const PropertyTreemapLists = ({ query, topic }: DataTypesProps) => {
     <Flex flexDirection='column'>
       <ChartWrapper
         title={`Resources mentioning ${topic} also mentioned the following:`}
-        description={
-          listView
-            ? `Explore the table by dragging the blue box horizontally on the bar chart to scroll through most popular metadata properties (100 top results) or resize it to filter a specific range. The list rows updates dynamically based on the selection.`
-            : 'Click on rectangle to view all related results within the portal.'
-        }
         error={error}
         isLoading={isLoading}
         skeletonProps={{
@@ -87,7 +90,26 @@ export const PropertyTreemapLists = ({ query, topic }: DataTypesProps) => {
           width: '100%',
         }}
       >
-        {/* Add toggle for charts */}
+        <HStack alignItems='flex-start' spacing={6} flexWrap='wrap'>
+          <Text lineHeight='short' flex={2}>
+            {listView
+              ? `Explore the table by dragging the blue box horizontally on the bar chart to scroll through most popular metadata properties (100 top results) or resize it to filter a specific range. The list rows updates dynamically based on the selection.`
+              : 'Click on rectangle to view all related results within the portal.'}
+          </Text>
+          {/* Add toggle for charts */}
+          <Flex px={4} flex={1} flexDirection='column' alignItems='flex-end'>
+            <Text fontWeight='medium'>Select Chart Type</Text>
+            <RadioGroup
+              onChange={value => setListView(value === 'list')}
+              value={`${listView ? 'list' : 'treemap'}`}
+            >
+              <Stack direction='row'>
+                <Radio value='list'>List</Radio>
+                <Radio value='treemap'>Treemap</Radio>
+              </Stack>
+            </RadioGroup>
+          </Flex>
+        </HStack>
         {/* Add charts */}
         <HStack mt={4} alignItems='flex-start' spacing={6} flexWrap='wrap'>
           {data?.map(({ terms, ...facet }) => {

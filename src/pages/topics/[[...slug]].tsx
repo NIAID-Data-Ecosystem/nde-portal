@@ -170,7 +170,7 @@ const TopicPage: NextPage<{
             pb={32}
             width='100%'
             // maxW={{ base: 'unset', lg: '70%' }}
-            // m='0 auto'
+            m='0 auto'
           >
             {/* Header section */}
             <HStack alignItems='flex-start' spacing={6} flexWrap='wrap'>
