@@ -1,3 +1,5 @@
+import { ThemingProps } from '@chakra-ui/react';
+
 export interface TopicPageProps {
   id: number;
   attributes: {
@@ -26,4 +28,11 @@ export interface TopicPageProps {
     updatedAt: string;
     publishedAt: string;
   };
+}
+
+export interface FacetProps {
+  label: string;
+  value: string;
+  fill: string;
+  colorScheme: ThemingProps<any>['colorScheme'];
 }

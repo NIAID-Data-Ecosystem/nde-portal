@@ -1,11 +1,5 @@
 import NextLink from 'next/link';
-import {
-  Box,
-  ListItem,
-  Text,
-  ThemingProps,
-  UnorderedList,
-} from '@chakra-ui/react';
+import { Box, ListItem, Text, UnorderedList } from '@chakra-ui/react';
 import { FacetTerm } from 'src/utils/api/types';
 import { SectionTitle } from '../../layouts/section';
 import { Link } from 'src/components/link';
@@ -13,13 +7,7 @@ import { UrlObject } from 'url';
 import { ScrollContainer } from 'src/components/scroll-container';
 import { BrushableBarChart } from './brushable-bar-chart';
 import { useState } from 'react';
-
-export interface FacetProps {
-  label: string;
-  value: string;
-  fill: string;
-  colorScheme: ThemingProps<any>['colorScheme'];
-}
+import { FacetProps } from '../../types';
 
 interface BrushableListChartProps {
   data: FacetTerm[];

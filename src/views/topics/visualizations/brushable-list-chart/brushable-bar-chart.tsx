@@ -7,7 +7,7 @@ import { FacetTerm } from 'src/utils/api/types';
 import { max } from 'd3-array';
 import { BrushHandleRenderProps } from '@visx/brush/lib/BrushHandle';
 import { Bounds } from '@visx/brush/lib/types';
-import { FacetProps } from '.';
+import { FacetProps } from '../../types';
 
 interface BrushableBarChartProps {
   data: FacetTerm[];

@@ -1,17 +1,15 @@
 import React from 'react';
 import { Flex, HStack } from '@chakra-ui/react';
-import { TopicPageProps } from '../types';
+import { FacetProps, TopicPageProps } from '../types';
 import { fetchSearchResults } from 'src/utils/api';
 import { useQuery } from '@tanstack/react-query';
 import { FacetTerm, FetchSearchResultsResponse } from 'src/utils/api/types';
 import { ChartWrapper } from '../layouts/chart-wrapper';
-import {
-  BrushableListChart,
-  FacetProps,
-} from '../visualizations/brushable-list-chart';
+import { BrushableListChart } from '../visualizations/brushable-list-chart';
 import { getSearchResultsRoute } from '../helpers';
 import { getMetadataTheme } from 'src/components/icon/helpers';
 import { theme } from 'src/theme';
+import { TreemapChart } from '../visualizations/treemap-chart';
 
 interface DataTypesProps {
   query: TopicPageProps['attributes']['query'];
@@ -40,6 +38,8 @@ const facets = [
 ] as FacetProps[];
 
 export const PropertyTreemapLists = ({ query, topic }: DataTypesProps) => {
+  const [listView, setListView] = React.useState(false);
+
   // Fetch data types for query.
   const params = {
     q: query.q,
@@ -90,8 +90,21 @@ export const PropertyTreemapLists = ({ query, topic }: DataTypesProps) => {
           {/* Add charts */}
           <HStack mt={4} alignItems='flex-start' spacing={6} flexWrap='wrap'>
             {data?.map(({ terms, ...facet }) => {
-              return (
+              return listView ? (
                 <BrushableListChart
+                  key={facet.value}
+                  facet={facet}
+                  data={terms}
+                  getSearchRoute={(term: string) => {
+                    return getSearchResultsRoute({
+                      facet: facet.value,
+                      querystring: query.q,
+                      term,
+                    });
+                  }}
+                />
+              ) : (
+                <TreemapChart
                   key={facet.value}
                   facet={facet}
                   data={terms}
