@@ -42,17 +42,19 @@ export const BrushableListChart = ({
       />
       <Box width='100%' mt={4}>
         <Flex
-          fontSize='sm'
+          fontSize='xs'
           fontWeight='semibold'
+          lineHeight='short'
           justifyContent='space-between'
           mr={4}
           ml={1}
-          lineHeight='short'
           borderBottom='1px solid'
           borderBottomColor='niaid.placeholder'
         >
-          <Text>Terms</Text>
-          <Text mr={4}>Count</Text>
+          <Text fontSize='inherit'>Terms</Text>
+          <Text fontSize='inherit' mr={4}>
+            Counts
+          </Text>
         </Flex>
         {/* List of terms and associated counts */}
         <ScrollContainer
