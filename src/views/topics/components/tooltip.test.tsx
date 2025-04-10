@@ -17,9 +17,9 @@ describe('TooltipWrapper', () => {
     expect(screen.getByText('Test Child')).toBeInTheDocument();
   });
 
-  it('renders the clickable search note when isClickSearchable is true', () => {
+  it('renders the clickable search note when showsSearchHint is true', () => {
     renderWithChakra(
-      <TooltipWrapper isClickSearchable>
+      <TooltipWrapper showsSearchHint>
         <span>Test Child</span>
       </TooltipWrapper>,
     );
@@ -28,7 +28,7 @@ describe('TooltipWrapper', () => {
     ).toBeInTheDocument();
   });
 
-  it('does not render the clickable search note when isClickSearchable is false', () => {
+  it('does not render the clickable search note when showsSearchHint is false', () => {
     renderWithChakra(
       <TooltipWrapper>
         <span>Test Child</span>

@@ -256,7 +256,7 @@ export const DonutChart = ({
         >
           <TooltipWrapper
             borderColor={getFillColor(tooltipData.term)}
-            isClickSearchable
+            showsSearchHint
           >
             <Text fontWeight='semibold' lineHeight='short'>
               {tooltipData.count.toLocaleString()}{' '}

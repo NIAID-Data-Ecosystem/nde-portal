@@ -3,12 +3,14 @@ import { Divider, Flex, FlexProps, Icon, Text, VStack } from '@chakra-ui/react';
 import { FaMagnifyingGlass } from 'react-icons/fa6';
 
 export interface TooltipWrapperProps extends FlexProps {
-  isClickSearchable?: boolean;
+  showsSearchHint?: boolean;
+  searchHintText?: string;
 }
 
 export const TooltipWrapper = ({
   children,
-  isClickSearchable,
+  showsSearchHint,
+  searchHintText = 'Click to find related search results in the portal.',
   ...props
 }: TooltipWrapperProps) => {
   return (
@@ -31,7 +33,7 @@ export const TooltipWrapper = ({
       >
         {children}
         {/* Show note that item links to search */}
-        {isClickSearchable && (
+        {showsSearchHint && (
           <>
             <Divider />
             <Text
@@ -46,7 +48,7 @@ export const TooltipWrapper = ({
                 mr={0.5}
                 boxSize={3}
               ></Icon>{' '}
-              Click to find search results related this type.
+              {searchHintText}
             </Text>
           </>
         )}
