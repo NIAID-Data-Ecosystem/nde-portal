@@ -8,7 +8,7 @@ import { Box, Checkbox, Flex, Text, VisuallyHidden } from '@chakra-ui/react';
 import { InfoLabel } from 'src/components/info-label';
 import { useTooltip, useTooltipInPortal } from '@visx/tooltip';
 import { localPoint } from '@visx/event';
-import { TooltipWrapper } from '../components/tooltip';
+import { customTooltipStyles, TooltipWrapper } from '../components/tooltip';
 import NextLink from 'next/link';
 import { UrlObject } from 'url';
 
@@ -247,17 +247,15 @@ export const DonutChart = ({
           data-testid='tooltip'
           // set this to random so it correctly updates with parent bounds
           key={Math.random()}
+          left={tooltipLeft}
+          top={tooltipTop}
           style={{
-            position: 'absolute',
-            top: tooltipTop,
-            left: tooltipLeft,
+            ...customTooltipStyles,
+            borderTopColor: getFillColor(tooltipData.term),
           }}
           aria-live='polite'
         >
-          <TooltipWrapper
-            borderColor={getFillColor(tooltipData.term)}
-            showsSearchHint
-          >
+          <TooltipWrapper showsSearchHint>
             <Text fontWeight='semibold' lineHeight='short'>
               {tooltipData.count.toLocaleString()}{' '}
               <Text as='span' textTransform='capitalize' fontWeight='normal'>

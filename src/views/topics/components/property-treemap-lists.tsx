@@ -26,10 +26,10 @@ interface DataTypesProps {
 
 const facets = [
   {
-    label: 'Pathogen',
-    value: 'infectiousAgent.name',
-    fill: theme.colors[getMetadataTheme('infectiousAgent')][300] as string,
-    colorScheme: theme.colors[getMetadataTheme('infectiousAgent')],
+    label: 'Health Condition',
+    value: 'healthCondition.name',
+    fill: theme.colors[getMetadataTheme('healthCondition')][300] as string,
+    colorScheme: theme.colors[getMetadataTheme('healthCondition')],
   },
   {
     label: 'Measurement Technique',
@@ -38,15 +38,15 @@ const facets = [
     colorScheme: theme.colors[getMetadataTheme('measurementTechnique')],
   },
   {
-    label: 'Health Condition',
-    value: 'healthCondition.name',
-    fill: theme.colors[getMetadataTheme('healthCondition')][300] as string,
-    colorScheme: theme.colors[getMetadataTheme('healthCondition')],
+    label: 'Pathogen',
+    value: 'infectiousAgent.name',
+    fill: theme.colors[getMetadataTheme('infectiousAgent')][300] as string,
+    colorScheme: theme.colors[getMetadataTheme('infectiousAgent')],
   },
 ] as FacetProps[];
 
 export const PropertyTreemapLists = ({ query, topic }: DataTypesProps) => {
-  const [listView, setListView] = React.useState(true);
+  const [listView, setListView] = React.useState(false);
 
   // Fetch data types for query.
   const params = {
@@ -134,7 +134,19 @@ export const PropertyTreemapLists = ({ query, topic }: DataTypesProps) => {
                 {listView ? (
                   <BrushableListChart {...props} />
                 ) : (
-                  <TreemapChart {...props} />
+                  <TreemapChart
+                    {...props}
+                    title={`Distribution of ${facet.label}`}
+                    description={`
+                      A treemap chart showing the distribution of the top ten ${facet.label} terms by count. Each rectangle represents a term.
+                      The size of the rectangle is proportional to the count of the term. Click on a rectangle to view all related results within the portal.`}
+                    data={terms.slice(0, 10)}
+                    defaultDimensions={{
+                      width: 450,
+                      height: 420,
+                      margin: { top: 4, right: 4, bottom: 4, left: 4 },
+                    }}
+                  />
                 )}
               </Box>
             );
