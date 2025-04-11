@@ -1,19 +1,21 @@
 import React from 'react';
-import { Box, BoxProps } from '@chakra-ui/react';
+import { VStack, StackProps } from '@chakra-ui/react';
 
 export const CardWrapper: React.FC<
-  { children: React.ReactNode } & BoxProps
+  { children: React.ReactNode } & StackProps
 > = ({ children, ...props }) => {
   return (
-    <Box
+    <VStack
+      alignItems='flex-start'
       boxShadow='sm'
       borderRadius='semi'
       borderWidth={1}
       borderColor='gray.100'
       p={4}
+      spacing={6}
       {...props}
     >
       {children}
-    </Box>
+    </VStack>
   );
 };

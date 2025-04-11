@@ -2,7 +2,7 @@ import React from 'react';
 import { Box, Flex } from '@chakra-ui/react';
 import NextLink from 'next/link';
 import { Link } from 'src/components/link';
-import { TopicPageProps } from '../types';
+import { TopicQueryProps } from '../types';
 import { fetchSearchResults } from 'src/utils/api';
 import { useQuery } from '@tanstack/react-query';
 import { FacetTerm, FetchSearchResultsResponse } from 'src/utils/api/types';
@@ -16,18 +16,13 @@ import { LegendContainer, LegendItem } from './legend';
 import { getSearchResultsRoute } from 'src/views/topics/helpers';
 import { ChartWrapper } from '../layouts/chart-wrapper';
 
-interface DataTypesProps {
-  query: TopicPageProps['attributes']['query'];
-  topic: string;
-}
-
 // Color scale for data types.
 const getFillColor = scaleOrdinal({
   domain: ['Dataset', 'ComputationalTool', 'ResourceCatalog'],
   range: ['#e8c543', '#ff8359', '#6e95fc'],
 });
 
-export const DataTypes = ({ query, topic }: DataTypesProps) => {
+export const DataTypes = ({ query, topic }: TopicQueryProps) => {
   // Fetch data types for query.
   const params = {
     q: query.q,
@@ -77,8 +72,8 @@ export const DataTypes = ({ query, topic }: DataTypesProps) => {
   });
 
   return (
-    <Flex>
-      <Flex flex={3} flexDirection='column'>
+    <Flex flexWrap='wrap' width='100%'>
+      <Flex flex={3} flexDirection='column' minWidth={250}>
         <ChartWrapper
           title='Data Types'
           description={
@@ -121,31 +116,35 @@ export const DataTypes = ({ query, topic }: DataTypesProps) => {
           )}
         </ChartWrapper>
       </Flex>
-      <Box flex={1} p={4}>
+      <Box flex={1} p={4} minWidth={250}>
         <LegendContainer>
-          {data?.terms?.map(({ term, count }) => {
-            return (
-              <LegendItem
-                key={term}
-                count={count}
-                isLoading={isLoading || isPlaceholderData}
-                swatchBg={getFillColor(term)}
-              >
-                <NextLink
-                  href={getSearchResultsRoute({
-                    facet: params.facets,
-                    querystring: query.q,
-                    term: term as string,
-                  })}
-                  passHref
+          {data?.terms
+            ?.sort((a, b) => {
+              return a.term.localeCompare(b.term);
+            })
+            .map(({ term, count }) => {
+              return (
+                <LegendItem
+                  key={term}
+                  count={count}
+                  isLoading={isLoading || isPlaceholderData}
+                  swatchBg={getFillColor(term)}
                 >
-                  <Link as='p'>
-                    {formatResourceTypeForDisplay(term as APIResourceType)}
-                  </Link>
-                </NextLink>
-              </LegendItem>
-            );
-          })}
+                  <NextLink
+                    href={getSearchResultsRoute({
+                      facet: params.facets,
+                      querystring: query.q,
+                      term: term as string,
+                    })}
+                    passHref
+                  >
+                    <Link as='p'>
+                      {formatResourceTypeForDisplay(term as APIResourceType)}
+                    </Link>
+                  </NextLink>
+                </LegendItem>
+              );
+            })}
           <LegendItem
             key='total'
             count={data?.total}

@@ -229,7 +229,7 @@ export const TreemapChart = ({
                               onPointerMove={e => {
                                 handlePointerMove(e, node.data.data);
                               }}
-                              onMouseOut={() => {
+                              onPointerLeave={() => {
                                 hideTooltip();
                                 setHoveredTerm(null);
                               }}

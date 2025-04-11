@@ -1,15 +1,7 @@
-import {
-  Box,
-  Flex,
-  Heading,
-  HStack,
-  SkeletonText,
-  Text,
-  VStack,
-} from '@chakra-ui/react';
+import { Flex, HStack, Text, VStack } from '@chakra-ui/react';
 import { Error } from 'src/components/error';
 import { useQuery } from '@tanstack/react-query';
-import { GetStaticPaths, GetStaticProps, NextPage } from 'next';
+import { GetStaticProps, NextPage } from 'next';
 import { PageContainer, PageContent } from 'src/components/page-container';
 import { TopicPageProps } from 'src/views/topics/types';
 import { IntroSection } from 'src/views/topics/layouts/intro';
@@ -21,6 +13,7 @@ import { encodeString } from 'src/utils/querystring-helpers';
 import { fetchSearchResults } from 'src/utils/api';
 import { FacetTerm, FetchSearchResultsResponse } from 'src/utils/api/types';
 import { PropertyTreemapLists } from 'src/views/topics/components/property-treemap-lists';
+import { ConditionsOfAccess } from 'src/views/topics/components/conditions-of-access';
 
 // Fetch Disease content from strapi
 const MOCK_DATA = {
@@ -214,7 +207,7 @@ const TopicPage: NextPage<{
                 <CardWrapper>
                   {/* Chart: Resource types */}
                   {query && <DataTypes query={query} topic={topic} />}
-                  {/* TO DO: Add visualisations */}
+                  {query && <ConditionsOfAccess query={query} topic={topic} />}
                 </CardWrapper>
 
                 <CardWrapper mt={4}>

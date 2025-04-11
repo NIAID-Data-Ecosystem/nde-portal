@@ -8,7 +8,7 @@ import {
   Stack,
   Text,
 } from '@chakra-ui/react';
-import { FacetProps, TopicPageProps } from '../types';
+import { FacetProps, TopicQueryProps } from '../types';
 import { fetchSearchResults } from 'src/utils/api';
 import { useQuery } from '@tanstack/react-query';
 import { FacetTerm, FetchSearchResultsResponse } from 'src/utils/api/types';
@@ -18,11 +18,6 @@ import { getSearchResultsRoute } from '../helpers';
 import { getMetadataTheme } from 'src/components/icon/helpers';
 import { theme } from 'src/theme';
 import { TreemapChart } from '../visualizations/treemap-chart';
-
-interface DataTypesProps {
-  query: TopicPageProps['attributes']['query'];
-  topic: string;
-}
 
 const facets = [
   {
@@ -45,7 +40,7 @@ const facets = [
   },
 ] as FacetProps[];
 
-export const PropertyTreemapLists = ({ query, topic }: DataTypesProps) => {
+export const PropertyTreemapLists = ({ query, topic }: TopicQueryProps) => {
   const [listView, setListView] = React.useState(false);
 
   // Fetch data types for query.

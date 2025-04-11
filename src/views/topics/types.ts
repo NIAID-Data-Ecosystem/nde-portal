@@ -30,6 +30,11 @@ export interface TopicPageProps {
   };
 }
 
+export interface TopicQueryProps {
+  query: TopicPageProps['attributes']['query'];
+  topic: string;
+}
+
 export interface FacetProps {
   label: string;
   value: string;
