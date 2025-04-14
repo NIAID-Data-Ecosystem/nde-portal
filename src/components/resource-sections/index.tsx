@@ -398,7 +398,7 @@ const Sections = ({
                   {/* Description text */}
                   {data.description && (
                     <DisplayHTMLContent
-                      content={`${data.description}` || ''}
+                      content={data.description}
                       overflow='auto'
                     />
                   )}
