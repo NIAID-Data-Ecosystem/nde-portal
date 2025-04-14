@@ -13,6 +13,8 @@ import NextLink from 'next/link';
 const cards = [
   {
     image: '/assets/homepage/influenza-a-virus-h1n1.png',
+    imageAlt:
+      'Microscopic view of the influenza A virus, a key focus in infectious disease research and vaccine development.',
     heading: 'Explore Infectious and Immune-mediated Disease Data',
     body: (
       <>
@@ -62,6 +64,8 @@ const cards = [
   },
   {
     image: '/assets/homepage/student-scrubs-green.png',
+    imageAlt:
+      'Group of four biomedical researchers collaborating in a laboratory setting.',
     heading: 'Curated Datasets from NIAID Research Programs',
     body: (
       <>
@@ -132,7 +136,7 @@ export const ExplorationCards = () => {
           >
             <Image
               src={card.image}
-              alt=''
+              alt={card.imageAlt}
               objectFit='cover'
               objectPosition={
                 i === 1 ? { base: 'center', xl: '15% center' } : 'center'
