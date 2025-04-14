@@ -36,10 +36,11 @@ export const DisplayHTMLString: React.FC<{ children: React.ReactNode }> = ({
 
 const formatContent = (contentString: DisplayHTMLContentProps['content']) => {
   // replace no break space with breaking space.
-  let formattedContent = contentString
-    .replace(/\u00a0/g, ' ')
-    .replace(`&emsp;`, ' ');
-  return formattedContent;
+  return contentString
+    .replace(/\u00a0|&emsp;/g, ' ')
+    .split('\n')
+    .map(line => line.trim())
+    .join('\n');
 };
 
 export const DisplayHTMLContent: React.FC<DisplayHTMLContentProps> = ({
@@ -58,7 +59,6 @@ export const DisplayHTMLContent: React.FC<DisplayHTMLContentProps> = ({
     }
     return chunk.text;
   });
-
   if (!content || typeof content !== 'string') {
     return <></>;
   }
@@ -70,7 +70,6 @@ export const DisplayHTMLContent: React.FC<DisplayHTMLContentProps> = ({
       flex={1}
       style={{ whiteSpace: 'pre-wrap' }}
       sx={{
-        pre: { display: 'none' },
         // Display nested links with nde link format.
         a: {
           color: 'link.color',
