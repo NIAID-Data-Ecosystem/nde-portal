@@ -227,6 +227,7 @@ export const TreemapChart = ({
                               onFocus={() => setFocusedTerm(term)}
                               onBlur={() => setFocusedTerm(null)}
                               onPointerMove={e => {
+                                setHoveredTerm(term);
                                 handlePointerMove(e, node.data.data);
                               }}
                               onPointerLeave={() => {
