@@ -14,7 +14,7 @@ import NextLink from 'next/link';
 import { UrlObject } from 'url';
 import { customTooltipStyles, TooltipWrapper } from '../components/tooltip';
 import { AccessTypes, FacetTerm } from 'src/utils/api/types';
-import { Link } from 'src/components/link';
+import { localPoint } from '@visx/event';
 
 export interface FacetTermsWithDetails
   extends Pick<FacetTerm, 'term' | 'count'> {
@@ -43,7 +43,7 @@ interface StackedBarChartProps {
   getRoute: (term: string) => UrlObject;
 }
 
-const bar = { height: 10, minWidth: 10, xPadding: 4, rx: 2.5 };
+const barStyles = { height: 10, minWidth: 10, xPadding: 4, rx: 2.5 };
 
 export const StackedBarChart = ({
   title,
@@ -66,7 +66,10 @@ export const StackedBarChart = ({
   const xMax = useMemo(() => {
     const n = data.terms.length;
     return (
-      width - margin.left - margin.right - n * (bar.xPadding + bar.minWidth)
+      width -
+      margin.left -
+      margin.right -
+      n * (barStyles.xPadding + barStyles.minWidth)
     );
   }, [width, margin, data]);
 
@@ -81,16 +84,16 @@ export const StackedBarChart = ({
 
   let cumulativeX = 0;
   const processedData = data.terms.map(datum => {
-    const barWidth = widthScale(datum.count) + bar.minWidth;
+    const barWidth = widthScale(datum.count) + barStyles.minWidth;
     const barData = {
       data: datum,
       x: cumulativeX,
       y: margin.top,
-      height: bar.height,
+      height: barStyles.height,
       width: barWidth,
       fill: datum.fill,
     };
-    cumulativeX += barWidth + bar.xPadding;
+    cumulativeX += barWidth + barStyles.xPadding;
     return barData;
   });
 
@@ -111,16 +114,17 @@ export const StackedBarChart = ({
 
   const handlePointerMove = (
     event:
-      | React.PointerEvent<SVGPathElement>
+      | React.PointerEvent<SVGGElement>
       | React.FocusEvent<SVGGElement, Element>,
     datum: FacetTermsWithDetails,
   ) => {
-    const x = ('clientX' in event ? event.clientX : 0) - containerBounds.left;
-    const y = ('clientY' in event ? event.clientY : 0) - containerBounds.top;
+    const targetEl = (event.target as SVGPathElement)?.ownerSVGElement;
+    if (!targetEl) return;
+    const coords = localPoint(targetEl, event);
 
     showTooltip({
-      tooltipLeft: x,
-      tooltipTop: y,
+      tooltipLeft: coords?.x || 0,
+      tooltipTop: coords?.y || 0,
       tooltipData: datum,
     });
   };
@@ -131,6 +135,7 @@ export const StackedBarChart = ({
         ref={containerRef}
         style={{ position: 'relative', width: svgWidth, height: svgHeight }}
       >
+        {/* Accessible title + description */}
         <VisuallyHidden>
           <p id='coa-stacked-title'>{title}</p>
           <p id='coa-stacked-desc'>{description}</p>
@@ -149,8 +154,13 @@ export const StackedBarChart = ({
                 cursor='pointer'
                 onPointerMove={e => handlePointerMove(e, bar.data)}
                 onPointerLeave={hideTooltip}
+                onFocus={e => handlePointerMove(e, bar.data)}
+                onBlur={() => hideTooltip}
               >
+                {/* Horizontally Stacked Bar */}
                 <AnimatedRect bar={bar} getRoute={getRoute} />
+
+                {/* Bar Label */}
                 <Annotation
                   x={bar.x + bar.width}
                   y={bar.y}
@@ -192,6 +202,8 @@ export const StackedBarChart = ({
             ))}
           </Group>
         </svg>
+
+        {/* Tooltip */}
         {tooltipOpen && tooltipData && (
           <TooltipWithBounds
             key={Math.random()}
@@ -221,7 +233,20 @@ export const StackedBarChart = ({
   );
 };
 
-export const AnimatedRect = ({ bar, getRoute }) => {
+export const AnimatedRect = ({
+  bar,
+  getRoute,
+}: {
+  bar: {
+    data: FacetTermsWithDetails;
+    x: number;
+    y: number;
+    height: number;
+    width: number;
+    fill: string;
+  };
+  getRoute: StackedBarChartProps['getRoute'];
+}) => {
   const spring = useSpring({
     width: bar.width,
   });
@@ -233,7 +258,7 @@ export const AnimatedRect = ({ bar, getRoute }) => {
         width={spring.width}
         height={bar.height}
         fill={bar.fill}
-        rx={bar.rx}
+        rx={barStyles.rx}
       />
     </NextLink>
   );

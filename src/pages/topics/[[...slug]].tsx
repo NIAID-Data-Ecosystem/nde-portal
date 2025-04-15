@@ -1,19 +1,20 @@
-import { Flex, HStack, Text, VStack } from '@chakra-ui/react';
-import { Error } from 'src/components/error';
-import { useQuery } from '@tanstack/react-query';
+import React from 'react';
 import { GetStaticProps, NextPage } from 'next';
-import { PageContainer, PageContent } from 'src/components/page-container';
-import { TopicPageProps } from 'src/views/topics/types';
-import { IntroSection } from 'src/views/topics/layouts/intro';
-import { SectionTitle, SectionWrapper } from 'src/views/topics/layouts/section';
+import { Flex, HStack, Text, VStack } from '@chakra-ui/react';
+import { useQuery } from '@tanstack/react-query';
+import { Error } from 'src/components/error';
 import { Link } from 'src/components/link';
-import { CardWrapper } from 'src/views/topics/layouts/card';
-import { DataTypes } from 'src/views/topics/components/data-types';
-import { encodeString } from 'src/utils/querystring-helpers';
+import { PageContainer, PageContent } from 'src/components/page-container';
 import { fetchSearchResults } from 'src/utils/api';
-import { FacetTerm, FetchSearchResultsResponse } from 'src/utils/api/types';
-import { PropertyTreemapLists } from 'src/views/topics/components/property-treemap-lists';
+import { FetchSearchResultsResponse } from 'src/utils/api/types';
 import { ConditionsOfAccess } from 'src/views/topics/components/conditions-of-access';
+import { IntroSection } from 'src/views/topics/layouts/intro';
+import { SectionWrapper } from 'src/views/topics/layouts/section';
+import { TopicPageProps } from 'src/views/topics/types';
+import { DataTypes } from 'src/views/topics/components/data-types';
+import { PropertyTreemapLists } from 'src/views/topics/components/property-treemap-lists';
+import { CardWrapper } from 'src/views/topics/layouts/card';
+import { ExternalLinksSection } from 'src/views/topics/components/external-links';
 
 // Fetch Disease content from strapi
 const MOCK_DATA = {
@@ -37,6 +38,172 @@ const MOCK_DATA = {
           id: 1,
           attributes: {
             name: 'Disease',
+            createdAt: '2025-02-22T19:09:45.049Z',
+            updatedAt: '2025-02-22T19:09:45.049Z',
+            publishedAt: '2025-02-22T19:09:45.049Z',
+          },
+        },
+      ],
+    },
+    externalLinks: {
+      data: [
+        {
+          id: 1,
+          attributes: {
+            label: 'National Institute of Allergy and Infectious Diseases',
+            url: 'https://www.niaid.nih.gov/',
+            categories: null,
+            image: {
+              data: {
+                attributes: {
+                  url: '/assets/NIH-logo.png',
+                  alternativeText: 'nih logo',
+                },
+              },
+            },
+            isExternal: true,
+            createdAt: '2025-02-22T19:09:45.049Z',
+            updatedAt: '2025-02-22T19:09:45.049Z',
+            publishedAt: '2025-02-22T19:09:45.049Z',
+          },
+        },
+        {
+          id: 2,
+          attributes: {
+            label: 'CDC Influenza (Flu)',
+            url: 'https://www.cdc.gov/flu/index.html',
+            categories: null,
+            image: { data: null },
+            isExternal: true,
+            createdAt: '2025-02-22T19:09:45.049Z',
+            updatedAt: '2025-02-22T19:09:45.049Z',
+            publishedAt: '2025-02-22T19:09:45.049Z',
+          },
+        },
+        {
+          id: 3,
+          attributes: {
+            label:
+              'Centers of Excellence for Influenza Research and Response (CEIRR)',
+            url: 'https://www.niaid.nih.gov/research/centers-excellence-influenza-research-response',
+            categories: {
+              data: [
+                {
+                  id: 1,
+                  attributes: {
+                    name: 'Working Groups / Programs / Networks',
+                    createdAt: '2025-02-22T19:09:45.049Z',
+                    publishedAt: '2025-02-22T19:09:45.049Z',
+                    updatedAt: '2025-02-22T19:09:45.049Z',
+                  },
+                },
+              ],
+            },
+            image: { data: null },
+            isExternal: true,
+            createdAt: '2025-02-22T19:09:45.049Z',
+            updatedAt: '2025-02-22T19:09:45.049Z',
+            publishedAt: '2025-02-22T19:09:45.049Z',
+          },
+        },
+        {
+          id: 4,
+          attributes: {
+            label:
+              'Collaborative Influenza Vaccine Innovation Centers (CIVICs)',
+            url: 'https://www.niaid.nih.gov/research/civics',
+            categories: {
+              data: [
+                {
+                  id: 1,
+                  attributes: {
+                    name: 'Working Groups / Programs / Networks',
+                    createdAt: '2025-02-22T19:09:45.049Z',
+                    publishedAt: '2025-02-22T19:09:45.049Z',
+                    updatedAt: '2025-02-22T19:09:45.049Z',
+                  },
+                },
+              ],
+            },
+            image: { data: null },
+            isExternal: true,
+            createdAt: '2025-02-22T19:09:45.049Z',
+            updatedAt: '2025-02-22T19:09:45.049Z',
+            publishedAt: '2025-02-22T19:09:45.049Z',
+          },
+        },
+        {
+          id: 5,
+          attributes: {
+            label:
+              'Mexican Emerging Infectious Disease Clinical Research Network (LaRed) ',
+            url: 'https://www.niaid.nih.gov/research/lared',
+            categories: {
+              data: [
+                {
+                  id: 1,
+                  attributes: {
+                    name: 'Working Groups / Programs / Networks',
+                    createdAt: '2025-02-22T19:09:45.049Z',
+                    publishedAt: '2025-02-22T19:09:45.049Z',
+                    updatedAt: '2025-02-22T19:09:45.049Z',
+                  },
+                },
+              ],
+            },
+            image: { data: null },
+            isExternal: true,
+            createdAt: '2025-02-22T19:09:45.049Z',
+            updatedAt: '2025-02-22T19:09:45.049Z',
+            publishedAt: '2025-02-22T19:09:45.049Z',
+          },
+        },
+        {
+          id: 6,
+          attributes: {
+            label: 'Modeling Immunity for Biodefense (MIB)',
+            url: 'https://www.niaid.nih.gov/research/modeling-immunity-biodefense',
+            categories: {
+              data: [
+                {
+                  id: 1,
+                  attributes: {
+                    name: 'Working Groups / Programs / Networks',
+                    createdAt: '2025-02-22T19:09:45.049Z',
+                    publishedAt: '2025-02-22T19:09:45.049Z',
+                    updatedAt: '2025-02-22T19:09:45.049Z',
+                  },
+                },
+              ],
+            },
+            image: { data: null },
+            isExternal: true,
+            createdAt: '2025-02-22T19:09:45.049Z',
+            updatedAt: '2025-02-22T19:09:45.049Z',
+            publishedAt: '2025-02-22T19:09:45.049Z',
+          },
+        },
+        {
+          id: 7,
+          attributes: {
+            label: 'Infectious Diseases Clinical Research Consortium',
+            url: 'https://www.niaid.nih.gov/research/idcrc',
+            categories: {
+              data: [
+                {
+                  id: 1,
+                  attributes: {
+                    name: 'Working Groups / Programs / Networks',
+                    createdAt: '2025-02-22T19:09:45.049Z',
+                    publishedAt: '2025-02-22T19:09:45.049Z',
+                    updatedAt: '2025-02-22T19:09:45.049Z',
+                  },
+                },
+              ],
+            },
+            image: { data: null },
+
+            isExternal: true,
             createdAt: '2025-02-22T19:09:45.049Z',
             updatedAt: '2025-02-22T19:09:45.049Z',
             publishedAt: '2025-02-22T19:09:45.049Z',
@@ -188,13 +355,14 @@ const TopicPage: NextPage<{
             <SectionWrapper
               id='about-datasets'
               title={`${topic} Resources in the NIAID Data Ecosystem`}
+              mt={10}
             >
               <Text mb={2}>
                 This section provides a visual summary of the resources
                 available within the NIAID Discovery Portal for {topic}{' '}
                 research.{' '}
                 <Link href={`/search?q=${data?.attributes.query.q}`}>
-                  View all search results related to {topic}
+                  {`View all search results related to ${topic}`}
                 </Link>
                 .
               </Text>
@@ -218,6 +386,19 @@ const TopicPage: NextPage<{
                 </CardWrapper>
               </SectionWrapper>
             </SectionWrapper>
+
+            {/* External links */}
+            {(data?.attributes?.externalLinks?.data ?? []).length > 0 && (
+              <SectionWrapper
+                as='h3'
+                id='external-links'
+                title={`External Resources for ${topic}`}
+              >
+                <ExternalLinksSection
+                  externalLinks={data?.attributes.externalLinks}
+                />
+              </SectionWrapper>
+            )}
           </Flex>
         )}
       </PageContent>

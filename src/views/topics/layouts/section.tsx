@@ -2,6 +2,7 @@ import React from 'react';
 import {
   Divider,
   Flex,
+  FlexProps,
   Heading,
   SkeletonText,
   Text,
@@ -105,15 +106,17 @@ export const SectionTitle = ({
   );
 };
 
-export const SectionWrapper: React.FC<{
-  as?: 'h2' | 'h3' | 'h4';
-  children?: React.ReactNode;
-  id: string;
-  isLoading?: boolean;
-  title: string;
-}> = ({ as = 'h2', id, children, isLoading, title }) => {
+export const SectionWrapper: React.FC<
+  FlexProps & {
+    as?: 'h2' | 'h3' | 'h4';
+    children?: React.ReactNode;
+    id: string;
+    isLoading?: boolean;
+    title: string;
+  }
+> = ({ as = 'h2', id, children, isLoading, title, ...props }) => {
   return (
-    <Flex as='section' id={id} mt={4} mb={4} flexDirection='column'>
+    <Flex as='section' id={id} mt={4} mb={4} flexDirection='column' {...props}>
       <SectionTitle as={as} isLoading={isLoading}>
         {title}
       </SectionTitle>

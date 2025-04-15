@@ -6,6 +6,35 @@ export interface TopicPageProps {
     title: string;
     subtitle: string | null;
     description?: string | null;
+    externalLinks: {
+      data: {
+        id: number;
+        attributes: {
+          label: string;
+          image: {
+            data: null | {
+              attributes: { url: string; alternativeText: string };
+            };
+          };
+          url: string;
+          categories: {
+            data: {
+              id: number;
+              attributes: {
+                name: string;
+                createdAt: string;
+                publishedAt: string;
+                updatedAt: string;
+              };
+            }[];
+          } | null;
+          isExternal: boolean;
+          createdAt: string;
+          updatedAt: string;
+          publishedAt: string;
+        };
+      }[];
+    };
     query: {
       q: string;
       facet_size: number;
