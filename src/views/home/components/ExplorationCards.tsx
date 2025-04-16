@@ -62,10 +62,11 @@ const CARDS_DATA: CardData[] = [
     image: '/assets/homepage/student-scrubs-green.png',
     imageAlt:
       'Group of biomedical researchers collaborating in a laboratory setting.',
-    heading: 'Curated Datasets from NIAID Research Programs',
+    heading:
+      'Curated Datasets and Other Resources from NIAID Research Programs',
     objectPosition: { base: 'center', xl: '15% center' },
     paragraphs: [
-      'The Discovery Portal connects researchers with high-impact datasets from NIAID-funded programs that drive innovation in infectious and immune-mediated disease research.',
+      'The Discovery Portal connects researchers with high-impact datasets and other resources from NIAID-funded programs that drive innovation in infectious and immune-mediated disease research.',
       <>
         Discover resources from programs like{' '}
         <ChakraLink as={NextLink} href='/' textDecoration='underline'>
