@@ -99,6 +99,8 @@
   "namingChanges": {
     "@id": "ID",
     "@type": "Type",
+    "about": "Data Type",
+    "genre": "Research Domain",
     "doi": "DOI",
     "pmid": "PMID",
     "url": "URL",

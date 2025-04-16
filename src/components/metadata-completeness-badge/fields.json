@@ -1,0 +1,111 @@
+{
+  "ComputationalTool": {
+    "required": [
+      "date",
+      "includedInDataCatalog",
+      "funding",
+      "author",
+      "description",
+      "name"
+    ],
+    "recommended": [
+      "citedBy",
+      "doi",
+      "topicCategory",
+      "codeRepository",
+      "programmingLanguage",
+      "applicationCategory",
+      "applicationSubCategory",
+      "input",
+      "output",
+      "featureList",
+      "operatingSystem",
+      "softwareRequirements",
+      "softwareVersion",
+      "citation",
+      "conditionsOfAccess",
+      "dateModified",
+      "interactionStatistic",
+      "license",
+      "identifier",
+      "url"
+    ]
+  },
+  "Dataset": {
+    "required": [
+      "name",
+      "description",
+      "author",
+      "url",
+      "measurementTechnique",
+      "includedInDataCatalog",
+      "distribution",
+      "funding",
+      "date"
+    ],
+    "recommended": [
+      "dateCreated",
+      "dateModified",
+      "datePublished",
+      "citedBy",
+      "doi",
+      "infectiousAgent",
+      "healthCondition",
+      "species",
+      "variableMeasured",
+      "citation",
+      "conditionsOfAccess",
+      "isBasedOn",
+      "keywords",
+      "license",
+      "sdPublisher",
+      "spatialCoverage",
+      "temporalCoverage",
+      "topicCategory",
+      "identifier",
+      "usageInfo",
+      "interactionStatistic"
+    ]
+  },
+  "ResourceCatalog": {
+    "required": [
+      "date",
+      "funding",
+      "includedInDataCatalog",
+      "measurementTechnique",
+      "description",
+      "name",
+      "url",
+      "about",
+      "genre"
+    ],
+    "recommended": [
+      "author",
+      "citedBy",
+      "doi",
+      "infectiousAgent",
+      "healthCondition",
+      "species",
+      "variableMeasured",
+      "citation",
+      "conditionsOfAccess",
+      "dateCreated",
+      "dateModified",
+      "datePublished",
+      "interactionStatistic",
+      "isBasedOn",
+      "keywords",
+      "license",
+      "sdPublisher",
+      "spatialCoverage",
+      "temporalCoverage",
+      "usageInfo",
+      "identifier",
+      "topicCategory",
+      "collectionSize",
+      "hasAPI",
+      "hasDownload",
+      "collectionType"
+    ]
+  }
+}
