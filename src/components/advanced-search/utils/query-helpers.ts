@@ -48,7 +48,7 @@ export const getMetadataNameByDotfield = (dotfield: string) => {
     item => item.dotfield === dotfield,
   ) || { name: '' };
 
-  return name;
+  return name || dotfield;
 };
 
 export const wildcardQueryString = ({
