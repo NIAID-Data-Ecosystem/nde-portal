@@ -47,7 +47,7 @@ const DesktopSubNavItem = ({
           >
             {label}
           </Text>
-          <Text fontSize='sm' color='text.body' lineHeight='short'>
+          <Text fontSize='sm' color='text.body' lineHeight='short' pr={1}>
             {subLabel}
           </Text>
         </Box>

@@ -20,6 +20,8 @@ import NextLink from 'next/link';
 import { SearchBarWithDropdown } from 'src/components/search-bar';
 import { FaMagnifyingGlass, FaRegEnvelope, FaGithub } from 'react-icons/fa6';
 import { useRepoData } from 'src/hooks/api/useRepoData';
+import { ExplorationCards } from 'src/views/home/components/ExplorationCards';
+
 import {
   NewsCarousel,
   fetchNews,
@@ -210,6 +212,12 @@ const Home: NextPage<{
                   </VStack>
                 </Flex>
               </Flex>
+              <Box px={{ base: 2, sm: 4 }} mb={{ base: 8, sm: 8 }}>
+                <Heading as='h2' fontSize='2xl' fontWeight='semibold' mb={4}>
+                  Find Resources By Topic
+                </Heading>
+                <ExplorationCards />
+              </Box>
               <Box px={{ base: 2, sm: 4 }}>
                 <Heading as='h2' fontSize='2xl' fontWeight='semibold' mb={4}>
                   Explore All Included Resources
