@@ -38,8 +38,7 @@ export const ConditionsOfAccess = ({ query, topic }: TopicQueryProps) => {
       const terms =
         data?.facets?.['conditionsOfAccess']?.terms?.map(access => {
           const label = formatConditionsOfAccess(access.term);
-          const colorScheme =
-            label === 'Registered' ? 'orange' : getColorScheme(label);
+          const colorScheme = getColorScheme(label);
 
           return {
             ...access,
@@ -107,7 +106,7 @@ export const ConditionsOfAccess = ({ query, topic }: TopicQueryProps) => {
               defaultDimensions={{
                 width: 450,
                 height: 100,
-                margin: { top: 25, right: 0, bottom: 20, left: 0 },
+                margin: { top: 25, right: 30, bottom: 20, left: 0 },
               }}
               getRoute={term => {
                 return getSearchResultsRoute({

@@ -52,14 +52,12 @@ export const ExternalLinksSection: React.FC<{
     <Stack spacing={6}>
       {Object.entries(externalLinksGroupedByCategory).map(
         ([category, links]) => (
-          <>
-            <Stack key={category} spacing={1}>
-              {category && <SectionTitle as='h4'>{category}</SectionTitle>}
-              {links.map((link, index) => (
-                <ExternalLinkItem key={index} {...link.attributes} />
-              ))}
-            </Stack>
-          </>
+          <Stack key={category} spacing={1}>
+            {category && <SectionTitle as='h4'>{category}</SectionTitle>}
+            {links.map((link, index) => (
+              <ExternalLinkItem key={index} {...link.attributes} />
+            ))}
+          </Stack>
         ),
       )}
     </Stack>

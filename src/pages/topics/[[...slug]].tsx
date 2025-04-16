@@ -21,8 +21,7 @@ const MOCK_DATA = {
   id: 1,
   attributes: {
     title: 'Influenza',
-    subtitle:
-      'Lorem ipsum dolor sit amet, consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+    subtitle: '',
     description:
       "Influenza is a viral infection that attacks your respiratory system — your nose, throat and lungs. Influenza, commonly called the flu, is not the same as the stomach 'flu' viruses that cause diarrhea and vomiting.",
     query: {

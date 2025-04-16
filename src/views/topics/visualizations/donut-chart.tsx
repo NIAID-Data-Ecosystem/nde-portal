@@ -1,16 +1,19 @@
 import React, { useMemo, useState } from 'react';
-import Pie, { ProvidedProps, PieArcDatum } from '@visx/shape/lib/shapes/Pie';
-import { scaleLog } from '@visx/scale';
-import { Group } from '@visx/group';
-import { animated, useTransition, to } from '@react-spring/web';
-import { FacetTerm } from 'src/utils/api/types';
-import { Box, Checkbox, Flex, Text, VisuallyHidden } from '@chakra-ui/react';
-import { InfoLabel } from 'src/components/info-label';
-import { useTooltip, useTooltipInPortal } from '@visx/tooltip';
-import { localPoint } from '@visx/event';
-import { customTooltipStyles, TooltipWrapper } from '../components/tooltip';
 import NextLink from 'next/link';
 import { UrlObject } from 'url';
+import { Box, Checkbox, Flex, Text, VisuallyHidden } from '@chakra-ui/react';
+import { animated, useTransition, to } from '@react-spring/web';
+import { Annotation, Connector, HtmlLabel } from '@visx/annotation';
+import { localPoint } from '@visx/event';
+import { Group } from '@visx/group';
+import { scaleLog } from '@visx/scale';
+import { useTooltip, useTooltipInPortal } from '@visx/tooltip';
+import Pie, { ProvidedProps, PieArcDatum } from '@visx/shape/lib/shapes/Pie';
+import { FacetTerm } from 'src/utils/api/types';
+import { InfoLabel } from 'src/components/info-label';
+import { customTooltipStyles, TooltipWrapper } from '../components/tooltip';
+import { theme } from 'src/theme';
+import { useParentSize } from '@visx/responsive';
 
 interface Datum {
   count: number;
@@ -21,7 +24,7 @@ interface Datum {
 // accessor functions
 const usage = (d: Datum) => d.pieValue;
 
-const defaultMargin = { top: 20, right: 20, bottom: 20, left: 20 };
+const defaultMargin = { top: 50, right: 20, bottom: 50, left: 20 };
 
 type LabelProps = React.SVGProps<SVGTextElement> & {
   transformLabel?: (label: string) => string;
@@ -87,8 +90,8 @@ export interface DonutChartProps {
 export const DonutChart = ({
   title,
   description,
-  width = 400,
-  height = 400,
+  width: defaultWidth = 400,
+  height: defaultHeight = 400,
   data,
   donutThickness = 50,
   getFillColor,
@@ -98,6 +101,10 @@ export const DonutChart = ({
   animate = true,
   useLogScale = true,
 }: DonutChartProps) => {
+  const { parentRef, width, height } = useParentSize({
+    debounceTime: 150,
+    initialSize: { width: defaultWidth, height: defaultHeight },
+  });
   // State: whether to apply log scale or raw counts
   const [applyLogScale, setApplyLogScale] = useState<boolean>(useLogScale);
 
@@ -172,7 +179,12 @@ export const DonutChart = ({
   );
 
   return (
-    <Flex flexDirection='column' alignItems='center' position='relative'>
+    <Flex
+      flexDirection='column'
+      alignItems='center'
+      position='relative'
+      minWidth={250}
+    >
       {/* Toggle log scale */}
       <Checkbox
         isChecked={applyLogScale}
@@ -187,59 +199,61 @@ export const DonutChart = ({
       </Checkbox>
 
       {/* Donut Chart */}
-      <Box ref={containerRef} width={width} height={height}>
-        <VisuallyHidden>
-          <p id='donut-chart-title'>{title}</p>
-          <p id='donut-chart-desc'>{description}</p>
-        </VisuallyHidden>
-        <svg
-          role='img'
-          width={width}
-          height={height}
-          aria-labelledby='donut-chart-title'
-          aria-describedby='donut-chart-desc'
-        >
-          <Group top={centerY + margin.top} left={centerX + margin.left}>
-            <Pie
-              cornerRadius={2}
-              data={
-                transformedData
-                // Uncomment to filter data based on selection
-                //  selection
-                //   ? transformedData.filter(({ term }) => term === selection)
-                //   : transformedData
-              }
-              innerRadius={Math.max(1, radius - donutThickness)}
-              outerRadius={radius}
-              padAngle={0.005}
-              pieValue={usage}
-            >
-              {pie => (
-                <AnimatedPie<Datum>
-                  {...pie}
-                  animate={animate}
-                  getKey={arc => arc.data.term}
-                  getColor={arc => getFillColor(arc.data.term)}
-                  getRoute={getRoute}
-                  handleMouseOver={handleMouseOver}
-                  handleMouseOut={() => {
-                    hideTooltip();
-                    setHoveredTerm(null);
-                  }}
-                  hoveredTerm={hoveredTerm}
-                  labelStyles={labelStyles}
-                  // onClickDatum={({ data: { term } }) => {
-                  //   animate &&
-                  //     setSelection(
-                  //       selection && selection === term ? null : term,
-                  //     );
-                  // }}
-                />
-              )}
-            </Pie>
-          </Group>
-        </svg>
-      </Box>
+      <div ref={parentRef} style={{ width: '100%', height: `${height}px` }}>
+        <Box ref={containerRef} width={width} height={height}>
+          <VisuallyHidden>
+            <p id='donut-chart-title'>{title}</p>
+            <p id='donut-chart-desc'>{description}</p>
+          </VisuallyHidden>
+          <svg
+            role='img'
+            width={width}
+            height={height}
+            aria-labelledby='donut-chart-title'
+            aria-describedby='donut-chart-desc'
+          >
+            <Group top={centerY + margin.top} left={centerX + margin.left}>
+              <Pie
+                cornerRadius={2}
+                data={
+                  transformedData
+                  // Uncomment to filter data based on selection
+                  //  selection
+                  //   ? transformedData.filter(({ term }) => term === selection)
+                  //   : transformedData
+                }
+                innerRadius={Math.max(1, radius - donutThickness)}
+                outerRadius={radius}
+                padAngle={0.005}
+                pieValue={usage}
+              >
+                {pie => (
+                  <AnimatedPie<Datum>
+                    {...pie}
+                    animate={animate}
+                    getKey={arc => arc.data.term}
+                    getColor={arc => getFillColor(arc.data.term)}
+                    getRoute={getRoute}
+                    handleMouseOver={handleMouseOver}
+                    handleMouseOut={() => {
+                      hideTooltip();
+                      setHoveredTerm(null);
+                    }}
+                    hoveredTerm={hoveredTerm}
+                    labelStyles={labelStyles}
+                    // onClickDatum={({ data: { term } }) => {
+                    //   animate &&
+                    //     setSelection(
+                    //       selection && selection === term ? null : term,
+                    //     );
+                    // }}
+                  />
+                )}
+              </Pie>
+            </Group>
+          </svg>
+        </Box>
+      </div>
 
       {/* Tooltip */}
       {tooltipOpen && tooltipData && (
@@ -343,13 +357,13 @@ function AnimatedPie<Datum>({
     keys: getKey,
   });
   return transitions((props, arc, { key }) => {
-    const { transformLabel, ...svgTextProps } = labelStyles || {};
     // For label positioning
-    // const [centroidX, centroidY] = path.centroid(arc);
-    // const hasSpaceForLabel = arc.endAngle - arc.startAngle >= 0.1;
-    // const displayLabel = transformLabel
-    //   ? transformLabel(getKey(arc))
-    //   : getKey(arc);
+    const [centroidX, centroidY] = path.centroid(arc);
+    const displayLabel = labelStyles?.transformLabel
+      ? labelStyles.transformLabel(getKey(arc))
+      : getKey(arc);
+
+    const labelWidth = 120;
 
     return (
       <g
@@ -367,7 +381,6 @@ function AnimatedPie<Datum>({
             data-testid={`${getKey(arc)}-path`}
             style={{
               cursor: 'pointer',
-              // prevent accidental text selection
               userSelect: 'none',
               transition: 'fill 0.2s, opacity 0.2s',
               opacity: !hoveredTerm || getKey(arc) === hoveredTerm ? 1 : 0.5, // dim non-hovered arcs
@@ -391,22 +404,34 @@ function AnimatedPie<Datum>({
             onMouseOut={handleMouseOut}
           />
           {/* Optional labels */}
-          {/* {hasSpaceForLabel && (
-          <animated.g style={{ opacity: props.opacity }}>
-            <text
-              fill='#2f2f2f'
-              x={centroidX}
-              y={centroidY}
-              dy='.33em'
-              fontSize={9}
-              textAnchor='end'
-              pointerEvents='none'
-              {...svgTextProps}
+          <Annotation
+            x={centroidX}
+            y={centroidY}
+            dx={centroidX > Math.PI ? 20 : 0 - 20}
+          >
+            <HtmlLabel
+              showAnchorLine={false}
+              verticalAnchor='middle'
+              containerStyle={{
+                overflow: 'hidden',
+                pointerEvents: 'none',
+                maxWidth: `${labelWidth}px`,
+              }}
             >
-              {displayLabel}
-            </text>
-          </animated.g>
-        )} */}
+              <Text
+                color='text.heading'
+                fontSize='xs'
+                fontWeight='semibold'
+                lineHeight='normal'
+                px={2}
+                maxWidth='100%'
+                noOfLines={2}
+                style={{ hyphens: 'auto' }}
+              >
+                {displayLabel}
+              </Text>
+            </HtmlLabel>
+          </Annotation>
         </NextLink>
       </g>
     );

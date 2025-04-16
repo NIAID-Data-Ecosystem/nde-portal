@@ -95,8 +95,8 @@ export const DataTypes = ({ query, topic }: TopicQueryProps) => {
               description=' A donut chart showing the distribution of different resource types
             by count. The chart is interactive and allows users to click on each segment to
             view more details about that resource type.'
-              width={200}
-              height={200}
+              width={400}
+              height={280}
               donutThickness={20}
               data={data.terms}
               getFillColor={getFillColor}
