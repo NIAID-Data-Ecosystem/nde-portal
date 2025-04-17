@@ -37,6 +37,7 @@ export interface TopicPageProps {
     };
     query: {
       q: string;
+      extra_filter?: string;
       facet_size: number;
       size: number;
     };

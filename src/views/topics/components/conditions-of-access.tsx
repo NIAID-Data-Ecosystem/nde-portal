@@ -22,6 +22,7 @@ import {
 export const ConditionsOfAccess = ({ query, topic }: TopicQueryProps) => {
   // Fetch conditionsOfAccess for query.
   const params = {
+    ...query,
     q: query.q,
     facet_size: query.facet_size,
     facets: 'conditionsOfAccess',
@@ -110,8 +111,8 @@ export const ConditionsOfAccess = ({ query, topic }: TopicQueryProps) => {
               }}
               getRoute={term => {
                 return getSearchResultsRoute({
+                  query: params,
                   facet: params.facets,
-                  querystring: query.q,
                   term,
                 });
               }}
@@ -132,8 +133,8 @@ export const ConditionsOfAccess = ({ query, topic }: TopicQueryProps) => {
                 <Box>
                   <NextLink
                     href={getSearchResultsRoute({
+                      query: params,
                       facet: params.facets,
-                      querystring: query.q,
                       term: term as string,
                     })}
                     passHref

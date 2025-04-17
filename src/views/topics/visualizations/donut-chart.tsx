@@ -239,6 +239,7 @@ export const DonutChart = ({
                       hideTooltip();
                       setHoveredTerm(null);
                     }}
+                    outerRadius={radius}
                     hoveredTerm={hoveredTerm}
                     labelStyles={labelStyles}
                     // onClickDatum={({ data: { term } }) => {
@@ -312,6 +313,9 @@ type AnimatedPieProps<Datum> = ProvidedProps<Datum> & {
   /** Styles for the labels displayed on the pie chart. */
   labelStyles: DonutChartProps['labelStyles'];
 
+  /** Number representing the outer radius of the pie chart. */
+  outerRadius: number;
+
   /** Function to determine the color of each pie slice. */
   getColor: (d: PieArcDatum<Datum>) => string;
 
@@ -348,6 +352,7 @@ function AnimatedPie<Datum>({
   getRoute,
   handleMouseOver,
   handleMouseOut,
+  outerRadius,
 }: AnimatedPieProps<Datum>) {
   const transitions = useTransition<PieArcDatum<Datum>, AnimatedStyles>(arcs, {
     from: animate ? fromLeaveTransition : enterUpdateTransition,
@@ -358,12 +363,17 @@ function AnimatedPie<Datum>({
   });
   return transitions((props, arc, { key }) => {
     // For label positioning
-    const [centroidX, centroidY] = path.centroid(arc);
+    const labelWidth = 200;
     const displayLabel = labelStyles?.transformLabel
       ? labelStyles.transformLabel(getKey(arc))
       : getKey(arc);
 
-    const labelWidth = 120;
+    // Find mid-angle of arc for labeling
+    // const [centroidX, centroidY] = path.centroid(arc);
+    const angle = (arc.startAngle + arc.endAngle) / 2;
+    const labelRadius = outerRadius + 5;
+    const centroidX = Math.cos(angle - Math.PI / 2) * labelRadius;
+    const centroidY = Math.sin(angle - Math.PI / 2) * labelRadius;
 
     return (
       <g
@@ -404,13 +414,10 @@ function AnimatedPie<Datum>({
             onMouseOut={handleMouseOut}
           />
           {/* Optional labels */}
-          <Annotation
-            x={centroidX}
-            y={centroidY}
-            dx={centroidX > Math.PI ? 20 : 0 - 20}
-          >
+          <Annotation x={centroidX} y={centroidY}>
             <HtmlLabel
               showAnchorLine={false}
+              horizontalAnchor={centroidX > 0 ? 'start' : 'end'}
               verticalAnchor='middle'
               containerStyle={{
                 overflow: 'hidden',
@@ -423,10 +430,8 @@ function AnimatedPie<Datum>({
                 fontSize='xs'
                 fontWeight='semibold'
                 lineHeight='normal'
-                px={2}
-                maxWidth='100%'
+                maxWidth={`${labelWidth}px`}
                 noOfLines={2}
-                style={{ hyphens: 'auto' }}
               >
                 {displayLabel}
               </Text>

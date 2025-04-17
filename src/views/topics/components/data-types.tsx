@@ -25,6 +25,7 @@ const getFillColor = scaleOrdinal({
 export const DataTypes = ({ query, topic }: TopicQueryProps) => {
   // Fetch data types for query.
   const params = {
+    ...query,
     q: query.q,
     facet_size: query.facet_size,
     facets: '@type',
@@ -107,8 +108,8 @@ export const DataTypes = ({ query, topic }: TopicQueryProps) => {
               }}
               getRoute={term => {
                 return getSearchResultsRoute({
+                  query: params,
                   facet: params.facets,
-                  querystring: query.q,
                   term,
                 });
               }}
@@ -120,7 +121,7 @@ export const DataTypes = ({ query, topic }: TopicQueryProps) => {
         <LegendContainer>
           {data?.terms
             ?.sort((a, b) => {
-              return a.term.localeCompare(b.term);
+              return b.count - a.count;
             })
             .map(({ term, count }) => {
               return (
@@ -132,8 +133,8 @@ export const DataTypes = ({ query, topic }: TopicQueryProps) => {
                 >
                   <NextLink
                     href={getSearchResultsRoute({
+                      query: params,
                       facet: params.facets,
-                      querystring: query.q,
                       term: term as string,
                     })}
                     passHref
@@ -152,7 +153,7 @@ export const DataTypes = ({ query, topic }: TopicQueryProps) => {
           >
             <NextLink
               href={getSearchResultsRoute({
-                querystring: query.q,
+                query: params,
               })}
               passHref
             >

@@ -45,6 +45,7 @@ export const PropertyTreemapLists = ({ query, topic }: TopicQueryProps) => {
 
   // Fetch data types for query.
   const params = {
+    ...query,
     q: query.q,
     facet_size: 100,
     facets: facets.map(facet => facet.value).join(','),
@@ -113,8 +114,8 @@ export const PropertyTreemapLists = ({ query, topic }: TopicQueryProps) => {
               data: terms,
               getSearchRoute: (term: string) => {
                 return getSearchResultsRoute({
+                  query: params,
                   facet: facet.value,
-                  querystring: query.q,
                   term,
                 });
               },
