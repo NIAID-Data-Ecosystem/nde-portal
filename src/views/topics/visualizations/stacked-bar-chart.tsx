@@ -182,7 +182,7 @@ export const StackedBarChart = ({
                       fontSize='xs'
                       lineHeight='normal'
                       style={{ hyphens: 'auto' }}
-                      maxWidth={`${bar.width / 2}px`}
+                      maxWidth={`${bar.width}px`}
                     >
                       <ChakraText
                         as='span'
@@ -216,7 +216,7 @@ export const StackedBarChart = ({
             }}
             aria-live='polite'
           >
-            <TooltipWrapper borderColor='red' showsSearchHint>
+            <TooltipWrapper showsSearchHint>
               <Box fontSize='xs' lineHeight='shorter'>
                 <ChakraText fontWeight='semibold' color='text.heading'>
                   {tooltipData.label}

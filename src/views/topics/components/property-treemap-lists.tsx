@@ -76,7 +76,7 @@ export const PropertyTreemapLists = ({ query, topic }: TopicQueryProps) => {
     enabled: !!query.q,
   });
   return (
-    <Flex flexDirection='column'>
+    <Flex flexDirection='column' width='100%'>
       <ChartWrapper
         title={`Resources mentioning ${topic} also mentioned the following:`}
         error={error}
@@ -86,7 +86,12 @@ export const PropertyTreemapLists = ({ query, topic }: TopicQueryProps) => {
           width: '100%',
         }}
       >
-        <HStack alignItems='flex-start' spacing={6} flexWrap='wrap'>
+        <HStack
+          alignItems='flex-start'
+          spacing={6}
+          flexWrap='wrap'
+          width='100%'
+        >
           <Text lineHeight='short' flex={2}>
             {listView
               ? `Explore the table by dragging the blue box horizontally on the bar chart to scroll through most popular metadata properties (100 top results) or resize it to filter a specific range. The list rows updates dynamically based on the selection.`
@@ -106,7 +111,8 @@ export const PropertyTreemapLists = ({ query, topic }: TopicQueryProps) => {
             </RadioGroup>
           </Flex>
         </HStack>
-        {/* Add charts */}
+
+        {/* Property Charts */}
         <HStack mt={4} alignItems='flex-start' spacing={6} flexWrap='wrap'>
           {data?.map(({ terms, ...facet }) => {
             const props = {

@@ -49,7 +49,7 @@ export const ExternalLinksSection: React.FC<{
   }, [externalLinks.data]);
 
   return (
-    <Stack spacing={6}>
+    <Stack spacing={6} mt={4}>
       {Object.entries(externalLinksGroupedByCategory).map(
         ([category, links]) => (
           <Stack key={category} spacing={1}>

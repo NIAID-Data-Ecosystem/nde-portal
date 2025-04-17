@@ -3007,10 +3007,10 @@
     d3-hierarchy "^1.1.4"
     prop-types "^15.6.1"
 
-"@visx/pattern@^3.3.0":
-  version "3.3.0"
-  resolved "https://registry.yarnpkg.com/@visx/pattern/-/pattern-3.3.0.tgz#358a2f6f2c33c606686324a7eec8c8b20c857397"
-  integrity sha512-x/a8sG8a+yj+yMjecL+UunRBGPf2Jm6L/X5AbRHEYddHZxxZa6FwxFuJe4R6S19+/vmFaXm8Md1ZAzT/cu6Icw==
+"@visx/pattern@^3.12.0":
+  version "3.12.0"
+  resolved "https://registry.yarnpkg.com/@visx/pattern/-/pattern-3.12.0.tgz#4966878de581a70a43dcd6d124419cbfe4a9adf8"
+  integrity sha512-ZkNA/2TkULNiiY4cw2IkuQcQRp9zI3SQ0/JoZMQ+UmUvY5RNBcsdTmic7649egHq0FRYCbY0DDQVJicccW5JUg==
   dependencies:
     "@types/react" "*"
     classnames "^2.3.1"

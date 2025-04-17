@@ -13,14 +13,8 @@ import {
   formatResourceTypeForDisplay,
 } from 'src/utils/formatting/formatResourceType';
 import { LegendContainer, LegendItem } from './legend';
-import { getSearchResultsRoute } from 'src/views/topics/helpers';
+import { getFillColor, getSearchResultsRoute } from 'src/views/topics/helpers';
 import { ChartWrapper } from '../layouts/chart-wrapper';
-
-// Color scale for data types.
-const getFillColor = scaleOrdinal({
-  domain: ['Dataset', 'ComputationalTool', 'ResourceCatalog'],
-  range: ['#e8c543', '#ff8359', '#6e95fc'],
-});
 
 export const DataTypes = ({ query, topic }: TopicQueryProps) => {
   // Fetch data types for query.

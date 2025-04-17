@@ -1,21 +1,22 @@
 import React from 'react';
-import { VStack, StackProps } from '@chakra-ui/react';
+import { Stack, StackProps } from '@chakra-ui/react';
 
 export const CardWrapper: React.FC<
   { children: React.ReactNode } & StackProps
 > = ({ children, ...props }) => {
   return (
-    <VStack
+    <Stack
       alignItems='flex-start'
       boxShadow='sm'
       borderRadius='semi'
       borderWidth={1}
       borderColor='gray.100'
+      flexDirection='column'
       p={4}
-      spacing={6}
+      spacing={4}
       {...props}
     >
       {children}
-    </VStack>
+    </Stack>
   );
 };

@@ -3,7 +3,7 @@ import NextLink from 'next/link';
 import { UrlObject } from 'url';
 import { Box, Checkbox, Flex, Text, VisuallyHidden } from '@chakra-ui/react';
 import { animated, useTransition, to } from '@react-spring/web';
-import { Annotation, Connector, HtmlLabel } from '@visx/annotation';
+import { Annotation, HtmlLabel } from '@visx/annotation';
 import { localPoint } from '@visx/event';
 import { Group } from '@visx/group';
 import { scaleLog } from '@visx/scale';
@@ -12,7 +12,6 @@ import Pie, { ProvidedProps, PieArcDatum } from '@visx/shape/lib/shapes/Pie';
 import { FacetTerm } from 'src/utils/api/types';
 import { InfoLabel } from 'src/components/info-label';
 import { customTooltipStyles, TooltipWrapper } from '../components/tooltip';
-import { theme } from 'src/theme';
 import { useParentSize } from '@visx/responsive';
 
 interface Datum {

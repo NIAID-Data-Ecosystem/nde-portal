@@ -1,6 +1,6 @@
 import React from 'react';
 import { GetStaticProps, NextPage } from 'next';
-import { Flex, HStack, Text, VStack } from '@chakra-ui/react';
+import { Box, Flex, HStack, Text, VStack } from '@chakra-ui/react';
 import { useQuery } from '@tanstack/react-query';
 import { Error } from 'src/components/error';
 import { Link } from 'src/components/link';
@@ -18,6 +18,7 @@ import { ExternalLinksSection } from 'src/views/topics/components/external-links
 import INFLUENZA_DATA from 'src/views/topics/mock-data/influenza.json';
 import MALARIA_DATA from 'src/views/topics/mock-data/malaria.json';
 import CREID_DATA from 'src/views/topics/mock-data/creid.json';
+import { Sources } from 'src/views/topics/components/sources';
 
 const fetchTopicContent = async (
   slug: string | string[],
@@ -185,32 +186,64 @@ const TopicPage: NextPage<{
                 title={`${totalResourcesCount} ${topic} Related Resources`}
               >
                 <CardWrapper>
-                  {/* Chart: Resource types */}
-                  {query && <DataTypes query={query} topic={topic} />}
-                  {query && <ConditionsOfAccess query={query} topic={topic} />}
-                </CardWrapper>
-
-                <CardWrapper mt={4}>
                   {/* Chart: Property Treemap/Brushable List*/}
                   {query && (
                     <PropertyTreemapLists query={query} topic={topic} />
+                  )}
+                </CardWrapper>
+
+                <CardWrapper flexDirection='row' flexWrap='wrap' mt={6}>
+                  <VStack w='100%' spacing={4} flex={3}>
+                    {/* Chart: Resource types */}
+                    {query && <DataTypes query={query} topic={topic} />}
+
+                    {/* Chart: Sources | Place under the sources charts on smaller screens */}
+                    {query && (
+                      <Flex
+                        w='100%'
+                        flexDirection='column'
+                        flex={1}
+                        minWidth={200}
+                        display={{ base: 'flex', lg: 'none' }}
+                      >
+                        <Sources query={query} topic={topic} />
+                      </Flex>
+                    )}
+                    {/* Chart: Conditions of Access */}
+                    {query && (
+                      <ConditionsOfAccess query={query} topic={topic} />
+                    )}
+                  </VStack>
+
+                  {/* Chart: Sources | Place beside the other charts on larger screens */}
+                  {query && (
+                    <Flex
+                      w='100%'
+                      flexDirection='column'
+                      flex={1}
+                      minWidth={200}
+                      display={{ base: 'none', lg: 'flex' }}
+                    >
+                      <Sources query={query} topic={topic} />
+                    </Flex>
                   )}
                 </CardWrapper>
               </SectionWrapper>
             </SectionWrapper>
 
             {/* External links */}
-            {(data?.attributes?.externalLinks?.data ?? []).length > 0 && (
-              <SectionWrapper
-                as='h3'
-                id='external-links'
-                title={`External Resources for ${topic}`}
-              >
-                <ExternalLinksSection
-                  externalLinks={data?.attributes.externalLinks}
-                />
-              </SectionWrapper>
-            )}
+            {data &&
+              (data?.attributes?.externalLinks?.data ?? []).length > 0 && (
+                <SectionWrapper
+                  as='h3'
+                  id='external-links'
+                  title={`External Resources for ${topic}`}
+                >
+                  <ExternalLinksSection
+                    externalLinks={data.attributes.externalLinks}
+                  />
+                </SectionWrapper>
+              )}
           </Flex>
         )}
       </PageContent>
