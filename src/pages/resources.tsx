@@ -30,15 +30,7 @@ const EmptyState = () => {
   );
 };
 
-interface ResourceQueryData extends FormattedResource {
-  relatedDatasets?: {
-    _id: FormattedResource['id'];
-    '@type': FormattedResource['@type'];
-    name: FormattedResource['name'];
-  }[];
-}
-
-export interface ResourceData extends ResourceQueryData {
+export interface ResourceData extends FormattedResource {
   rawData: Omit<
     FormattedResource['rawData'],
     '_id' | '_ignored' | '_score' | '_meta'
@@ -54,33 +46,10 @@ const ResourcePage: NextPage = () => {
     isLoading: loadingData,
     error,
     data,
-  } = useQuery<ResourceQueryData | undefined, Error, ResourceData | undefined>({
+  } = useQuery<FormattedResource | undefined, Error, ResourceData | undefined>({
     queryKey: ['search-result', { id }],
     queryFn: async () => {
       const data = await getResourceById(id, { show_meta: true });
-      // Get other datasets that have the same study identifier and data catalog name.
-      if (data?.isPartOf) {
-        const studyIds = data.isPartOf
-          .map(study => study.identifier)
-          .filter((item): item is string => !!item)
-          .join('" OR "');
-
-        const includedInDataCatalogNames = Array.isArray(
-          data.includedInDataCatalog,
-        )
-          ? data.includedInDataCatalog.map(({ name }) => name).join('" OR "')
-          : data.includedInDataCatalog.name;
-
-        const q = `isPartOf.identifier:("${studyIds}") AND includedInDataCatalog.name:("${includedInDataCatalogNames}")`;
-
-        const relatedDatasets = await fetchSearchResults({
-          q,
-          size: 10,
-          sort: 'name.raw',
-          fields: ['_id', '@type', 'name'],
-        }).then(data => data?.results);
-        return { ...data, relatedDatasets };
-      }
 
       return data;
     },
@@ -91,6 +60,7 @@ const ResourcePage: NextPage = () => {
       if (data) {
         return {
           ...data,
+          //  used for displaying and embedding metadata
           rawData: omit(data.rawData, ['_id', '_ignored', '_score', '_meta']),
         };
       }

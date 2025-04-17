@@ -9,13 +9,10 @@ import {
   ListItem,
   UnorderedList,
 } from '@chakra-ui/react';
-import {
-  Navigation,
-  RelatedDatasets,
-} from 'src/components/resource-sections/components';
+import { Navigation } from 'src/components/resource-sections/components';
 import { Route } from 'src/components/resource-sections/helpers';
 import { useLocalStorage } from 'usehooks-ts';
-import { CardContainer } from 'src/components/resource-sections/components/related-datasets';
+import { CardContainer } from 'src/components/resource-sections/components/card-container';
 import { FaMagnifyingGlass } from 'react-icons/fa6';
 import { External } from './components/external';
 import { ScrollContainer } from 'src/components/scroll-container';
@@ -71,12 +68,6 @@ export const Sidebar = ({
             <Navigation routes={sections} />
           </Card>
         )}
-
-        {/* Associated Resources with current page */}
-        <RelatedDatasets
-          isLoading={isLoading}
-          relatedDatasets={data?.relatedDatasets}
-        />
 
         {/* Search History links */}
         {isMounted && (

@@ -11,7 +11,6 @@ import {
 import { FaBitbucket, FaGithub } from 'react-icons/fa6';
 import { FormattedResource } from 'src/utils/api/types';
 import { HeadingWithTooltip } from './heading-with-tooltip';
-import { DisplayHTMLContent } from 'src/components/html-content';
 import { Link } from 'src/components/link';
 import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
 import { SchemaDefinitions } from 'scripts/generate-schema-definitions/types';
@@ -19,7 +18,6 @@ import { SchemaDefinitions } from 'scripts/generate-schema-definitions/types';
 interface AssociatedDocumentation {
   isLoading: boolean;
   type?: FormattedResource['@type'];
-  hasPart?: FormattedResource['hasPart'];
   mainEntityOfPage?: FormattedResource['mainEntityOfPage'];
   codeRepository?: FormattedResource['codeRepository'];
 }
@@ -29,59 +27,15 @@ const schema = SCHEMA_DEFINITIONS as SchemaDefinitions;
 export const AssociatedDocumentation: React.FC<AssociatedDocumentation> = ({
   isLoading,
   codeRepository,
-  hasPart,
   mainEntityOfPage,
   type,
 }) => {
-  if (!isLoading && !(hasPart || mainEntityOfPage || codeRepository || type)) {
+  if (!isLoading && !(mainEntityOfPage || codeRepository || type)) {
     return <></>;
   }
-  const hasAssociatedDocumentation = hasPart?.some(
-    item => item.name || item.url,
-  );
 
   return (
     <>
-      {hasAssociatedDocumentation && (
-        <Box>
-          <HeadingWithTooltip
-            label='Associated Documents'
-            tooltipLabel={`${
-              schema?.['hasPart']?.description?.[type || 'Dataset'] ?? ''
-            }`}
-          />
-          <Flex flexDirection='column'>
-            {hasPart?.map((part, idx) => {
-              if (part.url) {
-                return (
-                  <Link
-                    key={idx}
-                    href={part.url}
-                    isExternal
-                    wordBreak='break-word'
-                    fontSize='inherit'
-                    mb={1}
-                  >
-                    {part?.name || part.url}
-                  </Link>
-                );
-              }
-              return (
-                part?.name && (
-                  <Box key={part.name} sx={{ h4: { fontWeight: 'medium' } }}>
-                    <DisplayHTMLContent
-                      key={part.name}
-                      wordBreak='break-word'
-                      content={part.name}
-                      fontSize='inherit'
-                    />
-                  </Box>
-                )
-              );
-            })}
-          </Flex>
-        </Box>
-      )}
       {/* mainEntityOfPage refers to a website for the resource. */}
       {mainEntityOfPage && (
         <Stack spacing={1}>
@@ -131,7 +85,7 @@ export const AssociatedDocumentation: React.FC<AssociatedDocumentation> = ({
           flex={1}
         >
           <HeadingWithTooltip
-            label='Associated Source Code'
+            label='Code Repository'
             tooltipLabel={`${
               schema?.['coreRepository']?.description?.[type || 'Dataset'] ?? ''
             }`}

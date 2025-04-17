@@ -4,9 +4,13 @@ import {
   Box,
   Divider,
   Flex,
+  Grid,
+  GridItem,
   ListItem,
+  SimpleGrid,
   Skeleton,
   UnorderedList,
+  VStack,
 } from '@chakra-ui/react';
 import { Link } from 'src/components/link';
 import {
@@ -26,14 +30,20 @@ import SoftwareInformation from './components/software-information';
 import { External } from './components/sidebar/components/external';
 import { Funding } from './components/funding';
 import { JsonViewer } from '../json-viewer';
-import ResourceIsPartOf from './components/is-part-of';
 import BasedOnTable from './components/based-on';
 import { CompletenessBadgeCircle } from 'src/components/metadata-completeness-badge/Circular';
 import { ResourceCatalogCollection } from './components/collection-information';
 import { DownloadMetadata } from '../download-metadata';
 import { SearchableItems } from 'src/components/searchable-items';
-// import { Summary } from './components/summary';
+import { OverviewSectionWrapper } from './components/overview-section-wrapper';
+import { getMetadataDescription } from '../metadata';
+import { TagWithUrl } from '../tag-with-url';
+import { FaMagnifyingGlass } from 'react-icons/fa6';
+import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
+import { SchemaDefinitions } from 'scripts/generate-schema-definitions/types';
+import { RelatedResources } from './components/related-resources';
 
+const schema = SCHEMA_DEFINITIONS as SchemaDefinitions;
 // Metadata displayed in each section
 export const sectionMetadata: { [key: string]: (keyof FormattedResource)[] } = {
   overview: [
@@ -57,7 +67,6 @@ export const sectionMetadata: { [key: string]: (keyof FormattedResource)[] } = {
     'discussionUrl',
     'input',
     'output',
-    'isBasisFor',
     'processorRequirements',
     'programmingLanguage',
     'softwareAddOn',
@@ -74,6 +83,7 @@ export const sectionMetadata: { [key: string]: (keyof FormattedResource)[] } = {
   funding: ['funding'],
   isBasedOn: ['isBasedOn'],
   citedBy: ['citedBy'],
+  relatedResources: ['hasPart', 'isBasisFor', 'isRelatedTo', 'isPartOf'],
   metadata: ['rawData'],
 };
 
@@ -87,6 +97,8 @@ const Sections = ({
   data?: FormattedResource;
   sections: Route[];
 }) => {
+  const type = data?.['@type'] || 'Dataset';
+
   return (
     <>
       <ResourceHeader
@@ -169,19 +181,109 @@ const Sections = ({
             {section.hash === 'overview' && (
               <>
                 <ResourceOverview isLoading={isLoading} {...data} />
-                <ResourceIsPartOf
-                  isLoading={isLoading}
-                  studies={data?.isPartOf}
-                />
-                <ResourceCitations
-                  isLoading={isLoading}
-                  type={data?.['@type']}
-                  citations={data?.citation}
-                />
-                <ResourceCatalogCollection
-                  isLoading={isLoading}
-                  collectionSize={data?.collectionSize}
-                />
+                {/* Overview secondary section */}
+                {(data?.genre || data?.about || data?.collectionSize) && (
+                  <SimpleGrid
+                    minChildWidth={{ base: 'unset', sm: '280px', xl: '300px' }}
+                    spacingX={14}
+                    spacingY={10}
+                    mt={4}
+                    w='100%'
+                  >
+                    {/* Col 1: Genre & Content Types */}
+                    <VStack>
+                      {data?.genre && (
+                        <OverviewSectionWrapper
+                          isLoading={isLoading}
+                          label='Research Domain'
+                          scrollContainerProps={{
+                            border: 'none',
+                            py: 0,
+                          }}
+                        >
+                          <TagWithUrl
+                            colorScheme='primary'
+                            href={{
+                              pathname: '/search',
+                              query: {
+                                q: `genre:"${data?.genre}"`,
+                              },
+                            }}
+                            m={0.5}
+                            leftIcon={FaMagnifyingGlass}
+                          >
+                            {data?.genre}
+                          </TagWithUrl>
+                        </OverviewSectionWrapper>
+                      )}
+                      {data?.about && data?.about?.length > 0 && (
+                        <OverviewSectionWrapper
+                          isLoading={isLoading}
+                          label='Content Types'
+                          scrollContainerProps={{
+                            border: 'none',
+                            py: 0,
+                            maxHeight: 'unset',
+                          }}
+                        >
+                          <SearchableItems
+                            fieldName='about'
+                            generateButtonLabel={(
+                              limit,
+                              length,
+                              itemLabel = 'about',
+                            ) =>
+                              limit === length
+                                ? `Show fewer ${itemLabel}`
+                                : `Show all ${itemLabel} (${
+                                    length - limit
+                                  } more)`
+                            }
+                            itemLimit={20}
+                            items={data?.about.map(item => item.displayName)}
+                          />
+                        </OverviewSectionWrapper>
+                      )}
+                    </VStack>
+                    {/* Col 2: Size of collection */}
+                    {data?.collectionSize && (
+                      <OverviewSectionWrapper
+                        isLoading={isLoading}
+                        label='Collection Size Details'
+                        maxWidth={{ base: 'unset', xl: '500px' }}
+                        scrollContainerProps={{
+                          maxHeight: 'unset',
+                          py: 0,
+                        }}
+                      >
+                        <ResourceCatalogCollection
+                          collectionSize={data?.collectionSize}
+                        />
+                      </OverviewSectionWrapper>
+                    )}
+                    {/* Empty placeholder for third column at xl screens */}
+                    <Box display={{ base: 'none', xl: 'block' }} aria-hidden />
+                  </SimpleGrid>
+                )}
+
+                {/* Resource citation(s) */}
+                {data?.citation && (
+                  <OverviewSectionWrapper
+                    isLoading={isLoading}
+                    label={`Citation${
+                      data?.citation.length > 1
+                        ? `s (${data?.citation.length})`
+                        : ''
+                    }`}
+                    tooltipLabel={getMetadataDescription(
+                      'citation',
+                      data?.['@type'],
+                    )}
+                    my={4}
+                  >
+                    <ResourceCitations citations={data?.citation} />
+                  </OverviewSectionWrapper>
+                )}
               </>
             )}
             {/* Show keywords */}
@@ -256,27 +358,7 @@ const Sections = ({
                 {...data}
               />
             )}
-            {section.hash === 'isBasedOn' && data?.isBasedOn && (
-              <BasedOnTable
-                id='software-information-is-based-on'
-                title='Imports'
-                caption='Imports used by this dataset/tool.'
-                isLoading={isLoading}
-                items={data?.isBasedOn}
-              />
-            )}
 
-            {section.hash === 'isBasedOn' && data?.isBasisFor && (
-              <Box mt={4}>
-                <BasedOnTable
-                  id='software-information-dependency-for'
-                  title='Dependency for'
-                  caption='Datasets or tools that this dataset/tool is a dependency for.'
-                  isLoading={isLoading}
-                  items={data.isBasisFor}
-                />
-              </Box>
-            )}
             {/* Show description */}
             {section.hash === 'description' &&
               (data?.description || data?.abstract) && (
@@ -332,15 +414,47 @@ const Sections = ({
                 )}
               </>
             )}
-            {/* Show funding */}
 
+            {/* Show funding */}
             {section.hash === 'funding' && (
               <Funding isLoading={isLoading} data={data?.funding || []} />
             )}
+
+            {/* Show Based On information */}
+            {section.hash === 'isBasedOn' && data?.isBasedOn && (
+              <BasedOnTable
+                id='software-information-is-based-on'
+                title={schema['isBasedOn']['description']?.[type]}
+                caption='Table showing resources that this resource is based on.'
+                isLoading={isLoading}
+                items={data?.isBasedOn}
+              />
+            )}
+
             {/* Show citedBy */}
             {section.hash === 'citedBy' && (
-              <CitedByTable isLoading={isLoading} data={data?.citedBy || []} />
+              <CitedByTable
+                isLoading={isLoading}
+                data={data?.citedBy || []}
+                title={schema['citedBy']['description']?.[type]}
+              />
             )}
+
+            {/* Show related resources */}
+            {section.hash === 'relatedResources' && (
+              <RelatedResources
+                data={
+                  data && {
+                    '@type': data?.['@type'],
+                    hasPart: data?.hasPart,
+                    isBasisFor: data?.isBasisFor,
+                    isPartOf: data?.isPartOf,
+                    isRelatedTo: data?.isRelatedTo,
+                  }
+                }
+              />
+            )}
+
             {/* Show raw metadata */}
             {section.hash === 'metadata' && data?.rawData && (
               <>

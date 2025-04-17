@@ -1,6 +1,6 @@
-import { Box, BoxProps } from '@chakra-ui/react';
+import { Box } from '@chakra-ui/react';
 
-export const ScrollContainer = ({ children, ...props }: BoxProps) => {
+export const ScrollContainer = ({ children, ...props }: any) => {
   return (
     <Box
       overflow='auto'

@@ -45,20 +45,22 @@ export const formatAuthor = (
 };
 
 export interface APICitation {
-  url?: string;
-  name?: string;
-  citation?: string;
+  abstract?: string | null;
   author?: Author[] | null;
-  journalName?: string;
-  journalNameAbbrev?: string;
-  identifier?: string;
-  date?: string;
-  datePublished?: string;
-  pmid?: string;
-  doi?: string;
-  issueNumber?: string;
-  volumeNumber?: string;
-  pagination?: string;
+  citation?: string | null;
+  datePublished?: string | null;
+  description?: string | null;
+  doi?: string | null;
+  identifier?: string | null;
+  issueNumber?: string | null;
+  journalName?: string | null;
+  journalNameAbbrev?: string | null;
+  name?: string | null;
+  pagination?: string | null;
+  pmcid?: string | null;
+  pmid?: string | null;
+  url?: string | null;
+  volumeNumber?: string | null;
 }
 
 // Format the citation field
@@ -70,20 +72,22 @@ export const formatCitation = (
   }
   const getCitationFields = (data?: APICitation) => {
     return {
-      id: data?.identifier || null,
-      url: data?.url || null,
-      name: data?.name || null,
+      abstract: data?.abstract || null,
       author: data?.author || null,
       citation: data?.citation || null,
+      datePublished: data?.datePublished || null,
+      description: data?.description || null,
+      doi: data?.doi || null,
+      id: data?.identifier || null,
+      issueNumber: data?.issueNumber || null,
       journalName: data?.journalName || null,
       journalNameAbbrev: data?.journalNameAbbrev || null,
-      date: data?.date || null,
-      datePublished: data?.datePublished || null,
-      pmid: data?.pmid || null,
-      doi: data?.doi || null,
-      issueNumber: data?.issueNumber || null,
-      volumeNumber: data?.volumeNumber || null,
+      name: data?.name || null,
       pagination: data?.pagination || null,
+      pmcid: data?.pmcid || null,
+      pmid: data?.pmid || null,
+      url: data?.url || null,
+      volumeNumber: data?.volumeNumber || null,
     };
   };
 

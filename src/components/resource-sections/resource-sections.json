@@ -22,11 +22,7 @@
       "hash": "programmingLanguage",
       "isCollapsible": true
     },
-    {
-      "title": "Based On",
-      "hash": "isBasedOn",
-      "isCollapsible": true
-    },
+
     {
       "title": "Description",
       "hash": "description",
@@ -51,8 +47,18 @@
       "isCollapsible": true
     },
     {
+      "title": "Based On",
+      "hash": "isBasedOn",
+      "isCollapsible": true
+    },
+    {
       "title": "Cited By",
       "hash": "citedBy",
+      "isCollapsible": true
+    },
+    {
+      "title": "Related Resources",
+      "hash": "relatedResources",
       "isCollapsible": true
     },
     {
