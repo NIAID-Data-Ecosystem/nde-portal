@@ -120,14 +120,15 @@ const Sections = ({
       <ResourceBanner data={data} />
 
       {/*<--- AI Generated short description -->*/}
-      {data?.disambiguatingDescription && (
-        <Flex mx={6} my={2}>
-          <Summary
-            description={data.disambiguatingDescription}
-            tagLabel='AI Generated'
-          />
-          {/* Badge indicating completeness of metadata */}
-          {/* {data && data['_meta'] && (
+      {process.env.NODE_ENV !== 'production' &&
+        data?.disambiguatingDescription && (
+          <Flex mx={6} my={2}>
+            <Summary
+              description={data.disambiguatingDescription}
+              tagLabel='AI Generated'
+            />
+            {/* Badge indicating completeness of metadata */}
+            {/* {data && data['_meta'] && (
           <Flex
             px={4}
             py={4}
@@ -142,8 +143,8 @@ const Sections = ({
             />
           </Flex>
         )} */}
-        </Flex>
-      )}
+          </Flex>
+        )}
 
       {sections.map(section => {
         return (
