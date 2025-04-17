@@ -1,0 +1,195 @@
+{
+  "id": 1,
+  "attributes": {
+    "title": "NIAID CREID Network",
+    "subtitle": "",
+    "description": "",
+    "query": {
+      "q": "__all__",
+      "extra_filter": "sourceOrganization.name:(\"NIAID CREID Network\")",
+      "facet_size": 1000,
+      "size": 0
+    },
+    "slug": "creid",
+    "topic": "CREID Network",
+    "type": {
+      "data": [
+        {
+          "id": 1,
+          "attributes": {
+            "name": "Disease",
+            "createdAt": "2025-02-22T19:09:45.049Z",
+            "updatedAt": "2025-02-22T19:09:45.049Z",
+            "publishedAt": "2025-02-22T19:09:45.049Z"
+          }
+        }
+      ]
+    },
+    "externalLinks": {
+      "data": [
+        {
+          "id": 1,
+          "attributes": {
+            "label": "National Institute of Allergy and Infectious Diseases",
+            "url": "https://www.niaid.nih.gov/",
+            "categories": null,
+            "image": {
+              "data": {
+                "attributes": {
+                  "url": "/assets/NIH-logo.png",
+                  "alternativeText": "nih logo"
+                }
+              }
+            },
+            "isExternal": true,
+            "createdAt": "2025-02-22T19:09:45.049Z",
+            "updatedAt": "2025-02-22T19:09:45.049Z",
+            "publishedAt": "2025-02-22T19:09:45.049Z"
+          }
+        },
+        {
+          "id": 2,
+          "attributes": {
+            "label": "CDC Influenza (Flu)",
+            "url": "https://www.cdc.gov/flu/index.html",
+            "categories": null,
+            "image": { "data": null },
+            "isExternal": true,
+            "createdAt": "2025-02-22T19:09:45.049Z",
+            "updatedAt": "2025-02-22T19:09:45.049Z",
+            "publishedAt": "2025-02-22T19:09:45.049Z"
+          }
+        },
+        {
+          "id": 3,
+          "attributes": {
+            "label": "Centers of Excellence for Influenza Research and Response (CEIRR)",
+            "url": "https://www.niaid.nih.gov/research/centers-excellence-influenza-research-response",
+            "categories": {
+              "data": [
+                {
+                  "id": 1,
+                  "attributes": {
+                    "name": "Working Groups / Programs / Networks",
+                    "createdAt": "2025-02-22T19:09:45.049Z",
+                    "publishedAt": "2025-02-22T19:09:45.049Z",
+                    "updatedAt": "2025-02-22T19:09:45.049Z"
+                  }
+                }
+              ]
+            },
+            "image": { "data": null },
+            "isExternal": true,
+            "createdAt": "2025-02-22T19:09:45.049Z",
+            "updatedAt": "2025-02-22T19:09:45.049Z",
+            "publishedAt": "2025-02-22T19:09:45.049Z"
+          }
+        },
+        {
+          "id": 4,
+          "attributes": {
+            "label": "Collaborative Influenza Vaccine Innovation Centers (CIVICs)",
+            "url": "https://www.niaid.nih.gov/research/civics",
+            "categories": {
+              "data": [
+                {
+                  "id": 1,
+                  "attributes": {
+                    "name": "Working Groups / Programs / Networks",
+                    "createdAt": "2025-02-22T19:09:45.049Z",
+                    "publishedAt": "2025-02-22T19:09:45.049Z",
+                    "updatedAt": "2025-02-22T19:09:45.049Z"
+                  }
+                }
+              ]
+            },
+            "image": { "data": null },
+            "isExternal": true,
+            "createdAt": "2025-02-22T19:09:45.049Z",
+            "updatedAt": "2025-02-22T19:09:45.049Z",
+            "publishedAt": "2025-02-22T19:09:45.049Z"
+          }
+        },
+        {
+          "id": 5,
+          "attributes": {
+            "label": "Mexican Emerging Infectious Disease Clinical Research Network (LaRed) ",
+            "url": "https://www.niaid.nih.gov/research/lared",
+            "categories": {
+              "data": [
+                {
+                  "id": 1,
+                  "attributes": {
+                    "name": "Working Groups / Programs / Networks",
+                    "createdAt": "2025-02-22T19:09:45.049Z",
+                    "publishedAt": "2025-02-22T19:09:45.049Z",
+                    "updatedAt": "2025-02-22T19:09:45.049Z"
+                  }
+                }
+              ]
+            },
+            "image": { "data": null },
+            "isExternal": true,
+            "createdAt": "2025-02-22T19:09:45.049Z",
+            "updatedAt": "2025-02-22T19:09:45.049Z",
+            "publishedAt": "2025-02-22T19:09:45.049Z"
+          }
+        },
+        {
+          "id": 6,
+          "attributes": {
+            "label": "Modeling Immunity for Biodefense (MIB)",
+            "url": "https://www.niaid.nih.gov/research/modeling-immunity-biodefense",
+            "categories": {
+              "data": [
+                {
+                  "id": 1,
+                  "attributes": {
+                    "name": "Working Groups / Programs / Networks",
+                    "createdAt": "2025-02-22T19:09:45.049Z",
+                    "publishedAt": "2025-02-22T19:09:45.049Z",
+                    "updatedAt": "2025-02-22T19:09:45.049Z"
+                  }
+                }
+              ]
+            },
+            "image": { "data": null },
+            "isExternal": true,
+            "createdAt": "2025-02-22T19:09:45.049Z",
+            "updatedAt": "2025-02-22T19:09:45.049Z",
+            "publishedAt": "2025-02-22T19:09:45.049Z"
+          }
+        },
+        {
+          "id": 7,
+          "attributes": {
+            "label": "Infectious Diseases Clinical Research Consortium",
+            "url": "https://www.niaid.nih.gov/research/idcrc",
+            "categories": {
+              "data": [
+                {
+                  "id": 1,
+                  "attributes": {
+                    "name": "Working Groups / Programs / Networks",
+                    "createdAt": "2025-02-22T19:09:45.049Z",
+                    "publishedAt": "2025-02-22T19:09:45.049Z",
+                    "updatedAt": "2025-02-22T19:09:45.049Z"
+                  }
+                }
+              ]
+            },
+            "image": { "data": null },
+
+            "isExternal": true,
+            "createdAt": "2025-02-22T19:09:45.049Z",
+            "updatedAt": "2025-02-22T19:09:45.049Z",
+            "publishedAt": "2025-02-22T19:09:45.049Z"
+          }
+        }
+      ]
+    },
+    "createdAt": "2025-02-22T19:09:45.049Z",
+    "updatedAt": "2025-02-22T19:09:45.049Z",
+    "publishedAt": "2025-02-22T19:09:45.049Z"
+  }
+}

@@ -15,206 +15,9 @@ import { DataTypes } from 'src/views/topics/components/data-types';
 import { PropertyTreemapLists } from 'src/views/topics/components/property-treemap-lists';
 import { CardWrapper } from 'src/views/topics/layouts/card';
 import { ExternalLinksSection } from 'src/views/topics/components/external-links';
-
-// Fetch Disease content from strapi
-const MOCK_DATA = {
-  id: 1,
-  attributes: {
-    title: 'Influenza',
-    subtitle: '',
-    description:
-      "Influenza is a viral infection that attacks your respiratory system — your nose, throat and lungs. Influenza, commonly called the flu, is not the same as the stomach 'flu' viruses that cause diarrhea and vomiting.",
-    query: {
-      q: '"Influenza" OR "Flu"',
-      facet_size: 1000,
-      size: 0,
-    },
-    slug: 'influenza',
-    topic: 'influenza',
-    type: {
-      data: [
-        {
-          id: 1,
-          attributes: {
-            name: 'Disease',
-            createdAt: '2025-02-22T19:09:45.049Z',
-            updatedAt: '2025-02-22T19:09:45.049Z',
-            publishedAt: '2025-02-22T19:09:45.049Z',
-          },
-        },
-      ],
-    },
-    externalLinks: {
-      data: [
-        {
-          id: 1,
-          attributes: {
-            label: 'National Institute of Allergy and Infectious Diseases',
-            url: 'https://www.niaid.nih.gov/',
-            categories: null,
-            image: {
-              data: {
-                attributes: {
-                  url: '/assets/NIH-logo.png',
-                  alternativeText: 'nih logo',
-                },
-              },
-            },
-            isExternal: true,
-            createdAt: '2025-02-22T19:09:45.049Z',
-            updatedAt: '2025-02-22T19:09:45.049Z',
-            publishedAt: '2025-02-22T19:09:45.049Z',
-          },
-        },
-        {
-          id: 2,
-          attributes: {
-            label: 'CDC Influenza (Flu)',
-            url: 'https://www.cdc.gov/flu/index.html',
-            categories: null,
-            image: { data: null },
-            isExternal: true,
-            createdAt: '2025-02-22T19:09:45.049Z',
-            updatedAt: '2025-02-22T19:09:45.049Z',
-            publishedAt: '2025-02-22T19:09:45.049Z',
-          },
-        },
-        {
-          id: 3,
-          attributes: {
-            label:
-              'Centers of Excellence for Influenza Research and Response (CEIRR)',
-            url: 'https://www.niaid.nih.gov/research/centers-excellence-influenza-research-response',
-            categories: {
-              data: [
-                {
-                  id: 1,
-                  attributes: {
-                    name: 'Working Groups / Programs / Networks',
-                    createdAt: '2025-02-22T19:09:45.049Z',
-                    publishedAt: '2025-02-22T19:09:45.049Z',
-                    updatedAt: '2025-02-22T19:09:45.049Z',
-                  },
-                },
-              ],
-            },
-            image: { data: null },
-            isExternal: true,
-            createdAt: '2025-02-22T19:09:45.049Z',
-            updatedAt: '2025-02-22T19:09:45.049Z',
-            publishedAt: '2025-02-22T19:09:45.049Z',
-          },
-        },
-        {
-          id: 4,
-          attributes: {
-            label:
-              'Collaborative Influenza Vaccine Innovation Centers (CIVICs)',
-            url: 'https://www.niaid.nih.gov/research/civics',
-            categories: {
-              data: [
-                {
-                  id: 1,
-                  attributes: {
-                    name: 'Working Groups / Programs / Networks',
-                    createdAt: '2025-02-22T19:09:45.049Z',
-                    publishedAt: '2025-02-22T19:09:45.049Z',
-                    updatedAt: '2025-02-22T19:09:45.049Z',
-                  },
-                },
-              ],
-            },
-            image: { data: null },
-            isExternal: true,
-            createdAt: '2025-02-22T19:09:45.049Z',
-            updatedAt: '2025-02-22T19:09:45.049Z',
-            publishedAt: '2025-02-22T19:09:45.049Z',
-          },
-        },
-        {
-          id: 5,
-          attributes: {
-            label:
-              'Mexican Emerging Infectious Disease Clinical Research Network (LaRed) ',
-            url: 'https://www.niaid.nih.gov/research/lared',
-            categories: {
-              data: [
-                {
-                  id: 1,
-                  attributes: {
-                    name: 'Working Groups / Programs / Networks',
-                    createdAt: '2025-02-22T19:09:45.049Z',
-                    publishedAt: '2025-02-22T19:09:45.049Z',
-                    updatedAt: '2025-02-22T19:09:45.049Z',
-                  },
-                },
-              ],
-            },
-            image: { data: null },
-            isExternal: true,
-            createdAt: '2025-02-22T19:09:45.049Z',
-            updatedAt: '2025-02-22T19:09:45.049Z',
-            publishedAt: '2025-02-22T19:09:45.049Z',
-          },
-        },
-        {
-          id: 6,
-          attributes: {
-            label: 'Modeling Immunity for Biodefense (MIB)',
-            url: 'https://www.niaid.nih.gov/research/modeling-immunity-biodefense',
-            categories: {
-              data: [
-                {
-                  id: 1,
-                  attributes: {
-                    name: 'Working Groups / Programs / Networks',
-                    createdAt: '2025-02-22T19:09:45.049Z',
-                    publishedAt: '2025-02-22T19:09:45.049Z',
-                    updatedAt: '2025-02-22T19:09:45.049Z',
-                  },
-                },
-              ],
-            },
-            image: { data: null },
-            isExternal: true,
-            createdAt: '2025-02-22T19:09:45.049Z',
-            updatedAt: '2025-02-22T19:09:45.049Z',
-            publishedAt: '2025-02-22T19:09:45.049Z',
-          },
-        },
-        {
-          id: 7,
-          attributes: {
-            label: 'Infectious Diseases Clinical Research Consortium',
-            url: 'https://www.niaid.nih.gov/research/idcrc',
-            categories: {
-              data: [
-                {
-                  id: 1,
-                  attributes: {
-                    name: 'Working Groups / Programs / Networks',
-                    createdAt: '2025-02-22T19:09:45.049Z',
-                    publishedAt: '2025-02-22T19:09:45.049Z',
-                    updatedAt: '2025-02-22T19:09:45.049Z',
-                  },
-                },
-              ],
-            },
-            image: { data: null },
-
-            isExternal: true,
-            createdAt: '2025-02-22T19:09:45.049Z',
-            updatedAt: '2025-02-22T19:09:45.049Z',
-            publishedAt: '2025-02-22T19:09:45.049Z',
-          },
-        },
-      ],
-    },
-    createdAt: '2025-02-22T19:09:45.049Z',
-    updatedAt: '2025-02-22T19:09:45.049Z',
-    publishedAt: '2025-02-22T19:09:45.049Z',
-  },
-};
+import INFLUENZA_DATA from 'src/views/topics/mock-data/influenza.json';
+import MALARIA_DATA from 'src/views/topics/mock-data/malaria.json';
+import CREID_DATA from 'src/views/topics/mock-data/creid.json';
 
 const fetchTopicContent = async (
   slug: string | string[],
@@ -229,8 +32,15 @@ const fetchTopicContent = async (
     //     isProd ? 'live' : 'preview'
     //   }`,
     // );
+    if (slug[0] === 'influenza') {
+      return INFLUENZA_DATA;
+    } else if (slug[0] === 'malaria') {
+      return MALARIA_DATA;
+    } else if (slug[0] === 'creid') {
+      return CREID_DATA;
+    }
 
-    return MOCK_DATA;
+    return INFLUENZA_DATA;
   } catch (err: any) {
     throw err.response;
   }
@@ -273,6 +83,7 @@ const TopicPage: NextPage<{
   const params = {
     q: query?.q || '',
     facet_size: query?.facet_size,
+    extra_filter: query?.extra_filter,
     facets: '@type',
     size: 0,
   };
@@ -291,6 +102,8 @@ const TopicPage: NextPage<{
     },
     enabled: params.q !== undefined,
   });
+
+  const totalResourcesCount = totalQuery.data?.total.toLocaleString() || 0;
 
   return (
     <PageContainer
@@ -369,7 +182,7 @@ const TopicPage: NextPage<{
               <SectionWrapper
                 as='h3'
                 id='overview'
-                title={`${totalQuery.data?.total.toLocaleString()} ${topic} Related Resources`}
+                title={`${totalResourcesCount} ${topic} Related Resources`}
               >
                 <CardWrapper>
                   {/* Chart: Resource types */}
@@ -424,6 +237,8 @@ export async function getStaticPaths() {
   const paths = [
     { params: { slug: undefined } },
     { params: { slug: ['influenza'] } },
+    { params: { slug: ['malaria'] } },
+    { params: { slug: ['creid'] } },
   ];
 
   return { paths, fallback: false };
