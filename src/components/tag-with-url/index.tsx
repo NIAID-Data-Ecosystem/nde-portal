@@ -34,6 +34,7 @@ export const TagWithUrl = ({
   href,
   isExternal,
   leftIcon,
+  noOfLines = 1,
   ...props
 }: TagWithUrlProps) => {
   const Label = () =>

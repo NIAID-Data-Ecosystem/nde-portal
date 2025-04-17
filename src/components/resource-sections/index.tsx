@@ -4,11 +4,11 @@ import {
   Box,
   Divider,
   Flex,
-  Grid,
-  GridItem,
   ListItem,
   SimpleGrid,
   Skeleton,
+  Stack,
+  StackDivider,
   UnorderedList,
   VStack,
 } from '@chakra-ui/react';
@@ -27,7 +27,10 @@ import FilesTable from './components/files-table';
 import { CitedByTable } from './components/cited-by-table';
 import { DisplayHTMLContent } from '../html-content';
 import SoftwareInformation from './components/software-information';
-import { External } from './components/sidebar/components/external';
+import {
+  ExternalAccess,
+  UsageInfo,
+} from './components/sidebar/components/external';
 import { Funding } from './components/funding';
 import { JsonViewer } from '../json-viewer';
 import BasedOnTable from './components/based-on';
@@ -159,23 +162,37 @@ const Sections = ({
                 flexDirection='column'
                 minWidth='250px'
               >
-                {/* Badge indicating completeness of metadata */}
-                {data && data['_meta'] && (
-                  <Flex px={4} py={4} justifyContent='center'>
-                    <CompletenessBadgeCircle
-                      type={data['@type']}
-                      stats={data['_meta']}
-                      size='lg'
-                    />
-                  </Flex>
-                )}
-
-                {/* External links to access data, documents or dataset at the source. */}
-                <External
-                  data={data}
-                  isLoading={isLoading}
-                  hasDivider={false}
-                />
+                <Stack
+                  flexWrap='wrap'
+                  direction={{ base: 'column', md: 'row' }}
+                  divider={<StackDivider borderColor='gray.100' />}
+                >
+                  {/* Badge indicating completeness of metadata */}
+                  {data && data['_meta'] && (
+                    <Flex
+                      px={4}
+                      py={4}
+                      alignItems='center'
+                      justifyContent='center'
+                      minWidth='250px'
+                      flex={1}
+                    >
+                      <CompletenessBadgeCircle
+                        type={data['@type']}
+                        stats={data['_meta']}
+                        size='lg'
+                      />
+                    </Flex>
+                  )}
+                  {/* External links to access data, documents or dataset at the source. */}
+                  <ExternalAccess
+                    data={data}
+                    isLoading={isLoading}
+                    hasDivider={false}
+                    minWidth={{ base: 'unset', sm: '350px' }}
+                  />
+                </Stack>
+                <UsageInfo data={data} isLoading={isLoading} />
               </Flex>
             )}
             {section.hash === 'overview' && (

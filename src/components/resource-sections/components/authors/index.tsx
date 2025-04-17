@@ -89,7 +89,12 @@ const ResourceAuthors = ({
                 justifyContent='space-between'
               >
                 <Box w='100%' flex='1' textAlign='left' mr={6}>
-                  <Heading size='sm' color='gray.700' fontWeight='semibold'>
+                  <Heading
+                    fontSize='sm'
+                    color='gray.700'
+                    fontWeight='light'
+                    lineHeight='short'
+                  >
                     {formatAuthorsList2String(authors, ',', 10)}
                     {authors.length === 1 ? '' : '.'}
                   </Heading>
@@ -111,6 +116,7 @@ const ResourceAuthors = ({
                 <UnorderedList
                   display={authors_have_details ? '' : 'inline-flex'}
                   flexWrap='wrap'
+                  lineHeight='short'
                 >
                   {authors.map((author, i) => {
                     let { identifier, name, url, email } = author;

@@ -27,7 +27,6 @@ import { ToggleContainer } from 'src/components/toggle-container';
 import { formatAuthorsList2String } from 'src/utils/helpers/authors';
 import { isSourceFundedByNiaid } from 'src/utils/helpers/sources';
 import { Skeleton } from 'src/components/skeleton';
-import { useRouter } from 'next/router';
 import { filterWords } from './helpers';
 import { SchemaDefinitions } from 'scripts/generate-schema-definitions/types';
 import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';

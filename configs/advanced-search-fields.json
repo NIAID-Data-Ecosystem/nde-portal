@@ -33,6 +33,7 @@
     "dateCreated",
     "dateModified",
     "datePublished",
+    "disambiguatingDescription",
     "description",
     "distribution.dateModified",
     "distribution.encodingFormat",

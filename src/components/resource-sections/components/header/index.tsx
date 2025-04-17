@@ -35,12 +35,7 @@ const Header: React.FC<HeaderProps> = ({
         pt={4}
         pb={2}
       >
-        <Heading
-          as='h1'
-          fontSize='2xl'
-          fontWeight='semibold'
-          lineHeight={'short'}
-        >
+        <Heading as='h1' fontSize='2xl' fontWeight='bold' lineHeight='short'>
           <DisplayHTMLString>{name || alternateName}</DisplayHTMLString>
           {!!name && alternateName && (
             <Heading

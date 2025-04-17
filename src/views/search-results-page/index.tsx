@@ -32,6 +32,8 @@ import { DownloadMetadata } from 'src/components/download-metadata';
 import Banner from 'src/components/banner';
 import { FILTER_CONFIGS } from './components/filters/config';
 import { SelectedFilterType } from './components/filters/types';
+import { MetadataScoreToggle } from './components/metadata-score-toggle';
+import { useLocalStorage } from 'usehooks-ts';
 
 /*
 [COMPONENT INFO]:
@@ -46,6 +48,17 @@ const SearchResultsPage = ({
   results: FormattedResource[];
   total: number;
 }) => {
+  const [shouldUseMetadataScore, setShouldUseMetadataScore] = useLocalStorage(
+    'useMetadataScore',
+    // use metadata score is applied in the backend on production. Flag is hidden in production
+    true,
+  );
+  const [isMounted, setIsMounted] = useState(false); // for SSR
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
   const router = useRouter();
 
   // Currently selected filters.
@@ -125,6 +138,7 @@ const SearchResultsPage = ({
       size: `${selectedPerPage}`,
       from: `${(selectedPage - 1) * selectedPerPage}`,
       sort: sortOrder,
+      use_metadata_score: shouldUseMetadataScore ? 'true' : 'false',
       show_meta: true,
       fields: [
         '_meta',
@@ -161,7 +175,14 @@ const SearchResultsPage = ({
         'variableMeasured',
       ],
     }),
-    [querystring, selectedFilters, selectedPerPage, selectedPage, sortOrder],
+    [
+      querystring,
+      selectedFilters,
+      selectedPerPage,
+      selectedPage,
+      sortOrder,
+      shouldUseMetadataScore,
+    ],
   );
 
   const { isLoading, isRefetching, error, data } = useQuerySearchResults(
@@ -182,6 +203,11 @@ const SearchResultsPage = ({
     [router],
   );
 
+  const handleMetadataScoreToggle = useCallback(
+    () => setShouldUseMetadataScore(prev => !prev),
+    [setShouldUseMetadataScore],
+  );
+
   const numCards = useMemo(
     () =>
       Math.min(
@@ -194,6 +220,7 @@ const SearchResultsPage = ({
   if (error) {
     return <ErrorMessage error={error} querystring={querystring} />;
   }
+
   return (
     <Flex w='100%' flexDirection='column' flex={[1, 2]}>
       {/* Number of search results */}
@@ -205,6 +232,14 @@ const SearchResultsPage = ({
       {/* Search results controls */}
       {numCards > 0 && (
         <Stack borderRadius='semi' boxShadow='base' bg='white' px={4} py={2}>
+          {/* Hide toggle in production */}
+          {process.env.NODE_ENV !== 'production' && (
+            <MetadataScoreToggle
+              isChecked={isMounted ? shouldUseMetadataScore : false}
+              isDisabled={sortOrder !== '_score'}
+              handleToggle={handleMetadataScoreToggle}
+            />
+          )}
           <Flex
             borderBottom={{ base: '1px solid' }}
             borderColor={{ base: 'page.alt' }}
@@ -291,7 +326,7 @@ const SearchResultsPage = ({
                 preceded by a backslash (\).
               </ListItem>
               <ListItem>
-                <Link href={'/docs/advanced-searching'} isExternal>
+                <Link href={'/knowledge-center/advanced-searching'} isExternal>
                   For more information, see the documentation.
                 </Link>
               </ListItem>
