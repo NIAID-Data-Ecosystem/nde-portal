@@ -86,7 +86,7 @@ export const DownloadMetadata: React.FC<DownloadMetadataProps> = ({
           sort: params.sort,
           fields: params.fields,
           advancedSearch: params.advancedSearch,
-          // use_metadata_score: params.use_metadata_score,
+          use_metadata_score: params.use_metadata_score,
           // creates a column for each nested field for csv.
           dotfield:
             downloadFormat && downloadFormat?.format === 'csv' ? true : false,
