@@ -4,6 +4,8 @@ import {
   Box,
   Divider,
   Flex,
+  Grid,
+  GridItem,
   ListItem,
   SimpleGrid,
   Skeleton,
@@ -38,6 +40,7 @@ import { CompletenessBadgeCircle } from 'src/components/metadata-completeness-ba
 import { ResourceCatalogCollection } from './components/collection-information';
 import { DownloadMetadata } from '../download-metadata';
 import { SearchableItems } from 'src/components/searchable-items';
+import { Summary } from './components/summary';
 import { OverviewSectionWrapper } from './components/overview-section-wrapper';
 import { getMetadataDescription } from '../metadata';
 import { TagWithUrl } from '../tag-with-url';
@@ -117,13 +120,15 @@ const Sections = ({
       <ResourceBanner data={data} />
 
       {/*<--- AI Generated short description -->*/}
-      {/* {data?.disambiguatingDescription && (
-        <Flex mx={6} my={2}>
-          <Summary
-            description={data.disambiguatingDescription}
-            tagLabel='AI Generated'
-          />
-          {data && data['_meta'] && (
+      {process.env.NODE_ENV !== 'production' &&
+        data?.disambiguatingDescription && (
+          <Flex mx={6} my={2}>
+            <Summary
+              description={data.disambiguatingDescription}
+              tagLabel='AI Generated'
+            />
+            {/* Badge indicating completeness of metadata */}
+            {/* {data && data['_meta'] && (
           <Flex
             px={4}
             py={4}
@@ -137,9 +142,9 @@ const Sections = ({
               size='lg'
             />
           </Flex>
+        )} */}
+          </Flex>
         )}
-        </Flex>
-      )} */}
 
       {sections.map(section => {
         return (
