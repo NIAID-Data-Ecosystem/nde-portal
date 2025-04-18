@@ -102,8 +102,6 @@ const TopicPage: NextPage<{
   });
 
   const totalResourcesCount = totalQuery.data?.total.toLocaleString() || 0;
-
-  console.log(params);
   return (
     <PageContainer
       id='topic-page'
@@ -143,93 +141,99 @@ const TopicPage: NextPage<{
             // maxW={{ base: 'unset', lg: '70%' }}
             m='0 auto'
           >
-            {/* Topic Header */}
-            <IntroSection
-              title={data?.attributes.title}
-              subtitle={data?.attributes.subtitle}
-              description={data?.attributes.description}
-              links={data?.attributes.contactLinks}
-              params={params}
-              isLoading={isLoading}
-            />
-            <SectionWrapper
-              id='about-datasets'
-              title={`${topic} Resources in the NIAID Data Ecosystem`}
-              mt={10}
-            >
-              <Text mb={2}>
-                This section provides a visual summary of the resources
-                available within the NIAID Discovery Portal for {topic}{' '}
-                research.{' '}
-                <Link href={`/search?q=${data?.attributes.query.q}`}>
-                  {`View all search results related to ${topic}`}
-                </Link>
-                .
-              </Text>
-              {/* Overview Section */}
-              <SectionWrapper
-                as='h3'
-                id='overview'
-                title={`${totalResourcesCount} ${topic} Related Resources`}
-              >
-                <CardWrapper>
-                  {/* Chart: Property Treemap/Brushable List*/}
-                  {query && (
-                    <PropertyTreemapLists query={query} topic={topic} />
-                  )}
-                </CardWrapper>
-
-                <CardWrapper flexDirection='row' flexWrap='wrap' mt={6}>
-                  <VStack w='100%' spacing={4} flex={3}>
-                    {/* Chart: Resource types */}
-                    {query && <DataTypes query={query} topic={topic} />}
-
-                    {/* Chart: Sources | Place under the sources charts on smaller screens */}
-                    {query && (
-                      <Flex
-                        w='100%'
-                        flexDirection='column'
-                        flex={1}
-                        minWidth={200}
-                        display={{ base: 'flex', lg: 'none' }}
-                      >
-                        <Sources query={query} topic={topic} />
-                      </Flex>
-                    )}
-                    {/* Chart: Conditions of Access */}
-                    {query && (
-                      <ConditionsOfAccess query={query} topic={topic} />
-                    )}
-                  </VStack>
-
-                  {/* Chart: Sources | Place beside the other charts on larger screens */}
-                  {query && (
-                    <Flex
-                      w='100%'
-                      flexDirection='column'
-                      flex={1}
-                      minWidth={200}
-                      display={{ base: 'none', lg: 'flex' }}
-                    >
-                      <Sources query={query} topic={topic} />
-                    </Flex>
-                  )}
-                </CardWrapper>
-              </SectionWrapper>
-            </SectionWrapper>
-            {/* External links */}
-            {data &&
-              (data?.attributes?.externalLinks?.data ?? []).length > 0 && (
+            {slug ? (
+              <>
+                {/* Topic Header */}
+                <IntroSection
+                  title={data?.attributes.title}
+                  subtitle={data?.attributes.subtitle}
+                  description={data?.attributes.description}
+                  links={data?.attributes.contactLinks}
+                  params={params}
+                  isLoading={isLoading}
+                />
                 <SectionWrapper
-                  as='h3'
-                  id='external-links'
-                  title={`External Resources for ${topic}`}
+                  id='about-datasets'
+                  title={`${topic} Resources in the NIAID Data Ecosystem`}
+                  mt={10}
                 >
-                  <ExternalLinksSection
-                    externalLinks={data.attributes.externalLinks}
-                  />
+                  <Text mb={2}>
+                    This section provides a visual summary of the resources
+                    available within the NIAID Discovery Portal for {topic}{' '}
+                    research.{' '}
+                    <Link href={`/search?q=${data?.attributes.query.q}`}>
+                      {`View all search results related to ${topic}`}
+                    </Link>
+                    .
+                  </Text>
+                  {/* Overview Section */}
+                  <SectionWrapper
+                    as='h3'
+                    id='overview'
+                    title={`${totalResourcesCount} ${topic} Related Resources`}
+                  >
+                    <CardWrapper>
+                      {/* Chart: Property Treemap/Brushable List*/}
+                      {query && (
+                        <PropertyTreemapLists query={query} topic={topic} />
+                      )}
+                    </CardWrapper>
+
+                    <CardWrapper flexDirection='row' flexWrap='wrap' mt={6}>
+                      <VStack w='100%' spacing={4} flex={3}>
+                        {/* Chart: Resource types */}
+                        {query && <DataTypes query={query} topic={topic} />}
+
+                        {/* Chart: Sources | Place under the sources charts on smaller screens */}
+                        {query && (
+                          <Flex
+                            w='100%'
+                            flexDirection='column'
+                            flex={1}
+                            minWidth={200}
+                            display={{ base: 'flex', lg: 'none' }}
+                          >
+                            <Sources query={query} topic={topic} />
+                          </Flex>
+                        )}
+                        {/* Chart: Conditions of Access */}
+                        {query && (
+                          <ConditionsOfAccess query={query} topic={topic} />
+                        )}
+                      </VStack>
+
+                      {/* Chart: Sources | Place beside the other charts on larger screens */}
+                      {query && (
+                        <Flex
+                          w='100%'
+                          flexDirection='column'
+                          flex={1}
+                          minWidth={200}
+                          display={{ base: 'none', lg: 'flex' }}
+                        >
+                          <Sources query={query} topic={topic} />
+                        </Flex>
+                      )}
+                    </CardWrapper>
+                  </SectionWrapper>
                 </SectionWrapper>
-              )}
+                {/* External links */}
+                {data &&
+                  (data?.attributes?.externalLinks?.data ?? []).length > 0 && (
+                    <SectionWrapper
+                      as='h3'
+                      id='external-links'
+                      title={`External Resources for ${topic}`}
+                    >
+                      <ExternalLinksSection
+                        externalLinks={data.attributes.externalLinks}
+                      />
+                    </SectionWrapper>
+                  )}
+              </>
+            ) : (
+              <></>
+            )}
           </Flex>
         )}
       </PageContent>
@@ -254,7 +258,6 @@ export async function getStaticPaths() {
     params: { slug: [topic.attributes.slug] },
   }));
   const paths = [{ params: { slug: undefined } }, ...mock_paths];
-  console.log(paths);
   return { paths, fallback: false };
 }
 

@@ -9,7 +9,11 @@ import { TopicQueryProps } from '../types';
 import { ChartWrapper } from '../layouts/chart-wrapper';
 import { BarChart, SourceFacet } from '../visualizations/bar-chart';
 
-export const Sources = ({ query, topic }: TopicQueryProps) => {
+export const Sources = ({
+  id,
+  query,
+  topic,
+}: TopicQueryProps & { id: string }) => {
   const params = {
     ...query,
     q: query.q,
@@ -18,7 +22,7 @@ export const Sources = ({ query, topic }: TopicQueryProps) => {
     size: 0,
   };
 
-  const { data, isLoading, isPlaceholderData, error } = useQuery<
+  const { data, isLoading, error } = useQuery<
     | {
         facets: (FacetTerm & { type: string })[] | undefined;
         sources: Metadata;
@@ -137,6 +141,7 @@ export const Sources = ({ query, topic }: TopicQueryProps) => {
           {/* Bar Chart */}
           {data && (
             <BarChart
+              id={id}
               data={data}
               title={'Data Sources'}
               description={'Data Sources'}

@@ -24,7 +24,7 @@ interface IntroSectionProps {
   description?: TopicPageProps['attributes']['description'];
   links?: TopicPageProps['attributes']['contactLinks'];
   isLoading?: boolean;
-  params: Params;
+  params?: Params;
 }
 export const IntroSection: React.FC<IntroSectionProps> = ({
   title,
@@ -86,7 +86,7 @@ export const IntroSection: React.FC<IntroSectionProps> = ({
         )}
 
         {/* Contact Links */}
-        {contactLinksGroupedByCategory && (
+        {links && (
           <Flex
             bg={{ base: 'page.alt' }}
             p={[2, 4]}
@@ -126,22 +126,24 @@ export const IntroSection: React.FC<IntroSectionProps> = ({
                   </Stack>
                 ),
               )}
-              <NextLink
-                href={getSearchResultsRoute({
-                  query: params,
-                })}
-                legacyBehavior
-                passHref
-              >
-                <Button
-                  as={Link}
-                  leftIcon={<Icon as={FaMagnifyingGlass} boxSize={3} />}
-                  size='sm'
-                  alignItems='center'
+              {params && (
+                <NextLink
+                  href={getSearchResultsRoute({
+                    query: params,
+                  })}
+                  legacyBehavior
+                  passHref
                 >
-                  View collection in the Discovery Portal
-                </Button>
-              </NextLink>
+                  <Button
+                    as={Link}
+                    leftIcon={<Icon as={FaMagnifyingGlass} boxSize={3} />}
+                    size='sm'
+                    alignItems='center'
+                  >
+                    View collection in the Discovery Portal
+                  </Button>
+                </NextLink>
+              )}
             </VStack>
           </Flex>
         )}

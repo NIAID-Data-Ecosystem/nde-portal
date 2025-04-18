@@ -1,9 +1,9 @@
 import React from 'react';
-import { Divider, FlexProps, Icon, Text, VStack } from '@chakra-ui/react';
+import { Divider, Icon, StackProps, Text, VStack } from '@chakra-ui/react';
 import { FaMagnifyingGlass } from 'react-icons/fa6';
 import { defaultStyles } from '@visx/tooltip';
 
-export interface TooltipWrapperProps extends FlexProps {
+export interface TooltipWrapperProps extends StackProps {
   showsSearchHint?: boolean;
   searchHintText?: string;
 }
@@ -22,6 +22,7 @@ export const TooltipWrapper = ({
   children,
   showsSearchHint,
   searchHintText = 'Click to find related search results in the portal.',
+  ...props
 }: TooltipWrapperProps) => {
   return (
     <VStack
@@ -29,6 +30,7 @@ export const TooltipWrapper = ({
       alignItems='flex-start'
       fontSize='sm'
       lineHeight='short'
+      {...props}
     >
       {children}
       {/* Show note that item links to search */}

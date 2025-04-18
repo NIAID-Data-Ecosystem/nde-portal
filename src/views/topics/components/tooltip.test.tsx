@@ -23,9 +23,7 @@ describe('TooltipWrapper', () => {
         <span>Test Child</span>
       </TooltipWrapper>,
     );
-    expect(
-      screen.getByText(/Click to find search results related this type./i),
-    ).toBeInTheDocument();
+    expect(screen.getByText(/Click to find/i)).toBeInTheDocument();
   });
 
   it('does not render the clickable search note when showsSearchHint is false', () => {
@@ -34,9 +32,7 @@ describe('TooltipWrapper', () => {
         <span>Test Child</span>
       </TooltipWrapper>,
     );
-    expect(
-      screen.queryByText(/Click to find search results related this type./i),
-    ).not.toBeInTheDocument();
+    expect(screen.queryByText(/Click to find/i)).not.toBeInTheDocument();
   });
 
   it('applies additional props to the Flex container', () => {

@@ -318,10 +318,7 @@ export const TreemapChart = ({
               }}
               aria-live='polite'
             >
-              <TooltipWrapper
-                borderColor={facet.colorScheme?.[600]}
-                showsSearchHint
-              >
+              <TooltipWrapper showsSearchHint>
                 <Box fontSize='xs' lineHeight='shorter'>
                   <ChakraText fontWeight='semibold' color='text.heading'>
                     {tooltipData.term}

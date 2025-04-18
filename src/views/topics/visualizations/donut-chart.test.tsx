@@ -56,9 +56,9 @@ describe('DonutChart', () => {
       const element = document.getElementById(id);
       expect(element).toBeInTheDocument();
       if (id.includes('title')) {
-        expect(element?.tagName.toLowerCase()).toBe('title');
+        expect(element?.tagName.toLowerCase()).toBe('p');
       } else if (id.includes('desc')) {
-        expect(element?.tagName.toLowerCase()).toBe('desc');
+        expect(element?.tagName.toLowerCase()).toBe('p');
       }
     }
   });

@@ -40,6 +40,9 @@ export interface SourceFacet {
 }
 
 interface BarChartProps {
+  /** Unique identifier for the chart. */
+  id: string;
+
   /** Accessibilty title for the chart. */
   title: string;
 
@@ -69,7 +72,6 @@ interface BarChartProps {
 const barStyles = { minHeight: 10, padding: 25, rx: 2.5 };
 const domainStyles = {
   IID: {
-    fill: 'url(#iid-pattern)',
     fillOpacity: 0.4,
     stroke: theme.colors.page.placeholder,
   },
@@ -80,6 +82,7 @@ const domainStyles = {
 };
 
 export const BarChart = ({
+  id,
   title,
   description,
   data,
@@ -184,7 +187,7 @@ export const BarChart = ({
               proportions. Original counts are shown in tooltips.'
           ></InfoLabel>
         </Checkbox>
-        <Legend />
+        <Legend id={`${id}-iidpattern-swatch`} />
       </Flex>
       <div ref={parentRef} style={{ width: '100%', height: `${svgHeight}px` }}>
         <div
@@ -203,14 +206,7 @@ export const BarChart = ({
             aria-labelledby='coa-stacked-title'
             aria-describedby='coa-stacked-desc'
           >
-            <PatternLines
-              id='iid-pattern'
-              height={6}
-              width={6}
-              stroke={theme.colors.page.placeholder}
-              strokeWidth={2}
-              orientation={['diagonal']}
-            />
+            <IIDPattern id={`${id}-iidpattern`} />
             <Group top={margin.top} left={margin.left}>
               {data.terms.map(datum => {
                 const { term, count } = datum;
@@ -249,7 +245,7 @@ export const BarChart = ({
                           y={barY}
                           width={xMax}
                           height={barHeight}
-                          fill={domainStyles['IID'].fill}
+                          fill={`url(#${id}-iidpattern)`}
                           fillOpacity={domainStyles['IID'].fillOpacity}
                           rx={barStyles.rx}
                         />
@@ -373,17 +369,32 @@ export const AnimatedRect = ({
   );
 };
 
-const Legend = () => {
+const IIDPattern = ({ id }: { id: string }) => {
+  return (
+    <PatternLines
+      id={id}
+      width={4}
+      height={4}
+      // stroke='black'
+      stroke={theme.colors.page.placeholder}
+      strokeWidth={1}
+      orientation={['diagonal']}
+    />
+  );
+};
+
+const Legend = ({ id }: { id: string }) => {
   const swatchSize = 16;
   return (
-    <Group top={8} left={8}>
+    <VStack alignItems='flex-start' spacing={1}>
       {/* IID Pattern Swatch */}
       <HStack>
         <svg width={swatchSize} height={swatchSize}>
+          <IIDPattern id={id} />
           <rect
             width={swatchSize}
             height={swatchSize}
-            fill={domainStyles['IID'].fill}
+            fill={`url(#${id})`}
             fillOpacity={domainStyles['IID'].fillOpacity}
             stroke={domainStyles['IID'].stroke}
           />
@@ -406,6 +417,6 @@ const Legend = () => {
           Generalist
         </ChakraText>
       </HStack>
-    </Group>
+    </VStack>
   );
 };
