@@ -1,16 +1,16 @@
 {
-  "id": 4,
+  "id": 1,
   "attributes": {
-    "title": "Malaria",
+    "title": "Asthma",
     "subtitle": "",
-    "description": "Malaria is a serious and sometimes fatal disease caused by a parasite that commonly infects a certain type of mosquito which feeds on humans. Infection with malaria parasites may result in a wide variety of symptoms, ranging from absent or very mild symptoms to severe disease and even death. People who get malaria are typically very sick with high fevers, shaking chills, and flu-like illness. In general, malaria is a curable disease if diagnosed and treated promptly and correctly.Treatment depends on many factors including disease severity, the species of malaria parasite causing the infection and the part of the world in which the infection was acquired.",
+    "description": "A bronchial disease that is characterized by chronic inflammation and narrowing of the airways, which is caused by a combination of environmental and genetic factors resulting in recurring periods of wheezing (a whistling sound while breathing), chest tightness, shortness of breath, mucus production and coughing. The symptoms appear due to a variety of triggers such as allergens, irritants, respiratory infections, weather changes, exercise, stress, reflux disease, medications, foods and emotional anxiety.",
     "query": {
-      "q": "\"Malaria\" OR \"Plasmodium falciparum\" OR \"Plasmodium malariae\" OR \"Plasmodium ovale curtisi\" OR \"Plasmodium ovale wallikeri\" OR \"Plasmodium vivax\" OR \"Plasmodium knowlesi\"",
+      "q": "\"Asthma\"",
       "facet_size": 1000,
       "size": 0
     },
-    "slug": "malaria",
-    "topic": "malaria",
+    "slug": "asthma",
+    "topic": "asthma",
     "type": {
       "data": [
         {
@@ -50,8 +50,8 @@
         {
           "id": 2,
           "attributes": {
-            "label": "PlasmoDB",
-            "url": "https://plasmodb.org/plasmo/app",
+            "label": "NIAID Clinical Trials: Asthma Studies ",
+            "url": "https://www.niaid.nih.gov/clinical-trials/asthma-studies",
             "categories": null,
             "image": { "data": null },
             "isExternal": true,
@@ -63,8 +63,8 @@
         {
           "id": 3,
           "attributes": {
-            "label": "CDC Malaria",
-            "url": "https://www.cdc.gov/malaria/index.html",
+            "label": "CDC Asthma",
+            "url": "https://www.cdc.gov/asthma/index.html",
             "categories": null,
             "image": { "data": null },
             "isExternal": true,
@@ -76,8 +76,8 @@
         {
           "id": 4,
           "attributes": {
-            "label": "Malaria Research Program (MRP)",
-            "url": "https://www.niaid.nih.gov/research/malaria-research-program",
+            "label": "Childhood Asthma in Urban Settings (CAUSE)",
+            "url": "https://www.niaid.nih.gov/research/childhood-asthma-in-urban-settings",
             "categories": {
               "data": [
                 {
@@ -101,8 +101,8 @@
         {
           "id": 5,
           "attributes": {
-            "label": "International Centers of Excellence for Malaria Research (ICEMR)",
-            "url": "https://www.niaid.nih.gov/research/excellence-malaria-research",
+            "label": "Asthma and Allergic Diseases Cooperative Research Centers (AADCRCs)",
+            "url": "https://www.niaid.nih.gov/research/cooperative-research-centers",
             "categories": {
               "data": [
                 {
@@ -126,8 +126,8 @@
         {
           "id": 6,
           "attributes": {
-            "label": "European and Developing Countries Clinical Trials Partnership (EDCTP)",
-            "url": "https://www.niaid.nih.gov/research/clinical-trials-partnerships",
+            "label": "Immune Tolerance Network (ITN)",
+            "url": "https://www.niaid.nih.gov/research/immune-tolerance-network",
             "categories": {
               "data": [
                 {
@@ -151,33 +151,8 @@
         {
           "id": 7,
           "attributes": {
-            "label": "Monitoring Windborne Migration of Disease Vectors, Pathogens, and Pests in Africa to Improve Public Health and Food Security (MWMDVPPiA)",
-            "url": "https://www.niaid.nih.gov/research/mwmdvppia",
-            "categories": {
-              "data": [
-                {
-                  "id": 1,
-                  "attributes": {
-                    "name": "Working Groups / Programs / Networks",
-                    "createdAt": "2025-02-22T19:09:45.049Z",
-                    "publishedAt": "2025-02-22T19:09:45.049Z",
-                    "updatedAt": "2025-02-22T19:09:45.049Z"
-                  }
-                }
-              ]
-            },
-            "image": { "data": null },
-            "isExternal": true,
-            "createdAt": "2025-02-22T19:09:45.049Z",
-            "updatedAt": "2025-02-22T19:09:45.049Z",
-            "publishedAt": "2025-02-22T19:09:45.049Z"
-          }
-        },
-        {
-          "id": 8,
-          "attributes": {
-            "label": "Mali-University Clinical Research Center (UCRC)",
-            "url": "https://www.niaid.nih.gov/research/mali-university-clinical-research-center",
+            "label": "Human Immunology Project Consortium (HIPC)",
+            "url": "https://www.niaid.nih.gov/research/human-immunology-project-consortium",
             "categories": {
               "data": [
                 {

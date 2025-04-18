@@ -1,16 +1,16 @@
 {
-  "id": 4,
+  "id": 2,
   "attributes": {
-    "title": "Malaria",
+    "title": "HIV/AIDS",
     "subtitle": "",
-    "description": "Malaria is a serious and sometimes fatal disease caused by a parasite that commonly infects a certain type of mosquito which feeds on humans. Infection with malaria parasites may result in a wide variety of symptoms, ranging from absent or very mild symptoms to severe disease and even death. People who get malaria are typically very sick with high fevers, shaking chills, and flu-like illness. In general, malaria is a curable disease if diagnosed and treated promptly and correctly.Treatment depends on many factors including disease severity, the species of malaria parasite causing the infection and the part of the world in which the infection was acquired.",
+    "description": "A syndrome resulting from the acquired deficiency of cellular immunity caused by the human immunodeficiency virus (HIV). It is characterized by the reduction of the Helper T-lymphocytes in the peripheral blood and the lymph nodes. Symptoms include generalized lymphadenopathy, fever, weight loss, and chronic diarrhea. Patients with AIDS are especially susceptible to opportunistic infections (usually pneumocystis carinii pneumonia, cytomegalovirus (CMV) infections, tuberculosis, candida infections, and cryptococcosis), and the development of malignant neoplasms (usually non-Hodgkin lymphoma and Kaposi sarcoma). The human immunodeficiency virus is transmitted through sexual contact, sharing of contaminated needles, or transfusion of contaminated blood.",
     "query": {
-      "q": "\"Malaria\" OR \"Plasmodium falciparum\" OR \"Plasmodium malariae\" OR \"Plasmodium ovale curtisi\" OR \"Plasmodium ovale wallikeri\" OR \"Plasmodium vivax\" OR \"Plasmodium knowlesi\"",
+      "q": "\"HIV\" OR \"AIDS\"",
       "facet_size": 1000,
       "size": 0
     },
-    "slug": "malaria",
-    "topic": "malaria",
+    "slug": "hiv-aids",
+    "topic": "hiv/aids",
     "type": {
       "data": [
         {
@@ -46,12 +46,11 @@
             "publishedAt": "2025-02-22T19:09:45.049Z"
           }
         },
-
         {
           "id": 2,
           "attributes": {
-            "label": "PlasmoDB",
-            "url": "https://plasmodb.org/plasmo/app",
+            "label": "HIV/AIDS Clinical Trials Networks",
+            "url": "https://www.niaid.nih.gov/research/hivaids-clinical-trials-networks",
             "categories": null,
             "image": { "data": null },
             "isExternal": true,
@@ -63,8 +62,8 @@
         {
           "id": 3,
           "attributes": {
-            "label": "CDC Malaria",
-            "url": "https://www.cdc.gov/malaria/index.html",
+            "label": "CDC HIV/AIDS",
+            "url": "https://www.cdc.gov/hiv/index.html",
             "categories": null,
             "image": { "data": null },
             "isExternal": true,
@@ -76,8 +75,8 @@
         {
           "id": 4,
           "attributes": {
-            "label": "Malaria Research Program (MRP)",
-            "url": "https://www.niaid.nih.gov/research/malaria-research-program",
+            "label": "HIV Vaccine Trials Network (HVTN)",
+            "url": "https://www.niaid.nih.gov/research/hiv-vaccine-trials-network",
             "categories": {
               "data": [
                 {
@@ -101,8 +100,8 @@
         {
           "id": 5,
           "attributes": {
-            "label": "International Centers of Excellence for Malaria Research (ICEMR)",
-            "url": "https://www.niaid.nih.gov/research/excellence-malaria-research",
+            "label": "Women's Interagency HIV Study (WIHS)",
+            "url": "https://www.niaid.nih.gov/research/womens-interagency-hiv-study",
             "categories": {
               "data": [
                 {
@@ -126,8 +125,8 @@
         {
           "id": 6,
           "attributes": {
-            "label": "European and Developing Countries Clinical Trials Partnership (EDCTP)",
-            "url": "https://www.niaid.nih.gov/research/clinical-trials-partnerships",
+            "label": "Global HIV Vaccine Enterprise (GHAVE)",
+            "url": "https://www.niaid.nih.gov/node/7937?404message&requested_url=/research/global-hiv-vaccine-enterprise",
             "categories": {
               "data": [
                 {
@@ -151,8 +150,8 @@
         {
           "id": 7,
           "attributes": {
-            "label": "Monitoring Windborne Migration of Disease Vectors, Pathogens, and Pests in Africa to Improve Public Health and Food Security (MWMDVPPiA)",
-            "url": "https://www.niaid.nih.gov/research/mwmdvppia",
+            "label": "HIV Prevention Trials Network (HPTN)",
+            "url": "https://www.niaid.nih.gov/research/hiv-prevention-trials-network",
             "categories": {
               "data": [
                 {
@@ -176,8 +175,8 @@
         {
           "id": 8,
           "attributes": {
-            "label": "Mali-University Clinical Research Center (UCRC)",
-            "url": "https://www.niaid.nih.gov/research/mali-university-clinical-research-center",
+            "label": "Impact of CCR5 Blockade in HIV+ Kidney Transplant Recipients",
+            "url": "https://www.niaid.nih.gov/research/impact-ccr5-blockade-hiv-kidney-transplant-recipients",
             "categories": {
               "data": [
                 {

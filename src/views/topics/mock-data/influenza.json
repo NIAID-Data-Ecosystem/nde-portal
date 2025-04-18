@@ -1,9 +1,9 @@
 {
-  "id": 1,
+  "id": 3,
   "attributes": {
     "title": "Influenza",
     "subtitle": "",
-    "description": "Influenza is a viral infection that attacks your respiratory system — your nose, throat and lungs. Influenza, commonly called the flu, is not the same as the stomach 'flu' viruses that cause diarrhea and vomiting.",
+    "description": "An acute viral infection of the respiratory tract, occurring in isolated cases, in epidemics, or in pandemics; it is caused by serologically different strains of viruses (influenzaviruses) designated A, B, and C, has a 3-day incubation period, and usually lasts for 3 to 10 days. It is marked by inflammation of the nasal mucosa, pharynx, and conjunctiva; headache; myalgia; often fever, chills, and prostration; and occasionally involvement of the myocardium or central nervous system.",
     "query": {
       "q": "\"Influenza\" OR \"Flu\"",
       "facet_size": 1000,
