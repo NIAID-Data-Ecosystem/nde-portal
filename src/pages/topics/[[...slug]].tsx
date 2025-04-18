@@ -44,6 +44,15 @@ const fetchTopicContent = async (
   }
 };
 
+const pagesGroupedByType = (MOCK_PAGES || []).reduce((acc, page) => {
+  const category = page.attributes.type?.data[0]?.attributes.name || '';
+  if (!acc[category]) {
+    acc[category] = [];
+  }
+  acc[category].push(page);
+  return acc;
+}, {} as Record<string, TopicPageProps[]>);
+
 /**
  * TopicPage fetches topic-specific and displays it in a structured layout.
  *
@@ -68,11 +77,12 @@ const TopicPage: NextPage<{
     queryFn: () => fetchTopicContent(slug),
     placeholderData: initialData,
     refetchOnWindowFocus: true,
+    enabled: !!slug,
   });
 
-  const query = data?.attributes.query;
+  const query = data?.attributes?.query;
   const topic =
-    data?.attributes.topic
+    data?.attributes?.topic
       .charAt(0)
       .toUpperCase()
       .concat(data?.attributes.topic.slice(1)) || 'Topic';
@@ -98,10 +108,11 @@ const TopicPage: NextPage<{
       }
       return await fetchSearchResults(params);
     },
-    enabled: params.q !== undefined,
+    enabled: params.q !== undefined && !!slug,
   });
 
   const totalResourcesCount = totalQuery.data?.total.toLocaleString() || 0;
+
   return (
     <PageContainer
       id='topic-page'
@@ -193,7 +204,11 @@ const TopicPage: NextPage<{
                             minWidth={200}
                             display={{ base: 'flex', lg: 'none' }}
                           >
-                            <Sources query={query} topic={topic} />
+                            <Sources
+                              id='mobile-version'
+                              query={query}
+                              topic={topic}
+                            />
                           </Flex>
                         )}
                         {/* Chart: Conditions of Access */}
@@ -211,7 +226,11 @@ const TopicPage: NextPage<{
                           minWidth={200}
                           display={{ base: 'none', lg: 'flex' }}
                         >
-                          <Sources query={query} topic={topic} />
+                          <Sources
+                            id='desktop-version'
+                            query={query}
+                            topic={topic}
+                          />
                         </Flex>
                       )}
                     </CardWrapper>
@@ -232,7 +251,30 @@ const TopicPage: NextPage<{
                   )}
               </>
             ) : (
-              <></>
+              <Flex flexDirection='column'>
+                <IntroSection title='Topics' />
+                {Object.entries(pagesGroupedByType).map(
+                  ([sectionTitle, pages]) => {
+                    return (
+                      <SectionWrapper
+                        key={sectionTitle}
+                        as='h3'
+                        id={sectionTitle}
+                        title={sectionTitle}
+                      >
+                        {pages.map((page: TopicPageProps) => {
+                          const { title, slug } = page.attributes;
+                          return (
+                            <Link key={slug[0]} href={`/topics/${slug}`}>
+                              {title}
+                            </Link>
+                          );
+                        })}
+                      </SectionWrapper>
+                    );
+                  },
+                )}
+              </Flex>
             )}
           </Flex>
         )}
