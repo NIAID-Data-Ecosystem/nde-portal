@@ -4,8 +4,9 @@ import { TopicPageProps } from '../types';
 import { SectionTitle } from 'src/views/topics/layouts/section';
 import { Link } from 'src/components/link';
 
-type TopicPageExternalLink =
-  TopicPageProps['attributes']['externalLinks']['data'][number]['attributes'];
+type TopicPageExternalLink = NonNullable<
+  TopicPageProps['attributes']['externalLinks']
+>['data'][number]['attributes'];
 
 interface ExternalLinkItemProps extends TopicPageExternalLink {}
 
@@ -37,7 +38,7 @@ export const ExternalLinksSection: React.FC<{
 }> = ({ externalLinks }) => {
   // Group by categories
   const externalLinksGroupedByCategory = useMemo(() => {
-    return (externalLinks.data || []).reduce((acc, link) => {
+    return (externalLinks?.data || []).reduce((acc, link) => {
       const category =
         link.attributes.categories?.data[0]?.attributes.name || '';
       if (!acc[category]) {
@@ -45,8 +46,8 @@ export const ExternalLinksSection: React.FC<{
       }
       acc[category].push(link);
       return acc;
-    }, {} as Record<string, TopicPageProps['attributes']['externalLinks']['data']>);
-  }, [externalLinks.data]);
+    }, {} as Record<string, NonNullable<TopicPageProps['attributes']['externalLinks']>['data']>);
+  }, [externalLinks?.data]);
 
   return (
     <Stack spacing={6} mt={4}>

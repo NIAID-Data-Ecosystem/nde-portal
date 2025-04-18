@@ -30,7 +30,7 @@ export interface TopicPageProps {
         };
       }[];
     } | null;
-    externalLinks: {
+    externalLinks?: {
       data: {
         id: number;
         attributes: {
@@ -58,7 +58,7 @@ export interface TopicPageProps {
           publishedAt: string;
         };
       }[];
-    };
+    } | null;
     query: {
       q: string;
       extra_filter?: string;

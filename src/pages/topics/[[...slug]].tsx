@@ -15,12 +15,28 @@ import { DataTypes } from 'src/views/topics/components/data-types';
 import { PropertyTreemapLists } from 'src/views/topics/components/property-treemap-lists';
 import { CardWrapper } from 'src/views/topics/layouts/card';
 import { ExternalLinksSection } from 'src/views/topics/components/external-links';
+import { Sources } from 'src/views/topics/components/sources';
+import ASTHMA_DATA from 'src/views/topics/mock-data/asthma.json';
+import HIV_DATA from 'src/views/topics/mock-data/hiv-aids.json';
 import INFLUENZA_DATA from 'src/views/topics/mock-data/influenza.json';
 import MALARIA_DATA from 'src/views/topics/mock-data/malaria.json';
+import TUBERCULOSIS_DATA from 'src/views/topics/mock-data/tuberculosis.json';
 import CREID_DATA from 'src/views/topics/mock-data/creid.json';
-import { Sources } from 'src/views/topics/components/sources';
+import CFAR_DATA from 'src/views/topics/mock-data/cfar.json';
+import IMPAACT_DATA from 'src/views/topics/mock-data/impaact.json';
+import HIPC_DATA from 'src/views/topics/mock-data/hipc.json';
 
-const MOCK_PAGES = [INFLUENZA_DATA, MALARIA_DATA, CREID_DATA];
+const MOCK_PAGES = [
+  ASTHMA_DATA,
+  HIV_DATA,
+  INFLUENZA_DATA,
+  MALARIA_DATA,
+  TUBERCULOSIS_DATA,
+  CFAR_DATA,
+  CREID_DATA,
+  HIPC_DATA,
+  IMPAACT_DATA,
+];
 
 const fetchTopicContent = async (
   slug: string | string[],

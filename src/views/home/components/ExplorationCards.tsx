@@ -30,28 +30,52 @@ const CARDS_DATA: CardData[] = [
       <>
         Explore curated datasets and results from clinical studies for priority
         diseases such as{' '}
-        <ChakraLink as={NextLink} href='/' textDecoration='underline'>
+        <ChakraLink
+          as={NextLink}
+          href='/topics/asthma'
+          textDecoration='underline'
+        >
           asthma
         </ChakraLink>
         ,{' '}
-        <ChakraLink as={NextLink} href='/' textDecoration='underline'>
+        <ChakraLink
+          as={NextLink}
+          href='/topics/hiv-aids'
+          textDecoration='underline'
+        >
           HIV/AIDS
         </ChakraLink>
         ,{' '}
-        <ChakraLink as={NextLink} href='/' textDecoration='underline'>
+        <ChakraLink
+          as={NextLink}
+          href='/topics/influenza'
+          textDecoration='underline'
+        >
           influenza
         </ChakraLink>
         ,{' '}
-        <ChakraLink as={NextLink} href='/' textDecoration='underline'>
+        <ChakraLink
+          as={NextLink}
+          href='/topics/malaria'
+          textDecoration='underline'
+        >
           malaria
         </ChakraLink>
         ,{' '}
-        <ChakraLink as={NextLink} href='/' textDecoration='underline'>
+        <ChakraLink
+          as={NextLink}
+          href='/topics/tuberculosis'
+          textDecoration='underline'
+        >
           tuberculosis,
         </ChakraLink>{' '}
         and emerging viruses. Access the latest findings on disease mechanisms,
         biomarkers, therapeutic strategies, and more in the{' '}
-        <ChakraLink as={NextLink} href='/' textDecoration='underline'>
+        <ChakraLink
+          as={NextLink}
+          href='/topics#disease'
+          textDecoration='underline'
+        >
           Diseases Page
         </ChakraLink>
         .
@@ -69,20 +93,36 @@ const CARDS_DATA: CardData[] = [
       'The Discovery Portal connects researchers with high-impact datasets and other resources from NIAID-funded programs that drive innovation in infectious and immune-mediated disease research.',
       <>
         Discover resources from programs like{' '}
-        <ChakraLink as={NextLink} href='/' textDecoration='underline'>
+        <ChakraLink
+          as={NextLink}
+          href='/topics/NIAID-CFAR-Program'
+          textDecoration='underline'
+        >
           CFAR
         </ChakraLink>
         ,{' '}
-        <ChakraLink as={NextLink} href='/' textDecoration='underline'>
+        <ChakraLink
+          as={NextLink}
+          href='/topics/NIAID-IMPAACT-Network'
+          textDecoration='underline'
+        >
           IMPAACT
         </ChakraLink>
         ,{' '}
-        <ChakraLink as={NextLink} href='/' textDecoration='underline'>
+        <ChakraLink
+          as={NextLink}
+          href='/topics/NIAID-HIPC-Network'
+          textDecoration='underline'
+        >
           HIPC
         </ChakraLink>
         , and others. Explore how these collaborative networks accelerate
         biomedical discoveries in the{' '}
-        <ChakraLink as={NextLink} href='/' textDecoration='underline'>
+        <ChakraLink
+          as={NextLink}
+          href='/topics#programs'
+          textDecoration='underline'
+        >
           Programs Page
         </ChakraLink>
         .
