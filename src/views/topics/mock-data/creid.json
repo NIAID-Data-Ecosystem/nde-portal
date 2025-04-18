@@ -4,6 +4,34 @@
     "title": "NIAID CREID Network",
     "subtitle": "",
     "description": "The Centers for Research in Emerging Infectious Diseases (CREID) Network is a coordinated group of emerging infectious disease research centers situated in regions around the globe where emerging and re-emerging infectious disease outbreaks are likely to occur.",
+    "contactLinks": {
+      "data": [
+        {
+          "id": 1,
+          "attributes": {
+            "label": "CREID Network",
+            "url": "https://creid-network.org/",
+            "categories": {
+              "data": [
+                {
+                  "id": 1,
+                  "attributes": {
+                    "name": "Related Resources",
+                    "createdAt": "2025-02-22T19:09:45.049Z",
+                    "publishedAt": "2025-02-22T19:09:45.049Z",
+                    "updatedAt": "2025-02-22T19:09:45.049Z"
+                  }
+                }
+              ]
+            },
+            "isExternal": true,
+            "createdAt": "2025-02-22T19:09:45.049Z",
+            "updatedAt": "2025-02-22T19:09:45.049Z",
+            "publishedAt": "2025-02-22T19:09:45.049Z"
+          }
+        }
+      ]
+    },
     "query": {
       "q": "__all__",
       "extra_filter": "sourceOrganization.name:(\"NIAID CREID Network\")",

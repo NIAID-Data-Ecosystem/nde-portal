@@ -1,6 +1,6 @@
 import React from 'react';
 import { GetStaticProps, NextPage } from 'next';
-import { Box, Flex, HStack, Text, VStack } from '@chakra-ui/react';
+import { Flex, Text, VStack } from '@chakra-ui/react';
 import { useQuery } from '@tanstack/react-query';
 import { Error } from 'src/components/error';
 import { Link } from 'src/components/link';
@@ -20,6 +20,8 @@ import MALARIA_DATA from 'src/views/topics/mock-data/malaria.json';
 import CREID_DATA from 'src/views/topics/mock-data/creid.json';
 import { Sources } from 'src/views/topics/components/sources';
 
+const MOCK_PAGES = [INFLUENZA_DATA, MALARIA_DATA, CREID_DATA];
+
 const fetchTopicContent = async (
   slug: string | string[],
 ): Promise<TopicPageProps> => {
@@ -33,15 +35,10 @@ const fetchTopicContent = async (
     //     isProd ? 'live' : 'preview'
     //   }`,
     // );
-    if (slug[0] === 'influenza') {
-      return INFLUENZA_DATA;
-    } else if (slug[0] === 'malaria') {
-      return MALARIA_DATA;
-    } else if (slug[0] === 'creid') {
-      return CREID_DATA;
-    }
 
-    return INFLUENZA_DATA;
+    return MOCK_PAGES.find(
+      (topic: TopicPageProps) => topic.attributes.slug === slug[0],
+    ) as TopicPageProps;
   } catch (err: any) {
     throw err.response;
   }
@@ -106,6 +103,7 @@ const TopicPage: NextPage<{
 
   const totalResourcesCount = totalQuery.data?.total.toLocaleString() || 0;
 
+  console.log(params);
   return (
     <PageContainer
       id='topic-page'
@@ -145,26 +143,15 @@ const TopicPage: NextPage<{
             // maxW={{ base: 'unset', lg: '70%' }}
             m='0 auto'
           >
-            {/* Header section */}
-            <HStack alignItems='flex-start' spacing={6} flexWrap='wrap'>
-              <IntroSection
-                title={data?.attributes.title}
-                subtitle={data?.attributes.subtitle}
-                description={data?.attributes.description}
-                isLoading={isLoading}
-              />
-
-              {/* Sidebar */}
-              <VStack
-                spacing={4}
-                alignItems='flex-start'
-                flex={1}
-                minWidth='300px'
-              >
-                {/* TO DO: Add sidebar content - either contact section for program collections or image for disease page. Pending feedback. */}
-              </VStack>
-            </HStack>
-
+            {/* Topic Header */}
+            <IntroSection
+              title={data?.attributes.title}
+              subtitle={data?.attributes.subtitle}
+              description={data?.attributes.description}
+              links={data?.attributes.contactLinks}
+              params={params}
+              isLoading={isLoading}
+            />
             <SectionWrapper
               id='about-datasets'
               title={`${topic} Resources in the NIAID Data Ecosystem`}
@@ -230,7 +217,6 @@ const TopicPage: NextPage<{
                 </CardWrapper>
               </SectionWrapper>
             </SectionWrapper>
-
             {/* External links */}
             {data &&
               (data?.attributes?.externalLinks?.data ?? []).length > 0 && (
@@ -264,16 +250,11 @@ export const getStaticProps: GetStaticProps = async context => {
 export async function getStaticPaths() {
   // [TO DO]: Fetch all topic page slugs from Strapi API
   // const { data } = await fetchAllTopicPages();
-  // const paths = data.map((topic: TopicPageProps) => ({
-  //   params: { slug: topic.attributes.slug },
-  // }));
-  const paths = [
-    { params: { slug: undefined } },
-    { params: { slug: ['influenza'] } },
-    { params: { slug: ['malaria'] } },
-    { params: { slug: ['creid'] } },
-  ];
-
+  const mock_paths = MOCK_PAGES.map((topic: TopicPageProps) => ({
+    params: { slug: [topic.attributes.slug] },
+  }));
+  const paths = [{ params: { slug: undefined } }, ...mock_paths];
+  console.log(paths);
   return { paths, fallback: false };
 }
 

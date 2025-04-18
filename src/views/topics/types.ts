@@ -6,6 +6,30 @@ export interface TopicPageProps {
     title: string;
     subtitle: string | null;
     description?: string | null;
+    contactLinks?: {
+      data: {
+        id: number;
+        attributes: {
+          label: string;
+          url: string;
+          categories: {
+            data: {
+              id: number;
+              attributes: {
+                name: string;
+                createdAt: string;
+                publishedAt: string;
+                updatedAt: string;
+              };
+            }[];
+          } | null;
+          isExternal: boolean;
+          createdAt: string;
+          updatedAt: string;
+          publishedAt: string;
+        };
+      }[];
+    } | null;
     externalLinks: {
       data: {
         id: number;
