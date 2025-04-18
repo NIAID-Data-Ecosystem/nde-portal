@@ -72,7 +72,7 @@ interface BarChartProps {
 const barStyles = { minHeight: 10, padding: 25, rx: 2.5 };
 const domainStyles = {
   IID: {
-    fillOpacity: 0.4,
+    fillOpacity: 0.6,
     stroke: theme.colors.page.placeholder,
   },
   Generalist: {
@@ -373,8 +373,8 @@ const IIDPattern = ({ id }: { id: string }) => {
   return (
     <PatternLines
       id={id}
-      width={4}
-      height={4}
+      width={6}
+      height={6}
       // stroke='black'
       stroke={theme.colors.page.placeholder}
       strokeWidth={1}
