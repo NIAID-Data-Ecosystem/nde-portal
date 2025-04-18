@@ -1,0 +1,207 @@
+{
+  "id": 4,
+  "attributes": {
+    "title": "Malaria",
+    "subtitle": "",
+    "description": "Malaria is a serious and sometimes fatal disease caused by a parasite that commonly infects a certain type of mosquito which feeds on humans. Infection with malaria parasites may result in a wide variety of symptoms, ranging from absent or very mild symptoms to severe disease and even death. People who get malaria are typically very sick with high fevers, shaking chills, and flu-like illness. In general, malaria is a curable disease if diagnosed and treated promptly and correctly.Treatment depends on many factors including disease severity, the species of malaria parasite causing the infection and the part of the world in which the infection was acquired.",
+    "query": {
+      "q": "\"Malaria\" OR \"Plasmodium falciparum\" OR \"Plasmodium malariae\" OR \"Plasmodium ovale curtisi\" OR \"Plasmodium ovale wallikeri\" OR \"Plasmodium vivax\" OR \"Plasmodium knowlesi\"",
+      "facet_size": 1000,
+      "size": 0
+    },
+    "slug": "malaria",
+    "topic": "malaria",
+    "type": {
+      "data": [
+        {
+          "id": 1,
+          "attributes": {
+            "name": "Disease",
+            "createdAt": "2025-02-22T19:09:45.049Z",
+            "updatedAt": "2025-02-22T19:09:45.049Z",
+            "publishedAt": "2025-02-22T19:09:45.049Z"
+          }
+        }
+      ]
+    },
+    "externalLinks": {
+      "data": [
+        {
+          "id": 1,
+          "attributes": {
+            "label": "National Institute of Allergy and Infectious Diseases",
+            "url": "https://www.niaid.nih.gov/",
+            "categories": null,
+            "image": {
+              "data": {
+                "attributes": {
+                  "url": "/assets/NIH-logo.png",
+                  "alternativeText": "nih logo"
+                }
+              }
+            },
+            "isExternal": true,
+            "createdAt": "2025-02-22T19:09:45.049Z",
+            "updatedAt": "2025-02-22T19:09:45.049Z",
+            "publishedAt": "2025-02-22T19:09:45.049Z"
+          }
+        },
+
+        {
+          "id": 2,
+          "attributes": {
+            "label": "PlasmoDB",
+            "url": "https://plasmodb.org/plasmo/app",
+            "categories": null,
+            "image": { "data": null },
+            "isExternal": true,
+            "createdAt": "2025-02-22T19:09:45.049Z",
+            "updatedAt": "2025-02-22T19:09:45.049Z",
+            "publishedAt": "2025-02-22T19:09:45.049Z"
+          }
+        },
+        {
+          "id": 3,
+          "attributes": {
+            "label": "CDC Malaria",
+            "url": "https://www.cdc.gov/malaria/index.html",
+            "categories": null,
+            "image": { "data": null },
+            "isExternal": true,
+            "createdAt": "2025-02-22T19:09:45.049Z",
+            "updatedAt": "2025-02-22T19:09:45.049Z",
+            "publishedAt": "2025-02-22T19:09:45.049Z"
+          }
+        },
+        {
+          "id": 4,
+          "attributes": {
+            "label": "Malaria Research Program (MRP)",
+            "url": "https://www.niaid.nih.gov/research/malaria-research-program",
+            "categories": {
+              "data": [
+                {
+                  "id": 1,
+                  "attributes": {
+                    "name": "Working Groups / Programs / Networks",
+                    "createdAt": "2025-02-22T19:09:45.049Z",
+                    "publishedAt": "2025-02-22T19:09:45.049Z",
+                    "updatedAt": "2025-02-22T19:09:45.049Z"
+                  }
+                }
+              ]
+            },
+            "image": { "data": null },
+            "isExternal": true,
+            "createdAt": "2025-02-22T19:09:45.049Z",
+            "updatedAt": "2025-02-22T19:09:45.049Z",
+            "publishedAt": "2025-02-22T19:09:45.049Z"
+          }
+        },
+        {
+          "id": 5,
+          "attributes": {
+            "label": "International Centers of Excellence for Malaria Research (ICEMR)",
+            "url": "https://www.niaid.nih.gov/research/excellence-malaria-research",
+            "categories": {
+              "data": [
+                {
+                  "id": 1,
+                  "attributes": {
+                    "name": "Working Groups / Programs / Networks",
+                    "createdAt": "2025-02-22T19:09:45.049Z",
+                    "publishedAt": "2025-02-22T19:09:45.049Z",
+                    "updatedAt": "2025-02-22T19:09:45.049Z"
+                  }
+                }
+              ]
+            },
+            "image": { "data": null },
+            "isExternal": true,
+            "createdAt": "2025-02-22T19:09:45.049Z",
+            "updatedAt": "2025-02-22T19:09:45.049Z",
+            "publishedAt": "2025-02-22T19:09:45.049Z"
+          }
+        },
+        {
+          "id": 6,
+          "attributes": {
+            "label": "European and Developing Countries Clinical Trials Partnership (EDCTP)",
+            "url": "https://www.niaid.nih.gov/research/clinical-trials-partnerships",
+            "categories": {
+              "data": [
+                {
+                  "id": 1,
+                  "attributes": {
+                    "name": "Working Groups / Programs / Networks",
+                    "createdAt": "2025-02-22T19:09:45.049Z",
+                    "publishedAt": "2025-02-22T19:09:45.049Z",
+                    "updatedAt": "2025-02-22T19:09:45.049Z"
+                  }
+                }
+              ]
+            },
+            "image": { "data": null },
+            "isExternal": true,
+            "createdAt": "2025-02-22T19:09:45.049Z",
+            "updatedAt": "2025-02-22T19:09:45.049Z",
+            "publishedAt": "2025-02-22T19:09:45.049Z"
+          }
+        },
+        {
+          "id": 7,
+          "attributes": {
+            "label": "Monitoring Windborne Migration of Disease Vectors, Pathogens, and Pests in Africa to Improve Public Health and Food Security (MWMDVPPiA)",
+            "url": "https://www.niaid.nih.gov/research/mwmdvppia",
+            "categories": {
+              "data": [
+                {
+                  "id": 1,
+                  "attributes": {
+                    "name": "Working Groups / Programs / Networks",
+                    "createdAt": "2025-02-22T19:09:45.049Z",
+                    "publishedAt": "2025-02-22T19:09:45.049Z",
+                    "updatedAt": "2025-02-22T19:09:45.049Z"
+                  }
+                }
+              ]
+            },
+            "image": { "data": null },
+            "isExternal": true,
+            "createdAt": "2025-02-22T19:09:45.049Z",
+            "updatedAt": "2025-02-22T19:09:45.049Z",
+            "publishedAt": "2025-02-22T19:09:45.049Z"
+          }
+        },
+        {
+          "id": 8,
+          "attributes": {
+            "label": "Mali-University Clinical Research Center (UCRC)",
+            "url": "https://www.niaid.nih.gov/research/mali-university-clinical-research-center",
+            "categories": {
+              "data": [
+                {
+                  "id": 1,
+                  "attributes": {
+                    "name": "Working Groups / Programs / Networks",
+                    "createdAt": "2025-02-22T19:09:45.049Z",
+                    "publishedAt": "2025-02-22T19:09:45.049Z",
+                    "updatedAt": "2025-02-22T19:09:45.049Z"
+                  }
+                }
+              ]
+            },
+            "image": { "data": null },
+            "isExternal": true,
+            "createdAt": "2025-02-22T19:09:45.049Z",
+            "updatedAt": "2025-02-22T19:09:45.049Z",
+            "publishedAt": "2025-02-22T19:09:45.049Z"
+          }
+        }
+      ]
+    },
+    "createdAt": "2025-02-22T19:09:45.049Z",
+    "updatedAt": "2025-02-22T19:09:45.049Z",
+    "publishedAt": "2025-02-22T19:09:45.049Z"
+  }
+}

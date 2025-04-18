@@ -1,0 +1,85 @@
+{
+  "id": 14,
+  "attributes": {
+    "title": "NIAID HIPC Network",
+    "subtitle": "",
+    "description": "The Human Immunology Project Consortium (HIPC) is a network of researchers established to create a public resource that characterizes the diverse states of the human immune system. HIPC investigators use modern analytic tools to profile the immune system before and after infection, vaccination, or treatment with an adjuvant.",
+    "contactLinks": {
+      "data": [
+        {
+          "id": 1,
+          "attributes": {
+            "label": "ImmuneSpace",
+            "url": "https://immunespace.org/",
+            "categories": {
+              "data": [
+                {
+                  "id": 1,
+                  "attributes": {
+                    "name": "Related Resources",
+                    "createdAt": "2025-02-22T19:09:45.049Z",
+                    "publishedAt": "2025-02-22T19:09:45.049Z",
+                    "updatedAt": "2025-02-22T19:09:45.049Z"
+                  }
+                }
+              ]
+            },
+            "isExternal": true,
+            "createdAt": "2025-02-22T19:09:45.049Z",
+            "updatedAt": "2025-02-22T19:09:45.049Z",
+            "publishedAt": "2025-02-22T19:09:45.049Z"
+          }
+        },
+        {
+          "id": 2,
+          "attributes": {
+            "label": "NIAID Program page",
+            "url": "https://www.niaid.nih.gov/research/human-immunology-project-consortium",
+            "categories": {
+              "data": [
+                {
+                  "id": 1,
+                  "attributes": {
+                    "name": "Related Resources",
+                    "createdAt": "2025-02-22T19:09:45.049Z",
+                    "publishedAt": "2025-02-22T19:09:45.049Z",
+                    "updatedAt": "2025-02-22T19:09:45.049Z"
+                  }
+                }
+              ]
+            },
+            "isExternal": true,
+            "createdAt": "2025-02-22T19:09:45.049Z",
+            "updatedAt": "2025-02-22T19:09:45.049Z",
+            "publishedAt": "2025-02-22T19:09:45.049Z"
+          }
+        }
+      ]
+    },
+    "query": {
+      "q": "__all__",
+      "extra_filter": "sourceOrganization.name:(\"NIAID HIPC Network\")",
+      "facet_size": 1000,
+      "size": 0
+    },
+    "slug": "NIAID-HIPC-Network",
+    "topic": "NIAID HIPC Network",
+    "type": {
+      "data": [
+        {
+          "id": 1,
+          "attributes": {
+            "name": "Program",
+            "createdAt": "2025-02-22T19:09:45.049Z",
+            "updatedAt": "2025-02-22T19:09:45.049Z",
+            "publishedAt": "2025-02-22T19:09:45.049Z"
+          }
+        }
+      ]
+    },
+
+    "createdAt": "2025-02-22T19:09:45.049Z",
+    "updatedAt": "2025-02-22T19:09:45.049Z",
+    "publishedAt": "2025-02-22T19:09:45.049Z"
+  }
+}
