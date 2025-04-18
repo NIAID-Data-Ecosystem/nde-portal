@@ -1,0 +1,61 @@
+{
+  "id": 12,
+  "attributes": {
+    "title": "NIAID CFAR Program",
+    "subtitle": "",
+    "description": "The Centers for AIDS Research (CFAR) program at the National Institutes of Health provides administrative and shared research support to synergistically enhance and coordinate high quality AIDS research projects.",
+    "contactLinks": {
+      "data": [
+        {
+          "id": 1,
+          "attributes": {
+            "label": "NIAID Program page",
+            "url": "https://www.niaid.nih.gov/research/about-centers-aids-research",
+            "categories": {
+              "data": [
+                {
+                  "id": 1,
+                  "attributes": {
+                    "name": "Related Resources",
+                    "createdAt": "2025-02-22T19:09:45.049Z",
+                    "publishedAt": "2025-02-22T19:09:45.049Z",
+                    "updatedAt": "2025-02-22T19:09:45.049Z"
+                  }
+                }
+              ]
+            },
+            "isExternal": true,
+            "createdAt": "2025-02-22T19:09:45.049Z",
+            "updatedAt": "2025-02-22T19:09:45.049Z",
+            "publishedAt": "2025-02-22T19:09:45.049Z"
+          }
+        }
+      ]
+    },
+    "query": {
+      "q": "__all__",
+      "extra_filter": "sourceOrganization.name:(\"NIAID CFAR Program\")",
+      "facet_size": 1000,
+      "size": 0
+    },
+    "slug": "NIAID-CFAR-Program",
+    "topic": "NIAID CFAR Program",
+    "type": {
+      "data": [
+        {
+          "id": 1,
+          "attributes": {
+            "name": "Program",
+            "createdAt": "2025-02-22T19:09:45.049Z",
+            "updatedAt": "2025-02-22T19:09:45.049Z",
+            "publishedAt": "2025-02-22T19:09:45.049Z"
+          }
+        }
+      ]
+    },
+
+    "createdAt": "2025-02-22T19:09:45.049Z",
+    "updatedAt": "2025-02-22T19:09:45.049Z",
+    "publishedAt": "2025-02-22T19:09:45.049Z"
+  }
+}
