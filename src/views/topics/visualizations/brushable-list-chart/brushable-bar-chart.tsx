@@ -139,7 +139,6 @@ export const BrushableBarChart = ({
             handleSize={8}
             margin={brushMargin}
             onChange={handleBrushChange}
-            useWindowMoveEvents
             selectedBoxStyle={{
               fillOpacity: 0.2,
               fill: 'steelblue',

@@ -41,7 +41,7 @@ const facets = [
 ] as FacetProps[];
 
 export const PropertyTreemapLists = ({ query, topic }: TopicQueryProps) => {
-  const [listView, setListView] = React.useState(false);
+  const [listView, setListView] = React.useState(true);
 
   // Fetch data types for query.
   const params = {
