@@ -23,7 +23,12 @@ export const ChartWrapper = ({
     <>
       {/* Title and description */}
       {title && <SectionTitle as='h4'>{title}</SectionTitle>}
-      {description && <Text lineHeight='short'>{description}</Text>}
+      {description &&
+        (typeof description === 'string' ? (
+          <Text lineHeight='short'>{description}</Text>
+        ) : (
+          description
+        ))}
 
       {/* Skeleton loader */}
       <Skeleton

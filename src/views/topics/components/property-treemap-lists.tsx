@@ -41,7 +41,7 @@ const facets = [
 ] as FacetProps[];
 
 export const PropertyTreemapLists = ({ query, topic }: TopicQueryProps) => {
-  const [listView, setListView] = React.useState(false);
+  const [listView, setListView] = React.useState(true);
 
   // Fetch data types for query.
   const params = {
@@ -75,43 +75,50 @@ export const PropertyTreemapLists = ({ query, topic }: TopicQueryProps) => {
     },
     enabled: !!query.q,
   });
+
+  const defaultDimensions = {
+    width: 450,
+    height: 420,
+    margin: { top: 4, right: 4, bottom: 4, left: 4 },
+  };
   return (
     <Flex flexDirection='column' width='100%'>
       <ChartWrapper
         title={`Resources mentioning ${topic} also mentioned the following:`}
+        description={
+          <HStack
+            alignItems='flex-start'
+            spacing={6}
+            flexWrap='wrap'
+            width='100%'
+          >
+            <Text lineHeight='short' flex={2}>
+              {listView
+                ? `Explore the table by dragging the blue box horizontally on the bar chart to scroll through most popular metadata properties (100 top results) or resize it to filter a specific range. The list rows updates dynamically based on the selection.`
+                : 'Click on rectangle to view all related results within the portal.'}
+            </Text>
+            {/* Add toggle for charts */}
+            <Flex px={4} flex={1} flexDirection='column' alignItems='flex-end'>
+              <Text fontWeight='medium'>Select Chart Type</Text>
+              <RadioGroup
+                onChange={value => setListView(value === 'list')}
+                value={`${listView ? 'list' : 'treemap'}`}
+              >
+                <Stack direction='row'>
+                  <Radio value='list'>List</Radio>
+                  <Radio value='treemap'>Treemap</Radio>
+                </Stack>
+              </RadioGroup>
+            </Flex>
+          </HStack>
+        }
         error={error}
         isLoading={isLoading}
         skeletonProps={{
-          minHeight: '200px',
+          minHeight: defaultDimensions.height,
           width: '100%',
         }}
       >
-        <HStack
-          alignItems='flex-start'
-          spacing={6}
-          flexWrap='wrap'
-          width='100%'
-        >
-          <Text lineHeight='short' flex={2}>
-            {listView
-              ? `Explore the table by dragging the blue box horizontally on the bar chart to scroll through most popular metadata properties (100 top results) or resize it to filter a specific range. The list rows updates dynamically based on the selection.`
-              : 'Click on rectangle to view all related results within the portal.'}
-          </Text>
-          {/* Add toggle for charts */}
-          <Flex px={4} flex={1} flexDirection='column' alignItems='flex-end'>
-            <Text fontWeight='medium'>Select Chart Type</Text>
-            <RadioGroup
-              onChange={value => setListView(value === 'list')}
-              value={`${listView ? 'list' : 'treemap'}`}
-            >
-              <Stack direction='row'>
-                <Radio value='list'>List</Radio>
-                <Radio value='treemap'>Treemap</Radio>
-              </Stack>
-            </RadioGroup>
-          </Flex>
-        </HStack>
-
         {/* Property Charts */}
         <HStack mt={4} alignItems='flex-start' spacing={6} flexWrap='wrap'>
           {data?.map(({ terms, ...facet }) => {
@@ -143,11 +150,7 @@ export const PropertyTreemapLists = ({ query, topic }: TopicQueryProps) => {
                       A treemap chart showing the distribution of the top ten ${facet.label} terms by count. Each rectangle represents a term.
                       The size of the rectangle is proportional to the count of the term. Click on a rectangle to view all related results within the portal.`}
                     data={terms.slice(0, 10)}
-                    defaultDimensions={{
-                      width: 450,
-                      height: 420,
-                      margin: { top: 4, right: 4, bottom: 4, left: 4 },
-                    }}
+                    defaultDimensions={defaultDimensions}
                   />
                 )}
               </Box>
