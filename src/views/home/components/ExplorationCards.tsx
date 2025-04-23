@@ -73,7 +73,7 @@ const CARDS_DATA: CardData[] = [
         biomarkers, therapeutic strategies, and more in the{' '}
         <ChakraLink
           as={NextLink}
-          href='/topics#disease'
+          href='/topics#diseases'
           textDecoration='underline'
         >
           Diseases Page

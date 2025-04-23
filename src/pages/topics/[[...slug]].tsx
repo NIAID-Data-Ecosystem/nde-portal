@@ -16,6 +16,7 @@ import { PropertyTreemapLists } from 'src/views/topics/components/property-treem
 import { CardWrapper } from 'src/views/topics/layouts/card';
 import { ExternalLinksSection } from 'src/views/topics/components/external-links';
 import { Sources } from 'src/views/topics/components/sources';
+import { IndexListView } from 'src/views/topics';
 import ASTHMA_DATA from 'src/views/topics/mock-data/asthma.json';
 import HIV_DATA from 'src/views/topics/mock-data/hiv-aids.json';
 import INFLUENZA_DATA from 'src/views/topics/mock-data/influenza.json';
@@ -59,15 +60,6 @@ const fetchTopicContent = async (
     throw err.response;
   }
 };
-
-const pagesGroupedByType = (MOCK_PAGES || []).reduce((acc, page) => {
-  const category = page.attributes.type?.data[0]?.attributes.name || '';
-  if (!acc[category]) {
-    acc[category] = [];
-  }
-  acc[category].push(page);
-  return acc;
-}, {} as Record<string, TopicPageProps[]>);
 
 /**
  * TopicPage fetches topic-specific and displays it in a structured layout.
@@ -267,30 +259,7 @@ const TopicPage: NextPage<{
                   )}
               </>
             ) : (
-              <Flex flexDirection='column'>
-                <IntroSection title='Topics' />
-                {Object.entries(pagesGroupedByType).map(
-                  ([sectionTitle, pages]) => {
-                    return (
-                      <SectionWrapper
-                        key={sectionTitle}
-                        as='h3'
-                        id={sectionTitle}
-                        title={sectionTitle}
-                      >
-                        {pages.map((page: TopicPageProps) => {
-                          const { title, slug } = page.attributes;
-                          return (
-                            <Link key={slug[0]} href={`/topics/${slug}`}>
-                              {title}
-                            </Link>
-                          );
-                        })}
-                      </SectionWrapper>
-                    );
-                  },
-                )}
-              </Flex>
+              <IndexListView data={MOCK_PAGES} />
             )}
           </Flex>
         )}
