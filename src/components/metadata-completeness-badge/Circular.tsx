@@ -15,12 +15,20 @@ import Pie, { PieArcDatum, ProvidedProps } from '@visx/shape/lib/shapes/Pie';
 import Tooltip from 'src/components/tooltip';
 import { TooltipContent } from './TooltipContent';
 import { FormattedResource } from 'src/utils/api/types';
-import { getMetadataListByType } from './helpers';
+import { getMetadataListByType, getTooltipDetails } from './helpers';
 import { FaInfo } from 'react-icons/fa6';
 
 const colors = {
-  required: { light: '#ffc678', dark: '#e05e8f', bg: '#F2BED2' },
-  recommended: { light: '#ff8bff', dark: '#321eb5', bg: '#b8b3f4' },
+  required: {
+    light: '#ffc678',
+    dark: '#e05e8f',
+    bg: '#F2BED2',
+  },
+  recommended: {
+    light: '#ff8bff',
+    dark: '#321eb5',
+    bg: '#b8b3f4',
+  },
 };
 
 // Dimensions for the different sizes of the badge
@@ -166,14 +174,14 @@ export const CompletenessBadgeCircle = ({
               data={[
                 {
                   label: 'Fundamental fields',
-                  fields: metadataList.required,
+                  fields: getTooltipDetails(metadataList.required),
                   included: stats?.required_fields || [],
                   augmented: stats.required_augmented_fields,
                   fill: colors['required'].dark,
                 },
                 {
                   label: 'Recommended fields',
-                  fields: metadataList.recommended,
+                  fields: getTooltipDetails(metadataList.recommended),
                   included: stats?.recommended_fields || [],
                   augmented: stats.recommended_augmented_fields,
                   fill: colors['recommended'].dark,

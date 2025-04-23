@@ -9,13 +9,12 @@ import {
   Stack,
   Text,
 } from '@chakra-ui/react';
-import { getMetadataNameByDotfield } from 'src/components/advanced-search/utils/query-helpers';
 import { FaRegCircleUp, FaCircleCheck } from 'react-icons/fa6';
 import { FormattedResource } from 'src/utils/api/types';
 
 interface Stat {
   label: string;
-  fields: string[];
+  fields: { label: string; property: string; subLabel?: string }[];
   included: string[];
   augmented: string[];
   fill: string;
@@ -82,11 +81,11 @@ export const TooltipContent = ({ data }: TooltipContentProps) => {
             <Score {...item} />
             <Stack spacing={0}>
               {item.fields
-                .sort((a, b) => a.localeCompare(b))
+                .sort((a, b) => a.label.localeCompare(b.label))
                 .map((field, idx) => {
                   return (
                     <Grid
-                      key={field}
+                      key={field.property}
                       templateColumns='repeat(4, 1fr)'
                       gap={1}
                       border='1px solid'
@@ -100,7 +99,10 @@ export const TooltipContent = ({ data }: TooltipContentProps) => {
                         fontWeight='medium'
                         color='gray.800'
                       >
-                        {getMetadataNameByDotfield(field)}
+                        <Text>
+                          {field.label}{' '}
+                          {field.subLabel ? <>({field.subLabel})</> : ''}
+                        </Text>
                       </GridItem>
                       <GridItem
                         display='flex'
@@ -110,14 +112,14 @@ export const TooltipContent = ({ data }: TooltipContentProps) => {
                         borderLeft='1px solid'
                         borderLeftColor='gray.100'
                       >
-                        {item.included.includes(field) && (
+                        {item.included.includes(field.property) && (
                           <Icon
                             as={FaCircleCheck}
                             color='green.500'
                             boxSize={4}
                           />
                         )}
-                        {item.augmented.includes(field) && (
+                        {item.augmented.includes(field.property) && (
                           <Icon
                             as={FaRegCircleUp}
                             color='green.500'

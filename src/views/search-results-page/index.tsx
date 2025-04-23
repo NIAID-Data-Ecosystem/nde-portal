@@ -51,6 +51,7 @@ const SearchResultsPage = ({
 }) => {
   const [shouldUseMetadataScore, setShouldUseMetadataScore] = useLocalStorage(
     'useMetadataScore',
+    // use metadata score is applied in the backend on production. Flag is hidden in production
     true,
   );
   const [isMounted, setIsMounted] = useState(false); // for SSR
@@ -138,7 +139,7 @@ const SearchResultsPage = ({
       size: `${selectedPerPage}`,
       from: `${(selectedPage - 1) * selectedPerPage}`,
       sort: sortOrder,
-      // use_metadata_score: shouldUseMetadataScore ? 'true' : 'false',
+      use_metadata_score: shouldUseMetadataScore ? 'true' : 'false',
       show_meta: true,
       fields: [
         '_meta',
@@ -246,11 +247,14 @@ const SearchResultsPage = ({
       {/* Search results controls */}
       {numCards > 0 && (
         <Stack borderRadius='semi' boxShadow='base' bg='white' px={4} py={2}>
-          <MetadataScoreToggle
-            isChecked={isMounted ? shouldUseMetadataScore : false}
-            isDisabled={sortOrder !== '_score'}
-            handleToggle={handleMetadataScoreToggle}
-          />
+          {/* Hide toggle in production */}
+          {process.env.NODE_ENV !== 'production' && (
+            <MetadataScoreToggle
+              isChecked={isMounted ? shouldUseMetadataScore : false}
+              isDisabled={sortOrder !== '_score'}
+              handleToggle={handleMetadataScoreToggle}
+            />
+          )}
           <Flex
             borderBottom={{ base: '1px solid' }}
             borderColor={{ base: 'page.alt' }}

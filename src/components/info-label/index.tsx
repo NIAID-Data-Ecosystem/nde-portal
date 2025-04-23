@@ -37,7 +37,6 @@ export const InfoLabel: React.FC<InfoLabelProps> = ({
             color='gray.800!important'
           />
         )}
-        :
       </Text>
     </Tooltip>
   );
