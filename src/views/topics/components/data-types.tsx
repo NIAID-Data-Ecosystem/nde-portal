@@ -1,13 +1,12 @@
 import React from 'react';
-import { Box, Flex } from '@chakra-ui/react';
 import NextLink from 'next/link';
+import { Box, Flex, Text } from '@chakra-ui/react';
+import { useQuery } from '@tanstack/react-query';
 import { Link } from 'src/components/link';
 import { TopicQueryProps } from '../types';
 import { fetchSearchResults } from 'src/utils/api';
-import { useQuery } from '@tanstack/react-query';
 import { FacetTerm, FetchSearchResultsResponse } from 'src/utils/api/types';
 import { DonutChart } from '../visualizations/donut-chart';
-import { scaleOrdinal } from '@visx/scale';
 import {
   APIResourceType,
   formatResourceTypeForDisplay,
@@ -72,10 +71,20 @@ export const DataTypes = ({ query, topic }: TopicQueryProps) => {
         <ChartWrapper
           title='Data Types'
           description={
-            <>
+            <Text>
               An overview of resource types retrieved from a search on{' '}
-              <Link href={`/search?q=${query.q}`}>{topic}</Link>.
-            </>
+              <NextLink
+                passHref
+                href={getSearchResultsRoute({
+                  query: params,
+                  facet: params.facets,
+                })}
+                legacyBehavior
+              >
+                <Link>{topic}</Link>
+              </NextLink>
+              .
+            </Text>
           }
           error={error}
           isLoading={isLoading || isPlaceholderData}
