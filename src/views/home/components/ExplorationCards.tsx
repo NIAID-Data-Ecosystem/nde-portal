@@ -40,7 +40,7 @@ const CARDS_DATA: CardData[] = [
         ,{' '}
         <ChakraLink
           as={NextLink}
-          href='/topics/hiv-aids'
+          href='/topics/HIV-AIDS'
           textDecoration='underline'
         >
           HIV/AIDS
