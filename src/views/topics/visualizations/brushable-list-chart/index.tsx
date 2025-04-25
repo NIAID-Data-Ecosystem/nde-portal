@@ -6,7 +6,7 @@ import { Link } from 'src/components/link';
 import { UrlObject } from 'url';
 import { ScrollContainer } from 'src/components/scroll-container';
 import { BrushableBarChart } from './brushable-bar-chart';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { FacetProps } from '../../types';
 
 interface BrushableListChartProps {
@@ -27,8 +27,12 @@ export const BrushableListChart = ({
   const chartDimensions = {
     defaultWidth: 480,
     defaultHeight: 80,
-    margin: { top: 0, right: 5, bottom: 0, left: 7 },
+    margin: { top: 5, right: 5, bottom: 5, left: 7 },
   };
+
+  const onBrushSelection = useCallback((data: FacetTerm[]) => {
+    setSelectedData(data);
+  }, []);
 
   return (
     <>
@@ -37,7 +41,7 @@ export const BrushableListChart = ({
       <BrushableBarChart
         data={data}
         colorScheme={facet.colorScheme}
-        onBrushSelection={selected => setSelectedData(selected)}
+        onBrushSelection={onBrushSelection}
         {...chartDimensions}
       />
       <Box width='100%' mt={4}>
@@ -62,6 +66,7 @@ export const BrushableListChart = ({
           ml={1}
           mt={1}
           maxHeight={`${SCROLL_HEIGHT}px`}
+          minHeight={`${SCROLL_HEIGHT}px`}
         >
           {selectedData.map(item => (
             <ListItem
