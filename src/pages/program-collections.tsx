@@ -155,7 +155,10 @@ const ProgramCollections: NextPage<{ data: ProgramCollection[] }> = props => {
 
                     {/* Link to program resources in the NDE */}
                     {collection.sourceOrganization?.name && (
-                      <Flex justifyContent='flex-end' width='100%'>
+                      <Flex
+                        justifyContent={{ base: 'center', md: 'flex-end' }}
+                        width='100%'
+                      >
                         <StyledCardButton
                           maxWidth='500px'
                           href={{

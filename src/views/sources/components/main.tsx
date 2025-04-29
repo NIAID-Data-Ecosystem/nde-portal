@@ -51,13 +51,9 @@ const Main: React.FC<Main> = ({ data, isLoading, metadata }) => {
   }
 
   const sources =
-    data
-      ?.filter((source: { name: string }) =>
-        source.name.toLowerCase().includes(searchValue.toLowerCase()),
-      )
-      .sort((a: { name: string }, b: { name: any }) =>
-        a.name.localeCompare(b.name),
-      ) || [];
+    data?.filter((source: { name: string }) =>
+      source.name.toLowerCase().includes(searchValue.toLowerCase()),
+    ) || [];
 
   return (
     <Box id='sources-main' mb={10} width='100%' height='100%'>
@@ -136,7 +132,7 @@ const Main: React.FC<Main> = ({ data, isLoading, metadata }) => {
             return (
               <StyledCard
                 key={index}
-                id={id}
+                id={sourceObj.slug}
                 isLoading={isLoading}
                 label={sourceObj.name}
                 subLabel={
@@ -318,7 +314,10 @@ const Main: React.FC<Main> = ({ data, isLoading, metadata }) => {
                 )}
 
                 {/* Call to action */}
-                <Flex w='100%' justifyContent='flex-end'>
+                <Flex
+                  w='100%'
+                  justifyContent={{ base: 'center', md: 'flex-end' }}
+                >
                   <StyledCardButton
                     maxWidth='500px'
                     href={{
