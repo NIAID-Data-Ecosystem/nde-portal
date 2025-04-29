@@ -3,8 +3,9 @@ import { SourceOrganization } from 'src/utils/api/types';
 
 export interface ProgramCollection {
   id: string;
+  term: string;
   count: number;
-  details: SourceOrganization | null;
+  sourceOrganization: SourceOrganization | null;
 }
 /**
  * Fetches program collections and their associated counts from the NIAID Data Ecosystem API.
@@ -35,6 +36,7 @@ export const fetchProgramCollections = async (): Promise<
   const collectionsWithDetails = await Promise.all(
     collections.map(async (collection: any) => {
       const { term, count } = collection;
+      const id = transformTermToId(term);
 
       try {
         const { data } = await axios.get(
@@ -50,7 +52,7 @@ export const fetchProgramCollections = async (): Promise<
 
         const hit = data?.hits?.[0];
         if (!hit?.sourceOrganization) {
-          return { id: term, count, details: null };
+          return { id, term, count, sourceOrganization: null };
         }
 
         const sourceOrganization = hit.sourceOrganization;
@@ -68,13 +70,27 @@ export const fetchProgramCollections = async (): Promise<
           matchingOrganizationDetails = sourceOrganization;
         }
 
-        return { id: term, count, details: matchingOrganizationDetails };
+        return {
+          id,
+          term,
+          count,
+          sourceOrganization: matchingOrganizationDetails,
+        };
       } catch (error) {
-        console.error(`Failed to fetch details for term: ${term}`, error);
-        return { id: term, count, details: null };
+        console.error(
+          `Failed to fetch sourceOrganization for term: ${term}`,
+          error,
+        );
+        return { id, term, count, sourceOrganization: null };
       }
     }),
   );
 
   return collectionsWithDetails;
+};
+
+const transformTermToId = (term: string) => {
+  // Convert the term to lowercase and replace spaces with hyphens
+  const transformedTerm = term.toLowerCase().replace(/\s+/g, '-');
+  return transformedTerm;
 };

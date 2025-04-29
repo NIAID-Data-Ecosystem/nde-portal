@@ -11,7 +11,6 @@ import {
   StackDivider,
   Text,
 } from '@chakra-ui/react';
-import { DisplayHTMLContent } from 'src/components/html-content';
 import NextLink from 'next/link';
 import type { SourceResponse } from 'src/pages/sources';
 import { queryFilterObject2String } from 'src/views/search-results-page/helpers';
@@ -28,6 +27,7 @@ import { SectionHeader } from 'src/components/table-of-contents/layouts/section-
 import { SectionSearch } from 'src/components/table-of-contents/layouts/section-search';
 import {
   StyledCard,
+  StyledCardDescription,
   StyledCardStack,
 } from 'src/components/table-of-contents/components/card';
 import { BadgeWithTooltip } from 'src/components/badges';
@@ -146,8 +146,8 @@ const Main: React.FC<Main> = ({ data, isLoading, metadata }) => {
                 label={sourceObj.name}
                 subLabel={
                   sourceObj.numberOfRecords > 0
-                    ? `${sourceObj.numberOfRecords.toLocaleString()} Records
-                        Available`
+                    ? `${sourceObj.numberOfRecords.toLocaleString()} resources
+                        available`
                     : ''
                 }
                 tags={
@@ -195,10 +195,11 @@ const Main: React.FC<Main> = ({ data, isLoading, metadata }) => {
                 </HStack>
 
                 {/* Description */}
-                <DisplayHTMLContent
-                  content={sourceObj?.description || ''}
-                  lineHeight='tall'
-                />
+                {sourceObj?.description && (
+                  <StyledCardDescription>
+                    {sourceObj?.description}
+                  </StyledCardDescription>
+                )}
 
                 {/* Source Compatibility */}
                 {metadataCompatibilityData && (

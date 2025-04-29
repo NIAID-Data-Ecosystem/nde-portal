@@ -1,9 +1,17 @@
 import { Box, Divider, Flex, Heading } from '@chakra-ui/react';
 
 interface SectionHeaderProps {
-  children: React.ReactNode;
+  children?: React.ReactNode;
   title: string;
 }
+
+/**
+ *  SectionHeader component
+ * @description A component that displays a section header with a title and optional children used on table of content style pages.
+ *
+ * @returns {JSX.Element} The rendered SectionHeader component.
+ */
+
 export const SectionHeader: React.FC<SectionHeaderProps> = ({
   children,
   title,
