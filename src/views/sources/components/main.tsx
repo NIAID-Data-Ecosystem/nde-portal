@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { FaMinus, FaPlus, FaUpRightFromSquare } from 'react-icons/fa6';
 import {
   Box,
   Button,
@@ -7,30 +8,24 @@ import {
   HStack,
   Icon,
   SkeletonText,
-  Stack,
   StackDivider,
   Text,
 } from '@chakra-ui/react';
-import NextLink from 'next/link';
-import type { SourceResponse } from 'src/pages/sources';
-import { queryFilterObject2String } from 'src/views/search-results-page/helpers';
-import { formatDate } from 'src/utils/api/helpers';
-import {
-  FaMagnifyingGlass,
-  FaMinus,
-  FaPlus,
-  FaUpRightFromSquare,
-} from 'react-icons/fa6';
-import { TagWithUrl } from 'src/components/tag-with-url';
+import { BadgeWithTooltip } from 'src/components/badges';
+import { Link } from 'src/components/link';
 import { MetadataCompatibilitySourceBadge } from 'src/components/metadata-compatibility-source-badge';
-import { SectionHeader } from 'src/components/table-of-contents/layouts/section-header';
-import { SectionSearch } from 'src/components/table-of-contents/layouts/section-search';
 import {
   StyledCard,
+  StyledCardButton,
   StyledCardDescription,
   StyledCardStack,
 } from 'src/components/table-of-contents/components/card';
-import { BadgeWithTooltip } from 'src/components/badges';
+import { SectionHeader } from 'src/components/table-of-contents/layouts/section-header';
+import { SectionSearch } from 'src/components/table-of-contents/layouts/section-search';
+import { TagWithUrl } from 'src/components/tag-with-url';
+import type { SourceResponse } from 'src/pages/sources';
+import { formatDate } from 'src/utils/api/helpers';
+import { queryFilterObject2String } from 'src/views/search-results-page/helpers';
 
 interface Main {
   data?: SourceResponse[];
@@ -201,9 +196,15 @@ const Main: React.FC<Main> = ({ data, isLoading, metadata }) => {
                   </StyledCardDescription>
                 )}
 
+                {/* Link to source's website */}
+                {sourceObj.url && (
+                  <Link href={sourceObj.url} isExternal>
+                    {`${sourceObj.name} website`}
+                  </Link>
+                )}
                 {/* Source Compatibility */}
                 {metadataCompatibilityData && (
-                  <Box>
+                  <Box my={2}>
                     <MetadataCompatibilitySourceBadge
                       data={metadataCompatibilityData}
                     />
@@ -317,13 +318,9 @@ const Main: React.FC<Main> = ({ data, isLoading, metadata }) => {
                 )}
 
                 {/* Call to action */}
-                <Stack
-                  flexDirection={['column', 'column', 'row']}
-                  justifyContent='space-between'
-                  width='100%'
-                >
-                  <NextLink
-                    style={{ flex: 1, maxWidth: '380px' }}
+                <Flex w='100%' justifyContent='flex-end'>
+                  <StyledCardButton
+                    maxWidth='500px'
                     href={{
                       pathname: `/search`,
                       query: {
@@ -333,57 +330,10 @@ const Main: React.FC<Main> = ({ data, isLoading, metadata }) => {
                         }),
                       },
                     }}
-                    passHref
                   >
-                    <Button
-                      as='span'
-                      size='sm'
-                      leftIcon={<Icon as={FaMagnifyingGlass} />}
-                      wordBreak='break-word'
-                      whiteSpace='normal'
-                      textAlign='center'
-                      flex={1}
-                      colorScheme='primary'
-                      variant='solid'
-                      height='unset'
-                      py={1.5}
-                      w='100%'
-                      h='100%'
-                    >
-                      Search for {sourceObj.name} resources
-                    </Button>
-                  </NextLink>
-                  {sourceObj.url && (
-                    <NextLink
-                      style={{ flex: 1, maxWidth: '380px' }}
-                      href={{
-                        pathname: `${sourceObj.url}`,
-                      }}
-                      passHref
-                      target='_blank'
-                    >
-                      <Button
-                        as='span'
-                        wordBreak='break-word'
-                        whiteSpace='normal'
-                        textAlign='center'
-                        flex={1}
-                        size='sm'
-                        colorScheme='primary'
-                        rightIcon={
-                          <Icon as={FaUpRightFromSquare} boxSize={3} />
-                        }
-                        variant='outline'
-                        height='unset'
-                        py={1.5}
-                        w='100%'
-                        h='100%'
-                      >
-                        View {sourceObj.name} website
-                      </Button>
-                    </NextLink>
-                  )}
-                </Stack>
+                    Search for {sourceObj.name} resources
+                  </StyledCardButton>
+                </Flex>
               </StyledCard>
             );
           },
