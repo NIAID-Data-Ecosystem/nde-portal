@@ -267,11 +267,42 @@ const AccessibleBrush = ({
         // Update the brush state. Which will in turn calculate the new xValues.
         brushRef.current.updateBrush?.(newState);
 
-        brushRef.current.state = { ...brushRef.current.state, ...newState };
+        // brushRef.current.state = { ...brushRef.current.state, ...newState };
       });
     },
     [xScale, isFocused, activeState, xBrushMax, yBrushMax],
   );
+
+  // Set the initial brush state. Note: We need to manually set this because we are manually updating the brush state in OnKeyDown.
+  useEffect(() => {
+    if (!brushRef.current) return;
+    brushRef.current.reset?.();
+
+    const brushY0 = 0;
+    const brushY1 = yBrushMax;
+    const startX = brushRef.current?.state?.start?.x ?? 0;
+    const endX = brushRef.current?.state?.end?.x ?? 0;
+
+    const newState = {
+      bounds: { x0: 0, x1: xBrushMax, y0: brushY0, y1: brushY1 },
+      start: {
+        x: startX,
+        y: brushY0,
+      },
+      end: { x: endX, y: brushY1 },
+      isBrushing: false,
+      dragHandle: null,
+      activeHandle: null,
+      extent: {
+        x0: startX,
+        x1: endX,
+        y0: brushY0,
+        y1: brushY1,
+      },
+    };
+    // Update the brush state. Which will in turn calculate the new xValues.
+    brushRef.current.updateBrush?.(newState);
+  }, [xBrushMax, yBrushMax]);
 
   // If the brush is not focused, reset the active state.
   useEffect(() => {
