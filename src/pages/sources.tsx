@@ -2,20 +2,28 @@ import type { NextPage } from 'next';
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/router';
-import { Box, Button, Flex, Text, UnorderedList } from '@chakra-ui/react';
+import { Box, Button, Flex, Text } from '@chakra-ui/react';
 import { PageContainer, PageContent } from 'src/components/page-container';
-import { Main, Sidebar } from 'src/views/sources';
+import { Main } from 'src/views/sources';
 import { Error, ErrorCTA } from 'src/components/error';
 import axios from 'axios';
 import { MetadataSource } from 'src/hooks/api/types';
 import { getQueryStatusError } from 'src/components/error/utils';
 import { fetchMetadata } from 'src/hooks/api/helpers';
 import { getFundedByNIAID } from 'src/utils/helpers';
+import {
+  Label,
+  Sidebar,
+  SidebarItem,
+} from 'src/components/table-of-contents/layouts/sidebar';
+import { formatDate } from 'src/utils/api/helpers';
+import { BadgeWithTooltip } from 'src/components/badges/components/BadgeWithTooltip';
 
 export interface SourceResponse extends MetadataSource {
   dateCreated?: string;
   key: string;
   id: MetadataSource['sourceInfo']['identifier'];
+  slug: string;
   name: MetadataSource['sourceInfo']['name'];
   description: MetadataSource['sourceInfo']['description'];
   dateModified: MetadataSource['version'];
@@ -45,6 +53,7 @@ const Sources: NextPage<SourcesProps> = ({ data, error }) => {
       const sources = res.src;
       const sourceDetails = Object.entries(sources).map(([key, source]) => {
         const id = (source.sourceInfo && source.sourceInfo.identifier) || key;
+        const name = (source?.sourceInfo && source?.sourceInfo?.name) || key;
         const githubInfo = data?.find(item => {
           return item.id === id;
         });
@@ -64,7 +73,8 @@ const Sources: NextPage<SourcesProps> = ({ data, error }) => {
           ...source,
           key,
           id,
-          name: (source?.sourceInfo && source?.sourceInfo?.name) || key,
+          slug: name.replace(/\s+/g, '-'),
+          name,
           description:
             (source?.sourceInfo && source?.sourceInfo?.description) || '',
           dateModified,
@@ -79,7 +89,9 @@ const Sources: NextPage<SourcesProps> = ({ data, error }) => {
           version: res.build_version,
           date: res.build_date,
         },
-        sources: sourceDetails,
+        sources: sourceDetails.sort((a: { name: string }, b: { name: any }) =>
+          a.name.localeCompare(b.name),
+        ),
       };
     },
     refetchOnMount: true,
@@ -126,29 +138,37 @@ const Sources: NextPage<SourcesProps> = ({ data, error }) => {
         )}
         {!(error || metadataError) && (
           <>
-            <Flex
-              flexDirection='column'
-              bg='page.alt'
-              display={['none', 'none', 'flex']}
-              as='nav'
-              aria-label='Navigation for data sources.'
-              maxW='450px'
-              flex={1}
-            >
-              <UnorderedList
-                display='flex'
-                flexDirection='column'
-                py={4}
-                top={0}
-                ml={0}
-              >
-                {!isLoading && metadata ? (
-                  <Sidebar data={metadata.sources} />
-                ) : (
-                  <></>
-                )}
-              </UnorderedList>
-            </Flex>
+            <Sidebar aria-label='Navigation for data sources.'>
+              {metadata?.sources.map(source => {
+                return (
+                  <SidebarItem
+                    key={source.id}
+                    label={
+                      <Label>
+                        {source.name}
+                        {/* Add tag to show source is funded by NIAID */}
+                        {source.isNiaidFunded && (
+                          <BadgeWithTooltip
+                            colorScheme='blue'
+                            variant='subtle'
+                            mx={2}
+                            my={1}
+                          >
+                            NIAID
+                          </BadgeWithTooltip>
+                        )}
+                      </Label>
+                    }
+                    subLabel={`Latest Release ${
+                      source.dateModified
+                        ? formatDate(source.dateModified)
+                        : 'N/A'
+                    }`}
+                    href={`#${source.slug}`}
+                  ></SidebarItem>
+                );
+              })}
+            </Sidebar>
             <PageContent
               bg='#fff'
               maxW={{ base: 'unset', lg: '1200px' }}
