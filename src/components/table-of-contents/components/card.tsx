@@ -1,3 +1,7 @@
+import React from 'react';
+import { FaChevronRight } from 'react-icons/fa6';
+import NextLink from 'next/link';
+import type { UrlObject } from 'url';
 import {
   Box,
   Button,
@@ -9,8 +13,6 @@ import {
   Text,
   VStack,
 } from '@chakra-ui/react';
-import React from 'react';
-import { FaChevronRight } from 'react-icons/fa6';
 
 /**
  * StyledCardStack component
@@ -108,31 +110,27 @@ export const StyleCardSubLabel: React.FC<{ children: string }> = ({
   );
 };
 
-export const StyledCardDescription: React.FC<{ children: string }> = ({
+export const StyledCardDescription: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   return <Text lineHeight='tall'>{children}</Text>;
 };
 
-export const StyledCardButton: React.FC<
-  ButtonProps & { children: React.ReactNode }
-> = ({ children, ...props }) => {
+export const StyledCardButton: React.FC<ButtonProps & { href: UrlObject }> = ({
+  children,
+  href,
+  ...props
+}) => {
   return (
-    <Box
-      _hover={{
-        svg: {
-          transform: 'translateX(0)',
-          transition: 'all .3s ease',
-        },
-      }}
-    >
+    <Box as={NextLink} href={href} passHref legacyBehavior>
       <Button
+        as='a'
         size='sm'
         rightIcon={
           <Icon
             as={FaChevronRight}
             boxSize={3}
-            ml='2px'
+            ml={1}
             transition='all .3s ease'
             transform='translateX(-5px)'
           />
@@ -143,6 +141,14 @@ export const StyledCardButton: React.FC<
         height='unset'
         width={{ base: '100%', md: 'unset' }}
         colorScheme='primary'
+        sx={{
+          '&:hover': {
+            svg: {
+              transform: 'translateX(0)',
+              transition: 'all .3s ease',
+            },
+          },
+        }}
         {...props}
       >
         {children}

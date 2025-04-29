@@ -1,16 +1,10 @@
 import React, { useMemo, useState } from 'react';
 import { GetStaticProps, NextPage } from 'next';
-import NextLink from 'next/link';
 import { Flex, HStack, Text } from '@chakra-ui/react';
 import { useQuery } from '@tanstack/react-query';
 import { Error } from 'src/components/error';
+import { Link } from 'src/components/link';
 import { PageContainer, PageContent } from 'src/components/page-container';
-import {
-  fetchProgramCollections,
-  ProgramCollection,
-} from 'src/views/program-collections/helpers';
-import { SectionHeader } from 'src/components/table-of-contents/layouts/section-header';
-import { SectionSearch } from 'src/components/table-of-contents/layouts/section-search';
 import {
   StyleCardSubLabel,
   StyledCard,
@@ -18,7 +12,12 @@ import {
   StyledCardDescription,
   StyledCardStack,
 } from 'src/components/table-of-contents/components/card';
-import { Link } from 'src/components/link';
+import { SectionHeader } from 'src/components/table-of-contents/layouts/section-header';
+import { SectionSearch } from 'src/components/table-of-contents/layouts/section-search';
+import {
+  fetchProgramCollections,
+  ProgramCollection,
+} from 'src/views/program-collections/helpers';
 import { queryFilterObject2String } from 'src/views/search-results-page/helpers';
 
 const ProgramCollections: NextPage<{ data: ProgramCollection[] }> = props => {
@@ -150,15 +149,15 @@ const ProgramCollections: NextPage<{ data: ProgramCollection[] }> = props => {
                         href={collection.sourceOrganization?.url}
                         isExternal
                       >
-                        {label} Website
+                        {`${label} Website`}
                       </Link>
                     )}
 
                     {/* Link to program resources in the NDE */}
                     {collection.sourceOrganization?.name && (
                       <Flex justifyContent='flex-end' width='100%'>
-                        <NextLink
-                          style={{ maxWidth: '500px' }}
+                        <StyledCardButton
+                          maxWidth='500px'
                           href={{
                             pathname: `/search`,
                             query: {
@@ -170,12 +169,9 @@ const ProgramCollections: NextPage<{ data: ProgramCollection[] }> = props => {
                               }),
                             },
                           }}
-                          passHref
                         >
-                          <StyledCardButton>
-                            Search for resources related to {label}
-                          </StyledCardButton>
-                        </NextLink>
+                          Search for resources related to {label}
+                        </StyledCardButton>
                       </Flex>
                     )}
                   </StyledCard>
