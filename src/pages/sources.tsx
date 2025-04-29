@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/router';
 import { Box, Button, Flex, Text, UnorderedList } from '@chakra-ui/react';
 import { PageContainer, PageContent } from 'src/components/page-container';
-import { Main, Sidebar } from 'src/components/sources';
+import { Main, Sidebar } from 'src/views/sources';
 import { Error, ErrorCTA } from 'src/components/error';
 import axios from 'axios';
 import { MetadataSource } from 'src/hooks/api/types';
