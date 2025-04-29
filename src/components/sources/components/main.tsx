@@ -1,15 +1,12 @@
 import React, { useState } from 'react';
 import {
-  Badge,
   Box,
   Button,
   Collapse,
-  Divider,
   Flex,
-  Heading,
   HStack,
   Icon,
-  Skeleton,
+  SkeletonText,
   Stack,
   StackDivider,
   Text,
@@ -25,9 +22,15 @@ import {
   FaPlus,
   FaUpRightFromSquare,
 } from 'react-icons/fa6';
-import { SearchInput } from 'src/components/search-input';
 import { TagWithUrl } from 'src/components/tag-with-url';
 import { MetadataCompatibilitySourceBadge } from 'src/components/metadata-compatibility-source-badge';
+import { SectionHeader } from 'src/components/table-of-contents/layouts/section-header';
+import { SectionSearch } from 'src/components/table-of-contents/layouts/section-search';
+import {
+  StyledCard,
+  StyledCardStack,
+} from 'src/components/table-of-contents/components/card';
+import { BadgeWithTooltip } from 'src/components/badges';
 
 interface Main {
   data?: SourceResponse[];
@@ -63,84 +66,63 @@ const Main: React.FC<Main> = ({ data, isLoading, metadata }) => {
 
   return (
     <Box id='sources-main' mb={10} width='100%' height='100%'>
-      <Box>
-        <Flex
-          justifyContent='space-between'
-          alignItems='center'
-          flexWrap='wrap'
+      <SectionHeader title='Data Sources'>
+        <Button
+          as='a'
+          href='https://github.com/NIAID-Data-Ecosystem/nde-crawlers/issues/new?assignees=&labels=&template=suggest-a-new-resource.md&title=%5BSOURCE%5D'
+          target='_blank'
+          colorScheme='secondary'
+          size='sm'
+          variant='outline'
+          rightIcon={<Icon as={FaUpRightFromSquare} boxSize={3} />}
         >
-          <Heading as='h1' size='h5' my={1} ml={0}>
-            Data Sources
-          </Heading>
-
-          <Button
-            as='a'
-            href='https://github.com/NIAID-Data-Ecosystem/nde-crawlers/issues/new?assignees=&labels=&template=suggest-a-new-resource.md&title=%5BSOURCE%5D'
-            target='_blank'
-            colorScheme='secondary'
-            size='sm'
-            variant='outline'
-            rightIcon={<Icon as={FaUpRightFromSquare} boxSize={3} />}
-          >
-            Suggest a new source
-          </Button>
-        </Flex>
-        <Divider />
-      </Box>
-
-      {!isLoading ? (
-        <>
-          <Flex justifyContent='space-between' flexWrap='wrap'>
-            <Box minW='250px' m={2}>
-              <Text fontSize='xs' color='gray.800'>
-                API Version:
-                {metadata?.version && (
-                  <TagWithUrl
-                    bg='status.info_lt'
-                    href={`${process.env.NEXT_PUBLIC_API_URL}/metadata`}
-                    isExternal
-                    fontWeight='semibold'
-                    mx={1}
-                  >
-                    V.{metadata.version}
-                  </TagWithUrl>
-                )}
-              </Text>
-              {metadata?.date && (
-                <Text fontSize='xs' color='gray.800' fontWeight='medium'>
-                  Data last harvested: {formatDate(metadata?.date)}
-                </Text>
+          Suggest a new source
+        </Button>
+      </SectionHeader>
+      <Flex justifyContent='space-between' flexWrap='wrap'>
+        <Box minW='250px'>
+          <SkeletonText isLoaded={!isLoading} noOfLines={1} skeletonHeight={4}>
+            <Text fontSize='xs' color='gray.800'>
+              API Version:
+              {metadata?.version && (
+                <TagWithUrl
+                  bg='status.info_lt'
+                  href={`${process.env.NEXT_PUBLIC_API_URL}/metadata`}
+                  isExternal
+                  fontWeight='semibold'
+                  mx={1}
+                >
+                  V.{metadata.version}
+                </TagWithUrl>
               )}
-            </Box>
-            <Flex justifyContent='flex-end' flex={1}>
-              <Box w='300px' m={2}>
-                <SearchInput
-                  size='sm'
-                  ariaLabel='Search for a source'
-                  placeholder='Search for a source'
-                  value={searchValue}
-                  handleChange={e => setSearchValue(e.currentTarget.value)}
-                  type='text'
-                />
-                {data?.length && (
-                  <Text
-                    fontSize='xs'
-                    fontWeight='light'
-                    mt={2}
-                    color='gray.800'
-                    textAlign='right'
-                  >
-                    <Text as='span' fontWeight='medium'>
-                      {sources.length}
-                    </Text>{' '}
-                    result{sources.length === 1 ? '' : 's'}.
-                  </Text>
-                )}
-              </Box>
-            </Flex>
-          </Flex>
-          {sources.map((sourceObj: SourceResponse, i: number) => {
-            const id = `${sourceObj.name.replace(/\s+/g, '-')}`;
+            </Text>
+          </SkeletonText>
+          <SkeletonText
+            isLoaded={!isLoading}
+            noOfLines={1}
+            skeletonHeight={4}
+            mt={0.5}
+          >
+            {metadata?.date && (
+              <Text fontSize='xs' color='gray.800' fontWeight='medium'>
+                Data last harvested: {formatDate(metadata?.date)}
+              </Text>
+            )}
+          </SkeletonText>
+        </Box>
+        <SectionSearch
+          data={sources}
+          size='sm'
+          ariaLabel='Search for a source'
+          placeholder='Search for a source'
+          value={searchValue}
+          handleChange={e => setSearchValue(e.currentTarget.value)}
+        />
+      </Flex>
+      <StyledCardStack>
+        {(isLoading ? new Array(10).fill(0) : sources).map(
+          (sourceObj: SourceResponse, index: number) => {
+            const id = `${sourceObj?.name?.replace(/\s+/g, '-')}`;
 
             // used for metadata compatibility badge
             const parentCollectionInfo = sourceObj?.sourceInfo?.parentCollection
@@ -157,195 +139,187 @@ const Main: React.FC<Main> = ({ data, isLoading, metadata }) => {
               null;
 
             return (
-              <Box
-                key={id}
+              <StyledCard
+                key={index}
                 id={id}
-                as='section'
-                boxShadow='low'
-                borderRadius='semi'
-                borderColor='gray.200'
-                my={4}
-                py={6}
-                sx={{ '>*': { px: 2, mt: 2, mx: [0, 4, 8] } }}
+                isLoading={isLoading}
+                label={sourceObj.name}
+                subLabel={
+                  sourceObj.numberOfRecords > 0
+                    ? `${sourceObj.numberOfRecords.toLocaleString()} Records
+                        Available`
+                    : ''
+                }
+                tags={
+                  <>
+                    {sourceObj.isNiaidFunded && (
+                      <BadgeWithTooltip colorScheme='blue' variant='subtle'>
+                        NIAID
+                      </BadgeWithTooltip>
+                    )}
+                  </>
+                }
               >
-                <HStack spacing={2}>
-                  <Text fontWeight='bold' color='text.heading' fontSize='xl'>
-                    {sourceObj.name}
+                {/* Release dates */}
+                <HStack divider={<StackDivider borderColor='gray.100' />}>
+                  <Text fontSize='xs' fontWeight='semibold' color='text.body'>
+                    Latest Release:{' '}
+                    <Text as='span' fontWeight='normal'>
+                      {sourceObj.dateModified
+                        ? new Date(sourceObj.dateModified).toLocaleDateString(
+                            'en-US',
+                            {
+                              year: 'numeric',
+                              month: 'long',
+                              day: 'numeric',
+                            },
+                          )
+                        : 'N/A'}
+                    </Text>
                   </Text>
-                  {sourceObj.isNiaidFunded && (
-                    <Badge colorScheme='blue' variant='subtle'>
-                      NIAID
-                    </Badge>
-                  )}
+                  <Text fontSize='xs' fontWeight='semibold' color='text.body'>
+                    First Released:{' '}
+                    <Text as='span' fontWeight='normal'>
+                      {sourceObj.dateCreated
+                        ? new Date(sourceObj.dateCreated).toLocaleDateString(
+                            'en-US',
+                            {
+                              year: 'numeric',
+                              month: 'long',
+                              day: 'numeric',
+                            },
+                          )
+                        : 'N/A'}
+                    </Text>
+                  </Text>
                 </HStack>
 
-                {/* Num records */}
-                <Box mt={2}>
-                  {sourceObj?.numberOfRecords > 0 && (
-                    <Text fontWeight='semibold' fontSize='sm'>
-                      {sourceObj.numberOfRecords.toLocaleString()} Records
-                      Available
-                    </Text>
-                  )}
+                {/* Description */}
+                <DisplayHTMLContent
+                  content={sourceObj?.description || ''}
+                  lineHeight='tall'
+                />
 
-                  {/* Release dates */}
-                  <HStack divider={<StackDivider borderColor='gray.100' />}>
-                    <Text fontSize='xs' fontWeight='semibold' color='text.body'>
-                      Latest Release:{' '}
-                      <Text as='span' fontWeight='normal'>
-                        {sourceObj.dateModified
-                          ? new Date(sourceObj.dateModified).toLocaleDateString(
-                              'en-US',
-                              {
-                                year: 'numeric',
-                                month: 'long',
-                                day: 'numeric',
-                              },
-                            )
-                          : 'N/A'}
-                      </Text>
-                    </Text>
-                    <Text fontSize='xs' fontWeight='semibold' color='text.body'>
-                      First Released:{' '}
-                      <Text as='span' fontWeight='normal'>
-                        {sourceObj.dateCreated
-                          ? new Date(sourceObj.dateCreated).toLocaleDateString(
-                              'en-US',
-                              {
-                                year: 'numeric',
-                                month: 'long',
-                                day: 'numeric',
-                              },
-                            )
-                          : 'N/A'}
-                      </Text>
-                    </Text>
-                  </HStack>
+                {/* Source Compatibility */}
+                {metadataCompatibilityData && (
+                  <Box>
+                    <MetadataCompatibilitySourceBadge
+                      data={metadataCompatibilityData}
+                    />
+                  </Box>
+                )}
 
-                  {/* Description */}
-                  <DisplayHTMLContent content={sourceObj.description} />
-
-                  {/* Source Compatibility */}
-                  {metadataCompatibilityData && (
-                    <Box mt={1} mb={4}>
-                      <MetadataCompatibilitySourceBadge
-                        data={metadataCompatibilityData}
-                      />
-                    </Box>
-                  )}
-
-                  {/* Property transformations table */}
-                  {sourceObj?.schema && (
-                    <Box w='100%' mt={1}>
-                      <Flex
-                        w='100%'
-                        as='button'
-                        flexDirection={{ base: 'column', sm: 'row' }}
-                        alignItems='center'
-                        justifyContent='space-between'
-                        onClick={() => schemaIdFunc(sourceObj.name)}
-                        borderY='1px solid'
-                        borderColor='gray.100'
-                        px={0}
-                        py={2}
+                {/* Property transformations table */}
+                {sourceObj?.schema && (
+                  <Box w='100%' py={2}>
+                    <Flex
+                      w='100%'
+                      as='button'
+                      flexDirection={{ base: 'column', sm: 'row' }}
+                      alignItems='center'
+                      justifyContent='space-between'
+                      onClick={() => schemaIdFunc(sourceObj.name)}
+                      borderY='1px solid'
+                      borderColor='gray.100'
+                      px={0}
+                      py={2}
+                    >
+                      <Text
+                        fontWeight='semibold'
+                        color='gray.800'
+                        textAlign='left'
+                        lineHeight='short'
                       >
-                        <Text
-                          fontWeight='semibold'
-                          color='gray.800'
-                          textAlign='left'
-                          lineHeight='short'
-                        >
-                          Visualization of {sourceObj.name} properties
-                          transformed to the NIAID Data Ecosystem
+                        Visualization of {sourceObj.name} properties transformed
+                        to the NIAID Data Ecosystem
+                      </Text>
+                      <Flex alignItems='center'>
+                        <Text mx={2} fontSize='xs' color='gray.800'>
+                          {schemaText.includes(sourceObj.name)
+                            ? 'Hide'
+                            : 'Show'}
                         </Text>
-                        <Flex alignItems='center'>
-                          <Text mx={2} fontSize='xs' color='gray.800'>
-                            {schemaText.includes(sourceObj.name)
-                              ? 'Hide'
-                              : 'Show'}
-                          </Text>
-                          <Icon
-                            as={
-                              schemaText.includes(sourceObj.name)
-                                ? FaMinus
-                                : FaPlus
-                            }
-                            color='gray.800'
-                            boxSize={3}
-                          />
-                        </Flex>
+                        <Icon
+                          as={
+                            schemaText.includes(sourceObj.name)
+                              ? FaMinus
+                              : FaPlus
+                          }
+                          color='gray.800'
+                          boxSize={3}
+                        />
                       </Flex>
-                      <Collapse in={schemaId.includes(sourceObj.name)}>
-                        {schemaId.includes(sourceObj.name) && (
+                    </Flex>
+                    <Collapse in={schemaId.includes(sourceObj.name)}>
+                      {schemaId.includes(sourceObj.name) && (
+                        <Box
+                          mt={4}
+                          position='relative'
+                          overflowX='auto'
+                          boxShadow='low'
+                          borderRadius='semi'
+                        >
                           <Box
-                            mt={4}
-                            position='relative'
-                            overflowX='auto'
-                            boxShadow='low'
-                            borderRadius='semi'
+                            as='table'
+                            w='100%'
+                            bg='#374151'
+                            color='whiteAlpha.800'
+                            textAlign='left'
+                            fontSize='sm'
                           >
-                            <Box
-                              as='table'
-                              w='100%'
-                              bg='#374151'
-                              color='whiteAlpha.800'
-                              textAlign='left'
-                              fontSize='sm'
-                            >
-                              <Box as='thead' textTransform='uppercase'>
-                                <tr>
-                                  <Box as='th' scope='col' px={6} py={3}>
-                                    {sourceObj.name} Property
-                                  </Box>
-                                  <Box as='th' scope='col' px={6} py={3}>
-                                    NIAID Data Ecosystem Property
-                                  </Box>
-                                </tr>
-                              </Box>
+                            <Box as='thead' textTransform='uppercase'>
+                              <tr>
+                                <Box as='th' scope='col' px={6} py={3}>
+                                  {sourceObj.name} Property
+                                </Box>
+                                <Box as='th' scope='col' px={6} py={3}>
+                                  NIAID Data Ecosystem Property
+                                </Box>
+                              </tr>
+                            </Box>
 
-                              <Box as='tbody' bg='#1F2937' border='gray.100'>
-                                {Object.entries(sourceObj.schema).map(
-                                  (item, i) => {
-                                    return (
-                                      <Box
-                                        as='tr'
-                                        key={item[0]}
-                                        borderBottom='1px solid'
-                                        borderColor='gray.700'
-                                      >
-                                        {Object.entries(item).map(field => {
-                                          return (
-                                            <Box
-                                              as='td'
-                                              key={`${field[0]}-${field[1]}`}
-                                              px={6}
-                                              py={2}
-                                              fontWeight='medium'
-                                              color='#fff'
-                                              whiteSpace='nowrap'
-                                            >
-                                              {field[1]}
-                                            </Box>
-                                          );
-                                        })}
-                                      </Box>
-                                    );
-                                  },
-                                )}
-                              </Box>
+                            <Box as='tbody' bg='#1F2937' border='gray.100'>
+                              {Object.entries(sourceObj.schema).map(
+                                (item, i) => {
+                                  return (
+                                    <Box
+                                      as='tr'
+                                      key={item[0]}
+                                      borderBottom='1px solid'
+                                      borderColor='gray.700'
+                                    >
+                                      {Object.entries(item).map(field => {
+                                        return (
+                                          <Box
+                                            as='td'
+                                            key={`${field[0]}-${field[1]}`}
+                                            px={6}
+                                            py={2}
+                                            fontWeight='medium'
+                                            color='#fff'
+                                            whiteSpace='nowrap'
+                                          >
+                                            {field[1]}
+                                          </Box>
+                                        );
+                                      })}
+                                    </Box>
+                                  );
+                                },
+                              )}
                             </Box>
                           </Box>
-                        )}
-                      </Collapse>
-                    </Box>
-                  )}
-                </Box>
+                        </Box>
+                      )}
+                    </Collapse>
+                  </Box>
+                )}
 
                 {/* Call to action */}
                 <Stack
                   flexDirection={['column', 'column', 'row']}
                   justifyContent='space-between'
-                  mt={4}
+                  width='100%'
                 >
                   <NextLink
                     style={{ flex: 1, maxWidth: '380px' }}
@@ -409,26 +383,11 @@ const Main: React.FC<Main> = ({ data, isLoading, metadata }) => {
                     </NextLink>
                   )}
                 </Stack>
-              </Box>
+              </StyledCard>
             );
-          })}
-        </>
-      ) : (
-        <Flex flexDirection='column'>
-          {[...Array(10).keys()].map((_, i) => (
-            <Skeleton
-              width='100%'
-              h={isLoading ? 4 : 'unset'}
-              my={2}
-              isLoaded={!isLoading}
-              flex={1}
-              key={i}
-            >
-              <Box minH={200}></Box>
-            </Skeleton>
-          ))}
-        </Flex>
-      )}
+          },
+        )}
+      </StyledCardStack>
     </Box>
   );
 };

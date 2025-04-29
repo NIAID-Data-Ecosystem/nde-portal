@@ -130,10 +130,10 @@ const Sources: NextPage<SourcesProps> = ({ data, error }) => {
               flexDirection='column'
               bg='page.alt'
               display={['none', 'none', 'flex']}
-              w='50%'
               as='nav'
               aria-label='Navigation for data sources.'
               maxW='450px'
+              flex={1}
             >
               <UnorderedList
                 display='flex'
@@ -157,7 +157,7 @@ const Sources: NextPage<SourcesProps> = ({ data, error }) => {
               py={4}
               justifyContent='flex-start'
               mb={32}
-              flex={1}
+              flex={3}
             >
               <Main
                 data={metadata?.sources}

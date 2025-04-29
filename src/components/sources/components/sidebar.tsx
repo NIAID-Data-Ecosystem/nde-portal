@@ -1,7 +1,8 @@
 import React from 'react';
-import { Badge, Box, Heading, HStack, ListItem, Text } from '@chakra-ui/react';
-import { formatDate } from 'src/utils/api/helpers';
+import { Box, Heading, HStack, ListItem, Text } from '@chakra-ui/react';
+import { BadgeWithTooltip } from 'src/components/badges';
 import type { SourceResponse } from 'src/pages/sources';
+import { formatDate } from 'src/utils/api/helpers';
 
 interface Sidebar {
   data: SourceResponse[];
@@ -33,9 +34,9 @@ const Sidebar: React.FC<Sidebar> = ({ data }) => {
                   {name}{' '}
                 </Heading>
                 {data[+id].isNiaidFunded && (
-                  <Badge colorScheme='blue' variant='subtle'>
+                  <BadgeWithTooltip colorScheme='blue' variant='subtle'>
                     NIAID
-                  </Badge>
+                  </BadgeWithTooltip>
                 )}
               </HStack>
               {data[+id].dateModified ? (
