@@ -16,79 +16,70 @@ export interface ProgramCollection {
 export const fetchProgramCollections = async (): Promise<
   ProgramCollection[]
 > => {
-  if (!process.env.NEXT_PUBLIC_API_URL) {
+  const API_URL = process.env.NEXT_PUBLIC_API_URL;
+  if (!API_URL) {
     throw new Error('API URL is undefined');
   }
 
-  // use nde api to fetch list of available program collections and associated counts
-  const collections = await axios
-    .get(`${process.env.NEXT_PUBLIC_API_URL}/query`, {
+  let collections: { term: string; count: number }[] = [];
+  try {
+    // use nde api to fetch list of available program collections and associated counts
+    const response = await axios.get(`${API_URL}/query`, {
       params: {
         q: '_exists_:sourceOrganization.name',
         facets: 'sourceOrganization.name',
         facet_size: 1000,
         size: 0,
       },
-    })
-    .then(response => response.data.facets['sourceOrganization.name'].terms);
+    });
+
+    collections =
+      response.data.facets?.['sourceOrganization.name']?.terms || [];
+  } catch (error) {
+    console.error('Failed to fetch program collections list:', error);
+    throw new Error('Unable to fetch program collections list');
+  }
 
   // Fetch the first result for each collection and filter for the matching program collection.
   const collectionsWithDetails = await Promise.all(
-    collections.map(async (collection: any) => {
-      const { term, count } = collection;
+    collections.map(async ({ term, count }) => {
       const id = transformTermToId(term);
 
       try {
-        const { data } = await axios.get(
-          `${process.env.NEXT_PUBLIC_API_URL}/query`,
-          {
-            params: {
-              q: `_exists_:sourceOrganization.name AND sourceOrganization.name:"${term}"`,
-              size: 1,
-              fields: 'sourceOrganization',
-            },
+        const { data } = await axios.get(`${API_URL}/query`, {
+          params: {
+            q: `_exists_:sourceOrganization.name AND sourceOrganization.name:"${term}"`,
+            size: 1,
+            fields: 'sourceOrganization',
           },
-        );
+        });
 
         const hit = data?.hits?.[0];
-        if (!hit?.sourceOrganization) {
-          return { id, term, count, sourceOrganization: null };
-        }
+        const sourceOrg = hit?.sourceOrganization;
 
-        const sourceOrganization = hit.sourceOrganization;
+        let matchingOrg: SourceOrganization | null = null;
 
-        let matchingOrganizationDetails = null;
-
-        if (Array.isArray(sourceOrganization)) {
-          matchingOrganizationDetails = sourceOrganization.find(
+        if (Array.isArray(sourceOrg)) {
+          matchingOrg = sourceOrg.find(
             (org: SourceOrganization) =>
               org.name.toLowerCase() === term.toLowerCase(),
           );
-        } else if (
-          sourceOrganization.name?.toLowerCase() === term.toLowerCase()
-        ) {
-          matchingOrganizationDetails = sourceOrganization;
+        } else if (sourceOrg?.name?.toLowerCase() === term.toLowerCase()) {
+          matchingOrg = sourceOrg;
         }
 
-        return {
-          id,
-          term,
-          count,
-          sourceOrganization: matchingOrganizationDetails,
-        };
+        return { id, term, count, sourceOrganization: matchingOrg };
       } catch (error) {
-        console.error(
-          `Failed to fetch sourceOrganization for term: ${term}`,
-          error,
+        console.error(`Error fetching details for term "${term}":`, error);
+        throw new Error(
+          `Unable to fetch program collection details for ${term}`,
         );
-        return { id, term, count, sourceOrganization: null };
       }
     }),
   );
 
   return collectionsWithDetails;
 };
-
 const transformTermToId = (term: string) => {
   // Convert the term to lowercase and replace spaces with hyphens
   const transformedTerm = term.toLowerCase().replace(/\s+/g, '-');
