@@ -68,6 +68,15 @@ export const fetchProgramCollections = async (): Promise<
           matchingOrg = sourceOrg;
         }
 
+        // Format alternate name fields to remove any duplicate acronyms.
+        // (i.e.) if name = "AMP Network", remove AMP from alternate names
+        if (matchingOrg?.alternateName) {
+          const nameWords = matchingOrg.name.split(' ');
+          matchingOrg.alternateName = matchingOrg.alternateName.filter(
+            (alternateName: string) => !nameWords.includes(alternateName),
+          );
+        }
+
         return { id, term, count, sourceOrganization: matchingOrg };
       } catch (error) {
         console.error(`Error fetching details for term "${term}":`, error);
@@ -80,6 +89,7 @@ export const fetchProgramCollections = async (): Promise<
 
   return collectionsWithDetails;
 };
+
 const transformTermToId = (term: string) => {
   // Convert the term to lowercase and replace spaces with hyphens
   const transformedTerm = term.toLowerCase().replace(/\s+/g, '-');
