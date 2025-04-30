@@ -50,7 +50,7 @@ export const SidebarItem: React.FC<{
         borderRight='1px solid'
         borderColor='gray.100'
       >
-        <Label>{label}</Label>
+        {typeof label === 'string' ? <Label>{label}</Label> : label}
 
         {subLabel && (
           <Text fontSize='sm' lineHeight='short'>
