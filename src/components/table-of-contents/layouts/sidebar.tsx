@@ -27,7 +27,7 @@ export const Sidebar: React.FC<FlexProps & { ['aria-label']: string }> = ({
       maxW='450px'
       {...props}
     >
-      <UnorderedList py={4} top={0} ml={0}>
+      <UnorderedList top={0} ml={0}>
         {children}
       </UnorderedList>
     </Flex>
@@ -42,16 +42,18 @@ export const SidebarItem: React.FC<{
   return (
     <NextLink href={href}>
       <ListItem
-        // as='a'
         _hover={{ bg: 'gray.50' }}
         cursor='pointer'
         px={[2, 4, 6]}
         py={4}
+        borderTop='1px solid'
+        borderRight='1px solid'
+        borderColor='gray.100'
       >
         <Label>{label}</Label>
 
         {subLabel && (
-          <Text fontWeight='medium' fontSize='sm'>
+          <Text fontSize='sm' lineHeight='short'>
             {subLabel}
           </Text>
         )}
@@ -62,7 +64,7 @@ export const SidebarItem: React.FC<{
 
 export const Label: React.FC<HeadingProps> = ({ children, ...props }) => {
   return (
-    <Heading size='h6' {...props}>
+    <Heading size='h6' lineHeight='short' mb={1} {...props}>
       {children}
     </Heading>
   );
