@@ -24,12 +24,10 @@ const CARDS_DATA: CardData[] = [
     image: '/assets/homepage/influenza-a-virus-h1n1.png',
     imageAlt:
       'Microscopic view of the influenza A virus, a key focus in infectious disease research and vaccine development.',
-    heading: 'Explore Infectious and Immune-mediated Disease Data',
+    heading: 'Select Diseases and Conditions',
     paragraphs: [
-      'NIAID funds cutting-edge research to understand, diagnose, and treat infectious and immune-mediated diseases.',
       <>
-        Explore curated datasets and results from clinical studies for priority
-        diseases such as{' '}
+        Explore datasets and computational tools for diseases such as{' '}
         <ChakraLink
           as={NextLink}
           href='/topics/asthma'
@@ -67,16 +65,15 @@ const CARDS_DATA: CardData[] = [
           href='/topics/tuberculosis'
           textDecoration='underline'
         >
-          tuberculosis,
-        </ChakraLink>{' '}
-        and emerging viruses. Access the latest findings on disease mechanisms,
-        biomarkers, therapeutic strategies, and more in the{' '}
+          tuberculosis
+        </ChakraLink>
+        , and{' '}
         <ChakraLink
           as={NextLink}
           href='/topics#diseases'
           textDecoration='underline'
         >
-          Diseases Page
+          more
         </ChakraLink>
         .
       </>,
@@ -86,46 +83,19 @@ const CARDS_DATA: CardData[] = [
     image: '/assets/homepage/student-scrubs-green.png',
     imageAlt:
       'Group of biomedical researchers collaborating in a laboratory setting.',
-    heading:
-      'Curated Datasets and Other Resources from NIAID Research Programs',
+    heading: 'NIAID-Funded Programs',
     objectPosition: { base: 'center', xl: '15% center' },
     paragraphs: [
-      'The Discovery Portal connects researchers with high-impact datasets and other resources from NIAID-funded programs that drive innovation in infectious and immune-mediated disease research.',
       <>
-        Discover resources from programs like{' '}
-        <ChakraLink
-          as={NextLink}
-          href='/topics/NIAID-CFAR-Program'
-          textDecoration='underline'
-        >
-          CFAR
-        </ChakraLink>
-        ,{' '}
-        <ChakraLink
-          as={NextLink}
-          href='/topics/NIAID-IMPAACT-Network'
-          textDecoration='underline'
-        >
-          IMPAACT
-        </ChakraLink>
-        ,{' '}
-        <ChakraLink
-          as={NextLink}
-          href='/topics/NIAID-HIPC-Network'
-          textDecoration='underline'
-        >
-          HIPC
-        </ChakraLink>
-        , and others. Explore how these collaborative networks accelerate
-        biomedical discoveries in the{' '}
+        Find high-impact datasets and other resources from{' '}
         <ChakraLink
           as={NextLink}
           href='/topics#programs'
           textDecoration='underline'
         >
-          Programs Page
-        </ChakraLink>
-        .
+          NIAID-funded programs
+        </ChakraLink>{' '}
+        that are driving innovation.
       </>,
     ],
   },

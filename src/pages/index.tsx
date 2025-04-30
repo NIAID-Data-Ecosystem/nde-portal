@@ -21,7 +21,6 @@ import { SearchBarWithDropdown } from 'src/components/search-bar';
 import { FaMagnifyingGlass, FaRegEnvelope, FaGithub } from 'react-icons/fa6';
 import { useRepoData } from 'src/hooks/api/useRepoData';
 import { ExplorationCards } from 'src/views/home/components/ExplorationCards';
-
 import {
   NewsCarousel,
   fetchNews,
