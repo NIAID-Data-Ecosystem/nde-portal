@@ -102,12 +102,7 @@ const CARDS_DATA: CardData[] = [
 ];
 
 const CardText: React.FC<TextProps> = props => (
-  <Text
-    fontWeight='400'
-    lineHeight={{ base: 'short', xl: 'shorter' }}
-    fontSize='sm'
-    {...props}
-  />
+  <Text fontWeight='400' lineHeight={'short'} fontSize='md' {...props} />
 );
 
 const ExplorationCard = ({
@@ -145,14 +140,14 @@ const ExplorationCard = ({
     </Box>
     <Box
       width={{ base: '100%', md: '66.66%' }}
-      px={{ base: 4, sm: 5 }}
-      py={{ base: 4, xl: 1 }}
+      px={'5'}
+      py={'5'}
       display='flex'
       alignItems='flex-start'
       justifyContent='flex-start'
     >
       <VStack align='flex-start' spacing={2} w='100%'>
-        <Heading as='h3' fontSize='lg' fontWeight='semibold'>
+        <Heading as='h3' fontSize='xl' fontWeight='semibold'>
           {card.heading}
         </Heading>
         {card.paragraphs.map((paragraph, i) => (
