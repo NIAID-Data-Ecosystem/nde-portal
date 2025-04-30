@@ -14,7 +14,7 @@ export const SectionSearch: React.FC<SectionSearchProps> = ({
   handleChange,
 }) => {
   return (
-    <Flex justifyContent='flex-end' flex={1}>
+    <Flex justifyContent='flex-end'>
       <Box w='300px'>
         <SearchInput
           size={size}

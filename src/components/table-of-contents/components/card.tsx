@@ -149,6 +149,7 @@ export const StyledCardButton: React.FC<ButtonProps & { href: UrlObject }> = ({
             },
           },
         }}
+        mt={2}
         {...props}
       >
         {children}
