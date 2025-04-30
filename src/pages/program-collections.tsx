@@ -130,14 +130,16 @@ const ProgramCollections: NextPage<{ data: ProgramCollection[] }> = props => {
                 <SectionHeader title='Program Collections'></SectionHeader>
 
                 {/* Search bar */}
-                <SectionSearch
-                  data={programCollections}
-                  size='sm'
-                  ariaLabel='Search for a program collection'
-                  placeholder='Search for a program collection'
-                  value={searchValue}
-                  handleChange={e => setSearchValue(e.currentTarget.value)}
-                />
+                <Flex>
+                  <SectionSearch
+                    data={programCollections}
+                    size='sm'
+                    ariaLabel='Search for a program collection'
+                    placeholder='Search for a program collection'
+                    value={searchValue}
+                    handleChange={e => setSearchValue(e.currentTarget.value)}
+                  />
+                </Flex>
 
                 {/* Display list of program collections in cards */}
                 <StyledCardStack>

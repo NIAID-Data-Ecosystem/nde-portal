@@ -10,6 +10,7 @@ import {
   SkeletonText,
   StackDivider,
   Text,
+  VStack,
 } from '@chakra-ui/react';
 import { BadgeWithTooltip } from 'src/components/badges';
 import { Link } from 'src/components/link';
@@ -70,37 +71,42 @@ const Main: React.FC<Main> = ({ data, isLoading, metadata }) => {
           Suggest a new source
         </Button>
       </SectionHeader>
-      <Flex justifyContent='space-between' flexWrap='wrap'>
-        <Box minW='250px'>
-          <SkeletonText isLoaded={!isLoading} noOfLines={1} skeletonHeight={4}>
-            <Text fontSize='xs' color='gray.800'>
-              API Version:
+      <Flex justifyContent='space-between' flexWrap='wrap-reverse'>
+        <VStack minW='250px' alignItems='flex-start' m={0.5} flex={1}>
+          <SkeletonText isLoaded={!isLoading} noOfLines={1} skeletonHeight={5}>
+            <Flex alignItems='center'>
+              <Text
+                fontSize='xs'
+                lineHeight='short'
+                fontWeight='semibold'
+                color='text.body'
+              >
+                API Version:
+              </Text>
               {metadata?.version && (
                 <TagWithUrl
                   bg='status.info_lt'
                   href={`${process.env.NEXT_PUBLIC_API_URL}/metadata`}
                   isExternal
-                  fontWeight='semibold'
                   mx={1}
                 >
                   V.{metadata.version}
                 </TagWithUrl>
               )}
-            </Text>
+            </Flex>
           </SkeletonText>
-          <SkeletonText
-            isLoaded={!isLoading}
-            noOfLines={1}
-            skeletonHeight={4}
-            mt={0.5}
-          >
+          <SkeletonText isLoaded={!isLoading} noOfLines={1} skeletonHeight={5}>
             {metadata?.date && (
-              <Text fontSize='xs' color='gray.800' fontWeight='medium'>
-                Data last harvested: {formatDate(metadata?.date)}
+              <Text fontSize='xs' lineHeight='short' fontWeight='semibold'>
+                Data last harvested:
+                <Text as='span' fontWeight='normal'>
+                  {' '}
+                  {formatDate(metadata?.date)}
+                </Text>
               </Text>
             )}
           </SkeletonText>
-        </Box>
+        </VStack>
         <SectionSearch
           data={sources}
           size='sm'
@@ -309,20 +315,22 @@ const Main: React.FC<Main> = ({ data, isLoading, metadata }) => {
                 w='100%'
                 justifyContent={{ base: 'center', md: 'flex-end' }}
               >
-                <StyledCardButton
-                  maxWidth='500px'
-                  href={{
-                    pathname: `/search`,
-                    query: {
-                      q: '',
-                      filters: queryFilterObject2String({
-                        'includedInDataCatalog.name': [sourceObj.id],
-                      }),
-                    },
-                  }}
-                >
-                  Search for {sourceObj.name} resources
-                </StyledCardButton>
+                {sourceObj.id && (
+                  <StyledCardButton
+                    maxWidth='500px'
+                    href={{
+                      pathname: `/search`,
+                      query: {
+                        q: '',
+                        filters: queryFilterObject2String({
+                          'includedInDataCatalog.name': [sourceObj.id],
+                        }),
+                      },
+                    }}
+                  >
+                    Search for {sourceObj.name} resources
+                  </StyledCardButton>
+                )}
               </Flex>
             </StyledCard>
           );

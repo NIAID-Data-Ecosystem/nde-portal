@@ -57,7 +57,7 @@ const Sources: NextPage<SourcesProps> = ({ data, error }) => {
   } = useQuery({
     queryKey: ['metadata'],
     queryFn: fetchMetadata,
-    initialData: () => data.sourceMetadata.data,
+    placeholderData: () => data.sourceMetadata.data,
     select: res => {
       const sources = res.src;
       const sourceDetails = Object.entries(sources).map(([key, source]) => {
@@ -103,7 +103,7 @@ const Sources: NextPage<SourcesProps> = ({ data, error }) => {
         ),
       };
     },
-    refetchOnMount: true,
+    refetchOnMount: false,
   });
 
   return (
