@@ -133,8 +133,8 @@ const ProgramCollections: NextPage<{ data: ProgramCollection[] }> = props => {
                 <SectionSearch
                   data={programCollections}
                   size='sm'
-                  ariaLabel='Search for a source'
-                  placeholder='Search for a source'
+                  ariaLabel='Search for a program collection'
+                  placeholder='Search for a program collection'
                   value={searchValue}
                   handleChange={e => setSearchValue(e.currentTarget.value)}
                 />
