@@ -162,7 +162,6 @@ const Sources: NextPage<SourcesProps> = ({ data, error }) => {
                               colorScheme='blue'
                               variant='subtle'
                               mx={2}
-                              my={1}
                             >
                               NIAID
                             </BadgeWithTooltip>
