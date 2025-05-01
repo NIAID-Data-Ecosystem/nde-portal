@@ -103,7 +103,7 @@ const Sources: NextPage<SourcesProps> = ({ data, error }) => {
         ),
       };
     },
-    refetchOnMount: false,
+    refetchOnWindowFocus: false,
   });
 
   return (
