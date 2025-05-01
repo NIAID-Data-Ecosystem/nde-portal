@@ -15,6 +15,7 @@ type CardData = {
   image: string;
   imageAlt: string;
   heading: string;
+  headingHref: string;
   paragraphs: React.ReactNode[];
   objectPosition?: string | Record<string, string>;
 };
@@ -25,6 +26,7 @@ const CARDS_DATA: CardData[] = [
     imageAlt:
       'Microscopic view of the influenza A virus, a key focus in infectious disease research and vaccine development.',
     heading: 'Select Diseases and Conditions',
+    headingHref: '/topics#diseases',
     paragraphs: [
       <>
         Explore datasets and computational tools for diseases such as{' '}
@@ -84,6 +86,7 @@ const CARDS_DATA: CardData[] = [
     imageAlt:
       'Group of biomedical researchers collaborating in a laboratory setting.',
     heading: 'NIAID-Funded Programs',
+    headingHref: '/topics#programs',
     objectPosition: { base: 'center', xl: '15% center' },
     paragraphs: [
       <>
@@ -148,7 +151,13 @@ const ExplorationCard = ({
     >
       <VStack align='flex-start' spacing={2} w='100%'>
         <Heading as='h3' fontSize='xl' fontWeight='semibold'>
-          {card.heading}
+          <ChakraLink
+            as={NextLink}
+            href={card.headingHref}
+            textDecoration='underline'
+          >
+            {card.heading}
+          </ChakraLink>
         </Heading>
         {card.paragraphs.map((paragraph, i) => (
           <CardText key={i}>{paragraph}</CardText>
