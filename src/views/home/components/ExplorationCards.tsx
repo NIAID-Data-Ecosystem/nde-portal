@@ -32,7 +32,7 @@ const CARDS_DATA: CardData[] = [
         diseases such as{' '}
         <ChakraLink
           as={NextLink}
-          href='/topics/asthma'
+          href='/diseases/asthma'
           textDecoration='underline'
         >
           asthma
@@ -40,7 +40,7 @@ const CARDS_DATA: CardData[] = [
         ,{' '}
         <ChakraLink
           as={NextLink}
-          href='/topics/HIV-AIDS'
+          href='/diseases/HIV-AIDS'
           textDecoration='underline'
         >
           HIV/AIDS
@@ -48,7 +48,7 @@ const CARDS_DATA: CardData[] = [
         ,{' '}
         <ChakraLink
           as={NextLink}
-          href='/topics/influenza'
+          href='/diseases/influenza'
           textDecoration='underline'
         >
           influenza
@@ -56,7 +56,7 @@ const CARDS_DATA: CardData[] = [
         ,{' '}
         <ChakraLink
           as={NextLink}
-          href='/topics/malaria'
+          href='/diseases/malaria'
           textDecoration='underline'
         >
           malaria
@@ -64,18 +64,14 @@ const CARDS_DATA: CardData[] = [
         ,{' '}
         <ChakraLink
           as={NextLink}
-          href='/topics/tuberculosis'
+          href='/diseases/tuberculosis'
           textDecoration='underline'
         >
           tuberculosis,
         </ChakraLink>{' '}
         and emerging viruses. Access the latest findings on disease mechanisms,
         biomarkers, therapeutic strategies, and more in the{' '}
-        <ChakraLink
-          as={NextLink}
-          href='/topics#diseases'
-          textDecoration='underline'
-        >
+        <ChakraLink as={NextLink} href='/diseases' textDecoration='underline'>
           Diseases Page
         </ChakraLink>
         .
