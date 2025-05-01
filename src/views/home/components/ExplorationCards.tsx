@@ -95,7 +95,7 @@ const CARDS_DATA: CardData[] = [
         Discover resources from programs like{' '}
         <ChakraLink
           as={NextLink}
-          href='/topics/NIAID-CFAR-Program'
+          href='/program-collections#niaid-cfar-program'
           textDecoration='underline'
         >
           CFAR
@@ -103,7 +103,7 @@ const CARDS_DATA: CardData[] = [
         ,{' '}
         <ChakraLink
           as={NextLink}
-          href='/topics/NIAID-IMPAACT-Network'
+          href='/program-collections#niaid-impaact-network'
           textDecoration='underline'
         >
           IMPAACT
@@ -111,7 +111,7 @@ const CARDS_DATA: CardData[] = [
         ,{' '}
         <ChakraLink
           as={NextLink}
-          href='/topics/NIAID-HIPC-Network'
+          href='/program-collections#niaid-hipc-network'
           textDecoration='underline'
         >
           HIPC
@@ -120,7 +120,7 @@ const CARDS_DATA: CardData[] = [
         biomedical discoveries in the{' '}
         <ChakraLink
           as={NextLink}
-          href='/topics#programs'
+          href='/program-collections'
           textDecoration='underline'
         >
           Programs Page
