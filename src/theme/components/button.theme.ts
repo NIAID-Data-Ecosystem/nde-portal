@@ -11,6 +11,8 @@ export const Button = {
   sizes: {
     sm: {
       fontSize: 'sm',
+      px: 3, // <-- these values are tokens from the design system
+      py: 1.5, // <-- these values are tokens from the design system
     },
     md: {
       fontSize: 'md',

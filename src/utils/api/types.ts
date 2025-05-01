@@ -291,9 +291,11 @@ export interface SdPublisher {
 export interface SourceOrganization {
   '@type': string;
   name: string;
-  alternateName?: string;
+  abstract?: string;
+  alternateName?: string[];
+  correctionApproved?: boolean;
   description?: string;
-  parentOrganization?: string;
+  parentOrganization?: string | string[];
   url?: string;
 }
 
