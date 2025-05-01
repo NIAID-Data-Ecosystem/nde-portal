@@ -17,7 +17,7 @@ type CardData = {
   heading: string;
   headingHref: string;
   paragraphs: React.ReactNode[];
-  objectPosition?: string | Record<string, string>;
+  objectPosition: string;
 };
 
 const CARDS_DATA: CardData[] = [
@@ -80,6 +80,7 @@ const CARDS_DATA: CardData[] = [
         .
       </>,
     ],
+    objectPosition: 'center',
   },
   {
     image: '/assets/homepage/student-scrubs-green.png',
@@ -87,7 +88,6 @@ const CARDS_DATA: CardData[] = [
       'Group of biomedical researchers collaborating in a laboratory setting.',
     heading: 'NIAID-Funded Programs',
     headingHref: '/topics#programs',
-    objectPosition: { base: 'center', xl: '15% center' },
     paragraphs: [
       <>
         Find high-impact datasets and other resources from{' '}
@@ -101,6 +101,7 @@ const CARDS_DATA: CardData[] = [
         that are driving innovation.
       </>,
     ],
+    objectPosition: 'center',
   },
 ];
 
@@ -125,24 +126,24 @@ const ExplorationCard = ({
     borderColor='gray.100'
   >
     <Box
-      width={{ base: '100%', md: '33.33%' }}
+      width={{ base: '100%', md: '33.33%', lg: '40%' }}
       flexShrink={0}
       position='relative'
-      aspectRatio={{ base: '5 / 3', md: '4 / 3' }}
+      aspectRatio={{ base: '5 / 3', lg: '4 / 3' }}
       maxHeight={{ base: '250px', md: 'none' }}
     >
       <Image
         src={card.image}
         alt={card.imageAlt}
         objectFit='cover'
-        objectPosition={card.objectPosition || 'center'}
+        objectPosition={card.objectPosition}
         width='100%'
         height='100%'
         loading={index === 0 ? 'eager' : 'lazy'}
       />
     </Box>
     <Box
-      width={{ base: '100%', md: '66.66%' }}
+      width={{ base: '100%', md: '66.66%', lg: '60%' }}
       px={'5'}
       py={'5'}
       display='flex'
