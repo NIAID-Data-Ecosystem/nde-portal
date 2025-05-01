@@ -109,7 +109,7 @@ const CardText: React.FC<TextProps> = props => (
   <Text fontWeight='400' lineHeight={'short'} fontSize='md' {...props} />
 );
 
-const ExplorationCard = ({
+const LandingPageCard = ({
   card,
   index,
 }: {
@@ -168,7 +168,7 @@ const ExplorationCard = ({
   </Flex>
 );
 
-export const ExplorationCards = () => {
+export const LandingPageCards = () => {
   return (
     <Flex
       direction={{ base: 'column', xl: 'row' }}
@@ -178,7 +178,7 @@ export const ExplorationCards = () => {
       mt={4}
     >
       {CARDS_DATA.map((card, i) => (
-        <ExplorationCard key={i} card={card} index={i} />
+        <LandingPageCard key={i} card={card} index={i} />
       ))}
     </Flex>
   );
