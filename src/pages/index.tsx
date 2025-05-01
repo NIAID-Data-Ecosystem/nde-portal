@@ -20,7 +20,7 @@ import NextLink from 'next/link';
 import { SearchBarWithDropdown } from 'src/components/search-bar';
 import { FaMagnifyingGlass, FaRegEnvelope, FaGithub } from 'react-icons/fa6';
 import { useRepoData } from 'src/hooks/api/useRepoData';
-import { LandingPageCards } from 'src/views/home/components/LandingPageCards';
+import { LandingPageCards } from 'src/views/home/components/LandingPageCards/';
 import {
   NewsCarousel,
   fetchNews,
