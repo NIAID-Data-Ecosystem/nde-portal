@@ -3,13 +3,13 @@
   "attributes": {
     "title": "Influenza",
     "subtitle": "",
-    "description": "Each year, influenza causes millions of illnesses worldwide and, in the United States, results in thousands of hospitalizations and deaths. Influenza is especially dangerous for people 65 years and older, young children and people with certain health conditions, such as heart disease or asthma. Research to find new and improved ways to diagnose, treat and prevent seasonal influenza and novel influenza viruses with pandemic potential is essential to protecting the public health.",
+    "description": "Each year, influenza causes millions of illnesses worldwide and, in the United States, results in thousands of hospitalizations and deaths. Influenza is especially dangerous for people 65 years and older, young children and people with certain health conditions, such as heart disease or asthma. Research to find new and improved ways to diagnose, treat and prevent seasonal influenza and novel influenza viruses with pandemic potential is essential to protecting the public health. [Learn more about NIAID’s efforts to address this disease.](https://www.niaid.nih.gov/diseases-conditions/influenza)",
     "image": {
       "data": {
         "attributes": {
           "url": "https://www.niaid.nih.gov/sites/default/files/styles/image_style_thumbnail_md/public/avian-flu-hero_0.jpg?itok=PVtvYKzH",
           "alternativeText": "Influenza A (H5N1) virus particles (rod shaped)",
-          "caption": "Rod-shaped Influenza A (H5N1) virus particles"
+          "caption": "Rod-shaped Influenza A (H5N1) virus particles. Credit: NIAID."
         }
       }
     },
@@ -188,6 +188,19 @@
             },
             "image": { "data": null },
 
+            "isExternal": true,
+            "createdAt": "2025-02-22T19:09:45.049Z",
+            "updatedAt": "2025-02-22T19:09:45.049Z",
+            "publishedAt": "2025-02-22T19:09:45.049Z"
+          }
+        },
+        {
+          "id": 8,
+          "attributes": {
+            "label": "ClinicalTrials.gov",
+            "url": "https://clinicaltrials.gov/search?cond=Influenza&aggFilters=funderType:nih",
+            "categories": null,
+            "image": { "data": null },
             "isExternal": true,
             "createdAt": "2025-02-22T19:09:45.049Z",
             "updatedAt": "2025-02-22T19:09:45.049Z",

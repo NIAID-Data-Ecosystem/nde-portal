@@ -37,7 +37,6 @@ export const DiseaseContent: React.FC<DiseaseContentProps> = ({
       mt={16}
       flex={1}
     >
-      {' '}
       <Flex flexDirection='column' flex={1} pb={32} width='100%' m='0 auto'>
         {/* Disease page header */}
         <IntroSection
@@ -45,7 +44,7 @@ export const DiseaseContent: React.FC<DiseaseContentProps> = ({
           subtitle={data?.attributes.subtitle}
           description={data?.attributes.description}
           links={data?.attributes.contactLinks}
-          params={query}
+          image={data?.attributes.image}
           isLoading={isLoading}
         />
         <SectionWrapper

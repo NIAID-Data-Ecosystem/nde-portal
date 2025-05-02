@@ -1,153 +1,143 @@
-import { useMemo } from 'react';
-import { FaMagnifyingGlass } from 'react-icons/fa6';
-import NextLink from 'next/link';
 import {
   Box,
-  Button,
-  Flex,
-  Icon,
+  Image,
   SkeletonText,
   Stack,
-  StackDivider,
   Text,
   VStack,
 } from '@chakra-ui/react';
-import { Link } from 'src/components/link';
-import { Params } from 'src/utils/api';
 import { DiseasePageProps } from 'src/views/diseases/types';
-import { getSearchResultsRoute } from '../../helpers';
 import { SectionTitle } from './section';
+import { useMDXComponents } from 'mdx-components';
+import ReactMarkdown from 'react-markdown';
+import rehypeRaw from 'rehype-raw';
+import remarkGfm from 'remark-gfm';
 
 interface IntroSectionProps {
   title?: DiseasePageProps['attributes']['title'];
   subtitle?: DiseasePageProps['attributes']['subtitle'];
   description?: DiseasePageProps['attributes']['description'];
   links?: DiseasePageProps['attributes']['contactLinks'];
+  image?: DiseasePageProps['attributes']['image'];
   isLoading?: boolean;
-  params?: Params;
 }
 export const IntroSection: React.FC<IntroSectionProps> = ({
   title,
   subtitle,
   description,
-  links,
+  image,
   isLoading,
-  params,
+  links,
 }) => {
-  // Group contact links by category
-  const contactLinksGroupedByCategory = useMemo(() => {
-    return (links?.data || []).reduce((acc, contact) => {
-      const category =
-        contact.attributes.categories?.data[0]?.attributes.name || '';
-      if (!acc[category]) {
-        acc[category] = [];
-      }
-      acc[category].push(contact);
-      return acc;
-    }, {} as Record<string, NonNullable<DiseasePageProps['attributes']['contactLinks']>['data']>);
-  }, [links?.data]);
+  const MDXComponents = useMDXComponents({});
+
+  // [Note]: Unsure if contact link will remain here. Check when program collections are added back.
+  // // Group contact links by category
+  // const contactLinksGroupedByCategory = useMemo(() => {
+  //   return (links?.data || []).reduce((acc, contact) => {
+  //     const category =
+  //       contact.attributes.categories?.data[0]?.attributes.name || '';
+  //     if (!acc[category]) {
+  //       acc[category] = [];
+  //     }
+  //     acc[category].push(contact);
+  //     return acc;
+  //   }, {} as Record<string, NonNullable<DiseasePageProps['attributes']['contactLinks']>['data']>);
+  // }, [links?.data]);
+
   return (
-    <VStack
-      spacing={4}
-      alignItems='flex-start'
-      flex={3}
-      minWidth={{ base: '100%', md: '500px' }}
+    <Stack
+      flexDirection={{ base: 'column', sm: 'row' }}
+      spacing={{ base: 6, lg: 16 }}
+      flexWrap='wrap'
     >
-      {/* Title */}
-      <SectionTitle as='h1' isLoading={isLoading}>
-        {title}
-      </SectionTitle>
-
-      {/* Divider */}
-      <Box w={20} h={1} bgGradient='linear(to-r, secondary.500, primary.400)' />
-
-      {/* Subtitle */}
-      {(subtitle || isLoading) && (
-        <SkeletonText isLoaded={!isLoading} noOfLines={2} skeletonHeight={5}>
-          <Text color='gray.700' lineHeight='short'>
-            {subtitle}
-          </Text>
-        </SkeletonText>
-      )}
-
-      {/* Description */}
-      <Stack
+      <VStack
+        spacing={4}
         alignItems='flex-start'
-        spacing={6}
-        flexDirection={{
-          base: 'column',
-          md: 'row',
-        }}
+        flex={3}
+        minWidth={{ base: '100%', sm: '450px' }}
       >
-        {(description || isLoading) && (
-          <SkeletonText isLoaded={!isLoading} noOfLines={5} skeletonHeight={4}>
-            <Text>{description}</Text>
+        {/* Title */}
+        <SectionTitle as='h1' isLoading={isLoading}>
+          {title}
+        </SectionTitle>
+
+        {/* Divider */}
+        <Box
+          w={20}
+          h={1}
+          bgGradient='linear(to-r, secondary.500, primary.400)'
+        />
+
+        {/* Subtitle */}
+        {(subtitle || isLoading) && (
+          <SkeletonText isLoaded={!isLoading} noOfLines={2} skeletonHeight={5}>
+            <Text color='gray.700' lineHeight='short'>
+              {subtitle}
+            </Text>
           </SkeletonText>
         )}
 
-        {/* Contact Links */}
-        {links && (
-          <Flex
-            bg={{ base: 'page.alt' }}
-            p={[2, 4]}
-            w='100%'
-            borderRadius='base'
-            maxWidth={{ base: 'unset', md: 400 }}
+        {/* Description */}
+        {(description || isLoading) && (
+          <SkeletonText
+            isLoaded={!isLoading}
+            noOfLines={5}
+            skeletonHeight={4}
+            maxWidth={{ base: 'unset', xl: 800 }}
           >
-            <VStack
-              alignItems='flex-start'
-              divider={<StackDivider borderColor='page.placeholder' />}
-              spacing={4}
-              flex={1}
-            >
-              {Object.entries(contactLinksGroupedByCategory).map(
-                ([category, links]) => (
-                  <Stack key={category} spacing={1} lineHeight='short'>
-                    {category && (
-                      <Text
-                        size='sm'
-                        color='text.heading'
-                        textTransform='uppercase'
-                      >
-                        {category}
-                      </Text>
-                    )}
-                    {links.map(({ id, attributes }) => {
-                      return (
-                        <Link
-                          key={id}
-                          href={attributes.url}
-                          isExternal={attributes.isExternal}
-                        >
-                          {attributes.label}
-                        </Link>
-                      );
-                    })}
-                  </Stack>
-                ),
-              )}
-              {params && (
-                <NextLink
-                  href={getSearchResultsRoute({
-                    query: params,
-                  })}
-                  legacyBehavior
-                  passHref
-                >
-                  <Button
-                    as={Link}
-                    leftIcon={<Icon as={FaMagnifyingGlass} boxSize={3} />}
-                    size='sm'
-                    alignItems='center'
-                  >
-                    View collection in the Discovery Portal
-                  </Button>
-                </NextLink>
-              )}
-            </VStack>
-          </Flex>
+            {description && (
+              <ReactMarkdown
+                rehypePlugins={[rehypeRaw, remarkGfm]}
+                components={MDXComponents}
+              >
+                {description}
+              </ReactMarkdown>
+            )}
+          </SkeletonText>
         )}
-      </Stack>
-    </VStack>
+      </VStack>
+
+      {/* Image */}
+      {image?.data?.attributes?.url && (
+        <Box
+          as='figure'
+          minWidth={250}
+          maxWidth={{ base: 'unset', sm: '60%', md: '40%' }}
+          flex={1}
+        >
+          <Image
+            borderRadius='base'
+            width='100%'
+            height='auto'
+            src={image.data.attributes.url}
+            alt={image.data.attributes.alternativeText}
+            objectFit='contain'
+          />
+          {/* Image caption: can include a credit link so using markdown renderer */}
+          {image.data.attributes?.caption && (
+            <ReactMarkdown
+              rehypePlugins={[rehypeRaw, remarkGfm]}
+              components={{
+                ...MDXComponents,
+                p: props => (
+                  <Text
+                    as='figcaption'
+                    fontSize='xs'
+                    opacity={0.8}
+                    lineHeight='short'
+                    fontStyle='italic'
+                    mt={1}
+                    {...props}
+                  />
+                ),
+              }}
+            >
+              {image.data.attributes.caption}
+            </ReactMarkdown>
+          )}
+        </Box>
+      )}
+    </Stack>
   );
 };

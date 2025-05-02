@@ -3,13 +3,13 @@
   "attributes": {
     "title": "Tuberculosis",
     "subtitle": "",
-    "description": "Tuberculosis (TB) is a contagious disease caused by infection with Mycobacterium tuberculosis (Mtb) bacteria. It is spread through the air when a person with TB disease of the lungs or throat coughs, speaks or sings, and people nearby breathe in these bacteria and become infected.",
+    "description": "Tuberculosis (TB) is a contagious disease caused by infection with Mycobacterium tuberculosis (Mtb) bacteria. It is spread through the air when a person with TB disease of the lungs or throat coughs, speaks or sings, and people nearby breathe in these bacteria and become infected. [Learn more about NIAID’s efforts to address this disease.](https://www.niaid.nih.gov/diseases-conditions/tuberculosis)",
     "image": {
       "data": {
         "attributes": {
           "url": "https://www.niaid.nih.gov/sites/default/files/styles/image_style_thumbnail_md/public/tuberculosis-hero.jpg?itok=x5NIrcvK",
           "alternativeText": "Purple background with orange cylinders (TB particles) scattered and gathered around",
-          "caption": "Tuberculosis bacteria (Mycobacterium tuberculosis) visualized as orange particles"
+          "caption": "Tuberculosis bacteria (Mycobacterium tuberculosis) visualized as orange particles. Credit: NIAID."
         }
       }
     },
@@ -27,6 +27,56 @@
           "id": 1,
           "attributes": {
             "name": "Diseases",
+            "createdAt": "2025-02-22T19:09:45.049Z",
+            "updatedAt": "2025-02-22T19:09:45.049Z",
+            "publishedAt": "2025-02-22T19:09:45.049Z"
+          }
+        }
+      ]
+    },
+    "externalLinks": {
+      "data": [
+        {
+          "id": 1,
+          "attributes": {
+            "label": "National Institute of Allergy and Infectious Diseases",
+            "url": "https://www.niaid.nih.gov/",
+            "categories": null,
+            "image": {
+              "data": {
+                "attributes": {
+                  "url": "/assets/NIH-logo.png",
+                  "alternativeText": "nih logo"
+                }
+              }
+            },
+            "isExternal": true,
+            "createdAt": "2025-02-22T19:09:45.049Z",
+            "updatedAt": "2025-02-22T19:09:45.049Z",
+            "publishedAt": "2025-02-22T19:09:45.049Z"
+          }
+        },
+        {
+          "id": 2,
+          "attributes": {
+            "label": "CDC Tuberculosis (TB)",
+            "url": "https://www.cdc.gov/tb/",
+            "categories": null,
+            "image": { "data": null },
+            "isExternal": true,
+            "createdAt": "2025-02-22T19:09:45.049Z",
+            "updatedAt": "2025-02-22T19:09:45.049Z",
+            "publishedAt": "2025-02-22T19:09:45.049Z"
+          }
+        },
+        {
+          "id": 3,
+          "attributes": {
+            "label": "ClinicalTrials.gov",
+            "url": "https://clinicaltrials.gov/search?cond=Tuberculosis",
+            "categories": null,
+            "image": { "data": null },
+            "isExternal": true,
             "createdAt": "2025-02-22T19:09:45.049Z",
             "updatedAt": "2025-02-22T19:09:45.049Z",
             "publishedAt": "2025-02-22T19:09:45.049Z"

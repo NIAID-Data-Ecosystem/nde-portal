@@ -3,13 +3,13 @@
   "attributes": {
     "title": "Asthma",
     "subtitle": "",
-    "description": "Asthma is a chronic lung disease characterized by episodes of airway narrowing and obstruction, causing wheezing, coughing, chest tightness and shortness of breath.",
+    "description": "Asthma is a chronic lung disease characterized by episodes of airway narrowing and obstruction, causing wheezing, coughing, chest tightness and shortness of breath. [Learn more about NIAID’s efforts to address this disease.](https://www.niaid.nih.gov/diseases-conditions/asthma)",
     "image": {
       "data": {
         "attributes": {
           "url": "https://www.niaid.nih.gov/sites/default/files/styles/image_style_thumbnail_md/public/asthma-hero_1.jpg?itok=eDc1Lsl0",
           "alternativeText": "Photo of a smog covered cityscape",
-          "caption": "Smog-covered city skyline illustrating poor air quality"
+          "caption": "Smog-covered city skyline illustrating poor air quality. Credit: NIAID."
         }
       }
     },
