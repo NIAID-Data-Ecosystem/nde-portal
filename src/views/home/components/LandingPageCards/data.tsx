@@ -8,21 +8,23 @@ export const CARDS_DATA: CardData[] = [
     imageAlt:
       'Microscopic view of the influenza A virus, a key focus in infectious disease research and vaccine development.',
     heading: 'Select Diseases and Conditions',
-    headingHref: '/topics#diseases',
+    headingHref: '/diseases',
     paragraphs: [
       {
         id: 'diseases-paragraph',
         content: (
           <>
             Explore datasets and computational tools for diseases such as{' '}
-            <UnderlinedLink href='/topics/asthma'>asthma</UnderlinedLink>,{' '}
-            <UnderlinedLink href='/topics/HIV-AIDS'>HIV/AIDS</UnderlinedLink>,{' '}
-            <UnderlinedLink href='/topics/influenza'>influenza</UnderlinedLink>,{' '}
-            <UnderlinedLink href='/topics/malaria'>malaria</UnderlinedLink>,{' '}
-            <UnderlinedLink href='/topics/tuberculosis'>
+            <UnderlinedLink href='/diseases/asthma'>asthma</UnderlinedLink>,{' '}
+            <UnderlinedLink href='/diseases/HIV-AIDS'>HIV/AIDS</UnderlinedLink>,{' '}
+            <UnderlinedLink href='/diseases/influenza'>
+              influenza
+            </UnderlinedLink>
+            , <UnderlinedLink href='/diseases/malaria'>malaria</UnderlinedLink>,{' '}
+            <UnderlinedLink href='/diseases/tuberculosis'>
               tuberculosis
             </UnderlinedLink>
-            , and <UnderlinedLink href='/topics#diseases'>more</UnderlinedLink>.
+            , and <UnderlinedLink href='/diseases'>more</UnderlinedLink>.
           </>
         ),
       },
@@ -34,14 +36,14 @@ export const CARDS_DATA: CardData[] = [
     imageAlt:
       'Group of biomedical researchers collaborating in a laboratory setting.',
     heading: 'NIAID-Funded Programs',
-    headingHref: '/topics#programs',
+    headingHref: '/program-collections',
     paragraphs: [
       {
         id: 'programs-paragraph',
         content: (
           <>
             Find high-impact datasets and other resources from{' '}
-            <UnderlinedLink href='/topics#programs'>
+            <UnderlinedLink href='/program-collections'>
               NIAID-funded programs
             </UnderlinedLink>{' '}
             that are driving innovation.
