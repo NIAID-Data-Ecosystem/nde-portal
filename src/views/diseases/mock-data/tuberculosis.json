@@ -3,7 +3,16 @@
   "attributes": {
     "title": "Tuberculosis",
     "subtitle": "",
-    "description": "A chronic, recurrent infection caused by the bacterium Mycobacterium tuberculosis. Tuberculosis (TB) may affect almost any tissue or organ of the body with the lungs being the most common site of infection. The clinical stages of TB are primary or initial infection, latent or dormant infection, and recrudescent or adult-type TB. Ninety to 95% of primary TB infections may go unrecognized. Histopathologically, tissue lesions consist of granulomas which usually undergo central caseation necrosis. Local symptoms of TB vary according to the part affected; acute symptoms include hectic fever, sweats, and emaciation; serious complications include granulomatous erosion of pulmonary bronchi associated with hemoptysis. If untreated, progressive TB may be associated with a high degree of mortality. This infection is frequently observed in immunocompromised individuals with AIDS or a history of illicit IV drug use.",
+    "description": "Tuberculosis (TB) is a contagious disease caused by infection with Mycobacterium tuberculosis (Mtb) bacteria. It is spread through the air when a person with TB disease of the lungs or throat coughs, speaks or sings, and people nearby breathe in these bacteria and become infected.",
+    "image": {
+      "data": {
+        "attributes": {
+          "url": "https://www.niaid.nih.gov/sites/default/files/styles/image_style_thumbnail_md/public/tuberculosis-hero.jpg?itok=x5NIrcvK",
+          "alternativeText": "Purple background with orange cylinders (TB particles) scattered and gathered around",
+          "caption": "Tuberculosis bacteria (Mycobacterium tuberculosis) visualized as orange particles"
+        }
+      }
+    },
     "query": {
       "q": "\"Tuberculosis\" OR \"Mycobacterium bovis\" OR \"Mycobacterium africanum\" OR \"Mycobacterium canetti\" OR \"Mycobacterium microti\" OR \"Phthisis\"",
 

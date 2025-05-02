@@ -3,7 +3,16 @@
   "attributes": {
     "title": "HIV/AIDS",
     "subtitle": "",
-    "description": "A syndrome resulting from the acquired deficiency of cellular immunity caused by the human immunodeficiency virus (HIV). It is characterized by the reduction of the Helper T-lymphocytes in the peripheral blood and the lymph nodes. Symptoms include generalized lymphadenopathy, fever, weight loss, and chronic diarrhea. Patients with AIDS are especially susceptible to opportunistic infections (usually pneumocystis carinii pneumonia, cytomegalovirus (CMV) infections, tuberculosis, candida infections, and cryptococcosis), and the development of malignant neoplasms (usually non-Hodgkin lymphoma and Kaposi sarcoma). The human immunodeficiency virus is transmitted through sexual contact, sharing of contaminated needles, or transfusion of contaminated blood.",
+    "description": "Human immunodeficiency virus, commonly known as HIV, is a virus that targets the immune system and can lead to acquired immunodeficiency syndrome (AIDS) if left untreated. HIV can be transmitted through sexual intercourse, using needles that have been in contact with bodily fluids containing HIV, and during pregnancy, childbirth, or breastfeeding—a concept known as vertical transmission.",
+    "image": {
+      "data": {
+        "attributes": {
+          "url": "https://www.niaid.nih.gov/sites/default/files/styles/image_style_thumbnail_md/public/hiv-aids-hero.jpg?itok=MXMmgkUp",
+          "alternativeText": "Image of an HIV-infected T cell",
+          "caption": "A T cell infected with HIV"
+        }
+      }
+    },
     "query": {
       "q": "\"HIV\" OR \"AIDS\"",
       "facet_size": 1000,

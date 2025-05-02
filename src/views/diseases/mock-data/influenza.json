@@ -3,7 +3,16 @@
   "attributes": {
     "title": "Influenza",
     "subtitle": "",
-    "description": "An acute viral infection of the respiratory tract, occurring in isolated cases, in epidemics, or in pandemics; it is caused by serologically different strains of viruses (influenzaviruses) designated A, B, and C, has a 3-day incubation period, and usually lasts for 3 to 10 days. It is marked by inflammation of the nasal mucosa, pharynx, and conjunctiva; headache; myalgia; often fever, chills, and prostration; and occasionally involvement of the myocardium or central nervous system.",
+    "description": "Each year, influenza causes millions of illnesses worldwide and, in the United States, results in thousands of hospitalizations and deaths. Influenza is especially dangerous for people 65 years and older, young children and people with certain health conditions, such as heart disease or asthma. Research to find new and improved ways to diagnose, treat and prevent seasonal influenza and novel influenza viruses with pandemic potential is essential to protecting the public health.",
+    "image": {
+      "data": {
+        "attributes": {
+          "url": "https://www.niaid.nih.gov/sites/default/files/styles/image_style_thumbnail_md/public/avian-flu-hero_0.jpg?itok=PVtvYKzH",
+          "alternativeText": "Influenza A (H5N1) virus particles (rod shaped)",
+          "caption": "Rod-shaped Influenza A (H5N1) virus particles"
+        }
+      }
+    },
     "query": {
       "q": "\"Influenza\" OR \"Flu\"",
       "facet_size": 1000,

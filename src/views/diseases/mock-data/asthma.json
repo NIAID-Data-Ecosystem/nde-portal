@@ -3,7 +3,16 @@
   "attributes": {
     "title": "Asthma",
     "subtitle": "",
-    "description": "A bronchial disease that is characterized by chronic inflammation and narrowing of the airways, which is caused by a combination of environmental and genetic factors resulting in recurring periods of wheezing (a whistling sound while breathing), chest tightness, shortness of breath, mucus production and coughing. The symptoms appear due to a variety of triggers such as allergens, irritants, respiratory infections, weather changes, exercise, stress, reflux disease, medications, foods and emotional anxiety.",
+    "description": "Asthma is a chronic lung disease characterized by episodes of airway narrowing and obstruction, causing wheezing, coughing, chest tightness and shortness of breath.",
+    "image": {
+      "data": {
+        "attributes": {
+          "url": "https://www.niaid.nih.gov/sites/default/files/styles/image_style_thumbnail_md/public/asthma-hero_1.jpg?itok=eDc1Lsl0",
+          "alternativeText": "Photo of a smog covered cityscape",
+          "caption": "Smog-covered city skyline illustrating poor air quality"
+        }
+      }
+    },
     "query": {
       "q": "\"Asthma\"",
       "facet_size": 1000,

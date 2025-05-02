@@ -3,7 +3,16 @@
   "attributes": {
     "title": "Malaria",
     "subtitle": "",
-    "description": "Malaria is a serious and sometimes fatal disease caused by a parasite that commonly infects a certain type of mosquito which feeds on humans. Infection with malaria parasites may result in a wide variety of symptoms, ranging from absent or very mild symptoms to severe disease and even death. People who get malaria are typically very sick with high fevers, shaking chills, and flu-like illness. In general, malaria is a curable disease if diagnosed and treated promptly and correctly.Treatment depends on many factors including disease severity, the species of malaria parasite causing the infection and the part of the world in which the infection was acquired.",
+    "description": "Malaria is a mosquito-borne infectious disease caused by the bite of female Anopheles mosquitoes, which spread infectious Plasmodium parasites into a host. The WHO estimates that in 2020 about 240 million people had malaria and about 627,000 of them died. A vaccine to prevent malaria is available; however, its variable efficacy underscores the need for new interventions.",
+    "image": {
+      "data": {
+        "attributes": {
+          "url": "https://www.niaid.nih.gov/sites/default/files/styles/image_style_thumbnail_md/public/malaria-hero.jpg?itok=qLT_OiSl",
+          "alternativeText": "Malaria infected blood cell",
+          "caption": "Red blood cell infected with the malaria parasite Plasmodium"
+        }
+      }
+    },
     "query": {
       "q": "\"Malaria\" OR \"Plasmodium falciparum\" OR \"Plasmodium malariae\" OR \"Plasmodium ovale curtisi\" OR \"Plasmodium ovale wallikeri\" OR \"Plasmodium vivax\" OR \"Plasmodium knowlesi\"",
       "facet_size": 1000,
