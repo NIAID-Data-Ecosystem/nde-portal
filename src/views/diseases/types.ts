@@ -7,6 +7,11 @@ export interface DiseasePageProps {
     title: string;
     subtitle: string | null;
     description?: string | null;
+    image: {
+      data: null | {
+        attributes: { url: string; alternativeText: string; caption?: string };
+      };
+    };
     contactLinks?: {
       data: {
         id: number;
@@ -61,7 +66,7 @@ export interface DiseasePageProps {
       }[];
     } | null;
     query: Params;
-    slug: string | string[];
+    slug: string;
     topic: string;
     type: {
       data: {
