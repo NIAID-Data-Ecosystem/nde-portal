@@ -18,6 +18,8 @@ export const Card: React.FC<CardProps> = React.memo(({ card, index }) => (
     overflow='hidden'
     border='1px solid'
     borderColor='gray.100'
+    role='article'
+    aria-labelledby={`card-heading-${index}`}
   >
     <Box
       width={{ base: '100%', md: '33.33%', lg: '40%' }}
@@ -44,7 +46,12 @@ export const Card: React.FC<CardProps> = React.memo(({ card, index }) => (
       justifyContent='flex-start'
     >
       <VStack align='flex-start' spacing={2} w='100%'>
-        <Heading as='h3' fontSize='xl' fontWeight='semibold'>
+        <Heading
+          as='h3'
+          fontSize='xl'
+          fontWeight='semibold'
+          id={`card-heading-${index}`}
+        >
           <UnderlinedLink href={card.headingHref}>
             {card.heading}
           </UnderlinedLink>
