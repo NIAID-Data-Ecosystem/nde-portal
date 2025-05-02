@@ -12,7 +12,14 @@ export const UnderlinedLink: React.FC<UnderlinedLinkProps> = ({
   children,
   ...props
 }) => (
-  <ChakraLink as={NextLink} href={href} textDecoration='underline' {...props}>
+  <ChakraLink
+    as={NextLink}
+    href={href}
+    textDecoration='underline'
+    textDecorationThickness='1px'
+    textUnderlineOffset='0.20em'
+    {...props}
+  >
     {children}
   </ChakraLink>
 );
