@@ -1,6 +1,6 @@
 import React from 'react';
 import NextLink from 'next/link';
-import { Box, Flex, Text } from '@chakra-ui/react';
+import { Box, Flex } from '@chakra-ui/react';
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'src/components/link';
 import { fetchSearchResults } from 'src/utils/api';
@@ -17,6 +17,8 @@ import { TopicQueryProps } from '../../types';
 import { ChartWrapper } from '../layouts/chart-wrapper';
 import { DonutChart } from '../visualizations/donut-chart';
 import { LegendContainer, LegendItem } from './legend';
+import { MarkdownContent } from '../layouts/markdown-content';
+import DISEASE_PAGE_COPY from '../disease-page.json';
 
 export const DataTypes = ({ query, topic }: TopicQueryProps) => {
   // Fetch data types for query.
@@ -72,22 +74,14 @@ export const DataTypes = ({ query, topic }: TopicQueryProps) => {
     <Flex flexWrap='wrap' width='100%'>
       <Flex flex={3} flexDirection='column' minWidth={250}>
         <ChartWrapper
-          title='Data Types'
+          title={DISEASE_PAGE_COPY['charts']['types']['title']}
           description={
-            <Text>
-              An overview of resource types retrieved from a search on{' '}
-              <NextLink
-                passHref
-                href={getSearchResultsRoute({
-                  query: params,
-                  facet: params.facets,
-                })}
-                legacyBehavior
-              >
-                <Link>{topic}</Link>
-              </NextLink>
-              .
-            </Text>
+            <MarkdownContent
+              template={DISEASE_PAGE_COPY['charts']['types']['description']}
+              replacements={{
+                topic,
+              }}
+            />
           }
           error={error}
           isLoading={isLoading || isPlaceholderData}

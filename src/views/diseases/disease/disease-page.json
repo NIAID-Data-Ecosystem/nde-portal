@@ -1,0 +1,28 @@
+{
+  "showcase": {
+    "title": "{{topic}} Resources in the NIAID Data Ecosystem",
+    "description": "This section provides a visual summary of the resources available within the NIAID Discovery Portal for {{topic}} research. [View all search results related to {{topic}}]({{query}})."
+  },
+  "charts": {
+    "title": "{{count}} {{topic}} Related Resources",
+    "treemaplist": {
+      "title": "Resources mentioning {{topic}} also mentioned the following:",
+      "description": "{{topic}} datasets, computational tools, and resource catalogs also encompass different Health Conditions, Pathogens, and Measurement Techniques. Use the interactive figures below to help identify resources that advance your research needs."
+    },
+    "types": {
+      "title": "Data Types",
+      "description": "The NIAID Data Ecosystem currently ingests metadata for Datasets, Computational Tools and Resource Catalogs. Click on a type of resource to conduct a type-specific search for {{topic}} resources."
+    },
+    "sources": {
+      "title": "Data Sources",
+      "description": "{{topic}} researchers share their datasets, computational tools and other resources by depositing them in a variety of different repositories.  Use the visualization to explore the resources in the NIAID Data Ecosystem by source."
+    },
+    "conditions-of-access": {
+      "title": "Conditions Of Access",
+      "description": "Access requirements, like whether registration or a data use agreement (DUA) is needed to access a resource, aren’t always clear. Use the visualization to see how access conditions are distributed and click any category to filter {{topic}} resources by that access type."
+    }
+  },
+  "external": {
+    "title": "External Resources for {{topic}}"
+  }
+}

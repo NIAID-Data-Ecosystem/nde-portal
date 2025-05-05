@@ -8,6 +8,8 @@ import { getSearchResultsRoute } from 'src/views/diseases/helpers';
 import { TopicQueryProps } from '../../types';
 import { ChartWrapper } from '../layouts/chart-wrapper';
 import { BarChart, SourceFacet } from '../visualizations/bar-chart';
+import { MarkdownContent } from '../layouts/markdown-content';
+import DISEASE_PAGE_COPY from '../disease-page.json';
 
 export const Sources = ({
   id,
@@ -122,14 +124,14 @@ export const Sources = ({
     <Flex flexWrap='wrap' width='100%'>
       <Flex flex={3} flexDirection='column' minWidth={200}>
         <ChartWrapper
-          title='Data Sources'
+          title={DISEASE_PAGE_COPY['charts']['sources']['title']}
           description={
-            <>
-              The NIAID Data Ecosystem Discovery Portal harvests metadata from a
-              number of different data sources. This chart highlights the
-              origins of results related to {topic}, tracing their provenance
-              across different repositories.
-            </>
+            <MarkdownContent
+              template={DISEASE_PAGE_COPY['charts']['sources']['description']}
+              replacements={{
+                topic,
+              }}
+            />
           }
           error={error}
           isLoading={isLoading}
@@ -143,8 +145,8 @@ export const Sources = ({
             <BarChart
               id={id}
               data={data}
-              title={'Data Sources'}
-              description={'Data Sources'}
+              title={DISEASE_PAGE_COPY['charts']['sources']['title']}
+              description={DISEASE_PAGE_COPY['charts']['sources']['title']}
               isLoading={isLoading}
               defaultDimensions={{
                 width: 300,

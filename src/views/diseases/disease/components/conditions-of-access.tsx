@@ -18,6 +18,8 @@ import {
   StackedBarChart,
 } from '../visualizations/stacked-bar-chart';
 import { LegendContainer, LegendItem } from './legend';
+import DISEASE_PAGE_COPY from '../disease-page.json';
+import { MarkdownContent } from '../layouts/markdown-content';
 
 export const ConditionsOfAccess = ({ query, topic }: TopicQueryProps) => {
   // Fetch conditionsOfAccess for query.
@@ -85,12 +87,18 @@ export const ConditionsOfAccess = ({ query, topic }: TopicQueryProps) => {
     <Flex flexWrap='wrap' width='100%'>
       <Flex flex={3} flexDirection='column' minWidth={250}>
         <ChartWrapper
-          title='Conditions Of Access'
+          title={DISEASE_PAGE_COPY['charts']['conditions-of-access']['title']}
           description={
-            <>
-              A visual breakdown of the data accessibility associated with{' '}
-              {topic} related results (where available).
-            </>
+            <MarkdownContent
+              template={
+                DISEASE_PAGE_COPY['charts']['conditions-of-access'][
+                  'description'
+                ]
+              }
+              replacements={{
+                topic,
+              }}
+            />
           }
           error={error}
           isLoading={isLoading || isPlaceholderData}

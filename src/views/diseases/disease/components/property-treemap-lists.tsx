@@ -18,6 +18,12 @@ import { BrushableListChart } from '../visualizations/brushable-list-chart';
 import { TreemapChart } from '../visualizations/treemap-chart';
 import { getSearchResultsRoute } from '../../helpers';
 import { FacetProps, TopicQueryProps } from '../../types';
+import {
+  fillTemplatePlaceholders,
+  MarkdownContent,
+} from '../layouts/markdown-content';
+import { SectionTitle } from '../layouts/section';
+import DISEASE_PAGE_COPY from '../disease-page.json';
 
 const facets = [
   {
@@ -83,35 +89,40 @@ export const PropertyTreemapLists = ({ query, topic }: TopicQueryProps) => {
   };
   return (
     <Flex flexDirection='column' width='100%'>
-      <ChartWrapper
-        title={`Resources mentioning ${topic} also mentioned the following:`}
-        description={
-          <HStack
-            alignItems='flex-start'
-            spacing={6}
-            flexWrap='wrap'
-            width='100%'
+      <HStack alignItems='flex-start' spacing={6} flexWrap='wrap' width='100%'>
+        <Box flex={2}>
+          <SectionTitle as='h4'>
+            {fillTemplatePlaceholders(
+              DISEASE_PAGE_COPY['charts']['treemaplist']['title'],
+              {
+                topic,
+              },
+            )}
+          </SectionTitle>
+
+          <MarkdownContent
+            template={DISEASE_PAGE_COPY['charts']['treemaplist']['description']}
+            replacements={{
+              topic,
+            }}
+          />
+        </Box>
+
+        {/* Toggle for charts types */}
+        <Flex px={4} flex={1} flexDirection='column' alignItems='flex-end'>
+          <Text fontWeight='medium'>Select Chart Type</Text>
+          <RadioGroup
+            onChange={value => setListView(value === 'list')}
+            value={`${listView ? 'list' : 'treemap'}`}
           >
-            <Text lineHeight='short' flex={2}>
-              {listView
-                ? `Explore the table by dragging the blue box horizontally on the bar chart to scroll through most popular metadata properties (100 top results) or resize it to filter a specific range. The list rows updates dynamically based on the selection.`
-                : 'Click on rectangle to view all related results within the portal.'}
-            </Text>
-            {/* Add toggle for charts */}
-            <Flex px={4} flex={1} flexDirection='column' alignItems='flex-end'>
-              <Text fontWeight='medium'>Select Chart Type</Text>
-              <RadioGroup
-                onChange={value => setListView(value === 'list')}
-                value={`${listView ? 'list' : 'treemap'}`}
-              >
-                <Stack direction='row'>
-                  <Radio value='list'>List</Radio>
-                  <Radio value='treemap'>Treemap</Radio>
-                </Stack>
-              </RadioGroup>
-            </Flex>
-          </HStack>
-        }
+            <Stack direction='row'>
+              <Radio value='list'>List</Radio>
+              <Radio value='treemap'>Treemap</Radio>
+            </Stack>
+          </RadioGroup>
+        </Flex>
+      </HStack>
+      <ChartWrapper
         error={error}
         isLoading={isLoading}
         skeletonProps={{

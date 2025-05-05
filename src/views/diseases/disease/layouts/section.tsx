@@ -133,3 +133,14 @@ export const SectionWrapper: React.FC<
     {children}
   </Flex>
 );
+
+export const SectionDescription: React.FC<TextProps> = ({
+  children,
+  ...props
+}) => {
+  return (
+    <Text lineHeight='short' mb={2} {...props}>
+      {children}
+    </Text>
+  );
+};
