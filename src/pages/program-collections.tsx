@@ -15,14 +15,14 @@ import {
 import { SectionHeader } from 'src/components/table-of-contents/layouts/section-header';
 import { SectionSearch } from 'src/components/table-of-contents/layouts/section-search';
 import {
+  Sidebar,
+  SidebarItem,
+} from 'src/components/table-of-contents/layouts/sidebar';
+import {
   fetchProgramCollections,
   ProgramCollection,
 } from 'src/views/program-collections/helpers';
 import { queryFilterObject2String } from 'src/views/search-results-page/helpers';
-import {
-  Sidebar,
-  SidebarItem,
-} from 'src/components/table-of-contents/layouts/sidebar';
 
 const ProgramCollections: NextPage<{ data: ProgramCollection[] }> = props => {
   const [searchValue, setSearchValue] = useState('');
@@ -93,7 +93,7 @@ const ProgramCollections: NextPage<{ data: ProgramCollection[] }> = props => {
           </Error>
         ) : (
           <>
-            <Sidebar aria-label='Navigation for data sources.'>
+            <Sidebar aria-label='Navigation for program collections list.'>
               {data?.map(collection => {
                 return (
                   <SidebarItem
