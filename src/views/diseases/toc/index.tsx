@@ -59,7 +59,8 @@ export const TableOfContents = ({ data }: { data: DiseasePageProps[] }) => {
         maxW={{ base: 'unset', lg: '1200px' }}
         justifyContent='center'
         margin='0 auto'
-        p={4}
+        px={4}
+        py={4}
         mb={32}
         flex={3}
       >
@@ -91,7 +92,7 @@ export const TableOfContents = ({ data }: { data: DiseasePageProps[] }) => {
                 >
                   {/* Description */}
                   <Stack
-                    spacing={{ base: 4, lg: 6, xl: 8 }}
+                    spacing={{ base: 4, lg: 6, xl: 10 }}
                     flexDirection='row'
                     alignItems='unset'
                     flexWrap='wrap-reverse'
@@ -118,7 +119,7 @@ export const TableOfContents = ({ data }: { data: DiseasePageProps[] }) => {
                     {page.attributes.image?.data?.attributes?.url && (
                       <Flex
                         minWidth={200}
-                        maxWidth={{ base: 'unset', xl: '30%' }}
+                        maxWidth={{ base: 'unset', xl: '25%' }}
                         flex={1}
                         alignItems='flex-start'
                       >
