@@ -252,7 +252,10 @@ export const NewsCarousel = ({
                         </NextLink>
                       ) : (
                         <NextLink
-                          href={`news/#${carouselCard.attributes.slug}`}
+                          href={`news/#${carouselCard.attributes.slug.replace(
+                            'news-report',
+                            'update',
+                          )}`}
                           passHref
                         >
                           <Link
