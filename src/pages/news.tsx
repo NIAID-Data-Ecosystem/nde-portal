@@ -228,8 +228,8 @@ const News: NextPage<NewsProps> = props => {
 
   return (
     <PageContainer
-      title='News'
-      metaDescription='Latest news and updates for the NIAID Data Discovery Portal.'
+      title='Updates'
+      metaDescription='Updates for the NIAID Data Discovery Portal.'
       px={0}
       py={0}
     >
@@ -250,8 +250,8 @@ const News: NextPage<NewsProps> = props => {
           w='100%'
         >
           <HeroBannerText
-            title='News & Updates'
-            body='Latest news and events from the NIAID Data Discovery Portal'
+            title='Updates'
+            body='Updates and events from the NIAID Data Discovery Portal'
             alignItems={{ base: 'flex-start', lg: 'center' }}
             color='#fff'
             maxWidth={{ md: '500px', xl: '680px' }}
@@ -278,7 +278,7 @@ const News: NextPage<NewsProps> = props => {
         mb={32}
         flex={1}
       >
-        <VisuallyHidden as='h1'>News and Events </VisuallyHidden>
+        <VisuallyHidden as='h1'>Updates and Events </VisuallyHidden>
         {response ? (
           <>
             <Flex
@@ -291,7 +291,7 @@ const News: NextPage<NewsProps> = props => {
               m='0 auto'
             >
               {/* NEWS */}
-              <Section id='news' title='News'>
+              <Section id='news' title='Updates'>
                 <SectionList
                   id='news'
                   numItems={response?.news?.length || 0}
@@ -312,7 +312,7 @@ const News: NextPage<NewsProps> = props => {
                           />
                         ) : (
                           <Empty
-                            message='No news to display'
+                            message='No updates to display'
                             color='page.placeholder'
                             headingProps={{ size: 'sm' }}
                             iconProps={{
