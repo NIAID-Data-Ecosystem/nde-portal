@@ -6,7 +6,7 @@ describe('LegendContainer', () => {
   it('renders with default title', () => {
     render(<LegendContainer />);
     expect(screen.getByText('Legend')).toBeInTheDocument();
-    expect(screen.getByText('Counts')).toBeInTheDocument();
+    expect(screen.getByText('Resources')).toBeInTheDocument();
   });
 
   it('renders with a custom title', () => {

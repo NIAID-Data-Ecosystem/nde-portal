@@ -16,7 +16,7 @@ import {
  * @param {React.ReactNode} [props.children] - The child elements to be displayed within the legend.
  * @param {string} [props.title='Legend'] - The title of the legend. Defaults to 'Legend'.
  *
- * @returns {JSX.Element} A styled container with a title, a "Counts" label, and a list of children.
+ * @returns {JSX.Element} A styled container with a title, a "Resources" label, and a list of children.
  */
 export const LegendContainer = ({
   children,
@@ -45,7 +45,7 @@ export const LegendContainer = ({
         textTransform='uppercase'
         pb={0.5}
       >
-        Counts
+        Resources
       </Text>
       <VStack divider={<Divider borderColor='gray.200' />} spacing={1.5} my={2}>
         {children}

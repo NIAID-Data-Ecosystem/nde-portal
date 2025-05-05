@@ -2,11 +2,12 @@ import React from 'react';
 import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
 import { ErrorMessage } from 'src/components/error';
+import { SectionDescription, SectionTitle } from '../section';
 import { ChartWrapper } from '../chart-wrapper';
-import { SectionTitle } from '../section';
 
 jest.mock('../section', () => ({
   SectionTitle: jest.fn(({ children }) => <h4>{children}</h4>),
+  SectionDescription: jest.fn(({ children }) => <h4>{children}</h4>),
 }));
 
 jest.mock('src/components/error', () => ({
