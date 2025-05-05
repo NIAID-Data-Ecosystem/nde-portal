@@ -2,7 +2,7 @@ import React from 'react';
 import { Box, Flex, Image, VStack, Heading } from '@chakra-ui/react';
 import { CardData } from './types';
 import { CardText } from './CardText';
-import { UnderlinedLink } from './UnderlinedLink';
+import { Link } from 'src/components/link';
 
 interface CardProps {
   card: CardData;
@@ -52,9 +52,7 @@ export const Card: React.FC<CardProps> = React.memo(({ card, index }) => (
           fontWeight='semibold'
           id={`card-heading-${index}`}
         >
-          <UnderlinedLink href={card.headingHref}>
-            {card.heading}
-          </UnderlinedLink>
+          <Link href={card.headingHref}>{card.heading}</Link>
         </Heading>
         {card.paragraphs.map(paragraph => (
           <CardText key={paragraph.id}>{paragraph.content}</CardText>
