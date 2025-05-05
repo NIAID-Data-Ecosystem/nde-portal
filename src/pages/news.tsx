@@ -176,8 +176,8 @@ const News: NextPage<NewsProps> = props => {
 
   const [sections, setSections] = useState([
     {
-      title: 'News',
-      hash: 'news',
+      title: 'Updates',
+      hash: 'updates',
       showMax: 5,
     },
     {
@@ -291,9 +291,9 @@ const News: NextPage<NewsProps> = props => {
               m='0 auto'
             >
               {/* NEWS */}
-              <Section id='news' title='Updates'>
+              <Section id='updates' title='Updates'>
                 <SectionList
-                  id='news'
+                  id='updates'
                   numItems={response?.news?.length || 0}
                   sections={sections}
                   setSections={setSections}
