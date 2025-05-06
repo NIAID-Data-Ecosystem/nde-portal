@@ -21,9 +21,11 @@ import {
 export const LegendContainer = ({
   children,
   title = 'Legend',
+  columnTitle = 'Resources',
 }: {
   children?: React.ReactNode;
   title?: string;
+  columnTitle?: string;
 }) => {
   return (
     <Box>
@@ -45,7 +47,7 @@ export const LegendContainer = ({
         textTransform='uppercase'
         pb={0.5}
       >
-        Resources
+        {columnTitle}
       </Text>
       <VStack divider={<Divider borderColor='gray.200' />} spacing={1.5} my={2}>
         {children}
