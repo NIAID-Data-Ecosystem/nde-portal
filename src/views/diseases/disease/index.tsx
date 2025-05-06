@@ -92,7 +92,7 @@ export const DiseaseContent: React.FC<DiseaseContentProps> = ({
             </CardWrapper>
 
             <CardWrapper flexDirection='row' flexWrap='wrap' mt={6}>
-              <VStack w='100%' spacing={4} flex={3}>
+              <VStack w='50%' spacing={4} flex={3}>
                 {/* Chart: Resource types */}
                 {query && <DataTypes query={query} topic={topic} />}
 

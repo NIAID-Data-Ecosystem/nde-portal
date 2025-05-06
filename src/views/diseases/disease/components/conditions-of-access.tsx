@@ -107,64 +107,72 @@ export const ConditionsOfAccess = ({ query, topic }: TopicQueryProps) => {
             width: '100%',
           }}
         >
-          {data && (
-            <StackedBarChart
-              title='Title'
-              description='Description'
-              data={data}
-              defaultDimensions={{
-                width: 450,
-                height: 100,
-                margin: { top: 25, right: 30, bottom: 20, left: 0 },
-              }}
-              getRoute={term => {
-                return getSearchResultsRoute({
-                  query: params,
-                  facet: params.facets,
-                  term,
-                });
-              }}
-            />
-          )}
-        </ChartWrapper>
-      </Flex>
-      <Box flex={1} p={4} minWidth={250}>
-        <LegendContainer>
-          {data?.terms?.map(({ description, fill, label, term, count }) => {
-            return (
-              <LegendItem
-                key={term}
-                count={count}
-                isLoading={isLoading || isPlaceholderData}
-                swatchBg={fill}
-              >
-                <Box>
-                  <NextLink
-                    href={getSearchResultsRoute({
+          <Flex
+            flexWrap='wrap'
+            justifyContent='center'
+            flexDirection='column'
+            p={4}
+          >
+            <Box flex={2} minWidth={250} w='100%'>
+              {data && (
+                <StackedBarChart
+                  title={
+                    DISEASE_PAGE_COPY['charts']['conditions-of-access']['title']
+                  }
+                  description='Description'
+                  data={data}
+                  defaultDimensions={{
+                    width: 450,
+                    height: 80,
+                    margin: { top: 0, right: 0, bottom: 0, left: 0 },
+                  }}
+                  getRoute={term => {
+                    return getSearchResultsRoute({
                       query: params,
                       facet: params.facets,
-                      term: term as string,
-                    })}
-                    passHref
-                  >
-                    <Link as='p'>{label}</Link>
-                  </NextLink>
-                  <Text lineHeight='shorter' mt={1}>
-                    {description}
-                  </Text>
-                </Box>
-              </LegendItem>
-            );
-          })}
-          <LegendItem
-            key='total'
-            count={data?.total}
-            isLoading={isLoading || isPlaceholderData}
-          >
-            Total
-          </LegendItem>
-        </LegendContainer>
-      </Box>
+                      term,
+                    });
+                  }}
+                />
+              )}
+            </Box>
+
+            {/* legend */}
+            <Box flex={1} minWidth={250} w='100%'>
+              <LegendContainer orientation='horizontal'>
+                {data?.terms?.map(
+                  ({ description, fill, label, term, count }) => {
+                    return (
+                      <LegendItem
+                        key={term}
+                        count={count}
+                        isLoading={isLoading || isPlaceholderData}
+                        swatchBg={fill}
+                      >
+                        <Box>
+                          <NextLink
+                            href={getSearchResultsRoute({
+                              query: params,
+                              facet: params.facets,
+                              term: term as string,
+                            })}
+                            passHref
+                          >
+                            <Link as='p'>{label}</Link>
+                          </NextLink>
+                          <Text lineHeight='shorter' mt={1}>
+                            {description}
+                          </Text>
+                        </Box>
+                      </LegendItem>
+                    );
+                  },
+                )}
+              </LegendContainer>
+            </Box>
+          </Flex>
+        </ChartWrapper>
+      </Flex>
     </Flex>
   );
 };

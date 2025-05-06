@@ -91,7 +91,7 @@ export const DataTypes = ({ query, topic }: TopicQueryProps) => {
           }}
         >
           <Flex flexWrap='wrap' justifyContent='center'>
-            <Box flex={1} p={4} minWidth={250}>
+            <Box flex={2} p={4} minWidth={250}>
               {data?.terms && (
                 <DonutChart
                   title='Resource Type Distribution'
@@ -118,12 +118,9 @@ export const DataTypes = ({ query, topic }: TopicQueryProps) => {
                 />
               )}
             </Box>
-            <Box
-              flex={1}
-              p={4}
-              minWidth={250}
-              maxWidth={{ base: 'unset', md: 300 }}
-            >
+
+            {/* legend */}
+            <Box flex={1} p={4} minWidth={250}>
               <LegendContainer>
                 {data?.terms
                   ?.sort((a, b) => {

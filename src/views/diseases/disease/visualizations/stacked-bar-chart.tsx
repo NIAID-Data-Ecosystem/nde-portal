@@ -59,8 +59,8 @@ export const StackedBarChart = ({
     ignoreDimensions: ['height'],
   });
 
-  const svgWidth = width + margin.left + margin.right;
-  const svgHeight = height + margin.top + margin.bottom;
+  const svgWidth = width - margin.left - margin.right;
+  const svgHeight = height - margin.top - margin.bottom;
 
   // Calculate the usable chart area.
   const xMax = useMemo(() => {

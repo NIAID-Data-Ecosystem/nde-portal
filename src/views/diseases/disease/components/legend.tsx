@@ -3,10 +3,13 @@ import {
   Divider,
   Flex,
   Heading,
+  HeadingProps,
   HStack,
   Skeleton,
+  Stack,
+  StackProps,
   Text,
-  VStack,
+  TextProps,
 } from '@chakra-ui/react';
 
 /**
@@ -21,38 +24,69 @@ import {
 export const LegendContainer = ({
   children,
   title = 'Legend',
-  columnTitle = 'Resources',
-}: {
-  children?: React.ReactNode;
+  tableHeader = 'Resources',
+  orientation = 'vertical',
+  ...props
+}: StackProps & {
   title?: string;
-  columnTitle?: string;
+  tableHeader?: string;
+  orientation?: 'horizontal' | 'vertical';
 }) => {
   return (
     <Box>
-      <Heading
-        textTransform='uppercase'
-        fontSize='xs'
-        fontWeight='semibold'
-        mb={1}
-      >
-        {title}
-      </Heading>
-      <Text
-        borderBottom='1px solid'
-        borderColor='page.placeholder'
-        fontSize='12px'
-        fontWeight='semibold'
-        lineHeight='shorter'
-        textAlign='end'
-        textTransform='uppercase'
-        pb={0.5}
-      >
-        {columnTitle}
-      </Text>
-      <VStack divider={<Divider borderColor='gray.200' />} spacing={1.5} my={2}>
-        {children}
-      </VStack>
+      <LegendTitle>{title}</LegendTitle>
+      <LegendTableHeader>{tableHeader}</LegendTableHeader>
+      {orientation === 'vertical' ? (
+        <Stack
+          flexDirection='column'
+          divider={<Divider borderColor='gray.200' />}
+          spacing={1.5}
+          my={2}
+          {...props}
+        >
+          {children}
+        </Stack>
+      ) : (
+        <Stack
+          flexDirection={{ base: 'column', md: 'row' }}
+          spacing={{ base: 1.5, md: 8 }}
+          my={2}
+          {...props}
+        >
+          {children}
+        </Stack>
+      )}
     </Box>
+  );
+};
+
+export const LegendTitle: React.FC<HeadingProps> = ({ children }) => {
+  return (
+    <Heading
+      textTransform='uppercase'
+      fontSize='xs'
+      fontWeight='semibold'
+      mb={1}
+    >
+      {children}
+    </Heading>
+  );
+};
+
+export const LegendTableHeader: React.FC<TextProps> = ({ children }) => {
+  return (
+    <Text
+      borderBottom='1px solid'
+      borderColor='page.placeholder'
+      fontSize='12px'
+      fontWeight='semibold'
+      lineHeight='shorter'
+      textAlign='end'
+      textTransform='uppercase'
+      pb={0.5}
+    >
+      {children}
+    </Text>
   );
 };
 
