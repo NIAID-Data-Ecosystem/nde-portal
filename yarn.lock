@@ -2876,6 +2876,18 @@
     "@typescript-eslint/types" "6.9.0"
     eslint-visitor-keys "^3.4.1"
 
+"@use-gesture/core@10.3.1":
+  version "10.3.1"
+  resolved "https://registry.yarnpkg.com/@use-gesture/core/-/core-10.3.1.tgz#976c9421e905f0079d49822cfd5c2e56b808fc56"
+  integrity sha512-WcINiDt8WjqBdUXye25anHiNxPc0VOrlT8F6LLkU6cycrOGUDyY/yyFmsg3k8i5OLvv25llc0QC45GhR/C8llw==
+
+"@use-gesture/react@^10.0.0-beta.22":
+  version "10.3.1"
+  resolved "https://registry.yarnpkg.com/@use-gesture/react/-/react-10.3.1.tgz#17a743a894d9bd9a0d1980c618f37f0164469867"
+  integrity sha512-Yy19y6O2GJq8f7CHf7L0nxL8bf4PZCPaVOCgJrusOeFHY1LvHgYXnmnXg6N5iwAnbgbZCDjo60SiM6IPJi9C5g==
+  dependencies:
+    "@use-gesture/core" "10.3.1"
+
 "@visx/annotation@^3.12.0":
   version "3.12.0"
   resolved "https://registry.yarnpkg.com/@visx/annotation/-/annotation-3.12.0.tgz#bbf1ff2019847c1a7f37b75f827ce5698250107c"
@@ -2912,6 +2924,15 @@
     "@types/react-dom" "*"
     prop-types "^15.5.10"
 
+<<<<<<< HEAD
+"@visx/clip-path@^3.3.0":
+  version "3.3.0"
+  resolved "https://registry.yarnpkg.com/@visx/clip-path/-/clip-path-3.3.0.tgz#3ba27fe739faf11c2ef9679356ac37a01df01347"
+  integrity sha512-uMuI2M05qZTgUdTSHJGg4VDr2gytGmGyuaC89iByHqNaeMHkrJqQi/cOFAZi4D0dn75p7lVirJijEgDgSpcrMQ==
+  dependencies:
+    "@types/react" "*"
+    prop-types "^15.5.10"
+=======
 "@visx/brush@^3.12.0":
   version "3.12.0"
   resolved "https://registry.yarnpkg.com/@visx/brush/-/brush-3.12.0.tgz#9d4f939f8f1dad7cb2107b3535a97bff4d919d12"
@@ -2932,6 +2953,7 @@
   dependencies:
     "@types/d3-shape" "^1.3.1"
     d3-shape "^1.0.6"
+>>>>>>> main
 
 "@visx/curve@3.3.0":
   version "3.3.0"
@@ -2941,6 +2963,25 @@
     "@types/d3-shape" "^1.3.1"
     d3-shape "^1.0.6"
 
+<<<<<<< HEAD
+"@visx/drag@3.3.0":
+  version "3.3.0"
+  resolved "https://registry.yarnpkg.com/@visx/drag/-/drag-3.3.0.tgz#d44a9f7409c9da468ae37ef9bf30899144da7720"
+  integrity sha512-fLNsorq6GyANCqAE/dToG0q7YoGVxihGC9FZQUp0MCV1wMJIJ45ximhrl5NDng2ytbpWnBmXu8M8hdsdFuvIXw==
+  dependencies:
+    "@types/react" "*"
+    "@visx/event" "3.3.0"
+    "@visx/point" "3.3.0"
+    prop-types "^15.5.10"
+
+"@visx/event@3.3.0":
+  version "3.3.0"
+  resolved "https://registry.yarnpkg.com/@visx/event/-/event-3.3.0.tgz#30bb7f02857800749219e4ba76fce53df4d47353"
+  integrity sha512-fKalbNgNz2ooVOTXhvcOx5IlEQDgVfX66rI7bgZhBxI2/scy+5rWcXJXpwkheRF68SMx9R93SjKW6tmiD0h+jA==
+  dependencies:
+    "@types/react" "*"
+    "@visx/point" "3.3.0"
+=======
 "@visx/drag@3.12.0":
   version "3.12.0"
   resolved "https://registry.yarnpkg.com/@visx/drag/-/drag-3.12.0.tgz#5d3b09d720a951d179e863b9dca52934b64801a9"
@@ -2958,6 +2999,7 @@
   dependencies:
     "@types/react" "*"
     "@visx/point" "3.12.0"
+>>>>>>> main
 
 "@visx/gradient@^3.0.0":
   version "3.3.0"
@@ -2995,6 +3037,16 @@
     classnames "^2.3.1"
     prop-types "^15.6.1"
 
+<<<<<<< HEAD
+"@visx/hierarchy@^3.3.0":
+  version "3.3.0"
+  resolved "https://registry.yarnpkg.com/@visx/hierarchy/-/hierarchy-3.3.0.tgz#eb1580a98632b8b5943457b7425403bbd00e0d37"
+  integrity sha512-nPOZDsSst95+eZOQjZQbq1cuVywriiNAOQp2yXDkZov/32b7Qj0aakXvwU1Yd2DhriuSxlNzMecwVX7L6azrIg==
+  dependencies:
+    "@types/d3-hierarchy" "^1.1.6"
+    "@types/react" "*"
+    "@visx/group" "3.3.0"
+=======
 "@visx/hierarchy@^3.12.0":
   version "3.12.0"
   resolved "https://registry.yarnpkg.com/@visx/hierarchy/-/hierarchy-3.12.0.tgz#38295d2469cf957ed6d7700fe968aa16cbb878f0"
@@ -3003,14 +3055,22 @@
     "@types/d3-hierarchy" "^1.1.6"
     "@types/react" "*"
     "@visx/group" "3.12.0"
+>>>>>>> main
     classnames "^2.3.1"
     d3-hierarchy "^1.1.4"
     prop-types "^15.6.1"
 
+<<<<<<< HEAD
+"@visx/pattern@^3.3.0":
+  version "3.3.0"
+  resolved "https://registry.yarnpkg.com/@visx/pattern/-/pattern-3.3.0.tgz#358a2f6f2c33c606686324a7eec8c8b20c857397"
+  integrity sha512-x/a8sG8a+yj+yMjecL+UunRBGPf2Jm6L/X5AbRHEYddHZxxZa6FwxFuJe4R6S19+/vmFaXm8Md1ZAzT/cu6Icw==
+=======
 "@visx/pattern@^3.12.0":
   version "3.12.0"
   resolved "https://registry.yarnpkg.com/@visx/pattern/-/pattern-3.12.0.tgz#4966878de581a70a43dcd6d124419cbfe4a9adf8"
   integrity sha512-ZkNA/2TkULNiiY4cw2IkuQcQRp9zI3SQ0/JoZMQ+UmUvY5RNBcsdTmic7649egHq0FRYCbY0DDQVJicccW5JUg==
+>>>>>>> main
   dependencies:
     "@types/react" "*"
     classnames "^2.3.1"
@@ -3168,6 +3228,16 @@
     d3-time "3.1.0"
     d3-time-format "4.1.0"
     internmap "2.0.3"
+
+"@visx/zoom@^3.3.0":
+  version "3.3.0"
+  resolved "https://registry.yarnpkg.com/@visx/zoom/-/zoom-3.3.0.tgz#079d013d5299e8f2082c4790c01b177542e3a1b2"
+  integrity sha512-ijSitmJWbhupAe1F0LTsusg/WWEvYBcxV9iOHmTbGHhgpdKuhmZCXYg2zGAF4oT3lTuhofUA678jQt5+U9FlWA==
+  dependencies:
+    "@types/react" "*"
+    "@use-gesture/react" "^10.0.0-beta.22"
+    "@visx/event" "3.3.0"
+    prop-types "^15.6.2"
 
 "@xmldom/xmldom@^0.8.3":
   version "0.8.10"
@@ -4521,6 +4591,8 @@ d3-delaunay@6.0.2:
   resolved "https://registry.yarnpkg.com/d3-format/-/d3-format-3.1.0.tgz#9260e23a28ea5cb109e93b21a06e24e2ebd55641"
   integrity sha512-YyUI6AEuY/Wpt8KWLgZHsIU86atmikuoOmCfommt0LYHiQSPjvX2AcFc38PX0CBpr2RCyZhjex+NS/LPOv6YqA==
 
+<<<<<<< HEAD
+=======
 d3-geo@3.1.0:
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/d3-geo/-/d3-geo-3.1.0.tgz#74fd54e1f4cebd5185ac2039217a98d39b0a4c0e"
@@ -4528,6 +4600,7 @@ d3-geo@3.1.0:
   dependencies:
     d3-array "2.5.0 - 3"
 
+>>>>>>> main
 d3-hierarchy@^1.1.4:
   version "1.1.9"
   resolved "https://registry.yarnpkg.com/d3-hierarchy/-/d3-hierarchy-1.1.9.tgz#2f6bee24caaea43f8dc37545fa01628559647a83"
