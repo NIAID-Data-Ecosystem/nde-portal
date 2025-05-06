@@ -1,0 +1,85 @@
+{
+  "id": 13,
+  "attributes": {
+    "title": "NIAID IMPAACT Network",
+    "subtitle": "",
+    "description": "The International Maternal Pediatric Adolescent AIDS Clinical Trials (IMPAACT) Network is a global collaboration of investigators, institutions, community representatives and other partners organized for the purpose of evaluating interventions to treat and prevent HIV infection and its consequences in infants, children, adolescents, and pregnant/postpartum women through the conduct of high quality clinical trials.",
+    "contactLinks": {
+      "data": [
+        {
+          "id": 1,
+          "attributes": {
+            "label": "IMPAACT Network",
+            "url": "https://www.impaactnetwork.org/",
+            "categories": {
+              "data": [
+                {
+                  "id": 1,
+                  "attributes": {
+                    "name": "Related Resources",
+                    "createdAt": "2025-02-22T19:09:45.049Z",
+                    "publishedAt": "2025-02-22T19:09:45.049Z",
+                    "updatedAt": "2025-02-22T19:09:45.049Z"
+                  }
+                }
+              ]
+            },
+            "isExternal": true,
+            "createdAt": "2025-02-22T19:09:45.049Z",
+            "updatedAt": "2025-02-22T19:09:45.049Z",
+            "publishedAt": "2025-02-22T19:09:45.049Z"
+          }
+        },
+        {
+          "id": 2,
+          "attributes": {
+            "label": "NIAID Program page",
+            "url": "https://www.niaid.nih.gov/research/impaact",
+            "categories": {
+              "data": [
+                {
+                  "id": 1,
+                  "attributes": {
+                    "name": "Related Resources",
+                    "createdAt": "2025-02-22T19:09:45.049Z",
+                    "publishedAt": "2025-02-22T19:09:45.049Z",
+                    "updatedAt": "2025-02-22T19:09:45.049Z"
+                  }
+                }
+              ]
+            },
+            "isExternal": true,
+            "createdAt": "2025-02-22T19:09:45.049Z",
+            "updatedAt": "2025-02-22T19:09:45.049Z",
+            "publishedAt": "2025-02-22T19:09:45.049Z"
+          }
+        }
+      ]
+    },
+    "query": {
+      "q": "__all__",
+      "extra_filter": "sourceOrganization.name:(\"NIAID IMPAACT Network\")",
+      "facet_size": 1000,
+      "size": 0
+    },
+    "slug": "NIAID-IMPAACT-Network",
+    "topic": "NIAID IMPAACT Network",
+    "type": {
+      "data": [
+        {
+          "id": 1,
+          "attributes": {
+            "name": "Programs",
+            "createdAt": "2025-02-22T19:09:45.049Z",
+            "updatedAt": "2025-02-22T19:09:45.049Z",
+            "publishedAt": "2025-02-22T19:09:45.049Z"
+          }
+        }
+      ]
+    },
+
+    "createdAt": "2025-02-22T19:09:45.049Z",
+    "updatedAt": "2025-02-22T19:09:45.049Z",
+    "publishedAt": "2025-02-22T19:09:45.049Z"
+  }
+}
