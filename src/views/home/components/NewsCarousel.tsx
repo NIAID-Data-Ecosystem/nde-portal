@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { useQuery } from '@tanstack/react-query';
 import React from 'react';
-import { NewsOrEventsObject, fetchEvents } from 'src/pages/news';
+import { NewsOrEventsObject, fetchEvents } from 'src/pages/updates';
 import { formatDate } from 'src/utils/api/helpers';
 import { FaAngleRight } from 'react-icons/fa6';
 import {
@@ -252,7 +252,7 @@ export const NewsCarousel = ({
                         </NextLink>
                       ) : (
                         <NextLink
-                          href={`news/#${carouselCard.attributes.slug.replace(
+                          href={`updates/#${carouselCard.attributes.slug.replace(
                             'news-report',
                             'update',
                           )}`}
@@ -280,7 +280,7 @@ export const NewsCarousel = ({
       <Flex flex={1} justifyContent='center' mt={4}>
         <NextLink
           href={{
-            pathname: `/news`,
+            pathname: `/updates`,
           }}
           prefetch={false}
           passHref

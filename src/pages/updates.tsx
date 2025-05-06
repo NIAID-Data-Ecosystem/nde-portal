@@ -68,7 +68,7 @@ export interface NewsOrEventsObject {
   };
 }
 
-export interface NewsProps {
+export interface UpdatesProps {
   data: {
     news: {
       data: NewsOrEventsObject[];
@@ -90,7 +90,7 @@ export interface NewsProps {
   error?: { message: string };
 }
 
-const News: NextPage<NewsProps> = props => {
+const Updates: NextPage<UpdatesProps> = props => {
   const { data } = props;
 
   // Fetch features from Strapi API.
@@ -290,7 +290,7 @@ const News: NextPage<NewsProps> = props => {
               alignItems='center'
               m='0 auto'
             >
-              {/* NEWS */}
+              {/* UPDATES */}
               <Section id='updates' title='Updates'>
                 <SectionList
                   id='updates'
@@ -739,4 +739,4 @@ export async function getStaticProps() {
   }
 }
 
-export default News;
+export default Updates;
