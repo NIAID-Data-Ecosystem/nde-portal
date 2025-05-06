@@ -325,7 +325,7 @@ const News: NextPage<NewsProps> = props => {
                         response?.news
                           ?.slice(
                             0,
-                            sections.find(s => s.hash === 'news')?.showMax,
+                            sections.find(s => s.hash === 'updates')?.showMax,
                           )
                           .map((news: NewsOrEventsObject) => {
                             return <SectionCard key={news.id} {...news} />;
