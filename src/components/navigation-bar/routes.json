@@ -62,12 +62,12 @@
           "label": "Diseases",
           "subLabel": "Explore resources for NIAID priority health conditions",
           "href": "/diseases",
-          "env": ["development"]
+          "env": ["development", "staging"]
         },
         {
           "label": "Ontology Browser",
           "subLabel": "Explore search results in a novel way",
-          "href": "/",
+          "href": "/ontology-browser",
           "env": ["development"]
         }
       ]

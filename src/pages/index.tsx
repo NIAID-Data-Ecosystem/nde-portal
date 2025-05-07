@@ -211,7 +211,7 @@ const Home: NextPage<{
                   </VStack>
                 </Flex>
               </Flex>
-              {process.env.NODE_ENV !== 'production' && (
+              {process.env.NEXT_PUBLIC_APP_ENV !== 'production' && (
                 <Box px={{ base: 2, sm: 4 }} mb={{ base: 8, sm: 8 }}>
                   <Heading as='h2' fontSize='2xl' fontWeight='semibold' mb={4}>
                     Find Resources By Topic

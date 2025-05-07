@@ -37,6 +37,10 @@ export function filterRoutesByEnv(
   navigation: RouteProps,
   environment: string,
 ): RouteProps {
+  // If no environment is provided, return the original navigation
+  if (!environment) {
+    return navigation;
+  }
   function filter(routes: RouteProps[]): RouteProps[] {
     return routes
       .filter(route => {
@@ -71,7 +75,7 @@ export const Navigation: React.FC<FlexProps> = props => {
 
   const navigationFilteredByEnvironment = filterRoutesByEnv(
     NAVIGATION as RouteProps,
-    process.env.NODE_ENV,
+    process.env.NEXT_PUBLIC_APP_ENV || '',
   );
 
   return (
