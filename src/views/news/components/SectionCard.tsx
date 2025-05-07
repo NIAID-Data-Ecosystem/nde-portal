@@ -9,7 +9,7 @@ import {
   Tag,
   Text,
 } from '@chakra-ui/react';
-import { NewsOrEventsObject } from 'src/pages/news';
+import { NewsOrEventsObject } from 'src/pages/updates';
 import ReactMarkdown from 'react-markdown';
 import { useMDXComponents } from 'mdx-components';
 import { formatDate } from 'src/utils/api/helpers';

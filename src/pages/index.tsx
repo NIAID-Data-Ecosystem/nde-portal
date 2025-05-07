@@ -25,7 +25,7 @@ import {
   NewsCarousel,
   fetchNews,
 } from 'src/views/home/components/NewsCarousel';
-import { NewsOrEventsObject, fetchEvents } from './news';
+import { NewsOrEventsObject, fetchEvents } from './updates';
 import { TableWithSearch } from 'src/views/home/components/TableWithSearch/';
 import { useResourceCatalogs } from 'src/hooks/api/useResourceCatalogs';
 import { fetchAllFeaturedPages } from 'src/views/features/helpers';
