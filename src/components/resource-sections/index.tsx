@@ -120,7 +120,7 @@ const Sections = ({
       <ResourceBanner data={data} />
 
       {/*<--- AI Generated short description -->*/}
-      {process.env.NODE_ENV !== 'production' &&
+      {process.env.NEXT_PUBLIC_APP_ENV !== 'production' &&
         data?.disambiguatingDescription && (
           <Flex mx={6} my={2}>
             <Summary
