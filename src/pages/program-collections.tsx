@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { GetStaticProps, NextPage } from 'next';
 import { Flex, HStack, Text } from '@chakra-ui/react';
 import { useQuery } from '@tanstack/react-query';
@@ -24,33 +24,41 @@ import {
 } from 'src/views/program-collections/helpers';
 import { queryFilterObject2String } from 'src/views/search-results-page/helpers';
 
-const ProgramCollections: NextPage<{ data: ProgramCollection[] }> = props => {
+const ProgramCollections: NextPage<{
+  data: ProgramCollection[];
+  error: Error;
+}> = ({ data, error }) => {
   const [searchValue, setSearchValue] = useState('');
+  // const [isHydrated, setIsHydrated] = useState(false);
 
-  // Fetch program collections from the API
-  const { data, isFetching, error } = useQuery({
-    queryKey: ['program-collections'],
-    queryFn: fetchProgramCollections,
-    placeholderData: () => props.data,
-    select: collections => {
-      return collections.sort((a, b) => {
-        // if sourceOrganization.name is null, sort by term
-        if (
-          !a.sourceOrganization ||
-          !b.sourceOrganization ||
-          a.sourceOrganization.name === null ||
-          b.sourceOrganization.name === null
-        ) {
-          return a.term.localeCompare(b.term);
-        }
+  // useEffect(() => {
+  //   setIsHydrated(true);
+  // }, []);
 
-        return a.sourceOrganization.name.localeCompare(
-          b.sourceOrganization.name,
-        );
-      });
-    },
-    refetchOnWindowFocus: false,
-  });
+  // // Fetch program collections from the API
+  // const { data, isFetching, error } = useQuery({
+  //   queryKey: ['program-collections'],
+  //   queryFn: isHydrated ? () => fetchProgramCollections(150) : undefined,
+  //   placeholderData: () => props.data,
+  //   enabled: isHydrated, // don’t refetch on first render
+  // select: collections => {
+  //   return collections.sort((a, b) => {
+  //     if (
+  //       !a.sourceOrganization ||
+  //       !b.sourceOrganization ||
+  //       a.sourceOrganization.name === null ||
+  //       b.sourceOrganization.name === null
+  //     ) {
+  //       return a.term.localeCompare(b.term);
+  //     }
+
+  //     return a.sourceOrganization.name.localeCompare(
+  //       b.sourceOrganization.name,
+  //     );
+  //   });
+  // },
+  //   refetchOnWindowFocus: false,
+  // });
 
   const programCollections = useMemo(() => {
     return (
@@ -158,7 +166,6 @@ const ProgramCollections: NextPage<{ data: ProgramCollection[] }> = props => {
                       <StyledCard
                         key={index}
                         id={collection.id}
-                        isLoading={isFetching}
                         label={label}
                         subLabel={`${collection.count.toLocaleString()} resources available`}
                       >
@@ -228,7 +235,29 @@ const ProgramCollections: NextPage<{ data: ProgramCollection[] }> = props => {
 };
 
 export const getStaticProps: GetStaticProps = async context => {
-  return { props: { data: await fetchProgramCollections() } };
+  try {
+    const data = await fetchProgramCollections(150).then(collections => {
+      return collections.sort((a, b) => {
+        if (
+          !a.sourceOrganization ||
+          !b.sourceOrganization ||
+          a.sourceOrganization.name === null ||
+          b.sourceOrganization.name === null
+        ) {
+          return a.term.localeCompare(b.term);
+        }
+
+        return a.sourceOrganization.name.localeCompare(
+          b.sourceOrganization.name,
+        );
+      });
+    });
+
+    return { props: { data, error: null } };
+  } catch (error: any) {
+    // Allow error to break build
+    throw error;
+  }
 };
 
 export default ProgramCollections;

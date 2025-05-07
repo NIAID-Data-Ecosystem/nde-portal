@@ -248,7 +248,7 @@ const SearchResultsPage = ({
       {numCards > 0 && (
         <Stack borderRadius='semi' boxShadow='base' bg='white' px={4} py={2}>
           {/* Hide toggle in production */}
-          {process.env.NODE_ENV !== 'production' && (
+          {process.env.NEXT_PUBLIC_APP_ENV !== 'production' && (
             <MetadataScoreToggle
               isChecked={isMounted ? shouldUseMetadataScore : false}
               isDisabled={sortOrder !== '_score'}

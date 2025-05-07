@@ -7,15 +7,26 @@ export interface ProgramCollection {
   count: number;
   sourceOrganization: SourceOrganization | null;
 }
+
+/**
+ * Converts a display name into a URL-safe ID.
+ */
+const transformTermToId = (term: string) => {
+  return term.toLowerCase().replace(/\s+/g, '-');
+};
+
+/**
+ * Optional delay between requests to avoid rate limits.
+ */
+const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
 /**
  * Fetches program collections and their associated counts from the NIAID Data Ecosystem API.
- * @returns {Promise<ProgramCollection[]>} - An array of program collections with their details.
- * @throws {Error} - Throws an error if the API URL is undefined.
+ * Processes each detail request sequentially to avoid rate limits.
  */
-
-export const fetchProgramCollections = async (): Promise<
-  ProgramCollection[]
-> => {
+export const fetchProgramCollections = async (
+  delayTime = 0,
+): Promise<ProgramCollection[]> => {
   const API_URL = process.env.NEXT_PUBLIC_API_URL;
   if (!API_URL) {
     throw new Error('API URL is undefined');
@@ -23,7 +34,6 @@ export const fetchProgramCollections = async (): Promise<
 
   let collections: { term: string; count: number }[] = [];
   try {
-    // use nde api to fetch list of available program collections and associated counts
     const response = await axios.get(`${API_URL}/query`, {
       params: {
         q: '_exists_:sourceOrganization.name',
@@ -40,58 +50,54 @@ export const fetchProgramCollections = async (): Promise<
     throw new Error('Unable to fetch program collections list');
   }
 
-  // Fetch the first result for each collection and filter for the matching program collection.
-  const collectionsWithDetails = await Promise.all(
-    collections.map(async ({ term, count }) => {
-      const id = transformTermToId(term);
+  const collectionsWithDetails: ProgramCollection[] = [];
 
-      try {
-        const { data } = await axios.get(`${API_URL}/query`, {
-          params: {
-            q: `_exists_:sourceOrganization.name AND sourceOrganization.name:"${term}"`,
-            size: 1,
-            fields: 'sourceOrganization',
-          },
-        });
+  for (const { term, count } of collections) {
+    const id = transformTermToId(term);
 
-        const hit = data?.hits?.[0];
-        const sourceOrg = hit?.sourceOrganization;
+    try {
+      const { data } = await axios.get(`${API_URL}/query`, {
+        params: {
+          q: `_exists_:sourceOrganization.name AND sourceOrganization.name:"${term}"`,
+          size: 1,
+          fields: 'sourceOrganization',
+        },
+      });
 
-        let matchingOrg: SourceOrganization | null = null;
+      const hit = data?.hits?.[0];
+      const sourceOrg = hit?.sourceOrganization;
 
-        if (Array.isArray(sourceOrg)) {
-          matchingOrg = sourceOrg.find(
-            (org: SourceOrganization) =>
-              org.name.toLowerCase() === term.toLowerCase(),
-          );
-        } else if (sourceOrg?.name?.toLowerCase() === term.toLowerCase()) {
-          matchingOrg = sourceOrg;
-        }
+      let matchingOrg: SourceOrganization | null = null;
 
-        // Format alternate name fields to remove any duplicate acronyms.
-        // (i.e.) if name = "AMP Network", remove AMP from alternate names
-        if (matchingOrg?.alternateName) {
-          const nameWords = matchingOrg.name.split(' ');
-          matchingOrg.alternateName = matchingOrg.alternateName.filter(
-            (alternateName: string) => !nameWords.includes(alternateName),
-          );
-        }
+      if (Array.isArray(sourceOrg)) {
+        matchingOrg = sourceOrg.find(
+          (org: SourceOrganization) =>
+            org.name.toLowerCase() === term.toLowerCase(),
+        );
+      } else if (sourceOrg?.name?.toLowerCase() === term.toLowerCase()) {
+        matchingOrg = sourceOrg;
+      }
 
-        return { id, term, count, sourceOrganization: matchingOrg };
-      } catch (error) {
-        console.error(`Error fetching details for term "${term}":`, error);
-        throw new Error(
-          `Unable to fetch program collection details for ${term}`,
+      if (matchingOrg?.alternateName) {
+        const nameWords = matchingOrg.name.split(' ');
+        matchingOrg.alternateName = matchingOrg.alternateName.filter(
+          (alt: string) => !nameWords.includes(alt),
         );
       }
-    }),
-  );
+
+      collectionsWithDetails.push({
+        id,
+        term,
+        count,
+        sourceOrganization: matchingOrg,
+      });
+    } catch (error) {
+      throw new Error(`Unable to fetch program collection details for ${term}`);
+    }
+
+    // Optional delay to avoid rate limiting
+    await delay(delayTime);
+  }
 
   return collectionsWithDetails;
-};
-
-const transformTermToId = (term: string) => {
-  // Convert the term to lowercase and replace spaces with hyphens
-  const transformedTerm = term.toLowerCase().replace(/\s+/g, '-');
-  return transformedTerm;
 };

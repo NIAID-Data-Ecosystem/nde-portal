@@ -55,7 +55,7 @@ const customJestConfig = {
     '<rootDir>/coverage',
     '<rootDir>/dist',
     '<rootDir>/src/__tests__/mocks/',
-    // '<rootDir>/src/__tests__/validate-links.test.js',
+    '<rootDir>/src/__tests__/validate-links.test.js',
   ],
   moduleNameMapper: {
     'react-markdown':

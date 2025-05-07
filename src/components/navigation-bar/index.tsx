@@ -28,10 +28,43 @@ export interface RouteProps {
   subLabel?: string;
   routes?: Array<RouteProps>;
   href?: string;
+  env?: string[];
   isExternal?: boolean;
   isActive?: boolean;
 }
 
+export function filterRoutesByEnv(
+  navigation: RouteProps,
+  environment: string,
+): RouteProps {
+  // If no environment is provided, return the original navigation
+  if (!environment) {
+    return navigation;
+  }
+  function filter(routes: RouteProps[]): RouteProps[] {
+    return routes
+      .filter(route => {
+        // Remove routes with an env array that doesn't include the current env
+        if (route.env && !route.env.includes(environment)) {
+          return false;
+        }
+        return true;
+      })
+      .map(route => {
+        // If nested routes exist, filter them too
+        if (route.routes) {
+          const filteredNestedRoutes = filter(route.routes);
+          return { ...route, routes: filteredNestedRoutes };
+        }
+        return route;
+      });
+  }
+
+  return {
+    ...navigation,
+    routes: navigation?.routes && filter(navigation.routes),
+  };
+}
 export const Navigation: React.FC<FlexProps> = props => {
   const { isOpen, onToggle } = useDisclosure();
   const [isLargerThanMd] = useMediaQuery('(min-width: 54rem)', {
@@ -39,6 +72,11 @@ export const Navigation: React.FC<FlexProps> = props => {
     fallback: false,
   });
   const router = useRouter();
+
+  const navigationFilteredByEnvironment = filterRoutesByEnv(
+    NAVIGATION as RouteProps,
+    process.env.NEXT_PUBLIC_APP_ENV || '',
+  );
 
   return (
     <Box
@@ -76,22 +114,21 @@ export const Navigation: React.FC<FlexProps> = props => {
             justifyContent='flex-end'
             sx={{ '>a': { px: 4, py: 2 } }}
           >
-            {NAVIGATION.routes &&
-              NAVIGATION.routes.map(navItem => (
-                <DesktopNavItem
-                  key={navItem.label}
-                  isActive={
-                    router.asPath === navItem.href ||
-                    router.pathname === navItem.href
-                  }
-                  {...navItem}
-                />
-              ))}
+            {navigationFilteredByEnvironment?.routes?.map(navItem => (
+              <DesktopNavItem
+                key={navItem.label}
+                isActive={
+                  router.asPath === navItem.href ||
+                  router.pathname === navItem.href
+                }
+                {...navItem}
+              />
+            ))}
           </Stack>
         )}
 
         {/* For mobile / tablet */}
-        {NAVIGATION.routes && (
+        {navigationFilteredByEnvironment?.routes && (
           <IconButton
             display={isLargerThanMd ? 'none' : 'flex'}
             aria-label={
