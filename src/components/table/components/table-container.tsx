@@ -1,5 +1,7 @@
-import { TableContainerProps } from '@chakra-ui/table';
-import { TableContainer as NDETableContainer } from '@chakra-ui/react';
+import {
+  TableContainer as NDETableContainer,
+  TableContainerProps,
+} from '@chakra-ui/react';
 
 export const TableContainer = (props: TableContainerProps) => {
   return (

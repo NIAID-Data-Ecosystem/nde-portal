@@ -19,7 +19,7 @@
     "test": "npx jest"
   },
   "dependencies": {
-    "@chakra-ui/react": "^2.8.2",
+    "@chakra-ui/react": "^2.10.7",
     "@emotion/react": "^11.11.3",
     "@emotion/styled": "^11.11.0",
     "@next/third-parties": "^14.0.4",
@@ -30,7 +30,7 @@
     "@types/react-dom": "^18.2.4",
     "framer-motion": "^10.18.0",
     "jest-environment-jsdom": "^29.7.0",
-    "next": "^14.2.21",
+    "next": "^14.2.25",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-window": "^1.8.10"
@@ -68,8 +68,7 @@
     "@visx/scale": "^3.0.0",
     "@visx/shape": "^3.0.0",
     "@visx/tooltip": "^3.1.2",
-    "@visx/zoom": "^3.3.0",
-    "axios": "^1.7.4",
+    "axios": "^1.8.2",
     "d3-scale-chromatic": "^3.0.0",
     "env-cmd": "^10.1.0",
     "eslint": "7",
@@ -85,7 +84,7 @@
     "next-mdx-remote": "^4.4.1",
     "next-router-mock": "^0.9.3",
     "prettier": "^2.8.3",
-    "puppeteer": "^23.5.3",
+    "puppeteer": "^24.8.1",
     "raw-loader": "^4.0.2",
     "react-icons": "^4.10.1",
     "react-json-tree": "^0.18.0",
@@ -102,6 +101,8 @@
   },
   "resolutions": {
     "@adobe/css-tools": "^4.3.2",
+    "@babel/helpers": "^7.26.10",
+    "@babel/runtime": "^7.26.10",
     "braces": "^3.0.3",
     "cookie": "^0.7.0",
     "cross-spawn": "^7.0.5",
