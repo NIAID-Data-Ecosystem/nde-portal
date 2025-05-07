@@ -68,7 +68,7 @@ export interface NewsOrEventsObject {
   };
 }
 
-export interface NewsProps {
+export interface UpdatesProps {
   data: {
     news: {
       data: NewsOrEventsObject[];
@@ -90,7 +90,7 @@ export interface NewsProps {
   error?: { message: string };
 }
 
-const News: NextPage<NewsProps> = props => {
+const Updates: NextPage<UpdatesProps> = props => {
   const { data } = props;
 
   // Fetch features from Strapi API.
@@ -176,8 +176,8 @@ const News: NextPage<NewsProps> = props => {
 
   const [sections, setSections] = useState([
     {
-      title: 'News',
-      hash: 'news',
+      title: 'Updates',
+      hash: 'updates',
       showMax: 5,
     },
     {
@@ -228,8 +228,8 @@ const News: NextPage<NewsProps> = props => {
 
   return (
     <PageContainer
-      title='News'
-      metaDescription='Latest news and updates for the NIAID Data Discovery Portal.'
+      title='Updates'
+      metaDescription='Updates for the NIAID Data Discovery Portal.'
       px={0}
       py={0}
     >
@@ -250,8 +250,8 @@ const News: NextPage<NewsProps> = props => {
           w='100%'
         >
           <HeroBannerText
-            title='News & Updates'
-            body='Latest news and events from the NIAID Data Discovery Portal'
+            title='Updates'
+            body='Updates and events from the NIAID Data Discovery Portal'
             alignItems={{ base: 'flex-start', lg: 'center' }}
             color='#fff'
             maxWidth={{ md: '500px', xl: '680px' }}
@@ -278,7 +278,7 @@ const News: NextPage<NewsProps> = props => {
         mb={32}
         flex={1}
       >
-        <VisuallyHidden as='h1'>News and Events </VisuallyHidden>
+        <VisuallyHidden as='h1'>Updates and Events </VisuallyHidden>
         {response ? (
           <>
             <Flex
@@ -290,10 +290,10 @@ const News: NextPage<NewsProps> = props => {
               alignItems='center'
               m='0 auto'
             >
-              {/* NEWS */}
-              <Section id='news' title='News'>
+              {/* UPDATES */}
+              <Section id='updates' title='Updates'>
                 <SectionList
-                  id='news'
+                  id='updates'
                   numItems={response?.news?.length || 0}
                   sections={sections}
                   setSections={setSections}
@@ -312,7 +312,7 @@ const News: NextPage<NewsProps> = props => {
                           />
                         ) : (
                           <Empty
-                            message='No news to display'
+                            message='No updates to display'
                             color='page.placeholder'
                             headingProps={{ size: 'sm' }}
                             iconProps={{
@@ -325,7 +325,7 @@ const News: NextPage<NewsProps> = props => {
                         response?.news
                           ?.slice(
                             0,
-                            sections.find(s => s.hash === 'news')?.showMax,
+                            sections.find(s => s.hash === 'updates')?.showMax,
                           )
                           .map((news: NewsOrEventsObject) => {
                             return <SectionCard key={news.id} {...news} />;
@@ -739,4 +739,4 @@ export async function getStaticProps() {
   }
 }
 
-export default News;
+export default Updates;

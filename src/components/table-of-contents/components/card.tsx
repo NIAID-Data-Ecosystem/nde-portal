@@ -13,6 +13,10 @@ import {
   Text,
   VStack,
 } from '@chakra-ui/react';
+import { useMDXComponents } from 'mdx-components';
+import ReactMarkdown from 'react-markdown';
+import rehypeRaw from 'rehype-raw';
+import remarkGfm from 'remark-gfm';
 
 /**
  * StyledCardStack component
@@ -110,10 +114,23 @@ export const StyleCardSubLabel: React.FC<{ children: string }> = ({
   );
 };
 
-export const StyledCardDescription: React.FC<{ children: React.ReactNode }> = ({
+export const StyledCardDescription: React.FC<{ children: string }> = ({
   children,
 }) => {
-  return <Text lineHeight='tall'>{children}</Text>;
+  const MDXComponents = useMDXComponents({
+    p: props => {
+      return <Text lineHeight='tall' {...props} />;
+    },
+  });
+
+  return (
+    <ReactMarkdown
+      rehypePlugins={[rehypeRaw, remarkGfm]}
+      components={MDXComponents}
+    >
+      {children}
+    </ReactMarkdown>
+  );
 };
 
 export const StyledCardButton: React.FC<ButtonProps & { href: UrlObject }> = ({
