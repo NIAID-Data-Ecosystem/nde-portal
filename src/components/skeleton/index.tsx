@@ -1,10 +1,11 @@
 import {
   Box,
   SkeletonProps as ChakraSkeletonProps,
+  cssVar,
   usePrevious,
   useToken,
 } from '@chakra-ui/react';
-import { keyframes, cssVar } from '@chakra-ui/system';
+import { keyframes } from '@emotion/react';
 
 /**
  * `Skeleton` is used to display the loading state of some component.
