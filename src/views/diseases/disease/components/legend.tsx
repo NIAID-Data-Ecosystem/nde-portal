@@ -36,7 +36,7 @@ export const LegendContainer = ({
     <Box>
       <LegendTitle>{title}</LegendTitle>
       <LegendTableHeader
-        textAlign={orientation === 'vertical' ? 'end' : 'start'}
+        textAlign={orientation === 'vertical' ? 'start' : 'start'}
       >
         {tableHeader}
       </LegendTableHeader>

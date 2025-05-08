@@ -128,7 +128,7 @@ export const DataTypes = ({ query, topic }: TopicQueryProps) => {
 
           {/* legend */}
           <Box flex={1} minWidth={250}>
-            <LegendContainer>
+            <LegendContainer tableHeader='Data Types and Resources'>
               {data?.terms
                 ?.sort((a, b) => {
                   return b.count - a.count;
