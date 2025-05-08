@@ -91,8 +91,22 @@ export const DiseaseContent: React.FC<DiseaseContentProps> = ({
               {query && <PropertyTreemapLists query={query} topic={topic} />}
             </CardWrapper>
 
-            <CardWrapper flexDirection='row' flexWrap='wrap' mt={6}>
-              <VStack w='50%' spacing={4} flex={3}>
+            <CardWrapper
+              flexDirection='row'
+              flexWrap='wrap'
+              mt={6}
+              w='100%'
+              spacing={{ base: 4, lg: 14, xl: 28 }}
+              justifyContent='space-between'
+            >
+              <VStack
+                flex={2}
+                flexDirection='column'
+                justifyContent='space-between'
+                maxWidth={{ base: 'unset', lg: 700, xl: 1000 }}
+                spacing={4}
+                w='50%'
+              >
                 {/* Chart: Resource types */}
                 {query && <DataTypes query={query} topic={topic} />}
 
@@ -118,7 +132,8 @@ export const DiseaseContent: React.FC<DiseaseContentProps> = ({
                   w='100%'
                   flexDirection='column'
                   flex={1}
-                  minWidth={200}
+                  minWidth={{ base: 250, lg: 300 }}
+                  maxWidth={{ base: 'unset', lg: 400 }}
                   display={{ base: 'none', lg: 'flex' }}
                 >
                   <Sources id='desktop-version' query={query} topic={topic} />

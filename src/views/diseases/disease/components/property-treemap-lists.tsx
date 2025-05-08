@@ -89,7 +89,13 @@ export const PropertyTreemapLists = ({ query, topic }: TopicQueryProps) => {
   };
   return (
     <Flex flexDirection='column' width='100%'>
-      <HStack alignItems='flex-start' spacing={6} flexWrap='wrap' width='100%'>
+      <Stack
+        alignItems='flex-start'
+        flexDirection={{ base: 'column', lg: 'row' }}
+        flexWrap='wrap'
+        spacing={{ base: 2, lg: 6 }}
+        width='100%'
+      >
         <Box flex={2}>
           <SectionTitle as='h4'>
             {fillTemplatePlaceholders(
@@ -109,8 +115,15 @@ export const PropertyTreemapLists = ({ query, topic }: TopicQueryProps) => {
         </Box>
 
         {/* Toggle for charts types */}
-        <Flex px={4} flex={1} flexDirection='column' alignItems='flex-end'>
-          <Text fontWeight='medium'>Select Chart Type</Text>
+        <Flex
+          alignItems={{ base: 'flex-start', md: 'flex-end' }}
+          flex={1}
+          flexDirection='column'
+          px={{ base: 0, md: 4 }}
+        >
+          <Text fontWeight='medium' lineHeight='short'>
+            Select Chart Type
+          </Text>
           <RadioGroup
             onChange={value => setListView(value === 'list')}
             value={`${listView ? 'list' : 'treemap'}`}
@@ -121,7 +134,7 @@ export const PropertyTreemapLists = ({ query, topic }: TopicQueryProps) => {
             </Stack>
           </RadioGroup>
         </Flex>
-      </HStack>
+      </Stack>
       <ChartWrapper
         error={error}
         isLoading={isLoading}

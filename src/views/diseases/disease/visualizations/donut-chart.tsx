@@ -183,6 +183,7 @@ export const DonutChart = ({
       alignItems='center'
       position='relative'
       minWidth={250}
+      width={{ base: '100%', md: 'unset' }}
     >
       {/* Toggle log scale */}
       <Checkbox

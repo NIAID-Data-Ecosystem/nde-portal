@@ -71,105 +71,111 @@ export const DataTypes = ({ query, topic }: TopicQueryProps) => {
   });
 
   return (
-    <Flex flexWrap='wrap' width='100%'>
-      <Flex flex={3} flexDirection='column' minWidth={250}>
-        <ChartWrapper
-          title={DISEASE_PAGE_COPY['charts']['types']['title']}
-          description={
-            <MarkdownContent
-              template={DISEASE_PAGE_COPY['charts']['types']['description']}
-              replacements={{
-                topic,
-              }}
-            />
-          }
-          error={error}
-          isLoading={isLoading || isPlaceholderData}
-          skeletonProps={{
-            minHeight: '200px',
-            width: '100%',
-          }}
+    <Flex width='100%' flexDirection='column' minWidth={250}>
+      <ChartWrapper
+        title={DISEASE_PAGE_COPY['charts']['types']['title']}
+        description={
+          <MarkdownContent
+            template={DISEASE_PAGE_COPY['charts']['types']['description']}
+            replacements={{
+              topic,
+            }}
+          />
+        }
+        error={error}
+        isLoading={isLoading || isPlaceholderData}
+        skeletonProps={{
+          minHeight: '200px',
+          width: '100%',
+        }}
+      >
+        <Flex
+          flexWrap='wrap'
+          justifyContent='center'
+          width={{ base: '100%', lg: 'unset' }}
         >
-          <Flex flexWrap='wrap' justifyContent='center'>
-            <Box flex={2} p={4} minWidth={250}>
-              {data?.terms && (
-                <DonutChart
-                  title='Resource Type Distribution'
-                  description=' A donut chart showing the distribution of different resource types
+          <Box
+            flex={2}
+            minWidth={{ base: 'unset', lg: 350 }}
+            width={{ base: '100%', lg: 'unset' }}
+          >
+            {data?.terms && (
+              <DonutChart
+                title='Resource Type Distribution'
+                description=' A donut chart showing the distribution of different resource types
             by count. The chart is interactive and allows users to click on each segment to
             view more details about that resource type.'
-                  width={400}
-                  height={280}
-                  donutThickness={20}
-                  data={data.terms}
-                  getFillColor={getFillColor}
-                  labelStyles={{
-                    fill: '#2f2f2f',
-                    transformLabel: term =>
-                      formatResourceTypeForDisplay(term as APIResourceType),
-                  }}
-                  getRoute={term => {
-                    return getSearchResultsRoute({
-                      query: params,
-                      facet: params.facets,
-                      term,
-                    });
-                  }}
-                />
-              )}
-            </Box>
+                width={400}
+                height={280}
+                donutThickness={20}
+                data={data.terms}
+                getFillColor={getFillColor}
+                labelStyles={{
+                  fill: '#2f2f2f',
+                  transformLabel: term =>
+                    formatResourceTypeForDisplay(term as APIResourceType),
+                }}
+                getRoute={term => {
+                  return getSearchResultsRoute({
+                    query: params,
+                    facet: params.facets,
+                    term,
+                  });
+                }}
+              />
+            )}
+          </Box>
 
-            {/* legend */}
-            <Box flex={1} p={4} minWidth={250}>
-              <LegendContainer>
-                {data?.terms
-                  ?.sort((a, b) => {
-                    return b.count - a.count;
-                  })
-                  .map(({ term, count }) => {
-                    return (
-                      <LegendItem
-                        key={term}
-                        count={count}
-                        isLoading={isLoading || isPlaceholderData}
-                        swatchBg={getFillColor(term)}
+          {/* legend */}
+          <Box flex={1} minWidth={250}>
+            <LegendContainer>
+              {data?.terms
+                ?.sort((a, b) => {
+                  return b.count - a.count;
+                })
+                .map(({ term, count }) => {
+                  return (
+                    <LegendItem
+                      key={term}
+                      count={count}
+                      isLoading={isLoading || isPlaceholderData}
+                      swatchBg={getFillColor(term)}
+                    >
+                      <NextLink
+                        href={getSearchResultsRoute({
+                          query: params,
+                          facet: params.facets,
+                          term: term as string,
+                        })}
+                        passHref
                       >
-                        <NextLink
-                          href={getSearchResultsRoute({
-                            query: params,
-                            facet: params.facets,
-                            term: term as string,
-                          })}
-                          passHref
-                        >
-                          <Link as='p'>
-                            {formatResourceTypeForDisplay(
-                              term as APIResourceType,
-                            )}
-                          </Link>
-                        </NextLink>
-                      </LegendItem>
-                    );
+                        <Link as='p'>
+                          {formatResourceTypeForDisplay(
+                            term as APIResourceType,
+                          )}
+                        </Link>
+                      </NextLink>
+                    </LegendItem>
+                  );
+                })}
+              <LegendItem
+                key='total'
+                count={data?.total}
+                isLoading={isLoading || isPlaceholderData}
+              >
+                <NextLink
+                  href={getSearchResultsRoute({
+                    query: params,
                   })}
-                <LegendItem
-                  key='total'
-                  count={data?.total}
-                  isLoading={isLoading || isPlaceholderData}
+                  passHref
                 >
-                  <NextLink
-                    href={getSearchResultsRoute({
-                      query: params,
-                    })}
-                    passHref
-                  >
-                    <Link as='p'>Total</Link>
-                  </NextLink>
-                </LegendItem>
-              </LegendContainer>
-            </Box>
-          </Flex>
-        </ChartWrapper>
-      </Flex>
+                  <Link as='p'>Total</Link>
+                </NextLink>
+              </LegendItem>
+            </LegendContainer>
+          </Box>
+        </Flex>
+      </ChartWrapper>
     </Flex>
   );
 };

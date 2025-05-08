@@ -107,12 +107,7 @@ export const ConditionsOfAccess = ({ query, topic }: TopicQueryProps) => {
             width: '100%',
           }}
         >
-          <Flex
-            flexWrap='wrap'
-            justifyContent='center'
-            flexDirection='column'
-            p={4}
-          >
+          <Flex flexWrap='wrap' justifyContent='center' flexDirection='column'>
             <Box flex={2} minWidth={250} w='100%'>
               {data && (
                 <StackedBarChart
@@ -124,7 +119,7 @@ export const ConditionsOfAccess = ({ query, topic }: TopicQueryProps) => {
                   defaultDimensions={{
                     width: 450,
                     height: 80,
-                    margin: { top: 0, right: 0, bottom: 0, left: 0 },
+                    margin: { top: 10, right: 0, bottom: 0, left: 0 },
                   }}
                   getRoute={term => {
                     return getSearchResultsRoute({

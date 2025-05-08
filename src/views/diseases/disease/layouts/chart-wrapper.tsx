@@ -36,6 +36,7 @@ export const ChartWrapper = ({
         width='100%'
         height='100%'
         isLoaded={!isLoading}
+        py={4}
         {...skeletonProps}
       >
         {error && <ErrorMessage message={error.message} my={4} />}
