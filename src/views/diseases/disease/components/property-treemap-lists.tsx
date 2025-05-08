@@ -10,6 +10,7 @@ import {
 } from '@chakra-ui/react';
 import { useQuery } from '@tanstack/react-query';
 import { getMetadataTheme } from 'src/components/icon/helpers';
+import { InfoLabel } from 'src/components/info-label';
 import { theme } from 'src/theme';
 import { fetchSearchResults } from 'src/utils/api';
 import { FacetTerm, FetchSearchResultsResponse } from 'src/utils/api/types';
@@ -22,8 +23,9 @@ import {
   fillTemplatePlaceholders,
   MarkdownContent,
 } from '../layouts/markdown-content';
-import { SectionTitle } from '../layouts/section';
+import { headingStyles, SectionTitle } from '../layouts/section';
 import DISEASE_PAGE_COPY from '../disease-page.json';
+import { getMetadataDescription } from 'src/components/metadata';
 
 const facets = [
   {
@@ -31,18 +33,21 @@ const facets = [
     value: 'healthCondition.name',
     fill: theme.colors[getMetadataTheme('healthCondition')][300] as string,
     colorScheme: theme.colors[getMetadataTheme('healthCondition')],
+    tooltip: getMetadataDescription('healthCondition', 'Dataset'),
   },
   {
     label: 'Measurement Technique',
     value: 'measurementTechnique.name',
     fill: theme.colors[getMetadataTheme('measurementTechnique')][300] as string,
     colorScheme: theme.colors[getMetadataTheme('measurementTechnique')],
+    tooltip: getMetadataDescription('measurementTechnique', 'Dataset'),
   },
   {
     label: 'Pathogen',
     value: 'infectiousAgent.name',
     fill: theme.colors[getMetadataTheme('infectiousAgent')][300] as string,
     colorScheme: theme.colors[getMetadataTheme('infectiousAgent')],
+    tooltip: getMetadataDescription('infectiousAgent', 'Dataset'),
   },
 ] as FacetProps[];
 
@@ -67,7 +72,16 @@ export const PropertyTreemapLists = ({ query, topic }: TopicQueryProps) => {
     queryFn: async () => await fetchSearchResults(params),
     select: data => {
       if (!data)
-        return [{ colorScheme: '', fill: '', label: '', value: '', terms: [] }];
+        return [
+          {
+            colorScheme: '',
+            fill: '',
+            label: '',
+            value: '',
+            tooltip: '',
+            terms: [],
+          },
+        ];
       // Get the terms for each facet.
       const terms = facets.map(facet => {
         const facetTerms = data.facets?.[facet.value]?.terms || [];
@@ -164,6 +178,14 @@ export const PropertyTreemapLists = ({ query, topic }: TopicQueryProps) => {
                 minWidth={{ base: '100%', sm: '380px' }}
                 maxWidth={{ base: 'unset', lg: '500px' }}
               >
+                <InfoLabel
+                  title={facet.label}
+                  tooltipText={facet.tooltip}
+                  textProps={{
+                    ...headingStyles['h5'],
+                  }}
+                />
+
                 {listView ? (
                   <BrushableListChart {...props} />
                 ) : (

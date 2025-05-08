@@ -95,4 +95,5 @@ export interface FacetProps {
   value: string;
   fill: string;
   colorScheme: ThemingProps<any>['colorScheme'];
+  tooltip: string;
 }

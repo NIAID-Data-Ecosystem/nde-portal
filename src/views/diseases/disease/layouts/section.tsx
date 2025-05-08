@@ -12,7 +12,7 @@ import { HeadingWithLinkStyles } from 'src/components/heading-with-link/componen
 
 type HeadingLevel = 'h1' | 'h2' | 'h3' | 'h4' | 'h5';
 
-const headingStyles: Record<
+export const headingStyles: Record<
   HeadingLevel,
   {
     fontSize: string;
