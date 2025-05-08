@@ -1,4 +1,4 @@
-import { Flex } from '@chakra-ui/react';
+import { Flex, Text } from '@chakra-ui/react';
 import { useQuery } from '@tanstack/react-query';
 import { fetchMetadata } from 'src/hooks/api/helpers';
 import { Metadata } from 'src/hooks/api/types';
@@ -141,7 +141,7 @@ export const Sources = ({
           }}
         >
           {/* Bar Chart */}
-          {data && (
+          {data && data?.terms.length > 0 ? (
             <BarChart
               id={id}
               data={data}
@@ -161,6 +161,10 @@ export const Sources = ({
                 });
               }}
             />
+          ) : (
+            <Text color='page.placeholder' fontStyle='italic' mt={4}>
+              No data available.
+            </Text>
           )}
         </ChartWrapper>
       </Flex>
