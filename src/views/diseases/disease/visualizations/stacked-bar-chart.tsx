@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import NextLink from 'next/link';
 import { UrlObject } from 'url';
-import { Box, Text as ChakraText, VisuallyHidden } from '@chakra-ui/react';
+import { Text as ChakraText, VisuallyHidden } from '@chakra-ui/react';
 import { useSpring, animated } from '@react-spring/web';
 import { Annotation, Connector, HtmlLabel } from '@visx/annotation';
 import { localPoint } from '@visx/event';
@@ -14,7 +14,12 @@ import {
   useTooltipInPortal,
 } from '@visx/tooltip';
 import { AccessTypes, FacetTerm } from 'src/utils/api/types';
-import { customTooltipStyles, TooltipWrapper } from '../components/tooltip';
+import {
+  customTooltipStyles,
+  TooltipSubtitle,
+  TooltipTitle,
+  TooltipWrapper,
+} from '../components/tooltip';
 
 export interface FacetTermsWithDetails
   extends Pick<FacetTerm, 'term' | 'count'> {
@@ -217,14 +222,12 @@ export const StackedBarChart = ({
             aria-live='polite'
           >
             <TooltipWrapper showsSearchHint>
-              <Box fontSize='xs' lineHeight='shorter'>
-                <ChakraText fontWeight='semibold' color='text.heading'>
-                  {tooltipData.label}
-                </ChakraText>
-                <ChakraText fontWeight='normal'>
-                  {tooltipData.count.toLocaleString()} results
-                </ChakraText>
-              </Box>
+              <TooltipTitle>{tooltipData.label}</TooltipTitle>
+              <TooltipSubtitle>
+                {`${tooltipData.count.toLocaleString()} result${
+                  tooltipData.count == 1 ? '' : 's'
+                }`}
+              </TooltipSubtitle>
             </TooltipWrapper>
           </TooltipWithBounds>
         )}

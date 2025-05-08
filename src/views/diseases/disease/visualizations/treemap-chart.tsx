@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 import NextLink from 'next/link';
 import { useRouter } from 'next/router';
 import { UrlObject } from 'url';
-import { Box, Text as ChakraText, VisuallyHidden } from '@chakra-ui/react';
+import { Text as ChakraText, VisuallyHidden } from '@chakra-ui/react';
 import { HtmlLabel, Annotation } from '@visx/annotation';
 import { Group } from '@visx/group';
 import { Treemap, hierarchy, stratify, treemapBinary } from '@visx/hierarchy';
@@ -13,7 +13,12 @@ import {
   useTooltipInPortal,
 } from '@visx/tooltip';
 import { FacetTerm } from 'src/utils/api/types';
-import { customTooltipStyles, TooltipWrapper } from '../components/tooltip';
+import {
+  customTooltipStyles,
+  TooltipSubtitle,
+  TooltipTitle,
+  TooltipWrapper,
+} from '../components/tooltip';
 import { FacetProps } from '../../types';
 
 interface TreemapChartProps {
@@ -314,14 +319,12 @@ export const TreemapChart = ({
             aria-live='polite'
           >
             <TooltipWrapper showsSearchHint>
-              <Box fontSize='xs' lineHeight='shorter'>
-                <ChakraText fontWeight='semibold' color='text.heading'>
-                  {tooltipData.term}
-                </ChakraText>
-                <ChakraText fontWeight='normal'>
-                  {tooltipData.count.toLocaleString()} results
-                </ChakraText>
-              </Box>
+              <TooltipTitle>{tooltipData.term}</TooltipTitle>
+              <TooltipSubtitle>
+                {`${tooltipData.count.toLocaleString()} result${
+                  tooltipData.count == 1 ? '' : 's'
+                }`}
+              </TooltipSubtitle>
             </TooltipWrapper>
           </TooltipWithBounds>
         )}

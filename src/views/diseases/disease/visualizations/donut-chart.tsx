@@ -12,7 +12,12 @@ import Pie, { ProvidedProps, PieArcDatum } from '@visx/shape/lib/shapes/Pie';
 import { useTooltip, useTooltipInPortal } from '@visx/tooltip';
 import { InfoLabel } from 'src/components/info-label';
 import { FacetTerm } from 'src/utils/api/types';
-import { customTooltipStyles, TooltipWrapper } from '../components/tooltip';
+import {
+  customTooltipStyles,
+  TooltipSubtitle,
+  TooltipTitle,
+  TooltipWrapper,
+} from '../components/tooltip';
 
 interface Datum {
   count: number;
@@ -271,12 +276,12 @@ export const DonutChart = ({
           aria-live='polite'
         >
           <TooltipWrapper showsSearchHint>
-            <Text fontWeight='semibold' lineHeight='short'>
-              {tooltipData.count.toLocaleString()}{' '}
-              <Text as='span' textTransform='capitalize' fontWeight='normal'>
-                {`${tooltipData.label}${tooltipData.count == 1 ? '' : 's'}`}
-              </Text>
-            </Text>
+            <TooltipTitle>{tooltipData.label}</TooltipTitle>
+            <TooltipSubtitle>
+              {`${tooltipData.count.toLocaleString()} result${
+                tooltipData.count == 1 ? '' : 's'
+              }`}
+            </TooltipSubtitle>
           </TooltipWrapper>
         </TooltipInPortal>
       )}
