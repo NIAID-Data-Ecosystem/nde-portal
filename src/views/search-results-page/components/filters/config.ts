@@ -5,35 +5,18 @@ import {
 import { FilterConfig, FacetTermWithDetails } from './types';
 import { buildQueries, buildSourceQueries } from './utils/query-builders';
 import { formatDate, formatISOString } from 'src/utils/api/helpers';
-import { AccessTypes, FetchSearchResultsResponse } from 'src/utils/api/types';
+import { FetchSearchResultsResponse } from 'src/utils/api/types';
 import {
   createCommonQuery,
   createNotExistsQuery,
   structureQueryData,
 } from './utils/queries';
-import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
-import { SchemaDefinitions } from 'scripts/generate-schema-definitions/types';
+
 import {
   formatConditionsOfAccess,
   transformConditionsOfAccessLabel,
 } from 'src/utils/formatting/formatConditionsOfAccess';
-
-const schema = SCHEMA_DEFINITIONS as SchemaDefinitions;
-
-/**
- * Get the description for a given schema property.
- *
- * @param property - The schema property to get the description for.
- * @returns The description for the schema property.
- */
-const getSchemaDescription = (property: string) => {
-  const schemaProperty = schema[property];
-  return (
-    schemaProperty?.abstract?.['Dataset'] ||
-    schemaProperty?.description?.['Dataset'] ||
-    ''
-  );
-};
+import { getMetadataDescription } from 'src/components/metadata';
 
 /**
  * Filter configuration array. Order matters here as the filters will be rendered in the same order.
@@ -112,7 +95,7 @@ export const FILTER_CONFIGS: FilterConfig[] = [
     _id: 'includedInDataCatalog',
     name: 'Sources',
     property: 'includedInDataCatalog.name',
-    description: getSchemaDescription('includedInDataCatalog'),
+    description: getMetadataDescription('includedInDataCatalog') || '',
     createQueries: buildSourceQueries(),
     groupBy: [
       {
@@ -129,7 +112,7 @@ export const FILTER_CONFIGS: FilterConfig[] = [
     _id: 'sourceOrganization.name',
     name: 'Program Collection',
     property: 'sourceOrganization.name',
-    description: getSchemaDescription('sourceOrganization.name'),
+    description: getMetadataDescription('sourceOrganization') || '',
     createQueries: (id, params, options) => [
       createCommonQuery({
         id,
@@ -159,35 +142,35 @@ export const FILTER_CONFIGS: FilterConfig[] = [
     _id: 'healthCondition.name.raw',
     name: 'Health Condition',
     property: 'healthCondition.name.raw',
-    description: getSchemaDescription('healthCondition'),
+    description: getMetadataDescription('healthCondition') || '',
     createQueries: buildQueries(),
   },
   {
     _id: 'infectiousAgent.displayName.raw',
     name: 'Pathogen Species',
     property: 'infectiousAgent.displayName.raw',
-    description: getSchemaDescription('infectiousAgent'),
+    description: getMetadataDescription('infectiousAgent') || '',
     createQueries: buildQueries(),
   },
   {
     _id: 'species.displayName.raw',
     name: 'Host Species',
     property: 'species.displayName.raw',
-    description: getSchemaDescription('species'),
+    description: getMetadataDescription('species') || '',
     createQueries: buildQueries(),
   },
   {
     _id: 'funding.funder.name.raw',
     name: 'Funding',
     property: 'funding.funder.name.raw',
-    description: getSchemaDescription('funding'),
+    description: getMetadataDescription('funding') || '',
     createQueries: buildQueries(),
   },
   {
     _id: 'conditionsOfAccess',
     name: 'Conditions of Access',
     property: 'conditionsOfAccess',
-    description: getSchemaDescription('conditionsOfAccess'),
+    description: getMetadataDescription('conditionsOfAccess') || '',
     createQueries: buildQueries(),
     transformData: (item): FacetTermWithDetails => {
       let term = item.label || item.term;
@@ -207,14 +190,14 @@ export const FILTER_CONFIGS: FilterConfig[] = [
     _id: 'variableMeasured.name.raw',
     name: 'Variable Measured',
     property: 'variableMeasured.name.raw',
-    description: getSchemaDescription('variableMeasured.name'),
+    description: getMetadataDescription('variableMeasured') || '',
     createQueries: buildQueries(),
   },
   {
     _id: 'measurementTechnique.name.raw',
     name: 'Measurement Technique',
     property: 'measurementTechnique.name.raw',
-    description: getSchemaDescription('measurementTechnique'),
+    description: getMetadataDescription('measurementTechnique') || '',
     createQueries: buildQueries(),
   },
 ];
