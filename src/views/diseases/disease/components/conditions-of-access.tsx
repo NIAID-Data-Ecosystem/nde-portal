@@ -134,7 +134,10 @@ export const ConditionsOfAccess = ({ query, topic }: TopicQueryProps) => {
 
             {/* legend */}
             <Box flex={1} minWidth={250} w='100%'>
-              <LegendContainer orientation='horizontal'>
+              <LegendContainer
+                orientation='horizontal'
+                tableHeader='Access Condition and Resources'
+              >
                 {data?.terms?.map(
                   ({ description, fill, label, term, count }) => {
                     return (

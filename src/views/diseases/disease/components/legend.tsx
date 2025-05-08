@@ -35,7 +35,11 @@ export const LegendContainer = ({
   return (
     <Box>
       <LegendTitle>{title}</LegendTitle>
-      <LegendTableHeader>{tableHeader}</LegendTableHeader>
+      <LegendTableHeader
+        textAlign={orientation === 'vertical' ? 'end' : 'start'}
+      >
+        {tableHeader}
+      </LegendTableHeader>
       {orientation === 'vertical' ? (
         <Stack
           flexDirection='column'
@@ -73,7 +77,10 @@ export const LegendTitle: React.FC<HeadingProps> = ({ children }) => {
   );
 };
 
-export const LegendTableHeader: React.FC<TextProps> = ({ children }) => {
+export const LegendTableHeader: React.FC<TextProps> = ({
+  children,
+  ...props
+}) => {
   return (
     <Text
       borderBottom='1px solid'
@@ -84,6 +91,7 @@ export const LegendTableHeader: React.FC<TextProps> = ({ children }) => {
       textAlign='end'
       textTransform='uppercase'
       pb={0.5}
+      {...props}
     >
       {children}
     </Text>
