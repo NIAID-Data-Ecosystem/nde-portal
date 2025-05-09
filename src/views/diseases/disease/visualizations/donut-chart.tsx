@@ -247,6 +247,7 @@ export const DonutChart = ({
                     outerRadius={radius}
                     hoveredTerm={hoveredTerm}
                     labelStyles={labelStyles}
+                    dimensions={{ width, height }}
                     // onClickDatum={({ data: { term } }) => {
                     //   animate &&
                     //     setSelection(
@@ -312,6 +313,12 @@ type AnimatedPieProps<Datum> = ProvidedProps<Datum> & {
   /** Array of pie arc data. */
   arcs: PieArcDatum<Datum>[];
 
+  /** Dimensions of the chart */
+  dimensions: {
+    width: number;
+    height: number;
+  };
+
   /** The term currently being hovered over, or `null` if none. */
   hoveredTerm: string | null;
 
@@ -349,6 +356,7 @@ type AnimatedPieProps<Datum> = ProvidedProps<Datum> & {
 function AnimatedPie<Datum>({
   animate,
   arcs,
+  dimensions,
   hoveredTerm,
   path,
   labelStyles,
@@ -368,17 +376,26 @@ function AnimatedPie<Datum>({
   });
   return transitions((props, arc, { key }) => {
     // For label positioning
-    const labelWidth = 200;
     const displayLabel = labelStyles?.transformLabel
       ? labelStyles.transformLabel(getKey(arc))
       : getKey(arc);
 
     // Find mid-angle of arc for labeling
-    // const [centroidX, centroidY] = path.centroid(arc);
     const angle = (arc.startAngle + arc.endAngle) / 2;
-    const labelRadius = outerRadius + 5;
-    const centroidX = Math.cos(angle - Math.PI / 2) * labelRadius;
-    const centroidY = Math.sin(angle - Math.PI / 2) * labelRadius;
+    const labelPadding = { x: 5, y: 5 };
+    const centroidX = Math.cos(angle - Math.PI / 2) * outerRadius;
+    const centroidY = Math.sin(angle - Math.PI / 2) * outerRadius;
+
+    // label width should fit within the chart area aroundt the donut
+    const labelWidth =
+      (dimensions.width - outerRadius * 2) / 2 -
+      Math.max(labelPadding.x, labelPadding.y);
+
+    // Check if there is enough space for the label
+    // If the arc is too small, we won't show the label
+    // If the label is too long, we won't show it
+    const hasSpaceForLabel =
+      arc.endAngle - arc.startAngle >= 0.1 && labelWidth > 50;
 
     return (
       <g
@@ -419,29 +436,41 @@ function AnimatedPie<Datum>({
             onMouseOut={handleMouseOut}
           />
           {/* Optional labels */}
-          <Annotation x={centroidX} y={centroidY}>
-            <HtmlLabel
-              showAnchorLine={false}
-              horizontalAnchor={centroidX > 0 ? 'start' : 'end'}
-              verticalAnchor='middle'
-              containerStyle={{
-                overflow: 'hidden',
-                pointerEvents: 'none',
-                maxWidth: `${labelWidth}px`,
-              }}
+          {hasSpaceForLabel && (
+            <Annotation
+              x={centroidX}
+              y={centroidY}
+              dx={centroidX > 0 ? labelPadding.x : 0 - labelPadding.x}
+              dy={centroidY > 0 ? labelPadding.y : 0 - labelPadding.y}
             >
-              <Text
-                color='text.heading'
-                fontSize='xs'
-                fontWeight='semibold'
-                lineHeight='normal'
-                maxWidth={`${labelWidth}px`}
-                noOfLines={2}
+              <HtmlLabel
+                horizontalAnchor={centroidX > 0 ? 'start' : 'end'}
+                verticalAnchor='end'
+                containerStyle={{
+                  maxWidth: `${labelWidth}px`,
+                  overflow: 'hidden',
+                  pointerEvents: 'none',
+                  width: `${labelWidth}px`,
+                  textAlign: centroidX > 0 ? 'start' : 'end',
+                }}
+                showAnchorLine={false}
               >
-                {displayLabel}
-              </Text>
-            </HtmlLabel>
-          </Annotation>
+                <Text
+                  color='text.heading'
+                  fontSize='xs'
+                  fontWeight='semibold'
+                  lineHeight='normal'
+                  sx={{
+                    hyphens: 'auto',
+                    whiteSpace: 'normal',
+                  }}
+                  noOfLines={2}
+                >
+                  {displayLabel}
+                </Text>
+              </HtmlLabel>
+            </Annotation>
+          )}
         </NextLink>
       </g>
     );
