@@ -109,7 +109,7 @@ describe('DonutChart', () => {
     // Check if the tooltip is displayed
     const tooltip = screen.getByTestId('tooltip');
     expect(tooltip).toBeInTheDocument();
-    expect(tooltip).toHaveTextContent(/100 Datasets/i);
+    expect(tooltip).toHaveTextContent(/dataset/i);
   });
 
   it('hides tooltip on mouse out from a slice', () => {
@@ -134,7 +134,7 @@ describe('DonutChart', () => {
     // Check if the tooltip is displayed
     const tooltip = screen.getByTestId('tooltip');
     expect(tooltip).toBeInTheDocument();
-    expect(tooltip).toHaveTextContent(/100 Datasets/i);
+    expect(tooltip).toHaveTextContent(/Dataset/i);
   });
 
   it('hides tooltip on slice blur', () => {

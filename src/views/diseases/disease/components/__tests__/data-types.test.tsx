@@ -3,7 +3,15 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { render, screen } from '@testing-library/react';
 import { fetchSearchResults } from 'src/utils/api';
 import { getSearchResultsRoute } from 'src/views/diseases/helpers';
+import { useQuery } from '@tanstack/react-query';
+
 import { DataTypes } from '../data-types';
+
+// Mock the module before importing the component that uses it
+jest.mock('@tanstack/react-query', () => ({
+  ...jest.requireActual('@tanstack/react-query'),
+  useQuery: jest.fn(),
+}));
 
 jest.mock('src/utils/api', () => ({
   __esModule: true,
@@ -37,12 +45,22 @@ describe('DataTypes Component', () => {
     jest.clearAllMocks();
   });
 
-  it('shows loading skeleton while fetching data', async () => {
-    mockedFetchSearchResults.mockResolvedValueOnce(undefined);
+  it('shows loading skeleton when loading', () => {
+    //  Mock useQuery to simulate loading state
+    (useQuery as jest.Mock).mockReturnValue({
+      data: undefined,
+      isLoading: true,
+      isPlaceholderData: false,
+      error: null,
+    });
 
-    renderWithProviders(<DataTypes {...defaultProps} />);
-    expect(screen.getByText(/data types/i)).toBeInTheDocument();
-    // Add more assertions for skeletons if needed
+    renderWithProviders(
+      <DataTypes query={{ q: 'flu', facet_size: 10 }} topic='Influenza' />,
+    );
+
+    const loadingElement = screen.getByRole('status');
+
+    expect(loadingElement).toBeInTheDocument();
   });
 
   it('generates correct search results route', () => {
@@ -72,24 +90,24 @@ describe('DataTypes Component', () => {
     expect(result).toEqual(expectedRoute);
   });
 
-  // it('selects and transforms data correctly', async () => {
-  //   // @ts-ignore
-  //   const mockResponse: FetchSearchResultsResponse = {
-  //     facets: {
-  //       // @ts-ignore
-  //       '@type': {
-  //         terms: [
-  //           { term: 'Dataset', count: 10 },
-  //           { term: 'ComputationalTool', count: 5 },
-  //         ],
-  //       },
-  //     },
-  //   };
+  it('selects and transforms data correctly', async () => {
+    // @ts-ignore
+    const mockResponse: FetchSearchResultsResponse = {
+      facets: {
+        // @ts-ignore
+        '@type': {
+          terms: [
+            { term: 'Dataset', count: 10 },
+            { term: 'ComputationalTool', count: 5 },
+          ],
+        },
+      },
+    };
 
-  //   mockedFetchSearchResults.mockResolvedValueOnce(mockResponse);
+    mockedFetchSearchResults.mockResolvedValueOnce(mockResponse);
 
-  //   renderWithProviders(<DataTypes {...defaultProps} />);
-  //   // expect(await screen.findByText(/dataset/i)).toBeInTheDocument();
-  //   expect(await screen.findByText(/computational tool/i)).toBeInTheDocument();
-  // });
+    renderWithProviders(<DataTypes {...defaultProps} />);
+    // expect(await screen.findByText(/dataset/i)).toBeInTheDocument();
+    expect(await screen.findByText(/computational tool/i)).toBeInTheDocument();
+  });
 });
