@@ -26,7 +26,13 @@ import { InfoLabel } from 'src/components/info-label';
 import { MetadataSource } from 'src/hooks/api/types';
 import { theme } from 'src/theme';
 import { FacetTerm } from 'src/utils/api/types';
-import { customTooltipStyles, TooltipWrapper } from '../components/tooltip';
+import {
+  customTooltipStyles,
+  TooltipWrapper,
+  TooltipBody,
+  TooltipSubtitle,
+  TooltipTitle,
+} from '../components/tooltip';
 import { getFillColor } from '../../helpers';
 
 export interface SourceFacet {
@@ -314,24 +320,17 @@ export const BarChart = ({
               aria-live='polite'
             >
               <TooltipWrapper showsSearchHint>
-                <VStack
-                  alignItems='flex-start'
-                  fontSize='xs'
-                  lineHeight='shorter'
-                  spacing={1}
-                >
-                  <ChakraText fontWeight='semibold' color='text.heading'>
-                    {tooltipData.info?.name || tooltipData.term}
-                  </ChakraText>
-                  <ChakraText fontWeight='medium'>
-                    {tooltipData.info?.genre} |{' '}
-                    {tooltipData.count.toLocaleString()} results
-                  </ChakraText>
+                <TooltipTitle>
+                  {tooltipData.info?.name || tooltipData.term}
+                </TooltipTitle>
+                <TooltipSubtitle>
+                  {tooltipData.info?.genre} |{' '}
+                  {`${tooltipData.count.toLocaleString()} result${
+                    tooltipData.count == 1 ? '' : 's'
+                  }`}
+                </TooltipSubtitle>
 
-                  <ChakraText fontWeight='normal'>
-                    {tooltipData.info?.abstract}
-                  </ChakraText>
-                </VStack>
+                <TooltipBody>{tooltipData.info?.abstract}</TooltipBody>
               </TooltipWrapper>
             </TooltipWithBounds>
           )}

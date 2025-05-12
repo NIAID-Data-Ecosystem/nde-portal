@@ -1,5 +1,4 @@
 import { Flex, Text, VStack } from '@chakra-ui/react';
-import { Link } from 'src/components/link';
 import { DiseasePageProps, TopicQueryProps } from '../types';
 import { ConditionsOfAccess } from './components/conditions-of-access';
 import { DataTypes } from './components/data-types';
@@ -7,9 +6,14 @@ import { ExternalLinksSection } from './components/external-links';
 import { PropertyTreemapLists } from './components/property-treemap-lists';
 import { Sources } from './components/sources';
 import { IntroSection } from './layouts/intro';
-import { SectionWrapper } from './layouts/section';
+import { SectionDescription, SectionWrapper } from './layouts/section';
 import { CardWrapper } from './layouts/card';
 import { PageContent } from 'src/components/page-container';
+import DISEASE_PAGE_COPY from './disease-page.json';
+import {
+  fillTemplatePlaceholders,
+  MarkdownContent,
+} from './layouts/markdown-content';
 
 export interface DiseaseContentProps {
   data?: DiseasePageProps;
@@ -49,30 +53,60 @@ export const DiseaseContent: React.FC<DiseaseContentProps> = ({
         />
         <SectionWrapper
           id='about-datasets'
-          title={`${topic} Resources in the NIAID Data Ecosystem`}
+          title={fillTemplatePlaceholders(
+            DISEASE_PAGE_COPY['showcase']['title'],
+            { topic },
+          )}
           mt={10}
         >
-          <Text mb={2}>
-            This section provides a visual summary of the resources available
-            within the NIAID Discovery Portal for {topic} research.{' '}
-            <Link href={`/search?q=${data?.attributes.query.q}`}>
-              {`View all search results related to ${topic}`}
-            </Link>
-            .
-          </Text>
+          <MarkdownContent
+            template={DISEASE_PAGE_COPY['showcase']['description']}
+            replacements={{
+              topic,
+              query: `/search?q=${encodeURIComponent(
+                data?.attributes.query.q ?? '',
+              )}`,
+            }}
+            mdxComponents={{
+              p: props => {
+                return <SectionDescription lineHeight='base' {...props} />;
+              },
+            }}
+          />
+
           {/* Overview Section */}
           <SectionWrapper
             as='h3'
             id='overview'
-            title={`${totalCount.toLocaleString()} ${topic} Related Resources`}
+            title={fillTemplatePlaceholders(
+              DISEASE_PAGE_COPY['charts']['title'],
+              {
+                count: totalCount.toLocaleString(),
+                topic,
+              },
+            )}
           >
             <CardWrapper>
               {/* Chart: Property Treemap/Brushable List*/}
               {query && <PropertyTreemapLists query={query} topic={topic} />}
             </CardWrapper>
 
-            <CardWrapper flexDirection='row' flexWrap='wrap' mt={6}>
-              <VStack w='100%' spacing={4} flex={3}>
+            <CardWrapper
+              flexDirection='row'
+              flexWrap='wrap'
+              mt={6}
+              w='100%'
+              spacing={{ base: 4, lg: 14, xl: 28 }}
+              justifyContent='space-between'
+            >
+              <VStack
+                flex={2}
+                flexDirection='column'
+                justifyContent='space-between'
+                maxWidth={{ base: 'unset', lg: 700, xl: 1000 }}
+                spacing={4}
+                w='50%'
+              >
                 {/* Chart: Resource types */}
                 {query && <DataTypes query={query} topic={topic} />}
 
@@ -98,7 +132,8 @@ export const DiseaseContent: React.FC<DiseaseContentProps> = ({
                   w='100%'
                   flexDirection='column'
                   flex={1}
-                  minWidth={200}
+                  minWidth={{ base: 250, lg: 300 }}
+                  maxWidth={{ base: 'unset', lg: 400 }}
                   display={{ base: 'none', lg: 'flex' }}
                 >
                   <Sources id='desktop-version' query={query} topic={topic} />
@@ -112,7 +147,12 @@ export const DiseaseContent: React.FC<DiseaseContentProps> = ({
           <SectionWrapper
             as='h3'
             id='external-links'
-            title={`External Resources for ${topic}`}
+            title={fillTemplatePlaceholders(
+              DISEASE_PAGE_COPY['external']['title'],
+              {
+                topic,
+              },
+            )}
           >
             <ExternalLinksSection
               externalLinks={data.attributes.externalLinks}
