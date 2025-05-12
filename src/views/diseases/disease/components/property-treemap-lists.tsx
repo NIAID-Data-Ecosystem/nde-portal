@@ -51,6 +51,8 @@ const facets = [
   },
 ] as FacetProps[];
 
+const { skeletonHeight, ...textProps } = headingStyles['h5'];
+
 export const PropertyTreemapLists = ({ query, topic }: TopicQueryProps) => {
   const [listView, setListView] = React.useState(true);
 
@@ -181,9 +183,7 @@ export const PropertyTreemapLists = ({ query, topic }: TopicQueryProps) => {
                 <InfoLabel
                   title={facet.label}
                   tooltipText={facet.tooltip}
-                  textProps={{
-                    ...headingStyles['h5'],
-                  }}
+                  textProps={textProps}
                 />
 
                 {listView ? (
