@@ -5,15 +5,15 @@ import { TabType } from '../types';
 // is determined by the order of this array
 export const tabs: TabType[] = [
   {
-    id: 'ct',
-    label: 'Computational Tools',
-    '@type': ['ComputationalTools'],
-  },
-  {
     id: 'd',
     label: 'Datasets and Resource Catalogs',
     '@type': ['Dataset', 'ResourceCatalog'],
     isDefault: true,
+  },
+  {
+    id: 'ct',
+    label: 'Computational Tools',
+    '@type': ['ComputationalTool'],
   },
 ];
 

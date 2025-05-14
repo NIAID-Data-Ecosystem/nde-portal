@@ -8,6 +8,8 @@ import {
   tabs,
 } from 'src/views/draft-search/context/search-context';
 import { SearchTabs } from 'src/views/draft-search/components/tabs';
+import { useSearchQueryParams } from 'src/views/draft-search/hooks/useSearchQueryParams';
+import { useSearchResultsData } from 'src/views/draft-search/hooks/useSearchResultsData';
 
 //  This page renders the search results from the search bar.
 const Search: NextPage<{
@@ -15,6 +17,12 @@ const Search: NextPage<{
   total: number;
 }> = ({ results, total }) => {
   const router = useRouter();
+
+  const queryParams = useSearchQueryParams();
+
+  const { data, isLoading, isRefetching, error, params } = useSearchResultsData(
+    { ...queryParams, size: 0, facets: ['@type'] },
+  );
 
   const initialTab = useMemo(() => {
     if (!router.isReady) return null;
