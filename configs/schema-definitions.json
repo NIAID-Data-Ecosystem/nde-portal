@@ -641,9 +641,9 @@
     "count": 422076,
     "type": "object",
     "description": {
-      "Dataset": "A citation or reference to a publication, dataset, or computational tool which uses the dataset. Examples: a publication which describes the collection/analysis of the dataset, a publication which reuses the dataset in a secondary analysis, a dataset which extends the existing dataset, or a computational tool which relies on the dataset.",
+      "Dataset": "A citation or reference to a publication, dataset, or computational tool which uses the dataset. Examples: a publication which describes the creation/collection/analysis of the dataset.",
       "ComputationalTool": "A citation or reference to a publication, dataset, or computational tool which uses the computational tool. Examples: a publication which describes the development of the computational tool, a publication which describes the extension or use of the computational tool, a dataset which was processed or analyzed using the tool, or a computational tool which relies on the given tool.",
-      "ResourceCatalog": "A citation or reference to a publication, dataset, or computational tool which uses the resource catalog. Examples: a publication which describes the creation of the resource catalog, a publication which uses information or content of the resource catalog for secondary analysis, or a computational tool which relies on the content of the resource catalog."
+      "ResourceCatalog": "A citation or reference to a publication, dataset, or computational tool which uses the resource catalog. Examples: a publication which describes the creation of the resource catalog."
     },
     "abstract": {
       "Dataset": "citation to the work",
@@ -944,9 +944,9 @@
     "count": 30628,
     "type": "object",
     "description": {
-      "Dataset": "Publications, datasets, or computational tools that cite the work.",
-      "ComputationalTool": "Publications, datasets, or computational tools that cite the work.",
-      "ResourceCatalog": "Publications, datasets, or computational tools that cite the work."
+      "Dataset": "Publications, datasets, or computational tools that cite the work. Examples: a publication which reuses the dataset in a secondary analysis, a dataset which extends the existing dataset, or a computational tool which relies on the dataset.",
+      "ComputationalTool": "Publications, datasets, or computational tools that cite the work. Examples: a publication which reuses the dataset in a secondary analysis, a dataset which extends the existing dataset, or a computational tool which relies on the dataset.",
+      "ResourceCatalog": "Publications, datasets, or computational tools that cite the work. Examples: a publication which uses information or content of the resource catalog for secondary analysis, or a computational tool which relies on the content of the resource catalog"
     },
     "isAdvancedSearchField": false
   },
