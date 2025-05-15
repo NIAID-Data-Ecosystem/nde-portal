@@ -1,48 +1,47 @@
 # Changelog
 
-All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
+All notable changes to this project will be documented in this file. See
+[standard-version](https://github.com/conventional-changelog/standard-version)
+for commit guidelines.
 
 ## [4.2.0](https://github.com/NIAID-Data-Ecosystem/nde-portal/compare/v4.1.0...v4.2.0) (2025-05-15)
 
-
 ### 🐛 Bugfixes
 
-* **topics:** copy + link fixes ([b85d509](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/b85d50936e4d9ea34519737145d0d3842d141123))
-* **topics:** initial brush state ([9b7b117](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/9b7b1171f979ac54c044ba45740d09a7470f525b))
-* **topics:** treemap hover styles ([e414115](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/e4141151d2a08308494ade3e89cc9be73e331647))
-* **topics:** update brush selection on drag ([6326c2c](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/6326c2c610a7c31199f240c7c6f5b97db080c50d))
-* **topics:** update hiv/aids slug ([03b6ff6](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/03b6ff6c72e4c1b683a8c6fdd4fa68b5e5e48e01))
-* **topics:** update treemap skeleton ([a0ea416](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/a0ea416a6c1af082c474d73a7526451ed6e70850))
-
+- **diseases:** copy + link fixes
+  ([b85d509](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/b85d50936e4d9ea34519737145d0d3842d141123))
 
 ### 🚀 Features
 
-* add brushable list + treemap charts ([eb6ee1e](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/eb6ee1e06beb6889b5d274d2bc6c235b634357a5))
-* add disease pages to nav bar ([0ffbb55](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/0ffbb5595a3a4d252f2cfc63091989cdbdc38910))
-* add hyperlinks to card heading ([df43af0](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/df43af0878ca07315b2cc769e09ac128881f6c93))
-* add navigation bar updates + add program collections index ([ff2deef](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/ff2deef68abd620f08ff2cccbb37e7e94047b4c2))
-* add program collections index page [#284](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/284) ([#307](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/307)) ([866479f](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/866479fff8905342e7b2373a40058cea163c7030))
-* add topic pages ([#305](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/305)) ([7c3e589](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/7c3e589836daf702457a5f9cbc5f3cfee871c843))
-* add topicQuery type + conditionsOfAccess chart ([850ed87](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/850ed87a8a168a5bbf46a091bb530e620a7845e5))
-* change cards' text ([f601a8e](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/f601a8e30681aec4e51bd4c8b213ee02edd71e21))
-* change picture size ([a308386](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/a308386d8d93aa62246c1d9485cdda152ba904ce))
-* create index page for disease-specific pages [#284](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/284) ([#309](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/309)) ([e0a4567](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/e0a45672a094c9e24ec874fc3ef32e94ed10c601))
-* disease page improvements ([#312](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/312)) ([771f9dd](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/771f9dda0966b2601e7ebf2d6cd72370a9023c18))
-* improve card accessibility ([a79c330](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/a79c3304275c024378ba3e13df537baaf594e506))
-* **main:** add landing page updates [#287](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/287) ([6231376](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/6231376dfa990f658eb88c3107263b45764e6695))
-* restyle cards ([e3f51de](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/e3f51de4a7d356e273c18a303f1d6765cfb6fedf))
-* restyle hyperlinks ([dfb62d5](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/dfb62d530aa3f524eba7fffdb85e8ea9f74824f4))
-* **topic:** add donut chart ([288d397](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/288d39712648d91c56dce3ce72fba8148a59f111))
-* **topic:** add legend and links to donut chart ([f8d4286](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/f8d4286fedc2fad26bf7bf336a56150b086e3493))
-* **topic:** add topic page ([cf3051f](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/cf3051faf9c94d5fe031280ed0b34785ac5ca3ad))
-* **topics:** add chart accessility + tests ([e9743e0](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/e9743e0af05b50ead36fa72cdb5e10c77b68c526))
-* **topics:** add contact section ([c5e9dbd](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/c5e9dbdff373fb3107ddf7357f7f5b554a57849d))
-* **topics:** add index page ([1c0c239](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/1c0c23919f698d0cfa14c682fe99cbd8a7efe03b))
-* **topics:** add keyboard accessbility ([cb21fe4](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/cb21fe4db8fb0af1d802be571ef88ce1cec9be95))
-* **topics:** add links to programs+disease pages ([0a6681a](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/0a6681a540591da4018c41cb46cadfe4b39de4b9))
-* **topics:** add programs + diseases links to nav bar ([378835a](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/378835aff1a3fae20bf5e7ff07052be93d32d507))
-* **topics:** sources bar chart ([12c559c](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/12c559cc4a52053689523c44e99159d92cff7f3d))
-* **topics:** update topics index anchor tags ([5f820ed](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/5f820ed37bf90f79ab5acde457938bc05ed590d4))
+- **programs:** add program collections index page
+  [#284](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/284)
+  ([#307](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/307))
+  ([866479f](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/866479fff8905342e7b2373a40058cea163c7030))
+- **main:** add landing page updates
+  [#287](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/287)
+  ([6231376](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/6231376dfa990f658eb88c3107263b45764e6695))
+- **diseases:** add donut chart
+  ([288d397](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/288d39712648d91c56dce3ce72fba8148a59f111))
+- **diseases:** add legend and links to donut chart
+  ([f8d4286](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/f8d4286fedc2fad26bf7bf336a56150b086e3493))
+- **diseases:** add disease page
+  ([cf3051f](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/cf3051faf9c94d5fe031280ed0b34785ac5ca3ad))
+- **diseases:** add chart accessility + tests
+  ([e9743e0](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/e9743e0af05b50ead36fa72cdb5e10c77b68c526))
+- **diseases:** add contact section
+  ([c5e9dbd](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/c5e9dbdff373fb3107ddf7357f7f5b554a57849d))
+- **diseases:** add index page
+  ([1c0c239](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/1c0c23919f698d0cfa14c682fe99cbd8a7efe03b))
+- **diseases:** add keyboard accessbility
+  ([cb21fe4](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/cb21fe4db8fb0af1d802be571ef88ce1cec9be95))
+- **diseases:** add links to programs+disease pages
+  ([0a6681a](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/0a6681a540591da4018c41cb46cadfe4b39de4b9))
+- **diseases:** add programs + diseases links to nav bar
+  ([378835a](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/378835aff1a3fae20bf5e7ff07052be93d32d507))
+- **diseases:** sources bar chart
+  ([12c559c](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/12c559cc4a52053689523c44e99159d92cff7f3d))
+- **diseases:** update diseases index anchor tags
+  ([5f820ed](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/5f820ed37bf90f79ab5acde457938bc05ed590d4))
 
 ## [4.1.0](https://github.com/NIAID-Data-Ecosystem/nde-portal/compare/v4.0.0...v4.1.0) (2025-04-17)
 
