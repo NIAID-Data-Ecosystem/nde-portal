@@ -12,7 +12,7 @@ import { HeadingWithLinkStyles } from 'src/components/heading-with-link/componen
 
 type HeadingLevel = 'h1' | 'h2' | 'h3' | 'h4' | 'h5';
 
-const headingStyles: Record<
+export const headingStyles: Record<
   HeadingLevel,
   {
     fontSize: string;
@@ -133,3 +133,14 @@ export const SectionWrapper: React.FC<
     {children}
   </Flex>
 );
+
+export const SectionDescription: React.FC<TextProps> = ({
+  children,
+  ...props
+}) => {
+  return (
+    <Text lineHeight='short' mb={2} {...props}>
+      {children}
+    </Text>
+  );
+};

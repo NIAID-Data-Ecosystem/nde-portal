@@ -931,6 +931,7 @@ const createVariableMeasuredContent = (
 export const getMetadataDescription = (
   property: string,
   type?: APIResourceType,
+  useAbstract: boolean = false,
   accessor?: () => {},
 ) => {
   const schema = SCHEMA_DEFINITIONS as SchemaDefinitions;
@@ -939,7 +940,8 @@ export const getMetadataDescription = (
     accessor ? Object.values(schema).find(accessor) : schema[property]
   ) as SchemaDefinition | undefined;
 
-  const description = metadata?.description || '';
+  const description =
+    (useAbstract ? metadata?.abstract : metadata?.description) || '';
 
   if (description) {
     if (type && description?.[type]) {

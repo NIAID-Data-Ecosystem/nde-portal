@@ -2,9 +2,9 @@ import type { AppProps } from 'next/app';
 import Head from 'next/head';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { theme } from 'src/theme';
-import { ChakraProvider } from '@chakra-ui/provider';
 import { GoogleTagManager } from '@next/third-parties/google';
 import { fonts } from 'lib/fonts';
+import { ChakraProvider } from '@chakra-ui/react';
 
 // Creates an instance of react-query for the app.
 const queryClient = new QueryClient();

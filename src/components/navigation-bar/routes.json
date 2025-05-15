@@ -29,9 +29,9 @@
           "href": "/about"
         },
         {
-          "label": "News & Updates",
-          "subLabel": "Latest news and updates from the NIAID Data Ecosystem",
-          "href": "/news"
+          "label": "Updates",
+          "subLabel": "Updates from the NIAID Data Ecosystem",
+          "href": "/updates"
         },
         {
           "label": "Changelog",
@@ -61,8 +61,7 @@
         {
           "label": "Diseases",
           "subLabel": "Explore resources for NIAID priority health conditions",
-          "href": "/diseases",
-          "env": ["development", "staging"]
+          "href": "/diseases"
         },
         {
           "label": "Ontology Browser",

@@ -6,7 +6,6 @@ import {
   Flex,
   Icon,
   IconButton,
-  keyframes,
   Spinner,
   Text,
   Textarea,
@@ -35,6 +34,7 @@ import {
   validateQueryString,
 } from './utils';
 import { QueryStringError } from 'src/components/error/types';
+import { keyframes } from '@emotion/react';
 
 interface EditableQueryTextProps {
   queryObj: TreeItem[];

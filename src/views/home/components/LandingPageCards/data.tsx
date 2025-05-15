@@ -7,7 +7,7 @@ export const CARDS_DATA: CardData[] = [
     image: '/assets/homepage/influenza-a-virus-h1n1.png',
     imageAlt:
       'Microscopic view of the influenza A virus, a key focus in infectious disease research and vaccine development.',
-    heading: 'Select Diseases and Conditions',
+    heading: 'Diseases and Conditions',
     headingHref: '/diseases',
     paragraphs: [
       {

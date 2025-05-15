@@ -6,7 +6,6 @@ import { Link } from 'src/components/link';
 import { ScrollContainer } from 'src/components/scroll-container';
 import { FacetTerm } from 'src/utils/api/types';
 import { BrushableBarChart } from './brushable-bar-chart';
-import { SectionTitle } from '../../layouts/section';
 import { FacetProps } from '../../../types';
 
 interface BrushableListChartProps {
@@ -36,7 +35,6 @@ export const BrushableListChart = ({
 
   return (
     <>
-      <SectionTitle as='h5'>{facet.label}</SectionTitle>
       {/* Add Brush */}
       <BrushableBarChart
         data={data}
