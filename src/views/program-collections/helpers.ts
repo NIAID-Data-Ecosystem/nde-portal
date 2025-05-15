@@ -21,6 +21,31 @@ const transformTermToId = (term: string) => {
  */
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
+// Temporarily filter out non-approved sources
+export const filterCollectionsForInclusions = (collections: any[]) => {
+  const inclusionsList = programInclusions['inclusions'];
+
+  return collections.filter(collection => {
+    const term = collection.term.toLowerCase();
+    const name = collection.sourceOrganization?.name?.toLowerCase() || '';
+    const alternateNames =
+      collection.sourceOrganization?.alternateName?.join(' ').toLowerCase() ||
+      '';
+
+    return (
+      inclusionsList.some(inclusion =>
+        term.includes(inclusion.toLowerCase()),
+      ) ||
+      inclusionsList.some(inclusion =>
+        name.includes(inclusion.toLowerCase()),
+      ) ||
+      inclusionsList.some(inclusion =>
+        alternateNames.includes(inclusion.toLowerCase()),
+      )
+    );
+  });
+};
+
 /**
  * Fetches program collections and their associated counts from the NIAID Data Ecosystem API.
  * Processes each detail request sequentially to avoid rate limits.
@@ -103,25 +128,9 @@ export const fetchProgramCollections = async (
   // Temporarily filter out non-approved sources
   const inclusionsList = programInclusions['inclusions'];
 
-  const filteredCollections = collectionsWithDetails.filter(collection => {
-    const term = collection.term.toLowerCase();
-    const name = collection.sourceOrganization?.name?.toLowerCase() || '';
-    const alternateNames =
-      collection.sourceOrganization?.alternateName?.join(' ').toLowerCase() ||
-      '';
-
-    return (
-      inclusionsList.some(inclusion =>
-        term.includes(inclusion.toLowerCase()),
-      ) ||
-      inclusionsList.some(inclusion =>
-        name.includes(inclusion.toLowerCase()),
-      ) ||
-      inclusionsList.some(inclusion =>
-        alternateNames.includes(inclusion.toLowerCase()),
-      )
-    );
-  });
+  const filteredCollections = filterCollectionsForInclusions(
+    collectionsWithDetails,
+  );
 
   return filteredCollections;
 };
