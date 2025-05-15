@@ -7,7 +7,7 @@ import { UseQueryResult } from '@tanstack/react-query';
 
 export const useSearchResultsData = (
   queryParams: SearchQueryParams,
-  initialData: FetchSearchResultsResponse = {
+  placeholderData: FetchSearchResultsResponse = {
     results: [],
     total: 0,
     facets: {},
@@ -31,13 +31,13 @@ export const useSearchResultsData = (
     [queryParams, q, filters, size, from, sort, shouldUseMetadataScore],
   );
 
-  const queryKey = ['search-results', params];
+  const queryKey = ['search-results-draft', params];
 
   const query = useQuerySearchResults(params, {
     queryKey,
     refetchOnWindowFocus: false,
     enabled: typeof window !== 'undefined',
-    initialData,
+    placeholderData,
   });
 
   return query;

@@ -20,9 +20,11 @@ const Search: NextPage<{
 
   const queryParams = useSearchQueryParams();
 
-  const { data, isLoading, isRefetching, error, params } = useSearchResultsData(
-    { ...queryParams, size: 0, facets: ['@type'] },
-  );
+  const { data, isLoading, isRefetching, error } = useSearchResultsData({
+    ...queryParams,
+    size: 0,
+    facets: ['@type'],
+  });
 
   const initialTab = useMemo(() => {
     if (!router.isReady) return null;

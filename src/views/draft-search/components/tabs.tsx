@@ -12,6 +12,7 @@ import { tabs, useSearchContext } from '../context/search-context';
 import SearchResultsList from './list';
 import { useSearchQueryParams } from '../hooks/useSearchQueryParams';
 import { useSearchResultsData } from '../hooks/useSearchResultsData';
+import ResultsCount from 'src/views/search-results-page/components/count';
 
 export const SearchTabs = ({
   colorScheme = 'secondary',
@@ -41,7 +42,7 @@ export const SearchTabs = ({
   // Fetch the data so we can display the counts beside the tabs.
   const queryParams = useSearchQueryParams();
 
-  const { data, isLoading, isRefetching, error } = useSearchResultsData({
+  const { data, isLoading, isPlaceholderData } = useSearchResultsData({
     ...queryParams,
     size: 0,
     facets: ['@type'],
@@ -66,6 +67,10 @@ export const SearchTabs = ({
 
   return (
     <>
+      <ResultsCount
+        total={data?.total || 0}
+        isLoading={isLoading || isPlaceholderData}
+      />
       {/* TO DO: Add total count for all types */}
       <Tabs
         index={selectedIndex}
