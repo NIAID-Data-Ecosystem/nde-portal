@@ -1,7 +1,7 @@
 import React from 'react';
-import { Skeleton, SkeletonProps, Text } from '@chakra-ui/react';
+import { Skeleton, SkeletonProps } from '@chakra-ui/react';
 import { ErrorMessage } from 'src/components/error';
-import { SectionTitle } from '../layouts/section';
+import { SectionTitle, SectionDescription } from '../layouts/section';
 
 interface ChartWrapperProps {
   children?: React.ReactNode;
@@ -25,7 +25,7 @@ export const ChartWrapper = ({
       {title && <SectionTitle as='h4'>{title}</SectionTitle>}
       {description &&
         (typeof description === 'string' ? (
-          <Text lineHeight='short'>{description}</Text>
+          <SectionDescription>{description}</SectionDescription>
         ) : (
           description
         ))}
@@ -36,6 +36,7 @@ export const ChartWrapper = ({
         width='100%'
         height='100%'
         isLoaded={!isLoading}
+        py={4}
         {...skeletonProps}
       >
         {error && <ErrorMessage message={error.message} my={4} />}

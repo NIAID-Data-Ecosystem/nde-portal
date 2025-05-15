@@ -1,6 +1,13 @@
 import React from 'react';
 import { FaMagnifyingGlass } from 'react-icons/fa6';
-import { Divider, Icon, StackProps, Text, VStack } from '@chakra-ui/react';
+import {
+  Divider,
+  Icon,
+  StackProps,
+  Text,
+  TextProps,
+  VStack,
+} from '@chakra-ui/react';
 import { defaultStyles } from '@visx/tooltip';
 
 export interface TooltipWrapperProps extends StackProps {
@@ -32,7 +39,9 @@ export const TooltipWrapper = ({
       lineHeight='short'
       {...props}
     >
-      {children}
+      <VStack alignItems='flex-start' spacing={0.5}>
+        {children}
+      </VStack>
       {/* Show note that item links to search */}
       {showsSearchHint && (
         <>
@@ -54,5 +63,42 @@ export const TooltipWrapper = ({
         </>
       )}
     </VStack>
+  );
+};
+
+const baseTooltipText = {
+  fontSize: 'xs',
+  lineHeight: 'shorter',
+};
+
+export const TooltipTitle: React.FC<TextProps> = ({ children, ...props }) => {
+  return (
+    <Text
+      fontWeight='semibold'
+      color='text.heading'
+      {...baseTooltipText}
+      {...props}
+    >
+      {children}
+    </Text>
+  );
+};
+
+export const TooltipSubtitle: React.FC<TextProps> = ({
+  children,
+  ...props
+}) => {
+  return (
+    <Text fontWeight='normal' {...baseTooltipText} {...props}>
+      {children}
+    </Text>
+  );
+};
+
+export const TooltipBody: React.FC<TextProps> = ({ children, ...props }) => {
+  return (
+    <Text fontWeight='normal' mt={1} {...baseTooltipText} {...props}>
+      {children}
+    </Text>
   );
 };

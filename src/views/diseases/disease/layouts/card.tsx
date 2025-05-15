@@ -12,7 +12,7 @@ export const CardWrapper: React.FC<
       borderWidth={1}
       borderColor='gray.100'
       flexDirection='column'
-      p={4}
+      p={{ base: 4, lg: 6, xl: 8 }}
       spacing={4}
       {...props}
     >
