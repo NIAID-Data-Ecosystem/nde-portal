@@ -1,6 +1,5 @@
 import axios from 'axios';
 import { SourceOrganization } from 'src/utils/api/types';
-import programInclusions from './inclusions.json';
 
 export interface ProgramCollection {
   id: string;
@@ -100,28 +99,5 @@ export const fetchProgramCollections = async (
     await delay(delayTime);
   }
 
-  // Temporarily filter out non-approved sources
-  const inclusionsList = programInclusions['inclusions'];
-
-  const filteredCollections = collectionsWithDetails.filter(collection => {
-    const term = collection.term.toLowerCase();
-    const name = collection.sourceOrganization?.name?.toLowerCase() || '';
-    const alternateNames =
-      collection.sourceOrganization?.alternateName?.join(' ').toLowerCase() ||
-      '';
-
-    return (
-      inclusionsList.some(inclusion =>
-        term.includes(inclusion.toLowerCase()),
-      ) ||
-      inclusionsList.some(inclusion =>
-        name.includes(inclusion.toLowerCase()),
-      ) ||
-      inclusionsList.some(inclusion =>
-        alternateNames.includes(inclusion.toLowerCase()),
-      )
-    );
-  });
-
-  return filteredCollections;
+  return collectionsWithDetails;
 };
