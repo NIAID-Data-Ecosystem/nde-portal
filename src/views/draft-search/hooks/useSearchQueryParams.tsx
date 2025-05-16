@@ -1,6 +1,6 @@
 import { useRouter } from 'next/router';
 import { useMemo } from 'react';
-import { FILTER_CONFIGS } from '../config/filterConfig';
+import { FILTER_CONFIGS } from 'src/views/search-results-page/components/filters/config';
 import { queryFilterString2Object } from 'src/views/search-results-page/helpers';
 import { defaultQuery } from '../config/defaultQuery';
 import { encodeString } from 'src/utils/querystring-helpers';

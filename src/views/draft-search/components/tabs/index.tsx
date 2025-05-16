@@ -7,12 +7,13 @@ import {
   TabPanel,
   Tag,
   Badge,
+  Box,
 } from '@chakra-ui/react';
-import { tabs, useSearchContext } from '../context/search-context';
-import SearchResultsList from './list';
-import { useSearchQueryParams } from '../hooks/useSearchQueryParams';
-import { useSearchResultsData } from '../hooks/useSearchResultsData';
-import ResultsCount from 'src/views/search-results-page/components/count';
+import { tabs, useSearchContext } from '../../context/search-context';
+import SearchResultsList from '../list';
+import { useSearchQueryParams } from '../../hooks/useSearchQueryParams';
+import { useSearchResultsData } from '../../hooks/useSearchResultsData';
+import ResultsCount from './results-count';
 
 export const SearchTabs = ({
   colorScheme = 'secondary',
@@ -42,11 +43,12 @@ export const SearchTabs = ({
   // Fetch the data so we can display the counts beside the tabs.
   const queryParams = useSearchQueryParams();
 
-  const { data, isLoading, isPlaceholderData } = useSearchResultsData({
+  const { response } = useSearchResultsData({
     ...queryParams,
     size: 0,
     facets: ['@type'],
   });
+  const { data, isLoading, isPlaceholderData } = response;
 
   const tabsWithCounts = tabs.map(tab => {
     // sum the counts for all the types in the tab
@@ -66,7 +68,7 @@ export const SearchTabs = ({
   });
 
   return (
-    <>
+    <Box w='100%'>
       <ResultsCount
         total={data?.total || 0}
         isLoading={isLoading || isPlaceholderData}
@@ -76,8 +78,9 @@ export const SearchTabs = ({
         index={selectedIndex}
         onChange={handleTabChange}
         colorScheme={colorScheme}
+        isFitted
       >
-        <TabList>
+        <TabList bg='#fff' borderBottom='1px solid' borderColor='gray.200'>
           {tabsWithCounts.map(tab => (
             <Tab key={tab.id} id={tab.id} fontWeight='medium'>
               {tab.label}
@@ -102,6 +105,6 @@ export const SearchTabs = ({
           ))}
         </TabPanels>
       </Tabs>
-    </>
+    </Box>
   );
 };

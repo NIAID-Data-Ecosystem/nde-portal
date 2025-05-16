@@ -4,6 +4,7 @@ import { useQuerySearchResults } from 'src/views/search-results-page/hooks/useSe
 import { FetchSearchResultsResponse } from 'src/utils/api/types';
 import { SearchQueryParams } from '../types';
 import { UseQueryResult } from '@tanstack/react-query';
+import { Params } from 'src/utils/api';
 
 export const useSearchResultsData = (
   queryParams: SearchQueryParams,
@@ -12,7 +13,10 @@ export const useSearchResultsData = (
     total: 0,
     facets: {},
   },
-): UseQueryResult<FetchSearchResultsResponse | undefined, Error> => {
+): {
+  response: UseQueryResult<FetchSearchResultsResponse | undefined, Error>;
+  params: Params;
+} => {
   const { q, filters, from, size, sort, shouldUseMetadataScore } = queryParams;
 
   const params = useMemo(
@@ -33,12 +37,12 @@ export const useSearchResultsData = (
 
   const queryKey = ['search-results-draft', params];
 
-  const query = useQuerySearchResults(params, {
+  const queryResponse = useQuerySearchResults(params, {
     queryKey,
     refetchOnWindowFocus: false,
     enabled: typeof window !== 'undefined',
     placeholderData,
   });
 
-  return query;
+  return { response: queryResponse, params };
 };
