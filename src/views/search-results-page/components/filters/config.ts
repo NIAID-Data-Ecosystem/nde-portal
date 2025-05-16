@@ -17,7 +17,6 @@ import {
   transformConditionsOfAccessLabel,
 } from 'src/utils/formatting/formatConditionsOfAccess';
 import { getMetadataDescription } from 'src/components/metadata';
-import { filterCollectionsForInclusions } from 'src/views/program-collections/helpers';
 
 /**
  * Filter configuration array. Order matters here as the filters will be rendered in the same order.
@@ -114,42 +113,20 @@ export const FILTER_CONFIGS: FilterConfig[] = [
     name: 'Program Collection',
     property: 'sourceOrganization.name',
     description: getMetadataDescription('sourceOrganization') || '',
-    createQueries: (id, params, options) => {
-      const facet = 'sourceOrganization.name.raw';
-      return [
-        createCommonQuery({
-          id,
-          queryKey: options?.queryKey || [],
-          params: {
-            ...params,
-            facets: facet,
-            // multi_terms_fields:
-            //   'sourceOrganization.parentOrganization,sourceOrganization.name.raw',
-            // multi_terms_size: '100',
-          },
-          select: (data: FetchSearchResultsResponse) => {
-            // Temporarily filter out collections that are not approved for prod.
-            const collections = data.facets?.[facet]?.terms || [];
-            const filtered = filterCollectionsForInclusions(collections);
-            return {
-              id,
-              facet: facet,
-              results: structureQueryData({
-                ...data,
-                facets: {
-                  ...data.facets,
-                  [facet]: {
-                    ...data.facets?.[facet],
-                    terms: filtered,
-                  },
-                },
-              }),
-            };
-          },
-          ...options,
-        }),
-      ];
-    },
+    createQueries: (id, params, options) => [
+      createCommonQuery({
+        id,
+        queryKey: options?.queryKey || [],
+        params: {
+          ...params,
+          facets: 'sourceOrganization.name.raw',
+          // multi_terms_fields:
+          //   'sourceOrganization.parentOrganization,sourceOrganization.name.raw',
+          // multi_terms_size: '100',
+        },
+        ...options,
+      }),
+    ],
     // transformData: (item): FacetTermWithDetails => {
     //   let label = item.label || item.term;
     //   if (label.toLocaleLowerCase().includes('creid')) {
