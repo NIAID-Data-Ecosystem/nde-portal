@@ -1,7 +1,7 @@
 import { NextRouter } from 'next/router';
 
 // Given a query object, update the route to reflect the change.
-export const updateRoute = (update: {}, router: NextRouter) => {
+export const updateRoute = (router: NextRouter, update: {}) => {
   return router.push(
     {
       query: {

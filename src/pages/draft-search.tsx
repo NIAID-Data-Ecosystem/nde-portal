@@ -7,7 +7,6 @@ import {
   SearchProvider,
   tabs,
 } from 'src/views/draft-search/context/search-context';
-import { SearchTabs } from 'src/views/draft-search/components/tabs';
 import { useSearchQueryParams } from 'src/views/draft-search/hooks/useSearchQueryParams';
 import { useSearchResultsData } from 'src/views/draft-search/hooks/useSearchResultsData';
 import { Box, Flex } from '@chakra-ui/react';
@@ -16,7 +15,7 @@ import { SelectedFilterType } from 'src/views/draft-search/components/filters/ty
 import { FILTER_CONFIGS } from 'src/views/draft-search/components/filters/config';
 import { queryFilterString2Object } from 'src/views/draft-search/components/filters/utils/query-builders';
 import { defaultQuery } from 'src/views/draft-search/config/defaultQuery';
-import SearchResultsPage from 'src/views/search-results-page';
+import { SearchResultsController } from 'src/views/draft-search/components/search-results-controller';
 
 // Default filters list.
 const defaultFilters = FILTER_CONFIGS.reduce(
@@ -32,13 +31,11 @@ const Search: NextPage<{
 
   const queryParams = useSearchQueryParams();
 
-  const { response, params } = useSearchResultsData({
+  const { params } = useSearchResultsData({
     ...queryParams,
     size: 0,
     facets: ['@type'],
   });
-
-  const { data, isLoading, isRefetching, error } = response;
 
   // Set the initial tab based on the router query
   const initialTab = useMemo(() => {
@@ -59,7 +56,7 @@ const Search: NextPage<{
   }, [router.query.filters]);
 
   // Currently applied filters
-  const applied_filters = useMemo(
+  const appliedFilters = useMemo(
     () =>
       Object.entries(selectedFilters).filter(
         ([_, filters]) => filters.length > 0,
@@ -126,36 +123,15 @@ const Search: NextPage<{
                 }}
                 selectedFilters={selectedFilters}
                 removeAllFilters={
-                  applied_filters.length > 0 ? removeAllFilters : undefined
+                  appliedFilters.length > 0 ? removeAllFilters : undefined
                 }
               />
             )}
           </Flex>
           <Box flex={3}>
             {/* Filter tags */}
-
-            {/* Tabs */}
-            <SearchTabs facets={['@type']} tabs={tabs} />
-            <PageContent
-              id='search-page-content'
-              maxW={{ base: 'unset', lg: '1600px' }}
-              justifyContent='center'
-              margin='0 auto'
-              px={4}
-              py={4}
-              mb={32}
-              flex={3}
-            >
-              <Flex
-                flexDirection='column'
-                flex={1}
-                m='0 auto'
-                pb={32}
-                width='100%'
-              >
-                <SearchResultsPage results={results} total={total} />
-              </Flex>
-            </PageContent>
+            {/* Search Results */}
+            <SearchResultsController tabs={tabs}></SearchResultsController>
           </Box>
         </Flex>
       </SearchProvider>

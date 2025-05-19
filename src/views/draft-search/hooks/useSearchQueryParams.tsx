@@ -1,10 +1,10 @@
 import { useRouter } from 'next/router';
 import { useMemo } from 'react';
-import { FILTER_CONFIGS } from 'src/views/search-results-page/components/filters/config';
-import { queryFilterString2Object } from 'src/views/search-results-page/helpers';
 import { defaultQuery } from '../config/defaultQuery';
 import { encodeString } from 'src/utils/querystring-helpers';
 import { SearchQueryParams } from '../types';
+import { FILTER_CONFIGS } from '../components/filters/config';
+import { queryFilterString2Object } from '../components/filters/utils/query-builders';
 
 export const useSearchQueryParams = (): SearchQueryParams => {
   const router = useRouter();

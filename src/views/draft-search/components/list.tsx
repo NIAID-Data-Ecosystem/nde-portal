@@ -6,7 +6,7 @@ const SearchResultsList = () => {
 
   return (
     <Box mt={4}>
-      <Text fontWeight='bold'>Results for: {selectedTab['label']}</Text>
+      <Text fontWeight='bold'>Results for: {selectedTab['id']}</Text>
     </Box>
   );
 };

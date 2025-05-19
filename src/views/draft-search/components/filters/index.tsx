@@ -8,8 +8,8 @@ import { FiltersList } from './components/list';
 import { FiltersContainer } from './components/container';
 import { FiltersDateSlider } from './components/date-slider';
 import { SelectedFilterType } from './types';
-import { updateRoute } from './utils/update-route';
 import { queryFilterObject2String } from './utils/query-builders';
+import { updateRoute } from '../../utils/update-route';
 
 // Interface for Filters component props
 interface FiltersProps {
@@ -44,7 +44,7 @@ export const Filters: React.FC<FiltersProps> = ({
   });
 
   const handleUpdate = useCallback(
-    (update: {}) => updateRoute(update, router),
+    (update: {}) => updateRoute(router, update),
     [router],
   );
 

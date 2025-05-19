@@ -1,10 +1,10 @@
-import { queryFilterObject2String } from 'src/views/search-results-page/helpers';
 import { useMemo } from 'react';
-import { useQuerySearchResults } from 'src/views/search-results-page/hooks/useSearchResults';
 import { FetchSearchResultsResponse } from 'src/utils/api/types';
 import { SearchQueryParams } from '../types';
 import { UseQueryResult } from '@tanstack/react-query';
 import { Params } from 'src/utils/api';
+import { useSearchResultsQuery } from './useSearchResultsQuery';
+import { queryFilterObject2String } from '../components/filters/utils/query-builders';
 
 export const useSearchResultsData = (
   queryParams: SearchQueryParams,
@@ -17,31 +17,29 @@ export const useSearchResultsData = (
   response: UseQueryResult<FetchSearchResultsResponse | undefined, Error>;
   params: Params;
 } => {
-  const { q, filters, from, size, sort, shouldUseMetadataScore } = queryParams;
+  const { q, filters, from, size, shouldUseMetadataScore, ...rest } =
+    queryParams;
 
   const params = useMemo(
     () => ({
-      ...queryParams,
+      ...rest,
       q,
-      filters: queryFilterObject2String(filters) || '',
+      extra_filter: queryFilterObject2String(filters) || '',
       facets: queryParams?.facets?.join(', ') || '',
       size: `${size}`,
       from: `${(from - 1) * size}`,
-      sort: sort,
       use_metadata_score: shouldUseMetadataScore ? 'true' : 'false',
-      show_meta: true,
-      fields: [],
     }),
-    [queryParams, q, filters, size, from, sort, shouldUseMetadataScore],
+    [rest, q, filters, queryParams?.facets, size, from, shouldUseMetadataScore],
   );
 
   const queryKey = ['search-results-draft', params];
 
-  const queryResponse = useQuerySearchResults(params, {
+  const queryResponse = useSearchResultsQuery(params, {
     queryKey,
     refetchOnWindowFocus: false,
     enabled: typeof window !== 'undefined',
-    placeholderData,
+    // placeholderData,
   });
 
   return { response: queryResponse, params };
