@@ -104,9 +104,9 @@ const Search: NextPage<{
           <Flex
             id='search-page-filters-sidebar'
             bg='#fff'
-            flex={1}
-            minWidth='380px'
-            maxW='450px'
+            flex={{ base: 0, lg: 1 }}
+            minW={{ base: 'unset', lg: '380px' }}
+            maxW={{ base: 'unset', lg: '450px' }}
           >
             {/* Filters sidebar */}
             {router.isReady && (
