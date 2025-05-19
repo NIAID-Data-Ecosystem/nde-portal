@@ -1,7 +1,9 @@
 export type TabType = {
   id: 'ct' | 'd';
-  label: string;
-  '@type': string[];
+  types: {
+    label: string;
+    type: string;
+  }[];
   isDefault?: boolean;
 };
 

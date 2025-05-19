@@ -128,7 +128,7 @@ const Search: NextPage<{
             )}
           </Flex>
           <Box flex={3}>
-            <SearchTabs />
+            <SearchTabs facets={['@type']} tabs={tabs} />
             <PageContent
               id='search-page-content'
               maxW={{ base: 'unset', lg: '1600px' }}

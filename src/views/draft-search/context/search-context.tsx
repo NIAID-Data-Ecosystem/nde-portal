@@ -1,19 +1,32 @@
 import React, { createContext, useContext, useState } from 'react';
 import { TabType } from '../types';
+import { formatResourceTypeForDisplay } from 'src/utils/formatting/formatResourceType';
 
 // Order of tabs in the UI
 // is determined by the order of this array
 export const tabs: TabType[] = [
   {
     id: 'd',
-    label: 'Datasets and Resource Catalogs',
-    '@type': ['Dataset', 'ResourceCatalog'],
+    types: [
+      {
+        label: formatResourceTypeForDisplay('Dataset') + 's',
+        type: 'Dataset',
+      },
+      {
+        label: formatResourceTypeForDisplay('ResourceCatalog') + 's',
+        type: 'ResourceCatalog',
+      },
+    ],
     isDefault: true,
   },
   {
     id: 'ct',
-    label: 'Computational Tools',
-    '@type': ['ComputationalTool'],
+    types: [
+      {
+        label: formatResourceTypeForDisplay('ComputationalTool') + 's',
+        type: 'ComputationalTool',
+      },
+    ],
   },
 ];
 
