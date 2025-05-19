@@ -16,6 +16,7 @@ import { SelectedFilterType } from 'src/views/draft-search/components/filters/ty
 import { FILTER_CONFIGS } from 'src/views/draft-search/components/filters/config';
 import { queryFilterString2Object } from 'src/views/draft-search/components/filters/utils/query-builders';
 import { defaultQuery } from 'src/views/draft-search/config/defaultQuery';
+import SearchResultsPage from 'src/views/search-results-page';
 
 // Default filters list.
 const defaultFilters = FILTER_CONFIGS.reduce(
@@ -101,12 +102,15 @@ const Search: NextPage<{
         <Flex bg='page.alt'>
           <Flex
             id='search-page-filters-sidebar'
-            bg='#fff'
-            flex={{ base: 0, lg: 1 }}
-            minW={{ base: 'unset', lg: '380px' }}
-            maxW={{ base: 'unset', lg: '450px' }}
             borderRight='0.5px solid'
             borderRightColor='gray.200'
+            bg='#fff'
+            flex={{ base: 0, lg: 1 }}
+            height='100vh'
+            minW={{ base: 'unset', lg: '380px' }}
+            maxW={{ base: 'unset', lg: '450px' }}
+            position={{ base: 'unset', lg: 'sticky' }}
+            top='0px'
           >
             {/* Filters sidebar */}
             {router.isReady && (
@@ -145,10 +149,12 @@ const Search: NextPage<{
               <Flex
                 flexDirection='column'
                 flex={1}
+                m='0 auto'
                 pb={32}
                 width='100%'
-                m='0 auto'
-              ></Flex>
+              >
+                <SearchResultsPage results={results} total={total} />
+              </Flex>
             </PageContent>
           </Box>
         </Flex>
