@@ -105,6 +105,8 @@ const Search: NextPage<{
             flex={{ base: 0, lg: 1 }}
             minW={{ base: 'unset', lg: '380px' }}
             maxW={{ base: 'unset', lg: '450px' }}
+            borderRight='0.5px solid'
+            borderRightColor='gray.200'
           >
             {/* Filters sidebar */}
             {router.isReady && (
@@ -126,6 +128,8 @@ const Search: NextPage<{
             )}
           </Flex>
           <Box flex={3}>
+            {/* Filter tags */}
+
             {/* Tabs */}
             <SearchTabs facets={['@type']} tabs={tabs} />
             <PageContent
@@ -144,9 +148,7 @@ const Search: NextPage<{
                 pb={32}
                 width='100%'
                 m='0 auto'
-              >
-                {/* Filter tags */}
-              </Flex>
+              ></Flex>
             </PageContent>
           </Box>
         </Flex>
