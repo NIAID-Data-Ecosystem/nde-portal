@@ -8,7 +8,7 @@ const PAGE = 1;
 // Default parameters for the search query.
 export const defaultQuery: SearchQueryParams = {
   q: '__all__',
-  extra_filter: '', // extra filter updates aggregate fields
+  filters: '', // extra filter updates aggregate fields
   facet_size: FACET_SIZE,
   from: PAGE,
   size: SIZE,

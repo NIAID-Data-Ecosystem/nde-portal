@@ -2,21 +2,15 @@ import {
   APIResourceType,
   formatResourceTypeForDisplay,
 } from 'src/utils/formatting/formatResourceType';
-import {
-  FilterConfig,
-  FacetTermWithDetails,
-} from 'src/views/search-results-page/components/filters/types';
-import {
-  buildQueries,
-  buildSourceQueries,
-} from 'src/views/search-results-page/components/filters/utils/query-builders';
+import { FilterConfig, FacetTermWithDetails } from './types';
+import { buildQueries, buildSourceQueries } from './utils/query-builders';
 import { formatDate, formatISOString } from 'src/utils/api/helpers';
 import { FetchSearchResultsResponse } from 'src/utils/api/types';
 import {
   createCommonQuery,
   createNotExistsQuery,
   structureQueryData,
-} from 'src/views/search-results-page/components/filters/utils/queries';
+} from './utils/queries';
 
 import {
   formatConditionsOfAccess,

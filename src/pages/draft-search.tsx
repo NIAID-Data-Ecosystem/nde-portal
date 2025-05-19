@@ -11,13 +11,11 @@ import { SearchTabs } from 'src/views/draft-search/components/tabs';
 import { useSearchQueryParams } from 'src/views/draft-search/hooks/useSearchQueryParams';
 import { useSearchResultsData } from 'src/views/draft-search/hooks/useSearchResultsData';
 import { Box, Flex } from '@chakra-ui/react';
-import { Filters } from 'src/views/search-results-page/components/filters/';
-import { SelectedFilterType } from 'src/views/search-results-page/components/filters/types';
-import {
-  defaultQuery,
-  queryFilterString2Object,
-} from 'src/views/search-results-page/helpers';
-import { FILTER_CONFIGS } from 'src/views/draft-search/config/filterConfig';
+import { Filters } from 'src/views/draft-search/components/filters';
+import { SelectedFilterType } from 'src/views/draft-search/components/filters/types';
+import { FILTER_CONFIGS } from 'src/views/draft-search/components/filters/config';
+import { queryFilterString2Object } from 'src/views/draft-search/components/filters/utils/query-builders';
+import { defaultQuery } from 'src/views/draft-search/config/defaultQuery';
 
 // Default filters list.
 const defaultFilters = FILTER_CONFIGS.reduce(
@@ -82,7 +80,7 @@ const Search: NextPage<{
   // Reset the filters to the default.
   const removeAllFilters = useCallback(() => {
     return handleRouteUpdate({
-      from: defaultQuery.selectedPage,
+      from: defaultQuery.from,
       filters: defaultFilters,
     });
   }, [handleRouteUpdate]);
@@ -128,6 +126,7 @@ const Search: NextPage<{
             )}
           </Flex>
           <Box flex={3}>
+            {/* Tabs */}
             <SearchTabs facets={['@type']} tabs={tabs} />
             <PageContent
               id='search-page-content'
@@ -147,8 +146,6 @@ const Search: NextPage<{
                 m='0 auto'
               >
                 {/* Filter tags */}
-
-                {/* Tabs */}
               </Flex>
             </PageContent>
           </Box>
