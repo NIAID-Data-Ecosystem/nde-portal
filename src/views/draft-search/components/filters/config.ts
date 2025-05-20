@@ -70,27 +70,27 @@ export const FILTER_CONFIGS: FilterConfig[] = [
       };
     },
   },
-  {
-    _id: '__type',
-    name: 'Type',
-    property: '@type',
-    description:
-      'Type is used to categorize the nature of the content of the resource',
-    createQueries: (id, params, options) => [
-      createCommonQuery({
-        id,
-        queryKey: options?.queryKey || [],
-        params,
-        ...options,
-      }),
-    ],
-    transformData: (item): FacetTermWithDetails => ({
-      ...item,
-      label:
-        item.label ||
-        formatResourceTypeForDisplay(item.term as APIResourceType),
-    }),
-  },
+  // {
+  //   _id: '__type',
+  //   name: 'Type',
+  //   property: '@type',
+  //   description:
+  //     'Type is used to categorize the nature of the content of the resource',
+  //   createQueries: (id, params, options) => [
+  //     createCommonQuery({
+  //       id,
+  //       queryKey: options?.queryKey || [],
+  //       params,
+  //       ...options,
+  //     }),
+  //   ],
+  //   transformData: (item): FacetTermWithDetails => ({
+  //     ...item,
+  //     label:
+  //       item.label ||
+  //       formatResourceTypeForDisplay(item.term as APIResourceType),
+  //   }),
+  // },
   {
     _id: 'includedInDataCatalog',
     name: 'Sources',
