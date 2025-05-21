@@ -43,6 +43,12 @@ export const SearchTabs = ({
             key={tab.id}
             id={tab.id}
             aria-label={tab.types.map(t => t.label).join(', ')}
+            sx={{
+              _selected: {
+                color: `${colorScheme}.500`,
+                borderColor: 'currentColor',
+              },
+            }}
           >
             <TabLabels types={tab.types} colorScheme={colorScheme} />
           </Tab>
@@ -64,7 +70,7 @@ const TabLabels = ({
   colorScheme: string;
 }) => {
   return (
-    <Text fontWeight='medium' noOfLines={1} color='inherit'>
+    <Text color='inherit' fontSize='sm' noOfLines={1}>
       {types.map(({ label, count }, index) => {
         const isLast = index === types.length - 1;
         const isSecondLast = index === types.length - 2;
