@@ -1,6 +1,6 @@
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
-import { PageContainer, PageContent } from 'src/components/page-container';
+import { PageContainer } from 'src/components/page-container';
 import { useCallback, useMemo } from 'react';
 import { FormattedResource } from 'src/utils/api/types';
 import {
@@ -9,13 +9,15 @@ import {
 } from 'src/views/draft-search/context/search-context';
 import { useSearchQueryParams } from 'src/views/draft-search/hooks/useSearchQueryParams';
 import { useSearchResultsData } from 'src/views/draft-search/hooks/useSearchResultsData';
-import { Box, Flex } from '@chakra-ui/react';
+import { Box, Flex, VStack } from '@chakra-ui/react';
 import { Filters } from 'src/views/draft-search/components/filters';
 import { SelectedFilterType } from 'src/views/draft-search/components/filters/types';
 import { FILTER_CONFIGS } from 'src/views/draft-search/components/filters/config';
 import { queryFilterString2Object } from 'src/views/draft-search/components/filters/utils/query-builders';
 import { defaultQuery } from 'src/views/draft-search/config/defaultQuery';
 import { SearchResultsController } from 'src/views/draft-search/components/search-results-controller';
+import { FilterTags } from 'src/views/draft-search/components/filters/components/tag';
+import { SearchResultsHeader } from 'src/views/draft-search/components/search-results-header';
 
 // Default filters list.
 const defaultFilters = FILTER_CONFIGS.reduce(
@@ -129,9 +131,28 @@ const Search: NextPage<{
             )}
           </Flex>
           <Box flex={3}>
-            {/* Filter tags */}
+            <VStack
+              alignItems='flex-start'
+              p={4}
+              bg='#fff'
+              borderBottom='1px solid'
+              borderBottomColor='gray.100'
+              spacing={2}
+            >
+              {/* Heading: Showing results for... */}
+              <SearchResultsHeader querystring={queryParams.q} />
+              {/* Filter tags : Tags with the names of the currently selected filters */}
+              {Object.values(selectedFilters).length > 0 && (
+                <FilterTags
+                  filtersConfig={FILTER_CONFIGS}
+                  selectedFilters={selectedFilters}
+                  handleRouteUpdate={handleRouteUpdate}
+                  removeAllFilters={removeAllFilters}
+                />
+              )}
+            </VStack>
             {/* Search Results */}
-            <SearchResultsController tabs={tabs}></SearchResultsController>
+            <SearchResultsController tabs={tabs} />
           </Box>
         </Flex>
       </SearchProvider>
