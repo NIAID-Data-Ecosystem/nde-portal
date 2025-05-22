@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { useRouter } from 'next/router';
-import { ListItem, UnorderedList } from '@chakra-ui/react';
+import { ListItem, UnorderedList, VStack } from '@chakra-ui/react';
 import Card from './components/card';
 import { ErrorMessage } from './components/error';
 import { useSearchQueryParams } from '../../hooks/useSearchQueryParams';
@@ -61,7 +61,6 @@ const SearchResults = ({ types }: { types: string[] }) => {
   });
 
   const { data, isLoading, error } = response;
-
   const numCards = useMemo(
     () =>
       Math.min(
@@ -87,17 +86,20 @@ const SearchResults = ({ types }: { types: string[] }) => {
   return (
     <>
       {numCards > 0 && (
-        <UnorderedList
+        <VStack
+          as={UnorderedList}
           className='search-results-cards'
-          ml={0}
+          alignItems='flex-start'
           flex={3}
+          ml={0}
+          spacing={4}
           w='100%'
         >
           {Array(numCards)
             .fill(null)
             .map((_, idx) => {
               return (
-                <ListItem key={idx} my={4} mb={8}>
+                <ListItem key={idx} w='100%'>
                   <Card
                     isLoading={!router.isReady || isLoading}
                     data={data?.results[idx]}
@@ -107,7 +109,7 @@ const SearchResults = ({ types }: { types: string[] }) => {
                 </ListItem>
               );
             })}
-        </UnorderedList>
+        </VStack>
       )}
     </>
   );

@@ -1,15 +1,6 @@
 import React, { useMemo } from 'react';
 import { useRouter } from 'next/router';
-import {
-  Box,
-  Tabs,
-  TabList,
-  TabPanels,
-  Tab,
-  Tag,
-  Text,
-  TabPanel,
-} from '@chakra-ui/react';
+import { TabPanel } from '@chakra-ui/react';
 import { useSearchContext } from '../../context/search-context';
 import { useSearchQueryParams } from '../../hooks/useSearchQueryParams';
 import { useSearchResultsData } from '../../hooks/useSearchResultsData';
@@ -17,6 +8,7 @@ import { TabType } from '../../types';
 import SearchResults from '../results';
 import { updateRoute } from '../../utils/update-route';
 import { SearchTabs } from '../tabs';
+import { AccordionContent, AccordionWrapper } from '../layout/accordion';
 
 interface SearchResultsControllerProps {
   colorScheme?: string;
@@ -73,7 +65,7 @@ export const SearchResultsController = ({
   );
 
   return (
-    <Box w='100%'>
+    <>
       {/* Render each tab with its label(s) and count(s) */}
       <SearchTabs
         index={selectedIndex}
@@ -81,18 +73,40 @@ export const SearchResultsController = ({
         colorScheme={colorScheme}
         tabs={tabsWithCounts}
         renderTabPanels={() =>
-          tabs.map(tab => (
-            <TabPanel key={tab.id}>
-              {/* Each panel renders the carousel, pagination, result list for the selected tab */}
-              <SearchResults
-                types={tab.types
-                  .map(t => t.type)
-                  .filter(type => type !== 'ResourceCatalog')}
-              />
-            </TabPanel>
-          ))
+          tabsWithCounts.map(tab => {
+            const sections = tab.types;
+            {
+              /* Each panel renders the carousel, pagination, result list for the selected tab */
+            }
+            return (
+              <TabPanel key={tab.id}>
+                <AccordionWrapper defaultIndex={sections.map((_, i) => i)}>
+                  {sections.map(section => {
+                    return (
+                      <AccordionContent
+                        key={section.type}
+                        title={`${
+                          section.label
+                        } (${section.count.toLocaleString()})`}
+                      >
+                        {/* Render carousel if ResourceCatalog type is included */}
+                        {section.type === 'ResourceCatalog' ? (
+                          <>Insert carousel here</>
+                        ) : (
+                          <>
+                            {/* Add Pagination */}
+                            <SearchResults types={[section.type]} />
+                          </>
+                        )}
+                      </AccordionContent>
+                    );
+                  })}
+                </AccordionWrapper>
+              </TabPanel>
+            );
+          })
         }
       />
-    </Box>
+    </>
   );
 };

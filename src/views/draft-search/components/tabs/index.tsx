@@ -70,7 +70,7 @@ const TabLabels = ({
   colorScheme: string;
 }) => {
   return (
-    <Text color='inherit' fontSize='sm' noOfLines={1}>
+    <Text as='h2' color='inherit' fontSize='sm' noOfLines={1}>
       {types.map(({ label, count }, index) => {
         const isLast = index === types.length - 1;
         const isSecondLast = index === types.length - 2;

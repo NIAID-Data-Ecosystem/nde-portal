@@ -9,12 +9,12 @@ export const tabs: TabType[] = [
     id: 'd',
     types: [
       {
-        label: formatResourceTypeForDisplay('Dataset') + 's',
-        type: 'Dataset',
-      },
-      {
         label: formatResourceTypeForDisplay('ResourceCatalog') + 's',
         type: 'ResourceCatalog',
+      },
+      {
+        label: formatResourceTypeForDisplay('Dataset') + 's',
+        type: 'Dataset',
       },
     ],
     isDefault: true,
