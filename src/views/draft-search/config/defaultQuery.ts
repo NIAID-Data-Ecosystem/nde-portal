@@ -8,8 +8,6 @@ const PAGE = 1;
 // Default parameters for the search query.
 export const defaultQuery: SearchQueryParams = {
   q: '__all__',
-  filters: '',
-  facet_size: FACET_SIZE,
   from: PAGE,
   size: SIZE,
   sort: SORT_OPTIONS[0].sortBy,
