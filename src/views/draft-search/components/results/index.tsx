@@ -3,71 +3,105 @@ import { useRouter } from 'next/router';
 import { ListItem, UnorderedList, VStack } from '@chakra-ui/react';
 import Card from './components/card';
 import { ErrorMessage } from './components/error';
-import { useSearchQueryParams } from '../../hooks/useSearchQueryParams';
+import { useSearchQueryFromURL } from '../../hooks/useSearchQueryFromURL';
 import { useSearchResultsData } from '../../hooks/useSearchResultsData';
 import { EmptyState } from './components/empty';
+import { Pagination } from './components/pagination';
+import { TabType } from '../../types';
+import { useSearchContext } from '../../context/search-context';
+import { usePaginationContext } from '../../context/pagination-context';
+import { updateRoute } from '../../utils/update-route';
 
+const RESULT_FIELDS = [
+  '_meta',
+  '@type',
+  'alternateName',
+  'applicationCategory',
+  'author',
+  'availableOnDevice',
+  'conditionsOfAccess',
+  'date',
+  'description',
+  'doi',
+  'featureList',
+  'funding',
+  'healthCondition',
+  'includedInDataCatalog',
+  'infectiousAgent',
+  'input',
+  'isAccessibleForFree',
+  'license',
+  'measurementTechnique',
+  'name',
+  'operatingSystem',
+  'output',
+  'programmingLanguage',
+  'sdPublisher',
+  'softwareHelp',
+  'softwareRequirements',
+  'softwareVersion',
+  'species',
+  'topicCategory',
+  'url',
+  'usageInfo',
+  'variableMeasured',
+];
 /*
 [COMPONENT INFO]:
  Search results pages displays the list of records returned by a search.
  Contains pagination and search results cards.
 */
 
-const SearchResults = ({ types }: { types: string[] }) => {
+const SearchResults = ({
+  id,
+  tabs,
+  types,
+}: {
+  id: TabType['id'];
+  tabs: TabType[];
+  types: string[];
+}) => {
   const router = useRouter();
-  // Selected tab index is stored in context to sync with other components.
-  const queryParams = useSearchQueryParams();
 
-  const { response, params } = useSearchResultsData({
-    ...queryParams,
-    filters: {
-      ...queryParams.filters,
-      '@type': types,
+  // Get the selected tab index from the search context.
+  const { selectedIndex } = useSearchContext();
+  const activeTabId = tabs[selectedIndex].id;
+
+  // Retrieve pagination state for the current tab.
+  // This allows each tab to fetch the correct page of results independently.
+  const { getPagination, setFrom } = usePaginationContext();
+  const { from, size } = getPagination(id);
+
+  // Selected tab index is stored in context to sync with other components.
+  const urlQueryParams = useSearchQueryFromURL();
+
+  const { response, params } = useSearchResultsData(
+    {
+      ...urlQueryParams,
+      from,
+      size,
+      filters: {
+        ...urlQueryParams.filters,
+        '@type': types,
+      },
+      fields: RESULT_FIELDS,
     },
-    fields: [
-      '_meta',
-      '@type',
-      'alternateName',
-      'applicationCategory',
-      'author',
-      'availableOnDevice',
-      'conditionsOfAccess',
-      'date',
-      'description',
-      'doi',
-      'featureList',
-      'funding',
-      'healthCondition',
-      'includedInDataCatalog',
-      'infectiousAgent',
-      'input',
-      'isAccessibleForFree',
-      'license',
-      'measurementTechnique',
-      'name',
-      'operatingSystem',
-      'output',
-      'programmingLanguage',
-      'sdPublisher',
-      'softwareHelp',
-      'softwareRequirements',
-      'softwareVersion',
-      'species',
-      'topicCategory',
-      'url',
-      'usageInfo',
-      'variableMeasured',
-    ],
-  });
+    {
+      // Only fetch data when the router is ready and the active tab is selected.
+      // This prevents unnecessary data fetching when switching tabs.
+      enabled: router.isReady && id === activeTabId,
+    },
+  );
 
   const { data, isLoading, error } = response;
+
   const numCards = useMemo(
     () =>
       Math.min(
-        isLoading ? queryParams.size : data?.results?.length || 0,
-        queryParams.size,
+        isLoading ? urlQueryParams.size : data?.results?.length || 0,
+        urlQueryParams.size,
       ),
-    [isLoading, data?.results?.length, queryParams.size],
+    [isLoading, data?.results?.length, urlQueryParams.size],
   );
 
   if (error) {
@@ -79,12 +113,27 @@ const SearchResults = ({ types }: { types: string[] }) => {
     );
   }
 
-  if (!isLoading && (!data || data?.results?.length === 0)) {
+  if (!isLoading && (!data?.results || data.results.length === 0)) {
     return <EmptyState />;
   }
 
   return (
     <>
+      {/* Add Pagination */}
+      <Pagination
+        id='pagination-top'
+        ariaLabel='Paginate through resources.'
+        selectedPage={from}
+        selectedPerPage={size}
+        handleSelectedPage={newFrom => {
+          setFrom(id, newFrom);
+          updateRoute(router, { from: newFrom });
+          return;
+        }}
+        isLoading={isLoading}
+        total={data?.total || 0}
+      />
+      {/* Search results cards */}
       {numCards > 0 && (
         <VStack
           as={UnorderedList}
@@ -99,12 +148,12 @@ const SearchResults = ({ types }: { types: string[] }) => {
             .fill(null)
             .map((_, idx) => {
               return (
-                <ListItem key={idx} w='100%'>
+                <ListItem key={data?.results?.[idx]._id || idx} w='100%'>
                   <Card
                     isLoading={!router.isReady || isLoading}
                     data={data?.results[idx]}
                     referrerPath={router.asPath}
-                    querystring={queryParams.q}
+                    querystring={urlQueryParams.q}
                   />
                 </ListItem>
               );

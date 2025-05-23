@@ -1,18 +1,16 @@
 import { useMemo } from 'react';
 import { FetchSearchResultsResponse } from 'src/utils/api/types';
 import { SearchQueryParams } from '../types';
-import { UseQueryResult } from '@tanstack/react-query';
+import { UseQueryOptions, UseQueryResult } from '@tanstack/react-query';
 import { Params } from 'src/utils/api';
 import { useSearchResultsQuery } from './useSearchResultsQuery';
 import { queryFilterObject2String } from '../components/filters/utils/query-builders';
 
 export const useSearchResultsData = (
   queryParams: SearchQueryParams,
-  placeholderData: FetchSearchResultsResponse = {
-    results: [],
-    total: 0,
-    facets: {},
-  },
+  options?: Partial<
+    UseQueryOptions<FetchSearchResultsResponse | undefined, Error>
+  >,
 ): {
   response: UseQueryResult<FetchSearchResultsResponse | undefined, Error>;
   params: Params;
@@ -24,10 +22,10 @@ export const useSearchResultsData = (
     () => ({
       ...rest,
       q,
-      extra_filter: queryFilterObject2String(filters) || '',
+      extra_filter: (filters && queryFilterObject2String(filters)) || '',
       facets: queryParams?.facets?.join(', ') || '',
-      size: `${size}`,
-      from: `${(from - 1) * size}`,
+      size: size ? `${size}` : undefined,
+      from: from && size ? `${(from - 1) * size}` : undefined,
       use_metadata_score: shouldUseMetadataScore ? 'true' : 'false',
     }),
     [rest, q, filters, queryParams?.facets, size, from, shouldUseMetadataScore],
@@ -39,7 +37,7 @@ export const useSearchResultsData = (
     queryKey,
     refetchOnWindowFocus: false,
     enabled: typeof window !== 'undefined',
-    // placeholderData,
+    ...options,
   });
 
   return { response: queryResponse, params };

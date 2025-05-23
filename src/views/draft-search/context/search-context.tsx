@@ -41,6 +41,11 @@ interface SearchContextValue {
 
 const SearchContext = createContext<SearchContextValue | undefined>(undefined);
 
+/**
+ * Handles the search context for the draft search page.
+ * Provides the selected tab, index, and filters.
+ *
+ */
 export const SearchProvider: React.FC<{
   children: React.ReactNode;
   initialTab?: TabType['id'];

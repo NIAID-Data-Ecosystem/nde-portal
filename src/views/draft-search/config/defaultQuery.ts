@@ -6,7 +6,13 @@ const SIZE = 10;
 const PAGE = 1;
 
 // Default parameters for the search query.
-export const defaultQuery: SearchQueryParams = {
+export type DefaultSearchQueryParams = Omit<
+  SearchQueryParams,
+  'from' | 'size'
+> &
+  Required<Pick<SearchQueryParams, 'from' | 'size'>>;
+
+export const defaultQuery: DefaultSearchQueryParams = {
   q: '__all__',
   from: PAGE,
   size: SIZE,

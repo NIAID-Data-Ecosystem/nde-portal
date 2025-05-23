@@ -12,8 +12,8 @@ export interface SearchQueryParams {
   facets?: string[];
   fields?: string[];
   filters?: Record<string, string[]>;
-  from: number;
-  size: number;
-  sort: string;
+  from?: number;
+  size?: number;
+  sort?: string;
   shouldUseMetadataScore?: boolean;
 }

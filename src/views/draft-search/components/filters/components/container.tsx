@@ -21,6 +21,7 @@ import { ScrollContainer } from 'src/components/scroll-container';
 
 export interface FiltersContainerProps {
   title?: string;
+  isDisabled?: boolean;
   selectedFilters: SelectedFilterType;
   removeAllFilters?: () => void;
   error: Error | null;
@@ -53,6 +54,7 @@ export const FiltersContainer: React.FC<FiltersContainerProps> = ({
   children,
   selectedFilters,
   filtersList,
+  isDisabled = false,
   removeAllFilters,
 }) => {
   const [openSections, setOpenSections] = useState<number[]>([]);
@@ -135,7 +137,7 @@ export const FiltersContainer: React.FC<FiltersContainerProps> = ({
           variant='outline'
           size='xs'
           onClick={removeAllFilters}
-          isDisabled={!removeAllFilters}
+          isDisabled={isDisabled}
         >
           Clear All
         </Button>

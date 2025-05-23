@@ -2,13 +2,14 @@ import React, { useMemo } from 'react';
 import { useRouter } from 'next/router';
 import { TabPanel } from '@chakra-ui/react';
 import { useSearchContext } from '../../context/search-context';
-import { useSearchQueryParams } from '../../hooks/useSearchQueryParams';
-import { useSearchResultsData } from '../../hooks/useSearchResultsData';
+import { useSearchQueryFromURL } from '../../hooks/useSearchQueryFromURL';
 import { TabType } from '../../types';
 import SearchResults from '../results';
 import { updateRoute } from '../../utils/update-route';
 import { SearchTabs } from '../tabs';
 import { AccordionContent, AccordionWrapper } from '../layout/accordion';
+import { useSearchResultsData } from '../../hooks/useSearchResultsData';
+import { usePaginationContext } from '../../context/pagination-context';
 
 interface SearchResultsControllerProps {
   colorScheme?: string;
@@ -20,21 +21,28 @@ export const SearchResultsController = ({
   tabs,
 }: SearchResultsControllerProps) => {
   const router = useRouter();
-
   // Selected tab index is stored in context to sync with other components.
-  const { selectedIndex, setSelectedIndex, selectedTab } = useSearchContext();
+  const { selectedIndex, setSelectedIndex } = useSearchContext();
+
+  // Handle pagination with tab changes.
+  const { getPagination, setFrom } = usePaginationContext();
 
   // Update URL query param when a new tab is selected.
   const handleTabChange = (index: number) => {
     setSelectedIndex(index);
     const selectedTab = tabs[index];
-    updateRoute(router, { tab: selectedTab.id });
+    const newFrom = getPagination(selectedTab.id).from;
+    setFrom(selectedTab.id, newFrom);
+    // Update the URL with the new tab and pagination state.
+    updateRoute(router, { tab: selectedTab.id, from: newFrom });
   };
 
   // Get the current search parameters from the URL and fetch facet data.
-  const queryParams = useSearchQueryParams();
+  const queryParams = useSearchQueryFromURL();
+
   const searchResultsData = useSearchResultsData({
-    ...queryParams,
+    q: queryParams.q,
+    filters: queryParams.filters,
     facets: ['@type'],
   });
   const { data } = searchResultsData.response;
@@ -94,8 +102,12 @@ export const SearchResultsController = ({
                           <>Insert carousel here</>
                         ) : (
                           <>
-                            {/* Add Pagination */}
-                            <SearchResults types={[section.type]} />
+                            {/* Render search results */}
+                            <SearchResults
+                              id={tab.id}
+                              tabs={tabs}
+                              types={[section.type]}
+                            />
                           </>
                         )}
                       </AccordionContent>
