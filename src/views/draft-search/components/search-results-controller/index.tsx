@@ -6,6 +6,7 @@ import { useSearchQueryParams } from '../../hooks/useSearchQueryParams';
 import { useSearchResultsData } from '../../hooks/useSearchResultsData';
 import { TabType } from '../../types';
 import SearchResults from '../results';
+import { CompactCardCarousel } from '../results/components/compact-card-carousel';
 import { updateRoute } from '../../utils/update-route';
 import { SearchTabs } from '../tabs';
 import { AccordionContent, AccordionWrapper } from '../layout/accordion';
@@ -90,8 +91,12 @@ export const SearchResultsController = ({
                         } (${section.count.toLocaleString()})`}
                       >
                         {/* Render carousel if ResourceCatalog type is included */}
-                        {section.type === 'ResourceCatalog' ? (
-                          <>Insert carousel here</>
+                        {section.type === 'ResourceCatalog' && data?.results ? (
+                          // <>Insert carousel here</>
+                          <CompactCardCarousel
+                            data={data.results}
+                            referrerPath={router.asPath}
+                          />
                         ) : (
                           <>
                             {/* Add Pagination */}
