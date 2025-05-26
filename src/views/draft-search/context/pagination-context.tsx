@@ -18,6 +18,11 @@ export type PaginationState = {
 interface PaginationContextValue {
   getPagination: (tabId: string) => PaginationState;
   setFrom: (tabId: string, from: number) => void;
+  setSize: (tabId: string, size: number) => void;
+  setPagination: (
+    tabId: string,
+    update: { from?: number; size?: number },
+  ) => void;
   resetPagination: (tabId?: string) => void;
 }
 
@@ -52,6 +57,7 @@ export const PaginationProvider = ({
     if (!router.isReady) return;
 
     const urlFrom = parseInt(router.query.from as string);
+    const urlSize = parseInt(router.query.size as string);
     const urlTab = router.query.tab as string;
 
     if (!isNaN(urlFrom) && urlTab) {
@@ -60,6 +66,7 @@ export const PaginationProvider = ({
         [urlTab]: {
           ...prev[urlTab],
           from: urlFrom,
+          size: urlSize || defaultQuery.size,
         },
       }));
     }
@@ -82,14 +89,31 @@ export const PaginationProvider = ({
     }));
   }, []);
 
+  const setSize = useCallback((tabId: string, size: number) => {
+    setPaginationByTab(prev => ({
+      ...prev,
+      [tabId]: { ...prev[tabId], size }, // Reset from when size changes
+    }));
+  }, []);
+
+  const setPagination = useCallback(
+    (tabId: string, update: { from?: number; size?: number }) => {
+      setPaginationByTab(prev => ({
+        ...prev,
+        [tabId]: { ...prev[tabId], ...update },
+      }));
+    },
+    [],
+  );
+
   const resetPagination = useCallback((tabId?: string) => {
     setPaginationByTab(prev => {
       const next = { ...prev };
       if (tabId) {
-        next[tabId] = { from: defaultQuery.from, size: defaultQuery.size };
+        next[tabId] = { ...next[tabId], from: defaultQuery.from };
       } else {
         Object.keys(next).forEach(id => {
-          next[id] = { from: defaultQuery.from, size: defaultQuery.size };
+          next[id] = { ...next[id], from: defaultQuery.from };
         });
       }
       return next;
@@ -98,7 +122,13 @@ export const PaginationProvider = ({
 
   return (
     <PaginationContext.Provider
-      value={{ getPagination, setFrom, resetPagination }}
+      value={{
+        getPagination,
+        setFrom,
+        setSize,
+        resetPagination,
+        setPagination,
+      }}
     >
       {children}
     </PaginationContext.Provider>

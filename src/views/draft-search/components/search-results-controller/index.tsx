@@ -25,16 +25,22 @@ export const SearchResultsController = ({
   const { selectedIndex, setSelectedIndex } = useSearchContext();
 
   // Handle pagination with tab changes.
-  const { getPagination, setFrom } = usePaginationContext();
+  const { getPagination, setPagination } = usePaginationContext();
 
   // Update URL query param when a new tab is selected.
   const handleTabChange = (index: number) => {
     setSelectedIndex(index);
     const selectedTab = tabs[index];
     const newFrom = getPagination(selectedTab.id).from;
-    setFrom(selectedTab.id, newFrom);
+    const newSize = getPagination(selectedTab.id).size;
+
+    setPagination(selectedTab.id, {
+      from: newFrom,
+      size: newSize,
+    });
+
     // Update the URL with the new tab and pagination state.
-    updateRoute(router, { tab: selectedTab.id, from: newFrom });
+    updateRoute(router, { tab: selectedTab.id, from: newFrom, size: newSize });
   };
 
   // Get the current search parameters from the URL and fetch facet data.
