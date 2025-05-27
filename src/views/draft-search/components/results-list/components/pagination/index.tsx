@@ -37,7 +37,7 @@ interface PaginationProps {
 }
 
 // Max pages returned from the API.
-export const MAX_PAGES = 10000;
+export const MAX_RESULTS = 10000;
 
 export const Pagination: React.FC<PaginationProps> = React.memo(
   ({
@@ -57,9 +57,9 @@ export const Pagination: React.FC<PaginationProps> = React.memo(
           return prev;
         }
         const total_pages = Math.ceil(total / selectedPerPage);
-        // max pages allotted by api
+        // max results allotted by api
         const max = Math.floor(
-          (MAX_PAGES - selectedPerPage) / selectedPerPage + 1,
+          (MAX_RESULTS - selectedPerPage) / selectedPerPage + 1,
         );
 
         // If the number of pages exceed the number of allotted pages by the api we return the max allotted by the api.

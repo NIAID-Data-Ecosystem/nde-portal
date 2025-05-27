@@ -1,28 +1,25 @@
 import React, { useMemo } from 'react';
 import { useRouter } from 'next/router';
 import { TabPanel } from '@chakra-ui/react';
-import { useSearchContext } from '../../context/search-context';
+import { useSearchTabsContext } from '../../context/search-tabs-context';
 import { useSearchQueryFromURL } from '../../hooks/useSearchQueryFromURL';
-import { TabType } from '../../types';
-import SearchResults from '../results';
+import { SearchResults } from '../results-list';
 import { updateRoute } from '../../utils/update-route';
-import { SearchTabs } from '../tabs';
 import { AccordionContent, AccordionWrapper } from '../layout/accordion';
 import { useSearchResultsData } from '../../hooks/useSearchResultsData';
 import { usePaginationContext } from '../../context/pagination-context';
+import { SearchTabs } from '../layout/tabs';
 
 interface SearchResultsControllerProps {
   colorScheme?: string;
-  tabs: TabType[];
 }
 
 export const SearchResultsController = ({
   colorScheme = 'secondary',
-  tabs,
 }: SearchResultsControllerProps) => {
   const router = useRouter();
   // Selected tab index is stored in context to sync with other components.
-  const { selectedIndex, setSelectedIndex } = useSearchContext();
+  const { selectedIndex, setSelectedIndex, tabs } = useSearchTabsContext();
 
   // Handle pagination with tab changes.
   const { getPagination, setPagination } = usePaginationContext();

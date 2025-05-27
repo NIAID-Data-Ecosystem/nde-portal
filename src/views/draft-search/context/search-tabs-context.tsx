@@ -31,6 +31,7 @@ export const tabs: TabType[] = [
 ];
 
 interface SearchContextValue {
+  tabs: TabType[];
   selectedTab: TabType;
   setSelectedTab: (tab: TabType['id']) => void;
   selectedIndex: number;
@@ -46,7 +47,7 @@ const SearchContext = createContext<SearchContextValue | undefined>(undefined);
  * Provides the selected tab, index, and filters.
  *
  */
-export const SearchProvider: React.FC<{
+export const SearchTabsProvider: React.FC<{
   children: React.ReactNode;
   initialTab?: TabType['id'];
 }> = ({ children, initialTab = tabs.find(t => t.isDefault)?.id }) => {
@@ -66,6 +67,7 @@ export const SearchProvider: React.FC<{
   return (
     <SearchContext.Provider
       value={{
+        tabs,
         selectedTab,
         setSelectedTab,
         selectedIndex,
@@ -79,7 +81,7 @@ export const SearchProvider: React.FC<{
   );
 };
 
-export const useSearchContext = () => {
+export const useSearchTabsContext = () => {
   const context = useContext(SearchContext);
   if (!context) {
     throw new Error('useSearchContext must be used within a SearchProvider');

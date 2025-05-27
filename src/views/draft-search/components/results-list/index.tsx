@@ -1,17 +1,18 @@
 import React, { useMemo } from 'react';
 import { useRouter } from 'next/router';
-import { ListItem, UnorderedList, VStack } from '@chakra-ui/react';
+import { Collapse, ListItem, UnorderedList, VStack } from '@chakra-ui/react';
 import Card from './components/card';
 import { ErrorMessage } from './components/error';
 import { useSearchQueryFromURL } from '../../hooks/useSearchQueryFromURL';
 import { useSearchResultsData } from '../../hooks/useSearchResultsData';
 import { EmptyState } from './components/empty';
-import { Pagination } from './components/pagination';
+import { MAX_RESULTS, Pagination } from './components/pagination';
 import { TabType } from '../../types';
-import { useSearchContext } from '../../context/search-context';
+import { useSearchTabsContext } from '../../context/search-tabs-context';
 import { usePaginationContext } from '../../context/pagination-context';
 import { updateRoute } from '../../utils/update-route';
 import { SearchResultsToolbar } from './components/toolbar';
+import Banner from 'src/components/banner';
 
 const RESULT_FIELDS = [
   '_meta',
@@ -53,7 +54,7 @@ const RESULT_FIELDS = [
  Contains pagination and search results cards.
 */
 
-const SearchResults = ({
+export const SearchResults = ({
   id,
   tabs,
   types,
@@ -65,7 +66,7 @@ const SearchResults = ({
   const router = useRouter();
 
   // Get the selected tab index from the search context.
-  const { selectedIndex } = useSearchContext();
+  const { selectedIndex } = useSearchTabsContext();
   const activeTabId = tabs[selectedIndex].id;
 
   // Retrieve pagination state for the current tab.
@@ -81,6 +82,7 @@ const SearchResults = ({
       ...urlQueryParams,
       from,
       size,
+      sort,
       filters: {
         ...urlQueryParams.filters,
         '@type': types,
@@ -104,6 +106,15 @@ const SearchResults = ({
       ),
     [isLoading, data?.results?.length, urlQueryParams.size],
   );
+
+  const [mounted, setMounted] = React.useState(false);
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted || !router.isReady) {
+    return null;
+  }
 
   if (error) {
     return (
@@ -139,6 +150,16 @@ const SearchResults = ({
           isLoading={isLoading}
           total={data?.total || 0}
         />
+
+        {/* Display banner on last page if results exceed amount allotted by API */}
+        <Collapse in={from === Math.floor(MAX_RESULTS / size)} animateOpacity>
+          <Banner status='info'>
+            Only the first {MAX_RESULTS.toLocaleString()} results are displayed,
+            please limit your query to get better results or use our API to
+            download all results.
+          </Banner>
+        </Collapse>
+
         {/* Search results cards */}
         {numCards > 0 && (
           <VStack
@@ -166,6 +187,7 @@ const SearchResults = ({
               })}
           </VStack>
         )}
+
         {/* Pagination controls */}
         <Pagination
           id='pagination-bottom'
@@ -185,5 +207,3 @@ const SearchResults = ({
     </>
   );
 };
-
-export default SearchResults;

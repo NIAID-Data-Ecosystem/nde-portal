@@ -37,7 +37,12 @@ export const SearchTabs = ({
       lazyBehavior='keepMounted'
     >
       {/* Render each tab with its label(s) and count(s) */}
-      <TabList bg='#fff' borderBottom='1px solid' borderColor='gray.200'>
+      <TabList
+        bg='#fff'
+        border='1px solid'
+        borderColor='gray.100'
+        borderBottomColor='gray.200'
+      >
         {tabs.map(tab => (
           <Tab
             key={tab.id}

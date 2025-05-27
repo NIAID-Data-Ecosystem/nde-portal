@@ -7,8 +7,8 @@ import {
   ReactNode,
 } from 'react';
 import { useRouter } from 'next/router';
-import { TabType } from '../types';
 import { defaultQuery } from '../config/defaultQuery';
+import { useSearchTabsContext } from './search-tabs-context';
 
 export type PaginationState = {
   from: number;
@@ -33,14 +33,9 @@ const PaginationContext = createContext<PaginationContextValue | undefined>(
 
 // Pagination is handled by the tab-aware pagination hook.
 // Route updates are handled separately.
-export const PaginationProvider = ({
-  tabs,
-  children,
-}: {
-  tabs: TabType[];
-  children: ReactNode;
-}) => {
+export const PaginationProvider = ({ children }: { children: ReactNode }) => {
   const router = useRouter();
+  const { tabs } = useSearchTabsContext();
 
   const [paginationByTab, setPaginationByTab] = useState<
     Record<string, PaginationState>

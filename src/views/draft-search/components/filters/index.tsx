@@ -115,7 +115,11 @@ export const Filters: React.FC<FiltersProps> = React.memo(
                   }
                   resetFilter={() => handleSelectedFilters([], property)}
                   selectedDates={selected || []}
-                  queryParams={queryParams}
+                  queryParams={{
+                    q: queryParams.q,
+                    extra_filter:
+                      queryFilterObject2String(queryParams.filters) || '',
+                  }}
                 />
               </FiltersSection>
             );

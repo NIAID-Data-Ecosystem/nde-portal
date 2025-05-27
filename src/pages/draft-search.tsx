@@ -4,9 +4,9 @@ import { PageContainer } from 'src/components/page-container';
 import { useCallback, useMemo } from 'react';
 import { FormattedResource } from 'src/utils/api/types';
 import {
-  SearchProvider,
+  SearchTabsProvider,
   tabs,
-} from 'src/views/draft-search/context/search-context';
+} from 'src/views/draft-search/context/search-tabs-context';
 import { useSearchQueryFromURL } from 'src/views/draft-search/hooks/useSearchQueryFromURL';
 import { Box, Flex, VStack } from '@chakra-ui/react';
 import { Filters } from 'src/views/draft-search/components/filters';
@@ -14,10 +14,10 @@ import { SelectedFilterType } from 'src/views/draft-search/components/filters/ty
 import { FILTER_CONFIGS } from 'src/views/draft-search/components/filters/config';
 import { queryFilterString2Object } from 'src/views/draft-search/components/filters/utils/query-builders';
 import { defaultQuery } from 'src/views/draft-search/config/defaultQuery';
-import { SearchResultsController } from 'src/views/draft-search/components/search-results-controller';
 import { FilterTags } from 'src/views/draft-search/components/filters/components/tag';
 import { SearchResultsHeader } from 'src/views/draft-search/components/search-results-header';
 import { PaginationProvider } from 'src/views/draft-search/context/pagination-context';
+import { SearchResultsController } from 'src/views/draft-search/components/search-results-tabs-controller';
 
 // Default filters list.
 const defaultFilters = FILTER_CONFIGS.reduce(
@@ -32,16 +32,6 @@ const Search: NextPage<{
   const router = useRouter();
 
   const queryParams = useSearchQueryFromURL();
-
-  // Set the initial tab based on the router query
-  const initialTab = useMemo(() => {
-    if (!router.isReady) return null;
-
-    const defaultTab = tabs.find(t => t.isDefault)?.id || tabs[0].id;
-    const tabParamId = router.query.tab as string;
-    const tab = tabs.find(t => t.id === tabParamId);
-    return tab?.id || defaultTab;
-  }, [router.isReady, router.query.tab]);
 
   const selectedFilters: SelectedFilterType = useMemo(() => {
     const queryFilters = router.query.filters;
@@ -79,6 +69,16 @@ const Search: NextPage<{
     });
   }, [handleRouteUpdate]);
 
+  // Set the initial tab based on the router query
+  const initialTab = useMemo(() => {
+    if (!router.isReady) return null;
+
+    const defaultTab = tabs.find(t => t.isDefault)?.id || tabs[0].id;
+    const tabParamId = router.query.tab as string;
+    const tab = tabs.find(t => t.id === tabParamId);
+    return tab?.id || defaultTab;
+  }, [router.isReady, router.query.tab]);
+
   if (!router.isReady || initialTab === null) {
     return null;
   }
@@ -91,8 +91,8 @@ const Search: NextPage<{
       py={0}
       includeSearchBar
     >
-      <SearchProvider initialTab={initialTab}>
-        <PaginationProvider tabs={tabs}>
+      <SearchTabsProvider initialTab={initialTab}>
+        <PaginationProvider>
           <Flex bg='page.alt'>
             <Flex
               id='search-page-filters-sidebar'
@@ -120,11 +120,13 @@ const Search: NextPage<{
                 p={4}
                 bg='#fff'
                 borderBottom='1px solid'
-                borderBottomColor='gray.100'
+                borderRight='1px solid'
+                borderColor='gray.100'
                 spacing={2}
               >
                 {/* Heading: Showing results for... */}
                 <SearchResultsHeader querystring={queryParams.q} />
+
                 {/* Filter tags : Tags with the names of the currently selected filters */}
                 {Object.values(selectedFilters).length > 0 && (
                   <FilterTags
@@ -135,13 +137,13 @@ const Search: NextPage<{
                   />
                 )}
               </VStack>
-              {/* Search Results */}
 
-              <SearchResultsController tabs={tabs} />
+              {/* Search Results */}
+              <SearchResultsController />
             </Box>
           </Flex>
         </PaginationProvider>
-      </SearchProvider>
+      </SearchTabsProvider>
     </PageContainer>
   );
 };
