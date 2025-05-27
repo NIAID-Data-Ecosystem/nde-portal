@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { useRouter } from 'next/router';
-import { Flex, ListItem, UnorderedList, VStack } from '@chakra-ui/react';
+import { ListItem, UnorderedList, VStack } from '@chakra-ui/react';
 import Card from './components/card';
 import { ErrorMessage } from './components/error';
 import { useSearchQueryFromURL } from '../../hooks/useSearchQueryFromURL';
@@ -11,9 +11,7 @@ import { TabType } from '../../types';
 import { useSearchContext } from '../../context/search-context';
 import { usePaginationContext } from '../../context/pagination-context';
 import { updateRoute } from '../../utils/update-route';
-import { SortDropdown } from './components/sort';
-import { DownloadMetadata } from 'src/components/download-metadata';
-import { defaultQuery } from '../../config/defaultQuery';
+import { SearchResultsToolbar } from './components/toolbar';
 
 const RESULT_FIELDS = [
   '_meta',
@@ -122,41 +120,11 @@ const SearchResults = ({
 
   return (
     <>
-      {/* Add Pagination */}
       <VStack borderRadius='semi' bg='white' px={4} py={2}>
-        <Flex
-          borderBottom={{ base: '1px solid' }}
-          borderColor={{ base: 'page.alt' }}
-          flexDirection={{ base: 'column-reverse', md: 'row' }}
-          alignItems={{ base: 'unset', md: 'center' }}
-          pb={2}
-          w='100%'
-        >
-          <SortDropdown
-            sortOrder={sort}
-            handleSortOrder={newSort => {
-              const update = { sort: newSort, from: 1 };
-              setPagination(id, update);
-              updateRoute(router, update);
-            }}
-            selectedPerPage={size}
-            handleSelectedPerPage={newSize => {
-              const update = { size: newSize, from: 1 };
-              // Update pagination state for the current tab.
-              setPagination(id, update);
-              updateRoute(router, update);
-            }}
-          />
-          <DownloadMetadata
-            flex={1}
-            pb={{ base: 2, md: 0 }}
-            exportFileName={`nde-results-${params.q.replaceAll(' ', '_')}`}
-            params={params}
-            buttonProps={{ variant: 'outline' }}
-          >
-            Download Metadata
-          </DownloadMetadata>
-        </Flex>
+        {/* Toolbar controls: Sort, size, download metadata, and use metadata score (optional) */}
+        <SearchResultsToolbar id={id} params={params} />
+
+        {/* Pagination controls */}
         <Pagination
           id='pagination-top'
           ariaLabel='Paginate through resources.'
@@ -171,34 +139,49 @@ const SearchResults = ({
           isLoading={isLoading}
           total={data?.total || 0}
         />
+        {/* Search results cards */}
+        {numCards > 0 && (
+          <VStack
+            as={UnorderedList}
+            className='search-results-cards'
+            alignItems='flex-start'
+            flex={3}
+            ml={0}
+            spacing={4}
+            w='100%'
+          >
+            {Array(numCards)
+              .fill(null)
+              .map((_, idx) => {
+                return (
+                  <ListItem key={data?.results?.[idx]._id || idx} w='100%'>
+                    <Card
+                      isLoading={!router.isReady || isLoading}
+                      data={data?.results[idx]}
+                      referrerPath={router.asPath}
+                      querystring={urlQueryParams.q}
+                    />
+                  </ListItem>
+                );
+              })}
+          </VStack>
+        )}
+        {/* Pagination controls */}
+        <Pagination
+          id='pagination-bottom'
+          ariaLabel='Paginate through resources.'
+          selectedPage={from}
+          selectedPerPage={size}
+          handleSelectedPage={newFrom => {
+            const update = { from: newFrom };
+            setPagination(id, update);
+            updateRoute(router, update);
+            return;
+          }}
+          isLoading={isLoading}
+          total={data?.total || 0}
+        />
       </VStack>
-      {/* Search results cards */}
-      {numCards > 0 && (
-        <VStack
-          as={UnorderedList}
-          className='search-results-cards'
-          alignItems='flex-start'
-          flex={3}
-          ml={0}
-          spacing={4}
-          w='100%'
-        >
-          {Array(numCards)
-            .fill(null)
-            .map((_, idx) => {
-              return (
-                <ListItem key={data?.results?.[idx]._id || idx} w='100%'>
-                  <Card
-                    isLoading={!router.isReady || isLoading}
-                    data={data?.results[idx]}
-                    referrerPath={router.asPath}
-                    querystring={urlQueryParams.q}
-                  />
-                </ListItem>
-              );
-            })}
-        </VStack>
-      )}
     </>
   );
 };

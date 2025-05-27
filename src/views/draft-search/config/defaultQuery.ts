@@ -1,9 +1,49 @@
-import { SORT_OPTIONS } from 'src/views/search-results-page/helpers';
 import { SearchQueryParams } from '../types';
 
-const FACET_SIZE = 1000; // Default size for facets
-const SIZE = 10;
-const PAGE = 1;
+// Sorting configuration.
+export const SORT_OPTIONS = [
+  {
+    name: 'Best match',
+    value: '_score',
+    sortBy: '_score',
+    orderBy: 'asc',
+    tooltip: 'Sort by relevancy (field name is boosted).',
+  },
+  {
+    name: 'Date: Least recent',
+    value: 'date',
+    sortBy: 'date',
+    orderBy: 'asc',
+    tooltip: 'Sort by least recent activity (created, published or modified).',
+  },
+  {
+    name: 'Date: Most recent',
+    value: '-date',
+    sortBy: 'date',
+    orderBy: 'desc',
+    tooltip: 'Sort by most recent activity (created, published or modified).',
+  },
+  {
+    name: 'A-Z',
+    value: 'name.raw',
+    sortBy: 'name.raw',
+    orderBy: 'asc',
+    tooltip: 'Sort in alphabetical order (title).',
+  },
+  {
+    name: 'Z-A',
+    value: '-name.raw',
+    sortBy: 'name.raw',
+    orderBy: 'desc',
+    tooltip: 'Sort in reverse alphabetical order (title).',
+  },
+];
+
+export const PAGE_SIZE_OPTIONS = [
+  { name: '10', value: 10 },
+  { name: '50', value: 50 },
+  { name: '100', value: 100 },
+];
 
 // Default parameters for the search query.
 export type DefaultSearchQueryParams = Omit<
@@ -14,7 +54,7 @@ export type DefaultSearchQueryParams = Omit<
 
 export const defaultQuery: DefaultSearchQueryParams = {
   q: '__all__',
-  from: PAGE,
-  size: SIZE,
-  sort: SORT_OPTIONS[0].sortBy,
+  from: 1,
+  size: PAGE_SIZE_OPTIONS[0].value,
+  sort: SORT_OPTIONS[0].value,
 };
