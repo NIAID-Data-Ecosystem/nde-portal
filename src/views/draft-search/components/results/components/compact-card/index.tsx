@@ -1,11 +1,20 @@
 import React from 'react';
-import { Card, CardHeader } from '@chakra-ui/react';
+import {
+  Card,
+  CardHeader,
+  CardBody,
+  Flex,
+  Tooltip,
+  Text,
+} from '@chakra-ui/react';
 import NextLink from 'next/link';
 import { FormattedResource } from 'src/utils/api/types';
 import { TypeBanner } from 'src/components/resource-sections/components';
 import { DisplayHTMLContent } from 'src/components/html-content';
 import { isSourceFundedByNiaid } from 'src/utils/helpers/sources';
 import { Skeleton } from 'src/components/skeleton';
+import { ConditionsOfAccess } from 'src/components/badges';
+import { HasAPI } from 'src/components/badges/components/HasAPI';
 
 interface CompactCardProps {
   data?: FormattedResource | null;
@@ -19,6 +28,9 @@ export const CompactCard = ({ data, referrerPath }: CompactCardProps) => {
     alternateName,
     name,
     includedInDataCatalog,
+    date,
+    conditionsOfAccess,
+    hasAPI,
   } = data || {};
 
   return (
@@ -40,6 +52,7 @@ export const CompactCard = ({ data, referrerPath }: CompactCardProps) => {
         position='relative'
         px={2}
         pt={1}
+        pb={1}
         color='link.color'
         _hover={{
           p: { textDecoration: 'none' },
@@ -55,7 +68,7 @@ export const CompactCard = ({ data, referrerPath }: CompactCardProps) => {
         }}
         w='100%'
       >
-        <Skeleton isLoaded={true} minHeight='81px' flex={1}>
+        <Skeleton isLoaded={true} minHeight='27px' flex={1}>
           <NextLink
             href={{
               pathname: '/resources/',
@@ -90,6 +103,50 @@ export const CompactCard = ({ data, referrerPath }: CompactCardProps) => {
           </NextLink>
         </Skeleton>
       </CardHeader>
+      <CardBody p={0}>
+        {date && (
+          <Flex
+            px={2}
+            m={0}
+            flex={1}
+            bg='white'
+            fontWeight='semibold'
+            whiteSpace='nowrap'
+            alignItems='center'
+            justify='space-between'
+            maxHeight='30px'
+          >
+            <Tooltip
+              label='Corresponds to the most recent of date modified, date published and date created.'
+              hasArrow
+              bg='#fff'
+              sx={{
+                color: 'text.body',
+              }}
+            >
+              <Text fontSize='xs'>{date}</Text>
+            </Tooltip>
+            {(conditionsOfAccess ||
+              typeof hasAPI !== undefined ||
+              typeof hasAPI != null) && (
+              <Flex
+                justifyContent={['flex-start']}
+                alignItems='center'
+                w={['100%', 'unset']}
+                flex={[1]}
+                p={[0.5, 0.5]}
+              >
+                <ConditionsOfAccess
+                  type={data?.['@type']}
+                  conditionsOfAccess={conditionsOfAccess}
+                  mx={0.5}
+                />
+                <HasAPI type={data?.['@type']} hasAPI={data?.hasAPI} mx={0.5} />
+              </Flex>
+            )}
+          </Flex>
+        )}
+      </CardBody>
     </Card>
   );
 };
