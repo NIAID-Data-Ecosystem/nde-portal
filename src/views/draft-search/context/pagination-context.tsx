@@ -13,6 +13,7 @@ import { defaultQuery } from '../config/defaultQuery';
 export type PaginationState = {
   from: number;
   size: number;
+  sort: string;
 };
 
 interface PaginationContextValue {
@@ -47,7 +48,11 @@ export const PaginationProvider = ({
     Object.fromEntries(
       tabs.map(tab => [
         tab.id,
-        { from: defaultQuery.from, size: defaultQuery.size },
+        {
+          from: defaultQuery.from,
+          size: defaultQuery.size,
+          sort: defaultQuery.sort,
+        },
       ]),
     ),
   );
@@ -58,6 +63,7 @@ export const PaginationProvider = ({
 
     const urlFrom = parseInt(router.query.from as string);
     const urlSize = parseInt(router.query.size as string);
+    const urlSort = router.query.sort as string;
     const urlTab = router.query.tab as string;
 
     if (!isNaN(urlFrom) && urlTab) {
@@ -67,6 +73,7 @@ export const PaginationProvider = ({
           ...prev[urlTab],
           from: urlFrom,
           size: urlSize || defaultQuery.size,
+          sort: urlSort || defaultQuery.sort,
         },
       }));
     }
@@ -78,6 +85,7 @@ export const PaginationProvider = ({
       paginationByTab[tabId] || {
         from: defaultQuery.from,
         size: defaultQuery.size,
+        sort: defaultQuery.sort,
       },
     [paginationByTab],
   );

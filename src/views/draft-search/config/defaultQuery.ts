@@ -8,9 +8,9 @@ const PAGE = 1;
 // Default parameters for the search query.
 export type DefaultSearchQueryParams = Omit<
   SearchQueryParams,
-  'from' | 'size'
+  'from' | 'size' | 'sort'
 > &
-  Required<Pick<SearchQueryParams, 'from' | 'size'>>;
+  Required<Pick<SearchQueryParams, 'from' | 'size' | 'sort'>>;
 
 export const defaultQuery: DefaultSearchQueryParams = {
   q: '__all__',

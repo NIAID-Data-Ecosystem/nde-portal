@@ -31,16 +31,13 @@ export const SearchResultsController = ({
   const handleTabChange = (index: number) => {
     setSelectedIndex(index);
     const selectedTab = tabs[index];
-    const newFrom = getPagination(selectedTab.id).from;
-    const newSize = getPagination(selectedTab.id).size;
+    const paginationState = getPagination(selectedTab.id);
 
-    setPagination(selectedTab.id, {
-      from: newFrom,
-      size: newSize,
-    });
+    // Ensure pagination state is set for the selected tab.
+    setPagination(selectedTab.id, paginationState);
 
     // Update the URL with the new tab and pagination state.
-    updateRoute(router, { tab: selectedTab.id, from: newFrom, size: newSize });
+    updateRoute(router, { ...paginationState, tab: selectedTab.id });
   };
 
   // Get the current search parameters from the URL and fetch facet data.

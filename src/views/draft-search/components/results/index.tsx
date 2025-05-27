@@ -73,7 +73,7 @@ const SearchResults = ({
   // Retrieve pagination state for the current tab.
   // This allows each tab to fetch the correct page of results independently.
   const { getPagination, setPagination } = usePaginationContext();
-  const { from, size } = getPagination(id);
+  const { from, size, sort } = getPagination(id);
 
   // Selected tab index is stored in context to sync with other components.
   const urlQueryParams = useSearchQueryFromURL();
@@ -107,8 +107,6 @@ const SearchResults = ({
     [isLoading, data?.results?.length, urlQueryParams.size],
   );
 
-  const sort = '_score';
-
   if (error) {
     return (
       <ErrorMessage
@@ -125,21 +123,21 @@ const SearchResults = ({
   return (
     <>
       {/* Add Pagination */}
-      <VStack borderRadius='semi' boxShadow='base' bg='white' px={4} py={2}>
+      <VStack borderRadius='semi' bg='white' px={4} py={2}>
         <Flex
           borderBottom={{ base: '1px solid' }}
           borderColor={{ base: 'page.alt' }}
           flexDirection={{ base: 'column-reverse', md: 'row' }}
           alignItems={{ base: 'unset', md: 'center' }}
           pb={2}
+          w='100%'
         >
           <SortDropdown
             sortOrder={sort}
-            handleSortOrder={sort => {
-              updateRoute(router, {
-                sort,
-                from: defaultQuery.from,
-              });
+            handleSortOrder={newSort => {
+              const update = { sort: newSort, from: 1 };
+              setPagination(id, update);
+              updateRoute(router, update);
             }}
             selectedPerPage={size}
             handleSelectedPerPage={newSize => {
