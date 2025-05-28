@@ -152,7 +152,12 @@ export const Navigation: React.FC<FlexProps> = props => {
       </Flex>
 
       {/* Popout navigation in mobile mode */}
-      {isOpen && <MobileSubMenu isOpen={isOpen} />}
+      {isOpen && (
+        <MobileSubMenu
+          isOpen={isOpen}
+          navigation={navigationFilteredByEnvironment}
+        />
+      )}
     </Box>
   );
 };
