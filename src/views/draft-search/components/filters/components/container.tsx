@@ -23,7 +23,7 @@ export interface FiltersContainerProps {
   title?: string;
   isDisabled?: boolean;
   selectedFilters: SelectedFilterType;
-  removeAllFilters?: () => void;
+  removeAllFilters: () => void;
   error: Error | null;
   filtersList: FilterConfig[];
   children: React.ReactNode;

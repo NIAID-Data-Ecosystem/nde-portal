@@ -89,13 +89,6 @@ describe('FiltersContainer', () => {
     expect(screen.getByText('Filter children')).toBeInTheDocument();
   });
 
-  it('renders correctly without removeAllFilters', () => {
-    renderComponent({ removeAllFilters: undefined });
-    expect(screen.getByText('Test Filters')).toBeInTheDocument();
-    expect(screen.queryByText('Clear All')).toBeDisabled();
-    expect(screen.getByText('Filter children')).toBeInTheDocument();
-  });
-
   it('does not render the drawer on desktop', () => {
     renderComponent();
     expect(
