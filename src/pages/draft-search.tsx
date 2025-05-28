@@ -4,20 +4,20 @@ import { PageContainer } from 'src/components/page-container';
 import { useCallback, useMemo } from 'react';
 import { FormattedResource } from 'src/utils/api/types';
 import {
-  SearchProvider,
+  SearchTabsProvider,
   tabs,
-} from 'src/views/draft-search/context/search-context';
-import { useSearchQueryParams } from 'src/views/draft-search/hooks/useSearchQueryParams';
-import { useSearchResultsData } from 'src/views/draft-search/hooks/useSearchResultsData';
+} from 'src/views/draft-search/context/search-tabs-context';
+import { useSearchQueryFromURL } from 'src/views/draft-search/hooks/useSearchQueryFromURL';
 import { Box, Flex, VStack } from '@chakra-ui/react';
 import { Filters } from 'src/views/draft-search/components/filters';
 import { SelectedFilterType } from 'src/views/draft-search/components/filters/types';
 import { FILTER_CONFIGS } from 'src/views/draft-search/components/filters/config';
 import { queryFilterString2Object } from 'src/views/draft-search/components/filters/utils/query-builders';
 import { defaultQuery } from 'src/views/draft-search/config/defaultQuery';
-import { SearchResultsController } from 'src/views/draft-search/components/search-results-controller';
 import { FilterTags } from 'src/views/draft-search/components/filters/components/tag';
 import { SearchResultsHeader } from 'src/views/draft-search/components/search-results-header';
+import { PaginationProvider } from 'src/views/draft-search/context/pagination-context';
+import { SearchResultsController } from 'src/views/draft-search/components/search-results-tabs-controller';
 
 // Default filters list.
 const defaultFilters = FILTER_CONFIGS.reduce(
@@ -31,23 +31,7 @@ const Search: NextPage<{
 }> = ({ results, total }) => {
   const router = useRouter();
 
-  const queryParams = useSearchQueryParams();
-
-  const { params } = useSearchResultsData({
-    ...queryParams,
-    size: 0,
-    facets: ['@type'],
-  });
-
-  // Set the initial tab based on the router query
-  const initialTab = useMemo(() => {
-    if (!router.isReady) return null;
-
-    const defaultTab = tabs.find(t => t.isDefault)?.id || tabs[0].id;
-    const tabParamId = router.query.tab as string;
-    const tab = tabs.find(t => t.id === tabParamId);
-    return tab?.id || defaultTab;
-  }, [router.isReady, router.query.tab]);
+  const queryParams = useSearchQueryFromURL();
 
   const selectedFilters: SelectedFilterType = useMemo(() => {
     const queryFilters = router.query.filters;
@@ -85,6 +69,16 @@ const Search: NextPage<{
     });
   }, [handleRouteUpdate]);
 
+  // Set the initial tab based on the router query
+  const initialTab = useMemo(() => {
+    if (!router.isReady) return null;
+
+    const defaultTab = tabs.find(t => t.isDefault)?.id || tabs[0].id;
+    const tabParamId = router.query.tab as string;
+    const tab = tabs.find(t => t.id === tabParamId);
+    return tab?.id || defaultTab;
+  }, [router.isReady, router.query.tab]);
+
   if (!router.isReady || initialTab === null) {
     return null;
   }
@@ -97,65 +91,59 @@ const Search: NextPage<{
       py={0}
       includeSearchBar
     >
-      <SearchProvider initialTab={initialTab}>
-        <Flex bg='page.alt'>
-          <Flex
-            id='search-page-filters-sidebar'
-            borderRight='0.5px solid'
-            borderRightColor='gray.200'
-            bg='#fff'
-            flex={{ base: 0, lg: 1 }}
-            height='100vh'
-            minW={{ base: 'unset', lg: '380px' }}
-            maxW={{ base: 'unset', lg: '450px' }}
-            position={{ base: 'unset', lg: 'sticky' }}
-            top='0px'
-          >
-            {/* Filters sidebar */}
-            {router.isReady && (
+      <SearchTabsProvider initialTab={initialTab}>
+        <PaginationProvider>
+          <Flex bg='page.alt'>
+            <Flex
+              id='search-page-filters-sidebar'
+              borderRight='0.5px solid'
+              borderRightColor='gray.200'
+              bg='#fff'
+              flex={{ base: 0, lg: 1 }}
+              height='100vh'
+              minW={{ base: 'unset', lg: '380px' }}
+              maxW={{ base: 'unset', lg: '450px' }}
+              position={{ base: 'unset', lg: 'sticky' }}
+              top='0px'
+            >
+              {/* Filters sidebar */}
               <Filters
                 colorScheme='secondary'
-                queryParams={{
-                  ...params,
-                  ...router.query,
-                  filters: undefined,
-                  extra_filter: Array.isArray(router.query.filters)
-                    ? router.query.filters.join('')
-                    : router.query.filters || '',
-                }}
                 selectedFilters={selectedFilters}
-                removeAllFilters={
-                  appliedFilters.length > 0 ? removeAllFilters : undefined
-                }
+                isDisabled={appliedFilters.length === 0}
+                removeAllFilters={removeAllFilters}
               />
-            )}
+            </Flex>
+            <Box flex={3}>
+              <VStack
+                alignItems='flex-start'
+                p={4}
+                bg='#fff'
+                borderBottom='1px solid'
+                borderRight='1px solid'
+                borderColor='gray.100'
+                spacing={2}
+              >
+                {/* Heading: Showing results for... */}
+                <SearchResultsHeader querystring={queryParams.q} />
+
+                {/* Filter tags : Tags with the names of the currently selected filters */}
+                {Object.values(selectedFilters).length > 0 && (
+                  <FilterTags
+                    filtersConfig={FILTER_CONFIGS}
+                    selectedFilters={selectedFilters}
+                    handleRouteUpdate={handleRouteUpdate}
+                    removeAllFilters={removeAllFilters}
+                  />
+                )}
+              </VStack>
+
+              {/* Search Results */}
+              <SearchResultsController />
+            </Box>
           </Flex>
-          <Box flex={3}>
-            <VStack
-              alignItems='flex-start'
-              p={4}
-              bg='#fff'
-              borderBottom='1px solid'
-              borderBottomColor='gray.100'
-              spacing={2}
-            >
-              {/* Heading: Showing results for... */}
-              <SearchResultsHeader querystring={queryParams.q} />
-              {/* Filter tags : Tags with the names of the currently selected filters */}
-              {Object.values(selectedFilters).length > 0 && (
-                <FilterTags
-                  filtersConfig={FILTER_CONFIGS}
-                  selectedFilters={selectedFilters}
-                  handleRouteUpdate={handleRouteUpdate}
-                  removeAllFilters={removeAllFilters}
-                />
-              )}
-            </VStack>
-            {/* Search Results */}
-            <SearchResultsController tabs={tabs} />
-          </Box>
-        </Flex>
-      </SearchProvider>
+        </PaginationProvider>
+      </SearchTabsProvider>
     </PageContainer>
   );
 };
