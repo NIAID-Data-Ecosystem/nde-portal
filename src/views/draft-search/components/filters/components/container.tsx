@@ -14,6 +14,7 @@ import {
   useDisclosure,
   useBreakpointValue,
   Icon,
+  Box,
 } from '@chakra-ui/react';
 import { FaFilter } from 'react-icons/fa6';
 import { FilterConfig, SelectedFilterType } from '../types';
@@ -220,8 +221,6 @@ export const FiltersContainer: React.FC<FiltersContainerProps> = ({
       </Drawer>
     </>
   ) : (
-    <ScrollContainer w='100%' h='100%' pr={0} overflowY='auto'>
-      {content}
-    </ScrollContainer>
+    <Box>{content}</Box>
   );
 };

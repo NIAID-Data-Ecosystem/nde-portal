@@ -82,7 +82,7 @@ export const sectionMetadata: { [key: string]: (keyof FormattedResource)[] } = {
   applicationCategory: ['applicationCategory'],
   programmingLanguage: ['programmingLanguage'],
   description: ['description'],
-  provenance: ['includedInDataCatalog', 'url', 'sdPublisher', 'curatedBy'],
+  provenance: ['includedInDataCatalog', 'url', 'sdPublisher'],
   downloads: ['distribution', 'downloadUrl'],
   funding: ['funding'],
   isBasedOn: ['isBasedOn'],

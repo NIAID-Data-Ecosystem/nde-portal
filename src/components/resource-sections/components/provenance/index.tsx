@@ -25,8 +25,6 @@ interface Provenance {
   includedInDataCatalog?: FormattedResource['includedInDataCatalog'];
   sdPublisher?: FormattedResource['sdPublisher'];
   sourceOrganization?: FormattedResource['sourceOrganization'];
-  curatedBy?: FormattedResource['curatedBy'];
-  type?: FormattedResource['@type'];
 }
 
 const Provenance: React.FC<Provenance> = ({
@@ -34,8 +32,6 @@ const Provenance: React.FC<Provenance> = ({
   isLoading,
   sourceOrganization,
   sdPublisher,
-  curatedBy,
-  type,
 }) => {
   const provenanceCatalogs =
     !isLoading && includedInDataCatalog
@@ -169,33 +165,8 @@ const Provenance: React.FC<Provenance> = ({
           );
         })}
 
-        {(curatedBy || sdPublisher) && (
+        {sdPublisher && (
           <Block>
-            {curatedBy && curatedBy.name && (
-              <>
-                <Text fontSize='xs' fontWeight='semibold' lineHeight='tall'>
-                  Curated By
-                </Text>
-                <Divider />
-                <dl>
-                  <Field label='Name'>
-                    {curatedBy?.url ? (
-                      <Link isExternal href={curatedBy?.url}>
-                        {curatedBy?.name}
-                      </Link>
-                    ) : (
-                      curatedBy?.name
-                    )}
-                  </Field>
-                  <Field label='Version Date'>
-                    {curatedBy.versionDate
-                      ? formatDate(curatedBy.versionDate)
-                      : undefined}
-                  </Field>
-                </dl>
-              </>
-            )}
-
             {/* Original Publisher */}
             {sdPublisher && (
               <Box>

@@ -9,13 +9,16 @@ import { AccordionContent, AccordionWrapper } from '../layout/accordion';
 import { useSearchResultsData } from '../../hooks/useSearchResultsData';
 import { usePaginationContext } from '../../context/pagination-context';
 import { SearchTabs } from '../layout/tabs';
+import { FetchSearchResultsResponse } from 'src/utils/api/types';
 
 interface SearchResultsControllerProps {
   colorScheme?: string;
+  initialData: FetchSearchResultsResponse;
 }
 
 export const SearchResultsController = ({
   colorScheme = 'secondary',
+  initialData,
 }: SearchResultsControllerProps) => {
   const router = useRouter();
   // Selected tab index is stored in context to sync with other components.
@@ -40,13 +43,19 @@ export const SearchResultsController = ({
   // Get the current search parameters from the URL and fetch facet data.
   const queryParams = useSearchQueryFromURL();
 
-  const searchResultsData = useSearchResultsData({
-    q: queryParams.q,
-    filters: queryParams.filters,
-    facets: ['@type'],
-  });
-  const { data } = searchResultsData.response;
+  const searchResultsData = useSearchResultsData(
+    {
+      q: queryParams.q,
+      filters: queryParams.filters,
+      facets: ['@type'],
+      facet_size: 100,
+    },
+    {
+      initialData,
+    },
+  );
 
+  const { data } = searchResultsData.response;
   // Enhance each tab with facet counts for the types it represents.
   const tabsWithCounts = useMemo(
     () =>
@@ -107,6 +116,7 @@ export const SearchResultsController = ({
                               id={tab.id}
                               tabs={tabs}
                               types={[section.type]}
+                              initialData={initialData}
                             />
                           </>
                         )}

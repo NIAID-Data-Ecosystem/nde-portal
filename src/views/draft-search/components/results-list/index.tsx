@@ -13,6 +13,7 @@ import { usePaginationContext } from '../../context/pagination-context';
 import { updateRoute } from '../../utils/update-route';
 import { SearchResultsToolbar } from './components/toolbar';
 import Banner from 'src/components/banner';
+import { FetchSearchResultsResponse } from 'src/utils/api/types';
 
 const RESULT_FIELDS = [
   '_meta',
@@ -58,10 +59,12 @@ export const SearchResults = ({
   id,
   tabs,
   types,
+  initialData,
 }: {
   id: TabType['id'];
   tabs: TabType[];
   types: string[];
+  initialData: FetchSearchResultsResponse;
 }) => {
   const router = useRouter();
 
@@ -93,10 +96,11 @@ export const SearchResults = ({
       // Only fetch data when the router is ready and the active tab is selected.
       // This prevents unnecessary data fetching when switching tabs.
       enabled: router.isReady && id === activeTabId,
+      initialData,
     },
   );
 
-  const { data, isLoading, error } = response;
+  const { data, isLoading, isRefetching, error } = response;
 
   const numCards = useMemo(
     () =>
@@ -147,7 +151,7 @@ export const SearchResults = ({
             updateRoute(router, update);
             return;
           }}
-          isLoading={isLoading}
+          isLoading={isLoading || isRefetching}
           total={data?.total || 0}
         />
 
@@ -177,7 +181,7 @@ export const SearchResults = ({
                 return (
                   <ListItem key={data?.results?.[idx]._id || idx} w='100%'>
                     <Card
-                      isLoading={!router.isReady || isLoading}
+                      isLoading={!router.isReady || isLoading || isRefetching}
                       data={data?.results[idx]}
                       referrerPath={router.asPath}
                       querystring={urlQueryParams.q}
@@ -200,7 +204,7 @@ export const SearchResults = ({
             updateRoute(router, update);
             return;
           }}
-          isLoading={isLoading}
+          isLoading={isLoading || isRefetching}
           total={data?.total || 0}
         />
       </VStack>
