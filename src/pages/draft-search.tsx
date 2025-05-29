@@ -1,8 +1,8 @@
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import { PageContainer } from 'src/components/page-container';
-import { useCallback, useMemo } from 'react';
-import { FormattedResource } from 'src/utils/api/types';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { FetchSearchResultsResponse } from 'src/utils/api/types';
 import {
   SearchTabsProvider,
   tabs,
@@ -18,6 +18,8 @@ import { FilterTags } from 'src/views/draft-search/components/filters/components
 import { SearchResultsHeader } from 'src/views/draft-search/components/search-results-header';
 import { PaginationProvider } from 'src/views/draft-search/context/pagination-context';
 import { SearchResultsController } from 'src/views/draft-search/components/search-results-tabs-controller';
+import { fetchSearchResults } from 'src/utils/api';
+import { TabType } from 'src/views/draft-search/types';
 
 // Default filters list.
 const defaultFilters = FILTER_CONFIGS.reduce(
@@ -26,9 +28,8 @@ const defaultFilters = FILTER_CONFIGS.reduce(
 );
 //  This page renders the search results from the search bar.
 const Search: NextPage<{
-  results: FormattedResource[];
-  total: number;
-}> = ({ results, total }) => {
+  initialData: FetchSearchResultsResponse;
+}> = ({ initialData }) => {
   const router = useRouter();
 
   const queryParams = useSearchQueryFromURL();
@@ -70,19 +71,21 @@ const Search: NextPage<{
   }, [handleRouteUpdate]);
 
   // Set the initial tab based on the router query
-  const initialTab = useMemo(() => {
-    if (!router.isReady) return null;
+  const [initialTab, setInitialTab] = useState<TabType['id'] | null>(null);
+
+  useEffect(() => {
+    if (!router.isReady) return;
 
     const defaultTab = tabs.find(t => t.isDefault)?.id || tabs[0].id;
     const tabParamId = router.query.tab as string;
     const tab = tabs.find(t => t.id === tabParamId);
-    return tab?.id || defaultTab;
-  }, [router.isReady, router.query.tab]);
+    setInitialTab(tab?.id || defaultTab);
+  }, [router]);
 
-  if (!router.isReady || initialTab === null) {
+  // If the initial tab is not set, return a loading state.
+  if (!initialTab) {
     return null;
   }
-
   return (
     <PageContainer
       title='Search'
@@ -136,7 +139,7 @@ const Search: NextPage<{
               </VStack>
 
               {/* Search Results */}
-              <SearchResultsController />
+              <SearchResultsController initialData={initialData} />
             </Box>
           </Flex>
         </PaginationProvider>
@@ -144,5 +147,72 @@ const Search: NextPage<{
     </PageContainer>
   );
 };
+
+export async function getStaticProps() {
+  // If the app is in production, redirect to a 404 page until search is fully implemented and approved.
+  if (process.env.NEXT_PUBLIC_APP_ENV === 'production') {
+    return {
+      redirect: {
+        destination: '/404',
+        permanent: false,
+      },
+    };
+  }
+  try {
+    const defaultParams = {
+      q: defaultQuery.q,
+      extra_filter: '',
+      size: `${defaultQuery.size}`,
+      from: `${defaultQuery.from}`,
+      sort: defaultQuery.sort,
+    };
+    const data = await fetchSearchResults({
+      ...defaultParams,
+      facets: '@type',
+      facet_size: 100,
+      sort: '',
+      show_meta: true,
+      fields: [
+        '_meta',
+        '@type',
+        'alternateName',
+        'author',
+        'conditionsOfAccess',
+        'date',
+        'description',
+        'doi',
+        'funding',
+        'healthCondition',
+        'includedInDataCatalog',
+        'infectiousAgent',
+        'isAccessibleForFree',
+        'license',
+        'measurementTechnique',
+        'name',
+        'sdPublisher',
+        'species',
+        'url',
+        'usageInfo',
+        'variableMeasured',
+      ],
+    });
+    return {
+      props: {
+        initialData: {
+          results: data?.results || [],
+          total: data?.total || 0,
+          facets: data?.facets || {},
+        },
+      },
+    };
+  } catch (err) {
+    return {
+      props: {
+        data: null,
+        error: { message: 'Error retrieving data' },
+      },
+    };
+  }
+}
 
 export default Search;
