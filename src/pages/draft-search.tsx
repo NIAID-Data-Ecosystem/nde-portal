@@ -96,15 +96,12 @@ const Search: NextPage<{
           <Flex bg='page.alt'>
             <Flex
               id='search-page-filters-sidebar'
+              bg='#fff'
               borderRight='0.5px solid'
               borderRightColor='gray.200'
-              bg='#fff'
               flex={{ base: 0, lg: 1 }}
-              height='100vh'
               minW={{ base: 'unset', lg: '380px' }}
               maxW={{ base: 'unset', lg: '450px' }}
-              position={{ base: 'unset', lg: 'sticky' }}
-              top='0px'
             >
               {/* Filters sidebar */}
               <Filters
