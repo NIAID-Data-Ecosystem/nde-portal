@@ -192,7 +192,7 @@ export interface IncludedInDataCatalog {
   name: string;
   url?: string | null; //source repo url
   versionDate?: string | null;
-  dataset: string | null;
+  archivedAt: string | null;
 }
 
 export interface InfectiousAgent extends PropertyWithPubtator {
