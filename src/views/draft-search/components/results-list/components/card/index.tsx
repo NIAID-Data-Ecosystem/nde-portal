@@ -83,7 +83,13 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
 
   return (
     // {/* Banner with resource type + date of publication */}
-    <Card ref={cardRef} variant='niaid' my={4} mb={8}>
+    <Card
+      ref={cardRef}
+      variant='niaid'
+      boxShadow='none'
+      border='1px solid'
+      borderColor='gray.100'
+    >
       <TypeBanner
         type={type || 'Dataset'}
         p={0}

@@ -189,7 +189,6 @@ export const formatAPIResource = (data: any) => {
     condition: data.condition || null,
     conditionsOfAccess:
       formatConditionsOfAccess(data.conditionsOfAccess) || null,
-    curatedBy: data.curatedBy || null,
     date: formatDate(data.date) || null,
     dateCreated: formatDate(data.dateCreated) || null,
     dateModified: formatDate(data.dateModified) || null,
