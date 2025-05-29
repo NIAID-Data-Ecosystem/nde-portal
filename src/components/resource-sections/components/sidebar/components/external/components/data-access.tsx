@@ -70,9 +70,9 @@ export const DataAccess: React.FC<DataAccessProps> = ({
               mb: 1,
             }}
             source={source}
-            url={source.dataset}
+            url={source?.dataset || source?.archivedAt}
           />
-          {source.dataset && (
+          {(source?.dataset || source?.archivedAt) && (
             <Flex
               w='100%'
               mt={2}
@@ -94,7 +94,9 @@ export const DataAccess: React.FC<DataAccessProps> = ({
             >
               <AccessResourceButton
                 url={
-                  recordType === 'ResourceCatalog' ? url ?? '' : source.dataset
+                  recordType === 'ResourceCatalog'
+                    ? url ?? ''
+                    : source?.dataset ?? source?.archivedAt ?? ''
                 }
                 colorScheme={colorScheme}
               />

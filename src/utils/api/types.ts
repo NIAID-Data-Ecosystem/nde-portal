@@ -112,12 +112,6 @@ export interface CitedBy {
   issueNumber: string | null;
 }
 
-interface CuratedBy {
-  name?: string;
-  url?: string;
-  versionDate?: string;
-}
-
 export interface Distribution {
   encodingFormat: string[] | string | null;
   contentSize: number | null;
@@ -192,7 +186,8 @@ export interface IncludedInDataCatalog {
   name: string;
   url?: string | null; //source repo url
   versionDate?: string | null;
-  dataset: string | null;
+  dataset?: string | null;
+  archivedAt: string | null;
 }
 
 export interface InfectiousAgent extends PropertyWithPubtator {
@@ -429,7 +424,6 @@ export interface FormattedResource {
   collectionType?: CollectionType | null;
   condition: string | null;
   conditionsOfAccess: AccessTypes | null;
-  curatedBy: CuratedBy | null;
   date: string | null;
   dateCreated: string | null;
   dateModified: string | null;
