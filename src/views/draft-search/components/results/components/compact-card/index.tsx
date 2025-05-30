@@ -35,6 +35,7 @@ export const CompactCard = ({ data, referrerPath }: CompactCardProps) => {
     conditionsOfAccess,
     hasAPI,
     about,
+    description,
   } = data || {};
 
   return (
@@ -151,7 +152,7 @@ export const CompactCard = ({ data, referrerPath }: CompactCardProps) => {
           </Flex>
         )}
         {about && (
-          <Flex px={1} mt={1} flex={1} bg='white' direction='column'>
+          <Flex px={1} mt={1} mb={0} bg='white' direction='column'>
             <MetadataLabel label='Content Types' />
             <ScrollContainer overflow='auto' maxHeight='200px' fontSize='xs'>
               <SearchableItems
@@ -166,6 +167,14 @@ export const CompactCard = ({ data, referrerPath }: CompactCardProps) => {
               />
             </ScrollContainer>
           </Flex>
+        )}
+        {description && (
+          <Text px={2} mt={2} fontSize='xs' lineHeight='short'>
+            <p>
+              {description.trim().split(/\s+/).slice(0, 20).join(' ') +
+                (description.trim().split(/\s+/).length > 20 ? '...' : '')}
+            </p>
+          </Text>
         )}
       </CardBody>
     </Card>
