@@ -15,6 +15,9 @@ import { isSourceFundedByNiaid } from 'src/utils/helpers/sources';
 import { Skeleton } from 'src/components/skeleton';
 import { ConditionsOfAccess } from 'src/components/badges';
 import { HasAPI } from 'src/components/badges/components/HasAPI';
+import { MetadataLabel } from 'src/components/metadata';
+import { ScrollContainer } from 'src/components/scroll-container';
+import { SearchableItems } from 'src/components/searchable-items';
 
 interface CompactCardProps {
   data?: FormattedResource | null;
@@ -31,6 +34,7 @@ export const CompactCard = ({ data, referrerPath }: CompactCardProps) => {
     date,
     conditionsOfAccess,
     hasAPI,
+    about,
   } = data || {};
 
   return (
@@ -144,6 +148,23 @@ export const CompactCard = ({ data, referrerPath }: CompactCardProps) => {
                 <HasAPI type={data?.['@type']} hasAPI={data?.hasAPI} mx={0.5} />
               </Flex>
             )}
+          </Flex>
+        )}
+        {about && (
+          <Flex px={1} mt={1} flex={1} bg='white' direction='column'>
+            <MetadataLabel label='Content Types' />
+            <ScrollContainer overflow='auto' maxHeight='200px' fontSize='xs'>
+              <SearchableItems
+                fieldName='about'
+                generateButtonLabel={(limit, length, itemLabel = 'types') =>
+                  limit === length
+                    ? `Show fewer ${itemLabel}`
+                    : `Show all ${itemLabel} (${length - limit} more)`
+                }
+                itemLimit={3}
+                items={about.map(item => item.displayName)}
+              />
+            </ScrollContainer>
           </Flex>
         )}
       </CardBody>
