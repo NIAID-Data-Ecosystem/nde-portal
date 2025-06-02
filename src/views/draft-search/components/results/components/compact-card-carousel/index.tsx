@@ -30,6 +30,8 @@ export const CompactCardCarousel = ({
         height: 'auto',
         '& .padded-carousel': {
           height: 'auto',
+          paddingLeft: '4px',
+          paddingRight: '4px',
         },
       }}
     >
