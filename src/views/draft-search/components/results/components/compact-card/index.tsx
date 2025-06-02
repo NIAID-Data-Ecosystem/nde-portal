@@ -177,11 +177,15 @@ export const CompactCard = ({ data, referrerPath }: CompactCardProps) => {
           </Flex>
         )}
         {description && (
-          <Text px={2} mt={2} mb={1} fontSize='xs' lineHeight='short'>
-            <p>
-              {description.trim().split(/\s+/).slice(0, 20).join(' ') +
-                (description.trim().split(/\s+/).length > 20 ? '...' : '')}
-            </p>
+          <Text
+            px={2}
+            mt={2}
+            mb={1}
+            fontSize='xs'
+            lineHeight='short'
+            noOfLines={3}
+          >
+            <p>{description.trim()}</p>
           </Text>
         )}
       </CardBody>
