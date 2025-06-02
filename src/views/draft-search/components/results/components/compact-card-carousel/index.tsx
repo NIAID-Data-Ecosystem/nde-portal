@@ -17,8 +17,20 @@ export const CompactCardCarousel = ({
     <Box
       mt={{ base: 2, sm: 8 }}
       p={0}
-      pb={{ base: 8, md: 12, xl: 16 }}
-      minH={{ base: '280px', md: '320px', xl: '350px' }}
+      pb={{
+        base: 12,
+        sm: 10,
+        md: 14,
+        lg: 16,
+        xl: 16,
+      }}
+      minH={{
+        base: '355px',
+        sm: '300px',
+        md: '330px',
+        lg: '340px',
+        xl: '335px',
+      }}
       width='100%'
       maxW='100%'
       sx={{
