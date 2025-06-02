@@ -43,7 +43,7 @@ export const CompactCard = ({ data, referrerPath }: CompactCardProps) => {
       variant='niaid'
       boxShadow='none'
       border='1px solid'
-      borderColor='gray.100'
+      borderColor='gray.200'
     >
       <TypeBanner
         type={type || 'Dataset'}
@@ -93,7 +93,7 @@ export const CompactCard = ({ data, referrerPath }: CompactCardProps) => {
               content={name || alternateName || ''}
               fontWeight='semibold'
               color='inherit'
-              fontSize='lg'
+              fontSize='md'
               lineHeight='short'
               w='100%'
               textDecoration='underline'
@@ -113,13 +113,12 @@ export const CompactCard = ({ data, referrerPath }: CompactCardProps) => {
           <Flex
             px={2}
             m={0}
-            flex={1}
             bg='white'
             fontWeight='semibold'
             whiteSpace='nowrap'
-            alignItems='center'
+            alignItems='flex-start'
             justify='space-between'
-            maxHeight='30px'
+            minHeight='30px'
           >
             <Tooltip
               label='Corresponds to the most recent of date modified, date published and date created.'
@@ -129,7 +128,7 @@ export const CompactCard = ({ data, referrerPath }: CompactCardProps) => {
                 color: 'text.body',
               }}
             >
-              <Text fontSize='xs'>{date}</Text>
+              <Text fontSize='13px'>{date}</Text>
             </Tooltip>
             {(conditionsOfAccess ||
               typeof hasAPI !== undefined ||
@@ -140,21 +139,30 @@ export const CompactCard = ({ data, referrerPath }: CompactCardProps) => {
                 w={['100%', 'unset']}
                 flex={[1]}
                 p={[0.5, 0.5]}
+                flexWrap='wrap'
+                ml={0.5}
+                gap={0.5}
               >
                 <ConditionsOfAccess
                   type={data?.['@type']}
                   conditionsOfAccess={conditionsOfAccess}
                   mx={0.5}
+                  fontSize='13px'
                 />
-                <HasAPI type={data?.['@type']} hasAPI={data?.hasAPI} mx={0.5} />
+                <HasAPI
+                  type={data?.['@type']}
+                  hasAPI={data?.hasAPI}
+                  mx={0.5}
+                  fontSize='13px'
+                />
               </Flex>
             )}
           </Flex>
         )}
         {about && (
-          <Flex px={1} mt={1} mb={0} bg='white' direction='column'>
+          <Flex px={1} mt={0} mb={0} bg='white' direction='column'>
             <MetadataLabel label='Content Types' />
-            <ScrollContainer overflow='auto' maxHeight='200px' fontSize='xs'>
+            <ScrollContainer overflow='auto' maxHeight='200px'>
               <SearchableItems
                 fieldName='about'
                 generateButtonLabel={(limit, length, itemLabel = 'types') =>
@@ -162,14 +170,14 @@ export const CompactCard = ({ data, referrerPath }: CompactCardProps) => {
                     ? `Show fewer ${itemLabel}`
                     : `Show all ${itemLabel} (${length - limit} more)`
                 }
-                itemLimit={3}
+                itemLimit={2}
                 items={about.map(item => item.displayName)}
               />
             </ScrollContainer>
           </Flex>
         )}
         {description && (
-          <Text px={2} mt={2} fontSize='xs' lineHeight='short'>
+          <Text px={2} mt={2} mb={1} fontSize='xs' lineHeight='short'>
             <p>
               {description.trim().split(/\s+/).slice(0, 20).join(' ') +
                 (description.trim().split(/\s+/).length > 20 ? '...' : '')}

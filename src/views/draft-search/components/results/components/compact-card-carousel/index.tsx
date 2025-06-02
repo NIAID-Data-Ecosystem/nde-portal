@@ -17,20 +17,23 @@ export const CompactCardCarousel = ({
     <Box
       mt={{ base: 2, sm: 8 }}
       p={0}
-      minH='300px'
-      maxH='500px'
+      pb={{ base: 8, md: 12, xl: 16 }}
+      minH={{ base: '280px', md: '320px', xl: '350px' }}
       width='100%'
       maxW='100%'
-      overflow='hidden'
       sx={{
         contain: 'layout style size',
         '& *': {
           maxWidth: '100% !important',
           boxSizing: 'border-box !important',
         },
+        height: 'auto',
+        '& .padded-carousel': {
+          height: 'auto',
+        },
       }}
     >
-      <Carousel>
+      <Carousel gap={8}>
         {data.slice(0, 10).map((carouselCard, idx) => {
           return (
             <CompactCard
