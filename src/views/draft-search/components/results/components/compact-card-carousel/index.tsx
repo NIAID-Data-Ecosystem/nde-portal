@@ -15,7 +15,7 @@ export const CompactCardCarousel = ({
 }: CompactCardCarouselProps) => {
   return data && data.length > 0 ? (
     <Box
-      mt={{ base: 2, sm: 8 }}
+      mt={0}
       p={0}
       pb={{
         base: 12,
