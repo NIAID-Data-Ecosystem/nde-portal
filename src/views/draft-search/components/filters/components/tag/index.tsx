@@ -17,6 +17,7 @@ import { defaultQuery } from 'src/views/draft-search/config/defaultQuery';
 import { isEqual } from 'lodash';
 import { generateTags } from './utils';
 import { SearchResultsHeading } from '../../../search-results-header';
+import { usePaginationContext } from 'src/views/draft-search/context/pagination-context';
 
 interface FilterTagsProps {
   filtersConfig: FilterConfig[];
@@ -45,6 +46,8 @@ const tagStyles = {
 };
 export const FilterTags: React.FC<FilterTagsProps> = React.memo(
   ({ filtersConfig, selectedFilters, handleRouteUpdate, removeAllFilters }) => {
+    const { resetPagination } = usePaginationContext();
+
     // Convert filter config list to map for quick access
     const configMap = useMemo(() => {
       return Object.fromEntries(filtersConfig.map(cfg => [cfg.property, cfg]));
@@ -68,7 +71,7 @@ export const FilterTags: React.FC<FilterTagsProps> = React.memo(
           return !isEqual(v, filterValue);
         }),
       };
-
+      resetPagination();
       handleRouteUpdate({
         from: defaultQuery.from,
         filters: queryFilterObject2String(updatedFilters),
@@ -92,7 +95,10 @@ export const FilterTags: React.FC<FilterTagsProps> = React.memo(
             fontSize='sm'
             fontWeight='medium'
             _hover={{ bg: 'secondary.600' }}
-            onClick={removeAllFilters}
+            onClick={() => {
+              resetPagination();
+              removeAllFilters();
+            }}
           >
             Clear All
           </Tag>

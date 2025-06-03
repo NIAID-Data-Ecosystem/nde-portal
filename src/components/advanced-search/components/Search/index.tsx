@@ -75,66 +75,70 @@ export const Search = ({
               flex={1}
               w='100%'
               position='relative'
-              zIndex='popover'
+              zIndex={2}
               mb={[4, 2, 0]}
               mr={[0, 0, 4]}
             >
               <FieldSelectWithContext />
             </Box>
-            <SearchInput
-              size='md'
-              colorScheme='primary'
-              errors={errors}
-              setErrors={setErrors}
-              resetForm={resetForm}
-              setResetForm={setResetForm}
-              onSubmit={queryValue => {
-                setItems(prev => {
-                  const queryItem = Array.isArray(queryValue)
-                    ? queryValue
-                    : [queryValue];
+            <Box zIndex={1} w='100%'>
+              <SearchInput
+                size='md'
+                colorScheme='primary'
+                errors={errors}
+                setErrors={setErrors}
+                resetForm={resetForm}
+                setResetForm={setResetForm}
+                onSubmit={queryValue => {
+                  setItems(prev => {
+                    const queryItem = Array.isArray(queryValue)
+                      ? queryValue
+                      : [queryValue];
 
-                  const newItems = [...prev];
+                    const newItems = [...prev];
 
-                  queryItem.map(item => {
-                    const { field, term, union, querystring } = item;
-                    const id = `${uniqueId(
-                      `${term.slice(0, 20).split(' ').join('-')}-${
-                        items.length
-                      }-`,
-                    )}`;
+                    queryItem.map(item => {
+                      const { field, term, union, querystring } = item;
+                      const id = `${uniqueId(
+                        `${term.slice(0, 20).split(' ').join('-')}-${
+                          items.length
+                        }-`,
+                      )}`;
 
-                    newItems.push({
-                      id,
-                      value: {
-                        field,
-                        term,
-                        union: union || undefined,
-                        querystring,
-                      },
-                      children: [],
-                      collapsed: false,
+                      newItems.push({
+                        id,
+                        value: {
+                          field,
+                          term,
+                          union: union || undefined,
+                          querystring,
+                        },
+                        children: [],
+                        collapsed: false,
+                      });
                     });
-                  });
 
-                  return newItems;
-                });
-              }}
-              defaultInputValue={''}
-              renderSubmitButton={(props: Partial<InputSubmitButtonProps>) => (
-                <InputSubmitButton
-                  items={items}
-                  size='md'
-                  colorScheme='primary'
-                  // Button is disabled when the text input is needed but empty.
-                  isDisabled={
-                    selectedSearchType.id !== '_exists_' &&
-                    selectedSearchType.id !== '-_exists_'
-                  }
-                  {...props}
-                />
-              )}
-            />
+                    return newItems;
+                  });
+                }}
+                defaultInputValue={''}
+                renderSubmitButton={(
+                  props: Partial<InputSubmitButtonProps>,
+                ) => (
+                  <InputSubmitButton
+                    items={items}
+                    size='md'
+                    colorScheme='primary'
+                    // Button is disabled when the text input is needed but empty.
+                    isDisabled={
+                      selectedSearchType.id !== '_exists_' &&
+                      selectedSearchType.id !== '-_exists_'
+                    }
+                    {...props}
+                  />
+                )}
+              />
+            </Box>
           </Flex>
           <FormErrorMessage justifyContent='flex-end'>
             <UnorderedList>

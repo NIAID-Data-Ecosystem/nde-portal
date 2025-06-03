@@ -1,23 +1,25 @@
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import { PageContainer } from 'src/components/page-container';
-import { useCallback, useMemo } from 'react';
-import { FormattedResource } from 'src/utils/api/types';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { FetchSearchResultsResponse } from 'src/utils/api/types';
 import {
-  SearchProvider,
+  SearchTabsProvider,
   tabs,
-} from 'src/views/draft-search/context/search-context';
-import { useSearchQueryParams } from 'src/views/draft-search/hooks/useSearchQueryParams';
-import { useSearchResultsData } from 'src/views/draft-search/hooks/useSearchResultsData';
+} from 'src/views/draft-search/context/search-tabs-context';
+import { useSearchQueryFromURL } from 'src/views/draft-search/hooks/useSearchQueryFromURL';
 import { Box, Flex, VStack } from '@chakra-ui/react';
 import { Filters } from 'src/views/draft-search/components/filters';
 import { SelectedFilterType } from 'src/views/draft-search/components/filters/types';
 import { FILTER_CONFIGS } from 'src/views/draft-search/components/filters/config';
 import { queryFilterString2Object } from 'src/views/draft-search/components/filters/utils/query-builders';
 import { defaultQuery } from 'src/views/draft-search/config/defaultQuery';
-import { SearchResultsController } from 'src/views/draft-search/components/search-results-controller';
 import { FilterTags } from 'src/views/draft-search/components/filters/components/tag';
 import { SearchResultsHeader } from 'src/views/draft-search/components/search-results-header';
+import { PaginationProvider } from 'src/views/draft-search/context/pagination-context';
+import { SearchResultsController } from 'src/views/draft-search/components/search-results-tabs-controller';
+import { fetchSearchResults } from 'src/utils/api';
+import { TabType } from 'src/views/draft-search/types';
 
 // Default filters list.
 const defaultFilters = FILTER_CONFIGS.reduce(
@@ -26,28 +28,11 @@ const defaultFilters = FILTER_CONFIGS.reduce(
 );
 //  This page renders the search results from the search bar.
 const Search: NextPage<{
-  results: FormattedResource[];
-  total: number;
-}> = ({ results, total }) => {
+  initialData: FetchSearchResultsResponse;
+}> = ({ initialData }) => {
   const router = useRouter();
 
-  const queryParams = useSearchQueryParams();
-
-  const { params } = useSearchResultsData({
-    ...queryParams,
-    size: 0,
-    facets: ['@type'],
-  });
-
-  // Set the initial tab based on the router query
-  const initialTab = useMemo(() => {
-    if (!router.isReady) return null;
-
-    const defaultTab = tabs.find(t => t.isDefault)?.id || tabs[0].id;
-    const tabParamId = router.query.tab as string;
-    const tab = tabs.find(t => t.id === tabParamId);
-    return tab?.id || defaultTab;
-  }, [router.isReady, router.query.tab]);
+  const queryParams = useSearchQueryFromURL();
 
   const selectedFilters: SelectedFilterType = useMemo(() => {
     const queryFilters = router.query.filters;
@@ -85,10 +70,29 @@ const Search: NextPage<{
     });
   }, [handleRouteUpdate]);
 
-  if (!router.isReady || initialTab === null) {
+  // Set the initial tab based on the router query
+  const [initialTab, setInitialTab] = useState<TabType['id'] | null>(null);
+
+  useEffect(() => {
+    if (!router.isReady) return;
+
+    const defaultTab = tabs.find(t => t.isDefault)?.id || tabs[0].id;
+    const tabParamId = router.query.tab as string;
+    const tab = tabs.find(t => t.id === tabParamId);
+    setInitialTab(tab?.id || defaultTab);
+  }, [router]);
+
+  // If the app is in production, redirect to a 404 page until search is fully implemented and approved.
+  useEffect(() => {
+    if (process.env.NEXT_PUBLIC_APP_ENV === 'production') {
+      router.replace('/404');
+    }
+  }, [router]);
+
+  // If the initial tab is not set, return a loading state.
+  if (!initialTab) {
     return null;
   }
-
   return (
     <PageContainer
       title='Search'
@@ -97,67 +101,116 @@ const Search: NextPage<{
       py={0}
       includeSearchBar
     >
-      <SearchProvider initialTab={initialTab}>
-        <Flex bg='page.alt'>
-          <Flex
-            id='search-page-filters-sidebar'
-            borderRight='0.5px solid'
-            borderRightColor='gray.200'
-            bg='#fff'
-            flex={{ base: 0, lg: 1 }}
-            height='100vh'
-            minW={{ base: 'unset', lg: '380px' }}
-            maxW={{ base: 'unset', lg: '450px' }}
-            position={{ base: 'unset', lg: 'sticky' }}
-            top='0px'
-          >
-            {/* Filters sidebar */}
-            {router.isReady && (
+      <SearchTabsProvider initialTab={initialTab}>
+        <PaginationProvider>
+          <Flex bg='page.alt'>
+            <Flex
+              id='search-page-filters-sidebar'
+              bg='#fff'
+              borderRight='0.5px solid'
+              borderRightColor='gray.200'
+              flex={{ base: 0, lg: 1 }}
+              minW={{ base: 'unset', lg: '380px' }}
+              maxW={{ base: 'unset', lg: '450px' }}
+            >
+              {/* Filters sidebar */}
               <Filters
                 colorScheme='secondary'
-                queryParams={{
-                  ...params,
-                  ...router.query,
-                  filters: undefined,
-                  extra_filter: Array.isArray(router.query.filters)
-                    ? router.query.filters.join('')
-                    : router.query.filters || '',
-                }}
                 selectedFilters={selectedFilters}
-                removeAllFilters={
-                  appliedFilters.length > 0 ? removeAllFilters : undefined
-                }
+                isDisabled={appliedFilters.length === 0}
+                removeAllFilters={removeAllFilters}
               />
-            )}
+            </Flex>
+            <Box flex={3}>
+              <VStack
+                alignItems='flex-start'
+                p={4}
+                bg='#fff'
+                borderBottom='1px solid'
+                borderRight='1px solid'
+                borderColor='gray.100'
+                spacing={2}
+              >
+                {/* Heading: Showing results for... */}
+                <SearchResultsHeader querystring={queryParams.q} />
+
+                {/* Filter tags : Tags with the names of the currently selected filters */}
+                {Object.values(selectedFilters).length > 0 && (
+                  <FilterTags
+                    filtersConfig={FILTER_CONFIGS}
+                    selectedFilters={selectedFilters}
+                    handleRouteUpdate={handleRouteUpdate}
+                    removeAllFilters={removeAllFilters}
+                  />
+                )}
+              </VStack>
+
+              {/* Search Results */}
+              <SearchResultsController initialData={initialData} />
+            </Box>
           </Flex>
-          <Box flex={3}>
-            <VStack
-              alignItems='flex-start'
-              p={4}
-              bg='#fff'
-              borderBottom='1px solid'
-              borderBottomColor='gray.100'
-              spacing={2}
-            >
-              {/* Heading: Showing results for... */}
-              <SearchResultsHeader querystring={queryParams.q} />
-              {/* Filter tags : Tags with the names of the currently selected filters */}
-              {Object.values(selectedFilters).length > 0 && (
-                <FilterTags
-                  filtersConfig={FILTER_CONFIGS}
-                  selectedFilters={selectedFilters}
-                  handleRouteUpdate={handleRouteUpdate}
-                  removeAllFilters={removeAllFilters}
-                />
-              )}
-            </VStack>
-            {/* Search Results */}
-            <SearchResultsController tabs={tabs} />
-          </Box>
-        </Flex>
-      </SearchProvider>
+        </PaginationProvider>
+      </SearchTabsProvider>
     </PageContainer>
   );
 };
+
+export async function getStaticProps() {
+  try {
+    const defaultParams = {
+      q: defaultQuery.q,
+      extra_filter: '',
+      size: `${defaultQuery.size}`,
+      from: `${defaultQuery.from}`,
+      sort: defaultQuery.sort,
+    };
+    const data = await fetchSearchResults({
+      ...defaultParams,
+      facets: '@type',
+      facet_size: 100,
+      sort: '',
+      show_meta: true,
+      fields: [
+        '_meta',
+        '@type',
+        'alternateName',
+        'author',
+        'conditionsOfAccess',
+        'date',
+        'description',
+        'doi',
+        'funding',
+        'healthCondition',
+        'includedInDataCatalog',
+        'infectiousAgent',
+        'isAccessibleForFree',
+        'license',
+        'measurementTechnique',
+        'name',
+        'sdPublisher',
+        'species',
+        'url',
+        'usageInfo',
+        'variableMeasured',
+      ],
+    });
+    return {
+      props: {
+        initialData: {
+          results: data?.results || [],
+          total: data?.total || 0,
+          facets: data?.facets || {},
+        },
+      },
+    };
+  } catch (err) {
+    return {
+      props: {
+        data: null,
+        error: { message: 'Error retrieving data' },
+      },
+    };
+  }
+}
 
 export default Search;

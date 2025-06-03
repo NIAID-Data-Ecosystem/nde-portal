@@ -84,7 +84,7 @@ export const Navigation: React.FC<FlexProps> = props => {
       as='nav'
       w='100%'
       minW={300}
-      zIndex='popover'
+      zIndex='banner'
       aria-label='Main navigation'
       {...props}
     >
@@ -152,7 +152,12 @@ export const Navigation: React.FC<FlexProps> = props => {
       </Flex>
 
       {/* Popout navigation in mobile mode */}
-      {isOpen && <MobileSubMenu isOpen={isOpen} />}
+      {isOpen && (
+        <MobileSubMenu
+          isOpen={isOpen}
+          navigation={navigationFilteredByEnvironment}
+        />
+      )}
     </Box>
   );
 };

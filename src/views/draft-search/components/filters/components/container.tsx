@@ -14,6 +14,7 @@ import {
   useDisclosure,
   useBreakpointValue,
   Icon,
+  Box,
 } from '@chakra-ui/react';
 import { FaFilter } from 'react-icons/fa6';
 import { FilterConfig, SelectedFilterType } from '../types';
@@ -21,8 +22,9 @@ import { ScrollContainer } from 'src/components/scroll-container';
 
 export interface FiltersContainerProps {
   title?: string;
+  isDisabled?: boolean;
   selectedFilters: SelectedFilterType;
-  removeAllFilters?: () => void;
+  removeAllFilters: () => void;
   error: Error | null;
   filtersList: FilterConfig[];
   children: React.ReactNode;
@@ -53,6 +55,7 @@ export const FiltersContainer: React.FC<FiltersContainerProps> = ({
   children,
   selectedFilters,
   filtersList,
+  isDisabled = false,
   removeAllFilters,
 }) => {
   const [openSections, setOpenSections] = useState<number[]>([]);
@@ -135,7 +138,7 @@ export const FiltersContainer: React.FC<FiltersContainerProps> = ({
           variant='outline'
           size='xs'
           onClick={removeAllFilters}
-          isDisabled={!removeAllFilters}
+          isDisabled={isDisabled}
         >
           Clear All
         </Button>
@@ -218,8 +221,6 @@ export const FiltersContainer: React.FC<FiltersContainerProps> = ({
       </Drawer>
     </>
   ) : (
-    <ScrollContainer w='100%' h='100%' pr={0} overflowY='auto'>
-      {content}
-    </ScrollContainer>
+    <Box>{content}</Box>
   );
 };

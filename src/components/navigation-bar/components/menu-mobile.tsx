@@ -9,7 +9,6 @@ import {
   Text,
   useDisclosure,
 } from '@chakra-ui/react';
-import NAVIGATION from '../routes.json';
 import { FaAngleRight, FaAngleDown } from 'react-icons/fa6';
 import { RouteProps } from '..';
 
@@ -119,13 +118,19 @@ export const MobileNavItem = ({
   );
 };
 
-export const MobileSubMenu = ({ isOpen }: { isOpen: boolean }) => {
+export const MobileSubMenu = ({
+  isOpen,
+  navigation,
+}: {
+  isOpen: boolean;
+  navigation: RouteProps;
+}) => {
   return (
     <Box borderRadius='semi' boxShadow='base' overflow='hidden'>
       <Collapse in={isOpen} animateOpacity>
         <Stack bg='white' p={2} alignItems='end'>
-          {NAVIGATION.routes &&
-            NAVIGATION.routes.map(navItem => (
+          {navigation.routes &&
+            navigation.routes.map(navItem => (
               <MobileNavItem key={navItem.label} {...navItem} />
             ))}
         </Stack>

@@ -1,45 +1,62 @@
 import React, { useMemo } from 'react';
 import { useRouter } from 'next/router';
 import { TabPanel } from '@chakra-ui/react';
-import { useSearchContext } from '../../context/search-context';
-import { useSearchQueryParams } from '../../hooks/useSearchQueryParams';
-import { useSearchResultsData } from '../../hooks/useSearchResultsData';
-import { TabType } from '../../types';
-import SearchResults from '../results';
-import { CompactCardCarousel } from '../results/components/compact-card-carousel';
+import { useSearchTabsContext } from '../../context/search-tabs-context';
+import { useSearchQueryFromURL } from '../../hooks/useSearchQueryFromURL';
+import { SearchResults } from '../results-list';
 import { updateRoute } from '../../utils/update-route';
-import { SearchTabs } from '../tabs';
 import { AccordionContent, AccordionWrapper } from '../layout/accordion';
+import { useSearchResultsData } from '../../hooks/useSearchResultsData';
+import { usePaginationContext } from '../../context/pagination-context';
+import { SearchTabs } from '../layout/tabs';
+import { FetchSearchResultsResponse } from 'src/utils/api/types';
+import { CompactCardCarousel } from '../results-list/components/compact-card-carousel';
 
 interface SearchResultsControllerProps {
   colorScheme?: string;
-  tabs: TabType[];
+  initialData: FetchSearchResultsResponse;
 }
 
 export const SearchResultsController = ({
   colorScheme = 'secondary',
-  tabs,
+  initialData,
 }: SearchResultsControllerProps) => {
   const router = useRouter();
-
   // Selected tab index is stored in context to sync with other components.
-  const { selectedIndex, setSelectedIndex, selectedTab } = useSearchContext();
+  const { selectedIndex, setSelectedIndex, tabs } = useSearchTabsContext();
+
+  // Handle pagination with tab changes.
+  const { getPagination, setPagination } = usePaginationContext();
 
   // Update URL query param when a new tab is selected.
   const handleTabChange = (index: number) => {
     setSelectedIndex(index);
     const selectedTab = tabs[index];
-    updateRoute(router, { tab: selectedTab.id });
+    const paginationState = getPagination(selectedTab.id);
+
+    // Ensure pagination state is set for the selected tab.
+    setPagination(selectedTab.id, paginationState);
+
+    // Update the URL with the new tab and pagination state.
+    updateRoute(router, { ...paginationState, tab: selectedTab.id });
   };
 
   // Get the current search parameters from the URL and fetch facet data.
-  const queryParams = useSearchQueryParams();
-  const searchResultsData = useSearchResultsData({
-    ...queryParams,
-    facets: ['@type'],
-  });
-  const { data } = searchResultsData.response;
+  const queryParams = useSearchQueryFromURL();
 
+  const searchResultsData = useSearchResultsData(
+    {
+      q: queryParams.q,
+      filters: queryParams.filters,
+      facets: ['@type'],
+      facet_size: 100,
+    },
+    {
+      initialData,
+    },
+  );
+
+  const { data } = searchResultsData.response;
   // Enhance each tab with facet counts for the types it represents.
   const tabsWithCounts = useMemo(
     () =>
@@ -99,8 +116,13 @@ export const SearchResultsController = ({
                           />
                         ) : (
                           <>
-                            {/* Add Pagination */}
-                            <SearchResults types={[section.type]} />
+                            {/* Render search results */}
+                            <SearchResults
+                              id={tab.id}
+                              tabs={tabs}
+                              types={[section.type]}
+                              initialData={initialData}
+                            />
                           </>
                         )}
                       </AccordionContent>
