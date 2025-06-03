@@ -44,19 +44,13 @@ export const SearchResultsController = ({
   // Get the current search parameters from the URL and fetch facet data.
   const queryParams = useSearchQueryFromURL();
 
-  const searchResultsData = useSearchResultsData(
-    {
-      q: queryParams.q,
-      filters: queryParams.filters,
-      facets: ['@type'],
-      facet_size: 100,
-    },
-    {
-      initialData,
-    },
-  );
+  const searchResultsData = useSearchResultsData({
+    ...queryParams,
+    facets: ['@type'],
+  });
 
   const { data } = searchResultsData.response;
+
   // Enhance each tab with facet counts for the types it represents.
   const tabsWithCounts = useMemo(
     () =>
