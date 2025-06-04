@@ -48,7 +48,7 @@ export const CompactCardCarousel = ({
       }}
     >
       <Carousel gap={8}>
-        {data.slice(0, 10).map((carouselCard, idx) => {
+        {data.slice(0, 10).map(carouselCard => {
           return (
             <CompactCard
               key={carouselCard.id}
