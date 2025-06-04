@@ -322,7 +322,9 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                             url={
                               type === 'ResourceCatalog'
                                 ? ''
-                                : source?.dataset ?? source?.archivedAt ?? ''
+                                : Array.isArray(source?.archivedAt)
+                                ? source?.archivedAt[0]
+                                : source?.archivedAt ?? ''
                             }
                           />
                         );
@@ -493,7 +495,9 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                           url={
                             type === 'ResourceCatalog'
                               ? ''
-                              : source?.dataset ?? source?.archivedAt ?? ''
+                              : Array.isArray(source?.archivedAt)
+                              ? source?.archivedAt[0]
+                              : source?.archivedAt ?? ''
                           }
                         />
                       );
