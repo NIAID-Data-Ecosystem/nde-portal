@@ -185,7 +185,7 @@ export const CompactCard = ({ data, referrerPath }: CompactCardProps) => {
             lineHeight='short'
             noOfLines={3}
           >
-            <p>{description.trim()}</p>
+            {description.trim()}
           </Text>
         )}
       </CardBody>
