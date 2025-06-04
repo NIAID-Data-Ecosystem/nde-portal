@@ -51,7 +51,7 @@ export const CompactCardCarousel = ({
         {data.slice(0, 10).map((carouselCard, idx) => {
           return (
             <CompactCard
-              key={carouselCard.id + idx}
+              key={carouselCard.id}
               data={carouselCard}
               referrerPath={referrerPath}
             />
