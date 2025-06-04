@@ -87,7 +87,7 @@ export const NewsCarousel = ({
       return sortedResults;
     },
   });
-  console.log(carouselCards);
+
   if (isError && !carouselCards) {
     return <></>;
   }
@@ -114,16 +114,16 @@ export const NewsCarousel = ({
 
       <Carousel>
         {carouselCards.slice(0, 10).map((carouselCard, idx) => {
-          const image = carouselCard.attributes?.image?.data
-            ? Array.isArray(carouselCard.attributes.image.data)
-              ? `${process.env.NEXT_PUBLIC_STRAPI_API_URL}${carouselCard.attributes.image.data[0].attributes.url}`
-              : `${process.env.NEXT_PUBLIC_STRAPI_API_URL}${carouselCard.attributes.image.data.attributes.url}`
+          const image = carouselCard?.image
+            ? Array.isArray(carouselCard.image)
+              ? `${process.env.NEXT_PUBLIC_STRAPI_API_URL}${carouselCard.image[0].url}`
+              : `${process.env.NEXT_PUBLIC_STRAPI_API_URL}${carouselCard.image.url}`
             : '/assets/news-thumbnail.png';
 
-          const image_alt_text = carouselCard.attributes?.image?.data
-            ? Array.isArray(carouselCard.attributes.image.data)
-              ? `${carouselCard.attributes.image.data[0].attributes.alternativeText}`
-              : `${carouselCard.attributes.image.data.attributes.alternativeText}`
+          const image_alt_text = carouselCard?.image
+            ? Array.isArray(carouselCard.image)
+              ? `${carouselCard.image[0].alternativeText}`
+              : `${carouselCard.image.alternativeText}`
             : 'News Thumbnail Image';
           return (
             <Card key={carouselCard.id + idx} overflow='hidden' flex={1}>
@@ -164,8 +164,8 @@ export const NewsCarousel = ({
                   lineHeight='short'
                   size='h5'
                 >
-                  {carouselCard.attributes.name}
-                  {carouselCard.attributes.eventDate && (
+                  {carouselCard.name}
+                  {carouselCard.eventDate && (
                     <Badge
                       colorScheme='primary'
                       variant='solid'
@@ -193,13 +193,12 @@ export const NewsCarousel = ({
                   {
                     <Text as='span' mt={2} fontSize='sm' lineHeight='short'>
                       {formatDate(
-                        carouselCard.attributes.publishedAt ||
-                          carouselCard.attributes.updatedAt,
+                        carouselCard.publishedAt || carouselCard.updatedAt,
                       )}{' '}
                       &mdash;
-                      {carouselCard.attributes.shortDescription}
+                      {carouselCard.shortDescription}
                       <NextLink
-                        href={`updates/#${carouselCard.attributes.slug.replace(
+                        href={`updates/#${carouselCard.slug.replace(
                           'news-report',
                           'update',
                         )}`}

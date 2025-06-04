@@ -41,12 +41,10 @@ export interface NewsOrEventsObject {
   subtitle: string | null;
   description: string | null;
   shortDescription: string | null;
-  image: {
-    data:
-      | null
-      | { url: string; alternativeText: string }
-      | { url: string; alternativeText: string }[];
-  };
+  image:
+    | null
+    | { url: string; alternativeText: string }
+    | { url: string; alternativeText: string }[];
   eventDate?: string;
   slug: string;
   createdAt: string;
@@ -127,7 +125,6 @@ const Updates: NextPage<UpdatesProps> = props => {
     },
     refetchOnWindowFocus: false,
   });
-
   const [sections, setSections] = useState([
     {
       title: 'Updates',
@@ -151,16 +148,14 @@ const Updates: NextPage<UpdatesProps> = props => {
 
   const upcomingEvents = response?.events?.filter(
     event =>
-      event.attributes.eventDate &&
-      new Date(Date.parse(event.attributes.eventDate.replace(/-/g, ' '))) >=
-        new Date(),
+      event.eventDate &&
+      new Date(Date.parse(event.eventDate.replace(/-/g, ' '))) >= new Date(),
   );
 
   const pastEvents = response?.events?.filter(
     event =>
-      event.attributes.eventDate &&
-      new Date(Date.parse(event.attributes.eventDate.replace(/-/g, ' '))) <
-        new Date(),
+      event.eventDate &&
+      new Date(Date.parse(event.eventDate.replace(/-/g, ' '))) < new Date(),
   );
 
   // add scroll padding to account for sticky nav
@@ -351,6 +346,7 @@ const Updates: NextPage<UpdatesProps> = props => {
                                     ?.showMax,
                                 )
                                 .map((event: NewsOrEventsObject) => {
+                                  console.log('e', event);
                                   return (
                                     <SectionCard key={event.id} {...event} />
                                   );

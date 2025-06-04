@@ -5,7 +5,6 @@ import {
   CardFooter,
   Flex,
   Heading,
-  Image,
   Tag,
   Text,
 } from '@chakra-ui/react';
@@ -13,13 +12,10 @@ import { NewsOrEventsObject } from 'src/pages/updates';
 import ReactMarkdown from 'react-markdown';
 import { useMDXComponents } from 'mdx-components';
 import { formatDate } from 'src/utils/api/helpers';
-import { Link } from 'src/components/link';
 
-interface SectionCardProps extends NewsOrEventsObject {
-  image?: { url: string; alternativeText: string } | null;
-}
+interface SectionCardProps extends NewsOrEventsObject {}
 
-const SectionCard = ({ attributes, image }: SectionCardProps) => {
+const SectionCard = (attributes: SectionCardProps) => {
   const categoryColors = [
     'gray',
     'blue',
@@ -34,7 +30,6 @@ const SectionCard = ({ attributes, image }: SectionCardProps) => {
     'cyan',
   ];
   const MDXComponents = useMDXComponents({});
-
   return (
     <Card
       id={attributes.slug}
@@ -43,15 +38,6 @@ const SectionCard = ({ attributes, image }: SectionCardProps) => {
       boxShadow='none'
     >
       <Flex p={2} flexWrap={['wrap', 'nowrap']}>
-        {image && (
-          <Image
-            objectFit='contain'
-            w='200px'
-            px={4}
-            src={`${process.env.NEXT_PUBLIC_STRAPI_API_URL}${image.url}`}
-            alt={image.alternativeText}
-          />
-        )}
         {(attributes.publishedAt || attributes.updatedAt) && (
           <Text
             px={[2, 4]}
@@ -90,10 +76,10 @@ const SectionCard = ({ attributes, image }: SectionCardProps) => {
               </ReactMarkdown>
             </CardBody>
           )}
-          {attributes.categories && attributes.categories.data.length > 0 && (
+          {attributes.categories && attributes.categories.length > 0 && (
             <CardFooter p={0} mt={2}>
-              {attributes.categories.data.map((category, i) => {
-                const { name } = category.attributes;
+              {attributes.categories.map((category, i) => {
+                const { name } = category;
                 return (
                   <Tag
                     key={category.id}
