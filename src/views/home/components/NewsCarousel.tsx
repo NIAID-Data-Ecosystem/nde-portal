@@ -19,18 +19,15 @@ import {
 import { Carousel } from 'src/components/carousel';
 import NextLink from 'next/link';
 import { Link } from 'src/components/link';
-import { fetchAllFeaturedPages } from 'src/views/features/helpers';
 
 interface NewsCarouselProps {
   news: NewsOrEventsObject[];
   events: NewsOrEventsObject[];
-  features: NewsOrEventsObject[];
 }
 
 export const NewsCarousel = ({
   news: initialNews,
   events: initialEvents,
-  features: initialFeatures,
 }: NewsCarouselProps) => {
   const {
     data: carouselCards,
@@ -40,57 +37,25 @@ export const NewsCarousel = ({
     {
       news: NewsOrEventsObject[];
       events: NewsOrEventsObject[];
-      features: NewsOrEventsObject[];
     },
     Error,
     NewsOrEventsObject[]
   >({
-    queryKey: ['news', 'events', 'features'],
+    queryKey: ['news', 'events'],
     queryFn: async () => {
       try {
-        // Parallel fetching of news, events, and features using Promise.all
-        const [newsResponse, featuresResponse, eventsResponse] =
-          await Promise.all([
-            fetchNews({ paginate: { page: 1, pageSize: 5 } }),
-            fetchAllFeaturedPages({
-              populate: {
-                fields: [
-                  'title',
-                  'slug',
-                  'subtitle',
-                  'publishedAt',
-                  'updatedAt',
-                ],
-                thumbnail: {
-                  fields: ['url', 'alternativeText'],
-                },
-              },
-              sort: { publishedAt: 'desc', updatedAt: 'desc' },
-              paginate: { page: 1, pageSize: 5 },
-            }),
-            fetchEvents({ paginate: { page: 1, pageSize: 5 } }),
-          ]);
-
+        // Parallel fetching of news and events using Promise.all
+        const [newsResponse, eventsResponse] = await Promise.all([
+          fetchNews({ paginate: { page: 1, pageSize: 5 } }),
+          fetchEvents({ paginate: { page: 1, pageSize: 5 } }),
+        ]);
         // Mapping data to the expected structure
         const news = newsResponse.news;
-        const features = featuresResponse.data.map(item => ({
-          ...item,
-          type: 'feature',
-          attributes: {
-            name: item.attributes.title,
-            image: item.attributes.thumbnail,
-            slug: item.attributes.slug,
-            shortDescription: item.attributes.subtitle,
-            publishedAt: item.attributes.publishedAt,
-            updatedAt: item.attributes.updatedAt,
-          },
-        })) as NewsOrEventsObject[];
         const events = eventsResponse.events;
 
         return {
           news,
           events,
-          features,
         };
       } catch (error: any) {
         // Assuming error is of type any, we throw as type Error for useQuery to handle
@@ -104,19 +69,17 @@ export const NewsCarousel = ({
     initialData: {
       news: initialNews,
       events: initialEvents,
-      features: initialFeatures,
     },
     select: data => {
       if (!data) return [];
       // Combine and sort data from most recent to least recent
       const sortedResults = [
-        ...(data?.features || []),
         ...(data?.news || []),
         ...(data?.events || []),
       ].sort((a, b) => {
         // Use publishedAt if available, otherwise fallback to updatedAt
-        let dateA = a.attributes.publishedAt || a.attributes.updatedAt;
-        let dateB = b.attributes.publishedAt || b.attributes.updatedAt;
+        let dateA = a.publishedAt || a.updatedAt;
+        let dateB = b.publishedAt || b.updatedAt;
 
         return Number(new Date(dateB)) - Number(new Date(dateA));
       });
@@ -124,7 +87,7 @@ export const NewsCarousel = ({
       return sortedResults;
     },
   });
-
+  console.log(carouselCards);
   if (isError && !carouselCards) {
     return <></>;
   }
@@ -235,40 +198,23 @@ export const NewsCarousel = ({
                       )}{' '}
                       &mdash;
                       {carouselCard.attributes.shortDescription}
-                      {carouselCard.type === 'feature' ? (
-                        <NextLink
-                          href={`features/${carouselCard.attributes.slug}`}
-                          passHref
+                      <NextLink
+                        href={`updates/#${carouselCard.attributes.slug.replace(
+                          'news-report',
+                          'update',
+                        )}`}
+                        passHref
+                      >
+                        <Link
+                          as='span'
+                          fontSize='sm'
+                          bg='transparent'
+                          lineHeight='tall'
+                          mx={1}
                         >
-                          <Link
-                            as='span'
-                            fontSize='sm'
-                            bg='transparent'
-                            lineHeight='tall'
-                            mx={1}
-                          >
-                            (<Text>view featured page</Text>)
-                          </Link>
-                        </NextLink>
-                      ) : (
-                        <NextLink
-                          href={`updates/#${carouselCard.attributes.slug.replace(
-                            'news-report',
-                            'update',
-                          )}`}
-                          passHref
-                        >
-                          <Link
-                            as='span'
-                            fontSize='sm'
-                            bg='transparent'
-                            lineHeight='tall'
-                            mx={1}
-                          >
-                            (<Text>view full release</Text>)
-                          </Link>
-                        </NextLink>
-                      )}
+                          (<Text>view full release</Text>)
+                        </Link>
+                      </NextLink>
                     </Text>
                   }
                 </CardBody>
@@ -324,18 +270,7 @@ export const fetchNews = async (
       {
         params: {
           publicationState: isProd ? 'live' : 'preview',
-          populate: {
-            fields: [
-              'name',
-              'slug',
-              'publishedAt',
-              'updatedAt',
-              'shortDescription',
-            ],
-            image: {
-              fields: ['url', 'alternativeText'],
-            },
-          },
+          populate: '*',
           sort: { publishedAt: 'desc', updatedAt: 'desc' },
           paginate: { page: 1, pageSize: 100 },
           ...params,
