@@ -147,13 +147,13 @@ export const CompactCard = ({ data, referrerPath }: CompactCardProps) => {
                   type={data?.['@type']}
                   conditionsOfAccess={conditionsOfAccess}
                   mx={0.5}
-                  fontSize='13px'
+                  size='sm'
                 />
                 <HasAPI
                   type={data?.['@type']}
                   hasAPI={data?.hasAPI}
                   mx={0.5}
-                  fontSize='13px'
+                  size='sm'
                 />
               </Flex>
             )}
