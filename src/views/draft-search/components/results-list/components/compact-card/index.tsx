@@ -46,7 +46,7 @@ export const CompactCard = ({ data, referrerPath }: CompactCardProps) => {
       borderColor='gray.200'
     >
       <TypeBanner
-        type={type || 'Dataset'}
+        type={type || 'ResourceCatalog'}
         p={0}
         pl={[2, 4, 6]}
         flexDirection={['column', 'row']}
