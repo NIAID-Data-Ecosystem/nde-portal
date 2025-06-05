@@ -130,9 +130,7 @@ export const CompactCard = ({ data, referrerPath }: CompactCardProps) => {
             >
               <Text fontSize='13px'>{date}</Text>
             </Tooltip>
-            {(conditionsOfAccess ||
-              typeof hasAPI !== undefined ||
-              typeof hasAPI != null) && (
+            {(conditionsOfAccess || hasAPI) && (
               <Flex
                 justifyContent={['flex-start']}
                 alignItems='center'
