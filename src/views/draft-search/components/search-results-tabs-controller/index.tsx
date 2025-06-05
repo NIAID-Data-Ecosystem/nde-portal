@@ -10,7 +10,9 @@ import { useSearchResultsData } from '../../hooks/useSearchResultsData';
 import { usePaginationContext } from '../../context/pagination-context';
 import { SearchTabs } from '../layout/tabs';
 import { FetchSearchResultsResponse } from 'src/utils/api/types';
-import { CompactCardCarousel } from '../results-list/components/compact-card-carousel';
+import { CompactCard } from '../results-list/components/compact-card';
+import { Carousel } from 'src/components/carousel';
+import { CarouselWrapper } from '../layout/carousel-wrapper';
 
 interface SearchResultsControllerProps {
   colorScheme?: string;
@@ -103,11 +105,21 @@ export const SearchResultsController = ({
                       >
                         {/* Render carousel if ResourceCatalog type is included */}
                         {section.type === 'ResourceCatalog' && data?.results ? (
-                          // <>Insert carousel here</>
-                          <CompactCardCarousel
-                            data={data.results}
-                            referrerPath={router.asPath}
-                          />
+                          <CarouselWrapper>
+                            <Carousel gap={8}>
+                              {data.results
+                                .slice(0, 10)
+                                .map((carouselCard, idx) => {
+                                  return (
+                                    <CompactCard
+                                      key={carouselCard.id + idx}
+                                      data={carouselCard}
+                                      referrerPath={router.asPath}
+                                    />
+                                  );
+                                })}
+                            </Carousel>
+                          </CarouselWrapper>
                         ) : (
                           <>
                             {/* Render search results */}
