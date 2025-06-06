@@ -106,7 +106,7 @@ export const ParagraphSection = ({
             </ReactMarkdown>
           )}
         </Flex>
-        {image && image.data && (
+        {image && (
           <Image
             ml={
               imagePosition === 'right'
@@ -120,8 +120,8 @@ export const ParagraphSection = ({
             }
             w='auto'
             h='200px'
-            src={`${process.env.NEXT_PUBLIC_STRAPI_API_URL}${image.data.attributes.url}`}
-            alt={image.data.attributes.alternativeText}
+            src={`${process.env.NEXT_PUBLIC_STRAPI_API_URL}${image.url}`}
+            alt={image.alternativeText}
           />
         )}
       </Flex>

@@ -45,24 +45,6 @@ export const StepCard = ({
       fontSize='sm'
     >
       <Flex p={4} position='relative' flexWrap='wrap'>
-        {/* {icon && icon.data && (
-          <Box>
-            <Box
-              bg='page.alt'
-              p={4}
-              mr={[4, 2]}
-              mb={[2, 0]}
-              borderRadius='semi'
-            >
-              <Image
-                w='30px'
-                h='30px'
-                src={`${process.env.NEXT_PUBLIC_STRAPI_API_URLL}${icon.data.attributes.url}`}
-                alt={icon.data.attributes.alternativeText}
-              />
-            </Box>
-          </Box>
-        )} */}
         <Box flex={1} px={[0, 4]} minW='250px' maxW='500px'>
           <Heading as='h4' fontSize='md' fontWeight='semibold' mt={2} pr={4}>
             {title}
@@ -115,13 +97,13 @@ export const StepCard = ({
                   alignItems={['flex-start', 'center']}
                   flexDirection={['column', 'row']}
                 >
-                  {icon && icon.data && (
+                  {icon && (
                     <Image
                       m={2}
                       w='35px'
                       h='35px'
-                      src={`${process.env.NEXT_PUBLIC_STRAPI_API_URL}${icon.data.attributes.url}`}
-                      alt={icon.data.attributes.alternativeText}
+                      src={`${process.env.NEXT_PUBLIC_STRAPI_API_URL}${icon.url}`}
+                      alt={icon.alternativeText}
                     />
                   )}
                   <Text p={2} lineHeight='tall' minW='250px'>
