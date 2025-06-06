@@ -32,7 +32,7 @@ const fetchContent = async (): Promise<DisclaimerContent> => {
       }`,
     );
 
-    return data.data.attributes;
+    return data.data;
   } catch (err: any) {
     throw {
       ...err.response,

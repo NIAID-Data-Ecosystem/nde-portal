@@ -27,7 +27,6 @@ import { FaLinkedinIn, FaSquareFacebook, FaTwitter } from 'react-icons/fa6';
 import { fetchNews } from 'src/views/home/components/NewsCarousel';
 import { useQuery } from '@tanstack/react-query';
 import SectionCard from 'src/views/news/components/SectionCard';
-import { fetchAllFeaturedPages } from 'src/views/features/helpers';
 import {
   HeroBannerContainer,
   HeroBannerText,
@@ -38,34 +37,28 @@ export interface NewsOrEventsObject {
   id: number;
   mdx: { [key: string]: MDXRemoteSerializeResult };
   type?: string;
-  attributes: {
-    name: string | null;
-    subtitle: string | null;
-    description: string | null;
-    shortDescription: string | null;
-    image: {
-      data:
-        | null
-        | { attributes: { url: string; alternativeText: string } }
-        | { attributes: { url: string; alternativeText: string } }[];
-    };
-    eventDate?: string;
-    slug: string;
-    createdAt: string;
-    publishedAt: string;
-    updatedAt: string;
-    categories: {
-      data: {
+  name: string | null;
+  subtitle: string | null;
+  description: string | null;
+  shortDescription: string | null;
+  image:
+    | null
+    | { url: string; alternativeText: string }
+    | { url: string; alternativeText: string }[];
+  eventDate?: string;
+  slug: string;
+  createdAt: string;
+  publishedAt: string;
+  updatedAt: string;
+  categories:
+    | {
         id: number;
-        attributes: {
-          name: string;
-          createdAt: string;
-          publishedAt: string;
-          updatedAt: string;
-        };
-      }[];
-    } | null;
-  };
+        name: string;
+        createdAt: string;
+        publishedAt: string;
+        updatedAt: string;
+      }[]
+    | null;
 }
 
 export interface UpdatesProps {
@@ -78,14 +71,6 @@ export interface UpdatesProps {
       data: NewsOrEventsObject[];
       error?: { message: string };
     };
-    // webinars: {
-    //   data: NewsOrEventsObject[];
-    //   error?: { message: string };
-    // };
-    features: {
-      data: NewsOrEventsObject[];
-      error?: { message: string };
-    };
   };
   error?: { message: string };
 }
@@ -93,7 +78,6 @@ export interface UpdatesProps {
 const Updates: NextPage<UpdatesProps> = props => {
   const { data } = props;
 
-  // Fetch features from Strapi API.
   const {
     data: response,
     error,
@@ -103,61 +87,30 @@ const Updates: NextPage<UpdatesProps> = props => {
     | {
         news: NewsOrEventsObject[];
         events: NewsOrEventsObject[];
-        features: NewsOrEventsObject[];
       }
     | undefined,
     Error,
     {
       news: NewsOrEventsObject[];
       events: NewsOrEventsObject[];
-      features: NewsOrEventsObject[];
     }
   >({
-    queryKey: ['news', 'events', 'features'],
+    queryKey: ['news', 'events'],
     queryFn: async () => {
       try {
-        // Parallel fetching of news, events, and features using Promise.all
-        const [newsResponse, featuresResponse, eventsResponse] =
-          await Promise.all([
-            fetchNews({ paginate: { page: 1, pageSize: 100 } }),
-            fetchAllFeaturedPages({
-              populate: {
-                fields: [
-                  'title',
-                  'slug',
-                  'subtitle',
-                  'publishedAt',
-                  'updatedAt',
-                ],
-                thumbnail: {
-                  fields: ['url', 'alternativeText'],
-                },
-              },
-              sort: { publishedAt: 'desc', updatedAt: 'desc' },
-              paginate: { page: 1, pageSize: 100 },
-            }),
-            fetchEvents({ paginate: { page: 1, pageSize: 100 } }),
-          ]);
+        // Parallel fetching of news and events using Promise.all
+        const [newsResponse, eventsResponse] = await Promise.all([
+          fetchNews({ paginate: { page: 1, pageSize: 100 } }),
+          fetchEvents({ paginate: { page: 1, pageSize: 100 } }),
+        ]);
 
         // Mapping data to the expected structure
         const news = newsResponse.news;
-        const features = featuresResponse.data.map(item => ({
-          ...item,
-          type: 'feature',
-          attributes: {
-            name: item.attributes.title,
-            image: item.attributes.thumbnail,
-            slug: item.attributes.slug,
-            description: `[Read full feature](/features/${item.attributes.slug})`,
-            subtitle: item.attributes.subtitle,
-          },
-        })) as NewsOrEventsObject[];
         const events = eventsResponse.events;
 
         return {
           news,
           events,
-          features,
         };
       } catch (error: any) {
         // Assuming error is of type any, we throw as type Error for useQuery to handle
@@ -169,11 +122,9 @@ const Updates: NextPage<UpdatesProps> = props => {
     initialData: {
       news: data?.news?.data || [],
       events: data?.events?.data || [],
-      features: [],
     },
     refetchOnWindowFocus: false,
   });
-
   const [sections, setSections] = useState([
     {
       title: 'Updates',
@@ -186,15 +137,6 @@ const Updates: NextPage<UpdatesProps> = props => {
       showMax: 5,
     },
     {
-      title: 'Features',
-      hash: 'features',
-      showMax: 5,
-    },
-    // {
-    //   title: 'Webinar Recordings',
-    //   hash: 'webinars',
-    // },
-    {
       title: 'Additional Resources',
       hash: 'resources',
     },
@@ -206,16 +148,14 @@ const Updates: NextPage<UpdatesProps> = props => {
 
   const upcomingEvents = response?.events?.filter(
     event =>
-      event.attributes.eventDate &&
-      new Date(Date.parse(event.attributes.eventDate.replace(/-/g, ' '))) >=
-        new Date(),
+      event.eventDate &&
+      new Date(Date.parse(event.eventDate.replace(/-/g, ' '))) >= new Date(),
   );
 
   const pastEvents = response?.events?.filter(
     event =>
-      event.attributes.eventDate &&
-      new Date(Date.parse(event.attributes.eventDate.replace(/-/g, ' '))) <
-        new Date(),
+      event.eventDate &&
+      new Date(Date.parse(event.eventDate.replace(/-/g, ' '))) < new Date(),
   );
 
   // add scroll padding to account for sticky nav
@@ -406,6 +346,7 @@ const Updates: NextPage<UpdatesProps> = props => {
                                     ?.showMax,
                                 )
                                 .map((event: NewsOrEventsObject) => {
+                                  console.log('e', event);
                                   return (
                                     <SectionCard key={event.id} {...event} />
                                   );
@@ -418,54 +359,6 @@ const Updates: NextPage<UpdatesProps> = props => {
                   )}
                 </SectionList>
               </Section>
-
-              {/* Features */}
-              {response?.features.length > 0 && (
-                <Section id='features' title='Features'>
-                  <SectionList
-                    id='features'
-                    numItems={response?.features?.length || 0}
-                    sections={sections}
-                    setSections={setSections}
-                  >
-                    {isLoading || isRefetching ? (
-                      <SkeletonText />
-                    ) : (
-                      <>
-                        {error?.message ? (
-                          <Error
-                            minHeight='unset'
-                            bg='#fff'
-                            message={error.message}
-                            headingProps={{ fontSize: 'md' }}
-                          />
-                        ) : (
-                          response?.features
-                            ?.slice(
-                              0,
-                              sections.find(s => s.hash === 'features')
-                                ?.showMax,
-                            )
-                            .map((feature: NewsOrEventsObject) => {
-                              const image = Array.isArray(
-                                feature.attributes.image.data,
-                              )
-                                ? feature.attributes.image.data[0]?.attributes
-                                : feature.attributes.image.data?.attributes;
-                              return (
-                                <SectionCard
-                                  key={feature.id}
-                                  {...feature}
-                                  image={image}
-                                />
-                              );
-                            })
-                        )}
-                      </>
-                    )}
-                  </SectionList>
-                </Section>
-              )}
 
               {/* Additional Resources */}
               <Section id='resources' title='Additional Resources'>
@@ -637,12 +530,7 @@ export const fetchEvents = async (
       {
         params: {
           publicationState: isProd ? 'live' : 'preview',
-          populate: {
-            fields: ['*'],
-            image: {
-              fields: ['url', 'alternativeText'],
-            },
-          },
+          populate: '*',
           sort: { publishedAt: 'desc', updatedAt: 'desc' },
           paginate: { page: 1, pageSize: 100 },
           ...params,

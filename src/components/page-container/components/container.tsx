@@ -22,7 +22,7 @@ export interface NoticeProps {
   id: number | string;
   heading: string;
   description?: string | null;
-  status: 'INFO' | 'WARNING' | 'ERROR' | 'SUCCESS';
+  state: 'INFO' | 'WARNING' | 'ERROR' | 'SUCCESS';
   affectedRepository?: string | null;
   createdAt: string;
   updatedAt: string;
@@ -55,12 +55,9 @@ export const PageContainer: React.FC<PageContainerProps> = ({
           )
           .then(res => res.data);
         return notices.data
-          .filter(
-            (datum: { id: number; attributes: NoticeProps }) =>
-              datum.attributes.isActive === true,
-          )
-          .map((datum: { id: number; attributes: NoticeProps }) => ({
-            ...datum.attributes,
+          .filter((datum: NoticeProps) => datum.isActive === true)
+          .map((datum: NoticeProps) => ({
+            ...datum,
             id: datum.id,
           }));
       } catch (err: any) {
@@ -133,7 +130,7 @@ export const PageContainer: React.FC<PageContainerProps> = ({
                     ? 'Production'
                     : 'Development'
                 } API </a>.`}
-                status='INFO'
+                state='INFO'
               />
             )}
             {/* <!-- Banner for service warnings and notices --> */}
@@ -144,7 +141,7 @@ export const PageContainer: React.FC<PageContainerProps> = ({
                   id={`banner-${notice.id}-notice`}
                   heading={notice.heading}
                   description={notice.description}
-                  status={notice.status}
+                  state={notice.state}
                 />
               ))}
           </Stack>

@@ -15,13 +15,11 @@ interface FrequentlyAskedProps {
   data: {
     compiledMDX: MDXRemoteSerializeResult;
     id: string;
-    attributes: {
-      description: string;
-      name: string;
-      createdAt: string;
-      publishedAt: string;
-      updatedAt: string;
-    };
+    description: string;
+    name: string;
+    createdAt: string;
+    publishedAt: string;
+    updatedAt: string;
   } | null;
   error?: { message: string };
 }
@@ -40,7 +38,7 @@ const FrequentlyAsked: NextPage<FrequentlyAskedProps> = props => {
         {error ? (
           <Error>
             <Flex flexDirection='column' alignItems='center'>
-              <Text>{data?.attributes.name}</Text>
+              <Text>{data?.name}</Text>
             </Flex>
           </Error>
         ) : data ? (
@@ -52,7 +50,7 @@ const FrequentlyAsked: NextPage<FrequentlyAskedProps> = props => {
               components={MDXComponents}
               rehypePlugins={[rehypeRaw, remarkGfm]}
             >
-              {data.attributes.description}
+              {data.description}
             </ReactMarkdown>
           </Flex>
         ) : (
@@ -77,7 +75,7 @@ export async function getStaticProps() {
   };
   try {
     const data = await fetchDocs();
-    const body = await data.attributes.description;
+    const body = await data.description;
 
     const compiledMDX = await serialize(body);
 

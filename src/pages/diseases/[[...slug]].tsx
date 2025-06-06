@@ -27,16 +27,6 @@ const fetchDiseaseContent = async (
   slug: string | string[],
 ): Promise<DiseasePageProps> => {
   try {
-    // const isProd =
-    //   process.env.NEXT_PUBLIC_BASE_URL === 'https://data.niaid.nih.gov';
-    // const topics = await axios.get(
-    //   `${
-    //     process.env.NEXT_PUBLIC_STRAPI_API_URL
-    //   }/api/features?populate=*&filters[$and][0][slug][$eqi]=${slug}&publicationState=${
-    //     isProd ? 'live' : 'preview'
-    //   }`,
-    // );
-
     return MOCK_PAGES.find(
       (disease: DiseasePageProps) => disease.attributes.slug === slug[0],
     ) as DiseasePageProps;
