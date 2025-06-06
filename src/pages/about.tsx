@@ -35,8 +35,7 @@ const fetchContent = async (): Promise<AboutContent> => {
         isProd ? 'live' : 'preview'
       }`,
     );
-
-    return data.data.attributes;
+    return data.data;
   } catch (err: any) {
     throw {
       ...err.response,
@@ -48,7 +47,6 @@ const fetchContent = async (): Promise<AboutContent> => {
 
 const About: NextPage<AboutProps> = props => {
   const MDXComponents = useMDXComponents({});
-
   const [content, setContent] = useState<AboutProps['data']>(props.data);
   const [contentError, setContentError] = useState<any>(props.error);
 
