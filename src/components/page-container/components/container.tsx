@@ -55,12 +55,9 @@ export const PageContainer: React.FC<PageContainerProps> = ({
           )
           .then(res => res.data);
         return notices.data
-          .filter(
-            (datum: { id: number; attributes: NoticeProps }) =>
-              datum.attributes.isActive === true,
-          )
-          .map((datum: { id: number; attributes: NoticeProps }) => ({
-            ...datum.attributes,
+          .filter((datum: NoticeProps) => datum.isActive === true)
+          .map((datum: NoticeProps) => ({
+            ...datum,
             id: datum.id,
           }));
       } catch (err: any) {
