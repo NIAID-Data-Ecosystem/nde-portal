@@ -14,18 +14,18 @@ export const CarouselWrapper = ({
       mt={0}
       p={0}
       pb={{
-        base: 12,
-        sm: 10,
-        md: 14,
-        lg: 16,
-        xl: 16,
+        base: 14,
+        sm: 12,
+        md: 16,
+        lg: 18,
+        xl: 14,
       }}
       minH={{
-        base: '355px',
-        sm: '300px',
-        md: '330px',
-        lg: '340px',
-        xl: '335px',
+        base: '370px',
+        sm: '320px',
+        md: '350px',
+        lg: '355px',
+        xl: '360px',
       }}
       width='100%'
       maxW='100%'
