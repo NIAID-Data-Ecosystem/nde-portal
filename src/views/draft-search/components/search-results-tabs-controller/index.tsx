@@ -14,6 +14,20 @@ import { CompactCard } from '../results-list/components/compact-card';
 import { Carousel } from 'src/components/carousel';
 import { CarouselWrapper } from '../layout/carousel-wrapper';
 
+const CAROUSEL_RESULTS_FIELDS = [
+  '_meta',
+  '@type',
+  'id',
+  'about',
+  'alternateName',
+  'conditionsOfAccess',
+  'date',
+  'description',
+  'hasAPI',
+  'includedInDataCatalog',
+  'name',
+];
+
 interface SearchResultsControllerProps {
   colorScheme?: string;
   initialData: FetchSearchResultsResponse;
@@ -52,6 +66,32 @@ export const SearchResultsController = ({
   });
 
   const { data } = searchResultsData.response;
+
+  // Get resource catalog records
+  const carouselResultsData = useSearchResultsData({
+    ...queryParams,
+    filters: {
+      ...queryParams.filters,
+      '@type': ['ResourceCatalog'],
+    },
+    fields: CAROUSEL_RESULTS_FIELDS,
+    size: 50,
+  });
+
+  const { data: carouselData } = carouselResultsData.response;
+
+  // Sort carousel data alphabetically by name
+  const sortedCarouselData = useMemo(() => {
+    if (!carouselData?.results) return null;
+
+    const sorted = [...carouselData.results].sort((a, b) => {
+      const nameA = a.name || '';
+      const nameB = b.name || '';
+      return nameA.localeCompare(nameB, undefined, { sensitivity: 'base' });
+    });
+
+    return { ...carouselData, results: sorted };
+  }, [carouselData]);
 
   // Enhance each tab with facet counts for the types it represents.
   const tabsWithCounts = useMemo(
@@ -104,20 +144,19 @@ export const SearchResultsController = ({
                         } (${section.count.toLocaleString()})`}
                       >
                         {/* Render carousel if ResourceCatalog type is included */}
-                        {section.type === 'ResourceCatalog' && data?.results ? (
+                        {section.type === 'ResourceCatalog' &&
+                        sortedCarouselData?.results ? (
                           <CarouselWrapper>
                             <Carousel gap={8}>
-                              {data.results
-                                .slice(0, 10)
-                                .map((carouselCard, idx) => {
-                                  return (
-                                    <CompactCard
-                                      key={carouselCard.id + idx}
-                                      data={carouselCard}
-                                      referrerPath={router.asPath}
-                                    />
-                                  );
-                                })}
+                              {sortedCarouselData.results.map(carouselCard => {
+                                return (
+                                  <CompactCard
+                                    key={carouselCard.id}
+                                    data={carouselCard}
+                                    referrerPath={router.asPath}
+                                  />
+                                );
+                              })}
                             </Carousel>
                           </CarouselWrapper>
                         ) : (
