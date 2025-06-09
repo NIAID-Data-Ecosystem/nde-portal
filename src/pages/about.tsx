@@ -31,9 +31,7 @@ const fetchContent = async (): Promise<AboutContent> => {
     const { data } = await axios.get(
       `${
         process.env.NEXT_PUBLIC_STRAPI_API_URL
-      }/api/about-page?populate=*&publicationState=${
-        isProd ? 'live' : 'preview'
-      }`,
+      }/api/about-page?populate=*&status=${isProd ? 'published' : 'draft'}`,
     );
     return data.data;
   } catch (err: any) {

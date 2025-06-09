@@ -242,7 +242,7 @@ export const NewsCarousel = ({
 };
 
 interface NewsQueryParams {
-  publicationState?: string;
+  status?: string;
   fields?: string[];
   populate?:
     | {
@@ -267,7 +267,7 @@ export const fetchNews = async (
       `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/api/news-reports`,
       {
         params: {
-          publicationState: isProd ? 'live' : 'preview',
+          status: isProd ? 'published' : 'draft',
           populate: '*',
           sort: { publishedAt: 'desc', updatedAt: 'desc' },
           paginate: { page: 1, pageSize: 100 },

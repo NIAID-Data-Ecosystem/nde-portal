@@ -26,8 +26,8 @@ const fetchContent = async (): Promise<DisclaimerContent> => {
     const { data } = await axios.get(
       `${
         process.env.NEXT_PUBLIC_STRAPI_API_URL
-      }/api/disclaimer-page?populate=*&publicationState=${
-        isProd ? 'live' : 'preview'
+      }/api/disclaimer-page?populate=*&status=${
+        isProd ? 'published' : 'draft'
       }`,
     );
 

@@ -53,8 +53,8 @@ export const fetchCategories = async () => {
     const docs = await axios.get(
       `${
         process.env.NEXT_PUBLIC_STRAPI_API_URL
-      }/api/categories?filters[docs][name][$null]&populate[docs][fields][0]=name&populate[docs][fields][1]=slug&populate[docs][sort][1]=order:asc&pagination[page]=1&pagination[pageSize]=100&sort[0]=order:asc&publicationState=${
-        isProd ? 'live' : 'preview'
+      }/api/categories?filters[docs][name][$null]&populate[docs][fields][0]=name&populate[docs][fields][1]=slug&populate[docs][sort][1]=order:asc&pagination[page]=1&pagination[pageSize]=100&sort[0]=order:asc&status=${
+        isProd ? 'published' : 'draft'
       }`,
     );
 
@@ -352,8 +352,8 @@ export const getStaticProps: GetStaticProps = async context => {
       const docs = await axios.get(
         `${
           process.env.NEXT_PUBLIC_STRAPI_API_URL
-        }/api/docs?populate=*&filters[$and][0][slug][$eqi]=${slug}&publicationState=${
-          isProd ? 'live' : 'preview'
+        }/api/docs?populate=*&filters[$and][0][slug][$eqi]=${slug}&status=${
+          isProd ? 'published' : 'draft'
         }`,
       );
 
@@ -375,9 +375,7 @@ export async function getStaticPaths() {
       const docs = await axios.get(
         `${
           process.env.NEXT_PUBLIC_STRAPI_API_URL
-        }/api/docs?fields[0]=slug&publicationState=${
-          isProd ? 'live' : 'preview'
-        }`,
+        }/api/docs?fields[0]=slug&status=${isProd ? 'published' : 'draft'}`,
       );
 
       return {

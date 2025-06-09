@@ -48,9 +48,7 @@ export const PageContainer: React.FC<PageContainerProps> = ({
           .get(
             `${
               process.env.NEXT_PUBLIC_STRAPI_API_URL
-            }/api/notices?populate=*&publicationState=${
-              isProd ? 'live' : 'preview'
-            }`,
+            }/api/notices?populate=*&status=${isProd ? 'published' : 'draft'}`,
           )
           .then(res => res.data);
         return notices.data

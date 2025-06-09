@@ -264,7 +264,7 @@ const IntegrationMain: NextPage<IntegrationProps> = props => {
 };
 
 interface QueryParams {
-  publicationState?: string;
+  status?: string;
   fields?: string[];
   populate?:
     | {
@@ -289,7 +289,7 @@ export const fetchPageContent = async (
       `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/api/integration-page`,
       {
         params: {
-          publicationState: isProd ? 'live' : 'preview',
+          status: isProd ? 'published' : 'draft',
           populate: [
             'overview.image',
             'tabs.panels.cards.icon',

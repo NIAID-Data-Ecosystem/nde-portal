@@ -504,7 +504,7 @@ const Updates: NextPage<UpdatesProps> = props => {
 };
 
 interface QueryParams {
-  publicationState?: string;
+  status?: string;
   fields?: string[];
   populate?:
     | {
@@ -528,7 +528,7 @@ export const fetchEvents = async (
       `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/api/events`,
       {
         params: {
-          publicationState: isProd ? 'live' : 'preview',
+          status: isProd ? 'published' : 'draft',
           populate: '*',
           sort: { publishedAt: 'desc', updatedAt: 'desc' },
           paginate: { page: 1, pageSize: 100 },
@@ -555,7 +555,7 @@ export const fetchWebinars = async (
       `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/api/webinars`,
       {
         params: {
-          publicationState: isProd ? 'live' : 'preview',
+          status: isProd ? 'published' : 'draft',
           populate: {
             fields: ['*'],
           },

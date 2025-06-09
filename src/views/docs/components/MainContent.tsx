@@ -86,8 +86,8 @@ const fetchDocumentation = async (slug: string[]) => {
     const docs = await axios.get(
       `${
         process.env.NEXT_PUBLIC_STRAPI_API_URL
-      }/api/docs?populate=*&filters[$and][0][slug][$eqi]=${slug}&publicationState=${
-        isProd ? 'live' : 'preview'
+      }/api/docs?populate=*&filters[$and][0][slug][$eqi]=${slug}&status=${
+        isProd ? 'published' : 'draft'
       }`,
     );
     return docs.data.data as DocumentationProps[];
