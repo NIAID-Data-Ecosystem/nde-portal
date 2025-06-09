@@ -53,8 +53,7 @@ const IntegrationMain: NextPage<IntegrationProps> = props => {
   // Retrieve section information (title, slug) from content for the table of contents
   const sections =
     content &&
-    content?.attributes &&
-    Object.values(content.attributes).reduce((r, block) => {
+    Object.values(content).reduce((r, block) => {
       if (block && typeof block === 'object') {
         if (Array.isArray(block)) {
           block.map(({ title, slug }) => {
@@ -75,8 +74,8 @@ const IntegrationMain: NextPage<IntegrationProps> = props => {
   const MDXComponents = useMDXComponents({});
   const [updatedAt, setUpdatedAt] = useState('');
   useEffect(() => {
-    if (content && content?.attributes && content.attributes.updatedAt) {
-      const date = new Date(content.attributes.updatedAt).toLocaleString([], {
+    if (content && content.updatedAt) {
+      const date = new Date(content.updatedAt).toLocaleString([], {
         day: 'numeric',
         month: 'long',
         year: 'numeric',
@@ -105,44 +104,42 @@ const IntegrationMain: NextPage<IntegrationProps> = props => {
               </Text>
             </Flex>
           </Error>
-        ) : content?.attributes.title ? (
+        ) : content?.title ? (
           <Flex flexDirection='column'>
             <Heading as='h1' size='xl' mt={6} mb={2}>
-              {content.attributes.title}
+              {content.title}
             </Heading>
             <ReactMarkdown
               rehypePlugins={[rehypeRaw, remarkGfm]}
               components={MDXComponents}
             >
-              {content.attributes.description}
+              {content.description}
             </ReactMarkdown>
             {/* Overview */}
-            {content.attributes.overview?.map(
-              ({ description, ...props }, index) => {
-                const [descriptionText, listItems] =
-                  description?.split('<hr/>') || [];
-                return (
-                  <ParagraphSection
-                    key={props.id}
-                    description={descriptionText}
-                    imagePosition={index % 2 == 0 ? 'right' : 'left'}
-                    {...props}
-                  >
-                    {listItems && <ListBlock>{listItems}</ListBlock>}
-                  </ParagraphSection>
-                );
-              },
-            )}
-            {content.attributes.tabs ? (
+            {content.overview?.map(({ description, ...props }, index) => {
+              const [descriptionText, listItems] =
+                description?.split('<hr/>') || [];
+              return (
+                <ParagraphSection
+                  key={props.id}
+                  description={descriptionText}
+                  imagePosition={index % 2 == 0 ? 'right' : 'left'}
+                  {...props}
+                >
+                  {listItems && <ListBlock>{listItems}</ListBlock>}
+                </ParagraphSection>
+              );
+            })}
+            {content.tabs ? (
               <ParagraphSection
-                id={content.attributes.tabs.id}
-                title={content.attributes.tabs.title}
-                slug={content.attributes.tabs.slug}
+                id={content.tabs.id}
+                title={content.tabs.title}
+                slug={content.tabs.slug}
                 textAlign='center'
               >
                 <Tabs colorScheme='primary'>
                   <TabList>
-                    {content.attributes.tabs.panels?.map(({ id, title }) => (
+                    {content.tabs.panels?.map(({ id, title }) => (
                       <Tab
                         key={id}
                         fontSize='sm'
@@ -160,7 +157,7 @@ const IntegrationMain: NextPage<IntegrationProps> = props => {
                     ))}
                   </TabList>
                   <TabPanels>
-                    {content.attributes.tabs.panels?.map(({ id, cards }) => {
+                    {content.tabs.panels?.map(({ id, cards }) => {
                       let stepIndex = 0;
                       const total_steps = cards?.filter(
                         card => card.content && card.isRequired,
@@ -216,17 +213,14 @@ const IntegrationMain: NextPage<IntegrationProps> = props => {
             ) : (
               <></>
             )}
-            {content.attributes?.textBlocks &&
-              content.attributes.textBlocks?.map((block, i) => {
-                return (
-                  <React.Fragment key={block.id}>
-                    {i === content.attributes.textBlocks!.length - 1 && (
-                      <Divider />
-                    )}
-                    <ParagraphSection textAlign='center' {...block} />
-                  </React.Fragment>
-                );
-              })}
+            {content?.textBlocks?.map((block, i) => {
+              return (
+                <React.Fragment key={block.id}>
+                  {i === content.textBlocks!.length - 1 && <Divider />}
+                  <ParagraphSection textAlign='center' {...block} />
+                </React.Fragment>
+              );
+            })}
             <Divider orientation='horizontal' mt={8} mb={4} />
             <Text
               fontStyle='italic'
@@ -270,7 +264,7 @@ const IntegrationMain: NextPage<IntegrationProps> = props => {
 };
 
 interface QueryParams {
-  publicationState?: string;
+  status?: string;
   fields?: string[];
   populate?:
     | {
@@ -290,13 +284,12 @@ export const fetchPageContent = async (
 }> => {
   try {
     // in dev/staging mode, show drafts.
-    const isProd =
-      process.env.NEXT_PUBLIC_BASE_URL === 'https://data.niaid.nih.gov';
+    const isProd = process.env.NEXT_PUBLIC_APP_ENV === 'production';
     const response = await axios.get(
       `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/api/integration-page`,
       {
         params: {
-          publicationState: isProd ? 'live' : 'preview',
+          status: isProd ? 'published' : 'draft',
           populate: [
             'overview.image',
             'tabs.panels.cards.icon',

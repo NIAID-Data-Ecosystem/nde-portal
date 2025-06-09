@@ -26,17 +26,14 @@ interface AboutProps {
 
 const fetchContent = async (): Promise<AboutContent> => {
   try {
-    const isProd =
-      process.env.NEXT_PUBLIC_BASE_URL === 'https://data.niaid.nih.gov';
+    const isProd = process.env.NEXT_PUBLIC_APP_ENV === 'production';
+
     const { data } = await axios.get(
       `${
         process.env.NEXT_PUBLIC_STRAPI_API_URL
-      }/api/about-page?populate=*&publicationState=${
-        isProd ? 'live' : 'preview'
-      }`,
+      }/api/about-page?populate=*&status=${isProd ? 'published' : 'draft'}`,
     );
-
-    return data.data.attributes;
+    return data.data;
   } catch (err: any) {
     throw {
       ...err.response,
@@ -48,7 +45,6 @@ const fetchContent = async (): Promise<AboutContent> => {
 
 const About: NextPage<AboutProps> = props => {
   const MDXComponents = useMDXComponents({});
-
   const [content, setContent] = useState<AboutProps['data']>(props.data);
   const [contentError, setContentError] = useState<any>(props.error);
 

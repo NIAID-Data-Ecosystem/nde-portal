@@ -1,229 +1,167 @@
 {
   "id": 2,
-  "attributes": {
-    "title": "HIV/AIDS",
-    "subtitle": "",
-    "description": "Human immunodeficiency virus, commonly known as HIV, is a virus that targets the immune system and can lead to acquired immunodeficiency syndrome (AIDS) if left untreated. HIV can be transmitted through sexual intercourse, using needles that have been in contact with bodily fluids containing HIV, and during pregnancy, childbirth, or breastfeeding—a concept known as vertical transmission. [Learn more about NIAID’s efforts to address this disease.](https://www.niaid.nih.gov/diseases-conditions/hivaids)",
-    "image": {
-      "data": {
-        "attributes": {
-          "url": "https://www.niaid.nih.gov/sites/default/files/styles/image_style_thumbnail_md/public/hiv-aids-hero.jpg?itok=MXMmgkUp",
-          "alternativeText": "Image of an HIV-infected T cell",
-          "caption": "A T cell infected with HIV. Credit: NIAID."
-        }
-      }
+  "title": "HIV/AIDS",
+  "subtitle": "",
+  "description": "Human immunodeficiency virus, commonly known as HIV, is a virus that targets the immune system and can lead to acquired immunodeficiency syndrome (AIDS) if left untreated. HIV can be transmitted through sexual intercourse, using needles that have been in contact with bodily fluids containing HIV, and during pregnancy, childbirth, or breastfeeding—a concept known as vertical transmission. [Learn more about NIAID’s efforts to address this disease.](https://www.niaid.nih.gov/diseases-conditions/hivaids)",
+  "image": {
+    "url": "https://www.niaid.nih.gov/sites/default/files/styles/image_style_thumbnail_md/public/hiv-aids-hero.jpg?itok=MXMmgkUp",
+    "alternativeText": "Image of an HIV-infected T cell",
+    "caption": "A T cell infected with HIV. Credit: NIAID."
+  },
+  "query": {
+    "q": "\"HIV\" OR \"AIDS\"",
+    "facet_size": 1000,
+    "size": 0
+  },
+  "slug": "HIV-AIDS",
+  "topic": "HIV/AIDS",
+  "contacts": null,
+  "externalLinks": [
+    {
+      "id": 1,
+      "label": "National Institute of Allergy and Infectious Diseases",
+      "url": "https://www.niaid.nih.gov/",
+      "categories": null,
+      "image": {
+        "url": "/assets/NIH-logo.png",
+        "alternativeText": "nih logo"
+      },
+      "isExternal": true,
+      "createdAt": "2025-02-22T19:09:45.049Z",
+      "updatedAt": "2025-02-22T19:09:45.049Z",
+      "publishedAt": "2025-02-22T19:09:45.049Z"
     },
-    "query": {
-      "q": "\"HIV\" OR \"AIDS\"",
-      "facet_size": 1000,
-      "size": 0
-    },
-    "slug": "HIV-AIDS",
-    "topic": "HIV/AIDS",
-    "type": {
-      "data": [
-        {
-          "id": 1,
-          "attributes": {
-            "name": "Diseases",
-            "createdAt": "2025-02-22T19:09:45.049Z",
-            "updatedAt": "2025-02-22T19:09:45.049Z",
-            "publishedAt": "2025-02-22T19:09:45.049Z"
-          }
-        }
-      ]
-    },
-    "externalLinks": {
-      "data": [
-        {
-          "id": 1,
-          "attributes": {
-            "label": "National Institute of Allergy and Infectious Diseases",
-            "url": "https://www.niaid.nih.gov/",
-            "categories": null,
-            "image": {
-              "data": {
-                "attributes": {
-                  "url": "/assets/NIH-logo.png",
-                  "alternativeText": "nih logo"
-                }
-              }
-            },
-            "isExternal": true,
-            "createdAt": "2025-02-22T19:09:45.049Z",
-            "updatedAt": "2025-02-22T19:09:45.049Z",
-            "publishedAt": "2025-02-22T19:09:45.049Z"
-          }
-        },
 
-        {
-          "id": 2,
-          "attributes": {
-            "label": "CDC HIV/AIDS",
-            "url": "https://www.cdc.gov/hiv/index.html",
-            "categories": null,
-            "image": { "data": null },
-            "isExternal": true,
-            "createdAt": "2025-02-22T19:09:45.049Z",
-            "updatedAt": "2025-02-22T19:09:45.049Z",
-            "publishedAt": "2025-02-22T19:09:45.049Z"
-          }
-        },
-        {
-          "id": 3,
-          "attributes": {
-            "label": "HIV/AIDS Clinical Trials Networks",
-            "url": "https://www.niaid.nih.gov/research/hivaids-clinical-trials-networks",
-            "categories": null,
-            "image": { "data": null },
-            "isExternal": true,
-            "createdAt": "2025-02-22T19:09:45.049Z",
-            "updatedAt": "2025-02-22T19:09:45.049Z",
-            "publishedAt": "2025-02-22T19:09:45.049Z"
-          }
-        },
-        {
-          "id": 4,
-          "attributes": {
-            "label": "HIV Vaccine Trials Network (HVTN)",
-            "url": "https://www.niaid.nih.gov/research/hiv-vaccine-trials-network",
-            "categories": {
-              "data": [
-                {
-                  "id": 1,
-                  "attributes": {
-                    "name": "Working Groups / Programs / Networks",
-                    "createdAt": "2025-02-22T19:09:45.049Z",
-                    "publishedAt": "2025-02-22T19:09:45.049Z",
-                    "updatedAt": "2025-02-22T19:09:45.049Z"
-                  }
-                }
-              ]
-            },
-            "image": { "data": null },
-            "isExternal": true,
-            "createdAt": "2025-02-22T19:09:45.049Z",
-            "updatedAt": "2025-02-22T19:09:45.049Z",
-            "publishedAt": "2025-02-22T19:09:45.049Z"
-          }
-        },
-        {
-          "id": 5,
-          "attributes": {
-            "label": "Women's Interagency HIV Study (WIHS)",
-            "url": "https://www.niaid.nih.gov/research/womens-interagency-hiv-study",
-            "categories": {
-              "data": [
-                {
-                  "id": 1,
-                  "attributes": {
-                    "name": "Working Groups / Programs / Networks",
-                    "createdAt": "2025-02-22T19:09:45.049Z",
-                    "publishedAt": "2025-02-22T19:09:45.049Z",
-                    "updatedAt": "2025-02-22T19:09:45.049Z"
-                  }
-                }
-              ]
-            },
-            "image": { "data": null },
-            "isExternal": true,
-            "createdAt": "2025-02-22T19:09:45.049Z",
-            "updatedAt": "2025-02-22T19:09:45.049Z",
-            "publishedAt": "2025-02-22T19:09:45.049Z"
-          }
-        },
-        {
-          "id": 6,
-          "attributes": {
-            "label": "Global HIV Vaccine Enterprise (GHAVE)",
-            "url": "https://www.niaid.nih.gov/node/7937?404message&requested_url=/research/global-hiv-vaccine-enterprise",
-            "categories": {
-              "data": [
-                {
-                  "id": 1,
-                  "attributes": {
-                    "name": "Working Groups / Programs / Networks",
-                    "createdAt": "2025-02-22T19:09:45.049Z",
-                    "publishedAt": "2025-02-22T19:09:45.049Z",
-                    "updatedAt": "2025-02-22T19:09:45.049Z"
-                  }
-                }
-              ]
-            },
-            "image": { "data": null },
-            "isExternal": true,
-            "createdAt": "2025-02-22T19:09:45.049Z",
-            "updatedAt": "2025-02-22T19:09:45.049Z",
-            "publishedAt": "2025-02-22T19:09:45.049Z"
-          }
-        },
-        {
-          "id": 7,
-          "attributes": {
-            "label": "HIV Prevention Trials Network (HPTN)",
-            "url": "https://www.niaid.nih.gov/research/hiv-prevention-trials-network",
-            "categories": {
-              "data": [
-                {
-                  "id": 1,
-                  "attributes": {
-                    "name": "Working Groups / Programs / Networks",
-                    "createdAt": "2025-02-22T19:09:45.049Z",
-                    "publishedAt": "2025-02-22T19:09:45.049Z",
-                    "updatedAt": "2025-02-22T19:09:45.049Z"
-                  }
-                }
-              ]
-            },
-            "image": { "data": null },
-            "isExternal": true,
-            "createdAt": "2025-02-22T19:09:45.049Z",
-            "updatedAt": "2025-02-22T19:09:45.049Z",
-            "publishedAt": "2025-02-22T19:09:45.049Z"
-          }
-        },
-        {
-          "id": 8,
-          "attributes": {
-            "label": "Impact of CCR5 Blockade in HIV+ Kidney Transplant Recipients",
-            "url": "https://www.niaid.nih.gov/research/impact-ccr5-blockade-hiv-kidney-transplant-recipients",
-            "categories": {
-              "data": [
-                {
-                  "id": 1,
-                  "attributes": {
-                    "name": "Working Groups / Programs / Networks",
-                    "createdAt": "2025-02-22T19:09:45.049Z",
-                    "publishedAt": "2025-02-22T19:09:45.049Z",
-                    "updatedAt": "2025-02-22T19:09:45.049Z"
-                  }
-                }
-              ]
-            },
-            "image": { "data": null },
-            "isExternal": true,
-            "createdAt": "2025-02-22T19:09:45.049Z",
-            "updatedAt": "2025-02-22T19:09:45.049Z",
-            "publishedAt": "2025-02-22T19:09:45.049Z"
-          }
-        },
-        {
-          "id": 9,
-          "attributes": {
-            "label": "Selected Clinical Trials About HIV/AIDS",
-            "url": "https://www.niaid.nih.gov/clinical-trials/selected-hiv-aids-clinical-trials",
-            "categories": null,
-            "image": { "data": null },
-            "isExternal": true,
-            "createdAt": "2025-02-22T19:09:45.049Z",
-            "updatedAt": "2025-02-22T19:09:45.049Z",
-            "publishedAt": "2025-02-22T19:09:45.049Z"
-          }
-        }
-      ]
+    {
+      "id": 2,
+      "label": "CDC HIV/AIDS",
+      "url": "https://www.cdc.gov/hiv/index.html",
+      "categories": null,
+      "image": null,
+      "isExternal": true,
+      "createdAt": "2025-02-22T19:09:45.049Z",
+      "updatedAt": "2025-02-22T19:09:45.049Z",
+      "publishedAt": "2025-02-22T19:09:45.049Z"
     },
-    "createdAt": "2025-02-22T19:09:45.049Z",
-    "updatedAt": "2025-02-22T19:09:45.049Z",
-    "publishedAt": "2025-02-22T19:09:45.049Z"
-  }
+    {
+      "id": 3,
+      "label": "HIV/AIDS Clinical Trials Networks",
+      "url": "https://www.niaid.nih.gov/research/hivaids-clinical-trials-networks",
+      "categories": null,
+      "image": null,
+      "isExternal": true,
+      "createdAt": "2025-02-22T19:09:45.049Z",
+      "updatedAt": "2025-02-22T19:09:45.049Z",
+      "publishedAt": "2025-02-22T19:09:45.049Z"
+    },
+    {
+      "id": 4,
+      "label": "HIV Vaccine Trials Network (HVTN)",
+      "url": "https://www.niaid.nih.gov/research/hiv-vaccine-trials-network",
+      "categories": [
+        {
+          "id": 1,
+          "name": "Working Groups / Programs / Networks",
+          "createdAt": "2025-02-22T19:09:45.049Z",
+          "publishedAt": "2025-02-22T19:09:45.049Z",
+          "updatedAt": "2025-02-22T19:09:45.049Z"
+        }
+      ],
+      "image": null,
+      "isExternal": true,
+      "createdAt": "2025-02-22T19:09:45.049Z",
+      "updatedAt": "2025-02-22T19:09:45.049Z",
+      "publishedAt": "2025-02-22T19:09:45.049Z"
+    },
+    {
+      "id": 5,
+      "label": "Women's Interagency HIV Study (WIHS)",
+      "url": "https://www.niaid.nih.gov/research/womens-interagency-hiv-study",
+      "categories": [
+        {
+          "id": 1,
+          "name": "Working Groups / Programs / Networks",
+          "createdAt": "2025-02-22T19:09:45.049Z",
+          "publishedAt": "2025-02-22T19:09:45.049Z",
+          "updatedAt": "2025-02-22T19:09:45.049Z"
+        }
+      ],
+      "image": null,
+      "isExternal": true,
+      "createdAt": "2025-02-22T19:09:45.049Z",
+      "updatedAt": "2025-02-22T19:09:45.049Z",
+      "publishedAt": "2025-02-22T19:09:45.049Z"
+    },
+    {
+      "id": 6,
+      "label": "Global HIV Vaccine Enterprise (GHAVE)",
+      "url": "https://www.niaid.nih.gov/node/7937?404message&requested_url=/research/global-hiv-vaccine-enterprise",
+      "categories": [
+        {
+          "id": 1,
+          "name": "Working Groups / Programs / Networks",
+          "createdAt": "2025-02-22T19:09:45.049Z",
+          "publishedAt": "2025-02-22T19:09:45.049Z",
+          "updatedAt": "2025-02-22T19:09:45.049Z"
+        }
+      ],
+      "image": null,
+      "isExternal": true,
+      "createdAt": "2025-02-22T19:09:45.049Z",
+      "updatedAt": "2025-02-22T19:09:45.049Z",
+      "publishedAt": "2025-02-22T19:09:45.049Z"
+    },
+    {
+      "id": 7,
+      "label": "HIV Prevention Trials Network (HPTN)",
+      "url": "https://www.niaid.nih.gov/research/hiv-prevention-trials-network",
+      "categories": [
+        {
+          "id": 1,
+          "name": "Working Groups / Programs / Networks",
+          "createdAt": "2025-02-22T19:09:45.049Z",
+          "publishedAt": "2025-02-22T19:09:45.049Z",
+          "updatedAt": "2025-02-22T19:09:45.049Z"
+        }
+      ],
+      "image": null,
+      "isExternal": true,
+      "createdAt": "2025-02-22T19:09:45.049Z",
+      "updatedAt": "2025-02-22T19:09:45.049Z",
+      "publishedAt": "2025-02-22T19:09:45.049Z"
+    },
+    {
+      "id": 8,
+      "label": "Impact of CCR5 Blockade in HIV+ Kidney Transplant Recipients",
+      "url": "https://www.niaid.nih.gov/research/impact-ccr5-blockade-hiv-kidney-transplant-recipients",
+      "categories": [
+        {
+          "id": 1,
+          "name": "Working Groups / Programs / Networks",
+          "createdAt": "2025-02-22T19:09:45.049Z",
+          "publishedAt": "2025-02-22T19:09:45.049Z",
+          "updatedAt": "2025-02-22T19:09:45.049Z"
+        }
+      ],
+      "image": null,
+      "isExternal": true,
+      "createdAt": "2025-02-22T19:09:45.049Z",
+      "updatedAt": "2025-02-22T19:09:45.049Z",
+      "publishedAt": "2025-02-22T19:09:45.049Z"
+    },
+    {
+      "id": 9,
+      "label": "Selected Clinical Trials About HIV/AIDS",
+      "url": "https://www.niaid.nih.gov/clinical-trials/selected-hiv-aids-clinical-trials",
+      "categories": null,
+      "image": null,
+      "isExternal": true,
+      "createdAt": "2025-02-22T19:09:45.049Z",
+      "updatedAt": "2025-02-22T19:09:45.049Z",
+      "publishedAt": "2025-02-22T19:09:45.049Z"
+    }
+  ],
+  "createdAt": "2025-02-22T19:09:45.049Z",
+  "updatedAt": "2025-02-22T19:09:45.049Z",
+  "publishedAt": "2025-02-22T19:09:45.049Z"
 }

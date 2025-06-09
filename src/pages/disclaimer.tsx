@@ -22,17 +22,16 @@ interface DisclaimerContent {
 
 const fetchContent = async (): Promise<DisclaimerContent> => {
   try {
-    const isProd =
-      process.env.NEXT_PUBLIC_BASE_URL === 'https://data.niaid.nih.gov';
+    const isProd = process.env.NEXT_PUBLIC_APP_ENV === 'production';
     const { data } = await axios.get(
       `${
         process.env.NEXT_PUBLIC_STRAPI_API_URL
-      }/api/disclaimer-page?populate=*&publicationState=${
-        isProd ? 'live' : 'preview'
+      }/api/disclaimer-page?populate=*&status=${
+        isProd ? 'published' : 'draft'
       }`,
     );
 
-    return data.data.attributes;
+    return data.data;
   } catch (err: any) {
     throw {
       ...err.response,
