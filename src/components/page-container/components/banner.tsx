@@ -22,7 +22,7 @@ import {
   FaCircleXmark,
 } from 'react-icons/fa6';
 
-const StatusIcon = ({ status }: { status: NoticeProps['status'] }) => {
+const StatusIcon = ({ status }: { status: NoticeProps['state'] }) => {
   let icon = null;
 
   if (status === 'ERROR') {
@@ -50,8 +50,8 @@ export const Banner = ({
   id,
   heading,
   description,
-  status,
-}: Pick<NoticeProps, 'id' | 'heading' | 'description' | 'status'>) => {
+  state,
+}: Pick<NoticeProps, 'id' | 'heading' | 'description' | 'state'>) => {
   const [isOpen, setOpen] = useLocalStorage(`${id}`, true);
   const [isMounted, setIsMounted] = useState(false); // for SSR
   const MDXComponents = useMDXComponents({
@@ -91,8 +91,8 @@ export const Banner = ({
       px={4}
       py={2}
       borderLeft='0.5rem solid'
-      borderColor={`status.${status.toLowerCase()}`}
-      bg={`status.${status.toLowerCase()}_lt`}
+      borderColor={`status.${state.toLowerCase()}`}
+      bg={`status.${state.toLowerCase()}_lt`}
     >
       <HStack
         spacing={4}
@@ -108,7 +108,7 @@ export const Banner = ({
           flexDirection={{ base: 'column', sm: 'row' }}
         >
           {/* Status icon */}
-          <StatusIcon status={status} />
+          <StatusIcon status={state} />
 
           {/* Heading */}
           <Heading

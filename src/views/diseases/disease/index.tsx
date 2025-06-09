@@ -44,11 +44,11 @@ export const DiseaseContent: React.FC<DiseaseContentProps> = ({
       <Flex flexDirection='column' flex={1} pb={32} width='100%' m='0 auto'>
         {/* Disease page header */}
         <IntroSection
-          title={data?.attributes.title}
-          subtitle={data?.attributes.subtitle}
-          description={data?.attributes.description}
-          links={data?.attributes.contactLinks}
-          image={data?.attributes.image}
+          title={data?.title}
+          subtitle={data?.subtitle}
+          description={data?.description}
+          links={data?.contacts}
+          image={data?.image}
           isLoading={isLoading}
         />
         <SectionWrapper
@@ -63,9 +63,7 @@ export const DiseaseContent: React.FC<DiseaseContentProps> = ({
             template={DISEASE_PAGE_COPY['showcase']['description']}
             replacements={{
               topic,
-              query: `/search?q=${encodeURIComponent(
-                data?.attributes.query.q ?? '',
-              )}`,
+              query: `/search?q=${encodeURIComponent(data?.query.q ?? '')}`,
             }}
             mdxComponents={{
               p: props => {
@@ -143,7 +141,7 @@ export const DiseaseContent: React.FC<DiseaseContentProps> = ({
           </SectionWrapper>
         </SectionWrapper>
         {/* External links */}
-        {data && (data?.attributes?.externalLinks?.data ?? []).length > 0 && (
+        {data && (data?.externalLinks ?? []).length > 0 && (
           <SectionWrapper
             as='h3'
             id='external-links'
@@ -154,9 +152,7 @@ export const DiseaseContent: React.FC<DiseaseContentProps> = ({
               },
             )}
           >
-            <ExternalLinksSection
-              externalLinks={data.attributes.externalLinks}
-            />
+            <ExternalLinksSection externalLinks={data.externalLinks} />
           </SectionWrapper>
         )}
       </Flex>

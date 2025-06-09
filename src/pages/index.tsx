@@ -28,7 +28,6 @@ import {
 import { NewsOrEventsObject, fetchEvents } from './updates';
 import { TableWithSearch } from 'src/views/home/components/TableWithSearch/';
 import { useResourceCatalogs } from 'src/hooks/api/useResourceCatalogs';
-import { fetchAllFeaturedPages } from 'src/views/features/helpers';
 import { HeroBanner } from 'src/views/home/components/HeroBanner';
 import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
 
@@ -36,7 +35,6 @@ const Home: NextPage<{
   data: {
     news: NewsOrEventsObject[];
     events: NewsOrEventsObject[];
-    features: NewsOrEventsObject[];
   };
   error?: { message: string };
 }> = props => {
@@ -319,7 +317,6 @@ const Home: NextPage<{
                 <NewsCarousel
                   news={props.data.news}
                   events={props.data.events}
-                  features={props.data.features}
                 />
               )}
             </Box>
@@ -333,38 +330,7 @@ const Home: NextPage<{
 export async function getStaticProps() {
   try {
     const { news } = await fetchNews({ paginate: { page: 1, pageSize: 5 } });
-    const features = await fetchAllFeaturedPages({
-      populate: {
-        fields: ['title', 'slug', 'subtitle', 'publishedAt', 'updatedAt'],
-        thumbnail: {
-          fields: ['url', 'alternativeText'],
-        },
-      },
-      sort: { publishedAt: 'desc', updatedAt: 'desc' },
-      paginate: { page: 1, pageSize: 5 },
-    })
-      .then(res => {
-        return {
-          data: res.data.map(item => ({
-            ...item,
-            type: 'feature',
-            attributes: {
-              name: item.attributes.title,
-              image: item.attributes.thumbnail,
-              slug: item.attributes.slug,
-              shortDescription: item.attributes.subtitle,
-            },
-          })) as NewsOrEventsObject[],
-          error: null,
-        };
-      })
-      .catch(err => ({
-        data: [],
-        error: {
-          message: `${err.response.status} : ${err.response.statusText}`,
-          status: err.response.status,
-        },
-      }));
+
     const events = await fetchEvents({ paginate: { page: 1, pageSize: 100 } })
       .then(res => ({ data: res.events, error: null }))
       .catch(err => {
@@ -378,7 +344,7 @@ export async function getStaticProps() {
       });
 
     return {
-      props: { data: { news, events: events.data, features: features.data } },
+      props: { data: { news, events: events.data } },
     };
   } catch (err: any) {
     return {

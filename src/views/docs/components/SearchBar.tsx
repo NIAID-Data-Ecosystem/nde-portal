@@ -34,13 +34,12 @@ import { DocumentationProps } from './MainContent';
 
 export const searchDocumentation = async (searchTerm: string) => {
   try {
-    const isProd =
-      process.env.NEXT_PUBLIC_BASE_URL === 'https://data.niaid.nih.gov';
+    const isProd = process.env.NEXT_PUBLIC_APP_ENV === 'production';
     const docs = await axios.get(
       `${
         process.env.NEXT_PUBLIC_STRAPI_API_URL
-      }/api/docs?populate[fields][0]=name&populate[fields][1]=slug&populate[fields][2]=publishedAt&populate[fields][3]=updatedAt&populate[fields][4]=shortDescription&populate[image][fields][0]=url&populate[image][fields][1]=alternativeText&sort[publishedAt]=desc&sort[updatedAt]=desc&paginate[page]=1&paginate[pageSize]=5&publicationState=${
-        isProd ? 'live' : 'preview'
+      }/api/docs?populate[fields][0]=name&populate[fields][1]=slug&populate[fields][2]=publishedAt&populate[fields][3]=updatedAt&populate[fields][4]=subtitle&populate[fields][5]=description&sort[publishedAt]=desc&sort[updatedAt]=desc&paginate[page]=1&paginate[pageSize]=5&status=${
+        isProd ? 'published' : 'draft'
       }&_q=${searchTerm}`,
     );
     return docs.data.data;
@@ -108,9 +107,9 @@ function searchInMDX(
 
 interface SearchResult {
   id: DocumentationProps['id'];
-  name: DocumentationProps['attributes']['name'];
+  name: DocumentationProps['name'];
   slug: string;
-  description: string;
+  description: DocumentationProps['description'];
 }
 
 interface SearchBarProps extends SearchBarWithDropdownProps {
@@ -165,24 +164,22 @@ const SearchBar = ({
         return [];
       }
       const results = data.map(datum => {
-        const slug = Array.isArray(datum.attributes.slug)
-          ? datum.attributes.slug[0]
-          : datum.attributes.slug;
-        if (datum.attributes.description) {
+        const slug = Array.isArray(datum.slug) ? datum.slug[0] : datum.slug;
+        if (datum.description) {
           const { heading, snippet } = searchInMDX(
-            datum.attributes.description,
+            datum.description,
             searchTerm,
           );
           return {
             id: datum.id,
-            name: datum.attributes.name,
+            name: datum.name,
             slug: heading ? slug + '#' + heading : slug,
             description: snippet,
           };
         }
         return {
           id: datum.id,
-          name: datum.attributes.name,
+          name: datum.name,
           slug,
           description: '',
         };

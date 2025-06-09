@@ -16,25 +16,19 @@ import { ScrollContainer } from 'src/components/scroll-container';
 
 export interface DocumentationProps {
   id: number;
-  attributes: {
+  name: string;
+  description: string;
+  subtitle: string;
+  slug: string | string[];
+  createdAt: string;
+  updatedAt: string;
+  publishedAt: string;
+  category: {
+    id: number;
     name: string;
-    description: string;
-    subtitle: string;
-    slug: string | string[];
     createdAt: string;
     updatedAt: string;
     publishedAt: string;
-    category: {
-      data: {
-        id: number;
-        attributes: {
-          name: string;
-          createdAt: string;
-          updatedAt: string;
-          publishedAt: string;
-        };
-      };
-    };
   };
 }
 
@@ -88,13 +82,12 @@ interface MainContentProps {
 // Fetch documentation from API.
 const fetchDocumentation = async (slug: string[]) => {
   try {
-    const isProd =
-      process.env.NEXT_PUBLIC_BASE_URL === 'https://data.niaid.nih.gov';
+    const isProd = process.env.NEXT_PUBLIC_APP_ENV === 'production';
     const docs = await axios.get(
       `${
         process.env.NEXT_PUBLIC_STRAPI_API_URL
-      }/api/docs?populate=*&filters[$and][0][slug][$eqi]=${slug}&publicationState=${
-        isProd ? 'live' : 'preview'
+      }/api/docs?populate=*&filters[$and][0][slug][$eqi]=${slug}&status=${
+        isProd ? 'published' : 'draft'
       }`,
     );
     return docs.data.data as DocumentationProps[];
@@ -126,7 +119,7 @@ const MainContent = ({ slug, data: initialData }: MainContentProps) => {
         };
       }
       const markdownSections = extractMarkdownHeadings(
-        data[0].attributes.description,
+        data[0].description,
         MAX_HEADING_DEPTH,
       );
 
@@ -134,8 +127,8 @@ const MainContent = ({ slug, data: initialData }: MainContentProps) => {
         data: data[0],
         tocSections: [
           {
-            title: data[0].attributes.name,
-            hash: transformString2Hash(data[0].attributes.name),
+            title: data[0].name,
+            hash: transformString2Hash(data[0].name),
             depth: 1,
           },
           ...markdownSections,
@@ -150,8 +143,8 @@ const MainContent = ({ slug, data: initialData }: MainContentProps) => {
   const tocSections = queryData?.tocSections || [];
   const data = queryData?.data;
   useEffect(() => {
-    if (data && data.attributes && data.attributes.updatedAt) {
-      const date = new Date(data.attributes.updatedAt).toLocaleString([], {
+    if (data && data && data.updatedAt) {
+      const date = new Date(data.updatedAt).toLocaleString([], {
         day: 'numeric',
         month: 'long',
         year: 'numeric',
@@ -185,20 +178,20 @@ const MainContent = ({ slug, data: initialData }: MainContentProps) => {
           <>
             <Box mt={8} mb={4}>
               <Heading
-                id={transformString2Hash(data.attributes.name)}
+                id={transformString2Hash(data.name)}
                 as='h1'
                 size='xl'
                 mb={2}
               >
-                {data.attributes.name}
+                {data.name}
               </Heading>
-              <Text color='gray.700'>{data.attributes.subtitle}</Text>
+              <Text color='gray.700'>{data.subtitle}</Text>
             </Box>
             <ReactMarkdown
               rehypePlugins={[rehypeRaw, remarkGfm]}
               components={MDXComponents}
             >
-              {data.attributes.description}
+              {data.description}
             </ReactMarkdown>
             <Divider orientation='horizontal' mt={8} mb={4} />
             <Text
