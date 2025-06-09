@@ -78,7 +78,8 @@ export const SearchResultsController = ({
     size: 50,
   });
 
-  const { data: carouselData } = carouselResultsData.response;
+  const { data: carouselData, isLoading: carouselIsLoading } =
+    carouselResultsData.response;
 
   // Sort carousel data alphabetically by name
   const sortedCarouselData = useMemo(() => {
@@ -144,22 +145,35 @@ export const SearchResultsController = ({
                         } (${section.count.toLocaleString()})`}
                       >
                         {/* Render carousel if ResourceCatalog type is included */}
-                        {section.type === 'ResourceCatalog' &&
-                        sortedCarouselData?.results ? (
+                        {section.type === 'ResourceCatalog' && (
                           <CarouselWrapper>
                             <Carousel gap={8}>
-                              {sortedCarouselData.results.map(carouselCard => {
-                                return (
-                                  <CompactCard
-                                    key={carouselCard.id}
-                                    data={carouselCard}
-                                    referrerPath={router.asPath}
-                                  />
-                                );
-                              })}
+                              {carouselIsLoading
+                                ? // Show loading skeleton cards when data is loading
+                                  Array(3)
+                                    .fill(0)
+                                    .map((_, index) => (
+                                      <CompactCard
+                                        key={`loading-${index}`}
+                                        isLoading={true}
+                                        referrerPath={router.asPath}
+                                      />
+                                    ))
+                                : // Show actual data when loaded
+                                  (sortedCarouselData?.results || []).map(
+                                    carouselCard => (
+                                      <CompactCard
+                                        key={carouselCard.id}
+                                        data={carouselCard}
+                                        isLoading={false}
+                                        referrerPath={router.asPath}
+                                      />
+                                    ),
+                                  )}
                             </Carousel>
                           </CarouselWrapper>
-                        ) : (
+                        )}
+                        {section.type !== 'ResourceCatalog' && (
                           <>
                             {/* Render search results */}
                             <SearchResults

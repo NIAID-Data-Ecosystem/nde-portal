@@ -12,19 +12,24 @@ import { FormattedResource } from 'src/utils/api/types';
 import { TypeBanner } from 'src/components/resource-sections/components';
 import { DisplayHTMLContent } from 'src/components/html-content';
 import { isSourceFundedByNiaid } from 'src/utils/helpers/sources';
-import { Skeleton } from 'src/components/skeleton';
 import { ConditionsOfAccess } from 'src/components/badges';
 import { HasAPI } from 'src/components/badges/components/HasAPI';
 import { MetadataLabel } from 'src/components/metadata';
 import { ScrollContainer } from 'src/components/scroll-container';
 import { SearchableItems } from 'src/components/searchable-items';
+import { Skeleton } from 'src/components/skeleton';
 
 interface CompactCardProps {
   data?: FormattedResource | null;
   referrerPath?: string;
+  isLoading?: boolean;
 }
 
-export const CompactCard = ({ data, referrerPath }: CompactCardProps) => {
+export const CompactCard = ({
+  data,
+  referrerPath,
+  isLoading = false,
+}: CompactCardProps) => {
   const {
     ['@type']: type,
     id,
@@ -44,20 +49,35 @@ export const CompactCard = ({ data, referrerPath }: CompactCardProps) => {
       boxShadow='none'
       border='1px solid'
       borderColor='gray.200'
+      height={{
+        base: '320px',
+        sm: '280px',
+        md: '300px',
+        lg: '305px',
+        xl: '310px',
+      }}
     >
-      <TypeBanner
-        type={type || 'ResourceCatalog'}
-        p={0}
-        pl={[2, 4, 6]}
-        flexDirection={['column', 'row']}
-        isNiaidFunded={isSourceFundedByNiaid(includedInDataCatalog)}
-      />
+      {/* TypeBanner */}
+      <Skeleton
+        isLoaded={!isLoading}
+        height={isLoading ? '40px' : 'auto'}
+        borderTopRadius='md'
+      >
+        <TypeBanner
+          type={type || 'ResourceCatalog'}
+          p={0}
+          pl={[2, 4, 6]}
+          flexDirection={['column', 'row']}
+          isNiaidFunded={isSourceFundedByNiaid(includedInDataCatalog)}
+        />
+      </Skeleton>
       <CardHeader
         bg='transparent'
         position='relative'
         px={2}
         pt={1}
         pb={1}
+        w='100%'
         color='link.color'
         _hover={{
           p: { textDecoration: 'none' },
@@ -71,9 +91,9 @@ export const CompactCard = ({ data, referrerPath }: CompactCardProps) => {
           color: 'link.color',
           svg: { color: 'link.color' },
         }}
-        w='100%'
       >
-        <Skeleton isLoaded={true} minHeight='27px' flex={1}>
+        {/* Title */}
+        <Skeleton isLoaded={!isLoading} minHeight='27px' flex={1}>
           <NextLink
             href={{
               pathname: '/resources/',
@@ -109,83 +129,82 @@ export const CompactCard = ({ data, referrerPath }: CompactCardProps) => {
         </Skeleton>
       </CardHeader>
       <CardBody p={0}>
-        {date && (
-          <Flex
-            px={2}
-            m={0}
-            bg='white'
-            fontWeight='semibold'
-            whiteSpace='nowrap'
-            alignItems='flex-start'
-            justify='space-between'
-            minHeight='30px'
-          >
-            <Tooltip
-              label='Corresponds to the most recent of date modified, date published and date created.'
-              hasArrow
-              bg='#fff'
-              sx={{
-                color: 'text.body',
-              }}
+        {/* Date and badges section */}
+        <Skeleton isLoaded={!isLoading} minHeight='30px' px={2} m={0}>
+          {date && (
+            <Flex
+              bg='white'
+              fontWeight='semibold'
+              whiteSpace='nowrap'
+              alignItems='flex-start'
+              justify='space-between'
             >
-              <Text fontSize='13px'>{date}</Text>
-            </Tooltip>
-            {(conditionsOfAccess || hasAPI) && (
-              <Flex
-                justifyContent={['flex-start']}
-                alignItems='center'
-                w={['100%', 'unset']}
-                flex={[1]}
-                p={[0.5, 0.5]}
-                flexWrap='wrap'
-                ml={0.5}
-                gap={0.5}
+              <Tooltip
+                label='Corresponds to the most recent of date modified, date published and date created.'
+                hasArrow
+                bg='#fff'
+                sx={{
+                  color: 'text.body',
+                }}
               >
-                <ConditionsOfAccess
-                  type={data?.['@type']}
-                  conditionsOfAccess={conditionsOfAccess}
-                  mx={0.5}
-                  size='sm'
+                <Text fontSize='13px'>{date}</Text>
+              </Tooltip>
+              {(conditionsOfAccess || hasAPI) && (
+                <Flex
+                  justifyContent={['flex-start']}
+                  alignItems='center'
+                  w={['100%', 'unset']}
+                  flex={[1]}
+                  p={[0.5, 0.5]}
+                  flexWrap='wrap'
+                  ml={0.5}
+                  gap={0.5}
+                >
+                  <ConditionsOfAccess
+                    type={data?.['@type']}
+                    conditionsOfAccess={conditionsOfAccess}
+                    mx={0.5}
+                    size='sm'
+                  />
+                  <HasAPI
+                    type={data?.['@type']}
+                    hasAPI={data?.hasAPI}
+                    mx={0.5}
+                    size='sm'
+                  />
+                </Flex>
+              )}
+            </Flex>
+          )}
+        </Skeleton>
+        {/* Content types section */}
+        <Skeleton isLoaded={!isLoading} px={1} mt={0} mb={0}>
+          {about && (
+            <Flex bg='white' direction='column'>
+              <MetadataLabel label='Content Types' />
+              <ScrollContainer overflow='auto' maxHeight='200px'>
+                <SearchableItems
+                  fieldName='about'
+                  generateButtonLabel={(limit, length, itemLabel = 'types') =>
+                    limit === length
+                      ? `Show fewer ${itemLabel}`
+                      : `Show all ${itemLabel} (${length - limit} more)`
+                  }
+                  itemLimit={2}
+                  items={about.map(item => item.displayName)}
                 />
-                <HasAPI
-                  type={data?.['@type']}
-                  hasAPI={data?.hasAPI}
-                  mx={0.5}
-                  size='sm'
-                />
-              </Flex>
-            )}
-          </Flex>
-        )}
-        {about && (
-          <Flex px={1} mt={0} mb={0} bg='white' direction='column'>
-            <MetadataLabel label='Content Types' />
-            <ScrollContainer overflow='auto' maxHeight='200px'>
-              <SearchableItems
-                fieldName='about'
-                generateButtonLabel={(limit, length, itemLabel = 'types') =>
-                  limit === length
-                    ? `Show fewer ${itemLabel}`
-                    : `Show all ${itemLabel} (${length - limit} more)`
-                }
-                itemLimit={2}
-                items={about.map(item => item.displayName)}
-              />
-            </ScrollContainer>
-          </Flex>
-        )}
-        {description && (
-          <Text
-            px={2}
-            mt={2}
-            mb={1}
-            fontSize='xs'
-            lineHeight='short'
-            noOfLines={3}
-          >
-            {description.trim()}
-          </Text>
-        )}
+              </ScrollContainer>
+            </Flex>
+          )}
+        </Skeleton>
+        {/* Description section */}
+        <Skeleton isLoaded={!isLoading} flex='1' px={2} mt={2} mb={1}>
+          {description && (
+            <Text fontSize='xs' lineHeight='short' noOfLines={3}>
+              {description.trim()}
+            </Text>
+          )}
+        </Skeleton>
       </CardBody>
     </Card>
   );
