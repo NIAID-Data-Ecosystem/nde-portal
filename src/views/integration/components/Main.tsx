@@ -284,8 +284,7 @@ export const fetchPageContent = async (
 }> => {
   try {
     // in dev/staging mode, show drafts.
-    const isProd =
-      process.env.NEXT_PUBLIC_BASE_URL === 'https://data.niaid.nih.gov';
+    const isProd = process.env.NEXT_PUBLIC_APP_ENV === 'production';
     const response = await axios.get(
       `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/api/integration-page`,
       {

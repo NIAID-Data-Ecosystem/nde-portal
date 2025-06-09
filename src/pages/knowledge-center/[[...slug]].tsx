@@ -49,8 +49,7 @@ export interface DocumentationByCategories {
 // Fetch documentation from API.
 export const fetchCategories = async () => {
   try {
-    const isProd =
-      process.env.NEXT_PUBLIC_BASE_URL === 'https://data.niaid.nih.gov';
+    const isProd = process.env.NEXT_PUBLIC_APP_ENV === 'production';
     const docs = await axios.get(
       `${
         process.env.NEXT_PUBLIC_STRAPI_API_URL
@@ -347,8 +346,7 @@ export const getStaticProps: GetStaticProps = async context => {
     return { props: { slug: '', data: {} } };
   }
   const { slug } = context.params;
-  const isProd =
-    process.env.NEXT_PUBLIC_BASE_URL === 'https://data.niaid.nih.gov';
+  const isProd = process.env.NEXT_PUBLIC_APP_ENV === 'production';
   const fetchDocumentation = async () => {
     try {
       const docs = await axios.get(
@@ -372,8 +370,7 @@ export const getStaticProps: GetStaticProps = async context => {
 export async function getStaticPaths() {
   const fetchData = async () => {
     try {
-      const isProd =
-        process.env.NEXT_PUBLIC_BASE_URL === 'https://data.niaid.nih.gov';
+      const isProd = process.env.NEXT_PUBLIC_APP_ENV === 'production';
 
       const docs = await axios.get(
         `${

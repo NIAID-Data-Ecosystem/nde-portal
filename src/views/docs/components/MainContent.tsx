@@ -82,8 +82,7 @@ interface MainContentProps {
 // Fetch documentation from API.
 const fetchDocumentation = async (slug: string[]) => {
   try {
-    const isProd =
-      process.env.NEXT_PUBLIC_BASE_URL === 'https://data.niaid.nih.gov';
+    const isProd = process.env.NEXT_PUBLIC_APP_ENV === 'production';
     const docs = await axios.get(
       `${
         process.env.NEXT_PUBLIC_STRAPI_API_URL

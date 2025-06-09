@@ -523,8 +523,7 @@ export const fetchEvents = async (
 }> => {
   try {
     // in dev/staging mode, show drafts.
-    const isProd =
-      process.env.NEXT_PUBLIC_BASE_URL === 'https://data.niaid.nih.gov';
+    const isProd = process.env.NEXT_PUBLIC_APP_ENV === 'production';
     const events = await axios.get(
       `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/api/events`,
       {
@@ -550,8 +549,7 @@ export const fetchWebinars = async (
   webinars: NewsOrEventsObject[];
 }> => {
   try {
-    const isProd =
-      process.env.NEXT_PUBLIC_BASE_URL === 'https://data.niaid.nih.gov';
+    const isProd = process.env.NEXT_PUBLIC_APP_ENV === 'production';
     // in dev/staging mode, show drafts.
     const webinars = await axios.get(
       `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/api/webinars`,

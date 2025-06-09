@@ -39,8 +39,7 @@ export const PageContainer: React.FC<PageContainerProps> = ({
   ...props
 }) => {
   // Fetch Notices from STRAPI API.
-  const isProd =
-    process.env.NEXT_PUBLIC_BASE_URL === 'https://data.niaid.nih.gov';
+  const isProd = process.env.NEXT_PUBLIC_APP_ENV === 'production';
   const { data: notices } = useQuery<NoticeProps[]>({
     queryKey: ['notices'],
     queryFn: async () => {
