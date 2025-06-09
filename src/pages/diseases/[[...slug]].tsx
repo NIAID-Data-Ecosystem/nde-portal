@@ -28,7 +28,7 @@ const fetchDiseaseContent = async (
 ): Promise<DiseasePageProps> => {
   try {
     return MOCK_PAGES.find(
-      (disease: DiseasePageProps) => disease.attributes.slug === slug[0],
+      (disease: DiseasePageProps) => disease.slug === slug[0],
     ) as DiseasePageProps;
   } catch (err: any) {
     throw err.response;
@@ -57,12 +57,9 @@ const DiseasePage: NextPage<{
     enabled: !!slug,
   });
 
-  const query = data?.attributes?.query;
+  const query = data?.query;
   const topic =
-    data?.attributes?.topic
-      .charAt(0)
-      .toUpperCase()
-      .concat(data?.attributes.topic.slice(1)) || '';
+    data?.topic?.charAt(0).toUpperCase().concat(data.topic.slice(1)) || '';
 
   // Fetch total number of results for the topic
   const params = {
@@ -139,7 +136,7 @@ export async function getStaticPaths() {
   // [TO DO]: Fetch all disease page slugs from Strapi API
   // const { data } = await fetchAllDiseasePages();
   const mock_paths = MOCK_PAGES.map((disease: DiseasePageProps) => ({
-    params: { slug: [disease.attributes.slug] },
+    params: { slug: [disease.slug] },
   }));
   const paths = [{ params: { slug: undefined } }, ...mock_paths];
   return { paths, fallback: false };

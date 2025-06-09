@@ -1,216 +1,155 @@
 {
   "id": 3,
-  "attributes": {
-    "title": "Influenza",
-    "subtitle": "",
-    "description": "Each year, influenza causes millions of illnesses worldwide and, in the United States, results in thousands of hospitalizations and deaths. Influenza is especially dangerous for people 65 years and older, young children and people with certain health conditions, such as heart disease or asthma. Research to find new and improved ways to diagnose, treat and prevent seasonal influenza and novel influenza viruses with pandemic potential is essential to protecting the public health. [Learn more about NIAID’s efforts to address this disease.](https://www.niaid.nih.gov/diseases-conditions/influenza)",
-    "image": {
-      "data": {
-        "attributes": {
-          "url": "https://www.niaid.nih.gov/sites/default/files/styles/image_style_thumbnail_md/public/avian-flu-hero_0.jpg?itok=PVtvYKzH",
-          "alternativeText": "Influenza A (H5N1) virus particles (rod shaped)",
-          "caption": "Rod-shaped Influenza A (H5N1) virus particles. Credit: NIAID."
-        }
-      }
+  "title": "Influenza",
+  "subtitle": "",
+  "description": "Each year, influenza causes millions of illnesses worldwide and, in the United States, results in thousands of hospitalizations and deaths. Influenza is especially dangerous for people 65 years and older, young children and people with certain health conditions, such as heart disease or asthma. Research to find new and improved ways to diagnose, treat and prevent seasonal influenza and novel influenza viruses with pandemic potential is essential to protecting the public health. [Learn more about NIAID’s efforts to address this disease.](https://www.niaid.nih.gov/diseases-conditions/influenza)",
+  "image": {
+    "url": "https://www.niaid.nih.gov/sites/default/files/styles/image_style_thumbnail_md/public/avian-flu-hero_0.jpg?itok=PVtvYKzH",
+    "alternativeText": "Influenza A (H5N1) virus particles (rod shaped)",
+    "caption": "Rod-shaped Influenza A (H5N1) virus particles. Credit: NIAID."
+  },
+  "query": {
+    "q": "\"Influenza\" OR \"Flu\"",
+    "facet_size": 1000,
+    "size": 0
+  },
+  "slug": "influenza",
+  "topic": "influenza",
+  "contacts": null,
+  "externalLinks": [
+    {
+      "id": 1,
+      "label": "National Institute of Allergy and Infectious Diseases",
+      "url": "https://www.niaid.nih.gov/",
+      "categories": null,
+      "image": {
+        "url": "/assets/NIH-logo.png",
+        "alternativeText": "nih logo"
+      },
+      "isExternal": true,
+      "createdAt": "2025-02-22T19:09:45.049Z",
+      "updatedAt": "2025-02-22T19:09:45.049Z",
+      "publishedAt": "2025-02-22T19:09:45.049Z"
     },
-    "query": {
-      "q": "\"Influenza\" OR \"Flu\"",
-      "facet_size": 1000,
-      "size": 0
+    {
+      "id": 2,
+      "label": "CDC Influenza (Flu)",
+      "url": "https://www.cdc.gov/flu/index.html",
+      "categories": null,
+      "image": null,
+      "isExternal": true,
+      "createdAt": "2025-02-22T19:09:45.049Z",
+      "updatedAt": "2025-02-22T19:09:45.049Z",
+      "publishedAt": "2025-02-22T19:09:45.049Z"
     },
-    "slug": "influenza",
-    "topic": "influenza",
-    "type": {
-      "data": [
+    {
+      "id": 3,
+      "label": "Centers of Excellence for Influenza Research and Response (CEIRR)",
+      "url": "https://www.niaid.nih.gov/research/centers-excellence-influenza-research-response",
+      "categories": [
         {
           "id": 1,
-          "attributes": {
-            "name": "Diseases",
-            "createdAt": "2025-02-22T19:09:45.049Z",
-            "updatedAt": "2025-02-22T19:09:45.049Z",
-            "publishedAt": "2025-02-22T19:09:45.049Z"
-          }
+          "name": "Working Groups / Programs / Networks",
+          "createdAt": "2025-02-22T19:09:45.049Z",
+          "publishedAt": "2025-02-22T19:09:45.049Z",
+          "updatedAt": "2025-02-22T19:09:45.049Z"
         }
-      ]
+      ],
+      "image": null,
+      "isExternal": true,
+      "createdAt": "2025-02-22T19:09:45.049Z",
+      "updatedAt": "2025-02-22T19:09:45.049Z",
+      "publishedAt": "2025-02-22T19:09:45.049Z"
     },
-    "externalLinks": {
-      "data": [
+    {
+      "id": 4,
+      "label": "Collaborative Influenza Vaccine Innovation Centers (CIVICs)",
+      "url": "https://www.niaid.nih.gov/research/civics",
+      "categories": [
         {
           "id": 1,
-          "attributes": {
-            "label": "National Institute of Allergy and Infectious Diseases",
-            "url": "https://www.niaid.nih.gov/",
-            "categories": null,
-            "image": {
-              "data": {
-                "attributes": {
-                  "url": "/assets/NIH-logo.png",
-                  "alternativeText": "nih logo"
-                }
-              }
-            },
-            "isExternal": true,
-            "createdAt": "2025-02-22T19:09:45.049Z",
-            "updatedAt": "2025-02-22T19:09:45.049Z",
-            "publishedAt": "2025-02-22T19:09:45.049Z"
-          }
-        },
-        {
-          "id": 2,
-          "attributes": {
-            "label": "CDC Influenza (Flu)",
-            "url": "https://www.cdc.gov/flu/index.html",
-            "categories": null,
-            "image": { "data": null },
-            "isExternal": true,
-            "createdAt": "2025-02-22T19:09:45.049Z",
-            "updatedAt": "2025-02-22T19:09:45.049Z",
-            "publishedAt": "2025-02-22T19:09:45.049Z"
-          }
-        },
-        {
-          "id": 3,
-          "attributes": {
-            "label": "Centers of Excellence for Influenza Research and Response (CEIRR)",
-            "url": "https://www.niaid.nih.gov/research/centers-excellence-influenza-research-response",
-            "categories": {
-              "data": [
-                {
-                  "id": 1,
-                  "attributes": {
-                    "name": "Working Groups / Programs / Networks",
-                    "createdAt": "2025-02-22T19:09:45.049Z",
-                    "publishedAt": "2025-02-22T19:09:45.049Z",
-                    "updatedAt": "2025-02-22T19:09:45.049Z"
-                  }
-                }
-              ]
-            },
-            "image": { "data": null },
-            "isExternal": true,
-            "createdAt": "2025-02-22T19:09:45.049Z",
-            "updatedAt": "2025-02-22T19:09:45.049Z",
-            "publishedAt": "2025-02-22T19:09:45.049Z"
-          }
-        },
-        {
-          "id": 4,
-          "attributes": {
-            "label": "Collaborative Influenza Vaccine Innovation Centers (CIVICs)",
-            "url": "https://www.niaid.nih.gov/research/civics",
-            "categories": {
-              "data": [
-                {
-                  "id": 1,
-                  "attributes": {
-                    "name": "Working Groups / Programs / Networks",
-                    "createdAt": "2025-02-22T19:09:45.049Z",
-                    "publishedAt": "2025-02-22T19:09:45.049Z",
-                    "updatedAt": "2025-02-22T19:09:45.049Z"
-                  }
-                }
-              ]
-            },
-            "image": { "data": null },
-            "isExternal": true,
-            "createdAt": "2025-02-22T19:09:45.049Z",
-            "updatedAt": "2025-02-22T19:09:45.049Z",
-            "publishedAt": "2025-02-22T19:09:45.049Z"
-          }
-        },
-        {
-          "id": 5,
-          "attributes": {
-            "label": "Mexican Emerging Infectious Disease Clinical Research Network (LaRed) ",
-            "url": "https://www.niaid.nih.gov/research/lared",
-            "categories": {
-              "data": [
-                {
-                  "id": 1,
-                  "attributes": {
-                    "name": "Working Groups / Programs / Networks",
-                    "createdAt": "2025-02-22T19:09:45.049Z",
-                    "publishedAt": "2025-02-22T19:09:45.049Z",
-                    "updatedAt": "2025-02-22T19:09:45.049Z"
-                  }
-                }
-              ]
-            },
-            "image": { "data": null },
-            "isExternal": true,
-            "createdAt": "2025-02-22T19:09:45.049Z",
-            "updatedAt": "2025-02-22T19:09:45.049Z",
-            "publishedAt": "2025-02-22T19:09:45.049Z"
-          }
-        },
-        {
-          "id": 6,
-          "attributes": {
-            "label": "Modeling Immunity for Biodefense (MIB)",
-            "url": "https://www.niaid.nih.gov/research/modeling-immunity-biodefense",
-            "categories": {
-              "data": [
-                {
-                  "id": 1,
-                  "attributes": {
-                    "name": "Working Groups / Programs / Networks",
-                    "createdAt": "2025-02-22T19:09:45.049Z",
-                    "publishedAt": "2025-02-22T19:09:45.049Z",
-                    "updatedAt": "2025-02-22T19:09:45.049Z"
-                  }
-                }
-              ]
-            },
-            "image": { "data": null },
-            "isExternal": true,
-            "createdAt": "2025-02-22T19:09:45.049Z",
-            "updatedAt": "2025-02-22T19:09:45.049Z",
-            "publishedAt": "2025-02-22T19:09:45.049Z"
-          }
-        },
-        {
-          "id": 7,
-          "attributes": {
-            "label": "Infectious Diseases Clinical Research Consortium",
-            "url": "https://www.niaid.nih.gov/research/idcrc",
-            "categories": {
-              "data": [
-                {
-                  "id": 1,
-                  "attributes": {
-                    "name": "Working Groups / Programs / Networks",
-                    "createdAt": "2025-02-22T19:09:45.049Z",
-                    "publishedAt": "2025-02-22T19:09:45.049Z",
-                    "updatedAt": "2025-02-22T19:09:45.049Z"
-                  }
-                }
-              ]
-            },
-            "image": { "data": null },
-
-            "isExternal": true,
-            "createdAt": "2025-02-22T19:09:45.049Z",
-            "updatedAt": "2025-02-22T19:09:45.049Z",
-            "publishedAt": "2025-02-22T19:09:45.049Z"
-          }
-        },
-        {
-          "id": 8,
-          "attributes": {
-            "label": "ClinicalTrials.gov",
-            "url": "https://clinicaltrials.gov/search?cond=Influenza&aggFilters=funderType:nih",
-            "categories": null,
-            "image": { "data": null },
-            "isExternal": true,
-            "createdAt": "2025-02-22T19:09:45.049Z",
-            "updatedAt": "2025-02-22T19:09:45.049Z",
-            "publishedAt": "2025-02-22T19:09:45.049Z"
-          }
+          "name": "Working Groups / Programs / Networks",
+          "createdAt": "2025-02-22T19:09:45.049Z",
+          "publishedAt": "2025-02-22T19:09:45.049Z",
+          "updatedAt": "2025-02-22T19:09:45.049Z"
         }
-      ]
+      ],
+      "image": null,
+      "isExternal": true,
+      "createdAt": "2025-02-22T19:09:45.049Z",
+      "updatedAt": "2025-02-22T19:09:45.049Z",
+      "publishedAt": "2025-02-22T19:09:45.049Z"
     },
-    "createdAt": "2025-02-22T19:09:45.049Z",
-    "updatedAt": "2025-02-22T19:09:45.049Z",
-    "publishedAt": "2025-02-22T19:09:45.049Z"
-  }
+    {
+      "id": 5,
+      "label": "Mexican Emerging Infectious Disease Clinical Research Network (LaRed) ",
+      "url": "https://www.niaid.nih.gov/research/lared",
+      "categories": [
+        {
+          "id": 1,
+          "name": "Working Groups / Programs / Networks",
+          "createdAt": "2025-02-22T19:09:45.049Z",
+          "publishedAt": "2025-02-22T19:09:45.049Z",
+          "updatedAt": "2025-02-22T19:09:45.049Z"
+        }
+      ],
+      "image": null,
+      "isExternal": true,
+      "createdAt": "2025-02-22T19:09:45.049Z",
+      "updatedAt": "2025-02-22T19:09:45.049Z",
+      "publishedAt": "2025-02-22T19:09:45.049Z"
+    },
+    {
+      "id": 6,
+      "label": "Modeling Immunity for Biodefense (MIB)",
+      "url": "https://www.niaid.nih.gov/research/modeling-immunity-biodefense",
+      "categories": [
+        {
+          "id": 1,
+          "name": "Working Groups / Programs / Networks",
+          "createdAt": "2025-02-22T19:09:45.049Z",
+          "publishedAt": "2025-02-22T19:09:45.049Z",
+          "updatedAt": "2025-02-22T19:09:45.049Z"
+        }
+      ],
+      "image": null,
+      "isExternal": true,
+      "createdAt": "2025-02-22T19:09:45.049Z",
+      "updatedAt": "2025-02-22T19:09:45.049Z",
+      "publishedAt": "2025-02-22T19:09:45.049Z"
+    },
+    {
+      "id": 7,
+      "label": "Infectious Diseases Clinical Research Consortium",
+      "url": "https://www.niaid.nih.gov/research/idcrc",
+      "categories": [
+        {
+          "id": 1,
+          "name": "Working Groups / Programs / Networks",
+          "createdAt": "2025-02-22T19:09:45.049Z",
+          "publishedAt": "2025-02-22T19:09:45.049Z",
+          "updatedAt": "2025-02-22T19:09:45.049Z"
+        }
+      ],
+      "image": null,
+      "isExternal": true,
+      "createdAt": "2025-02-22T19:09:45.049Z",
+      "updatedAt": "2025-02-22T19:09:45.049Z",
+      "publishedAt": "2025-02-22T19:09:45.049Z"
+    },
+    {
+      "id": 8,
+      "label": "ClinicalTrials.gov",
+      "url": "https://clinicaltrials.gov/search?cond=Influenza&aggFilters=funderType:nih",
+      "categories": null,
+      "image": null,
+      "isExternal": true,
+      "createdAt": "2025-02-22T19:09:45.049Z",
+      "updatedAt": "2025-02-22T19:09:45.049Z",
+      "publishedAt": "2025-02-22T19:09:45.049Z"
+    }
+  ],
+  "createdAt": "2025-02-22T19:09:45.049Z",
+  "updatedAt": "2025-02-22T19:09:45.049Z",
+  "publishedAt": "2025-02-22T19:09:45.049Z"
 }

@@ -5,8 +5,8 @@ import { SectionTitle } from '../layouts/section';
 import { DiseasePageProps } from '../../types';
 
 type TopicPageExternalLink = NonNullable<
-  DiseasePageProps['attributes']['externalLinks']
->['data'][number]['attributes'];
+  DiseasePageProps['externalLinks']
+>[number];
 
 interface ExternalLinkItemProps extends TopicPageExternalLink {}
 
@@ -18,12 +18,8 @@ export const ExternalLinkItem: React.FC<ExternalLinkItemProps> = ({
 }) => {
   return (
     <Stack alignItems='flex-start'>
-      {image?.data && (
-        <Image
-          src={image.data.attributes.url}
-          alt={image.data.attributes.alternativeText}
-          maxHeight='100px'
-        />
+      {image && (
+        <Image src={image.url} alt={image.alternativeText} maxHeight='100px' />
       )}
 
       <Link href={url} isExternal={isExternal}>
@@ -34,20 +30,19 @@ export const ExternalLinkItem: React.FC<ExternalLinkItemProps> = ({
 };
 
 export const ExternalLinksSection: React.FC<{
-  externalLinks: DiseasePageProps['attributes']['externalLinks'];
+  externalLinks: DiseasePageProps['externalLinks'];
 }> = ({ externalLinks }) => {
   // Group by categories
   const externalLinksGroupedByCategory = useMemo(() => {
-    return (externalLinks?.data || []).reduce((acc, link) => {
-      const category =
-        link.attributes.categories?.data[0]?.attributes.name || '';
-      if (!acc[category]) {
-        acc[category] = [];
+    return (externalLinks || []).reduce((acc, link) => {
+      const categoryName = link.categories?.[0]?.name || '';
+      if (!acc[categoryName]) {
+        acc[categoryName] = [];
       }
-      acc[category].push(link);
+      acc[categoryName].push(link);
       return acc;
-    }, {} as Record<string, NonNullable<DiseasePageProps['attributes']['externalLinks']>['data']>);
-  }, [externalLinks?.data]);
+    }, {} as Record<string, NonNullable<DiseasePageProps['externalLinks']>>);
+  }, [externalLinks]);
 
   return (
     <Stack spacing={6} mt={4}>
@@ -56,7 +51,7 @@ export const ExternalLinksSection: React.FC<{
           <Stack key={category} spacing={1}>
             {category && <SectionTitle as='h4'>{category}</SectionTitle>}
             {links.map((link, index) => (
-              <ExternalLinkItem key={index} {...link.attributes} />
+              <ExternalLinkItem key={index} {...link} />
             ))}
           </Stack>
         ),

@@ -3,90 +3,44 @@ import { Params } from 'src/utils/api';
 
 export interface DiseasePageProps {
   id: number;
-  attributes: {
-    title: string;
-    subtitle: string | null;
-    description?: string | null;
-    image: {
-      data: null | {
-        attributes: { url: string; alternativeText: string; caption?: string };
-      };
-    };
-    contactLinks?: {
-      data: {
+  title: string;
+  topic: string;
+  slug: string;
+  query: Params;
+  image: { url: string; alternativeText: string; caption?: string };
+  subtitle: string | null;
+  description: string | null;
+  contacts: LinkItem[] | null;
+  externalLinks: LinkItem[] | null;
+  createdAt: string;
+  updatedAt: string;
+  publishedAt: string;
+}
+
+interface LinkItem {
+  id: number;
+  label: string;
+  url: string;
+  image: { url: string; alternativeText: string; caption?: string } | null;
+  categories:
+    | {
         id: number;
-        attributes: {
-          label: string;
-          url: string;
-          categories: {
-            data: {
-              id: number;
-              attributes: {
-                name: string;
-                createdAt: string;
-                publishedAt: string;
-                updatedAt: string;
-              };
-            }[];
-          } | null;
-          isExternal: boolean;
-          createdAt: string;
-          updatedAt: string;
-          publishedAt: string;
-        };
-      }[];
-    } | null;
-    externalLinks?: {
-      data: {
-        id: number;
-        attributes: {
-          label: string;
-          image: {
-            data: null | {
-              attributes: { url: string; alternativeText: string };
-            };
-          };
-          url: string;
-          categories: {
-            data: {
-              id: number;
-              attributes: {
-                name: string;
-                createdAt: string;
-                publishedAt: string;
-                updatedAt: string;
-              };
-            }[];
-          } | null;
-          isExternal: boolean;
-          createdAt: string;
-          updatedAt: string;
-          publishedAt: string;
-        };
-      }[];
-    } | null;
-    query: Params;
-    slug: string;
-    topic: string;
-    type: {
-      data: {
-        id: number;
-        attributes: {
-          name: string;
-          createdAt: string;
-          updatedAt: string;
-          publishedAt: string;
-        };
-      }[];
-    };
-    createdAt: string;
-    updatedAt: string;
-    publishedAt: string;
-  };
+        name: string;
+        description?: string;
+        url?: string;
+        createdAt: string;
+        publishedAt: string;
+        updatedAt: string;
+      }[]
+    | null;
+  isExternal: boolean;
+  createdAt: string;
+  updatedAt: string;
+  publishedAt: string;
 }
 
 export interface TopicQueryProps {
-  query: DiseasePageProps['attributes']['query'];
+  query: DiseasePageProps['query'];
   topic: string;
 }
 

@@ -14,11 +14,11 @@ import rehypeRaw from 'rehype-raw';
 import remarkGfm from 'remark-gfm';
 
 interface IntroSectionProps {
-  title?: DiseasePageProps['attributes']['title'];
-  subtitle?: DiseasePageProps['attributes']['subtitle'];
-  description?: DiseasePageProps['attributes']['description'];
-  links?: DiseasePageProps['attributes']['contactLinks'];
-  image?: DiseasePageProps['attributes']['image'];
+  title?: DiseasePageProps['title'];
+  subtitle?: DiseasePageProps['subtitle'];
+  description?: DiseasePageProps['description'];
+  links?: DiseasePageProps['contacts'];
+  image?: DiseasePageProps['image'];
   isLoading?: boolean;
 }
 export const IntroSection: React.FC<IntroSectionProps> = ({
@@ -99,7 +99,7 @@ export const IntroSection: React.FC<IntroSectionProps> = ({
       </VStack>
 
       {/* Image */}
-      {image?.data?.attributes?.url && (
+      {image?.url && (
         <Box
           as='figure'
           minWidth={250}
@@ -110,12 +110,12 @@ export const IntroSection: React.FC<IntroSectionProps> = ({
             borderRadius='base'
             width='100%'
             height='auto'
-            src={image.data.attributes.url}
-            alt={image.data.attributes.alternativeText}
+            src={image.url}
+            alt={image.alternativeText}
             objectFit='contain'
           />
           {/* Image caption: can include a credit link so using markdown renderer */}
-          {image.data.attributes?.caption && (
+          {image?.caption && (
             <ReactMarkdown
               rehypePlugins={[rehypeRaw, remarkGfm]}
               components={{
@@ -133,7 +133,7 @@ export const IntroSection: React.FC<IntroSectionProps> = ({
                 ),
               }}
             >
-              {image.data.attributes.caption}
+              {image.caption}
             </ReactMarkdown>
           )}
         </Box>
