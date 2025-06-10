@@ -13,6 +13,7 @@ import {
   Icon,
   useMediaQuery,
   VStack,
+  Progress,
 } from '@chakra-ui/react';
 import { theme } from 'src/theme';
 import { useResizeObserver } from 'usehooks-ts';
@@ -46,6 +47,7 @@ export const Carousel = ({
   gap = 32,
 }: CarouselProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
+  const controlsRef = useRef<HTMLDivElement>(null);
   const { width = 0 } = useResizeObserver({
     ref: containerRef,
     box: 'border-box',
@@ -55,6 +57,8 @@ export const Carousel = ({
   const [activeItem, setActiveItem] = useState(0);
   const [trackIsActive, setTrackIsActive] = useState(false);
   const [constraint, setConstraint] = useState(0);
+  const [controlsWidth, setControlsWidth] = useState(0);
+  const [showProgressBar, setShowProgressBar] = useState(false);
 
   const breakpoints = theme.breakpoints as unknown as {
     base: string;
@@ -107,6 +111,34 @@ export const Carousel = ({
     Math.ceil(children.length / Math.max(1, constraint)),
   );
 
+  // Check if the progress bar should be rendered
+  useEffect(() => {
+    if (controlsRef.current && itemWidth > 0) {
+      const availableWidth = itemWidth;
+
+      let shouldUseProgressBar = false;
+
+      if (constraint === 1) {
+        // Show up to 10 dots, progress bar otherwise
+        shouldUseProgressBar = totalDots > 10;
+      } else if (constraint === 2) {
+        // Show up to 20 dots, progress bar otherwise
+        shouldUseProgressBar = totalDots > 20;
+      } else if (constraint >= 3) {
+        // Show up to 25 dots, progress bar otherwise
+        shouldUseProgressBar = totalDots > 25;
+      }
+
+      // Always render a progress bar if the screen is very narrow
+      if (availableWidth < 300) {
+        shouldUseProgressBar = true;
+      }
+
+      setShowProgressBar(shouldUseProgressBar);
+      setControlsWidth(availableWidth);
+    }
+  }, [itemWidth, totalDots, gap, constraint]);
+
   // Navigation handlers
   const handleFocus = () => setTrackIsActive(true);
 
@@ -124,6 +156,10 @@ export const Carousel = ({
     const targetActiveItem = Math.min(index * constraint, maxActiveItem);
     setActiveItem(targetActiveItem);
   };
+
+  // Calculate progress percentage
+  const progressPercentage =
+    maxActiveItem > 0 ? (activeItem / maxActiveItem) * 100 : 0;
 
   // Props for child components
   const itemProps = {
@@ -160,13 +196,13 @@ export const Carousel = ({
             ))}
           </Track>
         )}
-
         <Flex
+          ref={controlsRef}
           w={`${itemWidth}px`}
-          mt={`${gap}px`}
           mx='auto'
           alignItems='center'
-          justify='center'
+          justify={showProgressBar ? 'space-between' : 'center'}
+          minH='44px'
         >
           <CarouselControls
             activeItem={activeItem}
@@ -180,6 +216,8 @@ export const Carousel = ({
             handleDotClick={handleDotClick}
             handleFocus={handleFocus}
             childrenLength={children.length}
+            showProgressBar={showProgressBar}
+            progressPercentage={progressPercentage}
           />
         </Flex>
       </Box>
@@ -199,6 +237,8 @@ interface CarouselControlsProps {
   handleDotClick: (index: number) => void;
   handleFocus: () => void;
   childrenLength: number;
+  showProgressBar: boolean;
+  progressPercentage: number;
 }
 
 const CarouselControls = ({
@@ -213,68 +253,113 @@ const CarouselControls = ({
   handleDotClick,
   handleFocus,
   childrenLength,
+  showProgressBar,
+  progressPercentage,
 }: CarouselControlsProps) => {
+  const shouldShowControls = childrenLength > constraint;
+
+  if (!shouldShowControls) {
+    return null;
+  }
+
   return (
     <>
       <Button
         aria-label='previous carousel item'
         onClick={handleDecrementClick}
         onFocus={handleFocus}
-        isDisabled={childrenLength <= constraint || activeItem <= 0}
-        mr={`${gap / 3}px`}
+        isDisabled={activeItem <= 0}
+        mr={showProgressBar ? 0 : `${gap / 3}px`}
         color={`${colorScheme}.800`}
         variant='ghost'
         minW={0}
         size='sm'
+        flexShrink={0}
       >
         <Icon as={FaAngleLeft} boxSize={4} />
       </Button>
 
-      <Flex>
-        {Array.from({ length: totalDots }, (_, i) => {
-          // Calculate which group of items is currently active
-          const currentGroup = Math.floor(activeItem / constraint);
-          const isLastGroup = activeItem >= childrenLength - constraint;
-          const shouldHighlight = isLastGroup
-            ? i === totalDots - 1
-            : i === currentGroup;
+      {showProgressBar ? (
+        <Box
+          flex={1}
+          mx={3}
+          role='progressbar'
+          aria-valuemin={0}
+          aria-valuemax={100}
+          aria-valuenow={Math.round(progressPercentage)}
+          aria-label={`Carousel progress: ${Math.round(
+            progressPercentage,
+          )}% complete`}
+        >
+          <Progress
+            value={progressPercentage}
+            colorScheme={colorScheme}
+            size='sm'
+            borderRadius='full'
+            bg={`${colorScheme}.100`}
+          />
+        </Box>
+      ) : (
+        <Flex>
+          {Array.from({ length: totalDots }, (_, i) => {
+            // Calculate which group of items is currently active
+            const currentGroup = Math.floor(activeItem / constraint);
+            const isLastGroup = activeItem >= childrenLength - constraint;
+            const shouldHighlight = isLastGroup
+              ? i === totalDots - 1
+              : i === currentGroup;
 
-          return (
-            <Box
-              aria-label={`carousel indicator ${i} ${
-                shouldHighlight ? 'highlighted' : ''
-              }`}
-              key={i}
-              w={3}
-              h={3}
-              mx={1}
-              borderRadius='50%'
-              borderWidth='1px'
-              borderColor={`${colorScheme}.500`}
-              bg={shouldHighlight ? `${colorScheme}.500` : '#ffffff'}
-              cursor='pointer'
-              _hover={{
-                bg: shouldHighlight
-                  ? `${colorScheme}.600`
-                  : `${colorScheme}.200`,
-                borderColor: `${colorScheme}.600`,
-              }}
-              onClick={() => handleDotClick(i)}
-            />
-          );
-        })}
-      </Flex>
+            return (
+              <Box
+                aria-label={`carousel indicator ${i + 1} of ${totalDots}${
+                  shouldHighlight ? ' (current)' : ''
+                }`}
+                key={i}
+                w={3}
+                h={3}
+                mx={1}
+                borderRadius='50%'
+                borderWidth='1px'
+                borderColor={`${colorScheme}.500`}
+                bg={shouldHighlight ? `${colorScheme}.500` : '#ffffff'}
+                cursor='pointer'
+                tabIndex={0}
+                role='button'
+                _hover={{
+                  bg: shouldHighlight
+                    ? `${colorScheme}.600`
+                    : `${colorScheme}.200`,
+                  borderColor: `${colorScheme}.600`,
+                }}
+                _focus={{
+                  outline: '2px solid',
+                  outlineColor: `${colorScheme}.500`,
+                  outlineOffset: '2px',
+                }}
+                onClick={() => handleDotClick(i)}
+                onKeyDown={e => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    handleDotClick(i);
+                  }
+                }}
+              />
+            );
+          })}
+        </Flex>
+      )}
 
       <Button
         aria-label='next carousel item'
         onClick={handleIncrementClick}
         onFocus={handleFocus}
-        isDisabled={childrenLength <= constraint || activeItem >= maxActiveItem}
-        ml={`${gap / 3}px`}
+        isDisabled={activeItem >= maxActiveItem}
+        ml={showProgressBar ? 0 : `${gap / 3}px`}
         color={`${colorScheme}.800`}
         variant='ghost'
         minW={0}
         size='sm'
+        flexShrink={0}
       >
         <Icon as={FaAngleRight} boxSize={4} />
       </Button>
