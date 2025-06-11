@@ -128,12 +128,10 @@ export const fetchAllSearchResults = async (
         fetch_all: true,
         page,
       };
-
       // scroll id for fetching the next page of data
       if (scroll_id) {
         params.scroll_id = scroll_id;
       }
-
       const { data } = await axios.get(url, { params, signal });
 
       if (updateProgress) {
@@ -152,6 +150,8 @@ export const fetchAllSearchResults = async (
         total = data.total;
       }
       allResults = [...allResults, ...data.hits];
+      // set timeout to avoid rate limiting
+      await new Promise(resolve => setTimeout(resolve, 1000));
 
       // fetch again until no more results.
       return fetchSinglePageSearchResults(params, page + 1, data._scroll_id);
