@@ -43,6 +43,8 @@ export const CompactCard = ({
     description,
   } = data || {};
 
+  console.log('data', data);
+
   return (
     <Card
       variant='niaid'
@@ -149,7 +151,7 @@ export const CompactCard = ({
               >
                 <Text fontSize='13px'>{date}</Text>
               </Tooltip>
-              {(conditionsOfAccess || hasAPI) && (
+              {(conditionsOfAccess || hasAPI === true) && (
                 <Flex
                   justifyContent={['flex-start']}
                   alignItems='center'
@@ -166,12 +168,14 @@ export const CompactCard = ({
                     mx={0.5}
                     size='sm'
                   />
-                  <HasAPI
-                    type={data?.['@type']}
-                    hasAPI={data?.hasAPI}
-                    mx={0.5}
-                    size='sm'
-                  />
+                  {hasAPI === true && (
+                    <HasAPI
+                      type={data?.['@type']}
+                      hasAPI={data?.hasAPI}
+                      mx={0.5}
+                      size='sm'
+                    />
+                  )}
                 </Flex>
               )}
             </Flex>
