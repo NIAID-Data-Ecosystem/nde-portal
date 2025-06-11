@@ -232,7 +232,7 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
         (props.src.includes('.webm') || props.src.includes('.mp4'))
       ) {
         return (
-          <video autoPlay loop muted>
+          <video autoPlay loop muted playsInline>
             {props.src.includes('.webm') && (
               <source
                 src={`${process.env.NEXT_PUBLIC_STRAPI_API_URL}${props.src}`}
