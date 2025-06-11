@@ -61,7 +61,7 @@ const extractMarkdownHeadings = (
 
           if (child.type === 'heading' && child.depth <= maxDepth) {
             headings.push({
-              title: child.children[0].value?.replace(/[^a-zA-Z\s]/g, '') || '',
+              title: child.children[0].value || '',
               hash: transformString2Hash(child.children[0].value) || '',
               depth: child.depth,
             });
