@@ -43,8 +43,6 @@ export const CompactCard = ({
     description,
   } = data || {};
 
-  console.log('data', data);
-
   return (
     <Card
       variant='niaid'
