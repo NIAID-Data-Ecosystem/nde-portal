@@ -12,6 +12,7 @@ export const Carousel = ({
   children,
   colorScheme = 'primary',
   gap = 32,
+  isLoading = false,
 }: CarouselProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const controlsRef = useRef<HTMLDivElement>(null);
@@ -74,6 +75,7 @@ export const Carousel = ({
     childrenLength: children.length,
     showProgressBar,
     progressPercentage,
+    isLoading,
     ...navigation,
   };
 

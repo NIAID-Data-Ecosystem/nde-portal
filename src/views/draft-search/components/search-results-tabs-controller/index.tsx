@@ -147,7 +147,7 @@ export const SearchResultsController = ({
                         {/* Render carousel if ResourceCatalog type is included */}
                         {section.type === 'ResourceCatalog' && (
                           <CarouselWrapper>
-                            <Carousel gap={8}>
+                            <Carousel gap={8} isLoading={carouselIsLoading}>
                               {carouselIsLoading
                                 ? // Show loading skeleton cards when data is loading
                                   Array(3)

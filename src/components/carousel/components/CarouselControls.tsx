@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Button, Flex, Icon, Progress } from '@chakra-ui/react';
+import { Box, Button, Flex, Icon, Progress, Skeleton } from '@chakra-ui/react';
 import { FaAngleLeft, FaAngleRight } from 'react-icons/fa6';
 import { CarouselControlsProps } from '../types';
 
@@ -17,8 +17,14 @@ export const CarouselControls = ({
   childrenLength,
   showProgressBar,
   progressPercentage,
+  isLoading = false,
 }: CarouselControlsProps) => {
   const shouldShowControls = childrenLength > constraint;
+
+  // Show skeleton loading state for controls
+  if (isLoading) {
+    return <Skeleton height='32px' width='120px' borderRadius='md' />;
+  }
 
   if (!shouldShowControls) {
     return null;
@@ -64,7 +70,6 @@ export const CarouselControls = ({
       ) : (
         <Flex>
           {Array.from({ length: totalDots }, (_, i) => {
-            // Calculate which group of items is currently active
             const currentGroup = Math.floor(activeItem / constraint);
             const isLastGroup = activeItem >= childrenLength - constraint;
             const shouldHighlight = isLastGroup
