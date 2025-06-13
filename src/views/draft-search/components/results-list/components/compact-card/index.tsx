@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Card,
   CardHeader,
@@ -6,8 +6,10 @@ import {
   Flex,
   Tooltip,
   Text,
+  Button,
 } from '@chakra-ui/react';
 import NextLink from 'next/link';
+import { FaMagnifyingGlass } from 'react-icons/fa6';
 import { FormattedResource } from 'src/utils/api/types';
 import { TypeBanner } from 'src/components/resource-sections/components';
 import { DisplayHTMLContent } from 'src/components/html-content';
@@ -16,7 +18,7 @@ import { ConditionsOfAccess } from 'src/components/badges';
 import { HasAPI } from 'src/components/badges/components/HasAPI';
 import { MetadataLabel } from 'src/components/metadata';
 import { ScrollContainer } from 'src/components/scroll-container';
-import { SearchableItems } from 'src/components/searchable-items';
+import { TagWithUrl } from 'src/components/tag-with-url';
 import { Skeleton } from 'src/components/skeleton';
 
 interface CompactCardProps {
@@ -30,6 +32,9 @@ export const CompactCard = ({
   referrerPath,
   isLoading = false,
 }: CompactCardProps) => {
+  const [showDescription, setShowDescription] = useState(true);
+  const [showAllTypes, setShowAllTypes] = useState(false);
+
   const {
     ['@type']: type,
     id,
@@ -43,6 +48,26 @@ export const CompactCard = ({
     description,
   } = data || {};
 
+  const handleShowMoreTypes = () => {
+    setShowAllTypes(true);
+    setShowDescription(false);
+  };
+
+  const handleShowFewerTypes = () => {
+    setShowAllTypes(false);
+    setShowDescription(true);
+  };
+
+  const handleShowDescription = () => {
+    setShowDescription(true);
+    setShowAllTypes(false);
+  };
+
+  const handleHideDescription = () => {
+    setShowDescription(false);
+    setShowAllTypes(true);
+  };
+
   return (
     <Card
       variant='niaid'
@@ -50,11 +75,11 @@ export const CompactCard = ({
       border='1px solid'
       borderColor='gray.200'
       height={{
-        base: '320px',
-        sm: '280px',
-        md: '310px',
-        lg: '315px',
-        xl: '320px',
+        base: '325px',
+        sm: '295px',
+        md: '320px',
+        lg: '320px',
+        xl: '325px',
       }}
     >
       {/* TypeBanner */}
@@ -179,32 +204,97 @@ export const CompactCard = ({
             </Flex>
           )}
         </Skeleton>
+
         {/* Content types section */}
         <Skeleton isLoaded={!isLoading} px={1} mt={0} mb={0}>
           {about && (
             <Flex bg='white' direction='column'>
               <MetadataLabel label='Content Types' />
               <ScrollContainer overflow='auto' maxHeight='200px'>
-                <SearchableItems
-                  fieldName='about'
-                  generateButtonLabel={(limit, length, itemLabel = 'types') =>
-                    limit === length
-                      ? `Show fewer ${itemLabel}`
-                      : `Show all ${itemLabel} (${length - limit} more)`
-                  }
-                  itemLimit={2}
-                  items={about.map(item => item.displayName)}
-                />
+                <ScrollContainer
+                  maxHeight='300px'
+                  m={0}
+                  p={0}
+                  display='flex'
+                  flexWrap='wrap'
+                >
+                  {about.slice(0, showAllTypes ? about.length : 2).map(item => (
+                    <TagWithUrl
+                      key={item.displayName}
+                      colorScheme='primary'
+                      href={{
+                        pathname: '/search',
+                        query: {
+                          q: `about:"${item.displayName.trim().toLowerCase()}"`,
+                        },
+                      }}
+                      m={0.5}
+                      leftIcon={FaMagnifyingGlass}
+                    >
+                      {item.displayName}
+                    </TagWithUrl>
+                  ))}
+                  {about.length > 2 && (
+                    <Button
+                      colorScheme='primary'
+                      size='xs'
+                      variant='link'
+                      justifyContent='flex-end'
+                      m={1}
+                      onClick={
+                        showAllTypes
+                          ? handleShowFewerTypes
+                          : handleShowMoreTypes
+                      }
+                    >
+                      {showAllTypes
+                        ? 'Show fewer types'
+                        : `Show more types (${about.length - 2} more)`}
+                    </Button>
+                  )}
+                </ScrollContainer>
               </ScrollContainer>
             </Flex>
           )}
         </Skeleton>
+
         {/* Description section */}
         <Skeleton isLoaded={!isLoading} flex='1' px={2} mt={2} mb={1}>
           {description && (
-            <Text fontSize='xs' lineHeight='short' noOfLines={3}>
-              {description.trim()}
-            </Text>
+            <>
+              {showDescription ? (
+                <Flex direction='column' gap={1}>
+                  <Text fontSize='xs' lineHeight='short' noOfLines={3}>
+                    {description.trim()}
+                  </Text>
+                  <Button
+                    variant='link'
+                    size='xs'
+                    onClick={handleHideDescription}
+                    alignSelf='flex-start'
+                    p={0}
+                    minH='auto'
+                    height='auto'
+                    fontSize='xs'
+                  >
+                    Hide description
+                  </Button>
+                </Flex>
+              ) : (
+                <Button
+                  variant='link'
+                  size='xs'
+                  onClick={handleShowDescription}
+                  alignSelf='flex-start'
+                  p={0}
+                  minH='auto'
+                  height='auto'
+                  fontSize='xs'
+                >
+                  See description
+                </Button>
+              )}
+            </>
           )}
         </Skeleton>
       </CardBody>
