@@ -10,6 +10,23 @@ import { useSearchResultsData } from '../../hooks/useSearchResultsData';
 import { usePaginationContext } from '../../context/pagination-context';
 import { SearchTabs } from '../layout/tabs';
 import { FetchSearchResultsResponse } from 'src/utils/api/types';
+import { CompactCard } from '../results-list/components/compact-card';
+import { Carousel } from 'src/components/carousel';
+import { CarouselWrapper } from '../layout/carousel-wrapper';
+
+const CAROUSEL_RESULTS_FIELDS = [
+  '_meta',
+  '@type',
+  'id',
+  'about',
+  'alternateName',
+  'conditionsOfAccess',
+  'date',
+  'description',
+  'hasAPI',
+  'includedInDataCatalog',
+  'name',
+];
 
 interface SearchResultsControllerProps {
   colorScheme?: string;
@@ -43,19 +60,40 @@ export const SearchResultsController = ({
   // Get the current search parameters from the URL and fetch facet data.
   const queryParams = useSearchQueryFromURL();
 
-  const searchResultsData = useSearchResultsData(
-    {
-      q: queryParams.q,
-      filters: queryParams.filters,
-      facets: ['@type'],
-      facet_size: 100,
-    },
-    {
-      initialData,
-    },
-  );
+  const searchResultsData = useSearchResultsData({
+    ...queryParams,
+    facets: ['@type'],
+  });
 
   const { data } = searchResultsData.response;
+
+  // Get resource catalog records
+  const carouselResultsData = useSearchResultsData({
+    ...queryParams,
+    filters: {
+      ...queryParams.filters,
+      '@type': ['ResourceCatalog'],
+    },
+    fields: CAROUSEL_RESULTS_FIELDS,
+    size: 50,
+  });
+
+  const { data: carouselData, isLoading: carouselIsLoading } =
+    carouselResultsData.response;
+
+  // Sort carousel data alphabetically by name
+  const sortedCarouselData = useMemo(() => {
+    if (!carouselData?.results) return null;
+
+    const sorted = [...carouselData.results].sort((a, b) => {
+      const nameA = a.name || '';
+      const nameB = b.name || '';
+      return nameA.localeCompare(nameB, undefined, { sensitivity: 'base' });
+    });
+
+    return { ...carouselData, results: sorted };
+  }, [carouselData]);
+
   // Enhance each tab with facet counts for the types it represents.
   const tabsWithCounts = useMemo(
     () =>
@@ -107,9 +145,35 @@ export const SearchResultsController = ({
                         } (${section.count.toLocaleString()})`}
                       >
                         {/* Render carousel if ResourceCatalog type is included */}
-                        {section.type === 'ResourceCatalog' ? (
-                          <>Insert carousel here</>
-                        ) : (
+                        {section.type === 'ResourceCatalog' && (
+                          <CarouselWrapper>
+                            <Carousel gap={8} isLoading={carouselIsLoading}>
+                              {carouselIsLoading
+                                ? // Show loading skeleton cards when data is loading
+                                  Array(3)
+                                    .fill(0)
+                                    .map((_, index) => (
+                                      <CompactCard
+                                        key={`loading-${index}`}
+                                        isLoading={true}
+                                        referrerPath={router.asPath}
+                                      />
+                                    ))
+                                : // Show actual data when loaded
+                                  (sortedCarouselData?.results || []).map(
+                                    carouselCard => (
+                                      <CompactCard
+                                        key={carouselCard.id}
+                                        data={carouselCard}
+                                        isLoading={false}
+                                        referrerPath={router.asPath}
+                                      />
+                                    ),
+                                  )}
+                            </Carousel>
+                          </CarouselWrapper>
+                        )}
+                        {section.type !== 'ResourceCatalog' && (
                           <>
                             {/* Render search results */}
                             <SearchResults
