@@ -9,7 +9,6 @@ import {
   Button,
 } from '@chakra-ui/react';
 import NextLink from 'next/link';
-import { FaMagnifyingGlass } from 'react-icons/fa6';
 import { FormattedResource } from 'src/utils/api/types';
 import { TypeBanner } from 'src/components/resource-sections/components';
 import { DisplayHTMLContent } from 'src/components/html-content';
@@ -18,7 +17,7 @@ import { ConditionsOfAccess } from 'src/components/badges';
 import { HasAPI } from 'src/components/badges/components/HasAPI';
 import { MetadataLabel } from 'src/components/metadata';
 import { ScrollContainer } from 'src/components/scroll-container';
-import { TagWithUrl } from 'src/components/tag-with-url';
+import { SearchableItems } from 'src/components/searchable-items';
 import { Skeleton } from 'src/components/skeleton';
 
 interface CompactCardProps {
@@ -48,14 +47,9 @@ export const CompactCard = ({
     description,
   } = data || {};
 
-  const handleShowMoreTypes = () => {
-    setShowAllTypes(true);
-    setShowDescription(false);
-  };
-
-  const handleShowFewerTypes = () => {
-    setShowAllTypes(false);
-    setShowDescription(true);
+  const handleTypesToggle = (expanded: boolean) => {
+    setShowAllTypes(expanded);
+    setShowDescription(!expanded);
   };
 
   const handleShowDescription = () => {
@@ -67,6 +61,9 @@ export const CompactCard = ({
     setShowDescription(false);
     setShowAllTypes(true);
   };
+
+  // Transform about array to string array for SearchableItems
+  const aboutItems = about?.map(item => item.displayName) || [];
 
   return (
     <Card
@@ -96,6 +93,7 @@ export const CompactCard = ({
           isNiaidFunded={isSourceFundedByNiaid(includedInDataCatalog)}
         />
       </Skeleton>
+
       <CardHeader
         bg='transparent'
         position='relative'
@@ -153,8 +151,9 @@ export const CompactCard = ({
           </NextLink>
         </Skeleton>
       </CardHeader>
+
       <CardBody p={0}>
-        {/* Date and badges section */}
+        {/* Date and badges */}
         <Skeleton isLoaded={!isLoading} minHeight='30px' px={2} m={0}>
           {date && (
             <Flex
@@ -205,60 +204,31 @@ export const CompactCard = ({
           )}
         </Skeleton>
 
-        {/* Content types section */}
+        {/* Content types */}
         <Skeleton isLoaded={!isLoading} px={1} mt={0} mb={0}>
-          {about && (
+          {aboutItems.length > 0 && (
             <Flex bg='white' direction='column'>
               <MetadataLabel label='Content Types' />
               <ScrollContainer overflow='auto' maxHeight='200px'>
-                <ScrollContainer
-                  maxHeight='300px'
-                  m={0}
-                  p={0}
-                  display='flex'
-                  flexWrap='wrap'
-                >
-                  {about.slice(0, showAllTypes ? about.length : 2).map(item => (
-                    <TagWithUrl
-                      key={item.displayName}
-                      colorScheme='primary'
-                      href={{
-                        pathname: '/search',
-                        query: {
-                          q: `about:"${item.displayName.trim().toLowerCase()}"`,
-                        },
-                      }}
-                      m={0.5}
-                      leftIcon={FaMagnifyingGlass}
-                    >
-                      {item.displayName}
-                    </TagWithUrl>
-                  ))}
-                  {about.length > 2 && (
-                    <Button
-                      colorScheme='primary'
-                      size='xs'
-                      variant='link'
-                      justifyContent='flex-end'
-                      m={1}
-                      onClick={
-                        showAllTypes
-                          ? handleShowFewerTypes
-                          : handleShowMoreTypes
-                      }
-                    >
-                      {showAllTypes
-                        ? 'Show fewer types'
-                        : `Show more types (${about.length - 2} more)`}
-                    </Button>
-                  )}
-                </ScrollContainer>
+                <SearchableItems
+                  fieldName='about'
+                  items={aboutItems}
+                  itemLimit={2}
+                  colorScheme='primary'
+                  isExpanded={showAllTypes}
+                  onToggle={handleTypesToggle}
+                  generateButtonLabel={(limit, length) =>
+                    limit === length
+                      ? 'Show fewer types'
+                      : `Show more types (${length - limit} more)`
+                  }
+                />
               </ScrollContainer>
             </Flex>
           )}
         </Skeleton>
 
-        {/* Description section */}
+        {/* Description */}
         <Skeleton isLoaded={!isLoading} flex='1' px={2} mt={2} mb={1}>
           {description && (
             <>
