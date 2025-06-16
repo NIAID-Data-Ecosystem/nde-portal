@@ -69,7 +69,7 @@ export const SearchResultsController = ({
 
   // Get resource catalog records
   const carouselResultsData = useSearchResultsData({
-    ...queryParams,
+    q: queryParams.q || '',
     filters: {
       ...queryParams.filters,
       '@type': ['ResourceCatalog'],
