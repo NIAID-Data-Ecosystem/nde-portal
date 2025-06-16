@@ -9,7 +9,12 @@ import {
   UnorderedList,
 } from '@chakra-ui/react';
 import { useQuery } from '@tanstack/react-query';
-import { FaAngleRight, FaCheck, FaMagnifyingGlass } from 'react-icons/fa6';
+import {
+  FaAngleRight,
+  FaMagnifyingGlass,
+  FaMinus,
+  FaPlus,
+} from 'react-icons/fa6';
 import {
   fetchChildrenFromBioThingsAPI,
   fetchPortalCounts,
@@ -316,20 +321,14 @@ export const TreeNode = (props: {
           </OntologyBrowserCountTag>
 
           <IconButton
-            ml={1}
+            ml={2}
             aria-label={
               isIncludedInSearch(node.taxonId)
                 ? `Remove ${node.label} from search list`
                 : `Search portal for resources related to ${node.label}`
             }
-            icon={
-              isIncludedInSearch(node.taxonId) ? (
-                <FaCheck />
-              ) : (
-                <FaMagnifyingGlass />
-              )
-            }
-            size='sm'
+            icon={isIncludedInSearch(node.taxonId) ? <FaMinus /> : <FaPlus />}
+            size='xs'
             variant='outline'
             fontSize='xs'
             onClick={e => {
