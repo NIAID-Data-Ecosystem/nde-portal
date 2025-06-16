@@ -148,9 +148,7 @@ export const OntologyBrowser = ({
             alignItems='flex-end'
             mb={1}
           >
-            {selectedOntologyNode && (
-              <OntologyBrowserHeader selectedNode={selectedOntologyNode} />
-            )}
+            <OntologyBrowserHeader selectedNode={selectedOntologyNode} />
             <OntologyBrowserSettings
               label='Configure View'
               buttonProps={{ size: 'sm' }}
