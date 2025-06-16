@@ -1,12 +1,8 @@
 interface ImageProps {
-  data: {
-    id: number;
-    attributes: {
-      name: string;
-      alternativeText: string;
-      url: string;
-    };
-  };
+  id: number;
+  name: string;
+  alternativeText: string;
+  url: string;
 }
 
 export interface SectionProps {
@@ -50,14 +46,12 @@ interface TabItem {
 
 export interface ContentProps {
   id: number;
-  attributes: {
-    title: string;
-    createdAt: string;
-    updatedAt: string;
-    publishedAt: string;
-    description: string;
-    overview?: SectionProps[];
-    tabs?: Tabs;
-    textBlocks?: SectionProps[];
-  };
+  title: string;
+  createdAt: string;
+  updatedAt: string;
+  publishedAt: string;
+  description: string;
+  overview?: SectionProps[];
+  tabs?: Tabs;
+  textBlocks?: SectionProps[];
 }

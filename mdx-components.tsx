@@ -88,6 +88,7 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
   return {
     a: (props: any) => {
       let { href } = props;
+
       if (href.startsWith('doc:')) {
         href = '';
       }
@@ -223,13 +224,38 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
         {...props}
       />
     ),
-    img: (props: ImageProps) => (
-      <Image
-        {...props}
-        alt={props.alt || 'image'}
-        src={`${process.env.NEXT_PUBLIC_STRAPI_API_URL}${props.src}`}
-      />
-    ),
+    img: (props: ImageProps) => {
+      // Handle video files
+      if (
+        props?.src &&
+        props?.src.includes('/uploads') &&
+        (props.src.includes('.webm') || props.src.includes('.mp4'))
+      ) {
+        return (
+          <video autoPlay loop muted playsInline>
+            {props.src.includes('.webm') && (
+              <source
+                src={`${process.env.NEXT_PUBLIC_STRAPI_API_URL}${props.src}`}
+                type='video/webm'
+              ></source>
+            )}
+            {props.src.includes('.mp4') && (
+              <source
+                src={`${process.env.NEXT_PUBLIC_STRAPI_API_URL}${props.src}`}
+                type='video/mp4'
+              ></source>
+            )}
+          </video>
+        );
+      }
+      return (
+        <Image
+          {...props}
+          alt={props.alt || 'image'}
+          src={`${process.env.NEXT_PUBLIC_STRAPI_API_URL}${props.src}`}
+        />
+      );
+    },
     li: (props: any) => {
       return (
         <ListItem listStyleType='inherit' pb='4px' fontSize='md'>

@@ -20,6 +20,8 @@ import { DownloadArgs, downloadAsCsv, downloadAsJson } from './helpers';
 import { Disclaimer } from './components/Disclaimer';
 import { FaXmark } from 'react-icons/fa6';
 import { encodeString } from 'src/utils/querystring-helpers';
+import { sendGTMEvent } from '@next/third-parties/google';
+import { useRouter } from 'next/router';
 
 /*
  [COMPONENT INFO]: Download data button that gives JSON or CSV download options.
@@ -31,6 +33,12 @@ interface DownloadMetadataProps extends FlexProps {
   buttonProps?: ButtonProps;
 }
 
+const trackDownloadEvent = (params: {
+  label: string;
+  event: string;
+  value: string;
+}) => sendGTMEvent(params);
+
 export const DownloadMetadata: React.FC<DownloadMetadataProps> = ({
   params,
   exportFileName,
@@ -40,6 +48,7 @@ export const DownloadMetadata: React.FC<DownloadMetadataProps> = ({
 }) => {
   // Toggle open/close a download format list.
   const { isOpen, onToggle, onClose } = useDisclosure();
+  const router = useRouter();
 
   // Options for download format and corresponding formatting functions.
   const [downloadFormat, setDownloadFormat] = useState<any | null>(null);
@@ -253,6 +262,11 @@ export const DownloadMetadata: React.FC<DownloadMetadataProps> = ({
                             bg: `${buttonProps?.colorScheme || 'primary'}.50`,
                           }}
                           onClick={async () => {
+                            trackDownloadEvent({
+                              label: `Download Metadata: From ${router.pathname}`,
+                              event: 'download_metadata_click',
+                              value: `downloadFormat: ${option.format}`,
+                            });
                             onClose();
                             setPercentComplete(0);
                             setDownloadFormat(option);

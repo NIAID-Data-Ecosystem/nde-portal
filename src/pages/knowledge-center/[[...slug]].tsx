@@ -35,30 +35,26 @@ import { HeroBanner } from 'src/views/docs/components/HeroBanner';
 
 export interface DocumentationByCategories {
   id: number;
-  attributes: {
-    name: string;
-    createdAt: string;
-    publishedAt: string;
-    updatedAt: string;
-    docs: {
-      data: {
-        id: DocumentationProps['id'];
-        attributes: Pick<DocumentationProps['attributes'], 'name' | 'slug'>;
-      }[];
-    };
-  };
+  name: string;
+  createdAt: string;
+  publishedAt: string;
+  updatedAt: string;
+  docs: {
+    id: DocumentationProps['id'];
+    name: DocumentationProps['name'];
+    slug: DocumentationProps['slug'];
+  }[];
 }
 
 // Fetch documentation from API.
 export const fetchCategories = async () => {
   try {
-    const isProd =
-      process.env.NEXT_PUBLIC_BASE_URL === 'https://data.niaid.nih.gov';
+    const isProd = process.env.NEXT_PUBLIC_APP_ENV === 'production';
     const docs = await axios.get(
       `${
         process.env.NEXT_PUBLIC_STRAPI_API_URL
-      }/api/categories?filters[docs][name][$null]&populate[docs][fields][0]=name&populate[docs][fields][1]=slug&populate[docs][sort][1]=order:asc&pagination[page]=1&pagination[pageSize]=100&sort[0]=order:asc&publicationState=${
-        isProd ? 'live' : 'preview'
+      }/api/categories?filters[docs][name][$null]&populate[docs][fields][0]=name&populate[docs][fields][1]=slug&populate[docs][sort][1]=order:asc&pagination[page]=1&pagination[pageSize]=100&sort[0]=order:asc&status=${
+        isProd ? 'published' : 'draft'
       }`,
     );
 
@@ -80,22 +76,22 @@ const Docs: NextPage<{
     queryFn: fetchCategories,
     select: (res: DocumentationByCategories[]) => {
       return res
-        .map(({ id, attributes }) => {
-          const items =
-            attributes?.docs?.data?.map(item => {
+        .map(({ id, name, ...data }) => {
+          const docs =
+            data?.docs?.map(doc => {
               return {
-                id: item.id,
-                name: item.attributes.name,
-                slug: item.attributes.slug,
+                id: doc.id,
+                name: doc.name,
+                slug: doc.slug,
                 href: {
-                  pathname: `/knowledge-center/${item.attributes.slug}`,
+                  pathname: `/knowledge-center/${doc.slug}`,
                 },
               };
             }) || [];
           return {
             id,
-            name: attributes.name,
-            items,
+            name,
+            items: docs,
           };
         })
         .filter(({ items }) => items.length > 0);
@@ -350,15 +346,14 @@ export const getStaticProps: GetStaticProps = async context => {
     return { props: { slug: '', data: {} } };
   }
   const { slug } = context.params;
-  const isProd =
-    process.env.NEXT_PUBLIC_BASE_URL === 'https://data.niaid.nih.gov';
+  const isProd = process.env.NEXT_PUBLIC_APP_ENV === 'production';
   const fetchDocumentation = async () => {
     try {
       const docs = await axios.get(
         `${
           process.env.NEXT_PUBLIC_STRAPI_API_URL
-        }/api/docs?populate=*&filters[$and][0][slug][$eqi]=${slug}&publicationState=${
-          isProd ? 'live' : 'preview'
+        }/api/docs?populate=*&filters[$and][0][slug][$eqi]=${slug}&status=${
+          isProd ? 'published' : 'draft'
         }`,
       );
 
@@ -369,25 +364,26 @@ export const getStaticProps: GetStaticProps = async context => {
   };
   // Fetch documentation from API.
   const [data] = await fetchDocumentation();
-
   return { props: { slug, data: data || {} } };
 };
 
 export async function getStaticPaths() {
   const fetchData = async () => {
     try {
-      const isProd =
-        process.env.NEXT_PUBLIC_BASE_URL === 'https://data.niaid.nih.gov';
+      const isProd = process.env.NEXT_PUBLIC_APP_ENV === 'production';
 
       const docs = await axios.get(
         `${
           process.env.NEXT_PUBLIC_STRAPI_API_URL
-        }/api/docs?fields[0]=slug&publicationState=${
-          isProd ? 'live' : 'preview'
-        }`,
+        }/api/docs?fields[0]=slug&status=${isProd ? 'published' : 'draft'}`,
       );
+
       return {
-        docs: docs.data.data as { id: number; attributes: { slug: string } }[],
+        docs: docs.data.data as {
+          id: number;
+          documentId: string;
+          slug: string;
+        }[],
       };
     } catch (err) {
       throw err;
@@ -406,12 +402,11 @@ export async function getStaticPaths() {
     { params: { slug: undefined } }, // handles /docs (without slug) route.
     { params: { slug: ['metadata-completeness-score'] } }, // handle removed completeness page
     ...docs
-      .filter(doc => !!doc.attributes?.slug)
+      .filter(doc => !!doc.slug)
       .map(doc => ({
-        params: { slug: [doc.attributes.slug] },
+        params: { slug: [doc.slug] },
       })),
   ];
-
   // { fallback: false } means other routes should 404
   return { paths, fallback: false };
 }

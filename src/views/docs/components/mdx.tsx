@@ -104,6 +104,30 @@ export default {
     />
   ),
   img: (props: ImageProps) => {
+    // Handle video files
+    if (
+      props?.src &&
+      props?.src.includes('/uploads') &&
+      (props.src.includes('.webm') || props.src.includes('.mp4'))
+    ) {
+      return (
+        <video autoPlay loop muted playsInline>
+          {props.src.includes('.webm') && (
+            <source
+              src={`${process.env.NEXT_PUBLIC_STRAPI_API_URL}${props.src}`}
+              type='video/webm'
+            ></source>
+          )}
+          {props.src.includes('.mp4') && (
+            <source
+              src={`${process.env.NEXT_PUBLIC_STRAPI_API_URL}${props.src}`}
+              type='video/mp4'
+            ></source>
+          )}
+        </video>
+      );
+    }
+
     // Strapi image path retrieved from the API is a full path but we only need the relative path
     const relative_url =
       props.src && !props.src.startsWith('/')

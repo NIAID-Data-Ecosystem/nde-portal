@@ -22,7 +22,7 @@ export interface NoticeProps {
   id: number | string;
   heading: string;
   description?: string | null;
-  status: 'INFO' | 'WARNING' | 'ERROR' | 'SUCCESS';
+  state: 'INFO' | 'WARNING' | 'ERROR' | 'SUCCESS';
   affectedRepository?: string | null;
   createdAt: string;
   updatedAt: string;
@@ -39,8 +39,7 @@ export const PageContainer: React.FC<PageContainerProps> = ({
   ...props
 }) => {
   // Fetch Notices from STRAPI API.
-  const isProd =
-    process.env.NEXT_PUBLIC_BASE_URL === 'https://data.niaid.nih.gov';
+  const isProd = process.env.NEXT_PUBLIC_APP_ENV === 'production';
   const { data: notices } = useQuery<NoticeProps[]>({
     queryKey: ['notices'],
     queryFn: async () => {
@@ -49,18 +48,13 @@ export const PageContainer: React.FC<PageContainerProps> = ({
           .get(
             `${
               process.env.NEXT_PUBLIC_STRAPI_API_URL
-            }/api/notices?populate=*&publicationState=${
-              isProd ? 'live' : 'preview'
-            }`,
+            }/api/notices?populate=*&status=${isProd ? 'published' : 'draft'}`,
           )
           .then(res => res.data);
         return notices.data
-          .filter(
-            (datum: { id: number; attributes: NoticeProps }) =>
-              datum.attributes.isActive === true,
-          )
-          .map((datum: { id: number; attributes: NoticeProps }) => ({
-            ...datum.attributes,
+          .filter((datum: NoticeProps) => datum.isActive === true)
+          .map((datum: NoticeProps) => ({
+            ...datum,
             id: datum.id,
           }));
       } catch (err: any) {
@@ -133,7 +127,7 @@ export const PageContainer: React.FC<PageContainerProps> = ({
                     ? 'Production'
                     : 'Development'
                 } API </a>.`}
-                status='INFO'
+                state='INFO'
               />
             )}
             {/* <!-- Banner for service warnings and notices --> */}
@@ -144,7 +138,7 @@ export const PageContainer: React.FC<PageContainerProps> = ({
                   id={`banner-${notice.id}-notice`}
                   heading={notice.heading}
                   description={notice.description}
-                  status={notice.status}
+                  state={notice.state}
                 />
               ))}
           </Stack>

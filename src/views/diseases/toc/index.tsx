@@ -26,14 +26,14 @@ export const TableOfContents = ({ data }: { data: DiseasePageProps[] }) => {
     return (
       data
         ?.filter(page => {
-          const title = page.attributes.title.toLowerCase();
-          const description = page.attributes.description?.toLowerCase() || '';
+          const title = page.title.toLowerCase();
+          const description = page.description?.toLowerCase() || '';
           const searchTerm = searchValue.toLowerCase();
 
           return title.includes(searchTerm) || description.includes(searchTerm);
         })
         .sort((a, b) =>
-          a.attributes.title.localeCompare(b.attributes.title, undefined, {
+          a.title.localeCompare(b.title, undefined, {
             numeric: true,
           }),
         ) || []
@@ -47,8 +47,8 @@ export const TableOfContents = ({ data }: { data: DiseasePageProps[] }) => {
           return (
             <SidebarItem
               key={page.id}
-              label={page?.attributes?.title}
-              href={`#${page.attributes.slug}`}
+              label={page?.title}
+              href={`#${page.slug}`}
             />
           );
         })}
@@ -82,14 +82,10 @@ export const TableOfContents = ({ data }: { data: DiseasePageProps[] }) => {
           {/* Display list of disease pages in cards */}
           <StyledCardStack>
             {diseasePages.map(page => {
-              const label = page?.attributes?.title;
+              const label = page?.title;
 
               return (
-                <StyledCard
-                  key={page.id}
-                  id={page.attributes.slug}
-                  isLoading={isLoading}
-                >
+                <StyledCard key={page.id} id={page.slug} isLoading={isLoading}>
                   {/* Description */}
                   <Stack
                     spacing={{ base: 4, lg: 6, xl: 10 }}
@@ -107,16 +103,16 @@ export const TableOfContents = ({ data }: { data: DiseasePageProps[] }) => {
                       <StyleCardLabel>{label}</StyleCardLabel>
 
                       {/* Description */}
-                      {page.attributes.description && (
+                      {page.description && (
                         <Flex flex={1}>
                           <StyledCardDescription>
-                            {page.attributes.description}
+                            {page.description}
                           </StyledCardDescription>
                         </Flex>
                       )}
                     </Stack>
 
-                    {page.attributes.image?.data?.attributes?.url && (
+                    {page.image?.url && (
                       <Flex
                         minWidth={200}
                         maxWidth={{ base: 'unset', xl: '25%' }}
@@ -127,25 +123,22 @@ export const TableOfContents = ({ data }: { data: DiseasePageProps[] }) => {
                           borderRadius='base'
                           width='100%'
                           height='auto'
-                          src={page.attributes.image.data.attributes.url}
-                          alt={
-                            page.attributes.image.data.attributes
-                              .alternativeText
-                          }
+                          src={page.image.url}
+                          alt={page.image.alternativeText}
                           objectFit='contain'
                         />
                       </Flex>
                     )}
                   </Stack>
                   {/* Link to program resources in the NDE */}
-                  {page.attributes.query && (
+                  {page.query && (
                     <Flex
                       justifyContent={{ base: 'center', md: 'flex-end' }}
                       width='100%'
                     >
                       <StyledCardButton
                         href={{
-                          pathname: `/diseases/${page.attributes.slug}`,
+                          pathname: `/diseases/${page.slug}`,
                         }}
                       >
                         Learn about {label} resources in the NIAID Data
