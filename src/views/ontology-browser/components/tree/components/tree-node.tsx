@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   Box,
   Flex,
+  Icon,
   IconButton,
   ListItem,
   Text,
@@ -276,7 +277,13 @@ export const TreeNode = (props: {
               {node.ontologyName} | {node.taxonId}
             </Text>
 
-            <Link href={node.iri} fontSize='xs' isExternal>
+            <Link
+              href={`/search?q=${
+                params.q && params.q !== '__all__' ? params.q + '+AND+' : ''
+              }_meta.lineage.taxon:${node.taxonId}`}
+              fontSize='xs'
+            >
+              <Icon as={FaMagnifyingGlass} mr={1.5} boxSize={3} />
               <Text
                 color={node.state.selected ? 'primary.500' : 'currentColor'}
                 fontWeight={node.state.selected ? 'semibold' : 'medium'}
