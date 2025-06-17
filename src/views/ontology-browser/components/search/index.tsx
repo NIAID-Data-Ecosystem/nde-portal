@@ -134,7 +134,7 @@ export const OntologyBrowserSearch = ({
           flexDirection='column'
           width={{ base: '100%', md: 'unset' }}
           minWidth={{ base: 'unset', md: '450px' }}
-          zIndex='sticky'
+          zIndex='docked'
         >
           <Text
             as='label'
@@ -212,7 +212,7 @@ export const OntologyBrowserSearch = ({
             width: '250px',
             overflow: 'hidden',
           }}
-          zIndex='docked'
+          zIndex={9}
           label={
             <Text
               as='span'

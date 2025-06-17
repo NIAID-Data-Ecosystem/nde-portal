@@ -1,4 +1,4 @@
-import { Box, HStack, Text } from '@chakra-ui/react';
+import { HStack, VStack, StackDivider, Text } from '@chakra-ui/react';
 import { Link } from 'src/components/link';
 import { OntologyLineageItemWithCounts } from '../types';
 
@@ -12,24 +12,35 @@ import { OntologyLineageItemWithCounts } from '../types';
 export const OntologyBrowserHeader = ({
   selectedNode,
 }: {
-  selectedNode: OntologyLineageItemWithCounts;
+  selectedNode?: OntologyLineageItemWithCounts | null;
 }) => {
   return (
-    <Box>
-      <Text fontWeight='normal' fontSize='sm' lineHeight='short'>
-        Selected taxonomy term:{' '}
-      </Text>
-      <HStack>
-        {/* <!--  Link to the external page for the selected taxonomy node. --> */}
-        <Link
-          href={selectedNode.iri}
-          fontWeight='medium'
-          isExternal
-          fontSize='sm'
-        >
-          {selectedNode.label}
-        </Link>
-      </HStack>
-    </Box>
+    <VStack
+      alignItems='flex-start'
+      fontSize='sm'
+      lineHeight='short'
+      spacing={1}
+      flex={1}
+    >
+      {selectedNode && (
+        <>
+          <Text fontWeight='normal'>Selected taxonomy term:</Text>
+          <HStack divider={<StackDivider borderColor='gray.200' />} spacing={2}>
+            <Text as='span' fontWeight='medium'>
+              {selectedNode.label}
+            </Text>
+
+            {/* <!--  Link to the external page for the selected taxonomy node. --> */}
+            <Link
+              href={`https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=${selectedNode.taxonId}`}
+              isExternal
+              _visited={{ color: 'inherit' }}
+            >
+              View NCBI classification
+            </Link>
+          </HStack>
+        </>
+      )}
+    </VStack>
   );
 };

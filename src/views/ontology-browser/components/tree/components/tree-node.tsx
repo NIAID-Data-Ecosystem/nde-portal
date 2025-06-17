@@ -2,13 +2,19 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   Box,
   Flex,
+  Icon,
   IconButton,
   ListItem,
   Text,
   UnorderedList,
 } from '@chakra-ui/react';
 import { useQuery } from '@tanstack/react-query';
-import { FaAngleRight, FaCheck, FaMagnifyingGlass } from 'react-icons/fa6';
+import {
+  FaAngleRight,
+  FaMagnifyingGlass,
+  FaMinus,
+  FaPlus,
+} from 'react-icons/fa6';
 import {
   fetchChildrenFromBioThingsAPI,
   fetchPortalCounts,
@@ -276,7 +282,13 @@ export const TreeNode = (props: {
               {node.ontologyName} | {node.taxonId}
             </Text>
 
-            <Link href={node.iri} fontSize='xs' isExternal>
+            <Link
+              href={`/search?q=${
+                params.q && params.q !== '__all__' ? params.q + '+AND+' : ''
+              }_meta.lineage.taxon:${node.taxonId}`}
+              fontSize='xs'
+            >
+              <Icon as={FaMagnifyingGlass} mr={1.5} boxSize={3} />
               <Text
                 color={node.state.selected ? 'primary.500' : 'currentColor'}
                 fontWeight={node.state.selected ? 'semibold' : 'medium'}
@@ -309,20 +321,14 @@ export const TreeNode = (props: {
           </OntologyBrowserCountTag>
 
           <IconButton
-            ml={1}
+            ml={2}
             aria-label={
               isIncludedInSearch(node.taxonId)
                 ? `Remove ${node.label} from search list`
                 : `Search portal for resources related to ${node.label}`
             }
-            icon={
-              isIncludedInSearch(node.taxonId) ? (
-                <FaCheck />
-              ) : (
-                <FaMagnifyingGlass />
-              )
-            }
-            size='sm'
+            icon={isIncludedInSearch(node.taxonId) ? <FaMinus /> : <FaPlus />}
+            size='xs'
             variant='outline'
             fontSize='xs'
             onClick={e => {

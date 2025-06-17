@@ -46,7 +46,7 @@ export const OntologyBrowserCountTag = ({
   label: React.ReactNode;
 }) => {
   return (
-    <Tooltip label={label}>
+    <Tooltip label={label} mx={1}>
       <Tag
         borderRadius='full'
         variant='subtle'

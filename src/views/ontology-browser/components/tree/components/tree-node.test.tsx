@@ -182,7 +182,11 @@ describe('TreeNode', () => {
     expect(nodeLabel).toHaveStyle('font-size: xs');
     expect(nodeLabel.closest('a')).toHaveAttribute(
       'href',
-      expect.stringContaining('http'),
+      expect.stringContaining('/search'),
+    );
+    expect(nodeLabel.closest('a')).toHaveAttribute(
+      'href',
+      expect.stringContaining('207598'),
     );
   });
 
