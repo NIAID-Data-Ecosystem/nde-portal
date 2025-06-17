@@ -32,7 +32,7 @@ export const OntologyBrowserHeader = ({
 
             {/* <!--  Link to the external page for the selected taxonomy node. --> */}
             <Link
-              href={selectedNode.iri}
+              href={`https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=${selectedNode.taxonId}`}
               isExternal
               _visited={{ color: 'inherit' }}
             >
