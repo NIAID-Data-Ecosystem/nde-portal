@@ -44,10 +44,14 @@ export const AccordionContent = ({
   );
 };
 
-export const AccordionWrapper = ({ children, ...props }: AccordionProps) => {
+export const AccordionWrapper = ({
+  children,
+  defaultIndex,
+  ...props
+}: AccordionProps) => {
   return (
     <Accordion
-      defaultIndex={[0]}
+      defaultIndex={defaultIndex ?? [0]}
       allowMultiple
       boxShadow='sm'
       border='1px solid'

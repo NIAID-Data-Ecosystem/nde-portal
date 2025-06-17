@@ -13,6 +13,7 @@ import { FetchSearchResultsResponse } from 'src/utils/api/types';
 import { CompactCard } from '../results-list/components/compact-card';
 import { Carousel } from 'src/components/carousel';
 import { CarouselWrapper } from '../layout/carousel-wrapper';
+import { EmptyState } from '../results-list/components/empty';
 
 const CAROUSEL_RESULTS_FIELDS = [
   '_meta',
@@ -67,16 +68,28 @@ export const SearchResultsController = ({
 
   const { data } = searchResultsData.response;
 
-  // Get resource catalog records
-  const carouselResultsData = useSearchResultsData({
-    q: queryParams.q || '',
-    filters: {
-      ...queryParams.filters,
-      '@type': ['ResourceCatalog'],
+  // Check if there are ResourceCatalog records using facet data
+  const hasResourceCatalogRecords = useMemo(() => {
+    const terms = data?.facets?.['@type']?.terms ?? [];
+    const resourceCatalogFacet = terms.find(t => t.term === 'ResourceCatalog');
+    return (resourceCatalogFacet?.count || 0) > 0;
+  }, [data?.facets]);
+
+  // Get resource catalog records if they are available
+  const carouselResultsData = useSearchResultsData(
+    {
+      q: queryParams.q || '',
+      filters: {
+        ...queryParams.filters,
+        '@type': ['ResourceCatalog'],
+      },
+      fields: CAROUSEL_RESULTS_FIELDS,
+      size: 50,
     },
-    fields: CAROUSEL_RESULTS_FIELDS,
-    size: 50,
-  });
+    {
+      enabled: hasResourceCatalogRecords,
+    },
+  );
 
   const { data: carouselData, isLoading: carouselIsLoading } =
     carouselResultsData.response;
@@ -119,6 +132,22 @@ export const SearchResultsController = ({
     [data?.facets, tabs],
   );
 
+  // Calculate accordion indices based on ResourceCatalog availability
+  const getAccordionIndices = (tabSections: any[]) => {
+    return tabSections.reduce((indices: number[], section, index) => {
+      // ResourceCatalog section: open if there are records
+      if (section.type === 'ResourceCatalog') {
+        if (hasResourceCatalogRecords) {
+          indices.push(index);
+        }
+      } else {
+        // Non-ResourceCatalog sections: always open
+        indices.push(index);
+      }
+      return indices;
+    }, []);
+  };
+
   return (
     <>
       {/* Render each tab with its label(s) and count(s) */}
@@ -130,12 +159,16 @@ export const SearchResultsController = ({
         renderTabPanels={() =>
           tabsWithCounts.map(tab => {
             const sections = tab.types;
+            const defaultIndices = getAccordionIndices(sections);
             {
               /* Each panel renders the carousel, pagination, result list for the selected tab */
             }
             return (
               <TabPanel key={tab.id}>
-                <AccordionWrapper defaultIndex={sections.map((_, i) => i)}>
+                <AccordionWrapper
+                  key={`${tab.id}-${defaultIndices.join('-')}`}
+                  defaultIndex={defaultIndices}
+                >
                   {sections.map(section => {
                     return (
                       <AccordionContent
@@ -146,32 +179,38 @@ export const SearchResultsController = ({
                       >
                         {/* Render carousel if ResourceCatalog type is included */}
                         {section.type === 'ResourceCatalog' && (
-                          <CarouselWrapper>
-                            <Carousel gap={8} isLoading={carouselIsLoading}>
-                              {carouselIsLoading
-                                ? // Show loading skeleton cards when data is loading
-                                  Array(3)
-                                    .fill(0)
-                                    .map((_, index) => (
-                                      <CompactCard
-                                        key={`loading-${index}`}
-                                        isLoading={true}
-                                        referrerPath={router.asPath}
-                                      />
-                                    ))
-                                : // Show actual data when loaded
-                                  (sortedCarouselData?.results || []).map(
-                                    carouselCard => (
-                                      <CompactCard
-                                        key={carouselCard.id}
-                                        data={carouselCard}
-                                        isLoading={false}
-                                        referrerPath={router.asPath}
-                                      />
-                                    ),
-                                  )}
-                            </Carousel>
-                          </CarouselWrapper>
+                          <>
+                            {hasResourceCatalogRecords ? (
+                              <CarouselWrapper>
+                                <Carousel gap={8} isLoading={carouselIsLoading}>
+                                  {carouselIsLoading
+                                    ? // Show loading skeleton cards when data is loading
+                                      Array(3)
+                                        .fill(0)
+                                        .map((_, index) => (
+                                          <CompactCard
+                                            key={`loading-${index}`}
+                                            isLoading={true}
+                                            referrerPath={router.asPath}
+                                          />
+                                        ))
+                                    : // Show actual data when loaded
+                                      (sortedCarouselData?.results || []).map(
+                                        carouselCard => (
+                                          <CompactCard
+                                            key={carouselCard.id}
+                                            data={carouselCard}
+                                            isLoading={false}
+                                            referrerPath={router.asPath}
+                                          />
+                                        ),
+                                      )}
+                                </Carousel>
+                              </CarouselWrapper>
+                            ) : (
+                              <EmptyState />
+                            )}
+                          </>
                         )}
                         {section.type !== 'ResourceCatalog' && (
                           <>
