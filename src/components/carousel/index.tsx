@@ -82,21 +82,19 @@ export const Carousel = ({
   return (
     <Flex ref={containerRef} direction='column' align='center'>
       <Box className='padded-carousel' w='100%' overflow='hidden' p={2}>
-        {itemWidth > 0 && (
-          <Track {...trackProps}>
-            {children.map((child, index) => (
-              <Item {...itemProps} index={index} key={index}>
-                {child}
-              </Item>
-            ))}
-          </Track>
-        )}
+        <Track {...trackProps}>
+          {children.map((child, index) => (
+            <Item {...itemProps} index={index} key={index}>
+              {child}
+            </Item>
+          ))}
+        </Track>
         <Flex
           ref={controlsRef}
-          minWidth={`${itemWidth}px`}
           mx='auto'
+          minWidth={`${itemWidth}px`}
           alignItems='center'
-          justify={showProgressBar ? 'space-between' : 'center'}
+          justifyContent={showProgressBar ? 'space-between' : 'center'}
           minH='44px'
         >
           <CarouselControls {...controlsProps} />

@@ -62,12 +62,15 @@ export const SearchResultsController = ({
   // Get the current search parameters from the URL and fetch facet data.
   const queryParams = useSearchQueryFromURL();
 
-  const searchResultsData = useSearchResultsData({
-    q: queryParams.q,
-    filters: queryParams.filters,
-    facets: ['@type'],
-    facet_size: 100,
-  });
+  const searchResultsData = useSearchResultsData(
+    {
+      q: queryParams.q,
+      filters: queryParams.filters,
+      facets: ['@type'],
+      facet_size: 100,
+    },
+    { initialData },
+  );
 
   const { data: facetData } = searchResultsData.response;
 
@@ -173,15 +176,22 @@ export const SearchResultsController = ({
                             carouselIsPending ||
                             resourceCatalogData.length > 0 ? (
                               <CarouselWrapper>
-                                <Carousel gap={8} isLoading={carouselIsLoading}>
-                                  {(carouselIsLoading
+                                <Carousel
+                                  gap={8}
+                                  isLoading={
+                                    carouselIsLoading || carouselIsPending
+                                  }
+                                >
+                                  {(carouselIsLoading || carouselIsPending
                                     ? Array(3).fill(0)
                                     : resourceCatalogData
                                   ).map((carouselCard, idx) => (
                                     <CompactCard
                                       key={carouselCard?.id || `loading-${idx}`}
                                       data={carouselCard}
-                                      isLoading={carouselIsLoading}
+                                      isLoading={
+                                        carouselIsLoading || carouselIsPending
+                                      }
                                       referrerPath={router.asPath}
                                     />
                                   ))}

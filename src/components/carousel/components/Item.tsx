@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Flex } from '@chakra-ui/react';
 import { ItemProps } from '../types';
-
+const FALLBACK_ITEM_WIDTH = 200; // Fallback width for items
 export const Item = ({
   setTrackIsActive,
   setActiveItem,
@@ -40,7 +40,7 @@ export const Item = ({
       onBlur={handleBlur}
       onKeyUp={handleKeyUp}
       onKeyDown={handleKeyDown}
-      w={`${itemWidth}px`}
+      w={`${itemWidth || FALLBACK_ITEM_WIDTH}px`}
       _notLast={{
         mr: `${gap}px`,
       }}
