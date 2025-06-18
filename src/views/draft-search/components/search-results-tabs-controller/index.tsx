@@ -61,10 +61,17 @@ export const SearchResultsController = ({
   // Get the current search parameters from the URL and fetch facet data.
   const queryParams = useSearchQueryFromURL();
 
-  const searchResultsData = useSearchResultsData({
-    ...queryParams,
-    facets: ['@type'],
-  });
+  const searchResultsData = useSearchResultsData(
+    {
+      q: queryParams.q,
+      filters: queryParams.filters,
+      facets: ['@type'],
+      facet_size: 100,
+    },
+    {
+      initialData,
+    },
+  );
 
   const { data } = searchResultsData.response;
 
@@ -85,6 +92,7 @@ export const SearchResultsController = ({
       },
       fields: CAROUSEL_RESULTS_FIELDS,
       size: 50,
+      sort: 'name.raw',
     },
     {
       enabled: hasResourceCatalogRecords,
@@ -93,19 +101,6 @@ export const SearchResultsController = ({
 
   const { data: carouselData, isLoading: carouselIsLoading } =
     carouselResultsData.response;
-
-  // Sort carousel data alphabetically by name
-  const sortedCarouselData = useMemo(() => {
-    if (!carouselData?.results) return null;
-
-    const sorted = [...carouselData.results].sort((a, b) => {
-      const nameA = a.name || '';
-      const nameB = b.name || '';
-      return nameA.localeCompare(nameB, undefined, { sensitivity: 'base' });
-    });
-
-    return { ...carouselData, results: sorted };
-  }, [carouselData]);
 
   // Enhance each tab with facet counts for the types it represents.
   const tabsWithCounts = useMemo(
@@ -195,7 +190,7 @@ export const SearchResultsController = ({
                                           />
                                         ))
                                     : // Show actual data when loaded
-                                      (sortedCarouselData?.results || []).map(
+                                      (carouselData?.results || []).map(
                                         carouselCard => (
                                           <CompactCard
                                             key={carouselCard.id}
