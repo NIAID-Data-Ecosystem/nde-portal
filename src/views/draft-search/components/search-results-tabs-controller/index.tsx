@@ -214,7 +214,6 @@ export const SearchResultsController = ({
                               id={tab.id}
                               tabs={tabs}
                               types={[section.type]}
-                              initialData={initialData}
                             />
                           </>
                         )}
