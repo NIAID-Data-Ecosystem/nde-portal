@@ -93,7 +93,7 @@ export const Carousel = ({
         )}
         <Flex
           ref={controlsRef}
-          w={`${itemWidth}px`}
+          minWidth={`${itemWidth}px`}
           mx='auto'
           alignItems='center'
           justify={showProgressBar ? 'space-between' : 'center'}
