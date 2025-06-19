@@ -31,7 +31,6 @@ export const CompactCard = ({
   referrerPath,
   isLoading = false,
 }: CompactCardProps) => {
-  const [showDescription, setShowDescription] = useState(true);
   const [showAllTypes, setShowAllTypes] = useState(false);
 
   const {
@@ -49,21 +48,18 @@ export const CompactCard = ({
 
   const handleTypesToggle = (expanded: boolean) => {
     setShowAllTypes(expanded);
-    setShowDescription(!expanded);
   };
 
   const handleShowDescription = () => {
-    setShowDescription(true);
     setShowAllTypes(false);
-  };
-
-  const handleHideDescription = () => {
-    setShowDescription(false);
-    setShowAllTypes(true);
   };
 
   // Transform about array to string array for SearchableItems
   const aboutItems = about?.map(item => item.displayName) || [];
+
+  // Determine what to show in the description area
+  const shouldShowDescription = !showAllTypes;
+  const shouldShowSeeDescriptionButton = showAllTypes && description;
 
   return (
     <Card
@@ -232,25 +228,12 @@ export const CompactCard = ({
         <Skeleton isLoaded={!isLoading} flex='1' px={2} mt={2} mb={1}>
           {description && (
             <>
-              {showDescription ? (
-                <Flex direction='column' gap={1}>
-                  <Text fontSize='xs' lineHeight='short' noOfLines={3}>
-                    {description.trim()}
-                  </Text>
-                  <Button
-                    variant='link'
-                    size='xs'
-                    onClick={handleHideDescription}
-                    alignSelf='flex-start'
-                    p={0}
-                    minH='auto'
-                    height='auto'
-                    fontSize='xs'
-                  >
-                    Hide description
-                  </Button>
-                </Flex>
-              ) : (
+              {shouldShowDescription && (
+                <Text fontSize='xs' lineHeight='short' noOfLines={3}>
+                  {description.trim()}
+                </Text>
+              )}
+              {shouldShowSeeDescriptionButton && (
                 <Button
                   variant='link'
                   size='xs'
