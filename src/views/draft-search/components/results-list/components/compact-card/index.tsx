@@ -68,11 +68,11 @@ export const CompactCard = ({
       border='1px solid'
       borderColor='gray.200'
       height={{
-        base: '325px',
-        sm: '295px',
-        md: '320px',
-        lg: '320px',
-        xl: '325px',
+        base: '310px',
+        sm: '280px',
+        md: '305px',
+        lg: '305px',
+        xl: '310px',
       }}
     >
       {/* TypeBanner */}
