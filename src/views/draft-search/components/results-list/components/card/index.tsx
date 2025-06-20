@@ -451,7 +451,6 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                     py={1}
                   >
                     <SearchableItems
-                      fieldName='programmingLanguage'
                       generateButtonLabel={(
                         limit,
                         length,
