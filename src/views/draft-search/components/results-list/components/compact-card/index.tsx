@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   Card,
   CardHeader,
@@ -25,6 +25,14 @@ interface CompactCardProps {
   referrerPath?: string;
   isLoading?: boolean;
 }
+
+const CARD_HEIGHTS = {
+  base: '310px',
+  sm: '280px',
+  md: '305px',
+  lg: '305px',
+  xl: '310px',
+};
 
 export const CompactCard = ({
   data,
@@ -55,11 +63,13 @@ export const CompactCard = ({
   };
 
   // Transform about array to string array for SearchableItems
-  const aboutItems = about?.map(item => item.displayName) || [];
+  const aboutItems = useMemo(
+    () => about?.map(item => item.displayName) || [],
+    [about],
+  );
 
   // Determine what to show in the description area
   const shouldShowDescription = !showAllTypes;
-  const shouldShowSeeDescriptionButton = showAllTypes && description;
 
   return (
     <Card
@@ -67,13 +77,7 @@ export const CompactCard = ({
       boxShadow='none'
       border='1px solid'
       borderColor='gray.200'
-      height={{
-        base: '310px',
-        sm: '280px',
-        md: '305px',
-        lg: '305px',
-        xl: '310px',
-      }}
+      height={CARD_HEIGHTS}
     >
       {/* TypeBanner */}
       <Skeleton
@@ -169,7 +173,7 @@ export const CompactCard = ({
               >
                 <Text fontSize='13px'>{date}</Text>
               </Tooltip>
-              {(conditionsOfAccess || hasAPI === true) && (
+              {(conditionsOfAccess || hasAPI) && (
                 <Flex
                   justifyContent={['flex-start']}
                   alignItems='center'
@@ -186,7 +190,7 @@ export const CompactCard = ({
                     mx={0.5}
                     size='sm'
                   />
-                  {hasAPI === true && (
+                  {hasAPI && (
                     <HasAPI
                       type={data?.['@type']}
                       hasAPI={data?.hasAPI}
@@ -228,12 +232,11 @@ export const CompactCard = ({
         <Skeleton isLoaded={!isLoading} flex='1' px={2} mt={2} mb={1}>
           {description && (
             <>
-              {shouldShowDescription && (
+              {shouldShowDescription ? (
                 <Text fontSize='xs' lineHeight='short' noOfLines={3}>
                   {description.trim()}
                 </Text>
-              )}
-              {shouldShowSeeDescriptionButton && (
+              ) : (
                 <Button
                   variant='link'
                   size='xs'
