@@ -64,7 +64,12 @@ export const CompactCard = ({
 
   // Transform about array to string array for SearchableItems
   const aboutItems = useMemo(
-    () => about?.map(item => item.displayName) || [],
+    () =>
+      about?.map(a => ({
+        name: a.displayName,
+        value: a.displayName,
+        field: 'about.displayName',
+      })) || [],
     [about],
   );
 
@@ -211,7 +216,6 @@ export const CompactCard = ({
               <MetadataLabel label='Content Types' />
               <ScrollContainer overflow='auto' maxHeight='200px'>
                 <SearchableItems
-                  fieldName='about.displayName'
                   items={aboutItems}
                   itemLimit={2}
                   colorScheme='primary'

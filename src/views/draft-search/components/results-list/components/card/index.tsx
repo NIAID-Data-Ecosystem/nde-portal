@@ -367,7 +367,6 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                     py={1}
                   >
                     <SearchableItems
-                      fieldName='topicCategory.name'
                       generateButtonLabel={(
                         limit,
                         length,
@@ -378,11 +377,16 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                           : `Show all ${itemLabel} (${length - limit} more)`
                       }
                       itemLimit={3}
-                      items={data.topicCategory?.flatMap(
-                        (topic: { name?: string }) =>
-                          topic?.name && typeof topic.name === 'string'
-                            ? [topic.name]
-                            : [],
+                      items={(data?.topicCategory ?? []).flatMap(topic =>
+                        typeof topic?.name === 'string'
+                          ? [
+                              {
+                                name: topic.name,
+                                value: topic.name,
+                                field: 'topicCategory.name',
+                              },
+                            ]
+                          : [],
                       )}
                       name={
                         <InfoLabel
@@ -408,7 +412,6 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                     py={1}
                   >
                     <SearchableItems
-                      fieldName='applicationCategory'
                       generateButtonLabel={(
                         limit,
                         length,
@@ -419,7 +422,11 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                           : `Show all ${itemLabel} (${length - limit} more)`
                       }
                       itemLimit={3}
-                      items={data.applicationCategory}
+                      items={data?.applicationCategory.map(ac => ({
+                        name: ac,
+                        value: ac,
+                        field: 'applicationCategory',
+                      }))}
                       name={
                         <InfoLabel
                           title='Application Categories'
@@ -444,7 +451,6 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                     py={1}
                   >
                     <SearchableItems
-                      fieldName='programmingLanguage'
                       generateButtonLabel={(
                         limit,
                         length,
@@ -455,7 +461,11 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                           : `Show all ${itemLabel} (${length - limit} more)`
                       }
                       itemLimit={3}
-                      items={data.programmingLanguage}
+                      items={data?.programmingLanguage.map(pl => ({
+                        name: pl,
+                        value: pl,
+                        field: 'programmingLanguage',
+                      }))}
                       name={
                         <InfoLabel
                           title='Programming Languages'
