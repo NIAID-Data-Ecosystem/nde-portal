@@ -211,7 +211,7 @@ export const CompactCard = ({
               <MetadataLabel label='Content Types' />
               <ScrollContainer overflow='auto' maxHeight='200px'>
                 <SearchableItems
-                  fieldName='about'
+                  fieldName='about.displayName'
                   items={aboutItems}
                   itemLimit={2}
                   colorScheme='primary'
