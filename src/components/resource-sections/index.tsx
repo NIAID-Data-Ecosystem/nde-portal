@@ -249,7 +249,6 @@ const Sections = ({
                           }}
                         >
                           <SearchableItems
-                            fieldName='about'
                             generateButtonLabel={(
                               limit,
                               length,
@@ -262,7 +261,11 @@ const Sections = ({
                                   } more)`
                             }
                             itemLimit={20}
-                            items={data?.about.map(item => item.displayName)}
+                            items={data?.about.map(about => ({
+                              name: about.displayName,
+                              value: about.displayName,
+                              field: 'about.displayName',
+                            }))}
                           />
                         </OverviewSectionWrapper>
                       )}
@@ -313,7 +316,6 @@ const Sections = ({
               <Skeleton isLoaded={!isLoading}>
                 {data?.keywords && data?.keywords?.length > 0 && (
                   <SearchableItems
-                    fieldName='keywords'
                     generateButtonLabel={(
                       limit,
                       length,
@@ -324,7 +326,11 @@ const Sections = ({
                         : `Show all ${itemLabel} (${length - limit} more)`
                     }
                     itemLimit={20}
-                    items={data?.keywords}
+                    items={data?.keywords.map(kw => ({
+                      name: kw,
+                      value: kw,
+                      field: 'keywords',
+                    }))}
                   />
                 )}
               </Skeleton>
@@ -335,7 +341,6 @@ const Sections = ({
                 {data?.applicationCategory &&
                   data?.applicationCategory?.length > 0 && (
                     <SearchableItems
-                      fieldName='applicationCategory'
                       generateButtonLabel={(
                         limit,
                         length,
@@ -346,7 +351,11 @@ const Sections = ({
                           : `Show all ${itemLabel} (${length - limit} more)`
                       }
                       itemLimit={10}
-                      items={data?.applicationCategory}
+                      items={data?.applicationCategory.map(ac => ({
+                        name: ac,
+                        value: ac,
+                        field: 'applicationCategory',
+                      }))}
                     />
                   )}
               </Skeleton>
@@ -357,7 +366,6 @@ const Sections = ({
                 {data?.programmingLanguage &&
                   data?.programmingLanguage?.length > 0 && (
                     <SearchableItems
-                      fieldName='programmingLanguage'
                       generateButtonLabel={(
                         limit,
                         length,
@@ -367,7 +375,11 @@ const Sections = ({
                           ? `Show fewer ${itemLabel}`
                           : `Show all ${itemLabel} (${length - limit} more)`
                       }
-                      items={data?.programmingLanguage}
+                      items={data?.programmingLanguage.map(pl => ({
+                        name: pl,
+                        value: pl,
+                        field: 'programmingLanguage',
+                      }))}
                       itemLimit={10}
                     />
                   )}
