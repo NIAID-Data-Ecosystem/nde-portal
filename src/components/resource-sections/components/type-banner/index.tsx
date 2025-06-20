@@ -27,6 +27,8 @@ export const getTypeColor = (type?: FormattedResource['@type']) => {
     dk = 'primary.700';
   } else if (typeLower?.includes('tool') || typeLower?.includes('software')) {
     lt = 'primary.800';
+  } else {
+    lt = 'niaid.500';
   }
   return { lt, dk };
 };
@@ -68,25 +70,24 @@ const TypeBanner: React.FC<TypeBannerProps> = ({
         overflow='hidden'
         minW='250px'
       >
-        {type && (
-          <StyledLabel
-            _before={{
-              bg: colorScheme['lt'],
-            }}
-          >
-            <Tooltip label={abstractTooltipLabel || descriptionTooltipLabel}>
-              <Text
-                fontSize='xs'
-                color='white'
-                px={2}
-                fontWeight='semibold'
-                whiteSpace='nowrap'
-              >
-                {formatResourceTypeForDisplay(type).toUpperCase()}
-              </Text>
-            </Tooltip>
-          </StyledLabel>
-        )}
+        <StyledLabel
+          _before={{
+            bg: colorScheme['lt'],
+          }}
+        >
+          <Tooltip label={abstractTooltipLabel || descriptionTooltipLabel}>
+            <Text
+              fontSize='xs'
+              color={type ? 'white' : colorScheme['lt']}
+              px={2}
+              fontWeight='semibold'
+              whiteSpace='nowrap'
+              textTransform='uppercase'
+            >
+              {type ? formatResourceTypeForDisplay(type) : 'Unknown'}
+            </Text>
+          </Tooltip>
+        </StyledLabel>
 
         {isNiaidFunded && (
           <StyledLabel
