@@ -21,17 +21,19 @@ export const CarouselControls = ({
 }: CarouselControlsProps) => {
   const shouldShowControls = childrenLength > constraint;
 
-  // Show skeleton loading state for controls
-  if (isLoading) {
-    return <Skeleton height='32px' width='120px' borderRadius='md' />;
-  }
-
   if (!shouldShowControls) {
     return null;
   }
 
   return (
-    <>
+    <Skeleton
+      isLoaded={!isLoading}
+      width='100%'
+      height='32px'
+      display='flex'
+      alignItems='center'
+      justifyContent='center'
+    >
       <Button
         aria-label='previous carousel item'
         onClick={handleDecrementClick}
@@ -130,6 +132,6 @@ export const CarouselControls = ({
       >
         <Icon as={FaAngleRight} boxSize={4} />
       </Button>
-    </>
+    </Skeleton>
   );
 };
