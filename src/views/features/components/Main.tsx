@@ -17,11 +17,11 @@ import {
 } from '@chakra-ui/react';
 import mdxComponents from '../../docs/components/mdx';
 import Empty from 'src/components/empty';
-import { FeaturedPageProps } from '../helpers';
+import { FeaturedPageProps } from '../types';
 
 interface MainContentProps {
   isLoading?: boolean;
-  data?: FeaturedPageProps;
+  data?: FeaturedPageProps | null;
 }
 
 const Main = ({ data, isLoading }: MainContentProps) => {
@@ -29,8 +29,8 @@ const Main = ({ data, isLoading }: MainContentProps) => {
   const [updatedAt, setUpdatedAt] = useState('');
 
   useEffect(() => {
-    if (data && data.attributes && data.attributes.updatedAt) {
-      const date = new Date(data.attributes.updatedAt).toLocaleString([], {
+    if (data && data.updatedAt) {
+      const date = new Date(data.updatedAt).toLocaleString([], {
         day: 'numeric',
         month: 'long',
         year: 'numeric',
@@ -39,38 +39,7 @@ const Main = ({ data, isLoading }: MainContentProps) => {
     }
   }, [data]);
 
-  const MDXComponents = useMDXComponents({
-    ...mdxComponents,
-    br: () => <br />,
-    p: (props: any) => {
-      return (
-        <Text mt={2} size='sm' lineHeight='tall' color='text.body' {...props} />
-      );
-    },
-    img: (props: ImageProps) => {
-      // Strapi image path retrieved from the API is a full path but we only need the relative path
-      const relative_url =
-        props.src && !props.src.startsWith('/')
-          ? `/uploads/${props.src.split('/uploads/')[1]}`
-          : props.src;
-
-      let styles = {} as any;
-      if (props.align === 'right' || props.float === 'right') {
-        styles.pl = { base: 4, lg: 6 };
-      } else if (props.align === 'left' || props.float === 'left') {
-        styles.pr = { base: 4, lg: 6 };
-      }
-      return (
-        <Image
-          {...styles}
-          {...props}
-          my={2}
-          src={`${process.env.NEXT_PUBLIC_STRAPI_API_URL}${relative_url}`}
-          alt={props.alt || 'image'}
-        />
-      );
-    },
-  });
+  const MDXComponents = useMDXComponents(mdxComponents);
 
   return (
     <>
@@ -83,7 +52,7 @@ const Main = ({ data, isLoading }: MainContentProps) => {
         width='100%'
         m='0 auto'
       >
-        {isLoading || data?.id ? (
+        {isLoading || data ? (
           <>
             <SkeletonText
               isLoaded={!isLoading}
@@ -92,7 +61,7 @@ const Main = ({ data, isLoading }: MainContentProps) => {
               skeletonHeight={10}
             >
               <Heading as='h1' size='xl'>
-                {data?.attributes?.title || ''}
+                {data?.title || ''}
               </Heading>
             </SkeletonText>
             <SkeletonText
@@ -102,34 +71,36 @@ const Main = ({ data, isLoading }: MainContentProps) => {
               skeletonHeight={6}
             >
               <Text color='gray.700' lineHeight='short'>
-                {data?.attributes?.subtitle || ''}
+                {data?.subtitle || ''}
               </Text>
             </SkeletonText>
 
-            <Skeleton isLoaded={!isLoading} height='100%'>
+            <Skeleton
+              isLoaded={!isLoading}
+              height='100%'
+              display='flex'
+              flexDirection='column'
+            >
               <ReactMarkdown
                 rehypePlugins={[rehypeRaw, remarkGfm]}
                 components={MDXComponents}
               >
-                {data?.attributes?.content || ''}
+                {data?.content || ''}
               </ReactMarkdown>
-              {data?.attributes?.categories?.data &&
-                data?.attributes?.categories?.data.length > 0 && (
-                  <HStack spacing={2} mt={8}>
-                    {data?.attributes.categories.data.map(
-                      ({ id, attributes }) => (
-                        <Tag
-                          key={id}
-                          variant='outline'
-                          size='sm'
-                          colorScheme='accent'
-                        >
-                          {attributes.name}
-                        </Tag>
-                      ),
-                    )}
-                  </HStack>
-                )}
+              {data?.categories && data?.categories?.length > 0 && (
+                <HStack spacing={2} mt={8}>
+                  {data.categories.map(({ id, name }) => (
+                    <Tag
+                      key={id}
+                      variant='outline'
+                      size='sm'
+                      colorScheme='accent'
+                    >
+                      {name}
+                    </Tag>
+                  ))}
+                </HStack>
+              )}
             </Skeleton>
 
             <Divider orientation='horizontal' my={4} />

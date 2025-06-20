@@ -1,49 +1,32 @@
 import axios from 'axios';
+import { FeaturedPageProps, FeaturedQueryParams } from './types';
 
-export interface FeaturedPageProps {
-  id: number;
-  attributes: {
-    title: string;
-    content: string;
-    subtitle: string;
-    banner: {
-      data: null | { attributes: { url: string; alternativeText: string } };
-    };
-    thumbnail: {
-      data: null | { attributes: { url: string; alternativeText: string } };
-    };
-    slug: string | string[];
-    createdAt: string;
-    updatedAt: string;
-    publishedAt: string;
-    categories: {
-      data: {
-        id: number;
-        attributes: {
-          name: string;
-          createdAt: string;
-          updatedAt: string;
-          publishedAt: string;
-        };
-      }[];
-    };
-  };
-}
+export const fetchFeaturedContent = async (
+  slug: string | string[],
+): Promise<FeaturedPageProps | null> => {
+  try {
+    const isProd = process.env.NEXT_PUBLIC_APP_ENV === 'production';
+    const featured = await axios.get(
+      `${
+        process.env.NEXT_PUBLIC_STRAPI_API_URL
+      }/api/features?populate=*&filters[$and][0][slug][$eqi]=${slug}&status=${
+        isProd ? 'published' : 'draft'
+      }`,
+    );
+    if (
+      !featured.data ||
+      !featured.data.data ||
+      featured.data.data.length === 0
+    ) {
+      return null;
+    }
+    return featured.data.data[0];
+  } catch (err: any) {
+    throw err.response;
+  }
+};
 
-interface queryParams {
-  publicationState?: string;
-  fields?: string[];
-  populate?: {
-    fields?: string[];
-    thumbnail?: {
-      fields?: string[];
-    };
-  };
-  sort?: { publishedAt?: string; updatedAt?: string };
-  paginate?: { page?: number; pageSize?: number };
-}
-
-export const fetchAllFeaturedPages = async (params?: queryParams) => {
+export const fetchAllFeaturedPages = async (params?: FeaturedQueryParams) => {
   try {
     const isProd = process.env.NEXT_PUBLIC_APP_ENV === 'production';
 
@@ -52,19 +35,13 @@ export const fetchAllFeaturedPages = async (params?: queryParams) => {
       {
         params: {
           status: isProd ? 'published' : 'draft',
-          populate: {
-            fields: ['slug'],
-          },
           sort: { publishedAt: 'desc', updatedAt: 'desc' },
           paginate: { page: 1, pageSize: 100 },
           ...params,
         },
       },
     );
-
-    return {
-      data: featuredPages.data.data,
-    };
+    return featuredPages.data.data;
   } catch (error) {
     if (axios.isAxiosError(error)) {
       throw new Error(error.response?.statusText || 'An error occurred');
