@@ -91,7 +91,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
       borderColor='gray.100'
     >
       <TypeBanner
-        type={type || 'Dataset'}
+        type={type}
         p={0}
         pl={[2, 4, 6]}
         flexDirection={['column', 'row']}
