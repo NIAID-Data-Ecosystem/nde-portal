@@ -186,7 +186,7 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
       );
     },
     br: (props: any) => (
-      <Box as='span' margin='10px 0 10px 0'>
+      <Box className='break' as='span' margin='10px 0 10px 0'>
         {props.children}
       </Box>
     ),
