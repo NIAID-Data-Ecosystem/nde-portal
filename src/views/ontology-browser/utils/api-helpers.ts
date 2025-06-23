@@ -347,6 +347,7 @@ export const fetchChildrenFromBioThingsAPI = async (
             );
           }),
         );
+
     const allChildrenIds = [
       ...childrenWithCounts.map(({ taxonId }) => {
         return taxonId;
@@ -356,8 +357,17 @@ export const fetchChildrenFromBioThingsAPI = async (
         : []),
     ];
 
-    if (!Array.isArray(allChildrenIds)) {
-      throw new Error('children data is not available or invalid');
+    // No children found, return empty array
+    if (!Array.isArray(allChildrenIds) || allChildrenIds.length === 0) {
+      return {
+        children: [],
+        pagination: {
+          hasMore: false,
+          numPage: 0,
+          totalPages: 0,
+          totalElements: 0,
+        },
+      };
     }
 
     // select children ids based on pagination parameters
@@ -663,7 +673,9 @@ export const fetchPortalCounts = async (
         return {
           ...node,
           hasChildren:
-            node.hasChildren || hasChildTaxons || termAndChildrenCount > 0,
+            node.hasChildren ||
+            hasChildTaxons ||
+            termAndChildrenCount > directTermCount,
           counts: {
             termCount: directTermCount,
             // Total unique child records + total records with this actual term id.
