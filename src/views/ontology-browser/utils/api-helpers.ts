@@ -643,10 +643,15 @@ export const fetchPortalCounts = async (
         const directTermCount =
           lineageQueryResponse?.facets?.lineage?.totalRecords || 0;
 
+        // Extract the total number of datasets associated with this taxon ID and
+        // its children.
+        const termAndChildrenCount =
+          lineageQueryResponse?.facets?.lineage?.totalLineageRecords || 0;
+
         // Extract counts for datasets where this taxon ID is a parent
-        const childTermsCount =
-          lineageQueryResponse?.facets?.lineage?.children
-            ?.totalUniqueChildRecords || 0;
+        // const childTermsCount =
+        //   lineageQueryResponse?.facets?.lineage?.children
+        //     ?.totalUniqueChildRecords || 0;
 
         // Determine if the node has child taxon IDs.
         // [NOTE]: This only checks if the node has children in the NDE API.
@@ -658,10 +663,11 @@ export const fetchPortalCounts = async (
         return {
           ...node,
           hasChildren:
-            node.hasChildren || hasChildTaxons || childTermsCount > 0,
+            node.hasChildren || hasChildTaxons || termAndChildrenCount > 0,
           counts: {
             termCount: directTermCount,
-            termAndChildrenCount: directTermCount + childTermsCount,
+            // Total unique child records + total records with this actual term id.
+            termAndChildrenCount,
           },
         };
       }),
