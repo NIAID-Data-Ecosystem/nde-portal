@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { FaAngleDown } from 'react-icons/fa6';
 import {
   Box,
@@ -13,8 +13,10 @@ import {
   ListItem,
   ImageProps,
   Icon,
+  HStack,
 } from '@chakra-ui/react';
 import { Link } from 'src/components/link';
+import { HeadingWithLink } from 'src/components/heading-with-link/components/HeadingWithLink';
 
 const Details = (props: any) => {
   const { children } = props;
@@ -176,43 +178,80 @@ export const MDXComponents = {
       {props.children}
     </Box>
   ),
+  code: (props: any) => (
+    <Text
+      as='code'
+      bg='primary.50'
+      border='0.1rem solid'
+      borderColor='primary.100'
+      borderRadius='base'
+      color='primary.600'
+      fontSize='xs'
+      fontWeight='medium'
+      px={1.5}
+      py={0.5}
+    >
+      {props.children}
+    </Text>
+  ),
   details: (props: any) => {
     return <Details {...props} />;
   },
   Flex: (props: any) => <Flex {...props} />,
-  h1: (props: any) => (
-    <Heading
-      as='h1'
-      size='h1'
-      mt={8}
-      fontSize={['4xl', '5xl']}
-      fontWeight='bold'
-      {...props}
-    />
-  ),
-  h2: (props: any) => (
-    <Heading as='h2' size='h2' mt={8} fontSize='2xl' {...props} />
-  ),
+  h1: (props: any) => <Heading as='h1' size='xl' mt={8} {...props} />,
+  h2: (props: any) => {
+    return (
+      <HeadingWithLink
+        id={props.slug}
+        slug={props.slug}
+        as='h2'
+        fontSize='2xl'
+        mt={6}
+        mb={3}
+        {...props}
+      />
+    );
+  },
   h3: (props: any) => (
-    <Heading as='h3' fontSize='lg' mt={6} mb={2} {...props} />
-  ),
-  h4: (props: any) => (
-    <Heading as='h4' fontSize='md' fontWeight='semibold' mt={2} {...props} />
-  ),
-  hr: (props: any) => <chakra.hr {...props} />,
-  // Allows customizing built-in components, e.g. to add styling.
-  Image: (props: ImageProps) => (
-    <Image
-      alt='image'
-      width={700}
-      height={400}
-      objectFit='contain'
+    <HeadingWithLink
+      id={props.slug}
+      slug={props.slug}
+      as='h3'
+      fontSize='lg'
+      mt={2}
+      mb={1}
+      color='text.body'
       {...props}
     />
   ),
+  h4: (props: any) => <Heading as='h4' fontSize='md' mt={2} {...props} />,
+  h5: (props: any) => (
+    <Heading as='h5' size='sm' mt={2} mb={1} lineHeight='shorter' {...props} />
+  ),
+  h6: (props: any) => (
+    <Heading
+      as='h6'
+      size='xs'
+      mt={1}
+      mb={0.5}
+      lineHeight='shorter'
+      {...props}
+    />
+  ),
+  hr: (props: any) => <chakra.hr my={4} borderColor='gray.100' {...props} />,
+
   img: (props: ImageProps) => {
-    console.log('img', props);
-    // Handle video files
+    if (!props.src) {
+      return null;
+    }
+
+    // If the src starts with a slash, prepend the Strapi API URL
+    const src = props.src.startsWith('/')
+      ? `${process.env.NEXT_PUBLIC_STRAPI_API_URL}${props.src}`
+      : props.src;
+
+    // If the src is a video file, render a video element
+    // Note: The video will autoplay, loop, and be muted by default.
     if (
       props?.src &&
       props?.src.includes('/uploads') &&
@@ -221,28 +260,18 @@ export const MDXComponents = {
       return (
         <video autoPlay loop muted playsInline>
           {props.src.includes('.webm') && (
-            <source
-              src={`${process.env.NEXT_PUBLIC_STRAPI_API_URL}${props.src}`}
-              type='video/webm'
-            ></source>
+            <source src={src} type='video/webm'></source>
           )}
           {props.src.includes('.mp4') && (
-            <source
-              src={`${process.env.NEXT_PUBLIC_STRAPI_API_URL}${props.src}`}
-              type='video/mp4'
-            ></source>
+            <source src={src} type='video/mp4'></source>
           )}
         </video>
       );
     }
-    return (
-      <Image
-        {...props}
-        alt={props.alt || 'image'}
-        src={`${process.env.NEXT_PUBLIC_STRAPI_API_URL}${props.src}`}
-      />
-    );
+    // If the src is an image file, render an Image component
+    return <Image {...props} alt={props.alt || 'image'} src={src} />;
   },
+
   li: (props: any) => {
     return (
       <ListItem listStyleType='inherit' pb='4px' fontSize='md'>
@@ -261,45 +290,43 @@ export const MDXComponents = {
   p: (props: any) => <Text mt={2} fontSize='md' lineHeight='tall' {...props} />,
   section: (props: any) => {
     const classNames = props.className.split(' ');
-    if (classNames?.includes('rightImage')) {
+    if (
+      classNames?.includes('rightImage') ||
+      classNames?.includes('right-image')
+    ) {
       return (
-        <Flex
-          display='flex'
+        <HStack
+          alignItems='flex-start'
           flexDirection={{ base: 'column', xl: 'row' }}
-          __css={{
-            span: { mt: 0 },
-            '.img-border': {
-              minW: 'unset',
-              minWidth: { base: '200px', xl: '300px' },
-              maxWidth: '400px',
-              flex: 1,
-              m: 4,
-              ml: [0, 0, 6],
-              mt: [4, 4, 0],
-            },
+          sx={{
+            img: { maxWidth: { base: '100%', md: '400px' } },
           }}
+          spacing={6}
           {...props}
-        ></Flex>
+        >
+          {props.children.map((child: any, idx: number) => (
+            <React.Fragment key={idx}>{child}</React.Fragment>
+          ))}
+        </HStack>
       );
-    } else if (classNames?.includes('leftImage')) {
+    } else if (
+      classNames?.includes('leftImage') ||
+      classNames?.includes('left-image')
+    ) {
       return (
-        <Flex
-          display='flex'
+        <HStack
+          alignItems='flex-start'
           flexDirection={{ base: 'column', xl: 'row-reverse' }}
-          __css={{
-            span: { mt: 0 },
-            '.img-border': {
-              minW: 'unset',
-              minWidth: { base: '200px', xl: '300px' },
-              maxWidth: '400px',
-              flex: 1,
-              mb: 4,
-              mr: [0, 0, 6],
-              mt: [4, 4, 0],
-            },
+          sx={{
+            img: { maxWidth: { base: '100%', md: '400px' } },
           }}
+          spacing={6}
           {...props}
-        ></Flex>
+        >
+          {props.children.map((child: any, idx: number) => (
+            <React.Fragment key={idx}>{child}</React.Fragment>
+          ))}
+        </HStack>
       );
     }
     return <Box {...props} />;

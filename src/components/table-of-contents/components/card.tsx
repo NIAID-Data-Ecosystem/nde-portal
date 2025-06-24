@@ -17,6 +17,7 @@ import { useMDXComponents } from 'mdx-components';
 import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
 import remarkGfm from 'remark-gfm';
+import { MDXComponents as DefaultMDXComponents } from 'src/components/mdx/components';
 
 /**
  * StyledCardStack component
@@ -117,7 +118,9 @@ export const StyleCardSubLabel: React.FC<{ children: string }> = ({
 export const StyledCardDescription: React.FC<{ children: string }> = ({
   children,
 }) => {
-  const MDXComponents = useMDXComponents();
+  const MDXComponents = useMDXComponents({
+    p: props => DefaultMDXComponents.p({ ...props, fontSize: 'sm', mt: 0 }),
+  });
 
   return (
     <ReactMarkdown

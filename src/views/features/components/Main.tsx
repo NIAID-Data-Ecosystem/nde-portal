@@ -15,7 +15,7 @@ import {
   Tag,
   Text,
 } from '@chakra-ui/react';
-import mdxComponents from '../../docs/components/mdx';
+import mdxComponents from '../../docs/components/mdx-overrides';
 import Empty from 'src/components/empty';
 import { FeaturedPageProps } from '../types';
 
