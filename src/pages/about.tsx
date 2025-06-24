@@ -44,7 +44,7 @@ const fetchContent = async (): Promise<AboutContent> => {
 };
 
 const About: NextPage<AboutProps> = props => {
-  const MDXComponents = useMDXComponents({});
+  const MDXComponents = useMDXComponents();
   const [content, setContent] = useState<AboutProps['data']>(props.data);
   const [contentError, setContentError] = useState<any>(props.error);
 
