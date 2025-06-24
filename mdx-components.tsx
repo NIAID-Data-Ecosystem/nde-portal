@@ -23,7 +23,7 @@ import { FaAngleDown } from 'react-icons/fa6';
 // other libraries.
 
 // This file is required to use MDX in `app` directory.
-export function useMDXComponents(components: MDXComponents): MDXComponents {
+export function useMDXComponents(overrides?: MDXComponents): MDXComponents {
   const Details = (props: any) => {
     const { children } = props;
     const summaryIndex = children.findIndex(
@@ -89,31 +89,26 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
     a: (props: any) => {
       let { href } = props;
 
-      if (href.startsWith('doc:')) {
-        href = '';
-      }
-      if (typeof props.children === 'object') {
-        // Check if the link is a relative link or starts with portal domain
-        const isPortalLink =
-          href.startsWith('/') ||
-          href.startsWith(process.env.NEXT_PUBLIC_BASE_URL);
-        return (
-          <Link
-            href={href}
-            isExternal={props?.target === '_blank' || !isPortalLink}
-            sx={{
-              // Workaround for Emotion warning with ":first-child" pseudo class is potentially unsafe when doing server-side rendering.
-              '*:not(:not(:last-child) ~ *)': {
-                borderBottom: '0.0625rem solid',
-                _hover: { borderBottomColor: 'transparent' },
-              },
-            }}
-            {...props}
-          ></Link>
-        );
-      }
+      // Check if the link is a relative link or starts with portal domain
+      const isPortalLink =
+        href.startsWith('/') ||
+        href.startsWith(process.env.NEXT_PUBLIC_BASE_URL);
+
+      const isExternal = props?.target === '_blank' || !isPortalLink;
+
       return (
-        <Link href={href} {...props}>
+        <Link
+          href={href}
+          isExternal={isExternal}
+          sx={{
+            // Workaround for Emotion warning with ":first-child" pseudo class is potentially unsafe when doing server-side rendering.
+            '*:not(:not(:last-child) ~ *)': {
+              borderBottom: '0.0625rem solid',
+              _hover: { borderBottomColor: 'transparent' },
+            },
+          }}
+          {...props}
+        >
           {props.children}
         </Link>
       );
@@ -325,6 +320,6 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
         {props.children}
       </UnorderedList>
     ),
-    ...components,
+    ...(overrides || {}),
   };
 }
