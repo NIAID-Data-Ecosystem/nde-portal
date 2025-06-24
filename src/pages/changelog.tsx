@@ -12,7 +12,7 @@ import { useMDXComponents } from 'mdx-components';
 interface ChangelogProps {}
 
 const Changelog: NextPage<ChangelogProps> = () => {
-  const MDXComponents = useMDXComponents({});
+  const MDXComponents = useMDXComponents();
   return (
     <PageContainer
       title='Changelog'

@@ -117,11 +117,7 @@ export const StyleCardSubLabel: React.FC<{ children: string }> = ({
 export const StyledCardDescription: React.FC<{ children: string }> = ({
   children,
 }) => {
-  const MDXComponents = useMDXComponents({
-    p: props => {
-      return <Text lineHeight='tall' {...props} />;
-    },
-  });
+  const MDXComponents = useMDXComponents();
 
   return (
     <ReactMarkdown
