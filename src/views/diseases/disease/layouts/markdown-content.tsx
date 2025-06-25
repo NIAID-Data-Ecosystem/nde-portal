@@ -3,7 +3,13 @@ import { MDXComponents } from 'mdx/types';
 import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
 import remarkGfm from 'remark-gfm';
-import { SectionDescription } from './section';
+
+/**
+ *  Function to fill template placeholders with provided variables
+ * @param {string} template - The template string containing placeholders.
+ * @param {Record<string, string>} vars - An object containing key-value pairs for
+ * @returns {string} - The template string with placeholders replaced by corresponding values.
+ */
 
 export const fillTemplatePlaceholders = (
   template: string,
@@ -15,18 +21,13 @@ export const fillTemplatePlaceholders = (
 export const MarkdownContent = ({
   template,
   replacements,
-  mdxComponents,
+  mdxComponentsOverrides = {},
 }: {
   template: string;
   replacements: Record<string, string>;
-  mdxComponents?: MDXComponents;
+  mdxComponentsOverrides?: MDXComponents;
 }) => {
-  const MDXComponents = useMDXComponents({
-    p: props => {
-      return <SectionDescription {...props} />;
-    },
-    ...mdxComponents,
-  });
+  const MDXComponents = useMDXComponents(mdxComponentsOverrides);
 
   return (
     <ReactMarkdown

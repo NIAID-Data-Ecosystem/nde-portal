@@ -29,7 +29,7 @@ export const IntroSection: React.FC<IntroSectionProps> = ({
   isLoading,
   links,
 }) => {
-  const MDXComponents = useMDXComponents({});
+  const MDXComponents = useMDXComponents();
 
   // [Note]: Unsure if contact link will remain here. Check when program collections are added back.
   // // Group contact links by category
