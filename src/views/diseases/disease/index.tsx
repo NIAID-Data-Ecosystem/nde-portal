@@ -65,11 +65,6 @@ export const DiseaseContent: React.FC<DiseaseContentProps> = ({
               topic,
               query: `/search?q=${encodeURIComponent(data?.query.q ?? '')}`,
             }}
-            mdxComponents={{
-              p: props => {
-                return <SectionDescription lineHeight='base' {...props} />;
-              },
-            }}
           />
 
           {/* Overview Section */}

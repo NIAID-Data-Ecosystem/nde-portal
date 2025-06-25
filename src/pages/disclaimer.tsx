@@ -47,7 +47,7 @@ interface DisclaimerProps {
 }
 
 const Disclaimer: NextPage<DisclaimerProps> = props => {
-  const MDXComponents = useMDXComponents({});
+  const MDXComponents = useMDXComponents();
 
   const [content, setContent] = useState<DisclaimerProps['data']>(props.data);
   const [contentError, setContentError] = useState<any>(props.error);

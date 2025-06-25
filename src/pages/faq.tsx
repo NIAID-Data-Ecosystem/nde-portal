@@ -26,7 +26,7 @@ interface FrequentlyAskedProps {
 
 const FrequentlyAsked: NextPage<FrequentlyAskedProps> = props => {
   const { data, error } = props;
-  const MDXComponents = useMDXComponents({});
+  const MDXComponents = useMDXComponents();
   return (
     <PageContainer
       title='FAQ'
