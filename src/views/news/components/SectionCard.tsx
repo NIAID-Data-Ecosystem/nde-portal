@@ -29,7 +29,7 @@ const SectionCard = (attributes: SectionCardProps) => {
     'yellow',
     'cyan',
   ];
-  const MDXComponents = useMDXComponents({});
+  const MDXComponents = useMDXComponents();
   return (
     <Card
       id={attributes.slug}

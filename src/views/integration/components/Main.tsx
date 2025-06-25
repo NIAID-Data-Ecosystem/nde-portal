@@ -71,7 +71,7 @@ const IntegrationMain: NextPage<IntegrationProps> = props => {
       return r;
     }, [] as { title: string; hash: string }[]);
 
-  const MDXComponents = useMDXComponents({});
+  const MDXComponents = useMDXComponents();
   const [updatedAt, setUpdatedAt] = useState('');
   useEffect(() => {
     if (content && content.updatedAt) {
