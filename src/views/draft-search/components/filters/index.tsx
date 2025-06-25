@@ -36,7 +36,6 @@ const TAB_FILTER_CONFIG = {
     'funding.funder.name.raw',
     'conditionsOfAccess',
     'applicationCategory',
-    'availableOnDevice',
     'operatingSystem',
     'programmingLanguage',
     'featureList.name',

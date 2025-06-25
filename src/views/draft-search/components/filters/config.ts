@@ -208,13 +208,6 @@ export const FILTER_CONFIGS: FilterConfig[] = [
     createQueries: buildQueries(),
   },
   {
-    _id: 'availableOnDevice',
-    name: 'Available on Device',
-    property: 'availableOnDevice',
-    description: getMetadataDescription('availableOnDevice') || '',
-    createQueries: buildQueries(),
-  },
-  {
     _id: 'operatingSystem',
     name: 'Operating System',
     property: 'operatingSystem',
