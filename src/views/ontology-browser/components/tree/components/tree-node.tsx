@@ -284,8 +284,10 @@ export const TreeNode = (props: {
 
             <Link
               href={`/search?q=${
-                params.q && params.q !== '__all__' ? params.q + '+AND+' : ''
-              }_meta.lineage.taxon:${node.taxonId}`}
+                params.q && params.q !== '__all__' ? `(${params.q}) AND ` : ''
+              }(species.identifier:${
+                node.taxonId
+              } OR infectiousAgent.identifier:${node.taxonId})`}
               fontSize='xs'
             >
               <Icon as={FaMagnifyingGlass} mr={1.5} boxSize={3} />
