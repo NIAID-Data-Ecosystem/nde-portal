@@ -138,7 +138,7 @@ export const fetchBioThingsSearchAPI = async (
   try {
     const { data } = await axios.get(`${BIOTHINGS_API_URL}/query?`, {
       params: {
-        q: `"${q}"`,
+        q,
         fields: biothingsFields.join(','),
         size: 8,
       },

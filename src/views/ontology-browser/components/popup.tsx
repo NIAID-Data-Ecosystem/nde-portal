@@ -132,7 +132,7 @@ export const OntologyBrowserPopup = ({
     enabled: hasOntology && !!term && !!ontology?.value,
   });
 
-  if (!hasOntology || error?.message) {
+  if (!hasOntology || error?.message || !suggestions?.length) {
     return null;
   }
 
