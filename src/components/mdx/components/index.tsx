@@ -17,6 +17,7 @@ import {
 } from '@chakra-ui/react';
 import { Link } from 'src/components/link';
 import { HeadingWithLink } from 'src/components/heading-with-link/components/HeadingWithLink';
+import { transformString2Hash } from 'src/views/docs/components/helpers';
 
 const Details = (props: any) => {
   const { children } = props;
@@ -201,10 +202,16 @@ export const MDXComponents = {
   Flex: (props: any) => <Flex {...props} />,
   h1: (props: any) => <Heading as='h1' size='xl' mt={8} {...props} />,
   h2: (props: any) => {
+    let slug =
+      props.children &&
+      Array.isArray(props.children) &&
+      typeof props.children[0] === 'string'
+        ? transformString2Hash(props.children[0])
+        : '';
     return (
       <HeadingWithLink
-        id={props.slug}
-        slug={props.slug}
+        id={slug}
+        slug={slug}
         as='h2'
         fontSize='2xl'
         mt={6}
@@ -213,18 +220,26 @@ export const MDXComponents = {
       />
     );
   },
-  h3: (props: any) => (
-    <HeadingWithLink
-      id={props.slug}
-      slug={props.slug}
-      as='h3'
-      fontSize='lg'
-      mt={2}
-      mb={1}
-      color='text.body'
-      {...props}
-    />
-  ),
+  h3: (props: any) => {
+    let slug =
+      props.children &&
+      Array.isArray(props.children) &&
+      typeof props.children[0] === 'string'
+        ? transformString2Hash(props.children[0])
+        : '';
+    return (
+      <HeadingWithLink
+        id={slug}
+        slug={slug}
+        as='h3'
+        fontSize='lg'
+        mt={2}
+        mb={1}
+        color='text.body'
+        {...props}
+      />
+    );
+  },
   h4: (props: any) => <Heading as='h4' fontSize='md' mt={2} {...props} />,
   h5: (props: any) => (
     <Heading as='h5' size='sm' mt={2} mb={1} lineHeight='shorter' {...props} />
@@ -269,8 +284,14 @@ export const MDXComponents = {
         </video>
       );
     }
+
+    const styles =
+      props.className === 'unstyled'
+        ? { ...props }
+        : { ...props, border: '1px solid', borderColor: 'gray.100', my: 2 };
+
     // If the src is an image file, render an Image component
-    return <Image {...props} alt={props.alt || 'image'} src={src} />;
+    return <Image {...styles} alt={props.alt || 'image'} src={src} />;
   },
 
   li: (props: any) => {

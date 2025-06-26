@@ -8,7 +8,6 @@ import remarkGfm from 'remark-gfm';
 import { Box, Divider, Flex, Heading, Text } from '@chakra-ui/react';
 import { remark } from 'remark';
 import Navigation from 'src/components/resource-sections/components/navigation';
-import mdxComponents from './mdx-overrides';
 import { transformString2Hash } from './helpers';
 import { Error } from 'src/components/error';
 import Empty from 'src/components/empty';
