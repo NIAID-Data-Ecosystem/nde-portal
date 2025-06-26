@@ -19,6 +19,7 @@ import {
 import { FaFilter } from 'react-icons/fa6';
 import { FilterConfig, SelectedFilterType } from '../types';
 import { ScrollContainer } from 'src/components/scroll-container';
+import { useSearchTabsContext } from '../../../context/search-tabs-context';
 
 export interface FiltersContainerProps {
   title?: string;
@@ -58,9 +59,12 @@ export const FiltersContainer: React.FC<FiltersContainerProps> = ({
   isDisabled = false,
   removeAllFilters,
 }) => {
-  const [openSections, setOpenSections] = useState<number[]>([]);
+  const [openSectionsByTab, setOpenSectionsByTab] = useState<
+    Record<string, Set<string>>
+  >({});
   const btnRef = useRef<HTMLButtonElement>(null);
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const { selectedTab } = useSearchTabsContext();
   const screenSize = useBreakpointValue(
     {
       base: 'mobile',
@@ -90,33 +94,61 @@ export const FiltersContainer: React.FC<FiltersContainerProps> = ({
     }
   }, []);
 
-  const selectedKeys = useMemo(() => {
-    let keys: number[] = [];
-    if (selectedFilters) {
-      keys = Object.entries(selectedFilters)
-        .filter(([_, v]) => v.length > 0)
-        .map(([key]) =>
-          filtersList.findIndex(config => config.property === key),
-        );
-    }
-    filtersList.forEach((config, i) => {
-      if (config.isDefaultOpen && !keys.includes(i)) {
-        keys.push(i);
-      }
-    });
-    return keys;
-  }, [selectedFilters, filtersList]);
+  const currentTabOpenSections = useMemo(() => {
+    return openSectionsByTab[selectedTab.id] || new Set<string>();
+  }, [openSectionsByTab, selectedTab.id]);
 
+  // Update open sections after selected filters or tab changes
   useEffect(() => {
-    setOpenSections(prev => {
-      // Get the sections that are selected
-      const sections = selectedKeys.filter(sectionId => {
-        return !prev?.includes(sectionId);
+    setOpenSectionsByTab(prev => {
+      const updated = { ...prev };
+      if (!updated[selectedTab.id]) {
+        updated[selectedTab.id] = new Set<string>();
+      }
+      const newOpenProperties = new Set(updated[selectedTab.id]);
+      if (selectedFilters) {
+        Object.entries(selectedFilters)
+          .filter(([_, v]) => v.length > 0)
+          .forEach(([property]) => {
+            newOpenProperties.add(property);
+          });
+      }
+      filtersList.forEach(config => {
+        if (config.isDefaultOpen && !newOpenProperties.has(config.property)) {
+          newOpenProperties.add(config.property);
+        }
       });
-      // Return the previous sections and the new sections
-      return [...prev, ...sections];
+      updated[selectedTab.id] = newOpenProperties;
+      return updated;
     });
-  }, [selectedFilters, filtersList, selectedKeys]);
+  }, [selectedFilters, filtersList, selectedTab.id]);
+
+  const accordionIndices = useMemo(() => {
+    return Array.from(currentTabOpenSections)
+      .map(property =>
+        filtersList.findIndex(config => config.property === property),
+      )
+      .filter(index => index !== -1)
+      .sort((a, b) => a - b);
+  }, [currentTabOpenSections, filtersList]);
+
+  const handleAccordionChange = (expandedIndex: number | number[]) => {
+    const indices = Array.isArray(expandedIndex)
+      ? expandedIndex
+      : [expandedIndex];
+
+    setOpenSectionsByTab(prev => {
+      const updated = { ...prev };
+      const newOpenProperties = new Set<string>();
+      indices.forEach(index => {
+        if (index >= 0 && index < filtersList.length) {
+          newOpenProperties.add(filtersList[index].property);
+        }
+      });
+      updated[selectedTab.id] = newOpenProperties;
+      return updated;
+    });
+  };
 
   const content = (
     <>
@@ -154,13 +186,8 @@ export const FiltersContainer: React.FC<FiltersContainerProps> = ({
         <Accordion
           bg='white'
           allowMultiple
-          index={openSections}
-          onChange={expandedIndex => {
-            const sections = Array.isArray(expandedIndex)
-              ? expandedIndex
-              : [expandedIndex];
-            setOpenSections(sections);
-          }}
+          index={accordionIndices}
+          onChange={handleAccordionChange}
         >
           {children}
         </Accordion>
