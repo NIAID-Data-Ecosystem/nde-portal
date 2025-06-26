@@ -2,59 +2,26 @@ import React from 'react';
 import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
 import remarkGfm from 'remark-gfm';
-import {
-  Box,
-  BoxProps,
-  Flex,
-  Image,
-  ListItem,
-  OrderedList,
-  Text,
-  UnorderedList,
-} from '@chakra-ui/react';
+import { Box, BoxProps, Flex, Image } from '@chakra-ui/react';
 import { useMDXComponents } from 'mdx-components';
 import type { SectionProps } from 'src/views/integration/types';
 import { HeadingWithLink } from 'src/components/heading-with-link/components/HeadingWithLink';
+import { MDXComponents as DefaultMDX } from 'src/components/mdx/components';
 
-export const styledMdxComponents = {
-  ol: ({ ordered, ...props }: any) => (
-    <OrderedList p={[1, 2]}>{props.children}</OrderedList>
-  ),
-  ul: ({ ordered, ...props }: any) => (
-    <UnorderedList listStyleType='none' py={[1, 2]} {...props}>
-      {props.children}
-    </UnorderedList>
-  ),
-  li: ({ ordered, ...props }: any) => {
-    // Check if the first child of the list item is an emoji and style it accordingly.
-    if (Array.isArray(props.children)) {
-      const startsWithSymbol =
-        props.children[0].charAt(0) === '✅' ||
-        props.children[0].charAt(0) === '✨';
-      if (startsWithSymbol) {
-        return (
-          <ListItem
-            listStyleType='none'
-            display='flex'
-            lineHeight='tall'
-            pb={4}
-            {...props}
-          >
-            <Box>{props.children[0].charAt(0)}</Box>
-            <Text ml={2}>{props.children[0].slice(1)}</Text>
-          </ListItem>
-        );
-      }
-    }
-    return (
-      <ListItem listStyleType='inherit' lineHeight='tall' pb={4} {...props}>
-        {props.children}{' '}
-      </ListItem>
-    );
+export const customMDX = {
+  li: (props: any) => {
+    const childText = React.Children.toArray(props.children)
+      .map(child => (typeof child === 'string' ? child : ''))
+      .join('')
+      .trim();
+
+    const startsWithEmoji = /^\p{Extended_Pictographic}/u.test(childText);
+
+    return DefaultMDX.li({
+      ...props,
+      listStyleType: startsWithEmoji ? 'none' : 'inherit',
+    });
   },
-  p: (props: any) => (
-    <Text my={2} lineHeight='tall' color='text.body' {...props} />
-  ),
 };
 
 interface ParagraphSectionProps
@@ -74,7 +41,7 @@ export const ParagraphSection = ({
   slug,
   ...props
 }: ParagraphSectionProps) => {
-  const MDXComponents = useMDXComponents(styledMdxComponents);
+  const MDXComponents = useMDXComponents(customMDX);
 
   return (
     <Box id={slug || id} as='section' scrollMarginTop='-0.5rem' {...props}>
@@ -131,14 +98,7 @@ export const ParagraphSection = ({
 };
 
 export const ListBlock = ({ children }: { children?: string }) => {
-  const MDXComponents = useMDXComponents({
-    ...styledMdxComponents,
-    ul: (props: any) =>
-      styledMdxComponents.ul({
-        ...props,
-        px: { base: 0, md: 10 },
-      }),
-  });
+  const MDXComponents = useMDXComponents(customMDX);
 
   return (
     <Flex

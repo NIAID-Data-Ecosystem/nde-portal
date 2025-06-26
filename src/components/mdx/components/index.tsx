@@ -174,7 +174,7 @@ export const MDXComponents = {
     );
   },
   br: (props: any) => (
-    <Box className='break' as='span' margin='10px 0 10px 0'>
+    <Box className='break' as='span' margin='10px 0 10px 0' {...props}>
       {props.children}
     </Box>
   ),
@@ -190,6 +190,7 @@ export const MDXComponents = {
       fontWeight='medium'
       px={1.5}
       py={0.5}
+      {...props}
     >
       {props.children}
     </Text>
@@ -274,7 +275,13 @@ export const MDXComponents = {
 
   li: (props: any) => {
     return (
-      <ListItem listStyleType='inherit' pb='4px' fontSize='md'>
+      <ListItem
+        listStyleType='inherit'
+        lineHeight='tall'
+        pb={4}
+        fontSize='md'
+        {...props}
+      >
         {props.children}
       </ListItem>
     );
@@ -333,7 +340,7 @@ export const MDXComponents = {
   },
   strong: (props: any) => <Box as='strong' fontWeight='semibold' {...props} />,
   ul: (props: any) => (
-    <UnorderedList my={4} ml={12}>
+    <UnorderedList my={4} ml={12} {...props}>
       {props.children}
     </UnorderedList>
   ),

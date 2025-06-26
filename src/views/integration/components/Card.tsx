@@ -16,7 +16,7 @@ import rehypeRaw from 'rehype-raw';
 import remarkGfm from 'remark-gfm';
 import { useMDXComponents } from 'mdx-components';
 import type { Card } from '../types';
-import { styledMdxComponents } from './Blocks';
+import { customMDX } from './Blocks';
 
 interface StepCardProps extends Card {
   step: string;
@@ -31,7 +31,7 @@ export const StepCard = ({
   tabItems,
   step,
 }: StepCardProps) => {
-  const MDXComponents = useMDXComponents(styledMdxComponents);
+  const MDXComponents = useMDXComponents(customMDX);
   if (!content) {
     return <></>;
   }
