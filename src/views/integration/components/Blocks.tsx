@@ -54,15 +54,7 @@ export const ParagraphSection = ({
       >
         <Flex flexDirection='column' flex={1}>
           {title && (
-            <HeadingWithLink
-              as='h3'
-              slug={slug ? `#${slug}` : ''}
-              fontSize='lg'
-              mt={6}
-              mb={2}
-            >
-              {title}
-            </HeadingWithLink>
+            <DefaultMDX.h3 slug={slug ? slug : ''}>{title}</DefaultMDX.h3>
           )}
           {description && (
             <ReactMarkdown

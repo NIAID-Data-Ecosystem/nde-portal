@@ -8,14 +8,11 @@ import {
   Flex,
   Heading,
   HStack,
-  Image,
-  ImageProps,
   Skeleton,
   SkeletonText,
   Tag,
   Text,
 } from '@chakra-ui/react';
-import mdxComponents from '../../docs/components/mdx-overrides';
 import Empty from 'src/components/empty';
 import { FeaturedPageProps } from '../types';
 
@@ -39,7 +36,7 @@ const Main = ({ data, isLoading }: MainContentProps) => {
     }
   }, [data]);
 
-  const MDXComponents = useMDXComponents(mdxComponents);
+  const MDXComponents = useMDXComponents();
 
   return (
     <>

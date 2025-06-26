@@ -27,19 +27,23 @@ interface HeadingWithLinkProps extends HeadingProps {
   slug: string;
 }
 
-export const HeadingWithLink = (props: HeadingWithLinkProps) => {
-  if (!props.slug) {
-    return <Heading {...props} />;
+export const HeadingWithLink = ({
+  children,
+  slug,
+  ...rest
+}: HeadingWithLinkProps) => {
+  if (!slug) {
+    return <Heading {...rest} />;
   }
   return (
-    <a href={'#' + props.slug}>
+    <a href={'#' + slug}>
       <Heading
         sx={HeadingWithLinkStyles}
         scrollMarginTop='1rem'
         display='inline-block!important'
-        {...props}
+        {...rest}
       >
-        {props.children}&nbsp;
+        {children}&nbsp;
         <span>#</span>
       </Heading>
     </a>
