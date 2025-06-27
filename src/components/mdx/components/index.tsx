@@ -84,6 +84,14 @@ const Details = (props: any) => {
 export const MDXComponents = {
   a: (props: any) => {
     let { href, ...rest } = props;
+    // If the href is a video file, render a video element using theimg component
+    if (
+      props?.href &&
+      props?.href.includes('/uploads') &&
+      (props.href.includes('.webm') || props.src.includes('.mp4'))
+    ) {
+      return MDXComponents.img({ ...props, src: href } as ImageProps); // Use img component to handle video files
+    }
 
     // Check if the link is a relative link or starts with portal domain
     const isPortalLink =
@@ -201,7 +209,7 @@ export const MDXComponents = {
     return <Details {...props} />;
   },
   div: (props: any) => {
-    const classNames = props.className.split(' ');
+    const classNames = props?.className?.split(' ');
     if (
       classNames?.includes('rightImage') ||
       classNames?.includes('right-image')
@@ -356,9 +364,27 @@ export const MDXComponents = {
       </OrderedList>
     );
   },
-  p: (props: any) => <Text mt={2} fontSize='md' lineHeight='tall' {...props} />,
+  p: (props: any) => {
+    /*
+      React-markdown wraps every element in a p tag, which causes issues with img tags
+      The following wraps components in a span instead of a p tag.
+    */
+    const containsImgEl =
+      Array.isArray(props.children) &&
+      props.children.some(
+        (child: any) => child?.props?.node?.tagName === 'img',
+      );
+    if (containsImgEl) {
+      return (
+        <Text as='span' mt={2} size='sm' lineHeight='tall' color='text.body'>
+          {props.children}
+        </Text>
+      );
+    }
+    return <Text mt={2} fontSize='md' lineHeight='tall' {...props} />;
+  },
   section: (props: any) => {
-    const classNames = props.className.split(' ');
+    const classNames = props?.className?.split(' ');
     if (
       classNames?.includes('rightImage') ||
       classNames?.includes('right-image')
