@@ -12,6 +12,7 @@ import { transformString2Hash } from './helpers';
 import { Error } from 'src/components/error';
 import Empty from 'src/components/empty';
 import { ScrollContainer } from 'src/components/scroll-container';
+import { MDXComponents as DefaultMDXComponents } from 'src/components/mdx/components';
 
 export interface DocumentationProps {
   id: number;
@@ -152,7 +153,23 @@ const MainContent = ({ slug, data: initialData }: MainContentProps) => {
     }
   }, [data]);
 
-  const MDXComponents = useMDXComponents(mdxComponents);
+  const MDXComponents = useMDXComponents({
+    img: (props: any) => {
+      const styles =
+        props.className === 'unstyled'
+          ? {}
+          : {
+              border: '1px solid',
+              borderColor: 'gray.100',
+              my: 2,
+            };
+
+      return DefaultMDXComponents.img({
+        ...styles,
+        ...props,
+      });
+    },
+  });
   return (
     <>
       <Flex
