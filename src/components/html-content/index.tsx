@@ -38,6 +38,7 @@ const formatContent = (contentString: DisplayHTMLContentProps['content']) => {
   // replace no break space with breaking space.
   return contentString
     .replace(/\u00a0|&emsp;/g, ' ')
+    .replace(/]]>/g, '\n') // Convert ]]> to newline
     .split('\n')
     .map(line => line.trim())
     .join('\n');
