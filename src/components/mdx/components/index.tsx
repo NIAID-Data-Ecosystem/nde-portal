@@ -332,23 +332,30 @@ export const MDXComponents = {
     return <Image {...props} alt={props.alt || 'image'} src={src} />;
   },
   li: (props: any) => {
+    const { ordered, ...rest } = props;
     return (
       <ListItem
         listStyleType='inherit'
         lineHeight='tall'
         pb={4}
         fontSize='md'
-        {...props}
+        {...rest}
       >
         {props.children}
       </ListItem>
     );
   },
-  ol: (props: any) => (
-    <OrderedList ml={12} my={2} {...props}>
-      {props.children}
-    </OrderedList>
-  ),
+  ol: (props: any) => {
+    const { ordered, ...rest } = props;
+    if (!ordered) {
+      return (MDXComponents.ul as any)(rest);
+    }
+    return (
+      <OrderedList ml={12} my={2} {...rest}>
+        {props.children}
+      </OrderedList>
+    );
+  },
   p: (props: any) => <Text mt={2} fontSize='md' lineHeight='tall' {...props} />,
   section: (props: any) => {
     const classNames = props.className.split(' ');
@@ -394,9 +401,15 @@ export const MDXComponents = {
     return <Box {...props} />;
   },
   strong: (props: any) => <Box as='strong' fontWeight='semibold' {...props} />,
-  ul: (props: any) => (
-    <UnorderedList my={4} ml={12} {...props}>
-      {props.children}
-    </UnorderedList>
-  ),
+  ul: (props: any) => {
+    const { ordered, ...rest } = props;
+    if (ordered) {
+      return (MDXComponents.ol as any)(rest);
+    }
+    return (
+      <UnorderedList my={4} ml={12} {...rest}>
+        {props.children}
+      </UnorderedList>
+    );
+  },
 };
