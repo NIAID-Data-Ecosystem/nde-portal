@@ -255,7 +255,6 @@ export const MDXComponents = {
     />
   ),
   hr: (props: any) => <chakra.hr my={4} borderColor='gray.100' {...props} />,
-
   img: (props: ImageProps) => {
     if (!props.src) {
       return null;
@@ -284,16 +283,9 @@ export const MDXComponents = {
         </video>
       );
     }
-
-    const styles =
-      props.className === 'unstyled'
-        ? { ...props }
-        : { ...props, border: '1px solid', borderColor: 'gray.100', my: 2 };
-
     // If the src is an image file, render an Image component
-    return <Image {...styles} alt={props.alt || 'image'} src={src} />;
+    return <Image {...props} alt={props.alt || 'image'} src={src} />;
   },
-
   li: (props: any) => {
     return (
       <ListItem
