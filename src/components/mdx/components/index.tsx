@@ -18,6 +18,7 @@ import {
 import { Link } from 'src/components/link';
 import { HeadingWithLink } from 'src/components/heading-with-link/components/HeadingWithLink';
 import { transformString2Hash } from 'src/views/docs/components/helpers';
+import { normalizeResponsiveProps } from '../helpers';
 
 const Details = (props: any) => {
   const { children } = props;
@@ -82,18 +83,20 @@ const Details = (props: any) => {
 
 export const MDXComponents = {
   a: (props: any) => {
-    let { href } = props;
+    let { href, ...rest } = props;
 
     // Check if the link is a relative link or starts with portal domain
     const isPortalLink =
       href.startsWith('/') || href.startsWith(process.env.NEXT_PUBLIC_BASE_URL);
 
     const isExternal = props?.target === '_blank' || !isPortalLink;
+    const parsedProps = normalizeResponsiveProps(rest);
 
     return (
       <Link
         href={href}
         isExternal={isExternal}
+        {...parsedProps}
         sx={{
           // Workaround for Emotion warning with ":first-child" pseudo class is potentially unsafe when doing server-side rendering.
           '*:not(:not(:last-child) ~ *)': {
@@ -101,7 +104,6 @@ export const MDXComponents = {
             _hover: { borderBottomColor: 'transparent' },
           },
         }}
-        {...props}
       >
         {props.children}
       </Link>
@@ -191,7 +193,6 @@ export const MDXComponents = {
       fontWeight='medium'
       px={1.5}
       py={0.5}
-      {...props}
     >
       {props.children}
     </Text>
@@ -199,7 +200,51 @@ export const MDXComponents = {
   details: (props: any) => {
     return <Details {...props} />;
   },
-  Flex: (props: any) => <Flex {...props} />,
+  div: (props: any) => {
+    const classNames = props.className.split(' ');
+    if (
+      classNames?.includes('rightImage') ||
+      classNames?.includes('right-image')
+    ) {
+      return (
+        <HStack
+          alignItems='flex-start'
+          flexDirection={{ base: 'column', xl: 'row' }}
+          sx={{
+            img: { maxWidth: { base: '100%', md: '400px' } },
+          }}
+          spacing={6}
+          {...props}
+        >
+          {props.children.map((child: any, idx: number) => (
+            <React.Fragment key={idx}>{child}</React.Fragment>
+          ))}
+        </HStack>
+      );
+    } else if (
+      classNames?.includes('leftImage') ||
+      classNames?.includes('left-image')
+    ) {
+      return (
+        <HStack
+          alignItems='flex-start'
+          flexDirection={{ base: 'column', xl: 'row-reverse' }}
+          sx={{
+            img: { maxWidth: { base: '100%', md: '400px' } },
+          }}
+          spacing={6}
+          {...props}
+        >
+          {props.children.map((child: any, idx: number) => (
+            <React.Fragment key={idx}>{child}</React.Fragment>
+          ))}
+        </HStack>
+      );
+    }
+    const parsedProps = normalizeResponsiveProps(props);
+
+    return <Box {...parsedProps} />;
+  },
   h1: (props: any) => <Heading as='h1' size='xl' mt={8} {...props} />,
   h2: (props: any) => {
     let slug =
@@ -298,9 +343,6 @@ export const MDXComponents = {
         {props.children}
       </ListItem>
     );
-  },
-  Link: (props: any) => {
-    return <Link {...props} />;
   },
   ol: (props: any) => (
     <OrderedList ml={12} my={2} {...props}>
