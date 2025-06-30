@@ -155,18 +155,12 @@ const MainContent = ({ slug, data: initialData }: MainContentProps) => {
 
   const MDXComponents = useMDXComponents({
     img: (props: any) => {
-      const styles =
-        props.className === 'unstyled'
-          ? {}
-          : {
-              border: '1px solid',
-              borderColor: 'gray.100',
-              my: 2,
-            };
-
+      // Add a border to images unless they have the 'unstyled' class.
       return DefaultMDXComponents.img({
-        ...styles,
         ...props,
+        className: props.className.includes('unstyled')
+          ? props.className
+          : props.className + ' border',
       });
     },
   });
