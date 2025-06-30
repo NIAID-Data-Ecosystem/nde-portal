@@ -50,6 +50,36 @@ const DrawerContentMemo: React.FC<{
   </DrawerContent>
 ));
 
+const TAB_FILTER_CONFIG = {
+  d: [
+    'date',
+    '@type',
+    'includedInDataCatalog.name',
+    'sourceOrganization.name',
+    'healthCondition.name.raw',
+    'infectiousAgent.displayName.raw',
+    'species.displayName.raw',
+    'funding.funder.name.raw',
+    'conditionsOfAccess',
+    'variableMeasured.name.raw',
+    'measurementTechnique.name.raw',
+  ],
+  ct: [
+    'date',
+    '@type',
+    'includedInDataCatalog.name',
+    'sourceOrganization.name',
+    'funding.funder.name.raw',
+    'conditionsOfAccess',
+    'applicationCategory',
+    'operatingSystem',
+    'programmingLanguage',
+    'featureList.name',
+    'input.name',
+    'output.name',
+  ],
+};
+
 export const FiltersContainer: React.FC<FiltersContainerProps> = ({
   title,
   error,
@@ -59,9 +89,15 @@ export const FiltersContainer: React.FC<FiltersContainerProps> = ({
   isDisabled = false,
   removeAllFilters,
 }) => {
-  const [openSectionsByTab, setOpenSectionsByTab] = useState<
+  const [tabSpecificOpenSections, setTabSpecificOpenSections] = useState<
     Record<string, Set<string>>
   >({});
+  const [commonOpenSections, setCommonOpenSections] = useState<Set<string>>(
+    new Set(),
+  );
+
+  const [isInitialized, setIsInitialized] = useState(false);
+
   const btnRef = useRef<HTMLButtonElement>(null);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { selectedTab } = useSearchTabsContext();
@@ -94,58 +130,105 @@ export const FiltersContainer: React.FC<FiltersContainerProps> = ({
     }
   }, []);
 
-  const currentTabOpenSections = useMemo(() => {
-    return openSectionsByTab[selectedTab.id] || new Set<string>();
-  }, [openSectionsByTab, selectedTab.id]);
+  const commonFilters = useMemo(() => {
+    const dFilters = new Set(TAB_FILTER_CONFIG.d);
+    const ctFilters = new Set(TAB_FILTER_CONFIG.ct);
+    return Array.from(dFilters).filter(filter => ctFilters.has(filter));
+  }, []);
 
-  // Update open sections after selected filters or tab changes
+  const currentTabSpecificOpenSections = useMemo(() => {
+    return tabSpecificOpenSections[selectedTab.id] || new Set<string>();
+  }, [tabSpecificOpenSections, selectedTab.id]);
+
+  const allCurrentOpenSections = useMemo(() => {
+    const combined = new Set([
+      ...commonOpenSections,
+      ...currentTabSpecificOpenSections,
+    ]);
+    return combined;
+  }, [commonOpenSections, currentTabSpecificOpenSections]);
+
   useEffect(() => {
-    setOpenSectionsByTab(prev => {
-      const updated = { ...prev };
-      if (!updated[selectedTab.id]) {
-        updated[selectedTab.id] = new Set<string>();
-      }
-      const newOpenProperties = new Set(updated[selectedTab.id]);
-      if (selectedFilters) {
-        Object.entries(selectedFilters)
-          .filter(([_, v]) => v.length > 0)
-          .forEach(([property]) => {
-            newOpenProperties.add(property);
-          });
-      }
-      filtersList.forEach(config => {
-        if (config.isDefaultOpen && !newOpenProperties.has(config.property)) {
-          newOpenProperties.add(config.property);
+    if (!isInitialized) {
+      const newCommonOpenSections = new Set<string>();
+
+      setTabSpecificOpenSections(prev => {
+        const updated = { ...prev };
+        if (!updated[selectedTab.id]) {
+          updated[selectedTab.id] = new Set<string>();
         }
+        const newTabSpecificOpenSections = new Set<string>();
+
+        if (selectedFilters) {
+          Object.entries(selectedFilters)
+            .filter(([_, v]) => v.length > 0)
+            .forEach(([property]) => {
+              if (commonFilters.includes(property)) {
+                newCommonOpenSections.add(property);
+              } else {
+                newTabSpecificOpenSections.add(property);
+              }
+            });
+        }
+
+        filtersList.forEach(config => {
+          if (config.isDefaultOpen) {
+            if (commonFilters.includes(config.property)) {
+              newCommonOpenSections.add(config.property);
+            } else {
+              newTabSpecificOpenSections.add(config.property);
+            }
+          }
+        });
+
+        updated[selectedTab.id] = newTabSpecificOpenSections;
+        return updated;
       });
-      updated[selectedTab.id] = newOpenProperties;
-      return updated;
-    });
-  }, [selectedFilters, filtersList, selectedTab.id]);
+
+      setCommonOpenSections(newCommonOpenSections);
+      setIsInitialized(true);
+    }
+  }, [
+    selectedFilters,
+    filtersList,
+    selectedTab.id,
+    commonFilters,
+    isInitialized,
+  ]);
 
   const accordionIndices = useMemo(() => {
-    return Array.from(currentTabOpenSections)
+    return Array.from(allCurrentOpenSections)
       .map(property =>
         filtersList.findIndex(config => config.property === property),
       )
       .filter(index => index !== -1)
       .sort((a, b) => a - b);
-  }, [currentTabOpenSections, filtersList]);
+  }, [allCurrentOpenSections, filtersList]);
 
   const handleAccordionChange = (expandedIndex: number | number[]) => {
     const indices = Array.isArray(expandedIndex)
       ? expandedIndex
       : [expandedIndex];
 
-    setOpenSectionsByTab(prev => {
-      const updated = { ...prev };
-      const newOpenProperties = new Set<string>();
-      indices.forEach(index => {
-        if (index >= 0 && index < filtersList.length) {
-          newOpenProperties.add(filtersList[index].property);
+    const newCommonOpenProperties = new Set<string>();
+    const newTabSpecificOpenProperties = new Set<string>();
+
+    indices.forEach(index => {
+      if (index >= 0 && index < filtersList.length) {
+        const property = filtersList[index].property;
+        if (commonFilters.includes(property)) {
+          newCommonOpenProperties.add(property);
+        } else {
+          newTabSpecificOpenProperties.add(property);
         }
-      });
-      updated[selectedTab.id] = newOpenProperties;
+      }
+    });
+
+    setCommonOpenSections(newCommonOpenProperties);
+
+    setTabSpecificOpenSections(prev => {
+      const updated = { ...prev };
+      updated[selectedTab.id] = newTabSpecificOpenProperties;
       return updated;
     });
   };
