@@ -1,4 +1,4 @@
-import { useMDXComponents } from 'mdx-components';
+import { useMDXComponents } from 'src/components/mdx/hooks/useMDXComponents';
 import { MDXComponents } from 'mdx/types';
 import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';

@@ -1,7 +1,7 @@
 import { Box, Heading, Text } from '@chakra-ui/react';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
-import { useMDXComponents } from 'mdx-components';
+import { useMDXComponents } from 'src/components/mdx/hooks/useMDXComponents';
 import type { GetStaticProps, NextPage } from 'next';
 import React, { useEffect, useState } from 'react';
 import ReactMarkdown from 'react-markdown';

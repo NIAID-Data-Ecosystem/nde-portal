@@ -9,12 +9,11 @@ import {
   Icon,
 } from '@chakra-ui/react';
 import { useLocalStorage } from 'usehooks-ts';
-import { useMDXComponents } from 'mdx-components';
+import { useMDXComponents } from 'src/components/mdx/hooks/useMDXComponents';
 import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
 import remarkGfm from 'remark-gfm';
 import { NoticeProps } from '..';
-import { Link } from 'src/components/link';
 import {
   FaCircleCheck,
   FaCircleExclamation,

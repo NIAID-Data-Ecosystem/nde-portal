@@ -10,7 +10,7 @@ import {
 } from '@chakra-ui/react';
 import { NewsOrEventsObject } from 'src/pages/updates';
 import ReactMarkdown from 'react-markdown';
-import { useMDXComponents } from 'mdx-components';
+import { useMDXComponents } from 'src/components/mdx/hooks/useMDXComponents';
 import { formatDate } from 'src/utils/api/helpers';
 
 interface SectionCardProps extends NewsOrEventsObject {}

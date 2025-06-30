@@ -3,7 +3,7 @@ import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
 import remarkGfm from 'remark-gfm';
 import { Box, BoxProps, Flex, Image } from '@chakra-ui/react';
-import { useMDXComponents } from 'mdx-components';
+import { useMDXComponents } from 'src/components/mdx/hooks/useMDXComponents';
 import type { SectionProps } from 'src/views/integration/types';
 import { HeadingWithLink } from 'src/components/heading-with-link/components/HeadingWithLink';
 import { MDXComponents as DefaultMDX } from 'src/components/mdx/components';

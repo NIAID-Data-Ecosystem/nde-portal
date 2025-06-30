@@ -8,7 +8,7 @@ import {
 } from '@chakra-ui/react';
 import { DiseasePageProps } from 'src/views/diseases/types';
 import { SectionTitle } from './section';
-import { useMDXComponents } from 'mdx-components';
+import { useMDXComponents } from 'src/components/mdx/hooks/useMDXComponents';
 import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
 import remarkGfm from 'remark-gfm';
