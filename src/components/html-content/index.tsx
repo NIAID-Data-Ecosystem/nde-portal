@@ -69,7 +69,7 @@ export const DisplayHTMLContent: React.FC<DisplayHTMLContentProps> = ({
       w='100%'
       fontSize='sm'
       flex={1}
-      style={{ whiteSpace: 'pre-wrap' }}
+      style={{ whiteSpace: 'pre-line' }}
       sx={{
         // Display nested links with nde link format.
         a: {
@@ -79,7 +79,7 @@ export const DisplayHTMLContent: React.FC<DisplayHTMLContentProps> = ({
           wordBreak: 'break-word',
         },
         '>*': {
-          whiteSpace: 'normal',
+          whiteSpace: 'pre-line',
           wordBreak: 'break-word',
         },
         mark: {
