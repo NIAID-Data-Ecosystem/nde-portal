@@ -308,7 +308,7 @@ export const MDXComponents = {
     />
   ),
   hr: (props: any) => <chakra.hr my={4} borderColor='gray.100' {...props} />,
-  img: (props: ImageProps) => {
+  img: (props: any) => {
     if (!props.src) {
       return null;
     }
@@ -318,6 +318,12 @@ export const MDXComponents = {
       ? `${process.env.NEXT_PUBLIC_STRAPI_API_URL}${props.src}`
       : props.src;
 
+    const borderStyles = {
+      border: '1px solid',
+      borderColor: 'gray.100',
+      my: 2,
+    };
+
     // If the src is a video file, render a video element
     // Note: The video will autoplay, loop, and be muted by default.
     if (
@@ -326,14 +332,35 @@ export const MDXComponents = {
       (props.src.includes('.webm') || props.src.includes('.mp4'))
     ) {
       return (
-        <video autoPlay loop muted playsInline>
+        <Box
+          as='video'
+          autoPlay
+          loop
+          muted
+          playsInline
+          {...(props?.className?.includes('border') ? borderStyles : {})}
+          {...props}
+        >
           {props.src.includes('.webm') && (
             <source src={src} type='video/webm'></source>
           )}
           {props.src.includes('.mp4') && (
             <source src={src} type='video/mp4'></source>
           )}
-        </video>
+        </Box>
+      );
+    }
+
+    // If the src is an image file and has a className that includes 'border',
+    // render an Image component with border styles
+    if (props?.className?.includes('border')) {
+      return (
+        <Image
+          {...borderStyles}
+          {...props}
+          alt={props.alt || 'image'}
+          src={src}
+        />
       );
     }
     // If the src is an image file, render an Image component
