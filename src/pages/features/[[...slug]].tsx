@@ -75,7 +75,7 @@ const FeaturedPage: NextPage<{
             id='features-content'
             bg='#fff'
             maxW={{ base: 'unset', lg: '1600px' }}
-            margin='0 auto'
+            margin={{ base: 'unset', md: '0 auto' }}
             px={4}
             py={4}
             justifyContent='center'
