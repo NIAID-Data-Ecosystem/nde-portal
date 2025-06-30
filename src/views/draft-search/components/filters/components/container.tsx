@@ -20,6 +20,7 @@ import { FaFilter } from 'react-icons/fa6';
 import { FilterConfig, SelectedFilterType } from '../types';
 import { ScrollContainer } from 'src/components/scroll-container';
 import { useSearchTabsContext } from '../../../context/search-tabs-context';
+import { getCommonFilterProperties } from '../utils/tab-filter-utils';
 
 export interface FiltersContainerProps {
   title?: string;
@@ -49,36 +50,6 @@ const DrawerContentMemo: React.FC<{
     </DrawerFooter>
   </DrawerContent>
 ));
-
-const TAB_FILTER_CONFIG = {
-  d: [
-    'date',
-    '@type',
-    'includedInDataCatalog.name',
-    'sourceOrganization.name',
-    'healthCondition.name.raw',
-    'infectiousAgent.displayName.raw',
-    'species.displayName.raw',
-    'funding.funder.name.raw',
-    'conditionsOfAccess',
-    'variableMeasured.name.raw',
-    'measurementTechnique.name.raw',
-  ],
-  ct: [
-    'date',
-    '@type',
-    'includedInDataCatalog.name',
-    'sourceOrganization.name',
-    'funding.funder.name.raw',
-    'conditionsOfAccess',
-    'applicationCategory',
-    'operatingSystem',
-    'programmingLanguage',
-    'featureList.name',
-    'input.name',
-    'output.name',
-  ],
-};
 
 export const FiltersContainer: React.FC<FiltersContainerProps> = ({
   title,
@@ -131,9 +102,7 @@ export const FiltersContainer: React.FC<FiltersContainerProps> = ({
   }, []);
 
   const commonFilters = useMemo(() => {
-    const dFilters = new Set(TAB_FILTER_CONFIG.d);
-    const ctFilters = new Set(TAB_FILTER_CONFIG.ct);
-    return Array.from(dFilters).filter(filter => ctFilters.has(filter));
+    return getCommonFilterProperties();
   }, []);
 
   const currentTabSpecificOpenSections = useMemo(() => {

@@ -12,37 +12,8 @@ import { updateRoute } from '../../utils/update-route';
 import { useSearchQueryFromURL } from '../../hooks/useSearchQueryFromURL';
 import { usePaginationContext } from '../../context/pagination-context';
 import { useSearchTabsContext } from '../../context/search-tabs-context';
-
-// Filter config for dataset and comptool tabs
-const TAB_FILTER_CONFIG = {
-  d: [
-    'date',
-    '@type',
-    'includedInDataCatalog.name',
-    'sourceOrganization.name',
-    'healthCondition.name.raw',
-    'infectiousAgent.displayName.raw',
-    'species.displayName.raw',
-    'funding.funder.name.raw',
-    'conditionsOfAccess',
-    'variableMeasured.name.raw',
-    'measurementTechnique.name.raw',
-  ],
-  ct: [
-    'date',
-    '@type',
-    'includedInDataCatalog.name',
-    'sourceOrganization.name',
-    'funding.funder.name.raw',
-    'conditionsOfAccess',
-    'applicationCategory',
-    'operatingSystem',
-    'programmingLanguage',
-    'featureList.name',
-    'input.name',
-    'output.name',
-  ],
-};
+import { getTabFilterProperties } from './utils/tab-filter-utils';
+import { type TabId } from './tab-filter-config';
 
 // Interface for Filters component props
 interface FiltersProps {
@@ -67,9 +38,7 @@ export const Filters: React.FC<FiltersProps> = React.memo(
 
     // Determine appropriate filters for the selected tab
     const filteredConfigs = useMemo(() => {
-      const allowedProperties =
-        TAB_FILTER_CONFIG[selectedTab.id as keyof typeof TAB_FILTER_CONFIG] ||
-        TAB_FILTER_CONFIG.d;
+      const allowedProperties = getTabFilterProperties(selectedTab.id as TabId);
       return FILTER_CONFIGS.filter(config =>
         allowedProperties.includes(config.property),
       );
