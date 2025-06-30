@@ -253,6 +253,19 @@ export const MDXComponents = {
 
     return <Box {...parsedProps} />;
   },
+  figcaption: (props: any) => {
+    return (
+      <Text
+        as='figcaption'
+        fontSize='xs'
+        opacity={0.8}
+        lineHeight='short'
+        fontStyle='italic'
+        mt={1}
+        {...props}
+      />
+    );
+  },
   h1: (props: any) => <Heading as='h1' size='xl' mt={8} {...props} />,
   h2: (props: any) => {
     let slug =
@@ -324,47 +337,45 @@ export const MDXComponents = {
       my: 2,
     };
 
-    // If the src is a video file, render a video element
-    // Note: The video will autoplay, loop, and be muted by default.
-    if (
-      props?.src &&
-      props?.src.includes('/uploads') &&
-      (props.src.includes('.webm') || props.src.includes('.mp4'))
-    ) {
-      return (
-        <Box
-          as='video'
-          autoPlay
-          loop
-          muted
-          playsInline
-          {...(props?.className?.includes('border') ? borderStyles : {})}
-          {...props}
-        >
-          {props.src.includes('.webm') && (
-            <source src={src} type='video/webm'></source>
-          )}
-          {props.src.includes('.mp4') && (
-            <source src={src} type='video/mp4'></source>
-          )}
-        </Box>
-      );
-    }
+    const AssetComponent = (props: any) => {
+      // If the src is a video file, render a video element
+      // Note: The video will autoplay, loop, and be muted by default.
+      if (
+        props?.src &&
+        props?.src.includes('/uploads') &&
+        (props.src.includes('.webm') || props.src.includes('.mp4'))
+      ) {
+        return (
+          <Box
+            as='video'
+            autoPlay
+            loop
+            muted
+            playsInline
+            {...(props?.className?.includes('border') ? borderStyles : {})}
+            {...props}
+          >
+            {props.src.includes('.webm') && (
+              <source src={src} type='video/webm'></source>
+            )}
+            {props.src.includes('.mp4') && (
+              <source src={src} type='video/mp4'></source>
+            )}
+          </Box>
+        );
+      } else if (props?.className?.includes('border')) {
+        // If the src is an image file and has a className that includes 'border',
+        // render an Image component with border styles
+        return (
+          <Image alt={props.alt || 'image'} {...borderStyles} {...props} />
+        );
+      } else {
+        return <Image alt={props.alt || 'image'} {...props} />;
+      }
+    };
 
-    // If the src is an image file and has a className that includes 'border',
-    // render an Image component with border styles
-    if (props?.className?.includes('border')) {
-      return (
-        <Image
-          {...borderStyles}
-          {...props}
-          alt={props.alt || 'image'}
-          src={src}
-        />
-      );
-    }
     // If the src is an image file, render an Image component
-    return <Image {...props} alt={props.alt || 'image'} src={src} />;
+    return <AssetComponent {...props} alt={props.alt || 'image'} src={src} />;
   },
   li: (props: any) => {
     const { ordered, ...rest } = props;
