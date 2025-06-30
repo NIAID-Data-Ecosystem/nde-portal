@@ -158,7 +158,7 @@ const MainContent = ({ slug, data: initialData }: MainContentProps) => {
       // Add a border to images unless they have the 'unstyled' class.
       return DefaultMDXComponents.img({
         ...props,
-        className: props.className.includes('unstyled')
+        className: props?.className?.includes('unstyled')
           ? props.className
           : props.className + ' border',
       });
