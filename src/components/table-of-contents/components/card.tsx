@@ -13,10 +13,11 @@ import {
   Text,
   VStack,
 } from '@chakra-ui/react';
-import { useMDXComponents } from 'mdx-components';
+import { useMDXComponents } from 'src/components/mdx/hooks/useMDXComponents';
 import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
 import remarkGfm from 'remark-gfm';
+import { MDXComponents as DefaultMDXComponents } from 'src/components/mdx/components';
 
 /**
  * StyledCardStack component
@@ -118,9 +119,7 @@ export const StyledCardDescription: React.FC<{ children: string }> = ({
   children,
 }) => {
   const MDXComponents = useMDXComponents({
-    p: props => {
-      return <Text lineHeight='tall' {...props} />;
-    },
+    p: props => DefaultMDXComponents.p({ ...props, fontSize: 'sm', mt: 0 }),
   });
 
   return (

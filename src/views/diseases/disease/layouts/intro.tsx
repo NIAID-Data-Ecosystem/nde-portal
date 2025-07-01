@@ -8,7 +8,7 @@ import {
 } from '@chakra-ui/react';
 import { DiseasePageProps } from 'src/views/diseases/types';
 import { SectionTitle } from './section';
-import { useMDXComponents } from 'mdx-components';
+import { useMDXComponents } from 'src/components/mdx/hooks/useMDXComponents';
 import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
 import remarkGfm from 'remark-gfm';
@@ -29,7 +29,7 @@ export const IntroSection: React.FC<IntroSectionProps> = ({
   isLoading,
   links,
 }) => {
-  const MDXComponents = useMDXComponents({});
+  const MDXComponents = useMDXComponents();
 
   // [Note]: Unsure if contact link will remain here. Check when program collections are added back.
   // // Group contact links by category

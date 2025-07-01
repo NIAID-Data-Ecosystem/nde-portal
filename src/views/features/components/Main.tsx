@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useMDXComponents } from 'mdx-components';
+import { useMDXComponents } from 'src/components/mdx/hooks/useMDXComponents';
 import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
 import remarkGfm from 'remark-gfm';
@@ -8,14 +8,11 @@ import {
   Flex,
   Heading,
   HStack,
-  Image,
-  ImageProps,
   Skeleton,
   SkeletonText,
   Tag,
   Text,
 } from '@chakra-ui/react';
-import mdxComponents from '../../docs/components/mdx';
 import Empty from 'src/components/empty';
 import { FeaturedPageProps } from '../types';
 
@@ -39,7 +36,7 @@ const Main = ({ data, isLoading }: MainContentProps) => {
     }
   }, [data]);
 
-  const MDXComponents = useMDXComponents(mdxComponents);
+  const MDXComponents = useMDXComponents();
 
   return (
     <>

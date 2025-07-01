@@ -9,12 +9,11 @@ import {
   Icon,
 } from '@chakra-ui/react';
 import { useLocalStorage } from 'usehooks-ts';
-import { useMDXComponents } from 'mdx-components';
+import { useMDXComponents } from 'src/components/mdx/hooks/useMDXComponents';
 import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
 import remarkGfm from 'remark-gfm';
 import { NoticeProps } from '..';
-import { Link } from 'src/components/link';
 import {
   FaCircleCheck,
   FaCircleExclamation,
@@ -54,27 +53,7 @@ export const Banner = ({
 }: Pick<NoticeProps, 'id' | 'heading' | 'description' | 'state'>) => {
   const [isOpen, setOpen] = useLocalStorage(`${id}`, true);
   const [isMounted, setIsMounted] = useState(false); // for SSR
-  const MDXComponents = useMDXComponents({
-    a: (props: any) => {
-      return (
-        <Link
-          href={props.href}
-          // External links should open in a new tab if not on the same domain.
-          isExternal={
-            (props.href.startsWith('/') ||
-              props.href.startsWith(process.env.NEXT_PUBLIC_BASE_URL)) &&
-            props.target !== '_blank'
-              ? false
-              : true
-          }
-          textDecoration='underline'
-          _hover={{ textDecoration: 'none' }}
-        >
-          {props.children}
-        </Link>
-      );
-    },
-  });
+  const MDXComponents = useMDXComponents();
   const toggleWarning = () => {
     setOpen(!isOpen);
   };
