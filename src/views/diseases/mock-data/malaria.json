@@ -4,7 +4,7 @@
   "subtitle": "",
   "description": "Malaria is a mosquito-borne infectious disease caused by the bite of female Anopheles mosquitoes, which spread infectious Plasmodium parasites into a host. The WHO estimates that in 2020 about 240 million people had malaria and about 627,000 of them died. A vaccine to prevent malaria is available; however, its variable efficacy underscores the need for new interventions. [Learn more about NIAID’s efforts to address this disease.](https://www.niaid.nih.gov/diseases-conditions/malaria)",
   "image": {
-    "url": "https://www.niaid.nih.gov/sites/default/files/styles/image_style_thumbnail_md/public/malaria-hero.jpg?itok=qLT_OiSl",
+    "url": "/assets/diseases/malaria-hero.jpg",
     "alternativeText": "Malaria infected blood cell",
     "caption": "Red blood cell infected with the malaria parasite Plasmodium. Credit: NIAID."
   },

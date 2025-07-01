@@ -4,7 +4,7 @@
   "subtitle": "",
   "description": "Tuberculosis (TB) is a contagious disease caused by infection with Mycobacterium tuberculosis (Mtb) bacteria. It is spread through the air when a person with TB disease of the lungs or throat coughs, speaks or sings, and people nearby breathe in these bacteria and become infected. [Learn more about NIAID’s efforts to address this disease.](https://www.niaid.nih.gov/diseases-conditions/tuberculosis)",
   "image": {
-    "url": "https://www.niaid.nih.gov/sites/default/files/styles/image_style_thumbnail_md/public/tuberculosis-hero.jpg?itok=x5NIrcvK",
+    "url": "/assets/diseases/tuberculosis-hero.jpg",
     "alternativeText": "Purple background with orange cylinders (TB particles) scattered and gathered around",
     "caption": "Tuberculosis bacteria (Mycobacterium tuberculosis) visualized as orange particles. Credit: NIAID."
   },
