@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import type { GetStaticProps, NextPage } from 'next';
 import {
   Flex,
@@ -17,6 +17,7 @@ import {
 } from 'src/views/features/helpers';
 import Main from 'src/views/features/components/Main';
 import { FeaturedPageProps } from 'src/views/features/types';
+import { useRouter } from 'next/router';
 
 const FeaturedPage: NextPage<{
   slug: string[];
@@ -44,6 +45,14 @@ const FeaturedPage: NextPage<{
     refetchOnWindowFocus: true,
     refetchOnMount: true,
   });
+
+  // If the app is in production, redirect to a 404 page until search is fully implemented and approved.
+  const router = useRouter();
+  useEffect(() => {
+    if (process.env.NEXT_PUBLIC_APP_ENV === 'production') {
+      router.replace('/404');
+    }
+  }, [router]);
 
   return (
     <PageContainer
