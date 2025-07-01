@@ -352,6 +352,7 @@ export const MDXComponents = {
             loop
             muted
             playsInline
+            controls
             {...(props?.className?.includes('border') ? borderStyles : {})}
             {...props}
           >
