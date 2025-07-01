@@ -197,13 +197,7 @@ export const NewsCarousel = ({
                       )}{' '}
                       &mdash;
                       {carouselCard.shortDescription}
-                      <NextLink
-                        href={`updates/#${carouselCard.slug.replace(
-                          'news-report',
-                          'update',
-                        )}`}
-                        passHref
-                      >
+                      <NextLink href={`updates/#${carouselCard.slug}`} passHref>
                         <Link
                           as='span'
                           fontSize='sm'
@@ -263,9 +257,8 @@ export const fetchNews = async (
   try {
     const isProd = process.env.NEXT_PUBLIC_APP_ENV === 'production';
     // in dev/staging mode, show drafts.
-    const news = await axios.get(
-      `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/api/news-reports`,
-      {
+    const news = await axios
+      .get(`${process.env.NEXT_PUBLIC_STRAPI_API_URL}/api/news-reports`, {
         params: {
           status: isProd ? 'published' : 'draft',
           populate: '*',
@@ -273,9 +266,17 @@ export const fetchNews = async (
           paginate: { page: 1, pageSize: 100 },
           ...params,
         },
-      },
-    );
-    return { news: news.data.data };
+      })
+      .then(news => {
+        return news.data.data.map((item: any) => {
+          return {
+            ...item,
+            slug: item.slug.replace('news-report-', 'updates-'),
+          };
+        });
+      });
+
+    return { news };
   } catch (err: any) {
     throw err.response;
   }

@@ -1,7 +1,7 @@
 import { Flex, Heading, Text } from '@chakra-ui/react';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
-import { useMDXComponents } from 'mdx-components';
+import { useMDXComponents } from 'src/components/mdx/hooks/useMDXComponents';
 import type { GetStaticProps, NextPage } from 'next';
 import React, { useEffect, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
@@ -47,7 +47,7 @@ interface DisclaimerProps {
 }
 
 const Disclaimer: NextPage<DisclaimerProps> = props => {
-  const MDXComponents = useMDXComponents({});
+  const MDXComponents = useMDXComponents();
 
   const [content, setContent] = useState<DisclaimerProps['data']>(props.data);
   const [contentError, setContentError] = useState<any>(props.error);

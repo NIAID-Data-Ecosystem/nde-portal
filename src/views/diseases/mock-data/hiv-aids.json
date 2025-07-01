@@ -4,7 +4,7 @@
   "subtitle": "",
   "description": "Human immunodeficiency virus, commonly known as HIV, is a virus that targets the immune system and can lead to acquired immunodeficiency syndrome (AIDS) if left untreated. HIV can be transmitted through sexual intercourse, using needles that have been in contact with bodily fluids containing HIV, and during pregnancy, childbirth, or breastfeeding—a concept known as vertical transmission. [Learn more about NIAID’s efforts to address this disease.](https://www.niaid.nih.gov/diseases-conditions/hivaids)",
   "image": {
-    "url": "https://www.niaid.nih.gov/sites/default/files/styles/image_style_thumbnail_md/public/hiv-aids-hero.jpg?itok=MXMmgkUp",
+    "url": "/assets/diseases/hiv-aids-hero.jpg",
     "alternativeText": "Image of an HIV-infected T cell",
     "caption": "A T cell infected with HIV. Credit: NIAID."
   },
