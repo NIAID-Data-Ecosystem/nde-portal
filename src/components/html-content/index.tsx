@@ -38,6 +38,7 @@ const formatContent = (contentString: DisplayHTMLContentProps['content']) => {
   // replace no break space with breaking space.
   return contentString
     .replace(/\u00a0|&emsp;/g, ' ')
+    .replace(/]]>/g, '\n') // Convert ]]> to newline
     .split('\n')
     .map(line => line.trim())
     .join('\n');
@@ -68,7 +69,7 @@ export const DisplayHTMLContent: React.FC<DisplayHTMLContentProps> = ({
       w='100%'
       fontSize='sm'
       flex={1}
-      style={{ whiteSpace: 'pre-wrap' }}
+      style={{ whiteSpace: 'pre-line' }}
       sx={{
         // Display nested links with nde link format.
         a: {
@@ -78,7 +79,7 @@ export const DisplayHTMLContent: React.FC<DisplayHTMLContentProps> = ({
           wordBreak: 'break-word',
         },
         '>*': {
-          whiteSpace: 'normal',
+          whiteSpace: 'pre-line',
           wordBreak: 'break-word',
         },
         mark: {

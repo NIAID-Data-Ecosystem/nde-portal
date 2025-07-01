@@ -10,7 +10,7 @@ import {
 } from '@chakra-ui/react';
 import { NewsOrEventsObject } from 'src/pages/updates';
 import ReactMarkdown from 'react-markdown';
-import { useMDXComponents } from 'mdx-components';
+import { useMDXComponents } from 'src/components/mdx/hooks/useMDXComponents';
 import { formatDate } from 'src/utils/api/helpers';
 
 interface SectionCardProps extends NewsOrEventsObject {}
@@ -29,7 +29,7 @@ const SectionCard = (attributes: SectionCardProps) => {
     'yellow',
     'cyan',
   ];
-  const MDXComponents = useMDXComponents({});
+  const MDXComponents = useMDXComponents();
   return (
     <Card
       id={attributes.slug}

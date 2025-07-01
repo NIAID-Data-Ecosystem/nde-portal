@@ -14,7 +14,7 @@ import {
   Text,
 } from '@chakra-ui/react';
 import type { NextPage } from 'next';
-import { useMDXComponents } from 'mdx-components';
+import { useMDXComponents } from 'src/components/mdx/hooks/useMDXComponents';
 import LocalNavigation from 'src/components/resource-sections/components/navigation';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
@@ -71,7 +71,7 @@ const IntegrationMain: NextPage<IntegrationProps> = props => {
       return r;
     }, [] as { title: string; hash: string }[]);
 
-  const MDXComponents = useMDXComponents({});
+  const MDXComponents = useMDXComponents();
   const [updatedAt, setUpdatedAt] = useState('');
   useEffect(() => {
     if (content && content.updatedAt) {

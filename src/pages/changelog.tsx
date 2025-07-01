@@ -7,12 +7,12 @@ import rehypeRaw from 'rehype-raw';
 import remarkGfm from 'remark-gfm';
 import React from 'react';
 import packageJsonData from '../../package.json';
-import { useMDXComponents } from 'mdx-components';
+import { useMDXComponents } from 'src/components/mdx/hooks/useMDXComponents';
 
 interface ChangelogProps {}
 
 const Changelog: NextPage<ChangelogProps> = () => {
-  const MDXComponents = useMDXComponents({});
+  const MDXComponents = useMDXComponents();
   return (
     <PageContainer
       title='Changelog'

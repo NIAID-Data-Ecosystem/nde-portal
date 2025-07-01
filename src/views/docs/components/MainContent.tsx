@@ -1,18 +1,18 @@
 import axios from 'axios';
 import { useQuery } from '@tanstack/react-query';
 import React, { useEffect, useState } from 'react';
-import { useMDXComponents } from 'mdx-components';
+import { useMDXComponents } from 'src/components/mdx/hooks/useMDXComponents';
 import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
 import remarkGfm from 'remark-gfm';
 import { Box, Divider, Flex, Heading, Text } from '@chakra-ui/react';
 import { remark } from 'remark';
 import Navigation from 'src/components/resource-sections/components/navigation';
-import mdxComponents from './mdx';
 import { transformString2Hash } from './helpers';
 import { Error } from 'src/components/error';
 import Empty from 'src/components/empty';
 import { ScrollContainer } from 'src/components/scroll-container';
+import { MDXComponents as DefaultMDXComponents } from 'src/components/mdx/components';
 
 export interface DocumentationProps {
   id: number;
@@ -153,7 +153,17 @@ const MainContent = ({ slug, data: initialData }: MainContentProps) => {
     }
   }, [data]);
 
-  const MDXComponents = useMDXComponents(mdxComponents);
+  const MDXComponents = useMDXComponents({
+    img: (props: any) => {
+      // Add a border to images unless they have the 'unstyled' class.
+      return DefaultMDXComponents.img({
+        ...props,
+        className: props?.className?.includes('unstyled')
+          ? props.className
+          : props.className + ' border',
+      });
+    },
+  });
   return (
     <>
       <Flex

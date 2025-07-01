@@ -59,12 +59,10 @@ export const SearchResults = ({
   id,
   tabs,
   types,
-  initialData,
 }: {
   id: TabType['id'];
   tabs: TabType[];
   types: string[];
-  initialData: FetchSearchResultsResponse;
 }) => {
   const router = useRouter();
 
@@ -96,7 +94,6 @@ export const SearchResults = ({
       // Only fetch data when the router is ready and the active tab is selected.
       // This prevents unnecessary data fetching when switching tabs.
       enabled: router.isReady && id === activeTabId,
-      initialData,
     },
   );
 
