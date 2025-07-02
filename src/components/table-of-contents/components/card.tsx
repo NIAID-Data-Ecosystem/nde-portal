@@ -6,9 +6,12 @@ import {
   Box,
   Button,
   ButtonProps,
+  Flex,
   HStack,
   Icon,
+  Image,
   Skeleton,
+  Stack,
   StackProps,
   Text,
   VStack,
@@ -18,6 +21,96 @@ import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
 import remarkGfm from 'remark-gfm';
 import { MDXComponents as DefaultMDXComponents } from 'src/components/mdx/components';
+
+/**
+ * StyledCard component
+ * @description A component that displays a card with an image, title, subtitle, tags, and an optional button. It is used in the table of contents style pages.
+ * @returns {JSX.Element} The rendered StyledCard component.
+ */
+
+interface StyledCardProps extends StackProps {
+  isLoading?: boolean;
+  title?: string;
+  subtitle?: string;
+  tags?: React.ReactNode;
+  thumbnail?: { url: string; alternativeText: string };
+  renderCTA?: () => React.ReactNode;
+}
+
+export const StyledCard: React.FC<StyledCardProps> = ({
+  id,
+  isLoading,
+  title,
+  subtitle,
+  children,
+  tags,
+  thumbnail,
+  renderCTA,
+}) => {
+  return (
+    <StyledCardWrapper id={id} isLoading={isLoading}>
+      <VStack alignItems='flex-start' lineHeight='short' mt={2}>
+        <Stack
+          spacing={{ base: 4, lg: 6, xl: 10 }}
+          flexDirection='row'
+          alignItems='unset'
+          flexWrap='wrap-reverse'
+        >
+          <Stack
+            flexDirection='column'
+            alignItems='unset'
+            minWidth={250}
+            flex={1}
+          >
+            {/* Main Heading */}
+            <Box>
+              <HStack>
+                {title && <StyleCardLabel>{title}</StyleCardLabel>}
+
+                {/* Tags */}
+                {tags}
+              </HStack>
+
+              {/* Sub Heading */}
+              {subtitle && <StyleCardSubLabel>{subtitle}</StyleCardSubLabel>}
+            </Box>
+            {/* Main content */}
+            {children}
+          </Stack>
+
+          {/* Thumnail image */}
+          {thumbnail?.url && (
+            <Flex
+              minWidth={200}
+              maxWidth={{ base: 'unset', xl: '25%' }}
+              flex={1}
+              alignItems='flex-start'
+            >
+              <Image
+                borderRadius='base'
+                width='100%'
+                height='auto'
+                src={thumbnail.url}
+                alt={thumbnail.alternativeText}
+                objectFit='contain'
+              />
+            </Flex>
+          )}
+        </Stack>
+
+        {/* Call to action button */}
+        {renderCTA && (
+          <Flex
+            justifyContent={{ base: 'center', md: 'flex-end' }}
+            width='100%'
+          >
+            {renderCTA()}
+          </Flex>
+        )}
+      </VStack>
+    </StyledCardWrapper>
+  );
+};
 
 /**
  * StyledCardStack component
@@ -33,42 +126,6 @@ export const StyledCardStack: React.FC<StackProps> = ({
     <VStack spacing={6} mt={4} alignItems='flex-start' {...props}>
       {children}
     </VStack>
-  );
-};
-
-interface StyledCardProps extends StackProps {
-  isLoading?: boolean;
-  label?: string;
-  subLabel?: string;
-  tags?: React.ReactNode;
-}
-
-/**
- * StyledCard component
- * @description A component that displays a card with a label, subLabel, and optional tags. It is used in the table of contents style pages.
- *
- * @returns {JSX.Element} The rendered StyledCard component.
- */
-
-export const StyledCard: React.FC<StyledCardProps> = ({
-  id,
-  isLoading,
-  label,
-  subLabel,
-  children,
-  tags,
-}) => {
-  return (
-    <StyledCardWrapper id={id} isLoading={isLoading}>
-      <HStack spacing={2}>
-        {label && <StyleCardLabel>{label}</StyleCardLabel>}
-        {tags}
-      </HStack>
-      {subLabel && <StyleCardSubLabel>{subLabel}</StyleCardSubLabel>}
-      <VStack alignItems='flex-start' lineHeight='short' mt={2}>
-        {children}
-      </VStack>
-    </StyledCardWrapper>
   );
 };
 
@@ -132,7 +189,11 @@ export const StyledCardDescription: React.FC<{ children: string }> = ({
   );
 };
 
-export const StyledCardButton: React.FC<ButtonProps & { href: UrlObject }> = ({
+interface StyledCardButtonProps extends ButtonProps {
+  href: UrlObject;
+}
+
+export const StyledCardButton: React.FC<StyledCardButtonProps> = ({
   children,
   href,
   ...props

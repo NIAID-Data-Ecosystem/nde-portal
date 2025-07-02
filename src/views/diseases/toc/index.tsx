@@ -1,9 +1,8 @@
 import { useMemo, useState } from 'react';
-import { Flex, Image, Stack } from '@chakra-ui/react';
+import { Flex } from '@chakra-ui/react';
 import { DiseasePageProps } from 'src/views/diseases/types';
 import { PageContent } from 'src/components/page-container';
 import {
-  StyleCardLabel,
   StyledCard,
   StyledCardButton,
   StyledCardDescription,
@@ -82,68 +81,35 @@ export const TableOfContents = ({ data }: { data: DiseasePageProps[] }) => {
           {/* Display list of disease pages in cards */}
           <StyledCardStack>
             {diseasePages.map(page => {
-              const label = page?.title;
-
+              const title = page?.title;
               return (
-                <StyledCard key={page.id} id={page.slug} isLoading={isLoading}>
-                  {/* Description */}
-                  <Stack
-                    spacing={{ base: 4, lg: 6, xl: 10 }}
-                    flexDirection='row'
-                    alignItems='unset'
-                    flexWrap='wrap-reverse'
-                  >
-                    <Stack
-                      flexDirection='column'
-                      alignItems='unset'
-                      minWidth={250}
-                      flex={1}
-                    >
-                      {/* Name */}
-                      <StyleCardLabel>{label}</StyleCardLabel>
-
-                      {/* Description */}
-                      {page.description && (
-                        <Flex flex={1}>
-                          <StyledCardDescription>
-                            {page.description}
-                          </StyledCardDescription>
-                        </Flex>
-                      )}
-                    </Stack>
-
-                    {page.image?.url && (
-                      <Flex
-                        minWidth={200}
-                        maxWidth={{ base: 'unset', xl: '25%' }}
-                        flex={1}
-                        alignItems='flex-start'
-                      >
-                        <Image
-                          borderRadius='base'
-                          width='100%'
-                          height='auto'
-                          src={page.image.url}
-                          alt={page.image.alternativeText}
-                          objectFit='contain'
-                        />
-                      </Flex>
-                    )}
-                  </Stack>
-                  {/* Link to program resources in the NDE */}
-                  {page.query && (
-                    <Flex
-                      justifyContent={{ base: 'center', md: 'flex-end' }}
-                      width='100%'
-                    >
+                <StyledCard
+                  key={page.id}
+                  id={page.slug}
+                  isLoading={isLoading}
+                  title={title}
+                  thumbnail={page.image}
+                  renderCTA={() =>
+                    page.query ? (
                       <StyledCardButton
                         href={{
                           pathname: `/diseases/${page.slug}`,
                         }}
                       >
-                        Learn about {label} resources in the NIAID Data
+                        Learn about {title} resources in the NIAID Data
                         Ecosystem
                       </StyledCardButton>
+                    ) : (
+                      <></>
+                    )
+                  }
+                >
+                  {/* Description */}
+                  {page.description && (
+                    <Flex flex={1}>
+                      <StyledCardDescription>
+                        {page.description}
+                      </StyledCardDescription>
                     </Flex>
                   )}
                 </StyledCard>
