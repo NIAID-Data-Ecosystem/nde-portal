@@ -322,6 +322,6 @@ export const FiltersContainer: React.FC<FiltersContainerProps> = ({
       </Drawer>
     </>
   ) : (
-    <Box>{content}</Box>
+    <Box width='100%'>{content}</Box>
   );
 };
