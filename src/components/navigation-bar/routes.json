@@ -64,6 +64,12 @@
           "href": "/diseases"
         },
         {
+          "label": "Features",
+          "subLabel": " - ",
+          "href": "/features",
+          "env": ["development", "staging"]
+        },
+        {
           "label": "Ontology Browser",
           "subLabel": "Explore search results in a novel way",
           "href": "/ontology-browser",
