@@ -218,7 +218,7 @@ export const FILTER_CONFIGS: FilterConfig[] = [
     _id: 'programmingLanguage.raw',
     name: 'Programming Language',
     property: 'programmingLanguage.raw',
-    description: getMetadataDescription('measurementTechnique') || '',
+    description: getMetadataDescription('programmingLanguage') || '',
     createQueries: buildQueries(),
   },
   {
