@@ -178,7 +178,7 @@ export const SearchResults = ({
                 return (
                   <ListItem key={data?.results?.[idx]._id || idx} w='100%'>
                     <Card
-                      isLoading={!router.isReady || isLoading || isRefetching}
+                      isLoading={!router.isReady || isLoading}
                       data={data?.results[idx]}
                       referrerPath={router.asPath}
                       querystring={urlQueryParams.q}
