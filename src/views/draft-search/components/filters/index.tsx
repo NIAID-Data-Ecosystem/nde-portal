@@ -11,6 +11,9 @@ import { queryFilterObject2String } from './utils/query-builders';
 import { updateRoute } from '../../utils/update-route';
 import { useSearchQueryFromURL } from '../../hooks/useSearchQueryFromURL';
 import { usePaginationContext } from '../../context/pagination-context';
+import { useSearchTabsContext } from '../../context/search-tabs-context';
+import { getTabFilterProperties } from './utils/tab-filter-utils';
+import { TabType } from '../../types';
 
 // Interface for Filters component props
 interface FiltersProps {
@@ -31,11 +34,22 @@ export const Filters: React.FC<FiltersProps> = React.memo(
     const router = useRouter();
     const queryParams = useSearchQueryFromURL();
     const { resetPagination } = usePaginationContext();
+    const { selectedTab } = useSearchTabsContext();
+
+    // Determine appropriate filters for the selected tab
+    const filtersForTab = useMemo(() => {
+      const allowedProperties = getTabFilterProperties(
+        selectedTab.id as TabType['id'],
+      );
+      return FILTER_CONFIGS.filter(config =>
+        allowedProperties.includes(config.property),
+      );
+    }, [selectedTab.id]);
 
     // Omits date filter from filter config since date is handled differently i.e. as a histogram
     const config = useMemo(
-      () => FILTER_CONFIGS.filter(facet => facet.property !== 'date'),
-      [],
+      () => filtersForTab.filter(facet => facet.property !== 'date'),
+      [filtersForTab],
     );
 
     // Use custom hook to get filter query results
@@ -83,7 +97,7 @@ export const Filters: React.FC<FiltersProps> = React.memo(
       <FiltersContainer
         title='Search Filters'
         error={error}
-        filtersList={FILTER_CONFIGS}
+        filtersList={filtersForTab}
         isDisabled={isDisabled}
         selectedFilters={selectedFilters}
         removeAllFilters={() => {
@@ -91,7 +105,7 @@ export const Filters: React.FC<FiltersProps> = React.memo(
           removeAllFilters();
         }}
       >
-        {FILTER_CONFIGS.map(config => {
+        {filtersForTab.map(config => {
           const { _id, name, property } = config;
           const selected = selectedFilters?.[property]?.map(filter => {
             if (typeof filter === 'object') {
