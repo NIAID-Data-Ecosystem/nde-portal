@@ -4,8 +4,6 @@ import {
   Box,
   Divider,
   Flex,
-  Grid,
-  GridItem,
   ListItem,
   SimpleGrid,
   Skeleton,

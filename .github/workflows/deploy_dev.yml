@@ -21,7 +21,7 @@ jobs:
           GH_API_KEY: ${{ secrets.GH_API_KEY }}
           GITHUB_BRANCH: ${{  github.ref_name }}
       - name: install additional packages for tests
-        run: yarn add puppeteer@19.11.1 axios jest
+        run: yarn add puppeteer@23.5.3 axios jest
       - name: start react app
         run: yarn serve &
         env:
