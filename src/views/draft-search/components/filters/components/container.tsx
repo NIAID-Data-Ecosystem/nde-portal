@@ -137,9 +137,10 @@ export const FiltersContainer: React.FC<FiltersContainerProps> = ({
       const newCommonOpenSections = new Set<string>();
 
       setTabSpecificOpenSections(prev => {
+        const tabId = selectedTab.id;
         const updated = { ...prev };
-        if (!updated[selectedTab.id]) {
-          updated[selectedTab.id] = new Set<string>();
+        if (!updated[tabId]) {
+          updated[tabId] = new Set<string>();
         }
         const newTabSpecificOpenSections = new Set<string>();
 
@@ -165,7 +166,7 @@ export const FiltersContainer: React.FC<FiltersContainerProps> = ({
           }
         });
 
-        updated[selectedTab.id] = newTabSpecificOpenSections;
+        updated[tabId] = newTabSpecificOpenSections;
         return updated;
       });
 
