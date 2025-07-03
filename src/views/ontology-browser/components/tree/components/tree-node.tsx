@@ -36,6 +36,7 @@ import { TreeProps, MARGIN, SIZE } from '..';
 import { transformSettingsToLocalStorageConfig } from '../../settings/helpers';
 import { DEFAULT_ONTOLOGY_BROWSER_SETTINGS } from '../../settings';
 import { ErrorMessage } from '../../error-message';
+import Tooltip from 'src/components/tooltip';
 
 const hasZeroCounts = (node: OntologyLineageItemWithCounts) =>
   node.counts.termCount === 0 && node.counts.termAndChildrenCount === 0;
@@ -281,26 +282,30 @@ export const TreeNode = (props: {
             <Text color='gray.800' fontSize='12px'>
               {node.ontologyName} | {node.taxonId}
             </Text>
-
-            <Link
-              href={`/search?q=${
-                params.q && params.q !== '__all__' ? `(${params.q}) AND ` : ''
-              }(species.identifier:${
-                node.taxonId
-              } OR infectiousAgent.identifier:${node.taxonId})`}
-              fontSize='xs'
+            <Tooltip
+              label={getTooltipLabelByCountType('termCount')}
+              placement='bottom'
             >
-              <Icon as={FaMagnifyingGlass} mr={1.5} boxSize={3} />
-              <Text
-                color={node.state.selected ? 'primary.500' : 'currentColor'}
-                fontWeight={node.state.selected ? 'semibold' : 'medium'}
-                lineHeight='inherit'
-                textAlign='left'
+              <Link
+                href={`/search?q=${
+                  params.q && params.q !== '__all__' ? `(${params.q}) AND ` : ''
+                }(species.identifier:${
+                  node.taxonId
+                } OR infectiousAgent.identifier:${node.taxonId})`}
                 fontSize='xs'
               >
-                {node.label}
-              </Text>
-            </Link>
+                <Icon as={FaMagnifyingGlass} mr={1.5} boxSize={3} />
+                <Text
+                  color={node.state.selected ? 'primary.500' : 'currentColor'}
+                  fontWeight={node.state.selected ? 'semibold' : 'medium'}
+                  lineHeight='inherit'
+                  textAlign='left'
+                  fontSize='xs'
+                >
+                  {node.label}
+                </Text>
+              </Link>
+            </Tooltip>
           </Box>
         </Flex>
         <Flex alignItems='center'>

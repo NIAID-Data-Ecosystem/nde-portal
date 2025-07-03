@@ -208,7 +208,7 @@ export const OntologySearchList = ({
                     pathname: `/search`,
                     query: {
                       q: `${
-                        queryString ? queryString + ' AND ' : ''
+                        queryString ? '(' + queryString + ') AND ' : ''
                       }_meta.lineage.taxon:${search_ids}`,
                     },
                   }}

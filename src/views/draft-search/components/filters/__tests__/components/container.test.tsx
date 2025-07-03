@@ -4,6 +4,7 @@ import { render, screen, fireEvent, act } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import { FiltersContainer } from '../../components/container';
 import { FilterConfig } from '../../types';
+import { SearchTabsProvider } from 'src/views/draft-search/context/search-tabs-context';
 
 // Mock data
 const mockFiltersList: FilterConfig[] = [
@@ -16,6 +17,7 @@ const mockFiltersList: FilterConfig[] = [
     createQueries: () => {
       return [];
     },
+    tabIds: ['d', 'ct'],
   },
   {
     _id: '02',
@@ -26,6 +28,7 @@ const mockFiltersList: FilterConfig[] = [
     createQueries: () => {
       return [];
     },
+    tabIds: ['d', 'ct'],
   },
 ];
 const mockSelectedFilters = {
@@ -45,15 +48,18 @@ jest.mock('@chakra-ui/react', () => {
 const renderComponent = (props = {}) => {
   return render(
     <ChakraProvider>
-      <FiltersContainer
-        title='Test Filters'
-        selectedFilters={mockSelectedFilters}
-        filtersList={mockFiltersList}
-        error={null}
-        {...props}
-      >
-        <div>Filter children</div>
-      </FiltersContainer>
+      <SearchTabsProvider initialTab={'d'}>
+        <FiltersContainer
+          title='Test Filters'
+          selectedFilters={mockSelectedFilters}
+          filtersList={mockFiltersList}
+          error={null}
+          removeAllFilters={jest.fn()}
+          {...props}
+        >
+          <div>Filter children</div>
+        </FiltersContainer>
+      </SearchTabsProvider>
     </ChakraProvider>,
   );
 };
