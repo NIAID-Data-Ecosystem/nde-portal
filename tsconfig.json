@@ -1,6 +1,9 @@
 {
   "compilerOptions": {
     "baseUrl": ".",
+    "paths": {
+      "src/*": ["src/*"]
+    },
     "removeComments": true,
     "target": "es2018",
     "downlevelIteration": true,
