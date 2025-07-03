@@ -1,16 +1,12 @@
-import {
-  APIResourceType,
-  formatResourceTypeForDisplay,
-} from 'src/utils/formatting/formatResourceType';
-import { FilterConfig, FacetTermWithDetails } from './types';
-import { buildQueries, buildSourceQueries } from './utils/query-builders';
+import { FilterConfig, FacetTermWithDetails } from '../types';
+import { buildQueries, buildSourceQueries } from '../utils/query-builders';
 import { formatDate, formatISOString } from 'src/utils/api/helpers';
 import { FetchSearchResultsResponse } from 'src/utils/api/types';
 import {
   createCommonQuery,
   createNotExistsQuery,
   structureQueryData,
-} from './utils/queries';
+} from '../utils/queries';
 
 import {
   formatConditionsOfAccess,
@@ -28,6 +24,7 @@ export const FILTER_CONFIGS: FilterConfig[] = [
     property: 'date',
     isDefaultOpen: true,
     description: '',
+    tabIds: ['d', 'ct'],
     createQueries: (id, params, options) => {
       // Destructure options to exclude queryKey and gather other options, with defaults
       const { queryKey = [], ...queryOptions } = options || {};
@@ -70,31 +67,11 @@ export const FILTER_CONFIGS: FilterConfig[] = [
       };
     },
   },
-  // {
-  //   _id: '__type',
-  //   name: 'Type',
-  //   property: '@type',
-  //   description:
-  //     'Type is used to categorize the nature of the content of the resource',
-  //   createQueries: (id, params, options) => [
-  //     createCommonQuery({
-  //       id,
-  //       queryKey: options?.queryKey || [],
-  //       params,
-  //       ...options,
-  //     }),
-  //   ],
-  //   transformData: (item): FacetTermWithDetails => ({
-  //     ...item,
-  //     label:
-  //       item.label ||
-  //       formatResourceTypeForDisplay(item.term as APIResourceType),
-  //   }),
-  // },
   {
     _id: 'includedInDataCatalog',
     name: 'Sources',
     property: 'includedInDataCatalog.name',
+    tabIds: ['d', 'ct'],
     description: getMetadataDescription('includedInDataCatalog') || '',
     createQueries: buildSourceQueries(),
     groupBy: [
@@ -112,6 +89,7 @@ export const FILTER_CONFIGS: FilterConfig[] = [
     _id: 'sourceOrganization.name',
     name: 'Program Collection',
     property: 'sourceOrganization.name',
+    tabIds: ['d', 'ct'],
     description: getMetadataDescription('sourceOrganization') || '',
     createQueries: (id, params, options) => [
       createCommonQuery({
@@ -142,6 +120,7 @@ export const FILTER_CONFIGS: FilterConfig[] = [
     _id: 'healthCondition.name.raw',
     name: 'Health Condition',
     property: 'healthCondition.name.raw',
+    tabIds: ['d'],
     description: getMetadataDescription('healthCondition') || '',
     createQueries: buildQueries(),
   },
@@ -149,6 +128,7 @@ export const FILTER_CONFIGS: FilterConfig[] = [
     _id: 'infectiousAgent.displayName.raw',
     name: 'Pathogen Species',
     property: 'infectiousAgent.displayName.raw',
+    tabIds: ['d'],
     description: getMetadataDescription('infectiousAgent') || '',
     createQueries: buildQueries(),
   },
@@ -156,6 +136,7 @@ export const FILTER_CONFIGS: FilterConfig[] = [
     _id: 'species.displayName.raw',
     name: 'Host Species',
     property: 'species.displayName.raw',
+    tabIds: ['d'],
     description: getMetadataDescription('species') || '',
     createQueries: buildQueries(),
   },
@@ -163,6 +144,7 @@ export const FILTER_CONFIGS: FilterConfig[] = [
     _id: 'funding.funder.name.raw',
     name: 'Funding',
     property: 'funding.funder.name.raw',
+    tabIds: ['d', 'ct'],
     description: getMetadataDescription('funding') || '',
     createQueries: buildQueries(),
   },
@@ -170,6 +152,7 @@ export const FILTER_CONFIGS: FilterConfig[] = [
     _id: 'conditionsOfAccess',
     name: 'Conditions of Access',
     property: 'conditionsOfAccess',
+    tabIds: ['d', 'ct'],
     description: getMetadataDescription('conditionsOfAccess') || '',
     createQueries: buildQueries(),
     transformData: (item): FacetTermWithDetails => {
@@ -190,6 +173,7 @@ export const FILTER_CONFIGS: FilterConfig[] = [
     _id: 'variableMeasured.name.raw',
     name: 'Variable Measured',
     property: 'variableMeasured.name.raw',
+    tabIds: ['d'],
     description: getMetadataDescription('variableMeasured') || '',
     createQueries: buildQueries(),
   },
@@ -197,6 +181,7 @@ export const FILTER_CONFIGS: FilterConfig[] = [
     _id: 'measurementTechnique.name.raw',
     name: 'Measurement Technique',
     property: 'measurementTechnique.name.raw',
+    tabIds: ['d'],
     description: getMetadataDescription('measurementTechnique') || '',
     createQueries: buildQueries(),
   },
@@ -204,6 +189,7 @@ export const FILTER_CONFIGS: FilterConfig[] = [
     _id: 'applicationCategory.raw',
     name: 'Application Category',
     property: 'applicationCategory.raw',
+    tabIds: ['ct'],
     description: getMetadataDescription('applicationCategory') || '',
     createQueries: buildQueries(),
   },
@@ -211,6 +197,7 @@ export const FILTER_CONFIGS: FilterConfig[] = [
     _id: 'operatingSystem.raw',
     name: 'Operating System',
     property: 'operatingSystem.raw',
+    tabIds: ['ct'],
     description: getMetadataDescription('operatingSystem') || '',
     createQueries: buildQueries(),
   },
@@ -218,6 +205,7 @@ export const FILTER_CONFIGS: FilterConfig[] = [
     _id: 'programmingLanguage.raw',
     name: 'Programming Language',
     property: 'programmingLanguage.raw',
+    tabIds: ['ct'],
     description: getMetadataDescription('programmingLanguage') || '',
     createQueries: buildQueries(),
   },
@@ -225,6 +213,7 @@ export const FILTER_CONFIGS: FilterConfig[] = [
     _id: 'featureList.name.raw',
     name: 'Feature List',
     property: 'featureList.name.raw',
+    tabIds: ['ct'],
     description: getMetadataDescription('featureList') || '',
     createQueries: buildQueries(),
   },
@@ -232,6 +221,7 @@ export const FILTER_CONFIGS: FilterConfig[] = [
     _id: 'input.name.raw',
     name: 'Input',
     property: 'input.name.raw',
+    tabIds: ['ct'],
     description: getMetadataDescription('input') || '',
     createQueries: buildQueries(),
   },
@@ -239,6 +229,7 @@ export const FILTER_CONFIGS: FilterConfig[] = [
     _id: 'output.name.raw',
     name: 'Output',
     property: 'output.name.raw',
+    tabIds: ['ct'],
     description: getMetadataDescription('output') || '',
     createQueries: buildQueries(),
   },
