@@ -33,7 +33,7 @@ interface StyledCardProps extends StackProps {
   title?: string;
   subtitle?: string;
   tags?: React.ReactNode;
-  thumbnail?: { url: string; alternativeText: string };
+  thumbnail?: { url: string; alternativeText: string } | null;
   renderCTA?: () => React.ReactNode;
 }
 

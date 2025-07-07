@@ -48,6 +48,10 @@ const FeaturedPage: NextPage<{
     }
   }, [router]);
 
+  if (process.env.NEXT_PUBLIC_APP_ENV === 'production') {
+    return null; // Prevent rendering in production until search is implemented.
+  }
+
   return (
     <PageContainer
       id='features-page'

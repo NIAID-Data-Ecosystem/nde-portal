@@ -33,11 +33,7 @@ import {
 } from 'src/views/home/components/HeroBanner';
 
 export interface NewsOrEventsObject {
-  compiledMDX: MDXRemoteSerializeResult;
   id: number;
-  mdx: { [key: string]: MDXRemoteSerializeResult };
-  type?: string;
-  name: string | null;
   subtitle: string | null;
   description: string | null;
   shortDescription: string | null;
@@ -45,7 +41,7 @@ export interface NewsOrEventsObject {
     | null
     | { url: string; alternativeText: string }
     | { url: string; alternativeText: string }[];
-  eventDate?: string;
+  name: string | null;
   slug: string;
   createdAt: string;
   publishedAt: string;
@@ -59,6 +55,10 @@ export interface NewsOrEventsObject {
         updatedAt: string;
       }[]
     | null;
+  compiledMDX?: MDXRemoteSerializeResult;
+  mdx?: { [key: string]: MDXRemoteSerializeResult };
+  type?: string;
+  eventDate?: string;
 }
 
 export interface UpdatesProps {
