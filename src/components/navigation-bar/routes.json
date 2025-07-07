@@ -67,7 +67,7 @@
           "label": "Ontology Browser",
           "subLabel": "Explore search results in a novel way",
           "href": "/ontology-browser",
-          "env": ["development"]
+          "env": ["development", "staging"]
         }
       ]
     }

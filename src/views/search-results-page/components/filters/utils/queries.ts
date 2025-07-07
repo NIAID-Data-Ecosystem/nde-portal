@@ -51,7 +51,9 @@ export const structureQueryData = (data: FetchSearchResultsResponse) => {
     throw new Error('No facets returned from fetchSearchResults');
   }
 
-  const terms = Object.values(facets)[0].terms;
+  const terms =
+    Object.values(facets).filter(facet => facet._type === 'terms')?.[0]
+      ?.terms || [];
 
   if (facets?.multi_terms_agg) {
     facets.multi_terms_agg.terms.forEach(({ term: multiTerm }) => {
@@ -62,9 +64,7 @@ export const structureQueryData = (data: FetchSearchResultsResponse) => {
       }
     });
   }
-  if (!terms.length) {
-    return [];
-  }
+
   return [
     {
       label: 'Any',
@@ -237,22 +237,25 @@ export const createQueryWithSourceMetadata = ({
         (data?.repos?.src &&
           Object.values(data.repos.src).filter(repo => repo?.sourceInfo)) ||
         [];
-      const terms = Object.values(facets)[0].terms.map(
-        (item: { term: string; count: number }) => ({
-          label: item.term,
-          term: item.term,
-          count: item.count,
-          facet: queryParams.facets,
-          groupBy:
-            repos?.find(r => r.sourceInfo?.name === item.term)?.sourceInfo
-              ?.genre || 'Generalist',
-        }),
-      );
+
+      const terms =
+        Object.values(facets).filter(facet => facet._type === 'terms')?.[0]
+          ?.terms || [];
+
+      const results = terms.map((item: { term: string; count: number }) => ({
+        label: item.term,
+        term: item.term,
+        count: item.count,
+        facet: queryParams.facets,
+        groupBy:
+          repos?.find(r => r.sourceInfo?.name === item.term)?.sourceInfo
+            ?.genre || 'Generalist',
+      }));
 
       return {
         id,
         facet: queryParams.facets,
-        results: terms,
+        results,
       };
     },
     ...options,

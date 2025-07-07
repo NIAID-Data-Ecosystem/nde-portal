@@ -1,5 +1,10 @@
 import React, { useRef } from 'react';
-import { Box, ListItemProps, useOutsideClick } from '@chakra-ui/react';
+import {
+  Box,
+  BoxProps,
+  ListItemProps,
+  useOutsideClick,
+} from '@chakra-ui/react';
 import { useDropdownInput } from './hooks/useDropdownInput';
 
 interface DropdownListItemProps extends ListItemProps {
@@ -40,12 +45,19 @@ const DropdownInputContext = React.createContext({
 DropdownInputContext.displayName = 'DropdownInputContext';
 
 // [Context Provider]: Input with a keyboardable dropdown list.
-export const InputWithDropdown: React.FC<{
+interface InputWithDropdownProps extends BoxProps {
   inputValue: string;
   cursorMax: number;
   colorScheme?: string;
-  children: React.ReactNode;
-}> = ({ children, inputValue, colorScheme = 'primary', cursorMax }) => {
+}
+
+export const InputWithDropdown: React.FC<InputWithDropdownProps> = ({
+  children,
+  inputValue,
+  colorScheme = 'primary',
+  cursorMax,
+  ...props
+}) => {
   const dropdownInput = useDropdownInput({
     colorScheme,
     cursorMax,
@@ -68,7 +80,9 @@ export const InputWithDropdown: React.FC<{
 
   return (
     <DropdownInputContext.Provider value={context}>
-      <Box ref={ref}>{children}</Box>
+      <Box className='input-with-dropdown' ref={ref} {...props}>
+        {children}
+      </Box>
     </DropdownInputContext.Provider>
   );
 };
