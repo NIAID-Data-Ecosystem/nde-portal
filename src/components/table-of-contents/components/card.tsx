@@ -59,7 +59,7 @@ export const StyledCard: React.FC<StyledCardProps> = ({
           <Stack
             flexDirection='column'
             alignItems='unset'
-            minWidth={250}
+            minWidth={{ base: '250px', sm: '350px' }}
             flex={1}
           >
             {/* Main Heading */}
@@ -81,8 +81,8 @@ export const StyledCard: React.FC<StyledCardProps> = ({
           {/* Thumnail image */}
           {thumbnail?.url && (
             <Flex
-              minWidth={200}
-              maxWidth={{ base: 'unset', xl: '25%' }}
+              minWidth={250}
+              maxWidth={{ base: 'unset', xl: '30%' }}
               flex={1}
               alignItems='flex-start'
             >

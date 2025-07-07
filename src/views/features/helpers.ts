@@ -34,6 +34,7 @@ export const fetchAllFeaturedPages = async (params?: FeaturedQueryParams) => {
       `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/api/features`,
       {
         params: {
+          populate: '*',
           status: isProd ? 'published' : 'draft',
           sort: { publishedAt: 'desc', updatedAt: 'desc' },
           paginate: { page: 1, pageSize: 100 },
