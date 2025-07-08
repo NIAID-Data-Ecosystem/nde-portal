@@ -2,7 +2,6 @@ import { useMemo } from 'react';
 import { Box, Flex, FlexProps, Stack } from '@chakra-ui/react';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
-import Head from 'next/head';
 import { Footer } from 'src/components/footer';
 import { Navigation } from 'src/components/navigation-bar';
 import { Breadcrumbs } from './breadcrumbs';
@@ -65,9 +64,7 @@ export const PageContainer: React.FC<PageContainerProps> = ({
   return (
     <>
       {/* Meta fields for SEO */}
-      <Head>
-        <SeoMetaFields {...meta} />
-      </Head>
+      <SeoMetaFields {...meta} />
 
       <Flex as='main' w='100%' flexDirection='column' minW='300px'>
         <Navigation />

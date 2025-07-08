@@ -1,3 +1,5 @@
+import Head from 'next/head';
+
 export interface SeoMetaFieldsProps {
   title: string; // title of the page, should be around 60 characters.
   url: string;
@@ -15,7 +17,6 @@ const DEFAULT_META = {
     'omics, data, infectious disease, epidemiology, clinical trial, immunology, bioinformatics, surveillance, search, repository',
 };
 
-// Note: This component must be wrapped in Head tags.
 export const SeoMetaFields: React.FC<SeoMetaFieldsProps> = ({
   title,
   url,
@@ -30,7 +31,7 @@ export const SeoMetaFields: React.FC<SeoMetaFieldsProps> = ({
   const imageUrl = `${baseURL}/assets/preview.png`;
 
   return (
-    <>
+    <Head>
       <title>{fullTitle}</title>
       <meta name='description' content={description} />
       <meta name='keywords' content={keywords} />
@@ -58,6 +59,6 @@ export const SeoMetaFields: React.FC<SeoMetaFieldsProps> = ({
           <meta name='googlebot' content='noindex'></meta>
         </>
       )}
-    </>
+    </Head>
   );
 };
