@@ -29,8 +29,11 @@ const FrequentlyAsked: NextPage<FrequentlyAskedProps> = props => {
   const MDXComponents = useMDXComponents();
   return (
     <PageContainer
-      title='FAQ'
-      metaDescription='Frequenty asked questions.'
+      meta={{
+        title: 'Frequently Asked Questions',
+        url: `${process.env.NEXT_PUBLIC_BASE_URL}/faq`,
+        description: 'Frequenty asked questions.',
+      }}
       px={0}
       py={0}
     >

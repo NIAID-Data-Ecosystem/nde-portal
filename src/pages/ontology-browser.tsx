@@ -19,8 +19,13 @@ const OntologyBrowserPage: NextPage = () => {
 
   return (
     <PageContainer
-      title='Search'
-      metaDescription='NDE Discovery Portal - Search results list based on query.'
+      meta={{
+        title: 'Ontology Browser',
+        description:
+          'Explore and search through ontologies related to biomedical data, including taxonomy and ontology terms.',
+        keywords: 'ontology, taxonomy, biomedical data, data discovery',
+        url: `${process.env.NEXT_PUBLIC_BASE_URL}/ontology-browser`,
+      }}
       px={0}
       py={0}
       includeSearchBar

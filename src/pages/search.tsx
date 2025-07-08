@@ -91,8 +91,13 @@ const Search: NextPage<{
 
   return (
     <PageContainer
-      title='Search'
-      metaDescription='NDE Discovery Portal - Search results list based on query.'
+      meta={{
+        title: 'Search',
+        description:
+          'NDE Discovery Portal - Search results list based on query.',
+        url: `${process.env.NEXT_PUBLIC_BASE_URL}/search`,
+        keywords: 'search, results, NIAID, data discovery portal',
+      }}
       px={0}
       py={0}
       includeSearchBar

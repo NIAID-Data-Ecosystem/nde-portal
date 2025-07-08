@@ -71,8 +71,11 @@ const About: NextPage<AboutProps> = props => {
 
   return (
     <PageContainer
-      title='About'
-      metaDescription='About page.'
+      meta={{
+        title: 'About',
+        description: 'About page.',
+        url: `${process.env.NEXT_PUBLIC_BASE_URL}/about`,
+      }}
       px={0}
       py={0}
       includeSearchBar

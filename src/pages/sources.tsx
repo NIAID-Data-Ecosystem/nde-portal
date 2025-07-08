@@ -109,8 +109,12 @@ const Sources: NextPage<SourcesProps> = ({ data, error }) => {
   return (
     <PageContainer
       id='sources-page'
-      title='Sources'
-      metaDescription='NDE Discovery Portal - API data sources.'
+      meta={{
+        title: 'Sources',
+        description: 'NDE Discovery Portal - API data sources.',
+        keywords: 'data sources, NIAID, data discovery portal',
+        url: `${process.env.NEXT_PUBLIC_BASE_URL}/sources`,
+      }}
       px={0}
       py={0}
     >

@@ -4,6 +4,7 @@ export interface SeoMetaFieldsProps {
   description?: string; // short description of the page should be around 155 characters.
   keywords?: string; // comma-separated keywords for the page, should be around 10-15 words.
   canonical?: string; // optional override for url
+  preventIndexing?: boolean; // if true, adds noindex meta tags to prevent indexing - useful for 404 page.
 }
 
 const DEFAULT_META = {
@@ -21,6 +22,7 @@ export const SeoMetaFields: React.FC<SeoMetaFieldsProps> = ({
   canonical,
   description = DEFAULT_META.description,
   keywords = DEFAULT_META.keywords,
+  preventIndexing = false,
 }) => {
   const baseURL = process.env.NEXT_PUBLIC_BASE_URL || '';
   const fullTitle =
@@ -33,7 +35,7 @@ export const SeoMetaFields: React.FC<SeoMetaFieldsProps> = ({
       <meta name='description' content={description} />
       <meta name='keywords' content={keywords} />
 
-      <link rel='canonical' href={canonical || url} />
+      {!preventIndexing && <link rel='canonical' href={canonical || url} />}
 
       {/* Open Graph */}
       <meta property='og:title' content={fullTitle} />
@@ -48,6 +50,14 @@ export const SeoMetaFields: React.FC<SeoMetaFieldsProps> = ({
       <meta property='twitter:description' content={description} />
       <meta property='twitter:card' content='summary' />
       <meta property='twitter:image' content={imageUrl} />
+
+      {/* Indexing */}
+      {preventIndexing && (
+        <>
+          <meta name='robots' content='noindex'></meta>
+          <meta name='googlebot' content='noindex'></meta>
+        </>
+      )}
     </>
   );
 };

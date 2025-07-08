@@ -168,8 +168,11 @@ const Updates: NextPage<UpdatesProps> = props => {
 
   return (
     <PageContainer
-      title='Updates'
-      metaDescription='Updates for the NIAID Data Discovery Portal.'
+      meta={{
+        title: 'Updates',
+        description: 'Updates for the NIAID Data Discovery Portal.',
+        url: `${process.env.NEXT_PUBLIC_BASE_URL}/updates`,
+      }}
       px={0}
       py={0}
     >

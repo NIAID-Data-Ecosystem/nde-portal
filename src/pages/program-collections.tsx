@@ -83,8 +83,13 @@ const ProgramCollections: NextPage<{
   return (
     <PageContainer
       id='program-page'
-      title='Program Collections'
-      metaDescription='Appendix of program collections available in the NIAID Data Ecosystem.'
+      meta={{
+        title: 'Program Collections',
+        url: `${process.env.NEXT_PUBLIC_BASE_URL}/program-collections`,
+        description:
+          'Appendix of program collections available in the NIAID Data Ecosystem.',
+        keywords: 'program collections, NIAID, data discovery portal',
+      }}
       px={0}
       py={0}
     >

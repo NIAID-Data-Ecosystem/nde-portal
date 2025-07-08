@@ -6,8 +6,11 @@ import { AdvancedSearch } from 'src/components/advanced-search';
 const AdvancedSearchPage: NextPage = () => {
   return (
     <PageContainer
-      title='Advanced Search'
-      metaDescription='Advanced Search page.'
+      meta={{
+        title: 'Advanced Search',
+        description: 'Advanced Search page.',
+        url: `${process.env.NEXT_PUBLIC_BASE_URL}/advanced-search`,
+      }}
       px={0}
       py={0}
     >

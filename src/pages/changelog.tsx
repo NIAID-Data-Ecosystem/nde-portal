@@ -15,8 +15,12 @@ const Changelog: NextPage<ChangelogProps> = () => {
   const MDXComponents = useMDXComponents();
   return (
     <PageContainer
-      title='Changelog'
-      metaDescription='Log of changes to the NDE System.'
+      meta={{
+        title: 'Changelog',
+        description: 'Log of changes to the NDE System.',
+        url: `${process.env.NEXT_PUBLIC_BASE_URL}/changelog`,
+        preventIndexing: true,
+      }}
       px={0}
       py={0}
     >

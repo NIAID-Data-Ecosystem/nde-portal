@@ -107,15 +107,21 @@ const ResourcePage: NextPage = () => {
   return (
     <>
       <PageContainer
-        title={`${data?.name ? data?.name : isLoading ? '' : 'Resource'}`}
-        metaDescription='NDE Discovery Portal - Detailed resource information.'
-        metaCanonical={
-          Boolean(id && id.toString() !== 'undefined')
-            ? `${process.env.NEXT_PUBLIC_BASE_URL}/resources?id=${
-                Array.isArray(id) ? id[0].toLowerCase() : id?.toLowerCase()
-              }`
-            : undefined
-        }
+        // meta={{
+        //   title: `${data?.name ? data?.name : 'Resource'}`,
+        //   description: data?.description?.substring(0, 155) || '',
+        //   keywords: data?.keywords?.slice(0, 10).join(', ') || '',
+        //   url: `${process.env.NEXT_PUBLIC_BASE_URL}/resources?id=${
+        //     Array.isArray(id) ? id[0].toLowerCase() : id?.toLowerCase()
+        //   }`,
+        // }}
+        meta={{
+          title: `${data?.name ? data?.name : 'Resource'}`,
+          description: 'NDE Discovery Portal - Detailed resource information.',
+          url: `${process.env.NEXT_PUBLIC_BASE_URL}/resources?id=${
+            Array.isArray(id) ? id[0].toLowerCase() : id?.toLowerCase()
+          }`,
+        }}
         includeSearchBar
       >
         <PageContent>

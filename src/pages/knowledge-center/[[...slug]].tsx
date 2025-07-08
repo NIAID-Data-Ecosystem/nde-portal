@@ -131,8 +131,13 @@ const Docs: NextPage<{
 
   return (
     <PageContainer
-      title='Knowledge Center'
-      metaDescription='Documentation for the portal.'
+      meta={{
+        title: 'Knowledge Center',
+        description: 'Documentation for the portal.',
+        url: `${process.env.NEXT_PUBLIC_BASE_URL}/knowledge-center/${
+          props.slug?.[0] || ''
+        }`,
+      }}
       px={0}
       py={0}
     >

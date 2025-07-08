@@ -75,8 +75,14 @@ const Disclaimer: NextPage<DisclaimerProps> = props => {
 
   return (
     <PageContainer
-      title='Disclaimer'
-      metaDescription='An overview of the NIAID Data Ecosystem Discovery Portal endorsement disclaimers and information disclaimers.'
+      meta={{
+        title: 'Disclaimer',
+        url: `${process.env.NEXT_PUBLIC_BASE_URL}/disclaimer`,
+        description:
+          'An overview of the NIAID Data Ecosystem Discovery Portal endorsement disclaimers and information disclaimers.',
+        keywords: 'disclaimer, terms of use, NIAID, data discovery portal',
+        preventIndexing: true,
+      }}
       px={0}
       py={0}
     >

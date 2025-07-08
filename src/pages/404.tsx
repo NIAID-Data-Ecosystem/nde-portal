@@ -7,8 +7,13 @@ import NextLink from 'next/link';
 const NotFoundPage: NextPage = () => {
   return (
     <PageContainer
-      title='Page Not Found'
-      metaDescription='404 Error: Page Not Found.'
+      meta={{
+        title: '404 — Page Not Found',
+        description: '404 Error: Page Not Found.',
+        keywords: '404, page not found, error',
+        url: `${process.env.NEXT_PUBLIC_BASE_URL}/404`,
+        preventIndexing: true,
+      }}
       includeSearchBar
     >
       <PageContent h='100vh' alignItems='center' justifyContent='center'>

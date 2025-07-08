@@ -88,8 +88,11 @@ const DiseasePage: NextPage<{
   return (
     <PageContainer
       id='disease-page'
-      title='Disease'
-      metaDescription='Spotlight on a disease topic.'
+      meta={{
+        title: 'Disease',
+        description: 'Spotlight on a disease topic.',
+        url: `${process.env.NEXT_PUBLIC_BASE_URL}/diseases/${slug?.[0] || ''}`,
+      }}
       px={0}
       py={0}
     >
