@@ -57,7 +57,7 @@ const FeaturedPage: NextPage<{
   return (
     <PageContainer
       meta={{
-        title: 'Features',
+        title: data?.title || 'Features',
         description: 'Featured content for the portal.',
         url: `${process.env.NEXT_PUBLIC_BASE_URL}/features/${
           props.slug?.[0] || ''
