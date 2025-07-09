@@ -1,7 +1,9 @@
 import { useMemo, useState } from 'react';
 import { Flex, Image, Stack } from '@chakra-ui/react';
+import { useQuery } from '@tanstack/react-query';
 import { DiseasePageProps } from 'src/views/diseases/types';
 import { PageContent } from 'src/components/page-container';
+import { fetchAllDiseasePages } from 'src/utils/api/strapi';
 import {
   StyleCardLabel,
   StyledCard,
@@ -16,34 +18,60 @@ import {
   SidebarItem,
 } from 'src/components/table-of-contents/layouts/sidebar';
 
-export const TableOfContents = ({ data }: { data: DiseasePageProps[] }) => {
-  // [TO DO]: Fetch all pages from the Strapi API
-  const isLoading = false;
-
+export const TableOfContents = () => {
   const [searchValue, setSearchValue] = useState('');
 
-  const diseasePages = useMemo(() => {
-    return (
-      data
-        ?.filter(page => {
-          const title = page.title.toLowerCase();
-          const description = page.description?.toLowerCase() || '';
-          const searchTerm = searchValue.toLowerCase();
+  // Fetch all disease pages from Strapi
+  const { data, isLoading, error } = useQuery<DiseasePageProps[], Error>({
+    queryKey: ['diseases'],
+    queryFn: fetchAllDiseasePages,
+    refetchOnWindowFocus: false,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
 
-          return title.includes(searchTerm) || description.includes(searchTerm);
-        })
-        .sort((a, b) =>
-          a.title.localeCompare(b.title, undefined, {
-            numeric: true,
-          }),
-        ) || []
-    );
+  const diseasePages = useMemo(() => {
+    if (!data) return [];
+
+    return data
+      .filter(page => {
+        const title = page.title.toLowerCase();
+        const description = page.description?.toLowerCase() || '';
+        const searchTerm = searchValue.toLowerCase();
+
+        return title.includes(searchTerm) || description.includes(searchTerm);
+      })
+      .sort((a, b) =>
+        a.title.localeCompare(b.title, undefined, {
+          numeric: true,
+        }),
+      );
   }, [data, searchValue]);
+
+  if (error) {
+    return (
+      <PageContent
+        id='diseases-index-page'
+        bg='#fff'
+        maxW={{ base: 'unset', lg: '1200px' }}
+        justifyContent='center'
+        margin='0 auto'
+        px={4}
+        py={4}
+        mb={32}
+        flex={3}
+      >
+        <Flex flexDirection='column' flex={1} pb={32} width='100%' m='0 auto'>
+          <SectionHeader title='Diseases' />
+          <div>Error loading diseases: {error.message}</div>
+        </Flex>
+      </PageContent>
+    );
+  }
 
   return (
     <Flex>
       <Sidebar aria-label='Navigation for list of disease pages.'>
-        {data?.map(page => {
+        {diseasePages?.map(page => {
           return (
             <SidebarItem
               key={page.id}
