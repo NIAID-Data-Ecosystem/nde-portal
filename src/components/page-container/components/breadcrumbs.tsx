@@ -1,3 +1,6 @@
+import { useMemo } from 'react';
+import { IconType } from 'react-icons';
+import { FaAngleRight, FaHouse } from 'react-icons/fa6';
 import {
   Breadcrumb,
   BreadcrumbItem as ChakraBreadcrumbItem,
@@ -7,10 +10,8 @@ import {
   HStack,
   Text,
 } from '@chakra-ui/react';
-import { useRouter } from 'next/router';
 import { usePathname } from 'next/navigation';
-import { FaAngleRight, FaHouse } from 'react-icons/fa6';
-import { IconType } from 'react-icons';
+import { useRouter } from 'next/router';
 
 interface BreadcrumbsProps {}
 
@@ -58,34 +59,48 @@ export const BreadcrumbItem = ({
 export const Breadcrumbs: React.FC<BreadcrumbsProps> = () => {
   const router = useRouter();
   const pathname = usePathname();
-  const segments = pathname.split('/').filter(Boolean);
 
-  const pathSegments = segments.map((path, idx) => {
-    const name = path
-      .replace(/-/g, ' ')
-      .replace(/_/g, ' ')
-      .replace(/(?:^|\s)\S/g, a => a.toUpperCase());
-    const last = idx === 0 ? path : segments.slice(0, idx + 1).join('/');
-    return {
-      name,
-      route: `/${last}`,
-    };
-  });
+  const pathSegments = useMemo(() => {
+    if (!pathname) return [];
+
+    const segments = pathname.split('/').filter(Boolean);
+
+    let mapped = segments.map((path, idx) => {
+      const name = path
+        .replace(/-/g, ' ')
+        .replace(/_/g, ' ')
+        .replace(/(?:^|\s)\S/g, a => a.toUpperCase());
+      const last = idx === 0 ? path : segments.slice(0, idx + 1).join('/');
+      return {
+        name,
+        route: `/${last}`,
+      };
+    });
+
+    // Inject "Search" before "Resources" if current path is exactly /resources or a subpath
+    const isResourcesPage = pathname.startsWith('/resources');
+
+    if (isResourcesPage) {
+      const searchRoute =
+        typeof router.query.referrerPath === 'string' &&
+        router.query.referrerPath?.includes('/search')
+          ? router.query.referrerPath
+          : '/search';
+
+      mapped = [
+        {
+          name: 'Search',
+          route: searchRoute,
+        },
+        ...mapped,
+      ];
+    }
+
+    return mapped;
+  }, [pathname, router.query.referrerPath]);
 
   if (!pathSegments.length) return null;
 
-  if (pathname === '/resources') {
-    // Since `/resources` is not nested within `/search` in the route, we need to hardcode the search breadcrumb.
-    // We leverage the router query field to determine the referrer path (which is set in the search results page). If the user is not coming from the search results page, we default to `/search`.
-
-    pathSegments.unshift({
-      name: 'Search',
-      route:
-        typeof router.query.referrerPath === 'string'
-          ? router.query.referrerPath
-          : '/search',
-    });
-  }
   return (
     <Flex px={6} py={2}>
       <Breadcrumb
@@ -115,11 +130,7 @@ export const Breadcrumbs: React.FC<BreadcrumbsProps> = () => {
           return (
             <ChakraBreadcrumbItem key={path.name} isCurrentPage={isCurrentPage}>
               <BreadcrumbLink href={path.route}>
-                <BreadcrumbItem
-                  key={path.name}
-                  isCurrentPage={isCurrentPage}
-                  path={path}
-                />
+                <BreadcrumbItem isCurrentPage={isCurrentPage} path={path} />
               </BreadcrumbLink>
             </ChakraBreadcrumbItem>
           );
