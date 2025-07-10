@@ -46,7 +46,7 @@ const transformStrapiDisease = (strapiData: any): DiseasePageProps => {
 export const fetchAllDiseasePages = async (): Promise<DiseasePageProps[]> => {
   try {
     const response = await fetch(
-      `${STRAPI_BASE_URL}/api/diseases?populate=*&sort=title:asc`,
+      `${STRAPI_BASE_URL}/api/diseases?status=draft&populate=*&sort=title:asc`,
     );
 
     if (!response.ok) {
@@ -68,7 +68,7 @@ export const fetchDiseaseBySlug = async (
 ): Promise<DiseasePageProps> => {
   try {
     const response = await fetch(
-      `${STRAPI_BASE_URL}/api/diseases?filters[slug][$eq]=${slug}&populate=*`,
+      `${STRAPI_BASE_URL}/api/diseases?status=draft&filters[slug][$eq]=${slug}&populate=*`,
     );
 
     if (!response.ok) {
@@ -94,7 +94,7 @@ export const fetchDiseaseById = async (
 ): Promise<DiseasePageProps> => {
   try {
     const response = await fetch(
-      `${STRAPI_BASE_URL}/api/diseases/${id}?populate=*`,
+      `${STRAPI_BASE_URL}/api/diseases?status=draft/${id}?populate=*`,
     );
 
     if (!response.ok) {
