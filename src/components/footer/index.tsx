@@ -12,9 +12,10 @@ import {
   UnorderedList,
 } from '@chakra-ui/react';
 import { Logo } from 'src/components/logos';
-import NAVIGATION from './routes.json';
+import SITE_CONFIG from 'configs/site.config.json';
 import { FooterLink, FooterSocialLinks } from './components/link';
 import { useMetadata } from 'src/hooks/api/useMetadata';
+import { SiteConfig } from '../page-container/types';
 
 export interface ListHeaderProps extends TextProps {}
 
@@ -54,6 +55,8 @@ export interface FooterProps {
 // Contact Links such as social media, email etc.
 
 export const Footer = () => {
+  const siteConfig = SITE_CONFIG as SiteConfig;
+
   interface NestedList {
     label: string;
     routes?: FooterItem[];
@@ -136,61 +139,53 @@ export const Footer = () => {
     >
       <Stack p={6} alignItems={{ base: 'center', md: 'start' }} margin='0 auto'>
         <Box w='100%'>
-          <Logo href={NAVIGATION?.href} isLazy={true} />
+          <Logo href='/' isLazy={true} />
           <SimpleGrid
             minChildWidth={{
               base: '100%',
-              md: `${100 / (NAVIGATION?.routes?.length || 1)}%`,
-              xl: `${1000 / (NAVIGATION?.routes?.length || 1)}px`,
+              md: `${100 / (siteConfig.footer.sections.length || 1)}%`,
+              xl: `${1000 / (siteConfig.footer.sections.length || 1)}px`,
             }}
             maxW='6xl'
             w='100%'
           >
-            {(NAVIGATION?.routes as FooterProps['navigation']['routes'])?.map(
-              (section, i) => {
-                return (
-                  <Box key={i} flex={i === 0 ? 2 : 1}>
-                    {section.label && (
-                      <LinksHeading mt={8}>{section.label}</LinksHeading>
-                    )}
-                    <UnorderedList ml={0} my={4}>
-                      {section.routes &&
-                        section.routes.map(
-                          ({ href, label, routes, isExternal }) => {
-                            return (
-                              <ListItem
-                                key={label}
-                                alignItems='flex-start'
-                                mt={1}
-                                mb={3}
-                                _hover={{
-                                  svg: {
-                                    opacity: '100%',
-                                    transform: 'translateX(0)',
-                                    transition: 'all .3s ease',
-                                  },
-                                }}
-                              >
-                                {href ? (
-                                  <FooterLink
-                                    href={href}
-                                    isExternal={isExternal ?? false}
-                                    variant='ghost'
-                                  >
-                                    {label}
-                                  </FooterLink>
-                                ) : (
-                                  <NestedList label={label} routes={routes} />
-                                )}
-                              </ListItem>
-                            );
-                          },
-                        )}
-                    </UnorderedList>
-                  </Box>
-                );
-              },
-            )}
+            {siteConfig.footer.sections.map((section, i) => {
+              return (
+                <Box key={i} flex={i === 0 ? 2 : 1}>
+                  {section.label && (
+                    <LinksHeading mt={8}>{section.label}</LinksHeading>
+                  )}
+                  <UnorderedList ml={0} my={4}>
+                    {section.routes &&
+                      section.routes.map(({ href, label, isExternal }) => {
+                        return (
+                          <ListItem
+                            key={label}
+                            alignItems='flex-start'
+                            mt={1}
+                            mb={3}
+                            _hover={{
+                              svg: {
+                                opacity: '100%',
+                                transform: 'translateX(0)',
+                                transition: 'all .3s ease',
+                              },
+                            }}
+                          >
+                            <FooterLink
+                              href={href}
+                              isExternal={isExternal ?? false}
+                              variant='ghost'
+                            >
+                              {label}
+                            </FooterLink>
+                          </ListItem>
+                        );
+                      })}
+                  </UnorderedList>
+                </Box>
+              );
+            })}
           </SimpleGrid>
         </Box>
       </Stack>
@@ -211,8 +206,8 @@ export const Footer = () => {
             flexWrap='wrap'
             flex={1}
           >
-            {NAVIGATION && NAVIGATION.contact && (
-              <FooterSocialLinks routes={NAVIGATION.contact.routes} />
+            {siteConfig.footer.contact && (
+              <FooterSocialLinks routes={siteConfig.footer.contact.routes} />
             )}
           </Flex>
           <Flex
@@ -221,10 +216,10 @@ export const Footer = () => {
             flex={1}
             justifyContent={{ base: 'flex-start', md: 'flex-end' }}
           >
-            {NAVIGATION && NAVIGATION?.lastUpdate && (
+            {siteConfig.footer.lastUpdate && (
               <FooterSocialLinks
                 routes={[
-                  ...NAVIGATION.lastUpdate,
+                  ...siteConfig.footer.lastUpdate,
                   {
                     label:
                       lastDataHarvest[0]?.label || 'Data harvested: 00-00-0000',
