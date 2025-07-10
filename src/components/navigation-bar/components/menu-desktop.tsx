@@ -17,7 +17,7 @@ import { TransformedNavigationMenu } from '../types';
 const DesktopSubNavItem = ({
   label,
   href,
-  subLabel,
+  description,
   isExternal,
 }: TransformedNavigationMenu) => {
   return (
@@ -48,7 +48,7 @@ const DesktopSubNavItem = ({
             {label}
           </Text>
           <Text fontSize='sm' color='text.body' lineHeight='short' pr={1}>
-            {subLabel}
+            {description}
           </Text>
         </Box>
         <Flex

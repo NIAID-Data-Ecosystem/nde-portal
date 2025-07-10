@@ -43,6 +43,7 @@ export const buildNavigationFromConfig = (config: SiteConfig) => {
           routes: item.routes.map(route => {
             return {
               ...config.pages[route.page]?.nav,
+              href: route.page,
               env: config.pages[route.page]?.env,
             } as TransformedNavigationMenu;
           }),
