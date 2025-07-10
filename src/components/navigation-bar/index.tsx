@@ -11,12 +11,12 @@ import {
 } from '@chakra-ui/react';
 import { FaBars, FaXmark } from 'react-icons/fa6';
 import dynamic from 'next/dynamic';
-import NAVIGATION from './routes.json';
+import SITE_CONFIG from 'configs/site.config.json';
 import { Logo } from 'src/components/logos';
 import { DesktopNavItem } from './components/desktop-nav-item';
 import { useRouter } from 'next/router';
-import { filterRoutesByEnv } from './helpers';
-import { RouteProps } from './types';
+import { buildNavigationFromConfig, filterRoutesByEnv } from './helpers';
+import { SiteConfig } from '../page-container/types';
 
 const MobileSubMenu = dynamic(
   () => import('./components/menu-mobile').then(mod => mod.MobileSubMenu),
@@ -33,8 +33,11 @@ export const Navigation: React.FC<FlexProps> = props => {
   });
   const router = useRouter();
 
+  // Build navigation from config
+  const navigationData = buildNavigationFromConfig(SITE_CONFIG as SiteConfig);
+
   const navigationFilteredByEnvironment = filterRoutesByEnv(
-    NAVIGATION as RouteProps,
+    navigationData,
     process.env.NEXT_PUBLIC_APP_ENV || '',
   );
 
@@ -61,7 +64,7 @@ export const Navigation: React.FC<FlexProps> = props => {
         alignItems={{ base: 'center', md: 'center' }}
       >
         <Flex alignItems='center' py={4} flex={{ base: 1, md: 'auto' }}>
-          <Logo href={NAVIGATION?.href} />
+          <Logo href='/' />
         </Flex>
         {/* For desktop */}
         {isLargerThanMd && (
@@ -74,7 +77,7 @@ export const Navigation: React.FC<FlexProps> = props => {
             justifyContent='flex-end'
             sx={{ '>a': { px: 4, py: 2 } }}
           >
-            {navigationFilteredByEnvironment?.routes?.map(navItem => (
+            {navigationFilteredByEnvironment?.map(navItem => (
               <DesktopNavItem
                 key={navItem.label}
                 isActive={
@@ -88,7 +91,7 @@ export const Navigation: React.FC<FlexProps> = props => {
         )}
 
         {/* For mobile / tablet */}
-        {navigationFilteredByEnvironment?.routes && (
+        {navigationFilteredByEnvironment && (
           <IconButton
             display={isLargerThanMd ? 'none' : 'flex'}
             aria-label={

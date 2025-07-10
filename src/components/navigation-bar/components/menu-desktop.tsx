@@ -11,7 +11,7 @@ import {
   Icon,
 } from '@chakra-ui/react';
 import { FaAngleRight } from 'react-icons/fa6';
-import { RouteProps } from '..';
+import { TransformedNavigationMenu } from '../types';
 
 // Desktop Navigation sub menu for nested links
 const DesktopSubNavItem = ({
@@ -19,7 +19,7 @@ const DesktopSubNavItem = ({
   href,
   subLabel,
   isExternal,
-}: RouteProps) => {
+}: TransformedNavigationMenu) => {
   return (
     <Link
       role='tab'
@@ -74,7 +74,7 @@ const DesktopSubNavItem = ({
   );
 };
 
-export const DesktopSubNav = ({ routes }: { routes: RouteProps[] }) => {
+export const DesktopSubNav = ({ routes }: TransformedNavigationMenu) => {
   if (!routes) return <></>;
   return (
     <PopoverContent

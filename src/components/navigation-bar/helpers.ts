@@ -1,14 +1,17 @@
-import { RouteProps } from './types';
+import { NavigationItem, SiteConfig } from '../page-container/types';
+import { TransformedNavigationMenu } from './types';
 
 export function filterRoutesByEnv(
-  navigation: RouteProps,
+  navigation: TransformedNavigationMenu[],
   environment: string,
-): RouteProps {
+): TransformedNavigationMenu[] {
   // If no environment is provided, return the original navigation
   if (!environment) {
     return navigation;
   }
-  function filter(routes: RouteProps[]): RouteProps[] {
+  function filter(
+    routes: TransformedNavigationMenu[],
+  ): TransformedNavigationMenu[] {
     return routes
       .filter(route => {
         // Remove routes with an env array that doesn't include the current env
@@ -27,8 +30,34 @@ export function filterRoutesByEnv(
       });
   }
 
-  return {
-    ...navigation,
-    routes: navigation?.routes && filter(navigation.routes),
-  };
+  return navigation && filter(navigation);
 }
+// Helper function to build navigation structure from config
+export const buildNavigationFromConfig = (config: SiteConfig) => {
+  const navigationRoutes = config.navigation.primary.reduce(
+    (navRoutes, item) => {
+      if (item.routes) {
+        // This is a parent with children
+        navRoutes.push({
+          label: item.label,
+          routes: item.routes.map(route => {
+            return { ...config.pages[route.page]?.nav } as NavigationItem;
+          }),
+        });
+      } else if (item.page) {
+        // This is a direct route
+        const pageData = {
+          ...config.pages[item.page]?.nav,
+          label: item.label,
+          href: item.page,
+        } as NavigationItem;
+
+        pageData && navRoutes.push(pageData);
+      }
+      return navRoutes;
+    },
+    [] as TransformedNavigationMenu[],
+  );
+
+  return navigationRoutes;
+};

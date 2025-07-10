@@ -1,9 +1,25 @@
-export interface RouteProps {
+export interface TransformedNavigationMenu extends NavigationItem {
+  routes?: Array<TransformedNavigationMenu>;
+}
+
+export interface NavigationItem {
   label: string;
-  subLabel?: string;
-  routes?: Array<RouteProps>;
   href?: string;
+  subLabel?: string;
   env?: string[];
   isExternal?: boolean;
-  isActive?: boolean;
+}
+
+export interface NavigationRoute {
+  page: string;
+}
+
+export interface NavigationSection {
+  label: string;
+  page?: string;
+  routes?: NavigationRoute[];
+}
+
+export interface Navigation {
+  primary: NavigationSection[];
 }
