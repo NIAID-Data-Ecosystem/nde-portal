@@ -1,12 +1,11 @@
 export interface TransformedNavigationMenu extends NavigationItem {
+  env?: string[];
   routes?: Array<TransformedNavigationMenu>;
 }
 
 export interface NavigationItem {
   label: string;
-  href?: string;
   subLabel?: string;
-  env?: string[];
   isExternal?: boolean;
 }
 

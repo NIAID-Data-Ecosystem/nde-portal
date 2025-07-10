@@ -1,9 +1,8 @@
 {
   "site": {
-    "name": "NIAID Data Discovery Portal",
-    "href": "/",
+    "name": "NIAID Data Ecosystem Discovery Portal",
     "seo": {
-      "title": "NIAID Data Ecosystem Discovery Portal",
+      "title": "NIAID Data Discovery Portal",
       "description": "Find and access allergic, infectious and immune-mediated disease data by searching across biomedical data repositories with the NIAID Data Discovery Portal",
       "keywords": [
         "omics",
@@ -22,204 +21,159 @@
   "pages": {
     "/": {
       "seo": {
-        "title": "Home | NIAID Data Ecosystem Discovery Portal",
-        "description": "Welcome to the NIAID Data Ecosystem Discovery Portal - your gateway to biomedical research data and resources",
+        "title": "Home",
+        "description": "Find and access allergic, infectious and immune-mediated disease data by searching across biomedical data repositories with the NIAID Data Discovery Portal",
         "keywords": [
-          "NIAID",
-          "data portal",
-          "biomedical research",
-          "home"
+          "omics",
+          "data",
+          "infectious disease",
+          "epidemiology",
+          "clinical trial",
+          "immunology",
+          "bioinformatics",
+          "surveillance",
+          "search",
+          "repository"
         ]
       },
       "nav": {
-        "label": "Home",
-        "href": "/"
+        "label": "Home"
       }
     },
     "/search": {
       "seo": {
-        "title": "Search | NIAID Data Ecosystem Discovery Portal",
-        "description": "Search for biomedical research resources using basic queries in the NIAID Data Ecosystem",
-        "keywords": [
-          "search",
-          "data discovery",
-          "biomedical resources",
-          "NIAID"
-        ]
+        "title": "Search",
+        "description": "NDE Discovery Portal - Search results list based on query."
       },
       "nav": {
         "label": "Search",
-        "subLabel": "Search for resources using basic queries",
-        "href": "/search"
+        "subLabel": "Search for resources using basic queries"
       }
     },
     "/advanced-search": {
       "seo": {
-        "title": "Advanced Search | NIAID Data Ecosystem Discovery Portal",
-        "description": "Build complex queries to find specific biomedical research data and resources",
-        "keywords": [
-          "advanced search",
-          "complex queries",
-          "data discovery",
-          "NIAID"
-        ]
+        "title": "Advanced Search",
+        "description": "Advanced Search page."
       },
       "nav": {
         "label": "Advanced Search",
-        "subLabel": "Build more complex queries",
-        "href": "/advanced-search"
+        "subLabel": "Build more complex queries"
       }
     },
     "/about": {
       "seo": {
-        "title": "About | NIAID Data Ecosystem Discovery Portal",
-        "description": "Learn about the purpose of the NIAID Data Ecosystem Discovery Portal and how to reach us",
-        "keywords": [
-          "about",
-          "NIAID",
-          "data ecosystem",
-          "contact information"
-        ]
+        "title": "About",
+        "description": "About page."
       },
       "nav": {
         "label": "About",
-        "subLabel": "Learn about the purpose of the portal and how to reach us",
-        "href": "/about"
+        "subLabel": "Learn about the purpose of the portal and how to reach us"
       }
     },
     "/updates": {
       "seo": {
-        "title": "Updates | NIAID Data Ecosystem Discovery Portal",
-        "description": "Latest updates and news from the NIAID Data Ecosystem",
-        "keywords": [
-          "updates",
-          "news",
-          "NIAID",
-          "data ecosystem"
-        ]
+        "title": "Updates",
+        "description": "Updates for the NIAID Data Discovery Portal."
       },
       "nav": {
         "label": "Updates",
-        "subLabel": "Updates from the NIAID Data Ecosystem",
-        "href": "/updates"
+        "subLabel": "Updates from the NIAID Data Ecosystem"
       }
     },
     "/changelog": {
       "seo": {
-        "title": "Changelog | NIAID Data Ecosystem Discovery Portal",
-        "description": "Log of updates and changes to the NIAID Data Ecosystem Discovery Portal",
-        "keywords": [
-          "changelog",
-          "updates",
-          "portal changes",
-          "NIAID"
-        ]
+        "title": "Changelog",
+        "description": "Log of changes to the NDE System."
       },
       "nav": {
         "label": "Changelog",
-        "subLabel": "Log of updates to the NIAID Data Ecosystem Discovery Portal",
-        "href": "/changelog"
+        "subLabel": "Log of updates to the NIAID Data Ecosystem Discovery Portal"
       }
     },
     "/knowledge-center": {
       "seo": {
-        "title": "Knowledge Center | NIAID Data Ecosystem Discovery Portal",
-        "description": "Learn how to use the NIAID Data Ecosystem Discovery Portal effectively",
-        "keywords": [
-          "knowledge center",
-          "tutorials",
-          "how to use",
-          "portal guide"
-        ]
+        "title": "Knowledge Center",
+        "description": "Documentation for the portal."
       },
       "nav": {
         "label": "Knowledge Center",
-        "subLabel": "Learn how to use the portal",
-        "href": "/knowledge-center"
+        "subLabel": "Learn how to use the portal"
       }
     },
     "/sources": {
       "seo": {
-        "title": "Sources | NIAID Data Ecosystem Discovery Portal",
-        "description": "Latest information about the data sources included in the NIAID Data Ecosystem",
-        "keywords": [
-          "data sources",
-          "repositories",
-          "databases",
-          "NIAID"
-        ]
+        "title": "Sources",
+        "description": "NDE Discovery Portal - API data sources."
       },
       "nav": {
         "label": "Sources",
-        "subLabel": "Latest information about the data sources included",
-        "href": "/sources"
+        "subLabel": "Latest information about the data sources included"
       }
     },
     "/program-collections": {
       "seo": {
-        "title": "Programs | NIAID Data Ecosystem Discovery Portal",
-        "description": "Find resources generated by NIAID-supported programs and networks",
-        "keywords": [
-          "programs",
-          "collections",
-          "NIAID-supported",
-          "research networks"
-        ]
+        "title": "Programs",
+        "description": "Appendix of program collections available in the NIAID Data Ecosystem."
       },
       "nav": {
         "label": "Programs",
-        "subLabel": "Find resources generated by NIAID-supported programs and networks",
-        "href": "/program-collections"
+        "subLabel": "Find resources generated by NIAID-supported programs and networks"
       }
     },
     "/diseases": {
       "seo": {
-        "title": "Diseases | NIAID Data Ecosystem Discovery Portal",
-        "description": "Explore resources for NIAID priority health conditions and diseases",
-        "keywords": [
-          "diseases",
-          "health conditions",
-          "infectious diseases",
-          "allergy",
-          "immunology"
-        ]
+        "title": "Diseases",
+        "description": "Spotlight on a disease topic."
       },
       "nav": {
         "label": "Diseases",
-        "subLabel": "Explore resources for NIAID priority health conditions",
-        "href": "/diseases"
+        "subLabel": "Explore resources for NIAID priority health conditions"
       }
+    },
+    "/features": {
+      "seo": {
+        "title": "Features",
+        "description": "Featured content for the portal."
+      },
+      "nav": {
+        "label": "Features",
+        "subLabel": "Featured content for the portal."
+      },
+      "env": ["development", "staging"]
     },
     "/ontology-browser": {
       "seo": {
-        "title": "Ontology Browser | NIAID Data Ecosystem Discovery Portal",
-        "description": "Explore search results in a novel way using the ontology browser",
+        "title": "Ontology Browser",
+        "description": "Explore and search through ontologies related to biomedical data, including taxonomy and ontology terms.",
         "keywords": [
           "ontology",
-          "browser",
-          "data exploration",
-          "search results"
+          "taxonomy",
+          "biomedical data",
+          "data discovery"
         ]
       },
       "nav": {
         "label": "Ontology Browser",
-        "subLabel": "Explore search results in a novel way",
-        "href": "/ontology-browser",
-        "env": [
-          "development",
-          "staging"
-        ]
+        "subLabel": "Explore search results in a novel way"
+      },
+      "env": ["dev", "staging"]
+    },
+    "/resources": {
+      "seo": {
+        "title": "Resource",
+        "description": "NDE Discovery Portal - Detailed resource information."
       }
     },
     "/disclaimer": {
       "seo": {
-        "title": "Disclaimer | NIAID Data Ecosystem Discovery Portal",
-        "description": "Legal disclaimer for the NIAID Data Ecosystem Discovery Portal",
-        "keywords": [
-          "disclaimer",
-          "legal",
-          "terms"
-        ]
+        "title": "Disclaimer",
+        "description": "An overview of the NIAID Data Ecosystem Discovery Portal endorsement disclaimers and information disclaimers."
+      }
+    },
+    "/faq": {
+      "seo": {
+        "title": "Frequently Asked Questions",
+        "description": "Frequently asked questions."
       }
     }
   },

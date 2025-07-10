@@ -1,4 +1,4 @@
-import { NavigationItem, SiteConfig } from '../page-container/types';
+import { SiteConfig } from '../page-container/types';
 import { TransformedNavigationMenu } from './types';
 
 export function filterRoutesByEnv(
@@ -41,7 +41,10 @@ export const buildNavigationFromConfig = (config: SiteConfig) => {
         navRoutes.push({
           label: item.label,
           routes: item.routes.map(route => {
-            return { ...config.pages[route.page]?.nav } as NavigationItem;
+            return {
+              ...config.pages[route.page]?.nav,
+              env: config.pages[route.page]?.env,
+            } as TransformedNavigationMenu;
           }),
         });
       } else if (item.page) {
@@ -50,7 +53,7 @@ export const buildNavigationFromConfig = (config: SiteConfig) => {
           ...config.pages[item.page]?.nav,
           label: item.label,
           href: item.page,
-        } as NavigationItem;
+        } as TransformedNavigationMenu;
 
         pageData && navRoutes.push(pageData);
       }

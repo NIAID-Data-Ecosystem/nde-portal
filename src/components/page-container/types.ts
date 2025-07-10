@@ -4,16 +4,21 @@ import { Navigation, NavigationItem } from '../navigation-bar/types';
 export interface SeoMetadata {
   title: string;
   description: string;
-  keywords: string[];
+  keywords?: string[];
   //add url
 }
 
 export interface PageConfig {
   seo: SeoMetadata;
   nav?: NavigationItem;
+  env?: string[];
 }
 
 export interface SiteConfig {
+  site: {
+    name: string;
+    seo: SeoMetadata;
+  };
   pages: Record<string, PageConfig>;
   navigation: Navigation;
   footer: Footer;
