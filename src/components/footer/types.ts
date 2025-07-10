@@ -1,8 +1,9 @@
 export interface FooterRoute {
   label: string;
-  href: string;
   type?: 'email' | 'github';
+  href: string;
   isExternal?: boolean;
+  routes?: Array<FooterRoute>;
 }
 
 export interface FooterSection {

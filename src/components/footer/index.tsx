@@ -16,6 +16,7 @@ import SITE_CONFIG from 'configs/site.config.json';
 import { FooterLink, FooterSocialLinks } from './components/link';
 import { useMetadata } from 'src/hooks/api/useMetadata';
 import { SiteConfig } from '../page-container/types';
+import { FooterRoute } from './types';
 
 export interface ListHeaderProps extends TextProps {}
 
@@ -34,24 +35,6 @@ const LinksHeading: React.FC<ListHeaderProps> = ({ children, ...props }) => {
   );
 };
 
-export interface FooterItem {
-  label: string;
-  type?: string;
-  routes?: FooterItem[];
-  href?: string;
-  subLabel?: string;
-  isExternal?: boolean;
-}
-
-export interface FooterProps {
-  navigation: {
-    href: string;
-    contact: FooterItem;
-    routes: FooterItem[];
-    lastUpdate?: FooterItem[];
-  };
-}
-
 // Contact Links such as social media, email etc.
 
 export const Footer = () => {
@@ -59,7 +42,7 @@ export const Footer = () => {
 
   interface NestedList {
     label: string;
-    routes?: FooterItem[];
+    routes?: FooterRoute[];
     listProps?: ListProps;
     headingProps?: HeadingProps;
   }
