@@ -5,8 +5,11 @@ import { useQuery } from '@tanstack/react-query';
 import { Error } from 'src/components/error';
 import { PageContainer } from 'src/components/page-container';
 import { fetchSearchResults } from 'src/utils/api';
-import { fetchDiseaseBySlug, fetchAllDiseasePages } from 'src/utils/api/strapi';
 import { FetchSearchResultsResponse } from 'src/utils/api/types';
+import {
+  fetchDiseaseBySlug,
+  fetchAllDiseasePages,
+} from 'src/views/diseases/helpers';
 import { TableOfContents } from 'src/views/diseases/toc';
 import { DiseasePageProps } from 'src/views/diseases/types';
 import { DiseaseContent } from 'src/views/diseases/disease';
