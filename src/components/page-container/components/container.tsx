@@ -8,6 +8,7 @@ import { Breadcrumbs } from './breadcrumbs';
 import { Banner } from './banner';
 import { SearchBarSection } from './search-bar-section';
 import { SeoMetaFields, SeoMetaFieldsProps } from './seo-meta-fields';
+import { useBreadcrumbs } from '../hooks/useBreadcrumbs';
 
 export interface NoticeProps {
   id: number | string;
@@ -32,6 +33,8 @@ export const PageContainer: React.FC<PageContainerProps> = ({
   includeSearchBar = false,
   ...props
 }) => {
+  const breadcrumbs = useBreadcrumbs(meta.title);
+
   // Fetch Notices from STRAPI API.
   const isProd = process.env.NEXT_PUBLIC_APP_ENV === 'production';
   const { data: notices } = useQuery<NoticeProps[]>({
@@ -96,7 +99,7 @@ export const PageContainer: React.FC<PageContainerProps> = ({
           </Stack>
 
           {/* <!-- Breadcrumbs --> */}
-          <Breadcrumbs />
+          <Breadcrumbs segments={breadcrumbs} />
 
           {/* <!-- Search bar for datasets across site --> */}
           {includeSearchBar && <SearchBarSection />}

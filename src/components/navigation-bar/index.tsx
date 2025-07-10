@@ -15,6 +15,8 @@ import NAVIGATION from './routes.json';
 import { Logo } from 'src/components/logos';
 import { DesktopNavItem } from './components/desktop-nav-item';
 import { useRouter } from 'next/router';
+import { filterRoutesByEnv } from './helpers';
+import { RouteProps } from './types';
 
 const MobileSubMenu = dynamic(
   () => import('./components/menu-mobile').then(mod => mod.MobileSubMenu),
@@ -23,48 +25,6 @@ const MobileSubMenu = dynamic(
   },
 );
 
-export interface RouteProps {
-  label: string;
-  subLabel?: string;
-  routes?: Array<RouteProps>;
-  href?: string;
-  env?: string[];
-  isExternal?: boolean;
-  isActive?: boolean;
-}
-
-export function filterRoutesByEnv(
-  navigation: RouteProps,
-  environment: string,
-): RouteProps {
-  // If no environment is provided, return the original navigation
-  if (!environment) {
-    return navigation;
-  }
-  function filter(routes: RouteProps[]): RouteProps[] {
-    return routes
-      .filter(route => {
-        // Remove routes with an env array that doesn't include the current env
-        if (route.env && !route.env.includes(environment)) {
-          return false;
-        }
-        return true;
-      })
-      .map(route => {
-        // If nested routes exist, filter them too
-        if (route.routes) {
-          const filteredNestedRoutes = filter(route.routes);
-          return { ...route, routes: filteredNestedRoutes };
-        }
-        return route;
-      });
-  }
-
-  return {
-    ...navigation,
-    routes: navigation?.routes && filter(navigation.routes),
-  };
-}
 export const Navigation: React.FC<FlexProps> = props => {
   const { isOpen, onToggle } = useDisclosure();
   const [isLargerThanMd] = useMediaQuery('(min-width: 54rem)', {

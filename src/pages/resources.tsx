@@ -116,7 +116,7 @@ const ResourcePage: NextPage = () => {
         //   }`,
         // }}
         meta={{
-          title: `${data?.name ? data?.name : 'Resource'}`,
+          title: 'Resource',
           description: 'NDE Discovery Portal - Detailed resource information.',
           url: `${process.env.NEXT_PUBLIC_BASE_URL}/resources?id=${
             Array.isArray(id) ? id[0].toLowerCase() : id?.toLowerCase()
