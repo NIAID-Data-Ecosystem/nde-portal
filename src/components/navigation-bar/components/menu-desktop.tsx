@@ -74,7 +74,11 @@ const DesktopSubNavItem = ({
   );
 };
 
-export const DesktopSubNav = ({ routes }: TransformedNavigationMenu) => {
+export const DesktopSubNav = ({
+  routes,
+}: {
+  routes: TransformedNavigationMenu[];
+}) => {
   if (!routes) return <></>;
   return (
     <PopoverContent
