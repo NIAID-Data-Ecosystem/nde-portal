@@ -151,7 +151,7 @@ export const TableOfContents = () => {
                           borderRadius='base'
                           width='100%'
                           height='auto'
-                          src={page.image.url}
+                          src={`${process.env.NEXT_PUBLIC_STRAPI_API_URL}${page.image.url}`}
                           alt={page.image.alternativeText}
                           objectFit='contain'
                         />
