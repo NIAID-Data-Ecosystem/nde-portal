@@ -33,7 +33,7 @@ export const PageContainer: React.FC<PageContainerProps> = ({
   includeSearchBar = false,
   ...props
 }) => {
-  const breadcrumbs = useBreadcrumbs(meta.title);
+  const breadcrumbs = useBreadcrumbs();
 
   // Fetch Notices from STRAPI API.
   const isProd = process.env.NEXT_PUBLIC_APP_ENV === 'production';

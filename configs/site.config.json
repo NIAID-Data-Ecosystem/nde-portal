@@ -1,6 +1,7 @@
 {
   "site": {
     "name": "NIAID Data Ecosystem Discovery Portal",
+    "previewImage": "/assets/preview.png",
     "seo": {
       "title": "NIAID Data Discovery Portal",
       "description": "Find and access allergic, infectious and immune-mediated disease data by searching across biomedical data repositories with the NIAID Data Discovery Portal",
@@ -40,6 +41,7 @@
         "label": "Home"
       }
     },
+
     "/search": {
       "seo": {
         "title": "Search",
@@ -83,7 +85,8 @@
     "/changelog": {
       "seo": {
         "title": "Changelog",
-        "description": "Log of changes to the NDE System."
+        "description": "Log of changes to the NDE System.",
+        "preventIndexing": true
       },
       "nav": {
         "label": "Changelog",
@@ -167,13 +170,22 @@
     "/disclaimer": {
       "seo": {
         "title": "Disclaimer",
-        "description": "An overview of the NIAID Data Ecosystem Discovery Portal endorsement disclaimers and information disclaimers."
+        "description": "An overview of the NIAID Data Ecosystem Discovery Portal endorsement disclaimers and information disclaimers.",
+        "preventIndexing": true
       }
     },
     "/faq": {
       "seo": {
         "title": "Frequently Asked Questions",
         "description": "Frequently asked questions."
+      }
+    },
+    "/404": {
+      "seo": {
+        "title": "404 — Page Not Found",
+        "description": "404 Error: Page Not Found.",
+        "keywords": ["404", "page not found", "error"],
+        "preventIndexing": true
       }
     }
   },
