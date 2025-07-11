@@ -3,7 +3,7 @@ import { GetStaticProps, NextPage } from 'next';
 import { Flex, Text } from '@chakra-ui/react';
 import { useQuery } from '@tanstack/react-query';
 import { Error } from 'src/components/error';
-import { PageContainer } from 'src/components/page-container';
+import { getPageSeoConfig, PageContainer } from 'src/components/page-container';
 import { fetchSearchResults } from 'src/utils/api';
 import { FetchSearchResultsResponse } from 'src/utils/api/types';
 import { TableOfContents } from 'src/views/diseases/toc';
@@ -85,14 +85,16 @@ const DiseasePage: NextPage<{
     enabled: params.q !== undefined && !!slug,
   });
 
+  const pageTitle = topic || 'Diseases';
+
   return (
     <PageContainer
       id='disease-page'
-      meta={{
-        title: topic ? topic : 'Diseases',
-        description: 'Spotlight on a disease topic.',
+      meta={getPageSeoConfig('/diseases', {
+        title: pageTitle,
         url: `${process.env.NEXT_PUBLIC_BASE_URL}/diseases/${slug?.[0] || ''}`,
-      }}
+      })}
+      breadcrumbsTitle={pageTitle}
       px={0}
       py={0}
     >

@@ -7,8 +7,11 @@ import React, { useEffect, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
 import remarkGfm from 'remark-gfm';
-
-import { PageContainer, PageContent } from 'src/components/page-container';
+import {
+  getPageSeoConfig,
+  PageContainer,
+  PageContent,
+} from 'src/components/page-container';
 import { Error } from 'src/components/error';
 
 interface AboutContent {
@@ -71,11 +74,7 @@ const About: NextPage<AboutProps> = props => {
 
   return (
     <PageContainer
-      meta={{
-        title: 'About',
-        description: 'About page.',
-        url: `${process.env.NEXT_PUBLIC_BASE_URL}/about`,
-      }}
+      meta={getPageSeoConfig('/about')}
       px={0}
       py={0}
       includeSearchBar

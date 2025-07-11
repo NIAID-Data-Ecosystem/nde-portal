@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
-import { usePathname } from 'next/navigation';
 import { useRouter } from 'next/router';
 import { formatSlug, getLabelFromRoute } from '../helpers';
+import { usePathname } from 'next/navigation';
 
 export interface BreadcrumbSegment {
   name: string;
@@ -10,9 +10,11 @@ export interface BreadcrumbSegment {
 }
 
 export const useBreadcrumbs = (pageTitle?: string): BreadcrumbSegment[] => {
-  const pathname = usePathname();
   const router = useRouter();
-  const [fallbackTitle, setFallbackTitle] = useState<string | null>(null);
+  const pathname = usePathname();
+
+  // Use a state to hold the fallback title in case pageTitle is not provided
+  const [fallbackTitle, setFallbackTitle] = useState<string>('');
 
   useEffect(() => {
     if (!pageTitle && typeof document !== 'undefined') {
@@ -53,7 +55,7 @@ export const useBreadcrumbs = (pageTitle?: string): BreadcrumbSegment[] => {
       // Use pageTitle if provided, otherwise use fallbackTitle or segment name
       name:
         idx === arr.length - 1
-          ? pageTitle || fallbackTitle || segment.name
+          ? pageTitle || segment.name || fallbackTitle
           : segment.name,
       isCurrentPage: idx === arr.length - 1,
     }));

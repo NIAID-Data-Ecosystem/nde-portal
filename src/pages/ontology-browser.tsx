@@ -1,7 +1,11 @@
 import { useState } from 'react';
 import { Flex, VStack } from '@chakra-ui/react';
 import type { NextPage } from 'next';
-import { PageContainer, PageContent } from 'src/components/page-container';
+import {
+  getPageSeoConfig,
+  PageContainer,
+  PageContent,
+} from 'src/components/page-container';
 import { OntologyBrowserSearch } from 'src/views/ontology-browser/components/search';
 import { OntologyLineageItemWithCounts } from 'src/views/ontology-browser/types';
 import { OntologySearchList } from 'src/views/ontology-browser/components/ontology-search-list';
@@ -19,13 +23,7 @@ const OntologyBrowserPage: NextPage = () => {
 
   return (
     <PageContainer
-      meta={{
-        title: 'Ontology Browser',
-        description:
-          'Explore and search through ontologies related to biomedical data, including taxonomy and ontology terms.',
-        keywords: 'ontology, taxonomy, biomedical data, data discovery',
-        url: `${process.env.NEXT_PUBLIC_BASE_URL}/ontology-browser`,
-      }}
+      meta={getPageSeoConfig('/ontology-browser')}
       px={0}
       py={0}
       includeSearchBar

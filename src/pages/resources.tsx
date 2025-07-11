@@ -1,7 +1,11 @@
 import React, { useEffect } from 'react';
 import type { NextPage } from 'next';
 import NextLink from 'next/link';
-import { PageContainer, PageContent } from 'src/components/page-container';
+import {
+  getPageSeoConfig,
+  PageContainer,
+  PageContent,
+} from 'src/components/page-container';
 import { useRouter } from 'next/router';
 import { useQuery } from '@tanstack/react-query';
 import { fetchSearchResults, getResourceById } from 'src/utils/api';
@@ -107,21 +111,12 @@ const ResourcePage: NextPage = () => {
   return (
     <>
       <PageContainer
-        // meta={{
-        //   title: `${data?.name ? data?.name : 'Resource'}`,
-        //   description: data?.description?.substring(0, 155) || '',
-        //   keywords: data?.keywords?.slice(0, 10).join(', ') || '',
-        //   url: `${process.env.NEXT_PUBLIC_BASE_URL}/resources?id=${
-        //     Array.isArray(id) ? id[0].toLowerCase() : id?.toLowerCase()
-        //   }`,
-        // }}
-        meta={{
-          title: 'Resource',
-          description: 'NDE Discovery Portal - Detailed resource information.',
+        meta={getPageSeoConfig('/resources', {
+          title: `${data?.name ? data?.name : 'Resource'}`,
           url: `${process.env.NEXT_PUBLIC_BASE_URL}/resources?id=${
             Array.isArray(id) ? id[0].toLowerCase() : id?.toLowerCase()
           }`,
-        }}
+        })}
         includeSearchBar
       >
         <PageContent>

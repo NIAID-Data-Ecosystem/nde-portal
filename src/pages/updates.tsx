@@ -15,7 +15,11 @@ import {
 } from '@chakra-ui/react';
 import { Link } from 'src/components/link';
 import type { NextPage } from 'next';
-import { PageContainer, PageContent } from 'src/components/page-container';
+import {
+  getPageSeoConfig,
+  PageContainer,
+  PageContent,
+} from 'src/components/page-container';
 import { MDXRemoteSerializeResult } from 'next-mdx-remote';
 import { Error } from 'src/components/error';
 import axios from 'axios';
@@ -167,15 +171,7 @@ const Updates: NextPage<UpdatesProps> = props => {
   }, []);
 
   return (
-    <PageContainer
-      meta={{
-        title: 'Updates',
-        description: 'Updates for the NIAID Data Discovery Portal.',
-        url: `${process.env.NEXT_PUBLIC_BASE_URL}/updates`,
-      }}
-      px={0}
-      py={0}
-    >
+    <PageContainer meta={getPageSeoConfig('/updates')} px={0} py={0}>
       <HeroBannerContainer
         justifyContent={{ base: 'flex-start', md: 'center' }}
         bgImg='/assets/news-01.jpg'

@@ -25,16 +25,17 @@ export interface NoticeProps {
 interface PageContainerProps extends FlexProps {
   meta: SeoMetaFieldsProps;
   includeSearchBar?: boolean;
+  breadcrumbsTitle?: string; // optional title for breadcrumbs, if not provided will use the site config
 }
 
 export const PageContainer: React.FC<PageContainerProps> = ({
   children,
   meta,
+  breadcrumbsTitle,
   includeSearchBar = false,
   ...props
 }) => {
-  const breadcrumbs = useBreadcrumbs();
-
+  const breadcrumbs = useBreadcrumbs(breadcrumbsTitle);
   // Fetch Notices from STRAPI API.
   const isProd = process.env.NEXT_PUBLIC_APP_ENV === 'production';
   const { data: notices } = useQuery<NoticeProps[]>({

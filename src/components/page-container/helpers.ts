@@ -1,27 +1,18 @@
-import ROUTES_CONFIG from 'src/components/navigation-bar/routes.json';
-import { RouteProps } from '../navigation-bar/types';
+import CONFIG from 'configs/site.config.json';
+import { SiteConfig } from './types';
 
 /**
  * Recursively searches for a route label based on the provided path.
  *
  * @param path - The path to search for.
- * @param routes - The array of route objects to search within.
+ * @param config - The array of route objects to search within.
  * @returns The label of the route if found, otherwise undefined.
  */
 export const getLabelFromRoute = (
   path: string,
-  routes: RouteProps[] = ROUTES_CONFIG.routes,
+  config: SiteConfig['pages'] = CONFIG.pages,
 ): string | undefined => {
-  for (const route of routes) {
-    if (route.href === path) {
-      return route.label;
-    }
-    if (route.routes) {
-      const found = getLabelFromRoute(path, route.routes);
-      if (found) return found;
-    }
-  }
-  return undefined;
+  return config[path]?.nav?.label || config[path]?.seo?.title || '';
 };
 
 /**

@@ -86,7 +86,10 @@ export const Breadcrumbs: React.FC<BreadcrumbsProps> = ({ segments }) => {
         {segments.map((path, idx) => {
           const isCurrentPage = idx === segments.length - 1;
           return (
-            <ChakraBreadcrumbItem key={path.name} isCurrentPage={isCurrentPage}>
+            <ChakraBreadcrumbItem
+              key={path.name + idx}
+              isCurrentPage={isCurrentPage}
+            >
               <BreadcrumbLink href={path.route}>
                 <BreadcrumbItem isCurrentPage={isCurrentPage} path={path} />
               </BreadcrumbLink>

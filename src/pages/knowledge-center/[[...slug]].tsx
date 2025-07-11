@@ -12,7 +12,11 @@ import {
 } from '@chakra-ui/react';
 import { Link } from 'src/components/link';
 import type { GetStaticProps, NextPage } from 'next';
-import { PageContainer, PageContent } from 'src/components/page-container';
+import {
+  getPageSeoConfig,
+  PageContainer,
+  PageContent,
+} from 'src/components/page-container';
 import DOCUMENTATION_COPY from 'configs/docs.json';
 import { Error } from 'src/components/error';
 import axios from 'axios';
@@ -129,15 +133,15 @@ const Docs: NextPage<{
     }
   });
 
+  const pageTitle = props?.data?.name || 'Knowledge Center';
+
   return (
     <PageContainer
-      meta={{
-        title: props?.data?.name || 'Knowledge Center',
-        description: 'Documentation for the portal.',
-        url: `${process.env.NEXT_PUBLIC_BASE_URL}/knowledge-center/${
-          props.slug?.[0] || ''
-        }`,
-      }}
+      meta={getPageSeoConfig('/knowledge-center', {
+        title: pageTitle,
+        url: `/knowledge-center/${props.slug?.[0] || ''}`,
+      })}
+      breadcrumbsTitle={pageTitle}
       px={0}
       py={0}
     >

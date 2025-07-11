@@ -1,19 +1,18 @@
 import React from 'react';
 import { NextPage } from 'next';
-import { Button, Flex, Heading, Image, Text } from '@chakra-ui/react';
-import { PageContainer, PageContent } from 'src/components/page-container';
 import NextLink from 'next/link';
+import { Button, Flex, Heading, Image, Text } from '@chakra-ui/react';
+import {
+  getPageSeoConfig,
+  PageContainer,
+  PageContent,
+} from 'src/components/page-container';
 
 const NotFoundPage: NextPage = () => {
   return (
     <PageContainer
-      meta={{
-        title: '404 — Page Not Found',
-        description: '404 Error: Page Not Found.',
-        keywords: '404, page not found, error',
-        url: `${process.env.NEXT_PUBLIC_BASE_URL}/404`,
-        preventIndexing: true,
-      }}
+      meta={getPageSeoConfig('/404')}
+      breadcrumbsTitle='404'
       includeSearchBar
     >
       <PageContent h='100vh' alignItems='center' justifyContent='center'>

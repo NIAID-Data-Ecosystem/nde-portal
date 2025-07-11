@@ -3,7 +3,11 @@ import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/router';
 import { Box, Button, Flex, Text } from '@chakra-ui/react';
-import { PageContainer, PageContent } from 'src/components/page-container';
+import {
+  getPageSeoConfig,
+  PageContainer,
+  PageContent,
+} from 'src/components/page-container';
 import { Main } from 'src/views/sources';
 import { Error, ErrorCTA } from 'src/components/error';
 import { Metadata, MetadataSource } from 'src/hooks/api/types';
@@ -109,12 +113,7 @@ const Sources: NextPage<SourcesProps> = ({ data, error }) => {
   return (
     <PageContainer
       id='sources-page'
-      meta={{
-        title: 'Sources',
-        description: 'NDE Discovery Portal - API data sources.',
-        keywords: 'data sources, NIAID, data discovery portal',
-        url: `${process.env.NEXT_PUBLIC_BASE_URL}/sources`,
-      }}
+      meta={getPageSeoConfig('/sources')}
       px={0}
       py={0}
     >

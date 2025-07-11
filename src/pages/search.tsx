@@ -1,6 +1,10 @@
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
-import { PageContainer, PageContent } from 'src/components/page-container';
+import {
+  getPageSeoConfig,
+  PageContainer,
+  PageContent,
+} from 'src/components/page-container';
 import { Flex, Heading, HStack } from '@chakra-ui/react';
 import { useHasMounted } from 'src/hooks/useHasMounted';
 import SearchResultsPage from 'src/views/search-results-page';
@@ -91,13 +95,7 @@ const Search: NextPage<{
 
   return (
     <PageContainer
-      meta={{
-        title: 'Search',
-        description:
-          'NDE Discovery Portal - Search results list based on query.',
-        url: `${process.env.NEXT_PUBLIC_BASE_URL}/search`,
-        keywords: 'search, results, NIAID, data discovery portal',
-      }}
+      meta={getPageSeoConfig('/search')}
       px={0}
       py={0}
       includeSearchBar

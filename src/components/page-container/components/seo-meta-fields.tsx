@@ -1,5 +1,4 @@
 import Head from 'next/head';
-import { useRouter } from 'next/router';
 import SITE_CONFIG from 'configs/site.config.json';
 import { SiteConfig } from '../types';
 
@@ -20,7 +19,7 @@ export const SeoMetaFields: React.FC<SeoMetaFieldsProps> = ({
   title: propsTitle = siteSeoConfig?.title || '',
   description = siteSeoConfig.description,
   keywords = siteSeoConfig.keywords,
-  url,
+  url: relativeUrl,
   canonical,
   preventIndexing = false,
 }) => {
@@ -34,6 +33,9 @@ export const SeoMetaFields: React.FC<SeoMetaFieldsProps> = ({
       ? propsTitle
       : `${siteSeoConfig.title} | ${propsTitle}`;
 
+  const url = relativeUrl.startsWith('/')
+    ? `${BASE_URL}${relativeUrl}`
+    : relativeUrl;
   // Warn about missing critical SEO data
   if (!title || !description) {
     console.warn(
@@ -84,7 +86,7 @@ export const getPageSeoConfig = (
   const pageSeoConfig = siteConfig.pages?.[pathname]?.seo || {};
 
   return {
-    url: `${process.env.NEXT_PUBLIC_BASE_URL}${pathname}`,
+    url: pathname,
     ...pageSeoConfig,
     ...overrides,
   };

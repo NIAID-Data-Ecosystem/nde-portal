@@ -13,7 +13,11 @@ import {
   VStack,
   Stack,
 } from '@chakra-ui/react';
-import { PageContainer, PageContent } from 'src/components/page-container';
+import {
+  getPageSeoConfig,
+  PageContainer,
+  PageContent,
+} from 'src/components/page-container';
 import HOMEPAGE_COPY from 'configs/homepage.json';
 import HOME_QUERIES from 'configs/queries/home-queries.json';
 import NextLink from 'next/link';
@@ -53,17 +57,7 @@ const Home: NextPage<{
   } = useRepoData({ refetchOnWindowFocus: false, refetchOnMount: false });
 
   return (
-    <PageContainer
-      meta={{
-        title: 'NIAID Data Discovery Portal',
-        description:
-          'Find and access allergic, infectious and immune-mediated disease data by searching across biomedical data repositories with the NIAID Data Discovery Portal',
-        keywords:
-          'omics, data, infectious disease, epidemiology, clinical trial, immunology, bioinformatics, surveillance, search, repository',
-        url: `${process.env.NEXT_PUBLIC_BASE_URL}/`,
-      }}
-      overflowX='hidden'
-    >
+    <PageContainer meta={getPageSeoConfig('/')} overflowX='hidden'>
       {/**** Hero banner + search bar *****/}
       <HeroBanner
         title={HOMEPAGE_COPY.sections.hero.heading}

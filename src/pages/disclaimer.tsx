@@ -8,7 +8,11 @@ import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
 import remarkGfm from 'remark-gfm';
 
-import { PageContainer, PageContent } from 'src/components/page-container';
+import {
+  getPageSeoConfig,
+  PageContainer,
+  PageContent,
+} from 'src/components/page-container';
 import { Error } from 'src/components/error';
 
 interface DisclaimerContent {
@@ -74,18 +78,7 @@ const Disclaimer: NextPage<DisclaimerProps> = props => {
   }, [content, data]);
 
   return (
-    <PageContainer
-      meta={{
-        title: 'Disclaimer',
-        url: `${process.env.NEXT_PUBLIC_BASE_URL}/disclaimer`,
-        description:
-          'An overview of the NIAID Data Ecosystem Discovery Portal endorsement disclaimers and information disclaimers.',
-        keywords: 'disclaimer, terms of use, NIAID, data discovery portal',
-        preventIndexing: true,
-      }}
-      px={0}
-      py={0}
-    >
+    <PageContainer meta={getPageSeoConfig('/disclaimer')} px={0} py={0}>
       {contentError && !content && (
         <Error>
           <Text fontWeight='light' color='gray.600' fontSize='lg'>
