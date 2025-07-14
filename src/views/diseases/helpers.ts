@@ -8,7 +8,6 @@ import {
 import {
   DiseasePageProps,
   DiseaseCollectionApiResponse,
-  DiseaseSingleApiResponse,
 } from 'src/views/diseases/types';
 
 const STRAPI_BASE_URL =
@@ -99,29 +98,6 @@ export const fetchDiseaseBySlug = async (
     return apiResponse.data[0];
   } catch (error) {
     console.error('Error fetching disease by slug:', error);
-    throw error;
-  }
-};
-
-// Fetch disease page by ID
-export const fetchDiseaseById = async (
-  id: number,
-): Promise<DiseasePageProps> => {
-  try {
-    const response = await fetch(
-      `${STRAPI_BASE_URL}/api/diseases?status=draft/${id}?populate=*`,
-    );
-
-    if (!response.ok) {
-      throw new Error(`Failed to fetch disease: ${response.status}`);
-    }
-
-    const apiResponse: DiseaseSingleApiResponse<DiseasePageProps> =
-      await response.json();
-
-    return apiResponse.data;
-  } catch (error) {
-    console.error('Error fetching disease by ID:', error);
     throw error;
   }
 };

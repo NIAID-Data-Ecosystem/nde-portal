@@ -74,11 +74,6 @@ export interface DiseaseCollectionApiResponse<T> {
   };
 }
 
-export interface DiseaseSingleApiResponse<T> {
-  data: T;
-  meta: {};
-}
-
 /**
  * Application domain types (aligned with API response)
  */
