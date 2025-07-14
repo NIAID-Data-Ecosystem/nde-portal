@@ -41,7 +41,6 @@
         "label": "Home"
       }
     },
-
     "/search": {
       "seo": {
         "title": "Search",
@@ -142,7 +141,10 @@
         "label": "Features",
         "description": "Featured content for the portal."
       },
-      "env": ["development", "staging"]
+      "env": [
+        "development",
+        "staging"
+      ]
     },
     "/ontology-browser": {
       "seo": {
@@ -159,7 +161,10 @@
         "label": "Ontology Browser",
         "description": "Explore search results in a novel way"
       },
-      "env": ["development", "staging"]
+      "env": [
+        "development",
+        "staging"
+      ]
     },
     "/resources": {
       "seo": {
@@ -184,7 +189,11 @@
       "seo": {
         "title": "404",
         "description": "404 Error: Page Not Found.",
-        "keywords": ["404", "page not found", "error"],
+        "keywords": [
+          "404",
+          "page not found",
+          "error"
+        ],
         "preventIndexing": true
       }
     }
@@ -333,7 +342,7 @@
     ],
     "lastUpdate": [
       {
-        "label": "Content updated: 2025-07-07",
+        "label": "",
         "href": "/changelog/"
       }
     ]

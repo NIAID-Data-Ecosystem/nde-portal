@@ -14,7 +14,8 @@ const fetchRepositoryInfo = async () => {
     const branch = process.env.GITHUB_BRANCH;
 
     if (!branch) {
-      throw new Error('GITHUB_BRANCH environment variable is not set');
+      console.warn('GITHUB_BRANCH environment variable is not set');
+      return;
     }
 
     const url = `https://api.github.com/repos/${owner}/${repo}/branches/${branch}`;
