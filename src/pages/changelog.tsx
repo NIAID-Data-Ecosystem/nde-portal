@@ -1,6 +1,10 @@
 import { Badge, Box, Flex, Heading, Text } from '@chakra-ui/react';
 import type { NextPage } from 'next';
-import { PageContainer, PageContent } from 'src/components/page-container';
+import {
+  getPageSeoConfig,
+  PageContainer,
+  PageContent,
+} from 'src/components/page-container';
 import ChangelogData from '../../CHANGELOG.md';
 import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
@@ -14,12 +18,7 @@ interface ChangelogProps {}
 const Changelog: NextPage<ChangelogProps> = () => {
   const MDXComponents = useMDXComponents();
   return (
-    <PageContainer
-      title='Changelog'
-      metaDescription='Log of changes to the NDE System.'
-      px={0}
-      py={0}
-    >
+    <PageContainer meta={getPageSeoConfig('/changelog')} px={0} py={0}>
       <PageContent bg='#fff' justifyContent={'center'}>
         <Flex w='1000px' flexDirection='column' mb={32}>
           <Heading as='h1' size='lg' mt={8}>

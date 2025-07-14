@@ -8,8 +8,13 @@ import {
   Popover,
   PopoverTrigger,
 } from '@chakra-ui/react';
-import { RouteProps } from '..';
 import { DesktopSubNav } from './menu-desktop';
+import { TransformedNavigationMenu } from '../types';
+
+interface DesktopNavItemProps extends TransformedNavigationMenu {
+  isActive?: boolean;
+}
+
 // Desktop Navigation link styles
 export const DesktopNavItem = ({
   label,
@@ -17,7 +22,7 @@ export const DesktopNavItem = ({
   href,
   isExternal,
   isActive,
-}: RouteProps) => {
+}: DesktopNavItemProps) => {
   if (!routes) {
     return (
       <Link
@@ -48,6 +53,13 @@ export const DesktopNavItem = ({
     );
   }
 
+  const linkProps = {
+    href,
+    _visited: { color: 'white' },
+
+    variant: 'unstyled',
+  };
+
   return (
     <>
       <Popover
@@ -61,22 +73,20 @@ export const DesktopNavItem = ({
           <>
             <PopoverTrigger>
               <Button
-                as='a'
+                as={href ? 'a' : 'div'}
                 __css={{ padding: 0 }}
                 display='flex'
-                href={href ?? '#'}
                 fontSize='md'
                 fontWeight={500}
                 color='white'
-                _visited={{ color: 'white' }}
-                _hover={{
-                  bg: 'whiteAlpha.300',
-                }}
-                variant='unstyled'
                 cursor='pointer'
                 alignItems='center'
                 justifyContent='center'
                 h='100%'
+                _hover={{
+                  bg: 'whiteAlpha.300',
+                }}
+                {...(href ? linkProps : {})}
               >
                 {label}
 

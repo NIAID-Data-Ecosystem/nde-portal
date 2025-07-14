@@ -1,3 +1,5 @@
+import { IconType } from 'react-icons';
+import { FaAngleRight, FaHouse } from 'react-icons/fa6';
 import {
   Breadcrumb,
   BreadcrumbItem as ChakraBreadcrumbItem,
@@ -7,12 +9,7 @@ import {
   HStack,
   Text,
 } from '@chakra-ui/react';
-import { useRouter } from 'next/router';
-import { usePathname } from 'next/navigation';
-import { FaAngleRight, FaHouse } from 'react-icons/fa6';
-import { IconType } from 'react-icons';
-
-interface BreadcrumbsProps {}
+import { BreadcrumbSegment } from '../hooks/useBreadcrumbs';
 
 interface BreadcrumbItemProps {
   path: { name: string; icon?: IconType };
@@ -55,37 +52,13 @@ export const BreadcrumbItem = ({
   );
 };
 
-export const Breadcrumbs: React.FC<BreadcrumbsProps> = () => {
-  const router = useRouter();
-  const pathname = usePathname();
-  const segments = pathname.split('/').filter(Boolean);
+interface BreadcrumbsProps {
+  segments: BreadcrumbSegment[];
+}
 
-  const pathSegments = segments.map((path, idx) => {
-    const name = path
-      .replace(/-/g, ' ')
-      .replace(/_/g, ' ')
-      .replace(/(?:^|\s)\S/g, a => a.toUpperCase());
-    const last = idx === 0 ? path : segments.slice(0, idx + 1).join('/');
-    return {
-      name,
-      route: `/${last}`,
-    };
-  });
+export const Breadcrumbs: React.FC<BreadcrumbsProps> = ({ segments }) => {
+  if (!segments.length) return null;
 
-  if (!pathSegments.length) return null;
-
-  if (pathname === '/resources') {
-    // Since `/resources` is not nested within `/search` in the route, we need to hardcode the search breadcrumb.
-    // We leverage the router query field to determine the referrer path (which is set in the search results page). If the user is not coming from the search results page, we default to `/search`.
-
-    pathSegments.unshift({
-      name: 'Search',
-      route:
-        typeof router.query.referrerPath === 'string'
-          ? router.query.referrerPath
-          : '/search',
-    });
-  }
   return (
     <Flex px={6} py={2}>
       <Breadcrumb
@@ -110,16 +83,15 @@ export const Breadcrumbs: React.FC<BreadcrumbsProps> = () => {
           </BreadcrumbLink>
         </ChakraBreadcrumbItem>
 
-        {pathSegments.map((path, idx) => {
-          const isCurrentPage = idx === pathSegments.length - 1;
+        {segments.map((path, idx) => {
+          const isCurrentPage = idx === segments.length - 1;
           return (
-            <ChakraBreadcrumbItem key={path.name} isCurrentPage={isCurrentPage}>
+            <ChakraBreadcrumbItem
+              key={path.name + idx}
+              isCurrentPage={isCurrentPage}
+            >
               <BreadcrumbLink href={path.route}>
-                <BreadcrumbItem
-                  key={path.name}
-                  isCurrentPage={isCurrentPage}
-                  path={path}
-                />
+                <BreadcrumbItem isCurrentPage={isCurrentPage} path={path} />
               </BreadcrumbLink>
             </ChakraBreadcrumbItem>
           );

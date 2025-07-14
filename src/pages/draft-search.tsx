@@ -1,6 +1,6 @@
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
-import { PageContainer } from 'src/components/page-container';
+import { getPageSeoConfig, PageContainer } from 'src/components/page-container';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { FetchSearchResultsResponse } from 'src/utils/api/types';
 import { SearchTabsProvider } from 'src/views/draft-search/context/search-tabs-context';
@@ -93,8 +93,7 @@ const Search: NextPage<{
   }
   return (
     <PageContainer
-      title='Search'
-      metaDescription='NDE Discovery Portal - Search results list based on query.'
+      meta={getPageSeoConfig('/search')}
       px={0}
       py={0}
       includeSearchBar

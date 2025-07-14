@@ -1,7 +1,11 @@
 import { useState } from 'react';
 import { Flex, VStack } from '@chakra-ui/react';
 import type { NextPage } from 'next';
-import { PageContainer, PageContent } from 'src/components/page-container';
+import {
+  getPageSeoConfig,
+  PageContainer,
+  PageContent,
+} from 'src/components/page-container';
 import { OntologyBrowserSearch } from 'src/views/ontology-browser/components/search';
 import { OntologyLineageItemWithCounts } from 'src/views/ontology-browser/types';
 import { OntologySearchList } from 'src/views/ontology-browser/components/ontology-search-list';
@@ -19,8 +23,7 @@ const OntologyBrowserPage: NextPage = () => {
 
   return (
     <PageContainer
-      title='Search'
-      metaDescription='NDE Discovery Portal - Search results list based on query.'
+      meta={getPageSeoConfig('/ontology-browser')}
       px={0}
       py={0}
       includeSearchBar
