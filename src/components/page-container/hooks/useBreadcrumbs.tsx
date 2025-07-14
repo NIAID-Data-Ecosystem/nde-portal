@@ -14,13 +14,8 @@ export const useBreadcrumbs = (pageTitle?: string): BreadcrumbSegment[] => {
   const pathname = usePathname();
 
   // Use a state to hold the fallback title in case pageTitle is not provided
-  const [fallbackTitle, setFallbackTitle] = useState<string>('');
-
-  useEffect(() => {
-    if (!pageTitle && typeof document !== 'undefined') {
-      setFallbackTitle(document.title);
-    }
-  }, [pageTitle]);
+  const fallbackTitle =
+    !pageTitle && typeof document !== 'undefined' ? document.title : '';
 
   const segments = useMemo(() => {
     if (!pathname) return [];
@@ -52,7 +47,7 @@ export const useBreadcrumbs = (pageTitle?: string): BreadcrumbSegment[] => {
 
     return mapped.map((segment, idx, arr) => ({
       ...segment,
-      // Use pageTitle if provided, otherwise use fallbackTitle or segment name
+      // For the last route, priority to pageTitle if provided, otherwise use segment name or fallback title.
       name:
         idx === arr.length - 1
           ? pageTitle || segment.name || fallbackTitle
