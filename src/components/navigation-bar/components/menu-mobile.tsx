@@ -60,6 +60,7 @@ export const MobileNavItem = ({
         </Link>
       ) : (
         <Flex
+          as='button'
           px={4}
           py={2}
           justify='space-between'

@@ -73,7 +73,7 @@ export const DesktopNavItem = ({
           <>
             <PopoverTrigger>
               <Button
-                as={href ? 'a' : 'div'}
+                as={href ? 'a' : 'button'}
                 __css={{ padding: 0 }}
                 display='flex'
                 fontSize='md'
