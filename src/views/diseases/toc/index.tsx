@@ -68,6 +68,13 @@ export const TableOfContents = () => {
     );
   }
 
+  // Show loading skeleton cards while data is being fetched
+  const renderLoadingCards = () => {
+    return Array.from({ length: 3 }, (_, index) => (
+      <StyledCard key={`loading-${index}`} isLoading={true} />
+    ));
+  };
+
   return (
     <Flex>
       <Sidebar aria-label='Navigation for list of disease pages.'>
@@ -109,74 +116,80 @@ export const TableOfContents = () => {
 
           {/* Display list of disease pages in cards */}
           <StyledCardStack>
-            {diseasePages.map(page => {
-              const label = page?.title;
+            {isLoading
+              ? renderLoadingCards()
+              : diseasePages.map(page => {
+                  const label = page?.title;
 
-              return (
-                <StyledCard key={page.id} id={page.slug} isLoading={isLoading}>
-                  {/* Description */}
-                  <Stack
-                    spacing={{ base: 4, lg: 6, xl: 10 }}
-                    flexDirection='row'
-                    alignItems='unset'
-                    flexWrap='wrap-reverse'
-                  >
-                    <Stack
-                      flexDirection='column'
-                      alignItems='unset'
-                      minWidth={250}
-                      flex={1}
+                  return (
+                    <StyledCard
+                      key={page.id}
+                      id={page.slug}
+                      isLoading={isLoading}
                     >
-                      {/* Name */}
-                      <StyleCardLabel>{label}</StyleCardLabel>
-
                       {/* Description */}
-                      {page.description && (
-                        <Flex flex={1}>
-                          <StyledCardDescription>
-                            {page.description}
-                          </StyledCardDescription>
+                      <Stack
+                        spacing={{ base: 4, lg: 6, xl: 10 }}
+                        flexDirection='row'
+                        alignItems='unset'
+                        flexWrap='wrap-reverse'
+                      >
+                        <Stack
+                          flexDirection='column'
+                          alignItems='unset'
+                          minWidth={250}
+                          flex={1}
+                        >
+                          {/* Name */}
+                          <StyleCardLabel>{label}</StyleCardLabel>
+
+                          {/* Description */}
+                          {page.description && (
+                            <Flex flex={1}>
+                              <StyledCardDescription>
+                                {page.description}
+                              </StyledCardDescription>
+                            </Flex>
+                          )}
+                        </Stack>
+
+                        {page.image?.url && (
+                          <Flex
+                            minWidth={200}
+                            maxWidth={{ base: 'unset', xl: '25%' }}
+                            flex={1}
+                            alignItems='flex-start'
+                          >
+                            <Image
+                              borderRadius='base'
+                              width='100%'
+                              height='auto'
+                              src={`${process.env.NEXT_PUBLIC_STRAPI_API_URL}${page.image.url}`}
+                              alt={page.image.alternativeText}
+                              objectFit='contain'
+                            />
+                          </Flex>
+                        )}
+                      </Stack>
+                      {/* Link to program resources in the NDE */}
+                      {page.query && (
+                        <Flex
+                          justifyContent={{ base: 'center', md: 'flex-end' }}
+                          width='100%'
+                        >
+                          <StyledCardButton
+                            href={{
+                              pathname: `/diseases/${page.slug}`,
+                            }}
+                          >
+                            Learn about {label} resources in the NIAID Data
+                            Ecosystem
+                          </StyledCardButton>
                         </Flex>
                       )}
-                    </Stack>
-
-                    {page.image?.url && (
-                      <Flex
-                        minWidth={200}
-                        maxWidth={{ base: 'unset', xl: '25%' }}
-                        flex={1}
-                        alignItems='flex-start'
-                      >
-                        <Image
-                          borderRadius='base'
-                          width='100%'
-                          height='auto'
-                          src={`${process.env.NEXT_PUBLIC_STRAPI_API_URL}${page.image.url}`}
-                          alt={page.image.alternativeText}
-                          objectFit='contain'
-                        />
-                      </Flex>
-                    )}
-                  </Stack>
-                  {/* Link to program resources in the NDE */}
-                  {page.query && (
-                    <Flex
-                      justifyContent={{ base: 'center', md: 'flex-end' }}
-                      width='100%'
-                    >
-                      <StyledCardButton
-                        href={{
-                          pathname: `/diseases/${page.slug}`,
-                        }}
-                      >
-                        Learn about {label} resources in the NIAID Data
-                        Ecosystem
-                      </StyledCardButton>
-                    </Flex>
-                  )}
-                </StyledCard>
-              );
-            })}
+                    </StyledCard>
+                  );
+                })}
           </StyledCardStack>
         </Flex>
       </PageContent>
