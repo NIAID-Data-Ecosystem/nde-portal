@@ -22,12 +22,7 @@ const OntologyBrowserPage: NextPage = () => {
   const [searchList, setSearchList] = useState<SearchListItem[] | []>([]);
 
   return (
-    <PageContainer
-      meta={getPageSeoConfig('/ontology-browser')}
-      px={0}
-      py={0}
-      includeSearchBar
-    >
+    <PageContainer meta={getPageSeoConfig('/ontology-browser')} px={0} py={0}>
       <PageContent
         alignItems='center'
         flexDirection='column'
