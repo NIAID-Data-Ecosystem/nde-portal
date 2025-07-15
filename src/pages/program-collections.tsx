@@ -4,7 +4,11 @@ import { Flex, HStack, Text } from '@chakra-ui/react';
 import { useQuery } from '@tanstack/react-query';
 import { Error } from 'src/components/error';
 import { Link } from 'src/components/link';
-import { PageContainer, PageContent } from 'src/components/page-container';
+import {
+  getPageSeoConfig,
+  PageContainer,
+  PageContent,
+} from 'src/components/page-container';
 import {
   StyleCardSubLabel,
   StyledCard,
@@ -83,8 +87,7 @@ const ProgramCollections: NextPage<{
   return (
     <PageContainer
       id='program-page'
-      title='Program Collections'
-      metaDescription='Appendix of program collections available in the NIAID Data Ecosystem.'
+      meta={getPageSeoConfig('/program-collections')}
       px={0}
       py={0}
     >

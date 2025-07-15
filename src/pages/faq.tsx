@@ -1,6 +1,10 @@
 import { Flex, Heading, Text } from '@chakra-ui/react';
 import type { NextPage } from 'next';
-import { PageContainer, PageContent } from 'src/components/page-container';
+import {
+  getPageSeoConfig,
+  PageContainer,
+  PageContent,
+} from 'src/components/page-container';
 import { serialize } from 'next-mdx-remote/serialize';
 import { MDXRemoteSerializeResult } from 'next-mdx-remote';
 import { Error } from 'src/components/error';
@@ -28,12 +32,7 @@ const FrequentlyAsked: NextPage<FrequentlyAskedProps> = props => {
   const { data, error } = props;
   const MDXComponents = useMDXComponents();
   return (
-    <PageContainer
-      title='FAQ'
-      metaDescription='Frequenty asked questions.'
-      px={0}
-      py={0}
-    >
+    <PageContainer meta={getPageSeoConfig('/faq')} px={0} py={0}>
       <PageContent justifyContent='center'>
         {error ? (
           <Error>
