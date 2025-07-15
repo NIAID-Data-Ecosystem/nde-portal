@@ -13,6 +13,9 @@ import {
   FiltersContainer,
   FiltersContainerProps,
 } from '../../components/container';
+import { SearchTabsProvider } from 'src/views/draft-search/context/search-tabs-context';
+import { tab } from 'node_modules/@testing-library/user-event/dist/types/convenience';
+import { TabType } from 'src/views/draft-search/types';
 
 // Mock the useBreakpointValue hook  -- put in desktop mode
 jest.mock('@chakra-ui/react', () => {
@@ -52,11 +55,13 @@ const renderComponent = (props: {
 }) => {
   return render(
     <ChakraProvider>
-      <FiltersContainer {...props.containerProps}>
-        {props.sections.map(section => (
-          <FiltersSection {...section} key={section._id} />
-        ))}
-      </FiltersContainer>
+      <SearchTabsProvider initialTab={'d'}>
+        <FiltersContainer {...props.containerProps}>
+          {props.sections.map(section => (
+            <FiltersSection {...section} key={section._id} />
+          ))}
+        </FiltersContainer>
+      </SearchTabsProvider>
     </ChakraProvider>,
   );
 };
@@ -68,6 +73,7 @@ describe('FiltersSection', () => {
       _id: 'test_01',
       name: 'Test Filter 1',
       property: 'test_01',
+      tabIds: ['d', 'ct'] as TabType['id'][],
       description: 'test 1 description',
       children: <div>Filter1 children</div>,
       createQueries: () => [],
@@ -76,6 +82,7 @@ describe('FiltersSection', () => {
       _id: 'test_02',
       name: 'Test Filter 2',
       property: 'test_02',
+      tabIds: ['d', 'ct'] as TabType['id'][],
       description: 'test 2 description',
       children: <div>Filter2 children</div>,
       createQueries: () => [],
@@ -90,7 +97,11 @@ describe('FiltersSection', () => {
 
   it('renders correctly', () => {
     renderComponent({
-      containerProps: { ...containerProps, selectedFilters: {} },
+      containerProps: {
+        ...containerProps,
+        selectedFilters: {},
+        removeAllFilters: jest.fn(),
+      },
       sections,
     });
     expect(screen.getByText('Test Filter 1')).toBeInTheDocument();
@@ -99,7 +110,11 @@ describe('FiltersSection', () => {
 
   it('expands and collapses on click', async () => {
     renderComponent({
-      containerProps: { ...containerProps, selectedFilters: {} },
+      containerProps: {
+        ...containerProps,
+        selectedFilters: {},
+        removeAllFilters: jest.fn(),
+      },
       sections,
     });
     const button = screen.getByRole('button', { name: /Test Filter 1/i });
@@ -124,7 +139,11 @@ describe('FiltersSection', () => {
 
   it('displays tooltip with correct description', async () => {
     renderComponent({
-      containerProps: { ...containerProps, selectedFilters: {} },
+      containerProps: {
+        ...containerProps,
+        selectedFilters: {},
+        removeAllFilters: jest.fn(),
+      },
       sections,
     });
     const button = screen.getByRole('button', { name: /Test Filter 1/i });
@@ -142,7 +161,11 @@ describe('FiltersSection', () => {
 
   it('renders correct icon based on expanded state', async () => {
     renderComponent({
-      containerProps: { ...containerProps, selectedFilters: {} },
+      containerProps: {
+        ...containerProps,
+        selectedFilters: {},
+        removeAllFilters: jest.fn(),
+      },
       sections,
     });
     const button = screen.getByRole('button', { name: /Test Filter 1/i });

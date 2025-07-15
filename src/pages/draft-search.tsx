@@ -1,12 +1,9 @@
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
-import { PageContainer } from 'src/components/page-container';
+import { getPageSeoConfig, PageContainer } from 'src/components/page-container';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { FetchSearchResultsResponse } from 'src/utils/api/types';
-import {
-  SearchTabsProvider,
-  tabs,
-} from 'src/views/draft-search/context/search-tabs-context';
+import { SearchTabsProvider } from 'src/views/draft-search/context/search-tabs-context';
 import { useSearchQueryFromURL } from 'src/views/draft-search/hooks/useSearchQueryFromURL';
 import { Box, Flex, VStack } from '@chakra-ui/react';
 import { Filters } from 'src/views/draft-search/components/filters';
@@ -20,6 +17,7 @@ import { PaginationProvider } from 'src/views/draft-search/context/pagination-co
 import { SearchResultsController } from 'src/views/draft-search/components/search-results-tabs-controller';
 import { fetchSearchResults } from 'src/utils/api';
 import { TabType } from 'src/views/draft-search/types';
+import { tabs } from 'src/views/draft-search/config/tabs';
 
 // Default filters list.
 const defaultFilters = FILTER_CONFIGS.reduce(
@@ -95,8 +93,7 @@ const Search: NextPage<{
   }
   return (
     <PageContainer
-      title='Search'
-      metaDescription='NDE Discovery Portal - Search results list based on query.'
+      meta={getPageSeoConfig('/search')}
       px={0}
       py={0}
       includeSearchBar

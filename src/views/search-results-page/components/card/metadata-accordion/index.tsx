@@ -26,6 +26,7 @@ import {
 import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
 import { SchemaDefinitions } from 'scripts/generate-schema-definitions/types';
 import dynamic from 'next/dynamic';
+import { useRouter } from 'next/router';
 
 const MetadataBlock = dynamic(
   () => import('src/components/metadata').then(mod => mod.MetadataBlock),
@@ -98,6 +99,8 @@ const MetadataAccordion: React.FC<MetadataAccordionProps> = ({ data }) => {
       : sortMetadataArray(content, SORT_ORDER);
 
   const schema = SCHEMA_DEFINITIONS as SchemaDefinitions;
+  const router = useRouter();
+  const referrerPath = router.query.referrerPath || '/search';
   return (
     <>
       {/* Details expandable drawer */}
@@ -223,11 +226,17 @@ const MetadataAccordion: React.FC<MetadataAccordionProps> = ({ data }) => {
                                 </MetadataList>
                                 {items.length > 3 && (
                                   <NextLink
-                                    href={
-                                      props.property === 'funding'
-                                        ? `/resources?id=${id}#funding`
-                                        : `/resources?id=${id}#overview`
-                                    }
+                                    href={{
+                                      pathname: '/resources',
+                                      query: {
+                                        id,
+                                        referrerPath,
+                                      },
+                                      hash:
+                                        props.property === 'funding'
+                                          ? 'funding'
+                                          : 'overview',
+                                    }}
                                   >
                                     <Link
                                       as='div'

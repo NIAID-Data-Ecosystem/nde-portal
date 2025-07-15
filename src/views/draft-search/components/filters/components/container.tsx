@@ -19,6 +19,8 @@ import {
 import { FaFilter } from 'react-icons/fa6';
 import { FilterConfig, SelectedFilterType } from '../types';
 import { ScrollContainer } from 'src/components/scroll-container';
+import { useSearchTabsContext } from '../../../context/search-tabs-context';
+import { getCommonFilterProperties } from '../utils/tab-filter-utils';
 
 export interface FiltersContainerProps {
   title?: string;
@@ -58,9 +60,25 @@ export const FiltersContainer: React.FC<FiltersContainerProps> = ({
   isDisabled = false,
   removeAllFilters,
 }) => {
-  const [openSections, setOpenSections] = useState<number[]>([]);
+  // State for managing which sections are open per tab
+  // It allows tab-specific filters to maintain their open/closed state
+  // when switching between tabs
+  const [tabSpecificOpenSections, setTabSpecificOpenSections] = useState<
+    Record<string, Set<string>>
+  >({});
+
+  // State for managing which common sections are open
+  // Common filters persist their state across all tabs
+  const [commonOpenSections, setCommonOpenSections] = useState<Set<string>>(
+    new Set(),
+  );
+
+  // Prevent accordion state initialization on every render
+  const [isInitialized, setIsInitialized] = useState(false);
+
   const btnRef = useRef<HTMLButtonElement>(null);
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const { selectedTab } = useSearchTabsContext();
   const screenSize = useBreakpointValue(
     {
       base: 'mobile',
@@ -90,33 +108,122 @@ export const FiltersContainer: React.FC<FiltersContainerProps> = ({
     }
   }, []);
 
-  const selectedKeys = useMemo(() => {
-    let keys: number[] = [];
-    if (selectedFilters) {
-      keys = Object.entries(selectedFilters)
-        .filter(([_, v]) => v.length > 0)
-        .map(([key]) =>
-          filtersList.findIndex(config => config.property === key),
-        );
+  // Get list of filter properties that are common across all tabs
+  const commonFilters = useMemo(() => {
+    return getCommonFilterProperties();
+  }, []);
+
+  // Get open sections for the current tab
+  const currentTabSpecificOpenSections = useMemo(() => {
+    return tabSpecificOpenSections[selectedTab.id] || new Set<string>();
+  }, [tabSpecificOpenSections, selectedTab.id]);
+
+  // Combine common and tab-specific open sections for the selected tab
+  const allCurrentOpenSections = useMemo(() => {
+    const combined = new Set([
+      ...commonOpenSections,
+      ...currentTabSpecificOpenSections,
+    ]);
+    return combined;
+  }, [commonOpenSections, currentTabSpecificOpenSections]);
+
+  /**
+   * Initialize accordion state based on:
+   * 1. Currently selected filters (auto-open sections with active filters)
+   * 2. Filter configs marked as default open
+   */
+  useEffect(() => {
+    if (!isInitialized) {
+      const newCommonOpenSections = new Set<string>();
+
+      setTabSpecificOpenSections(prev => {
+        const tabId = selectedTab.id;
+        const updated = { ...prev };
+        if (!updated[tabId]) {
+          updated[tabId] = new Set<string>();
+        }
+        const newTabSpecificOpenSections = new Set<string>();
+
+        if (selectedFilters) {
+          Object.entries(selectedFilters)
+            .filter(([_, v]) => v.length > 0)
+            .forEach(([property]) => {
+              if (commonFilters.includes(property)) {
+                newCommonOpenSections.add(property);
+              } else {
+                newTabSpecificOpenSections.add(property);
+              }
+            });
+        }
+
+        filtersList.forEach(config => {
+          if (config.isDefaultOpen) {
+            if (commonFilters.includes(config.property)) {
+              newCommonOpenSections.add(config.property);
+            } else {
+              newTabSpecificOpenSections.add(config.property);
+            }
+          }
+        });
+
+        updated[tabId] = newTabSpecificOpenSections;
+        return updated;
+      });
+
+      setCommonOpenSections(newCommonOpenSections);
+      setIsInitialized(true);
     }
-    filtersList.forEach((config, i) => {
-      if (config.isDefaultOpen && !keys.includes(i)) {
-        keys.push(i);
+  }, [
+    selectedFilters,
+    filtersList,
+    selectedTab.id,
+    commonFilters,
+    isInitialized,
+  ]);
+
+  // Convert open section properties to accordion indices
+  const accordionIndices = useMemo(() => {
+    return Array.from(allCurrentOpenSections)
+      .map(property =>
+        filtersList.findIndex(config => config.property === property),
+      )
+      .filter(index => index !== -1)
+      .sort((a, b) => a - b);
+  }, [allCurrentOpenSections, filtersList]);
+
+  /**
+   * Handle accordion section expand/collapse
+   * Separate common filters from tab-specific filters to maintain
+   * appropriate state persistence
+   */
+  const handleAccordionChange = (expandedIndex: number | number[]) => {
+    const indices = Array.isArray(expandedIndex)
+      ? expandedIndex
+      : [expandedIndex];
+
+    const newCommonOpenProperties = new Set<string>();
+    const newTabSpecificOpenProperties = new Set<string>();
+
+    // Categorize each opened section as common or tab-specific
+    indices.forEach(index => {
+      if (index >= 0 && index < filtersList.length) {
+        const property = filtersList[index].property;
+        if (commonFilters.includes(property)) {
+          newCommonOpenProperties.add(property);
+        } else {
+          newTabSpecificOpenProperties.add(property);
+        }
       }
     });
-    return keys;
-  }, [selectedFilters, filtersList]);
 
-  useEffect(() => {
-    setOpenSections(prev => {
-      // Get the sections that are selected
-      const sections = selectedKeys.filter(sectionId => {
-        return !prev?.includes(sectionId);
-      });
-      // Return the previous sections and the new sections
-      return [...prev, ...sections];
+    setCommonOpenSections(newCommonOpenProperties);
+
+    setTabSpecificOpenSections(prev => {
+      const updated = { ...prev };
+      updated[selectedTab.id] = newTabSpecificOpenProperties;
+      return updated;
     });
-  }, [selectedFilters, filtersList, selectedKeys]);
+  };
 
   const content = (
     <>
@@ -154,13 +261,8 @@ export const FiltersContainer: React.FC<FiltersContainerProps> = ({
         <Accordion
           bg='white'
           allowMultiple
-          index={openSections}
-          onChange={expandedIndex => {
-            const sections = Array.isArray(expandedIndex)
-              ? expandedIndex
-              : [expandedIndex];
-            setOpenSections(sections);
-          }}
+          index={accordionIndices}
+          onChange={handleAccordionChange}
         >
           {children}
         </Accordion>
@@ -221,6 +323,6 @@ export const FiltersContainer: React.FC<FiltersContainerProps> = ({
       </Drawer>
     </>
   ) : (
-    <Box>{content}</Box>
+    <Box width='100%'>{content}</Box>
   );
 };

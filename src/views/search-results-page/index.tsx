@@ -34,6 +34,7 @@ import { FILTER_CONFIGS } from './components/filters/config';
 import { SelectedFilterType } from './components/filters/types';
 import { MetadataScoreToggle } from './components/metadata-score-toggle';
 import { useLocalStorage } from 'usehooks-ts';
+import { OntologyBrowserPopup } from '../ontology-browser/components/popup';
 
 /*
 [COMPONENT INFO]:
@@ -224,10 +225,24 @@ const SearchResultsPage = ({
   return (
     <Flex w='100%' flexDirection='column' flex={[1, 2]}>
       {/* Number of search results */}
-      <ResultsCount
-        isLoading={isLoading || isRefetching || !router.isReady}
-        total={total}
-      />
+      <Flex
+        w='100%'
+        borderBottom='2px solid'
+        borderColor='gray.700'
+        flexWrap={{ base: 'wrap-reverse', sm: 'wrap' }}
+        alignItems='baseline'
+        justifyContent='space-between'
+        lineHeight='short'
+      >
+        <ResultsCount
+          isLoading={isLoading || isRefetching || !router.isReady}
+          total={total}
+        />
+        <OntologyBrowserPopup
+          querystring={querystring === '__all__' ? '' : querystring}
+          selectedFilters={selectedFilters}
+        />
+      </Flex>
 
       {/* Search results controls */}
       {numCards > 0 && (

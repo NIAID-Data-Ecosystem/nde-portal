@@ -3,7 +3,12 @@ import type { GetStaticProps, NextPage } from 'next';
 import { Flex, Skeleton, Text } from '@chakra-ui/react';
 import { useQuery } from '@tanstack/react-query';
 import { Error } from 'src/components/error';
-import { PageContainer, PageContent } from 'src/components/page-container';
+import { Link } from 'src/components/link';
+import {
+  getPageSeoConfig,
+  PageContainer,
+  PageContent,
+} from 'src/components/page-container';
 import {
   fetchAllFeaturedPages,
   fetchFeaturedContent,
@@ -48,15 +53,16 @@ const FeaturedPage: NextPage<{
     }
   }, [router]);
 
-  if (process.env.NEXT_PUBLIC_APP_ENV === 'production') {
-    return null; // Prevent rendering in production until search is implemented.
-  }
-
+  const pageTitle = data?.title || 'Features';
   return (
     <PageContainer
-      id='features-page'
-      title='Featured'
-      metaDescription='Featured content for the portal.'
+      meta={getPageSeoConfig('/features', {
+        title: pageTitle,
+        url: `${process.env.NEXT_PUBLIC_BASE_URL}/features/${
+          props.slug?.[0] || ''
+        }`,
+      })}
+      breadcrumbsTitle={pageTitle}
       px={0}
       py={0}
     >

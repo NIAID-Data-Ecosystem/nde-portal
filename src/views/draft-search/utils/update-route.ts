@@ -12,7 +12,6 @@ export const updateRoute = (router: NextRouter, update: {}) => {
     undefined,
     {
       shallow: true,
-      scroll: true,
     },
   );
 };

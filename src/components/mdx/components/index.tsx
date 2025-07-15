@@ -339,7 +339,7 @@ export const MDXComponents = {
 
     const AssetComponent = (props: any) => {
       // If the src is a video file, render a video element
-      // Note: The video will autoplay, loop, and be muted by default.
+      // Note: The video will be paused and muted by default.
       if (
         props?.src &&
         props?.src.includes('/uploads') &&
@@ -348,7 +348,6 @@ export const MDXComponents = {
         return (
           <Box
             as='video'
-            autoPlay
             loop
             muted
             playsInline
