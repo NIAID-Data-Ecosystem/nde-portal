@@ -4,8 +4,11 @@ import {
   Box,
   Button,
   Flex,
+  HStack,
   Icon,
   IconButton,
+  Radio,
+  RadioGroup,
   Text,
   useDisclosure,
 } from '@chakra-ui/react';
@@ -19,6 +22,7 @@ import Tooltip from 'src/components/tooltip';
 import { useRouter } from 'next/router';
 import { ScrollContainer } from 'src/components/scroll-container';
 import { SearchListItem } from 'src/pages/ontology-browser';
+import { ListToggle } from './toggle';
 
 const WIDTH = 400;
 
@@ -31,10 +35,12 @@ export const OntologySearchList = ({
 }) => {
   const router = useRouter();
   const { isOpen, onOpen, onClose } = useDisclosure({ defaultIsOpen: true });
+  const [union, setUnion] = React.useState<string>('OR');
 
   if (!searchList.length) {
     return <></>;
   }
+
   const queryString = router?.query?.q || '';
   const search_ids = searchList
     .map(item => item.taxonId)
@@ -48,32 +54,13 @@ export const OntologySearchList = ({
         borderRadius='semi'
         overflow='hidden'
       >
-        {!isOpen && (
-          <Tooltip label='Expand list of selected search terms'>
-            <Button
-              aria-label='Expand list of selected search terms'
-              onClick={onOpen}
-              size='sm'
-              colorScheme='gray'
-              bg='white'
-              variant='ghost'
-              height={{ base: 'auto', lg: '100%' }}
-            >
-              <Text display={{ base: 'block', lg: 'none' }} mr={2}>
-                Toggle Search List
-              </Text>
-              <Box>
-                <Icon as={FaMagnifyingGlass} />
-                <Icon
-                  display={{ base: 'none', lg: 'block' }}
-                  as={FaAnglesLeft}
-                  fill='gray.600'
-                  mt={4}
-                />
-              </Box>
-            </Button>
-          </Tooltip>
-        )}
+        {/* Toggle for opening the list*/}
+        <ListToggle
+          isOpen={isOpen}
+          toggleOpen={isOpen ? onClose : onOpen}
+          label='Expand list of selected search terms'
+        />
+        {/* List of terms to search */}
         <Box
           className='onto-search-list-content'
           bg='white'
@@ -110,6 +97,7 @@ export const OntologySearchList = ({
               </Text>
               <Icon as={FaAnglesRight} ml={4} fill='gray.600' />
             </Button>
+
             <ScrollContainer
               as='aside'
               overflowX='hidden'
@@ -120,8 +108,17 @@ export const OntologySearchList = ({
               pb={4}
               pr={0}
             >
-              {/*<--- Search List --->*/}
-              <Flex justifyContent='flex-end' w='100%' px={4} py={2}>
+              {/* Search Options */}
+              <Flex justifyContent='space-between' w='100%' px={4} py={2}>
+                <Flex fontSize='sm'>
+                  <RadioGroup onChange={setUnion} value={union} size='sm'>
+                    <HStack fontSize='sm'>
+                      <Radio value='OR'>Match Any</Radio>
+                      <Radio value='AND'>Match All</Radio>
+                    </HStack>
+                  </RadioGroup>
+                </Flex>
+                {/* Clear search */}
                 <Button
                   size='sm'
                   onClick={() => setSearchList([])}
@@ -186,21 +183,25 @@ export const OntologySearchList = ({
                   ))}
               </Box>
 
+              {/* Query summary */}
               <Text mt={4} px={6} lineHeight='short' fontSize='sm'>
-                Search for resources associated with{' '}
+                Search for resources associated with: <br />
                 {searchList.map((item, idx) => {
                   return (
                     <React.Fragment key={item.taxonId}>
                       <Text as='span' fontWeight='semibold'>
                         {item.label}
                       </Text>
-                      <Text as='span' fontStyle='italic'>
-                        {idx < searchList.length - 1 ? ' and ' : '.'}
+                      <br />
+                      <Text as='span'>
+                        {idx < searchList.length - 1 ? ` ${union} ` : ''}
                       </Text>
                     </React.Fragment>
                   );
                 })}
               </Text>
+
+              {/* Search button */}
               <Flex justifyContent='flex-end' px={4}>
                 <Button
                   as={NextLink}
