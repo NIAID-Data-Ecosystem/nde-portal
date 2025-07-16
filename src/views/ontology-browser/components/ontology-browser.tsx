@@ -1,5 +1,13 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Alert, Box, Flex, Spinner } from '@chakra-ui/react';
+import {
+  Alert,
+  AlertDescription,
+  AlertIcon,
+  AlertTitle,
+  Box,
+  Flex,
+  Spinner,
+} from '@chakra-ui/react';
 import { useQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/router';
 import {
@@ -128,7 +136,14 @@ export const OntologyBrowser = ({
   if (error) {
     return (
       <Alert status='error' role='alert'>
-        Error fetching ontology browser data: {error.message}
+        <AlertIcon />
+        <Box>
+          <AlertTitle>{error.message}</AlertTitle>
+          <AlertDescription>
+            There was a network issue communicating with the server. Please try
+            again in a few moments.{' '}
+          </AlertDescription>
+        </Box>
       </Alert>
     );
   }
