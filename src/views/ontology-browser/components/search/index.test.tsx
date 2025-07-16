@@ -464,7 +464,7 @@ describe('OntologyBrowserSearch', () => {
 
     await waitFor(() => {
       expect(searchOntologyAPI).toHaveBeenCalledWith({
-        q: 'homo',
+        q: 'homo*',
         ontology: ontologyMockOptions.map(onto => onto.value),
         biothingsFields: ['_id', 'rank', 'scientific_name'],
         olsFields: ['iri', 'label', 'ontology_name', 'short_form', 'type'],
