@@ -263,6 +263,7 @@ export const OntologyBrowserSearch = ({
       {error && (
         <Alert status='error' role='alert' flexWrap='wrap'>
           <AlertIcon />
+          <AlertTitle>{error.message}</AlertTitle>
           <AlertDescription>
             There was an error processing your search. Please try again later.
           </AlertDescription>

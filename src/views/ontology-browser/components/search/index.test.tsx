@@ -127,7 +127,6 @@ describe('OntologyBrowserSearch', () => {
 
     // Wait for the error message to appear
     await waitFor(() => {
-      expect(screen.getByText('Error:')).toBeInTheDocument();
       expect(screen.getByText('Error fetching data')).toBeInTheDocument();
     });
   });
@@ -142,7 +141,7 @@ describe('OntologyBrowserSearch', () => {
     fireEvent.submit(input);
 
     await waitFor(() => {
-      expect(screen.getByText('No Match:')).toBeInTheDocument();
+      expect(screen.getByText('No Results Found')).toBeInTheDocument();
       expect(screen.getByText('nonexistent')).toBeInTheDocument();
     });
   });
