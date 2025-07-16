@@ -9,16 +9,12 @@ import {
   IconButton,
   Radio,
   RadioGroup,
+  Tag,
+  TagLabel,
   Text,
   useDisclosure,
 } from '@chakra-ui/react';
-import {
-  FaAnglesLeft,
-  FaAnglesRight,
-  FaMagnifyingGlass,
-  FaX,
-} from 'react-icons/fa6';
-import Tooltip from 'src/components/tooltip';
+import { FaAnglesRight, FaMagnifyingGlass, FaX } from 'react-icons/fa6';
 import { useRouter } from 'next/router';
 import { ScrollContainer } from 'src/components/scroll-container';
 import { SearchListItem } from 'src/pages/ontology-browser';
@@ -44,7 +40,7 @@ export const OntologySearchList = ({
   const queryString = router?.query?.q || '';
   const search_ids = searchList
     .map(item => item.taxonId)
-    .join(' AND _meta.lineage.taxon:');
+    .join(` ${union} _meta.lineage.taxon:`);
   return (
     <>
       <Flex
@@ -111,7 +107,12 @@ export const OntologySearchList = ({
               {/* Search Options */}
               <Flex justifyContent='space-between' w='100%' px={4} py={2}>
                 <Flex fontSize='sm'>
-                  <RadioGroup onChange={setUnion} value={union} size='sm'>
+                  <RadioGroup
+                    onChange={setUnion}
+                    value={union}
+                    size='sm'
+                    isDisabled={searchList.length <= 1}
+                  >
                     <HStack fontSize='sm'>
                       <Radio value='OR'>Match Any</Radio>
                       <Radio value='AND'>Match All</Radio>
@@ -129,62 +130,79 @@ export const OntologySearchList = ({
               </Flex>
 
               {/* Search list */}
-              <Box flex={1} w='100%' flexDirection='column' bg='white'>
+              <Box as='ul' flex={1} w='100%' flexDirection='column' bg='white'>
                 {isOpen &&
                   searchList.map(({ taxonId, ontologyName, label }, index) => (
-                    <Flex
-                      key={`${ontologyName}-${taxonId}`}
-                      px={2}
-                      pl={6}
-                      py={1}
-                      bg={index % 2 ? 'niaid.50' : 'transparent'}
-                      alignItems='center'
-                    >
+                    <>
                       <Flex
-                        flex={1}
-                        fontWeight='normal'
-                        lineHeight='short'
-                        textAlign='left'
-                        wordBreak='break-word'
+                        as='li'
+                        key={`${ontologyName}-${taxonId}`}
+                        px={2}
+                        pl={8}
+                        py={4}
+                        bg={index % 2 ? 'niaid.50' : 'transparent'}
                         alignItems='center'
-                        justifyContent='space-between'
+                        position='relative'
                       >
-                        <Text color='gray.800' fontSize='12px'>
-                          {ontologyName} | {taxonId}
-                        </Text>
-                        <Text
-                          color='text.body'
-                          fontSize='xs'
-                          fontWeight='medium'
-                          lineHeight='inherit'
+                        {index !== 0 && (
+                          <Tag
+                            position='absolute'
+                            top={0}
+                            left={2}
+                            transform={'translateY(-50%)'}
+                            size='sm'
+                            colorScheme='niaid'
+                            variant='subtle'
+                          >
+                            <TagLabel fontSize='12px'>{union}</TagLabel>
+                          </Tag>
+                        )}
+                        <Flex
+                          flex={1}
+                          fontWeight='normal'
+                          lineHeight='shorter'
+                          textAlign='left'
+                          wordBreak='break-word'
+                          justifyContent='space-between'
+                          flexDirection='column'
                         >
-                          {label}
-                        </Text>
+                          <Text color='gray.800' fontSize='12px'>
+                            {ontologyName} | {taxonId}
+                          </Text>
+                          <Text
+                            color='text.body'
+                            fontWeight='medium'
+                            lineHeight='inherit'
+                            fontSize='sm'
+                          >
+                            {label}
+                          </Text>
+                        </Flex>
+                        <Flex alignItems='center'>
+                          <IconButton
+                            ml={4}
+                            aria-label={`remove ${label} from search`}
+                            icon={<Icon as={FaX} boxSize={2.5} />}
+                            variant='ghost'
+                            colorScheme='gray'
+                            size='sm'
+                            p={1}
+                            boxSize={6}
+                            minWidth={6}
+                            onClick={() => {
+                              setSearchList(prev =>
+                                prev.filter(item => item.label !== label),
+                              );
+                            }}
+                          />
+                        </Flex>
                       </Flex>
-                      <Flex alignItems='center'>
-                        <IconButton
-                          ml={4}
-                          aria-label={`remove ${label} from search`}
-                          icon={<Icon as={FaX} boxSize={2.5} />}
-                          variant='ghost'
-                          colorScheme='gray'
-                          size='sm'
-                          p={1}
-                          boxSize={6}
-                          minWidth={6}
-                          onClick={() => {
-                            setSearchList(prev =>
-                              prev.filter(item => item.label !== label),
-                            );
-                          }}
-                        />
-                      </Flex>
-                    </Flex>
+                    </>
                   ))}
               </Box>
 
               {/* Query summary */}
-              <Text mt={4} px={6} lineHeight='short' fontSize='sm'>
+              {/* <Text mt={4} px={6} lineHeight='short' fontSize='sm'>
                 Search for resources associated with: <br />
                 {searchList.map((item, idx) => {
                   return (
@@ -196,10 +214,11 @@ export const OntologySearchList = ({
                       <Text as='span'>
                         {idx < searchList.length - 1 ? ` ${union} ` : ''}
                       </Text>
+                      <br />
                     </React.Fragment>
                   );
                 })}
-              </Text>
+              </Text> */}
 
               {/* Search button */}
               <Flex justifyContent='flex-end' px={4}>
@@ -209,7 +228,7 @@ export const OntologySearchList = ({
                     pathname: `/search`,
                     query: {
                       q: `${
-                        queryString ? '(' + queryString + ') AND ' : ''
+                        queryString ? `(${queryString}) AND ` : ''
                       }_meta.lineage.taxon:${search_ids}`,
                     },
                   }}
