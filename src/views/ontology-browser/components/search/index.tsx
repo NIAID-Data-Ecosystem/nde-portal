@@ -28,7 +28,6 @@ import { DropdownContent } from 'src/components/input-with-dropdown/components/D
 import { CheckboxList } from 'src/components/checkbox-list';
 import { useDebounceValue } from 'usehooks-ts';
 import { DropdownListItem } from './dropdown-list-item';
-import { ErrorMessage } from '../error-message';
 
 interface OntologyBrowserSearchProps {
   colorScheme?: string;
@@ -86,11 +85,8 @@ export const OntologyBrowserSearch = ({
         pathname: `/ontology-browser`,
         query: { ...router.query, id, ontology },
       });
-      setSearchTerm('');
-
-      setHasNoMatch(false);
     },
-    [router, setSearchTerm, setHasNoMatch],
+    [router],
   );
 
   const handleInputChange = (str: string) => {
@@ -104,27 +100,36 @@ export const OntologyBrowserSearch = ({
   };
 
   const handleInputSubmit = (str: string) => {
-    const suggestion = suggestions?.find(
+    const suggestionMatch = suggestions?.find(
       suggestion => str === suggestion.label || str === suggestion._id,
     );
 
-    if (suggestion) {
+    if (suggestionMatch) {
       handleSubmit({
-        id: suggestion._id,
-        ontology: suggestion.definingOntology,
+        id: suggestionMatch._id,
+        ontology: suggestionMatch.definingOntology,
       });
       setSearchTerm('');
-    } else {
+      setHasNoMatch(false);
+    } else if (suggestions && suggestions.length > 0) {
+      // If no match found, set hasNoMatch to true
       setHasNoMatch(true);
+      // and submit the first suggestion if available
+      handleSubmit({
+        id: suggestions[0]._id,
+        ontology: suggestions[0].definingOntology,
+      });
     }
   };
+
+  const hasPartialResults = suggestions && suggestions.length > 0 && hasNoMatch;
 
   return (
     <VStack
       className='ontology-search'
       w='100%'
       alignItems='flex-start'
-      spacing={1}
+      spacing={2}
     >
       <HStack
         w='100%'
@@ -176,7 +181,12 @@ export const OntologyBrowserSearch = ({
                   size={size}
                   type='submit'
                   display={{ base: 'none', md: 'flex' }}
-                  isDisabled={error || isLoading || !debouncedTerm}
+                  isDisabled={
+                    !!error ||
+                    isLoading ||
+                    !debouncedTerm.trim() ||
+                    (suggestions && suggestions.length === 0)
+                  }
                 >
                   Search
                 </Button>
@@ -249,6 +259,7 @@ export const OntologyBrowserSearch = ({
           handleChange={setSelectedOntologies}
         />
       </HStack>
+      {/* <!-- Error Message --> */}
       {error && (
         <Alert status='error' role='alert'>
           <AlertIcon />
@@ -257,13 +268,44 @@ export const OntologyBrowserSearch = ({
           </AlertDescription>
         </Alert>
       )}
+      {/* <!-- No Match Found --> */}
+      {suggestions &&
+        suggestions.length === 0 &&
+        debouncedTerm &&
+        !isLoading &&
+        !error && (
+          <Alert status='info'>
+            <AlertIcon />
+            <AlertTitle>No Results Found</AlertTitle>
+            <AlertDescription>
+              No results found for <strong>{debouncedTerm}</strong>. Please try
+              a different search term.
+            </AlertDescription>
+          </Alert>
+        )}
+      {/* <!-- No Match in Selected Ontologies --> */}
       {hasNoMatch && (
-        <Alert status='warning'>
+        <Alert status='info'>
           <AlertIcon />
-          <AlertTitle>No Match:</AlertTitle>
+          <AlertTitle>
+            {suggestions && suggestions.length === 0
+              ? 'No match'
+              : 'No complete match'}
+          </AlertTitle>
           <AlertDescription>
-            Search term <strong>{debouncedTerm}</strong> not found in selected
-            ontologies.
+            Search term{' '}
+            <Text as='span' textDecoration='underline'>
+              {debouncedTerm}
+            </Text>{' '}
+            not found in selected ontologies.{' '}
+            {hasPartialResults && (
+              <Text as='span'>
+                Returning results for{' '}
+                <Text as='span' textDecoration='underline'>
+                  {suggestions[0].label}
+                </Text>{' '}
+              </Text>
+            )}
           </AlertDescription>
         </Alert>
       )}
