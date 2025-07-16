@@ -1,5 +1,9 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import {
+  Alert,
+  AlertDescription,
+  AlertIcon,
+  AlertTitle,
   Button,
   Flex,
   HStack,
@@ -172,7 +176,7 @@ export const OntologyBrowserSearch = ({
                   size={size}
                   type='submit'
                   display={{ base: 'none', md: 'flex' }}
-                  isDisabled={isLoading || !debouncedTerm}
+                  isDisabled={error || isLoading || !debouncedTerm}
                 >
                   Search
                 </Button>
@@ -245,21 +249,23 @@ export const OntologyBrowserSearch = ({
           handleChange={setSelectedOntologies}
         />
       </HStack>
-      {error && <ErrorMessage title='Error:'>{error.message}</ErrorMessage>}
+      {error && (
+        <Alert status='error' role='alert'>
+          <AlertIcon />
+          <AlertDescription>
+            There was an error processing your search. Please try again later.
+          </AlertDescription>
+        </Alert>
+      )}
       {hasNoMatch && (
-        <ErrorMessage title='No Match:'>
-          Search term{' '}
-          <Text
-            as='span'
-            fontWeight='semibold'
-            mr={1}
-            color='inherit'
-            fontSize='inherit'
-          >
-            {debouncedTerm}
-          </Text>
-          not found in selected ontologies.
-        </ErrorMessage>
+        <Alert status='warning'>
+          <AlertIcon />
+          <AlertTitle>No Match:</AlertTitle>
+          <AlertDescription>
+            Search term <strong>{debouncedTerm}</strong> not found in selected
+            ontologies.
+          </AlertDescription>
+        </Alert>
       )}
     </VStack>
   );
