@@ -59,6 +59,7 @@ export const OntologySearchList = ({
         {/* List of terms to search */}
         <Box
           className='onto-search-list-content'
+          minWidth={300}
           bg='white'
           w={isOpen ? { base: '100%', lg: `${WIDTH}px` } : '0px'}
           h={isOpen ? { base: 'auto', lg: 'auto' } : '0px'}
@@ -69,8 +70,9 @@ export const OntologySearchList = ({
           transitionTimingFunction='ease'
           position={{ base: 'fixed', lg: 'unset' }}
           top={0}
+          left={0}
           right={0}
-          zIndex='popover'
+          zIndex='modal'
         >
           <Flex
             h='100%'

@@ -162,6 +162,7 @@ export const OntologyBrowser = ({
             justifyContent='space-between'
             alignItems='flex-end'
             mb={1}
+            flexWrap='wrap'
           >
             <OntologyBrowserHeader selectedNode={selectedOntologyNode} />
             <OntologyBrowserSettings

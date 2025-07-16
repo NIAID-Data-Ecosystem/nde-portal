@@ -261,7 +261,7 @@ export const OntologyBrowserSearch = ({
       </HStack>
       {/* <!-- Error Message --> */}
       {error && (
-        <Alert status='error' role='alert'>
+        <Alert status='error' role='alert' flexWrap='wrap'>
           <AlertIcon />
           <AlertDescription>
             There was an error processing your search. Please try again later.
@@ -274,7 +274,7 @@ export const OntologyBrowserSearch = ({
         debouncedTerm &&
         !isLoading &&
         !error && (
-          <Alert status='info'>
+          <Alert status='info' flexWrap='wrap'>
             <AlertIcon />
             <AlertTitle>No Results Found</AlertTitle>
             <AlertDescription>
@@ -285,7 +285,7 @@ export const OntologyBrowserSearch = ({
         )}
       {/* <!-- No Match in Selected Ontologies --> */}
       {hasNoMatch && (
-        <Alert status='info'>
+        <Alert status='info' flexWrap='wrap'>
           <AlertIcon />
           <AlertTitle>
             {suggestions && suggestions.length === 0
