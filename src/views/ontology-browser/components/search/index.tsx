@@ -70,7 +70,7 @@ export const OntologyBrowserSearch = ({
     queryKey: ['ontology-browser-search', debouncedTerm, selectedOntologies],
     queryFn: () =>
       searchOntologyAPI({
-        q: debouncedTerm ? debouncedTerm : '',
+        q: debouncedTerm ? debouncedTerm + '*' : '',
         ontology: selectedOntologies.map(
           o => o.value,
         ) as SearchParams['ontology'],
