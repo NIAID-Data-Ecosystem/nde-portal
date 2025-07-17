@@ -26,6 +26,7 @@ export const OntologyViewSettings = ({
   const [viewSettings, setViewSettings] = useLocalStorage<LocalStorageConfig>(
     'ontology-browser-view',
     () => transformSettingsToLocalStorageConfig(defaultSettings),
+    { initializeWithValue: false },
   );
 
   return (
