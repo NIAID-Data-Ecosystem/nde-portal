@@ -19,7 +19,11 @@ export const ExternalLinkItem: React.FC<ExternalLinkItemProps> = ({
   return (
     <Stack alignItems='flex-start'>
       {image && (
-        <Image src={image.url} alt={image.alternativeText} maxHeight='100px' />
+        <Image
+          src={`${process.env.NEXT_PUBLIC_STRAPI_API_URL}${image.url}`}
+          alt={image.alternativeText}
+          maxHeight='100px'
+        />
       )}
 
       <Link href={url} isExternal={isExternal}>

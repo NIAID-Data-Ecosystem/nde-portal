@@ -110,7 +110,7 @@ export const IntroSection: React.FC<IntroSectionProps> = ({
             borderRadius='base'
             width='100%'
             height='auto'
-            src={image.url}
+            src={`${process.env.NEXT_PUBLIC_STRAPI_API_URL}${image.url}`}
             alt={image.alternativeText}
             objectFit='contain'
           />

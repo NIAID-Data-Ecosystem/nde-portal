@@ -5,6 +5,13 @@ import {
   queryFilterObject2String,
   queryFilterString2Object,
 } from 'src/views/search-results-page/helpers';
+import {
+  DiseasePageProps,
+  DiseaseCollectionApiResponse,
+} from 'src/views/diseases/types';
+
+const STRAPI_BASE_URL =
+  process.env.NEXT_PUBLIC_STRAPI_API_URL || 'http://localhost:1337';
 
 // Color scale for data types.
 export const getFillColor = scaleOrdinal({
@@ -45,4 +52,52 @@ export const getSearchResultsRoute = ({
       }),
     },
   };
+};
+
+// Fetch all disease pages
+export const fetchAllDiseasePages = async (): Promise<DiseasePageProps[]> => {
+  try {
+    const response = await fetch(
+      `${STRAPI_BASE_URL}/api/diseases?status=draft&populate=*&sort=title:asc`,
+    );
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch diseases: ${response.status}`);
+    }
+
+    const apiResponse: DiseaseCollectionApiResponse<DiseasePageProps[]> =
+      await response.json();
+
+    return apiResponse.data;
+  } catch (error) {
+    console.error('Error fetching disease pages:', error);
+    throw error;
+  }
+};
+
+// Fetch a single disease page by slug
+export const fetchDiseaseBySlug = async (
+  slug: string,
+): Promise<DiseasePageProps> => {
+  try {
+    const response = await fetch(
+      `${STRAPI_BASE_URL}/api/diseases?status=draft&filters[slug][$eq]=${slug}&populate=*`,
+    );
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch disease: ${response.status}`);
+    }
+
+    const apiResponse: DiseaseCollectionApiResponse<DiseasePageProps[]> =
+      await response.json();
+
+    if (!apiResponse.data || apiResponse.data.length === 0) {
+      throw new Error(`Disease with slug "${slug}" not found`);
+    }
+
+    return apiResponse.data[0];
+  } catch (error) {
+    console.error('Error fetching disease by slug:', error);
+    throw error;
+  }
 };

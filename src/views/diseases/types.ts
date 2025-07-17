@@ -2,22 +2,93 @@ import { ThemingProps } from '@chakra-ui/react';
 import { Params } from 'src/utils/api';
 
 /**
- * Strapi structure
- * Use this interface to define the structure of the disease page data in the Strapi application
- *
- * title: Text; Required.
- * topic: Text; Required.
- * slug: UID; Required.
- * query: JSON; Required.
- * image: Media (single); Required.
- *
- * subtitle: Text; Optional.
- * description: Rich Text; Optional.
- * contacts: Component (existing component - repeatable - LinkItem); Optional.
- * externalLinks: Component (existing component - repeatable - LinkItem); Optional.
- *
- *
+ * Strapi API response types for Disease content
  */
+
+export interface DiseaseImageApiResponse {
+  id: number;
+  url: string;
+  alternativeText: string;
+  caption?: string;
+  width?: number;
+  height?: number;
+  formats?: any;
+  hash: string;
+  ext: string;
+  mime: string;
+  size: number;
+  previewUrl?: string;
+  provider: string;
+  provider_metadata?: any;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface DiseaseLinkItemApiResponse {
+  id: number;
+  label: string;
+  url: string;
+  image: DiseaseImageApiResponse | null;
+  categories: DiseaseCategoryApiResponse[] | null;
+  isExternal: boolean;
+  createdAt: string;
+  updatedAt: string;
+  publishedAt: string;
+}
+
+export interface DiseaseCategoryApiResponse {
+  id: number;
+  name: string;
+  description?: string;
+  url?: string;
+  createdAt: string;
+  publishedAt: string;
+  updatedAt: string;
+}
+
+export interface DiseaseApiResponse {
+  id: number;
+  title: string;
+  topic: string;
+  slug: string;
+  query: Params;
+  image: DiseaseImageApiResponse;
+  subtitle?: string;
+  description?: string;
+  contacts?: DiseaseLinkItemApiResponse[];
+  externalLinks?: DiseaseLinkItemApiResponse[];
+  createdAt: string;
+  updatedAt: string;
+  publishedAt: string;
+}
+
+export interface DiseaseCollectionApiResponse<T> {
+  data: T;
+  meta: {
+    pagination?: {
+      page: number;
+      pageSize: number;
+      pageCount: number;
+      total: number;
+    };
+  };
+}
+
+/**
+ * Application domain types (aligned with API response)
+ */
+
+export interface LinkItem {
+  id: number;
+  label: string;
+  url: string;
+  image: DiseaseImageApiResponse | null;
+  categories: DiseaseCategoryApiResponse[] | null;
+  isExternal: boolean;
+  createdAt: string;
+  updatedAt: string;
+  publishedAt: string;
+}
 
 export interface DiseasePageProps {
   id: number;
@@ -25,33 +96,11 @@ export interface DiseasePageProps {
   topic: string;
   slug: string;
   query: Params;
-  image: { url: string; alternativeText: string; caption?: string };
-  subtitle: string | null;
-  description: string | null;
-  contacts: LinkItem[] | null;
-  externalLinks: LinkItem[] | null;
-  createdAt: string;
-  updatedAt: string;
-  publishedAt: string;
-}
-
-interface LinkItem {
-  id: number;
-  label: string;
-  url: string;
-  image: { url: string; alternativeText: string; caption?: string } | null;
-  categories:
-    | {
-        id: number;
-        name: string;
-        description?: string;
-        url?: string;
-        createdAt: string;
-        publishedAt: string;
-        updatedAt: string;
-      }[]
-    | null;
-  isExternal: boolean;
+  image: DiseaseImageApiResponse;
+  subtitle?: string;
+  description?: string;
+  contacts?: LinkItem[];
+  externalLinks?: LinkItem[];
   createdAt: string;
   updatedAt: string;
   publishedAt: string;
