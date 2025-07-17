@@ -38,15 +38,15 @@ export const OntologyBrowserCountTag = ({
   children,
   colorScheme,
   isLoading,
-  label,
+  tooltipLabel,
 }: {
   children: React.ReactNode;
   colorScheme: TagProps['colorScheme'];
   isLoading?: boolean;
-  label: React.ReactNode;
+  tooltipLabel: React.ReactNode;
 }) => {
   return (
-    <Tooltip label={label} mx={1}>
+    <Tooltip label={tooltipLabel} mx={1}>
       <Tag
         borderRadius='full'
         variant='subtle'

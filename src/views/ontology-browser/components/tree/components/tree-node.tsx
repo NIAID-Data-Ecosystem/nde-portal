@@ -2,9 +2,11 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   Box,
   Flex,
+  HStack,
   Icon,
   IconButton,
   ListItem,
+  StackDivider,
   Text,
   UnorderedList,
 } from '@chakra-ui/react';
@@ -309,23 +311,27 @@ export const TreeNode = (props: {
           </Box>
         </Flex>
         <Flex alignItems='center'>
-          <OntologyBrowserCountTag
-            colorScheme={node.counts.termCount === 0 ? 'gray' : 'primary'}
-            isLoading={isLoading}
-            label={getTooltipLabelByCountType('termCount')}
+          <HStack
+            divider={<StackDivider borderColor='gray.100' />}
+            flex={1}
+            alignItems='unset'
           >
-            {node.counts.termCount?.toLocaleString() || 0}
-          </OntologyBrowserCountTag>
-          <Text mx={0.5} fontWeight='bold' color='niaid.placeholder'>
-            {' / '}
-          </Text>
-          <OntologyBrowserCountTag
-            colorScheme='white'
-            isLoading={isLoading}
-            label={getTooltipLabelByCountType('termAndChildrenCount')}
-          >
-            {node.counts.termAndChildrenCount?.toLocaleString() || 0}
-          </OntologyBrowserCountTag>
+            <OntologyBrowserCountTag
+              colorScheme={node.counts.termCount === 0 ? 'gray' : 'primary'}
+              isLoading={isLoading}
+              tooltipLabel={getTooltipLabelByCountType('termCount')}
+            >
+              {node.counts.termCount?.toLocaleString() || 0}
+            </OntologyBrowserCountTag>
+
+            <OntologyBrowserCountTag
+              colorScheme='white'
+              isLoading={isLoading}
+              tooltipLabel={getTooltipLabelByCountType('termAndChildrenCount')}
+            >
+              {node.counts.termAndChildrenCount?.toLocaleString() || 0}
+            </OntologyBrowserCountTag>
+          </HStack>
 
           <IconButton
             ml={2}
