@@ -315,9 +315,9 @@ export const TreeNode = (props: {
             divider={<StackDivider borderColor='gray.100' />}
             flex={1}
             alignItems='unset'
+            spacing={3}
           >
             <OntologyBrowserCountTag
-              colorScheme={node.counts.termCount === 0 ? 'gray' : 'primary'}
               isLoading={isLoading}
               tooltipLabel={getTooltipLabelByCountType('termCount')}
             >
@@ -325,7 +325,6 @@ export const TreeNode = (props: {
             </OntologyBrowserCountTag>
 
             <OntologyBrowserCountTag
-              colorScheme='white'
               isLoading={isLoading}
               tooltipLabel={getTooltipLabelByCountType('termAndChildrenCount')}
             >
