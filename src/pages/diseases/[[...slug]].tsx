@@ -74,7 +74,7 @@ const DiseasePage: NextPage<{
             <Text fontWeight='light' color='gray.600' fontSize='lg'>
               API Request:{' '}
               {error?.message ||
-                'Its possible that the server is experiencing some issues.'}
+                'It’s possible that the server is experiencing some issues.'}{' '}
             </Text>
           </Flex>
         </Error>
