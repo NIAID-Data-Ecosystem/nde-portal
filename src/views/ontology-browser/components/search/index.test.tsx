@@ -43,17 +43,9 @@ jest.mock('next/router', () => ({
   useRouter: jest.fn(),
 }));
 
-jest.mock('usehooks-ts', () => {
-  let debouncedValue = '';
-  return {
-    useDebounceValue: jest.fn(value => {
-      return [
-        debouncedValue || value,
-        jest.fn(newValue => (debouncedValue = newValue)),
-      ];
-    }),
-  };
-});
+jest.mock('usehooks-ts', () => ({
+  useDebounceValue: (value: string) => [value, jest.fn()],
+}));
 
 const mockPush = jest.fn();
 
@@ -125,9 +117,16 @@ describe('OntologyBrowserSearch', () => {
 
     renderComponent();
 
-    // Wait for the error message to appear
+    const input = screen.getByPlaceholderText(
+      'Enter a taxonomy name or identifier',
+    );
+    fireEvent.change(input, { target: { value: 'homo' } });
+
     await waitFor(() => {
       expect(screen.getByText('Error fetching data')).toBeInTheDocument();
+      expect(
+        screen.getByText(/There was an error processing your search/i),
+      ).toBeInTheDocument();
     });
   });
 
@@ -441,8 +440,8 @@ describe('OntologyBrowserSearch', () => {
     });
   });
 
-  it('fetches suggestions based on search term', async () => {
-    const mockSuggestions = [
+  it('fetches suggestions based on search term and wildcard', async () => {
+    const mockExactSuggestions = [
       {
         _id: '9605',
         definingAPI: 'biothings',
@@ -452,7 +451,22 @@ describe('OntologyBrowserSearch', () => {
       },
     ];
 
-    (searchOntologyAPI as jest.Mock).mockResolvedValue(mockSuggestions);
+    const mockWildcardSuggestions = [
+      {
+        _id: '9606',
+        definingAPI: 'biothings',
+        definingOntology: 'ncbitaxon',
+        label: 'homo sapiens',
+        rank: 'species',
+      },
+    ];
+
+    // Mock implementation based on input
+    (searchOntologyAPI as jest.Mock).mockImplementation(({ q }) => {
+      if (q === 'homo') return Promise.resolve(mockExactSuggestions);
+      if (q === 'homo*') return Promise.resolve(mockWildcardSuggestions);
+      return Promise.resolve([]);
+    });
 
     renderComponent({ ontologyMenuOptions: ontologyMockOptions });
 
@@ -460,16 +474,18 @@ describe('OntologyBrowserSearch', () => {
       'Enter a taxonomy name or identifier',
     );
     fireEvent.change(input, { target: { value: 'homo' } });
+    expect(searchOntologyAPI).toHaveBeenCalledTimes(2);
 
     await waitFor(() => {
-      expect(searchOntologyAPI).toHaveBeenCalledWith({
-        q: 'homo*',
-        ontology: ontologyMockOptions.map(onto => onto.value),
-        biothingsFields: ['_id', 'rank', 'scientific_name'],
-        olsFields: ['iri', 'label', 'ontology_name', 'short_form', 'type'],
-      });
-    });
+      const calls = (searchOntologyAPI as jest.Mock).mock.calls;
 
-    expect(screen.getByText('homo')).toBeInTheDocument();
+      const qValues = calls.map(call => call[0].q); // grab the `q` from first argument
+
+      expect(qValues).toContain('homo');
+      expect(qValues).toContain('homo*');
+    });
+    // Combined results should be rendered
+    expect(await screen.findByText(/9605/)).toBeInTheDocument();
+    expect(await screen.findByText(/9606/)).toBeInTheDocument();
   });
 });

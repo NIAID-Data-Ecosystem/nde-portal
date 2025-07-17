@@ -46,7 +46,9 @@ export const OntologyBrowserSearch = ({
   const [selectedOntologies, setSelectedOntologies] =
     useState(ontologyMenuOptions);
 
-  const [debouncedTerm, setSearchTerm] = useDebounceValue('', 300);
+  const [searchTerm, setSearchTerm] = useState('');
+  // Debounce the search term to avoid excessive API calls
+  const [debouncedTerm] = useDebounceValue(searchTerm, 100);
 
   useEffect(() => {
     if (router?.query?.ontology) {
@@ -67,15 +69,54 @@ export const OntologyBrowserSearch = ({
     data: suggestions,
   } = useQuery({
     queryKey: ['ontology-browser-search', debouncedTerm, selectedOntologies],
-    queryFn: () =>
-      searchOntologyAPI({
-        q: debouncedTerm ? debouncedTerm + '*' : '',
-        ontology: selectedOntologies.map(
-          o => o.value,
-        ) as SearchParams['ontology'],
-        biothingsFields: ['_id', 'rank', 'scientific_name'],
-        olsFields: ['iri', 'label', 'ontology_name', 'short_form', 'type'],
-      }),
+    queryFn: async ({ signal }) => {
+      const term = debouncedTerm.trim();
+      if (!term) return [];
+
+      const ontologyValues = selectedOntologies.map(
+        o => o.value,
+      ) as SearchParams['ontology'];
+
+      // Search for both exact term and wildcard term. The reason for this is that searching for 9606* will return for anything that starts with 9606 but will not included term 9606 itself.
+      const [termSearchResponse, wildcardSearchResponse] = await Promise.all([
+        searchOntologyAPI(
+          {
+            q: term,
+            ontology: ontologyValues,
+            biothingsFields: ['_id', 'rank', 'scientific_name'],
+            olsFields: ['iri', 'label', 'ontology_name', 'short_form', 'type'],
+          },
+          signal,
+        ),
+        searchOntologyAPI(
+          {
+            q: `${term}*`,
+            ontology: ontologyValues,
+            biothingsFields: ['_id', 'rank', 'scientific_name'],
+            olsFields: ['iri', 'label', 'ontology_name', 'short_form', 'type'],
+          },
+          signal,
+        ),
+      ]);
+
+      return {
+        termSearch: termSearchResponse,
+        wildcardSearch: wildcardSearchResponse,
+      };
+    },
+    select: data => {
+      if (!data || Array.isArray(data)) return [];
+      // Combine results from both searches
+      const combinedResults = [
+        ...(data.termSearch || []),
+        ...(data.wildcardSearch || []),
+      ];
+      // Remove duplicates based on _id
+      const uniqueResults = Array.from(
+        new Map(combinedResults.map(item => [item._id, item])).values(),
+      );
+      return uniqueResults;
+    },
     refetchOnWindowFocus: false,
   });
 
