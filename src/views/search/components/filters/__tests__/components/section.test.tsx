@@ -13,9 +13,8 @@ import {
   FiltersContainer,
   FiltersContainerProps,
 } from '../../components/container';
-import { SearchTabsProvider } from 'src/views/draft-search/context/search-tabs-context';
-import { tab } from 'node_modules/@testing-library/user-event/dist/types/convenience';
-import { TabType } from 'src/views/draft-search/types';
+import { SearchTabsProvider } from 'src/views/search/context/search-tabs-context';
+import { TabType } from 'src/views/search/types';
 
 // Mock the useBreakpointValue hook  -- put in desktop mode
 jest.mock('@chakra-ui/react', () => {

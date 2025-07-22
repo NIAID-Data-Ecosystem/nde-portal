@@ -1,4 +1,4 @@
-import { TabType } from 'src/views/draft-search/types';
+import { TabType } from 'src/views/search/types';
 import { FILTER_CONFIGS } from '../config';
 
 /**

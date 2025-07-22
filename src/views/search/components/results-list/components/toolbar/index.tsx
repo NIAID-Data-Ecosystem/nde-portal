@@ -2,14 +2,14 @@ import React from 'react';
 import { useRouter } from 'next/router';
 import { DownloadMetadata } from 'src/components/download-metadata';
 import { Params } from 'src/utils/api';
-import { usePaginationContext } from 'src/views/draft-search/context/pagination-context';
-import { updateRoute } from 'src/views/draft-search/utils/update-route';
-import { TabType } from 'src/views/draft-search/types';
+import { usePaginationContext } from 'src/views/search/context/pagination-context';
+import { updateRoute } from 'src/views/search/utils/update-route';
+import { TabType } from 'src/views/search/types';
 import { SelectWithLabel } from './components/select-input';
 import {
   PAGE_SIZE_OPTIONS,
   SORT_OPTIONS,
-} from 'src/views/draft-search/config/defaultQuery';
+} from 'src/views/search/config/defaultQuery';
 import { Flex, Stack } from '@chakra-ui/react';
 import { MetadataScoreToggle } from './components/metadata-score-toggle';
 

@@ -4,7 +4,7 @@ import { render, screen, fireEvent, act } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import { FiltersContainer } from '../../components/container';
 import { FilterConfig } from '../../types';
-import { SearchTabsProvider } from 'src/views/draft-search/context/search-tabs-context';
+import { SearchTabsProvider } from 'src/views/search/context/search-tabs-context';
 
 // Mock data
 const mockFiltersList: FilterConfig[] = [

@@ -13,11 +13,11 @@ import {
   SelectedFilterTypeValue,
 } from '../../types';
 import { queryFilterObject2String } from '../../utils/query-builders';
-import { defaultQuery } from 'src/views/draft-search/config/defaultQuery';
+import { defaultQuery } from 'src/views/search/config/defaultQuery';
 import { isEqual } from 'lodash';
 import { generateTags } from './utils';
 import { SearchResultsHeading } from '../../../search-results-header';
-import { usePaginationContext } from 'src/views/draft-search/context/pagination-context';
+import { usePaginationContext } from 'src/views/search/context/pagination-context';
 
 interface FilterTagsProps {
   filtersConfig: FilterConfig[];

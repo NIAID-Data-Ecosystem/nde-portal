@@ -3,21 +3,21 @@ import { useRouter } from 'next/router';
 import { getPageSeoConfig, PageContainer } from 'src/components/page-container';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { FetchSearchResultsResponse } from 'src/utils/api/types';
-import { SearchTabsProvider } from 'src/views/draft-search/context/search-tabs-context';
-import { useSearchQueryFromURL } from 'src/views/draft-search/hooks/useSearchQueryFromURL';
+import { SearchTabsProvider } from 'src/views/search/context/search-tabs-context';
+import { useSearchQueryFromURL } from 'src/views/search/hooks/useSearchQueryFromURL';
 import { Box, Flex, VStack } from '@chakra-ui/react';
-import { Filters } from 'src/views/draft-search/components/filters';
-import { SelectedFilterType } from 'src/views/draft-search/components/filters/types';
-import { FILTER_CONFIGS } from 'src/views/draft-search/components/filters/config';
-import { queryFilterString2Object } from 'src/views/draft-search/components/filters/utils/query-builders';
-import { defaultQuery } from 'src/views/draft-search/config/defaultQuery';
-import { FilterTags } from 'src/views/draft-search/components/filters/components/tag';
-import { SearchResultsHeader } from 'src/views/draft-search/components/search-results-header';
-import { PaginationProvider } from 'src/views/draft-search/context/pagination-context';
-import { SearchResultsController } from 'src/views/draft-search/components/search-results-tabs-controller';
+import { Filters } from 'src/views/search/components/filters';
+import { SelectedFilterType } from 'src/views/search/components/filters/types';
+import { FILTER_CONFIGS } from 'src/views/search/components/filters/config';
+import { queryFilterString2Object } from 'src/views/search/components/filters/utils/query-builders';
+import { defaultQuery } from 'src/views/search/config/defaultQuery';
+import { FilterTags } from 'src/views/search/components/filters/components/tag';
+import { SearchResultsHeader } from 'src/views/search/components/search-results-header';
+import { PaginationProvider } from 'src/views/search/context/pagination-context';
+import { SearchResultsController } from 'src/views/search/components/search-results-tabs-controller';
 import { fetchSearchResults } from 'src/utils/api';
-import { TabType } from 'src/views/draft-search/types';
-import { tabs } from 'src/views/draft-search/config/tabs';
+import { TabType } from 'src/views/search/types';
+import { tabs } from 'src/views/search/config/tabs';
 
 // Default filters list.
 const defaultFilters = FILTER_CONFIGS.reduce(
