@@ -18,7 +18,7 @@ import { ResourceCatalog } from 'src/hooks/api/useResourceCatalogs';
 import { formatDomainName, formatTypeName } from './helpers';
 import { Filters } from './filters/';
 import useFilteredData from './hooks/useFilteredData';
-import { queryFilterObject2String } from 'src/views/search-results-page-archived/helpers';
+import { queryFilterObject2String } from 'src/views/search/components/filters/utils/query-builders';
 
 export interface TableData
   extends Omit<ResourceCatalog, 'type'>,

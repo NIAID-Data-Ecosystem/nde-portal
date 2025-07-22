@@ -26,7 +26,7 @@ import { SectionSearch } from 'src/components/table-of-contents/layouts/section-
 import { TagWithUrl } from 'src/components/tag-with-url';
 import type { SourceResponse } from 'src/pages/sources';
 import { formatDate } from 'src/utils/api/helpers';
-import { queryFilterObject2String } from 'src/views/search-results-page-archived/helpers';
+import { queryFilterObject2String } from 'src/views/search/components/filters/utils/query-builders';
 
 interface Main {
   data?: SourceResponse[];

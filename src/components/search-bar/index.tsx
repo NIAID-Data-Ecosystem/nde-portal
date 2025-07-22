@@ -23,7 +23,7 @@ import {
 } from '../input-with-dropdown';
 import { SearchHistoryItem } from './components/search-history-item';
 import { CheckboxList, CheckboxListProps } from '../checkbox-list';
-import { queryFilterObject2String } from 'src/views/search-results-page-archived/helpers';
+import { queryFilterObject2String } from 'src/views/search/components/filters/utils/query-builders';
 
 const DropdownContent = dynamic(() =>
   import('src/components/input-with-dropdown/components/DropdownContent').then(
