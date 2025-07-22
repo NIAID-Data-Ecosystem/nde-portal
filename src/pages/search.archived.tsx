@@ -8,7 +8,7 @@ import {
 import { Flex, Heading, HStack } from '@chakra-ui/react';
 import { useHasMounted } from 'src/hooks/useHasMounted';
 import SearchResultsPage from 'src/views/search-results-page-archived';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import dynamic from 'next/dynamic';
 import {
   defaultParams,
@@ -92,6 +92,13 @@ const Search: NextPage<{
       filters: defaultFilters,
     });
   }, [handleRouteUpdate, defaultFilters]);
+
+  // If the app is in production, redirect to a 404 page until search is fully implemented and approved.
+  useEffect(() => {
+    if (process.env.NEXT_PUBLIC_APP_ENV === 'production') {
+      router.replace('/404');
+    }
+  }, [router]);
 
   return (
     <PageContainer

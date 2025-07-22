@@ -80,13 +80,6 @@ const Search: NextPage<{
     setInitialTab(tab?.id || defaultTab);
   }, [router]);
 
-  // If the app is in production, redirect to a 404 page until search is fully implemented and approved.
-  useEffect(() => {
-    if (process.env.NEXT_PUBLIC_APP_ENV === 'production') {
-      router.replace('/404');
-    }
-  }, [router]);
-
   // If the initial tab is not set, return a loading state.
   if (!initialTab) {
     return null;
