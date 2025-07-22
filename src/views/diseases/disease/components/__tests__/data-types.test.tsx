@@ -4,7 +4,6 @@ import { render, screen } from '@testing-library/react';
 import { fetchSearchResults } from 'src/utils/api';
 import { getSearchResultsRoute } from 'src/views/diseases/helpers';
 import { useQuery } from '@tanstack/react-query';
-
 import { DataTypes } from '../data-types';
 
 // Mock the module before importing the component that uses it
