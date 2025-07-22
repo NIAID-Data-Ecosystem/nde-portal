@@ -6,7 +6,9 @@ import {
   AlertTitle,
   Box,
   Flex,
+  HStack,
   Spinner,
+  StackDivider,
 } from '@chakra-ui/react';
 import { useQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/router';
@@ -28,6 +30,11 @@ import { Tree } from './tree';
 import { OntologyTreeBreadcrumbs } from './tree/components/breadcrumbs';
 import { transformSettingsToLocalStorageConfig } from './settings/helpers';
 import { mergePreviousLineageWithChildrenData } from '../utils/ontology-helpers';
+import {
+  OntologyTreeHeaderItem,
+  OntologyTreeHeaders,
+} from './tree/components/tree-headers';
+import { getTooltipLabelByCountType } from './ontology-browser-count-tag';
 
 export const OntologyBrowser = ({
   searchList,
@@ -191,6 +198,27 @@ export const OntologyBrowser = ({
                       updateShowFromIndex={setShowFromIndex}
                     />
                   )}
+
+                  <OntologyTreeHeaders>
+                    <OntologyTreeHeaderItem label='Term name' />
+                    <HStack
+                      justifyContent='flex-end'
+                      flex={1}
+                      divider={<StackDivider borderColor='gray.100' />}
+                      spacing={3}
+                    >
+                      <OntologyTreeHeaderItem
+                        label='Exact Matches'
+                        tooltipLabel={getTooltipLabelByCountType('termCount')}
+                      />
+                      <OntologyTreeHeaderItem
+                        label='Matches including sub-terms'
+                        tooltipLabel={getTooltipLabelByCountType(
+                          'termAndChildrenCount',
+                        )}
+                      />
+                    </HStack>
+                  </OntologyTreeHeaders>
 
                   <Tree
                     params={queryParams}
