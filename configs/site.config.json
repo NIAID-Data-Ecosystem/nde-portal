@@ -202,6 +202,9 @@
           },
           {
             "page": "/advanced-search"
+          },
+          {
+            "page": "/ontology-browser"
           }
         ]
       },
@@ -236,9 +239,6 @@
           },
           {
             "page": "/features"
-          },
-          {
-            "page": "/ontology-browser"
           }
         ]
       }

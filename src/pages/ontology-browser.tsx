@@ -8,9 +8,9 @@ import {
 } from 'src/components/page-container';
 import { OntologyBrowserSearch } from 'src/views/ontology-browser/components/search';
 import { OntologyLineageItemWithCounts } from 'src/views/ontology-browser/types';
-import { OntologySearchList } from 'src/views/ontology-browser/components/ontology-search-list';
 import { OntologyBrowser } from 'src/views/ontology-browser/components/ontology-browser';
 import { ONTOLOGY_BROWSER_OPTIONS } from 'src/views/ontology-browser/utils/api-helpers';
+import { OntologySearchList } from 'src/views/ontology-browser/components/ontology-search-list';
 
 export interface SearchListItem
   extends Pick<
@@ -22,12 +22,7 @@ const OntologyBrowserPage: NextPage = () => {
   const [searchList, setSearchList] = useState<SearchListItem[] | []>([]);
 
   return (
-    <PageContainer
-      meta={getPageSeoConfig('/ontology-browser')}
-      px={0}
-      py={0}
-      includeSearchBar
-    >
+    <PageContainer meta={getPageSeoConfig('/ontology-browser')} px={0} py={0}>
       <PageContent
         alignItems='center'
         flexDirection='column'
