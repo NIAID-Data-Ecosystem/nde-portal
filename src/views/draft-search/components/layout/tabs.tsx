@@ -33,15 +33,16 @@ export const SearchTabs = ({
       index={index}
       onChange={onChange}
       colorScheme={colorScheme}
+      bg='#fff'
       isLazy
       lazyBehavior='keepMounted'
     >
       {/* Render each tab with its label(s) and count(s) */}
       <TabList
-        bg='#fff'
-        border='1px solid'
-        borderColor='gray.100'
-        borderBottomColor='gray.200'
+        borderTop='1px solid'
+        borderTopColor='gray.100'
+        borderBottom='hidden'
+        bg='page.alt'
       >
         {tabs.map(tab => (
           <Tab
@@ -51,7 +52,7 @@ export const SearchTabs = ({
             sx={{
               _selected: {
                 color: `${colorScheme}.500`,
-                borderColor: 'currentColor',
+                bg: '#fff',
               },
             }}
           >

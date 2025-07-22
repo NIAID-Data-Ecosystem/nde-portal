@@ -18,7 +18,7 @@ export const AccordionContent = ({
   children: React.ReactNode;
 }) => {
   return (
-    <AccordionItem>
+    <AccordionItem bg='page.alt'>
       {({ isExpanded }) => (
         <>
           <h2>
