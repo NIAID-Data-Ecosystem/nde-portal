@@ -1,7 +1,10 @@
 import { scaleOrdinal } from '@visx/scale';
 import { UrlObject } from 'url';
 import { Params } from 'src/utils/api';
-import { queryFilterObject2String } from '../search/components/filters/utils/query-builders';
+import {
+  queryFilterObject2String,
+  queryFilterString2Object,
+} from '../search/components/filters/utils/query-builders';
 
 // Color scale for data types.
 export const getFillColor = scaleOrdinal({
