@@ -7,8 +7,8 @@ import {
   TagLabel,
   FlexProps,
 } from '@chakra-ui/react';
-import { queryFilterObject2String } from 'src/views/search-results-page/helpers';
-import { defaultQuery } from 'src/views/search-results-page/helpers';
+import { queryFilterObject2String } from 'src/views/search-results-page-archived/helpers';
+import { defaultQuery } from 'src/views/search-results-page-archived/helpers';
 import { SelectedFilterType, SelectedFilterTypeValue } from '../types';
 import { FILTER_CONFIGS } from '../config';
 

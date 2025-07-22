@@ -12,7 +12,7 @@ import { FaArrowRight } from 'react-icons/fa6';
 import {
   SourceLogo,
   getSourceDetails,
-} from 'src/views/search-results-page/components/card/source-logo';
+} from 'src/views/search-results-page-archived/components/card/source-logo';
 
 interface DataAccessProps {
   isLoading: boolean;

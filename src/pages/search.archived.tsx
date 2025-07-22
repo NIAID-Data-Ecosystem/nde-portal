@@ -7,23 +7,23 @@ import {
 } from 'src/components/page-container';
 import { Flex, Heading, HStack } from '@chakra-ui/react';
 import { useHasMounted } from 'src/hooks/useHasMounted';
-import SearchResultsPage from 'src/views/search-results-page';
+import SearchResultsPage from 'src/views/search-results-page-archived';
 import { useCallback, useMemo } from 'react';
 import dynamic from 'next/dynamic';
 import {
   defaultParams,
   defaultQuery,
   queryFilterString2Object,
-} from 'src/views/search-results-page/helpers';
+} from 'src/views/search-results-page-archived/helpers';
 import { fetchSearchResults } from 'src/utils/api';
-import { Filters } from 'src/views/search-results-page/components/filters';
+import { Filters } from 'src/views/search-results-page-archived/components/filters';
 import { FormattedResource } from 'src/utils/api/types';
-import { FILTER_CONFIGS } from 'src/views/search-results-page/components/filters/config';
-import { SelectedFilterType } from 'src/views/search-results-page/components/filters/types';
+import { FILTER_CONFIGS } from 'src/views/search-results-page-archived/components/filters/config';
+import { SelectedFilterType } from 'src/views/search-results-page-archived/components/filters/types';
 
 const FilterTags = dynamic(() =>
   import(
-    'src/views/search-results-page/components/filters/components/tag'
+    'src/views/search-results-page-archived/components/filters/components/tag'
   ).then(mod => mod.FilterTags),
 );
 

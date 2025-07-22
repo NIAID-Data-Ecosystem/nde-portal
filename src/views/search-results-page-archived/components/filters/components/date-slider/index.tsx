@@ -11,7 +11,7 @@ import { FILTER_CONFIGS } from '../../config';
 import {
   queryFilterObject2String,
   queryFilterString2Object,
-} from 'src/views/search-results-page/helpers';
+} from 'src/views/search-results-page-archived/helpers';
 import { omit } from 'lodash';
 
 const Histogram = dynamic(() => import('./components/histogram'), {

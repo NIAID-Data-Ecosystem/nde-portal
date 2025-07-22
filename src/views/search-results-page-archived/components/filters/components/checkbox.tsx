@@ -5,7 +5,7 @@ import {
   Tag,
   Text,
 } from '@chakra-ui/react';
-import { FilterItem } from 'src/views/search-results-page/components/filters/types';
+import { FilterItem } from 'src/views/search-results-page-archived/components/filters/types';
 import Tooltip from 'src/components/tooltip';
 import { sendGTMEvent } from '@next/third-parties/google';
 

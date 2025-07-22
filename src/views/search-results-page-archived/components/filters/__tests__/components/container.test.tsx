@@ -2,7 +2,7 @@ import React from 'react';
 import { render, screen, fireEvent, act } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import { FiltersContainer } from '../../components/container';
-import { FilterConfig } from 'src/views/search-results-page/components/filters/types';
+import { FilterConfig } from 'src/views/search-results-page-archived/components/filters/types';
 import { ChakraProvider, useBreakpointValue } from '@chakra-ui/react';
 
 // Mock data

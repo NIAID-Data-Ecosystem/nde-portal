@@ -8,7 +8,7 @@ import { formatNumber } from 'src/utils/helpers';
 import { scaleBand, scaleLinear } from '@visx/scale';
 import { addMissingYears } from '../helpers';
 import { useDateRangeContext } from '../hooks/useDateRangeContext';
-import { FacetTermWithDetails } from 'src/views/search-results-page/components/filters/types';
+import { FacetTermWithDetails } from 'src/views/search-results-page-archived/components/filters/types';
 
 interface HistogramProps {
   updatedData: FacetTermWithDetails[];

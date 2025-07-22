@@ -3,7 +3,7 @@ import { addMissingYears } from '../helpers';
 import {
   FacetTermWithDetails,
   FilterItem,
-} from 'src/views/search-results-page/components/filters/types';
+} from 'src/views/search-results-page-archived/components/filters/types';
 
 export interface ContextProps {
   colorScheme: string;

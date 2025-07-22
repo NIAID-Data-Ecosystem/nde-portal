@@ -1,4 +1,4 @@
-import { FacetTermWithDetails } from 'src/views/search-results-page/components/filters/types';
+import { FacetTermWithDetails } from 'src/views/search-results-page-archived/components/filters/types';
 
 export const addMissingYears = (dates: FacetTermWithDetails[]) => {
   //  Add in missing years (with a count of 0)

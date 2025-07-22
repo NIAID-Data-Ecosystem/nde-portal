@@ -14,13 +14,13 @@ import {
   queryFilterObject2String,
   queryFilterString2Object,
   updateRoute,
-} from 'src/views/search-results-page/helpers';
+} from 'src/views/search-results-page-archived/helpers';
 import { MAX_PAGES, Pagination } from './components/pagination';
 import { SortDropdown } from './components/sort';
 import { encodeString, RESERVED_CHARS } from 'src/utils/querystring-helpers';
 import { defaultQuery } from './helpers';
 import { useQuerySearchResults } from './hooks/useSearchResults';
-import ResultsCount from 'src/views/search-results-page/components/count';
+import ResultsCount from 'src/views/search-results-page-archived/components/count';
 import Card from './components/card';
 import { FormattedResource } from 'src/utils/api/types';
 import Empty from 'src/components/empty';

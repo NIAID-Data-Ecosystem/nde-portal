@@ -4,7 +4,7 @@ import { Params } from 'src/utils/api';
 import {
   queryFilterObject2String,
   queryFilterString2Object,
-} from 'src/views/search-results-page/helpers';
+} from 'src/views/search-results-page-archived/helpers';
 
 // Color scale for data types.
 export const getFillColor = scaleOrdinal({

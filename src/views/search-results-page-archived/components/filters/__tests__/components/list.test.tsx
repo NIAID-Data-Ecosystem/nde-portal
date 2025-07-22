@@ -5,7 +5,7 @@ import {
   FilterConfig,
   FacetTermWithDetails,
   FilterItem,
-} from 'src/views/search-results-page/components/filters/types';
+} from 'src/views/search-results-page-archived/components/filters/types';
 import { FiltersList, groupTerms } from '../../components/list';
 
 jest.mock('react-window', () => ({

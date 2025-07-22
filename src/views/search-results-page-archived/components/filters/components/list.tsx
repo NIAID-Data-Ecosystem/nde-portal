@@ -11,7 +11,7 @@ import {
   FacetTermWithDetails,
   FilterConfig,
   FilterItem,
-} from 'src/views/search-results-page/components/filters/types';
+} from 'src/views/search-results-page-archived/components/filters/types';
 import { useDebounceValue } from 'usehooks-ts';
 import { VariableSizeList as List } from 'react-window';
 import { Checkbox } from './checkbox';
