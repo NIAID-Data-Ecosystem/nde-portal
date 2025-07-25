@@ -78,7 +78,7 @@ export const TableOfContents = () => {
   return (
     <Flex>
       <Sidebar aria-label='Navigation for list of disease pages.'>
-        {diseasePages?.map(page => {
+        {diseasePages.map(page => {
           return (
             <SidebarItem
               key={page.id}
