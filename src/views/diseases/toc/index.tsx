@@ -68,13 +68,6 @@ export const TableOfContents = () => {
     );
   }
 
-  // Show loading skeleton cards while data is being fetched
-  const renderLoadingCards = () => {
-    return Array.from({ length: 3 }, (_, index) => (
-      <StyledCard key={`loading-${index}`} isLoading={true} />
-    ));
-  };
-
   return (
     <Flex>
       <Sidebar aria-label='Navigation for list of disease pages.'>
@@ -117,7 +110,9 @@ export const TableOfContents = () => {
           {/* Display list of disease pages in cards */}
           <StyledCardStack>
             {isLoading
-              ? renderLoadingCards()
+              ? Array.from({ length: 3 }, (_, index) => (
+                  <StyledCard key={`loading-${index}`} isLoading={true} />
+                ))
               : diseasePages.map(page => {
                   const label = page?.title;
 
