@@ -23,12 +23,14 @@ const DiseasePage: NextPage<{
 }> = props => {
   const { data: initialData, slug } = props;
 
+  const hasSlug = !!slug && slug.length > 0;
+
   const { data, isLoading, error } = useQuery<DiseasePageProps, Error>({
     queryKey: ['disease', { slug }],
     queryFn: () => fetchDiseaseBySlug(slug[0]),
     initialData: initialData || undefined,
     refetchOnWindowFocus: false,
-    enabled: !!slug && slug.length > 0,
+    enabled: hasSlug,
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
@@ -57,7 +59,7 @@ const DiseasePage: NextPage<{
       }
       return await fetchSearchResults(params);
     },
-    enabled: params.q !== undefined && !!slug && slug.length > 0,
+    enabled: params.q !== undefined && hasSlug,
   });
 
   return (
@@ -80,7 +82,7 @@ const DiseasePage: NextPage<{
         </Error>
       ) : (
         <>
-          {slug && slug.length > 0 ? (
+          {hasSlug ? (
             <DiseaseContent
               data={data}
               query={query}
