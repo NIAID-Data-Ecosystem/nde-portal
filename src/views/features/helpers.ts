@@ -70,7 +70,7 @@ export const transformFeaturedContentForCarousel = (
       name: item.title,
       type: 'feature',
       description: item.content,
-      shortDescription: item?.abstract || '',
+      shortDescription: item?.abstract.slice(0, 160) || '',
       image: item.thumbnail,
     };
   });
