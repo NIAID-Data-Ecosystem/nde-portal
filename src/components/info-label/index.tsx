@@ -5,7 +5,7 @@ import Tooltip from 'src/components/tooltip';
 
 interface InfoLabelProps {
   title: string;
-  tooltipText?: string;
+  tooltipText?: TooltipProps['label'];
   textProps?: TextProps;
   tooltipProps?: TooltipProps;
 }

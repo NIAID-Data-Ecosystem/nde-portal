@@ -25,7 +25,7 @@ import {
   fetchProgramCollections,
   ProgramCollection,
 } from 'src/views/program-collections/helpers';
-import { queryFilterObject2String } from 'src/views/search-results-page/helpers';
+import { queryFilterObject2String } from 'src/views/search/components/filters/utils/query-builders';
 
 const ProgramCollections: NextPage<{
   data: ProgramCollection[];
