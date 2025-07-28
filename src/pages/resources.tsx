@@ -1,24 +1,28 @@
 import React, { useEffect } from 'react';
+import { omit } from 'lodash';
 import type { NextPage } from 'next';
 import NextLink from 'next/link';
+import { useRouter } from 'next/router';
+import { Box, Button, Card, Flex, Link, Text } from '@chakra-ui/react';
+import { useQuery } from '@tanstack/react-query';
 import {
   getPageSeoConfig,
   PageContainer,
   PageContent,
 } from 'src/components/page-container';
-import { useRouter } from 'next/router';
-import { useQuery } from '@tanstack/react-query';
-import { fetchSearchResults, getResourceById } from 'src/utils/api';
+import { getResourceById } from 'src/utils/api';
 import { FormattedResource } from 'src/utils/api/types';
 import Empty from 'src/components/empty';
-import { Box, Button, Card, Flex, Link, Text } from '@chakra-ui/react';
 import { Error, ErrorCTA } from 'src/components/error';
 import Sections, { sectionMetadata } from 'src/components/resource-sections';
 import navigationData from 'src/components/resource-sections/resource-sections.json';
 import { Route, showSection } from 'src/components/resource-sections/helpers';
 import { getQueryStatusError } from 'src/components/error/utils';
 import { Sidebar } from 'src/components/resource-sections/components/sidebar';
-import { omit } from 'lodash';
+import SITE_CONFIG from 'configs/site.config.json';
+import { SiteConfig } from 'src/components/page-container/types';
+
+const siteConfig = SITE_CONFIG as SiteConfig;
 
 // Displays empty message when no data exists.
 const EmptyState = () => {
@@ -75,11 +79,20 @@ const ResourcePage: NextPage = () => {
   // embed metadata
   useEffect(() => {
     if (data && data.rawData) {
-      let script_tag = document.createElement('script');
-      let metadata = JSON.stringify(data.rawData, null, 2);
-      script_tag.setAttribute('type', 'application/ld+json');
-      script_tag.text = metadata;
-      document.head.appendChild(script_tag);
+      const scriptId = 'structured-data-jsonld';
+
+      // Remove existing json ld script if present
+      const existing = document.getElementById(scriptId);
+      if (existing) {
+        existing.remove();
+      }
+
+      const scriptTag = document.createElement('script');
+      const metadata = JSON.stringify(data.rawData, null, 2);
+      scriptTag.setAttribute('type', 'application/ld+json');
+      scriptTag.setAttribute('id', scriptId);
+      scriptTag.text = metadata;
+      document.head.appendChild(scriptTag);
     }
   }, [data]);
 
@@ -113,6 +126,11 @@ const ResourcePage: NextPage = () => {
       <PageContainer
         meta={getPageSeoConfig('/resources', {
           title: `${data?.name ? data?.name : 'Resource'}`,
+          description: data?.description
+            ? data?.description.slice(0, 160)
+            : siteConfig.pages['/resources'].seo.description,
+          keywords: data?.keywords?.slice(0, 15) ||
+            siteConfig.pages['/resources'].seo.keywords || ['hello'],
           url: `${process.env.NEXT_PUBLIC_BASE_URL}/resources?id=${
             Array.isArray(id) ? id[0].toLowerCase() : id?.toLowerCase()
           }`,
