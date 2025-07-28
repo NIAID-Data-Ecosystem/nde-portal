@@ -10,8 +10,22 @@ import {
   DiseaseCollectionApiResponse,
 } from 'src/views/diseases/types';
 
-const STRAPI_BASE_URL =
-  process.env.NEXT_PUBLIC_STRAPI_API_URL || 'http://localhost:1337';
+// Get Strapi base URL with error handling
+const getStrapiBaseUrl = (): string => {
+  const url = process.env.NEXT_PUBLIC_STRAPI_API_URL;
+  if (!url) {
+    throw new Error(
+      'NEXT_PUBLIC_STRAPI_API_URL environment variable is required',
+    );
+  }
+  return url;
+};
+
+// Determine the correct status based on environment
+const getContentStatus = (): string => {
+  const isProd = process.env.NEXT_PUBLIC_APP_ENV === 'production';
+  return isProd ? 'published' : 'draft';
+};
 
 // Color scale for data types.
 export const getFillColor = scaleOrdinal({
@@ -57,8 +71,11 @@ export const getSearchResultsRoute = ({
 // Fetch all disease pages
 export const fetchAllDiseasePages = async (): Promise<DiseasePageProps[]> => {
   try {
+    const baseUrl = getStrapiBaseUrl();
+    const status = getContentStatus();
+
     const response = await fetch(
-      `${STRAPI_BASE_URL}/api/diseases?status=draft&populate=*&sort=title:asc`,
+      `${baseUrl}/api/diseases?status=${status}&populate=*&sort=title:asc`,
     );
 
     if (!response.ok) {
@@ -80,8 +97,11 @@ export const fetchDiseaseBySlug = async (
   slug: string,
 ): Promise<DiseasePageProps> => {
   try {
+    const baseUrl = getStrapiBaseUrl();
+    const status = getContentStatus();
+
     const response = await fetch(
-      `${STRAPI_BASE_URL}/api/diseases?status=draft&filters[slug][$eq]=${slug}&populate=*`,
+      `${baseUrl}/api/diseases?status=${status}&filters[slug][$eq]=${slug}&populate=*`,
     );
 
     if (!response.ok) {
