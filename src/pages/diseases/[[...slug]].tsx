@@ -107,8 +107,14 @@ export const getStaticProps: GetStaticProps = async context => {
   const { slug } = context.params;
 
   try {
-    const data = await fetchDiseaseBySlug(slug[0] as string);
-    return { props: { slug, data } };
+    // Handle both string and string array cases
+    const slugValue = Array.isArray(slug) ? slug[0] : slug;
+    const data = await fetchDiseaseBySlug(slugValue);
+
+    // Ensure slug is always returned as an array for consistency
+    const normalizedSlug = Array.isArray(slug) ? slug : [slug];
+
+    return { props: { slug: normalizedSlug, data } };
   } catch (error) {
     console.error('Error fetching disease data:', error);
     return { notFound: true };
