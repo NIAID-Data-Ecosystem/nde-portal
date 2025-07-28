@@ -157,9 +157,16 @@ export const CompactCard = ({
         </Skeleton>
       </CardHeader>
 
-      <CardBody p={0}>
+      <CardBody
+        p={0}
+        sx={{
+          '>*': {
+            my: 0,
+          },
+        }}
+      >
         {/* Date and badges */}
-        <Skeleton isLoaded={!isLoading} minHeight='30px' px={2} m={0}>
+        <Skeleton isLoaded={!isLoading} minHeight='30px' px={2}>
           {date && (
             <Flex
               bg='white'
@@ -210,7 +217,7 @@ export const CompactCard = ({
         </Skeleton>
 
         {/* Content types */}
-        <Skeleton isLoaded={!isLoading} px={1} mt={0} mb={0}>
+        <Skeleton isLoaded={!isLoading} px={1}>
           {aboutItems.length > 0 && (
             <Flex bg='white' direction='column'>
               <MetadataLabel label='Content Types' />

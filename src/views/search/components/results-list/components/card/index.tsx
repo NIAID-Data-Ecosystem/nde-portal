@@ -231,11 +231,17 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
               </Flex>
             )}
 
-            <CardBody p={0}>
+            <CardBody
+              p={0}
+              sx={{
+                '>*': {
+                  my: 0,
+                },
+              }}
+            >
               {date && (
                 <Flex
                   px={paddingCard}
-                  m={0}
                   flex={1}
                   borderRadius='semi'
                   bg='secondary.50'
@@ -268,7 +274,6 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                 <Flex
                   px={paddingCard}
                   py={1}
-                  m={0}
                   flex={1}
                   borderRadius='semi'
                   bg='secondary.50'
@@ -286,7 +291,6 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
               <Stack
                 px={paddingCard}
                 py={[0, 1]}
-                my={1}
                 flexDirection={{ base: 'column', md: 'row' }}
                 spacing={[1, 3, 4]}
               >
@@ -362,7 +366,6 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                   <Flex
                     borderBottom='1px solid'
                     borderBottomColor='gray.200'
-                    my={0}
                     px={paddingCard}
                     py={1}
                   >
@@ -407,7 +410,6 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                   <Flex
                     borderBottom='1px solid'
                     borderBottomColor='gray.200'
-                    my={0}
                     px={paddingCard}
                     py={1}
                   >
@@ -446,7 +448,6 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                   <Flex
                     borderBottom='1px solid'
                     borderBottomColor='gray.200'
-                    my={0}
                     px={paddingCard}
                     py={1}
                   >

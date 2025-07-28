@@ -52,7 +52,8 @@ export const useSearchQueryFromURL = (): DefaultSearchQueryParams => {
     const cleaned = Array.isArray(raw)
       ? raw.map(s => s?.trim()).join('+')
       : raw?.trim() ?? '';
-    return router.query.advancedSearch ? cleaned : encodeString(cleaned);
+    const finalQuery = cleaned || defaultQuery.q;
+    return router.query.advancedSearch ? finalQuery : encodeString(finalQuery);
   }, [router.query.q, router.query.advancedSearch]);
 
   return {
