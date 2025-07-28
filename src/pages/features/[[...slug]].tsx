@@ -22,6 +22,10 @@ import {
 import Main from 'src/views/features/components/Main';
 import { FeaturedPageProps } from 'src/views/features/types';
 import { useRouter } from 'next/router';
+import SITE_CONFIG from 'configs/site.config.json';
+import { SiteConfig } from 'src/components/page-container/types';
+
+const siteConfig = SITE_CONFIG as SiteConfig;
 
 const FeaturedPage: NextPage<{
   slug: string[];
@@ -62,7 +66,16 @@ const FeaturedPage: NextPage<{
   return (
     <PageContainer
       meta={getPageSeoConfig('/features', {
-        title: pageTitle,
+        title:
+          data?.metaFields?.title ||
+          data?.title ||
+          siteConfig.pages['/features'].seo.title,
+        description:
+          data?.metaFields?.description ||
+          siteConfig.pages['/features'].seo.description,
+        keywords:
+          data?.metaFields?.keywords ||
+          siteConfig.pages['/features'].seo.keywords,
         url: `${process.env.NEXT_PUBLIC_BASE_URL}/features/${
           props.slug?.[0] || ''
         }`,
