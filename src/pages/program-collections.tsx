@@ -1,7 +1,6 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { GetStaticProps, NextPage } from 'next';
 import { Flex, HStack, Text } from '@chakra-ui/react';
-import { useQuery } from '@tanstack/react-query';
 import { Error } from 'src/components/error';
 import { Link } from 'src/components/link';
 import {
@@ -10,8 +9,8 @@ import {
   PageContent,
 } from 'src/components/page-container';
 import {
-  StyleCardSubLabel,
   StyledCard,
+  StyleCardSubLabel,
   StyledCardButton,
   StyledCardDescription,
   StyledCardStack,
@@ -165,47 +164,15 @@ const ProgramCollections: NextPage<{
                         ? collection.sourceOrganization?.parentOrganization
                         : [collection.sourceOrganization?.parentOrganization]
                       : [];
+
                     return (
                       <StyledCard
                         key={index}
                         id={collection.id}
-                        label={label}
-                        subLabel={`${collection.count.toLocaleString()} resources available`}
-                      >
-                        {/* Description */}
-                        {collection.sourceOrganization?.abstract && (
-                          <StyledCardDescription>
-                            {collection.sourceOrganization?.abstract}
-                          </StyledCardDescription>
-                        )}
-
-                        {/* Parent Organization */}
-                        {parentOrganizations.length && (
-                          <HStack>
-                            <StyleCardSubLabel key={index}>
-                              {`Parent Organization(s): ${parentOrganizations.join(
-                                ', ',
-                              )}`}
-                            </StyleCardSubLabel>
-                          </HStack>
-                        )}
-
-                        {/* Link to program website */}
-                        {collection.sourceOrganization?.url && (
-                          <Link
-                            href={collection.sourceOrganization?.url}
-                            isExternal
-                          >
-                            {`${label} Website`}
-                          </Link>
-                        )}
-
-                        {/* Link to program resources in the NDE */}
-                        {collection.sourceOrganization?.name && (
-                          <Flex
-                            justifyContent={{ base: 'center', md: 'flex-end' }}
-                            width='100%'
-                          >
+                        title={label}
+                        subtitle={`${collection.count.toLocaleString()} resources available`}
+                        renderCTA={() =>
+                          collection.sourceOrganization?.name ? (
                             <StyledCardButton
                               maxWidth='500px'
                               href={{
@@ -222,8 +189,40 @@ const ProgramCollections: NextPage<{
                             >
                               Search for resources related to {label}
                             </StyledCardButton>
-                          </Flex>
-                        )}
+                          ) : (
+                            <></>
+                          )
+                        }
+                      >
+                        <>
+                          {/* Description */}
+                          {collection.sourceOrganization?.abstract && (
+                            <StyledCardDescription>
+                              {collection.sourceOrganization?.abstract}
+                            </StyledCardDescription>
+                          )}
+
+                          {/* Parent Organization */}
+                          {parentOrganizations.length && (
+                            <HStack>
+                              <StyleCardSubLabel key={index}>
+                                {`Parent Organization(s): ${parentOrganizations.join(
+                                  ', ',
+                                )}`}
+                              </StyleCardSubLabel>
+                            </HStack>
+                          )}
+
+                          {/* Link to program website */}
+                          {collection.sourceOrganization?.url && (
+                            <Link
+                              href={collection.sourceOrganization?.url}
+                              isExternal
+                            >
+                              {`${label} Website`}
+                            </Link>
+                          )}
+                        </>
                       </StyledCard>
                     );
                   })}

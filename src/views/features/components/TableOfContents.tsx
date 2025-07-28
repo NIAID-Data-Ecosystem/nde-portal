@@ -1,8 +1,8 @@
 import { useMemo, useState } from 'react';
-import { Flex } from '@chakra-ui/react';
-import { DiseasePageProps } from 'src/views/diseases/types';
+import { Flex, Image, Stack } from '@chakra-ui/react';
 import { PageContent } from 'src/components/page-container';
 import {
+  StyleCardLabel,
   StyledCard,
   StyledCardButton,
   StyledCardDescription,
@@ -14,19 +14,20 @@ import {
   Sidebar,
   SidebarItem,
 } from 'src/components/table-of-contents/layouts/sidebar';
+import { FeaturedPageProps } from '../types';
 
-export const TableOfContents = ({ data }: { data: DiseasePageProps[] }) => {
+export const TableOfContents = ({ data }: { data?: FeaturedPageProps[] }) => {
   // [TO DO]: Fetch all pages from the Strapi API
   const isLoading = false;
 
   const [searchValue, setSearchValue] = useState('');
 
-  const diseasePages = useMemo(() => {
+  const sortedPages = useMemo(() => {
     return (
       data
         ?.filter(page => {
           const title = page.title.toLowerCase();
-          const description = page.description?.toLowerCase() || '';
+          const description = page.abstract?.toLowerCase() || '';
           const searchTerm = searchValue.toLowerCase();
 
           return title.includes(searchTerm) || description.includes(searchTerm);
@@ -38,10 +39,9 @@ export const TableOfContents = ({ data }: { data: DiseasePageProps[] }) => {
         ) || []
     );
   }, [data, searchValue]);
-
   return (
     <Flex>
-      <Sidebar aria-label='Navigation for list of disease pages.'>
+      <Sidebar aria-label='Navigation for list of featured pages.'>
         {data?.map(page => {
           return (
             <SidebarItem
@@ -53,7 +53,7 @@ export const TableOfContents = ({ data }: { data: DiseasePageProps[] }) => {
         })}
       </Sidebar>
       <PageContent
-        id='diseases-index-page'
+        id='featured-index-page'
         bg='#fff'
         maxW={{ base: 'unset', lg: '1200px' }}
         justifyContent='center'
@@ -64,54 +64,67 @@ export const TableOfContents = ({ data }: { data: DiseasePageProps[] }) => {
         flex={3}
       >
         <Flex flexDirection='column' flex={1} pb={32} width='100%' m='0 auto'>
-          <SectionHeader title='Diseases'></SectionHeader>
+          <SectionHeader title='Features'></SectionHeader>
 
           {/* Search bar */}
           <Flex>
             <SectionSearch
-              data={diseasePages}
+              data={sortedPages}
               size='sm'
-              ariaLabel='Search for a disease'
-              placeholder='Search for a disease'
+              ariaLabel='Search for a featured page'
+              placeholder='Search for a featured page'
               value={searchValue}
               handleChange={e => setSearchValue(e.currentTarget.value)}
             />
           </Flex>
 
-          {/* Display list of disease pages in cards */}
+          {/* Display list of featured pages in cards */}
           <StyledCardStack>
-            {diseasePages.map(page => {
-              const title = page?.title;
+            {sortedPages.map(page => {
+              const label = page?.title;
+              const imageUrl = page?.thumbnail?.url.startsWith('/')
+                ? `${process.env.NEXT_PUBLIC_STRAPI_API_URL}${page.thumbnail.url}`
+                : page?.thumbnail?.url;
+
               return (
                 <StyledCard
                   key={page.id}
                   id={page.slug}
                   isLoading={isLoading}
-                  title={title}
-                  thumbnail={page.image}
+                  title={label}
+                  thumbnail={
+                    imageUrl
+                      ? {
+                          url: imageUrl,
+                          alternativeText:
+                            page?.thumbnail?.alternativeText || '',
+                        }
+                      : null
+                  }
                   renderCTA={() =>
-                    page.query ? (
+                    page.slug ? (
                       <StyledCardButton
                         href={{
-                          pathname: `/diseases/${page.slug}`,
+                          pathname: `/features/${page.slug}`,
                         }}
                       >
-                        Learn about {title} resources in the NIAID Data
-                        Ecosystem
+                        {page.title}
                       </StyledCardButton>
                     ) : (
                       <></>
                     )
                   }
                 >
-                  {/* Description */}
-                  {page.description && (
-                    <Flex flex={1}>
-                      <StyledCardDescription>
-                        {page.description}
-                      </StyledCardDescription>
-                    </Flex>
-                  )}
+                  <>
+                    {/* Description */}
+                    {page.abstract && (
+                      <Flex flex={1}>
+                        <StyledCardDescription>
+                          {page.abstract}
+                        </StyledCardDescription>
+                      </Flex>
+                    )}
+                  </>
                 </StyledCard>
               );
             })}
