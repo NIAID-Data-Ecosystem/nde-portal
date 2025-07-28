@@ -14,7 +14,10 @@ import HIV_DATA from 'src/views/diseases/mock-data/hiv-aids.json';
 import INFLUENZA_DATA from 'src/views/diseases/mock-data/influenza.json';
 import MALARIA_DATA from 'src/views/diseases/mock-data/malaria.json';
 import TUBERCULOSIS_DATA from 'src/views/diseases/mock-data/tuberculosis.json';
+import SITE_CONFIG from 'configs/site.config.json';
+import { SiteConfig } from 'src/components/page-container/types';
 
+const siteConfig = SITE_CONFIG as SiteConfig;
 const MOCK_PAGES = [
   ASTHMA_DATA,
   HIV_DATA,
@@ -85,13 +88,20 @@ const DiseasePage: NextPage<{
     enabled: params.q !== undefined && !!slug,
   });
 
-  const pageTitle = topic || 'Diseases';
+  const pageTitle = data?.title || 'Diseases';
 
   return (
     <PageContainer
       id='disease-page'
       meta={getPageSeoConfig('/diseases', {
-        title: pageTitle,
+        title: data?.title || siteConfig.pages['/diseases'].seo.title,
+        description: data?.topic
+          ? `Explore datasets and research resources for ${data.topic}, including clinical, molecular, and experimental data.`
+          : siteConfig.pages['/diseases'].seo.description,
+        // append topic to keywords if available
+        keywords: siteConfig.pages['/diseases'].seo.keywords?.concat(
+          topic ? [topic] : [],
+        ),
         url: `${process.env.NEXT_PUBLIC_BASE_URL}/diseases/${slug?.[0] || ''}`,
       })}
       breadcrumbsTitle={pageTitle}
