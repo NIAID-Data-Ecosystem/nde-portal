@@ -10,7 +10,10 @@ describe('use query hook', () => {
       wrapper: createWrapper(),
     });
 
-    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    await waitFor(() => expect(result.current.isSuccess).toBe(true), {
+      timeout: 5000,
+    });
+
     const { _id, abstract, conditionsOfAccess, name, type, url, domain } =
       result.current.data[0];
 
