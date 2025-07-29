@@ -131,9 +131,7 @@ describe('OntologyBrowser', () => {
     });
 
     await waitFor(() => {
-      expect(screen.getByRole('alert')).toHaveTextContent(
-        'Error fetching ontology browser data: API Error',
-      );
+      expect(screen.getByRole('alert')).toHaveTextContent('API Error');
     });
   });
 

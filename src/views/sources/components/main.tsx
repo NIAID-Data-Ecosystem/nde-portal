@@ -26,7 +26,7 @@ import { SectionSearch } from 'src/components/table-of-contents/layouts/section-
 import { TagWithUrl } from 'src/components/tag-with-url';
 import type { SourceResponse } from 'src/pages/sources';
 import { formatDate } from 'src/utils/api/helpers';
-import { queryFilterObject2String } from 'src/views/search-results-page/helpers';
+import { queryFilterObject2String } from 'src/views/search/components/filters/utils/query-builders';
 
 interface Main {
   data?: SourceResponse[];
@@ -137,8 +137,8 @@ const Main: React.FC<Main> = ({ data, isLoading, metadata }) => {
               key={index}
               id={sourceObj.slug}
               isLoading={isLoading}
-              label={sourceObj.name}
-              subLabel={
+              title={sourceObj.name}
+              subtitle={
                 sourceObj.numberOfRecords > 0
                   ? `${sourceObj.numberOfRecords.toLocaleString()} resources
                         available`
@@ -153,169 +153,8 @@ const Main: React.FC<Main> = ({ data, isLoading, metadata }) => {
                   )}
                 </>
               }
-            >
-              {/* Release dates */}
-              <HStack divider={<StackDivider borderColor='gray.100' />}>
-                <Text fontSize='xs' fontWeight='semibold' color='text.body'>
-                  Latest Release:{' '}
-                  <Text as='span' fontWeight='normal'>
-                    {sourceObj.dateModified
-                      ? new Date(sourceObj.dateModified).toLocaleDateString(
-                          'en-US',
-                          {
-                            year: 'numeric',
-                            month: 'long',
-                            day: 'numeric',
-                          },
-                        )
-                      : 'N/A'}
-                  </Text>
-                </Text>
-                <Text fontSize='xs' fontWeight='semibold' color='text.body'>
-                  First Released:{' '}
-                  <Text as='span' fontWeight='normal'>
-                    {sourceObj.dateCreated
-                      ? new Date(sourceObj.dateCreated).toLocaleDateString(
-                          'en-US',
-                          {
-                            year: 'numeric',
-                            month: 'long',
-                            day: 'numeric',
-                          },
-                        )
-                      : 'N/A'}
-                  </Text>
-                </Text>
-              </HStack>
-
-              {/* Description */}
-              {sourceObj?.description && (
-                <StyledCardDescription>
-                  {sourceObj?.description}
-                </StyledCardDescription>
-              )}
-
-              {/* Link to source's website */}
-              {sourceObj.url && (
-                <Link href={sourceObj.url} isExternal>
-                  {`${sourceObj.name} website`}
-                </Link>
-              )}
-              {/* Source Compatibility */}
-              {metadataCompatibilityData && (
-                <Box my={2}>
-                  <MetadataCompatibilitySourceBadge
-                    data={metadataCompatibilityData}
-                  />
-                </Box>
-              )}
-
-              {/* Property transformations table */}
-              {sourceObj?.schema && (
-                <Box w='100%' py={2}>
-                  <Flex
-                    w='100%'
-                    as='button'
-                    flexDirection={{ base: 'column', sm: 'row' }}
-                    alignItems='center'
-                    justifyContent='space-between'
-                    onClick={() => schemaIdFunc(sourceObj.name)}
-                    borderY='1px solid'
-                    borderColor='gray.100'
-                    px={0}
-                    py={2}
-                  >
-                    <Text
-                      fontWeight='semibold'
-                      color='gray.800'
-                      textAlign='left'
-                      lineHeight='short'
-                    >
-                      Visualization of {sourceObj.name} properties transformed
-                      to the NIAID Data Ecosystem
-                    </Text>
-                    <Flex alignItems='center'>
-                      <Text mx={2} fontSize='xs' color='gray.800'>
-                        {schemaText.includes(sourceObj.name) ? 'Hide' : 'Show'}
-                      </Text>
-                      <Icon
-                        as={
-                          schemaText.includes(sourceObj.name) ? FaMinus : FaPlus
-                        }
-                        color='gray.800'
-                        boxSize={3}
-                      />
-                    </Flex>
-                  </Flex>
-                  <Collapse in={schemaId.includes(sourceObj.name)}>
-                    {schemaId.includes(sourceObj.name) && (
-                      <Box
-                        mt={4}
-                        position='relative'
-                        overflowX='auto'
-                        boxShadow='low'
-                        borderRadius='semi'
-                      >
-                        <Box
-                          as='table'
-                          w='100%'
-                          bg='#374151'
-                          color='whiteAlpha.800'
-                          textAlign='left'
-                          fontSize='sm'
-                        >
-                          <Box as='thead' textTransform='uppercase'>
-                            <tr>
-                              <Box as='th' scope='col' px={6} py={3}>
-                                {sourceObj.name} Property
-                              </Box>
-                              <Box as='th' scope='col' px={6} py={3}>
-                                NIAID Data Ecosystem Property
-                              </Box>
-                            </tr>
-                          </Box>
-
-                          <Box as='tbody' bg='#1F2937' border='gray.100'>
-                            {Object.entries(sourceObj.schema).map((item, i) => {
-                              return (
-                                <Box
-                                  as='tr'
-                                  key={item[0]}
-                                  borderBottom='1px solid'
-                                  borderColor='gray.700'
-                                >
-                                  {Object.entries(item).map(field => {
-                                    return (
-                                      <Box
-                                        as='td'
-                                        key={`${field[0]}-${field[1]}`}
-                                        px={6}
-                                        py={2}
-                                        fontWeight='medium'
-                                        color='#fff'
-                                        whiteSpace='nowrap'
-                                      >
-                                        {field[1]}
-                                      </Box>
-                                    );
-                                  })}
-                                </Box>
-                              );
-                            })}
-                          </Box>
-                        </Box>
-                      </Box>
-                    )}
-                  </Collapse>
-                </Box>
-              )}
-
-              {/* Call to action */}
-              <Flex
-                w='100%'
-                justifyContent={{ base: 'center', md: 'flex-end' }}
-              >
-                {sourceObj.id && (
+              renderCTA={() =>
+                sourceObj.id ? (
                   <StyledCardButton
                     maxWidth='500px'
                     href={{
@@ -330,8 +169,174 @@ const Main: React.FC<Main> = ({ data, isLoading, metadata }) => {
                   >
                     Search for {sourceObj.name} resources
                   </StyledCardButton>
+                ) : (
+                  <></>
+                )
+              }
+            >
+              <>
+                {/* Release dates */}
+                <HStack divider={<StackDivider borderColor='gray.100' />}>
+                  <Text fontSize='xs' fontWeight='semibold' color='text.body'>
+                    Latest Release:{' '}
+                    <Text as='span' fontWeight='normal'>
+                      {sourceObj.dateModified
+                        ? new Date(sourceObj.dateModified).toLocaleDateString(
+                            'en-US',
+                            {
+                              year: 'numeric',
+                              month: 'long',
+                              day: 'numeric',
+                            },
+                          )
+                        : 'N/A'}
+                    </Text>
+                  </Text>
+                  <Text fontSize='xs' fontWeight='semibold' color='text.body'>
+                    First Released:{' '}
+                    <Text as='span' fontWeight='normal'>
+                      {sourceObj.dateCreated
+                        ? new Date(sourceObj.dateCreated).toLocaleDateString(
+                            'en-US',
+                            {
+                              year: 'numeric',
+                              month: 'long',
+                              day: 'numeric',
+                            },
+                          )
+                        : 'N/A'}
+                    </Text>
+                  </Text>
+                </HStack>
+
+                {/* Description */}
+                {sourceObj?.description && (
+                  <StyledCardDescription>
+                    {sourceObj?.description}
+                  </StyledCardDescription>
                 )}
-              </Flex>
+
+                {/* Link to source's website */}
+                {sourceObj.url && (
+                  <Link href={sourceObj.url} isExternal>
+                    {`${sourceObj.name} website`}
+                  </Link>
+                )}
+                {/* Source Compatibility */}
+                {metadataCompatibilityData && (
+                  <Box my={2}>
+                    <MetadataCompatibilitySourceBadge
+                      data={metadataCompatibilityData}
+                    />
+                  </Box>
+                )}
+
+                {/* Property transformations table */}
+                {sourceObj?.schema && (
+                  <Box w='100%' py={2}>
+                    <Flex
+                      w='100%'
+                      as='button'
+                      flexDirection={{ base: 'column', sm: 'row' }}
+                      alignItems='center'
+                      justifyContent='space-between'
+                      onClick={() => schemaIdFunc(sourceObj.name)}
+                      borderY='1px solid'
+                      borderColor='gray.100'
+                      px={0}
+                      py={2}
+                    >
+                      <Text
+                        fontWeight='semibold'
+                        color='gray.800'
+                        textAlign='left'
+                        lineHeight='short'
+                      >
+                        Visualization of {sourceObj.name} properties transformed
+                        to the NIAID Data Ecosystem
+                      </Text>
+                      <Flex alignItems='center'>
+                        <Text mx={2} fontSize='xs' color='gray.800'>
+                          {schemaText.includes(sourceObj.name)
+                            ? 'Hide'
+                            : 'Show'}
+                        </Text>
+                        <Icon
+                          as={
+                            schemaText.includes(sourceObj.name)
+                              ? FaMinus
+                              : FaPlus
+                          }
+                          color='gray.800'
+                          boxSize={3}
+                        />
+                      </Flex>
+                    </Flex>
+                    <Collapse in={schemaId.includes(sourceObj.name)}>
+                      {schemaId.includes(sourceObj.name) && (
+                        <Box
+                          mt={4}
+                          position='relative'
+                          overflowX='auto'
+                          boxShadow='low'
+                          borderRadius='semi'
+                        >
+                          <Box
+                            as='table'
+                            w='100%'
+                            bg='#374151'
+                            color='whiteAlpha.800'
+                            textAlign='left'
+                            fontSize='sm'
+                          >
+                            <Box as='thead' textTransform='uppercase'>
+                              <tr>
+                                <Box as='th' scope='col' px={6} py={3}>
+                                  {sourceObj.name} Property
+                                </Box>
+                                <Box as='th' scope='col' px={6} py={3}>
+                                  NIAID Data Ecosystem Property
+                                </Box>
+                              </tr>
+                            </Box>
+
+                            <Box as='tbody' bg='#1F2937' border='gray.100'>
+                              {Object.entries(sourceObj.schema).map(
+                                (item, i) => {
+                                  return (
+                                    <Box
+                                      as='tr'
+                                      key={item[0]}
+                                      borderBottom='1px solid'
+                                      borderColor='gray.700'
+                                    >
+                                      {Object.entries(item).map(field => {
+                                        return (
+                                          <Box
+                                            as='td'
+                                            key={`${field[0]}-${field[1]}`}
+                                            px={6}
+                                            py={2}
+                                            fontWeight='medium'
+                                            color='#fff'
+                                            whiteSpace='nowrap'
+                                          >
+                                            {field[1]}
+                                          </Box>
+                                        );
+                                      })}
+                                    </Box>
+                                  );
+                                },
+                              )}
+                            </Box>
+                          </Box>
+                        </Box>
+                      )}
+                    </Collapse>
+                  </Box>
+                )}
+              </>
             </StyledCard>
           );
         })}

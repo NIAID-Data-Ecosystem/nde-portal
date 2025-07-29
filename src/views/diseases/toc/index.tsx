@@ -5,8 +5,8 @@ import { DiseasePageProps } from 'src/views/diseases/types';
 import { PageContent } from 'src/components/page-container';
 import { fetchAllDiseasePages } from 'src/views/diseases/helpers';
 import {
-  StyleCardLabel,
   StyledCard,
+  StyleCardLabel,
   StyledCardButton,
   StyledCardDescription,
   StyledCardStack,

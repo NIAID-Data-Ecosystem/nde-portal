@@ -13,7 +13,11 @@ import {
   VStack,
   Stack,
 } from '@chakra-ui/react';
-import { PageContainer, PageContent } from 'src/components/page-container';
+import {
+  getPageSeoConfig,
+  PageContainer,
+  PageContent,
+} from 'src/components/page-container';
 import HOMEPAGE_COPY from 'configs/homepage.json';
 import HOME_QUERIES from 'configs/queries/home-queries.json';
 import NextLink from 'next/link';
@@ -30,11 +34,16 @@ import { TableWithSearch } from 'src/views/home/components/TableWithSearch/';
 import { useResourceCatalogs } from 'src/hooks/api/useResourceCatalogs';
 import { HeroBanner } from 'src/views/home/components/HeroBanner';
 import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
+import {
+  fetchAllFeaturedPages,
+  transformFeaturedContentForCarousel,
+} from 'src/views/features/helpers';
 
 const Home: NextPage<{
   data: {
     news: NewsOrEventsObject[];
     events: NewsOrEventsObject[];
+    features: NewsOrEventsObject[];
   };
   error?: { message: string };
 }> = props => {
@@ -53,12 +62,7 @@ const Home: NextPage<{
   } = useRepoData({ refetchOnWindowFocus: false, refetchOnMount: false });
 
   return (
-    <PageContainer
-      title='Home'
-      metaDescription='Find and access allergic, infectious and immune-mediated disease data by searching across biomedical data repositories with the NIAID Data Discovery Portal'
-      keywords='omics, data, infectious disease, epidemiology, clinical trial, immunology, bioinformatics, surveillance, search, repository'
-      overflowX='hidden'
-    >
+    <PageContainer meta={getPageSeoConfig('/')} overflowX='hidden'>
       {/**** Hero banner + search bar *****/}
       <HeroBanner
         title={HOMEPAGE_COPY.sections.hero.heading}
@@ -317,6 +321,7 @@ const Home: NextPage<{
                 <NewsCarousel
                   news={props.data.news}
                   events={props.data.events}
+                  features={props.data.features}
                 />
               )}
             </Box>
@@ -329,6 +334,10 @@ const Home: NextPage<{
 
 export async function getStaticProps() {
   try {
+    const features = await fetchAllFeaturedPages({
+      paginate: { page: 1, pageSize: 5 },
+    });
+
     const { news } = await fetchNews({ paginate: { page: 1, pageSize: 5 } });
 
     const events = await fetchEvents({ paginate: { page: 1, pageSize: 100 } })
@@ -344,7 +353,13 @@ export async function getStaticProps() {
       });
 
     return {
-      props: { data: { news, events: events.data } },
+      props: {
+        data: {
+          news,
+          events: events.data,
+          features: transformFeaturedContentForCarousel(features),
+        },
+      },
     };
   } catch (err: any) {
     return {

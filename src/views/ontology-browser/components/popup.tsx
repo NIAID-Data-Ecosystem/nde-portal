@@ -3,7 +3,7 @@ import NextLink from 'next/link';
 import {
   SelectedFilterType,
   SelectedFilterTypeValue,
-} from 'src/views/search-results-page/components/filters/types';
+} from 'src/views/search/components/filters/types';
 import { useQuery } from '@tanstack/react-query';
 import {
   ONTOLOGY_BROWSER_OPTIONS,

@@ -4,7 +4,7 @@ import { Params } from 'src/utils/api';
 import {
   queryFilterObject2String,
   queryFilterString2Object,
-} from 'src/views/search-results-page/helpers';
+} from '../search/components/filters/utils/query-builders';
 import {
   DiseasePageProps,
   DiseaseCollectionApiResponse,
