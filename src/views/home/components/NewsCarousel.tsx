@@ -19,15 +19,21 @@ import {
 import { Carousel } from 'src/components/carousel';
 import NextLink from 'next/link';
 import { Link } from 'src/components/link';
+import {
+  fetchAllFeaturedPages,
+  transformFeaturedContentForCarousel,
+} from 'src/views/features/helpers';
 
 interface NewsCarouselProps {
   news: NewsOrEventsObject[];
   events: NewsOrEventsObject[];
+  features: NewsOrEventsObject[];
 }
 
 export const NewsCarousel = ({
   news: initialNews,
   events: initialEvents,
+  features: initialFeatures,
 }: NewsCarouselProps) => {
   const {
     data: carouselCards,
@@ -37,25 +43,32 @@ export const NewsCarousel = ({
     {
       news: NewsOrEventsObject[];
       events: NewsOrEventsObject[];
+      features: NewsOrEventsObject[];
     },
     Error,
     NewsOrEventsObject[]
   >({
-    queryKey: ['news', 'events'],
+    queryKey: ['news', 'events', 'features'],
     queryFn: async () => {
       try {
         // Parallel fetching of news and events using Promise.all
-        const [newsResponse, eventsResponse] = await Promise.all([
-          fetchNews({ paginate: { page: 1, pageSize: 5 } }),
-          fetchEvents({ paginate: { page: 1, pageSize: 5 } }),
-        ]);
+        const [newsResponse, eventsResponse, featuresResponse] =
+          await Promise.all([
+            fetchNews({ paginate: { page: 1, pageSize: 5 } }),
+            fetchEvents({ paginate: { page: 1, pageSize: 5 } }),
+            fetchAllFeaturedPages({
+              paginate: { page: 1, pageSize: 5 },
+            }),
+          ]);
         // Mapping data to the expected structure
         const news = newsResponse.news;
         const events = eventsResponse.events;
+        const features = transformFeaturedContentForCarousel(featuresResponse);
 
         return {
           news,
           events,
+          features,
         };
       } catch (error: any) {
         // Assuming error is of type any, we throw as type Error for useQuery to handle
@@ -69,6 +82,7 @@ export const NewsCarousel = ({
     initialData: {
       news: initialNews,
       events: initialEvents,
+      features: initialFeatures,
     },
     select: data => {
       if (!data) return [];
@@ -76,6 +90,7 @@ export const NewsCarousel = ({
       const sortedResults = [
         ...(data?.news || []),
         ...(data?.events || []),
+        ...(data?.features || []),
       ].sort((a, b) => {
         // Use publishedAt if available, otherwise fallback to updatedAt
         let dateA = a.publishedAt || a.updatedAt;
@@ -125,6 +140,11 @@ export const NewsCarousel = ({
               ? `${carouselCard.image[0].alternativeText}`
               : `${carouselCard.image.alternativeText}`
             : 'News Thumbnail Image';
+
+          const card_url =
+            carouselCard?.type === 'feature'
+              ? `/features/${carouselCard.slug}`
+              : `/updates/#${carouselCard.slug}`;
           return (
             <Card key={carouselCard.id + idx} overflow='hidden' flex={1}>
               <Flex
@@ -197,7 +217,7 @@ export const NewsCarousel = ({
                       )}{' '}
                       &mdash;
                       {carouselCard.shortDescription}
-                      <NextLink href={`updates/#${carouselCard.slug}`} passHref>
+                      <NextLink href={card_url} passHref>
                         <Link
                           as='span'
                           fontSize='sm'

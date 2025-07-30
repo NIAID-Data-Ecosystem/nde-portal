@@ -34,11 +34,16 @@ import { TableWithSearch } from 'src/views/home/components/TableWithSearch/';
 import { useResourceCatalogs } from 'src/hooks/api/useResourceCatalogs';
 import { HeroBanner } from 'src/views/home/components/HeroBanner';
 import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
+import {
+  fetchAllFeaturedPages,
+  transformFeaturedContentForCarousel,
+} from 'src/views/features/helpers';
 
 const Home: NextPage<{
   data: {
     news: NewsOrEventsObject[];
     events: NewsOrEventsObject[];
+    features: NewsOrEventsObject[];
   };
   error?: { message: string };
 }> = props => {
@@ -316,6 +321,7 @@ const Home: NextPage<{
                 <NewsCarousel
                   news={props.data.news}
                   events={props.data.events}
+                  features={props.data.features}
                 />
               )}
             </Box>
@@ -328,6 +334,10 @@ const Home: NextPage<{
 
 export async function getStaticProps() {
   try {
+    const features = await fetchAllFeaturedPages({
+      paginate: { page: 1, pageSize: 5 },
+    });
+
     const { news } = await fetchNews({ paginate: { page: 1, pageSize: 5 } });
 
     const events = await fetchEvents({ paginate: { page: 1, pageSize: 100 } })
@@ -343,7 +353,13 @@ export async function getStaticProps() {
       });
 
     return {
-      props: { data: { news, events: events.data } },
+      props: {
+        data: {
+          news,
+          events: events.data,
+          features: transformFeaturedContentForCarousel(features),
+        },
+      },
     };
   } catch (err: any) {
     return {

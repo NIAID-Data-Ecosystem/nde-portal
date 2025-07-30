@@ -6,6 +6,7 @@ export interface MetaFields {
 export interface FeaturedPageProps {
   id: number;
   title: string;
+  abstract: string;
   content: string;
   subtitle: string;
   banner: { url: string; alternativeText: string } | null;

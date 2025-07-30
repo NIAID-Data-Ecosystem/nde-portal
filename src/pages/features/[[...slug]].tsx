@@ -1,15 +1,9 @@
 import React, { useEffect } from 'react';
 import type { GetStaticProps, NextPage } from 'next';
-import {
-  Flex,
-  ListItem,
-  Skeleton,
-  Text,
-  UnorderedList,
-} from '@chakra-ui/react';
+import { useRouter } from 'next/router';
+import { Flex, Skeleton, Text } from '@chakra-ui/react';
 import { useQuery } from '@tanstack/react-query';
 import { Error } from 'src/components/error';
-import { Link } from 'src/components/link';
 import {
   getPageSeoConfig,
   PageContainer,
@@ -21,7 +15,7 @@ import {
 } from 'src/views/features/helpers';
 import Main from 'src/views/features/components/Main';
 import { FeaturedPageProps } from 'src/views/features/types';
-import { useRouter } from 'next/router';
+import { TableOfContents } from 'src/views/features/components/TableOfContents';
 import SITE_CONFIG from 'configs/site.config.json';
 import { SiteConfig } from 'src/components/page-container/types';
 
@@ -84,61 +78,65 @@ const FeaturedPage: NextPage<{
       px={0}
       py={0}
     >
-      <Flex>
-        {/* Banner img */}
-        {(isLoading || data?.banner) && (
-          <Skeleton
-            isLoaded={!isLoading}
-            backgroundImage={`${process.env.NEXT_PUBLIC_STRAPI_API_URL}${data?.banner?.url}`}
-            backgroundSize='cover'
-            display={{ base: 'none', sm: 'flex' }}
-            width={{ base: 'none', sm: '50px', md: '150px', lg: '300px' }}
-          />
-        )}
+      {error ? (
+        <Error>
+          <Flex flexDirection='column' justifyContent='center'>
+            <Text fontWeight='light' color='gray.600' fontSize='lg'>
+              API Request:{' '}
+              {error?.message ||
+                'It’s possible that the server is experiencing some issues.'}{' '}
+            </Text>
+          </Flex>
+        </Error>
+      ) : (
+        <>
+          {props.slug ? (
+            <>
+              <Flex>
+                {/* Banner img */}
+                {(isLoading || data?.banner) && (
+                  <Skeleton
+                    isLoaded={!isLoading}
+                    backgroundImage={`${process.env.NEXT_PUBLIC_STRAPI_API_URL}${data?.banner?.url}`}
+                    backgroundSize='cover'
+                    display={{ base: 'none', sm: 'flex' }}
+                    width={{
+                      base: 'none',
+                      sm: '50px',
+                      md: '150px',
+                      lg: '300px',
+                    }}
+                  />
+                )}
 
-        <Flex
-          justifyContent='center'
-          bg='whiteAlpha.900'
-          p={0}
-          flex={1}
-          flexDirection={{ base: 'column', md: 'row' }}
-        >
-          <PageContent
-            id='features-content'
-            bg='#fff'
-            maxW={{ base: 'unset', lg: '1600px' }}
-            margin={{ base: 'unset', md: '0 auto' }}
-            px={4}
-            py={4}
-            justifyContent='center'
-            mb={32}
-            flex={1}
-          >
-            {error ? (
-              <Error bg='#fff'>
-                <Flex flexDirection='column' alignItems='center'>
-                  <Text fontWeight='light' color='gray.600' fontSize='lg'>
-                    {error?.statusText ||
-                      'It’s possible that the server is experiencing some issues.'}
-                  </Text>
+                <Flex
+                  justifyContent='center'
+                  bg='whiteAlpha.900'
+                  p={0}
+                  flex={1}
+                  flexDirection={{ base: 'column', md: 'row' }}
+                >
+                  <PageContent
+                    id='features-content'
+                    bg='#fff'
+                    maxW={{ base: 'unset', lg: '1600px' }}
+                    margin={{ base: 'unset', md: '0 auto' }}
+                    px={4}
+                    py={4}
+                    justifyContent='center'
+                    mb={32}
+                    flex={1}
+                  >
+                    <Main isLoading={isLoading} data={data} />
+                  </PageContent>
                 </Flex>
-              </Error>
-            ) : props.slug ? (
-              <Main isLoading={isLoading} data={data} />
-            ) : (
-              <UnorderedList>
-                {/* [TO DO]: Add index page  */}
-                {featuredPages &&
-                  featuredPages.map(page => (
-                    <ListItem key={page.slug}>
-                      <Link href={`/features/${page.slug}`}>{page.title}</Link>
-                    </ListItem>
-                  ))}
-              </UnorderedList>
-            )}
-          </PageContent>
-        </Flex>
-      </Flex>
+              </Flex>
+            </>
+          ) : (
+            <TableOfContents data={featuredPages} />
+          )}
+        </>
+      )}
     </PageContainer>
   );
 };
@@ -153,7 +151,7 @@ export const getStaticProps: GetStaticProps = async context => {
 };
 
 export async function getStaticPaths() {
-  // Call an external API endpoint to get documentation
+  // Call an external API endpoint to get featured pages.
   const featuredPages = await fetchAllFeaturedPages();
   if (!featuredPages.length) {
     return { paths: [], fallback: false };
