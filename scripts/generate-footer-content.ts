@@ -72,7 +72,9 @@ const updateConfigWithFooter = async (config: SiteConfig, repoData: any) => {
   };
 
   await fs.writeFile(CONFIG_FILE_PATH, JSON.stringify(updatedConfig, null, 2));
-  console.log('Config file updated successfully');
+  console.log(
+    'Site configuration(configs/site.config.json) file updated field lastUpdate.label with date successfully',
+  );
 };
 
 // Main execution
