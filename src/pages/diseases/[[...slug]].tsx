@@ -13,7 +13,10 @@ import {
 import { TableOfContents } from 'src/views/diseases/toc';
 import { DiseasePageProps } from 'src/views/diseases/types';
 import { DiseaseContent } from 'src/views/diseases/disease';
+import SITE_CONFIG from 'configs/site.config.json';
+import { SiteConfig } from 'src/components/page-container/types';
 
+const siteConfig = SITE_CONFIG as SiteConfig;
 /**
  * DiseasePage fetches disease-specific content from Strapi and displays it in a structured layout.
  */
@@ -62,13 +65,20 @@ const DiseasePage: NextPage<{
     enabled: params.q !== undefined && hasSlug,
   });
 
-  const pageTitle = topic || 'Diseases';
+  const pageTitle = data?.title || 'Diseases';
 
   return (
     <PageContainer
       id='disease-page'
       meta={getPageSeoConfig('/diseases', {
-        title: pageTitle,
+        title: data?.title || siteConfig.pages['/diseases'].seo.title,
+        description: data?.topic
+          ? `Explore datasets and research resources for ${data.topic}, including clinical, molecular, and experimental data.`
+          : siteConfig.pages['/diseases'].seo.description,
+        // append topic to keywords if available
+        keywords: siteConfig.pages['/diseases'].seo.keywords?.concat(
+          topic ? [topic] : [],
+        ),
         url: `${process.env.NEXT_PUBLIC_BASE_URL}/diseases/${slug?.[0] || ''}`,
       })}
       breadcrumbsTitle={pageTitle}

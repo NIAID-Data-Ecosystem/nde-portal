@@ -6,7 +6,7 @@ export interface SeoMetaFieldsProps {
   url: string;
   title?: string; // title of the page, should be around 60 characters
   description?: string; // short description of the page should be around 155 characters
-  keywords?: string[]; // comma-separated keywords for the page, should be around 10-15 words
+  keywords?: string | string[]; // comma-separated keywords for the page, should be around 10-15 words
   canonical?: string; // optional override for url
   preventIndexing?: boolean; // if true, adds noindex meta tags to prevent indexing - useful for 404 page
 }
@@ -36,6 +36,12 @@ export const SeoMetaFields: React.FC<SeoMetaFieldsProps> = ({
   const url = relativeUrl.startsWith('/')
     ? `${BASE_URL}${relativeUrl}`
     : relativeUrl;
+
+  // Normalize keywords to a string
+  const keywords_string = Array.isArray(keywords)
+    ? keywords.join(', ')
+    : keywords || '';
+
   // Warn about missing critical SEO data
   if (!title || !description) {
     console.warn(
@@ -47,9 +53,7 @@ export const SeoMetaFields: React.FC<SeoMetaFieldsProps> = ({
     <Head>
       <title>{title}</title>
       <meta name='description' content={description} />
-      {keywords?.length && (
-        <meta name='keywords' content={keywords.join(', ')} />
-      )}
+      {keywords_string && <meta name='keywords' content={keywords_string} />}
 
       {!preventIndexing && <link rel='canonical' href={canonical || url} />}
 
