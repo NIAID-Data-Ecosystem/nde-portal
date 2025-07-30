@@ -1,5 +1,15 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Alert, Box, Flex, Spinner } from '@chakra-ui/react';
+import {
+  Alert,
+  AlertDescription,
+  AlertIcon,
+  AlertTitle,
+  Box,
+  Flex,
+  HStack,
+  Spinner,
+  StackDivider,
+} from '@chakra-ui/react';
 import { useQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/router';
 import {
@@ -20,6 +30,11 @@ import { Tree } from './tree';
 import { OntologyTreeBreadcrumbs } from './tree/components/breadcrumbs';
 import { transformSettingsToLocalStorageConfig } from './settings/helpers';
 import { mergePreviousLineageWithChildrenData } from '../utils/ontology-helpers';
+import {
+  OntologyTreeHeaderItem,
+  OntologyTreeHeaders,
+} from './tree/components/tree-headers';
+import { getTooltipLabelByCountType } from './ontology-browser-count-tag';
 
 export const OntologyBrowser = ({
   searchList,
@@ -128,7 +143,14 @@ export const OntologyBrowser = ({
   if (error) {
     return (
       <Alert status='error' role='alert'>
-        Error fetching ontology browser data: {error.message}
+        <AlertIcon />
+        <Box>
+          <AlertTitle>{error.message}</AlertTitle>
+          <AlertDescription>
+            There was a network issue communicating with the server. Please try
+            again in a few moments.{' '}
+          </AlertDescription>
+        </Box>
       </Alert>
     );
   }
@@ -147,6 +169,7 @@ export const OntologyBrowser = ({
             justifyContent='space-between'
             alignItems='flex-end'
             mb={1}
+            flexWrap='wrap'
           >
             <OntologyBrowserHeader selectedNode={selectedOntologyNode} />
             <OntologyBrowserSettings
@@ -175,6 +198,27 @@ export const OntologyBrowser = ({
                       updateShowFromIndex={setShowFromIndex}
                     />
                   )}
+
+                  <OntologyTreeHeaders>
+                    <OntologyTreeHeaderItem label='Term name' />
+                    <HStack
+                      justifyContent='flex-end'
+                      flex={1}
+                      divider={<StackDivider borderColor='gray.100' />}
+                      spacing={3}
+                    >
+                      <OntologyTreeHeaderItem
+                        label='Exact Matches'
+                        tooltipLabel={getTooltipLabelByCountType('termCount')}
+                      />
+                      <OntologyTreeHeaderItem
+                        label='Matches including sub-terms'
+                        tooltipLabel={getTooltipLabelByCountType(
+                          'termAndChildrenCount',
+                        )}
+                      />
+                    </HStack>
+                  </OntologyTreeHeaders>
 
                   <Tree
                     params={queryParams}

@@ -11,10 +11,12 @@ import {
 } from '@chakra-ui/react';
 import { FaBars, FaXmark } from 'react-icons/fa6';
 import dynamic from 'next/dynamic';
-import NAVIGATION from './routes.json';
+import SITE_CONFIG from 'configs/site.config.json';
 import { Logo } from 'src/components/logos';
 import { DesktopNavItem } from './components/desktop-nav-item';
 import { useRouter } from 'next/router';
+import { buildNavigationFromConfig, filterRoutesByEnv } from './helpers';
+import { SiteConfig } from '../page-container/types';
 
 const MobileSubMenu = dynamic(
   () => import('./components/menu-mobile').then(mod => mod.MobileSubMenu),
@@ -23,48 +25,6 @@ const MobileSubMenu = dynamic(
   },
 );
 
-export interface RouteProps {
-  label: string;
-  subLabel?: string;
-  routes?: Array<RouteProps>;
-  href?: string;
-  env?: string[];
-  isExternal?: boolean;
-  isActive?: boolean;
-}
-
-export function filterRoutesByEnv(
-  navigation: RouteProps,
-  environment: string,
-): RouteProps {
-  // If no environment is provided, return the original navigation
-  if (!environment) {
-    return navigation;
-  }
-  function filter(routes: RouteProps[]): RouteProps[] {
-    return routes
-      .filter(route => {
-        // Remove routes with an env array that doesn't include the current env
-        if (route.env && !route.env.includes(environment)) {
-          return false;
-        }
-        return true;
-      })
-      .map(route => {
-        // If nested routes exist, filter them too
-        if (route.routes) {
-          const filteredNestedRoutes = filter(route.routes);
-          return { ...route, routes: filteredNestedRoutes };
-        }
-        return route;
-      });
-  }
-
-  return {
-    ...navigation,
-    routes: navigation?.routes && filter(navigation.routes),
-  };
-}
 export const Navigation: React.FC<FlexProps> = props => {
   const { isOpen, onToggle } = useDisclosure();
   const [isLargerThanMd] = useMediaQuery('(min-width: 54rem)', {
@@ -73,8 +33,11 @@ export const Navigation: React.FC<FlexProps> = props => {
   });
   const router = useRouter();
 
+  // Build navigation from config
+  const navigationData = buildNavigationFromConfig(SITE_CONFIG as SiteConfig);
+
   const navigationFilteredByEnvironment = filterRoutesByEnv(
-    NAVIGATION as RouteProps,
+    navigationData,
     process.env.NEXT_PUBLIC_APP_ENV || '',
   );
 
@@ -84,7 +47,7 @@ export const Navigation: React.FC<FlexProps> = props => {
       as='nav'
       w='100%'
       minW={300}
-      zIndex='banner'
+      zIndex='popover'
       aria-label='Main navigation'
       {...props}
     >
@@ -101,7 +64,7 @@ export const Navigation: React.FC<FlexProps> = props => {
         alignItems={{ base: 'center', md: 'center' }}
       >
         <Flex alignItems='center' py={4} flex={{ base: 1, md: 'auto' }}>
-          <Logo href={NAVIGATION?.href} />
+          <Logo href='/' />
         </Flex>
         {/* For desktop */}
         {isLargerThanMd && (
@@ -112,9 +75,9 @@ export const Navigation: React.FC<FlexProps> = props => {
             ml={{ base: 6, lg: 10 }}
             flex={1}
             justifyContent='flex-end'
-            sx={{ '>a': { px: 4, py: 2 } }}
+            sx={{ '>a,>button': { px: 4, py: 2 } }}
           >
-            {navigationFilteredByEnvironment?.routes?.map(navItem => (
+            {navigationFilteredByEnvironment?.map(navItem => (
               <DesktopNavItem
                 key={navItem.label}
                 isActive={
@@ -128,7 +91,7 @@ export const Navigation: React.FC<FlexProps> = props => {
         )}
 
         {/* For mobile / tablet */}
-        {navigationFilteredByEnvironment?.routes && (
+        {navigationFilteredByEnvironment && (
           <IconButton
             display={isLargerThanMd ? 'none' : 'flex'}
             aria-label={

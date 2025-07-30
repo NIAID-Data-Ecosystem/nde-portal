@@ -1,8 +1,8 @@
 import React from 'react';
 import { Icon, Flex } from '@chakra-ui/react';
 import { FaAngleRight, FaGithub, FaRegEnvelope } from 'react-icons/fa6';
-import { FooterProps } from '..';
 import { Link, LinkProps } from 'src/components/link';
+import { FooterRoute } from '../types';
 
 export const StyledLink = ({ ...props }: LinkProps) => {
   return (
@@ -18,8 +18,8 @@ export const StyledLink = ({ ...props }: LinkProps) => {
 };
 
 interface FooterLinkProps extends LinkProps {
-  href: string;
-  isExternal?: boolean;
+  isExternal?: FooterRoute['isExternal'];
+  href?: FooterRoute['href'];
 }
 
 export const FooterLink: React.FC<FooterLinkProps> = ({
@@ -47,13 +47,7 @@ export const FooterLink: React.FC<FooterLinkProps> = ({
   );
 };
 
-export const FooterSocialLinks = ({
-  routes,
-}: {
-  routes:
-    | FooterProps['navigation']['contact']['routes']
-    | FooterProps['navigation']['lastUpdate'];
-}) => {
+export const FooterSocialLinks = ({ routes }: { routes: FooterRoute[] }) => {
   if (!routes) {
     return null;
   }

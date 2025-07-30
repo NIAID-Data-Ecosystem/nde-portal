@@ -1,6 +1,10 @@
-import fs from 'fs';
+import fs from 'fs/promises';
 import axios from 'axios';
-// Fetch NDE PORTAL repository information from github
+import { SiteConfig } from 'src/components/page-container/types';
+
+const CONFIG_FILE_PATH = 'configs/site.config.json';
+
+// Fetch NDE PORTAL repository information from GitHub
 const fetchRepositoryInfo = async () => {
   try {
     console.log('Generating footer content...');
@@ -8,62 +12,81 @@ const fetchRepositoryInfo = async () => {
     const owner = 'NIAID-Data-Ecosystem';
     const repo = 'nde-portal';
     const branch = process.env.GITHUB_BRANCH;
+
+    if (!branch) {
+      console.warn('GITHUB_BRANCH environment variable is not set');
+      return;
+    }
+
     const url = `https://api.github.com/repos/${owner}/${repo}/branches/${branch}`;
     const response = await axios.get(url, {
       headers: {
         'Content-Type': 'application/json',
       },
     });
-    const data = await response.data;
-    return { data };
+
+    return response.data;
   } catch (err: any) {
-    return {
-      data: null,
-      error: {
-        type: 'error',
-        status: err.response.status,
-        message: err.response.statusText,
-      },
-    };
+    console.error('Error fetching repository info:', err.message);
+    throw err;
   }
 };
 
-fetchRepositoryInfo().then(response => {
-  const file_path = './src/components/footer/routes.json';
-  let rawdata = fs.readFileSync(file_path);
-  let properties = [];
+// Read existing config file or create empty one
+const readOrCreateConfig = async () => {
   try {
-    let prevData = JSON.parse(rawdata.toString());
-    properties = prevData;
-  } catch (err) {
-    // JSON file is empty.
-    if (err) {
-      properties = [];
+    const data = await fs.readFile(CONFIG_FILE_PATH, 'utf8');
+    return JSON.parse(data);
+  } catch (err: any) {
+    if (err.code === 'ENOENT') {
+      // File doesn't exist, create empty config
+      const emptyConfig = {};
+      await fs.writeFile(
+        CONFIG_FILE_PATH,
+        JSON.stringify(emptyConfig, null, 2),
+      );
+      return emptyConfig;
     }
+    // If JSON is invalid, return empty object
+    console.warn('Invalid JSON in config file, using empty config');
+    return {};
   }
-  // Write update to json
-  response &&
-    response.data &&
-    fs.writeFile(
-      file_path,
-      JSON.stringify({
-        ...properties,
-        lastUpdate: [
-          {
-            label:
-              response.data && response.data.commit.commit.committer.date
-                ? `Content updated: ${
-                    response.data.commit.commit.committer.date.split('T')[0]
-                  }`
-                : '',
-            href: '/changelog/',
-          },
-        ],
-      }),
-      err => {
-        if (err) {
-          console.error('error writing to file.');
-        }
-      },
-    );
-});
+};
+
+// Update config file with footer information
+const updateConfigWithFooter = async (config: SiteConfig, repoData: any) => {
+  const commitDate = repoData?.commit?.commit?.committer?.date;
+  const formattedDate = commitDate ? commitDate.split('T')[0] : '';
+  const label = formattedDate ? `Content updated: ${formattedDate}` : '';
+  const updatedConfig = {
+    ...config,
+    footer: {
+      ...config.footer,
+      lastUpdate: [
+        {
+          label,
+          href: '/changelog/',
+        },
+      ],
+    },
+  };
+
+  await fs.writeFile(CONFIG_FILE_PATH, JSON.stringify(updatedConfig, null, 2));
+  console.log(
+    `Site configuration(configs/site.config.json) file updated successfully. Label: ${label}`,
+  );
+};
+
+// Main execution
+const main = async () => {
+  try {
+    const repoData = await fetchRepositoryInfo();
+    const config = await readOrCreateConfig();
+    await updateConfigWithFooter(config, repoData);
+  } catch (err: any) {
+    console.error('Failed to update config:', err.message);
+    process.exit(1);
+  }
+};
+
+main();

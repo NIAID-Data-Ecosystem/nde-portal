@@ -1,12 +1,16 @@
 import { useState } from 'react';
 import { Flex, VStack } from '@chakra-ui/react';
 import type { NextPage } from 'next';
-import { PageContainer, PageContent } from 'src/components/page-container';
+import {
+  getPageSeoConfig,
+  PageContainer,
+  PageContent,
+} from 'src/components/page-container';
 import { OntologyBrowserSearch } from 'src/views/ontology-browser/components/search';
 import { OntologyLineageItemWithCounts } from 'src/views/ontology-browser/types';
-import { OntologySearchList } from 'src/views/ontology-browser/components/ontology-search-list';
 import { OntologyBrowser } from 'src/views/ontology-browser/components/ontology-browser';
 import { ONTOLOGY_BROWSER_OPTIONS } from 'src/views/ontology-browser/utils/api-helpers';
+import { OntologySearchList } from 'src/views/ontology-browser/components/ontology-search-list';
 
 export interface SearchListItem
   extends Pick<
@@ -18,13 +22,7 @@ const OntologyBrowserPage: NextPage = () => {
   const [searchList, setSearchList] = useState<SearchListItem[] | []>([]);
 
   return (
-    <PageContainer
-      title='Search'
-      metaDescription='NDE Discovery Portal - Search results list based on query.'
-      px={0}
-      py={0}
-      includeSearchBar
-    >
+    <PageContainer meta={getPageSeoConfig('/ontology-browser')} px={0} py={0}>
       <PageContent
         alignItems='center'
         flexDirection='column'

@@ -1,6 +1,12 @@
+export interface MetaFields {
+  title?: string;
+  description?: string;
+  keywords?: string;
+}
 export interface FeaturedPageProps {
   id: number;
   title: string;
+  abstract: string;
   content: string;
   subtitle: string;
   banner: { url: string; alternativeText: string } | null;
@@ -20,6 +26,8 @@ export interface FeaturedPageProps {
         updatedAt: string;
       }[]
     | null;
+  // Meta fields for SEO
+  metaFields?: MetaFields;
 }
 
 export interface FeaturedQueryParams {

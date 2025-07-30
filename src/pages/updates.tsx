@@ -15,7 +15,11 @@ import {
 } from '@chakra-ui/react';
 import { Link } from 'src/components/link';
 import type { NextPage } from 'next';
-import { PageContainer, PageContent } from 'src/components/page-container';
+import {
+  getPageSeoConfig,
+  PageContainer,
+  PageContent,
+} from 'src/components/page-container';
 import { MDXRemoteSerializeResult } from 'next-mdx-remote';
 import { Error } from 'src/components/error';
 import axios from 'axios';
@@ -33,11 +37,7 @@ import {
 } from 'src/views/home/components/HeroBanner';
 
 export interface NewsOrEventsObject {
-  compiledMDX: MDXRemoteSerializeResult;
   id: number;
-  mdx: { [key: string]: MDXRemoteSerializeResult };
-  type?: string;
-  name: string | null;
   subtitle: string | null;
   description: string | null;
   shortDescription: string | null;
@@ -45,7 +45,7 @@ export interface NewsOrEventsObject {
     | null
     | { url: string; alternativeText: string }
     | { url: string; alternativeText: string }[];
-  eventDate?: string;
+  name: string | null;
   slug: string;
   createdAt: string;
   publishedAt: string;
@@ -59,6 +59,10 @@ export interface NewsOrEventsObject {
         updatedAt: string;
       }[]
     | null;
+  compiledMDX?: MDXRemoteSerializeResult;
+  mdx?: { [key: string]: MDXRemoteSerializeResult };
+  type?: string;
+  eventDate?: string;
 }
 
 export interface UpdatesProps {
@@ -167,12 +171,7 @@ const Updates: NextPage<UpdatesProps> = props => {
   }, []);
 
   return (
-    <PageContainer
-      title='Updates'
-      metaDescription='Updates for the NIAID Data Discovery Portal.'
-      px={0}
-      py={0}
-    >
+    <PageContainer meta={getPageSeoConfig('/updates')} px={0} py={0}>
       <HeroBannerContainer
         justifyContent={{ base: 'flex-start', md: 'center' }}
         bgImg='/assets/news-01.jpg'
