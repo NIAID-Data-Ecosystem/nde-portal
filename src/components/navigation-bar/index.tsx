@@ -47,7 +47,7 @@ export const Navigation: React.FC<FlexProps> = props => {
       as='nav'
       w='100%'
       minW={300}
-      zIndex='banner'
+      zIndex='popover'
       aria-label='Main navigation'
       {...props}
     >
