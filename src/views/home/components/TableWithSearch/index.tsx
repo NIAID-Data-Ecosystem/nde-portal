@@ -19,6 +19,7 @@ import { formatDomainName, formatTypeName } from './helpers';
 import { Filters } from './filters/';
 import useFilteredData from './hooks/useFilteredData';
 import { queryFilterObject2String } from 'src/views/search/components/filters/utils/query-builders';
+import { getTabIdFromTypeLabel } from 'src/views/search/components/filters/utils/tab-filter-utils';
 
 export interface TableData
   extends Omit<ResourceCatalog, 'type'>,
@@ -199,6 +200,9 @@ export const RepositoryCells = ({
   data: TableData;
   isLoading?: boolean;
 }) => {
+  const tab = data?.type?.includes('Computational Tool Repository')
+    ? getTabIdFromTypeLabel('ComputationalTool')
+    : undefined;
   const href = data?.type?.includes('Resource Catalog')
     ? {
         pathname: `/resources`,
@@ -213,6 +217,7 @@ export const RepositoryCells = ({
           filters: queryFilterObject2String({
             'includedInDataCatalog.name': [data._id],
           }),
+          ...(tab && { tab }),
         },
       };
   return (
