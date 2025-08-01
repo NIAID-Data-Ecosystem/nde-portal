@@ -56,7 +56,19 @@ export const SearchResultsController = ({
     setPagination(selectedTab.id, paginationState);
 
     // Update the URL with the new tab and pagination state.
-    updateRoute(router, { ...paginationState, tab: selectedTab.id });
+    return router.replace(
+      {
+        query: {
+          ...router.query,
+          ...paginationState,
+          tab: selectedTab.id,
+        },
+      },
+      undefined,
+      {
+        shallow: true,
+      },
+    );
   };
 
   // Get the current search parameters from the URL and fetch facet data.
