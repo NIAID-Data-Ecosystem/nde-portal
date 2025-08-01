@@ -40,7 +40,7 @@ const StatusIcon = ({ status }: { status: NoticeProps['state'] }) => {
       as={icon}
       boxSize={6}
       my={1}
-      fill={`status.${status.toLowerCase()}`}
+      fill={`status.${status?.toLowerCase()}`}
     />
   );
 };
@@ -70,8 +70,8 @@ export const Banner = ({
       px={4}
       py={2}
       borderLeft='0.5rem solid'
-      borderColor={`status.${state.toLowerCase()}`}
-      bg={`status.${state.toLowerCase()}_lt`}
+      borderColor={`status.${state?.toLowerCase()}`}
+      bg={`status.${state?.toLowerCase()}_lt`}
     >
       <HStack
         spacing={4}

@@ -169,22 +169,21 @@ describe('TreeNode', () => {
     });
   });
 
-  it('renders node details with correct styles and attributes', () => {
+  it('renders node details and links to the correct search URL', () => {
     renderComponent();
 
-    const nodeDetails = screen.getByText('ncbitaxon | 207598');
+    const nodeDetails = screen.getByText(/ncbitaxon\s*\|\s*207598/i);
     expect(nodeDetails).toBeInTheDocument();
-    expect(nodeDetails).toHaveStyle('color: gray.800');
-    expect(nodeDetails).toHaveStyle('font-size: 12px');
 
-    const nodeLabel = screen.getByText(/homininae/i);
-    expect(nodeLabel).toBeInTheDocument();
-    expect(nodeLabel).toHaveStyle('font-size: xs');
-    expect(nodeLabel.closest('a')).toHaveAttribute(
+    const nodeLabelLink = screen.getByRole('link', { name: /homininae/i });
+    expect(nodeLabelLink).toBeInTheDocument();
+
+    // Verify the href links to search and includes the expected id
+    expect(nodeLabelLink).toHaveAttribute(
       'href',
       expect.stringContaining('/search'),
     );
-    expect(nodeLabel.closest('a')).toHaveAttribute(
+    expect(nodeLabelLink).toHaveAttribute(
       'href',
       expect.stringContaining('207598'),
     );

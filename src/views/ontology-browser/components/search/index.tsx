@@ -1,5 +1,9 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import {
+  Alert,
+  AlertDescription,
+  AlertIcon,
+  AlertTitle,
   Button,
   Flex,
   HStack,
@@ -24,7 +28,6 @@ import { DropdownContent } from 'src/components/input-with-dropdown/components/D
 import { CheckboxList } from 'src/components/checkbox-list';
 import { useDebounceValue } from 'usehooks-ts';
 import { DropdownListItem } from './dropdown-list-item';
-import { ErrorMessage } from '../error-message';
 
 interface OntologyBrowserSearchProps {
   colorScheme?: string;
@@ -43,7 +46,9 @@ export const OntologyBrowserSearch = ({
   const [selectedOntologies, setSelectedOntologies] =
     useState(ontologyMenuOptions);
 
-  const [debouncedTerm, setSearchTerm] = useDebounceValue('', 300);
+  const [searchTerm, setSearchTerm] = useState('');
+  // Debounce the search term to avoid excessive API calls
+  const [debouncedTerm] = useDebounceValue(searchTerm, 100);
 
   useEffect(() => {
     if (router?.query?.ontology) {
@@ -64,15 +69,54 @@ export const OntologyBrowserSearch = ({
     data: suggestions,
   } = useQuery({
     queryKey: ['ontology-browser-search', debouncedTerm, selectedOntologies],
-    queryFn: () =>
-      searchOntologyAPI({
-        q: debouncedTerm ? debouncedTerm : '',
-        ontology: selectedOntologies.map(
-          o => o.value,
-        ) as SearchParams['ontology'],
-        biothingsFields: ['_id', 'rank', 'scientific_name'],
-        olsFields: ['iri', 'label', 'ontology_name', 'short_form', 'type'],
-      }),
+    queryFn: async ({ signal }) => {
+      const term = debouncedTerm.trim();
+      if (!term) return [];
+
+      const ontologyValues = selectedOntologies.map(
+        o => o.value,
+      ) as SearchParams['ontology'];
+
+      // Search for both exact term and wildcard term. The reason for this is that searching for 9606* will return for anything that starts with 9606 but will not included term 9606 itself.
+      const [termSearchResponse, wildcardSearchResponse] = await Promise.all([
+        searchOntologyAPI(
+          {
+            q: term,
+            ontology: ontologyValues,
+            biothingsFields: ['_id', 'rank', 'scientific_name'],
+            olsFields: ['iri', 'label', 'ontology_name', 'short_form', 'type'],
+          },
+          signal,
+        ),
+        searchOntologyAPI(
+          {
+            q: `${term}*`,
+            ontology: ontologyValues,
+            biothingsFields: ['_id', 'rank', 'scientific_name'],
+            olsFields: ['iri', 'label', 'ontology_name', 'short_form', 'type'],
+          },
+          signal,
+        ),
+      ]);
+
+      return {
+        termSearch: termSearchResponse,
+        wildcardSearch: wildcardSearchResponse,
+      };
+    },
+    select: data => {
+      if (!data || Array.isArray(data)) return [];
+      // Combine results from both searches
+      const combinedResults = [
+        ...(data.termSearch || []),
+        ...(data.wildcardSearch || []),
+      ];
+      // Remove duplicates based on _id
+      const uniqueResults = Array.from(
+        new Map(combinedResults.map(item => [item._id, item])).values(),
+      );
+      return uniqueResults;
+    },
     refetchOnWindowFocus: false,
   });
 
@@ -82,11 +126,8 @@ export const OntologyBrowserSearch = ({
         pathname: `/ontology-browser`,
         query: { ...router.query, id, ontology },
       });
-      setSearchTerm('');
-
-      setHasNoMatch(false);
     },
-    [router, setSearchTerm, setHasNoMatch],
+    [router],
   );
 
   const handleInputChange = (str: string) => {
@@ -100,27 +141,36 @@ export const OntologyBrowserSearch = ({
   };
 
   const handleInputSubmit = (str: string) => {
-    const suggestion = suggestions?.find(
+    const suggestionMatch = suggestions?.find(
       suggestion => str === suggestion.label || str === suggestion._id,
     );
 
-    if (suggestion) {
+    if (suggestionMatch) {
       handleSubmit({
-        id: suggestion._id,
-        ontology: suggestion.definingOntology,
+        id: suggestionMatch._id,
+        ontology: suggestionMatch.definingOntology,
       });
       setSearchTerm('');
-    } else {
+      setHasNoMatch(false);
+    } else if (suggestions && suggestions.length > 0) {
+      // If no match found, set hasNoMatch to true
       setHasNoMatch(true);
+      // and submit the first suggestion if available
+      handleSubmit({
+        id: suggestions[0]._id,
+        ontology: suggestions[0].definingOntology,
+      });
     }
   };
+
+  const hasPartialResults = suggestions && suggestions.length > 0 && hasNoMatch;
 
   return (
     <VStack
       className='ontology-search'
       w='100%'
       alignItems='flex-start'
-      spacing={1}
+      spacing={2}
     >
       <HStack
         w='100%'
@@ -172,7 +222,12 @@ export const OntologyBrowserSearch = ({
                   size={size}
                   type='submit'
                   display={{ base: 'none', md: 'flex' }}
-                  isDisabled={isLoading || !debouncedTerm}
+                  isDisabled={
+                    !!error ||
+                    isLoading ||
+                    !debouncedTerm.trim() ||
+                    (suggestions && suggestions.length === 0)
+                  }
                 >
                   Search
                 </Button>
@@ -245,21 +300,56 @@ export const OntologyBrowserSearch = ({
           handleChange={setSelectedOntologies}
         />
       </HStack>
-      {error && <ErrorMessage title='Error:'>{error.message}</ErrorMessage>}
+      {/* <!-- Error Message --> */}
+      {error && (
+        <Alert status='error' role='alert' flexWrap='wrap'>
+          <AlertIcon />
+          <AlertTitle>{error.message}</AlertTitle>
+          <AlertDescription>
+            There was an error processing your search. Please try again later.
+          </AlertDescription>
+        </Alert>
+      )}
+      {/* <!-- No Match Found --> */}
+      {suggestions &&
+        suggestions.length === 0 &&
+        debouncedTerm &&
+        !isLoading &&
+        !error && (
+          <Alert status='info' flexWrap='wrap'>
+            <AlertIcon />
+            <AlertTitle>No Results Found</AlertTitle>
+            <AlertDescription>
+              No results found for <strong>{debouncedTerm}</strong>. Please try
+              a different search term.
+            </AlertDescription>
+          </Alert>
+        )}
+      {/* <!-- No Match in Selected Ontologies --> */}
       {hasNoMatch && (
-        <ErrorMessage title='No Match:'>
-          Search term{' '}
-          <Text
-            as='span'
-            fontWeight='semibold'
-            mr={1}
-            color='inherit'
-            fontSize='inherit'
-          >
-            {debouncedTerm}
-          </Text>
-          not found in selected ontologies.
-        </ErrorMessage>
+        <Alert status='info' flexWrap='wrap'>
+          <AlertIcon />
+          <AlertTitle>
+            {suggestions && suggestions.length === 0
+              ? 'No match'
+              : 'No complete match'}
+          </AlertTitle>
+          <AlertDescription>
+            Search term{' '}
+            <Text as='span' textDecoration='underline'>
+              {debouncedTerm}
+            </Text>{' '}
+            not found in selected ontologies.{' '}
+            {hasPartialResults && (
+              <Text as='span'>
+                Returning results for{' '}
+                <Text as='span' textDecoration='underline'>
+                  {suggestions[0].label}
+                </Text>{' '}
+              </Text>
+            )}
+          </AlertDescription>
+        </Alert>
       )}
     </VStack>
   );

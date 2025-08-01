@@ -10,7 +10,7 @@ import {
   useDisclosure,
 } from '@chakra-ui/react';
 import { FaAngleRight, FaAngleDown } from 'react-icons/fa6';
-import { RouteProps } from '..';
+import { TransformedNavigationMenu } from '../types';
 
 // Mobile Navigation link styles
 export const MobileNavItem = ({
@@ -18,7 +18,7 @@ export const MobileNavItem = ({
   routes,
   href,
   isExternal,
-}: RouteProps) => {
+}: TransformedNavigationMenu) => {
   const { isOpen, onToggle } = useDisclosure();
   return (
     <Stack w='100%' spacing={2} onClick={routes && onToggle} cursor='pointer'>
@@ -60,6 +60,7 @@ export const MobileNavItem = ({
         </Link>
       ) : (
         <Flex
+          as='button'
           px={4}
           py={2}
           justify='space-between'
@@ -123,14 +124,14 @@ export const MobileSubMenu = ({
   navigation,
 }: {
   isOpen: boolean;
-  navigation: RouteProps;
+  navigation: TransformedNavigationMenu[];
 }) => {
   return (
     <Box borderRadius='semi' boxShadow='base' overflow='hidden'>
       <Collapse in={isOpen} animateOpacity>
         <Stack bg='white' p={2} alignItems='end'>
-          {navigation.routes &&
-            navigation.routes.map(navItem => (
+          {navigation &&
+            navigation.map(navItem => (
               <MobileNavItem key={navItem.label} {...navItem} />
             ))}
         </Stack>

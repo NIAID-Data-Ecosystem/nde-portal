@@ -157,6 +157,10 @@ export const fetchBioThingsSearchAPI = async (
     );
     return results;
   } catch (error: any) {
+    if (axios.isCancel(error)) {
+      console.log('Request canceled due to update:', error.message);
+      return [];
+    }
     console.error(
       'Error in fetching search results from the BioThings API:',
       error.message,

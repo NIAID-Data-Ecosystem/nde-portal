@@ -1,12 +1,17 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Flex, VStack } from '@chakra-ui/react';
 import type { NextPage } from 'next';
-import { PageContainer, PageContent } from 'src/components/page-container';
+import {
+  getPageSeoConfig,
+  PageContainer,
+  PageContent,
+} from 'src/components/page-container';
 import { OntologyBrowserSearch } from 'src/views/ontology-browser/components/search';
 import { OntologyLineageItemWithCounts } from 'src/views/ontology-browser/types';
-import { OntologySearchList } from 'src/views/ontology-browser/components/ontology-search-list';
 import { OntologyBrowser } from 'src/views/ontology-browser/components/ontology-browser';
 import { ONTOLOGY_BROWSER_OPTIONS } from 'src/views/ontology-browser/utils/api-helpers';
+import { OntologySearchList } from 'src/views/ontology-browser/components/ontology-search-list';
+import { useRouter } from 'next/router';
 
 export interface SearchListItem
   extends Pick<
@@ -17,14 +22,20 @@ export interface SearchListItem
 const OntologyBrowserPage: NextPage = () => {
   const [searchList, setSearchList] = useState<SearchListItem[] | []>([]);
 
+  // Re-route to /404 when in production
+  const router = useRouter();
+  useEffect(() => {
+    if (process.env.NEXT_PUBLIC_APP_ENV === 'production') {
+      router.replace('/404');
+    }
+  }, [router]);
+
+  if (process.env.NEXT_PUBLIC_APP_ENV === 'production') {
+    return null; // Prevent rendering in production
+  }
+
   return (
-    <PageContainer
-      title='Search'
-      metaDescription='NDE Discovery Portal - Search results list based on query.'
-      px={0}
-      py={0}
-      includeSearchBar
-    >
+    <PageContainer meta={getPageSeoConfig('/ontology-browser')} px={0} py={0}>
       <PageContent
         alignItems='center'
         flexDirection='column'
