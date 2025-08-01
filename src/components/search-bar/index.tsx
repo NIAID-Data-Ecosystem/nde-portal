@@ -24,6 +24,7 @@ import {
 import { SearchHistoryItem } from './components/search-history-item';
 import { CheckboxList, CheckboxListProps } from '../checkbox-list';
 import { getTabIdFromTypeLabel } from 'src/views/search/components/filters/utils/tab-filter-utils';
+import { queryFilterObject2String } from 'src/views/search/components/filters/utils/query-builders';
 
 const DropdownContent = dynamic(() =>
   import('src/components/input-with-dropdown/components/DropdownContent').then(
@@ -149,11 +150,16 @@ const SearchBar = ({
       ?.map(filter => filter.value);
 
     const tab = getTabIdFromTypeLabel(filters[0]);
+
     router.push({
       pathname: `/search`,
       query: {
         ...(trimmedTerm && { q: trimmedTerm }),
-        ...(filters?.length && { filters }),
+        ...(filters?.length && {
+          filters: queryFilterObject2String({
+            '@type': filters,
+          }),
+        }),
         ...(tab && { tab }),
       },
     });
