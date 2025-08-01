@@ -1,51 +1,36 @@
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
-import {
-  getPageSeoConfig,
-  PageContainer,
-  PageContent,
-} from 'src/components/page-container';
-import { Flex, Heading, HStack } from '@chakra-ui/react';
-import { useHasMounted } from 'src/hooks/useHasMounted';
-import SearchResultsPage from 'src/views/search-results-page-archived';
-import { useCallback, useEffect, useMemo } from 'react';
-import dynamic from 'next/dynamic';
-import {
-  defaultParams,
-  defaultQuery,
-  queryFilterString2Object,
-} from 'src/views/search-results-page-archived/helpers';
+import { getPageSeoConfig, PageContainer } from 'src/components/page-container';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { FetchSearchResultsResponse } from 'src/utils/api/types';
+import { SearchTabsProvider } from 'src/views/search/context/search-tabs-context';
+import { useSearchQueryFromURL } from 'src/views/search/hooks/useSearchQueryFromURL';
+import { Box, Flex, VStack } from '@chakra-ui/react';
+import { Filters } from 'src/views/search/components/filters';
+import { SelectedFilterType } from 'src/views/search/components/filters/types';
+import { FILTER_CONFIGS } from 'src/views/search/components/filters/config';
+import { queryFilterString2Object } from 'src/views/search/components/filters/utils/query-builders';
+import { defaultQuery } from 'src/views/search/config/defaultQuery';
+import { FilterTags } from 'src/views/search/components/filters/components/tag';
+import { SearchResultsHeader } from 'src/views/search/components/search-results-header';
+import { PaginationProvider } from 'src/views/search/context/pagination-context';
+import { SearchResultsController } from 'src/views/search/components/search-results-tabs-controller';
 import { fetchSearchResults } from 'src/utils/api';
-import { Filters } from 'src/views/search-results-page-archived/components/filters';
-import { FormattedResource } from 'src/utils/api/types';
-import { FILTER_CONFIGS } from 'src/views/search-results-page-archived/components/filters/config';
-import { SelectedFilterType } from 'src/views/search-results-page-archived/components/filters/types';
+import { TabType } from 'src/views/search/types';
+import { tabs } from 'src/views/search/config/tabs';
 
-const FilterTags = dynamic(() =>
-  import(
-    'src/views/search-results-page-archived/components/filters/components/tag'
-  ).then(mod => mod.FilterTags),
+// Default filters list.
+const defaultFilters = FILTER_CONFIGS.reduce(
+  (r, { property }) => ({ ...r, [property]: [] }),
+  {},
 );
-
 //  This page renders the search results from the search bar.
 const Search: NextPage<{
-  results: FormattedResource[];
-  total: number;
-}> = ({ results, total }) => {
-  const hasMounted = useHasMounted();
+  initialData: FetchSearchResultsResponse;
+}> = ({ initialData }) => {
   const router = useRouter();
 
-  const queryString = useMemo(
-    () =>
-      Array.isArray(router.query.q)
-        ? router.query.q.map(s => s.trim()).join('+')
-        : router.query.q || defaultParams?.q,
-    [router.query.q],
-  );
-
-  ////////////////////////////////////////////////////
-  ////////////////// Update Router ///////////////////
-  ////////////////////////////////////////////////////
+  const queryParams = useSearchQueryFromURL();
 
   const selectedFilters: SelectedFilterType = useMemo(() => {
     const queryFilters = router.query.filters;
@@ -56,22 +41,12 @@ const Search: NextPage<{
   }, [router.query.filters]);
 
   // Currently applied filters
-  const applied_filters = useMemo(
+  const appliedFilters = useMemo(
     () =>
       Object.entries(selectedFilters).filter(
         ([_, filters]) => filters.length > 0,
       ),
     [selectedFilters],
-  );
-
-  // Default filters list.
-  const defaultFilters = useMemo(
-    () =>
-      FILTER_CONFIGS.reduce(
-        (r, { property }) => ({ ...r, [property]: [] }),
-        {},
-      ),
-    [],
   );
 
   /*** Router handlers ***/
@@ -88,22 +63,27 @@ const Search: NextPage<{
   // Reset the filters to the default.
   const removeAllFilters = useCallback(() => {
     return handleRouteUpdate({
-      from: defaultQuery.selectedPage,
+      from: defaultQuery.from,
       filters: defaultFilters,
     });
-  }, [handleRouteUpdate, defaultFilters]);
+  }, [handleRouteUpdate]);
 
-  // // If the app is in production, redirect to a 404 page until search is fully implemented and approved.
-  // useEffect(() => {
-  //   if (process.env.NEXT_PUBLIC_APP_ENV === 'production') {
-  //     router.replace('/404');
-  //   }
-  // }, [router]);
+  // Set the initial tab based on the router query
+  const [initialTab, setInitialTab] = useState<TabType['id'] | null>(null);
 
-  //   if (process.env.NEXT_PUBLIC_APP_ENV === 'production') {
-  //   return null; // Prevent rendering in production
-  // }
+  useEffect(() => {
+    if (!router.isReady) return;
 
+    const defaultTab = tabs.find(t => t.isDefault)?.id || tabs[0].id;
+    const tabParamId = router.query.tab as string;
+    const tab = tabs.find(t => t.id === tabParamId);
+    setInitialTab(tab?.id || defaultTab);
+  }, [router]);
+
+  // If the initial tab is not set, return a loading state.
+  if (!initialTab) {
+    return null;
+  }
   return (
     <PageContainer
       meta={getPageSeoConfig('/search')}
@@ -111,96 +91,73 @@ const Search: NextPage<{
       py={0}
       includeSearchBar
     >
-      <PageContent
-        w='100%'
-        flexDirection='column'
-        alignItems='center'
-        px={{ base: 2, sm: 4, xl: '5vw' }}
-      >
-        <Flex flexDirection='column' w='100%'>
-          {/* Search query */}
-          <Heading
-            as='h1'
-            fontSize='sm'
-            color='gray.800'
-            fontWeight='normal'
-            lineHeight='short'
-            mb={4}
-          >
-            {queryString === '__all__'
-              ? `Showing all results`
-              : `Showing results for`}
-            <br />
-            {queryString !== '__all__' && (
-              <Heading as='span' fontWeight='bold' fontSize='inherit'>
-                {queryString.replaceAll('\\', '')}
-              </Heading>
-            )}
-          </Heading>
-
-          {/* Tags with the names of the currently selected filters */}
-          {Object.values(selectedFilters).length > 0 && (
-            <FilterTags
-              selectedFilters={selectedFilters}
-              handleRouteUpdate={handleRouteUpdate}
-              removeAllFilters={removeAllFilters}
-            />
-          )}
-          <HStack
-            w='100%'
-            spacing={[0, 0, 4, 4, 6]}
-            alignItems='flex-start'
-            maxW='2600px'
-          >
-            {/* Filters sidebar */}
+      <SearchTabsProvider initialTab={initialTab}>
+        <PaginationProvider>
+          <Flex bg='page.alt'>
             <Flex
+              id='search-page-filters-sidebar'
+              bg='#fff'
+              borderRight='0.5px solid'
+              borderRightColor='gray.200'
               flex={{ base: 0, lg: 1 }}
-              height='100vh'
-              minW={{ base: 'unset', lg: '300px' }}
+              minW={{ base: 'unset', lg: '380px' }}
               maxW={{ base: 'unset', lg: '450px' }}
-              position={{ base: 'unset', lg: 'sticky' }}
-              top='0px'
-              bg='white'
-              borderRadius='semi'
-              boxShadow='base'
             >
-              {router.isReady && hasMounted && (
-                <Filters
-                  colorScheme='secondary'
-                  queryParams={{
-                    ...defaultParams,
-                    ...router.query,
-                    q: queryString,
-                    filters: undefined,
-                    extra_filter: Array.isArray(router.query.filters)
-                      ? router.query.filters.join('')
-                      : router.query.filters || '',
-                  }}
-                  selectedFilters={selectedFilters}
-                  removeAllFilters={
-                    applied_filters.length > 0 ? removeAllFilters : undefined
-                  }
-                />
-              )}
+              {/* Filters sidebar */}
+              <Filters
+                colorScheme='secondary'
+                selectedFilters={selectedFilters}
+                isDisabled={appliedFilters.length === 0}
+                removeAllFilters={removeAllFilters}
+              />
             </Flex>
-            {/* Result cards */}
-            <SearchResultsPage results={results} total={total} />
-          </HStack>
-        </Flex>
-      </PageContent>
+            <Box flex={3}>
+              <VStack
+                alignItems='flex-start'
+                p={4}
+                bg='#fff'
+                borderBottom='1px solid'
+                borderRight='1px solid'
+                borderColor='gray.100'
+                spacing={2}
+              >
+                {/* Heading: Showing results for... */}
+                <SearchResultsHeader querystring={queryParams.q} />
+
+                {/* Filter tags : Tags with the names of the currently selected filters */}
+                {Object.values(selectedFilters).length > 0 && (
+                  <FilterTags
+                    filtersConfig={FILTER_CONFIGS}
+                    selectedFilters={selectedFilters}
+                    handleRouteUpdate={handleRouteUpdate}
+                    removeAllFilters={removeAllFilters}
+                  />
+                )}
+              </VStack>
+
+              {/* Search Results */}
+              <SearchResultsController initialData={initialData} />
+            </Box>
+          </Flex>
+        </PaginationProvider>
+      </SearchTabsProvider>
     </PageContainer>
   );
 };
 
 export async function getStaticProps() {
   try {
+    const defaultParams = {
+      q: defaultQuery.q,
+      extra_filter: '',
+      size: `${defaultQuery.size}`,
+      from: `${defaultQuery.from}`,
+      sort: defaultQuery.sort,
+    };
     const data = await fetchSearchResults({
       ...defaultParams,
-      facet_size: 0,
-      // don't escape parenthesis or colons when its an advanced search
-      q: '__all__',
-      size: '10',
-      from: '1',
+      facets: '@type',
+      facet_size: 100,
       sort: '',
       show_meta: true,
       fields: [
@@ -227,7 +184,15 @@ export async function getStaticProps() {
         'variableMeasured',
       ],
     });
-    return { props: { results: data?.results || [], total: data?.total } };
+    return {
+      props: {
+        initialData: {
+          results: data?.results || [],
+          total: data?.total || 0,
+          facets: data?.facets || {},
+        },
+      },
+    };
   } catch (err) {
     return {
       props: {
@@ -237,4 +202,5 @@ export async function getStaticProps() {
     };
   }
 }
+
 export default Search;
