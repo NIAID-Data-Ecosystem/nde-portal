@@ -57,14 +57,14 @@ const readOrCreateConfig = async () => {
 const updateConfigWithFooter = async (config: SiteConfig, repoData: any) => {
   const commitDate = repoData?.commit?.commit?.committer?.date;
   const formattedDate = commitDate ? commitDate.split('T')[0] : '';
-
+  const label = formattedDate ? `Content updated: ${formattedDate}` : '';
   const updatedConfig = {
     ...config,
     footer: {
       ...config.footer,
       lastUpdate: [
         {
-          label: formattedDate ? `Content updated: ${formattedDate}` : '',
+          label,
           href: '/changelog/',
         },
       ],
@@ -72,7 +72,9 @@ const updateConfigWithFooter = async (config: SiteConfig, repoData: any) => {
   };
 
   await fs.writeFile(CONFIG_FILE_PATH, JSON.stringify(updatedConfig, null, 2));
-  console.log('Config file updated successfully');
+  console.log(
+    `Site configuration(configs/site.config.json) file updated successfully. Label: ${label}`,
+  );
 };
 
 // Main execution

@@ -5,6 +5,8 @@ import {
   SelectedFilterTypeValue,
 } from '../../types';
 import { capitalize, has, isPlainObject } from 'lodash';
+import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
+import { SchemaDefinitions } from 'scripts/generate-schema-definitions/types';
 
 /**
  * Controls how a selected filter is displayed in the tag.
@@ -54,13 +56,21 @@ const getDisplayValue = (
 /**
  * Generates a flat list of tag metadata objects from selected filters.
  */
+const schema = SCHEMA_DEFINITIONS as SchemaDefinitions;
+export const generateTagName = (key: string, config?: FilterConfig): string => {
+  if (config?.name) return config.name;
+  if (schema?.[key]?.name) return schema[key].name;
+
+  return key;
+};
+
 export const generateTags = (
   selectedFilters: SelectedFilterType,
   configMap: Record<string, FilterConfig>,
 ): TagInfo[] => {
   return Object.entries(selectedFilters).flatMap(([key, values]) => {
     const config = configMap[key];
-    const name = config?.name || key;
+    const name = generateTagName(key, config);
 
     if (
       key === 'date' &&
