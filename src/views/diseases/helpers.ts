@@ -23,6 +23,8 @@ export const trackDiseasesEvent = (event: {
   linkType: 'legend' | 'chart'; // 'link' for links, 'chart' for chart segments
   value?: number; // optional value, e.g., count associated with "Datasets"
 }) => {
+  console.log('Tracking event:', event);
+  // Send the event to Google Tag Manager
   return sendGTMEvent({
     event: 'disease_to_search', // required by GTM
     label: event.label, // clicked item name
