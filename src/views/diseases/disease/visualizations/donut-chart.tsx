@@ -55,6 +55,8 @@ export interface DonutChartProps {
 
   /** Function to handle slice click events. */
   getRoute: (term: string) => UrlObject;
+  /** Callback for handling click events on a pie slice. */
+  handleGATracking: (event: { label: string; count: number }) => void;
 
   /** Optional label style and transform function. */
   labelStyles?: LabelProps;
@@ -70,6 +72,7 @@ export interface DonutChartProps {
 
   /** Accessibilty title for the chart. */
   title: string;
+
   /** Accessibility description for the chart. */
   description: string;
 }
@@ -100,6 +103,7 @@ export const DonutChart = ({
   donutThickness = 50,
   getFillColor,
   getRoute,
+  handleGATracking,
   labelStyles,
   margin = defaultMargin,
   animate = true,
@@ -248,6 +252,7 @@ export const DonutChart = ({
                     hoveredTerm={hoveredTerm}
                     labelStyles={labelStyles}
                     dimensions={{ width, height }}
+                    handleGATracking={handleGATracking}
                     // onClickDatum={({ data: { term } }) => {
                     //   animate &&
                     //     setSelection(
@@ -306,54 +311,58 @@ const enterUpdateTransition = ({ startAngle, endAngle }: PieArcDatum<any>) => ({
   opacity: 1,
 });
 
-type AnimatedPieProps<Datum> = ProvidedProps<Datum> & {
-  /** Whether to animate the pie chart transitions. */
-  animate?: boolean;
+type AnimatedPieProps<Datum extends { count: number }> =
+  ProvidedProps<Datum> & {
+    /** Whether to animate the pie chart transitions. */
+    animate?: boolean;
 
-  /** Array of pie arc data. */
-  arcs: PieArcDatum<Datum>[];
+    /** Array of pie arc data. */
+    arcs: PieArcDatum<Datum>[];
 
-  /** Dimensions of the chart */
-  dimensions: {
-    width: number;
-    height: number;
+    /** Dimensions of the chart */
+    dimensions: {
+      width: number;
+      height: number;
+    };
+
+    /** The term currently being hovered over, or `null` if none. */
+    hoveredTerm: string | null;
+
+    /** Styles for the labels displayed on the pie chart. */
+    labelStyles: DonutChartProps['labelStyles'];
+
+    /** Number representing the outer radius of the pie chart. */
+    outerRadius: number;
+
+    /** Function to determine the color of each pie slice. */
+    getColor: (d: PieArcDatum<Datum>) => string;
+
+    /** Function to generate a unique key for each pie slice. */
+    getKey: (d: PieArcDatum<Datum>) => string;
+
+    /** Function to determine the route associated with a pie slice. */
+    getRoute: DonutChartProps['getRoute'];
+
+    /** Callback for handling mouse-over events on a pie slice. */
+    handleMouseOver: (
+      e:
+        | React.PointerEvent<SVGPathElement>
+        | React.FocusEvent<SVGGElement, Element>,
+      d: PieArcDatum<Datum>['data'],
+    ) => void;
+
+    /** Callback for handling mouse-out events from a pie slice. */
+    handleMouseOut: () => void;
+
+    /** Callback for handling GA tracking events. */
+    handleGATracking: (event: { label: string; count: number }) => void;
+
+    /** Callback for handling click events on a pie slice. */
+    // onClickDatum: (d: PieArcDatum<Datum>) => void;
   };
 
-  /** The term currently being hovered over, or `null` if none. */
-  hoveredTerm: string | null;
-
-  /** Styles for the labels displayed on the pie chart. */
-  labelStyles: DonutChartProps['labelStyles'];
-
-  /** Number representing the outer radius of the pie chart. */
-  outerRadius: number;
-
-  /** Function to determine the color of each pie slice. */
-  getColor: (d: PieArcDatum<Datum>) => string;
-
-  /** Function to generate a unique key for each pie slice. */
-  getKey: (d: PieArcDatum<Datum>) => string;
-
-  /** Function to determine the route associated with a pie slice. */
-  getRoute: DonutChartProps['getRoute'];
-
-  /** Callback for handling mouse-over events on a pie slice. */
-  handleMouseOver: (
-    e:
-      | React.PointerEvent<SVGPathElement>
-      | React.FocusEvent<SVGGElement, Element>,
-    d: PieArcDatum<Datum>['data'],
-  ) => void;
-
-  /** Callback for handling mouse-out events from a pie slice. */
-  handleMouseOut: () => void;
-
-  /** Callback for handling click events on a pie slice. */
-  // onClickDatum: (d: PieArcDatum<Datum>) => void;
-};
-
 // Arc rendering with animated transitions
-function AnimatedPie<Datum>({
+function AnimatedPie<Datum extends { count: number }>({
   animate,
   arcs,
   dimensions,
@@ -363,6 +372,7 @@ function AnimatedPie<Datum>({
   getKey,
   getColor,
   getRoute,
+  handleGATracking,
   handleMouseOver,
   handleMouseOut,
   outerRadius,
@@ -408,7 +418,13 @@ function AnimatedPie<Datum>({
           handleMouseOut();
         }}
       >
-        <NextLink href={getRoute(getKey(arc))} passHref>
+        <NextLink
+          onClick={() =>
+            handleGATracking({ label: displayLabel, count: arc.data.count })
+          }
+          href={getRoute(getKey(arc))}
+          passHref
+        >
           <animated.path
             data-testid={`${getKey(arc)}-path`}
             style={{

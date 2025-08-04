@@ -12,6 +12,7 @@ import {
 import {
   getFillColor,
   getSearchResultsRoute,
+  trackDiseasesEvent,
 } from 'src/views/diseases/helpers';
 import { TopicQueryProps } from '../../types';
 import { ChartWrapper } from '../layouts/chart-wrapper';
@@ -122,6 +123,14 @@ export const DataTypes = ({ query, topic }: TopicQueryProps) => {
                     term,
                   });
                 }}
+                handleGATracking={({ label, count }) => {
+                  trackDiseasesEvent({
+                    label: label,
+                    category: DISEASE_PAGE_COPY['charts']['types']['title'],
+                    linkType: 'chart',
+                    value: count,
+                  });
+                }}
               />
             )}
           </Box>
@@ -134,6 +143,10 @@ export const DataTypes = ({ query, topic }: TopicQueryProps) => {
                   return b.count - a.count;
                 })
                 .map(({ term, count }) => {
+                  if (!term) return null; // Skip if term is undefined
+                  const label = formatResourceTypeForDisplay(
+                    term as APIResourceType,
+                  );
                   return (
                     <LegendItem
                       key={term}
@@ -142,6 +155,15 @@ export const DataTypes = ({ query, topic }: TopicQueryProps) => {
                       swatchBg={getFillColor(term)}
                     >
                       <NextLink
+                        onClick={() => {
+                          trackDiseasesEvent({
+                            label,
+                            category:
+                              DISEASE_PAGE_COPY['charts']['types']['title'],
+                            linkType: 'legend',
+                            value: count,
+                          });
+                        }}
                         href={getSearchResultsRoute({
                           query: params,
                           facet: params.facets,
@@ -149,11 +171,7 @@ export const DataTypes = ({ query, topic }: TopicQueryProps) => {
                         })}
                         passHref
                       >
-                        <Link as='p'>
-                          {formatResourceTypeForDisplay(
-                            term as APIResourceType,
-                          )}
-                        </Link>
+                        <Link as='p'>{label}</Link>
                       </NextLink>
                     </LegendItem>
                   );
@@ -164,6 +182,14 @@ export const DataTypes = ({ query, topic }: TopicQueryProps) => {
                 isLoading={isLoading || isPlaceholderData}
               >
                 <NextLink
+                  onClick={() => {
+                    trackDiseasesEvent({
+                      label: 'Total',
+                      category: DISEASE_PAGE_COPY['charts']['types']['title'],
+                      linkType: 'legend',
+                      value: data?.total,
+                    });
+                  }}
                   href={getSearchResultsRoute({
                     query: params,
                   })}
