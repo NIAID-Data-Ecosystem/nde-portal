@@ -46,6 +46,9 @@ interface StackedBarChartProps {
   };
   /** Function to handle slice click events. */
   getRoute: (term: string) => UrlObject;
+
+  /** Callback for handling click events on a pie slice. */
+  handleGATracking: (event: { label: string; count: number }) => void;
 }
 
 const barStyles = { height: 10, minWidth: 10, xPadding: 4, rx: 2.5 };
@@ -56,6 +59,7 @@ export const StackedBarChart = ({
   data,
   defaultDimensions,
   getRoute,
+  handleGATracking,
 }: StackedBarChartProps) => {
   const { height, margin } = defaultDimensions;
   const { parentRef, width } = useParentSize({
@@ -163,7 +167,11 @@ export const StackedBarChart = ({
                 onBlur={() => hideTooltip}
               >
                 {/* Horizontally Stacked Bar */}
-                <AnimatedRect bar={bar} getRoute={getRoute} />
+                <AnimatedRect
+                  bar={bar}
+                  getRoute={getRoute}
+                  onClick={handleGATracking}
+                />
 
                 {/* Bar Label */}
                 <Annotation
@@ -239,6 +247,7 @@ export const StackedBarChart = ({
 export const AnimatedRect = ({
   bar,
   getRoute,
+  onClick,
 }: {
   bar: {
     data: FacetTermsWithDetails;
@@ -249,12 +258,16 @@ export const AnimatedRect = ({
     fill: string;
   };
   getRoute: StackedBarChartProps['getRoute'];
+  onClick: StackedBarChartProps['handleGATracking'];
 }) => {
   const spring = useSpring({
     width: bar.width,
   });
   return (
-    <NextLink href={getRoute(bar.data.term)}>
+    <NextLink
+      href={getRoute(bar.data.term)}
+      onClick={() => onClick({ label: bar.data.label, count: bar.data.count })}
+    >
       <animated.rect
         x={bar.x}
         y={bar.y}
