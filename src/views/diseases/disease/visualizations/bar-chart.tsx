@@ -71,7 +71,7 @@ interface BarChartProps {
   /** Function to get the route for a given term. */
   getRoute: (term: string) => UrlObject;
 
-  /** Callback for handling click events on a pie slice. */
+  /** Callback for handling click events on a bar. */
   handleGATracking: (event: { label: string; count: number }) => void;
 
   /** Whether to apply logarithmic scaling to values. @default true */

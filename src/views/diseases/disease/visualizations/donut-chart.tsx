@@ -55,6 +55,7 @@ export interface DonutChartProps {
 
   /** Function to handle slice click events. */
   getRoute: (term: string) => UrlObject;
+
   /** Callback for handling click events on a pie slice. */
   handleGATracking: (event: { label: string; count: number }) => void;
 

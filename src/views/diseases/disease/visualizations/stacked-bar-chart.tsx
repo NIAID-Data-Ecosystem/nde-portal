@@ -47,7 +47,7 @@ interface StackedBarChartProps {
   /** Function to handle slice click events. */
   getRoute: (term: string) => UrlObject;
 
-  /** Callback for handling click events on a pie slice. */
+  /** Callback for handling click events on a bar. */
   handleGATracking: (event: { label: string; count: number }) => void;
 }
 
