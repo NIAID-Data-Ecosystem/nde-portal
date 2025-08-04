@@ -9,29 +9,28 @@ import {
   DiseasePageProps,
   DiseaseCollectionApiResponse,
 } from 'src/views/diseases/types';
-
-// Get Strapi base URL with error handling
-const getStrapiBaseUrl = (): string => {
-  const url = process.env.NEXT_PUBLIC_STRAPI_API_URL;
-  if (!url) {
-    throw new Error(
-      'NEXT_PUBLIC_STRAPI_API_URL environment variable is required',
-    );
-  }
-  return url;
-};
-
-// Determine the correct status based on environment
-const getContentStatus = (): string => {
-  const isProd = process.env.NEXT_PUBLIC_APP_ENV === 'production';
-  return isProd ? 'published' : 'draft';
-};
+import { sendGTMEvent } from '@next/third-parties/google';
 
 // Color scale for data types.
 export const getFillColor = scaleOrdinal({
   domain: ['Dataset', 'ComputationalTool', 'ResourceCatalog'],
   range: ['#e8c543', '#ff8359', '#6e95fc'],
 });
+
+export const trackDiseasesEvent = (event: {
+  label: string; // e.g., "Dataset"
+  category: string; // e.g., "Data Types Chart"
+  linkType: 'legend' | 'chart'; // 'link' for links, 'chart' for chart segments
+  value?: number; // optional value, e.g., count associated with "Datasets"
+}) => {
+  return sendGTMEvent({
+    event: 'disease_to_search', // required by GTM
+    label: event.label, // clicked item name
+    category: event.category, // chart section or type
+    link_type: event.linkType, // custom param to distinguish whether it's a link or chart segment that was clicked
+    value: event?.value, // optional value associated with the event
+  });
+};
 
 // Helper function to generate a URL object for search results.
 export const getSearchResultsRoute = ({
@@ -66,6 +65,23 @@ export const getSearchResultsRoute = ({
       }),
     },
   };
+};
+
+// Get Strapi base URL with error handling
+const getStrapiBaseUrl = (): string => {
+  const url = process.env.NEXT_PUBLIC_STRAPI_API_URL;
+  if (!url) {
+    throw new Error(
+      'NEXT_PUBLIC_STRAPI_API_URL environment variable is required',
+    );
+  }
+  return url;
+};
+
+// Determine the correct status based on environment
+const getContentStatus = (): string => {
+  const isProd = process.env.NEXT_PUBLIC_APP_ENV === 'production';
+  return isProd ? 'published' : 'draft';
 };
 
 // Fetch all disease pages
