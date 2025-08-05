@@ -9,23 +9,7 @@ import {
   DiseasePageProps,
   DiseaseCollectionApiResponse,
 } from 'src/views/diseases/types';
-
-// Get Strapi base URL with error handling
-const getStrapiBaseUrl = (): string => {
-  const url = process.env.NEXT_PUBLIC_STRAPI_API_URL;
-  if (!url) {
-    throw new Error(
-      'NEXT_PUBLIC_STRAPI_API_URL environment variable is required',
-    );
-  }
-  return url;
-};
-
-// Determine the correct status based on environment
-const getContentStatus = (): string => {
-  const isProd = process.env.NEXT_PUBLIC_APP_ENV === 'production';
-  return isProd ? 'published' : 'draft';
-};
+import { getTabIdFromTypeLabel } from '../search/components/filters/utils/tab-filter-utils';
 
 // Color scale for data types.
 export const getFillColor = scaleOrdinal({
@@ -43,29 +27,42 @@ export const getSearchResultsRoute = ({
   facet?: string;
   term?: string;
 }): UrlObject => {
-  const querystring = query.q || '';
-  const queryFilters = queryFilterString2Object(query.extra_filter);
-  if (!facet || !term) {
-    return {
-      pathname: `/search`,
-      query: {
-        q: querystring,
-        filters: queryFilterObject2String({
-          ...queryFilters,
-        }),
-      },
-    };
+  const q = query.q || '';
+  const filters = queryFilterString2Object(query.extra_filter) || {};
+
+  if (facet && term) {
+    filters[facet] = [term];
   }
+
+  // Get the tab ID from the facet term if applicable
+  const tabId =
+    (facet === '@type' && getTabIdFromTypeLabel(term || '')) || undefined;
+
   return {
-    pathname: `/search`,
+    pathname: '/search',
     query: {
-      q: querystring,
-      filters: queryFilterObject2String({
-        ...queryFilters,
-        [facet]: [term],
-      }),
+      q,
+      filters: queryFilterObject2String(filters),
+      ...(tabId && { tab: tabId }),
     },
   };
+};
+
+// Get Strapi base URL with error handling
+const getStrapiBaseUrl = (): string => {
+  const url = process.env.NEXT_PUBLIC_STRAPI_API_URL;
+  if (!url) {
+    throw new Error(
+      'NEXT_PUBLIC_STRAPI_API_URL environment variable is required',
+    );
+  }
+  return url;
+};
+
+// Determine the correct status based on environment
+const getContentStatus = (): string => {
+  const isProd = process.env.NEXT_PUBLIC_APP_ENV === 'production';
+  return isProd ? 'published' : 'draft';
 };
 
 // Fetch all disease pages
