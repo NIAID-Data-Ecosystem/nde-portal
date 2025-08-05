@@ -31,7 +31,7 @@ export const ExternalLinkItem: React.FC<ExternalLinkItemProps> = ({
       )}
 
       <Link
-        // href={url}
+        href={url}
         isExternal={isExternal}
         onClick={() => handleGATracking({ label, url })}
       >
