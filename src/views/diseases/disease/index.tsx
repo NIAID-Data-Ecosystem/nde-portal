@@ -147,7 +147,10 @@ export const DiseaseContent: React.FC<DiseaseContentProps> = ({
               },
             )}
           >
-            <ExternalLinksSection externalLinks={data.externalLinks} />
+            <ExternalLinksSection
+              topic={topic}
+              externalLinks={data.externalLinks}
+            />
           </SectionWrapper>
         )}
       </Flex>
