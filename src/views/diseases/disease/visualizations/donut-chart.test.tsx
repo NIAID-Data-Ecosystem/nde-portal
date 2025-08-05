@@ -30,6 +30,7 @@ const defaultProps: DonutChartProps = {
   getRoute: mockGetRoute,
   title: 'An accessible title',
   description: 'Followed by an accessible description.',
+  handleGATracking: jest.fn(),
 };
 
 describe('DonutChart', () => {

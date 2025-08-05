@@ -30,6 +30,9 @@ interface TreemapChartProps {
   /** Function to generate the search route for each term. */
   getSearchRoute: (term: string) => UrlObject;
 
+  /** Callback for handling click events on treemap term. */
+  handleGATracking: (event: { label: string; count: number }) => void;
+
   /** Default dimensions of the chart in pixels */
   defaultDimensions: {
     width: number;
@@ -57,6 +60,7 @@ export const TreemapChart = ({
   facet,
   defaultDimensions,
   getSearchRoute,
+  handleGATracking,
 }: TreemapChartProps) => {
   // State to manage hover and focus interactions
   const [hoveredTerm, setHoveredTerm] = useState<string | null>(null);
@@ -204,6 +208,12 @@ export const TreemapChart = ({
                       >
                         {/* Focusable interactive rect with URL via NextLink */}
                         <NextLink
+                          onClick={() =>
+                            handleGATracking({
+                              label: term,
+                              count: node.data.data.count,
+                            })
+                          }
                           href={getSearchRoute(term)}
                           passHref
                           tabIndex={-1} // Prevent link from being tabbable, rect is tabbable
