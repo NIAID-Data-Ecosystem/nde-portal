@@ -106,7 +106,12 @@ const fetchSourceIdsGroupedByDomain = async (): Promise<
 
       const id = src?.sourceInfo?.identifier;
       const name = src?.sourceInfo?.name;
-      const genre = src?.sourceInfo?.genre || 'Generalist';
+      // Only allow known domains; default to 'Generalist' if unknown
+      const genre =
+        src?.sourceInfo?.genre === 'IID' ||
+        src?.sourceInfo?.genre === 'Generalist'
+          ? src?.sourceInfo?.genre
+          : 'Generalist';
 
       if (!id || OMITTED_SOURCES.includes(id)) return acc;
 
@@ -169,7 +174,9 @@ const fetchTopScoringResultsForSDPublishers = async (
     try {
       const data = await fetchAllSearchResults(query);
       if (!data?.results?.length) {
-        console.warn(`⚠️ No results found for SD publisher: ${sdPublisher}`);
+        console.warn(
+          `  └⚠️  No results found for SD publisher: ${sdPublisher}`,
+        );
         continue;
       }
       results.push(...data.results);
