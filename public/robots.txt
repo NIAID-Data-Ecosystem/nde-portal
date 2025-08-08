@@ -19,4 +19,23 @@ Host: https://data.niaid.nih.gov
 
 # Sitemaps
 Sitemap: https://data.niaid.nih.gov/sitemap.xml
-Sitemap: https://data.niaid.nih.gov/sitemap-datasets.xml
+Sitemap: https://data.niaid.nih.gov/sitemaps/datasets/accessclinicaldata_niaid.xml
+Sitemap: https://data.niaid.nih.gov/sitemaps/datasets/bio_tools.xml
+Sitemap: https://data.niaid.nih.gov/sitemaps/datasets/clinepidb.xml
+Sitemap: https://data.niaid.nih.gov/sitemaps/datasets/dryad_digital_repository.xml
+Sitemap: https://data.niaid.nih.gov/sitemaps/datasets/harvard_dataverse.xml
+Sitemap: https://data.niaid.nih.gov/sitemaps/datasets/immport.xml
+Sitemap: https://data.niaid.nih.gov/sitemaps/datasets/immunespace.xml
+Sitemap: https://data.niaid.nih.gov/sitemaps/datasets/malariagen.xml
+Sitemap: https://data.niaid.nih.gov/sitemaps/datasets/massive.xml
+Sitemap: https://data.niaid.nih.gov/sitemaps/datasets/microbiomedb.xml
+Sitemap: https://data.niaid.nih.gov/sitemaps/datasets/ndex.xml
+Sitemap: https://data.niaid.nih.gov/sitemaps/datasets/nichd_dash.xml
+Sitemap: https://data.niaid.nih.gov/sitemaps/datasets/omics_discovery_index__omicsdi_.xml
+Sitemap: https://data.niaid.nih.gov/sitemaps/datasets/qiita.xml
+Sitemap: https://data.niaid.nih.gov/sitemaps/datasets/radx_data_hub.xml
+Sitemap: https://data.niaid.nih.gov/sitemaps/datasets/reframedb.xml
+Sitemap: https://data.niaid.nih.gov/sitemaps/datasets/vdjserver.xml
+Sitemap: https://data.niaid.nih.gov/sitemaps/datasets/veupathdb.xml
+Sitemap: https://data.niaid.nih.gov/sitemaps/datasets/vivli.xml
+Sitemap: https://data.niaid.nih.gov/sitemaps/datasets/zenodo.xml
