@@ -114,14 +114,7 @@ const fetchSourceIdsGroupedByDomain = async (): Promise<
 
       // Add the source to the NIAID array if it is funded by NIAID. Otherwise, add it to the domain array.
       // This ensures that NIAID sources are prioritized in the sitemap.
-
-      if (funded) {
-        acc.NIAID.push(id);
-      } else if (genre === 'IID') {
-        acc.IID.push(id);
-      } else {
-        acc.Generalist.push(id);
-      }
+      funded ? acc.NIAID.push(id) : acc[genre].push(id);
 
       return acc;
     },
@@ -171,11 +164,10 @@ const fetchTopScoringResultsForSDPublishers = async (
       q: params.q
         ? `${params.q} AND sdPublisher.name:"${sdPublisher}"`
         : `sdPublisher.name:"${sdPublisher}"`,
-      size: 5,
       fields: [...(params.fields || []), 'sdPublisher.name'],
     };
     try {
-      const data = await fetchSearchResults(query);
+      const data = await fetchAllSearchResults(query);
       if (!data?.results?.length) {
         console.warn(`⚠️ No results found for SD publisher: ${sdPublisher}`);
         continue;
@@ -206,7 +198,6 @@ const fetchTopScoringResults = async (
   for (const source of sources) {
     const params: Params = {
       q: `includedInDataCatalog.name:"${source}" AND ${scoring_query}`,
-      size: 5,
       sort: '-_meta.completeness.total_score',
       fields,
     };
@@ -218,7 +209,7 @@ const fetchTopScoringResults = async (
           ? await fetchSDPublishersForSource(source).then(sdPublishers =>
               fetchTopScoringResultsForSDPublishers(params, sdPublishers),
             )
-          : (await fetchSearchResults(params))?.results || [];
+          : (await fetchAllSearchResults(params))?.results || [];
 
       groupedTopScoringResults.push({ source, results: data });
     } catch (err: any) {
@@ -257,6 +248,7 @@ const generateSitemapDatasetsBySource = async (
           results: await fetchAllResourcesBySource(source, fields),
         })),
       );
+
       sitemapDatasets.push(...iidResults);
     }
 
@@ -269,6 +261,22 @@ const generateSitemapDatasetsBySource = async (
 
       sitemapDatasets.push(...generalistResults);
     }
+
+    // Log count of datasets per source
+    sitemapDatasets.forEach(({ source, results }) => {
+      console.log(`ℹ️ Source: ${source}, Datasets Count: ${results.length}`);
+    });
+
+    // log count of all results
+    const totalResultsCount = sitemapDatasets.reduce(
+      (sum, { results }) => sum + results.length,
+      0,
+    );
+
+    console.log(
+      `ℹ️ Total results to include in sitemaps: ${totalResultsCount}`,
+    );
+
     return sitemapDatasets;
   } catch (error: any) {
     console.error(
@@ -299,6 +307,11 @@ const writeToCSV = async (
 const writeSitemapContentPerSource = async (
   sources: { source: string; results: FormattedResource[] }[],
 ) => {
+  const totalSitemapURLSCount = sources.reduce(
+    (sum, { results }) => sum + results.length,
+    0,
+  );
+  console.log(`ℹ️ Total sitemap URLs to write: ${totalSitemapURLSCount}`);
   if (!fs.existsSync(OUTPUT_SITEMAP_DIR)) {
     fs.mkdirSync(OUTPUT_SITEMAP_DIR, { recursive: true });
   }
