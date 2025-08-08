@@ -3,7 +3,7 @@ import axios from 'axios';
 import JSON5 from 'json5';
 
 /**
- * This script fetches the metadata completeness fields from the NIAID-Data-Ecosystem GitHub repository,
+ * This script fetches the metadata completeness fields from the NIAID-Data-Ecosystem/nde-crawlers GitHub repository,
  * processes the data, and writes it to a JSON file.
  * The script uses axios to make HTTP requests and JSON5 to parse the data.
  * The output file is saved in the src/components/metadata-completeness-badge directory.

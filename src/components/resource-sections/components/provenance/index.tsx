@@ -175,7 +175,10 @@ const Provenance: React.FC<Provenance> = ({
                 </Text>
                 <Divider />
                 <dl>
-                  {sdPublisher.map(publisher => {
+                  {(Array.isArray(sdPublisher)
+                    ? sdPublisher
+                    : [sdPublisher]
+                  ).map(publisher => {
                     return (
                       <Field
                         key={publisher.identifier || publisher.name}
