@@ -254,8 +254,7 @@
       "seo": {
         "title": "404",
         "description": "404 Error: Page Not Found.",
-        "keywords": ["404", "page not found", "error"],
-        "preventIndexing": true
+        "keywords": ["404", "page not found", "error"]
       }
     }
   },

@@ -5,6 +5,7 @@ import { fetchSearchResults } from 'src/utils/api';
 import { getSearchResultsRoute } from 'src/views/diseases/helpers';
 import { useQuery } from '@tanstack/react-query';
 import { DataTypes } from '../data-types';
+import { getTabIdFromTypeLabel } from 'src/views/search/components/filters/utils/tab-filter-utils';
 
 // Mock the module before importing the component that uses it
 jest.mock('@tanstack/react-query', () => ({
@@ -72,6 +73,7 @@ describe('DataTypes Component', () => {
       query: {
         q: querystring,
         filters: `(${facet}:("${term}"))`,
+        tab: getTabIdFromTypeLabel(term),
       },
     };
 

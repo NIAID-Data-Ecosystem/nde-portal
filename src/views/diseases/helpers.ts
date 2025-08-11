@@ -10,6 +10,7 @@ import {
   DiseaseCollectionApiResponse,
 } from 'src/views/diseases/types';
 import { sendGTMEvent } from '@next/third-parties/google';
+import { getTabIdFromTypeLabel } from '../search/components/filters/utils/tab-filter-utils';
 
 // Color scale for data types.
 export const getFillColor = scaleOrdinal({
@@ -44,27 +45,23 @@ export const getSearchResultsRoute = ({
   facet?: string;
   term?: string;
 }): UrlObject => {
-  const querystring = query.q || '';
-  const queryFilters = queryFilterString2Object(query.extra_filter);
-  if (!facet || !term) {
-    return {
-      pathname: `/search`,
-      query: {
-        q: querystring,
-        filters: queryFilterObject2String({
-          ...queryFilters,
-        }),
-      },
-    };
+  const q = query.q || '';
+  const filters = queryFilterString2Object(query.extra_filter) || {};
+
+  if (facet && term) {
+    filters[facet] = [term];
   }
+
+  // Get the tab ID from the facet term if applicable
+  const tabId =
+    (facet === '@type' && getTabIdFromTypeLabel(term || '')) || undefined;
+
   return {
-    pathname: `/search`,
+    pathname: '/search',
     query: {
-      q: querystring,
-      filters: queryFilterObject2String({
-        ...queryFilters,
-        [facet]: [term],
-      }),
+      q,
+      filters: queryFilterObject2String(filters),
+      ...(tabId && { tab: tabId }),
     },
   };
 };
