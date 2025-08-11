@@ -1,6 +1,10 @@
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
-import { getPageSeoConfig, PageContainer } from 'src/components/page-container';
+import {
+  getPageSeoConfig,
+  PageContainer,
+  PageContent,
+} from 'src/components/page-container';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { FetchSearchResultsResponse } from 'src/utils/api/types';
 import { SearchTabsProvider } from 'src/views/search/context/search-tabs-context';
@@ -93,51 +97,55 @@ const Search: NextPage<{
     >
       <SearchTabsProvider initialTab={initialTab}>
         <PaginationProvider>
-          <Flex bg='page.alt'>
+          <Flex bg='page.alt' flex={1}>
             <Flex
-              id='search-page-filters-sidebar'
               bg='#fff'
-              borderRight='0.5px solid'
-              borderRightColor='gray.200'
-              flex={{ base: 0, lg: 1 }}
-              minW={{ base: 'unset', lg: '380px' }}
-              maxW={{ base: 'unset', lg: '450px' }}
+              margin='0 auto'
+              maxW={{ base: 'unset', xl: '2000px' }}
+              flex={1}
+              overflow='hidden'
+              mb={32}
+              border='1px solid'
+              borderRadius='semi'
+              borderColor='gray.100'
             >
-              {/* Filters sidebar */}
-              <Filters
-                colorScheme='secondary'
-                selectedFilters={selectedFilters}
-                isDisabled={appliedFilters.length === 0}
-                removeAllFilters={removeAllFilters}
-              />
-            </Flex>
-            <Box flex={3}>
-              <VStack
-                alignItems='flex-start'
-                p={4}
+              <Flex
+                id='search-page-filters-sidebar'
                 bg='#fff'
-                borderBottom='1px solid'
-                borderRight='1px solid'
-                borderColor='gray.100'
-                spacing={2}
+                borderRight='0.5px solid'
+                borderRightColor='gray.200'
+                flex={{ base: 0, lg: 1 }}
+                minW={{ base: 'unset', lg: '380px' }}
+                maxW={{ base: 'unset', lg: '450px' }}
               >
-                {/* Heading: Showing results for... */}
-                <SearchResultsHeader querystring={queryParams.q} />
+                {/* Filters sidebar */}
+                <Filters
+                  colorScheme='secondary'
+                  selectedFilters={selectedFilters}
+                  isDisabled={appliedFilters.length === 0}
+                  removeAllFilters={removeAllFilters}
+                />
+              </Flex>
+              <Box flex={3}>
+                <VStack alignItems='flex-start' p={4} bg='#fff' spacing={2}>
+                  {/* Heading: Showing results for... */}
+                  <SearchResultsHeader querystring={queryParams.q} />
 
-                {/* Filter tags : Tags with the names of the currently selected filters */}
-                {Object.values(selectedFilters).length > 0 && (
-                  <FilterTags
-                    filtersConfig={FILTER_CONFIGS}
-                    selectedFilters={selectedFilters}
-                    handleRouteUpdate={handleRouteUpdate}
-                    removeAllFilters={removeAllFilters}
-                  />
-                )}
-              </VStack>
+                  {/* Filter tags : Tags with the names of the currently selected filters */}
+                  {Object.values(selectedFilters).length > 0 && (
+                    <FilterTags
+                      filtersConfig={FILTER_CONFIGS}
+                      selectedFilters={selectedFilters}
+                      handleRouteUpdate={handleRouteUpdate}
+                      removeAllFilters={removeAllFilters}
+                    />
+                  )}
+                </VStack>
 
-              {/* Search Results */}
-              <SearchResultsController initialData={initialData} />
-            </Box>
+                {/* Search Results */}
+                <SearchResultsController initialData={initialData} />
+              </Box>
+            </Flex>
           </Flex>
         </PaginationProvider>
       </SearchTabsProvider>

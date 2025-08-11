@@ -12,7 +12,7 @@ export const SearchBarSection: React.FC = () => {
         borderBottom='1px solid'
         borderColor='gray.100'
       >
-        <Stack flexDirection='column' py={4} flex={1} maxW='2600px'>
+        <Stack flexDirection='column' py={4} flex={1} maxW='2000px'>
           <NextLink
             href={{ pathname: '/advanced-search' }}
             passHref
