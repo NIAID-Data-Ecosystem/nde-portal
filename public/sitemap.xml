@@ -1,5 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <sitemap><loc>https://data.niaid.nih.gov/sitemap-0.xml</loc></sitemap>
-<sitemap><loc>https://data.niaid.nih.gov/sitemap-datasets.xml</loc></sitemap>
+<sitemap><loc>https://data.niaid.nih.gov/sitemaps/datasets/accessclinicaldata_niaid.xml</loc></sitemap>
+<sitemap><loc>https://data.niaid.nih.gov/sitemaps/datasets/bio_tools.xml</loc></sitemap>
+<sitemap><loc>https://data.niaid.nih.gov/sitemaps/datasets/clinepidb.xml</loc></sitemap>
+<sitemap><loc>https://data.niaid.nih.gov/sitemaps/datasets/dryad_digital_repository.xml</loc></sitemap>
+<sitemap><loc>https://data.niaid.nih.gov/sitemaps/datasets/harvard_dataverse.xml</loc></sitemap>
+<sitemap><loc>https://data.niaid.nih.gov/sitemaps/datasets/immport.xml</loc></sitemap>
+<sitemap><loc>https://data.niaid.nih.gov/sitemaps/datasets/immunespace.xml</loc></sitemap>
+<sitemap><loc>https://data.niaid.nih.gov/sitemaps/datasets/malariagen.xml</loc></sitemap>
+<sitemap><loc>https://data.niaid.nih.gov/sitemaps/datasets/massive.xml</loc></sitemap>
+<sitemap><loc>https://data.niaid.nih.gov/sitemaps/datasets/microbiomedb.xml</loc></sitemap>
+<sitemap><loc>https://data.niaid.nih.gov/sitemaps/datasets/ndex.xml</loc></sitemap>
+<sitemap><loc>https://data.niaid.nih.gov/sitemaps/datasets/nichd_dash.xml</loc></sitemap>
+<sitemap><loc>https://data.niaid.nih.gov/sitemaps/datasets/omics_discovery_index__omicsdi_.xml</loc></sitemap>
+<sitemap><loc>https://data.niaid.nih.gov/sitemaps/datasets/qiita.xml</loc></sitemap>
+<sitemap><loc>https://data.niaid.nih.gov/sitemaps/datasets/radx_data_hub.xml</loc></sitemap>
+<sitemap><loc>https://data.niaid.nih.gov/sitemaps/datasets/reframedb.xml</loc></sitemap>
+<sitemap><loc>https://data.niaid.nih.gov/sitemaps/datasets/vdjserver.xml</loc></sitemap>
+<sitemap><loc>https://data.niaid.nih.gov/sitemaps/datasets/veupathdb.xml</loc></sitemap>
+<sitemap><loc>https://data.niaid.nih.gov/sitemaps/datasets/vivli.xml</loc></sitemap>
+<sitemap><loc>https://data.niaid.nih.gov/sitemaps/datasets/zenodo.xml</loc></sitemap>
 </sitemapindex>
