@@ -112,4 +112,90 @@ describe('useCarouselNavigation', () => {
     // Dot click should calculate: index * constraint = 2 * 2 = 4 (using default constraint: 2)
     expect(mockSetActiveItem).toHaveBeenCalledWith(4);
   });
+
+  it('should handle dot click at boundaries correctly', () => {
+    const { result } = renderHook(() =>
+      useCarouselNavigation(
+        createDefaultProps({
+          constraint: 3,
+          maxActiveItem: 7,
+        }),
+      ),
+    );
+
+    // Test clicking a dot that would go beyond the maximum
+    act(() => {
+      result.current.handleDotClick(3); // 3 * 3 = 9, but max is 7
+    });
+
+    expect(mockSetActiveItem).toHaveBeenCalledWith(7);
+  });
+
+  it('should return stable function references', () => {
+    const { result, rerender } = renderHook(() =>
+      useCarouselNavigation(createDefaultProps()),
+    );
+
+    // Get the functions from the first render
+    const firstRenderFunctions = result.current;
+
+    // Force a re-render with the same props
+    rerender();
+
+    // Get the functions from the second render
+    const secondRenderFunctions = result.current;
+
+    // Function references should be the same
+    expect(firstRenderFunctions.handleFocus).toBe(
+      secondRenderFunctions.handleFocus,
+    );
+    expect(firstRenderFunctions.handleDecrementClick).toBe(
+      secondRenderFunctions.handleDecrementClick,
+    );
+    expect(firstRenderFunctions.handleIncrementClick).toBe(
+      secondRenderFunctions.handleIncrementClick,
+    );
+    expect(firstRenderFunctions.handleDotClick).toBe(
+      secondRenderFunctions.handleDotClick,
+    );
+  });
+
+  it('should update functions when dependencies change', () => {
+    let constraint = 2;
+    let maxActiveItem = 10;
+
+    // Create a renderHook setup
+    const { result, rerender } = renderHook(() =>
+      useCarouselNavigation({
+        setActiveItem: mockSetActiveItem,
+        setTrackIsActive: mockSetTrackIsActive,
+        constraint,
+        maxActiveItem,
+      }),
+    );
+
+    // Test with initial values
+    act(() => {
+      result.current.handleIncrementClick();
+    });
+
+    const firstUpdateFunction = mockSetActiveItem.mock.calls[0][0];
+    expect(firstUpdateFunction(0)).toBe(2);
+
+    // Clear mock calls
+    mockSetActiveItem.mockClear();
+
+    // Change props and re-render
+    constraint = 5;
+    maxActiveItem = 20;
+    rerender();
+
+    // Test with new values
+    act(() => {
+      result.current.handleIncrementClick();
+    });
+
+    const secondUpdateFunction = mockSetActiveItem.mock.calls[0][0];
+    expect(secondUpdateFunction(0)).toBe(5);
+  });
 });
