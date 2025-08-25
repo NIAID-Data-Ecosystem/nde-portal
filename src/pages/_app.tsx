@@ -1,10 +1,9 @@
 import type { AppProps } from 'next/app';
 import Head from 'next/head';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { theme } from 'src/theme';
 import { GoogleTagManager } from '@next/third-parties/google';
 import { fonts } from 'lib/fonts';
-import { ChakraProvider } from '@chakra-ui/react';
+import { Provider } from 'src/components/ui/provider';
 
 // Creates an instance of react-query for the app.
 const queryClient = new QueryClient();
@@ -27,10 +26,10 @@ function App({ Component, pageProps }: AppProps) {
       </style>
 
       <QueryClientProvider client={queryClient}>
-        <ChakraProvider theme={theme}>
+        <Provider>
           {/* @ts-ignore */}
           <Component {...pageProps} />
-        </ChakraProvider>
+        </Provider>
       </QueryClientProvider>
       <GoogleTagManager
         gtmId={process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS || ''}

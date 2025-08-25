@@ -6,7 +6,6 @@ import NextDocument, {
   NextScript,
 } from 'next/document';
 import React from 'react';
-import { Box } from '@chakra-ui/react';
 
 export const NAV_HEIGHT = { base: '105px', sm: '77px', md: '89px' };
 
@@ -16,7 +15,7 @@ class Document extends NextDocument {
   }
   render() {
     return (
-      <Box as={Html} lang='en'>
+      <Html lang='en'>
         <Head>
           <link rel='icon' href='/favicon.png' />
           <meta name='robots' content='noindex' />
@@ -25,7 +24,7 @@ class Document extends NextDocument {
           <Main />
           <NextScript />
         </body>
-      </Box>
+      </Html>
     );
   }
 }
