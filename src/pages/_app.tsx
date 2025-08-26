@@ -27,7 +27,6 @@ function App({ Component, pageProps }: AppProps) {
 
       <QueryClientProvider client={queryClient}>
         <Provider>
-          {/* @ts-ignore */}
           <Component {...pageProps} />
         </Provider>
       </QueryClientProvider>

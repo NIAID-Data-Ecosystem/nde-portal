@@ -1,13 +1,15 @@
-import { colors } from './colors';
+import colors from './colors';
+import fonts from './fonts';
 import radii from './radius';
 import shadows from './shadows';
-import typography from './typography';
 
-const foundations = {
-  colors,
-  shadows,
+export const tokens = {
+  colors: colors.tokens,
   radii,
-  ...typography,
+  shadows,
+  ...fonts,
 } as any;
 
-export default foundations;
+export const semanticTokens = {
+  colors: colors.semanticTokens,
+};

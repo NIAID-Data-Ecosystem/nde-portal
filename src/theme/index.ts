@@ -1,8 +1,10 @@
-import { createSystem, defaultConfig } from '@chakra-ui/react';
+import { createSystem, defaultConfig, defineConfig } from '@chakra-ui/react';
+import { tokens, semanticTokens } from './tokens';
 
-export const theme = createSystem(defaultConfig);
+const overrides = defineConfig({ theme: { tokens, semanticTokens } });
+export const theme = createSystem(defaultConfig, overrides);
+
 // import { extendTheme } from '@chakra-ui/react';
-// import foundations from './foundations';
 // import styles from './styles';
 // import { Badge } from './components/badge.theme';
 // import { Button } from './components/button.theme';

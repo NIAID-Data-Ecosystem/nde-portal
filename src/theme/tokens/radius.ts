@@ -1,7 +1,7 @@
 const radii = {
-  none: '0',
-  semi: '0.3125rem',
-  full: '1rem',
+  none: { value: '0' },
+  semi: { value: '0.3125rem' },
+  full: { value: '1rem' },
 };
 
 export default radii;
