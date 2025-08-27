@@ -64,77 +64,155 @@ const tokens = {
     800: { value: '#5A5959' },
     900: { value: '#414141' },
   },
+};
+const semanticTokens = {
+  primary: {
+    contrast: { value: 'white' },
+    emphasized: { value: '{colors.primary.300}' },
+    fg: { value: '{colors.primary.700}' },
+    focusRing: { value: '{colors.primary.500/50}' },
+    muted: { value: '{colors.primary.200}' },
+    solid: { value: '{colors.primary.500}' },
+    subtle: { value: '{colors.primary.100}' },
+  },
+  secondary: {
+    contrast: { value: 'white' },
+    emphasized: { value: '{colors.secondary.300}' },
+    fg: { value: '{colors.secondary.700}' },
+    focusRing: { value: '{colors.secondary.500/50}' },
+    muted: { value: '{colors.secondary.200}' },
+    solid: { value: '{colors.secondary.500}' },
+    subtle: { value: '{colors.secondary.100}' },
+  },
+  accent: {
+    contrast: { value: 'white' },
+    emphasized: { value: '{colors.accent.300}' },
+    fg: { value: '{colors.accent.700}' },
+    focusRing: { value: '{colors.accent.500/50}' },
+    muted: { value: '{colors.accent.100}' },
+    solid: { value: '{colors.accent.500}' },
+    subtle: { value: '{colors.accent.50}' },
+  },
+  error: {
+    light: { value: '#FBF2F3' },
+    default: { value: '#D23342' },
+    contrast: { value: 'white' },
+    emphasized: { value: '{colors.error.light}' },
+    fg: { value: '{colors.error.default}' },
+    focusRing: { value: '{colors.red.500/50}' },
+    muted: { value: '#f6bec4' },
+    solid: { value: '{colors.error.default}' },
+    subtle: { value: '{colors.error.light}' },
+  },
+  info: {
+    light: { value: '#F3F4FC' },
+    default: { value: '#4865E3' },
+    contrast: { value: 'white' },
+    emphasized: { value: '{colors.info.light}' },
+    fg: { value: '{colors.info.default}' },
+    focusRing: { value: '#4299E199' },
+    muted: { value: '#8FA2F1' },
+    solid: { value: '{colors.info.default}' },
+    subtle: { value: '{colors.info.light}' },
+  },
+  success: {
+    light: { value: '#F2F5F4' },
+    default: { value: '#17805F' },
+    contrast: { value: 'white' },
+    emphasized: { value: '{colors.success.light}' },
+    fg: { value: '{colors.success.default}' },
+    focusRing: { value: '{colors.success.default}' },
+    muted: { value: '#BBF4E3' },
+    solid: { value: '{colors.success.default}' },
+    subtle: { value: '{colors.success.light}' },
+  },
+  warning: {
+    light: { value: '#FFF9F2' },
+    default: { value: '#FFC10A' },
+    contrast: { value: 'white' },
+    emphasized: { value: '{colors.warning.light}' },
+    fg: { value: '{colors.yellow.800}' },
+    focusRing: { value: '{colors.warning.default}' },
+    muted: { value: '#FFECAD' },
+    solid: { value: '{colors.warning.default}' },
+    subtle: { value: '{colors.warning.light}' },
+  },
+  niaid: {
+    contrast: { value: 'white' },
+    emphasized: { value: '{colors.niaid.300}' },
+    fg: { value: '{colors.niaid.700}' },
+    focusRing: { value: '{colors.niaid.500}' },
+    muted: { value: '{colors.niaid.200}' },
+    solid: { value: '{colors.niaid.500}' },
+    subtle: { value: '{colors.niaid.100}' },
+  },
   page: {
-    bg: { value: '#FDFDFD' },
+    default: { value: '#FDFDFD' },
     alt: { value: '#F5F6FA' },
     placeholder: { value: '#9AA6B5' },
   },
+  link: {
+    default: { value: '#246CD3' },
+    visited: { value: '#6F57B5' },
+  },
+  navigation: { default: { value: '#262626' }, hover: { value: '#1B1B1B' } },
   text: {
     body: { value: '#404B56' },
     heading: { value: '#2F2F2F' },
   },
-  navigation: { bg: { value: '#262626' }, hover: { value: '#1B1B1B' } },
-  link: {
-    color: { value: '#246CD3' },
-    visited: { value: '#6F57B5' },
+  bg: {
+    DEFAULT: {
+      value: '{colors.page.default}',
+    },
+    subtle: {
+      value: '{colors.page.alt}',
+    },
+    error: {
+      value: '{colors.error.light}',
+    },
+    warning: {
+      value: '{colors.warning.light}',
+    },
+    success: {
+      value: '{colors.success.light}',
+    },
+    info: {
+      value: '{colors.info.light}',
+    },
   },
-  status: {
-    success: { value: '#17805F' },
-    success_lt: { value: '#F2F5F4' },
-    alert: { value: '#F8FF55' },
-    warning: { value: '#FFC10A' },
-    warning_lt: { value: '#FFF9F2' },
-    error: { value: '#D23342' },
-    error_lt: { value: '#FBF2F3' },
-    info: { value: '#4865E3' },
-    info_lt: { value: '#F3F4FC' },
+  border: {
+    DEFAULT: {
+      value: '{colors.gray.200}',
+    },
+    error: {
+      value: '{colors.error.default}',
+    },
+    warning: {
+      value: '{colors.warning.default}',
+    },
+    success: {
+      value: '{colors.success.default}',
+    },
+    info: {
+      value: '{colors.info.default}',
+    },
   },
-};
-const semanticTokens = {
-  primary: {
-    solid: { value: '{colors.primary.500}' },
-    contrast: { value: '{colors.primary.100}' },
-    fg: { value: '{colors.primary.700}' },
-    muted: { value: '{colors.primary.100}' },
-    subtle: { value: '{colors.primary.200}' },
-    emphasized: { value: '{colors.primary.300}' },
-    focusRing: { value: '{colors.primary.500}' },
-  },
-  secondary: {
-    solid: { value: '{colors.secondary.500}' },
-    contrast: { value: '{colors.secondary.100}' },
-    fg: { value: '{colors.secondary.700}' },
-    muted: { value: '{colors.secondary.100}' },
-    subtle: { value: '{colors.secondary.200}' },
-    emphasized: { value: '{colors.secondary.300}' },
-    focusRing: { value: '{colors.secondary.500}' },
-  },
-  niaid: {
-    solid: { value: '{colors.niaid.500}' },
-    contrast: { value: '{colors.niaid.100}' },
-    fg: { value: '{colors.niaid.700}' },
-    muted: { value: '{colors.niaid.100}' },
-    subtle: { value: '{colors.niaid.200}' },
-    emphasized: { value: '{colors.niaid.300}' },
-    focusRing: { value: '{colors.niaid.500}' },
-  },
-  accent: {
-    solid: { value: '{colors.accent.500}' },
-    contrast: { value: '{colors.accent.100}' },
-    fg: { value: '{colors.accent.700}' },
-    muted: { value: '{colors.accent.100}' },
-    subtle: { value: '{colors.accent.200}' },
-    emphasized: { value: '{colors.accent.300}' },
-    focusRing: { value: '{colors.accent.500}' },
-  },
-  gray: {
-    solid: { value: '{colors.gray.500}' },
-    contrast: { value: '{colors.gray.100}' },
-    fg: { value: '{colors.gray.700}' },
-    muted: { value: '{colors.gray.100}' },
-    subtle: { value: '{colors.gray.200}' },
-    emphasized: { value: '{colors.gray.300}' },
-    focusRing: { value: '{colors.gray.500}' },
+  fg: {
+    DEFAULT: {
+      value: '{colors.text.body}',
+    },
+    error: {
+      value: '{colors.error.default}',
+    },
+    warning: {
+      value: '{colors.warning.default}',
+    },
+    success: {
+      value: '{colors.success.default}',
+    },
+    info: {
+      value: '{colors.info.default}',
+    },
   },
 };
 

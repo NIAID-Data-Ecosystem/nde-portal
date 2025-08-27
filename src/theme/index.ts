@@ -1,12 +1,14 @@
 import { createSystem, defaultConfig, defineConfig } from '@chakra-ui/react';
+import { recipes, slotRecipes } from './recipes';
 import { tokens, semanticTokens } from './tokens';
 import { globalCss } from './global-css';
 
 const overrides = defineConfig({
   globalCss,
-  theme: { tokens, semanticTokens },
+  theme: { recipes, slotRecipes, semanticTokens, tokens },
 });
-export const theme = createSystem(defaultConfig, overrides);
+
+export const system = createSystem(defaultConfig, overrides);
 
 // import { extendTheme } from '@chakra-ui/react';
 // import styles from './styles';
