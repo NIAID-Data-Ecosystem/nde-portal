@@ -1,7 +1,11 @@
 import { createSystem, defaultConfig, defineConfig } from '@chakra-ui/react';
 import { tokens, semanticTokens } from './tokens';
+import { globalCss } from './global-css';
 
-const overrides = defineConfig({ theme: { tokens, semanticTokens } });
+const overrides = defineConfig({
+  globalCss,
+  theme: { tokens, semanticTokens },
+});
 export const theme = createSystem(defaultConfig, overrides);
 
 // import { extendTheme } from '@chakra-ui/react';
