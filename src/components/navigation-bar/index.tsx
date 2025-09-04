@@ -26,10 +26,10 @@ const MobileSubMenu = dynamic(
 );
 
 export const Navigation: React.FC<FlexProps> = props => {
-  const { isOpen, onToggle } = useDisclosure();
-  const [isLargerThanMd] = useMediaQuery('(min-width: 54rem)', {
+  const { open, onToggle } = useDisclosure();
+  const [isLargerThanMd] = useMediaQuery(['(min-width: 54rem)'], {
     ssr: true,
-    fallback: false,
+    fallback: [false],
   });
   const router = useRouter();
 
@@ -95,10 +95,10 @@ export const Navigation: React.FC<FlexProps> = props => {
           <IconButton
             display={isLargerThanMd ? 'none' : 'flex'}
             aria-label={
-              isOpen ? 'Toggle Navigation closed.' : 'Toggle Navigation open.'
+              open ? 'Toggle Navigation closed.' : 'Toggle Navigation open.'
             }
             icon={
-              isOpen ? (
+              open ? (
                 <Icon as={FaXmark} w={5} h={5} />
               ) : (
                 <Icon as={FaBars} w={4} h={4} />
@@ -115,9 +115,9 @@ export const Navigation: React.FC<FlexProps> = props => {
       </Flex>
 
       {/* Popout navigation in mobile mode */}
-      {isOpen && (
+      {open && (
         <MobileSubMenu
-          isOpen={isOpen}
+          isOpen={open}
           navigation={navigationFilteredByEnvironment}
         />
       )}

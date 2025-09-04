@@ -44,7 +44,7 @@ export const filterFields = (field: SchemaDefinition) => {
 };
 
 const Option = (props: OptionProps<any>) => {
-  const { isOpen: showDescription, onClose, onOpen } = useDisclosure();
+  const { open: showDescription, onClose, onOpen } = useDisclosure();
   const { data } = props;
   const { label, type, count, property } = data;
 

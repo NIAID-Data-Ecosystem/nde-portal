@@ -28,15 +28,15 @@ import { TagWithUrl } from 'src/components/tag-with-url';
 // TruncatedDescription: Component for displaying truncated text with 'read more/less' option
 const TruncatedDescription = React.memo(
   ({ description }: { description: Item['description'] }) => {
-    const { isOpen, onToggle } = useDisclosure();
+    const { open, onToggle } = useDisclosure();
 
     if (!description) return <></>;
 
-    const { text, hasMore } = getTruncatedText(description, isOpen);
+    const { text, hasMore } = getTruncatedText(description, open);
     return text ? (
       <Text fontSize='inherit' w='100%'>
         {text}
-        {!isOpen && hasMore ? '...' : ''}
+        {!open && hasMore ? '...' : ''}
         {hasMore ? (
           <Button
             variant='link'
@@ -44,7 +44,7 @@ const TruncatedDescription = React.memo(
             mx={1}
             onClick={onToggle}
           >
-            {isOpen ? 'read less' : 'read more'}
+            {open ? 'read less' : 'read more'}
           </Button>
         ) : (
           <></>

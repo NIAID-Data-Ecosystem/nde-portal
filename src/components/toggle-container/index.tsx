@@ -29,7 +29,9 @@ export const ToggleContainer: React.FC<ToggleContainerProps> = ({
   variant,
   ...props
 }) => {
-  const { isOpen, onOpen, onClose } = useDisclosure({ defaultIsOpen });
+  const { open, onOpen, onClose } = useDisclosure({
+    defaultOpen: defaultIsOpen,
+  });
 
   // Set minimum number of lines shown when container is not expanded
   const minNoOfLines = Array.isArray(noOfLines)
@@ -64,15 +66,15 @@ export const ToggleContainer: React.FC<ToggleContainerProps> = ({
 
   useEffect(() => {
     handleOverflow();
-  }, [isOpen, handleOverflow]);
+  }, [open, handleOverflow]);
 
   // Possible to toggle drawer when drawer is close with oversized inner content or is open.
-  const isExpandable = (isOverflowing && !isOpen) || isOpen;
+  const isExpandable = (isOverflowing && !open) || open;
   return (
     <Button
       variant={variant}
-      bg={isOpen ? 'blackAlpha.50' : 'white'}
-      onClick={() => (isOpen ? onClose() : onOpen())}
+      bg={open ? 'blackAlpha.50' : 'white'}
+      onClick={() => (open ? onClose() : onOpen())}
       flexWrap={['wrap', 'nowrap']}
       aria-label={ariaLabel}
       alignItems={alignIcon}
@@ -107,12 +109,12 @@ export const ToggleContainer: React.FC<ToggleContainerProps> = ({
       <Flex
         ref={containerRef}
         overflow={'hidden'}
-        height={isOpen ? undefined : minHeight}
-        noOfLines={isOpen ? maxNoOfLines : minNoOfLines}
+        height={open ? undefined : minHeight}
+        noOfLines={open ? maxNoOfLines : minNoOfLines}
       >
         {children}
       </Flex>
-      {(isOpen || (!isOpen && isOverflowing)) && (
+      {(open || (!open && isOverflowing)) && (
         <Flex
           className='icon'
           flexDirection='column'
@@ -128,7 +130,7 @@ export const ToggleContainer: React.FC<ToggleContainerProps> = ({
             h={3}
             color='gray.700'
             as={FaAngleDown}
-            transform={isOpen ? 'rotate(-180deg)' : undefined}
+            transform={open ? 'rotate(-180deg)' : undefined}
             transformOrigin='center'
             transition='transform 0.2s'
           />

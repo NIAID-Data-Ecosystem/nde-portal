@@ -23,18 +23,14 @@ export const AdvancedSearchWithModal: React.FC<
   AdvancedSearchPropsWithModal
 > = ({ buttonProps, modalProps, ...props }) => {
   // Handles the opening of the modal.
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const { open, onOpen, onClose } = useDisclosure();
 
   return (
     <>
       <AdvancedSearchOpen onClick={onOpen} {...buttonProps} />
 
-      <AdvancedSearchModal
-        isOpen={isOpen}
-        handleClose={onClose}
-        {...modalProps}
-      >
-        {isOpen && (
+      <AdvancedSearchModal isOpen={open} handleClose={onClose} {...modalProps}>
+        {open && (
           <AdvancedSearch
             onValidSubmit={onClose}
             renderButtonGroup={(props: any) => (

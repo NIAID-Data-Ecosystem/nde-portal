@@ -57,7 +57,7 @@ export const RadioSelect = ({
         justifyContent='space-between'
         p={2}
         isDisabled={isDisabled}
-        isOpen={disclosure.isOpen}
+        isOpen={disclosure.open}
         onToggle={disclosure.onToggle}
         onClose={disclosure.onClose}
       >

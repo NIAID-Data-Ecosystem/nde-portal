@@ -19,7 +19,7 @@ export const MobileNavItem = ({
   href,
   isExternal,
 }: TransformedNavigationMenu) => {
-  const { isOpen, onToggle } = useDisclosure();
+  const { open, onToggle } = useDisclosure();
   return (
     <Stack w='100%' spacing={2} onClick={routes && onToggle} cursor='pointer'>
       {href ? (
@@ -86,9 +86,7 @@ export const MobileNavItem = ({
               as={FaAngleDown}
               transition={'all .25s ease-in-out'}
               transform={
-                isOpen
-                  ? 'translateX(-10px) rotate(180deg)'
-                  : 'translateX(-10px)'
+                open ? 'translateX(-10px) rotate(180deg)' : 'translateX(-10px)'
               }
               w={3}
               h={3}
@@ -98,7 +96,7 @@ export const MobileNavItem = ({
       )}
 
       <Box>
-        <Collapse in={isOpen} animateOpacity>
+        <Collapse in={open} animateOpacity>
           <Stack
             mt={0}
             pl={2}

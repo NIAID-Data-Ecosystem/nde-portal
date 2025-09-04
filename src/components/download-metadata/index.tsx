@@ -47,7 +47,7 @@ export const DownloadMetadata: React.FC<DownloadMetadataProps> = ({
   ...props
 }) => {
   // Toggle open/close a download format list.
-  const { isOpen, onToggle, onClose } = useDisclosure();
+  const { open, onToggle, onClose } = useDisclosure();
   const router = useRouter();
 
   // Options for download format and corresponding formatting functions.
@@ -240,7 +240,7 @@ export const DownloadMetadata: React.FC<DownloadMetadataProps> = ({
               borderRadius='semi'
               bg='white'
             >
-              <Collapse in={isOpen} animateOpacity>
+              <Collapse in={open} animateOpacity>
                 <UnorderedList ml={0}>
                   {options.map((option, idx) => {
                     return (

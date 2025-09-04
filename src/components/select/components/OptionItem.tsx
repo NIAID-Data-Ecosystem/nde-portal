@@ -18,7 +18,7 @@ export const OptionItem: React.FC<OptionProps> = ({
   onClick,
   ...props
 }) => {
-  const { isOpen: showDescription, onClose, onOpen } = useDisclosure();
+  const { open: showDescription, onClose, onOpen } = useDisclosure();
   return (
     <ListItem
       px={3}

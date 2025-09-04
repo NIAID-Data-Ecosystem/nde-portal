@@ -330,7 +330,7 @@ interface SearchBarWithDropdownProps {
 
 export const DocsSearchBar = (props: SearchBarWithDropdownProps) => {
   const [results, setResults] = useState<SearchResult[]>([]);
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const { open, onOpen, onClose } = useDisclosure();
   const { placeholder, colorScheme = 'primary', size = 'sm' } = props;
 
   const handleClose = () => {
@@ -366,8 +366,8 @@ export const DocsSearchBar = (props: SearchBarWithDropdownProps) => {
           {placeholder}
         </Button>
       </Stack>
-      {isOpen && (
-        <Modal isOpen={isOpen} onClose={handleClose} size='5xl'>
+      {open && (
+        <Modal isOpen={open} onClose={handleClose} size='5xl'>
           <ModalContent>
             <ModalBody>
               <Box p={6}>

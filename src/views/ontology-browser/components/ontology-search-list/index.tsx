@@ -30,7 +30,7 @@ export const OntologySearchList = ({
   setSearchList: React.Dispatch<React.SetStateAction<SearchListItem[]>>;
 }) => {
   const router = useRouter();
-  const { isOpen, onOpen, onClose } = useDisclosure({ defaultIsOpen: true });
+  const { open, onOpen, onClose } = useDisclosure({ defaultOpen: true });
   const [union, setUnion] = React.useState<string>('OR');
 
   if (!searchList.length) {
@@ -52,8 +52,8 @@ export const OntologySearchList = ({
       >
         {/* Toggle for opening the list*/}
         <ListToggle
-          isOpen={isOpen}
-          toggleOpen={isOpen ? onClose : onOpen}
+          isOpen={open}
+          toggleOpen={open ? onClose : onOpen}
           label='Expand list of selected search terms'
         />
         {/* List of terms to search */}
@@ -61,9 +61,9 @@ export const OntologySearchList = ({
           className='onto-search-list-content'
           minWidth={300}
           bg='white'
-          w={isOpen ? { base: '100%', lg: `${WIDTH}px` } : '0px'}
-          h={isOpen ? { base: 'auto', lg: 'auto' } : '0px'}
-          transform={isOpen ? 'translateX(0)' : 'translateX(100%)'}
+          w={open ? { base: '100%', lg: `${WIDTH}px` } : '0px'}
+          h={open ? { base: 'auto', lg: 'auto' } : '0px'}
+          transform={open ? 'translateX(0)' : 'translateX(100%)'}
           maxW={{ base: 'auto', lg: `${WIDTH}px` }}
           transitionDuration='fast'
           transitionProperty='width, transform'
@@ -77,7 +77,7 @@ export const OntologySearchList = ({
           <Flex
             h='100%'
             flexDirection='column'
-            overflow={isOpen ? 'visible' : 'hidden'}
+            overflow={open ? 'visible' : 'hidden'}
           >
             <Button
               aria-label='Collapse selected search terms list'
@@ -133,7 +133,7 @@ export const OntologySearchList = ({
 
               {/* Search list */}
               <Box as='ul' flex={1} w='100%' flexDirection='column' bg='white'>
-                {isOpen &&
+                {open &&
                   searchList.map(({ taxonId, ontologyName, label }, index) => (
                     <>
                       <Flex

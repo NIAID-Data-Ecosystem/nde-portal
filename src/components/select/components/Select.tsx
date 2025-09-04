@@ -10,7 +10,6 @@ import {
   InputGroup,
   InputProps,
   InputRightElement,
-  UseDisclosureProps,
   useOutsideClick,
   VisuallyHidden,
 } from '@chakra-ui/react';
@@ -52,12 +51,15 @@ export const SelectWrapper: React.FC<{
   );
 };
 
-interface SelectProps extends UseDisclosureProps {
+interface SelectProps {
   id: string;
   handleOnClickOutside?: () => void;
   isDisabled?: boolean;
   renderButton?: (props: IconButtonProps) => React.ReactElement;
   onToggle: () => void;
+  isOpen?: boolean;
+  onClose?: () => void;
+  onOpen?: () => void;
 }
 
 interface SelectWithInputProps extends Omit<InputProps, 'id'>, SelectProps {

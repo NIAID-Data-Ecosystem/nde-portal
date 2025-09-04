@@ -77,7 +77,7 @@ export const FiltersContainer: React.FC<FiltersContainerProps> = ({
   const [isInitialized, setIsInitialized] = useState(false);
 
   const btnRef = useRef<HTMLButtonElement>(null);
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const { open, onOpen, onClose } = useDisclosure();
   const { selectedTab } = useSearchTabsContext();
   const screenSize = useBreakpointValue(
     {
@@ -307,7 +307,7 @@ export const FiltersContainer: React.FC<FiltersContainerProps> = ({
       </Button>
       <Drawer
         autoFocus={false}
-        isOpen={isOpen}
+        isOpen={open}
         placement='left'
         onClose={onClose}
         finalFocusRef={btnRef}

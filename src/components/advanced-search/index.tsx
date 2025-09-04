@@ -83,8 +83,8 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
 
   const [resetForm, setResetForm] = useState(false);
 
-  const { isOpen: showRawQuery, onToggle: toggleShowRawQuery } = useDisclosure({
-    defaultIsOpen: true,
+  const { open: showRawQuery, onToggle: toggleShowRawQuery } = useDisclosure({
+    defaultOpen: true,
   });
   const [items, setItems] = useState<TreeItem[]>([]);
 

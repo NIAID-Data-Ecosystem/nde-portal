@@ -20,7 +20,7 @@ export const Summary = ({
   description: FormattedResource['disambiguatingDescription'];
   tagLabel: string;
 }) => {
-  const { isOpen, onToggle } = useDisclosure();
+  const { open, onToggle } = useDisclosure();
 
   return (
     <Flex
@@ -66,7 +66,7 @@ export const Summary = ({
         mx={1}
         fontSize='lg'
         verticalAlign='bottom'
-        noOfLines={isOpen ? undefined : 5}
+        noOfLines={open ? undefined : 5}
       >
         <Tag
           variant='solid'
@@ -88,7 +88,7 @@ export const Summary = ({
           color='inherit'
           onClick={onToggle}
         >
-          read {isOpen ? 'less' : 'full summary'}
+          read {open ? 'less' : 'full summary'}
         </Button>
       </Flex>
     </Flex>

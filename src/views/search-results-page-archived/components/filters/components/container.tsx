@@ -58,7 +58,7 @@ export const FiltersContainer: React.FC<FiltersContainerProps> = ({
 }) => {
   const [openSections, setOpenSections] = useState<number[]>([]);
   const btnRef = useRef<HTMLButtonElement>(null);
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const { open, onOpen, onClose } = useDisclosure();
   const screenSize = useBreakpointValue(
     {
       base: 'mobile',
@@ -203,7 +203,7 @@ export const FiltersContainer: React.FC<FiltersContainerProps> = ({
       </Button>
       <Drawer
         autoFocus={false}
-        isOpen={isOpen}
+        isOpen={open}
         placement='left'
         onClose={onClose}
         finalFocusRef={btnRef}
