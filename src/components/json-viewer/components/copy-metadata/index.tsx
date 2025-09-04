@@ -1,6 +1,7 @@
-import { Button, ButtonProps, FlexProps, useClipboard } from '@chakra-ui/react';
+import { Button, ButtonProps, FlexProps } from '@chakra-ui/react';
 import React from 'react';
 import { FaCopy } from 'react-icons/fa6';
+import { useCopyToClipboard } from 'usehooks-ts';
 
 /*
  [COMPONENT INFO]: Button that copies [metadataObject] as string to clipboard.
@@ -14,7 +15,7 @@ export const CopyMetadata: React.FC<CopyMetadataProps> = ({
   metadataObject,
   buttonProps,
 }) => {
-  const { onCopy, hasCopied } = useClipboard(metadataObject);
+  const [copiedText, copy] = useCopyToClipboard();
 
   return (
     <Button
@@ -22,10 +23,10 @@ export const CopyMetadata: React.FC<CopyMetadataProps> = ({
       size='sm'
       leftIcon={<FaCopy />}
       colorScheme='primary'
-      onClick={onCopy}
+      onClick={() => copy(metadataObject)}
       {...buttonProps}
     >
-      {hasCopied ? 'Metadata copied!' : 'Copy'}
+      {copiedText ? 'Metadata copied!' : 'Copy'}
     </Button>
   );
 };
