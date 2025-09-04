@@ -1,11 +1,7 @@
 import React, { useRef } from 'react';
-import {
-  Box,
-  BoxProps,
-  ListItemProps,
-  useOutsideClick,
-} from '@chakra-ui/react';
+import { Box, BoxProps, ListItemProps } from '@chakra-ui/react';
 import { useDropdownInput } from './hooks/useDropdownInput';
+import { useOnClickOutside } from 'usehooks-ts';
 
 interface DropdownListItemProps extends ListItemProps {
   index: number;
@@ -68,10 +64,10 @@ export const InputWithDropdown: React.FC<InputWithDropdownProps> = ({
 
   // Handles closing the dropdown list when clicking outside the element.
   const ref = useRef(null);
-  useOutsideClick({
-    ref: ref,
-    handler: () => dropdownInput.setIsOpen(false),
-  });
+  const handleClickOutside = () => dropdownInput.setIsOpen(false);
+
+  useOnClickOutside(ref, handleClickOutside);
+
   const context = {
     cursorMax,
     colorScheme,
