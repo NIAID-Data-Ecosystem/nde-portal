@@ -1,6 +1,6 @@
-import { ChakraProvider } from '@chakra-ui/react';
-import { system } from 'src/theme';
+import { ChakraProvider, ChakraProviderProps } from '@chakra-ui/react';
+import { defaultSystem } from '@chakra-ui/react';
 
-export function Provider(props: any) {
-  return <ChakraProvider value={system} {...props} />;
+export function Provider({ value, ...props }: ChakraProviderProps) {
+  return <ChakraProvider value={value || defaultSystem} {...props} />;
 }

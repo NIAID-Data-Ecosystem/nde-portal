@@ -13,7 +13,6 @@ import {
   useEditableControls,
   VisuallyHidden,
 } from '@chakra-ui/react';
-import { theme } from 'src/theme';
 import { MouseEventHandler, useEffect, useState } from 'react';
 import { FaCheck, FaRegPenToSquare, FaXmark } from 'react-icons/fa6';
 import { useQuery } from '@tanstack/react-query';
@@ -266,12 +265,7 @@ export const EditableQueryText = ({
           fontSize='sm'
           as={EditableTextarea}
           isInvalid={hasErrors}
-          _focus={{
-            boxShadow: hasErrors
-              ? `0 0 0 1px ${theme.colors.status.error}`
-              : '0 0 0 1px #3182ce',
-            borderColor: hasErrors ? theme.colors.status.error : '#3182ce',
-          }}
+          focusRingColor={hasErrors ? 'error.default' : 'info.default'}
         />
         <Flex p={2} justifyContent='space-between' alignItems='center'>
           <Flex>

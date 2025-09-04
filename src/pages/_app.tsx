@@ -4,6 +4,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { GoogleTagManager } from '@next/third-parties/google';
 import { fonts } from 'lib/fonts';
 import { Provider } from 'src/components/ui/provider';
+import { system } from 'src/theme';
 
 // Creates an instance of react-query for the app.
 const queryClient = new QueryClient();
@@ -26,7 +27,7 @@ function App({ Component, pageProps }: AppProps) {
       </style>
 
       <QueryClientProvider client={queryClient}>
-        <Provider>
+        <Provider value={system}>
           <Component {...pageProps} />
         </Provider>
       </QueryClientProvider>
