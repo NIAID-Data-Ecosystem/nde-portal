@@ -1,11 +1,5 @@
 import React from 'react';
-import {
-  Button,
-  Flex,
-  usePrefersReducedMotion,
-  Stack,
-  ButtonProps,
-} from '@chakra-ui/react';
+import { Button, Flex, Stack, ButtonProps } from '@chakra-ui/react';
 import { FormattedResource } from 'src/utils/api/types';
 import NextLink from 'next/link';
 import { FaArrowRight } from 'react-icons/fa6';
@@ -41,8 +35,6 @@ export const DataAccess: React.FC<DataAccessProps> = ({
   recordType,
   colorScheme = 'secondary',
 }) => {
-  const prefersReducedMotion = usePrefersReducedMotion();
-
   const sources =
     !isLoading && includedInDataCatalog
       ? getSourceDetails(
@@ -88,12 +80,10 @@ export const DataAccess: React.FC<DataAccessProps> = ({
                 },
               }}
               _hover={{
-                svg: prefersReducedMotion
-                  ? {}
-                  : {
-                      transform: 'translateX(4px)',
-                      transition: 'transform 0.2s ease-in-out',
-                    },
+                svg: {
+                  transform: 'translateX(4px)',
+                  transition: 'transform 0.2s ease-in-out',
+                },
               }}
             >
               <AccessResourceButton
