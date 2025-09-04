@@ -7,6 +7,7 @@ import {
   Tooltip,
   Text,
   Button,
+  Skeleton,
 } from '@chakra-ui/react';
 import NextLink from 'next/link';
 import { FormattedResource } from 'src/utils/api/types';
@@ -18,7 +19,6 @@ import { HasAPI } from 'src/components/badges/components/HasAPI';
 import { MetadataLabel } from 'src/components/metadata';
 import { ScrollContainer } from 'src/components/scroll-container';
 import { SearchableItems } from 'src/components/searchable-items';
-import { Skeleton } from 'src/components/skeleton';
 
 interface CompactCardProps {
   data?: FormattedResource | null;
@@ -86,7 +86,7 @@ export const CompactCard = ({
     >
       {/* TypeBanner */}
       <Skeleton
-        isLoaded={!isLoading}
+        loading={isLoading}
         height={isLoading ? '40px' : 'auto'}
         borderTopRadius='md'
       >
@@ -121,7 +121,7 @@ export const CompactCard = ({
         }}
       >
         {/* Title */}
-        <Skeleton isLoaded={!isLoading} minHeight='27px' flex={1}>
+        <Skeleton loading={isLoading} minHeight='27px' flex={1}>
           <NextLink
             href={{
               pathname: '/resources/',
@@ -166,7 +166,7 @@ export const CompactCard = ({
         }}
       >
         {/* Date and badges */}
-        <Skeleton isLoaded={!isLoading} minHeight='30px' px={2}>
+        <Skeleton loading={isLoading} minHeight='30px' px={2}>
           {date && (
             <Flex
               bg='white'
@@ -217,7 +217,7 @@ export const CompactCard = ({
         </Skeleton>
 
         {/* Content types */}
-        <Skeleton isLoaded={!isLoading} px={1}>
+        <Skeleton loading={isLoading} px={1}>
           {aboutItems.length > 0 && (
             <Flex bg='white' direction='column'>
               <MetadataLabel label='Content Types' />
@@ -240,7 +240,7 @@ export const CompactCard = ({
         </Skeleton>
 
         {/* Description */}
-        <Skeleton isLoaded={!isLoading} flex='1' px={2} mt={2} mb={1}>
+        <Skeleton loading={isLoading} flex='1' px={2} mt={2} mb={1}>
           {description && (
             <>
               {shouldShowDescription ? (

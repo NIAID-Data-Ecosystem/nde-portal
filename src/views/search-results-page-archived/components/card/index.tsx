@@ -10,6 +10,7 @@ import {
   Tooltip,
   Stack,
   Highlight,
+  Skeleton,
 } from '@chakra-ui/react';
 import { useInView } from '@react-spring/web';
 import NextLink from 'next/link';
@@ -26,7 +27,6 @@ import { CompletenessBadgeCircle } from 'src/components/metadata-completeness-ba
 import { ToggleContainer } from 'src/components/toggle-container';
 import { formatAuthorsList2String } from 'src/utils/helpers/authors';
 import { isSourceFundedByNiaid } from 'src/utils/helpers/sources';
-import { Skeleton } from 'src/components/skeleton';
 import { filterWords } from './helpers';
 import { SchemaDefinitions } from 'scripts/generate-schema-definitions/types';
 import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
@@ -114,7 +114,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
         w='100%'
       >
         <Skeleton
-          isLoaded={!isLoading}
+          loading={isLoading}
           minHeight={isLoading ? '81px' : 'unset'}
           flex={1}
         >
@@ -163,7 +163,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
         </Skeleton>
       </CardHeader>
       <Skeleton
-        isLoaded={!isLoading}
+        loading={isLoading}
         p='0px!important'
         minHeight={
           isLoading
