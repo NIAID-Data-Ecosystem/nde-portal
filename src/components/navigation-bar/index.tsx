@@ -7,7 +7,6 @@ import {
   Stack,
   Icon,
   useDisclosure,
-  useMediaQuery,
 } from '@chakra-ui/react';
 import { FaBars, FaXmark } from 'react-icons/fa6';
 import dynamic from 'next/dynamic';
@@ -17,6 +16,7 @@ import { DesktopNavItem } from './components/desktop-nav-item';
 import { useRouter } from 'next/router';
 import { buildNavigationFromConfig, filterRoutesByEnv } from './helpers';
 import { SiteConfig } from '../page-container/types';
+import { useMediaQuery } from 'usehooks-ts';
 
 const MobileSubMenu = dynamic(
   () => import('./components/menu-mobile').then(mod => mod.MobileSubMenu),
@@ -27,10 +27,7 @@ const MobileSubMenu = dynamic(
 
 export const Navigation: React.FC<FlexProps> = props => {
   const { open, onToggle } = useDisclosure();
-  const [isLargerThanMd] = useMediaQuery(['(min-width: 54rem)'], {
-    ssr: true,
-    fallback: [false],
-  });
+  const isLargerThanMd = useMediaQuery('(min-width: 54rem)');
   const router = useRouter();
 
   // Build navigation from config

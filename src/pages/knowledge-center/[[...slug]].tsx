@@ -8,8 +8,8 @@ import {
   SkeletonText,
   Text,
   UnorderedList,
-  useMediaQuery,
 } from '@chakra-ui/react';
+import { useMediaQuery } from 'usehooks-ts';
 import { Link } from 'src/components/link';
 import type { GetStaticProps, NextPage } from 'next';
 import {
@@ -105,10 +105,7 @@ const Docs: NextPage<{
 
   const router = useRouter();
 
-  const [isLargerThanSm] = useMediaQuery('(min-width: 48em)', {
-    ssr: true,
-    fallback: false, // return false on the server, and re-evaluate on the client side
-  });
+  const isLargerThanSm = useMediaQuery('(min-width: 48em)');
 
   const selectedPage = documentationPagesList?.reduce((r, page) => {
     const slug = Array.isArray(router.query.slug)

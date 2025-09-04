@@ -1,11 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import {
-  Flex,
-  Icon,
-  Select,
-  VisuallyHidden,
-  useMediaQuery,
-} from '@chakra-ui/react';
+import { Flex, Icon, Select, VisuallyHidden } from '@chakra-ui/react';
+import { useMediaQuery } from 'usehooks-ts';
 import {
   FaAngleRight,
   FaAngleLeft,
@@ -80,10 +75,8 @@ export const Pagination: React.FC<PaginationProps> = React.memo(
     };
 
     const options = generateOptions(selectedPage);
-    const [isLargerThanMd] = useMediaQuery('(min-width: 48em)', {
-      ssr: true,
-      fallback: false,
-    });
+    const isLargerThanMd = useMediaQuery('(min-width: 48em)');
+
     return (
       <Flex
         id={id}
