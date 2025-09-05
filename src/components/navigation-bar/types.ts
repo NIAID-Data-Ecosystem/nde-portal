@@ -1,7 +1,10 @@
+import { IconProps } from '@chakra-ui/react';
+
 export interface TransformedNavigationMenu extends NavigationItem {
   env?: string[];
   href?: string;
   routes?: Array<TransformedNavigationMenu>;
+  getIcon?: (props: IconProps) => React.ReactNode;
 }
 
 export interface NavigationItem {

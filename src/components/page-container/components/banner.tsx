@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import {
   Box,
   Button,
-  Divider,
+  Separator,
   Flex,
   HStack,
   Heading,
@@ -21,28 +21,16 @@ import {
   FaCircleXmark,
 } from 'react-icons/fa6';
 
-const StatusIcon = ({ status }: { status: NoticeProps['state'] }) => {
-  let icon = null;
-
+const getStatusIcon = (status: NoticeProps['state']) => {
   if (status === 'ERROR') {
-    icon = FaCircleXmark;
+    return FaCircleXmark;
   } else if (status === 'INFO') {
-    icon = FaCircleInfo;
+    return FaCircleInfo;
   } else if (status === 'SUCCESS') {
-    icon = FaCircleCheck;
+    return FaCircleCheck;
   } else if (status === 'WARNING') {
-    icon = FaCircleExclamation;
+    return FaCircleExclamation;
   }
-  if (!icon) return <></>;
-
-  return (
-    <Icon
-      as={icon}
-      boxSize={6}
-      my={1}
-      fill={`status.${status?.toLowerCase()}`}
-    />
-  );
 };
 
 export const Banner = ({
@@ -58,6 +46,11 @@ export const Banner = ({
     setOpen(!isOpen);
   };
 
+  const theme = {
+    default: `${state?.toLowerCase()}.default`,
+    light: `${state?.toLowerCase()}.light`,
+  };
+
   useEffect(() => {
     setIsMounted(true);
   }, []);
@@ -69,12 +62,12 @@ export const Banner = ({
       flexDirection='column'
       px={4}
       py={2}
+      bg={theme.light}
       borderLeft='0.5rem solid'
-      borderColor={`status.${state?.toLowerCase()}`}
-      bg={`status.${state?.toLowerCase()}_lt`}
+      borderColor={theme.default}
     >
       <HStack
-        spacing={4}
+        gap={4}
         flex={1}
         flexDirection={{ base: 'column', sm: 'row' }}
         alignItems='flex-end'
@@ -82,12 +75,17 @@ export const Banner = ({
         <HStack
           flex={1}
           width='100%'
-          spacing={{ base: 2, sm: 4 }}
+          gap={{ base: 2, sm: 4 }}
           alignItems='flex-start'
           flexDirection={{ base: 'column', sm: 'row' }}
         >
           {/* Status icon */}
-          <StatusIcon status={state} />
+          <Icon
+            as={getStatusIcon(state)}
+            boxSize={6}
+            my={1}
+            fill={theme.default}
+          />
 
           {/* Heading */}
           <Heading
@@ -114,7 +112,7 @@ export const Banner = ({
       {/* Description / Additional info */}
       {isMounted && isOpen && description && (
         <Box py={2} fontSize='sm'>
-          <Divider />
+          <Separator />
           <Box px={2}>
             <ReactMarkdown
               rehypePlugins={[rehypeRaw, remarkGfm]}

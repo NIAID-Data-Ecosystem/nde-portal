@@ -1,5 +1,5 @@
 import React from 'react';
-import { Icon, Link, LinkProps, Text } from '@chakra-ui/react';
+import { Icon, Link, LinkProps } from '@chakra-ui/react';
 import { FaArrowUpRightFromSquare } from 'react-icons/fa6';
 
 // Styles based on: https://designsystem.niaid.nih.gov/components/atoms)
@@ -23,4 +23,4 @@ const CustomLink = ({ isExternal, children, ...props }: CustomLinkProps) => {
   );
 };
 
-export default CustomLink;
+export { CustomLink as Link };

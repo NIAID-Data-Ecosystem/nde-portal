@@ -5,6 +5,7 @@ http://policy-prod-varnish-1734617591.us-east-1.elb.amazonaws.com/policies/typog
 USWDS Typesetting guidelines:
 https://designsystem.digital.gov/design-tokens/typesetting/overview/
 */
+const fallback = `-apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"`;
 
 export const fontSizes = {
   xs: { value: '0.875rem' },
@@ -17,8 +18,8 @@ export const lineHeights = {
 };
 
 export const fonts = {
-  heading: { value: 'var(--font-public-sans)' },
-  body: { value: 'var(--font-public-sans)' },
+  heading: { value: `var(--font-public-sans), ${fallback}` },
+  body: { value: `var(--font-public-sans), ${fallback}` },
 };
 
 export default {

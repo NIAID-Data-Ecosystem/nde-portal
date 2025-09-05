@@ -18,6 +18,13 @@ const link = defineRecipe({
 
   variants: {
     variant: {
+      'no-line': {
+        color: 'inherit',
+        textDecoration: 'none',
+        _hover: {
+          textDecoration: 'none',
+        },
+      },
       underline: {
         color: 'link.default',
         textDecorationColor: 'currentColor',

@@ -3,17 +3,15 @@ import { FaAngleDown } from 'react-icons/fa6';
 import {
   Box,
   chakra,
-  Collapse,
+  Collapsible,
   Flex,
   Heading,
   Image,
   Text,
-  UnorderedList,
-  OrderedList,
-  ListItem,
   ImageProps,
   Icon,
   HStack,
+  List,
 } from '@chakra-ui/react';
 import { Link } from 'src/components/link';
 import { HeadingWithLink } from 'src/components/heading-with-link/components/HeadingWithLink';
@@ -59,13 +57,13 @@ const Details = (props: any) => {
         />
       </Flex>
 
-      <Collapse in={isOpen} animateOpacity>
+      <Collapsible.Root open={isOpen}>
         <Box
           px={6}
           py={4}
           pb={6}
           bg='whiteAlpha.800'
-          sx={{
+          css={{
             h3: {
               fontSize: 'lg',
               mt: 6,
@@ -76,7 +74,7 @@ const Details = (props: any) => {
           {/* display content after summary */}
           {children.slice(summaryIndex + 1)}
         </Box>
-      </Collapse>
+      </Collapsible.Root>
     </Box>
   );
 };
@@ -380,7 +378,7 @@ export const MDXComponents = {
   li: (props: any) => {
     const { ordered, ...rest } = props;
     return (
-      <ListItem
+      <List.Item
         listStyleType='inherit'
         lineHeight='tall'
         pb={4}
@@ -388,7 +386,7 @@ export const MDXComponents = {
         {...rest}
       >
         {props.children}
-      </ListItem>
+      </List.Item>
     );
   },
   ol: (props: any) => {
@@ -397,9 +395,9 @@ export const MDXComponents = {
       return (MDXComponents.ul as any)(rest);
     }
     return (
-      <OrderedList ml={12} my={2} {...rest}>
+      <List.Root as='ol' ml={12} my={2} {...rest}>
         {props.children}
-      </OrderedList>
+      </List.Root>
     );
   },
   p: (props: any) => {
@@ -414,7 +412,13 @@ export const MDXComponents = {
       );
     if (containsImgEl) {
       return (
-        <Text as='span' mt={2} size='sm' lineHeight='tall' color='text.body'>
+        <Text
+          as='span'
+          mt={2}
+          fontSize='sm'
+          lineHeight='tall'
+          color='text.body'
+        >
           {props.children}
         </Text>
       );
@@ -471,9 +475,9 @@ export const MDXComponents = {
       return (MDXComponents.ol as any)(rest);
     }
     return (
-      <UnorderedList my={4} ml={12} {...rest}>
+      <List.Root my={4} ml={12} {...rest}>
         {props.children}
-      </UnorderedList>
+      </List.Root>
     );
   },
 };

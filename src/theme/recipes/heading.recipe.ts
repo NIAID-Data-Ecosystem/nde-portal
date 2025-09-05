@@ -7,32 +7,28 @@ const heading = defineRecipe({
     lineHeight: 'base',
   },
   variants: {
-    as: {
+    size: {
       h1: {
-        fontWeight: 800,
-        base: { fontSize: '5xl' },
-        md: { fontSize: '6xl' },
+        textStyle: 'h1',
       },
       h2: {
-        base: { fontSize: '4xl' },
-        md: { fontSize: '5xl' },
+        textStyle: 'h2',
       },
       h3: {
-        base: { fontSize: '3xl' },
-        md: { fontSize: '4xl' },
+        textStyle: 'h3',
       },
       h4: {
-        base: { fontSize: '2xl' },
-        md: { fontSize: '3xl' },
+        textStyle: 'h4',
       },
       h5: {
-        base: { fontSize: 'xl' },
-        md: { fontSize: '2xl' },
+        textStyle: 'h5',
       },
-      h6: { fontSize: 'lg' },
+      h6: {
+        textStyle: 'h6',
+      },
     },
   },
-  defaultVariants: { as: 'h2' },
+  defaultVariants: { size: 'h2' },
 });
 
 export default heading;

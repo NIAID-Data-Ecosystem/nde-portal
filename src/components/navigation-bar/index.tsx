@@ -3,31 +3,29 @@ import {
   Box,
   Flex,
   IconButton,
-  FlexProps,
   Stack,
-  Icon,
   useDisclosure,
+  BoxProps,
+  Portal,
+  Collapsible,
 } from '@chakra-ui/react';
 import { FaBars, FaXmark } from 'react-icons/fa6';
-import dynamic from 'next/dynamic';
 import SITE_CONFIG from 'configs/site.config.json';
 import { Logo } from 'src/components/logos';
-import { DesktopNavItem } from './components/desktop-nav-item';
+import { DesktopNavItem } from './components/navigation-popover';
 import { useRouter } from 'next/router';
 import { buildNavigationFromConfig, filterRoutesByEnv } from './helpers';
 import { SiteConfig } from '../page-container/types';
 import { useMediaQuery } from 'usehooks-ts';
+import { MobileNavItem } from './components/navigation-mobile-menu';
 
-const MobileSubMenu = dynamic(
-  () => import('./components/menu-mobile').then(mod => mod.MobileSubMenu),
-  {
-    loading: () => <p></p>,
-  },
-);
-
-export const Navigation: React.FC<FlexProps> = props => {
+export const Navigation: React.FC<BoxProps> = props => {
+  const mobileMenuRef = React.useRef<HTMLDivElement>(null);
   const { open, onToggle } = useDisclosure();
-  const isLargerThanMd = useMediaQuery('(min-width: 54rem)');
+  const isLargerThanMd = useMediaQuery('(min-width: 54rem)', {
+    initializeWithValue: false,
+    defaultValue: true,
+  });
   const router = useRouter();
 
   // Build navigation from config
@@ -48,11 +46,12 @@ export const Navigation: React.FC<FlexProps> = props => {
       aria-label='Main navigation'
       {...props}
     >
-      <Flex
+      <Stack
+        direction='row'
+        gap={4}
         bg='niaid.500'
         color='white'
         minH='60px'
-        // h={['105px', '77px', '89px']}
         pl={6}
         pr={4}
         borderBottom={1}
@@ -63,16 +62,18 @@ export const Navigation: React.FC<FlexProps> = props => {
         <Flex alignItems='center' py={4} flex={{ base: 1, md: 'auto' }}>
           <Logo href='/' />
         </Flex>
+
         {/* For desktop */}
         {isLargerThanMd && (
           <Stack
+            role='tablist'
             direction='row'
-            spacing={{ base: 0 }}
+            gap={{ base: 1 }}
             display={{ base: 'none', md: 'flex' }}
             ml={{ base: 6, lg: 10 }}
             flex={1}
             justifyContent='flex-end'
-            sx={{ '>a,>button': { px: 4, py: 2 } }}
+            css={{ '>a,>button': { px: 4, py: 2 } }}
           >
             {navigationFilteredByEnvironment?.map(navItem => (
               <DesktopNavItem
@@ -88,36 +89,35 @@ export const Navigation: React.FC<FlexProps> = props => {
         )}
 
         {/* For mobile / tablet */}
+        {/* Popout navigation in mobile mode */}
         {navigationFilteredByEnvironment && (
-          <IconButton
-            display={isLargerThanMd ? 'none' : 'flex'}
-            aria-label={
-              open ? 'Toggle Navigation closed.' : 'Toggle Navigation open.'
-            }
-            icon={
-              open ? (
-                <Icon as={FaXmark} w={5} h={5} />
-              ) : (
-                <Icon as={FaBars} w={4} h={4} />
-              )
-            }
-            onClick={onToggle}
-            colorScheme='niaid'
-            color='#fff'
-            _hover={{ bg: 'whiteAlpha.500' }}
-            variant='ghost'
-            size='md'
-          />
+          <Collapsible.Root>
+            <Collapsible.Trigger asChild>
+              <IconButton
+                colorPalette='niaid'
+                display={isLargerThanMd ? 'none' : 'flex'}
+                aria-label={
+                  open ? 'Toggle Navigation closed.' : 'Toggle Navigation open.'
+                }
+                onClick={onToggle}
+              >
+                {open ? <FaXmark /> : <FaBars />}
+              </IconButton>
+            </Collapsible.Trigger>
+            <Portal container={mobileMenuRef}>
+              <Collapsible.Content position='relative'>
+                <Stack display={{ base: 'flex', lg: 'none' }} p={2}>
+                  {navigationFilteredByEnvironment &&
+                    navigationFilteredByEnvironment.map(navItem => {
+                      return <MobileNavItem key={navItem.label} {...navItem} />;
+                    })}
+                </Stack>
+              </Collapsible.Content>
+            </Portal>
+          </Collapsible.Root>
         )}
-      </Flex>
-
-      {/* Popout navigation in mobile mode */}
-      {open && (
-        <MobileSubMenu
-          isOpen={open}
-          navigation={navigationFilteredByEnvironment}
-        />
-      )}
+      </Stack>
+      <div ref={mobileMenuRef} />
     </Box>
   );
 };

@@ -2,6 +2,7 @@
 export const globalCss = {
   '*': {
     listStyleType: 'none',
+    lineHeight: 'base',
   },
   // sets default color palette for components if not specified
   // https://chakra-ui.com/guides/theming-change-default-color-palette
@@ -10,6 +11,5 @@ export const globalCss = {
     fontFamily: 'body',
     color: 'text.body',
     fontSize: '16px',
-    lineHeight: 'base',
   },
 };

@@ -24,8 +24,9 @@ export const Logo = ({ href, isLazy }: LogoProps) => {
         display='flex'
         alignItems='center'
         href={href?.endsWith('/') ? href : `${href}/`}
-        variant='unstyled'
+        variant='no-line'
         rel='preload'
+        outlineColor='whiteAlpha.300'
       >
         <NDELogo loading={isLazy ? 'lazy' : 'eager'} />
       </Link>
