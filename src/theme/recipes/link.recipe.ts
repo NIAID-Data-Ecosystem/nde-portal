@@ -7,10 +7,9 @@ const link = defineRecipe({
     _focus: {
       outlineColor: 'currentColor/50',
     },
-
     _visited: {
       color: 'link.visited',
-      '& .chakra-icon': {
+      _icon: {
         color: 'link.visited',
       },
     },
@@ -28,9 +27,16 @@ const link = defineRecipe({
       underline: {
         color: 'link.default',
         textDecorationColor: 'currentColor',
-        textUnderlineOffset: '4px',
+        textUnderlineOffset: '6px',
         _hover: {
           textDecorationColor: 'transparent',
+        },
+      },
+      plain: {
+        color: 'currentColor',
+        textUnderlineOffset: '6px',
+        _hover: {
+          textDecorationColor: 'currentColor/80',
         },
       },
     },
