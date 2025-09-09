@@ -7,11 +7,8 @@ import { FooterRoute } from '../types';
 export const StyledLink = ({ ...props }: LinkProps) => {
   return (
     <Link
-      display='inline'
-      my={0}
       color='white'
-      _visited={{ color: 'white' }}
-      _hover={{ color: 'white' }}
+      _visited={{ color: 'white', _icon: { color: 'white' } }}
       {...props}
     />
   );
