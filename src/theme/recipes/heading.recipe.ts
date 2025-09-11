@@ -4,7 +4,7 @@ const heading = defineRecipe({
   base: {
     color: 'text.heading',
     fontWeight: 'bold',
-    lineHeight: 'base',
+    lineHeight: '1.2',
   },
   variants: {
     size: {

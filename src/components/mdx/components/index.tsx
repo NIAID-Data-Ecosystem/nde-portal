@@ -103,7 +103,7 @@ export const MDXComponents = {
         href={href}
         isExternal={isExternal}
         {...parsedProps}
-        sx={{
+        css={{
           // Workaround for Emotion warning with ":first-child" pseudo class is potentially unsafe when doing server-side rendering.
           '*:not(:not(:last-child) ~ *)': {
             borderBottom: '0.0625rem solid',
@@ -120,8 +120,8 @@ export const MDXComponents = {
       const text = node?.children[0]?.value;
       if (!text) {
         return {
-          bg: 'status.info_lt',
-          color: 'status.info',
+          bg: 'info.light',
+          color: 'info.default',
         };
       }
 
@@ -129,23 +129,23 @@ export const MDXComponents = {
       const emojis = text.match(/\p{Emoji_Presentation}/gu);
       if (!emojis) {
         return {
-          bg: 'status.info_lt',
-          color: 'status.info',
+          bg: 'info.light',
+          color: 'info.default',
         };
       } else if (emojis[0] === '🚧') {
         return {
-          bg: 'status.warning_lt',
-          color: 'status.warning',
+          bg: 'warning.light',
+          color: 'warning.default',
         };
       } else if (emojis[0] === '🚨') {
         return {
-          bg: 'status.error_lt',
-          color: 'status.error',
+          bg: 'error.light',
+          color: 'error.default',
         };
       } else {
         return {
-          bg: 'status.info_lt',
-          color: 'status.info',
+          bg: 'info.light',
+          color: 'info.default',
         };
       }
     };
@@ -165,7 +165,7 @@ export const MDXComponents = {
         py={2}
         m={{ base: 0, md: 2 }}
         bg={theme.bg}
-        sx={{
+        css={{
           p: {
             my: 4,
           },
@@ -216,10 +216,10 @@ export const MDXComponents = {
         <HStack
           alignItems='flex-start'
           flexDirection={{ base: 'column', xl: 'row' }}
-          sx={{
+          css={{
             img: { maxWidth: { base: '100%', md: '400px' } },
           }}
-          spacing={6}
+          gap={6}
           {...props}
         >
           {props.children.map((child: any, idx: number) => (
@@ -235,10 +235,10 @@ export const MDXComponents = {
         <HStack
           alignItems='flex-start'
           flexDirection={{ base: 'column', xl: 'row-reverse' }}
-          sx={{
+          css={{
             img: { maxWidth: { base: '100%', md: '400px' } },
           }}
-          spacing={6}
+          gap={6}
           {...props}
         >
           {props.children.map((child: any, idx: number) => (
@@ -435,10 +435,10 @@ export const MDXComponents = {
         <HStack
           alignItems='flex-start'
           flexDirection={{ base: 'column', xl: 'row' }}
-          sx={{
+          css={{
             img: { maxWidth: { base: '100%', md: '400px' } },
           }}
-          spacing={6}
+          gap={6}
           {...props}
         >
           {props.children.map((child: any, idx: number) => (
@@ -454,10 +454,10 @@ export const MDXComponents = {
         <HStack
           alignItems='flex-start'
           flexDirection={{ base: 'column', xl: 'row-reverse' }}
-          sx={{
+          css={{
             img: { maxWidth: { base: '100%', md: '400px' } },
           }}
-          spacing={6}
+          gap={6}
           {...props}
         >
           {props.children.map((child: any, idx: number) => (

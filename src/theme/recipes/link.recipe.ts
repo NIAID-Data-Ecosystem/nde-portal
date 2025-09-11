@@ -27,14 +27,14 @@ const link = defineRecipe({
       underline: {
         color: 'link.default',
         textDecorationColor: 'currentColor',
-        textUnderlineOffset: '6px',
+        textUnderlineOffset: '4px',
         _hover: {
           textDecorationColor: 'transparent',
         },
       },
       plain: {
         color: 'currentColor',
-        textUnderlineOffset: '6px',
+        textUnderlineOffset: '4px',
         _hover: {
           textDecorationColor: 'currentColor/80',
         },

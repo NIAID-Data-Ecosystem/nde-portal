@@ -59,8 +59,8 @@ export const ErrorCTA: React.FC<{ children: React.ReactNode }> = ({
       flexWrap='wrap'
       flexDirection='row'
       justifyContent='center'
-      spacing={2}
-      sx={{ '>*': { minWidth: '150px', maxWidth: '310px', flex: 1 } }}
+      gap={2}
+      css={{ '>*': { minWidth: '150px', maxWidth: '310px', flex: 1 } }}
     >
       {children}
       <NextLink href='/'>
@@ -87,7 +87,7 @@ export const ErrorMessage: React.FC<Error & StackProps> = ({
       color='red.500'
       flex={1}
       alignItems='flex-start'
-      spacing={1}
+      gap={1}
       {...props}
     >
       <Text fontSize='sm' color='inherit'>
