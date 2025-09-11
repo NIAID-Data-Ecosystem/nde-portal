@@ -1,10 +1,10 @@
 import React, { useMemo } from 'react';
 import { FaMagnifyingGlass } from 'react-icons/fa6';
-import { Highlight, Icon, ListItem, Text } from '@chakra-ui/react';
+import { Highlight, Icon, InputProps, ListItem, Text } from '@chakra-ui/react';
 import { useDropdownContext } from '../../input-with-dropdown';
 
 interface SearchHistoryItemProps {
-  colorScheme: string;
+  colorPalette: InputProps['colorPalette'];
   index: number;
   searchTerm: string;
   value: string;
@@ -12,7 +12,7 @@ interface SearchHistoryItemProps {
 }
 export const SearchHistoryItem = React.memo(
   ({
-    colorScheme,
+    colorPalette,
     index,
     searchTerm,
     value,
@@ -44,7 +44,7 @@ export const SearchHistoryItem = React.memo(
           as={FaMagnifyingGlass}
           mr={2}
           mt={1.5}
-          color='primary.400'
+          color={`${colorPalette}.400`}
           boxSize={3}
         />
         <Text
@@ -54,11 +54,11 @@ export const SearchHistoryItem = React.memo(
           wordBreak='break-word'
           fontWeight='normal'
           textAlign='left'
-          sx={{
+          css={{
             '* > .search-term': {
               fontWeight: 'bold',
               textDecoration: 'underline',
-              color: `${colorScheme}.400`,
+              color: `${colorPalette}.400`,
               bg: 'transparent',
             },
           }}
@@ -68,7 +68,7 @@ export const SearchHistoryItem = React.memo(
             styles={{
               fontWeight: 'bold',
               textDecoration: 'underline',
-              color: `${colorScheme}.400`,
+              color: `${colorPalette}.400`,
               bg: 'transparent',
             }}
           >

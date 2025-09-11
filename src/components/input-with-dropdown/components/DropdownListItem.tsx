@@ -2,14 +2,14 @@ import React, { useMemo } from 'react';
 import {
   Heading,
   Highlight,
-  ListItem as NDEListItem,
-  ListItemProps as ChakraListItemProps,
+  List,
+  ListItemProps,
   Text,
 } from '@chakra-ui/react';
 import { FormattedResource } from 'src/utils/api/types';
 import { useDropdownContext } from '..';
 
-interface DropdownListItemProps extends ChakraListItemProps {
+interface DropdownListItemProps extends ListItemProps {
   searchTerm: string;
   name?: keyof FormattedResource;
   value: FormattedResource['name'];
@@ -18,13 +18,13 @@ interface DropdownListItemProps extends ChakraListItemProps {
 
 export const DropdownListItem: React.FC<DropdownListItemProps> = React.memo(
   ({ name, searchTerm, value, index, onMouseOver, onClick, ...props }) => {
-    const { colorScheme, cursor, getListItemProps } = useDropdownContext();
+    const { colorPalette, cursor, getListItemProps } = useDropdownContext();
 
     // If item is highlighted (mouseover or keydown), update the input string with the value of the list item.
     const isSelected = useMemo(() => cursor === index, [index, cursor]);
     const displayValue = Array.isArray(value) ? value.join(' or ') : value;
     return (
-      <NDEListItem
+      <List.Item
         borderRadius='base'
         cursor='pointer'
         p={2}
@@ -43,7 +43,7 @@ export const DropdownListItem: React.FC<DropdownListItemProps> = React.memo(
         {name && (
           <Text
             fontSize='12px'
-            color={`${colorScheme}.800`}
+            color={`${colorPalette}.800`}
             wordBreak='break-word'
             fontWeight='light'
             textAlign='left'
@@ -66,14 +66,14 @@ export const DropdownListItem: React.FC<DropdownListItemProps> = React.memo(
             styles={{
               fontWeight: 'bold',
               textDecoration: 'underline',
-              color: `${colorScheme}.400`,
+              color: `${colorPalette}.400`,
               bg: 'transparent',
             }}
           >
             {displayValue}
           </Highlight>
         </Heading>
-      </NDEListItem>
+      </List.Item>
     );
   },
 );

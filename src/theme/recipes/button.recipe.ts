@@ -3,7 +3,7 @@ import { defineRecipe } from '@chakra-ui/react';
 const button = defineRecipe({
   base: {
     borderRadius: 'semi',
-    fontWeight: 500,
+    fontWeight: 'medium',
     fontFamily: 'body',
   },
   variants: {
@@ -25,6 +25,7 @@ const button = defineRecipe({
     size: {
       sm: {
         fontSize: 'sm',
+        height: 'unset',
         px: 3, // <-- these values are tokens from the design system
         py: 1.5, // <-- these values are tokens from the design system
       },

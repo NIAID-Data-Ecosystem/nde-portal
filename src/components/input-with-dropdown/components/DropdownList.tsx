@@ -1,8 +1,8 @@
 import React from 'react';
-import { ListProps, UnorderedList } from '@chakra-ui/react';
+import { ListRootProps, List } from '@chakra-ui/react';
 import { useDropdownContext } from '..';
 
-interface DropdownListProps extends ListProps {}
+interface DropdownListProps extends ListRootProps {}
 
 // List wrapper that open when an input is entered.
 export const DropdownList: React.FC<DropdownListProps> = ({
@@ -15,8 +15,8 @@ export const DropdownList: React.FC<DropdownListProps> = ({
   }
 
   return (
-    <UnorderedList ml={0} {...props}>
+    <List.Root as='ul' ml={0} {...props}>
       {children}
-    </UnorderedList>
+    </List.Root>
   );
 };

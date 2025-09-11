@@ -5,6 +5,7 @@ import { ContextProps } from '../index';
 
 interface DropdownInputProps extends Omit<InputProps, 'onKeyDown'> {
   onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>, idx: number) => void;
+  isInvalid?: boolean;
 }
 
 interface DropdownListItemProps extends ListItemProps {
@@ -18,13 +19,13 @@ export const useDropdownInput = ({
   cursorMax,
   inputValue: initialInputValue,
   isOpen: initialIsOpen,
-  colorScheme,
+  colorPalette,
 }: {
   cursor: ContextProps['cursor'];
   cursorMax: ContextProps['cursorMax'];
   inputValue: ContextProps['inputValue'];
   isOpen: ContextProps['isOpen'];
-  colorScheme?: ContextProps['colorScheme'];
+  colorPalette?: ContextProps['colorPalette'];
 }) => {
   const [inputValue, setInputValue] = useState(initialInputValue);
   const [cursor, setCursor] = useState(initialCursor);
@@ -72,7 +73,7 @@ export const useDropdownInput = ({
     onKeyDown,
     ...props
   }: DropdownInputProps) => ({
-    colorScheme: props.isInvalid ? 'red' : colorScheme,
+    colorPalette: props.isInvalid ? 'red' : colorPalette,
     borderColor: props.isInvalid ? 'status.error' : 'gray.200',
     _focus: { borderColor: props.isInvalid ? 'status.error' : 'inherit' },
     bg: 'white',
@@ -98,7 +99,7 @@ export const useDropdownInput = ({
   }: DropdownListItemProps) => {
     return {
       id: `li-${index}`,
-      bg: isSelected ? `${colorScheme}.100` : `${colorScheme}.50`,
+      bg: isSelected ? `${colorPalette}.100` : `${colorPalette}.50`,
       color: isSelected ? 'text.heading' : 'text.body',
       onClick: callAllHandlers(
         (e: React.MouseEvent<HTMLLIElement, MouseEvent>) => {

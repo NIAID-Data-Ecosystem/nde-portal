@@ -20,32 +20,28 @@ export const SearchBarSection: React.FC = () => {
             style={{ alignSelf: 'flex-end' }}
           >
             <Button
-              as='span'
               variant='outline'
               size='sm'
               transition='0.2s ease-in-out'
-              colorScheme='primary'
-              fontWeight='semibold'
               _hover={{
                 bg: 'primary.600',
                 color: 'white',
                 transition: '0.2s ease-in-out',
 
-                svg: {
+                _icon: {
                   transform: 'translateX(-8px)',
                   transition: '0.2s transform ease-in-out',
                 },
               }}
-              leftIcon={
-                <Icon
-                  as={FaMagnifyingGlass}
-                  ml={2}
-                  boxSize={3}
-                  transform='translateX(-4px)'
-                  transition='0.2s transform ease-in-out'
-                />
-              }
             >
+              <Icon
+                ml={2}
+                boxSize={3}
+                transform='translateX(-4px)'
+                transition='0.2s transform ease-in-out'
+              >
+                <FaMagnifyingGlass />
+              </Icon>
               Advanced Search
             </Button>
           </NextLink>

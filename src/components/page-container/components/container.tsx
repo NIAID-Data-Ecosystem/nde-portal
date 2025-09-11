@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { Box, Flex, FlexProps, Stack } from '@chakra-ui/react';
+import { Flex, FlexProps, Stack } from '@chakra-ui/react';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import { Footer } from 'src/components/footer';
@@ -74,8 +74,13 @@ export const PageContainer: React.FC<PageContainerProps> = ({
         <Navigation />
 
         {/*Page content has margin-top to compensate for fixed nav bar. */}
-        <Box id='pagebody' position='relative' {...props}>
-          <Stack spacing='1px' bg='gray.100'>
+        <Flex
+          id='pagebody'
+          position='relative'
+          flexDirection='column'
+          {...props}
+        >
+          <Stack gap='1px' bg='gray.100'>
             {/* <!-- Banner for dev and staging instance --> */}
             {!isProd && (
               <Banner
@@ -107,7 +112,7 @@ export const PageContainer: React.FC<PageContainerProps> = ({
 
           {children}
           <Footer />
-        </Box>
+        </Flex>
       </Flex>
     </>
   );

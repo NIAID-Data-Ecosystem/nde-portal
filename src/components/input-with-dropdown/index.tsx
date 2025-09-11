@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { Box, BoxProps, ListItemProps } from '@chakra-ui/react';
+import { Box, BoxProps, InputProps, ListItemProps } from '@chakra-ui/react';
 import { useDropdownInput } from './hooks/useDropdownInput';
 import { useOnClickOutside } from 'usehooks-ts';
 
@@ -10,7 +10,7 @@ interface DropdownListItemProps extends ListItemProps {
 }
 
 export interface ContextProps {
-  colorScheme: string;
+  colorPalette: InputProps['colorPalette'];
   inputValue: string;
   cursor: number;
   cursorMax: number;
@@ -23,7 +23,7 @@ export interface ContextProps {
 }
 
 export const defaultContext: ContextProps = {
-  colorScheme: 'primary',
+  colorPalette: 'primary',
   cursor: -1,
   cursorMax: 0,
   inputValue: '',
@@ -44,18 +44,18 @@ DropdownInputContext.displayName = 'DropdownInputContext';
 interface InputWithDropdownProps extends BoxProps {
   inputValue: string;
   cursorMax: number;
-  colorScheme?: string;
+  colorPalette?: InputProps['colorPalette'];
 }
 
 export const InputWithDropdown: React.FC<InputWithDropdownProps> = ({
   children,
   inputValue,
-  colorScheme = 'primary',
+  colorPalette = 'primary',
   cursorMax,
   ...props
 }) => {
   const dropdownInput = useDropdownInput({
-    colorScheme,
+    colorPalette,
     cursorMax,
     inputValue: inputValue || defaultContext.inputValue,
     cursor: defaultContext.cursor,
@@ -70,7 +70,7 @@ export const InputWithDropdown: React.FC<InputWithDropdownProps> = ({
 
   const context = {
     cursorMax,
-    colorScheme,
+    colorPalette,
     ...dropdownInput,
   };
 
