@@ -9,7 +9,7 @@ export const StyledLabel = styled(Flex)<FlexProps>`
   &:before {
     content: '';
     background-color: ${(props: any) =>
-      props._before.bg || props.theme.colors.status.info};
+      props._before.bg || props.theme.colors.info.default};
     box-shadow: 0 0 0 5px #fff;
     display: block;
     height: 2.5rem;

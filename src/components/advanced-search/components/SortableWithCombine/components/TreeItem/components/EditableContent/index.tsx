@@ -101,7 +101,7 @@ const ItemContent = ({
         {errors.map(error => (
           <Text
             key={error.id}
-            color='status.error'
+            color='error.default'
             fontSize='xs'
             fontStyle='italic'
           >

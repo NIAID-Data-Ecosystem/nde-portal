@@ -85,7 +85,7 @@ export const FiltersDateSlider: React.FC<FiltersDateSliderProps> = ({
 
   if (error) {
     return (
-      <Flex p={4} bg='status.error'>
+      <Flex p={4} bg='error.default'>
         <Heading size='sm' color='white' fontWeight='semibold'>
           Something went wrong, unable to load filters. <br />
           Try reloading the page.

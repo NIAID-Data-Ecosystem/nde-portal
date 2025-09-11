@@ -16,11 +16,11 @@ interface TypeBannerProps extends FlexProps {
 
 export const getTypeColor = (type?: FormattedResource['@type']) => {
   const typeLower = type?.toLowerCase();
-  let lt = 'status.info';
+  let lt = 'info.default';
   let dk = 'niaid.500';
 
   if (typeLower === 'dataset') {
-    lt = 'status.info';
+    lt = 'info.default';
     dk = 'niaid.500';
   } else if (typeLower === 'resourcecatalog') {
     lt = 'primary.500';

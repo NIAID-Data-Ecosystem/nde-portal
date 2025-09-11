@@ -25,7 +25,7 @@ const Changelog: NextPage<ChangelogProps> = () => {
             Changelog
           </Heading>
           <Box>
-            <Badge variant='subtle' bg='status.info' size='sm' mt={2}>
+            <Badge variant='subtle' bg='info.default' size='sm' mt={2}>
               <Text
                 fontSize='sm'
                 fontWeight='semibold'

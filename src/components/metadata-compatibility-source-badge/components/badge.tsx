@@ -222,7 +222,7 @@ export const CompatibilityBadge = ({
       sx={{
         '.visx-heatmap-rect:hover': {
           strokeWidth: 2,
-          stroke: theme.colors.status.warning,
+          stroke: theme.colors.waning.default,
         },
       }}
       onMouseLeave={handleMouseLeave}

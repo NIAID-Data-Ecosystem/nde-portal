@@ -14,8 +14,8 @@ interface BannerProps {
 
 // [COMPONENT INFO]: Banner Element to notice user. NIAID design specs: https://designsystem.niaid.nih.gov/components/molecules
 const Banner: React.FC<BannerProps> = ({ children, status }) => {
-  let bg = 'status.info_lt';
-  let icon_bg = 'status.info';
+  let bg = 'info.light';
+  let icon_bg = 'info.default';
 
   if (
     status === 'info' ||

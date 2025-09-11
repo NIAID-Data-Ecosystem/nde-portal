@@ -74,8 +74,8 @@ export const useDropdownInput = ({
     ...props
   }: DropdownInputProps) => ({
     colorPalette: props.isInvalid ? 'red' : colorPalette,
-    borderColor: props.isInvalid ? 'status.error' : 'gray.200',
-    _focus: { borderColor: props.isInvalid ? 'status.error' : 'inherit' },
+    borderColor: props.isInvalid ? 'error.default' : 'gray.200',
+    _focus: { borderColor: props.isInvalid ? 'error.default' : 'inherit' },
     bg: 'white',
     type: 'search',
     value: inputValue,

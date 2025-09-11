@@ -85,7 +85,7 @@ const Main: React.FC<Main> = ({ data, isLoading, metadata }) => {
               </Text>
               {metadata?.version && (
                 <TagWithUrl
-                  bg='status.info_lt'
+                  bg='info.light'
                   href={`${process.env.NEXT_PUBLIC_API_URL}/metadata`}
                   isExternal
                   mx={1}

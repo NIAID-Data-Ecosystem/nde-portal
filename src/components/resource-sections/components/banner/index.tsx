@@ -69,7 +69,7 @@ const ResourceBanner: React.FC<ResourceBannerProps> = ({ data }) => {
   return (
     <TypeBanner
       type={type}
-      bg='status.info_lt'
+      bg='info.light'
       isNiaidFunded={isSourceFundedByNiaid(data.includedInDataCatalog)}
     >
       <Flex flexWrap='wrap' ml={[0, 0, 4]}>

@@ -251,9 +251,9 @@ export interface ThemeTypings {
     | 'link.visited'
     | 'status.success'
     | 'status.alert'
-    | 'status.warning'
-    | 'status.error'
-    | 'status.info'
+    | 'waning.default'
+    | 'error.default'
+    | 'info.default'
     | 'socials.ig'
     | (string & {});
   colorSchemes:

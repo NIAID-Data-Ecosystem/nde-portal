@@ -173,7 +173,7 @@ const IntegrationMain: NextPage<IntegrationProps> = props => {
                                 {card.additionalInfo && (
                                   <Flex
                                     alignItems='center'
-                                    bg='status.warning_lt'
+                                    bg='waning.light'
                                     borderRadius='semi'
                                     p={2}
                                     flexWrap='wrap'
@@ -181,7 +181,7 @@ const IntegrationMain: NextPage<IntegrationProps> = props => {
                                     <Circle bg='whiteAlpha.900' p={2} m={2}>
                                       <Icon
                                         as={FaLightbulb}
-                                        color='status.warning'
+                                        color='waning.default'
                                         boxSize={4}
                                       />
                                     </Circle>

@@ -251,7 +251,7 @@ export const FiltersContainer: React.FC<FiltersContainerProps> = ({
         </Button>
       </Flex>
       {error ? (
-        <Flex p={4} bg='status.error_lt'>
+        <Flex p={4} bg='error.light'>
           <Heading size='sm' color='red.600' fontWeight='normal'>
             Something went wrong, unable to load filters. <br />
             Try reloading the page.

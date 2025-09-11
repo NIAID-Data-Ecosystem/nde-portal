@@ -42,8 +42,12 @@ export const DownloadMetadataProgress: React.FC<DownloadMetadataProgressProps> =
         <Flex alignItems='flex-end' flexDirection='column' mb={2}>
           {/* Error */}
           <Collapse in={!!error}>
-            <Text fontSize='xs' fontStyle='italic' color='status.error'>
-              <Icon as={FaCircleExclamation} color='status.error' mr={1}></Icon>
+            <Text fontSize='xs' fontStyle='italic' color='error.default'>
+              <Icon
+                as={FaCircleExclamation}
+                color='error.default'
+                mr={1}
+              ></Icon>
               Something went wrong with the metadata download. Please try again.
             </Text>
           </Collapse>

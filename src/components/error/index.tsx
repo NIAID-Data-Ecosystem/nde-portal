@@ -83,7 +83,7 @@ export const ErrorMessage: React.FC<Error & StackProps> = ({
   return (
     <VStack
       px={2}
-      bg='status.error_lt'
+      bg='error.light'
       color='red.500'
       flex={1}
       alignItems='flex-start'
