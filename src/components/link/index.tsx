@@ -1,22 +1,36 @@
-import { Icon, IconProps, Link, LinkProps } from '@chakra-ui/react';
+import type { RecipeVariantProps } from '@chakra-ui/react';
+import {
+  Icon,
+  IconProps,
+  Link,
+  LinkProps as ChakraLinkProps,
+} from '@chakra-ui/react';
 import { FaArrowUpRightFromSquare } from 'react-icons/fa6';
+import linkRecipe from 'src/theme/recipes/link.recipe';
 
 // Styles based on: https://designsystem.niaid.nih.gov/components/atoms)
+type LinkVariantProps = RecipeVariantProps<typeof linkRecipe>;
 
-interface CustomLinkProps extends LinkProps {
+// Extending Chakra LinkProps to include our custom variants and isExternal prop: https://www.chakra-ui.com/docs/theming/recipes#typescript-1
+export interface LinkProps extends Omit<ChakraLinkProps, 'variant'> {
+  variant?: LinkVariantProps['variant'];
   isExternal?: boolean;
   iconProps?: IconProps;
 }
+
 const CustomLink = ({
   isExternal,
   children,
   iconProps,
+  variant,
   ...props
-}: CustomLinkProps) => {
+}: LinkProps) => {
   return (
     <Link
       target={isExternal ? '_blank' : undefined}
       rel={isExternal ? 'noopener noreferrer' : undefined}
+      // @ts-ignore
+      variant={variant}
       {...props}
     >
       {children}
@@ -31,4 +45,3 @@ const CustomLink = ({
 };
 
 export { CustomLink as Link };
-export type { CustomLinkProps as LinkProps };

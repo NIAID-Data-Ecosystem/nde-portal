@@ -1,5 +1,7 @@
+import { Flex } from '@chakra-ui/react';
 import React from 'react';
-import { Flex, Link } from '@chakra-ui/react';
+import { Link } from 'src/components/link';
+
 import { NDELogo } from './nde-logo';
 
 export interface LogoProps {
@@ -24,7 +26,7 @@ export const Logo = ({ href, isLazy }: LogoProps) => {
         display='flex'
         alignItems='center'
         href={href?.endsWith('/') ? href : `${href}/`}
-        variant='no-line'
+        variant='noline'
         rel='preload'
         outlineColor='whiteAlpha.300'
       >

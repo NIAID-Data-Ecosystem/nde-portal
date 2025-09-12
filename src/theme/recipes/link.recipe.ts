@@ -19,8 +19,8 @@ const link = defineRecipe({
 
   variants: {
     variant: {
-      // no-line: no underline, no hover effect.
-      'no-line': {
+      // noline: no underline, no hover effect.
+      noline: {
         color: 'inherit',
         textDecoration: 'none',
         _hover: {

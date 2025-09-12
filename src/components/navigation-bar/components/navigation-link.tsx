@@ -1,14 +1,7 @@
-import {
-  Box,
-  Flex,
-  FlexProps,
-  Icon,
-  Link,
-  LinkProps,
-  Text,
-} from '@chakra-ui/react';
+import { Box, Flex, FlexProps, Icon, Text } from '@chakra-ui/react';
 import React from 'react';
 import { FaAngleRight } from 'react-icons/fa6';
+import { Link, LinkProps } from 'src/components/link';
 
 import { TransformedNavigationMenu } from '../types';
 
@@ -22,10 +15,10 @@ export const NavigationLinkWrapper = ({
   return (
     <Link
       as={href ? 'a' : 'button'}
+      variant='noline'
       role='tab'
       href={href}
       target={isExternal ? '_blank' : '_self'}
-      variant='no-line'
       p={2}
       rounded='md'
       _hover={{
