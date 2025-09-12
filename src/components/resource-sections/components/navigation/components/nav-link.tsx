@@ -1,5 +1,4 @@
 import React from 'react';
-import { Text } from '@chakra-ui/react';
 import { Link, LinkProps } from 'src/components/link';
 
 interface NavLinkProps extends LinkProps {
@@ -17,7 +16,7 @@ export const NavLink: React.FC<NavLinkProps> = ({
 }) => {
   return (
     <Link
-      variant='ghost'
+      variant='plain'
       display='flex'
       lineHeight='short'
       pl={3}
@@ -26,22 +25,17 @@ export const NavLink: React.FC<NavLinkProps> = ({
       borderLeft='3px solid'
       fontSize='sm'
       fontWeight={isSelected ? 'semibold' : 'normal'}
-      textDecoration={isSelected ? 'underline' : 'none'}
       borderLeftColor={isSelected ? borderLeftColor : 'transparent'}
+      opacity={isSelected ? 1 : 0.8}
+      color={isSelected ? color : 'text.body'}
       _visited={{
         color: isSelected ? color : 'text.body',
         borderLeftColor: isSelected ? borderLeftColor : 'transparent',
       }}
-      opacity={isSelected ? 1 : 0.8}
-      color={isSelected ? color : 'text.body'}
-      {...props}
       _hover={{
-        textDecoration: 'underline!important',
-        borderBottom: 'none!important',
-        '*': { borderBottom: 'none!important' },
-        color: isSelected ? color : 'text.body',
         ...props._hover,
       }}
+      {...props}
     >
       {props.children}
     </Link>

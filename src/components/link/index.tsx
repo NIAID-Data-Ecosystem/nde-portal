@@ -1,4 +1,3 @@
-import React from 'react';
 import { Icon, IconProps, Link, LinkProps } from '@chakra-ui/react';
 import { FaArrowUpRightFromSquare } from 'react-icons/fa6';
 
@@ -23,12 +22,9 @@ const CustomLink = ({
       {children}
       {/* Add an external link icon when [isExternal] prop is true */}
       {isExternal && (
-        <Icon
-          as={FaArrowUpRightFromSquare}
-          boxSize={3}
-          ml={0.5}
-          {...iconProps}
-        />
+        <Icon boxSize={3} m={0.5} ml={1} mb={1} {...iconProps}>
+          <FaArrowUpRightFromSquare />
+        </Icon>
       )}
     </Link>
   );

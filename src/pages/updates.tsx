@@ -1,40 +1,38 @@
-import React, { useEffect, useState } from 'react';
 import {
   Box,
   Card,
-  CardBody,
   Flex,
   Heading,
-  Icon,
+  IconButton,
   SimpleGrid,
   SkeletonText,
   Stack,
-  StackDivider,
+  StackSeparator,
   Text,
-  VisuallyHidden,
 } from '@chakra-ui/react';
-import { Link } from 'src/components/link';
+import { useQuery } from '@tanstack/react-query';
+import axios from 'axios';
+import NDESOCIALS from 'configs/socials.json';
 import type { NextPage } from 'next';
+import { MDXRemoteSerializeResult } from 'next-mdx-remote';
+import { useEffect, useState } from 'react';
+import { FaLinkedinIn, FaSquareFacebook, FaTwitter } from 'react-icons/fa6';
+import Empty from 'src/components/empty';
+import { Error } from 'src/components/error';
+import { Link } from 'src/components/link';
 import {
   getPageSeoConfig,
   PageContainer,
   PageContent,
 } from 'src/components/page-container';
-import { MDXRemoteSerializeResult } from 'next-mdx-remote';
-import { Error } from 'src/components/error';
-import axios from 'axios';
-import Empty from 'src/components/empty';
 import Navigation from 'src/components/resource-sections/components/navigation';
-import { Section, SectionList } from 'src/views/news/components/Section';
-import NDESOCIALS from 'configs/socials.json';
-import { FaLinkedinIn, FaSquareFacebook, FaTwitter } from 'react-icons/fa6';
-import { fetchNews } from 'src/views/home/components/NewsCarousel';
-import { useQuery } from '@tanstack/react-query';
-import SectionCard from 'src/views/news/components/SectionCard';
 import {
   HeroBannerContainer,
   HeroBannerText,
 } from 'src/views/home/components/HeroBanner';
+import { fetchNews } from 'src/views/home/components/NewsCarousel';
+import { Section, SectionList } from 'src/views/news/components/Section';
+import SectionCard from 'src/views/news/components/SectionCard';
 
 export interface NewsOrEventsObject {
   id: number;
@@ -81,7 +79,6 @@ export interface UpdatesProps {
 
 const Updates: NextPage<UpdatesProps> = props => {
   const { data } = props;
-
   const {
     data: response,
     error,
@@ -174,7 +171,7 @@ const Updates: NextPage<UpdatesProps> = props => {
     <PageContainer meta={getPageSeoConfig('/updates')} px={0} py={0}>
       <HeroBannerContainer
         justifyContent={{ base: 'flex-start', md: 'center' }}
-        bgImg='/assets/news-01.jpg'
+        bgImg="url('/assets/news-01.jpg')"
         backgroundSize='cover'
         px='0px'
         minHeight='unset'
@@ -196,10 +193,10 @@ const Updates: NextPage<UpdatesProps> = props => {
             maxWidth={{ md: '500px', xl: '680px' }}
             mt={0}
             mb={0}
-            spacing={10}
+            gap={10}
             textAlign={{ base: 'left', lg: 'center' }}
-            sx={{
-              h1: {
+            css={{
+              '& h1': {
                 letterSpacing: '1px',
               },
             }}
@@ -217,7 +214,6 @@ const Updates: NextPage<UpdatesProps> = props => {
         mb={32}
         flex={1}
       >
-        <VisuallyHidden as='h1'>Updates and Events </VisuallyHidden>
         {response ? (
           <>
             <Flex
@@ -362,9 +358,9 @@ const Updates: NextPage<UpdatesProps> = props => {
               <Section id='resources' title='Additional Resources'>
                 <Stack
                   direction={{ base: 'column', sm: 'row' }}
-                  divider={<StackDivider borderColor='primary.200' />}
-                  spacing={4}
+                  gap={4}
                   fontSize='md'
+                  separator={<StackSeparator borderColor='primary.200' />}
                 >
                   <Link href='/knowledge-center'>Knowledge Center</Link>
                   <Link href='/knowledge-center/frequently-asked-questions'>
@@ -381,16 +377,11 @@ const Updates: NextPage<UpdatesProps> = props => {
               <Section id='community' title='Join the community'>
                 <SimpleGrid
                   columns={{ base: 1, sm: 2 }}
-                  spacing={4}
+                  gap={4}
                   maxW='700px'
-                  sx={{
-                    '>div': {
-                      transform: 'translate(0, 2px)',
-                      boxShadow: 'sm',
-                      border: '1px solid',
-                      borderColor: 'gray.100',
-                      borderTopColor: 'transparent',
-                      transition: 'all 0.1s ease-in-out',
+                  css={{
+                    '& .card-root': {
+                      overflow: 'hidden',
                       _hover: {
                         transform: 'translate(0, 0px)',
                         boxShadow: 'base',
@@ -398,7 +389,9 @@ const Updates: NextPage<UpdatesProps> = props => {
                       },
                       _after: {
                         content: "''",
-                        bgGradient: 'linear(to-r, primary.200, accent.400)',
+                        bgGradient: 'to-r',
+                        gradientFrom: 'primary.200',
+                        gradientTo: 'accent.400',
                         position: 'absolute',
                         top: 0,
                         left: 0,
@@ -409,8 +402,8 @@ const Updates: NextPage<UpdatesProps> = props => {
                   }}
                 >
                   {/* Email */}
-                  <Card>
-                    <CardBody p={0} px={4} py={1}>
+                  <Card.Root className='card-root' variant='outline'>
+                    <Card.Body>
                       <Text
                         lineHeight='short'
                         color='gray.800'
@@ -421,49 +414,50 @@ const Updates: NextPage<UpdatesProps> = props => {
                           emailing the team
                         </Link>
                       </Text>
-                    </CardBody>
-                  </Card>
+                    </Card.Body>
+                  </Card.Root>
                   {/* Socials */}
                   {NDESOCIALS && NDESOCIALS['socials'] && (
-                    <Card>
-                      <CardBody px={4} py={1}>
+                    <Card.Root className='card-root' variant='outline'>
+                      <Card.Body>
                         <Text
                           lineHeight='short'
                           color='gray.800'
                           fontWeight='medium'
                         >
-                          Join us on
+                          Join us on:
                         </Text>
-                        <Stack direction='row' spacing={6} fontSize='sm'>
+                        <Stack direction='row' gap={6} fontSize='sm' mt={2}>
                           {Object.entries(NDESOCIALS['socials']).map(
                             ([platform, href]) => {
                               let icon =
-                                platform === 'twitter'
-                                  ? FaTwitter
-                                  : platform === 'linkedin'
-                                  ? FaLinkedinIn
-                                  : platform === 'facebook'
-                                  ? FaSquareFacebook
-                                  : undefined;
+                                platform === 'twitter' ? (
+                                  <FaTwitter />
+                                ) : platform === 'linkedin' ? (
+                                  <FaLinkedinIn />
+                                ) : platform === 'facebook' ? (
+                                  <FaSquareFacebook />
+                                ) : undefined;
 
                               return (
-                                <Link key={platform} href={href}>
-                                  <VisuallyHidden>
-                                    {platform} link
-                                  </VisuallyHidden>
-                                  <Icon
-                                    as={icon}
-                                    boxSize={6}
-                                    fill='page.placeholder'
-                                    _hover={{ fill: `${platform}.500` }}
-                                  />
-                                </Link>
+                                <IconButton
+                                  asChild
+                                  key={platform}
+                                  aria-label={`${platform} link`}
+                                  colorPalette='primary'
+                                  variant='subtle'
+                                  size='md'
+                                >
+                                  <a href={href} target='_blank'>
+                                    {icon}
+                                  </a>
+                                </IconButton>
                               );
                             },
                           )}
                         </Stack>
-                      </CardBody>
-                    </Card>
+                      </Card.Body>
+                    </Card.Root>
                   )}
                 </SimpleGrid>
               </Section>

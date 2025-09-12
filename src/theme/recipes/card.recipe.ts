@@ -40,6 +40,11 @@ const card = defineSlotRecipe({
   },
   variants: {
     variant: {
+      outline: {
+        root: {
+          borderColor: 'gray.100',
+        },
+      },
       elevated: {},
       niaid: {
         title: { bg: 'niaid.500', color: 'white' },

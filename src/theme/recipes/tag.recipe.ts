@@ -4,6 +4,9 @@ import { tagAnatomy } from '@chakra-ui/react/anatomy';
 const tag = defineSlotRecipe({
   slots: tagAnatomy.keys(),
   base: {
+    label: {
+      fontWeight: 'medium',
+    },
     closeTrigger: {
       cursor: 'pointer',
       color: 'currentColor/80',

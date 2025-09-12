@@ -4,12 +4,13 @@ const heading = defineRecipe({
   base: {
     color: 'text.heading',
     fontWeight: 'bold',
-    lineHeight: '1.2',
+    lineHeight: 'base',
   },
   variants: {
     size: {
       h1: {
         textStyle: 'h1',
+        lineHeight: '1.2',
       },
       h2: {
         textStyle: 'h2',

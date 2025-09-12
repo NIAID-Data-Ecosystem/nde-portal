@@ -2,8 +2,10 @@ import { defineRecipe } from '@chakra-ui/react';
 
 const link = defineRecipe({
   base: {
+    display: 'inline',
     color: 'link.default',
-    gap: '1',
+    fontSize: 'inherit',
+    fontWeight: 'inherit',
     _focus: {
       outlineColor: 'currentColor/50',
     },
@@ -17,6 +19,7 @@ const link = defineRecipe({
 
   variants: {
     variant: {
+      // no-line: no underline, no hover effect.
       'no-line': {
         color: 'inherit',
         textDecoration: 'none',
@@ -24,6 +27,7 @@ const link = defineRecipe({
           textDecoration: 'none',
         },
       },
+      // underline: underline visible. on hover, underline fades out.
       underline: {
         color: 'link.default',
         textDecorationColor: 'currentColor',
@@ -32,6 +36,7 @@ const link = defineRecipe({
           textDecorationColor: 'transparent',
         },
       },
+      // plain: no underline. on hover, underline with partial opacity.
       plain: {
         color: 'currentColor',
         textUnderlineOffset: '4px',

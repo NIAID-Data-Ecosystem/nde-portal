@@ -49,7 +49,7 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
       <VStack
         px={{ base: 4 }}
         py={{ base: 4, sm: 10 }}
-        spacing={4}
+        gap={4}
         alignItems='flex-start'
         flex={1}
         maxW={{ base: 'unset', lg: '75%', '2xl': '1300px' }}
@@ -124,7 +124,7 @@ export const HeroBannerText = ({
   return (
     <VStack
       maxWidth='350px'
-      spacing={4}
+      gap={4}
       alignItems='flex-start'
       zIndex={2}
       mt={10}

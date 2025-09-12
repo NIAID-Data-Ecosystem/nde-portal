@@ -1,4 +1,3 @@
-import React from 'react';
 import {
   Button,
   Flex,
@@ -10,8 +9,9 @@ import {
   Text,
   VStack,
 } from '@chakra-ui/react';
-import { PageContent } from 'src/components/page-container';
 import NextLink from 'next/link';
+import React from 'react';
+import { PageContent } from 'src/components/page-container';
 
 interface Error {
   title?: string;
