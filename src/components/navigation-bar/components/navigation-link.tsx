@@ -1,14 +1,15 @@
-import React from 'react';
 import {
   Box,
   Flex,
-  Link,
-  Text,
-  Icon,
   FlexProps,
+  Icon,
+  Link,
   LinkProps,
+  Text,
 } from '@chakra-ui/react';
+import React from 'react';
 import { FaAngleRight } from 'react-icons/fa6';
+
 import { TransformedNavigationMenu } from '../types';
 
 // Desktop Navigation sub menu for nested links

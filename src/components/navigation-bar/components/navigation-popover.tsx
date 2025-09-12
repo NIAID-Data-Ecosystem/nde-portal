@@ -1,5 +1,3 @@
-import React from 'react';
-import { FaCaretDown } from 'react-icons/fa6';
 import {
   Box,
   Button,
@@ -7,14 +5,17 @@ import {
   Flex,
   Icon,
   Popover,
-  Stack,
   Portal,
+  Stack,
 } from '@chakra-ui/react';
+import React from 'react';
+import { FaCaretDown } from 'react-icons/fa6';
+
+import { TransformedNavigationMenu } from '../types';
 import {
   NavigationLinkContent,
   NavigationLinkWrapper,
 } from './navigation-link';
-import { TransformedNavigationMenu } from '../types';
 
 interface DesktopNavItemProps extends TransformedNavigationMenu {
   isActive?: boolean;
@@ -35,6 +36,7 @@ export const DesktopNavItem = ({
     px: 4,
     py: 2,
     borderRadius: 'none',
+    gap: 1,
     display: 'flex',
     alignItems: 'center',
     _hover: {
@@ -85,7 +87,7 @@ export const DesktopNavItem = ({
           >
             {label}
 
-            {routes && <Icon as={FaCaretDown} ml={1} w={4} h={4} />}
+            {routes && <Icon as={FaCaretDown} w={4} h={4} />}
           </Button>
         </Popover.Trigger>
         <Portal>

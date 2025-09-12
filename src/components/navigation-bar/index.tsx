@@ -1,23 +1,24 @@
-import React from 'react';
 import {
   Box,
+  BoxProps,
+  Collapsible,
   Flex,
   IconButton,
+  Portal,
   Stack,
   useDisclosure,
-  BoxProps,
-  Portal,
-  Collapsible,
 } from '@chakra-ui/react';
-import { FaBars, FaXmark } from 'react-icons/fa6';
 import SITE_CONFIG from 'configs/site.config.json';
-import { Logo } from 'src/components/logos';
-import { DesktopNavItem } from './components/navigation-popover';
 import { useRouter } from 'next/router';
-import { buildNavigationFromConfig, filterRoutesByEnv } from './helpers';
-import { SiteConfig } from '../page-container/types';
+import React from 'react';
+import { FaBars, FaXmark } from 'react-icons/fa6';
+import { Logo } from 'src/components/logos';
 import { useMediaQuery } from 'usehooks-ts';
+
+import { SiteConfig } from '../page-container/types';
 import { MobileNavItem } from './components/navigation-mobile-menu';
+import { DesktopNavItem } from './components/navigation-popover';
+import { buildNavigationFromConfig, filterRoutesByEnv } from './helpers';
 
 export const Navigation: React.FC<BoxProps> = props => {
   const mobileMenuRef = React.useRef<HTMLDivElement>(null);
