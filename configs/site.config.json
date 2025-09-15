@@ -216,8 +216,7 @@
       "nav": {
         "label": "Ontology Browser",
         "description": "Explore search results in a novel way"
-      },
-      "env": ["development", "staging"]
+      }
     },
     "/resources": {
       "seo": {
