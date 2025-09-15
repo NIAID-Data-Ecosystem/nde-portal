@@ -47,11 +47,7 @@ export const NavigationLinkWrapper = ({
 export const NavigationLinkContent = ({
   label,
   description,
-  getIcon = props => (
-    <Icon {...props}>
-      <FaAngleRight />
-    </Icon>
-  ),
+  getIcon = props => <Icon as={FaAngleRight} {...props}></Icon>,
   ...props
 }: FlexProps &
   Pick<TransformedNavigationMenu, 'label' | 'description' | 'getIcon'>) => {

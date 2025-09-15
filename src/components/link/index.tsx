@@ -36,9 +36,14 @@ const CustomLink = ({
       {children}
       {/* Add an external link icon when [isExternal] prop is true */}
       {isExternal && (
-        <Icon boxSize={3} m={0.5} ml={1} mb={1} {...iconProps}>
-          <FaArrowUpRightFromSquare />
-        </Icon>
+        <Icon
+          as={FaArrowUpRightFromSquare}
+          boxSize={3}
+          m={0.5}
+          ml={1}
+          mb={1}
+          {...iconProps}
+        ></Icon>
       )}
     </Link>
   );

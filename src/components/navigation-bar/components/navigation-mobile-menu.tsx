@@ -1,6 +1,7 @@
-import React from 'react';
 import { Collapsible, Icon, Stack, useDisclosure } from '@chakra-ui/react';
+import React from 'react';
 import { FaAngleDown } from 'react-icons/fa6';
+
 import { TransformedNavigationMenu } from '../types';
 import {
   NavigationLinkContent,
@@ -31,11 +32,10 @@ export const MobileNavItem = (props: TransformedNavigationMenu) => {
             getIcon={props => (
               <Icon
                 {...props}
+                as={FaAngleDown}
                 transition='all .25s ease-in-out'
                 transform={open ? 'rotate(180deg)' : ''}
-              >
-                <FaAngleDown />
-              </Icon>
+              ></Icon>
             )}
           />
         </NavigationLinkWrapper>
