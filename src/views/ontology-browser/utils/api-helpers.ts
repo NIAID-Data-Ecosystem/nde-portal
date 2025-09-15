@@ -64,6 +64,7 @@ export interface SearchParams {
   start?: number;
   format?: string;
   lang?: string;
+  userquery?: 'nde';
 }
 
 interface SearchResponse {
@@ -134,13 +135,14 @@ export const fetchBioThingsSearchAPI = async (
   if (!params.q) {
     return [];
   }
-  const { q, biothingsFields } = params;
+  const { q, biothingsFields, userquery } = params;
   try {
     const { data } = await axios.get(`${BIOTHINGS_API_URL}/query?`, {
       params: {
         q,
         fields: biothingsFields.join(','),
         size: 8,
+        userquery,
       },
       signal,
     });
