@@ -21,7 +21,7 @@ export const SearchBarSection: React.FC = () => {
           >
             <Button
               variant='outline'
-              size='sm'
+              size='xs'
               transition='0.2s ease-in-out'
               _hover={{
                 bg: 'primary.600',
