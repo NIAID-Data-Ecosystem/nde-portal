@@ -50,7 +50,7 @@ const SectionCard = (attributes: SectionCardProps) => {
             <Heading
               as='h4'
               fontWeight='semibold'
-              size='sm'
+              fontSize='sm'
               color='gray.700'
               my={0}
               mt={1}

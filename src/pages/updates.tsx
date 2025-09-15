@@ -307,7 +307,11 @@ const Updates: NextPage<UpdatesProps> = props => {
                           {/* Upcoming events */}
                           {upcomingEvents && upcomingEvents?.length > 0 && (
                             <>
-                              <Heading as='h3' size='sm' color='gray.600'>
+                              <Heading
+                                as='h3'
+                                textStyle='sm'
+                                fontWeight='semibold'
+                              >
                                 Upcoming
                               </Heading>
                               {upcomingEvents
@@ -328,8 +332,7 @@ const Updates: NextPage<UpdatesProps> = props => {
                             <>
                               <Heading
                                 as='h3'
-                                size='sm'
-                                color='primary.600'
+                                textStyle='sm'
                                 fontWeight='semibold'
                               >
                                 Past events
