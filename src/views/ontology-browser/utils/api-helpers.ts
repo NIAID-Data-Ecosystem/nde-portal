@@ -644,8 +644,11 @@ export const fetchPortalCounts = async (
   try {
     // fetch counts from NDE API
 
-    const lineageWithCounts = await Promise.all(
-      lineage.map(async node => {
+    const lineageWithCounts = await processInBatches(
+      lineage,
+      10,
+      1000,
+      async node => {
         // Extract the numeric taxon ID from the node
         const numericTaxonId = +node.taxonId.replace(/[^0-9]/g, '');
 
@@ -688,7 +691,7 @@ export const fetchPortalCounts = async (
             termAndChildrenCount,
           },
         };
-      }),
+      },
     );
 
     return lineageWithCounts;
@@ -697,3 +700,29 @@ export const fetchPortalCounts = async (
     throw error;
   }
 };
+
+// A helper to batch queries with a delay between each batch
+async function processInBatches<T, R>(
+  items: T[],
+  batchSize: number,
+  delayMs: number,
+  fn: (item: T, index: number) => Promise<R>,
+): Promise<R[]> {
+  const results: R[] = [];
+
+  for (let i = 0; i < items.length; i += batchSize) {
+    const batch = items.slice(i, i + batchSize);
+
+    const batchResults = await Promise.all(
+      batch.map((item, idx) => fn(item, i + idx)),
+    );
+
+    results.push(...batchResults);
+
+    if (i + batchSize < items.length) {
+      await new Promise(resolve => setTimeout(resolve, delayMs));
+    }
+  }
+
+  return results;
+}
