@@ -35,13 +35,12 @@ export const SearchBarSection: React.FC = () => {
               }}
             >
               <Icon
+                as={FaMagnifyingGlass}
                 ml={2}
                 boxSize={3}
                 transform='translateX(-4px)'
                 transition='0.2s transform ease-in-out'
-              >
-                <FaMagnifyingGlass />
-              </Icon>
+              />
               Advanced Search
             </Button>
           </NextLink>
