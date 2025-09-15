@@ -1,21 +1,22 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { FaClockRotateLeft } from 'react-icons/fa6';
+import { Button, Flex, HStack, IconButton, List, Text } from '@chakra-ui/react';
 import { uniq } from 'lodash';
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/router';
-import { Button, Flex, HStack, IconButton, List, Text } from '@chakra-ui/react';
+import React, { useEffect, useMemo, useState } from 'react';
+import { FaClockRotateLeft } from 'react-icons/fa6';
+import { queryFilterObject2String } from 'src/views/search/components/filters/utils/query-builders';
+import { getTabIdFromTypeLabel } from 'src/views/search/components/filters/utils/tab-filter-utils';
 import { useLocalStorage } from 'usehooks-ts';
+
+import { CheckboxList, CheckboxListProps } from '../checkbox-list';
 import {
   DropdownInput,
   DropdownInputProps,
   InputWithDropdown,
   useDropdownContext,
 } from '../input-with-dropdown';
-import { SearchHistoryItem } from './components/search-history-item';
-import { CheckboxList, CheckboxListProps } from '../checkbox-list';
-import { getTabIdFromTypeLabel } from 'src/views/search/components/filters/utils/tab-filter-utils';
-import { queryFilterObject2String } from 'src/views/search/components/filters/utils/query-builders';
 import { Tooltip } from '../ui/tooltip';
+import { SearchHistoryItem } from './components/search-history-item';
 
 const DropdownContent = dynamic(() =>
   import('src/components/input-with-dropdown/components/DropdownContent').then(
@@ -56,7 +57,7 @@ const SearchInput = ({
             display={{ base: 'none', md: 'flex' }}
             aria-label={inputProps.ariaLabel}
           >
-            Submit
+            Search
           </Button>
           {showSearchHistory && (
             <Flex borderLeft='1px solid' borderLeftColor='gray.200' pl={1}>
