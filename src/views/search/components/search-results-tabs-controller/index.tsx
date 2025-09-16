@@ -4,17 +4,18 @@ import { TabPanel } from '@chakra-ui/react';
 import { useSearchTabsContext } from '../../context/search-tabs-context';
 import { useSearchQueryFromURL } from '../../hooks/useSearchQueryFromURL';
 import { SearchResults } from '../results-list';
-import { updateRoute } from '../../utils/update-route';
 import { AccordionContent, AccordionWrapper } from '../layout/accordion';
 import { useSearchResultsData } from '../../hooks/useSearchResultsData';
 import { usePaginationContext } from '../../context/pagination-context';
 import { SearchTabs } from '../layout/tabs';
 import { FetchSearchResultsResponse } from 'src/utils/api/types';
 import { CompactCard } from '../results-list/components/compact-card';
+import { DiseaseOverviewCard } from '../results-list/components/disease-overview-card';
 import { Carousel } from 'src/components/carousel';
 import { CarouselWrapper } from '../layout/carousel-wrapper';
 import { EmptyState } from '../results-list/components/empty';
 import { TabType } from '../../types';
+import { useDiseaseData } from '../../hooks/useDiseaseData';
 
 const CAROUSEL_RESULTS_FIELDS = [
   '_meta',
@@ -121,6 +122,37 @@ export const SearchResultsController = ({
     [carouselData?.results],
   );
 
+  // Fetch matching disease data
+  const {
+    diseases: matchingDiseases,
+    isLoading: diseaseIsLoading,
+    hasMatchingDiseases,
+  } = useDiseaseData({
+    searchQuery: queryParams.q || '',
+    selectedFilters: queryParams.filters || {},
+    enabled: true,
+  });
+
+  // Combine carousel items
+  const carouselItems = useMemo(() => {
+    const items: Array<{ type: 'resource' | 'disease'; data: any }> = [];
+
+    resourceCatalogData.forEach(resource => {
+      items.push({ type: 'resource', data: resource });
+    });
+
+    matchingDiseases.forEach(disease => {
+      items.push({ type: 'disease', data: disease });
+    });
+
+    return items;
+  }, [resourceCatalogData, matchingDiseases]);
+
+  // Check if carousel should be shown
+  const shouldShowCarousel = hasResourceCatalogRecords || hasMatchingDiseases;
+  const isCarouselLoading =
+    carouselIsLoading || carouselIsPending || diseaseIsLoading;
+
   // Enhance each tab with facet counts for the types it represents.
   const tabsWithFacetCounts = useMemo(
     () =>
@@ -184,28 +216,35 @@ export const SearchResultsController = ({
                         {/* Render carousel if ResourceCatalog type is included */}
                         {typeSection.type === 'ResourceCatalog' ? (
                           <>
-                            {carouselIsLoading ||
-                            carouselIsPending ||
-                            resourceCatalogData.length > 0 ? (
+                            {isCarouselLoading || shouldShowCarousel ? (
                               <CarouselWrapper>
-                                <Carousel
-                                  gap={8}
-                                  isLoading={
-                                    carouselIsLoading || carouselIsPending
-                                  }
-                                >
-                                  {(carouselIsLoading || carouselIsPending
-                                    ? Array(3).fill(0)
-                                    : resourceCatalogData
-                                  ).map((carouselCard, idx) => (
-                                    <CompactCard
-                                      key={carouselCard?.id || `loading-${idx}`}
-                                      data={carouselCard}
-                                      isLoading={
-                                        carouselIsLoading || carouselIsPending
+                                <Carousel gap={8} isLoading={isCarouselLoading}>
+                                  {(isCarouselLoading
+                                    ? Array(3).fill({
+                                        type: 'resource',
+                                        data: null,
+                                      })
+                                    : carouselItems
+                                  ).map((carouselItem, idx) => (
+                                    <div
+                                      key={
+                                        carouselItem?.data?.id ||
+                                        `loading-${idx}`
                                       }
-                                      referrerPath={router.asPath}
-                                    />
+                                    >
+                                      {carouselItem.type === 'resource' ? (
+                                        <CompactCard
+                                          data={carouselItem.data}
+                                          isLoading={isCarouselLoading}
+                                          referrerPath={router.asPath}
+                                        />
+                                      ) : (
+                                        <DiseaseOverviewCard
+                                          data={carouselItem.data}
+                                          isLoading={isCarouselLoading}
+                                        />
+                                      )}
+                                    </div>
                                   ))}
                                 </Carousel>
                               </CarouselWrapper>

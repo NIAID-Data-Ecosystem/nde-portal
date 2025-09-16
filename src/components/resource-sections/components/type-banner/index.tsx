@@ -14,7 +14,7 @@ interface TypeBannerProps extends FlexProps {
   isNiaidFunded?: boolean;
 }
 
-export const getTypeColor = (type?: FormattedResource['@type']) => {
+export const getTypeColor = (type?: FormattedResource['@type'] | string) => {
   const typeLower = type?.toLowerCase();
   let lt = 'status.info';
   let dk = 'niaid.500';
@@ -27,6 +27,9 @@ export const getTypeColor = (type?: FormattedResource['@type']) => {
     dk = 'primary.700';
   } else if (typeLower?.includes('tool') || typeLower?.includes('software')) {
     lt = 'primary.800';
+  } else if (typeLower === 'diseaseoverview') {
+    lt = 'purple.600';
+    dk = 'purple.800';
   } else {
     lt = 'niaid.500';
   }

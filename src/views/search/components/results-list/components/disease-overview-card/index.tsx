@@ -1,15 +1,14 @@
 import React from 'react';
 import { Card, CardHeader, CardBody, Text } from '@chakra-ui/react';
 import NextLink from 'next/link';
-import { FormattedResource } from 'src/utils/api/types';
+import { DiseasePageProps } from 'src/views/diseases/types';
 import { TypeBanner } from 'src/components/resource-sections/components';
 import { DisplayHTMLContent } from 'src/components/html-content';
-import { isSourceFundedByNiaid } from 'src/utils/helpers/sources';
 import { Skeleton } from 'src/components/skeleton';
+import { Link } from 'src/components/link';
 
 interface DiseaseOverviewCardProps {
-  data?: FormattedResource | null;
-  referrerPath?: string;
+  data?: DiseasePageProps | null;
   isLoading?: boolean;
 }
 
@@ -23,19 +22,23 @@ const CARD_HEIGHTS = {
 
 export const DiseaseOverviewCard = ({
   data,
-  referrerPath,
   isLoading = false,
 }: DiseaseOverviewCardProps) => {
-  const {
-    ['@type']: type,
-    id,
-    alternateName,
-    name,
-    includedInDataCatalog,
-    description,
-  } = data || {};
+  const { title, description, slug } = data || {};
 
-  const lastParagraph = `Learn about ${name} resources in the NIAID Data Ecosystem.`;
+  let diseaseDescription = description || '';
+  let descriptionLinkText = '';
+  let descriptionUrl = '';
+
+  if (description) {
+    // Capture "[text](url)" Markdown-style link
+    const match = description.match(/\[([^\]]+)\]\(([^)]+)\)/);
+    if (match) {
+      diseaseDescription = description.replace(match[0], '').trim();
+      descriptionLinkText = match[1];
+      descriptionUrl = match[2];
+    }
+  }
 
   return (
     <Card
@@ -52,11 +55,10 @@ export const DiseaseOverviewCard = ({
         borderTopRadius='md'
       >
         <TypeBanner
-          type={type || 'ResourceCatalog'}
+          type='DiseaseOverview'
           p={0}
           pl={[2, 4, 6]}
           flexDirection={['column', 'row']}
-          isNiaidFunded={isSourceFundedByNiaid(includedInDataCatalog)}
         />
       </Skeleton>
 
@@ -85,10 +87,10 @@ export const DiseaseOverviewCard = ({
         <Skeleton isLoaded={!isLoading} minHeight='27px' flex={1}>
           <NextLink
             href={{
-              pathname: '/resources/',
-              query: { id, referrerPath },
+              pathname: '/diseases/[slug]',
+              query: { slug },
             }}
-            as={`/resources?id=${id}`}
+            as={`/diseases/${slug}`}
             passHref
             prefetch={false}
             style={{
@@ -99,7 +101,7 @@ export const DiseaseOverviewCard = ({
           >
             <DisplayHTMLContent
               noOfLines={3}
-              content={name || alternateName || ''}
+              content={title || ''}
               fontWeight='semibold'
               color='inherit'
               fontSize='md'
@@ -119,24 +121,30 @@ export const DiseaseOverviewCard = ({
       </CardHeader>
 
       <CardBody
-        p={0}
+        p={2}
         sx={{
           '>*': {
             my: 0,
           },
         }}
+        flex='1'
+        display='flex'
+        flexDirection='column'
       >
         {/* Description */}
-        <Skeleton isLoaded={!isLoading} flex='1' px={2} mt={2} mb={1}>
-          {description && (
-            <>
-              <Text fontSize='xs' lineHeight='short' noOfLines={4}>
-                {description.trim()}
-              </Text>
-              <Text fontSize='xs' lineHeight='short' mt={2}>
-                {lastParagraph}
-              </Text>
-            </>
+        <Skeleton isLoaded={!isLoading} flex='1'>
+          {diseaseDescription && (
+            <Text fontSize='xs' lineHeight='short' noOfLines={6}>
+              {diseaseDescription}
+            </Text>
+          )}
+
+          {descriptionLinkText && descriptionUrl && (
+            <Text fontSize='xs' lineHeight='short' marginTop={1}>
+              <Link href={descriptionUrl} isExternal>
+                {descriptionLinkText}
+              </Link>
+            </Text>
           )}
         </Skeleton>
       </CardBody>

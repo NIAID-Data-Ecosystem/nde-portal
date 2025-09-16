@@ -1,10 +1,8 @@
 export type APIResourceType =
   | 'Dataset'
   | 'ResourceCatalog'
-  | 'ComputationalTool';
-// | 'Software'
-// | 'ScholarlyArticle'
-// | 'Other';
+  | 'ComputationalTool'
+  | 'DiseaseOverview';
 
 export type CollectionType =
   | 'Knowledge Base'
@@ -32,6 +30,7 @@ export type DisplayResourceType =
   | 'Computational Tool'
   | 'Software'
   | 'Scholarly Article'
+  | 'Disease Overview'
   | 'Other';
 
 // Format the resource type for display.
@@ -44,6 +43,8 @@ export const formatResourceTypeForDisplay = (
     return 'Resource Catalog';
   } else if (str.toLowerCase() === 'computationaltool') {
     return 'Computational Tool';
+  } else if (str.toLowerCase() === 'diseaseoverview') {
+    return 'Disease Overview';
   } else {
     return 'Other';
   }
