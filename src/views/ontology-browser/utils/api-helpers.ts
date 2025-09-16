@@ -705,29 +705,3 @@ export const fetchPortalCounts = async (
     throw error;
   }
 };
-
-// A helper to batch queries with a delay between each batch
-async function processInBatches<T, R>(
-  items: T[],
-  batchSize: number,
-  delayMs: number,
-  fn: (item: T, index: number) => Promise<R>,
-): Promise<R[]> {
-  const results: R[] = [];
-
-  for (let i = 0; i < items.length; i += batchSize) {
-    const batch = items.slice(i, i + batchSize);
-
-    const batchResults = await Promise.all(
-      batch.map((item, idx) => fn(item, i + idx)),
-    );
-
-    results.push(...batchResults);
-
-    if (i + batchSize < items.length) {
-      await new Promise(resolve => setTimeout(resolve, delayMs));
-    }
-  }
-
-  return results;
-}
