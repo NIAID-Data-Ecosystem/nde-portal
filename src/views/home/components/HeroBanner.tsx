@@ -91,7 +91,9 @@ export const HeroBannerContainer = ({
     <Flex
       id='hero-banner'
       position='relative'
-      bgGradient='linear(to-r,#ddf4fd 50%, #c1e0eb)' // small gradient to lighten up scene
+      bgGradient='to-r'
+      gradientFrom='#ddf4fd 50%'
+      gradientTo='#c1e0eb'
       minHeight={{
         base: '320px',
         sm: '360px',
