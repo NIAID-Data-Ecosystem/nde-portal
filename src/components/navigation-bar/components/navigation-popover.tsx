@@ -94,7 +94,7 @@ export const DesktopNavItem = ({
           <Popover.Positioner>
             <Popover.Content>
               <Popover.Arrow />
-              <Popover.Body p={2}>
+              <Popover.Body>
                 <Stack role='tablist'>
                   {routes.map(route => (
                     <NavigationLinkWrapper key={route.label} {...route}>

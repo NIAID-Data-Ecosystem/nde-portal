@@ -45,10 +45,7 @@ const SearchInput = ({
       renderSubmitButton={props => (
         <HStack height='100%'>
           {showOptionsMenu && optionMenuProps && (
-            <CheckboxList
-              {...optionMenuProps}
-              colorPalette={colorPalette}
-            ></CheckboxList>
+            <CheckboxList colorPalette={colorPalette} {...optionMenuProps} />
           )}
           <Button
             {...props}
@@ -56,6 +53,7 @@ const SearchInput = ({
             type='submit'
             display={{ base: 'none', md: 'flex' }}
             aria-label={inputProps.ariaLabel}
+            px={8}
           >
             Search
           </Button>

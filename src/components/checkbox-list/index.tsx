@@ -1,20 +1,17 @@
 import {
   Button,
-  CheckboxGroup,
-  Checkbox,
-  Flex,
-  Stack,
-  Popover,
-  PopoverTrigger,
-  PopoverContent,
-  PopoverCloseButton,
-  PopoverHeader,
-  PopoverBody,
-  PopoverArrow,
-  Text,
-  FlexProps,
-  PopoverProps,
   ButtonProps,
+  Checkbox,
+  CheckboxGroup,
+  CloseButton,
+  Flex,
+  FlexProps,
+  Icon,
+  Popover,
+  PopoverRootProps,
+  Portal,
+  Stack,
+  Text,
 } from '@chakra-ui/react';
 import React from 'react';
 import { FaCaretDown } from 'react-icons/fa6';
@@ -33,7 +30,7 @@ export interface CheckboxListProps<T extends Option> extends FlexProps {
   label: string | React.ReactNode;
   options: T[];
   selectedOptions: T[];
-  size?: PopoverProps['size'];
+  size?: PopoverRootProps['size'];
   showSelectAll?: boolean;
 }
 
@@ -43,9 +40,10 @@ export const CheckboxList = <T extends Option>({
   description,
   handleChange,
   selectedOptions,
-  size = 'md',
+  size = 'sm',
   buttonProps,
   showSelectAll,
+  colorPalette = 'primary',
   ...rest
 }: CheckboxListProps<T>) => {
   return (
@@ -56,107 +54,111 @@ export const CheckboxList = <T extends Option>({
       alignItems='center'
       {...rest}
     >
-      <Popover>
-        <PopoverTrigger>
-          <Button
-            colorScheme='gray'
-            flex={1}
-            fontWeight='medium'
-            fontSize='inherit'
-            lineHeight='shorter'
-            size={size}
-            px={4}
-            rightIcon={<FaCaretDown />}
-            variant='outline'
-            justifyContent='space-between'
-            {...buttonProps}
-          >
+      <Popover.Root size={size}>
+        <Popover.Trigger asChild>
+          <Button variant='outline' {...buttonProps}>
             {buttonProps?.children || label}
+            <Icon as={FaCaretDown} />
           </Button>
-        </PopoverTrigger>
-        <PopoverContent>
-          <PopoverArrow />
-          <PopoverCloseButton />
-          <PopoverHeader>
-            <Text fontWeight='semibold' lineHeight='normal' my={1}>
-              {label}
-            </Text>
-            {description && (
-              <Text
-                color='page.placeholder'
-                fontSize='sm'
-                fontStyle='italic'
-                fontWeight='normal'
-                lineHeight='short'
-                mt={1.5}
-              >
-                {description}
-              </Text>
-            )}
-          </PopoverHeader>
-          <PopoverBody>
-            {showSelectAll && (
-              <Flex justifyContent='flex-end'>
-                <Button
-                  size='xs'
-                  variant='link'
-                  onClick={() => {
-                    if (selectedOptions.length === options.length) {
-                      handleChange([]);
-                    } else {
-                      handleChange(options);
-                    }
-                  }}
-                >
-                  {selectedOptions.length === options.length
-                    ? 'Clear all'
-                    : 'Select all'}
-                </Button>
-              </Flex>
-            )}
-            <ScrollContainer maxHeight='300px'>
-              <CheckboxGroup
-                colorScheme='blue'
-                value={selectedOptions.map(item => item.value)}
-              >
-                <Stack spacing={1} direction='column'>
-                  {options.map(option => (
-                    <Checkbox
-                      key={option.value}
-                      value={option.value}
-                      onChange={() => {
-                        const newFilterItem = option;
-                        // Check if filter is already selected
-                        const index = selectedOptions.findIndex(
-                          f =>
-                            f.property === newFilterItem.property &&
-                            f.value === newFilterItem.value,
-                        );
-                        if (index === -1) {
-                          // Add new filter
-                          return handleChange([
-                            ...selectedOptions,
-                            newFilterItem,
-                          ]);
+        </Popover.Trigger>
+        <Portal>
+          <Popover.Positioner>
+            <Popover.Content>
+              <Popover.Arrow />
+              <Popover.Header border='1px solid' borderColor='gray.100'>
+                <Popover.Title display='flex' justifyContent='space-between'>
+                  <Text fontWeight='semibold' lineHeight='normal' my={1}>
+                    {label}
+                  </Text>
+                  <Popover.CloseTrigger asChild>
+                    <CloseButton size='2xs' colorPalette='gray' />
+                  </Popover.CloseTrigger>
+                </Popover.Title>
+                {description && (
+                  <Text
+                    color='page.placeholder'
+                    fontSize='sm'
+                    fontStyle='italic'
+                    fontWeight='normal'
+                    lineHeight='short'
+                    py={1.5}
+                  >
+                    {description}
+                  </Text>
+                )}
+              </Popover.Header>
+              <Popover.Body>
+                {showSelectAll && (
+                  <Flex justifyContent='flex-end'>
+                    <Button
+                      size='xs'
+                      variant='link'
+                      mb={1}
+                      colorPalette={colorPalette}
+                      onClick={() => {
+                        if (selectedOptions.length === options.length) {
+                          handleChange([]);
                         } else {
-                          // Remove filter if it's already selected
-                          return handleChange(
-                            selectedOptions.filter((_, i) => i !== index),
-                          );
+                          handleChange(options);
                         }
                       }}
-                      px={1}
-                      _hover={{ bg: 'niaid.50' }}
                     >
-                      <Text fontSize='sm'>{option.name}</Text>
-                    </Checkbox>
-                  ))}
-                </Stack>
-              </CheckboxGroup>
-            </ScrollContainer>
-          </PopoverBody>
-        </PopoverContent>
-      </Popover>
+                      {selectedOptions.length === options.length
+                        ? 'Clear all'
+                        : 'Select all'}
+                    </Button>
+                  </Flex>
+                )}
+                <ScrollContainer maxHeight='300px'>
+                  <CheckboxGroup colorPalette={colorPalette}>
+                    <Stack gap={1} direction='column'>
+                      {options.map(option => (
+                        <Checkbox.Root
+                          key={option.value}
+                          size={size}
+                          p={1}
+                          cursor='pointer'
+                          checked={selectedOptions.some(
+                            f =>
+                              f.property === option.property &&
+                              f.value === option.value,
+                          )}
+                          onCheckedChange={() => {
+                            const newFilterItem = option;
+                            // Check if filter is already selected
+                            const index = selectedOptions.findIndex(
+                              f =>
+                                f.property === newFilterItem.property &&
+                                f.value === newFilterItem.value,
+                            );
+                            if (index === -1) {
+                              // Add new filter
+                              return handleChange([
+                                ...selectedOptions,
+                                newFilterItem,
+                              ]);
+                            } else {
+                              // Remove filter if it's already selected
+                              return handleChange(
+                                selectedOptions.filter((_, i) => i !== index),
+                              );
+                            }
+                          }}
+                          _hover={{ bg: 'colorPalette.50' }}
+                        >
+                          <Checkbox.HiddenInput />
+                          <Checkbox.Control />
+                          <Checkbox.Label>{option.name}</Checkbox.Label>
+                        </Checkbox.Root>
+                      ))}
+                    </Stack>
+                  </CheckboxGroup>
+                </ScrollContainer>
+              </Popover.Body>
+            </Popover.Content>
+          </Popover.Positioner>
+        </Portal>
+      </Popover.Root>
     </Flex>
   );
 };

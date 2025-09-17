@@ -8,27 +8,29 @@ const button = defineRecipe({
   },
   variants: {
     variant: {
+      link: {
+        height: 'unset',
+        textDecoration: 'underline',
+        color: 'colorPalette.500',
+        _hover: {
+          color: 'colorPalette.600',
+          textDecoration: 'none',
+        },
+      },
       solid: { _hover: { bg: 'colorPalette.600' } },
       outline: {
         borderColor: 'colorPalette.500',
         color: 'colorPalette.500',
         _hover: { bg: 'colorPalette.600', color: 'white' },
       },
-      link: {
-        textDecoration: 'underline',
-
-        _hover: {
-          textDecoration: 'none',
-        },
-      },
     },
     size: {
       '2xs': {
         gap: 2,
-        _icon: {
-          width: '3',
-          height: '3',
-        },
+        // _icon: {
+        //   width: '3',
+        //   height: '3',
+        // },
       },
       xs: {
         gap: 2,
@@ -46,8 +48,8 @@ const button = defineRecipe({
         py: 1.5, // <-- these values are tokens from the design system
       },
       md: {
-        px: 3, // <-- these values are tokens from the design system
-        py: 1.5, // <-- these values are tokens from the design system
+        // px: 3, // <-- these values are tokens from the design system
+        // py: 1.5, // <-- these values are tokens from the design system
         _icon: {
           width: '4',
           height: '4',

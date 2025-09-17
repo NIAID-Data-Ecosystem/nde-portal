@@ -96,7 +96,7 @@ const About: NextPage<AboutProps> = props => {
           bg='#fff'
         >
           <Box w='100%' maxW='1000px' mt={8} mb={32}>
-            <Heading as='h1' fontSize='4xl' textStyle='h1'>
+            <Heading as='h1' fontSize='4xl'>
               {content.name || ''}
             </Heading>
             {content?.subtitle && (
