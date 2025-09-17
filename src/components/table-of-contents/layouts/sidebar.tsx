@@ -64,7 +64,7 @@ export const SidebarItem: React.FC<{
 
 export const Label: React.FC<HeadingProps> = ({ children, ...props }) => {
   return (
-    <Heading size='h6' lineHeight='short' mb={1} {...props}>
+    <Heading textStyle='h6' lineHeight='short' mb={1} {...props}>
       {children}
     </Heading>
   );

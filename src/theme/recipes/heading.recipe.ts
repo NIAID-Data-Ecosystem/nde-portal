@@ -7,26 +7,6 @@ const heading = defineRecipe({
     lineHeight: { base: '1.33', md: '1.2' },
   },
   variants: {
-    size: {
-      h1: {
-        textStyle: 'h1',
-      },
-      h2: {
-        textStyle: 'h2',
-      },
-      h3: {
-        textStyle: 'h3',
-      },
-      h4: {
-        textStyle: 'h4',
-      },
-      h5: {
-        textStyle: 'h5',
-      },
-      h6: {
-        textStyle: 'h6',
-      },
-    },
     as: {
       h1: {
         textStyle: 'h1',
@@ -48,7 +28,7 @@ const heading = defineRecipe({
       },
     },
   },
-  defaultVariants: { size: 'h2' },
+  defaultVariants: { as: 'h2' },
 });
 
 export default heading;

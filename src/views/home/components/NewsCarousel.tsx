@@ -1,24 +1,24 @@
-import axios from 'axios';
-import { useQuery } from '@tanstack/react-query';
-import React from 'react';
-import { NewsOrEventsObject, fetchEvents } from 'src/pages/updates';
-import { formatDate } from 'src/utils/api/helpers';
-import { FaAngleRight } from 'react-icons/fa6';
 import {
+  Badge,
   Box,
   Button,
+  Card,
+  CardBody,
   Flex,
   Heading,
   Icon,
   Image,
   Text,
-  Card,
-  CardBody,
-  Badge,
 } from '@chakra-ui/react';
-import { Carousel } from 'src/components/carousel';
+import { useQuery } from '@tanstack/react-query';
+import axios from 'axios';
 import NextLink from 'next/link';
+import React from 'react';
+import { FaAngleRight } from 'react-icons/fa6';
+import { Carousel } from 'src/components/carousel';
 import { Link } from 'src/components/link';
+import { fetchEvents, NewsOrEventsObject } from 'src/pages/updates';
+import { formatDate } from 'src/utils/api/helpers';
 import {
   fetchAllFeaturedPages,
   transformFeaturedContentForCarousel,
@@ -182,7 +182,7 @@ export const NewsCarousel = ({
                   fontSize='lg'
                   fontWeight='semibold'
                   lineHeight='short'
-                  size='h5'
+                  textStyle='h5'
                 >
                   {carouselCard.name}
                   {carouselCard.eventDate && (

@@ -1,17 +1,18 @@
 import { Badge, Box, Flex, Heading, Text } from '@chakra-ui/react';
 import type { NextPage } from 'next';
+import React from 'react';
+import ReactMarkdown from 'react-markdown';
+import rehypeRaw from 'rehype-raw';
+import remarkGfm from 'remark-gfm';
+import { useMDXComponents } from 'src/components/mdx/hooks/useMDXComponents';
 import {
   getPageSeoConfig,
   PageContainer,
   PageContent,
 } from 'src/components/page-container';
+
 import ChangelogData from '../../CHANGELOG.md';
-import ReactMarkdown from 'react-markdown';
-import rehypeRaw from 'rehype-raw';
-import remarkGfm from 'remark-gfm';
-import React from 'react';
 import packageJsonData from '../../package.json';
-import { useMDXComponents } from 'src/components/mdx/hooks/useMDXComponents';
 
 interface ChangelogProps {}
 
@@ -21,7 +22,7 @@ const Changelog: NextPage<ChangelogProps> = () => {
     <PageContainer meta={getPageSeoConfig('/changelog')} px={0} py={0}>
       <PageContent bg='#fff' justifyContent={'center'}>
         <Flex w='1000px' flexDirection='column' mb={32}>
-          <Heading as='h1' size='lg' mt={8}>
+          <Heading as='h1' textStyle='h4' mt={8}>
             Changelog
           </Heading>
           <Box>
@@ -48,21 +49,21 @@ const Changelog: NextPage<ChangelogProps> = () => {
                 }
                 return (
                   <>
-                    <Heading as='h1' size='lg' mt={8} {...props}></Heading>
+                    <Heading as='h1' textStyle='h4' mt={8} {...props}></Heading>
                   </>
                 );
               },
               h2: (props: any) => {
                 return (
                   <>
-                    <Heading as='h2' fontSize='2xl' mt={8} {...props}></Heading>
+                    <Heading as='h2' textStyle='h5' {...props}></Heading>
                   </>
                 );
               },
               h3: (props: any) => {
                 return (
                   <>
-                    <Heading as='h3' size='md' mt={8} {...props}></Heading>
+                    <Heading as='h3' textStyle='xl' {...props}></Heading>
                   </>
                 );
               },

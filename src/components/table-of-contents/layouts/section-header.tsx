@@ -19,7 +19,7 @@ export const SectionHeader: React.FC<SectionHeaderProps> = ({
   return (
     <Box width='100%' mb={2}>
       <Flex justifyContent='space-between' alignItems='center' flexWrap='wrap'>
-        <Heading as='h1' size='h5' my={1} ml={0}>
+        <Heading as='h1' textStyle='h5' my={1} ml={0}>
           {title}
         </Heading>
 

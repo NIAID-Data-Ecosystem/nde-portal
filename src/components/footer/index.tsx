@@ -1,4 +1,3 @@
-import React from 'react';
 import {
   Box,
   Flex,
@@ -10,11 +9,13 @@ import {
   Stack,
   TextProps,
 } from '@chakra-ui/react';
-import { Logo } from 'src/components/logos';
 import SITE_CONFIG from 'configs/site.config.json';
-import { FooterLink, FooterSocialLinks } from './components/link';
+import React from 'react';
+import { Logo } from 'src/components/logos';
 import { useMetadata } from 'src/hooks/api/useMetadata';
+
 import { SiteConfig } from '../page-container/types';
+import { FooterLink, FooterSocialLinks } from './components/link';
 import { FooterRoute } from './types';
 
 export interface ListHeaderProps extends TextProps {}
@@ -23,7 +24,7 @@ const LinksHeading: React.FC<ListHeaderProps> = ({ children, ...props }) => {
   return (
     <Heading
       as='h2'
-      size='h5'
+      textStyle='h5'
       fontFamily='body'
       color='white'
       fontWeight='medium'
