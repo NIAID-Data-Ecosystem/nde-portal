@@ -1,15 +1,20 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Card, CardHeader, CardBody, Text } from '@chakra-ui/react';
 import NextLink from 'next/link';
 import { DiseasePageProps } from 'src/views/diseases/types';
 import { TypeBanner } from 'src/components/resource-sections/components';
 import { DisplayHTMLContent } from 'src/components/html-content';
 import { Skeleton } from 'src/components/skeleton';
-import { Link } from 'src/components/link';
 
 interface DiseaseOverviewCardProps {
   data?: DiseasePageProps | null;
   isLoading?: boolean;
+}
+
+interface ProcessedDescription {
+  cleanedDescription: string;
+  invitation: string;
+  hasContent: boolean;
 }
 
 const CARD_HEIGHTS = {
@@ -18,6 +23,39 @@ const CARD_HEIGHTS = {
   md: '305px',
   lg: '305px',
   xl: '310px',
+} as const;
+
+const MARKDOWN_LINK_REGEX = /\[([^\]]*)\]\(([^)]*)\)/g;
+
+const processDescription = (
+  description: string | undefined,
+  title: string | undefined,
+): ProcessedDescription => {
+  if (!description?.trim()) {
+    return {
+      cleanedDescription: '',
+      invitation: title
+        ? `Learn about ${title} resources in the NIAID Data Ecosystem.`
+        : '',
+      hasContent: false,
+    };
+  }
+
+  // Remove all markdown links and clean up whitespace
+  const cleanedDescription = description
+    .replace(MARKDOWN_LINK_REGEX, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+  const invitation = title
+    ? `Learn about ${title} resources in the NIAID Data Ecosystem.`
+    : '';
+
+  return {
+    cleanedDescription,
+    invitation,
+    hasContent: Boolean(cleanedDescription || invitation),
+  };
 };
 
 export const DiseaseOverviewCard = ({
@@ -26,18 +64,22 @@ export const DiseaseOverviewCard = ({
 }: DiseaseOverviewCardProps) => {
   const { title, description, slug } = data || {};
 
-  let diseaseDescription = description || '';
-  let descriptionLinkText = '';
-  let descriptionUrl = '';
+  const processedContent = useMemo(
+    () => processDescription(description, title),
+    [description, title],
+  );
 
-  if (description) {
-    // Capture "[text](url)" Markdown-style link
-    const match = description.match(/\[([^\]]+)\]\(([^)]+)\)/);
-    if (match) {
-      diseaseDescription = description.replace(match[0], '').trim();
-      descriptionLinkText = match[1];
-      descriptionUrl = match[2];
-    }
+  if (!isLoading && !slug) {
+    console.warn(
+      'DiseaseOverviewCard: Missing slug for disease overview card',
+      {
+        title: title || 'No title',
+        description: description
+          ? `${description.substring(0, 50)}...`
+          : 'No description',
+      },
+    );
+    return null;
   }
 
   return (
@@ -85,38 +127,40 @@ export const DiseaseOverviewCard = ({
       >
         {/* Title */}
         <Skeleton isLoaded={!isLoading} minHeight='27px' flex={1}>
-          <NextLink
-            href={{
-              pathname: '/diseases/[slug]',
-              query: { slug },
-            }}
-            as={`/diseases/${slug}`}
-            passHref
-            prefetch={false}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              width: '100%',
-            }}
-          >
-            <DisplayHTMLContent
-              noOfLines={3}
-              content={title || ''}
-              fontWeight='semibold'
-              color='inherit'
-              fontSize='md'
-              lineHeight='short'
-              w='100%'
-              textDecoration='underline'
-              _hover={{
-                textDecoration: 'none',
+          {!isLoading && slug ? (
+            <NextLink
+              href={{
+                pathname: '/diseases/[slug]',
+                query: { slug },
               }}
-              reactMarkdownProps={{
-                linkTarget: '_blank',
-                disallowedElements: ['a'],
+              as={`/diseases/${slug}`}
+              passHref
+              prefetch={false}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                width: '100%',
               }}
-            />
-          </NextLink>
+            >
+              <DisplayHTMLContent
+                noOfLines={3}
+                content={title || ''}
+                fontWeight='semibold'
+                color='inherit'
+                fontSize='md'
+                lineHeight='short'
+                w='100%'
+                textDecoration='underline'
+                _hover={{
+                  textDecoration: 'none',
+                }}
+                reactMarkdownProps={{
+                  linkTarget: '_blank',
+                  disallowedElements: ['a'],
+                }}
+              />
+            </NextLink>
+          ) : null}
         </Skeleton>
       </CardHeader>
 
@@ -133,18 +177,23 @@ export const DiseaseOverviewCard = ({
       >
         {/* Description */}
         <Skeleton isLoaded={!isLoading} flex='1'>
-          {diseaseDescription && (
-            <Text fontSize='xs' lineHeight='short' noOfLines={6}>
-              {diseaseDescription}
-            </Text>
-          )}
-
-          {descriptionLinkText && descriptionUrl && (
-            <Text fontSize='xs' lineHeight='short' marginTop={1}>
-              <Link href={descriptionUrl} isExternal>
-                {descriptionLinkText}
-              </Link>
-            </Text>
+          {processedContent.hasContent && (
+            <>
+              {processedContent.cleanedDescription && (
+                <Text fontSize='xs' lineHeight='short' noOfLines={6}>
+                  {processedContent.cleanedDescription}
+                </Text>
+              )}
+              {processedContent.invitation && (
+                <Text
+                  fontSize='xs'
+                  lineHeight='short'
+                  marginTop={processedContent.cleanedDescription ? 7 : 0}
+                >
+                  {processedContent.invitation}
+                </Text>
+              )}
+            </>
           )}
         </Skeleton>
       </CardBody>
