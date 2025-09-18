@@ -21,11 +21,7 @@
     "property": "@type",
     "count": 3545884,
     "type": "keyword",
-    "enum": [
-      "Dataset",
-      "ComputationalTool",
-      "ResourceCatalog"
-    ],
+    "enum": ["Dataset", "ComputationalTool", "ResourceCatalog"],
     "description": {
       "Dataset": "Datasets contained in the NIAID Data Ecosystem. A dataset is a collection of data of a particular experimental type. The NIAID Data Ecosystem is an environment to find and access and infectious and immune-mediated disease data and computational tools to speed the development of diagnostics, therapeutics, and vaccines. The NIAID Data Ecosystem Discovery Portal harvests metadata from dataset repository and harmonizes them to this schema to enable easy cross-platform dataset searching and filtering.",
       "ComputationalTool": "ComputationalTools (software, workflows, computational tools, code) contained in the NIAID Data Ecosystem. The NIAID Data Ecosystem is a secure environment to find, access and analyze immune-mediated and infectious disease data and computational tools to speed the development of diagnostics, therapeutics, and vaccines. The NIAID Data Ecosystem Discovery Portal harvests metadata from dataset repository and harmonizes them to this schema to enable easy cross-platform dataset searching and filtering.",
@@ -1354,12 +1350,7 @@
     "count": 130124,
     "type": "keyword",
     "schemaType": "string",
-    "enum": [
-      "Closed",
-      "Open",
-      "Restricted",
-      "Embargoed"
-    ],
+    "enum": ["Closed", "Open", "Restricted", "Embargoed"],
     "description": {
       "Dataset": "Conditions that affect the availability of, or method(s) of access to, the work. Options include open (freely available), restricted (may include restrictions such as on use), closed (requires registration to access), or embargoed (unpublished).",
       "ComputationalTool": "Conditions that affect the availability of, or method(s) of access to, the work. Options include open (freely available), restricted (may include restrictions such as on use), closed (requires registration to access), or embargoed (unpublished).",
@@ -5123,57 +5114,49 @@
     },
     "isAdvancedSearchField": true
   },
-  "temporalCoverage.temporalInterval": {
-    "name": "Temporal Coverage Temporal Interval",
-    "dotfield": "temporalCoverage.temporalInterval",
-    "property": "temporalInterval",
-    "count": 81267,
-    "type": "object",
-    "isAdvancedSearchField": true
-  },
-  "temporalCoverage.temporalInterval.@type": {
+  "temporalCoverage.@type": {
     "name": "Temporal Coverage Temporal Interval Type",
-    "dotfield": "temporalCoverage.temporalInterval.@type",
+    "dotfield": "temporalCoverage.@type",
     "property": "@type",
     "count": 14517,
     "type": "text",
     "isAdvancedSearchField": false
   },
-  "temporalCoverage.temporalInterval.duration": {
+  "temporalCoverage.duration": {
     "name": "Temporal Coverage Temporal Interval Duration",
-    "dotfield": "temporalCoverage.temporalInterval.duration",
+    "dotfield": "temporalCoverage.duration",
     "property": "duration",
     "count": 1807,
     "type": "text",
     "isAdvancedSearchField": false
   },
-  "temporalCoverage.temporalInterval.endDate": {
+  "temporalCoverage.endDate": {
     "name": "Temporal Coverage Temporal Interval End Date",
-    "dotfield": "temporalCoverage.temporalInterval.endDate",
+    "dotfield": "temporalCoverage.endDate",
     "property": "endDate",
     "count": 77928,
     "type": "date",
     "isAdvancedSearchField": true
   },
-  "temporalCoverage.temporalInterval.name": {
+  "temporalCoverage.name": {
     "name": "Temporal Coverage Temporal Interval Name",
-    "dotfield": "temporalCoverage.temporalInterval.name",
+    "dotfield": "temporalCoverage.name",
     "property": "name",
     "count": 44,
     "type": "text",
     "isAdvancedSearchField": false
   },
-  "temporalCoverage.temporalInterval.startDate": {
+  "temporalCoverage.startDate": {
     "name": "Temporal Coverage Temporal Interval Start Date",
-    "dotfield": "temporalCoverage.temporalInterval.startDate",
+    "dotfield": "temporalCoverage.startDate",
     "property": "startDate",
     "count": 20483,
     "type": "date",
     "isAdvancedSearchField": true
   },
-  "temporalCoverage.temporalInterval.temporalType": {
+  "temporalCoverage.temporalType": {
     "name": "Temporal Coverage Temporal Interval Temporal Type",
-    "dotfield": "temporalCoverage.temporalInterval.temporalType",
+    "dotfield": "temporalCoverage.temporalType",
     "property": "temporalType",
     "count": 14466,
     "type": "text",
