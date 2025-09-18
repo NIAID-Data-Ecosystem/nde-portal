@@ -213,6 +213,7 @@ const semanticTokens = {
     info: {
       value: '{colors.info.default}',
     },
+    muted: { value: '{colors.text.body/80}' },
   },
 };
 
