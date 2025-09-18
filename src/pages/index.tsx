@@ -1,43 +1,46 @@
-import React from 'react';
-import type { NextPage } from 'next';
 import {
   Box,
   Button,
   ButtonGroup,
   Flex,
+  Heading,
   Icon,
   Image,
-  Text,
-  Heading,
-  Divider,
-  VStack,
   Stack,
+  Text,
+  VStack,
 } from '@chakra-ui/react';
+import HOMEPAGE_COPY from 'configs/homepage.json';
+import HOME_QUERIES from 'configs/queries/home-queries.json';
+import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
+import type { NextPage } from 'next';
+import NextLink from 'next/link';
+import React from 'react';
+import { FaGithub, FaMagnifyingGlass, FaRegEnvelope } from 'react-icons/fa6';
 import {
   getPageSeoConfig,
   PageContainer,
   PageContent,
 } from 'src/components/page-container';
-import HOMEPAGE_COPY from 'configs/homepage.json';
-import HOME_QUERIES from 'configs/queries/home-queries.json';
-import NextLink from 'next/link';
 import { SearchBarWithDropdown } from 'src/components/search-bar';
-import { FaMagnifyingGlass, FaRegEnvelope, FaGithub } from 'react-icons/fa6';
 import { useRepoData } from 'src/hooks/api/useRepoData';
-import { LandingPageCards } from 'src/views/home/components/LandingPageCards/';
-import {
-  NewsCarousel,
-  fetchNews,
-} from 'src/views/home/components/NewsCarousel';
-import { NewsOrEventsObject, fetchEvents } from './updates';
-import { TableWithSearch } from 'src/views/home/components/TableWithSearch/';
 import { useResourceCatalogs } from 'src/hooks/api/useResourceCatalogs';
-import { HeroBanner } from 'src/views/home/components/HeroBanner';
-import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
 import {
   fetchAllFeaturedPages,
   transformFeaturedContentForCarousel,
 } from 'src/views/features/helpers';
+import {
+  LANDING_PAGE_CARDS_DATA,
+  LandingPageCards,
+} from 'src/views/home/components/cards';
+import { HeroBanner } from 'src/views/home/components/HeroBanner';
+import {
+  fetchNews,
+  // NewsCarousel,
+} from 'src/views/home/components/NewsCarousel';
+
+// import { TableWithSearch } from 'src/views/home/components/TableWithSearch/';
+import { fetchEvents, NewsOrEventsObject } from './updates';
 
 const Home: NextPage<{
   data: {
@@ -72,7 +75,7 @@ const Home: NextPage<{
           flexDirection='column'
           w='100%'
           alignItems='flex-start'
-          spacing={{ base: 4, sm: 2 }}
+          gap={{ base: 4, sm: 2 }}
           zIndex={2}
         >
           <Flex w='100%' flexDirection='column' maxWidth='1000px'>
@@ -83,9 +86,10 @@ const Home: NextPage<{
               showOptionsMenu
               showSearchHistory
               optionMenuProps={{
+                colorPalette: 'primary',
                 buttonProps: {
                   borderRadius: 'full',
-                  colorScheme: 'primary',
+                  colorPalette: 'primary',
                   my: 2,
                 },
                 label: 'Type',
@@ -118,30 +122,30 @@ const Home: NextPage<{
                 return (
                   <Button
                     key={query.title}
-                    as={NextLink}
-                    href={{
-                      pathname: `/search`,
-                      query: { q: query.searchTerms.join(' OR ') },
-                    }}
-                    leftIcon={<FaMagnifyingGlass />}
-                    size={{ base: 'sm', sm: 'xs' }}
-                    colorScheme='niaid'
-                    fontWeight='semibold'
+                    asChild
+                    size={{ base: 'xs', sm: '2xs' }}
+                    colorPalette='niaid'
                   >
-                    {query.title}
+                    <NextLink
+                      href={{
+                        pathname: `/search`,
+                        query: { q: query.searchTerms.join(' OR ') },
+                      }}
+                    >
+                      <Icon as={FaMagnifyingGlass} />
+                      {query.title}
+                    </NextLink>
                   </Button>
                 );
               })}
             </Stack>
           </Box>
-          <Button
-            as={NextLink}
-            href={{ pathname: '/advanced-search' }}
-            leftIcon={<FaMagnifyingGlass />}
-            size={{ base: 'sm', sm: 'xs' }}
-            mt={2}
-          >
-            Advanced Search
+
+          <Button asChild size={{ base: 'xs', sm: '2xs' }} mt={2}>
+            <NextLink href={{ pathname: '/advanced-search' }}>
+              <Icon as={FaMagnifyingGlass} />
+              Advanced Search
+            </NextLink>
           </Button>
         </Stack>
       </HeroBanner>
@@ -155,71 +159,29 @@ const Home: NextPage<{
             alignItems='center'
           >
             <Box maxW='1300px' width='100%'>
-              <Flex
-                id='getting-started-card'
-                boxShadow='sm'
-                borderRadius='semi'
-                overflow='hidden'
-                border='1px solid'
-                borderColor='gray.100'
-                m={{ base: 0, sm: 4 }}
-                mb={{ base: 8, sm: 8 }}
-                flexWrap='wrap'
-              >
-                <Box flex={1}>
-                  <Image
-                    src='/assets/homepage/getting-started.png'
-                    alt='The image shows a healthcare professional, likely a doctor, wearing a white coat and stethoscope, interacting with a digital interface. The interface displays various health-related icons, such as a heart, a DNA helix, a medical cross, a microscope, a pill, an apple, and a syringe, representing different aspects of healthcare and medical research. The doctor is pointing at the heart icon, indicating a focus on heart health or medical diagnostics.'
-                    objectFit='cover'
-                    height='100%'
-                    minWidth='400px'
-                    minHeight={{ base: '200px', xl: '316px' }}
-                  />
-                </Box>
-                <Flex
-                  w='100%'
-                  px={{ base: 4, sm: 8 }}
-                  py={{ base: 4, sm: 6 }}
-                  flex={1}
-                  justifyContent={{ base: 'flex-start', sm: 'center' }}
+              <Stack gap={8} px={{ base: 2, sm: 4 }} mb={{ base: 8, sm: 8 }}>
+                {/* Getting Started Card */}
+                {LANDING_PAGE_CARDS_DATA['getting-started']?.data.map(
+                  (card, i) => (
+                    <LandingPageCards.Card
+                      key={`getting-started-${i}`}
+                      card={card}
+                    />
+                  ),
+                )}
+                {/* Topic Cards */}
+                <LandingPageCards.Wrapper
+                  heading={LANDING_PAGE_CARDS_DATA['topics']?.heading}
                 >
-                  <VStack
-                    w='100%'
-                    alignItems='flex-start'
-                    spacing={4}
-                    justifyContent='center'
-                    px={{ base: 0, xl: 8 }}
-                  >
-                    <Heading as='h2' fontSize='2xl' fontWeight='semibold'>
-                      Getting Started
-                    </Heading>
-                    <Text fontWeight='medium'>
-                      If you are new to the NIAID Data Ecosystem Discovery
-                      Portal you can find tips for searching infectious and
-                      immune disease datasets, learn about the different
-                      repositories, discover how best to filter results, and
-                      more...
-                    </Text>
-                    <Button
-                      as={NextLink}
-                      href='/knowledge-center/getting-started-with-niaid-data-ecosystem-discovery-portal'
-                      size={{ base: 'md', sm: 'sm' }}
-                      width={{ base: '100%', sm: 'auto' }}
-                    >
-                      <Text isTruncated color='inherit'>
-                        Read more about getting started
-                      </Text>
-                    </Button>
-                  </VStack>
-                </Flex>
-              </Flex>
-              <Box px={{ base: 2, sm: 4 }} mb={{ base: 8, sm: 8 }}>
-                <Heading as='h2' fontSize='2xl' fontWeight='semibold' mb={4}>
-                  Find Resources By Topic
-                </Heading>
-                <LandingPageCards />
-              </Box>
-              <Box px={{ base: 2, sm: 4 }}>
+                  {LANDING_PAGE_CARDS_DATA['topics']?.data.map((card, i) => (
+                    <LandingPageCards.Card
+                      key={`landing-card-${i}`}
+                      card={card}
+                    />
+                  ))}
+                </LandingPageCards.Wrapper>
+              </Stack>
+              {/* <Box px={{ base: 2, sm: 4 }}>
                 <Heading as='h2' fontSize='2xl' fontWeight='semibold' mb={4}>
                   Explore All Included Resources
                 </Heading>
@@ -314,16 +276,16 @@ const Home: NextPage<{
                     },
                   )}
                 </ButtonGroup>
-              </Box>
+              </Box> */}
 
               {/* NEWS */}
-              {!props?.error?.message && props.data?.news && (
+              {/* {!props?.error?.message && props.data?.news && (
                 <NewsCarousel
                   news={props.data.news}
                   events={props.data.events}
                   features={props.data.features}
                 />
-              )}
+              )} */}
             </Box>
           </PageContent>
         )}
