@@ -12,6 +12,7 @@ const card = defineSlotRecipe({
       // overflow: 'hidden',
     },
     title: {
+      color: 'text.heading',
       // pb: [2, 4],
       // display: 'flex',
       // flexWrap: 'wrap',

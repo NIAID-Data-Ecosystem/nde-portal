@@ -1,4 +1,4 @@
-import { Flex, Heading } from '@chakra-ui/react';
+import { Box, Flex, Heading } from '@chakra-ui/react';
 import React from 'react';
 
 interface LandingPageWrapperProps {
@@ -11,7 +11,7 @@ export const LandingPageWrapper: React.FC<LandingPageWrapperProps> = ({
   children,
 }) => {
   return (
-    <>
+    <Box>
       {heading && (
         <Heading as='h2' fontSize='2xl' fontWeight='semibold' mb={4}>
           {heading}
@@ -27,6 +27,6 @@ export const LandingPageWrapper: React.FC<LandingPageWrapperProps> = ({
       >
         {children}
       </Flex>
-    </>
+    </Box>
   );
 };
