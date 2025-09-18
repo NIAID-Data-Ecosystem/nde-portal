@@ -10,7 +10,7 @@ export const LANDING_PAGE_CARDS_DATA: LandingPageCards = {
         image: {
           src: '/assets/homepage/getting-started.png',
           alt: 'The image shows a healthcare professional, likely a doctor, wearing a white coat and stethoscope, interacting with a digital interface. The interface displays various health-related icons, such as a heart, a DNA helix, a medical cross, a microscope, a pill, an apple, and a syringe, representing different aspects of healthcare and medical research. The doctor is pointing at the heart icon, indicating a focus on heart health or medical diagnostics.',
-          maxWidth: { base: '100%', md: '40%' },
+          maxWidth: { base: '100%', md: '40%', lg: '60%' },
           maxHeight: { base: '250px', md: 'none', lg: '250px' },
         },
         heading: 'Getting Started',
