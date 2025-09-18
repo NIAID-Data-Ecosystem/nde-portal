@@ -29,7 +29,6 @@ const CustomLink = ({
     <Link
       target={isExternal ? '_blank' : undefined}
       rel={isExternal ? 'noopener noreferrer' : undefined}
-      // @ts-ignore
       variant={variant}
       {...props}
     >

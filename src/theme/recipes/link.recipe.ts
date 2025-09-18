@@ -6,6 +6,7 @@ const link = defineRecipe({
     color: 'link.default',
     fontSize: 'inherit',
     fontWeight: 'inherit',
+    lineHeight: 'inherit',
     _focus: {
       outlineColor: 'currentColor/50',
     },
