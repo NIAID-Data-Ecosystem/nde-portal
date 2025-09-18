@@ -322,12 +322,11 @@ export interface Species extends PropertyWithPubtator {
 }
 
 interface TemporalCoverage {
-  temporalInterval: {
-    duration?: string[];
-    endDate?: string;
-    name?: string;
-    startDate?: string;
-  };
+  duration?: string[];
+  endDate?: string;
+  name?: string;
+  startDate?: string;
+  temporalType?: string;
 }
 
 export interface TopicCategory {
