@@ -12,4 +12,7 @@ export const globalCss = {
     color: 'text.body',
     fontSize: '16px',
   },
+  strong: {
+    lineHeight: 'inherit',
+  },
 };

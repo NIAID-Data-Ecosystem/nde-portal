@@ -2,7 +2,7 @@ import { Box, Flex, Image } from '@chakra-ui/react';
 import {
   HeroBannerContainer,
   HeroBannerText,
-} from 'src/views/home/components/HeroBanner';
+} from 'src/views/home/components/hero-banner';
 
 interface HeroBannerProps {
   title?: string;

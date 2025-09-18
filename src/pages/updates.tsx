@@ -29,7 +29,7 @@ import Navigation from 'src/components/resource-sections/components/navigation';
 import {
   HeroBannerContainer,
   HeroBannerText,
-} from 'src/views/home/components/HeroBanner';
+} from 'src/views/home/components/hero-banner';
 import { fetchNews } from 'src/views/home/components/NewsCarousel';
 import { Section, SectionList } from 'src/views/news/components/Section';
 import SectionCard from 'src/views/news/components/SectionCard';

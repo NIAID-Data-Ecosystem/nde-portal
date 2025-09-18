@@ -3,7 +3,7 @@ import NextLink from 'next/link';
 import React from 'react';
 import { Link } from 'src/components/link';
 
-import { LandingPageCardData } from '../types';
+import { LandingPageCardData } from '../cards/types';
 
 interface CardProps {
   card: LandingPageCardData;

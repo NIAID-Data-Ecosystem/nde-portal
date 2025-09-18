@@ -1,17 +1,16 @@
 import {
   Box,
   Button,
-  ButtonGroup,
   Flex,
   Heading,
   Icon,
   Image,
+  Separator,
   Stack,
   Text,
   VStack,
 } from '@chakra-ui/react';
 import HOMEPAGE_COPY from 'configs/homepage.json';
-import HOME_QUERIES from 'configs/queries/home-queries.json';
 import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
 import type { NextPage } from 'next';
 import NextLink from 'next/link';
@@ -29,15 +28,13 @@ import {
   fetchAllFeaturedPages,
   transformFeaturedContentForCarousel,
 } from 'src/views/features/helpers';
-import {
-  LANDING_PAGE_CARDS_DATA,
-  LandingPageCards,
-} from 'src/views/home/components/cards';
-import { HeroBanner } from 'src/views/home/components/HeroBanner';
+import { HeroBanner } from 'src/views/home/components/hero-banner';
 import {
   fetchNews,
   // NewsCarousel,
 } from 'src/views/home/components/NewsCarousel';
+import { LandingPageSection } from 'src/views/home/components/sections';
+import { LANDING_PAGE_DATA } from 'src/views/home/data';
 
 // import { TableWithSearch } from 'src/views/home/components/TableWithSearch/';
 import { fetchEvents, NewsOrEventsObject } from './updates';
@@ -68,8 +65,8 @@ const Home: NextPage<{
     <PageContainer meta={getPageSeoConfig('/')} overflowX='hidden'>
       {/**** Hero banner + search bar *****/}
       <HeroBanner
-        title={HOMEPAGE_COPY.sections.hero.heading}
-        subtitle={HOMEPAGE_COPY.sections.hero.subtitle}
+        title={LANDING_PAGE_DATA.SECTIONS.hero.heading}
+        subtitle={LANDING_PAGE_DATA.SECTIONS.hero.subheading}
       >
         <Stack
           flexDirection='column'
@@ -118,7 +115,7 @@ const Home: NextPage<{
           <Box>
             <Text fontWeight='semibold'>Try these searches:</Text>
             <Stack flexDirection='row' flexWrap={'wrap'}>
-              {HOME_QUERIES.map(query => {
+              {LANDING_PAGE_DATA.SAMPLE_QUERIES.map(query => {
                 return (
                   <Button
                     key={query.title}
@@ -161,39 +158,35 @@ const Home: NextPage<{
             <Box maxW='1300px' width='100%'>
               <Stack gap={8} px={{ base: 2, sm: 4 }} mb={{ base: 8, sm: 8 }}>
                 {/* Getting Started Card */}
-                {LANDING_PAGE_CARDS_DATA['getting-started']?.data.map(
+                {LANDING_PAGE_DATA.SECTIONS['getting-started']?.data?.map(
                   (card, i) => (
-                    <LandingPageCards.Card
+                    <LandingPageSection.Card
                       key={`getting-started-${i}`}
                       card={card}
                     />
                   ),
                 )}
                 {/* Topic Cards */}
-                <LandingPageCards.Wrapper
-                  heading={LANDING_PAGE_CARDS_DATA['topics']?.heading}
+                <LandingPageSection.Wrapper
+                  {...LANDING_PAGE_DATA.SECTIONS['topics']}
                 >
-                  {LANDING_PAGE_CARDS_DATA['topics']?.data.map((card, i) => (
-                    <LandingPageCards.Card
-                      key={`landing-card-${i}`}
-                      card={card}
-                    />
-                  ))}
-                </LandingPageCards.Wrapper>
+                  {LANDING_PAGE_DATA.SECTIONS['topics']?.data?.map(
+                    (card, i) => (
+                      <LandingPageSection.Card
+                        key={`landing-card-${i}`}
+                        card={card}
+                      />
+                    ),
+                  )}
+                </LandingPageSection.Wrapper>
+                <LandingPageSection.Wrapper
+                  {...LANDING_PAGE_DATA.SECTIONS['explore-resources']}
+                >
+                  hello
+                </LandingPageSection.Wrapper>
               </Stack>
               {/* <Box px={{ base: 2, sm: 4 }}>
-                <Heading as='h2' fontSize='2xl' fontWeight='semibold' mb={4}>
-                  Explore All Included Resources
-                </Heading>
-                <Text lineHeight='short'>
-                  The following <strong>Resource Catalogs</strong> (collections
-                  of scientific information or research outputs) and{' '}
-                  <strong>Dataset Repositories</strong> (collections of data of
-                  a particular experimental type) are currently included in the
-                  NIAID Data Ecosystem
-                </Text>
-                <Flex justifyContent='flex-end' fontSize='sm' />
-                <Divider my={4} />
+
 
                 <TableWithSearch
                   ariaLabel='List of repositories and resource catalogs'

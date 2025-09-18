@@ -1,9 +1,9 @@
 import React from 'react';
 import { Link } from 'src/components/link';
 
-import type { LandingPageCards } from '../components/cards/types';
+import { LandingPageSections } from '../components/sections/types';
 
-export const LANDING_PAGE_SECTIONS: LandingPageCards = {
+export const LANDING_PAGE_SECTIONS: LandingPageSections = {
   hero: {
     heading: 'Discovery Portal',
     subheading:
@@ -92,5 +92,18 @@ export const LANDING_PAGE_SECTIONS: LandingPageCards = {
         ],
       },
     ],
+  },
+  'explore-resources': {
+    heading: 'Explore All Included Resources',
+    subheading: (
+      <>
+        The following <strong>Resource Catalogs</strong> (collections of
+        scientific information or research outputs) and{' '}
+        <strong>Dataset Repositories</strong> (collections of data of a
+        particular experimental type) are currently included in the NIAID Data
+        Ecosystem
+      </>
+    ),
+    hasSeparator: true,
   },
 };

@@ -11,7 +11,7 @@ import {
 
 interface HeroBannerProps {
   title?: string;
-  subtitle?: string;
+  subtitle?: React.ReactNode;
   body?: string;
   children?: React.ReactNode;
 }
