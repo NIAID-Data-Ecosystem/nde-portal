@@ -1,0 +1,9 @@
+import { LANDING_PAGE_SAMPLE_QUERIES } from './sample-queries';
+import { LANDING_PAGE_SECTIONS } from './sections';
+
+const LANDING_PAGE_DATA = {
+  SECTIONS: LANDING_PAGE_SECTIONS,
+  SAMPLE_QUERIES: LANDING_PAGE_SAMPLE_QUERIES,
+};
+
+export { LANDING_PAGE_DATA };

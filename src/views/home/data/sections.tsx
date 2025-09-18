@@ -1,9 +1,14 @@
 import React from 'react';
 import { Link } from 'src/components/link';
 
-import type { LandingPageCards } from './types';
+import type { LandingPageCards } from '../components/cards/types';
 
-export const LANDING_PAGE_CARDS_DATA: LandingPageCards = {
+export const LANDING_PAGE_SECTIONS: LandingPageCards = {
+  hero: {
+    heading: 'Discovery Portal',
+    subheading:
+      'Accelerate your research. Find datasets on Infectious and Immune-mediated Diseases (IID) across many repositories.',
+  },
   'getting-started': {
     data: [
       {
