@@ -1,6 +1,7 @@
 import React from 'react';
-import { CardData } from './types';
 import { Link } from 'src/components/link';
+
+import { CardData } from './types';
 
 export const CARDS_DATA: CardData[] = [
   {
