@@ -21,7 +21,7 @@ const OUTPUT_SITEMAP_DIR = './public/sitemaps/datasets';
 const LOC_PATH = `${process.env.BASE_URL}/resources?id=`;
 
 // Sources that should be omitted from the sitemap.
-const OMITTED_SOURCES = ['Data Discovery Engine'];
+const OMITTED_SOURCES = ['Data Discovery Engine', 'Protein Data Bank'];
 
 // [SCORING CRITERIA] used for fetching top scoring results.
 // Note: Scoring criteria are defined in this issue: https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/346#issuecomment-3164920234.
