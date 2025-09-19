@@ -1,11 +1,14 @@
-import { TableData } from '..';
-import { useMemo } from 'react';
-import { getFilterData } from '../helpers';
-import { CheckboxList } from 'src/components/checkbox-list';
-import { formatDomainName, formatTypeName } from '../helpers';
+import { CheckboxRootProps } from '@chakra-ui/react';
 import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
+import { useMemo } from 'react';
+import { CheckboxList } from 'src/components/checkbox-list';
+
+import { TableData } from '..';
+import { getFilterData } from '../helpers';
+import { formatDomainName, formatTypeName } from '../helpers';
 
 interface TableFiltersProps {
+  colorPalette?: CheckboxRootProps['colorPalette'];
   data: TableData[];
   filters: { name: string; value: string; property: string }[];
   setFilters: React.Dispatch<
@@ -13,7 +16,12 @@ interface TableFiltersProps {
   >;
 }
 
-export const Filters = ({ data, filters, setFilters }: TableFiltersProps) => {
+export const Filters = ({
+  colorPalette = 'gray',
+  data,
+  filters,
+  setFilters,
+}: TableFiltersProps) => {
   // Data types: ResourceCatalog, Repository
   const types = useMemo(
     () =>
@@ -78,6 +86,8 @@ export const Filters = ({ data, filters, setFilters }: TableFiltersProps) => {
           }
           handleChange={newFilters => handleFilterChange('type', newFilters)}
           showSelectAll
+          colorPalette={colorPalette}
+          buttonProps={{ colorPalette }}
         />
       )}
 
@@ -92,6 +102,8 @@ export const Filters = ({ data, filters, setFilters }: TableFiltersProps) => {
           }
           handleChange={newFilters => handleFilterChange('domain', newFilters)}
           showSelectAll
+          colorPalette={colorPalette}
+          buttonProps={{ colorPalette }}
         />
       )}
 
@@ -118,6 +130,8 @@ export const Filters = ({ data, filters, setFilters }: TableFiltersProps) => {
             handleFilterChange('conditionsOfAccess', newFilters)
           }
           showSelectAll
+          colorPalette={colorPalette}
+          buttonProps={{ colorPalette }}
         />
       )}
     </>

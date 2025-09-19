@@ -6,6 +6,24 @@ const button = defineRecipe({
     fontWeight: 'medium',
     fontFamily: 'body',
   },
+  compoundVariants: [
+    {
+      variant: 'link',
+      colorPalette: 'gray',
+      css: {
+        color: 'colorPalette.900',
+      },
+    },
+    {
+      variant: 'outline',
+      colorPalette: 'gray',
+      css: {
+        color: 'gray.900',
+        borderColor: 'gray.200',
+        _hover: { bg: 'colorPalette.900' },
+      },
+    },
+  ],
   variants: {
     variant: {
       link: {
