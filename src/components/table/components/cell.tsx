@@ -1,14 +1,17 @@
-import React from 'react';
 import {
   Box,
   BoxProps,
   ButtonProps,
   Flex,
   FlexProps,
+  Stack,
+  Table,
   Text,
   TextProps,
 } from '@chakra-ui/react';
-import { TableSortToggle } from './sort-toggle';
+import React from 'react';
+
+import { TableSortToggle, TableSortToggleProps } from './sort-toggle';
 
 // Label component - displays text in a specific style.
 export const Label = React.memo(({ children, ...props }: TextProps) => {
@@ -78,17 +81,6 @@ export const EmptyCell = React.memo(({ label }: { label?: string }) => {
   );
 });
 
-interface ThProps extends CellProps {
-  colorScheme?: ButtonProps['colorScheme'];
-  isSelected?: boolean;
-  isSortable?: boolean;
-  tableSortToggleProps?: {
-    isSelected: boolean;
-    sortBy: 'ASC' | 'DESC';
-    handleToggle: (sortByAsc: boolean) => void;
-  };
-}
-
 export const Th = React.memo(
   ({
     children,
@@ -102,11 +94,10 @@ export const Th = React.memo(
     const bg = isSelected ? 'page.alt' : 'transparent';
     const py = isSortable ? 1 : 2;
     return (
-      <Flex
+      <Table.ColumnHeader
         as='th'
         role='columnheader'
         scope='col'
-        label={label}
         alignItems='center'
         bg={bg}
         borderBottom='1px solid'
@@ -136,7 +127,29 @@ export const Th = React.memo(
             <TableSortToggle {...tableSortToggleProps} />
           </Box>
         )}
-      </Flex>
+      </Table.ColumnHeader>
     );
   },
 );
+
+interface SortableHeaderCell extends CellProps {
+  colorScheme?: ButtonProps['colorScheme'];
+  isSelected?: boolean;
+  isSortable?: boolean;
+  tableSortToggleProps?: TableSortToggleProps;
+}
+
+export const SortableHeaderCell = ({
+  label,
+  isSortable,
+  tableSortToggleProps,
+}: SortableHeaderCell) => {
+  return (
+    <Stack flexDirection='row' lineHeight='shorter' alignItems='center' gap={2}>
+      {label}
+      {isSortable && tableSortToggleProps && (
+        <TableSortToggle {...tableSortToggleProps} />
+      )}
+    </Stack>
+  );
+};

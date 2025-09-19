@@ -1,20 +1,17 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { uniqueId } from 'lodash';
 import {
-  Box,
-  Skeleton,
-  Table as ChakraTable,
-  Tr,
-  VisuallyHidden,
-  HTMLChakraProps,
-  TableContainerProps,
+  SkeletonText,
+  Table,
+  TableBodyProps,
+  TableHeaderProps,
+  TableRootProps,
+  TableScrollAreaProps,
 } from '@chakra-ui/react';
-import { TableContainer } from 'src/components/table/components/table-container';
-import { TableWrapper } from 'src/components/table/components/wrapper';
+import { uniqueId } from 'lodash';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { TableRowProps } from 'react-markdown/lib/ast-to-react';
+import { SortableHeaderCell } from 'src/components/table/components/cell';
 import { TablePagination } from 'src/components/table/components/pagination';
 import { useTableSort } from 'src/components/table/hooks/useTableSort';
-import { Row } from 'src/components/table/components/row';
-import { Cell, Th } from 'src/components/table/components/cell';
 
 interface Column {
   title: string;
@@ -26,40 +23,42 @@ interface Column {
 interface TableProps<TData extends Record<string, string | number>> {
   ariaLabel: string;
   caption: string;
+  colorPalette?: TableRootProps['colorPalette'];
   columns: Column[];
   data: TData[];
+  hasPagination?: boolean;
+  isLoading?: boolean;
+  numRows?: number[];
   getCells: (props: {
     column: Column;
     data: TData;
     isLoading?: boolean;
   }) => React.ReactNode;
-  colorScheme?: string;
-  isLoading?: boolean;
-  numRows?: number[];
-  hasPagination?: boolean;
-  tableBodyProps?: HTMLChakraProps<'tbody'>;
   getTableRowProps?: (row: any, idx: number) => any;
-  tableHeadProps?: HTMLChakraProps<'thead'>;
-  tableContainerProps?: TableContainerProps;
+  tableProps?: {
+    root?: TableRootProps;
+    header?: TableHeaderProps;
+    body?: TableBodyProps;
+    scrollArea?: TableScrollAreaProps;
+    row?: TableRowProps;
+  };
 }
 // Constants for table configuration.
 // [NUM_ROWS]: num of rows per page
 const NUM_ROWS = [5, 10, 50, 100];
 
-export const Table: React.FC<TableProps<any>> = ({
+const CustomTable: React.FC<TableProps<any>> = ({
   ariaLabel,
   caption,
-  colorScheme = 'gray',
+  colorPalette = 'gray',
   columns,
   data,
   getCells,
   hasPagination,
   isLoading,
   numRows = NUM_ROWS,
-  tableHeadProps,
-  tableBodyProps,
+  tableProps,
   getTableRowProps,
-  tableContainerProps,
 }) => {
   // create unique id for each row
   const dataWithUniqueID = useMemo(
@@ -106,90 +105,105 @@ export const Table: React.FC<TableProps<any>> = ({
   }, [tableData, size, from, data.length, hasPagination, numRows]);
 
   return (
-    <Skeleton
-      isLoaded={!isLoading}
-      overflow='auto'
-      minH={isLoading ? '500px' : 'unset'}
-    >
-      <TableWrapper colorScheme={colorScheme}>
-        <TableContainer {...tableContainerProps}>
-          <ChakraTable
-            role='table'
-            aria-label={ariaLabel}
-            aria-describedby='table-caption'
-            aria-rowcount={rows.length}
+    <>
+      <Table.ScrollArea borderWidth='1px' {...tableProps?.scrollArea}>
+        <Table.Root
+          role='table'
+          aria-describedby='table-caption'
+          {...tableProps?.root}
+          colorPalette={colorPalette}
+          aria-label={ariaLabel}
+          aria-rowcount={rows.length}
+        >
+          {/* Note: keep for accessibility */}
+          <Table.Caption
+            id='table-caption'
+            // hide caption visually
+            css={{
+              height: '1px',
+              width: '1px',
+              margin: '-1px',
+              padding: '0',
+              overflow: 'hidden',
+              whiteSpace: 'nowrap',
+              position: 'absolute',
+            }}
           >
-            {/* Note: keep for accessibility */}
-            <VisuallyHidden id='table-caption' as='caption'>
-              {caption}
-            </VisuallyHidden>
-            <Box as='thead' {...tableHeadProps}>
-              <Tr role='row' flex='1' display='flex' w='100%'>
-                {columns.map(column => {
-                  return (
-                    <Th
-                      key={`table-col-th-${column.property}`}
-                      label={column.title}
-                      isSelected={column.property === orderBy}
-                      borderBottomColor={`${colorScheme}.200`}
+            {caption}
+          </Table.Caption>
+          <Table.Header {...tableProps?.header}>
+            <Table.Row>
+              {columns.map(column => {
+                return (
+                  <Table.ColumnHeader
+                    key={`table-col-th-${column.property}`}
+                    {...column.props}
+                  >
+                    <SortableHeaderCell
+                      label={column.title.toUpperCase()}
                       isSortable={column.isSortable}
                       tableSortToggleProps={{
+                        columnName: column.title,
                         isSelected: column.property === orderBy,
                         sortBy,
                         handleToggle: (sortByAsc: boolean) => {
                           updateSort(column.property, sortByAsc);
                         },
                       }}
-                      {...column.props}
-                    ></Th>
-                  );
-                })}
-              </Tr>
-            </Box>
-            <Box as='tbody' {...tableBodyProps}>
-              {rows.map((row: any, idx: number) => {
-                return (
-                  <Row
-                    as='tr'
-                    key={`table-tr-${row.key}`}
-                    flexDirection='row'
-                    borderColor='gray.100'
-                    {...(getTableRowProps && getTableRowProps(row, idx))}
-                  >
-                    {columns.map(column => {
-                      return (
-                        <Cell
-                          key={`table-td-${row.key}-${column.property}`}
-                          as='td'
-                          role='cell'
-                          alignItems='center'
-                          sx={{ '>div': { my: 0 } }}
-                          {...column.props}
-                        >
-                          {/* generate the cells */}
-                          {getCells({ column, data: row, isLoading })}
-                        </Cell>
-                      );
-                    })}
-                  </Row>
+                    />
+                  </Table.ColumnHeader>
                 );
               })}
-            </Box>
-          </ChakraTable>
-        </TableContainer>
-        {hasPagination && numRows && (
-          <TablePagination
-            total={dataWithUniqueID.length}
-            size={size}
-            setSize={setSize}
-            from={from}
-            setFrom={setFrom}
-            pageSizeOptions={numRows}
-            colorScheme='gray'
-            __css={{ '>div': { py: 1 } }}
-          />
-        )}
-      </TableWrapper>
-    </Skeleton>
+            </Table.Row>
+          </Table.Header>
+          <Table.Body {...tableProps?.body}>
+            {rows.map((row: any) => {
+              return (
+                <Table.Row
+                  key={`table-tr-${row.key}`}
+                  colorPalette={colorPalette}
+                  {...tableProps?.row}
+                >
+                  {columns.map(column => {
+                    return (
+                      <Table.Cell
+                        key={`table-td-${row.key}-${column.property}`}
+                        verticalAlign='top'
+                        {...column.props}
+                      >
+                        {isLoading ? (
+                          <SkeletonText
+                            key={`table-td-${row.key}-${column.property}`}
+                            loading={isLoading}
+                            noOfLines={2}
+                            height={2}
+                          />
+                        ) : (
+                          <>{getCells({ column, data: row, isLoading })}</>
+                        )}
+                      </Table.Cell>
+                    );
+                  })}
+                </Table.Row>
+              );
+            })}
+          </Table.Body>
+        </Table.Root>
+      </Table.ScrollArea>
+      {/* {hasPagination && numRows && (
+        <TablePagination
+          total={dataWithUniqueID.length}
+          size={size}
+          setSize={setSize}
+          from={from}
+          setFrom={setFrom}
+          pageSizeOptions={numRows}
+          colorScheme='gray'
+          css={{ '>div': { py: 1 } }}
+        />
+      )} */}
+    </>
   );
 };
+
+export { CustomTable as Table };

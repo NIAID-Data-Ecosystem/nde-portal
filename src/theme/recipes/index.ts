@@ -6,7 +6,8 @@ import heading from './heading.recipe';
 import input from './input.recipe';
 import link from './link.recipe';
 import popover from './popover.recipe';
+import table from './table.recipe';
 import tag from './tag.recipe';
 
 export const recipes = { badge, button, heading, input, link };
-export const slotRecipes = { breadcrumb, card, popover, tag };
+export const slotRecipes = { breadcrumb, card, popover, table, tag };

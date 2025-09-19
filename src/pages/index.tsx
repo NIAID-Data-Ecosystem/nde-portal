@@ -34,9 +34,9 @@ import {
   // NewsCarousel,
 } from 'src/views/home/components/NewsCarousel';
 import { LandingPageSection } from 'src/views/home/components/sections';
+import { TableWithSearch } from 'src/views/home/components/TableWithSearch/';
 import { LANDING_PAGE_DATA } from 'src/views/home/data';
 
-// import { TableWithSearch } from 'src/views/home/components/TableWithSearch/';
 import { fetchEvents, NewsOrEventsObject } from './updates';
 
 const Home: NextPage<{
@@ -79,7 +79,7 @@ const Home: NextPage<{
             <SearchBarWithDropdown
               placeholder='Search for resources'
               ariaLabel='Search for resources'
-              size='md'
+              size='xl'
               showOptionsMenu
               showSearchHistory
               optionMenuProps={{
@@ -182,7 +182,48 @@ const Home: NextPage<{
                 <LandingPageSection.Wrapper
                   {...LANDING_PAGE_DATA.SECTIONS['explore-resources']}
                 >
-                  hello
+                  <TableWithSearch
+                    ariaLabel='List of repositories and resource catalogs'
+                    caption='List of repositories and resource catalogs'
+                    data={[
+                      ...(resourceCatalogs || []),
+                      ...(repositories || []),
+                    ]}
+                    isLoading={
+                      repositoriesIsLoading || resourceCatalogsIsLoading
+                    }
+                    columns={[
+                      {
+                        title: 'name',
+                        property: 'name',
+                        isSortable: true,
+                        props: { maxW: '280px', minW: '280px' },
+                      },
+                      {
+                        title: 'description',
+                        property: 'abstract',
+                        props: { maxW: '280px', minW: '280px' },
+                      },
+                      {
+                        title: 'Type',
+                        property: 'type',
+                        isSortable: true,
+                        props: { maxW: '180px', minW: '180px' },
+                      },
+                      {
+                        title: 'Research Domain',
+                        property: 'domain',
+                        isSortable: true,
+                        props: { maxW: '180px', minW: '180px' },
+                      },
+                      {
+                        title: 'access',
+                        property: 'conditionsOfAccess',
+                        isSortable: true,
+                        props: { maxW: '150px', minW: '150px' },
+                      },
+                    ]}
+                  />
                 </LandingPageSection.Wrapper>
               </Stack>
               {/* <Box px={{ base: 2, sm: 4 }}>

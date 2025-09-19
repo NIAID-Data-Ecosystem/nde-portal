@@ -1,4 +1,3 @@
-import React from 'react';
 import {
   ButtonProps,
   CloseButton,
@@ -11,10 +10,12 @@ import {
   Spinner,
   VisuallyHidden,
 } from '@chakra-ui/react';
+import React from 'react';
 import { FaMagnifyingGlass } from 'react-icons/fa6';
-import { useDropdownContext } from '..';
 import { ReactElement } from 'react-markdown/lib/react-markdown';
 import { system } from 'src/theme';
+
+import { useDropdownContext } from '..';
 
 /*
 [Component Information]: [DropdownInput] is a regular input field with a list of suggestions based on the user typing.

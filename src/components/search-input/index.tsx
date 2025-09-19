@@ -1,20 +1,19 @@
-import React, { useState } from 'react';
 import {
   Button,
+  ButtonProps,
+  CloseButton,
   Flex,
+  FlexProps,
+  HStack,
   Icon,
+  IconButton,
   Input,
   InputGroup,
-  InputLeftElement,
-  InputRightElement,
   InputProps,
-  IconButton,
   VisuallyHidden,
-  CloseButton,
 } from '@chakra-ui/react';
+import React, { useState } from 'react';
 import { FaMagnifyingGlass, FaXmark } from 'react-icons/fa6';
-
-type SizeOptions = 'xs' | 'sm' | 'md' | 'lg';
 
 export interface SearchInputProps extends Omit<InputProps, 'size'> {
   // Function fired when input is changed.
@@ -22,15 +21,18 @@ export interface SearchInputProps extends Omit<InputProps, 'size'> {
   onClose?: () => void;
   // Function fired button is submitted.
   handleSubmit?: (e: React.FormEvent<HTMLDivElement>) => void;
-  // Variant for button
-  buttonVariant?: string;
   // Should input resize responsively
   isResponsive?: boolean;
   // Button reflects loading state
   isLoading?: boolean;
   // For accessibility, we need to link label and input with identical for and id field.
   ariaLabel: string;
-  size?: SizeOptions;
+  size?: ButtonProps['size'];
+  // Props for submit button
+  submitButtonProps?: ButtonProps;
+  // Props for responsive button
+  responsiveButtonProps?: ButtonProps;
+  wrapperProps?: FlexProps;
 }
 
 /**
@@ -43,124 +45,142 @@ export const SearchInput: React.FC<SearchInputProps> = ({
   handleChange,
   handleSubmit,
   isResponsive = true,
-  buttonVariant,
   ariaLabel,
-  colorScheme,
+  colorPalette,
   isLoading,
+  submitButtonProps,
+  responsiveButtonProps,
+  wrapperProps,
   ...props
 }) => {
   const [showInput, setShowInput] = useState(false);
 
-  const sizeConfig: {
-    [key in SizeOptions]: { width: string; height: string };
-  } = {
-    xs: {
-      width: '4rem',
-      height: '1.25rem',
-    },
-    sm: {
-      width: '5.5rem',
-      height: '1.75rem',
-    },
-    md: {
-      width: '5.5rem',
-      height: '2.5rem',
-    },
-    lg: {
-      width: '6.5rem',
-      height: '3rem',
-    },
-  };
+  const [endElementSize, setEndElementSize] = React.useState({
+    width: 0,
+    height: 0,
+  });
+  const inputEndElement = React.useRef<HTMLDivElement | null>(null);
+
+  React.useEffect(() => {
+    if (!inputEndElement.current) return;
+
+    const handleResize = () => {
+      if (inputEndElement.current) {
+        setEndElementSize({
+          width: inputEndElement.current.clientWidth,
+          height: inputEndElement.current.clientHeight,
+        });
+      }
+    };
+    handleResize();
+
+    const observer = new ResizeObserver(handleResize);
+
+    observer.observe(inputEndElement.current);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [handleSubmit, onClose, size, isLoading]);
+
+  const startElement = (
+    <Icon as={FaMagnifyingGlass} color='page.placeholder' boxSize={4} />
+  );
+
+  const endElement = (
+    <HStack
+      ref={inputEndElement}
+      gap={1}
+      px={2}
+      py={1}
+      alignItems='center'
+      height='100%'
+    >
+      {(onClose || handleSubmit) && (
+        <>
+          {onClose && props.value && (
+            <CloseButton
+              colorPalette={colorPalette}
+              size={size}
+              h='100%'
+              onClick={() => {
+                onClose();
+              }}
+              aria-label='Clear search input'
+            />
+          )}
+          {handleSubmit && (
+            <Button
+              size={size}
+              colorPalette={colorPalette}
+              h='100%'
+              loading={isLoading}
+              aria-label='search'
+              type='submit'
+              display='flex'
+              // set padding top and bottom for safari, do not remove.
+              py={0}
+              {...submitButtonProps}
+            >
+              Search
+            </Button>
+          )}
+        </>
+      )}
+    </HStack>
+  );
 
   return (
     <Flex
       as='form'
-      alignItems='center'
-      position='relative'
       onSubmit={e => {
         e.preventDefault();
         handleSubmit && handleSubmit(e);
       }}
-      {...props}
+      {...wrapperProps}
     >
       <VisuallyHidden>
         <label htmlFor={ariaLabel}>{ariaLabel}</label>
       </VisuallyHidden>
 
       <InputGroup
+        startElement={startElement}
+        endElement={endElement}
+        endElementProps={{ px: 0 }}
+        endOffset={`var(--input-height) + ${endElementSize.width}px`}
         // If in 'responsive mode' we use a button to toggle the visibility of the input in mobile size.
         visibility={[
           isResponsive && !showInput ? 'hidden' : 'visible',
           'visible',
         ]}
-        size={size}
-        _focusWithin={{
-          svg: { color: `${colorScheme}.500` },
-        }}
       >
-        <InputLeftElement pointerEvents='none' height={sizeConfig[size].height}>
-          <Icon as={FaMagnifyingGlass} color='page.placeholder' boxSize={4} />
-        </InputLeftElement>
         <Input
           id={ariaLabel}
           type='text'
-          variant='shadow'
+          variant='outline'
           size={size}
           onChange={e => handleChange(e)}
-          colorScheme={colorScheme}
-          pr={handleSubmit ? sizeConfig[size].width : 0}
-          bg={bg}
-          height={sizeConfig[size].height}
+          colorPalette={colorPalette}
           {...props}
         />
 
         {/* If handle submit function is provided we show a button. */}
-        {(onClose || handleSubmit) && (
-          <InputRightElement p={1} height={sizeConfig[size].height}>
-            {onClose && props.value && (
-              <CloseButton
-                onClick={() => {
-                  onClose();
-                }}
-                size={size}
-                colorScheme='primary'
-              />
-            )}
-            {handleSubmit && (
-              <Button
-                size={size}
-                colorScheme={colorScheme}
-                isLoading={isLoading}
-                aria-label='search'
-                type='submit'
-                display='flex'
-                // set padding top and bottom for safari, do not remove.
-                py={0}
-              >
-                Search
-              </Button>
-            )}
-          </InputRightElement>
-        )}
       </InputGroup>
 
       {/* Button that toggles out input if in responsive mode. */}
       {isResponsive && (
         <IconButton
           display={['flex', 'none']}
+          ml={1}
           size={size}
-          top={0}
-          right={0}
-          ml={4}
           aria-label='Open search input'
-          icon={
-            showInput ? <Icon as={FaXmark} /> : <Icon as={FaMagnifyingGlass} />
-          }
-          colorScheme={colorScheme}
-          variant={buttonVariant || 'outline'}
+          colorPalette={colorPalette}
+          variant='outline'
           onClick={() => setShowInput(!showInput)}
-          isActive={showInput}
-        />
+          {...responsiveButtonProps}
+        >
+          {showInput ? <Icon as={FaXmark} /> : <Icon as={FaMagnifyingGlass} />}
+        </IconButton>
       )}
     </Flex>
   );

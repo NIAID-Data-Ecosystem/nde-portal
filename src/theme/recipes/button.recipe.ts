@@ -1,5 +1,9 @@
 import { defineRecipe } from '@chakra-ui/react';
 
+// [NOTE]: These are the default sizes set in the theme by Chakra UI reference.
+// https://github.com/chakra-ui/chakra-ui/blob/main/packages/react/src/theme/recipes/button.ts
+// Redefining these can have unintended consequences, since other elements like inputs match these sizings.
+
 const button = defineRecipe({
   base: {
     borderRadius: 'semi',
@@ -59,7 +63,6 @@ const button = defineRecipe({
       },
       sm: {
         gap: 2,
-
         // fontSize: 'sm',
         // height: 'unset',
         px: 3, // <-- these values are tokens from the design system
@@ -73,6 +76,9 @@ const button = defineRecipe({
           height: '4',
         },
       },
+      lg: {},
+      xl: {},
+      '2xl': {},
     },
   },
   defaultVariants: {

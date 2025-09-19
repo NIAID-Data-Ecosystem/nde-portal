@@ -87,7 +87,8 @@ export const Filters = ({
           handleChange={newFilters => handleFilterChange('type', newFilters)}
           showSelectAll
           colorPalette={colorPalette}
-          buttonProps={{ colorPalette }}
+          buttonProps={{ colorPalette, width: '100%' }}
+          width={{ base: '100%', sm: 'unset' }}
         />
       )}
 
@@ -103,7 +104,8 @@ export const Filters = ({
           handleChange={newFilters => handleFilterChange('domain', newFilters)}
           showSelectAll
           colorPalette={colorPalette}
-          buttonProps={{ colorPalette }}
+          buttonProps={{ colorPalette, width: '100%' }}
+          width={{ base: '100%', sm: 'unset' }}
         />
       )}
 
@@ -131,7 +133,8 @@ export const Filters = ({
           }
           showSelectAll
           colorPalette={colorPalette}
-          buttonProps={{ colorPalette }}
+          buttonProps={{ colorPalette, width: '100%' }}
+          width={{ base: '100%', sm: 'unset' }}
         />
       )}
     </>

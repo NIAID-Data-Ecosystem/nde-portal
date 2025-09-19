@@ -1,3 +1,95 @@
+import { defineSlotRecipe } from '@chakra-ui/react';
+import { tableAnatomy } from '@chakra-ui/react/anatomy';
+
+export const table = defineSlotRecipe({
+  slots: tableAnatomy.keys(),
+  base: {
+    root: {},
+    row: {},
+    cell: {
+      fontSize: 'sm',
+      lineHeight: 'short',
+      whiteSpace: 'pre-wrap',
+    },
+    columnHeader: {
+      fontSize: 'xs',
+      fontWeight: 'bold',
+      lineHeight: 'shorter',
+      whiteSpace: 'pre-wrap',
+    },
+    caption: {},
+    footer: {},
+  },
+
+  variants: {
+    colorPalette: {
+      niaid: {
+        columnHeader: {
+          bg: 'page.alt',
+        },
+
+        row: {
+          borderColor: 'gray.100',
+          '&:nth-of-type(odd) td': {
+            bg: '#fff',
+          },
+          '&:nth-of-type(even) td': {
+            bg: 'colorPalette.muted',
+          },
+        },
+        cell: {
+          // borderColor: 'niaid.200',
+        },
+        footer: {
+          // borderTop: '2px solid',
+          // borderColor: 'niaid.200',
+        },
+      },
+    },
+    interactive: {
+      true: {},
+    },
+
+    sortable: {
+      true: {
+        columnHeader: {},
+      },
+    },
+
+    stickyHeader: {
+      true: {},
+    },
+
+    striped: {
+      true: {},
+    },
+
+    showColumnBorder: {
+      true: {},
+    },
+
+    variant: {
+      line: {},
+
+      outline: {},
+    },
+
+    size: {
+      sm: {},
+
+      md: {},
+
+      lg: {},
+    },
+  },
+
+  defaultVariants: {
+    variant: 'line',
+    size: 'sm',
+  },
+});
+
+export default table;
 // [TO DO]: Implement recipe or delete altogether
 // export const Table = {
 //   // Table styles based on: https://designsystem.niaid.nih.gov/components/atoms

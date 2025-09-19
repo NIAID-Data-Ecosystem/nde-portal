@@ -142,7 +142,7 @@ const semanticTokens = {
     emphasized: { value: '{colors.niaid.300}' },
     fg: { value: '{colors.niaid.700}' },
     focusRing: { value: '{colors.niaid.500}' },
-    muted: { value: '{colors.niaid.200}' },
+    muted: { value: '{colors.page.alt}' },
     solid: { value: '{colors.niaid.500}' },
     subtle: { value: '{colors.niaid.100}' },
   },
