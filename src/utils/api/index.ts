@@ -132,6 +132,7 @@ export const fetchAllSearchResults = async (
       // scroll id for fetching the next page of data
       if (scroll_id) {
         params.scroll_id = scroll_id;
+        console.log('Fetching next page with scroll_id:', scroll_id);
       }
       const { data } = await axios.get(url, { params, signal });
 

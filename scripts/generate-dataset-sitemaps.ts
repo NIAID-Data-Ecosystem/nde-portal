@@ -311,6 +311,17 @@ const writeToCSV = async (
   });
 };
 
+const MAX_URLS_PER_SITEMAP = 50000; // Google limit per sitemap
+
+// Split an array into chunks of a specified size.
+function chunkArray<T>(arr: T[], size: number): T[][] {
+  const chunks: T[][] = [];
+  for (let i = 0; i < arr.length; i += size) {
+    chunks.push(arr.slice(i, i + size));
+  }
+  return chunks;
+}
+
 const writeSitemapContentPerSource = async (
   sources: { source: string; results: FormattedResource[] }[],
 ) => {
@@ -319,25 +330,46 @@ const writeSitemapContentPerSource = async (
     0,
   );
   console.log(`ℹ️ Total sitemap URLs to write: ${totalSitemapURLSCount}`);
+
   if (!fs.existsSync(OUTPUT_SITEMAP_DIR)) {
     fs.mkdirSync(OUTPUT_SITEMAP_DIR, { recursive: true });
   }
+
   for (const { source, results } of sources) {
     if (results.length === 0) {
       console.warn(`⚠️ No results found for source: ${source}`);
       continue;
     }
-    const safeSourceName = source.replace(/[^a-zA-Z0-9-_]/g, '_').toLowerCase();
-    const sitemapPath = path.join(OUTPUT_SITEMAP_DIR, `${safeSourceName}.xml`);
-    const urls = results.map(result => `${LOC_PATH}${result._id}`);
-    const sitemapContent = buildSitemapXML(urls);
 
-    try {
-      fs.writeFileSync(sitemapPath, sitemapContent);
-      console.log(`✅ Sitemap written for ${source}: ${sitemapPath}`);
-    } catch (error: any) {
-      console.error(`❌ Error writing sitemap for ${source}:`, error.message);
-    }
+    const safeSourceName = source.replace(/[^a-zA-Z0-9-_]/g, '_').toLowerCase();
+    const urls = results.map(r => `${LOC_PATH}${r._id}`);
+
+    // Split into chunks
+    const chunks = chunkArray(urls, MAX_URLS_PER_SITEMAP);
+
+    chunks.forEach((chunk, index) => {
+      const label = String(index + 1).padStart(2, '0'); // 01, 02, 03
+      const sitemapPath =
+        chunks.length === 1
+          ? path.join(OUTPUT_SITEMAP_DIR, `${safeSourceName}.xml`)
+          : path.join(OUTPUT_SITEMAP_DIR, `${safeSourceName}-${label}.xml`);
+
+      const sitemapContent = buildSitemapXML(chunk);
+
+      try {
+        fs.writeFileSync(sitemapPath, sitemapContent);
+        console.log(
+          `✅ Sitemap written for ${source} [part ${index + 1}/${
+            chunks.length
+          }]: ${sitemapPath}`,
+        );
+      } catch (error: any) {
+        console.error(
+          `❌ Error writing sitemap for ${source} [part ${index + 1}]:`,
+          error.message,
+        );
+      }
+    });
   }
 };
 

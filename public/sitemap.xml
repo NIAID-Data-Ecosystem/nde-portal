@@ -14,6 +14,10 @@
 <sitemap><loc>https://data.niaid.nih.gov/sitemaps/datasets/ndex.xml</loc></sitemap>
 <sitemap><loc>https://data.niaid.nih.gov/sitemaps/datasets/nichd_dash.xml</loc></sitemap>
 <sitemap><loc>https://data.niaid.nih.gov/sitemaps/datasets/omics_discovery_index__omicsdi_.xml</loc></sitemap>
+<sitemap><loc>https://data.niaid.nih.gov/sitemaps/datasets/project_tycho.xml</loc></sitemap>
+<sitemap><loc>https://data.niaid.nih.gov/sitemaps/datasets/protein_data_bank-01.xml</loc></sitemap>
+<sitemap><loc>https://data.niaid.nih.gov/sitemaps/datasets/protein_data_bank-02.xml</loc></sitemap>
+<sitemap><loc>https://data.niaid.nih.gov/sitemaps/datasets/protein_data_bank-03.xml</loc></sitemap>
 <sitemap><loc>https://data.niaid.nih.gov/sitemaps/datasets/qiita.xml</loc></sitemap>
 <sitemap><loc>https://data.niaid.nih.gov/sitemaps/datasets/radx_data_hub.xml</loc></sitemap>
 <sitemap><loc>https://data.niaid.nih.gov/sitemaps/datasets/reframedb.xml</loc></sitemap>
