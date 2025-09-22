@@ -1,19 +1,20 @@
-import React, { useCallback, useMemo } from 'react';
-import { useFilterQueries } from './hooks/useFilterQueries';
-import { FILTER_CONFIGS } from './config';
 import { useRouter } from 'next/router';
-import { FiltersSection } from './components/section';
-import { FiltersList } from './components/list';
-import { FiltersContainer } from './components/container';
-import { FiltersDateSlider } from './components/date-slider';
-import { SelectedFilterType } from './types';
-import { queryFilterObject2String } from './utils/query-builders';
-import { updateRoute } from '../../utils/update-route';
-import { useSearchQueryFromURL } from '../../hooks/useSearchQueryFromURL';
+import React, { useCallback, useMemo } from 'react';
+
 import { usePaginationContext } from '../../context/pagination-context';
 import { useSearchTabsContext } from '../../context/search-tabs-context';
-import { getTabFilterProperties } from './utils/tab-filter-utils';
+import { useSearchQueryFromURL } from '../../hooks/useSearchQueryFromURL';
 import { TabType } from '../../types';
+import { updateRoute } from '../../utils/update-route';
+import { FiltersContainer } from './components/container';
+import { FiltersDateSlider } from './components/date-slider';
+import { FiltersList } from './components/list';
+import { FiltersSection } from './components/section';
+import { FILTER_CONFIGS } from './config';
+import { useFilterQueries } from './hooks/useFilterQueries';
+import { SelectedFilterType } from './types';
+import { queryFilterObject2String } from './utils/query-builders';
+import { getTabFilterProperties } from './utils/tab-filter-utils';
 
 // Interface for Filters component props
 interface FiltersProps {

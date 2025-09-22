@@ -1,23 +1,23 @@
+import { Box, Flex, VStack } from '@chakra-ui/react';
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
-import { getPageSeoConfig, PageContainer } from 'src/components/page-container';
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { getPageSeoConfig, PageContainer } from 'src/components/page-container';
+import { fetchSearchResults } from 'src/utils/api';
 import { FetchSearchResultsResponse } from 'src/utils/api/types';
+import { Filters } from 'src/views/search/components/filters';
+import { FilterTags } from 'src/views/search/components/filters/components/tag';
+import { FILTER_CONFIGS } from 'src/views/search/components/filters/config';
+import { SelectedFilterType } from 'src/views/search/components/filters/types';
+import { queryFilterString2Object } from 'src/views/search/components/filters/utils/query-builders';
+import { SearchResultsHeader } from 'src/views/search/components/search-results-header';
+import { SearchResultsController } from 'src/views/search/components/search-results-tabs-controller';
+import { defaultQuery } from 'src/views/search/config/defaultQuery';
+import { tabs } from 'src/views/search/config/tabs';
+import { PaginationProvider } from 'src/views/search/context/pagination-context';
 import { SearchTabsProvider } from 'src/views/search/context/search-tabs-context';
 import { useSearchQueryFromURL } from 'src/views/search/hooks/useSearchQueryFromURL';
-import { Box, Flex, VStack } from '@chakra-ui/react';
-import { Filters } from 'src/views/search/components/filters';
-import { SelectedFilterType } from 'src/views/search/components/filters/types';
-import { FILTER_CONFIGS } from 'src/views/search/components/filters/config';
-import { queryFilterString2Object } from 'src/views/search/components/filters/utils/query-builders';
-import { defaultQuery } from 'src/views/search/config/defaultQuery';
-import { FilterTags } from 'src/views/search/components/filters/components/tag';
-import { SearchResultsHeader } from 'src/views/search/components/search-results-header';
-import { PaginationProvider } from 'src/views/search/context/pagination-context';
-import { SearchResultsController } from 'src/views/search/components/search-results-tabs-controller';
-import { fetchSearchResults } from 'src/utils/api';
 import { TabType } from 'src/views/search/types';
-import { tabs } from 'src/views/search/config/tabs';
 
 // Default filters list.
 const defaultFilters = FILTER_CONFIGS.reduce(
@@ -119,24 +119,24 @@ const Search: NextPage<{
                 borderBottom='1px solid'
                 borderRight='1px solid'
                 borderColor='gray.100'
-                spacing={2}
+                gap={2}
               >
                 {/* Heading: Showing results for... */}
-                <SearchResultsHeader querystring={queryParams.q} />
+                {/* <SearchResultsHeader querystring={queryParams.q} /> */}
 
                 {/* Filter tags : Tags with the names of the currently selected filters */}
-                {Object.values(selectedFilters).length > 0 && (
+                {/* {Object.values(selectedFilters).length > 0 && (
                   <FilterTags
                     filtersConfig={FILTER_CONFIGS}
                     selectedFilters={selectedFilters}
                     handleRouteUpdate={handleRouteUpdate}
                     removeAllFilters={removeAllFilters}
                   />
-                )}
+                )} */}
               </VStack>
 
               {/* Search Results */}
-              <SearchResultsController initialData={initialData} />
+              {/* <SearchResultsController initialData={initialData} /> */}
             </Box>
           </Flex>
         </PaginationProvider>
