@@ -151,7 +151,8 @@ export const SearchResultsController = ({
   // Check if carousel should be shown
   const shouldShowCarousel = hasResourceCatalogRecords || hasMatchingDiseases;
   const isCarouselLoading =
-    carouselIsLoading || carouselIsPending || diseaseIsLoading;
+    (hasResourceCatalogRecords && (carouselIsLoading || carouselIsPending)) ||
+    diseaseIsLoading;
 
   // Enhance each tab with facet counts for the types it represents.
   const tabsWithFacetCounts = useMemo(
@@ -179,7 +180,11 @@ export const SearchResultsController = ({
     sections: (TabType['types'][number] & { count: number })[],
   ) =>
     sections.reduce((indices: number[], section, index) => {
-      if (section.type !== 'ResourceCatalog' || section.count > 0) {
+      if (section.type === 'ResourceCatalog') {
+        if (section.count > 0 || hasMatchingDiseases) {
+          indices.push(index);
+        }
+      } else if (section.count > 0) {
         indices.push(index);
       }
       return indices;
@@ -202,7 +207,9 @@ export const SearchResultsController = ({
             return (
               <TabPanel key={tab.id}>
                 <AccordionWrapper
-                  key={`${tab.id}-${defaultIndices.join('-')}`}
+                  key={`${tab.id}-${defaultIndices.join(
+                    '-',
+                  )}-${hasMatchingDiseases}`}
                   defaultIndex={defaultIndices}
                 >
                   {sections.map(typeSection => {

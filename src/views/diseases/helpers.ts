@@ -50,12 +50,9 @@ export const getSearchResultsRoute = ({
 
 // Get Strapi base URL with error handling
 const getStrapiBaseUrl = (): string => {
-  const url = process.env.NEXT_PUBLIC_STRAPI_API_URL;
-  if (!url) {
-    throw new Error(
-      'NEXT_PUBLIC_STRAPI_API_URL environment variable is required',
-    );
-  }
+  const url =
+    process.env.NEXT_PUBLIC_STRAPI_API_URL ||
+    'https://data.niaid.nih.gov/strapi';
   return url;
 };
 
@@ -116,5 +113,35 @@ export const fetchDiseaseBySlug = async (
   } catch (error) {
     console.error('Error fetching disease by slug:', error);
     throw error;
+  }
+};
+
+// Fetch diseases by search term using Strapi containsi filter
+export const fetchDiseasesByTerm = async (
+  term: string,
+): Promise<DiseasePageProps[]> => {
+  try {
+    const baseUrl = getStrapiBaseUrl();
+    const status = getContentStatus();
+
+    const response = await fetch(
+      `${baseUrl}/api/diseases?filters[query][$containsi]=${encodeURIComponent(
+        term,
+      )}&status=${status}&populate=*&sort=title:asc`,
+    );
+
+    if (!response.ok) {
+      throw new Error(
+        `Failed to fetch diseases by term "${term}": ${response.status}`,
+      );
+    }
+
+    const apiResponse: DiseaseCollectionApiResponse<DiseasePageProps[]> =
+      await response.json();
+
+    return apiResponse.data || [];
+  } catch (error) {
+    console.error(`Error fetching diseases by term "${term}":`, error);
+    return [];
   }
 };
