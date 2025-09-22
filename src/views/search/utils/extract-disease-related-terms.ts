@@ -165,29 +165,6 @@ export const shouldShowAllDiseases = (
   return isQueryAll && !hasHealthConditionFilters && !hasInfectiousAgentFilters;
 };
 
-export const fetchAllDiseasePages = async (): Promise<DiseasePageProps[]> => {
-  try {
-    const baseUrl = getStrapiBaseUrl();
-    const status = getContentStatus();
-
-    const response = await fetch(
-      `${baseUrl}/api/diseases?status=${status}&populate=*&sort=title:asc`,
-    );
-
-    if (!response.ok) {
-      throw new Error(`Failed to fetch diseases: ${response.status}`);
-    }
-
-    const apiResponse: DiseaseCollectionApiResponse<DiseasePageProps[]> =
-      await response.json();
-
-    return apiResponse.data;
-  } catch (error) {
-    console.error('Error fetching disease pages:', error);
-    throw error;
-  }
-};
-
 // Build Strapi query using $or operator for multiple terms
 const buildStrapiOrQuery = (terms: string[]): string => {
   if (terms.length === 0) return '';
@@ -250,6 +227,10 @@ export const fetchMatchingDiseasesByTerms = async (
 ): Promise<DiseasePageProps[]> => {
   try {
     if (shouldShowAll) {
+      // Import the function from helpers to avoid duplication
+      const { fetchAllDiseasePages } = await import(
+        'src/views/diseases/helpers'
+      );
       return await fetchAllDiseasePages();
     }
 
@@ -264,80 +245,4 @@ export const fetchMatchingDiseasesByTerms = async (
     console.error('Error fetching matching diseases by terms:', error);
     return [];
   }
-};
-
-export const fetchDiseasesByTerm = async (
-  term: string,
-): Promise<DiseasePageProps[]> => {
-  return fetchDiseasesByTerms([term]);
-};
-
-export const doesDiseaseMatchTerms = (
-  disease: DiseasePageProps,
-  healthConditionTerms: string[],
-  infectiousAgentTerms: string[],
-): boolean => {
-  if (!disease.query?.q) {
-    return false;
-  }
-
-  const diseaseQuery = disease.query.q.toLowerCase();
-
-  // Check if any health condition terms are found in the disease query
-  const hasHealthConditionMatch =
-    healthConditionTerms.length === 0 ||
-    healthConditionTerms.some(term =>
-      diseaseQuery.includes(term.toLowerCase()),
-    );
-
-  // Check if any infectious agent terms are found in the disease query
-  const hasInfectiousAgentMatch =
-    infectiousAgentTerms.length === 0 ||
-    infectiousAgentTerms.some(term =>
-      diseaseQuery.includes(term.toLowerCase()),
-    );
-
-  // Return true if there are matching terms and at least one category matches
-  const hasAnyTerms =
-    healthConditionTerms.length > 0 || infectiousAgentTerms.length > 0;
-
-  return hasAnyTerms && (hasHealthConditionMatch || hasInfectiousAgentMatch);
-};
-
-export const getMatchingDiseases = (
-  diseases: DiseasePageProps[],
-  searchQuery: string,
-  selectedFilters: SelectedFilterType,
-): DiseasePageProps[] => {
-  // Extract terms from both query and filters
-  const queryTerms = extractDiseaseTermsFromQuery(searchQuery);
-  const filterTerms = extractDiseaseTermsFromFilters(selectedFilters);
-
-  // Combine terms from both sources
-  const allHealthConditionTerms = [
-    ...queryTerms.healthConditionTerms,
-    ...filterTerms.healthConditionTerms,
-  ];
-
-  const allInfectiousAgentTerms = [
-    ...queryTerms.infectiousAgentTerms,
-    ...filterTerms.infectiousAgentTerms,
-  ];
-
-  // If no disease-related terms are found, return empty array
-  if (
-    allHealthConditionTerms.length === 0 &&
-    allInfectiousAgentTerms.length === 0
-  ) {
-    return [];
-  }
-
-  // Filter diseases based on matching terms
-  return diseases.filter(disease =>
-    doesDiseaseMatchTerms(
-      disease,
-      allHealthConditionTerms,
-      allInfectiousAgentTerms,
-    ),
-  );
 };
