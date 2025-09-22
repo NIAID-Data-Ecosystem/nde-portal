@@ -43,7 +43,7 @@ export const Navigation: React.FC<BoxProps> = props => {
       as='nav'
       w='100%'
       minW={300}
-      zIndex='popover'
+      zIndex='docked'
       aria-label='Main navigation'
       {...props}
     >
