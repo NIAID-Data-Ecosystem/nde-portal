@@ -44,6 +44,7 @@ export const NavigationLinkWrapper = ({
 };
 
 // Desktop Navigation sub menu for nested links
+const TRANSLATE_X = 10;
 export const NavigationLinkContent = ({
   label,
   description,
@@ -53,7 +54,7 @@ export const NavigationLinkContent = ({
   Pick<TransformedNavigationMenu, 'label' | 'description' | 'getIcon'>) => {
   return (
     <Flex justifyContent='space-between' flex={1} {...props}>
-      <Box>
+      <Box pr={`${TRANSLATE_X}px`}>
         <Text className='label' fontSize='md' fontWeight='semibold'>
           {label}
         </Text>
@@ -64,7 +65,7 @@ export const NavigationLinkContent = ({
       <Flex
         className='icon'
         transition='all .3s ease'
-        transform='translateX(-10px)'
+        transform={`translateX(-${TRANSLATE_X}px)`}
         opacity={1}
         alignItems='center'
       >
