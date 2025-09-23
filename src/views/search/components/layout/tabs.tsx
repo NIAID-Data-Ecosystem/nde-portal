@@ -10,9 +10,12 @@ import {
 } from '@chakra-ui/react';
 import { TabType } from '../../types';
 
-// Extends TabType to include dataset counts for each type
 interface TabWithCounts extends Omit<TabType, 'types'> {
-  types: (TabType['types'][number] & { count: number })[];
+  types: (TabType['types'][number] & {
+    count: number;
+    resourceCatalogCount?: number;
+    diseaseCount?: number;
+  })[];
 }
 
 interface SearchTabsProps extends Omit<TabsProps, 'children'> {
@@ -66,6 +69,66 @@ export const SearchTabs = ({
   );
 };
 
+// Helper function to generate tab labels with separate counts
+const generateTabLabel = (
+  type: TabWithCounts['types'][number],
+  colorScheme: string,
+): React.ReactNode => {
+  if (
+    type.type === 'ResourceCatalog' &&
+    typeof type.resourceCatalogCount === 'number' &&
+    typeof type.diseaseCount === 'number'
+  ) {
+    const resourceCount = type.resourceCatalogCount;
+    const diseaseCount = type.diseaseCount;
+
+    return (
+      <>
+        Resource Catalogs
+        <Tag
+          borderRadius='full'
+          colorScheme={colorScheme}
+          ml={1.5}
+          my={1}
+          size='sm'
+          variant='subtle'
+        >
+          {resourceCount.toLocaleString()}
+        </Tag>
+        , Disease Overviews
+        <Tag
+          borderRadius='full'
+          colorScheme={colorScheme}
+          ml={1.5}
+          my={1}
+          size='sm'
+          variant='subtle'
+        >
+          {diseaseCount.toLocaleString()}
+        </Tag>
+        ,
+      </>
+    );
+  }
+
+  // Default format for other types
+  return (
+    <>
+      {type.label}
+      <Tag
+        borderRadius='full'
+        colorScheme={colorScheme}
+        ml={1.5}
+        my={1}
+        size='sm'
+        variant='subtle'
+      >
+        {type.count.toLocaleString()}
+      </Tag>
+    </>
+  );
+};
+
 // Formats a list of label/count pairs with proper conjunctions (e.g. ", and").
 // Example output: "A (10), B (20) and C (30)"
 const TabLabels = ({
@@ -77,23 +140,13 @@ const TabLabels = ({
 }) => {
   return (
     <Text as='h2' color='inherit' fontSize='sm' noOfLines={1}>
-      {types.map(({ label, count }, index) => {
+      {types.map((type, index) => {
         const isLast = index === types.length - 1;
         const isSecondLast = index === types.length - 2;
 
         return (
-          <React.Fragment key={label}>
-            {label}
-            <Tag
-              borderRadius='full'
-              colorScheme={colorScheme}
-              ml={1.5}
-              my={1}
-              size='sm'
-              variant='subtle'
-            >
-              {count.toLocaleString()}
-            </Tag>
+          <React.Fragment key={type.label}>
+            {generateTabLabel(type, colorScheme)}
 
             {/* Add comma or "and" where appropriate */}
             {types.length > 2 && !isLast && ', '}

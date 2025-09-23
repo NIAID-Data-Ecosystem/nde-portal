@@ -1,7 +1,6 @@
 import { formatResourceTypeForDisplay } from 'src/utils/formatting/formatResourceType';
 import { TabType } from '../types';
 
-// is determined by the order of this array
 export const tabs: TabType[] = [
   {
     id: 'd',

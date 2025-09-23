@@ -94,7 +94,14 @@ export const SearchResultsController = ({
     return (resourceCatalogFacet?.count || 0) > 0;
   }, [facetData?.facets]);
 
-  // Get resource catalog records if they are available
+  // Get ResourceCatalog count from facets
+  const resourceCatalogCount = useMemo(() => {
+    const terms = facetData?.facets?.['@type']?.terms ?? [];
+    const resourceCatalogFacet = terms.find(t => t.term === 'ResourceCatalog');
+    return resourceCatalogFacet?.count || 0;
+  }, [facetData?.facets]);
+
+  // Get ResourceCatalog records if they are available
   const carouselResultsData = useSearchResultsData(
     {
       q: queryParams.q || '',
@@ -154,6 +161,17 @@ export const SearchResultsController = ({
     (hasResourceCatalogRecords && (carouselIsLoading || carouselIsPending)) ||
     diseaseIsLoading;
 
+  // Helper function to generate accordion titles with separate counts
+  const generateAccordionTitle = (
+    resourceCount: number,
+    diseaseCount: number,
+  ): string => {
+    const resourcePart = `Resource Catalogs (${resourceCount.toLocaleString()})`;
+    const diseasePart = `Disease Overviews (${diseaseCount.toLocaleString()})`;
+
+    return `${resourcePart} and ${diseasePart}`;
+  };
+
   // Enhance each tab with facet counts for the types it represents.
   const tabsWithFacetCounts = useMemo(
     () =>
@@ -161,10 +179,15 @@ export const SearchResultsController = ({
         const tabTypesWithCount = tab.types.map(({ label, type }) => {
           const terms = facetData?.facets?.['@type']?.terms ?? [];
           const facet = terms.find(t => t.term === type);
+          let count = facet?.count || 0;
           return {
             label,
             type,
-            count: facet?.count || 0,
+            count,
+            ...(type === 'ResourceCatalog' && {
+              resourceCatalogCount,
+              diseaseCount: matchingDiseases.length,
+            }),
           };
         });
 
@@ -173,7 +196,7 @@ export const SearchResultsController = ({
           types: tabTypesWithCount,
         };
       }),
-    [facetData?.facets, tabs],
+    [facetData?.facets, tabs, resourceCatalogCount, matchingDiseases.length],
   );
 
   const getAccordionDefaultIndices = (
@@ -181,10 +204,22 @@ export const SearchResultsController = ({
   ) =>
     sections.reduce((indices: number[], section, index) => {
       if (section.type === 'ResourceCatalog') {
+        // Open ResourceCatalog accordion if it has content OR if there are matching diseases
         if (section.count > 0 || hasMatchingDiseases) {
           indices.push(index);
         }
+      } else if (section.type === 'Dataset') {
+        // Open Dataset accordion if it has content OR if count is 0
+        if (section.count > 0 || section.count === 0) {
+          indices.push(index);
+        }
+      } else if (section.type === 'ComputationalTool') {
+        // Open ComputationalTool accordion if it has content OR if count is 0
+        if (section.count > 0 || section.count === 0) {
+          indices.push(index);
+        }
       } else if (section.count > 0) {
+        // Default behavior for other types
         indices.push(index);
       }
       return indices;
@@ -209,16 +244,23 @@ export const SearchResultsController = ({
                 <AccordionWrapper
                   key={`${tab.id}-${defaultIndices.join(
                     '-',
-                  )}-${hasMatchingDiseases}`}
+                  )}-${hasMatchingDiseases}-${matchingDiseases.length}`}
                   defaultIndex={defaultIndices}
                 >
                   {sections.map(typeSection => {
                     return (
                       <AccordionContent
                         key={typeSection.type}
-                        title={`${
-                          typeSection.label
-                        } (${typeSection.count.toLocaleString()})`}
+                        title={
+                          typeSection.type === 'ResourceCatalog'
+                            ? generateAccordionTitle(
+                                resourceCatalogCount,
+                                matchingDiseases.length,
+                              )
+                            : `${
+                                typeSection.label
+                              } (${typeSection.count.toLocaleString()})`
+                        }
                       >
                         {/* Render carousel if ResourceCatalog type is included */}
                         {typeSection.type === 'ResourceCatalog' ? (
