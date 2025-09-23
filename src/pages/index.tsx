@@ -31,7 +31,7 @@ import {
 import { HeroBanner } from 'src/views/home/components/hero-banner';
 import {
   fetchNews,
-  // NewsCarousel,
+  NewsCarousel,
 } from 'src/views/home/components/NewsCarousel';
 import { LandingPageSection } from 'src/views/home/components/sections';
 import { TableWithSearch } from 'src/views/home/components/TableWithSearch/';
@@ -313,13 +313,13 @@ const Home: NextPage<{
               </Box> */}
 
               {/* NEWS */}
-              {/* {!props?.error?.message && props.data?.news && (
+              {!props?.error?.message && props.data?.news && (
                 <NewsCarousel
                   news={props.data.news}
                   events={props.data.events}
                   features={props.data.features}
                 />
-              )} */}
+              )}
             </Box>
           </PageContent>
         )}

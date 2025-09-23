@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useMediaQuery } from 'usehooks-ts';
-import { theme } from 'src/theme';
+import { system } from 'src/theme';
 import { PROGRESS_BAR_THRESHOLDS } from '../constants';
 
 interface CarouselStateProps {
@@ -21,13 +21,13 @@ export const useCarouselState = ({
   const [controlsWidth, setControlsWidth] = useState(0);
   const [showProgressBar, setShowProgressBar] = useState(false);
 
-  const breakpoints = theme.breakpoints as unknown as {
-    base: string;
-    sm: string;
-    md: string;
-    lg: string;
-    xl: string;
-  };
+  const breakpoints = system.breakpoints.values.reduce(
+    (acc, breakpoint) => {
+      acc[breakpoint.name] = `${breakpoint.min}`;
+      return acc;
+    },
+    { base: '0rem' } as Record<string, string>,
+  );
 
   const isBetweenBaseAndMd = useMediaQuery(
     `(min-width: ${breakpoints.base}) and (max-width: ${breakpoints.md})`,

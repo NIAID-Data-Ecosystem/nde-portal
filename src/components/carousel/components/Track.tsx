@@ -115,7 +115,7 @@ export const Track = ({
       x.set(newX);
       controls.start({
         x: newX,
-        transition: TRANSITION_PROPS.ease,
+        // transition:  TRANSITION_PROPS.ease,
       });
 
       const isNearEnd = Math.abs(newX - maxPosition) < 20;
@@ -163,7 +163,7 @@ export const Track = ({
   }, [activeItem, controls, positions]);
 
   return (
-    <VStack ref={node} spacing={5} alignItems='stretch'>
+    <VStack ref={node} gap={5} alignItems='stretch'>
       <MotionFlex
         dragConstraints={node}
         onDragStart={handleDragStart}
