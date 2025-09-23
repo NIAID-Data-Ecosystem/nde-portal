@@ -20,7 +20,7 @@ import { ScrollContainer } from 'src/components/scroll-container';
 import { SearchableItems } from 'src/components/searchable-items';
 import { Skeleton } from 'src/components/skeleton';
 
-interface CompactCardProps {
+interface ResourceCatalogCardProps {
   data?: FormattedResource | null;
   referrerPath?: string;
   isLoading?: boolean;
@@ -34,11 +34,11 @@ const CARD_HEIGHTS = {
   xl: '310px',
 };
 
-export const CompactCard = ({
+export const ResourceCatalogCard = ({
   data,
   referrerPath,
   isLoading = false,
-}: CompactCardProps) => {
+}: ResourceCatalogCardProps) => {
   const [showAllTypes, setShowAllTypes] = useState(false);
 
   const {

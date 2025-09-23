@@ -9,7 +9,7 @@ import { useSearchResultsData } from '../../hooks/useSearchResultsData';
 import { usePaginationContext } from '../../context/pagination-context';
 import { SearchTabs } from '../layout/tabs';
 import { FetchSearchResultsResponse } from 'src/utils/api/types';
-import { CompactCard } from '../results-list/components/compact-card';
+import { ResourceCatalogCard } from '../results-list/components/resource-catalog-card';
 import { DiseaseOverviewCard } from '../results-list/components/disease-overview-card';
 import { Carousel } from 'src/components/carousel';
 import { CarouselWrapper } from '../layout/carousel-wrapper';
@@ -282,7 +282,7 @@ export const SearchResultsController = ({
                                       }
                                     >
                                       {carouselItem.type === 'resource' ? (
-                                        <CompactCard
+                                        <ResourceCatalogCard
                                           data={carouselItem.data}
                                           isLoading={isCarouselLoading}
                                           referrerPath={router.asPath}
