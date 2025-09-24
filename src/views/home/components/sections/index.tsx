@@ -19,7 +19,9 @@ const SectionHeading = ({ children, ...props }: HeadingProps) => (
 );
 
 const SectionSubheading = ({ children }: TextProps) => (
-  <Text lineHeight='short'>{children}</Text>
+  <Text lineHeight='short' mb={4}>
+    {children}
+  </Text>
 );
 
 const SectionBody = ({ children, ...props }: FlexProps) => (
@@ -54,7 +56,7 @@ const SectionWrapper: React.FC<SectionWrapperProps> = ({
     <Flex flexDirection='column' {...props}>
       {heading && <SectionHeading>{heading}</SectionHeading>}
       {subheading && <SectionSubheading>{subheading}</SectionSubheading>}
-      {hasSeparator && <Separator my={4} />}
+      {hasSeparator && <Separator mb={4} />}
       <SectionBody>{children}</SectionBody>
     </Flex>
   );

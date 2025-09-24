@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'src/components/link';
 
 import { LandingPageSections } from '../components/sections/types';
+import { FaGithub, FaRegEnvelope } from 'react-icons/fa6';
 
 export const LANDING_PAGE_SECTIONS: LandingPageSections = {
   hero: {
@@ -105,5 +106,19 @@ export const LANDING_PAGE_SECTIONS: LandingPageSections = {
       </>
     ),
     hasSeparator: true,
+    cta: [
+      {
+        title: 'Ask a question',
+        href: 'mailto:NIAIDDataEcosystem@mail.nih.gov',
+        icon: FaRegEnvelope,
+        isExternal: true,
+      },
+      {
+        title: 'Suggest a new source',
+        href: 'https://github.com/NIAID-Data-Ecosystem/nde-crawlers/issues/new?template=suggest-a-source.yml',
+        icon: FaGithub,
+        isExternal: true,
+      },
+    ],
   },
 };

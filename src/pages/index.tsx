@@ -1,6 +1,7 @@
 import {
   Box,
   Button,
+  ButtonGroup,
   Flex,
   Heading,
   Icon,
@@ -155,80 +156,36 @@ const Home: NextPage<{
             mb={20}
             alignItems='center'
           >
-            <Box maxW='1300px' width='100%'>
-              <Stack gap={8} px={{ base: 2, sm: 4 }} mb={{ base: 8, sm: 8 }}>
-                {/* Getting Started Card */}
-                {LANDING_PAGE_DATA.SECTIONS['getting-started']?.data?.map(
-                  (card, i) => (
-                    <LandingPageSection.Card
-                      key={`getting-started-${i}`}
-                      card={card}
-                    />
-                  ),
-                )}
-                {/* Topic Cards */}
-                <LandingPageSection.Wrapper
-                  {...LANDING_PAGE_DATA.SECTIONS['topics']}
-                >
-                  {LANDING_PAGE_DATA.SECTIONS['topics']?.data?.map(
-                    (card, i) => (
-                      <LandingPageSection.Card
-                        key={`landing-card-${i}`}
-                        card={card}
-                      />
-                    ),
-                  )}
-                </LandingPageSection.Wrapper>
-                <LandingPageSection.Wrapper
-                  {...LANDING_PAGE_DATA.SECTIONS['explore-resources']}
-                >
-                  <TableWithSearch
-                    ariaLabel='List of repositories and resource catalogs'
-                    caption='List of repositories and resource catalogs'
-                    data={[
-                      ...(resourceCatalogs || []),
-                      ...(repositories || []),
-                    ]}
-                    isLoading={
-                      repositoriesIsLoading || resourceCatalogsIsLoading
-                    }
-                    columns={[
-                      {
-                        title: 'name',
-                        property: 'name',
-                        isSortable: true,
-                        props: { maxW: '280px', minW: '280px' },
-                      },
-                      {
-                        title: 'description',
-                        property: 'abstract',
-                        props: { maxW: '280px', minW: '280px' },
-                      },
-                      {
-                        title: 'Type',
-                        property: 'type',
-                        isSortable: true,
-                        props: { maxW: '180px', minW: '180px' },
-                      },
-                      {
-                        title: 'Research Domain',
-                        property: 'domain',
-                        isSortable: true,
-                        props: { maxW: '180px', minW: '180px' },
-                      },
-                      {
-                        title: 'access',
-                        property: 'conditionsOfAccess',
-                        isSortable: true,
-                        props: { maxW: '150px', minW: '150px' },
-                      },
-                    ]}
+            <Stack
+              gap={8}
+              px={{ base: 2, sm: 4 }}
+              mb={{ base: 8, sm: 8 }}
+              maxW='1300px'
+              width='100%'
+            >
+              {/* Getting Started Card */}
+              {LANDING_PAGE_DATA.SECTIONS['getting-started']?.data?.map(
+                (card, i) => (
+                  <LandingPageSection.Card
+                    key={`getting-started-${i}`}
+                    card={card}
                   />
-                </LandingPageSection.Wrapper>
-              </Stack>
-              {/* <Box px={{ base: 2, sm: 4 }}>
-
-
+                ),
+              )}
+              {/* Topic Cards */}
+              <LandingPageSection.Wrapper
+                {...LANDING_PAGE_DATA.SECTIONS['topics']}
+              >
+                {LANDING_PAGE_DATA.SECTIONS['topics']?.data?.map((card, i) => (
+                  <LandingPageSection.Card
+                    key={`landing-card-${i}`}
+                    card={card}
+                  />
+                ))}
+              </LandingPageSection.Wrapper>
+              <LandingPageSection.Wrapper
+                {...LANDING_PAGE_DATA.SECTIONS['explore-resources']}
+              >
                 <TableWithSearch
                   ariaLabel='List of repositories and resource catalogs'
                   caption='List of repositories and resource catalogs'
@@ -244,6 +201,7 @@ const Home: NextPage<{
                     {
                       title: 'description',
                       property: 'abstract',
+                      props: { maxW: '280px', minW: '280px' },
                     },
                     {
                       title: 'Type',
@@ -255,7 +213,7 @@ const Home: NextPage<{
                       title: 'Research Domain',
                       property: 'domain',
                       isSortable: true,
-                      props: { maxW: '225px', minW: '225px' },
+                      props: { maxW: '180px', minW: '180px' },
                     },
                     {
                       title: 'access',
@@ -265,62 +223,51 @@ const Home: NextPage<{
                     },
                   ]}
                 />
-
                 <ButtonGroup
-                  spacing={[0, 2]}
-                  flexWrap={['wrap', 'nowrap']}
-                  w='100%'
-                  display='flex'
                   justifyContent='flex-end'
-                  mt={4}
+                  w='100%'
+                  flexWrap={{ base: 'wrap' }}
                 >
-                  {HOMEPAGE_COPY.sections.help.routes.map(
-                    (
-                      route: {
-                        title: string;
-                        path: string;
-                        isExternal?: boolean;
-                      },
-                      index,
-                    ) => {
-                      const icon = route.title.includes('question')
-                        ? FaRegEnvelope
-                        : FaGithub;
-                      return (
-                        <Box key={route.title} w={['100%', 'unset']}>
+                  {LANDING_PAGE_DATA.SECTIONS['explore-resources']?.cta.map(
+                    (cta, idx) => (
+                      <Button
+                        key={cta.title}
+                        asChild
+                        size='xs'
+                        variant={idx % 2 ? 'solid' : 'outline'}
+                        flex={{ base: 1, sm: 'unset' }}
+                        minWidth={{ base: '180px', md: 'unset' }}
+                        maxWidth={{ base: 'unset', md: '250px' }}
+                      >
+                        {cta.href ? (
                           <NextLink
-                            href={route.path}
-                            passHref
-                            target={route.isExternal ? '_blank' : '_self'}
+                            href={cta.href}
+                            target={cta.isExternal ? '_blank' : '_self'}
+                            rel={cta.isExternal ? 'noopener noreferrer' : ''}
                           >
-                            <Button
-                              w='100%'
-                              minWidth='150px'
-                              size='sm'
-                              variant={index % 2 ? 'solid' : 'outline'}
-                              my={[1, 2, 0]}
-                              maxWidth={['unset', '250px']}
-                              leftIcon={<Icon as={icon} />}
-                            >
-                              {route.title}
-                            </Button>
+                            {cta?.icon ? <Icon as={cta.icon} /> : null}
+                            {cta.title}
                           </NextLink>
-                        </Box>
-                      );
-                    },
+                        ) : (
+                          <>{cta.title}</>
+                        )}
+                      </Button>
+                    ),
                   )}
                 </ButtonGroup>
-              </Box> */}
+              </LandingPageSection.Wrapper>
 
               {/* NEWS */}
-              {!props?.error?.message && props.data?.news && (
-                <NewsCarousel
-                  news={props.data.news}
-                  events={props.data.events}
-                  features={props.data.features}
-                />
-              )}
-            </Box>
+              <LandingPageSection.Wrapper heading='Updates' hasSeparator>
+                {!props?.error?.message && props.data?.news && (
+                  <NewsCarousel
+                    news={props.data.news}
+                    events={props.data.events}
+                    features={props.data.features}
+                  />
+                )}
+              </LandingPageSection.Wrapper>
+            </Stack>
           </PageContent>
         )}
       </>

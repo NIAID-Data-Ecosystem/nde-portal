@@ -21,5 +21,12 @@ export type LandingPageSections = {
     subheading?: React.ReactNode;
     hasSeparator?: boolean;
     data?: LandingPageCard[];
+    cta: Array<
+      ButtonProps & {
+        href?: string;
+        isExternal?: boolean;
+        icon?: React.ElementType;
+      }
+    >;
   };
 };
