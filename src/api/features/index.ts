@@ -41,7 +41,7 @@ export const fetchAllFeatures = async (
       return [];
     }
 
-    const featuredPages = await axios.get<{ data: FeatureQueryParams[] }>(
+    const featured = await axios.get(
       `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/api/features`,
       {
         params: {
@@ -53,7 +53,7 @@ export const fetchAllFeatures = async (
         },
       },
     );
-    return featuredPages.data.data;
+    return featured.data.data;
   } catch (error) {
     if (axios.isAxiosError(error)) {
       throw new Error(error.response?.statusText || 'An error occurred');
