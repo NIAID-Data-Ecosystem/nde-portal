@@ -11,12 +11,17 @@ import {
   Text,
 } from '@chakra-ui/react';
 import { useQuery } from '@tanstack/react-query';
-import axios from 'axios';
 import NDESOCIALS from 'configs/socials.json';
 import type { NextPage } from 'next';
-import { MDXRemoteSerializeResult } from 'next-mdx-remote';
 import { useEffect, useState } from 'react';
 import { FaLinkedinIn, FaSquareFacebook, FaTwitter } from 'react-icons/fa6';
+import { EventsQueryResponse } from 'src/api/events/types';
+import { NewsQueryResponse } from 'src/api/news/types';
+import { fetchAllUpdates } from 'src/api/updates';
+import {
+  BaseUpdateQueryResponse,
+  UpdatesQueryResponse,
+} from 'src/api/updates/types';
 import Empty from 'src/components/empty';
 import { Error } from 'src/components/error';
 import { Link } from 'src/components/link';
@@ -30,50 +35,11 @@ import {
   HeroBannerContainer,
   HeroBannerText,
 } from 'src/views/home/components/hero-banner';
-import { fetchNews } from 'src/views/home/components/NewsCarousel';
 import { Section, SectionList } from 'src/views/news/components/Section';
 import SectionCard from 'src/views/news/components/SectionCard';
 
-export interface NewsOrEventsObject {
-  id: number;
-  subtitle: string | null;
-  description: string | null;
-  shortDescription: string | null;
-  image:
-    | null
-    | { url: string; alternativeText: string }
-    | { url: string; alternativeText: string }[];
-  name: string | null;
-  slug: string;
-  createdAt: string;
-  publishedAt: string;
-  updatedAt: string;
-  categories:
-    | {
-        id: number;
-        name: string;
-        createdAt: string;
-        publishedAt: string;
-        updatedAt: string;
-      }[]
-    | null;
-  compiledMDX?: MDXRemoteSerializeResult;
-  mdx?: { [key: string]: MDXRemoteSerializeResult };
-  type?: string;
-  eventDate?: string;
-}
-
 export interface UpdatesProps {
-  data: {
-    news: {
-      data: NewsOrEventsObject[];
-      error?: { message: string };
-    };
-    events: {
-      data: NewsOrEventsObject[];
-      error?: { message: string };
-    };
-  };
+  data: UpdatesQueryResponse;
   error?: { message: string };
 }
 
@@ -85,44 +51,20 @@ const Updates: NextPage<UpdatesProps> = props => {
     isLoading,
     isRefetching,
   } = useQuery<
-    | {
-        news: NewsOrEventsObject[];
-        events: NewsOrEventsObject[];
-      }
-    | undefined,
-    Error,
-    {
-      news: NewsOrEventsObject[];
-      events: NewsOrEventsObject[];
-    }
+    { news: NewsQueryResponse[]; events: EventsQueryResponse[] },
+    Error
   >({
     queryKey: ['news', 'events'],
     queryFn: async () => {
-      try {
-        // Parallel fetching of news and events using Promise.all
-        const [newsResponse, eventsResponse] = await Promise.all([
-          fetchNews({ paginate: { page: 1, pageSize: 100 } }),
-          fetchEvents({ paginate: { page: 1, pageSize: 100 } }),
-        ]);
-
-        // Mapping data to the expected structure
-        const news = newsResponse.news;
-        const events = eventsResponse.events;
-
-        return {
-          news,
-          events,
-        };
-      } catch (error: any) {
-        // Assuming error is of type any, we throw as type Error for useQuery to handle
-        throw `Data fetching error: ${
-          error.message || 'An unknown error occurred'
-        }`;
-      }
+      const updates = await fetchAllUpdates();
+      return {
+        news: updates.news,
+        events: updates.events,
+      };
     },
     initialData: {
-      news: data?.news?.data || [],
-      events: data?.events?.data || [],
+      news: data?.news || [],
+      events: data?.events || [],
     },
     refetchOnWindowFocus: false,
   });
@@ -262,7 +204,7 @@ const Updates: NextPage<UpdatesProps> = props => {
                             0,
                             sections.find(s => s.hash === 'updates')?.showMax,
                           )
-                          .map((news: NewsOrEventsObject) => {
+                          .map((news: BaseUpdateQueryResponse) => {
                             return <SectionCard key={news.id} {...news} />;
                           })
                       )}
@@ -320,7 +262,7 @@ const Updates: NextPage<UpdatesProps> = props => {
                                   sections.find(s => s.hash === 'events')
                                     ?.showMax,
                                 )
-                                .map((event: NewsOrEventsObject) => {
+                                .map((event: BaseUpdateQueryResponse) => {
                                   return (
                                     <SectionCard key={event.id} {...event} />
                                   );
@@ -343,7 +285,7 @@ const Updates: NextPage<UpdatesProps> = props => {
                                   sections.find(s => s.hash === 'events')
                                     ?.showMax,
                                 )
-                                .map((event: NewsOrEventsObject) => {
+                                .map((event: BaseUpdateQueryResponse) => {
                                   return (
                                     <SectionCard key={event.id} {...event} />
                                   );
@@ -498,115 +440,12 @@ const Updates: NextPage<UpdatesProps> = props => {
   );
 };
 
-interface QueryParams {
-  status?: string;
-  fields?: string[];
-  populate?:
-    | {
-        [key: string]: {
-          fields: string[];
-        };
-      }
-    | string;
-  sort?: string;
-  paginate?: { page?: number; pageSize?: number };
-}
-export const fetchEvents = async (
-  params: QueryParams,
-): Promise<{
-  events: NewsOrEventsObject[];
-}> => {
-  try {
-    // in dev/staging mode, show drafts.
-    const isProd = process.env.NEXT_PUBLIC_APP_ENV === 'production';
-    const events = await axios.get(
-      `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/api/events`,
-      {
-        params: {
-          status: isProd ? 'published' : 'draft',
-          populate: '*',
-          sort: { publishedAt: 'desc', updatedAt: 'desc' },
-          paginate: { page: 1, pageSize: 100 },
-          ...params,
-        },
-      },
-    );
-
-    return { events: events.data.data };
-  } catch (err: any) {
-    throw err;
-  }
-};
-
-export const fetchWebinars = async (
-  params: QueryParams,
-): Promise<{
-  webinars: NewsOrEventsObject[];
-}> => {
-  try {
-    const isProd = process.env.NEXT_PUBLIC_APP_ENV === 'production';
-    // in dev/staging mode, show drafts.
-    const webinars = await axios.get(
-      `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/api/webinars`,
-      {
-        params: {
-          status: isProd ? 'published' : 'draft',
-          populate: {
-            fields: ['*'],
-          },
-          sort: { publishedAt: 'desc', updatedAt: 'desc' },
-          paginate: { page: 1, pageSize: 100 },
-          ...params,
-        },
-      },
-    );
-
-    return { webinars: webinars.data.data };
-  } catch (err: any) {
-    throw err;
-  }
-};
-
 export async function getStaticProps() {
   try {
-    const news = await fetchNews({ paginate: { page: 1, pageSize: 100 } })
-      .then(res => ({ data: res.news, error: null }))
-      .catch(err => {
-        return {
-          data: [],
-          error: {
-            message: `${err.response.status} : ${err.response.statusText}`,
-            status: err.response.status,
-          },
-        };
-      });
-
-    const events = await fetchEvents({ paginate: { page: 1, pageSize: 100 } })
-      .then(res => ({ data: res.events, error: null }))
-      .catch(err => {
-        return {
-          data: [],
-          error: {
-            message: `${err.response.status} : ${err.response.statusText}`,
-            status: err.response.status,
-          },
-        };
-      });
-    const webinars = await fetchWebinars({
+    const updates = await fetchAllUpdates({
       paginate: { page: 1, pageSize: 100 },
-    })
-      .then(res => ({ data: res.webinars, error: null }))
-      .catch(err => {
-        return {
-          data: [],
-          error: {
-            message: `${err.response.status} : ${err.response.statusText}`,
-            status: err.response.status,
-          },
-        };
-      });
-
-    return { props: { data: { news, events, webinars } } };
+    });
+    return { props: { data: { ...updates } } };
   } catch (err: any) {
     return {
       props: {
