@@ -1,8 +1,3 @@
-import React, { useEffect, useState } from 'react';
-import { useMDXComponents } from 'src/components/mdx/hooks/useMDXComponents';
-import ReactMarkdown from 'react-markdown';
-import rehypeRaw from 'rehype-raw';
-import remarkGfm from 'remark-gfm';
 import {
   Divider,
   Flex,
@@ -13,12 +8,17 @@ import {
   Tag,
   Text,
 } from '@chakra-ui/react';
+import React, { useEffect, useState } from 'react';
+import ReactMarkdown from 'react-markdown';
+import rehypeRaw from 'rehype-raw';
+import remarkGfm from 'remark-gfm';
+import { FeatureQueryResponse } from 'src/api/features/types';
 import Empty from 'src/components/empty';
-import { FeaturedPageProps } from '../types';
+import { useMDXComponents } from 'src/components/mdx/hooks/useMDXComponents';
 
 interface MainContentProps {
   isLoading?: boolean;
-  data?: FeaturedPageProps | null;
+  data?: FeatureQueryResponse | null;
 }
 
 const Main = ({ data, isLoading }: MainContentProps) => {

@@ -1,5 +1,6 @@
-import { useMemo, useState } from 'react';
 import { Flex, Image, Stack } from '@chakra-ui/react';
+import { useMemo, useState } from 'react';
+import { FeatureQueryResponse } from 'src/api/features/types';
 import { PageContent } from 'src/components/page-container';
 import {
   StyleCardLabel,
@@ -14,9 +15,12 @@ import {
   Sidebar,
   SidebarItem,
 } from 'src/components/table-of-contents/layouts/sidebar';
-import { FeaturedPageProps } from '../types';
 
-export const TableOfContents = ({ data }: { data?: FeaturedPageProps[] }) => {
+export const TableOfContents = ({
+  data,
+}: {
+  data?: FeatureQueryResponse[];
+}) => {
   // [TO DO]: Fetch all pages from the Strapi API
   const isLoading = false;
 

@@ -1,9 +1,14 @@
+import { UpdatesQueryParams } from '../updates/types';
+
+export interface FeatureQueryParams extends UpdatesQueryParams {}
+
 export interface MetaFields {
   title?: string;
   description?: string;
   keywords?: string;
 }
-export interface FeaturedPageProps {
+
+export interface FeatureQueryResponse {
   id: number;
   title: string;
   abstract: string;
@@ -28,17 +33,4 @@ export interface FeaturedPageProps {
     | null;
   // Meta fields for SEO
   metaFields?: MetaFields;
-}
-
-export interface FeaturedQueryParams {
-  status?: string;
-  fields?: string[];
-  populate?: {
-    fields?: string[];
-    thumbnail?: {
-      fields?: string[];
-    };
-  };
-  sort?: { publishedAt?: string; updatedAt?: string };
-  paginate?: { page?: number; pageSize?: number };
 }

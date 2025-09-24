@@ -1,23 +1,20 @@
-import React, { useEffect } from 'react';
-import type { GetStaticProps, NextPage } from 'next';
-import { useRouter } from 'next/router';
 import { Flex, Skeleton, Text } from '@chakra-ui/react';
 import { useQuery } from '@tanstack/react-query';
+import SITE_CONFIG from 'configs/site.config.json';
+import type { GetStaticProps, NextPage } from 'next';
+import { useRouter } from 'next/router';
+import React, { useEffect } from 'react';
+import { fetchAllFeatures, fetchFeatureBySlug } from 'src/api/features';
+import { FeatureQueryResponse } from 'src/api/features/types';
 import { Error } from 'src/components/error';
 import {
   getPageSeoConfig,
   PageContainer,
   PageContent,
 } from 'src/components/page-container';
-import {
-  fetchAllFeaturedPages,
-  fetchFeaturedContent,
-} from 'src/views/features/helpers';
-import Main from 'src/views/features/components/Main';
-import { FeaturedPageProps } from 'src/views/features/types';
-import { TableOfContents } from 'src/views/features/components/TableOfContents';
-import SITE_CONFIG from 'configs/site.config.json';
 import { SiteConfig } from 'src/components/page-container/types';
+import Main from 'src/views/features/components/Main';
+import { TableOfContents } from 'src/views/features/components/TableOfContents';
 
 const siteConfig = SITE_CONFIG as SiteConfig;
 
@@ -26,24 +23,24 @@ const FeaturedPage: NextPage<{
 }> = props => {
   // Fetch all featured pages from API for index.
   const { data: featuredPages } = useQuery<
-    FeaturedPageProps[],
+    FeatureQueryResponse[],
     any,
-    FeaturedPageProps[]
+    FeatureQueryResponse[]
   >({
     queryKey: ['featured'],
-    queryFn: () => fetchAllFeaturedPages(),
+    queryFn: () => fetchAllFeatures(),
     refetchOnWindowFocus: true,
     refetchOnMount: true,
   });
 
   // Fetch current feature page from API using the route slug.
   const { isLoading, error, data } = useQuery<
-    FeaturedPageProps | null,
+    FeatureQueryResponse | null,
     any,
-    FeaturedPageProps | null
+    FeatureQueryResponse | null
   >({
     queryKey: ['featured', { slug: props.slug }],
-    queryFn: () => fetchFeaturedContent(props.slug),
+    queryFn: () => fetchFeatureBySlug(props.slug),
     refetchOnWindowFocus: true,
     refetchOnMount: true,
   });
@@ -96,7 +93,7 @@ const FeaturedPage: NextPage<{
                 {/* Banner img */}
                 {(isLoading || data?.banner) && (
                   <Skeleton
-                    isLoaded={!isLoading}
+                    loading={!isLoading}
                     backgroundImage={`${process.env.NEXT_PUBLIC_STRAPI_API_URL}${data?.banner?.url}`}
                     backgroundSize='cover'
                     display={{ base: 'none', sm: 'flex' }}
@@ -152,7 +149,7 @@ export const getStaticProps: GetStaticProps = async context => {
 
 export async function getStaticPaths() {
   // Call an external API endpoint to get featured pages.
-  const featuredPages = await fetchAllFeaturedPages();
+  const featuredPages = await fetchAllFeatures();
   if (!featuredPages.length) {
     return { paths: [], fallback: false };
   }
