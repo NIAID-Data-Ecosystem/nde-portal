@@ -18,10 +18,7 @@ import { FaLinkedinIn, FaSquareFacebook, FaTwitter } from 'react-icons/fa6';
 import { EventsQueryResponse } from 'src/api/events/types';
 import { NewsQueryResponse } from 'src/api/news/types';
 import { fetchAllUpdates } from 'src/api/updates';
-import {
-  BaseUpdateQueryResponse,
-  UpdatesQueryResponse,
-} from 'src/api/updates/types';
+import { UpdatesQueryResponse } from 'src/api/updates/types';
 import Empty from 'src/components/empty';
 import { Error } from 'src/components/error';
 import { Link } from 'src/components/link';
@@ -193,7 +190,7 @@ const Updates: NextPage<UpdatesProps> = props => {
                             color='page.placeholder'
                             headingProps={{ size: 'sm' }}
                             iconProps={{
-                              color: 'page.placeholder',
+                              color: 'page.placeholdedr',
                               opacity: 0.7,
                             }}
                           />
@@ -204,7 +201,7 @@ const Updates: NextPage<UpdatesProps> = props => {
                             0,
                             sections.find(s => s.hash === 'updates')?.showMax,
                           )
-                          .map((news: BaseUpdateQueryResponse) => {
+                          .map((news: UpdatesQueryResponse['news'][number]) => {
                             return <SectionCard key={news.id} {...news} />;
                           })
                       )}
@@ -262,11 +259,15 @@ const Updates: NextPage<UpdatesProps> = props => {
                                   sections.find(s => s.hash === 'events')
                                     ?.showMax,
                                 )
-                                .map((event: BaseUpdateQueryResponse) => {
-                                  return (
-                                    <SectionCard key={event.id} {...event} />
-                                  );
-                                })}
+                                .map(
+                                  (
+                                    event: UpdatesQueryResponse['events'][number],
+                                  ) => {
+                                    return (
+                                      <SectionCard key={event.id} {...event} />
+                                    );
+                                  },
+                                )}
                             </>
                           )}
                           {/* Past events */}
@@ -285,11 +286,15 @@ const Updates: NextPage<UpdatesProps> = props => {
                                   sections.find(s => s.hash === 'events')
                                     ?.showMax,
                                 )
-                                .map((event: BaseUpdateQueryResponse) => {
-                                  return (
-                                    <SectionCard key={event.id} {...event} />
-                                  );
-                                })}
+                                .map(
+                                  (
+                                    event: UpdatesQueryResponse['events'][number],
+                                  ) => {
+                                    return (
+                                      <SectionCard key={event.id} {...event} />
+                                    );
+                                  },
+                                )}
                             </>
                           )}
                         </>
