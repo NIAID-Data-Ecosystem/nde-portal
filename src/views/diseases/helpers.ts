@@ -115,33 +115,3 @@ export const fetchDiseaseBySlug = async (
     throw error;
   }
 };
-
-// Fetch diseases by search term using Strapi containsi filter
-export const fetchDiseasesByTerm = async (
-  term: string,
-): Promise<DiseasePageProps[]> => {
-  try {
-    const baseUrl = getStrapiBaseUrl();
-    const status = getContentStatus();
-
-    const response = await fetch(
-      `${baseUrl}/api/diseases?filters[query][$containsi]=${encodeURIComponent(
-        term,
-      )}&status=${status}&populate=*&sort=title:asc`,
-    );
-
-    if (!response.ok) {
-      throw new Error(
-        `Failed to fetch diseases by term "${term}": ${response.status}`,
-      );
-    }
-
-    const apiResponse: DiseaseCollectionApiResponse<DiseasePageProps[]> =
-      await response.json();
-
-    return apiResponse.data || [];
-  } catch (error) {
-    console.error(`Error fetching diseases by term "${term}":`, error);
-    return [];
-  }
-};
