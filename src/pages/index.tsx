@@ -34,7 +34,7 @@ import {
   NewsCarousel,
 } from 'src/views/home/components/NewsCarousel';
 import { LandingPageSection } from 'src/views/home/components/sections';
-import { TableWithSearch } from 'src/views/home/components/TableWithSearch/';
+import { TableWithSearch } from 'src/views/home/components/table-with-search/';
 import { LANDING_PAGE_DATA } from 'src/views/home/data';
 
 import { fetchEvents, NewsOrEventsObject } from './updates';
