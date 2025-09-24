@@ -70,7 +70,7 @@
     "axios": "^1.11.0",
     "d3-scale-chromatic": "^3.0.0",
     "env-cmd": "^10.1.0",
-    "eslint": "7",
+    "eslint": "^8",
     "eslint-config-next": "^13.2.1",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-simple-import-sort": "^12.1.1",
