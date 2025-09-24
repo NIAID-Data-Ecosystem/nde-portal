@@ -50,9 +50,12 @@ export const getSearchResultsRoute = ({
 
 // Get Strapi base URL with error handling
 const getStrapiBaseUrl = (): string => {
-  const url =
-    process.env.NEXT_PUBLIC_STRAPI_API_URL ||
-    'https://data.niaid.nih.gov/strapi';
+  const url = process.env.NEXT_PUBLIC_STRAPI_API_URL;
+  if (!url) {
+    throw new Error(
+      'NEXT_PUBLIC_STRAPI_API_URL environment variable is required',
+    );
+  }
   return url;
 };
 
