@@ -20,11 +20,12 @@ import {
   PageContent,
 } from 'src/components/page-container';
 import { SearchBarWithDropdown } from 'src/components/search-bar';
+import { Section as LandingPageSection } from 'src/components/section';
 import { useRepoData } from 'src/hooks/api/useRepoData';
 import { useResourceCatalogs } from 'src/hooks/api/useResourceCatalogs';
+import { LandingPageCard } from 'src/views/home/components/card';
 import { UpdatesCarousel } from 'src/views/home/components/carousel';
 import { HeroBanner } from 'src/views/home/components/hero-banner';
-import { LandingPageSection } from 'src/views/home/components/sections';
 import { TableWithSearch } from 'src/views/home/components/table-with-search/';
 import { LANDING_PAGE_DATA } from 'src/views/home/data';
 
@@ -148,13 +149,10 @@ const Home: NextPage<{
               maxW='1300px'
               width='100%'
             >
-              {/* Getting Started Card */}
+              {/* Getting Started LandingPageCard */}
               {LANDING_PAGE_DATA.SECTIONS['getting-started']?.data?.map(
                 (card, i) => (
-                  <LandingPageSection.Card
-                    key={`getting-started-${i}`}
-                    {...card}
-                  />
+                  <LandingPageCard key={`getting-started-${i}`} {...card} />
                 ),
               )}
               {/* Topic Cards */}
@@ -162,10 +160,7 @@ const Home: NextPage<{
                 {...LANDING_PAGE_DATA.SECTIONS['topics']}
               >
                 {LANDING_PAGE_DATA.SECTIONS['topics']?.data?.map((card, i) => (
-                  <LandingPageSection.Card
-                    key={`landing-card-${i}`}
-                    {...card}
-                  />
+                  <LandingPageCard key={`landing-card-${i}`} {...card} />
                 ))}
               </LandingPageSection.Wrapper>
               <LandingPageSection.Wrapper

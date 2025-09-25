@@ -9,8 +9,7 @@ import {
 } from '@chakra-ui/react';
 import React from 'react';
 
-import { LandingPageCard } from './card';
-import { LandingPageSections } from './types';
+import { SectionWrapperProps } from './types';
 
 const SectionHeading = ({ children, ...props }: HeadingProps) => (
   <Heading as='h2' textStyle='h5' mb={4} fontWeight='semibold' {...props}>
@@ -37,14 +36,6 @@ const SectionBody = ({ children, ...props }: FlexProps) => (
   </Flex>
 );
 
-// extract the value type
-type SectionConfig = LandingPageSections[keyof LandingPageSections];
-
-// props for the component
-interface SectionWrapperProps extends SectionConfig {
-  children: React.ReactNode;
-}
-
 const SectionWrapper: React.FC<SectionWrapperProps> = ({
   heading,
   subheading,
@@ -62,12 +53,11 @@ const SectionWrapper: React.FC<SectionWrapperProps> = ({
   );
 };
 
-const LandingPageSection = {
+const Section = {
   Body: SectionBody,
-  Card: LandingPageCard,
   Heading: SectionHeading,
   Subheading: SectionSubheading,
   Wrapper: SectionWrapper,
 };
 
-export { LandingPageSection };
+export { Section };

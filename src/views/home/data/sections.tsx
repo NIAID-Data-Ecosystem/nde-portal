@@ -1,8 +1,8 @@
 import React from 'react';
+import { FaGithub, FaRegEnvelope } from 'react-icons/fa6';
 import { Link } from 'src/components/link';
 
-import { LandingPageSections } from '../components/sections/types';
-import { FaGithub, FaRegEnvelope } from 'react-icons/fa6';
+import { LandingPageSections } from '../components/card/types';
 
 export const LANDING_PAGE_SECTIONS: LandingPageSections = {
   hero: {
