@@ -7,7 +7,7 @@ const heading = defineRecipe({
     lineHeight: { base: '1.33', md: '1.2' },
   },
   variants: {
-    as: {
+    size: {
       h1: {
         textStyle: 'h1',
       },
