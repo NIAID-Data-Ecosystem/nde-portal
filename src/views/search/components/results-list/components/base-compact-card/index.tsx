@@ -4,7 +4,7 @@ import NextLink from 'next/link';
 import { TypeBanner } from 'src/components/resource-sections/components';
 import { DisplayHTMLContent } from 'src/components/html-content';
 import { Skeleton } from 'src/components/skeleton';
-import { FormattedResource } from 'src/utils/api/types';
+import { AllResourceType } from 'src/utils/formatting/formatResourceType';
 
 const CARD_HEIGHTS = {
   base: '310px',
@@ -24,7 +24,7 @@ interface BaseCompactCardProps extends Omit<CardProps, 'children' | 'as'> {
   title?: string;
   linkProps?: LinkProps;
   typeBannerProps?: {
-    type?: FormattedResource['@type'];
+    type?: AllResourceType;
     isNiaidFunded?: boolean;
   };
   headerContent?: ReactNode;
