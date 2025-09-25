@@ -12,6 +12,7 @@ import type { NextPage } from 'next';
 import NextLink from 'next/link';
 import React from 'react';
 import { FaMagnifyingGlass } from 'react-icons/fa6';
+import { fetchAllUpdates } from 'src/api/updates';
 import { UpdatesQueryResponse } from 'src/api/updates/types';
 import {
   getPageSeoConfig,
