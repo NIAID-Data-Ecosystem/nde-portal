@@ -1,63 +1,20 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { Text } from '@chakra-ui/react';
 import { DiseasePageProps } from 'src/views/diseases/types';
 import { Skeleton } from 'src/components/skeleton';
 import { BaseCompactCard } from '../base-compact-card';
+import { DisplayHTMLContent } from 'src/components/html-content';
 
 interface DiseaseOverviewCardProps {
   data?: DiseasePageProps | null;
   isLoading?: boolean;
 }
 
-interface ProcessedDescription {
-  cleanedDescription: string;
-  invitation: string;
-  hasContent: boolean;
-}
-
-const MARKDOWN_LINK_REGEX = /\[([^\]]*)\]\(([^)]*)\)/g;
-
-const processDescription = (
-  description: string | undefined,
-  title: string | undefined,
-): ProcessedDescription => {
-  if (!description?.trim()) {
-    return {
-      cleanedDescription: '',
-      invitation: title
-        ? `Learn about ${title} resources in the NIAID Data Ecosystem.`
-        : '',
-      hasContent: false,
-    };
-  }
-
-  // Remove all markdown links and clean up whitespace
-  const cleanedDescription = description
-    .replace(MARKDOWN_LINK_REGEX, '')
-    .replace(/\s+/g, ' ')
-    .trim();
-
-  const invitation = title
-    ? `Learn about ${title} resources in the NIAID Data Ecosystem.`
-    : '';
-
-  return {
-    cleanedDescription,
-    invitation,
-    hasContent: Boolean(cleanedDescription || invitation),
-  };
-};
-
 export const DiseaseOverviewCard = ({
   data,
   isLoading = false,
 }: DiseaseOverviewCardProps) => {
   const { title, description, slug } = data || {};
-
-  const processedContent = useMemo(
-    () => processDescription(description, title),
-    [description, title],
-  );
 
   if (!isLoading && !slug) {
     console.warn(
@@ -82,6 +39,10 @@ export const DiseaseOverviewCard = ({
       }
     : undefined;
 
+  const invitation = title
+    ? `Learn about ${title} resources in the NIAID Data Ecosystem.`
+    : `Learn about resources in the NIAID Data Ecosystem.`;
+
   return (
     <BaseCompactCard
       isLoading={isLoading}
@@ -91,25 +52,27 @@ export const DiseaseOverviewCard = ({
         type: 'DiseaseOverview',
       }}
     >
-      {/* Description */}
       <Skeleton isLoaded={!isLoading} flex='1'>
-        {processedContent.hasContent && (
+        {/* Description (if present) */}
+        {description ? (
           <>
-            {processedContent.cleanedDescription && (
-              <Text fontSize='xs' lineHeight='short' noOfLines={6}>
-                {processedContent.cleanedDescription}
-              </Text>
-            )}
-            {processedContent.invitation && (
-              <Text
-                fontSize='xs'
-                lineHeight='short'
-                marginTop={processedContent.cleanedDescription ? 7 : 0}
-              >
-                {processedContent.invitation}
-              </Text>
-            )}
+            <DisplayHTMLContent
+              noOfLines={6}
+              content={description}
+              fontSize='xs'
+              lineHeight='short'
+              reactMarkdownProps={{
+                disallowedElements: ['a'],
+              }}
+            />
+            <Text fontSize='xs' lineHeight='short' marginTop={7}>
+              {invitation}
+            </Text>
           </>
+        ) : (
+          <Text fontSize='xs' lineHeight='short'>
+            {invitation}
+          </Text>
         )}
       </Skeleton>
     </BaseCompactCard>
