@@ -161,15 +161,16 @@ export const SearchResultsController = ({
     (hasResourceCatalogRecords && (carouselIsLoading || carouselIsPending)) ||
     diseaseIsLoading;
 
-  // Helper function to generate accordion titles with separate counts
+  // Helper function to generate accordion titles
   const generateAccordionTitle = (
     resourceCount: number,
     diseaseCount: number,
   ): string => {
+    const totalCount = resourceCount + diseaseCount;
     const resourcePart = `Resource Catalogs (${resourceCount.toLocaleString()})`;
     const diseasePart = `Disease Overviews (${diseaseCount.toLocaleString()})`;
 
-    return `${resourcePart} and ${diseasePart}`;
+    return `Other Resources (${totalCount.toLocaleString()}): ${resourcePart}, ${diseasePart}`;
   };
 
   // Enhance each tab with facet counts for the types it represents.
