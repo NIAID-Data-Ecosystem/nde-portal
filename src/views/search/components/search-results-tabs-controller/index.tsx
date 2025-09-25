@@ -181,14 +181,20 @@ export const SearchResultsController = ({
           const terms = facetData?.facets?.['@type']?.terms ?? [];
           const facet = terms.find(t => t.term === type);
           let count = facet?.count || 0;
+
+          // Create counts object
+          const counts = {
+            datasets: type === 'Dataset' ? count : 0,
+            diseases: matchingDiseases.length,
+            resourceCatalogs: resourceCatalogCount,
+            computationalTools: type === 'ComputationalTool' ? count : 0,
+          };
+
           return {
             label,
             type,
             count,
-            ...(type === 'ResourceCatalog' && {
-              resourceCatalogCount,
-              diseaseCount: matchingDiseases.length,
-            }),
+            counts,
           };
         });
 
