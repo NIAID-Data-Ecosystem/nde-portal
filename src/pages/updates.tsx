@@ -53,7 +53,9 @@ const Updates: NextPage<UpdatesProps> = props => {
   >({
     queryKey: ['news', 'events'],
     queryFn: async () => {
-      const updates = await fetchAllUpdates();
+      const updates = await fetchAllUpdates({
+        paginate: { page: 1, pageSize: 100 },
+      });
       return {
         news: updates.news,
         events: updates.events,

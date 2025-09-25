@@ -3,13 +3,9 @@ import NextLink from 'next/link';
 import React from 'react';
 import { Link } from 'src/components/link';
 
-import { LandingPageCardData } from '../cards/types';
+import { LandingPageCardType } from './types';
 
-interface CardProps {
-  card: LandingPageCardData;
-}
-
-export const LandingPageCard: React.FC<CardProps> = React.memo(({ card }) => (
+export const LandingPageCard: React.FC<LandingPageCardType> = card => (
   <Card.Root
     variant='outline'
     flexDirection={{ base: 'column', md: 'row' }}
@@ -76,4 +72,4 @@ export const LandingPageCard: React.FC<CardProps> = React.memo(({ card }) => (
       )}
     </Flex>
   </Card.Root>
-));
+);

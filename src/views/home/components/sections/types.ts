@@ -1,7 +1,7 @@
 import { ButtonProps, ImageProps } from '@chakra-ui/react';
 import { ReactNode } from 'react';
 
-export type LandingPageCard = {
+export type LandingPageCardType = {
   image: ImageProps;
   heading: string;
   headingHref?: string;
@@ -21,7 +21,7 @@ export type LandingPageSections = {
     subheading?: React.ReactNode;
     hasSeparator?: boolean;
     data?: LandingPageCard[];
-    cta: Array<
+    cta?: Array<
       ButtonProps & {
         href?: string;
         isExternal?: boolean;

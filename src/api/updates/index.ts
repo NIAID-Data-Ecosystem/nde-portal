@@ -1,10 +1,12 @@
 import { fetchAllEvents } from '../events';
 import { fetchAllFeatures } from '../features';
 import { fetchAllNews } from '../news';
-import { UpdatesQueryParams } from '../updates/types';
+import { UpdatesQueryParams, UpdatesQueryResponse } from '../updates/types';
 
 // Fetches all updates including: news reports, events, and features
-export const fetchAllUpdates = async (params?: UpdatesQueryParams) => {
+export const fetchAllUpdates = async (
+  params?: UpdatesQueryParams,
+): Promise<UpdatesQueryResponse> => {
   try {
     // Parallel fetching of news and events using Promise.all
     const [newsResponse, eventsResponse, featuresResponse] = await Promise.all([

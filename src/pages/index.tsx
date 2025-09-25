@@ -3,20 +3,16 @@ import {
   Button,
   ButtonGroup,
   Flex,
-  Heading,
   Icon,
-  Image,
-  Separator,
   Stack,
   Text,
-  VStack,
 } from '@chakra-ui/react';
-import HOMEPAGE_COPY from 'configs/homepage.json';
 import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
 import type { NextPage } from 'next';
 import NextLink from 'next/link';
 import React from 'react';
-import { FaGithub, FaMagnifyingGlass, FaRegEnvelope } from 'react-icons/fa6';
+import { FaMagnifyingGlass } from 'react-icons/fa6';
+import { UpdatesQueryResponse } from 'src/api/updates/types';
 import {
   getPageSeoConfig,
   PageContainer,
@@ -25,27 +21,14 @@ import {
 import { SearchBarWithDropdown } from 'src/components/search-bar';
 import { useRepoData } from 'src/hooks/api/useRepoData';
 import { useResourceCatalogs } from 'src/hooks/api/useResourceCatalogs';
-import {
-  fetchAllFeaturedPages,
-  transformFeaturedContentForCarousel,
-} from 'src/views/features/helpers';
+import { UpdatesCarousel } from 'src/views/home/components/carousel';
 import { HeroBanner } from 'src/views/home/components/hero-banner';
-import {
-  fetchNews,
-  NewsCarousel,
-} from 'src/views/home/components/NewsCarousel';
 import { LandingPageSection } from 'src/views/home/components/sections';
 import { TableWithSearch } from 'src/views/home/components/table-with-search/';
 import { LANDING_PAGE_DATA } from 'src/views/home/data';
 
-import { fetchEvents, NewsOrEventsObject } from './updates';
-
 const Home: NextPage<{
-  data: {
-    news: NewsOrEventsObject[];
-    events: NewsOrEventsObject[];
-    features: NewsOrEventsObject[];
-  };
+  data: UpdatesQueryResponse;
   error?: { message: string };
 }> = props => {
   /****** Resource Catalogs Data ******/
@@ -77,6 +60,7 @@ const Home: NextPage<{
           zIndex={2}
         >
           <Flex w='100%' flexDirection='column' maxWidth='1000px'>
+            {/* Search bar */}
             <SearchBarWithDropdown
               placeholder='Search for resources'
               ariaLabel='Search for resources'
@@ -113,6 +97,7 @@ const Home: NextPage<{
               }}
             />
           </Flex>
+          {/* Sample queries */}
           <Box>
             <Text fontWeight='semibold'>Try these searches:</Text>
             <Stack flexDirection='row' flexWrap={'wrap'}>
@@ -148,7 +133,6 @@ const Home: NextPage<{
         </Stack>
       </HeroBanner>
       <>
-        {/**** Repositories Table section *****/}
         {!(repositoriesError || resourceCatalogsError) && (
           <PageContent
             flexDirection='column'
@@ -168,7 +152,7 @@ const Home: NextPage<{
                 (card, i) => (
                   <LandingPageSection.Card
                     key={`getting-started-${i}`}
-                    card={card}
+                    {...card}
                   />
                 ),
               )}
@@ -179,7 +163,7 @@ const Home: NextPage<{
                 {LANDING_PAGE_DATA.SECTIONS['topics']?.data?.map((card, i) => (
                   <LandingPageSection.Card
                     key={`landing-card-${i}`}
-                    card={card}
+                    {...card}
                   />
                 ))}
               </LandingPageSection.Wrapper>
@@ -228,7 +212,7 @@ const Home: NextPage<{
                   w='100%'
                   flexWrap={{ base: 'wrap' }}
                 >
-                  {LANDING_PAGE_DATA.SECTIONS['explore-resources']?.cta.map(
+                  {LANDING_PAGE_DATA.SECTIONS['explore-resources']?.cta?.map(
                     (cta, idx) => (
                       <Button
                         key={cta.title}
@@ -257,10 +241,10 @@ const Home: NextPage<{
                 </ButtonGroup>
               </LandingPageSection.Wrapper>
 
-              {/* NEWS */}
+              {/* Updates */}
               <LandingPageSection.Wrapper heading='Updates' hasSeparator>
                 {!props?.error?.message && props.data?.news && (
-                  <NewsCarousel
+                  <UpdatesCarousel
                     news={props.data.news}
                     events={props.data.events}
                     features={props.data.features}
@@ -277,30 +261,16 @@ const Home: NextPage<{
 
 export async function getStaticProps() {
   try {
-    const features = await fetchAllFeaturedPages({
-      paginate: { page: 1, pageSize: 5 },
+    const updates = await fetchAllUpdates({
+      paginate: { page: 1, pageSize: 100 },
     });
-
-    const { news } = await fetchNews({ paginate: { page: 1, pageSize: 5 } });
-
-    const events = await fetchEvents({ paginate: { page: 1, pageSize: 100 } })
-      .then(res => ({ data: res.events, error: null }))
-      .catch(err => {
-        return {
-          data: [],
-          error: {
-            message: `${err.response.status} : ${err.response.statusText}`,
-            status: err.response.status,
-          },
-        };
-      });
 
     return {
       props: {
         data: {
-          news,
-          events: events.data,
-          features: transformFeaturedContentForCarousel(features),
+          news: updates.news,
+          events: updates.events,
+          features: updates.features,
         },
       },
     };

@@ -1,5 +1,9 @@
 import { MDXRemoteSerializeResult } from 'next-mdx-remote';
 
+import { EventsQueryResponse } from '../events/types';
+import { FeatureQueryResponse } from '../features/types';
+import { NewsQueryResponse } from '../news/types';
+
 export interface UpdatesQueryParams {
   status?: string;
   fields?: string[];
@@ -44,7 +48,7 @@ export interface BaseUpdateQueryResponse {
 }
 
 export interface UpdatesQueryResponse {
-  news: BaseUpdateQueryResponse[];
-  events: BaseUpdateQueryResponse[];
-  features: BaseUpdateQueryResponse[];
+  news: NewsQueryResponse[];
+  events: EventsQueryResponse[];
+  features: FeatureQueryResponse[];
 }

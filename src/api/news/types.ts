@@ -1,4 +1,4 @@
-import { UpdatesQueryParams, BaseUpdateQueryResponse } from '../updates/types';
+import { BaseUpdateQueryResponse, UpdatesQueryParams } from '../updates/types';
 
 export interface NewsQueryParams extends UpdatesQueryParams {}
 
