@@ -1,4 +1,4 @@
-import { formatResourceTypeForDisplay } from 'src/utils/formatting/formatResourceType';
+import { formatAPIResourceTypeForDisplay } from 'src/utils/formatting/formatResourceType';
 import { TabType } from '../types';
 
 // is determined by the order of this array
@@ -7,11 +7,11 @@ export const tabs: TabType[] = [
     id: 'd',
     types: [
       {
-        label: formatResourceTypeForDisplay('ResourceCatalog') + 's',
+        label: formatAPIResourceTypeForDisplay('ResourceCatalog') + 's',
         type: 'ResourceCatalog',
       },
       {
-        label: formatResourceTypeForDisplay('Dataset') + 's',
+        label: formatAPIResourceTypeForDisplay('Dataset') + 's',
         type: 'Dataset',
       },
     ],
@@ -21,7 +21,7 @@ export const tabs: TabType[] = [
     id: 'ct',
     types: [
       {
-        label: formatResourceTypeForDisplay('ComputationalTool') + 's',
+        label: formatAPIResourceTypeForDisplay('ComputationalTool') + 's',
         type: 'ComputationalTool',
       },
     ],

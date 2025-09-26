@@ -1,6 +1,6 @@
 import {
   APIResourceType,
-  formatResourceTypeForDisplay,
+  formatAPIResourceTypeForDisplay,
 } from 'src/utils/formatting/formatResourceType';
 import { FilterConfig, FacetTermWithDetails } from './types';
 import { buildQueries, buildSourceQueries } from './utils/query-builders';
@@ -88,7 +88,7 @@ export const FILTER_CONFIGS: FilterConfig[] = [
       ...item,
       label:
         item.label ||
-        formatResourceTypeForDisplay(item.term as APIResourceType),
+        formatAPIResourceTypeForDisplay(item.term as APIResourceType),
     }),
   },
   {

@@ -23,10 +23,8 @@ export type CollectionType =
   | 'Data Collection'
   | 'Portal';
 
-export type StrapiContentType = 'DiseaseOverview';
-
 // Combined type for all possible resource types in the UI
-export type AllResourceType = APIResourceType | StrapiContentType;
+export type AllResourceType = APIResourceType;
 
 export type DisplayResourceType =
   | 'Dataset'
@@ -34,7 +32,6 @@ export type DisplayResourceType =
   | 'Computational Tool'
   | 'Software'
   | 'Scholarly Article'
-  | 'Disease Overview'
   | 'Other';
 
 // Format API resource types for display
@@ -50,30 +47,6 @@ export const formatAPIResourceTypeForDisplay = (
   } else {
     return 'Other';
   }
-};
-
-// Format Strapi content types for display
-export const formatStrapiContentTypeForDisplay = (
-  str: StrapiContentType,
-): DisplayResourceType => {
-  if (str.toLowerCase() === 'diseaseoverview') {
-    return 'Disease Overview';
-  } else {
-    return 'Other';
-  }
-};
-
-// Generic formatter that handles both API and Strapi types
-export const formatResourceTypeForDisplay = (
-  str: AllResourceType,
-): DisplayResourceType => {
-  const lowerStr = str.toLowerCase();
-
-  if (lowerStr === 'diseaseoverview') {
-    return formatStrapiContentTypeForDisplay(str as StrapiContentType);
-  }
-
-  return formatAPIResourceTypeForDisplay(str as APIResourceType);
 };
 
 // Format the dataset type (if changed for display) to the @type accepted in the API
@@ -100,11 +73,4 @@ export const formatResourceTypeForAPI = (
 // Type guard to check if a type is an API resource type
 export const isAPIResourceType = (type: string): type is APIResourceType => {
   return ['Dataset', 'ResourceCatalog', 'ComputationalTool'].includes(type);
-};
-
-// Type guard to check if a type is a Strapi content type
-export const isStrapiContentType = (
-  type: string,
-): type is StrapiContentType => {
-  return ['DiseaseOverview'].includes(type);
 };
