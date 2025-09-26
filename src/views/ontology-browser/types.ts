@@ -75,11 +75,13 @@ export interface OntologyLineageItem {
   taxonId: string;
 }
 
+export interface CountsType {
+  termCount?: number;
+  termAndChildrenCount?: number;
+}
+
 export interface OntologyLineageItemWithCounts extends OntologyLineageItem {
-  counts: {
-    termCount: number;
-    termAndChildrenCount: number;
-  };
+  counts?: CountsType;
 }
 
 export interface OntologyPagination {

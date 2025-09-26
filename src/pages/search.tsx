@@ -18,6 +18,7 @@ import { SearchResultsController } from 'src/views/search/components/search-resu
 import { fetchSearchResults } from 'src/utils/api';
 import { TabType } from 'src/views/search/types';
 import { tabs } from 'src/views/search/config/tabs';
+import { OntologyBrowserPopup } from 'src/views/ontology-browser/components/popup';
 
 // Default filters list.
 const defaultFilters = FILTER_CONFIGS.reduce(
@@ -121,8 +122,18 @@ const Search: NextPage<{
                 borderColor='gray.100'
                 spacing={2}
               >
-                {/* Heading: Showing results for... */}
-                <SearchResultsHeader querystring={queryParams.q} />
+                <Flex flex={1} flexDirection='column' width='100%'>
+                  <Flex flex={1} justifyContent='flex-end'>
+                    <OntologyBrowserPopup
+                      querystring={
+                        queryParams.q === '__all__' ? '' : queryParams.q
+                      }
+                      selectedFilters={selectedFilters}
+                    />
+                  </Flex>
+                  {/* Heading: Showing results for... */}
+                  <SearchResultsHeader querystring={queryParams.q} />
+                </Flex>
 
                 {/* Filter tags : Tags with the names of the currently selected filters */}
                 {Object.values(selectedFilters).length > 0 && (

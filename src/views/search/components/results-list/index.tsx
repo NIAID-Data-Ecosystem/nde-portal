@@ -86,7 +86,7 @@ export const SearchResults = ({
       sort,
       filters: {
         ...urlQueryParams.filters,
-        '@type': types,
+        '@type': [...(urlQueryParams?.filters?.['@type'] || types || [])],
       },
       fields: RESULT_FIELDS,
     },
@@ -94,6 +94,19 @@ export const SearchResults = ({
       // Only fetch data when the router is ready and the active tab is selected.
       // This prevents unnecessary data fetching when switching tabs.
       enabled: router.isReady && id === activeTabId,
+      select: data => {
+        // only return selected types if they are provided
+        if (types && types.length > 0 && data) {
+          return {
+            results: data.results.filter(result =>
+              types.includes(result['@type'] as string),
+            ),
+            total: data.total,
+            facets: data.facets,
+          };
+        }
+        return data;
+      },
     },
   );
 

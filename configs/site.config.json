@@ -100,12 +100,7 @@
       "seo": {
         "title": "Updates",
         "description": "View the latest NIAID Data Ecosystem updates, including new features and improvements to data discovery.",
-        "keywords": [
-          "updates",
-          "events",
-          "NIAID",
-          "data discovery portal"
-        ]
+        "keywords": ["updates", "events", "NIAID", "data discovery portal"]
       },
       "nav": {
         "label": "Updates",
@@ -116,11 +111,7 @@
       "seo": {
         "title": "Changelog",
         "description": "Changelog for the NIAID Data Ecosystem Discovery Portal, listing updates and version history.",
-        "keywords": [
-          "changelog",
-          "updates",
-          "version history"
-        ],
+        "keywords": ["changelog", "updates", "version history"],
         "preventIndexing": true
       },
       "nav": {
@@ -203,21 +194,13 @@
       "seo": {
         "title": "Features",
         "description": "Explore how researchers use the NIAID Data Ecosystem to advance biomedical research. Learn from real-world use cases and topic-specific insights.",
-        "keywords": [
-          "featured",
-          "NIAID",
-          "data discovery portal",
-          "topics"
-        ]
+        "keywords": ["featured", "NIAID", "data discovery portal", "topics"]
       },
       "nav": {
         "label": "Features",
         "description": "Featured content for the portal."
       },
-      "env": [
-        "development",
-        "staging"
-      ]
+      "env": ["development", "staging"]
     },
     "/ontology-browser": {
       "seo": {
@@ -233,11 +216,7 @@
       "nav": {
         "label": "Ontology Browser",
         "description": "Explore search results in a novel way"
-      },
-      "env": [
-        "development",
-        "staging"
-      ]
+      }
     },
     "/resources": {
       "seo": {
@@ -274,12 +253,7 @@
       "seo": {
         "title": "404",
         "description": "404 Error: Page Not Found.",
-        "keywords": [
-          "404",
-          "page not found",
-          "error"
-        ],
-        "preventIndexing": true
+        "keywords": ["404", "page not found", "error"]
       }
     }
   },

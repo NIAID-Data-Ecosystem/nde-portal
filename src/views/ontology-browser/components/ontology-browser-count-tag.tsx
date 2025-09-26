@@ -1,6 +1,6 @@
-import { Flex, Spinner, TagProps, Text } from '@chakra-ui/react';
+import { Flex, Spinner, Text } from '@chakra-ui/react';
 import Tooltip from 'src/components/tooltip';
-import { OntologyLineageItemWithCounts } from '../types';
+import { CountsType } from '../types';
 
 /**
  * Retrieves the tooltip label for the count type.
@@ -8,9 +8,7 @@ import { OntologyLineageItemWithCounts } from '../types';
  * @returns - The tooltip label for the specified count type.
  *
  */
-export const getTooltipLabelByCountType = (
-  type: keyof OntologyLineageItemWithCounts['counts'],
-) => {
+export const getTooltipLabelByCountType = (type: keyof CountsType) => {
   if (type === 'termCount') {
     return (
       <>
@@ -46,9 +44,13 @@ export const OntologyBrowserCountTag = ({
   return (
     <Flex minW={120} maxW={130}>
       <Tooltip label={tooltipLabel} mx={1}>
-        <Text fontWeight='medium' lineHeight='shorter' fontSize='sm'>
-          {isLoading ? <Spinner size='sm' color='primary.500' /> : children}
-        </Text>
+        {isLoading ? (
+          <Spinner size='sm' color='primary.500' />
+        ) : (
+          <Text fontWeight='medium' lineHeight='shorter' fontSize='sm'>
+            {children}
+          </Text>
+        )}
       </Tooltip>
     </Flex>
   );

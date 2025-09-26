@@ -5130,6 +5130,7 @@
     },
     "isAdvancedSearchField": true
   },
+<<<<<<< HEAD
   "temporalCoverage.temporalInterval": {
     "name": "Temporal Coverage Temporal Interval",
     "dotfield": "temporalCoverage.temporalInterval",
@@ -5139,48 +5140,51 @@
     "isAdvancedSearchField": true
   },
   "temporalCoverage.temporalInterval.@type": {
+=======
+  "temporalCoverage.@type": {
+>>>>>>> main
     "name": "Temporal Coverage Temporal Interval Type",
-    "dotfield": "temporalCoverage.temporalInterval.@type",
+    "dotfield": "temporalCoverage.@type",
     "property": "@type",
     "count": 14517,
     "type": "text",
     "isAdvancedSearchField": false
   },
-  "temporalCoverage.temporalInterval.duration": {
+  "temporalCoverage.duration": {
     "name": "Temporal Coverage Temporal Interval Duration",
-    "dotfield": "temporalCoverage.temporalInterval.duration",
+    "dotfield": "temporalCoverage.duration",
     "property": "duration",
     "count": 1807,
     "type": "text",
     "isAdvancedSearchField": false
   },
-  "temporalCoverage.temporalInterval.endDate": {
+  "temporalCoverage.endDate": {
     "name": "Temporal Coverage Temporal Interval End Date",
-    "dotfield": "temporalCoverage.temporalInterval.endDate",
+    "dotfield": "temporalCoverage.endDate",
     "property": "endDate",
     "count": 65291,
     "type": "date",
     "isAdvancedSearchField": true
   },
-  "temporalCoverage.temporalInterval.name": {
+  "temporalCoverage.name": {
     "name": "Temporal Coverage Temporal Interval Name",
-    "dotfield": "temporalCoverage.temporalInterval.name",
+    "dotfield": "temporalCoverage.name",
     "property": "name",
     "count": 44,
     "type": "text",
     "isAdvancedSearchField": false
   },
-  "temporalCoverage.temporalInterval.startDate": {
+  "temporalCoverage.startDate": {
     "name": "Temporal Coverage Temporal Interval Start Date",
-    "dotfield": "temporalCoverage.temporalInterval.startDate",
+    "dotfield": "temporalCoverage.startDate",
     "property": "startDate",
     "count": 7992,
     "type": "date",
     "isAdvancedSearchField": true
   },
-  "temporalCoverage.temporalInterval.temporalType": {
+  "temporalCoverage.temporalType": {
     "name": "Temporal Coverage Temporal Interval Temporal Type",
-    "dotfield": "temporalCoverage.temporalInterval.temporalType",
+    "dotfield": "temporalCoverage.temporalType",
     "property": "temporalType",
     "count": 14466,
     "type": "text",
