@@ -9,7 +9,7 @@ import {
 import NextLink from 'next/link';
 import type { UrlObject } from 'url';
 
-export const Sidebar: React.FC<FlexProps & { ['aria-label']: string }> = ({
+const SidebarList: React.FC<FlexProps & { ['aria-label']: string }> = ({
   ['aria-label']: ariaLabel,
   children,
   ...props
@@ -34,10 +34,11 @@ export const Sidebar: React.FC<FlexProps & { ['aria-label']: string }> = ({
 };
 
 export const SidebarItem: React.FC<{
-  label: React.ReactNode;
-  subLabel?: React.ReactNode;
+  title: React.ReactNode;
+  subTitle?: React.ReactNode;
   href: UrlObject | string;
-}> = ({ href, label, subLabel }) => {
+  headingProps?: HeadingProps;
+}> = ({ href, title, subTitle }) => {
   return (
     <List.Item
       asChild
@@ -50,11 +51,17 @@ export const SidebarItem: React.FC<{
       borderColor='gray.100'
     >
       <NextLink href={href}>
-        {typeof label === 'string' ? <Label>{label}</Label> : label}
+        {typeof title === 'string' ? (
+          <Heading textStyle='h6' lineHeight='short' mb={1} {...props}>
+            {title}
+          </Heading>
+        ) : (
+          title
+        )}
 
-        {subLabel && (
+        {subTitle && (
           <Text fontSize='sm' lineHeight='short'>
-            {subLabel}
+            {subTitle}
           </Text>
         )}
       </NextLink>
@@ -62,10 +69,7 @@ export const SidebarItem: React.FC<{
   );
 };
 
-export const Label: React.FC<HeadingProps> = ({ children, ...props }) => {
-  return (
-    <Heading textStyle='h6' lineHeight='short' mb={1} {...props}>
-      {children}
-    </Heading>
-  );
+export const Sidebar = {
+  List: SidebarList,
+  Item: SidebarItem,
 };
