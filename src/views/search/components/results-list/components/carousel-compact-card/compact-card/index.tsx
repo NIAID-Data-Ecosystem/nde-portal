@@ -6,10 +6,10 @@ import {
   CardProps,
   BoxProps,
   TextProps,
+  Text,
 } from '@chakra-ui/react';
 import NextLink from 'next/link';
 import { TypeBanner } from 'src/components/resource-sections/components';
-import { DisplayHTMLContent } from 'src/components/html-content';
 import { Skeleton } from 'src/components/skeleton';
 import { TypeBannerProps } from 'src/components/resource-sections/components/type-banner';
 
@@ -110,7 +110,7 @@ const Header = ({ isLoading = false, children, ...boxProps }: HeaderProps) => {
   );
 };
 
-// Title component with optional markdown support
+// Title component
 interface LinkProps {
   href: string | { pathname: string; query: Record<string, any> };
   as?: string;
@@ -118,44 +118,13 @@ interface LinkProps {
 
 interface TitleProps extends Omit<TextProps, 'children'> {
   children: string;
-  hasMarkdown?: boolean;
   linkProps?: LinkProps;
-  highlightProps?: {
-    query: string | string[];
-  };
 }
 
-const Title = ({
-  children,
-  hasMarkdown = false,
-  linkProps,
-  highlightProps,
-  ...textProps
-}: TitleProps) => {
-  const content = hasMarkdown ? (
-    <DisplayHTMLContent
+const Title = ({ children, linkProps, ...textProps }: TitleProps) => {
+  const content = (
+    <Text
       noOfLines={3}
-      content={children}
-      fontWeight='semibold'
-      color='inherit'
-      fontSize='md'
-      lineHeight='short'
-      w='100%'
-      textDecoration='underline'
-      _hover={{
-        textDecoration: 'none',
-      }}
-      reactMarkdownProps={{
-        linkTarget: '_blank',
-        disallowedElements: ['a'],
-      }}
-      highlightProps={highlightProps}
-      {...textProps}
-    />
-  ) : (
-    <DisplayHTMLContent
-      noOfLines={3}
-      content={children}
       fontWeight='semibold'
       color='inherit'
       fontSize='md'
@@ -166,7 +135,9 @@ const Title = ({
         textDecoration: 'none',
       }}
       {...textProps}
-    />
+    >
+      {children}
+    </Text>
   );
 
   if (!linkProps) {

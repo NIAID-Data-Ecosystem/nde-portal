@@ -3,7 +3,6 @@ import { Text } from '@chakra-ui/react';
 import { DiseasePageProps } from 'src/views/diseases/types';
 import { Skeleton } from 'src/components/skeleton';
 import { CompactCard } from '../compact-card';
-import { DisplayHTMLContent } from 'src/components/html-content';
 
 interface DiseaseOverviewCardProps {
   data?: DiseasePageProps | null;
@@ -62,15 +61,9 @@ export const DiseaseOverviewCard = ({
           {/* Description (if present) */}
           {description ? (
             <>
-              <DisplayHTMLContent
-                noOfLines={6}
-                content={description}
-                fontSize='xs'
-                lineHeight='short'
-                reactMarkdownProps={{
-                  disallowedElements: ['a'],
-                }}
-              />
+              <Text noOfLines={6} fontSize='xs' lineHeight='short'>
+                {description}
+              </Text>
               <Text fontSize='xs' lineHeight='short' marginTop={7}>
                 {invitation}
               </Text>

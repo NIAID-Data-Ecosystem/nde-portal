@@ -79,7 +79,7 @@ export const ResourceCatalogCard = ({
 
       <CompactCard.Header isLoading={isLoading}>
         {(name || alternateName) && (
-          <CompactCard.Title hasMarkdown linkProps={linkProps}>
+          <CompactCard.Title linkProps={linkProps}>
             {name || alternateName || ''}
           </CompactCard.Title>
         )}
