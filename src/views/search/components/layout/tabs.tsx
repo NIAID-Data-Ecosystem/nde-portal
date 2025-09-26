@@ -25,7 +25,7 @@ interface TabWithCounts extends Omit<TabType, 'types'> {
 interface SearchTabsProps extends Omit<TabsProps, 'children'> {
   colorScheme?: string;
   tabs: TabWithCounts[];
-  renderTabPanels: () => React.ReactNode[];
+  renderTabPanels: () => React.ReactNode;
 }
 
 export const SearchTabs = ({
@@ -84,6 +84,19 @@ const TabLabels = ({
     type => type.type === 'ResourceCatalog',
   );
 
+  const tagStyles = {
+    borderRadius: 'full',
+    colorScheme,
+    ml: 1.5,
+    my: 1,
+    size: 'sm',
+    variant: 'subtle',
+  };
+  const textStyles = {
+    color: 'inherit',
+    fontSize: 'sm',
+    noOfLines: 1,
+  };
   if (datasetType && resourceCatalogType) {
     const datasetCount = datasetType.counts?.datasets || 0;
     const resourceCatalogCount =
@@ -92,29 +105,11 @@ const TabLabels = ({
     const otherResourcesCount = resourceCatalogCount + diseaseCount;
 
     return (
-      <Text as='h2' color='inherit' fontSize='sm' noOfLines={1}>
+      <Text as='h2' {...textStyles}>
         Datasets
-        <Tag
-          borderRadius='full'
-          colorScheme={colorScheme}
-          ml={1.5}
-          my={1}
-          size='sm'
-          variant='subtle'
-        >
-          {datasetCount.toLocaleString()}
-        </Tag>
+        <Tag {...tagStyles}>{datasetCount.toLocaleString()}</Tag>
         {' and Other Resources '}
-        <Tag
-          borderRadius='full'
-          colorScheme={colorScheme}
-          ml={1.5}
-          my={1}
-          size='sm'
-          variant='subtle'
-        >
-          {otherResourcesCount.toLocaleString()}
-        </Tag>
+        <Tag {...tagStyles}>{otherResourcesCount.toLocaleString()}</Tag>
       </Text>
     );
   }
@@ -122,18 +117,9 @@ const TabLabels = ({
   // Single-type tabs, e.g. Computational Tools
   const type = types[0];
   return (
-    <Text as='h2' color='inherit' fontSize='sm' noOfLines={1}>
+    <Text as='h2' {...textStyles}>
       {type.label}
-      <Tag
-        borderRadius='full'
-        colorScheme={colorScheme}
-        ml={1.5}
-        my={1}
-        size='sm'
-        variant='subtle'
-      >
-        {type.count.toLocaleString()}
-      </Tag>
+      <Tag {...tagStyles}>{type.count.toLocaleString()}</Tag>
     </Text>
   );
 };
