@@ -9,6 +9,7 @@ import { ScrollContainer } from 'src/components/scroll-container';
 import { SearchableItems } from 'src/components/searchable-items';
 import { Skeleton } from 'src/components/skeleton';
 import { CompactCard } from '../compact-card';
+import { formatAPIResourceTypeForDisplay } from 'src/utils/formatting/formatResourceType';
 
 interface ResourceCatalogCardProps {
   data?: FormattedResource | null;
@@ -70,6 +71,7 @@ export const ResourceCatalogCard = ({
   return (
     <CompactCard.Base isLoading={isLoading}>
       <CompactCard.Banner
+        label={formatAPIResourceTypeForDisplay(type || 'ResourceCatalog')}
         type={type || 'ResourceCatalog'}
         isNiaidFunded={isSourceFundedByNiaid(includedInDataCatalog)}
         isLoading={isLoading}

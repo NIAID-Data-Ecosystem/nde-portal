@@ -45,7 +45,11 @@ export const DiseaseOverviewCard = ({
 
   return (
     <CompactCard.Base isLoading={isLoading}>
-      <CompactCard.Banner type='DiseaseOverview' isLoading={isLoading} />
+      <CompactCard.Banner
+        label='Disease Overview'
+        type='Disease'
+        isLoading={isLoading}
+      />
 
       <CompactCard.Header isLoading={isLoading}>
         {title && (

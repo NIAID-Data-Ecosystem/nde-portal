@@ -11,7 +11,7 @@ import NextLink from 'next/link';
 import { TypeBanner } from 'src/components/resource-sections/components';
 import { DisplayHTMLContent } from 'src/components/html-content';
 import { Skeleton } from 'src/components/skeleton';
-import { AllResourceType } from 'src/utils/formatting/formatResourceType';
+import { TypeBannerProps } from 'src/components/resource-sections/components/type-banner';
 
 const CARD_HEIGHTS = {
   base: '310px',
@@ -43,17 +43,16 @@ const Base = ({ isLoading = false, children, ...cardProps }: BaseProps) => {
 };
 
 // Banner component
-interface BannerProps extends BoxProps {
-  type?: AllResourceType;
-  isNiaidFunded?: boolean;
+interface BannerProps extends TypeBannerProps {
   isLoading?: boolean;
 }
 
 const Banner = ({
+  label,
   type,
   isNiaidFunded,
   isLoading = false,
-  ...boxProps
+  ...props
 }: BannerProps) => {
   return (
     <Skeleton
@@ -62,12 +61,13 @@ const Banner = ({
       borderTopRadius='md'
     >
       <TypeBanner
+        label={label}
         type={type}
         p={0}
         pl={[2, 4, 6]}
         flexDirection={['column', 'row']}
         isNiaidFunded={isNiaidFunded}
-        {...boxProps}
+        {...props}
       />
     </Skeleton>
   );
