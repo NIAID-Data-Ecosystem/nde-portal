@@ -9,6 +9,8 @@ import {
 } from '@chakra-ui/react';
 import React from 'react';
 
+import { SectionButton, SectionButtonGroup } from './components/buttons';
+import { SectionSearch } from './components/search';
 import { SectionWrapperProps } from './types';
 
 const SectionHeading = ({ children, ...props }: HeadingProps) => (
@@ -54,10 +56,13 @@ const SectionWrapper: React.FC<SectionWrapperProps> = ({
 };
 
 const Section = {
+  Wrapper: SectionWrapper,
+  Search: SectionSearch,
   Body: SectionBody,
   Heading: SectionHeading,
   Subheading: SectionSubheading,
-  Wrapper: SectionWrapper,
+  ButtonGroup: SectionButtonGroup,
+  Button: SectionButton,
 };
 
 export { Section };
