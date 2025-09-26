@@ -2,7 +2,7 @@ import React from 'react';
 import { Text } from '@chakra-ui/react';
 import { DiseasePageProps } from 'src/views/diseases/types';
 import { Skeleton } from 'src/components/skeleton';
-import { BaseCompactCard } from '../base-compact-card';
+import { CompactCard } from '../compact-card';
 import { DisplayHTMLContent } from 'src/components/html-content';
 
 interface DiseaseOverviewCardProps {
@@ -44,37 +44,40 @@ export const DiseaseOverviewCard = ({
     : `Learn about resources in the NIAID Data Ecosystem.`;
 
   return (
-    <BaseCompactCard
-      isLoading={isLoading}
-      title={title || ''}
-      linkProps={linkProps}
-      typeBannerProps={{
-        type: 'DiseaseOverview',
-      }}
-    >
-      <Skeleton isLoaded={!isLoading} flex='1'>
-        {/* Description (if present) */}
-        {description ? (
-          <>
-            <DisplayHTMLContent
-              noOfLines={6}
-              content={description}
-              fontSize='xs'
-              lineHeight='short'
-              reactMarkdownProps={{
-                disallowedElements: ['a'],
-              }}
-            />
-            <Text fontSize='xs' lineHeight='short' marginTop={7}>
+    <CompactCard.Base isLoading={isLoading}>
+      <CompactCard.Banner type='DiseaseOverview' isLoading={isLoading} />
+
+      <CompactCard.Header isLoading={isLoading}>
+        {title && (
+          <CompactCard.Title linkProps={linkProps}>{title}</CompactCard.Title>
+        )}
+      </CompactCard.Header>
+
+      <CompactCard.Body>
+        <Skeleton isLoaded={!isLoading} flex='1'>
+          {/* Description (if present) */}
+          {description ? (
+            <>
+              <DisplayHTMLContent
+                noOfLines={6}
+                content={description}
+                fontSize='xs'
+                lineHeight='short'
+                reactMarkdownProps={{
+                  disallowedElements: ['a'],
+                }}
+              />
+              <Text fontSize='xs' lineHeight='short' marginTop={7}>
+                {invitation}
+              </Text>
+            </>
+          ) : (
+            <Text fontSize='xs' lineHeight='short'>
               {invitation}
             </Text>
-          </>
-        ) : (
-          <Text fontSize='xs' lineHeight='short'>
-            {invitation}
-          </Text>
-        )}
-      </Skeleton>
-    </BaseCompactCard>
+          )}
+        </Skeleton>
+      </CompactCard.Body>
+    </CompactCard.Base>
   );
 };
