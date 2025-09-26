@@ -1,6 +1,6 @@
-import { Button, Card, Flex, Image, Text } from '@chakra-ui/react';
-import NextLink from 'next/link';
+import { Card, Flex, Image } from '@chakra-ui/react';
 import React from 'react';
+import { ArrowButton } from 'src/components/button.tsx/arrow-button';
 import { Link } from 'src/components/link';
 
 import { LandingPageCardType } from './types';
@@ -48,24 +48,13 @@ export const LandingPageCard: React.FC<LandingPageCardType> = card => (
           {/* Call to action buttons */}
           {card.footer.cta?.map((cta, index) => {
             return (
-              <Button
+              <ArrowButton
                 key={index}
-                asChild={!!cta.href}
                 maxWidth={{ base: '225px', sm: 'unset' }}
                 {...cta}
               >
-                {cta.href ? (
-                  <NextLink href='/knowledge-center/getting-started-with-niaid-data-ecosystem-discovery-portal'>
-                    <Text truncate w='100%'>
-                      {cta.children}
-                    </Text>
-                  </NextLink>
-                ) : (
-                  <Text truncate w='100%'>
-                    {cta.children}
-                  </Text>
-                )}
-              </Button>
+                {cta.children}
+              </ArrowButton>
             );
           })}
         </Card.Footer>

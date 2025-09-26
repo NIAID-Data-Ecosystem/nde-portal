@@ -37,6 +37,7 @@ const card = defineSlotRecipe({
     },
     description: {
       lineHeight: 'short',
+      fontSize: 'md',
     },
     footer: {
       // display: 'flex',

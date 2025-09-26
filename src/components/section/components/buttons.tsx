@@ -23,11 +23,12 @@ export const SectionButtonGroup = ({
 export const SectionButton = (props: SectionButtonProps) => {
   return (
     <ArrowButton
-      // variant={idx % 2 ? 'solid' : 'outline'}
       flex={{ base: 1, sm: 'unset' }}
       minWidth={{ base: '180px', md: 'unset' }}
       maxWidth={{ base: 'unset', md: '250px' }}
       {...props}
-    />
+    >
+      {props.title}
+    </ArrowButton>
   );
 };

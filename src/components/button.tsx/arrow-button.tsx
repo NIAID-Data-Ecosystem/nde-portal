@@ -1,4 +1,4 @@
-import { Button, ButtonProps, Icon } from '@chakra-ui/react';
+import { Button, ButtonProps, Icon, Text } from '@chakra-ui/react';
 import NextLink from 'next/link';
 
 export interface ArrowButtonProps extends ButtonProps {
@@ -13,20 +13,11 @@ export const ArrowButton = ({
   isExternal,
   icon,
   hasArrow,
-  title,
+  children,
   ...props
 }: ArrowButtonProps) => {
   return (
-    <Button
-      key={title}
-      asChild
-      size='xs'
-      // variant={idx % 2 ? 'solid' : 'outline'}
-      flex={{ base: 1, sm: 'unset' }}
-      minWidth={{ base: '180px', md: 'unset' }}
-      maxWidth={{ base: 'unset', md: '250px' }}
-      {...props}
-    >
+    <Button asChild={!!href} size='xs' {...props}>
       {href ? (
         <NextLink
           href={href}
@@ -34,10 +25,14 @@ export const ArrowButton = ({
           rel={isExternal ? 'noopener noreferrer' : ''}
         >
           {icon ? <Icon as={icon} /> : null}
-          {title}
+          <Text truncate w='100%'>
+            {children}
+          </Text>
         </NextLink>
       ) : (
-        <>{title}</>
+        <Text truncate w='100%'>
+          {children}
+        </Text>
       )}
     </Button>
   );

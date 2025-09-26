@@ -203,38 +203,18 @@ const Home: NextPage<{
                     },
                   ]}
                 />
-                <ButtonGroup
-                  justifyContent='flex-end'
-                  w='100%'
-                  flexWrap={{ base: 'wrap' }}
-                >
+                <LandingPageSection.ButtonGroup>
                   {LANDING_PAGE_DATA.SECTIONS['explore-resources']?.cta?.map(
                     (cta, idx) => (
-                      <Button
+                      <LandingPageSection.Button
                         key={cta.title}
-                        asChild
-                        size='xs'
                         variant={idx % 2 ? 'solid' : 'outline'}
-                        flex={{ base: 1, sm: 'unset' }}
-                        minWidth={{ base: '180px', md: 'unset' }}
-                        maxWidth={{ base: 'unset', md: '250px' }}
                       >
-                        {cta.href ? (
-                          <NextLink
-                            href={cta.href}
-                            target={cta.isExternal ? '_blank' : '_self'}
-                            rel={cta.isExternal ? 'noopener noreferrer' : ''}
-                          >
-                            {cta?.icon ? <Icon as={cta.icon} /> : null}
-                            {cta.title}
-                          </NextLink>
-                        ) : (
-                          <>{cta.title}</>
-                        )}
-                      </Button>
+                        {cta.title}
+                      </LandingPageSection.Button>
                     ),
                   )}
-                </ButtonGroup>
+                </LandingPageSection.ButtonGroup>
               </LandingPageSection.Wrapper>
 
               {/* Updates */}
