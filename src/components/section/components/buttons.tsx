@@ -1,8 +1,8 @@
-import { Button, ButtonGroup, ButtonGroupProps, Icon } from '@chakra-ui/react';
-import NextLink from 'next/link';
-import { ArrowButton } from 'src/components/button.tsx/arrow-button';
-
-import { SectionButtonProps } from '../types';
+import { ButtonGroup, ButtonGroupProps } from '@chakra-ui/react';
+import {
+  ArrowButton,
+  ArrowButtonProps,
+} from 'src/components/button.tsx/arrow-button';
 
 export const SectionButtonGroup = ({
   children,
@@ -20,7 +20,7 @@ export const SectionButtonGroup = ({
   );
 };
 
-export const SectionButton = (props: SectionButtonProps) => {
+export const SectionButton = (props: ArrowButtonProps) => {
   return (
     <ArrowButton
       flex={{ base: 1, sm: 'unset' }}
