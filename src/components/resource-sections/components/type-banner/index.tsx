@@ -3,10 +3,7 @@ import { Flex, FlexProps, Icon, Text } from '@chakra-ui/react';
 import { FaRegClock } from 'react-icons/fa6';
 import { FormattedResource } from 'src/utils/api/types';
 import { StyledLabel } from './styles';
-import {
-  AllResourceType,
-  APIResourceType,
-} from 'src/utils/formatting/formatResourceType';
+import { APIResourceType } from 'src/utils/formatting/formatResourceType';
 import Tooltip from 'src/components/tooltip';
 import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
 
@@ -18,7 +15,7 @@ export interface TypeBannerProps extends FlexProps {
   isNiaidFunded?: boolean;
 }
 
-export const getTypeColor = (type?: AllResourceType | string) => {
+export const getTypeColor = (type?: APIResourceType | string) => {
   const typeLower = type?.toLowerCase();
   let lt = 'status.info';
   let dk = 'niaid.500';

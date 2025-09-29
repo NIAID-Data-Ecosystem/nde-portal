@@ -23,9 +23,6 @@ export type CollectionType =
   | 'Data Collection'
   | 'Portal';
 
-// Combined type for all possible resource types in the UI
-export type AllResourceType = APIResourceType;
-
 export type DisplayResourceType =
   | 'Dataset'
   | 'Resource Catalog'
