@@ -36,8 +36,12 @@ export type DisplayResourceType =
 
 // Format API resource types for display
 export const formatAPIResourceTypeForDisplay = (
-  str: APIResourceType,
+  str: APIResourceType | undefined,
 ): DisplayResourceType => {
+  if (!str) {
+    return 'Other';
+  }
+
   if (str.toLowerCase() === 'dataset') {
     return 'Dataset';
   } else if (str.toLowerCase() === 'resourcecatalog') {
