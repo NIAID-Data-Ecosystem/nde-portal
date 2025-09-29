@@ -163,10 +163,15 @@ export const SearchResultsController = ({
 
   // Helper function to generate accordion titles
   const generateAccordionTitle = (
-    resourceCount: number,
-    diseaseCount: number,
+    sections: (typeof tabsWithFacetCounts)[0]['types'],
   ): string => {
+    const resourceCatalog = sections.find(s => s.type === 'ResourceCatalog');
+    const disease = sections.find(s => s.type === 'Disease');
+
+    const resourceCount = resourceCatalog?.count || 0;
+    const diseaseCount = disease?.count || 0;
     const totalCount = resourceCount + diseaseCount;
+
     const resourcePart = `Resource Catalogs (${resourceCount.toLocaleString()})`;
     const diseasePart = `Disease Overviews (${diseaseCount.toLocaleString()})`;
 
@@ -182,19 +187,15 @@ export const SearchResultsController = ({
           const facet = terms.find(t => t.term === type);
           let count = facet?.count || 0;
 
-          // Create counts object
-          const counts = {
-            datasets: type === 'Dataset' ? count : 0,
-            diseases: matchingDiseases.length,
-            resourceCatalogs: resourceCatalogCount,
-            computationalTools: type === 'ComputationalTool' ? count : 0,
-          };
+          // Special handling for Disease type
+          if (type === 'Disease') {
+            count = matchingDiseases.length;
+          }
 
           return {
             label,
             type,
             count,
-            counts,
           };
         });
 
@@ -203,7 +204,7 @@ export const SearchResultsController = ({
           types: tabTypesWithCount,
         };
       }),
-    [facetData?.facets, tabs, resourceCatalogCount, matchingDiseases.length],
+    [facetData?.facets, tabs, matchingDiseases.length],
   );
 
   const getAccordionDefaultIndices = (
@@ -260,10 +261,7 @@ export const SearchResultsController = ({
                         key={typeSection.type}
                         title={
                           typeSection.type === 'ResourceCatalog'
-                            ? generateAccordionTitle(
-                                resourceCatalogCount,
-                                matchingDiseases.length,
-                              )
+                            ? generateAccordionTitle(sections)
                             : `${
                                 typeSection.label
                               } (${typeSection.count.toLocaleString()})`

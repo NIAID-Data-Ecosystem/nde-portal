@@ -13,12 +13,6 @@ import { TabType } from '../../types';
 interface TabWithCounts extends Omit<TabType, 'types'> {
   types: (TabType['types'][number] & {
     count: number;
-    counts?: {
-      datasets: number;
-      diseases: number;
-      resourceCatalogs: number;
-      computationalTools: number;
-    };
   })[];
 }
 
@@ -83,6 +77,7 @@ const TabLabels = ({
   const resourceCatalogType = types.find(
     type => type.type === 'ResourceCatalog',
   );
+  const diseaseType = types.find(type => type.type === 'Disease');
 
   const tagStyles = {
     borderRadius: 'full',
@@ -97,11 +92,11 @@ const TabLabels = ({
     fontSize: 'sm',
     noOfLines: 1,
   };
-  if (datasetType && resourceCatalogType) {
-    const datasetCount = datasetType.counts?.datasets || 0;
-    const resourceCatalogCount =
-      resourceCatalogType.counts?.resourceCatalogs || 0;
-    const diseaseCount = resourceCatalogType.counts?.diseases || 0;
+
+  if (datasetType && resourceCatalogType && diseaseType) {
+    const datasetCount = datasetType.count || 0;
+    const resourceCatalogCount = resourceCatalogType.count || 0;
+    const diseaseCount = diseaseType.count || 0;
     const otherResourcesCount = resourceCatalogCount + diseaseCount;
 
     return (

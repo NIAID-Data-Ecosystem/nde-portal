@@ -14,6 +14,10 @@ export const tabs: TabType[] = [
         label: formatAPIResourceTypeForDisplay('Dataset') + 's',
         type: 'Dataset',
       },
+      {
+        label: 'Disease Overviews',
+        type: 'Disease',
+      },
     ],
     isDefault: true,
   },
