@@ -16,6 +16,7 @@ import { CarouselWrapper } from '../layout/carousel-wrapper';
 import { EmptyState } from '../results-list/components/empty';
 import { TabType } from '../../types';
 import { useDiseaseData } from '../../hooks/useDiseaseData';
+import { generateOtherResourcesTitle } from '../../config/tabs';
 
 const CAROUSEL_RESULTS_FIELDS = [
   '_meta',
@@ -142,22 +143,6 @@ export const SearchResultsController = ({
     (hasResourceCatalogRecords && (carouselIsLoading || carouselIsPending)) ||
     diseaseIsLoading;
 
-  const generateAccordionTitle = (
-    sections: (typeof tabsWithFacetCounts)[0]['types'],
-  ): string => {
-    const resourceCatalog = sections.find(s => s.type === 'ResourceCatalog');
-    const disease = sections.find(s => s.type === 'Disease');
-
-    const resourceCount = resourceCatalog?.count || 0;
-    const diseaseCount = disease?.count || 0;
-    const totalCount = resourceCount + diseaseCount;
-
-    const resourcePart = `Resource Catalogs (${resourceCount.toLocaleString()})`;
-    const diseasePart = `Disease Overviews (${diseaseCount.toLocaleString()})`;
-
-    return `Other Resources (${totalCount.toLocaleString()}): ${resourcePart}, ${diseasePart}`;
-  };
-
   const tabsWithFacetCounts = useMemo(
     () =>
       tabs.map(tab => {
@@ -235,7 +220,7 @@ export const SearchResultsController = ({
                       return (
                         <AccordionContent
                           key='other-resources'
-                          title={generateAccordionTitle(sections)}
+                          title={generateOtherResourcesTitle(sections)}
                         >
                           {isCarouselLoading || shouldShowCarousel ? (
                             <CarouselWrapper>

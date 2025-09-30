@@ -9,6 +9,7 @@ import {
   TabsProps,
 } from '@chakra-ui/react';
 import { TabType } from '../../types';
+import { TAB_LABELS } from '../../config/tabs';
 
 interface TabWithCounts extends Omit<TabType, 'types'> {
   types: (TabType['types'][number] & {
@@ -101,15 +102,15 @@ const TabLabels = ({
 
     return (
       <Text as='h2' {...textStyles}>
-        Datasets
+        {`${TAB_LABELS.DATASET}s`}
         <Tag {...tagStyles}>{datasetCount.toLocaleString()}</Tag>
-        {' and Other Resources '}
+        {` and ${TAB_LABELS.OTHER_RESOURCES} `}
         <Tag {...tagStyles}>{otherResourcesCount.toLocaleString()}</Tag>
       </Text>
     );
   }
 
-  // Single-type tabs, e.g. Computational Tools
+  // Single-type tabs
   const type = types[0];
   return (
     <Text as='h2' {...textStyles}>

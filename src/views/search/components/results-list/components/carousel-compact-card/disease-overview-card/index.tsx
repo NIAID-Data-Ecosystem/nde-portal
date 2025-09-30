@@ -3,6 +3,7 @@ import { Text } from '@chakra-ui/react';
 import { DiseasePageProps } from 'src/views/diseases/types';
 import { Skeleton } from 'src/components/skeleton';
 import { CompactCard } from '../compact-card';
+import { TAB_LABELS } from 'src/views/search/config/tabs';
 
 interface DiseaseOverviewCardProps {
   data?: DiseasePageProps | null;
@@ -45,7 +46,7 @@ export const DiseaseOverviewCard = ({
   return (
     <CompactCard.Base isLoading={isLoading}>
       <CompactCard.Banner
-        label='Disease Overview'
+        label={TAB_LABELS.DISEASE_OVERVIEW}
         type='Disease'
         isLoading={isLoading}
       />
