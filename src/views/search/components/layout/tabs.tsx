@@ -9,16 +9,18 @@ import {
   TabsProps,
 } from '@chakra-ui/react';
 import { TabType } from '../../types';
+import { TAB_LABELS } from '../../config/tabs';
 
-// Extends TabType to include dataset counts for each type
 interface TabWithCounts extends Omit<TabType, 'types'> {
-  types: (TabType['types'][number] & { count: number })[];
+  types: (TabType['types'][number] & {
+    count: number;
+  })[];
 }
 
 interface SearchTabsProps extends Omit<TabsProps, 'children'> {
   colorScheme?: string;
   tabs: TabWithCounts[];
-  renderTabPanels: () => React.ReactNode[];
+  renderTabPanels: () => React.ReactNode;
 }
 
 export const SearchTabs = ({
@@ -60,14 +62,11 @@ export const SearchTabs = ({
           </Tab>
         ))}
       </TabList>
-
       <TabPanels>{renderTabPanels()}</TabPanels>
     </Tabs>
   );
 };
 
-// Formats a list of label/count pairs with proper conjunctions (e.g. ", and").
-// Example output: "A (10), B (20) and C (30)"
 const TabLabels = ({
   types,
   colorScheme,
@@ -75,32 +74,48 @@ const TabLabels = ({
   types: TabWithCounts['types'];
   colorScheme: string;
 }) => {
+  const datasetType = types.find(type => type.type === 'Dataset');
+  const resourceCatalogType = types.find(
+    type => type.type === 'ResourceCatalog',
+  );
+  const diseaseType = types.find(type => type.type === 'Disease');
+
+  const tagStyles = {
+    borderRadius: 'full',
+    colorScheme,
+    ml: 1.5,
+    my: 1,
+    size: 'sm',
+    variant: 'subtle',
+  };
+  const textStyles = {
+    color: 'inherit',
+    fontSize: 'sm',
+    noOfLines: 1,
+  };
+
+  if (datasetType && resourceCatalogType && diseaseType) {
+    const datasetCount = datasetType.count || 0;
+    const resourceCatalogCount = resourceCatalogType.count || 0;
+    const diseaseCount = diseaseType.count || 0;
+    const otherResourcesCount = resourceCatalogCount + diseaseCount;
+
+    return (
+      <Text as='h2' {...textStyles}>
+        {`${TAB_LABELS.DATASET}s`}
+        <Tag {...tagStyles}>{datasetCount.toLocaleString()}</Tag>
+        {` and ${TAB_LABELS.OTHER_RESOURCES} `}
+        <Tag {...tagStyles}>{otherResourcesCount.toLocaleString()}</Tag>
+      </Text>
+    );
+  }
+
+  // Single-type tabs
+  const type = types[0];
   return (
-    <Text as='h2' color='inherit' fontSize='sm' noOfLines={1}>
-      {types.map(({ label, count }, index) => {
-        const isLast = index === types.length - 1;
-        const isSecondLast = index === types.length - 2;
-
-        return (
-          <React.Fragment key={label}>
-            {label}
-            <Tag
-              borderRadius='full'
-              colorScheme={colorScheme}
-              ml={1.5}
-              my={1}
-              size='sm'
-              variant='subtle'
-            >
-              {count.toLocaleString()}
-            </Tag>
-
-            {/* Add comma or "and" where appropriate */}
-            {types.length > 2 && !isLast && ', '}
-            {isSecondLast && types.length > 1 && ' and '}
-          </React.Fragment>
-        );
-      })}
+    <Text as='h2' {...textStyles}>
+      {type.label}
+      <Tag {...tagStyles}>{type.count.toLocaleString()}</Tag>
     </Text>
   );
 };

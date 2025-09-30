@@ -4,17 +4,19 @@ import { TabPanel } from '@chakra-ui/react';
 import { useSearchTabsContext } from '../../context/search-tabs-context';
 import { useSearchQueryFromURL } from '../../hooks/useSearchQueryFromURL';
 import { SearchResults } from '../results-list';
-import { updateRoute } from '../../utils/update-route';
 import { AccordionContent, AccordionWrapper } from '../layout/accordion';
 import { useSearchResultsData } from '../../hooks/useSearchResultsData';
 import { usePaginationContext } from '../../context/pagination-context';
 import { SearchTabs } from '../layout/tabs';
 import { FetchSearchResultsResponse } from 'src/utils/api/types';
-import { CompactCard } from '../results-list/components/compact-card';
+import { ResourceCatalogCard } from '../results-list/components/carousel-compact-card/resource-catalog-card';
+import { DiseaseOverviewCard } from '../results-list/components/carousel-compact-card/disease-overview-card';
 import { Carousel } from 'src/components/carousel';
 import { CarouselWrapper } from '../layout/carousel-wrapper';
 import { EmptyState } from '../results-list/components/empty';
 import { TabType } from '../../types';
+import { useDiseaseData } from '../../hooks/useDiseaseData';
+import { generateOtherResourcesTitle } from '../../config/tabs';
 
 const CAROUSEL_RESULTS_FIELDS = [
   '_meta',
@@ -40,22 +42,16 @@ export const SearchResultsController = ({
   initialData,
 }: SearchResultsControllerProps) => {
   const router = useRouter();
-  // Selected tab index is stored in context to sync with other components.
   const { selectedIndex, setSelectedIndex, tabs } = useSearchTabsContext();
-
-  // Handle pagination with tab changes.
   const { getPagination, setPagination } = usePaginationContext();
 
-  // Update URL query param when a new tab is selected.
   const handleTabChange = (index: number) => {
     setSelectedIndex(index);
     const selectedTab = tabs[index];
     const paginationState = getPagination(selectedTab.id);
 
-    // Ensure pagination state is set for the selected tab.
     setPagination(selectedTab.id, paginationState);
 
-    // Update the URL with the new tab and pagination state.
     return router.replace(
       {
         query: {
@@ -71,7 +67,6 @@ export const SearchResultsController = ({
     );
   };
 
-  // Get the current search parameters from the URL and fetch facet data.
   const queryParams = useSearchQueryFromURL();
 
   const searchResultsData = useSearchResultsData(
@@ -86,14 +81,12 @@ export const SearchResultsController = ({
 
   const { data: facetData } = searchResultsData.response;
 
-  // Check if there are ResourceCatalog records using facet data
   const hasResourceCatalogRecords = useMemo(() => {
     const terms = facetData?.facets?.['@type']?.terms ?? [];
     const resourceCatalogFacet = terms.find(t => t.term === 'ResourceCatalog');
     return (resourceCatalogFacet?.count || 0) > 0;
   }, [facetData?.facets]);
 
-  // Get resource catalog records if they are available
   const carouselResultsData = useSearchResultsData(
     {
       q: queryParams.q || '',
@@ -121,17 +114,51 @@ export const SearchResultsController = ({
     [carouselData?.results],
   );
 
-  // Enhance each tab with facet counts for the types it represents.
+  const {
+    diseases: matchingDiseases,
+    isLoading: diseaseIsLoading,
+    hasMatchingDiseases,
+  } = useDiseaseData({
+    searchQuery: queryParams.q || '',
+    selectedFilters: queryParams.filters || {},
+    enabled: true,
+  });
+
+  const carouselItems = useMemo(() => {
+    const items: Array<{ type: 'resource' | 'disease'; data: any }> = [];
+
+    resourceCatalogData.forEach(resource => {
+      items.push({ type: 'resource', data: resource });
+    });
+
+    matchingDiseases.forEach(disease => {
+      items.push({ type: 'disease', data: disease });
+    });
+
+    return items;
+  }, [resourceCatalogData, matchingDiseases]);
+
+  const shouldShowCarousel = hasResourceCatalogRecords || hasMatchingDiseases;
+  const isCarouselLoading =
+    (hasResourceCatalogRecords && (carouselIsLoading || carouselIsPending)) ||
+    diseaseIsLoading;
+
   const tabsWithFacetCounts = useMemo(
     () =>
       tabs.map(tab => {
         const tabTypesWithCount = tab.types.map(({ label, type }) => {
           const terms = facetData?.facets?.['@type']?.terms ?? [];
           const facet = terms.find(t => t.term === type);
+          let count = facet?.count || 0;
+
+          if (type === 'Disease') {
+            count = matchingDiseases.length;
+          }
+
           return {
             label,
             type,
-            count: facet?.count || 0,
+            count,
           };
         });
 
@@ -140,14 +167,26 @@ export const SearchResultsController = ({
           types: tabTypesWithCount,
         };
       }),
-    [facetData?.facets, tabs],
+    [facetData?.facets, tabs, matchingDiseases.length],
   );
 
   const getAccordionDefaultIndices = (
     sections: (TabType['types'][number] & { count: number })[],
   ) =>
     sections.reduce((indices: number[], section, index) => {
-      if (section.type !== 'ResourceCatalog' || section.count > 0) {
+      if (section.type === 'ResourceCatalog') {
+        if (section.count > 0 || hasMatchingDiseases) {
+          indices.push(index);
+        }
+      } else if (section.type === 'Dataset') {
+        if (section.count > 0 || section.count === 0) {
+          indices.push(index);
+        }
+      } else if (section.type === 'ComputationalTool') {
+        if (section.count > 0 || section.count === 0) {
+          indices.push(index);
+        }
+      } else if (section.count > 0) {
         indices.push(index);
       }
       return indices;
@@ -155,7 +194,6 @@ export const SearchResultsController = ({
 
   return (
     <>
-      {/* Render each tab with its label(s) and count(s) */}
       <SearchTabs
         index={selectedIndex}
         onChange={handleTabChange}
@@ -164,62 +202,77 @@ export const SearchResultsController = ({
         renderTabPanels={() =>
           tabsWithFacetCounts.map(tab => {
             const sections = tab.types;
-            // Determine the default indices for the accordion based on sections
             const defaultIndices = getAccordionDefaultIndices(sections);
 
             return (
               <TabPanel key={tab.id}>
                 <AccordionWrapper
-                  key={`${tab.id}-${defaultIndices.join('-')}`}
+                  key={`${tab.id}-${defaultIndices.join(
+                    '-',
+                  )}-${hasMatchingDiseases}-${matchingDiseases.length}`}
                   defaultIndex={defaultIndices}
                 >
-                  {sections.map(typeSection => {
+                  {sections.map((section, idx) => {
+                    if (section.type === 'Disease') return null;
+
+                    // For ResourceCatalog, render "Other Resources" with carousel
+                    if (section.type === 'ResourceCatalog') {
+                      return (
+                        <AccordionContent
+                          key='other-resources'
+                          title={generateOtherResourcesTitle(sections)}
+                        >
+                          {isCarouselLoading || shouldShowCarousel ? (
+                            <CarouselWrapper>
+                              <Carousel gap={8} isLoading={isCarouselLoading}>
+                                {(isCarouselLoading
+                                  ? Array(3).fill({
+                                      type: 'resource',
+                                      data: null,
+                                    })
+                                  : carouselItems
+                                ).map((carouselItem, idx) => (
+                                  <div
+                                    key={
+                                      carouselItem?.data?.id || `loading-${idx}`
+                                    }
+                                  >
+                                    {carouselItem.type === 'resource' ? (
+                                      <ResourceCatalogCard
+                                        data={carouselItem.data}
+                                        isLoading={isCarouselLoading}
+                                        referrerPath={router.asPath}
+                                      />
+                                    ) : (
+                                      <DiseaseOverviewCard
+                                        data={carouselItem.data}
+                                        isLoading={isCarouselLoading}
+                                      />
+                                    )}
+                                  </div>
+                                ))}
+                              </Carousel>
+                            </CarouselWrapper>
+                          ) : (
+                            <EmptyState />
+                          )}
+                        </AccordionContent>
+                      );
+                    }
+
+                    // For Dataset and ComputationalTool, render normal search results
                     return (
                       <AccordionContent
-                        key={typeSection.type}
+                        key={section.type}
                         title={`${
-                          typeSection.label
-                        } (${typeSection.count.toLocaleString()})`}
+                          section.label
+                        } (${section.count.toLocaleString()})`}
                       >
-                        {/* Render carousel if ResourceCatalog type is included */}
-                        {typeSection.type === 'ResourceCatalog' ? (
-                          <>
-                            {carouselIsLoading ||
-                            carouselIsPending ||
-                            resourceCatalogData.length > 0 ? (
-                              <CarouselWrapper>
-                                <Carousel
-                                  gap={8}
-                                  isLoading={
-                                    carouselIsLoading || carouselIsPending
-                                  }
-                                >
-                                  {(carouselIsLoading || carouselIsPending
-                                    ? Array(3).fill(0)
-                                    : resourceCatalogData
-                                  ).map((carouselCard, idx) => (
-                                    <CompactCard
-                                      key={carouselCard?.id || `loading-${idx}`}
-                                      data={carouselCard}
-                                      isLoading={
-                                        carouselIsLoading || carouselIsPending
-                                      }
-                                      referrerPath={router.asPath}
-                                    />
-                                  ))}
-                                </Carousel>
-                              </CarouselWrapper>
-                            ) : (
-                              <EmptyState />
-                            )}
-                          </>
-                        ) : (
-                          <SearchResults
-                            id={tab.id}
-                            tabs={tabs}
-                            types={[typeSection.type]}
-                          />
-                        )}
+                        <SearchResults
+                          id={tab.id}
+                          tabs={tabs}
+                          types={[section.type]}
+                        />
                       </AccordionContent>
                     );
                   })}
