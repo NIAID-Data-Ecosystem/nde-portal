@@ -25,10 +25,11 @@ export const SectionButton = (props: ArrowButtonProps) => {
     <ArrowButton
       flex={{ base: 1, sm: 'unset' }}
       minWidth={{ base: '180px', md: 'unset' }}
-      maxWidth={{ base: 'unset', md: '250px' }}
+      // maxWidth={{ base: 'unset', md: '250px' }}
       {...props}
+      hasArrow={true}
     >
-      {props.title}
+      {props.children}
     </ArrowButton>
   );
 };

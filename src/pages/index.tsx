@@ -209,6 +209,7 @@ const Home: NextPage<{
                       <LandingPageSection.Button
                         key={cta.title}
                         variant={idx % 2 ? 'solid' : 'outline'}
+                        {...cta}
                       >
                         {cta.title}
                       </LandingPageSection.Button>

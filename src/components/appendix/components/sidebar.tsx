@@ -9,7 +9,7 @@ import {
 import NextLink from 'next/link';
 import type { UrlObject } from 'url';
 
-const SidebarList: React.FC<FlexProps & { ['aria-label']: string }> = ({
+export const SidebarList: React.FC<FlexProps & { ['aria-label']: string }> = ({
   ['aria-label']: ariaLabel,
   children,
   ...props
@@ -35,10 +35,10 @@ const SidebarList: React.FC<FlexProps & { ['aria-label']: string }> = ({
 
 export const SidebarItem: React.FC<{
   title: React.ReactNode;
-  subTitle?: React.ReactNode;
+  subtitle?: React.ReactNode;
   href: UrlObject | string;
   headingProps?: HeadingProps;
-}> = ({ href, title, subTitle }) => {
+}> = ({ href, title, subtitle, ...props }) => {
   return (
     <List.Item
       asChild
@@ -59,17 +59,12 @@ export const SidebarItem: React.FC<{
           title
         )}
 
-        {subTitle && (
+        {subtitle && (
           <Text fontSize='sm' lineHeight='short'>
-            {subTitle}
+            {subtitle}
           </Text>
         )}
       </NextLink>
     </List.Item>
   );
-};
-
-export const Sidebar = {
-  List: SidebarList,
-  Item: SidebarItem,
 };

@@ -3,11 +3,10 @@ import {
   Box,
   Flex,
   Heading,
-  ListItem,
+  List,
   SimpleGrid,
   SkeletonText,
   Text,
-  UnorderedList,
 } from '@chakra-ui/react';
 import { useMediaQuery } from 'usehooks-ts';
 import { Link } from 'src/components/link';
@@ -249,7 +248,7 @@ const Docs: NextPage<{
                   // {/* List of categories with associated documents. */}
                   <SimpleGrid
                     columns={{ base: 1, md: 2, lg: 3 }}
-                    spacing={{ base: 8, md: 10, lg: '50px' }}
+                    gap={{ base: 8, md: 10, lg: '50px' }}
                     margin='0 auto'
                     w={{ base: '100%', lg: '1000px' }}
                     gridAutoRows='min-content'

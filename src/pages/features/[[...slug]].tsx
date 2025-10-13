@@ -13,8 +13,8 @@ import {
   PageContent,
 } from 'src/components/page-container';
 import { SiteConfig } from 'src/components/page-container/types';
+import { TableOfContents } from 'src/views/features/components/appendix';
 import Main from 'src/views/features/components/Main';
-import { TableOfContents } from 'src/views/features/components/TableOfContents';
 
 const siteConfig = SITE_CONFIG as SiteConfig;
 
@@ -124,7 +124,7 @@ const FeaturedPage: NextPage<{
                     mb={32}
                     flex={1}
                   >
-                    <Main isLoading={isLoading} data={data} />
+                    {/* <Main isLoading={isLoading} data={data} /> */}
                   </PageContent>
                 </Flex>
               </Flex>

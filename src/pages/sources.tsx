@@ -18,7 +18,7 @@ import {
   Label,
   Sidebar,
   SidebarItem,
-} from 'src/components/table-of-contents/layouts/sidebar';
+} from 'src/components/table-of-contents/components/sidebar';
 import { formatDate } from 'src/utils/api/helpers';
 import { BadgeWithTooltip } from 'src/components/badges/components/BadgeWithTooltip';
 import { fetchSourceInformationFromGithub } from 'src/views/sources/helpers';

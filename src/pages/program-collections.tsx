@@ -1,6 +1,6 @@
-import React, { useMemo, useState } from 'react';
-import { GetStaticProps, NextPage } from 'next';
 import { Flex, HStack, Text } from '@chakra-ui/react';
+import { GetStaticProps, NextPage } from 'next';
+import React, { useMemo, useState } from 'react';
 import { Error } from 'src/components/error';
 import { Link } from 'src/components/link';
 import {
@@ -8,19 +8,19 @@ import {
   PageContainer,
   PageContent,
 } from 'src/components/page-container';
+import { SectionSearch } from 'src/components/section/components/search';
 import {
-  StyledCard,
   StyleCardSubLabel,
+  StyledCard,
   StyledCardButton,
   StyledCardDescription,
   StyledCardStack,
 } from 'src/components/table-of-contents/components/card';
-import { SectionHeader } from 'src/components/table-of-contents/layouts/section-header';
-import { SectionSearch } from 'src/components/table-of-contents/layouts/section-search';
 import {
   Sidebar,
   SidebarItem,
-} from 'src/components/table-of-contents/layouts/sidebar';
+} from 'src/components/table-of-contents/components/sidebar';
+import { SectionHeader } from 'src/components/table-of-contents/layouts/section-header';
 import {
   fetchProgramCollections,
   ProgramCollection,

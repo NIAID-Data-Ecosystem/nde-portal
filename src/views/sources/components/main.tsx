@@ -22,7 +22,7 @@ import {
   StyledCardStack,
 } from 'src/components/table-of-contents/components/card';
 import { SectionHeader } from 'src/components/table-of-contents/layouts/section-header';
-import { SectionSearch } from 'src/components/table-of-contents/layouts/section-search';
+import { SectionSearch } from 'src/components/section/components/search';
 import { TagWithUrl } from 'src/components/tag-with-url';
 import type { SourceResponse } from 'src/pages/sources';
 import { formatDate } from 'src/utils/api/helpers';

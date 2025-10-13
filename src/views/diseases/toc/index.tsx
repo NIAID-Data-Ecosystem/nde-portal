@@ -1,23 +1,22 @@
-import { useMemo, useState } from 'react';
-import { Flex, Image, Stack } from '@chakra-ui/react';
+import { Box, Flex, Image, Skeleton, Stack } from '@chakra-ui/react';
 import { useQuery } from '@tanstack/react-query';
-import { DiseasePageProps } from 'src/views/diseases/types';
+import { useMemo, useState } from 'react';
+import { Appendix } from 'src/components/appendix';
 import { PageContent } from 'src/components/page-container';
+import { Section } from 'src/components/section';
 import { fetchAllDiseasePages } from 'src/views/diseases/helpers';
-import {
-  StyledCard,
-  StyleCardLabel,
-  StyledCardButton,
-  StyledCardDescription,
-  StyledCardStack,
-} from 'src/components/table-of-contents/components/card';
-import { SectionHeader } from 'src/components/table-of-contents/layouts/section-header';
-import { SectionSearch } from 'src/components/table-of-contents/layouts/section-search';
-import {
-  Sidebar,
-  SidebarItem,
-} from 'src/components/table-of-contents/layouts/sidebar';
+import { DiseasePageProps } from 'src/views/diseases/types';
 
+const APPENDIX_COPY = {
+  heading: 'Diseases',
+  sidebar: {
+    'aria-label': 'Navigation for list of disease pages.',
+  },
+  search: {
+    'aria-label': 'Search for a disease page',
+    placeholder: 'Search for a disease page',
+  },
+};
 export const TableOfContents = () => {
   const [searchValue, setSearchValue] = useState('');
 
@@ -61,7 +60,7 @@ export const TableOfContents = () => {
         flex={3}
       >
         <Flex flexDirection='column' flex={1} pb={32} width='100%' m='0 auto'>
-          <SectionHeader title='Diseases' />
+          <Section.Heading>{APPENDIX_COPY.heading}</Section.Heading>
           <div>Error loading diseases: {error.message}</div>
         </Flex>
       </PageContent>
@@ -70,17 +69,17 @@ export const TableOfContents = () => {
 
   return (
     <Flex>
-      <Sidebar aria-label='Navigation for list of disease pages.'>
+      <Appendix.SidebarList aria-label={APPENDIX_COPY.sidebar['aria-label']}>
         {diseasePages.map(page => {
           return (
-            <SidebarItem
+            <Appendix.SidebarItem
               key={page.id}
-              label={page?.title}
+              title={page?.title}
               href={`#${page.slug}`}
             />
           );
         })}
-      </Sidebar>
+      </Appendix.SidebarList>
       <PageContent
         id='diseases-index-page'
         bg='#fff'
@@ -92,101 +91,57 @@ export const TableOfContents = () => {
         mb={32}
         flex={3}
       >
-        <Flex flexDirection='column' flex={1} pb={32} width='100%' m='0 auto'>
-          <SectionHeader title='Diseases'></SectionHeader>
+        <Section.Wrapper hasSeparator heading={APPENDIX_COPY.heading} w='100%'>
+          <Flex flexDirection='column' alignItems='center' flex={1}>
+            {/* Search bar */}
+            <Flex>
+              <Section.Search
+                data={diseasePages}
+                size='sm'
+                ariaLabel='Search for a disease'
+                placeholder='Search for a disease'
+                value={searchValue}
+                handleChange={e => setSearchValue(e.currentTarget.value)}
+              />
+            </Flex>
 
-          {/* Search bar */}
-          <Flex>
-            <SectionSearch
-              data={diseasePages}
-              size='sm'
-              ariaLabel='Search for a disease'
-              placeholder='Search for a disease'
-              value={searchValue}
-              handleChange={e => setSearchValue(e.currentTarget.value)}
-            />
-          </Flex>
+            {/* Display list of disease pages in cards */}
 
-          {/* Display list of disease pages in cards */}
-          <StyledCardStack>
-            {isLoading
-              ? Array.from({ length: 3 }, (_, index) => (
-                  <StyledCard key={`loading-${index}`} isLoading={true} />
-                ))
-              : diseasePages.map(page => {
-                  const label = page?.title;
-
-                  return (
-                    <StyledCard
-                      key={page.id}
-                      id={page.slug}
-                      isLoading={isLoading}
-                    >
-                      {/* Description */}
-                      <Stack
-                        spacing={{ base: 4, lg: 6, xl: 10 }}
-                        flexDirection='row'
-                        alignItems='unset'
-                        flexWrap='wrap-reverse'
+            <Appendix.CardStack>
+              {isLoading
+                ? Array.from({ length: 3 }, (_, index) => (
+                    <Skeleton key={`loading-${index}`} loading={true} />
+                  ))
+                : diseasePages.map(page => {
+                    return (
+                      <Appendix.Card
+                        key={page.id}
+                        id={page.slug}
+                        title={page?.title || ''}
+                        image={{
+                          src: `${process.env.NEXT_PUBLIC_STRAPI_API_URL}${page.image.url}`,
+                          alt: page.image.alternativeText,
+                        }}
+                        cta={[
+                          {
+                            href: `/diseases/${page.slug}`,
+                            children: `Learn about ${page.title} resources in the NIAID Data Ecosystem`,
+                          },
+                        ]}
                       >
-                        <Stack
-                          flexDirection='column'
-                          alignItems='unset'
-                          minWidth={250}
-                          flex={1}
-                        >
-                          {/* Name */}
-                          <StyleCardLabel>{label}</StyleCardLabel>
-
-                          {/* Description */}
-                          {page.description && (
-                            <Flex flex={1}>
-                              <StyledCardDescription>
-                                {page.description}
-                              </StyledCardDescription>
-                            </Flex>
-                          )}
-                        </Stack>
-
-                        {page.image?.url && (
-                          <Flex
-                            minWidth={200}
-                            maxWidth={{ base: 'unset', xl: '25%' }}
-                            flex={1}
-                            alignItems='flex-start'
-                          >
-                            <Image
-                              borderRadius='base'
-                              width='100%'
-                              height='auto'
-                              src={`${process.env.NEXT_PUBLIC_STRAPI_API_URL}${page.image.url}`}
-                              alt={page.image.alternativeText}
-                              objectFit='contain'
-                            />
+                        {page.description && (
+                          <Flex flex={1}>
+                            <Appendix.CardMarkdownContent>
+                              {page.description}
+                            </Appendix.CardMarkdownContent>
                           </Flex>
                         )}
-                      </Stack>
-                      {/* Link to program resources in the NDE */}
-                      {page.query && (
-                        <Flex
-                          justifyContent={{ base: 'center', md: 'flex-end' }}
-                          width='100%'
-                        >
-                          <StyledCardButton
-                            href={{
-                              pathname: `/diseases/${page.slug}`,
-                            }}
-                          >
-                            Learn about {label} resources in the NIAID Data
-                            Ecosystem
-                          </StyledCardButton>
-                        </Flex>
-                      )}
-                    </StyledCard>
-                  );
-                })}
-          </StyledCardStack>
-        </Flex>
+                      </Appendix.Card>
+                    );
+                  })}
+            </Appendix.CardStack>
+          </Flex>
+        </Section.Wrapper>
       </PageContent>
     </Flex>
   );

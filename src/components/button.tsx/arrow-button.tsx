@@ -1,5 +1,6 @@
 import { Button, ButtonProps, Icon, Text } from '@chakra-ui/react';
 import NextLink from 'next/link';
+import { FaAngleRight } from 'react-icons/fa6';
 
 export interface ArrowButtonProps extends ButtonProps {
   href?: string;
@@ -8,6 +9,7 @@ export interface ArrowButtonProps extends ButtonProps {
   hasArrow?: boolean;
 }
 
+const TRANSLATE_X = 10;
 export const ArrowButton = ({
   href,
   isExternal,
@@ -16,6 +18,11 @@ export const ArrowButton = ({
   children,
   ...props
 }: ArrowButtonProps) => {
+  const textStyles = {
+    truncate: true,
+    w: '100%',
+    pr: hasArrow ? `${TRANSLATE_X}px` : undefined,
+  };
   return (
     <Button asChild={!!href} size='xs' {...props}>
       {href ? (
@@ -25,14 +32,16 @@ export const ArrowButton = ({
           rel={isExternal ? 'noopener noreferrer' : ''}
         >
           {icon ? <Icon as={icon} /> : null}
-          <Text truncate w='100%'>
-            {children}
-          </Text>
+          <Text {...textStyles}>{children}</Text>
+          {hasArrow && (
+            <Icon
+              as={FaAngleRight}
+              transform={`translateX(-${TRANSLATE_X}px)`}
+            />
+          )}
         </NextLink>
       ) : (
-        <Text truncate w='100%'>
-          {children}
-        </Text>
+        <Text {...textStyles}>{children}</Text>
       )}
     </Button>
   );

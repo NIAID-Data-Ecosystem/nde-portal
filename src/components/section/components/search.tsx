@@ -15,7 +15,7 @@ export const SectionSearch: React.FC<SectionSearchProps> = ({
 }) => {
   return (
     <Flex justifyContent='flex-end' flex={1}>
-      <Box w='300px' my={0.5}>
+      <Box width={{ base: '100%', sm: '300px' }} my={0.5}>
         <SearchInput
           size={size}
           ariaLabel={ariaLabel}
