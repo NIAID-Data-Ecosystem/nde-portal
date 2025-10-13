@@ -7,10 +7,7 @@ export const fetchFeaturedContent = async (
 ): Promise<FeaturedPageProps | null> => {
   try {
     const isProd = process.env.NEXT_PUBLIC_APP_ENV === 'production';
-    // In production, we do not features. Remove when approved.
-    if (isProd) {
-      return null;
-    }
+
     const featured = await axios.get(
       `${
         process.env.NEXT_PUBLIC_STRAPI_API_URL
@@ -34,10 +31,6 @@ export const fetchFeaturedContent = async (
 export const fetchAllFeaturedPages = async (params?: FeaturedQueryParams) => {
   try {
     const isProd = process.env.NEXT_PUBLIC_APP_ENV === 'production';
-    // In production, we do not features. Remove when approved.
-    if (isProd) {
-      return [];
-    }
 
     const featuredPages = await axios.get<{ data: FeaturedPageProps[] }>(
       `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/api/features`,
