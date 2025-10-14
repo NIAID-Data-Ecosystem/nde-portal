@@ -11,7 +11,7 @@ import { QueryValue } from 'src/components/advanced-search/types';
 import { SearchInputProps } from './types';
 import {
   APIResourceType,
-  formatResourceTypeForDisplay,
+  formatAPIResourceTypeForDisplay,
 } from 'src/utils/formatting/formatResourceType';
 
 export const SearchInput: React.FC<SearchInputProps> = ({
@@ -134,7 +134,7 @@ export const SearchInput: React.FC<SearchInputProps> = ({
             // [@type] needs to be formatted to the terms we use in the UI.
             if (selectedFieldDetails.property === '@type') {
               const type = value as APIResourceType;
-              return { label: formatResourceTypeForDisplay(type), value };
+              return { label: formatAPIResourceTypeForDisplay(type), value };
             }
             return { label: value, value };
           })}
