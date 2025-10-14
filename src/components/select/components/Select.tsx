@@ -60,7 +60,9 @@ interface SelectProps extends UseDisclosureProps {
   onToggle: () => void;
 }
 
-interface SelectWithInputProps extends Omit<InputProps, 'id'>, SelectProps {
+interface SelectWithInputProps
+  extends Omit<InputProps, 'id' | 'onToggle'>,
+    SelectProps {
   ariaLabel: string;
 }
 
@@ -121,7 +123,9 @@ export const SelectWithInput: React.FC<SelectWithInputProps> = ({
   );
 };
 
-interface SelectWithButtonProps extends Omit<ButtonProps, 'id'>, SelectProps {}
+interface SelectWithButtonProps
+  extends Omit<ButtonProps, 'id' | 'onToggle'>,
+    SelectProps {}
 
 export const SelectWithButton: React.FC<SelectWithButtonProps> = ({
   children,
