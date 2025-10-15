@@ -31,6 +31,7 @@ import { filterWords } from './helpers';
 import { SchemaDefinitions } from 'scripts/generate-schema-definitions/types';
 import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
 import { InfoLabel } from 'src/components/info-label';
+import { formatAPIResourceTypeForDisplay } from 'src/utils/formatting/formatResourceType';
 
 interface SearchResultCardProps {
   isLoading?: boolean;
@@ -91,6 +92,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
       borderColor='gray.100'
     >
       <TypeBanner
+        label={formatAPIResourceTypeForDisplay(type)}
         type={type}
         p={0}
         pl={[2, 4, 6]}

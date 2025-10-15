@@ -5,6 +5,7 @@ import TypeBanner from '../type-banner';
 import { FormattedResource } from 'src/utils/api/types';
 import { isSourceFundedByNiaid } from 'src/utils/helpers/sources';
 import { operatingSystemIcons } from 'src/utils/helpers/operating-system-icons';
+import { formatAPIResourceTypeForDisplay } from 'src/utils/formatting/formatResourceType';
 
 interface DateTagProps extends FlexProps {
   type?: string;
@@ -68,6 +69,7 @@ const ResourceBanner: React.FC<ResourceBannerProps> = ({ data }) => {
 
   return (
     <TypeBanner
+      label={formatAPIResourceTypeForDisplay(type)}
       type={type}
       bg='status.info_lt'
       isNiaidFunded={isSourceFundedByNiaid(data.includedInDataCatalog)}
