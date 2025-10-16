@@ -300,7 +300,7 @@ const createFeatureListContent = (
               name,
               searchProps: {
                 ['aria-label']: `Search for results with feature "${name}"`,
-                property: 'feature.name',
+                property: 'featureList.name',
                 value: Array.isArray(feature.name)
                   ? feature.name.join('" OR "')
                   : feature.name,
