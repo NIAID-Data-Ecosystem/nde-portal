@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [5.1.0](https://github.com/NIAID-Data-Ecosystem/nde-portal/compare/v5.0.0...v5.1.0) (2025-10-16)
+
+
+### 🚀 Features
+
+* add handling for rate limit ([64072b8](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/64072b8bf93c45b91b51d7b8c333f3e7a4f47b9f))
+* add ontology browser page ([3799480](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/3799480aeebac45518e754b4a1d23e8831c8be39))
+* add ontology browser page ([8ba6467](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/8ba6467ea15f63e2c4a139a544ca0f328c1a813c))
+* **diseases:** Add GA tracking ([#345](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/345)) ([24d7307](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/24d730765df7ec86b24eda47fb46683cf93b98fb))
+* improve loading in ontological browser ([#351](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/351)) ([4e22293](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/4e2229351379227047c60b4c56af0c9927e438ba))
+* **ontology-browser:** add nde flag to biothings search ([973a05b](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/973a05bce55a5b1ee56f85e32befabc19b7a5cef))
+* **search:** add ontology browser linkout ([24cd3bb](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/24cd3bb9c08e6a3c0dfe5d36410e4347a9b4a331))
+
+
+### 🐛 Bugfixes
+
+* **ontology-browser:** add rate limit on portal counts ([c208ec0](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/c208ec05993464e80f9a90df6c42043e7829ef8b))
+* **ontology-browser:** fix typo ([a892483](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/a8924830477fce9d09d446447b6091581174518f))
+* remove temporalInterval property from temporalCoverage ([#353](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/353)) ([317cb1d](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/317cb1d7cfddc47f7458636a439c5831314bc45f))
+* **search:** ensure tab selection works with type filters ([935ca48](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/935ca488e8550494eabd14898b5b4a25364b19c7))
+
 ## [5.0.0](https://github.com/NIAID-Data-Ecosystem/nde-portal/compare/v4.2.0...v5.0.0) (2025-08-01)
 
 
