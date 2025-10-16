@@ -7,7 +7,7 @@ import { fetchSearchResults } from 'src/utils/api';
 import { FacetTerm, FetchSearchResultsResponse } from 'src/utils/api/types';
 import {
   APIResourceType,
-  formatResourceTypeForDisplay,
+  formatAPIResourceTypeForDisplay,
 } from 'src/utils/formatting/formatResourceType';
 import {
   getFillColor,
@@ -113,7 +113,7 @@ export const DataTypes = ({ query, topic }: TopicQueryProps) => {
                 labelStyles={{
                   fill: '#2f2f2f',
                   transformLabel: term =>
-                    formatResourceTypeForDisplay(term as APIResourceType),
+                    formatAPIResourceTypeForDisplay(term as APIResourceType),
                 }}
                 getRoute={term => {
                   return getSearchResultsRoute({
@@ -150,7 +150,7 @@ export const DataTypes = ({ query, topic }: TopicQueryProps) => {
                         passHref
                       >
                         <Link as='p'>
-                          {formatResourceTypeForDisplay(
+                          {formatAPIResourceTypeForDisplay(
                             term as APIResourceType,
                           )}
                         </Link>

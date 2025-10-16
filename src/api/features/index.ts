@@ -7,10 +7,7 @@ export const fetchFeatureBySlug = async (
 ): Promise<FeatureQueryResponse | null> => {
   try {
     const isProd = process.env.NEXT_PUBLIC_APP_ENV === 'production';
-    // In production, we do not features. Remove when approved.
-    if (isProd) {
-      return null;
-    }
+
     const featured = await axios.get(
       `${
         process.env.NEXT_PUBLIC_STRAPI_API_URL
@@ -36,10 +33,6 @@ export const fetchAllFeatures = async (
 ): Promise<FeatureQueryResponse[]> => {
   try {
     const isProd = process.env.NEXT_PUBLIC_APP_ENV === 'production';
-    // In production, we do not features. Remove when approved.
-    if (isProd) {
-      return [];
-    }
 
     const featured = await axios.get(
       `${process.env.NEXT_PUBLIC_STRAPI_API_URL}/api/features`,

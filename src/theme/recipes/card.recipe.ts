@@ -44,6 +44,26 @@ const card = defineSlotRecipe({
     },
   },
   variants: {
+    size: {
+      sm: {
+        title: {
+          textStyle: 'lg',
+          mb: 1,
+        },
+      },
+      md: {
+        title: {
+          textStyle: 'xl',
+          mb: 1,
+        },
+      },
+      lg: {
+        title: {
+          textStyle: 'xl',
+          mb: 2,
+        },
+      },
+    },
     variant: {
       outline: {
         root: {

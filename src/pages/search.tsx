@@ -5,6 +5,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { getPageSeoConfig, PageContainer } from 'src/components/page-container';
 import { fetchSearchResults } from 'src/utils/api';
 import { FetchSearchResultsResponse } from 'src/utils/api/types';
+import { OntologyBrowserPopup } from 'src/views/ontology-browser/components/popup';
 import { Filters } from 'src/views/search/components/filters';
 import { FilterTags } from 'src/views/search/components/filters/components/tag';
 import { FILTER_CONFIGS } from 'src/views/search/components/filters/config';
@@ -121,8 +122,18 @@ const Search: NextPage<{
                 borderColor='gray.100'
                 gap={2}
               >
-                {/* Heading: Showing results for... */}
-                {/* <SearchResultsHeader querystring={queryParams.q} /> */}
+                <Flex flex={1} flexDirection='column' width='100%'>
+                  <Flex flex={1} justifyContent='flex-end'>
+                    <OntologyBrowserPopup
+                      querystring={
+                        queryParams.q === '__all__' ? '' : queryParams.q
+                      }
+                      selectedFilters={selectedFilters}
+                    />
+                  </Flex>
+                  {/* Heading: Showing results for... */}
+                  <SearchResultsHeader querystring={queryParams.q} />
+                </Flex>
 
                 {/* Filter tags : Tags with the names of the currently selected filters */}
                 {/* {Object.values(selectedFilters).length > 0 && (

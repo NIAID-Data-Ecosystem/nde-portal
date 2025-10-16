@@ -96,7 +96,21 @@ const DiseasePage: NextPage<{
           </Flex>
         </Error>
       ) : (
-        <>{hasSlug ? <></> : <TableOfContents />}</>
+        <>
+          {hasSlug ? (
+            <>
+              {/*  <DiseaseContent
+               data={data}
+               query={query}
+               isLoading={isLoading}
+               topic={topic}
+               totalCount={totalQuery.data?.total || 0}
+             /> */}
+            </>
+          ) : (
+            <TableOfContents />
+          )}
+        </>
       )}
     </PageContainer>
   );

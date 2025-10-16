@@ -3,18 +3,19 @@ import { Flex, FlexProps, Icon, Text } from '@chakra-ui/react';
 import { FaRegClock } from 'react-icons/fa6';
 import { FormattedResource } from 'src/utils/api/types';
 import { StyledLabel } from './styles';
-import { formatResourceTypeForDisplay } from 'src/utils/formatting/formatResourceType';
+import { APIResourceType } from 'src/utils/formatting/formatResourceType';
 import Tooltip from 'src/components/tooltip';
 import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
 
-interface TypeBannerProps extends FlexProps {
-  type?: FormattedResource['@type'];
+export interface TypeBannerProps extends FlexProps {
+  label: string;
+  type?: APIResourceType | 'Disease';
   date?: FormattedResource['date'];
   sourceName?: string[] | null;
   isNiaidFunded?: boolean;
 }
 
-export const getTypeColor = (type?: FormattedResource['@type']) => {
+export const getTypeColor = (type?: APIResourceType | string) => {
   const typeLower = type?.toLowerCase();
   let lt = 'info.default';
   let dk = 'niaid.500';
@@ -27,6 +28,9 @@ export const getTypeColor = (type?: FormattedResource['@type']) => {
     dk = 'primary.700';
   } else if (typeLower?.includes('tool') || typeLower?.includes('software')) {
     lt = 'primary.800';
+  } else if (typeLower === 'disease') {
+    lt = 'purple.600';
+    dk = 'purple.800';
   } else {
     lt = 'niaid.500';
   }
@@ -34,6 +38,7 @@ export const getTypeColor = (type?: FormattedResource['@type']) => {
 };
 
 const TypeBanner: React.FC<TypeBannerProps> = ({
+  label,
   type,
   date,
   children,
@@ -84,7 +89,7 @@ const TypeBanner: React.FC<TypeBannerProps> = ({
               whiteSpace='nowrap'
               textTransform='uppercase'
             >
-              {type ? formatResourceTypeForDisplay(type) : 'Unknown'}
+              {label || 'Unknown'}
             </Text>
           </Tooltip>
         </StyledLabel>

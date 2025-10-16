@@ -1,13 +1,13 @@
-import { Box, Flex, Image, Skeleton, Stack } from '@chakra-ui/react';
+import { Flex, Skeleton } from '@chakra-ui/react';
 import { useQuery } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
-import { Appendix } from 'src/components/appendix';
 import { PageContent } from 'src/components/page-container';
 import { Section } from 'src/components/section';
+import { TOC } from 'src/components/toc';
 import { fetchAllDiseasePages } from 'src/views/diseases/helpers';
 import { DiseasePageProps } from 'src/views/diseases/types';
 
-const APPENDIX_COPY = {
+const TOC_COPY = {
   heading: 'Diseases',
   sidebar: {
     'aria-label': 'Navigation for list of disease pages.',
@@ -60,7 +60,7 @@ export const TableOfContents = () => {
         flex={3}
       >
         <Flex flexDirection='column' flex={1} pb={32} width='100%' m='0 auto'>
-          <Section.Heading>{APPENDIX_COPY.heading}</Section.Heading>
+          <Section.Heading>{TOC_COPY.heading}</Section.Heading>
           <div>Error loading diseases: {error.message}</div>
         </Flex>
       </PageContent>
@@ -69,17 +69,17 @@ export const TableOfContents = () => {
 
   return (
     <Flex>
-      <Appendix.SidebarList aria-label={APPENDIX_COPY.sidebar['aria-label']}>
+      <TOC.SidebarList aria-label={TOC_COPY.sidebar['aria-label']}>
         {diseasePages.map(page => {
           return (
-            <Appendix.SidebarItem
+            <TOC.SidebarItem
               key={page.id}
               title={page?.title}
               href={`#${page.slug}`}
             />
           );
         })}
-      </Appendix.SidebarList>
+      </TOC.SidebarList>
       <PageContent
         id='diseases-index-page'
         bg='#fff'
@@ -91,10 +91,10 @@ export const TableOfContents = () => {
         mb={32}
         flex={3}
       >
-        <Section.Wrapper hasSeparator heading={APPENDIX_COPY.heading} w='100%'>
+        <Section.Wrapper hasSeparator heading={TOC_COPY.heading} w='100%'>
           <Flex flexDirection='column' alignItems='center' flex={1}>
             {/* Search bar */}
-            <Flex>
+            <Flex width='100%' alignItems='flex-end'>
               <Section.Search
                 data={diseasePages}
                 size='sm'
@@ -107,14 +107,14 @@ export const TableOfContents = () => {
 
             {/* Display list of disease pages in cards */}
 
-            <Appendix.CardStack>
+            <TOC.CardStack width='100%'>
               {isLoading
                 ? Array.from({ length: 3 }, (_, index) => (
                     <Skeleton key={`loading-${index}`} loading={true} />
                   ))
                 : diseasePages.map(page => {
                     return (
-                      <Appendix.Card
+                      <TOC.Card
                         key={page.id}
                         id={page.slug}
                         title={page?.title || ''}
@@ -126,20 +126,21 @@ export const TableOfContents = () => {
                           {
                             href: `/diseases/${page.slug}`,
                             children: `Learn about ${page.title} resources in the NIAID Data Ecosystem`,
+                            hasArrow: true,
                           },
                         ]}
                       >
                         {page.description && (
                           <Flex flex={1}>
-                            <Appendix.CardMarkdownContent>
+                            <TOC.CardMarkdownContent>
                               {page.description}
-                            </Appendix.CardMarkdownContent>
+                            </TOC.CardMarkdownContent>
                           </Flex>
                         )}
-                      </Appendix.Card>
+                      </TOC.Card>
                     );
                   })}
-            </Appendix.CardStack>
+            </TOC.CardStack>
           </Flex>
         </Section.Wrapper>
       </PageContent>

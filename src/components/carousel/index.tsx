@@ -1,12 +1,13 @@
-import React, { useRef } from 'react';
 import { Box, Flex } from '@chakra-ui/react';
+import React, { useRef } from 'react';
 import { useResizeObserver } from 'usehooks-ts';
-import { CarouselProps } from './types';
-import { useCarouselState } from './hooks/useCarouselState';
-import { useCarouselNavigation } from './hooks/useCarouselNavigation';
+
 import { CarouselControls } from './components/CarouselControls';
-import { Track } from './components/Track';
 import { Item } from './components/Item';
+import { Track } from './components/Track';
+import { useCarouselNavigation } from './hooks/useCarouselNavigation';
+import { useCarouselState } from './hooks/useCarouselState';
+import { CarouselProps } from './types';
 
 export const Carousel = ({
   children,
@@ -96,6 +97,7 @@ export const Carousel = ({
           alignItems='center'
           justifyContent={showProgressBar ? 'space-between' : 'center'}
           minH='44px'
+          mt={4}
         >
           <CarouselControls {...controlsProps} />
         </Flex>

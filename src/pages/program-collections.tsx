@@ -8,25 +8,24 @@ import {
   PageContainer,
   PageContent,
 } from 'src/components/page-container';
-import { SectionSearch } from 'src/components/section/components/search';
-import {
-  StyleCardSubLabel,
-  StyledCard,
-  StyledCardButton,
-  StyledCardDescription,
-  StyledCardStack,
-} from 'src/components/table-of-contents/components/card';
-import {
-  Sidebar,
-  SidebarItem,
-} from 'src/components/table-of-contents/components/sidebar';
-import { SectionHeader } from 'src/components/table-of-contents/layouts/section-header';
+import { Section } from 'src/components/section';
+import { TOC } from 'src/components/toc';
 import {
   fetchProgramCollections,
   ProgramCollection,
 } from 'src/views/program-collections/helpers';
 import { queryFilterObject2String } from 'src/views/search/components/filters/utils/query-builders';
 
+const TOC_COPY = {
+  heading: 'Program Collections',
+  sidebar: {
+    'aria-label': 'Navigation for program collections list.',
+  },
+  search: {
+    'aria-label': 'Search for a program collection',
+    placeholder: 'Search for a program collection',
+  },
+};
 const ProgramCollections: NextPage<{
   data: ProgramCollection[];
   error: Error;
@@ -103,22 +102,23 @@ const ProgramCollections: NextPage<{
           </Error>
         ) : (
           <>
-            <Sidebar aria-label='Navigation for program collections list.'>
+            <TOC.SidebarList aria-label={TOC_COPY.sidebar['aria-label']}>
               {data?.map(collection => {
                 return (
-                  <SidebarItem
+                  <TOC.SidebarItem
                     key={collection.id}
-                    label={
+                    title={
                       collection?.sourceOrganization?.name || collection.term
                     }
-                    subLabel={collection.sourceOrganization?.alternateName?.join(
+                    subtitle={collection.sourceOrganization?.alternateName?.join(
                       ', ',
                     )}
                     href={`#${collection.id}`}
-                  ></SidebarItem>
+                  />
                 );
               })}
-            </Sidebar>
+            </TOC.SidebarList>
+
             <PageContent
               id='program-page-content'
               bg='#fff'
@@ -130,104 +130,99 @@ const ProgramCollections: NextPage<{
               mb={32}
               flex={3}
             >
-              <Flex
-                flexDirection='column'
-                flex={1}
-                pb={32}
-                width='100%'
-                m='0 auto'
-              >
-                <SectionHeader title='Program Collections'></SectionHeader>
+              <Section.Wrapper hasSeparator heading={TOC_COPY.heading} w='100%'>
+                <Flex flexDirection='column' width='100%'>
+                  {/* Search bar */}
+                  <Flex justifyContent='flex-end' flex={1}>
+                    <Section.Search
+                      data={programCollections}
+                      size='sm'
+                      ariaLabel='Search for a program collection'
+                      placeholder='Search for a program collection'
+                      value={searchValue}
+                      handleChange={e => setSearchValue(e.currentTarget.value)}
+                    />
+                  </Flex>
 
-                {/* Search bar */}
-                <Flex>
-                  <SectionSearch
-                    data={programCollections}
-                    size='sm'
-                    ariaLabel='Search for a program collection'
-                    placeholder='Search for a program collection'
-                    value={searchValue}
-                    handleChange={e => setSearchValue(e.currentTarget.value)}
-                  />
-                </Flex>
-
-                {/* Display list of program collections in cards */}
-                <StyledCardStack>
-                  {programCollections.map((collection, index) => {
-                    const label =
-                      collection?.sourceOrganization?.name || collection.term;
-                    const parentOrganizations = collection.sourceOrganization
-                      ?.parentOrganization
-                      ? Array.isArray(
-                          collection.sourceOrganization?.parentOrganization,
-                        )
-                        ? collection.sourceOrganization?.parentOrganization
-                        : [collection.sourceOrganization?.parentOrganization]
-                      : [];
-
-                    return (
-                      <StyledCard
-                        key={index}
-                        id={collection.id}
-                        title={label}
-                        subtitle={`${collection.count.toLocaleString()} resources available`}
-                        renderCTA={() =>
-                          collection.sourceOrganization?.name ? (
-                            <StyledCardButton
-                              maxWidth='500px'
-                              href={{
-                                pathname: `/search`,
-                                query: {
-                                  q: '',
-                                  filters: queryFilterObject2String({
-                                    'sourceOrganization.name': [
-                                      collection.sourceOrganization?.name,
-                                    ],
-                                  }),
-                                },
-                              }}
-                            >
-                              Search for resources related to {label}
-                            </StyledCardButton>
-                          ) : (
-                            <></>
+                  {/* Display list of program collections in cards */}
+                  <TOC.CardStack>
+                    {programCollections.map((collection, index) => {
+                      const label =
+                        collection?.sourceOrganization?.name || collection.term;
+                      const parentOrganizations = collection.sourceOrganization
+                        ?.parentOrganization
+                        ? Array.isArray(
+                            collection.sourceOrganization?.parentOrganization,
                           )
-                        }
-                      >
-                        <>
-                          {/* Description */}
-                          {collection.sourceOrganization?.abstract && (
-                            <StyledCardDescription>
-                              {collection.sourceOrganization?.abstract}
-                            </StyledCardDescription>
-                          )}
+                          ? collection.sourceOrganization?.parentOrganization
+                          : [collection.sourceOrganization?.parentOrganization]
+                        : [];
 
-                          {/* Parent Organization */}
-                          {parentOrganizations.length && (
-                            <HStack>
-                              <StyleCardSubLabel key={index}>
-                                {`Parent Organization(s): ${parentOrganizations.join(
-                                  ', ',
-                                )}`}
-                              </StyleCardSubLabel>
-                            </HStack>
-                          )}
+                      return (
+                        <TOC.Card
+                          key={collection.id}
+                          id={collection.id}
+                          title={label}
+                          subtitle={`${collection.count.toLocaleString()} resources available`}
+                          footerProps={{ alignItems: 'flex-end' }}
+                          cta={
+                            collection.sourceOrganization?.name
+                              ? [
+                                  {
+                                    href: {
+                                      pathname: `/search`,
+                                      query: {
+                                        q: '',
+                                        filters: queryFilterObject2String({
+                                          'sourceOrganization.name': [
+                                            collection.sourceOrganization?.name,
+                                          ],
+                                        }),
+                                      },
+                                    },
+                                    children: `Search for resources related to ${label}`,
+                                    hasArrow: true,
+                                  },
+                                ]
+                              : undefined
+                          }
+                        >
+                          <>
+                            {/* Description */}
+                            {collection.sourceOrganization?.abstract && (
+                              <TOC.CardMarkdownContent>
+                                {collection.sourceOrganization?.abstract}
+                              </TOC.CardMarkdownContent>
+                            )}
 
-                          {/* Link to program website */}
-                          {collection.sourceOrganization?.url && (
-                            <Link
-                              href={collection.sourceOrganization?.url}
-                              isExternal
-                            >
-                              {`${label} Website`}
-                            </Link>
-                          )}
-                        </>
-                      </StyledCard>
-                    );
-                  })}
-                </StyledCardStack>
-              </Flex>
+                            {/* Parent Organization */}
+                            {parentOrganizations.length && (
+                              <HStack>
+                                <TOC.CardSubtitle key={index}>
+                                  {`Parent Organization(s): ${parentOrganizations.join(
+                                    ', ',
+                                  )}`}
+                                </TOC.CardSubtitle>
+                              </HStack>
+                            )}
+
+                            {/* Link to program website */}
+                            {collection.sourceOrganization?.url && (
+                              <Link
+                                href={collection.sourceOrganization?.url}
+                                isExternal
+                                fontSize='sm'
+                              >
+                                {`${label} Website`}
+                              </Link>
+                            )}
+                          </>
+                        </TOC.Card>
+                      );
+                    })}
+                  </TOC.CardStack>
+                </Flex>
+              </Section.Wrapper>
             </PageContent>
           </>
         )}

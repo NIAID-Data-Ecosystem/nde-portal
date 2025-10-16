@@ -199,8 +199,7 @@
       "nav": {
         "label": "Features",
         "description": "Featured content for the portal."
-      },
-      "env": ["development", "staging"]
+      }
     },
     "/ontology-browser": {
       "seo": {
@@ -216,8 +215,7 @@
       "nav": {
         "label": "Ontology Browser",
         "description": "Explore search results in a novel way"
-      },
-      "env": ["development", "staging"]
+      }
     },
     "/resources": {
       "seo": {

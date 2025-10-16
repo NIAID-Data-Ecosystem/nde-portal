@@ -41,7 +41,7 @@ import { ErrorMessage } from '../../error-message';
 import Tooltip from 'src/components/tooltip';
 
 const hasZeroCounts = (node: OntologyLineageItemWithCounts) =>
-  node.counts.termCount === 0 && node.counts.termAndChildrenCount === 0;
+  node?.counts?.termCount === 0 && node?.counts?.termAndChildrenCount === 0;
 
 /**
  * TreeNode Component
@@ -321,14 +321,14 @@ export const TreeNode = (props: {
               isLoading={isLoading}
               tooltipLabel={getTooltipLabelByCountType('termCount')}
             >
-              {node.counts.termCount?.toLocaleString() || 0}
+              {node?.counts?.termCount?.toLocaleString() || 0}
             </OntologyBrowserCountTag>
 
             <OntologyBrowserCountTag
               isLoading={isLoading}
               tooltipLabel={getTooltipLabelByCountType('termAndChildrenCount')}
             >
-              {node.counts.termAndChildrenCount?.toLocaleString() || 0}
+              {node?.counts?.termAndChildrenCount?.toLocaleString() || 0}
             </OntologyBrowserCountTag>
           </HStack>
 

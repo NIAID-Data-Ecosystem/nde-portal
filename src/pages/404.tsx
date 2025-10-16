@@ -15,8 +15,8 @@ const NotFoundPage: NextPage = () => {
       breadcrumbsTitle='404'
       includeSearchBar
     >
-      <PageContent>
-        <Flex bg='red' flexDirection='column' alignItems='center'>
+      <PageContent justifyContent='center'>
+        <Flex flexDirection='column' alignItems='center'>
           <Image
             w='80%'
             h='auto'

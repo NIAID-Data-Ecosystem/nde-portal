@@ -1,10 +1,10 @@
-import { Button, Card, Flex, Icon, Image } from '@chakra-ui/react';
+import { Card, Flex, Image, Stack, Tag } from '@chakra-ui/react';
 import { useQuery } from '@tanstack/react-query';
 import NextLink from 'next/link';
 import React from 'react';
-import { FaAngleRight } from 'react-icons/fa6';
 import { fetchAllUpdates } from 'src/api/updates';
 import { UpdatesQueryResponse } from 'src/api/updates/types';
+import { ArrowButton } from 'src/components/button.tsx/arrow-button';
 import { Carousel } from 'src/components/carousel';
 import { Link } from 'src/components/link';
 
@@ -67,7 +67,13 @@ export const UpdatesCarousel = ({
   return carouselCards && carouselCards.length > 0 ? (
     <Flex flexDirection='column' justifyContent='center' width='100%'>
       <Carousel>
-        {carouselCards.slice(0, 10).map((card, idx) => {
+        {carouselCards.slice(0, 10).map(card => {
+          const tag = card?.eventDate
+            ? { label: 'Event', colorPalette: 'primary' }
+            : card?.type === 'feature'
+            ? { label: 'Feature', colorPalette: 'primary' }
+            : null;
+
           return (
             <Card.Root key={card.id} overflow='hidden' flex={1} size='sm'>
               <Image
@@ -76,11 +82,26 @@ export const UpdatesCarousel = ({
                 objectFit='contain'
               />
               <Card.Body gap={2}>
-                <Card.Title>
-                  <Link asChild>
-                    <NextLink href={card.cardHref}>{card.name}</NextLink>
-                  </Link>
-                </Card.Title>
+                <Stack
+                  lineHeight='normal'
+                  flexDirection='column'
+                  alignItems='flex-start'
+                >
+                  {tag && (
+                    <Tag.Root
+                      verticalAlign='middle'
+                      colorPalette={tag.colorPalette}
+                    >
+                      <Tag.Label>{tag.label}</Tag.Label>
+                    </Tag.Root>
+                  )}
+                  <Card.Title>
+                    <Link asChild mr={2}>
+                      <NextLink href={card.cardHref}>{card.name}</NextLink>
+                    </Link>
+                  </Card.Title>
+                </Stack>
+
                 <Card.Description>
                   {new Date(
                     card.publishedAt || card.updatedAt,
@@ -96,12 +117,9 @@ export const UpdatesCarousel = ({
           );
         })}
       </Carousel>
-      <Button size='xs' m='0 auto'>
-        <NextLink href='/updates'>
-          All updates
-          <Icon as={FaAngleRight} />
-        </NextLink>
-      </Button>
+      <ArrowButton href='/updates' size='sm' m='0 auto' hasArrow>
+        All updates
+      </ArrowButton>
     </Flex>
   ) : (
     <></>

@@ -33,6 +33,7 @@ const button = defineRecipe({
       link: {
         height: 'unset',
         textDecoration: 'underline',
+        textUnderlineOffset: '4px',
         color: 'colorPalette.500',
         _hover: {
           color: 'colorPalette.600',

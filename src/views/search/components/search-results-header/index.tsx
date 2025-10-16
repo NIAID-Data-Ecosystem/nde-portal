@@ -14,7 +14,7 @@ export const SearchResultsHeader = ({
   querystring: string;
 }) => {
   return (
-    <VStack alignItems='flex-start' spacing={1} fontSize='sm'>
+    <VStack alignItems='flex-start' spacing={1} fontSize='sm' flex={1}>
       {/* Heading: Showing results for... */}
       <SearchResultsHeading as='h1' fontSize='inherit'>
         {querystring === '__all__'

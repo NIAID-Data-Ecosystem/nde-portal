@@ -1,44 +1,28 @@
+import { Button, Flex, Skeleton, Text } from '@chakra-ui/react';
 import React, { useMemo, useState } from 'react';
-import {
-  Card,
-  CardHeader,
-  CardBody,
-  Flex,
-  Tooltip,
-  Text,
-  Button,
-  Skeleton,
-} from '@chakra-ui/react';
-import NextLink from 'next/link';
-import { FormattedResource } from 'src/utils/api/types';
-import { TypeBanner } from 'src/components/resource-sections/components';
-import { DisplayHTMLContent } from 'src/components/html-content';
-import { isSourceFundedByNiaid } from 'src/utils/helpers/sources';
 import { ConditionsOfAccess } from 'src/components/badges';
 import { HasAPI } from 'src/components/badges/components/HasAPI';
 import { MetadataLabel } from 'src/components/metadata';
 import { ScrollContainer } from 'src/components/scroll-container';
 import { SearchableItems } from 'src/components/searchable-items';
+import Tooltip from 'src/components/tooltip';
+import { FormattedResource } from 'src/utils/api/types';
+import { formatAPIResourceTypeForDisplay } from 'src/utils/formatting/formatResourceType';
+import { isSourceFundedByNiaid } from 'src/utils/helpers/sources';
 
-interface CompactCardProps {
+import { CompactCard } from '../compact-card';
+
+interface ResourceCatalogCardProps {
   data?: FormattedResource | null;
   referrerPath?: string;
   isLoading?: boolean;
 }
 
-const CARD_HEIGHTS = {
-  base: '310px',
-  sm: '280px',
-  md: '305px',
-  lg: '305px',
-  xl: '310px',
-};
-
-export const CompactCard = ({
+export const ResourceCatalogCard = ({
   data,
   referrerPath,
   isLoading = false,
-}: CompactCardProps) => {
+}: ResourceCatalogCardProps) => {
   const [showAllTypes, setShowAllTypes] = useState(false);
 
   const {
@@ -73,100 +57,38 @@ export const CompactCard = ({
     [about],
   );
 
-  // Determine what to show in the description area
   const shouldShowDescription = !showAllTypes;
 
+  const linkProps = id
+    ? {
+        href: {
+          pathname: '/resources/',
+          query: { id, referrerPath },
+        },
+        as: `/resources?id=${id}`,
+      }
+    : undefined;
+
   return (
-    <Card
-      variant='niaid'
-      boxShadow='none'
-      border='1px solid'
-      borderColor='gray.200'
-      height={CARD_HEIGHTS}
-    >
-      {/* TypeBanner */}
-      <Skeleton
-        loading={isLoading}
-        height={isLoading ? '40px' : 'auto'}
-        borderTopRadius='md'
-      >
-        <TypeBanner
-          type={type || 'ResourceCatalog'}
-          p={0}
-          pl={[2, 4, 6]}
-          flexDirection={['column', 'row']}
-          isNiaidFunded={isSourceFundedByNiaid(includedInDataCatalog)}
-        />
-      </Skeleton>
+    <CompactCard.Base isLoading={isLoading}>
+      <CompactCard.Banner
+        label={formatAPIResourceTypeForDisplay(type || 'ResourceCatalog')}
+        type={type || 'ResourceCatalog'}
+        isNiaidFunded={isSourceFundedByNiaid(includedInDataCatalog)}
+        isLoading={isLoading}
+      />
 
-      <CardHeader
-        bg='transparent'
-        position='relative'
-        px={2}
-        pt={1}
-        pb={1}
-        w='100%'
-        color='link.color'
-        _hover={{
-          p: { textDecoration: 'none' },
-          svg: {
-            transform: 'translate(0px)',
-            opacity: 0.9,
-            transition: '0.2s ease-in-out',
-          },
-        }}
-        _visited={{
-          color: 'link.color',
-          svg: { color: 'link.color' },
-        }}
-      >
-        {/* Title */}
-        <Skeleton loading={isLoading} minHeight='27px' flex={1}>
-          <NextLink
-            href={{
-              pathname: '/resources/',
-              query: { id, referrerPath },
-            }}
-            as={`/resources?id=${id}`}
-            passHref
-            prefetch={false}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              width: '100%',
-            }}
-          >
-            <DisplayHTMLContent
-              noOfLines={3}
-              content={name || alternateName || ''}
-              fontWeight='semibold'
-              color='inherit'
-              fontSize='md'
-              lineHeight='short'
-              w='100%'
-              textDecoration='underline'
-              _hover={{
-                textDecoration: 'none',
-              }}
-              reactMarkdownProps={{
-                linkTarget: '_blank',
-                disallowedElements: ['a'],
-              }}
-            />
-          </NextLink>
-        </Skeleton>
-      </CardHeader>
+      <CompactCard.Header isLoading={isLoading}>
+        {(name || alternateName) && (
+          <CompactCard.Title linkProps={linkProps}>
+            {name || alternateName || ''}
+          </CompactCard.Title>
+        )}
+      </CompactCard.Header>
 
-      <CardBody
-        p={0}
-        sx={{
-          '>*': {
-            my: 0,
-          },
-        }}
-      >
+      <CompactCard.Body>
         {/* Date and badges */}
-        <Skeleton loading={isLoading} minHeight='30px' px={2}>
+        <Skeleton isLoaded={!isLoading} minHeight='30px'>
           {date && (
             <Flex
               bg='white'
@@ -174,6 +96,7 @@ export const CompactCard = ({
               whiteSpace='nowrap'
               alignItems='flex-start'
               justify='space-between'
+              px={0}
             >
               <Tooltip
                 label='Corresponds to the most recent of date modified, date published and date created.'
@@ -217,7 +140,7 @@ export const CompactCard = ({
         </Skeleton>
 
         {/* Content types */}
-        <Skeleton loading={isLoading} px={1}>
+        <Skeleton isLoaded={!isLoading} px={-1}>
           {aboutItems.length > 0 && (
             <Flex bg='white' direction='column'>
               <MetadataLabel label='Content Types' />
@@ -240,7 +163,7 @@ export const CompactCard = ({
         </Skeleton>
 
         {/* Description */}
-        <Skeleton loading={isLoading} flex='1' px={2} mt={2} mb={1}>
+        <Skeleton isLoaded={!isLoading} flex='1' mt={2} mb={1}>
           {description && (
             <>
               {shouldShowDescription ? (
@@ -264,7 +187,7 @@ export const CompactCard = ({
             </>
           )}
         </Skeleton>
-      </CardBody>
-    </Card>
+      </CompactCard.Body>
+    </CompactCard.Base>
   );
 };

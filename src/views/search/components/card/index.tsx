@@ -31,6 +31,7 @@ import { filterWords } from './helpers';
 import { SchemaDefinitions } from 'scripts/generate-schema-definitions/types';
 import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
 import { InfoLabel } from 'src/components/info-label';
+import { formatAPIResourceTypeForDisplay } from 'src/utils/formatting/formatResourceType';
 
 interface SearchResultCardProps {
   isLoading?: boolean;
@@ -85,6 +86,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
     // {/* Banner with resource type + date of publication */}
     <Card ref={cardRef} variant='niaid' my={4} mb={8}>
       <TypeBanner
+        label={formatAPIResourceTypeForDisplay(type || 'Dataset')}
         type={type || 'Dataset'}
         p={0}
         pl={[2, 4, 6]}

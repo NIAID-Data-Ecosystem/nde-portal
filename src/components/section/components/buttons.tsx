@@ -27,7 +27,6 @@ export const SectionButton = (props: ArrowButtonProps) => {
       minWidth={{ base: '180px', md: 'unset' }}
       // maxWidth={{ base: 'unset', md: '250px' }}
       {...props}
-      hasArrow={true}
     >
       {props.children}
     </ArrowButton>

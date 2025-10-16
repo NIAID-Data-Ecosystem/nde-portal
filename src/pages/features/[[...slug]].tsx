@@ -13,8 +13,8 @@ import {
   PageContent,
 } from 'src/components/page-container';
 import { SiteConfig } from 'src/components/page-container/types';
-import { TableOfContents } from 'src/views/features/components/appendix';
 import Main from 'src/views/features/components/Main';
+import { TableOfContents } from 'src/views/features/components/toc';
 
 const siteConfig = SITE_CONFIG as SiteConfig;
 
@@ -44,14 +44,6 @@ const FeaturedPage: NextPage<{
     refetchOnWindowFocus: true,
     refetchOnMount: true,
   });
-
-  // If the app is in production, redirect to a 404 page until search is fully implemented and approved.
-  const router = useRouter();
-  useEffect(() => {
-    if (process.env.NEXT_PUBLIC_APP_ENV === 'production') {
-      router.replace('/404');
-    }
-  }, [router]);
 
   const pageTitle = data?.title || 'Features';
   return (

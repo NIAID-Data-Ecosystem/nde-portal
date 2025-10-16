@@ -1,4 +1,5 @@
 import axios from 'axios';
+import Bottleneck from 'bottleneck';
 import { fetchSearchResults } from 'src/utils/api';
 import {
   BioThingsDetailedLineageAPIResponseItem,
@@ -64,6 +65,7 @@ export interface SearchParams {
   start?: number;
   format?: string;
   lang?: string;
+  userquery?: 'nde';
 }
 
 interface SearchResponse {
@@ -134,13 +136,14 @@ export const fetchBioThingsSearchAPI = async (
   if (!params.q) {
     return [];
   }
-  const { q, biothingsFields } = params;
+  const { q, biothingsFields, userquery } = params;
   try {
     const { data } = await axios.get(`${BIOTHINGS_API_URL}/query?`, {
       params: {
         q,
         fields: biothingsFields.join(','),
         size: 8,
+        userquery,
       },
       signal,
     });
@@ -635,58 +638,65 @@ export const fetchChildrenFromOLSAPI = async (
  * @returns An array of lineage items with counts.
  */
 
+// --- Configure the limiter ---
+// minTime: 100ms → max 10 requests per second
+// maxConcurrent: 3 → up to 3 requests in parallel
+const limiter = new Bottleneck({
+  minTime: 100,
+  maxConcurrent: 2,
+});
 export const fetchPortalCounts = async (
   lineage: OntologyLineageItem[],
   params: { q?: string },
 ): Promise<OntologyLineageItemWithCounts[]> => {
   try {
-    // fetch counts from NDE API
+    const processNode = async (node: OntologyLineageItem) => {
+      // Extract the numeric taxon ID from the node
+      const numericTaxonId = +node.taxonId.replace(/[^0-9]/g, '');
+
+      const lineageQueryResponse = await fetchSearchResults({
+        q: params.q ? params.q : '__all__',
+        size: 0,
+        lineage: numericTaxonId,
+      });
+
+      // Extract counts for datasets directly related to this taxon ID
+      const directTermCount =
+        lineageQueryResponse?.facets?.lineage?.totalRecords || 0;
+
+      // Extract the total number of datasets associated with this taxon ID and
+      // its children.
+      const termAndChildrenCount =
+        lineageQueryResponse?.facets?.lineage?.totalLineageRecords || 0;
+
+      // Extract counts for datasets where this taxon ID is a parent
+      // const childTermsCount =
+      //   lineageQueryResponse?.facets?.lineage?.children
+      //     ?.totalUniqueChildRecords || 0;
+
+      // Determine if the node has child taxon IDs.
+      // [NOTE]: This only checks if the node has children in the NDE API.
+      const hasChildTaxons =
+        lineageQueryResponse?.facets?.lineage?.children?.childTaxonCounts
+          ?.length > 0;
+
+      // Return the updated node with counts and child status
+      return {
+        ...node,
+        hasChildren:
+          node.hasChildren ||
+          hasChildTaxons ||
+          termAndChildrenCount > directTermCount,
+        counts: {
+          termCount: directTermCount,
+          // Total unique child records + total records with this actual term id.
+          termAndChildrenCount,
+        },
+      };
+    };
 
     const lineageWithCounts = await Promise.all(
-      lineage.map(async node => {
-        // Extract the numeric taxon ID from the node
-        const numericTaxonId = +node.taxonId.replace(/[^0-9]/g, '');
-
-        const lineageQueryResponse = await fetchSearchResults({
-          q: params.q ? params.q : '__all__',
-          size: 0,
-          lineage: numericTaxonId,
-        });
-
-        // Extract counts for datasets directly related to this taxon ID
-        const directTermCount =
-          lineageQueryResponse?.facets?.lineage?.totalRecords || 0;
-
-        // Extract the total number of datasets associated with this taxon ID and
-        // its children.
-        const termAndChildrenCount =
-          lineageQueryResponse?.facets?.lineage?.totalLineageRecords || 0;
-
-        // Extract counts for datasets where this taxon ID is a parent
-        // const childTermsCount =
-        //   lineageQueryResponse?.facets?.lineage?.children
-        //     ?.totalUniqueChildRecords || 0;
-
-        // Determine if the node has child taxon IDs.
-        // [NOTE]: This only checks if the node has children in the NDE API.
-        const hasChildTaxons =
-          lineageQueryResponse?.facets?.lineage?.children?.childTaxonCounts
-            ?.length > 0;
-
-        // Return the updated node with counts and child status
-        return {
-          ...node,
-          hasChildren:
-            node.hasChildren ||
-            hasChildTaxons ||
-            termAndChildrenCount > directTermCount,
-          counts: {
-            termCount: directTermCount,
-            // Total unique child records + total records with this actual term id.
-            termAndChildrenCount,
-          },
-        };
-      }),
+      lineage.map(node => limiter.schedule(() => processNode(node))),
     );
 
     return lineageWithCounts;

@@ -1,11 +1,11 @@
 import { Box, Card, Flex, Skeleton } from '@chakra-ui/react';
 import { useMemo, useState } from 'react';
 import { FeatureQueryResponse } from 'src/api/features/types';
-import { Appendix } from 'src/components/appendix';
 import { PageContent } from 'src/components/page-container';
 import { Section } from 'src/components/section';
+import { TOC } from 'src/components/toc';
 
-const APPENDIX_COPY = {
+const TOC_COPY = {
   heading: 'Features',
   sidebar: {
     'aria-label': 'Navigation for list of featured pages.',
@@ -43,18 +43,18 @@ export const TableOfContents = ({
     );
   }, [data, searchValue]);
   return (
-    <Flex>
-      <Appendix.SidebarList aria-label={APPENDIX_COPY.sidebar['aria-label']}>
+    <Flex bg='#fff'>
+      <TOC.SidebarList aria-label={TOC_COPY.sidebar['aria-label']}>
         {data?.map(page => {
           return (
-            <Appendix.SidebarItem
+            <TOC.SidebarItem
               key={page.id}
               title={page?.title}
               href={`#${page.slug}`}
             />
           );
         })}
-      </Appendix.SidebarList>
+      </TOC.SidebarList>
       <PageContent
         id='featured-index-page'
         bg='#fff'
@@ -66,22 +66,22 @@ export const TableOfContents = ({
         mb={32}
         flex={3}
       >
-        <Section.Wrapper hasSeparator heading={APPENDIX_COPY.heading} w='100%'>
+        <Section.Wrapper hasSeparator heading={TOC_COPY.heading} w='100%'>
           <Box flex={1}>
             {/* Search bar */}
             <Flex justifyContent='flex-end' flex={1}>
               <Section.Search
                 data={sortedPages}
                 size='sm'
-                ariaLabel={APPENDIX_COPY.search['aria-label']}
-                placeholder={APPENDIX_COPY.search['placeholder']}
+                ariaLabel={TOC_COPY.search['aria-label']}
+                placeholder={TOC_COPY.search['placeholder']}
                 value={searchValue}
                 handleChange={e => setSearchValue(e.currentTarget.value)}
               />
             </Flex>
 
             {/* Display list of featured pages in cards */}
-            <Appendix.CardStack>
+            <TOC.CardStack>
               {sortedPages.map(page => {
                 // const label = page?.title;
                 const image = {
@@ -92,25 +92,37 @@ export const TableOfContents = ({
                 };
 
                 return (
-                  <Skeleton key={page.id} loading={isLoading} flex={1}>
-                    <Appendix.Card
+                  <Skeleton
+                    key={page.id}
+                    loading={isLoading}
+                    flex={1}
+                    w='100%'
+                    display='flex'
+                    justifyContent='center'
+                  >
+                    <TOC.Card
+                      key={page.id}
+                      id={page.slug}
                       title={page?.title || ''}
                       image={image?.src ? image : undefined}
-                      maxWidth={{
-                        base: 'xl',
-                        xl: 'unset',
-                      }}
+                      cta={[
+                        {
+                          href: `/features/${page.slug}`,
+                          children: page?.title || 'Read more',
+                          hasArrow: true,
+                        },
+                      ]}
                     >
                       {page.abstract && (
                         <Flex flex={1}>
                           <Card.Description>{page.abstract}</Card.Description>
                         </Flex>
                       )}
-                    </Appendix.Card>
+                    </TOC.Card>
                   </Skeleton>
                 );
               })}
-            </Appendix.CardStack>
+            </TOC.CardStack>
           </Box>
         </Section.Wrapper>
       </PageContent>

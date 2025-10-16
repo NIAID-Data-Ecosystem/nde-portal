@@ -136,7 +136,9 @@ export const TableWithSearch: React.FC<TableWithSearchProps> = ({
                   borderColor='primary.100'
                 >
                   <Tag.Label>Clear all</Tag.Label>
-                  <Tag.CloseTrigger onClick={() => setFilters([])} />
+                  <Tag.EndElement>
+                    <Tag.CloseTrigger onClick={() => setFilters([])} />
+                  </Tag.EndElement>
                 </Tag.Root>
               )}
               {filters.map(filter => {
@@ -150,9 +152,11 @@ export const TableWithSearch: React.FC<TableWithSearchProps> = ({
                     colorPalette='primary'
                   >
                     <Tag.Label fontWeight='medium'>{name}</Tag.Label>
-                    <Tag.CloseTrigger
-                      onClick={() => removeSingleFilter(filter)}
-                    />
+                    <Tag.EndElement>
+                      <Tag.CloseTrigger
+                        onClick={() => removeSingleFilter(filter)}
+                      />
+                    </Tag.EndElement>
                   </Tag.Root>
                 );
               })}
