@@ -81,7 +81,26 @@ export const generateTags = (
       return [];
     }
 
-    // Generate tag info for each value
+    // Special handling for date ranges - create one tag for the entire range
+    if (
+      key === 'date' &&
+      values.length === 2 &&
+      typeof values[0] === 'string' &&
+      typeof values[1] === 'string'
+    ) {
+      const displayValue = `From ${values[0]} to ${values[1]}`;
+      return [
+        {
+          key: `${key}-range`,
+          filterKey: key,
+          name,
+          value: values, // Pass the entire array as the value
+          displayValue,
+        },
+      ];
+    }
+
+    // Generate tag info for each value (non-date or single date)
     return values
       .map((rawValue, index) => {
         const displayValue = getDisplayValue(
