@@ -124,24 +124,29 @@ const createValueTags = (
   values: (string | SelectedFilterTypeValue)[],
   config?: FilterConfig,
 ): TagInfo[] => {
-  const tags: TagInfo[] = [];
+  return values
+    .map((rawValue, index): TagInfo | null => {
+      const displayValue = getDisplayValue(
+        key,
+        rawValue,
+        values,
+        index,
+        config,
+      );
 
-  for (let index = 0; index < values.length; index++) {
-    const rawValue = values[index];
-    const displayValue = getDisplayValue(key, rawValue, values, index, config);
+      if (!displayValue) {
+        return null;
+      }
 
-    if (displayValue) {
-      tags.push({
+      return {
         key: `${key}-${index}`,
         filterKey: key,
         name,
         value: rawValue,
         displayValue,
-      });
-    }
-  }
-
-  return tags;
+      };
+    })
+    .filter((tag): tag is TagInfo => tag !== null);
 };
 
 // Exported functions
