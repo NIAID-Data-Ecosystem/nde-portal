@@ -3,7 +3,7 @@ import React from 'react';
 
 export interface SectionWrapperProps extends FlexProps {
   children: React.ReactNode;
-  heading?: string;
+  heading?: React.ReactNode;
   subheading?: React.ReactNode;
   hasSeparator?: boolean;
 }

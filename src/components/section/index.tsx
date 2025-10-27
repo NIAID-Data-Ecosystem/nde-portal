@@ -47,7 +47,15 @@ const SectionWrapper: React.FC<SectionWrapperProps> = ({
 }) => {
   return (
     <Flex flexDirection='column' {...props}>
-      {heading && <SectionHeading>{heading}</SectionHeading>}
+      {heading ? (
+        typeof heading === 'string' ? (
+          <SectionHeading>{heading}</SectionHeading>
+        ) : (
+          heading
+        )
+      ) : (
+        <></>
+      )}
       {subheading && <SectionSubheading>{subheading}</SectionSubheading>}
       {hasSeparator && <Separator mb={4} />}
       <SectionBody>{children}</SectionBody>

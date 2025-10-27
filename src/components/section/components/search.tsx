@@ -12,6 +12,7 @@ export const SectionSearch: React.FC<SectionSearchProps> = ({
   size = 'sm',
   value,
   handleChange,
+  ...props
 }) => {
   return (
     <Flex justifyContent='flex-end' flex={1}>
@@ -23,6 +24,7 @@ export const SectionSearch: React.FC<SectionSearchProps> = ({
           value={value}
           handleChange={handleChange}
           type='text'
+          {...props}
         />
         <Text
           fontSize='xs'

@@ -12,11 +12,6 @@ import {
 } from 'src/components/page-container';
 import { TagWithTooltip } from 'src/components/tag-with-tooltip';
 import { TOC } from 'src/components/toc';
-// import {
-//   Label,
-//   Sidebar,
-//   SidebarItem,
-// } from 'src/components/table-of-contents/components/sidebar';
 import { fetchMetadata } from 'src/hooks/api/helpers';
 import { Metadata, MetadataSource } from 'src/hooks/api/types';
 import { formatDate } from 'src/utils/api/helpers';
@@ -192,11 +187,11 @@ const Sources: NextPage<SourcesProps> = ({ data, error }) => {
               mb={32}
               flex={3}
             >
-              {/* <Main
+              <Main
                 data={metadata?.sources}
                 isLoading={isLoading}
                 metadata={metadata?.meta}
-              /> */}
+              />
             </PageContent>
           </>
         )}
