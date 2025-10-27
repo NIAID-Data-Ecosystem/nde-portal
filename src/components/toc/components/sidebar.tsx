@@ -33,6 +33,17 @@ export const SidebarList: React.FC<FlexProps & { ['aria-label']: string }> = ({
   );
 };
 
+export const SidebarLabel: React.FC<HeadingProps> = ({
+  children,
+  ...props
+}) => {
+  return (
+    <Heading textStyle='h6' lineHeight='short' mb={1} {...props}>
+      {children}
+    </Heading>
+  );
+};
+
 export const SidebarItem: React.FC<{
   title: React.ReactNode;
   subtitle?: React.ReactNode;
@@ -52,9 +63,9 @@ export const SidebarItem: React.FC<{
     >
       <NextLink href={href}>
         {typeof title === 'string' ? (
-          <Heading textStyle='h6' lineHeight='short' mb={1} {...props}>
+          <SidebarLabel textStyle='h6' lineHeight='short' mb={1} {...props}>
             {title}
-          </Heading>
+          </SidebarLabel>
         ) : (
           title
         )}

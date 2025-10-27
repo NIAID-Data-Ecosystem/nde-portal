@@ -1,9 +1,12 @@
-import { FormattedResource } from 'src/utils/api/types';
-import { BadgeWithTooltip, BadgeWithTooltipProps } from 'src/components/badges';
 import SchemaDefinitions from 'configs/schema-definitions.json';
 import { SchemaDefinition } from 'scripts/generate-schema-definitions/types';
+import {
+  TagWithTooltip,
+  TagWithTooltipProps,
+} from 'src/components/tag-with-tooltip';
+import { FormattedResource } from 'src/utils/api/types';
 
-interface HasDownloadProps extends Omit<BadgeWithTooltipProps, 'value'> {
+interface HasDownloadProps extends Omit<TagWithTooltipProps, 'value'> {
   hasDownload?: FormattedResource['hasDownload'];
   type?: FormattedResource['@type'];
   tooltipLabel?: string;
@@ -36,12 +39,12 @@ export const HasDownload = ({
   };
 
   return (
-    <BadgeWithTooltip
-      colorScheme={getColorScheme()}
-      tooltipLabel={type ? property?.description?.[type] || '' : ''}
+    <TagWithTooltip
+      colorPalette={getColorScheme()}
+      tooltipContent={type ? property?.description?.[type] || '' : ''}
       {...props}
     >
       Has Download: {hasDownload}
-    </BadgeWithTooltip>
+    </TagWithTooltip>
   );
 };

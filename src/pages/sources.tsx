@@ -1,26 +1,27 @@
-import type { NextPage } from 'next';
-import React from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { useRouter } from 'next/router';
 import { Box, Button, Flex, Text } from '@chakra-ui/react';
+import { useQuery } from '@tanstack/react-query';
+import type { NextPage } from 'next';
+import { useRouter } from 'next/router';
+import React from 'react';
+import { Error, ErrorCTA } from 'src/components/error';
+import { getQueryStatusError } from 'src/components/error/utils';
 import {
   getPageSeoConfig,
   PageContainer,
   PageContent,
 } from 'src/components/page-container';
-import { Main } from 'src/views/sources';
-import { Error, ErrorCTA } from 'src/components/error';
-import { Metadata, MetadataSource } from 'src/hooks/api/types';
-import { getQueryStatusError } from 'src/components/error/utils';
+import { TagWithTooltip } from 'src/components/tag-with-tooltip';
+import { TOC } from 'src/components/toc';
+// import {
+//   Label,
+//   Sidebar,
+//   SidebarItem,
+// } from 'src/components/table-of-contents/components/sidebar';
 import { fetchMetadata } from 'src/hooks/api/helpers';
-import { getFundedByNIAID } from 'src/utils/helpers';
-import {
-  Label,
-  Sidebar,
-  SidebarItem,
-} from 'src/components/table-of-contents/components/sidebar';
+import { Metadata, MetadataSource } from 'src/hooks/api/types';
 import { formatDate } from 'src/utils/api/helpers';
-import { BadgeWithTooltip } from 'src/components/badges/components/BadgeWithTooltip';
+import { getFundedByNIAID } from 'src/utils/helpers';
+import { Main } from 'src/views/sources';
 import { fetchSourceInformationFromGithub } from 'src/views/sources/helpers';
 
 export interface SourceResponse extends MetadataSource {
@@ -150,28 +151,28 @@ const Sources: NextPage<SourcesProps> = ({ data, error }) => {
         )}
         {!(error || metadataError) && (
           <>
-            <Sidebar aria-label='Navigation for data sources.'>
+            <TOC.SidebarList aria-label='Navigation for data sources.'>
               {!isLoading &&
                 metadata?.sources.map(source => {
                   return (
-                    <SidebarItem
+                    <TOC.SidebarItem
                       key={source.slug}
-                      label={
-                        <Label>
+                      title={
+                        <TOC.SidebarLabel>
                           {source.name}
                           {/* Add tag to show source is funded by NIAID */}
                           {source.isNiaidFunded && (
-                            <BadgeWithTooltip
-                              colorScheme='blue'
-                              variant='subtle'
+                            <TagWithTooltip
+                              colorPalette='blue'
+                              variant='surface'
                               mx={2}
                             >
                               NIAID
-                            </BadgeWithTooltip>
+                            </TagWithTooltip>
                           )}
-                        </Label>
+                        </TOC.SidebarLabel>
                       }
-                      subLabel={`Latest Release ${
+                      subtitle={`Latest Release ${
                         source.dateModified
                           ? formatDate(source.dateModified)
                           : 'N/A'
@@ -180,7 +181,7 @@ const Sources: NextPage<SourcesProps> = ({ data, error }) => {
                     />
                   );
                 })}
-            </Sidebar>
+            </TOC.SidebarList>
             <PageContent
               bg='#fff'
               maxW={{ base: 'unset', lg: '1200px' }}
@@ -191,11 +192,11 @@ const Sources: NextPage<SourcesProps> = ({ data, error }) => {
               mb={32}
               flex={3}
             >
-              <Main
+              {/* <Main
                 data={metadata?.sources}
                 isLoading={isLoading}
                 metadata={metadata?.meta}
-              />
+              /> */}
             </PageContent>
           </>
         )}

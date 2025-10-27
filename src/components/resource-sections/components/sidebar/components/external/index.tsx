@@ -13,9 +13,12 @@ import { DataAccess } from './components/data-access';
 import { DataUsage } from './components/usage';
 import { License } from './components/license';
 import { AssociatedDocumentation } from './components/associated-documentation';
-import { AccessibleForFree, ConditionsOfAccess } from 'src/components/badges';
-import { HasDownload } from 'src/components/badges/components/HasDownload';
-import { HasAPI } from 'src/components/badges/components/HasAPI';
+import {
+  AccessibleForFree,
+  ConditionsOfAccess,
+} from 'src/components/tag-with-tooltip';
+import { HasDownload } from 'src/components/tag-with-tooltip/components/HasDownload';
+import { HasAPI } from 'src/components/tag-with-tooltip/components/HasAPI';
 
 interface ExternalProps extends Omit<WrapperProps, 'children'> {
   data?: FormattedResource;

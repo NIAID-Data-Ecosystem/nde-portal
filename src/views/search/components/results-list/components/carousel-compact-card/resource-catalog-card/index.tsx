@@ -1,7 +1,7 @@
 import { Button, Flex, Skeleton, Text } from '@chakra-ui/react';
 import React, { useMemo, useState } from 'react';
-import { ConditionsOfAccess } from 'src/components/badges';
-import { HasAPI } from 'src/components/badges/components/HasAPI';
+import { ConditionsOfAccess } from 'src/components/tag-with-tooltip';
+import { HasAPI } from 'src/components/tag-with-tooltip/components/HasAPI';
 import { MetadataLabel } from 'src/components/metadata';
 import { ScrollContainer } from 'src/components/scroll-container';
 import { SearchableItems } from 'src/components/searchable-items';

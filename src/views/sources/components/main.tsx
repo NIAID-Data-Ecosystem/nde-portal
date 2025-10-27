@@ -1,5 +1,3 @@
-import React, { useState } from 'react';
-import { FaMinus, FaPlus, FaUpRightFromSquare } from 'react-icons/fa6';
 import {
   Box,
   Button,
@@ -12,9 +10,11 @@ import {
   Text,
   VStack,
 } from '@chakra-ui/react';
-import { BadgeWithTooltip } from 'src/components/badges';
+import React, { useState } from 'react';
+import { FaMinus, FaPlus, FaUpRightFromSquare } from 'react-icons/fa6';
 import { Link } from 'src/components/link';
 import { MetadataCompatibilitySourceBadge } from 'src/components/metadata-compatibility-source-badge';
+import { SectionSearch } from 'src/components/section/components/search';
 import {
   StyledCard,
   StyledCardButton,
@@ -22,7 +22,7 @@ import {
   StyledCardStack,
 } from 'src/components/table-of-contents/components/card';
 import { SectionHeader } from 'src/components/table-of-contents/layouts/section-header';
-import { SectionSearch } from 'src/components/section/components/search';
+import { TagWithTooltip } from 'src/components/tag-with-tooltip';
 import { TagWithUrl } from 'src/components/tag-with-url';
 import type { SourceResponse } from 'src/pages/sources';
 import { formatDate } from 'src/utils/api/helpers';
@@ -147,9 +147,9 @@ const Main: React.FC<Main> = ({ data, isLoading, metadata }) => {
               tags={
                 <>
                   {sourceObj.isNiaidFunded && (
-                    <BadgeWithTooltip colorScheme='blue' variant='subtle'>
+                    <TagWithTooltip colorPalette='blue' variant='subtle'>
                       NIAID
-                    </BadgeWithTooltip>
+                    </TagWithTooltip>
                   )}
                 </>
               }

@@ -21,7 +21,10 @@ import MetadataAccordion from './metadata-accordion';
 import OperatingSystems from './operating-systems';
 import { SearchableItems } from 'src/components/searchable-items';
 import { DisplayHTMLContent } from 'src/components/html-content';
-import { AccessibleForFree, ConditionsOfAccess } from 'src/components/badges';
+import {
+  AccessibleForFree,
+  ConditionsOfAccess,
+} from 'src/components/tag-with-tooltip';
 import { SourceLogo, SourceLogoWrapper, getSourceDetails } from './source-logo';
 import { CompletenessBadgeCircle } from 'src/components/metadata-completeness-badge/Circular';
 import { ToggleContainer } from 'src/components/toggle-container';
