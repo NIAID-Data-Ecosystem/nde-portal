@@ -59,18 +59,37 @@ export const FilterTags: React.FC<FilterTagsProps> = React.memo(
       [selectedFilters, configMap],
     );
 
-    //Removes a single filter value from selectedFilters and updates the route.
+    // Removes a single filter value from selectedFilters and updates the route.
     const removeSelectedFilter = (
       filterKey: string,
       filterValue: SelectedFilterTypeValue | SelectedFilterTypeValue[],
     ) => {
-      const updatedFilters: SelectedFilterType = {
-        ...selectedFilters,
-        [filterKey]: selectedFilters[filterKey].filter(v => {
-          if (Array.isArray(filterValue)) return !filterValue.includes(v);
-          return !isEqual(v, filterValue);
-        }),
-      };
+      let updatedFilters: SelectedFilterType;
+
+      // If filterValue is an array of 2 dates, clear all
+      if (
+        filterKey === 'date' &&
+        Array.isArray(filterValue) &&
+        filterValue.length === 2 &&
+        typeof filterValue[0] === 'string' &&
+        typeof filterValue[1] === 'string'
+      ) {
+        // Remove the entire date range
+        updatedFilters = {
+          ...selectedFilters,
+          [filterKey]: [],
+        };
+      } else {
+        // For other filters, remove the specific value(s)
+        updatedFilters = {
+          ...selectedFilters,
+          [filterKey]: selectedFilters[filterKey].filter(v => {
+            if (Array.isArray(filterValue)) return !filterValue.includes(v);
+            return !isEqual(v, filterValue);
+          }),
+        };
+      }
+
       resetPagination();
       handleRouteUpdate({
         from: defaultQuery.from,
