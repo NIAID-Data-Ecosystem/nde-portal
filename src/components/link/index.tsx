@@ -41,6 +41,7 @@ const CustomLink = ({
           m={0.5}
           ml={1}
           mb={1}
+          color='inherit'
           {...iconProps}
         ></Icon>
       )}

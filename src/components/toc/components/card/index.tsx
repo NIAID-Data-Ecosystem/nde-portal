@@ -139,7 +139,9 @@ export const Card = ({
         <Flex flex={2} flexDirection='column'>
           <ChakraCard.Body gap={2} minWidth={{ base: 'unset', sm: '400px' }}>
             <Box>
-              <ChakraCard.Title mb={0}>{title}</ChakraCard.Title>
+              <ChakraCard.Title mb={0}>
+                {title} {tags}
+              </ChakraCard.Title>
               {subtitle && <CardSubtitle>{subtitle}</CardSubtitle>}
             </Box>
 
