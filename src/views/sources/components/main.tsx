@@ -1,20 +1,14 @@
 import {
-  Box,
   Button,
-  Collapse,
   Flex,
-  HStack,
   Icon,
   SkeletonText,
-  StackDivider,
   Text,
   VStack,
 } from '@chakra-ui/react';
-import NextLink, { LinkProps } from 'next/link';
+import NextLink from 'next/link';
 import React, { useState } from 'react';
-import { FaMinus, FaPlus, FaUpRightFromSquare } from 'react-icons/fa6';
-import { Link } from 'src/components/link';
-import { MetadataCompatibilitySourceBadge } from 'src/components/metadata-compatibility-source-badge';
+import { FaUpRightFromSquare } from 'react-icons/fa6';
 import { Section } from 'src/components/section';
 import { TagWithTooltip } from 'src/components/tag-with-tooltip';
 import { TagWithUrl } from 'src/components/tag-with-url';
@@ -22,6 +16,8 @@ import { TOC } from 'src/components/toc';
 import type { SourceResponse } from 'src/pages/sources';
 import { formatDate } from 'src/utils/api/helpers';
 import { queryFilterObject2String } from 'src/views/search/components/filters/utils/query-builders';
+
+import { CardContent } from './card';
 
 interface Main {
   data?: SourceResponse[];
@@ -48,15 +44,6 @@ const Main: React.FC<Main> = ({ data, isLoading, metadata }) => {
   const [schemaId, setSchemaId] = useState<string[]>([]);
   const [schemaText, setSchemaText] = useState<string[]>([]);
   const [searchValue, setSearchValue] = useState('');
-
-  function schemaIdFunc(sourceName: string) {
-    if (schemaId.includes(sourceName) || schemaText.includes(sourceName)) {
-      setSchemaText(schemaText.filter(schemaText => schemaText !== sourceName));
-      return setSchemaId(schemaId.filter(schemaId => schemaId !== sourceName));
-    }
-    setSchemaText([...schemaText, sourceName]);
-    return setSchemaId([...schemaId, sourceName]);
-  }
 
   const sources =
     data?.filter((source: { name: string }) =>
@@ -137,6 +124,70 @@ const Main: React.FC<Main> = ({ data, isLoading, metadata }) => {
       </Flex>
 
       {/* Card Stack */}
+      <TOC.CardStack>
+        {sources.map((sourceObj: SourceResponse, index: number) => {
+          // used for metadata compatibility badge
+          const parentCollectionInfo = sourceObj?.sourceInfo?.parentCollection
+            ?.id
+            ? sources.find(
+                source =>
+                  source.key === sourceObj?.sourceInfo?.parentCollection?.id,
+              )
+            : null;
+
+          const metadataCompatibilityData =
+            sourceObj?.sourceInfo?.metadata_completeness ||
+            parentCollectionInfo?.sourceInfo.metadata_completeness ||
+            null;
+          return (
+            <TOC.Card
+              {...sourceObj}
+              key={sourceObj.slug}
+              id={sourceObj.slug}
+              title={sourceObj.name}
+              subtitle={
+                sourceObj.numberOfRecords > 0
+                  ? `${sourceObj.numberOfRecords.toLocaleString()} resources
+                        available`
+                  : ''
+              }
+              tags={
+                sourceObj.isNiaidFunded && (
+                  <TagWithTooltip colorPalette='blue' variant='surface'>
+                    NIAID
+                  </TagWithTooltip>
+                )
+              }
+              footerProps={{ alignItems: 'flex-end' }}
+              cta={
+                sourceObj.id
+                  ? [
+                      {
+                        href: {
+                          pathname: `/search`,
+                          query: {
+                            q: '',
+                            filters: queryFilterObject2String({
+                              'includedInDataCatalog.name': [sourceObj.id],
+                            }),
+                          },
+                        },
+                        children: `Search for ${sourceObj.name} resources`,
+                        hasArrow: true,
+                      },
+                    ]
+                  : undefined
+              }
+              fontSize='sm'
+            >
+              <CardContent
+                {...sourceObj}
+                metadataCompatibilityData={metadataCompatibilityData}
+              />
+            </TOC.Card>
+          );
+        })}
+      </TOC.CardStack>
     </Section.Wrapper>
   );
 };
