@@ -3,6 +3,7 @@ import {
   Tooltip as ChakraTooltip,
   TooltipProps as ChakraTooltipProps,
 } from '@chakra-ui/react';
+import { theme } from 'src/theme';
 
 interface TooltipProps extends ChakraTooltipProps {}
 
@@ -17,6 +18,7 @@ const Tooltip: React.FC<TooltipProps> = ({ label, children, ...props }) => {
       lineHeight='short'
       border='1px solid'
       borderColor='gray.200'
+      arrowShadowColor={theme.colors.gray[200]}
       {...props}
     >
       {children}
