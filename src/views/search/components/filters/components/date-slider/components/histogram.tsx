@@ -4,6 +4,7 @@ import { theme } from 'src/theme';
 import { Group } from '@visx/group';
 import { scaleBand, scaleLinear } from '@visx/scale';
 import { Bar } from '@visx/shape';
+import { AxisBottom } from '@visx/axis';
 import { useTooltip, useTooltipInPortal } from '@visx/tooltip';
 import { formatNumber } from 'src/utils/helpers';
 import { addMissingYears } from '../helpers';
@@ -16,18 +17,12 @@ interface HistogramProps {
   children: React.ReactNode;
 }
 
-/*
-Histogram consists of :
-- default [data] (data unaffected by date filtering - represented by gray bars)
-- [updatedData] (data updated to reflect filtered resources - represented by coloured bars)
-*/
-
 const Histogram: React.FC<HistogramProps> = ({
   children,
   updatedData,
   handleClick,
 }) => {
-  const { data = [], dates, setDateRange } = useDateRangeContext();
+  const { allData, filteredData, dates } = useDateRangeContext();
 
   const params = useMemo(
     () => ({
@@ -49,9 +44,7 @@ const Histogram: React.FC<HistogramProps> = ({
   const range_min = useMemo(() => dates[0], [dates]);
   const range_max = useMemo(() => dates[1], [dates]);
 
-  ////////////////////////////////////////////////////////////////////////////////////
-  ////////////////////////////     TOOLTIP      //////////////////////////////////////
-  ////////////////////////////////////////////////////////////////////////////////////
+  // tooltip
 
   const {
     tooltipData,
@@ -103,46 +96,53 @@ const Histogram: React.FC<HistogramProps> = ({
     [containerBounds.left, containerBounds.top, showTooltip],
   );
 
-  /////////////////////////////////////////p///////////////////////////////////////////
-  ////////////////////////////     Scales      //////////////////////////////////////
-  ////////////////////////////////////////////////////////////////////////////////////
+  // visibleData is filteredData (already filtered by date range in context)
+  const visibleData = filteredData;
+
   // x-axis is date, using index for domain
   const xScale = useMemo(() => {
     const maxW =
-      width / data.length > params.maxBarWidth
-        ? data.length * params.maxBarWidth
+      width / visibleData.length > params.maxBarWidth
+        ? visibleData.length * params.maxBarWidth
         : width;
 
     return scaleBand<number>({
       range: [0, width === null ? 0 : maxW],
-      domain: data.map((_, i) => i),
+      domain: visibleData.map((_, i) => i),
       padding: params.padding,
     });
-  }, [data, width, params.padding, params.maxBarWidth]);
+  }, [visibleData, width, params.padding, params.maxBarWidth]);
 
-  // y-axis is document count.
+  // y-axis is document count
   const yScale = useMemo(
     () =>
       scaleLinear<number>({
-        domain: [0, Math.max(...data.map(d => d.count))],
+        domain: [0, Math.max(...visibleData.map(d => d.count))],
         range: [height - 1, 0],
       }),
-    [data, height],
+    [visibleData, height],
   );
 
-  // Set svg width to the exact width of the barchart.
+  // Set svg width to the exact width of the barchart
   const svgWidth = useMemo(
-    () => (xScale(data.length - 1) || 0) + xScale.bandwidth(),
-    [data.length, xScale],
+    () => (xScale(visibleData.length - 1) || 0) + xScale.bandwidth(),
+    [visibleData.length, xScale],
   );
 
-  // "Fill in" the data where years are missing.
+  // "Fill in" the data where years are missing
   const updatedCounts = useMemo(
     () => addMissingYears([...updatedData]),
     [updatedData],
   );
 
-  if (!data) {
+  // Calculate tick values for x-axis - only show min and max
+  const xAxisTickValues = useMemo(() => {
+    if (visibleData.length === 0) return [];
+    if (visibleData.length === 1) return [0];
+    return [0, visibleData.length - 1];
+  }, [visibleData.length]);
+
+  if (!filteredData) {
     return <></>;
   }
 
@@ -181,9 +181,15 @@ const Histogram: React.FC<HistogramProps> = ({
 
       {/* Bars */}
       <Flex ref={containerRef} justifyContent='center'>
-        {data.length ? (
+        {visibleData.length ? (
           <Box>
-            <Box as='svg' id='filters-histogram' width={svgWidth}>
+            <Box
+              as='svg'
+              id='filters-histogram'
+              width={svgWidth + 40}
+              height={height + 30}
+              style={{ overflow: 'visible' }}
+            >
               <defs>
                 <linearGradient
                   id='histogram-gradient'
@@ -197,8 +203,8 @@ const Histogram: React.FC<HistogramProps> = ({
                   <stop offset='1' stopColor='#241683'></stop>
                 </linearGradient>
               </defs>
-              <Group>
-                {data.map((d, i) => {
+              <Group left={20}>
+                {visibleData.map((d, i) => {
                   const { term, count } = d;
                   /* Updated counts when date has changed */
                   const updatedCount =
@@ -216,28 +222,11 @@ const Histogram: React.FC<HistogramProps> = ({
                   const barHeight = Math.ceil(height - yScale(barCount));
                   const barY = height - barHeight;
 
-                  // const updatedBarHeight = Math.ceil(
-                  //   height - yScale(updatedCount),
-                  // );
                   const hovered = term === tooltipData?.term;
-                  let fill = params.fill.gray;
+                  let fill = `url("#histogram-gradient")`;
 
-                  const termInRange =
-                    range_min &&
-                    range_max &&
-                    term >= range_min &&
-                    term <= range_max;
-
-                  if (range_min && range_max) {
-                    fill = termInRange
-                      ? `url("#histogram-gradient")`
-                      : params.fill.gray;
-
-                    // If bar is hovered over, fill with a different color.
-                    // if count is zero we fill the bar with a lighter colors
-                    if (count === 0 && updatedCount === 0) {
-                      fill = theme.colors.gray[200];
-                    }
+                  if (count === 0 && updatedCount === 0) {
+                    fill = theme.colors.gray[200];
                   }
 
                   return (
@@ -276,9 +265,9 @@ const Histogram: React.FC<HistogramProps> = ({
                 })}
               </Group>
 
-              {/* Invisible bars that are used to trigger the tooltip. */}
-              <Group>
-                {data.map((d, i) => {
+              {/* Invisible bars for tooltip triggers */}
+              <Group left={20}>
+                {visibleData.map((d, i) => {
                   const { term } = d;
                   /* Updated counts when date has changed */
                   const updatedCount =
@@ -305,7 +294,6 @@ const Histogram: React.FC<HistogramProps> = ({
                         onMouseOut={hideTooltip}
                         style={{ cursor: 'pointer' }}
                         onClick={() => {
-                          setDateRange([i, i]);
                           const year = term.split('-')[0];
                           handleClick([`${year}-01-01`, `${year}-12-31`]);
                         }}
@@ -314,24 +302,39 @@ const Histogram: React.FC<HistogramProps> = ({
                   );
                 })}
               </Group>
+
+              {/* x-axis */}
+              <Group left={20}>
+                <AxisBottom
+                  top={height}
+                  scale={xScale}
+                  tickValues={xAxisTickValues}
+                  tickFormat={i => visibleData[i as number]?.label || ''}
+                  stroke={theme.colors.gray[300]}
+                  tickStroke={theme.colors.gray[300]}
+                  tickLabelProps={() => ({
+                    fill: theme.colors.gray[600],
+                    fontSize: 13,
+                    textAnchor: 'middle',
+                  })}
+                />
+              </Group>
             </Box>
 
-            {/* SLIDER */}
-            <Flex w='100%' position='relative'>
+            {/* slider */}
+            <Flex w='100%' position='relative' mt={0}>
               {/*
                 Position slider under bars where
                 [left]  = first bar's x-position + half bar width.
                 [width] = last bar's x-position - half bar width.
                 */}
-              {
-                <Box
-                  position='absolute'
-                  left={`${(xScale(0) || 0) + xScale.bandwidth() / 2}px`}
-                  w={`${xScale(data.length - 1) || 0}px`}
-                >
-                  {children}
-                </Box>
-              }
+              <Box
+                position='absolute'
+                left={`${(xScale(0) || 0) + xScale.bandwidth() / 2 + 20}px`}
+                w={`${xScale(visibleData.length - 1) || 0}px`}
+              >
+                {children}
+              </Box>
             </Flex>
           </Box>
         ) : (

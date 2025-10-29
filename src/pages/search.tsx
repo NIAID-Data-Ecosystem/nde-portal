@@ -9,7 +9,10 @@ import { Box, Flex, VStack } from '@chakra-ui/react';
 import { Filters } from 'src/views/search/components/filters';
 import { SelectedFilterType } from 'src/views/search/components/filters/types';
 import { FILTER_CONFIGS } from 'src/views/search/components/filters/config';
-import { queryFilterString2Object } from 'src/views/search/components/filters/utils/query-builders';
+import {
+  queryFilterString2Object,
+  queryFilterObject2String,
+} from 'src/views/search/components/filters/utils/query-builders';
 import { defaultQuery } from 'src/views/search/config/defaultQuery';
 import { FilterTags } from 'src/views/search/components/filters/components/tag';
 import { SearchResultsHeader } from 'src/views/search/components/search-results-header';
@@ -25,6 +28,7 @@ const defaultFilters = FILTER_CONFIGS.reduce(
   (r, { property }) => ({ ...r, [property]: [] }),
   {},
 );
+
 //  This page renders the search results from the search bar.
 const Search: NextPage<{
   initialData: FetchSearchResultsResponse;
@@ -71,6 +75,7 @@ const Search: NextPage<{
 
   // Set the initial tab based on the router query
   const [initialTab, setInitialTab] = useState<TabType['id'] | null>(null);
+  const [hasSetInitialDateFilter, setHasSetInitialDateFilter] = useState(false);
 
   useEffect(() => {
     if (!router.isReady) return;
@@ -81,10 +86,47 @@ const Search: NextPage<{
     setInitialTab(tab?.id || defaultTab);
   }, [router]);
 
+  // Set initial date filter on first load
+  useEffect(() => {
+    if (!router.isReady || hasSetInitialDateFilter) return;
+
+    const hasDateFilter =
+      selectedFilters.date && selectedFilters.date.length > 0;
+
+    // Only set default date filter if no date filter exists
+    if (!hasDateFilter) {
+      const currentYear = new Date().getFullYear();
+      const defaultDateFilter = ['2000-01-01', `${currentYear}-12-31`];
+
+      // Build the complete filters object with the date filter
+      const updatedFilters = {
+        ...selectedFilters,
+        date: defaultDateFilter,
+      };
+
+      // Convert to filter string format
+      const filterString = queryFilterObject2String(updatedFilters);
+
+      handleRouteUpdate({
+        filters: filterString,
+      });
+
+      setHasSetInitialDateFilter(true);
+    } else {
+      setHasSetInitialDateFilter(true);
+    }
+  }, [
+    router.isReady,
+    selectedFilters,
+    hasSetInitialDateFilter,
+    handleRouteUpdate,
+  ]);
+
   // If the initial tab is not set, return a loading state.
   if (!initialTab) {
     return null;
   }
+
   return (
     <PageContainer
       meta={getPageSeoConfig('/search')}

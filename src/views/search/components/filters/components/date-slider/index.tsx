@@ -44,8 +44,7 @@ export const FiltersDateSlider: React.FC<FiltersDateSliderProps> = ({
 
   /*
   Remove date filter from filters object for initial results.
-  This is necessary to get all the possible results (regardless of date filter selection),
-  If we want the histogram bars to fully change whenever there's a new date selection, add back the date filter.
+  This is necessary to get all the possible results (regardless of date filter selection).
   */
   const initialParams = useMemo(() => {
     const filtersString2Object = queryParams.extra_filter

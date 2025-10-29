@@ -17,14 +17,18 @@ export const DatePicker: React.FC<DatePickerProps> = ({
   resetFilter,
 }) => {
   const [selected, setSelected] = useState(selectedDates);
-  const { data } = useDateRangeContext();
-  const min = formatISOString((data && data[0]?.term) || '');
+  const { allData } = useDateRangeContext();
 
-  const max =
-    formatISOString((data && data[data.length - 1]?.term) || '').split('-')[0] +
-    '-12-31';
+  // Min is the first date in the complete dataset
+  const min = formatISOString((allData && allData[0]?.term) || '');
 
-  const isDisabled = !data || !data.length;
+  // Max is the last date in the complete dataset
+  const max = formatISOString(
+    (allData && allData[allData.length - 1]?.term) || '',
+  );
+
+  const isDisabled = !allData || !allData.length;
+
   useEffect(() => {
     setSelected(selectedDates);
   }, [selectedDates]);
@@ -34,6 +38,7 @@ export const DatePicker: React.FC<DatePickerProps> = ({
       id='date-picker'
       as='form'
       w='100%'
+      mt={4}
       flexDirection='column'
       onSubmit={e => {
         e.preventDefault();
@@ -42,7 +47,7 @@ export const DatePicker: React.FC<DatePickerProps> = ({
         if (!dates[0]) {
           dates[0] = min;
         }
-        // automatically set start date to max if none is provided
+        // automatically set end date to max if none is provided
         if (!dates[1]) {
           dates[1] = max;
         }
@@ -61,10 +66,9 @@ export const DatePicker: React.FC<DatePickerProps> = ({
             colorScheme={colorScheme as string}
             bg='white'
             min={min}
-            max={selected[1] || max} // set the maximum start date to the end date in the current selection or the end date in the data to prevent setting a start date later than the end date.
+            max={selected[1] || max}
             value={selected[0] === '-_exists_' ? '' : selected[0] || min}
             onChange={e => {
-              // If not max selected, set the max value to the max date in data.
               let newSelection = [e.target.value, selected[1] || max];
               setSelected(newSelection);
             }}
@@ -80,11 +84,10 @@ export const DatePicker: React.FC<DatePickerProps> = ({
             type='date'
             colorScheme={colorScheme as string}
             bg='white'
-            min={selected[0] || min} // set the minimum end date to the start date in the current selection or the start date in the data to prevent setting an end date earlier than the start date.
+            min={selected[0] || min}
             max={max}
             value={selected[0] === '-_exists_' ? '' : selected[1] || max}
             onChange={e => {
-              // If not max selected, set the max value to the max date in data.
               let newSelection = [selected[0] || min, e.target.value];
               setSelected(newSelection);
             }}
