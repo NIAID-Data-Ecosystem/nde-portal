@@ -255,7 +255,7 @@ interface OptionProps {
   property: string; // Associated property name (e.g., type, domain)
 }
 
-interface SearchBarWithDropdownProps {
+export interface SearchBarWithDropdownProps {
   value?: string;
   ariaLabel: string;
   placeholder: string;
@@ -276,7 +276,7 @@ interface SearchBarWithDropdownProps {
   };
 }
 
-export const SearchBarWithDropdown = (props: SearchBarWithDropdownProps) => {
+export const DropdownSearchInput = (props: SearchBarWithDropdownProps) => {
   const router = useRouter();
   const { q } = router.query;
   const defaultInputValue =
@@ -302,4 +302,8 @@ export const SearchBarWithDropdown = (props: SearchBarWithDropdownProps) => {
       />
     </InputWithDropdown>
   );
+};
+
+export const Search = {
+  Input: DropdownSearchInput,
 };

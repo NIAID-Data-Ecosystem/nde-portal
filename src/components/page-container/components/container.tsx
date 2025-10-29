@@ -6,7 +6,7 @@ import { Footer } from 'src/components/footer';
 import { Navigation } from 'src/components/navigation-bar';
 import { Breadcrumbs } from './breadcrumbs';
 import { Banner } from './banner';
-import { SearchBarSection } from './search-bar-section';
+import { Search } from './search';
 import { SeoMetaFields, SeoMetaFieldsProps } from './seo-meta-fields';
 import { useBreadcrumbs } from '../hooks/useBreadcrumbs';
 
@@ -103,7 +103,16 @@ export const PageContainer: React.FC<PageContainerProps> = ({
           <Breadcrumbs segments={breadcrumbs} />
 
           {/* <!-- Search bar for datasets across site --> */}
-          {includeSearchBar && <SearchBarSection />}
+          {/* {includeSearchBar && <SearchBarSection />} */}
+          {includeSearchBar && (
+            <Search.Wrapper>
+              <Flex justifyContent='space-between' alignItems='baseline'>
+                <Search.AIToggle />
+                <Search.AdvancedSearchLink />
+              </Flex>
+              <Search.Input />
+            </Search.Wrapper>
+          )}
 
           {children}
           <Footer />

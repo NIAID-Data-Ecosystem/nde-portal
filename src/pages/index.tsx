@@ -12,16 +12,18 @@ import {
   Divider,
   VStack,
   Stack,
+  Card,
+  CardBody,
 } from '@chakra-ui/react';
 import {
   getPageSeoConfig,
   PageContainer,
   PageContent,
+  Search,
 } from 'src/components/page-container';
 import HOMEPAGE_COPY from 'configs/homepage.json';
 import HOME_QUERIES from 'configs/queries/home-queries.json';
 import NextLink from 'next/link';
-import { SearchBarWithDropdown } from 'src/components/search-bar';
 import { FaMagnifyingGlass, FaRegEnvelope, FaGithub } from 'react-icons/fa6';
 import { useRepoData } from 'src/hooks/api/useRepoData';
 import { LandingPageCards } from 'src/views/home/components/LandingPageCards/';
@@ -68,82 +70,86 @@ const Home: NextPage<{
         title={HOMEPAGE_COPY.sections.hero.heading}
         subtitle={HOMEPAGE_COPY.sections.hero.subtitle}
       >
-        <Stack
-          flexDirection='column'
-          w='100%'
-          alignItems='flex-start'
-          spacing={{ base: 4, sm: 2 }}
-          zIndex={2}
-        >
-          <Flex w='100%' flexDirection='column' maxWidth='1000px'>
-            <SearchBarWithDropdown
-              placeholder='Search for resources'
-              ariaLabel='Search for resources'
-              size='md'
-              showOptionsMenu
-              showSearchHistory
-              optionMenuProps={{
-                buttonProps: {
-                  borderRadius: 'full',
-                  colorScheme: 'primary',
-                  my: 2,
-                },
-                label: 'Type',
-                description: SCHEMA_DEFINITIONS['type'].abstract['Dataset'],
-                showSelectAll: true,
-                options: [
-                  {
-                    name: 'Computational Tool Repository',
-                    value: 'ComputationalTool',
-                    property: '@type',
-                  },
-                  {
-                    name: 'Dataset Repository',
-                    value: 'Dataset',
-                    property: '@type',
-                  },
-                  {
-                    name: 'Resource Catalog',
-                    value: 'ResourceCatalog',
-                    property: '@type',
-                  },
-                ],
-              }}
-            />
-          </Flex>
-          <Box>
-            <Text fontWeight='semibold'>Try these searches:</Text>
-            <Stack flexDirection='row' flexWrap={'wrap'}>
-              {HOME_QUERIES.map(query => {
-                return (
-                  <Button
-                    key={query.title}
-                    as={NextLink}
-                    href={{
-                      pathname: `/search`,
-                      query: { q: query.searchTerms.join(' OR ') },
-                    }}
-                    leftIcon={<FaMagnifyingGlass />}
-                    size={{ base: 'sm', sm: 'xs' }}
-                    colorScheme='niaid'
-                    fontWeight='semibold'
-                  >
-                    {query.title}
-                  </Button>
-                );
-              })}
+        <Card w='100%' overflow='visible' bg='whiteAlpha.800'>
+          <CardBody overflow='visible'>
+            <Stack
+              flexDirection='column'
+              w='100%'
+              alignItems='flex-start'
+              spacing={{ base: 4, sm: 3 }}
+              zIndex={2}
+            >
+              <Flex w='100%' flexDirection='column' maxWidth='1000px'>
+                <Flex
+                  justifyContent='space-between'
+                  alignItems='baseline'
+                  flex={1}
+                  mb={1}
+                >
+                  <Search.AIToggle />
+                  <Search.AdvancedSearchLink />
+                </Flex>
+                <Search.Input
+                  placeholder='Search for resources'
+                  ariaLabel='Search for resources'
+                  size='md'
+                  showOptionsMenu
+                  showSearchHistory
+                  optionMenuProps={{
+                    buttonProps: {
+                      borderRadius: 'full',
+                      colorScheme: 'primary',
+                      my: 2,
+                    },
+                    label: 'Type',
+                    description: SCHEMA_DEFINITIONS['type'].abstract['Dataset'],
+                    showSelectAll: true,
+                    options: [
+                      {
+                        name: 'Computational Tool Repository',
+                        value: 'ComputationalTool',
+                        property: '@type',
+                      },
+                      {
+                        name: 'Dataset Repository',
+                        value: 'Dataset',
+                        property: '@type',
+                      },
+                      {
+                        name: 'Resource Catalog',
+                        value: 'ResourceCatalog',
+                        property: '@type',
+                      },
+                    ],
+                  }}
+                />
+              </Flex>
+              <Box>
+                <Text fontWeight='semibold'>Try these searches:</Text>
+                <Stack flexDirection='row' flexWrap={'wrap'}>
+                  {HOME_QUERIES.map(query => {
+                    return (
+                      <Button
+                        key={query.title}
+                        as={NextLink}
+                        href={{
+                          pathname: `/search`,
+                          query: { q: query.searchTerms.join(' OR ') },
+                        }}
+                        leftIcon={<FaMagnifyingGlass />}
+                        size='sm'
+                        colorScheme='niaid'
+                        fontWeight='semibold'
+                      >
+                        {query.title}
+                      </Button>
+                    );
+                  })}
+                </Stack>
+              </Box>
             </Stack>
-          </Box>
-          <Button
-            as={NextLink}
-            href={{ pathname: '/advanced-search' }}
-            leftIcon={<FaMagnifyingGlass />}
-            size={{ base: 'sm', sm: 'xs' }}
-            mt={2}
-          >
-            Advanced Search
-          </Button>
-        </Stack>
+          </CardBody>
+        </Card>
       </HeroBanner>
       <>
         {/**** Repositories Table section *****/}
