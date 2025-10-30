@@ -1,11 +1,11 @@
 import { Button, Flex, Skeleton, Text } from '@chakra-ui/react';
 import React, { useMemo, useState } from 'react';
-import { ConditionsOfAccess } from 'src/components/tag-with-tooltip';
-import { HasAPI } from 'src/components/tag-with-tooltip/components/HasAPI';
+import { ConditionsOfAccess } from 'src/components/badges';
+import { HasAPI } from 'src/components/badges/components/HasAPI';
 import { MetadataLabel } from 'src/components/metadata';
 import { ScrollContainer } from 'src/components/scroll-container';
 import { SearchableItems } from 'src/components/searchable-items';
-import Tooltip from 'src/components/tooltip';
+import { Tooltip } from 'src/components/tooltip';
 import { FormattedResource } from 'src/utils/api/types';
 import { formatAPIResourceTypeForDisplay } from 'src/utils/formatting/formatResourceType';
 import { isSourceFundedByNiaid } from 'src/utils/helpers/sources';
@@ -88,7 +88,7 @@ export const ResourceCatalogCard = ({
 
       <CompactCard.Body>
         {/* Date and badges */}
-        <Skeleton isLoaded={!isLoading} minHeight='30px'>
+        <Skeleton loading={isLoading} minHeight='30px'>
           {date && (
             <Flex
               bg='white'
@@ -99,8 +99,8 @@ export const ResourceCatalogCard = ({
               px={0}
             >
               <Tooltip
-                label='Corresponds to the most recent of date modified, date published and date created.'
-                hasArrow
+                content='Corresponds to the most recent of date modified, date published and date created.'
+                showArrow
                 bg='#fff'
                 sx={{
                   color: 'text.body',
@@ -140,7 +140,7 @@ export const ResourceCatalogCard = ({
         </Skeleton>
 
         {/* Content types */}
-        <Skeleton isLoaded={!isLoading} px={-1}>
+        <Skeleton loading={isLoading} px={-1}>
           {aboutItems.length > 0 && (
             <Flex bg='white' direction='column'>
               <MetadataLabel label='Content Types' />
@@ -163,7 +163,7 @@ export const ResourceCatalogCard = ({
         </Skeleton>
 
         {/* Description */}
-        <Skeleton isLoaded={!isLoading} flex='1' mt={2} mb={1}>
+        <Skeleton loading={isLoading} flex='1' mt={2} mb={1}>
           {description && (
             <>
               {shouldShowDescription ? (

@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import SITE_CONFIG from 'configs/site.config.json';
 import type { GetStaticProps, NextPage } from 'next';
 import { useRouter } from 'next/router';
-import React, { useEffect } from 'react';
+import React from 'react';
 import { fetchAllFeatures, fetchFeatureBySlug } from 'src/api/features';
 import { FeatureQueryResponse } from 'src/api/features/types';
 import { Error } from 'src/components/error';
