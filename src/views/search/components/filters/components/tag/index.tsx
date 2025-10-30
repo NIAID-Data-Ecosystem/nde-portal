@@ -1,23 +1,17 @@
+import { Box, HStack, Tag } from '@chakra-ui/react';
+import { isEqual } from 'lodash';
 import React, { useMemo } from 'react';
-import {
-  Box,
-  Button,
-  HStack,
-  Tag,
-  TagCloseButton,
-  TagLabel,
-} from '@chakra-ui/react';
+import { defaultQuery } from 'src/views/search/config/defaultQuery';
+import { usePaginationContext } from 'src/views/search/context/pagination-context';
+
+import { SearchResultsHeading } from '../../../search-results-header';
 import {
   FilterConfig,
   SelectedFilterType,
   SelectedFilterTypeValue,
 } from '../../types';
 import { queryFilterObject2String } from '../../utils/query-builders';
-import { defaultQuery } from 'src/views/search/config/defaultQuery';
-import { isEqual } from 'lodash';
 import { generateTags } from './utils';
-import { SearchResultsHeading } from '../../../search-results-header';
-import { usePaginationContext } from 'src/views/search/context/pagination-context';
 
 interface FilterTagsProps {
   filtersConfig: FilterConfig[];
@@ -39,11 +33,6 @@ export interface TagInfo {
  * Users can remove individual tags or clear all filters at once.
  */
 
-const tagStyles = {
-  colorScheme: 'secondary',
-  size: 'sm',
-  variant: 'solid',
-};
 export const FilterTags: React.FC<FilterTagsProps> = React.memo(
   ({ filtersConfig, selectedFilters, handleRouteUpdate, removeAllFilters }) => {
     const { resetPagination } = usePaginationContext();
@@ -103,34 +92,41 @@ export const FilterTags: React.FC<FilterTagsProps> = React.memo(
     return (
       <Box>
         <SearchResultsHeading as='h2'>Filtered by: </SearchResultsHeading>
-        <HStack flexWrap='wrap' spacing={1.5} py={1}>
+        <HStack flexWrap='wrap' gap={1.5} py={1}>
           {/* Clear all filters button */}
-          <Tag
-            as={Button}
-            {...tagStyles}
-            colorScheme='secondary'
-            px={4}
+          <Tag.Root
+            asChild
             variant='outline'
-            fontSize='sm'
-            fontWeight='medium'
-            _hover={{ bg: 'secondary.600' }}
-            onClick={() => {
-              resetPagination();
-              removeAllFilters();
+            colorPalette='secondary'
+            cursor='pointer'
+            px={4}
+            _hover={{
+              bg: 'secondary.500',
+              borderColor: 'secondary.500',
+              color: '#fff',
+              transition: '0.25s ease',
             }}
           >
-            Clear All
-          </Tag>
+            <button
+              onClick={() => {
+                resetPagination();
+                removeAllFilters();
+              }}
+            >
+              <Tag.Label>Clear All</Tag.Label>
+            </button>
+          </Tag.Root>
 
           {/* Render each tag with close button */}
           {tags.map(({ key, name, value, displayValue, filterKey }) => (
-            <Tag key={key} {...tagStyles}>
-              <TagLabel>{`${name}: ${displayValue}`}</TagLabel>
-
-              <TagCloseButton
-                onClick={() => removeSelectedFilter(filterKey, value)}
-              />
-            </Tag>
+            <Tag.Root key={key} colorPalette='secondary' variant='solid'>
+              <Tag.Label>{`${name}: ${displayValue}`}</Tag.Label>
+              <Tag.EndElement>
+                <Tag.CloseTrigger
+                  onClick={() => removeSelectedFilter(filterKey, value)}
+                />
+              </Tag.EndElement>
+            </Tag.Root>
           ))}
         </HStack>
       </Box>
