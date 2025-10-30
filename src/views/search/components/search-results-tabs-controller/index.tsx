@@ -1,22 +1,23 @@
-import React, { useMemo } from 'react';
+import { Tabs } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
-import { TabPanel } from '@chakra-ui/react';
-import { useSearchTabsContext } from '../../context/search-tabs-context';
-import { useSearchQueryFromURL } from '../../hooks/useSearchQueryFromURL';
-import { SearchResults } from '../results-list';
-import { AccordionContent, AccordionWrapper } from '../layout/accordion';
-import { useSearchResultsData } from '../../hooks/useSearchResultsData';
-import { usePaginationContext } from '../../context/pagination-context';
-import { SearchTabs } from '../layout/tabs';
-import { FetchSearchResultsResponse } from 'src/utils/api/types';
-import { ResourceCatalogCard } from '../results-list/components/carousel-compact-card/resource-catalog-card';
-import { DiseaseOverviewCard } from '../results-list/components/carousel-compact-card/disease-overview-card';
+import React, { useMemo } from 'react';
 import { Carousel } from 'src/components/carousel';
-import { CarouselWrapper } from '../layout/carousel-wrapper';
-import { EmptyState } from '../results-list/components/empty';
-import { TabType } from '../../types';
-import { useDiseaseData } from '../../hooks/useDiseaseData';
+import { FetchSearchResultsResponse } from 'src/utils/api/types';
+
 import { generateOtherResourcesTitle } from '../../config/tabs';
+import { usePaginationContext } from '../../context/pagination-context';
+import { useSearchTabsContext } from '../../context/search-tabs-context';
+import { useDiseaseData } from '../../hooks/useDiseaseData';
+import { useSearchQueryFromURL } from '../../hooks/useSearchQueryFromURL';
+import { useSearchResultsData } from '../../hooks/useSearchResultsData';
+import { TabType } from '../../types';
+import { AccordionContent, AccordionWrapper } from '../layout/accordion';
+import { CarouselWrapper } from '../layout/carousel-wrapper';
+import { SearchTabs } from '../layout/tabs';
+import { SearchResults } from '../results-list';
+import { DiseaseOverviewCard } from '../results-list/components/carousel-compact-card/disease-overview-card';
+import { ResourceCatalogCard } from '../results-list/components/carousel-compact-card/resource-catalog-card';
+import { EmptyState } from '../results-list/components/empty';
 
 const CAROUSEL_RESULTS_FIELDS = [
   '_meta',
@@ -33,12 +34,12 @@ const CAROUSEL_RESULTS_FIELDS = [
 ];
 
 interface SearchResultsControllerProps {
-  colorScheme?: string;
+  colorPalette?: string;
   initialData: FetchSearchResultsResponse;
 }
 
 export const SearchResultsController = ({
-  colorScheme = 'secondary',
+  colorPalette = 'secondary',
   initialData,
 }: SearchResultsControllerProps) => {
   const router = useRouter();
@@ -195,17 +196,17 @@ export const SearchResultsController = ({
   return (
     <>
       <SearchTabs
-        index={selectedIndex}
-        onChange={handleTabChange}
-        colorScheme={colorScheme}
+        value={`${selectedIndex}`}
+        onValueChange={index => handleTabChange(+index)}
+        colorPalette={colorPalette}
         tabs={tabsWithFacetCounts}
         renderTabPanels={() =>
-          tabsWithFacetCounts.map(tab => {
+          tabsWithFacetCounts.map((tab, index) => {
             const sections = tab.types;
             const defaultIndices = getAccordionDefaultIndices(sections);
 
             return (
-              <TabPanel key={tab.id}>
+              <Tabs.Content key={tab.id} value={`${index}`}>
                 <AccordionWrapper
                   key={`${tab.id}-${defaultIndices.join(
                     '-',
@@ -277,7 +278,7 @@ export const SearchResultsController = ({
                     );
                   })}
                 </AccordionWrapper>
-              </TabPanel>
+              </Tabs.Content>
             );
           })
         }

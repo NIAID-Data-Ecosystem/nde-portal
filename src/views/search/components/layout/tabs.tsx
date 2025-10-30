@@ -1,15 +1,8 @@
+import { Tabs, TabsRootProps, Tag, Text } from '@chakra-ui/react';
 import React from 'react';
-import {
-  Tabs,
-  TabList,
-  TabPanels,
-  Tab,
-  Tag,
-  Text,
-  TabsProps,
-} from '@chakra-ui/react';
-import { TabType } from '../../types';
+
 import { TAB_LABELS } from '../../config/tabs';
+import { TabType } from '../../types';
 
 interface TabWithCounts extends Omit<TabType, 'types'> {
   types: (TabType['types'][number] & {
@@ -17,62 +10,60 @@ interface TabWithCounts extends Omit<TabType, 'types'> {
   })[];
 }
 
-interface SearchTabsProps extends Omit<TabsProps, 'children'> {
-  colorScheme?: string;
+interface SearchTabsProps extends Omit<TabsRootProps, 'children'> {
+  colorPalette?: string;
   tabs: TabWithCounts[];
   renderTabPanels: () => React.ReactNode;
 }
 
 export const SearchTabs = ({
-  colorScheme = 'secondary',
-  index,
-  onChange,
+  colorPalette = 'secondary',
+  value,
+  onValueChange,
   renderTabPanels,
   tabs,
 }: SearchTabsProps) => {
   return (
-    <Tabs
-      index={index}
-      onChange={onChange}
-      colorScheme={colorScheme}
+    <Tabs.Root
+      value={value}
+      onValueChange={onValueChange}
+      colorPalette={colorPalette}
       bg='#fff'
-      isLazy
-      lazyBehavior='keepMounted'
+      lazyMount
     >
       {/* Render each tab with its label(s) and count(s) */}
-      <TabList
+      <Tabs.List
         borderTop='1px solid'
         borderTopColor='gray.100'
         borderBottom='hidden'
         bg='page.alt'
       >
-        {tabs.map(tab => (
-          <Tab
+        {tabs.map((tab, index) => (
+          <Tabs.Trigger
             key={tab.id}
             id={tab.id}
             aria-label={tab.types.map(t => t.label).join(', ')}
-            sx={{
-              _selected: {
-                color: `${colorScheme}.500`,
-                bg: '#fff',
-              },
+            value={`${index}`}
+            _selected={{
+              color: `${colorPalette}.500`,
+              bg: '#fff',
             }}
           >
-            <TabLabels types={tab.types} colorScheme={colorScheme} />
-          </Tab>
+            <TabLabel types={tab.types} colorPalette={colorPalette} />
+          </Tabs.Trigger>
         ))}
-      </TabList>
-      <TabPanels>{renderTabPanels()}</TabPanels>
-    </Tabs>
+      </Tabs.List>
+      {renderTabPanels()}
+    </Tabs.Root>
   );
 };
 
-const TabLabels = ({
+const TabLabel = ({
   types,
-  colorScheme,
+  colorPalette,
 }: {
   types: TabWithCounts['types'];
-  colorScheme: string;
+  colorPalette: string;
 }) => {
   const datasetType = types.find(type => type.type === 'Dataset');
   const resourceCatalogType = types.find(
@@ -82,11 +73,9 @@ const TabLabels = ({
 
   const tagStyles = {
     borderRadius: 'full',
-    colorScheme,
+    colorPalette,
     ml: 1.5,
     my: 1,
-    size: 'sm',
-    variant: 'subtle',
   };
   const textStyles = {
     color: 'inherit',
@@ -103,9 +92,13 @@ const TabLabels = ({
     return (
       <Text as='h2' {...textStyles}>
         {`${TAB_LABELS.DATASET}s`}
-        <Tag {...tagStyles}>{datasetCount.toLocaleString()}</Tag>
+        <Tag.Root {...tagStyles}>
+          <Tag.Label>{datasetCount.toLocaleString()}</Tag.Label>
+        </Tag.Root>
         {` and ${TAB_LABELS.OTHER_RESOURCES} `}
-        <Tag {...tagStyles}>{otherResourcesCount.toLocaleString()}</Tag>
+        <Tag.Root {...tagStyles}>
+          <Tag.Label>{otherResourcesCount.toLocaleString()}</Tag.Label>
+        </Tag.Root>
       </Text>
     );
   }
@@ -115,7 +108,9 @@ const TabLabels = ({
   return (
     <Text as='h2' {...textStyles}>
       {type.label}
-      <Tag {...tagStyles}>{type.count.toLocaleString()}</Tag>
+      <Tag.Root {...tagStyles}>
+        <Tag.Label>{type.count.toLocaleString()}</Tag.Label>
+      </Tag.Root>
     </Text>
   );
 };

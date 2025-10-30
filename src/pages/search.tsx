@@ -136,18 +136,18 @@ const Search: NextPage<{
                 </Flex>
 
                 {/* Filter tags : Tags with the names of the currently selected filters */}
-                {/* {Object.values(selectedFilters).length > 0 && (
+                {Object.values(selectedFilters).length > 0 && (
                   <FilterTags
                     filtersConfig={FILTER_CONFIGS}
                     selectedFilters={selectedFilters}
                     handleRouteUpdate={handleRouteUpdate}
                     removeAllFilters={removeAllFilters}
                   />
-                )} */}
+                )}
               </VStack>
 
               {/* Search Results */}
-              {/* <SearchResultsController initialData={initialData} /> */}
+              <SearchResultsController initialData={initialData} />
             </Box>
           </Flex>
         </PaginationProvider>

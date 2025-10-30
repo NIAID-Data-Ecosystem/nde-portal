@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState } from 'react';
-import { TabType } from '../types';
+
 import { tabs } from '../config/tabs';
+import { TabType } from '../types';
 
 interface SearchContextValue {
   tabs: TabType[];
