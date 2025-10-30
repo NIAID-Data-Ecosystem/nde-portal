@@ -174,21 +174,22 @@ export const SearchResultsController = ({
   const getAccordionDefaultIndices = (
     sections: (TabType['types'][number] & { count: number })[],
   ) =>
-    sections.reduce((indices: number[], section, index) => {
+    sections.reduce((indices: string[], section, index) => {
+      const index_str = index.toString();
       if (section.type === 'ResourceCatalog') {
         if (section.count > 0 || hasMatchingDiseases) {
-          indices.push(index);
+          indices.push(index_str);
         }
       } else if (section.type === 'Dataset') {
         if (section.count > 0 || section.count === 0) {
-          indices.push(index);
+          indices.push(index_str);
         }
       } else if (section.type === 'ComputationalTool') {
         if (section.count > 0 || section.count === 0) {
-          indices.push(index);
+          indices.push(index_str);
         }
       } else if (section.count > 0) {
-        indices.push(index);
+        indices.push(index_str);
       }
       return indices;
     }, []);
@@ -201,19 +202,19 @@ export const SearchResultsController = ({
         colorPalette={colorPalette}
         tabs={tabsWithFacetCounts}
         renderTabPanels={() =>
-          tabsWithFacetCounts.map((tab, index) => {
+          tabsWithFacetCounts.map((tab, tabIndex) => {
             const sections = tab.types;
             const defaultIndices = getAccordionDefaultIndices(sections);
 
             return (
-              <Tabs.Content key={tab.id} value={`${index}`}>
+              <Tabs.Content key={tab.id} value={`${tabIndex}`}>
                 <AccordionWrapper
                   key={`${tab.id}-${defaultIndices.join(
                     '-',
                   )}-${hasMatchingDiseases}-${matchingDiseases.length}`}
-                  defaultIndex={defaultIndices}
+                  defaultValue={defaultIndices}
                 >
-                  {sections.map((section, idx) => {
+                  {sections.map((section, sectionIndex) => {
                     if (section.type === 'Disease') return null;
 
                     // For ResourceCatalog, render "Other Resources" with carousel
@@ -222,6 +223,7 @@ export const SearchResultsController = ({
                         <AccordionContent
                           key='other-resources'
                           title={generateOtherResourcesTitle(sections)}
+                          value={`${sectionIndex}`}
                         >
                           {isCarouselLoading || shouldShowCarousel ? (
                             <CarouselWrapper>
@@ -232,10 +234,11 @@ export const SearchResultsController = ({
                                       data: null,
                                     })
                                   : carouselItems
-                                ).map((carouselItem, idx) => (
+                                ).map((carouselItem, carouselIndex) => (
                                   <div
                                     key={
-                                      carouselItem?.data?.id || `loading-${idx}`
+                                      carouselItem?.data?.id ||
+                                      `loading-${carouselIndex}`
                                     }
                                   >
                                     {carouselItem.type === 'resource' ? (
@@ -265,6 +268,7 @@ export const SearchResultsController = ({
                     return (
                       <AccordionContent
                         key={section.type}
+                        value={`${sectionIndex}`}
                         title={`${
                           section.label
                         } (${section.count.toLocaleString()})`}

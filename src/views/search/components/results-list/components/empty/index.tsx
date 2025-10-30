@@ -1,4 +1,4 @@
-import { Box, ListItem, Text, UnorderedList } from '@chakra-ui/react';
+import { Box, List, Text } from '@chakra-ui/react';
 import Empty from 'src/components/empty';
 import { Link } from 'src/components/link';
 import { RESERVED_CHARS } from 'src/utils/querystring-helpers';
@@ -16,27 +16,27 @@ export const EmptyState = () => {
         bg='niaid.50'
       >
         <Text fontWeight='medium'>Suggestions:</Text>
-        <UnorderedList styleType='disc' spacing={1} lineHeight='short'>
-          <ListItem listStyleType='inherit'>
+        <List.Root as='ul' listStyle='disc' gap={1} lineHeight='short'>
+          <List.Item listStyleType='inherit'>
             Try using more general keywords.
-          </ListItem>
-          <ListItem listStyleType='inherit'>
+          </List.Item>
+          <List.Item listStyleType='inherit'>
             Use different or fewer keywords.
-          </ListItem>
-          <ListItem listStyleType='inherit'>
+          </List.Item>
+          <List.Item listStyleType='inherit'>
             Ensure that the use of reserved fields in fielded queries are
             intentional and followed by a colon.
-          </ListItem>
-          <ListItem listStyleType='inherit'>
+          </List.Item>
+          <List.Item listStyleType='inherit'>
             Ensure reserved characters ( {RESERVED_CHARS.join(' ')}) are
             preceded by a backslash (\).
-          </ListItem>
-          <ListItem>
+          </List.Item>
+          <List.Item>
             <Link href={'/knowledge-center/advanced-searching'} isExternal>
               For more information, see the documentation.
             </Link>
-          </ListItem>
-        </UnorderedList>
+          </List.Item>
+        </List.Root>
       </Box>
     </Empty>
   );
