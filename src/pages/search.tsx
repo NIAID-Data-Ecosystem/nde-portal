@@ -113,6 +113,34 @@ const Search: NextPage<{
 
       setHasSetInitialDateFilter(true);
     } else {
+      // Validate existing date filter doesn't exceed current year
+      const currentYear = new Date().getFullYear();
+      const existingEndDate = selectedFilters.date?.[1];
+
+      if (existingEndDate && typeof existingEndDate === 'string') {
+        const endDateParts = existingEndDate.split('-');
+        const endYear = parseInt(endDateParts[0], 10);
+
+        if (endYear > currentYear) {
+          // Cap the end date at current year
+          const cappedDateFilter = [
+            selectedFilters.date[0],
+            `${currentYear}-12-31`,
+          ];
+
+          const updatedFilters = {
+            ...selectedFilters,
+            date: cappedDateFilter,
+          };
+
+          const filterString = queryFilterObject2String(updatedFilters);
+
+          handleRouteUpdate({
+            filters: filterString,
+          });
+        }
+      }
+
       setHasSetInitialDateFilter(true);
     }
   }, [

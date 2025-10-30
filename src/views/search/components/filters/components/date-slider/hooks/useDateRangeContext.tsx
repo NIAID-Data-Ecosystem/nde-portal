@@ -60,42 +60,46 @@ export const DateRangeSlider: React.FC<{
     }
   }, [datesData, isLoading]);
 
-  // All available data (complete dataset) - this represents the full slider range
-  const allData = useMemo(
-    () =>
-      addMissingYears(
-        initialData
-          .filter(datum => {
-            // Filter to current year as max
-            return (
-              new Date(datum.term).getFullYear() <= new Date().getFullYear()
-            );
-          })
-          .filter(d => !(d.term === '-_exists_' || d.count === 0)) || [],
-      ),
-    [initialData],
-  );
+  // Get current year for all filtering operations
+  const currentYear = new Date().getFullYear();
 
-  // Filtered data based on selected date range - this is what the histogram displays
+  // All available data
+  // Cap at current year to prevent future dates
+  const allData = useMemo(() => {
+    const filtered = initialData.filter(d => {
+      // Remove invalid entries
+      if (d.term === '-_exists_' || d.count === 0) return false;
+
+      // Remove future years
+      const year = parseInt(d.term.split('-')[0], 10);
+      return year <= currentYear;
+    });
+    return addMissingYears(filtered || []);
+  }, [initialData, currentYear]);
+
+  // Filtered data based on selected date range
   const filteredData = useMemo(() => {
-    // If no date filter or _exists_ filter, show ALL data
+    // If no date filter or _exists_ filter, show ALL data (already capped at current year by allData)
     if (!selectedDates.length || selectedDates.includes('_exists_')) {
       return allData;
     }
 
     const [start, end] = selectedDates;
-    const startYear = start ? parseInt(start.split('-')[0]) : null;
-    const endYear = end ? parseInt(end.split('-')[0]) : null;
+    const startYear = start ? parseInt(start.split('-')[0], 10) : null;
+    const endYear = end ? parseInt(end.split('-')[0], 10) : null;
 
     if (!startYear || !endYear) {
       return allData;
     }
 
+    // Cap end year at current year
+    const cappedEndYear = Math.min(endYear, currentYear);
+
     return allData.filter(d => {
-      const year = parseInt(d.term.split('-')[0]);
-      return year >= startYear && year <= endYear;
+      const year = parseInt(d.term.split('-')[0], 10);
+      return year >= startYear && year <= cappedEndYear;
     });
-  }, [allData, selectedDates]);
+  }, [allData, selectedDates, currentYear]);
 
   useEffect(() => {
     setDateRange(prev => {
@@ -168,22 +172,3 @@ export const useDateRangeContext = () => {
   }
   return context;
 };
-
-// // src/views/search/utils/update-route.ts
-// import { NextRouter } from 'next/router';
-
-// // Given a query object, update the route to reflect the change.
-// export const updateRoute = (router: NextRouter, update: {}) => {
-//   return router.push(
-//     {
-//       query: {
-//         ...router.query,
-//         ...update,
-//       },
-//     },
-//     undefined,
-//     {
-//       shallow: true,
-//     },
-//   );
-// };

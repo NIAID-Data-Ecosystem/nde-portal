@@ -24,6 +24,17 @@ const Histogram: React.FC<HistogramProps> = ({
 }) => {
   const { allData, filteredData, dates } = useDateRangeContext();
 
+  // Filter updatedData to remove any future years
+  const currentYear = new Date().getFullYear();
+  const sanitizedUpdatedData = useMemo(
+    () =>
+      updatedData.filter(d => {
+        const year = parseInt(d.term.split('-')[0], 10);
+        return year <= currentYear;
+      }),
+    [updatedData, currentYear],
+  );
+
   const params = useMemo(
     () => ({
       maxBarWidth: 40,
@@ -130,10 +141,14 @@ const Histogram: React.FC<HistogramProps> = ({
   );
 
   // "Fill in" the data where years are missing
-  const updatedCounts = useMemo(
-    () => addMissingYears([...updatedData]),
-    [updatedData],
-  );
+  const updatedCounts = useMemo(() => {
+    const filled = addMissingYears([...sanitizedUpdatedData]);
+    // Filter again after addMissingYears to ensure no future years
+    return filled.filter(d => {
+      const year = parseInt(d.term.split('-')[0], 10);
+      return year <= currentYear;
+    });
+  }, [sanitizedUpdatedData, currentYear]);
 
   // Calculate tick values for x-axis - only show min and max
   const xAxisTickValues = useMemo(() => {

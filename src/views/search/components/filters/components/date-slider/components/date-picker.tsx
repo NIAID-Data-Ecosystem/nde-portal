@@ -23,9 +23,16 @@ export const DatePicker: React.FC<DatePickerProps> = ({
   const min = formatISOString((allData && allData[0]?.term) || '');
 
   // Max is the last date in the complete dataset
-  const max = formatISOString(
+  // Cap at current year with 12-31 as the end date
+  const maxFromData = formatISOString(
     (allData && allData[allData.length - 1]?.term) || '',
   );
+  const currentYear = new Date().getFullYear();
+  const maxYear = maxFromData
+    ? parseInt(maxFromData.split('-')[0])
+    : currentYear;
+  const cappedYear = Math.min(maxYear, currentYear);
+  const max = `${cappedYear}-12-31`;
 
   const isDisabled = !allData || !allData.length;
 
@@ -51,6 +58,13 @@ export const DatePicker: React.FC<DatePickerProps> = ({
         if (!dates[1]) {
           dates[1] = max;
         }
+
+        // Ensure end date doesn't exceed current year
+        const endYear = parseInt(dates[1].split('-')[0]);
+        if (endYear > currentYear) {
+          dates[1] = max;
+        }
+
         handleSelectedFilter(dates);
       }}
     >
@@ -89,6 +103,9 @@ export const DatePicker: React.FC<DatePickerProps> = ({
             value={selected[0] === '-_exists_' ? '' : selected[1] || max}
             onChange={e => {
               let newSelection = [selected[0] || min, e.target.value];
+              if (e.target.value > max) {
+                newSelection[1] = max;
+              }
               setSelected(newSelection);
             }}
             isDisabled={isDisabled}
