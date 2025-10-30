@@ -1,10 +1,11 @@
 import { Button } from '@chakra-ui/react';
+import { useQuery } from '@tanstack/react-query';
 import NextLink from 'next/link';
 import {
   SelectedFilterType,
   SelectedFilterTypeValue,
 } from 'src/views/search/components/filters/types';
-import { useQuery } from '@tanstack/react-query';
+
 import {
   ONTOLOGY_BROWSER_OPTIONS,
   searchOntologyAPI,
@@ -160,7 +161,7 @@ export const OntologyBrowserPopup = ({
           borderRadius: 'semi',
           bg: 'blue.50',
         }}
-        isLoading={isLoading}
+        loading={isLoading}
       >
         use ontology browser?
       </Button>
