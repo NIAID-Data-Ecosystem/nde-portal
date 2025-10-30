@@ -258,7 +258,7 @@ const Histogram: React.FC<HistogramProps> = ({
                               : params.opacity.active
                           }
                           y={height - defaultBarHeight}
-                          height={barY}
+                          height={defaultBarHeight}
                           fill={params.fill.gray}
                         />
                       )}
