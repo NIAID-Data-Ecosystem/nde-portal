@@ -1,11 +1,11 @@
-import { Box } from '@chakra-ui/react';
+import { Box, BoxProps } from '@chakra-ui/react';
 
-export const ScrollContainer = ({ children, ...props }: any) => {
+export const ScrollContainer = ({ children, ...props }: BoxProps) => {
   return (
     <Box
       overflow='auto'
       pr={2}
-      sx={{
+      css={{
         '&::-webkit-scrollbar': {
           width: '8px',
           height: '7px',

@@ -1,14 +1,13 @@
-import { Icon, Tag, TagRootProps, Text } from '@chakra-ui/react';
+import { Tag, TagRootProps, Text } from '@chakra-ui/react';
 import NextLink, { LinkProps } from 'next/link';
 import React from 'react';
-import { IconType } from 'react-icons';
 import { FaSquareArrowUpRight } from 'react-icons/fa6';
 
 interface TagWithUrlProps extends TagRootProps {
   href?: LinkProps['href'];
   label?: string;
   isExternal?: boolean;
-  leftIcon?: IconType;
+  leftIcon?: React.ReactNode;
 }
 
 /**
@@ -57,11 +56,7 @@ export const TagWithUrl = ({
       {...props}
     >
       <NextLink href={href} target={isExternal ? '_blank' : '_self'}>
-        {leftIcon && (
-          <Tag.StartElement>
-            <Icon as={leftIcon} />
-          </Tag.StartElement>
-        )}
+        {leftIcon && <Tag.StartElement>{leftIcon}</Tag.StartElement>}
         <Tag.Label className='tag-label' textDecoration='underline'>
           {children}
         </Tag.Label>

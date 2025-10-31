@@ -1,9 +1,9 @@
-import { FormattedResource } from 'src/utils/api/types';
+import SchemaDefinitions from 'configs/schema-definitions.json';
 import {
   TagWithTooltip,
   TagWithTooltipProps,
 } from 'src/components/tag-with-tooltip';
-import SchemaDefinitions from 'configs/schema-definitions.json';
+import { FormattedResource } from 'src/utils/api/types';
 
 interface AccessibleForFreeProps extends Omit<TagWithTooltipProps, 'value'> {
   isAccessibleForFree?: FormattedResource['isAccessibleForFree'];

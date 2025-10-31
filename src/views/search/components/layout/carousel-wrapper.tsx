@@ -1,14 +1,7 @@
-import React from 'react';
 import { Box, BoxProps } from '@chakra-ui/react';
+import React from 'react';
 
-interface CarouselWrapperProps extends BoxProps {
-  children: React.ReactNode;
-}
-
-export const CarouselWrapper = ({
-  children,
-  ...props
-}: CarouselWrapperProps) => {
+export const CarouselWrapper = ({ children, ...props }: BoxProps) => {
   return (
     <Box
       mt={0}
@@ -29,7 +22,7 @@ export const CarouselWrapper = ({
       }}
       width='100%'
       maxW='100%'
-      sx={{
+      css={{
         contain: 'layout style size',
         '& *': {
           maxWidth: '100% !important',

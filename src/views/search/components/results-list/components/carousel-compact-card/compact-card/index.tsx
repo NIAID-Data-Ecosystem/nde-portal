@@ -1,16 +1,14 @@
-import React, { ReactNode } from 'react';
 import {
-  Card,
-  CardHeader,
-  CardBody,
-  CardProps,
   BoxProps,
-  TextProps,
+  Card,
+  CardRootProps,
+  Skeleton,
   Text,
+  TextProps,
 } from '@chakra-ui/react';
-import NextLink from 'next/link';
+import NextLink, { LinkProps } from 'next/link';
+import React, { ReactNode } from 'react';
 import { TypeBanner } from 'src/components/resource-sections/components';
-import { Skeleton } from 'src/components/skeleton';
 import { TypeBannerProps } from 'src/components/resource-sections/components/type-banner';
 
 const CARD_HEIGHTS = {
@@ -22,23 +20,22 @@ const CARD_HEIGHTS = {
 } as const;
 
 // Base compact card wrapper component
-interface BaseProps extends Omit<CardProps, 'children' | 'as'> {
+interface BaseProps extends Omit<CardRootProps, 'children' | 'as'> {
   isLoading?: boolean;
   children: ReactNode;
 }
 
 const Base = ({ isLoading = false, children, ...cardProps }: BaseProps) => {
   return (
-    <Card
-      variant='niaid'
-      boxShadow='none'
-      border='1px solid'
-      borderColor='gray.200'
+    <Card.Root
+      variant='outline'
+      overflow='hidden'
       height={CARD_HEIGHTS}
+      size='sm'
       {...cardProps}
     >
       {children}
-    </Card>
+    </Card.Root>
   );
 };
 
@@ -56,17 +53,14 @@ const Banner = ({
 }: BannerProps) => {
   return (
     <Skeleton
-      isLoaded={!isLoading}
+      loading={isLoading}
       height={isLoading ? '40px' : 'auto'}
       borderTopRadius='md'
     >
       <TypeBanner
+        isNiaidFunded={isNiaidFunded}
         label={label}
         type={type}
-        p={0}
-        pl={[2, 4, 6]}
-        flexDirection={['column', 'row']}
-        isNiaidFunded={isNiaidFunded}
         {...props}
       />
     </Skeleton>
@@ -81,40 +75,13 @@ interface HeaderProps extends BoxProps {
 
 const Header = ({ isLoading = false, children, ...boxProps }: HeaderProps) => {
   return (
-    <CardHeader
-      bg='transparent'
-      position='relative'
-      px={2}
-      pt={1}
-      pb={1}
-      w='100%'
-      color='link.color'
-      _hover={{
-        p: { textDecoration: 'none' },
-        svg: {
-          transform: 'translate(0px)',
-          opacity: 0.9,
-          transition: '0.2s ease-in-out',
-        },
-      }}
-      _visited={{
-        color: 'link.color',
-        svg: { color: 'link.color' },
-      }}
-      {...boxProps}
-    >
-      <Skeleton isLoaded={!isLoading} minHeight='27px' flex={1}>
+    <Card.Header {...boxProps}>
+      <Skeleton loading={isLoading} minHeight='50px' flex={1}>
         {!isLoading && children}
       </Skeleton>
-    </CardHeader>
+    </Card.Header>
   );
 };
-
-// Title component
-interface LinkProps {
-  href: string | { pathname: string; query: Record<string, any> };
-  as?: string;
-}
 
 interface TitleProps extends Omit<TextProps, 'children'> {
   children: string;
@@ -122,11 +89,12 @@ interface TitleProps extends Omit<TextProps, 'children'> {
 }
 
 const Title = ({ children, linkProps, ...textProps }: TitleProps) => {
-  const content = (
+  return (
     <Text
-      noOfLines={3}
+      asChild={!!linkProps}
+      color={linkProps ? 'link.default' : 'inherit'}
+      lineClamp={3}
       fontWeight='semibold'
-      color='inherit'
       fontSize='md'
       lineHeight='short'
       w='100%'
@@ -136,28 +104,8 @@ const Title = ({ children, linkProps, ...textProps }: TitleProps) => {
       }}
       {...textProps}
     >
-      {children}
+      {linkProps ? <NextLink {...linkProps}>{children}</NextLink> : children}
     </Text>
-  );
-
-  if (!linkProps) {
-    return content;
-  }
-
-  return (
-    <NextLink
-      href={linkProps.href}
-      as={linkProps.as}
-      passHref
-      prefetch={false}
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        width: '100%',
-      }}
-    >
-      {content}
-    </NextLink>
   );
 };
 
@@ -168,20 +116,9 @@ interface BodyProps extends BoxProps {
 
 const Body = ({ children, ...boxProps }: BodyProps) => {
   return (
-    <CardBody
-      p={2}
-      sx={{
-        '>*': {
-          my: 0,
-        },
-      }}
-      flex='1'
-      display='flex'
-      flexDirection='column'
-      {...boxProps}
-    >
+    <Card.Body pt={2} {...boxProps}>
       {children}
-    </CardBody>
+    </Card.Body>
   );
 };
 

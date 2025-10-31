@@ -1,40 +1,36 @@
-import React, { useMemo } from 'react';
 import {
-  Button,
   Card,
-  CardHeader,
-  CardBody,
   Flex,
-  Icon,
-  Text,
-  Tooltip,
-  Stack,
   Highlight,
+  Icon,
   Skeleton,
+  Stack,
+  Text,
 } from '@chakra-ui/react';
 import { useInView } from '@react-spring/web';
+import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
 import NextLink from 'next/link';
-import { FaCircleArrowRight, FaAngleRight, FaRegClock } from 'react-icons/fa6';
-import { FormattedResource } from 'src/utils/api/types';
-import { TypeBanner } from 'src/components/resource-sections/components';
-import MetadataAccordion from './metadata-accordion';
-import OperatingSystems from './operating-systems';
-import { SearchableItems } from 'src/components/searchable-items';
+import React, { useMemo } from 'react';
+import { FaAngleRight, FaRegClock } from 'react-icons/fa6';
+import { SchemaDefinitions } from 'scripts/generate-schema-definitions/types';
+import { AccessibleForFree, ConditionsOfAccess } from 'src/components/badges';
+import { ArrowButton } from 'src/components/button.tsx/arrow-button';
 import { DisplayHTMLContent } from 'src/components/html-content';
-import {
-  AccessibleForFree,
-  ConditionsOfAccess,
-} from 'src/components/tag-with-tooltip';
-import { SourceLogo, SourceLogoWrapper, getSourceDetails } from './source-logo';
+import { InfoLabel } from 'src/components/info-label';
 import { CompletenessBadgeCircle } from 'src/components/metadata-completeness-badge/Circular';
+import { TypeBanner } from 'src/components/resource-sections/components';
+import { SearchableItems } from 'src/components/searchable-items';
 import { ToggleContainer } from 'src/components/toggle-container';
+import { Tooltip } from 'src/components/tooltip';
+import { FormattedResource } from 'src/utils/api/types';
+import { formatAPIResourceTypeForDisplay } from 'src/utils/formatting/formatResourceType';
 import { formatAuthorsList2String } from 'src/utils/helpers/authors';
 import { isSourceFundedByNiaid } from 'src/utils/helpers/sources';
+
 import { filterWords } from './helpers';
-import { SchemaDefinitions } from 'scripts/generate-schema-definitions/types';
-import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
-import { InfoLabel } from 'src/components/info-label';
-import { formatAPIResourceTypeForDisplay } from 'src/utils/formatting/formatResourceType';
+import MetadataAccordion from './metadata-accordion';
+import OperatingSystems from './operating-systems';
+import { getSourceDetails, SourceLogo, SourceLogoWrapper } from './source-logo';
 
 interface SearchResultCardProps {
   isLoading?: boolean;
@@ -87,7 +83,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
 
   return (
     // {/* Banner with resource type + date of publication */}
-    <Card
+    <Card.Root
       ref={cardRef}
       variant='niaid'
       boxShadow='none'
@@ -104,7 +100,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
       />
 
       {/* Card header where name of resource is a link to resource page */}
-      <CardHeader
+      <Card.Header
         bg='transparent'
         position='relative'
         px={paddingCard}
@@ -145,7 +141,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
             }}
           >
             <DisplayHTMLContent
-              noOfLines={3}
+              lineClamp={3}
               content={name || alternateName || ''}
               fontWeight='semibold'
               color='inherit'
@@ -172,7 +168,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
             />
           </NextLink>
         </Skeleton>
-      </CardHeader>
+      </Card.Header>
       <Skeleton
         loading={isLoading}
         p='0px!important'
@@ -236,7 +232,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
               </Flex>
             )}
 
-            <CardBody
+            <Card.Body
               p={0}
               sx={{
                 '>*': {
@@ -256,12 +252,8 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                   justify='space-between'
                 >
                   <Tooltip
-                    label='Corresponds to the most recent of date modified, date published and date created.'
-                    hasArrow
-                    bg='#fff'
-                    sx={{
-                      color: 'text.body',
-                    }}
+                    content='Corresponds to the most recent of date modified, date published and date created.'
+                    showArrow
                   >
                     <Flex whiteSpace='nowrap' alignItems='center'>
                       <Icon as={FaRegClock} mr={2} />
@@ -297,7 +289,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                 px={paddingCard}
                 py={[0, 1]}
                 flexDirection={{ base: 'column', md: 'row' }}
-                spacing={[1, 3, 4]}
+                gap={[1, 3, 4]}
               >
                 {data && (
                   <CompletenessBadgeCircle
@@ -526,42 +518,22 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                   w={{ base: '100%', sm: 'unset' }}
                 >
                   {id && (
-                    <NextLink
-                      // referrerPath is the current path of the page - used for breadcrumbs in resources page
+                    <ArrowButton
                       href={{
                         pathname: '/resources/',
                         query: { id, referrerPath },
                       }}
-                      as={`/resources?id=${id}`}
-                      style={{ flex: 1 }}
-                      passHref
-                      prefetch={false}
                     >
-                      <Flex
-                        flex={1}
-                        justifyContent='flex-end'
-                        flexWrap='wrap'
-                        maxW={{ base: '100%', sm: '150px' }}
-                      >
-                        <Button
-                          as='span'
-                          flex={1}
-                          size={{ base: 'md', sm: 'sm' }}
-                          rightIcon={<FaCircleArrowRight />}
-                          aria-label={`Go to details about resource ${name}`}
-                        >
-                          View resource
-                        </Button>
-                      </Flex>
-                    </NextLink>
+                      View resource
+                    </ArrowButton>
                   )}
                 </Flex>
               </Stack>
-            </CardBody>
+            </Card.Body>
           </>
         )}
       </Skeleton>
-    </Card>
+    </Card.Root>
   );
 };
 

@@ -1,5 +1,5 @@
+import { BoxProps, Button, ButtonProps, FlexProps } from '@chakra-ui/react';
 import React, { useMemo, useState } from 'react';
-import { FlexProps, Button, TagProps } from '@chakra-ui/react';
 import { FaMagnifyingGlass } from 'react-icons/fa6';
 import { ScrollContainer } from 'src/components/scroll-container';
 import { TagWithUrl } from 'src/components/tag-with-url';
@@ -10,7 +10,7 @@ interface SearchableItemsProps extends FlexProps {
     value: string;
     field: string;
   }[];
-  colorScheme?: TagProps['colorScheme'];
+  colorPalette?: ButtonProps['colorPalette'];
   generateButtonLabel?: (limit: number, length: number) => string;
   itemLimit?: number;
   name?: React.ReactNode;
@@ -34,15 +34,15 @@ const generateDefaultLabel = (limit: number, length: number) => {
  * 1. Independent mode (default): manages its own state internally
  * 2. Controlled mode: when isExpanded and onToggle are provided, state is managed externally
  */
+
 export const SearchableItems: React.FC<SearchableItemsProps> = ({
-  colorScheme = 'primary',
+  colorPalette = 'primary',
   generateButtonLabel = generateDefaultLabel,
   itemLimit = 3,
   items,
   name,
   isExpanded,
   onToggle,
-  ...props
 }) => {
   const uniqueItems = useMemo(
     () =>
@@ -82,19 +82,12 @@ export const SearchableItems: React.FC<SearchableItemsProps> = ({
   const buttonLabel = generateButtonLabel(currentLimit, uniqueItems.length);
 
   return (
-    <ScrollContainer
-      maxHeight='300px'
-      m={0}
-      p={0}
-      display='flex'
-      flexWrap='wrap'
-      {...props}
-    >
+    <>
       {name}
       {uniqueItems.slice(0, currentLimit).map(item => (
         <TagWithUrl
           key={item.value}
-          colorScheme={colorScheme}
+          colorPalette={colorPalette}
           href={{
             pathname: '/search',
             query: {
@@ -102,14 +95,15 @@ export const SearchableItems: React.FC<SearchableItemsProps> = ({
             },
           }}
           m={0.5}
-          leftIcon={FaMagnifyingGlass}
+          leftIcon={<FaMagnifyingGlass />}
+          variant='surface'
         >
           {item.name}
         </TagWithUrl>
       ))}
       {uniqueItems.length > itemLimit && (
         <Button
-          colorScheme={colorScheme}
+          colorPalette={colorPalette}
           size='xs'
           variant='link'
           justifyContent='flex-end'
@@ -119,6 +113,19 @@ export const SearchableItems: React.FC<SearchableItemsProps> = ({
           {buttonLabel}
         </Button>
       )}
-    </ScrollContainer>
+    </>
+  );
+};
+
+export const SearchableItemsWrapper = (props: BoxProps) => {
+  return (
+    <ScrollContainer
+      maxHeight='300px'
+      m={0}
+      p={0}
+      display='flex'
+      flexWrap='wrap'
+      {...props}
+    />
   );
 };

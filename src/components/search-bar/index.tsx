@@ -4,6 +4,7 @@ import dynamic from 'next/dynamic';
 import { useRouter } from 'next/router';
 import React, { useEffect, useMemo, useState } from 'react';
 import { FaClockRotateLeft } from 'react-icons/fa6';
+import { Tooltip } from 'src/components/tooltip';
 import { queryFilterObject2String } from 'src/views/search/components/filters/utils/query-builders';
 import { getTabIdFromTypeLabel } from 'src/views/search/components/filters/utils/tab-filter-utils';
 import { useLocalStorage } from 'usehooks-ts';
@@ -15,7 +16,6 @@ import {
   InputWithDropdown,
   useDropdownContext,
 } from '../input-with-dropdown';
-import { Tooltip } from '../ui/tooltip';
 import { SearchHistoryItem } from './components/search-history-item';
 
 const DropdownContent = dynamic(() =>
@@ -58,7 +58,12 @@ const SearchInput = ({
             Search
           </Button>
           {showSearchHistory && (
-            <Flex borderLeft='1px solid' borderLeftColor='gray.200' pl={1}>
+            <Flex
+              borderLeft='1px solid'
+              borderLeftColor='gray.200'
+              pl={1}
+              height='100%'
+            >
               <Tooltip content='Toggle search history'>
                 <IconButton
                   variant='ghost'
@@ -66,6 +71,7 @@ const SearchInput = ({
                   aria-label='Toggle search history.'
                   onClick={() => setIsOpen(!isOpen)}
                   colorPalette={colorPalette}
+                  height='100%'
                 >
                   <FaClockRotateLeft />
                 </IconButton>

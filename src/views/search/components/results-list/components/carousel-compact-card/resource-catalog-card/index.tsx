@@ -3,8 +3,10 @@ import React, { useMemo, useState } from 'react';
 import { ConditionsOfAccess } from 'src/components/badges';
 import { HasAPI } from 'src/components/badges/components/HasAPI';
 import { MetadataLabel } from 'src/components/metadata';
-import { ScrollContainer } from 'src/components/scroll-container';
-import { SearchableItems } from 'src/components/searchable-items';
+import {
+  SearchableItems,
+  SearchableItemsWrapper,
+} from 'src/components/searchable-items';
 import { Tooltip } from 'src/components/tooltip';
 import { FormattedResource } from 'src/utils/api/types';
 import { formatAPIResourceTypeForDisplay } from 'src/utils/formatting/formatResourceType';
@@ -84,90 +86,82 @@ export const ResourceCatalogCard = ({
             {name || alternateName || ''}
           </CompactCard.Title>
         )}
-      </CompactCard.Header>
 
-      <CompactCard.Body>
         {/* Date and badges */}
-        <Skeleton loading={isLoading} minHeight='30px'>
-          {date && (
-            <Flex
-              bg='white'
-              fontWeight='semibold'
-              whiteSpace='nowrap'
-              alignItems='flex-start'
-              justify='space-between'
-              px={0}
+        {date && (
+          <Flex
+            bg='white'
+            fontWeight='semibold'
+            whiteSpace='nowrap'
+            alignItems='flex-start'
+            justify='space-between'
+            px={0}
+          >
+            <Tooltip
+              content='Corresponds to the most recent of date modified, date published and date created.'
+              showArrow
             >
-              <Tooltip
-                content='Corresponds to the most recent of date modified, date published and date created.'
-                showArrow
-                bg='#fff'
-                sx={{
-                  color: 'text.body',
-                }}
+              <Text fontSize='13px'>{date}</Text>
+            </Tooltip>
+            {(conditionsOfAccess || hasAPI) && (
+              <Flex
+                justifyContent={['flex-start']}
+                alignItems='center'
+                w={['100%', 'unset']}
+                flex={[1]}
+                p={[0.5, 0.5]}
+                flexWrap='wrap'
+                ml={0.5}
+                gap={0.5}
               >
-                <Text fontSize='13px'>{date}</Text>
-              </Tooltip>
-              {(conditionsOfAccess || hasAPI) && (
-                <Flex
-                  justifyContent={['flex-start']}
-                  alignItems='center'
-                  w={['100%', 'unset']}
-                  flex={[1]}
-                  p={[0.5, 0.5]}
-                  flexWrap='wrap'
-                  ml={0.5}
-                  gap={0.5}
-                >
-                  <ConditionsOfAccess
+                <ConditionsOfAccess
+                  type={data?.['@type']}
+                  conditionsOfAccess={conditionsOfAccess}
+                  mx={0.5}
+                  size='sm'
+                />
+                {hasAPI && (
+                  <HasAPI
                     type={data?.['@type']}
-                    conditionsOfAccess={conditionsOfAccess}
+                    hasAPI={data?.hasAPI}
                     mx={0.5}
                     size='sm'
                   />
-                  {hasAPI && (
-                    <HasAPI
-                      type={data?.['@type']}
-                      hasAPI={data?.hasAPI}
-                      mx={0.5}
-                      size='sm'
-                    />
-                  )}
-                </Flex>
-              )}
-            </Flex>
-          )}
-        </Skeleton>
+                )}
+              </Flex>
+            )}
+          </Flex>
+        )}
+      </CompactCard.Header>
 
+      <CompactCard.Body>
         {/* Content types */}
-        <Skeleton loading={isLoading} px={-1}>
-          {aboutItems.length > 0 && (
-            <Flex bg='white' direction='column'>
-              <MetadataLabel label='Content Types' />
-              <ScrollContainer overflow='auto' maxHeight='200px'>
-                <SearchableItems
-                  items={aboutItems}
-                  itemLimit={2}
-                  colorScheme='primary'
-                  isExpanded={showAllTypes}
-                  onToggle={handleTypesToggle}
-                  generateButtonLabel={(limit, length) =>
-                    limit === length
-                      ? 'Show fewer types'
-                      : `Show more types (${length - limit} more)`
-                  }
-                />
-              </ScrollContainer>
-            </Flex>
-          )}
-        </Skeleton>
+        {aboutItems.length > 0 && (
+          <Flex bg='white' direction='column'>
+            <MetadataLabel label='Content Types' mx={0} />
+            <SearchableItemsWrapper overflow='auto' maxHeight='200px'>
+              <SearchableItems
+                items={aboutItems}
+                itemLimit={2}
+                colorScheme='primary'
+                isExpanded={showAllTypes}
+                onToggle={handleTypesToggle}
+                generateButtonLabel={(limit, length) =>
+                  limit === length
+                    ? 'Show fewer types'
+                    : `Show more types (${length - limit} more)`
+                }
+              />
+            </SearchableItemsWrapper>
+          </Flex>
+        )}
 
         {/* Description */}
         <Skeleton loading={isLoading} flex='1' mt={2} mb={1}>
           {description && (
             <>
               {shouldShowDescription ? (
-                <Text fontSize='xs' lineHeight='short' noOfLines={3}>
+                <Text fontSize='xs' lineHeight='short' lineClamp={3}>
                   {description.trim()}
                 </Text>
               ) : (

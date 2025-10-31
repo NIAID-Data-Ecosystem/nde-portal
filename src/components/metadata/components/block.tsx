@@ -1,8 +1,8 @@
+import { Box, Button, Flex, Icon, Text, TextProps } from '@chakra-ui/react';
 import React from 'react';
-import { Box, Button, Flex, Icon, Text, TooltipProps } from '@chakra-ui/react';
-import { getMetadataTheme } from 'src/components/icon/helpers';
-import Tooltip from 'src/components/tooltip';
 import { FaInfo } from 'react-icons/fa6';
+import { getMetadataTheme } from 'src/components/icon/helpers';
+import { Tooltip, TooltipProps } from 'src/components/tooltip';
 
 interface MetadataBlockProps {
   label: string;
@@ -10,7 +10,7 @@ interface MetadataBlockProps {
   isDisabled?: boolean;
   children?: React.ReactNode;
   bg?: string;
-  tooltipLabel?: TooltipProps['label'];
+  tooltipLabel?: TooltipProps['content'];
 }
 
 // Themed block for metadata
@@ -52,7 +52,7 @@ export const MetadataBlock = ({
 export const MetadataLabel = ({
   label,
   ...props
-}: Pick<MetadataBlockProps, 'label'>) => {
+}: Pick<MetadataBlockProps, 'label'> & TextProps) => {
   return (
     <Text
       mx={1}
@@ -76,13 +76,13 @@ export const MetadataTooltip = ({
   tooltipLabel,
 }: Pick<MetadataBlockProps, 'isDisabled' | 'tooltipLabel'>) => {
   return (
-    <Tooltip label={tooltipLabel}>
+    <Tooltip content={tooltipLabel}>
       <Flex
         minW={4}
         minH={4}
         p={1}
         _hover={{
-          div: {
+          '& div': {
             bg: 'gray.800',
             borderColor: 'gray.800',
             color: 'white',

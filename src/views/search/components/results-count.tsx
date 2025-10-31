@@ -1,5 +1,5 @@
-import React from 'react';
 import { Flex, Spinner, Text, TextProps } from '@chakra-ui/react';
+import React from 'react';
 
 // [COMPONENT INFO]: Displays total results count
 
@@ -26,10 +26,10 @@ const ResultsCount: React.FC<ResultsCount> = ({
       {isLoading ? (
         <Spinner
           color='primary.500'
-          emptyColor='gray.200'
+          css={{ '--spinner-track-color': 'colors.gray.200' }}
           size='md'
-          speed='0.5s'
-          thickness='1px'
+          animationDuration='0.5s'
+          borderWidth='1px'
           mr={2}
         />
       ) : (

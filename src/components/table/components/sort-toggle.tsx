@@ -1,7 +1,7 @@
 import { Button, Icon, IconButtonProps, Stack } from '@chakra-ui/react';
 import React from 'react';
 import { FaCaretDown, FaCaretUp } from 'react-icons/fa6';
-import { Tooltip } from 'src/components/ui/tooltip';
+import { Tooltip } from 'src/components/tooltip';
 
 // Based on NIAID's Table Styles
 // https://designsystem.niaid.nih.gov/components/atoms

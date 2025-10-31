@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
-import { useMediaQuery } from 'usehooks-ts';
 import { system } from 'src/theme';
+import { useMediaQuery } from 'usehooks-ts';
+
 import { PROGRESS_BAR_THRESHOLDS } from '../constants';
 
 interface CarouselStateProps {

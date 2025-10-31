@@ -1,11 +1,10 @@
-import React from 'react';
 import { Flex, FlexProps, Icon, Text } from '@chakra-ui/react';
-import { FaRegClock } from 'react-icons/fa6';
-import { FormattedResource } from 'src/utils/api/types';
-import { StyledLabel } from './styles';
-import { APIResourceType } from 'src/utils/formatting/formatResourceType';
-import Tooltip from 'src/components/tooltip';
 import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
+import React from 'react';
+import { FaRegClock } from 'react-icons/fa6';
+import { Tooltip } from 'src/components/tooltip';
+import { FormattedResource } from 'src/utils/api/types';
+import { APIResourceType } from 'src/utils/formatting/formatResourceType';
 
 export interface TypeBannerProps extends FlexProps {
   label: string;
@@ -37,6 +36,35 @@ export const getTypeColor = (type?: APIResourceType | string) => {
   return { lt, dk };
 };
 
+const Label = ({ bg = 'info.default', ...props }: FlexProps) => {
+  return (
+    <Flex
+      display='inline-flex'
+      alignItems='center'
+      lineHeight='1.5'
+      position='relative'
+      zIndex='0'
+      mx={2}
+      px={2}
+      height='100%'
+      _before={{
+        content: "''",
+        bg,
+        boxShadow: '0 0 0 5px #fff',
+        display: 'block',
+        height: '100%',
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        transform: 'skew(-12deg)',
+        width: '100%',
+        zIndex: '-4',
+      }}
+      {...props}
+    />
+  );
+};
+
 const TypeBanner: React.FC<TypeBannerProps> = ({
   label,
   type,
@@ -64,23 +92,24 @@ const TypeBanner: React.FC<TypeBannerProps> = ({
     <Flex
       flexWrap='wrap'
       w='100%'
+      height='2.5rem'
       bg={props.bg || colorScheme['dk']}
       {...props}
     >
       <Flex
         bg={props.bg || colorScheme['dk']}
-        px={{ base: 2, lg: 4 }}
+        px={{ base: 2, md: 4, lg: 6 }}
         pl={pl}
         py={0}
         overflow='hidden'
         minW='250px'
+        height='100%'
       >
-        <StyledLabel
-          _before={{
-            bg: colorScheme['lt'],
-          }}
-        >
-          <Tooltip label={abstractTooltipLabel || descriptionTooltipLabel}>
+        <Label bg={colorScheme['lt']}>
+          <Tooltip
+            content={abstractTooltipLabel || descriptionTooltipLabel}
+            showArrow
+          >
             <Text
               fontSize='xs'
               color={type ? 'white' : colorScheme['lt']}
@@ -92,14 +121,10 @@ const TypeBanner: React.FC<TypeBannerProps> = ({
               {label || 'Unknown'}
             </Text>
           </Tooltip>
-        </StyledLabel>
+        </Label>
 
         {isNiaidFunded && (
-          <StyledLabel
-            _before={{
-              bg: colorScheme['dk'],
-            }}
-          >
+          <Label bg={colorScheme['dk']}>
             <Text
               fontSize='xs'
               color='white'
@@ -109,25 +134,27 @@ const TypeBanner: React.FC<TypeBannerProps> = ({
             >
               NIAID
             </Text>
-          </StyledLabel>
+          </Label>
         )}
       </Flex>
-      <Flex
-        bg={props.bg || colorScheme['dk']}
-        overflow='hidden'
-        flex={1}
-        minW='250px'
-      >
-        {date && (
-          <Flex alignItems='center' px={{ base: 2, lg: 4 }} py={[2, 1]}>
-            <Icon as={FaRegClock} mr={2}></Icon>
-            <Text fontSize='xs' fontWeight='semibold' whiteSpace='nowrap'>
-              {date}
-            </Text>
-          </Flex>
-        )}
-        {children}
-      </Flex>
+      {(children || date) && (
+        <Flex
+          bg={props.bg || colorScheme['dk']}
+          overflow='hidden'
+          flex={1}
+          minW='250px'
+        >
+          {date && (
+            <Flex alignItems='center' px={{ base: 2, lg: 4 }} py={[2, 1]}>
+              <Icon as={FaRegClock} mr={2}></Icon>
+              <Text fontSize='xs' fontWeight='semibold' whiteSpace='nowrap'>
+                {date}
+              </Text>
+            </Flex>
+          )}
+          {children}
+        </Flex>
+      )}
     </Flex>
   );
 };
