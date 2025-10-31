@@ -1,5 +1,3 @@
-import React from 'react';
-import { FormattedResource } from 'src/utils/api/types';
 import {
   Box,
   Divider,
@@ -12,40 +10,43 @@ import {
   UnorderedList,
   VStack,
 } from '@chakra-ui/react';
+import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
+import React from 'react';
+import { FaMagnifyingGlass } from 'react-icons/fa6';
+import { SchemaDefinitions } from 'scripts/generate-schema-definitions/types';
 import { Link } from 'src/components/link';
+import { CompletenessBadgeCircle } from 'src/components/metadata-completeness-badge/Circular';
+import { SearchableItems } from 'src/components/searchable-items';
+import { FormattedResource } from 'src/utils/api/types';
+
+import { DownloadMetadata } from '../download-metadata';
+import { DisplayHTMLContent } from '../html-content';
+import { JsonViewer } from '../json-viewer';
+import { getMetadataDescription } from '../metadata';
+import { TagWithUrl } from '../tag-with-url';
 import {
-  ResourceHeader,
+  ResourceAuthors,
   ResourceBanner,
+  ResourceCitations,
+  ResourceHeader,
   ResourceOverview,
   ResourceProvenance,
   Section,
-  ResourceCitations,
-  ResourceAuthors,
 } from './components';
-import { Route } from './helpers';
-import FilesTable from './components/files-table';
+import BasedOnTable from './components/based-on';
 import { CitedByTable } from './components/cited-by-table';
-import { DisplayHTMLContent } from '../html-content';
-import SoftwareInformation from './components/software-information';
+import { ResourceCatalogCollection } from './components/collection-information';
+import FilesTable from './components/files-table';
+import { Funding } from './components/funding';
+import { OverviewSectionWrapper } from './components/overview-section-wrapper';
+import { RelatedResources } from './components/related-resources';
 import {
   ExternalAccess,
   UsageInfo,
 } from './components/sidebar/components/external';
-import { Funding } from './components/funding';
-import { JsonViewer } from '../json-viewer';
-import BasedOnTable from './components/based-on';
-import { CompletenessBadgeCircle } from 'src/components/metadata-completeness-badge/Circular';
-import { ResourceCatalogCollection } from './components/collection-information';
-import { DownloadMetadata } from '../download-metadata';
-import { SearchableItems } from 'src/components/searchable-items';
+import SoftwareInformation from './components/software-information';
 import { Summary } from './components/summary';
-import { OverviewSectionWrapper } from './components/overview-section-wrapper';
-import { getMetadataDescription } from '../metadata';
-import { TagWithUrl } from '../tag-with-url';
-import { FaMagnifyingGlass } from 'react-icons/fa6';
-import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
-import { SchemaDefinitions } from 'scripts/generate-schema-definitions/types';
-import { RelatedResources } from './components/related-resources';
+import { Route } from './helpers';
 
 const schema = SCHEMA_DEFINITIONS as SchemaDefinitions;
 // Metadata displayed in each section
@@ -246,25 +247,27 @@ const Sections = ({
                             maxHeight: 'unset',
                           }}
                         >
-                          <SearchableItems
-                            generateButtonLabel={(
-                              limit,
-                              length,
-                              itemLabel = 'about',
-                            ) =>
-                              limit === length
-                                ? `Show fewer ${itemLabel}`
-                                : `Show all ${itemLabel} (${
-                                    length - limit
-                                  } more)`
-                            }
-                            itemLimit={20}
-                            items={data?.about.map(about => ({
-                              name: about.displayName,
-                              value: about.displayName,
-                              field: 'about.displayName',
-                            }))}
-                          />
+                          <SearchableItems.Wrapper>
+                            <SearchableItems.List
+                              generateButtonLabel={(
+                                limit,
+                                length,
+                                itemLabel = 'about',
+                              ) =>
+                                limit === length
+                                  ? `Show fewer ${itemLabel}`
+                                  : `Show all ${itemLabel} (${
+                                      length - limit
+                                    } more)`
+                              }
+                              itemLimit={20}
+                              items={data?.about.map(about => ({
+                                name: about.displayName,
+                                value: about.displayName,
+                                field: 'about.displayName',
+                              }))}
+                            />
+                          </SearchableItems.Wrapper>
                         </OverviewSectionWrapper>
                       )}
                     </VStack>
@@ -313,23 +316,25 @@ const Sections = ({
             {section.hash === 'keywords' && (
               <Skeleton isLoaded={!isLoading}>
                 {data?.keywords && data?.keywords?.length > 0 && (
-                  <SearchableItems
-                    generateButtonLabel={(
-                      limit,
-                      length,
-                      itemLabel = 'keywords',
-                    ) =>
-                      limit === length
-                        ? `Show fewer ${itemLabel}`
-                        : `Show all ${itemLabel} (${length - limit} more)`
-                    }
-                    itemLimit={20}
-                    items={data?.keywords.map(kw => ({
-                      name: kw,
-                      value: kw,
-                      field: 'keywords',
-                    }))}
-                  />
+                  <SearchableItems.Wrapper>
+                    <SearchableItems.List
+                      generateButtonLabel={(
+                        limit,
+                        length,
+                        itemLabel = 'keywords',
+                      ) =>
+                        limit === length
+                          ? `Show fewer ${itemLabel}`
+                          : `Show all ${itemLabel} (${length - limit} more)`
+                      }
+                      itemLimit={20}
+                      items={data?.keywords.map(kw => ({
+                        name: kw,
+                        value: kw,
+                        field: 'keywords',
+                      }))}
+                    />
+                  </SearchableItems.Wrapper>
                 )}
               </Skeleton>
             )}
@@ -338,23 +343,25 @@ const Sections = ({
               <Skeleton isLoaded={!isLoading}>
                 {data?.applicationCategory &&
                   data?.applicationCategory?.length > 0 && (
-                    <SearchableItems
-                      generateButtonLabel={(
-                        limit,
-                        length,
-                        itemLabel = 'application categories',
-                      ) =>
-                        limit === length
-                          ? `Show fewer ${itemLabel}`
-                          : `Show all ${itemLabel} (${length - limit} more)`
-                      }
-                      itemLimit={10}
-                      items={data?.applicationCategory.map(ac => ({
-                        name: ac,
-                        value: ac,
-                        field: 'applicationCategory',
-                      }))}
-                    />
+                    <SearchableItems.Wrapper>
+                      <SearchableItems.List
+                        generateButtonLabel={(
+                          limit,
+                          length,
+                          itemLabel = 'application categories',
+                        ) =>
+                          limit === length
+                            ? `Show fewer ${itemLabel}`
+                            : `Show all ${itemLabel} (${length - limit} more)`
+                        }
+                        itemLimit={10}
+                        items={data?.applicationCategory.map(ac => ({
+                          name: ac,
+                          value: ac,
+                          field: 'applicationCategory',
+                        }))}
+                      />
+                    </SearchableItems.Wrapper>
                   )}
               </Skeleton>
             )}
@@ -363,23 +370,25 @@ const Sections = ({
               <Skeleton isLoaded={!isLoading}>
                 {data?.programmingLanguage &&
                   data?.programmingLanguage?.length > 0 && (
-                    <SearchableItems
-                      generateButtonLabel={(
-                        limit,
-                        length,
-                        itemLabel = 'languages',
-                      ) =>
-                        limit === length
-                          ? `Show fewer ${itemLabel}`
-                          : `Show all ${itemLabel} (${length - limit} more)`
-                      }
-                      items={data?.programmingLanguage.map(pl => ({
-                        name: pl,
-                        value: pl,
-                        field: 'programmingLanguage',
-                      }))}
-                      itemLimit={10}
-                    />
+                    <SearchableItems.Wrapper>
+                      <SearchableItems.List
+                        generateButtonLabel={(
+                          limit,
+                          length,
+                          itemLabel = 'languages',
+                        ) =>
+                          limit === length
+                            ? `Show fewer ${itemLabel}`
+                            : `Show all ${itemLabel} (${length - limit} more)`
+                        }
+                        items={data?.programmingLanguage.map(pl => ({
+                          name: pl,
+                          value: pl,
+                          field: 'programmingLanguage',
+                        }))}
+                        itemLimit={10}
+                      />
+                    </SearchableItems.Wrapper>
                   )}
               </Skeleton>
             )}

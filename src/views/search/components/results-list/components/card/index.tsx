@@ -366,39 +366,41 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                     px={paddingCard}
                     py={1}
                   >
-                    <SearchableItems
-                      generateButtonLabel={(
-                        limit,
-                        length,
-                        itemLabel = 'topics',
-                      ) =>
-                        limit === length
-                          ? `Show fewer ${itemLabel}`
-                          : `Show all ${itemLabel} (${length - limit} more)`
-                      }
-                      itemLimit={3}
-                      items={(data?.topicCategory ?? []).flatMap(topic =>
-                        typeof topic?.name === 'string'
-                          ? [
-                              {
-                                name: topic.name,
-                                value: topic.name,
-                                field: 'topicCategory.name',
-                              },
-                            ]
-                          : [],
-                      )}
-                      name={
-                        <InfoLabel
-                          title='Topic Categories'
-                          tooltipText={
-                            metadataFields['topicCategory'].description?.[
-                              data['@type']
-                            ]
-                          }
-                        />
-                      }
-                    />
+                    <SearchableItems.Wrapper>
+                      <SearchableItems.List
+                        generateButtonLabel={(
+                          limit,
+                          length,
+                          itemLabel = 'topics',
+                        ) =>
+                          limit === length
+                            ? `Show fewer ${itemLabel}`
+                            : `Show all ${itemLabel} (${length - limit} more)`
+                        }
+                        itemLimit={3}
+                        items={(data?.topicCategory ?? []).flatMap(topic =>
+                          typeof topic?.name === 'string'
+                            ? [
+                                {
+                                  name: topic.name,
+                                  value: topic.name,
+                                  field: 'topicCategory.name',
+                                },
+                              ]
+                            : [],
+                        )}
+                        name={
+                          <InfoLabel
+                            title='Topic Categories'
+                            tooltipText={
+                              metadataFields['topicCategory'].description?.[
+                                data['@type']
+                              ]
+                            }
+                          />
+                        }
+                      />
+                    </SearchableItems.Wrapper>
                   </Flex>
                 )}
 
@@ -410,33 +412,34 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                     px={paddingCard}
                     py={1}
                   >
-                    <SearchableItems
-                      generateButtonLabel={(
-                        limit,
-                        length,
-                        itemLabel = 'Application Categories',
-                      ) =>
-                        limit === length
-                          ? `Show fewer ${itemLabel}`
-                          : `Show all ${itemLabel} (${length - limit} more)`
-                      }
-                      itemLimit={3}
-                      items={data?.applicationCategory.map(ac => ({
-                        name: ac,
-                        value: ac,
-                        field: 'applicationCategory',
-                      }))}
-                      name={
-                        <InfoLabel
-                          title='Application Categories'
-                          tooltipText={
-                            metadataFields['applicationCategory'].description?.[
-                              data['@type']
-                            ]
-                          }
-                        />
-                      }
-                    />
+                    <SearchableItems.Wrapper>
+                      <SearchableItems.List
+                        generateButtonLabel={(
+                          limit,
+                          length,
+                          itemLabel = 'Application Categories',
+                        ) =>
+                          limit === length
+                            ? `Show fewer ${itemLabel}`
+                            : `Show all ${itemLabel} (${length - limit} more)`
+                        }
+                        itemLimit={3}
+                        items={data?.applicationCategory.map(ac => ({
+                          name: ac,
+                          value: ac,
+                          field: 'applicationCategory',
+                        }))}
+                        name={
+                          <InfoLabel
+                            title='Application Categories'
+                            tooltipText={
+                              metadataFields['applicationCategory']
+                                .description?.[data['@type']]
+                            }
+                          />
+                        }
+                      />
+                    </SearchableItems.Wrapper>
                   </Flex>
                 )}
 
@@ -448,33 +451,34 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                     px={paddingCard}
                     py={1}
                   >
-                    <SearchableItems
-                      generateButtonLabel={(
-                        limit,
-                        length,
-                        itemLabel = 'languages',
-                      ) =>
-                        limit === length
-                          ? `Show fewer ${itemLabel}`
-                          : `Show all ${itemLabel} (${length - limit} more)`
-                      }
-                      itemLimit={3}
-                      items={data?.programmingLanguage.map(pl => ({
-                        name: pl,
-                        value: pl,
-                        field: 'programmingLanguage',
-                      }))}
-                      name={
-                        <InfoLabel
-                          title='Programming Languages'
-                          tooltipText={
-                            metadataFields['programmingLanguage'].description?.[
-                              data['@type']
-                            ]
-                          }
-                        />
-                      }
-                    />
+                    <SearchableItems.Wrapper>
+                      <SearchableItems.List
+                        generateButtonLabel={(
+                          limit,
+                          length,
+                          itemLabel = 'languages',
+                        ) =>
+                          limit === length
+                            ? `Show fewer ${itemLabel}`
+                            : `Show all ${itemLabel} (${length - limit} more)`
+                        }
+                        itemLimit={3}
+                        items={data?.programmingLanguage.map(pl => ({
+                          name: pl,
+                          value: pl,
+                          field: 'programmingLanguage',
+                        }))}
+                        name={
+                          <InfoLabel
+                            title='Programming Languages'
+                            tooltipText={
+                              metadataFields['programmingLanguage']
+                                .description?.[data['@type']]
+                            }
+                          />
+                        }
+                      />
+                    </SearchableItems.Wrapper>
                   </Flex>
                 )}
 

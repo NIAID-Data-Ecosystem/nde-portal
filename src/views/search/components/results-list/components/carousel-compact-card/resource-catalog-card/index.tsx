@@ -3,10 +3,7 @@ import React, { useMemo, useState } from 'react';
 import { ConditionsOfAccess } from 'src/components/badges';
 import { HasAPI } from 'src/components/badges/components/HasAPI';
 import { MetadataLabel } from 'src/components/metadata';
-import {
-  SearchableItems,
-  SearchableItemsWrapper,
-} from 'src/components/searchable-items';
+import { SearchableItems } from 'src/components/searchable-items';
 import { Tooltip } from 'src/components/tooltip';
 import { FormattedResource } from 'src/utils/api/types';
 import { formatAPIResourceTypeForDisplay } from 'src/utils/formatting/formatResourceType';
@@ -139,11 +136,10 @@ export const ResourceCatalogCard = ({
         {aboutItems.length > 0 && (
           <Flex bg='white' direction='column'>
             <MetadataLabel label='Content Types' mx={0} />
-            <SearchableItemsWrapper overflow='auto' maxHeight='200px'>
-              <SearchableItems
+            <SearchableItems.Wrapper overflow='auto' maxHeight='200px'>
+              <SearchableItems.List
                 items={aboutItems}
                 itemLimit={2}
-                colorScheme='primary'
                 isExpanded={showAllTypes}
                 onToggle={handleTypesToggle}
                 generateButtonLabel={(limit, length) =>
@@ -152,7 +148,7 @@ export const ResourceCatalogCard = ({
                     : `Show more types (${length - limit} more)`
                 }
               />
-            </SearchableItemsWrapper>
+            </SearchableItems.Wrapper>
           </Flex>
         )}
 

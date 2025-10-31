@@ -35,7 +35,7 @@ const generateDefaultLabel = (limit: number, length: number) => {
  * 2. Controlled mode: when isExpanded and onToggle are provided, state is managed externally
  */
 
-export const SearchableItems: React.FC<SearchableItemsProps> = ({
+const SearchableItemsList: React.FC<SearchableItemsProps> = ({
   colorPalette = 'primary',
   generateButtonLabel = generateDefaultLabel,
   itemLimit = 3,
@@ -117,7 +117,7 @@ export const SearchableItems: React.FC<SearchableItemsProps> = ({
   );
 };
 
-export const SearchableItemsWrapper = (props: BoxProps) => {
+const SearchableItemsWrapper = (props: BoxProps) => {
   return (
     <ScrollContainer
       maxHeight='300px'
@@ -128,4 +128,9 @@ export const SearchableItemsWrapper = (props: BoxProps) => {
       {...props}
     />
   );
+};
+
+export const SearchableItems = {
+  List: SearchableItemsList,
+  Wrapper: SearchableItemsWrapper,
 };
