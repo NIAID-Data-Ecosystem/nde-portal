@@ -1,4 +1,3 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   Box,
   Button,
@@ -8,22 +7,23 @@ import {
   Stack,
   Table,
   Text,
-  Tr,
-  VisuallyHidden,
-  useDisclosure,
   Tooltip,
+  Tr,
+  useDisclosure,
+  VisuallyHidden,
 } from '@chakra-ui/react';
-import { Link } from 'src/components/link';
-import { IsBasedOn, IsBasisFor } from 'src/utils/api/types';
 import { uniqueId } from 'lodash';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { Link } from 'src/components/link';
 import { Cell, EmptyCell, Th } from 'src/components/table/components/cell';
+import { TablePagination } from 'src/components/table/components/pagination';
 import { Row } from 'src/components/table/components/row';
 import { TableContainer } from 'src/components/table/components/table-container';
+import { TableWrapper } from 'src/components/table/components/wrapper';
 import { getTruncatedText } from 'src/components/table/helpers';
 import { useTableSort } from 'src/components/table/hooks/useTableSort';
-import { TableWrapper } from 'src/components/table/components/wrapper';
-import { TablePagination } from 'src/components/table/components/pagination';
-import { TagWithUrl } from 'src/components/tag-with-url';
+import { Tag } from 'src/components/tag';
+import { IsBasedOn, IsBasisFor } from 'src/utils/api/types';
 
 // TruncatedDescription: Component for displaying truncated text with 'read more/less' option
 const TruncatedDescription = React.memo(
@@ -236,28 +236,24 @@ const BasedOnTable = ({
                                     item.doi) && (
                                     <Stack spacing={1} mt={1}>
                                       {item.identifier && (
-                                        <TagWithUrl
+                                        <Tag
                                           // only add url here if there is no name (name field is default used for the link)
-                                          href={
-                                            !item.name && item.url
-                                              ? item.url
-                                              : ''
-                                          }
-                                          label='ID |'
-                                          isExternal
+                                          linkProps={{
+                                            href:
+                                              !item.name && item.url
+                                                ? item.url
+                                                : '',
+                                            isExternal: true,
+                                          }}
                                         >
-                                          {item.identifier}
-                                        </TagWithUrl>
+                                          {'ID |' + item.identifier}
+                                        </Tag>
                                       )}
                                       {item.pmid && (
-                                        <TagWithUrl label='PMID |' isExternal>
-                                          {item.pmid}
-                                        </TagWithUrl>
+                                        <Tag>{'PMID |' + item.pmid}</Tag>
                                       )}
                                       {item.doi && (
-                                        <TagWithUrl label='DOI |' isExternal>
-                                          {item.doi}
-                                        </TagWithUrl>
+                                        <Tag>{'DOI |' + item.doi}</Tag>
                                       )}
                                     </Stack>
                                   )}
@@ -275,32 +271,24 @@ const BasedOnTable = ({
                                       if (!type?.name && !type?.url)
                                         return <React.Fragment key={idx} />;
                                       return (
-                                        <Tooltip
+                                        <Tag
                                           key={idx}
-                                          label={
-                                            type?.url
+                                          linkProps={{
+                                            href: type?.url || '',
+                                            isExternal: true,
+                                          }}
+                                          tooltipProps={{
+                                            showArrow: true,
+                                            content: type?.url
                                               ? 'Show ontology information.'
-                                              : ''
-                                          }
-                                          hasArrow
-                                          bg='white'
-                                          color='text.body'
-                                          fontWeight='normal'
-                                          fontSize='12px'
-                                          boxShadow='base'
+                                              : '',
+                                          }}
+                                          colorPalette='primary'
                                         >
-                                          <span>
-                                            <TagWithUrl
-                                              href={type?.url || ''}
-                                              colorScheme='primary'
-                                              isExternal
-                                            >
-                                              {type?.name ||
-                                                type?.url ||
-                                                'No type provided'}
-                                            </TagWithUrl>
-                                          </span>
-                                        </Tooltip>
+                                          {type?.name ||
+                                            type?.url ||
+                                            'No type provided'}
+                                        </Tag>
                                       );
                                     })}
                                   </>

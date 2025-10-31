@@ -1,8 +1,8 @@
-import React from 'react';
 import { Flex, Heading, Skeleton } from '@chakra-ui/react';
-import { FormattedResource } from 'src/utils/api/types';
+import React from 'react';
 import { DisplayHTMLString } from 'src/components/html-content';
-import { TagWithUrl } from 'src/components/tag-with-url';
+import { Tag } from 'src/components/tag';
+import { FormattedResource } from 'src/utils/api/types';
 
 interface HeaderProps {
   isLoading: boolean;
@@ -53,18 +53,18 @@ const Header: React.FC<HeaderProps> = ({
 
         {(nctid || doi) && (
           <Flex mt={2}>
-            {nctid && <TagWithUrl label='NCTID |'>{nctid}</TagWithUrl>}
+            {nctid && <Tag>{'NCTID |' + nctid}</Tag>}
             {doi && (
-              <TagWithUrl
-                colorScheme='secondary'
-                label='DOI |'
-                href={
-                  doi.includes('http') || doi.includes('doi.org') ? doi : ''
-                }
-                isExternal
+              <Tag
+                colorPalette='secondary'
+                linkProps={{
+                  href:
+                    doi.includes('http') || doi.includes('doi.org') ? doi : '',
+                  isExternal: true,
+                }}
               >
-                {doi}
-              </TagWithUrl>
+                {'DOI |' + doi}
+              </Tag>
             )}
           </Flex>
         )}

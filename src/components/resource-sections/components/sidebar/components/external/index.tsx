@@ -1,5 +1,3 @@
-import React from 'react';
-import { FormattedResource } from 'src/utils/api/types';
 import {
   Box,
   Divider,
@@ -9,16 +7,17 @@ import {
   SkeletonProps,
   Stack,
 } from '@chakra-ui/react';
-import { DataAccess } from './components/data-access';
-import { DataUsage } from './components/usage';
-import { License } from './components/license';
+import React from 'react';
+import { ConditionsOfAccess } from 'src/components/badges';
+import { AccessibleForFree } from 'src/components/badges/components/AccessibleForFree';
+import { HasAPI } from 'src/components/badges/components/HasAPI';
+import { HasDownload } from 'src/components/badges/components/HasDownload';
+import { FormattedResource } from 'src/utils/api/types';
+
 import { AssociatedDocumentation } from './components/associated-documentation';
-import {
-  AccessibleForFree,
-  ConditionsOfAccess,
-} from 'src/components/tag-with-tooltip';
-import { HasDownload } from 'src/components/tag-with-tooltip/components/HasDownload';
-import { HasAPI } from 'src/components/tag-with-tooltip/components/HasAPI';
+import { DataAccess } from './components/data-access';
+import { License } from './components/license';
+import { DataUsage } from './components/usage';
 
 interface ExternalProps extends Omit<WrapperProps, 'children'> {
   data?: FormattedResource;

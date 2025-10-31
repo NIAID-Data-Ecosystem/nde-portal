@@ -1,33 +1,33 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   Box,
   Flex,
   FlexProps,
-  Table,
-  Tr,
-  Text,
-  VisuallyHidden,
   Heading,
   Skeleton,
+  Table,
+  Text,
+  Tr,
+  VisuallyHidden,
   VStack,
 } from '@chakra-ui/react';
-import { Link } from 'src/components/link';
-import { Funding as FundingType } from 'src/utils/api/types';
 import { uniqueId } from 'lodash';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { getMetadataTheme } from 'src/components/icon/helpers';
+import { Link } from 'src/components/link';
 import {
   Cell,
-  Label,
   Content,
   EmptyCell,
+  Label,
   Th,
 } from 'src/components/table/components/cell';
+import { TablePagination } from 'src/components/table/components/pagination';
 import { Row, RowWithDrawer } from 'src/components/table/components/row';
 import { TableContainer } from 'src/components/table/components/table-container';
 import { TableWrapper } from 'src/components/table/components/wrapper';
-import { TablePagination } from 'src/components/table/components/pagination';
 import { useTableSort } from 'src/components/table/hooks/useTableSort';
-import { TagWithUrl } from 'src/components/tag-with-url';
+import { Tag } from 'src/components/tag';
+import { Funding as FundingType } from 'src/utils/api/types';
 
 // Constants for table configuration.
 // [ROW_SIZES]: num of rows per page
@@ -320,15 +320,13 @@ const ContentWithTag = React.memo(
         )}
 
         {identifier && (
-          <TagWithUrl
-            colorScheme='orange'
-            href={href || ''}
-            label={label}
-            isExternal
+          <Tag
+            colorPalette='orange'
+            linkProps={{ href: href || '', isExternal: true }}
             mt={0.5}
           >
-            {identifier}
-          </TagWithUrl>
+            {label + '|'} {identifier}
+          </Tag>
         )}
       </>
     );

@@ -1,12 +1,12 @@
-import React from 'react';
 import { BoxProps } from '@chakra-ui/react';
-import Tooltip from 'src/components/tooltip';
-import { TagWithUrl } from 'src/components/tag-with-url';
+import { LinkProps } from 'next/link';
+import React from 'react';
+import { Tag } from 'src/components/tag';
 
 interface MetadataWithTagProps extends BoxProps {
   label?: string;
   value: string;
-  url?: string | null;
+  url?: LinkProps['href'];
   colorScheme?: string;
   tooltipLabel?: string;
 }
@@ -19,17 +19,24 @@ export const MetadataWithTag = ({
   tooltipLabel,
 }: MetadataWithTagProps) => {
   return (
-    <Tooltip label={tooltipLabel} fontSize='12px'>
-      <TagWithUrl
-        colorScheme={colorScheme}
-        fontSize='13px'
-        href={url}
-        isExternal
-        label={label + ' |'}
-        lineHeight='shorter'
-      >
-        {value}
-      </TagWithUrl>
-    </Tooltip>
+    <Tag
+      colorPalette={colorScheme}
+      fontSize='13px'
+      linkProps={
+        url
+          ? {
+              href: url,
+              isExternal: true,
+            }
+          : undefined
+      }
+      tooltipProps={{
+        content: tooltipLabel,
+      }}
+      lineHeight='shorter'
+    >
+      {label + ' |'}
+      {value}
+    </Tag>
   );
 };

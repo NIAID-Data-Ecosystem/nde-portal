@@ -10,8 +10,7 @@ import NextLink from 'next/link';
 import React, { useState } from 'react';
 import { FaUpRightFromSquare } from 'react-icons/fa6';
 import { Section } from 'src/components/section';
-import { TagWithTooltip } from 'src/components/tag-with-tooltip';
-import { TagWithUrl } from 'src/components/tag-with-url';
+import { Tag } from 'src/components/tag';
 import { TOC } from 'src/components/toc';
 import type { SourceResponse } from 'src/pages/sources';
 import { formatDate } from 'src/utils/api/helpers';
@@ -88,15 +87,17 @@ const Main: React.FC<Main> = ({ data, isLoading, metadata }) => {
                   lineHeight='short'
                 >
                   API Version:
-                  <TagWithUrl
+                  <Tag
                     colorPalette='niaid'
                     variant='surface'
-                    href={`${process.env.NEXT_PUBLIC_API_URL}/metadata`}
-                    isExternal
                     ml={1}
+                    linkProps={{
+                      href: `${process.env.NEXT_PUBLIC_API_URL}/metadata`,
+                      isExternal: true,
+                    }}
                   >
                     V.{metadata.version}
-                  </TagWithUrl>
+                  </Tag>
                 </Text>
               )}
             </SkeletonText>
@@ -153,9 +154,9 @@ const Main: React.FC<Main> = ({ data, isLoading, metadata }) => {
               }
               tags={
                 sourceObj.isNiaidFunded && (
-                  <TagWithTooltip colorPalette='blue' variant='surface'>
+                  <Tag colorPalette='blue' variant='surface'>
                     NIAID
-                  </TagWithTooltip>
+                  </Tag>
                 )
               }
               footerProps={{ alignItems: 'flex-end' }}

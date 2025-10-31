@@ -2,7 +2,7 @@ import { BoxProps, Button, ButtonProps, FlexProps } from '@chakra-ui/react';
 import React, { useMemo, useState } from 'react';
 import { FaMagnifyingGlass } from 'react-icons/fa6';
 import { ScrollContainer } from 'src/components/scroll-container';
-import { TagWithUrl } from 'src/components/tag-with-url';
+import { Tag } from 'src/components/tag';
 
 interface SearchableItemsProps extends FlexProps {
   items: {
@@ -85,21 +85,22 @@ const SearchableItemsList: React.FC<SearchableItemsProps> = ({
     <>
       {name}
       {uniqueItems.slice(0, currentLimit).map(item => (
-        <TagWithUrl
+        <Tag
           key={item.value}
           colorPalette={colorPalette}
-          href={{
-            pathname: '/search',
-            query: {
-              q: `${item.field}:"${item.value}"`,
+          linkProps={{
+            href: {
+              pathname: '/search',
+              query: {
+                q: `${item.field}:"${item.value}"`,
+              },
             },
           }}
           m={0.5}
           leftIcon={<FaMagnifyingGlass />}
-          variant='surface'
         >
           {item.name}
-        </TagWithUrl>
+        </Tag>
       ))}
       {uniqueItems.length > itemLimit && (
         <Button

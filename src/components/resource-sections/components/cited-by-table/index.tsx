@@ -1,24 +1,24 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   Flex,
-  Table,
-  Tr,
-  Text,
-  VisuallyHidden,
   Heading,
   Skeleton,
   Stack,
+  Table,
+  Text,
+  Tr,
+  VisuallyHidden,
 } from '@chakra-ui/react';
-import { Link } from 'src/components/link';
-import { CitedBy as CitedByType } from 'src/utils/api/types';
 import { uniqueId } from 'lodash';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { Link } from 'src/components/link';
 import { Cell, EmptyCell, Th } from 'src/components/table/components/cell';
+import { TablePagination } from 'src/components/table/components/pagination';
 import { Row } from 'src/components/table/components/row';
 import { TableContainer } from 'src/components/table/components/table-container';
 import { TableWrapper } from 'src/components/table/components/wrapper';
-import { TablePagination } from 'src/components/table/components/pagination';
 import { useTableSort } from 'src/components/table/hooks/useTableSort';
-import { TagWithUrl } from 'src/components/tag-with-url';
+import { Tag } from 'src/components/tag';
+import { CitedBy as CitedByType } from 'src/utils/api/types';
 
 // Constants for table configuration.
 // [ROW_SIZES]: num of rows per page
@@ -170,20 +170,12 @@ export const CitedByTable: React.FC<CitedByTable> = ({
                                 )}
                                 <Stack spacing={1} mt={1}>
                                   {item.identifier && (
-                                    <TagWithUrl label='ID |'>
-                                      {item.identifier}
-                                    </TagWithUrl>
+                                    <Tag>{'ID |' + item.identifier}</Tag>
                                   )}
                                   {item.pmid && (
-                                    <TagWithUrl label='PMID |'>
-                                      {item.pmid}
-                                    </TagWithUrl>
+                                    <Tag>{'PMID |' + item.pmid}</Tag>
                                   )}
-                                  {item.doi && (
-                                    <TagWithUrl label='DOI |'>
-                                      {item.doi}
-                                    </TagWithUrl>
-                                  )}
+                                  {item.doi && <Tag>{'DOI |' + item.doi}</Tag>}
                                 </Stack>
                               </>
                             )}
@@ -191,9 +183,9 @@ export const CitedByTable: React.FC<CitedByTable> = ({
                             {column.key === '@type' &&
                               (item['@type'] ? (
                                 <>
-                                  <TagWithUrl colorScheme='primary'>
+                                  <Tag colorPalette='primary'>
                                     {item['@type']}
-                                  </TagWithUrl>
+                                  </Tag>
                                 </>
                               ) : (
                                 <EmptyCell />

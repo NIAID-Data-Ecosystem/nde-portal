@@ -10,7 +10,7 @@ import {
   PageContainer,
   PageContent,
 } from 'src/components/page-container';
-import { TagWithTooltip } from 'src/components/tag-with-tooltip';
+import { Tag } from 'src/components/tag';
 import { TOC } from 'src/components/toc';
 import { fetchMetadata } from 'src/hooks/api/helpers';
 import { Metadata, MetadataSource } from 'src/hooks/api/types';
@@ -157,13 +157,9 @@ const Sources: NextPage<SourcesProps> = ({ data, error }) => {
                           {source.name}
                           {/* Add tag to show source is funded by NIAID */}
                           {source.isNiaidFunded && (
-                            <TagWithTooltip
-                              colorPalette='blue'
-                              variant='surface'
-                              mx={2}
-                            >
+                            <Tag colorPalette='blue' variant='surface' mx={2}>
                               NIAID
-                            </TagWithTooltip>
+                            </Tag>
                           )}
                         </TOC.SidebarLabel>
                       }

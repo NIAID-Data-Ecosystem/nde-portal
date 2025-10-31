@@ -17,13 +17,13 @@ import { SchemaDefinitions } from 'scripts/generate-schema-definitions/types';
 import { Link } from 'src/components/link';
 import { CompletenessBadgeCircle } from 'src/components/metadata-completeness-badge/Circular';
 import { SearchableItems } from 'src/components/searchable-items';
+import { Tag } from 'src/components/tag';
 import { FormattedResource } from 'src/utils/api/types';
 
 import { DownloadMetadata } from '../download-metadata';
 import { DisplayHTMLContent } from '../html-content';
 import { JsonViewer } from '../json-viewer';
 import { getMetadataDescription } from '../metadata';
-import { TagWithUrl } from '../tag-with-url';
 import {
   ResourceAuthors,
   ResourceBanner,
@@ -222,19 +222,21 @@ const Sections = ({
                             py: 0,
                           }}
                         >
-                          <TagWithUrl
+                          <Tag
                             colorScheme='primary'
-                            href={{
-                              pathname: '/search',
-                              query: {
-                                q: `genre:"${data?.genre}"`,
+                            linkProps={{
+                              href: {
+                                pathname: '/search',
+                                query: {
+                                  q: `genre:"${data?.genre}"`,
+                                },
                               },
                             }}
                             m={0.5}
-                            leftIcon={FaMagnifyingGlass}
+                            leftIcon={<FaMagnifyingGlass />}
                           >
                             {data?.genre}
-                          </TagWithUrl>
+                          </Tag>
                         </OverviewSectionWrapper>
                       )}
                       {data?.about && data?.about?.length > 0 && (

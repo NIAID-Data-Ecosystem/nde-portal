@@ -1,15 +1,11 @@
 import SchemaDefinitions from 'configs/schema-definitions.json';
 import { SchemaDefinition } from 'scripts/generate-schema-definitions/types';
-import {
-  TagWithTooltip,
-  TagWithTooltipProps,
-} from 'src/components/tag-with-tooltip';
+import { Tag, TagProps } from 'src/components/tag';
 import { FormattedResource } from 'src/utils/api/types';
 
-interface HasDownloadProps extends Omit<TagWithTooltipProps, 'value'> {
+interface HasDownloadProps extends TagProps {
   hasDownload?: FormattedResource['hasDownload'];
   type?: FormattedResource['@type'];
-  tooltipLabel?: string;
 }
 
 export const HasDownload = ({
@@ -39,12 +35,14 @@ export const HasDownload = ({
   };
 
   return (
-    <TagWithTooltip
+    <Tag
       colorPalette={getColorScheme()}
-      tooltipContent={type ? property?.description?.[type] || '' : ''}
+      tooltipProps={{
+        content: type ? property?.description?.[type] || '' : '',
+      }}
       {...props}
     >
       Has Download: {hasDownload}
-    </TagWithTooltip>
+    </Tag>
   );
 };

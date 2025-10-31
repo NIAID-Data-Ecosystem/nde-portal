@@ -1,12 +1,9 @@
 import SchemaDefinitions from 'configs/schema-definitions.json';
 import { SchemaDefinitions as SchemaDefinitionsType } from 'scripts/generate-schema-definitions/types';
-import {
-  TagWithTooltip,
-  TagWithTooltipProps,
-} from 'src/components/tag-with-tooltip';
+import { Tag, TagProps } from 'src/components/tag';
 import { FormattedResource } from 'src/utils/api/types';
 
-interface HasDownloadProps extends Omit<TagWithTooltipProps, 'value'> {
+interface HasDownloadProps extends TagProps {
   hasAPI?: FormattedResource['hasAPI'];
   type?: FormattedResource['@type'];
   tooltipLabel?: string;
@@ -20,12 +17,14 @@ export const HasAPI = ({ hasAPI, type, ...props }: HasDownloadProps) => {
   const property = schema['hasAPI'];
 
   return (
-    <TagWithTooltip
+    <Tag
       colorPalette={hasAPI ? 'green' : 'gray'}
-      tooltipContent={type ? property?.description?.[type] || '' : ''}
+      tooltipProps={{
+        content: type ? property?.description?.[type] || '' : '',
+      }}
       {...props}
     >
       {hasAPI ? 'API Available' : 'API Not Available'}
-    </TagWithTooltip>
+    </Tag>
   );
 };
