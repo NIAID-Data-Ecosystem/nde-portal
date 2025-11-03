@@ -1,15 +1,15 @@
-import React from 'react';
 import {
   Box,
-  Divider,
   Flex,
   Grid,
   GridItem,
   Icon,
+  Separator,
   Stack,
   Text,
 } from '@chakra-ui/react';
-import { FaRegCircleUp, FaCircleCheck } from 'react-icons/fa6';
+import React from 'react';
+import { FaCircleCheck, FaRegCircleUp } from 'react-icons/fa6';
 import { FormattedResource } from 'src/utils/api/types';
 
 interface Stat {
@@ -72,14 +72,14 @@ export const TooltipContent = ({ data }: TooltipContentProps) => {
           {current_total_score} / {max_total_score}
         </Text>
       </Flex>
-      <Divider></Divider>
+      <Separator />
 
       {/* Rows of included and augmented fields */}
       <Stack direction='row' flexWrap='wrap'>
         {data.map(item => (
           <Box key={item.label} my={1} minWidth='200px' flex={1}>
             <Score {...item} />
-            <Stack spacing={0}>
+            <Stack gap={0}>
               {item.fields
                 .sort((a, b) => a.label.localeCompare(b.label))
                 .map((field, idx) => {

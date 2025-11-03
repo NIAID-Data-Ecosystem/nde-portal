@@ -75,15 +75,13 @@ interface HeaderProps extends BoxProps {
 
 const Header = ({ isLoading = false, children, ...boxProps }: HeaderProps) => {
   return (
-    <Card.Header {...boxProps}>
-      <Skeleton
-        loading={isLoading}
-        minHeight={isLoading ? '50px' : 'auto'}
-        flex={1}
-      >
-        {!isLoading && children}
-      </Skeleton>
-    </Card.Header>
+    <Skeleton
+      loading={isLoading}
+      minHeight={isLoading ? '50px' : 'auto'}
+      flex={1}
+    >
+      <Card.Header {...boxProps}>{!isLoading && children}</Card.Header>
+    </Skeleton>
   );
 };
 

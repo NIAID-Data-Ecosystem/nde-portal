@@ -1,4 +1,5 @@
 import {
+  Box,
   Card,
   Flex,
   Highlight,
@@ -9,7 +10,7 @@ import {
 } from '@chakra-ui/react';
 import { useInView } from '@react-spring/web';
 import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
-import NextLink from 'next/link';
+import NextLink, { LinkProps } from 'next/link';
 import React, { useMemo } from 'react';
 import { FaAngleRight, FaRegClock } from 'react-icons/fa6';
 import { SchemaDefinitions } from 'scripts/generate-schema-definitions/types';
@@ -27,6 +28,7 @@ import { formatAPIResourceTypeForDisplay } from 'src/utils/formatting/formatReso
 import { formatAuthorsList2String } from 'src/utils/helpers/authors';
 import { isSourceFundedByNiaid } from 'src/utils/helpers/sources';
 
+import { CompactCard } from '../carousel-compact-card/compact-card';
 import { filterWords } from './helpers';
 import MetadataAccordion from './metadata-accordion';
 import OperatingSystems from './operating-systems';
@@ -83,74 +85,52 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
 
   return (
     // {/* Banner with resource type + date of publication */}
-    <Card.Root
-      ref={cardRef}
-      variant='niaid'
-      boxShadow='none'
-      border='1px solid'
-      borderColor='gray.100'
-    >
-      <TypeBanner
+    <Box as={CompactCard.Base} ref={cardRef}>
+      <CompactCard.Banner
         label={formatAPIResourceTypeForDisplay(type)}
         type={type}
-        p={0}
-        pl={[2, 4, 6]}
-        flexDirection={['column', 'row']}
         isNiaidFunded={isSourceFundedByNiaid(includedInDataCatalog)}
+        isLoading={isLoading}
       />
 
       {/* Card header where name of resource is a link to resource page */}
-      <Card.Header
-        bg='transparent'
-        position='relative'
-        px={paddingCard}
-        pt={4}
-        color='link.color'
+
+      <CompactCard.Header
+        asChild
+        isLoading={isLoading}
+        display='flex'
+        flexDirection='row'
+        alignItems='center'
+        color='link.default'
+        textDecoration='underline'
         _hover={{
-          p: { textDecoration: 'none' },
-          svg: {
+          textDecoration: 'none',
+          '& > svg': {
             transform: 'translate(0px)',
             opacity: 0.9,
             transition: '0.2s ease-in-out',
           },
         }}
         _visited={{
-          color: 'link.color',
-          svg: { color: 'link.color' },
+          color: 'link.default',
+          '& > svg': { color: 'link.default' },
         }}
-        w='100%'
       >
-        <Skeleton
-          loading={isLoading}
-          minHeight={isLoading ? '81px' : 'unset'}
-          flex={1}
+        <NextLink
+          as={`/resources?id=${id}`}
+          href={{
+            pathname: '/resources/',
+            query: { id, referrerPath },
+          }}
         >
-          <NextLink
-            // referrerPath is the current path of the page - used for breadcrumbs in resources page
-            href={{
-              pathname: '/resources/',
-              query: { id, referrerPath },
-            }}
-            as={`/resources?id=${id}`}
-            passHref
-            prefetch={false}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              width: '100%',
-            }}
-          >
+          <Card.Title flex={1} color='inherit' lineHeight='short'>
             <DisplayHTMLContent
-              lineClamp={3}
               content={name || alternateName || ''}
-              fontWeight='semibold'
-              color='inherit'
+              lineClamp={3}
               fontSize='lg'
-              lineHeight='short'
-              w='100%'
-              textDecoration='underline'
-              _hover={{
-                textDecoration: 'none',
+              lineHeight='inherit'
+              css={{
+                '& > p': { lineHeight: 'inherit' },
               }}
               reactMarkdownProps={{
                 linkTarget: '_blank',
@@ -158,17 +138,17 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
               }}
               highlightProps={highlightProps}
             />
-            <Icon
-              as={FaAngleRight}
-              boxSize={4}
-              ml={4}
-              opacity={0.6}
-              transform='translate(-5px)'
-              transition='0.2s ease-in-out'
-            />
-          </NextLink>
-        </Skeleton>
-      </Card.Header>
+          </Card.Title>
+          <Icon
+            as={FaAngleRight}
+            boxSize={4}
+            ml={4}
+            opacity={0.6}
+            transform='translate(-5px)'
+            transition='0.2s ease-in-out'
+          />
+        </NextLink>
+      </CompactCard.Header>
       <Skeleton
         loading={isLoading}
         p='0px!important'
@@ -188,7 +168,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                 borderY='1px solid'
                 borderColor='gray.100'
               >
-                {author && (
+                {/* {author && (
                   <ToggleContainer
                     ariaLabel=''
                     noOfLines={1}
@@ -206,7 +186,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                       {formatAuthorsList2String(author, ',', 10) || ''}
                     </Highlight>
                   </ToggleContainer>
-                )}
+                )} */}
                 {(typeof isAccessibleForFree !== undefined ||
                   typeof isAccessibleForFree !== null ||
                   conditionsOfAccess) && (
@@ -232,9 +212,9 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
               </Flex>
             )}
 
-            <Card.Body
+            {/* <Card.Body
               p={0}
-              sx={{
+              css={{
                 '>*': {
                   my: 0,
                 },
@@ -533,11 +513,11 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                   )}
                 </Flex>
               </Stack>
-            </Card.Body>
+            </Card.Body> */}
           </>
         )}
       </Skeleton>
-    </Card.Root>
+    </Box>
   );
 };
 
