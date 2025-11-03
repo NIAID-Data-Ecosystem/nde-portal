@@ -1,9 +1,9 @@
+import { Skeleton, Text } from '@chakra-ui/react';
 import React from 'react';
-import { Text } from '@chakra-ui/react';
 import { DiseasePageProps } from 'src/views/diseases/types';
-import { Skeleton } from 'src/components/skeleton';
-import { CompactCard } from '../compact-card';
 import { TAB_LABELS } from 'src/views/search/config/tabs';
+
+import { CompactCard } from '../compact-card';
 
 interface DiseaseOverviewCardProps {
   data?: DiseasePageProps | null;
@@ -58,19 +58,19 @@ export const DiseaseOverviewCard = ({
       </CompactCard.Header>
 
       <CompactCard.Body>
-        <Skeleton isLoaded={!isLoading} flex='1'>
+        <Skeleton loading={isLoading} flex='1' fontSize='xs' lineHeight='short'>
           {/* Description (if present) */}
           {description ? (
             <>
-              <Text noOfLines={6} fontSize='xs' lineHeight='short'>
+              <Text lineClamp={6} fontSize='inherit' lineHeight='inherit'>
                 {description}
               </Text>
-              <Text fontSize='xs' lineHeight='short' marginTop={7}>
+              <Text fontSize='inherit' lineHeight='inherit' marginTop={7}>
                 {invitation}
               </Text>
             </>
           ) : (
-            <Text fontSize='xs' lineHeight='short'>
+            <Text fontSize='inherit' lineHeight='inherit'>
               {invitation}
             </Text>
           )}
