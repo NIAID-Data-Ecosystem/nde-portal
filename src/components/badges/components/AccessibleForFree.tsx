@@ -18,6 +18,7 @@ export const AccessibleForFree = ({
       <Tag
         colorPalette={isAccessibleForFree ? 'green' : 'gray'}
         tooltipProps={{ content: property?.description[type] }}
+        borderRadius='full'
         {...props}
       >
         {isAccessibleForFree ? 'No Cost Access' : 'Paid Access'}

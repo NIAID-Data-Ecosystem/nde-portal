@@ -92,13 +92,13 @@ const TypeBanner: React.FC<TypeBannerProps> = ({
     <Flex
       flexWrap='wrap'
       w='100%'
-      height='2.5rem'
+      height='100%'
       bg={props.bg || colorScheme['dk']}
       {...props}
     >
       <Flex
         bg={props.bg || colorScheme['dk']}
-        px={{ base: 2, md: 4, lg: 6 }}
+        px={{ base: 2, md: 4 }}
         pl={pl}
         py={0}
         overflow='hidden'

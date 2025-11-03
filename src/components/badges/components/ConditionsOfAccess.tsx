@@ -25,6 +25,7 @@ export const ConditionsOfAccess = ({
 
   return (
     <Tag
+      borderRadius='full'
       colorPalette={getColorScheme(conditionsOfAccess)}
       tooltipProps={{ content: property?.description[type] }}
       {...props}

@@ -36,6 +36,7 @@ export const HasDownload = ({
 
   return (
     <Tag
+      borderRadius='full'
       colorPalette={getColorScheme()}
       tooltipProps={{
         content: type ? property?.description?.[type] || '' : '',

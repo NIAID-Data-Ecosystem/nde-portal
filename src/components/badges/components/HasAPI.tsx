@@ -18,6 +18,7 @@ export const HasAPI = ({ hasAPI, type, ...props }: HasDownloadProps) => {
 
   return (
     <Tag
+      borderRadius='full'
       colorPalette={hasAPI ? 'green' : 'gray'}
       tooltipProps={{
         content: type ? property?.description?.[type] || '' : '',

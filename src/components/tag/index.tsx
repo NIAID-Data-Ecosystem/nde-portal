@@ -16,7 +16,6 @@ export interface TagProps extends TagRootProps {
 
 //  A tag component that includes an optional tooltip and handles optional links
 export const Tag = ({
-  borderRadius = 'full',
   size = 'md',
   variant = 'surface',
   linkProps,
@@ -27,19 +26,13 @@ export const Tag = ({
     <TagTooltip {...tooltipProps}>
       {linkProps?.href ? (
         <BaseTagWithLink
-          borderRadius={borderRadius}
           size={size}
           variant={variant}
           linkProps={linkProps}
           {...props}
         />
       ) : (
-        <BaseTag
-          borderRadius={borderRadius}
-          size={size}
-          variant={variant}
-          {...props}
-        />
+        <BaseTag size={size} variant={variant} {...props} />
       )}
     </TagTooltip>
   );

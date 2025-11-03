@@ -157,7 +157,12 @@ const Sources: NextPage<SourcesProps> = ({ data, error }) => {
                           {source.name}
                           {/* Add tag to show source is funded by NIAID */}
                           {source.isNiaidFunded && (
-                            <Tag colorPalette='blue' variant='surface' mx={2}>
+                            <Tag
+                              borderRadius='full'
+                              colorPalette='blue'
+                              variant='surface'
+                              mx={2}
+                            >
                               NIAID
                             </Tag>
                           )}
