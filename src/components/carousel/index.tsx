@@ -97,7 +97,6 @@ export const Carousel = ({
           alignItems='center'
           justifyContent={showProgressBar ? 'space-between' : 'center'}
           minH='44px'
-          mt={4}
         >
           <CarouselControls {...controlsProps} />
         </Flex>

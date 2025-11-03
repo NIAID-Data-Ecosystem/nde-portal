@@ -6,13 +6,7 @@ export const CarouselWrapper = ({ children, ...props }: BoxProps) => {
     <Box
       mt={0}
       p={0}
-      pb={{
-        base: 14,
-        sm: 12,
-        md: 16,
-        lg: 18,
-        xl: 14,
-      }}
+      mb={4}
       minH={{
         base: '350px',
         sm: '320px',

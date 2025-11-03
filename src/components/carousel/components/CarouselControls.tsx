@@ -1,6 +1,7 @@
-import React from 'react';
 import { Box, Button, Flex, Icon, Progress, Skeleton } from '@chakra-ui/react';
+import React from 'react';
 import { FaAngleLeft, FaAngleRight } from 'react-icons/fa6';
+
 import { CarouselControlsProps } from '../types';
 
 export const CarouselControls = ({
@@ -40,7 +41,7 @@ export const CarouselControls = ({
         onFocus={handleFocus}
         disabled={activeItem <= 0}
         mr={showProgressBar ? 0 : `${gap / 3}px`}
-        color='colorPalette.800'
+        colorPalette={colorPalette}
         variant='ghost'
         minW={0}
         size='sm'
@@ -67,7 +68,7 @@ export const CarouselControls = ({
             size='sm'
             borderRadius='full'
             variant='subtle'
-            bg='colorPalette.100'
+            bg={`${colorPalette}.100`}
           >
             <Progress.Track>
               <Progress.Range />
@@ -94,18 +95,20 @@ export const CarouselControls = ({
                 mx={1}
                 borderRadius='50%'
                 borderWidth='1px'
-                borderColor='colorPalette.500'
-                bg={shouldHighlight ? `colorPalette.500` : '#ffffff'}
+                borderColor={`${colorPalette}.500`}
+                bg={shouldHighlight ? `${colorPalette}.500` : '#ffffff'}
                 cursor='pointer'
                 tabIndex={0}
                 role='button'
                 _hover={{
-                  bg: shouldHighlight ? `colorPalette.600` : `colorPalette.200`,
-                  borderColor: `colorPalette.600`,
+                  bg: shouldHighlight
+                    ? `${colorPalette}.600`
+                    : `${colorPalette}.200`,
+                  borderColor: `${colorPalette}.600`,
                 }}
                 _focus={{
                   outline: '2px solid',
-                  outlineColor: 'colorPalette.500',
+                  outlineColor: `${colorPalette}.500`,
                   outlineOffset: '2px',
                 }}
                 onClick={() => handleDotClick(i)}
@@ -127,11 +130,11 @@ export const CarouselControls = ({
         onFocus={handleFocus}
         disabled={activeItem >= maxActiveItem}
         ml={showProgressBar ? 0 : `${gap / 3}px`}
-        color='colorPalette.800'
         variant='ghost'
         minW={0}
         size='sm'
         flexShrink={0}
+        colorPalette={colorPalette}
       >
         <Icon as={FaAngleRight} boxSize={4} />
       </Button>
