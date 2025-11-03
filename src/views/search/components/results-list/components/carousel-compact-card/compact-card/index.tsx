@@ -54,7 +54,7 @@ const Banner = ({
   return (
     <Skeleton
       loading={isLoading}
-      height={isLoading ? '40px' : 'auto'}
+      height={isLoading ? '2rem' : 'auto'}
       borderTopRadius='md'
     >
       <TypeBanner

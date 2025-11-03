@@ -92,7 +92,7 @@ const TypeBanner: React.FC<TypeBannerProps> = ({
     <Flex
       flexWrap='wrap'
       w='100%'
-      height='100%'
+      height='2rem'
       bg={props.bg || colorScheme['dk']}
       {...props}
     >
