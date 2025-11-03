@@ -8,19 +8,21 @@ import {
   StackProps,
   Text,
 } from '@chakra-ui/react';
-import { Link } from 'src/components/link';
+import { useState } from 'react';
+import { Link, LinkProps } from 'src/components/link';
 import { FormattedResource, IncludedInDataCatalog } from 'src/utils/api/types';
 import { getRepositoryImage } from 'src/utils/helpers';
 
 export const getSourceDetails = (
   sources: FormattedResource['includedInDataCatalog'],
 ) => {
-  const sources2Array = sources
-    ? Array.isArray(sources)
-      ? sources
-      : [sources]
+  const sourcesArray = Array.isArray(sources)
+    ? sources
+    : sources
+    ? [sources]
     : [];
-  return sources2Array.map(source => ({
+
+  return sourcesArray.map(source => ({
     ...source,
     logo: getRepositoryImage(source.name),
   }));
@@ -38,12 +40,36 @@ export const SourceLogoWrapper = ({
       flexDirection='row'
       flexWrap='wrap'
       my={0}
-      spacing={[2, 4]}
+      gap={[2, 4]}
       py={[2, 0]}
       {...props}
     >
       {children}
     </Stack>
+  );
+};
+
+interface WithLinkProps extends Omit<LinkProps, 'href'> {
+  href?: string | null;
+}
+
+export const WithLink = ({
+  children,
+  href,
+  isExternal,
+  ...props
+}: WithLinkProps) => {
+  if (!href) return <>{children}</>;
+
+  return (
+    <Link
+      variant='noline'
+      href={href}
+      target={isExternal ? '_blank' : '_self'}
+      {...props}
+    >
+      {children}
+    </Link>
   );
 };
 
@@ -66,74 +92,55 @@ export const SourceLogo = ({
   url,
   ...props
 }: SourceLogoProps) => {
-  const logo = getRepositoryImage(source.name);
+  const logoImageSrc = getRepositoryImage(source.name);
+  const [hasError, setHasError] = useState(false);
+  const showImage = logoImageSrc && !hasError;
+
+  const sourceText =
+    type === 'ResourceCatalog'
+      ? `Provided by ${source.name}`
+      : `Indexed in ${source.name}`;
 
   return (
-    <Box key={source.name} maxW={{ base: '200px', sm: '250px' }} {...props}>
-      {logo ? (
-        source.url ? (
-          <Link target='_blank' href={source.url}>
-            <Image
-              objectFit='contain'
-              objectPosition='left'
-              fallback={
-                <Flex minHeight='40px' color='text.heading' alignItems='center'>
-                  <Text
-                    borderBottom='none!important'
-                    color='inherit!important'
-                    fontSize='xl'
-                    fontWeight='bold'
-                    lineHeight='shorter'
-                    _hover={{
-                      borderBottom: 'none!important',
-                    }}
-                    _visited={{ color: 'inherit!important' }}
-                  >
-                    {source.name}
-                  </Text>
-                </Flex>
-              }
-              // fallbackSrc='/assets/resources/empty-source.png'
-              w='100%'
-              h='40px'
-              mr={4}
-              src={logo}
-              alt={`Click to open the source (${source.name}) in a new tab.`}
-              {...imageProps}
-            />
-          </Link>
-        ) : (
+    <Box maxW={{ base: '200px', sm: '350px' }} {...props}>
+      <WithLink href={source.url || ''} isExternal>
+        {showImage ? (
           <Image
             objectFit='contain'
             objectPosition='left'
+            onError={() => setHasError(true)}
             w='100%'
             h='40px'
             mr={4}
-            src={logo}
-            alt={`Logo for ${source.name}`}
+            src={logoImageSrc}
+            alt={`Click to open the source (${source.name}) in a new tab.`}
             {...imageProps}
           />
-        )
-      ) : (
-        <></>
-      )}
-      <Flex>
-        {url ? (
-          <Link href={url} isExternal lineHeight='shorter'>
-            <Text fontSize='12px' lineHeight='short'>
-              {type === 'ResourceCatalog'
-                ? `Provided by ${source.name}`
-                : `Indexed in ${source.name}`}
-            </Text>
-          </Link>
         ) : (
-          <Text fontSize='12px' lineHeight='short'>
-            {type === 'ResourceCatalog'
-              ? `Provided by ${source.name}`
-              : `Indexed in ${source.name}`}
-          </Text>
+          <>
+            {/* Fallback content */}
+            <Flex minHeight='40px' alignItems='center'>
+              <Text
+                color='text.heading'
+                fontSize='xl'
+                fontWeight='bold'
+                lineHeight='shorter'
+              >
+                {source.name}
+              </Text>
+            </Flex>
+          </>
         )}
-      </Flex>
+      </WithLink>
+      {url ? (
+        <Link href={url} isExternal fontSize='12px' lineHeight='short'>
+          {sourceText}
+        </Link>
+      ) : (
+        <Text fontSize='12px' lineHeight='short'>
+          {sourceText}
+        </Text>
+      )}
     </Box>
   );
 };

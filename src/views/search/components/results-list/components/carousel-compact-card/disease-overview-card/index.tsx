@@ -3,7 +3,7 @@ import React from 'react';
 import { DiseasePageProps } from 'src/views/diseases/types';
 import { TAB_LABELS } from 'src/views/search/config/tabs';
 
-import { CompactCard } from '../compact-card';
+import { CARD_HEIGHTS, CompactCard } from '../compact-card';
 
 interface DiseaseOverviewCardProps {
   data?: DiseasePageProps | null;
@@ -44,7 +44,7 @@ export const DiseaseOverviewCard = ({
     : `Learn about resources in the NIAID Data Ecosystem.`;
 
   return (
-    <CompactCard.Base isLoading={isLoading}>
+    <CompactCard.Base isLoading={isLoading} height={CARD_HEIGHTS} flex={1}>
       <CompactCard.Banner
         label={TAB_LABELS.DISEASE_OVERVIEW}
         type='Disease'

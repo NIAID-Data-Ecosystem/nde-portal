@@ -1,15 +1,15 @@
-import React from 'react';
 import {
   Box,
-  Divider,
   Flex,
   Grid,
   GridItem,
   Icon,
+  Separator,
   Stack,
   Text,
 } from '@chakra-ui/react';
-import { FaRegCircleUp, FaCircleCheck } from 'react-icons/fa6';
+import React from 'react';
+import { FaCircleCheck, FaRegCircleUp } from 'react-icons/fa6';
 import { FormattedResource } from 'src/utils/api/types';
 
 interface Stat {
@@ -32,15 +32,20 @@ const Score = ({ fill, label, included, fields }: Stat) => {
       px={2}
       py={1}
       color='white'
+      alignItems='center'
       justifyContent='space-between'
+      fontWeight='medium'
+      lineHeight='short'
     >
-      <Flex alignItems='center' flex={1} mr={1}>
-        {label && <Text color='inherit'>{label}</Text>}
-      </Flex>
+      {label && (
+        <Text color='inherit' lineHeight='inherit' flex={1} mr={1}>
+          {label}
+        </Text>
+      )}
 
-      <Text color='inherit' fontWeight='medium'>
+      <Text color='inherit' lineHeight='inherit'>
         {included.length}
-        <Text as='span' ml={1} color='inherit'>
+        <Text as='span' ml={1} color='inherit' lineHeight='inherit'>
           / {fields.length}
         </Text>
       </Text>
@@ -72,14 +77,14 @@ export const TooltipContent = ({ data }: TooltipContentProps) => {
           {current_total_score} / {max_total_score}
         </Text>
       </Flex>
-      <Divider></Divider>
+      <Separator />
 
       {/* Rows of included and augmented fields */}
-      <Stack direction='row' flexWrap='wrap'>
+      <Stack flexDirection='row' flexWrap='wrap'>
         {data.map(item => (
-          <Box key={item.label} my={1} minWidth='200px' flex={1}>
+          <Box key={item.label} my={1} minW={200} flex={1}>
             <Score {...item} />
-            <Stack spacing={0}>
+            <Stack gap={0}>
               {item.fields
                 .sort((a, b) => a.label.localeCompare(b.label))
                 .map((field, idx) => {
@@ -98,8 +103,9 @@ export const TooltipContent = ({ data }: TooltipContentProps) => {
                         colSpan={3}
                         fontWeight='medium'
                         color='gray.800'
+                        lineHeight='short'
                       >
-                        <Text>
+                        <Text lineHeight='inherit' fontSize='xs'>
                           {field.label}{' '}
                           {field.subLabel ? <>({field.subLabel})</> : ''}
                         </Text>
@@ -115,14 +121,14 @@ export const TooltipContent = ({ data }: TooltipContentProps) => {
                         {item.included.includes(field.property) && (
                           <Icon
                             as={FaCircleCheck}
-                            color='green.500'
+                            color='green.600'
                             boxSize={4}
                           />
                         )}
                         {item.augmented.includes(field.property) && (
                           <Icon
                             as={FaRegCircleUp}
-                            color='green.500'
+                            color='green.600'
                             boxSize={4}
                           />
                         )}
@@ -135,7 +141,7 @@ export const TooltipContent = ({ data }: TooltipContentProps) => {
         ))}
       </Stack>
       <Text fontStyle='italic' textAlign='end' mt={1}>
-        <Icon as={FaRegCircleUp} color='green.500' boxSize={4} mr={1} />
+        <Icon as={FaRegCircleUp} color='green.600' boxSize={4} mr={1} />
         Indicates a field has been augmented and does not count towards the
         score.
       </Text>

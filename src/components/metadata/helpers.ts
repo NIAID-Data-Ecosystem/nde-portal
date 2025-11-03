@@ -1,13 +1,14 @@
-import { FormattedResource } from 'src/utils/api/types';
-import { formatLicense } from 'src/utils/helpers';
-import { OntologyButtonProps, SearchButtonProps } from './components/buttons';
-import { uniqueId } from 'lodash';
-import { APIResourceType } from 'src/utils/formatting/formatResourceType';
 import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
+import { uniqueId } from 'lodash';
 import {
   SchemaDefinition,
   SchemaDefinitions,
 } from 'scripts/generate-schema-definitions/types';
+import { FormattedResource } from 'src/utils/api/types';
+import { APIResourceType } from 'src/utils/formatting/formatResourceType';
+import { formatLicense } from 'src/utils/helpers';
+
+import { OntologyButtonProps, SearchButtonProps } from './components/buttons';
 
 // Sort [SORT_ORDER] based on: https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/214
 export const SORT_ORDER = [
@@ -381,7 +382,9 @@ const createFundingContent = (
                       label: 'ID',
                       value: funding?.identifier || 'Funding ID',
                       url: funding?.url,
-                      tooltipLabel: funding?.identifier || '',
+                      tooltipLabel: funding?.identifier
+                        ? `See funding information for funding ID ${funding.identifier}`
+                        : '',
                     },
                   ]
                 : [],

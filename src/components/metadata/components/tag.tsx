@@ -6,8 +6,8 @@ import { Tag } from 'src/components/tag';
 interface MetadataWithTagProps extends BoxProps {
   label?: string;
   value: string;
-  url?: LinkProps['href'];
-  colorScheme?: string;
+  url?: LinkProps['href'] | string | null;
+  colorPalette?: string;
   tooltipLabel?: string;
 }
 
@@ -15,12 +15,12 @@ export const MetadataWithTag = ({
   label,
   url,
   value,
-  colorScheme = 'gray',
+  colorPalette = 'gray',
   tooltipLabel,
 }: MetadataWithTagProps) => {
   return (
     <Tag
-      colorPalette={colorScheme}
+      colorPalette={colorPalette}
       fontSize='13px'
       linkProps={
         url
@@ -35,7 +35,7 @@ export const MetadataWithTag = ({
       }}
       lineHeight='shorter'
     >
-      {label + ' |'}
+      {label + ' | '}
       {value}
     </Tag>
   );

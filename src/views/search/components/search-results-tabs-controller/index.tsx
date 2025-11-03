@@ -173,8 +173,8 @@ export const SearchResultsController = ({
 
   const getAccordionDefaultIndices = (
     sections: (TabType['types'][number] & { count: number })[],
-  ) =>
-    sections.reduce((indices: string[], section, index) => {
+  ) => {
+    return sections.reduce((indices: string[], section, index) => {
       const index_str = index.toString();
       if (section.type === 'ResourceCatalog') {
         if (section.count > 0 || hasMatchingDiseases) {
@@ -193,6 +193,7 @@ export const SearchResultsController = ({
       }
       return indices;
     }, []);
+  };
 
   return (
     <>
@@ -235,7 +236,7 @@ export const SearchResultsController = ({
                                     })
                                   : carouselItems
                                 ).map((carouselItem, carouselIndex) => (
-                                  <div
+                                  <React.Fragment
                                     key={
                                       carouselItem?.data?.id ||
                                       `loading-${carouselIndex}`
@@ -253,7 +254,7 @@ export const SearchResultsController = ({
                                         isLoading={isCarouselLoading}
                                       />
                                     )}
-                                  </div>
+                                  </React.Fragment>
                                 ))}
                               </Carousel>
                             </CarouselWrapper>

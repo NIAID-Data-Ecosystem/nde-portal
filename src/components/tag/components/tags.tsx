@@ -30,6 +30,10 @@ export const BaseTagWithLink = ({
     <ChakraTag.Root
       asChild
       css={{
+        '& .tag-label': {
+          textDecoration: 'underline',
+        },
+
         '&:hover .tag-label': {
           textDecoration: 'none',
         },
@@ -43,9 +47,7 @@ export const BaseTagWithLink = ({
         {leftIcon && (
           <ChakraTag.StartElement>{leftIcon}</ChakraTag.StartElement>
         )}
-        <ChakraTag.Label className='tag-label' textDecoration='underline'>
-          {children}
-        </ChakraTag.Label>
+        <ChakraTag.Label className='tag-label'>{children}</ChakraTag.Label>
         {linkProps?.isExternal && (
           <ChakraTag.EndElement>
             <FaSquareArrowUpRight />

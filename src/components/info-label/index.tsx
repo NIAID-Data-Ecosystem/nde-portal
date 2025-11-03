@@ -1,11 +1,11 @@
+import { Icon, Text, TextProps } from '@chakra-ui/react';
 import React from 'react';
-import { Icon, Text, TextProps, TooltipProps } from '@chakra-ui/react';
 import { FaInfo } from 'react-icons/fa6';
-import Tooltip from 'src/components/tooltip';
+import { Tooltip, TooltipProps } from 'src/components/tooltip';
 
 interface InfoLabelProps {
   title: string;
-  tooltipText?: TooltipProps['label'];
+  tooltipText?: TooltipProps['content'];
   textProps?: TextProps;
   tooltipProps?: TooltipProps;
 }
@@ -17,12 +17,14 @@ export const InfoLabel: React.FC<InfoLabelProps> = ({
   tooltipProps,
 }) => {
   return (
-    <Tooltip label={tooltipText} {...tooltipProps}>
+    <Tooltip content={tooltipText} {...tooltipProps}>
       <Text
         fontSize='xs'
         color='gray.800'
         mr={1}
         userSelect='none'
+        display='flex'
+        alignItems='baseline'
         {...textProps}
       >
         {title}
@@ -34,7 +36,6 @@ export const InfoLabel: React.FC<InfoLabelProps> = ({
             borderRadius='full'
             p={0.5}
             mx={1}
-            color='gray.800!important'
           />
         )}
       </Text>

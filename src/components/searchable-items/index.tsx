@@ -4,6 +4,8 @@ import { FaMagnifyingGlass } from 'react-icons/fa6';
 import { ScrollContainer } from 'src/components/scroll-container';
 import { Tag } from 'src/components/tag';
 
+import { Link } from '../link';
+
 interface SearchableItemsProps extends FlexProps {
   items: {
     name: string;
@@ -109,6 +111,7 @@ const SearchableItemsList: React.FC<SearchableItemsProps> = ({
           variant='link'
           justifyContent='flex-end'
           m={1}
+          px={0}
           onClick={toggleLimit}
         >
           {buttonLabel}

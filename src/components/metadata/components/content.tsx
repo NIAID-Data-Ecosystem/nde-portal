@@ -1,18 +1,19 @@
 import { Box, Flex, Icon, Image, Text } from '@chakra-ui/react';
-import { MetadataItem } from '../helpers';
-import { MetadataWithTag } from './tag';
-import { MetadataButtonGroup, OntologyButton, SearchButton } from './buttons';
 import { FaSquareArrowUpRight } from 'react-icons/fa6';
 import { Link } from 'src/components/link';
+
+import { MetadataItem } from '../helpers';
+import { MetadataButtonGroup, OntologyButton, SearchButton } from './buttons';
+import { MetadataWithTag } from './tag';
 
 interface MetadataContentProps extends Omit<MetadataItem, 'key'> {
   includeSearch?: boolean;
   includeOntology?: boolean;
-  colorScheme?: string;
+  colorPalette?: string;
 }
 export const MetadataContent = ({
   name,
-  colorScheme,
+  colorPalette,
   img,
   scientificName,
   tags,
@@ -45,16 +46,14 @@ export const MetadataContent = ({
           )}
           {name &&
             (url ? (
-              <Link href={url} target='_blank' alignItems='center'>
-                <Text wordBreak='break-word' w='100%'>
-                  {name}
-                </Text>
-                <Icon
-                  as={FaSquareArrowUpRight}
-                  boxSize={2.5}
-                  ml={1}
-                  color='gray.800'
-                />
+              <Link
+                href={url}
+                target='_blank'
+                alignItems='center'
+                isExternal
+                flex={1}
+              >
+                {name}
               </Link>
             ) : (
               <Text fontWeight='normal' wordBreak='break-word' w='100%'>
@@ -64,7 +63,7 @@ export const MetadataContent = ({
         </Flex>
         {tags &&
           tags.map((tag, idx) => (
-            <MetadataWithTag key={idx} colorScheme={colorScheme} {...tag} />
+            <MetadataWithTag key={idx} colorPalette={colorPalette} {...tag} />
           ))}
       </Box>
       {((includeSearch && searchProps) ||

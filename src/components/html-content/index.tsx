@@ -1,9 +1,9 @@
+import { Box, BoxProps, HighlightProps, useHighlight } from '@chakra-ui/react';
 import React from 'react';
 import ReactMarkdown from 'react-markdown';
+import { ReactMarkdownOptions } from 'react-markdown/lib/react-markdown';
 import rehypeRaw from 'rehype-raw';
 import remarkGfm from 'remark-gfm';
-import { Box, BoxProps, HighlightProps, useHighlight } from '@chakra-ui/react';
-import { ReactMarkdownOptions } from 'react-markdown/lib/react-markdown';
 
 /**
  * Displays + formats HTML block content.
@@ -48,6 +48,7 @@ export const DisplayHTMLContent: React.FC<DisplayHTMLContentProps> = ({
   content,
   reactMarkdownProps,
   highlightProps,
+  css,
   ...props
 }) => {
   // Highlight search query in content.
@@ -67,27 +68,31 @@ export const DisplayHTMLContent: React.FC<DisplayHTMLContentProps> = ({
   return (
     <Box
       w='100%'
-      fontSize='sm'
+      fontSize='lg'
       flex={1}
       style={{ whiteSpace: 'pre-line' }}
-      sx={{
+      lineHeight='inherit'
+      css={{
         // Display nested links with nde link format.
-        a: {
-          color: 'link.color',
-          textDecoration: 'underline',
-          _hover: { textDecoration: 'none' },
-          wordBreak: 'break-word',
-        },
-        '>*': {
+        '& *': {
           whiteSpace: 'pre-line',
           wordBreak: 'break-word',
+          lineHeight: 'inherit',
         },
-        mark: {
+        '& a': {
+          color: 'link.default',
+          textDecoration: 'underline',
+          _hover: { textDecoration: 'none' },
+        },
+        '& mark': {
           px: 0.5,
           bg: 'orange.100',
           color: 'inherit',
           ...highlightProps?.styles,
         },
+
+        lineHeight: 'inherit',
+        ...css,
       }}
       {...props}
     >

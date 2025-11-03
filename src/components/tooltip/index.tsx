@@ -35,7 +35,7 @@ const theme = {
 export const Tooltip = React.forwardRef<HTMLDivElement, TooltipProps>(
   function Tooltip(props, ref) {
     const {
-      showArrow,
+      showArrow = true,
       children,
       disabled,
       portalled = true,

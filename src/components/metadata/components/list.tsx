@@ -1,11 +1,12 @@
+import { Icon, List, ListRootProps } from '@chakra-ui/react';
 import React from 'react';
-import { ListItem, UnorderedList, ListIcon, ListProps } from '@chakra-ui/react';
 import { FaCircle } from 'react-icons/fa6';
 import { getMetadataTheme } from 'src/components/icon/helpers';
 
-export const MetadataList = ({ children, ...props }: ListProps) => {
+export const MetadataList = ({ children, ...props }: ListRootProps) => {
   return (
-    <UnorderedList
+    <List.Root
+      as='ul'
       ml={0}
       my={1.5}
       display='flex'
@@ -13,7 +14,7 @@ export const MetadataList = ({ children, ...props }: ListProps) => {
       {...props}
     >
       {children}
-    </UnorderedList>
+    </List.Root>
   );
 };
 
@@ -25,15 +26,17 @@ export const MetadataListItem = ({
   property: string;
 }) => {
   return (
-    <ListItem mb={3} display='flex' fontSize='xs' lineHeight='short' w='100%'>
-      <ListIcon
-        as={FaCircle}
-        m={2}
-        mx={1}
-        boxSize={1}
-        fill={`${getMetadataTheme(property)}.400`}
-      />
+    <List.Item mb={3} display='flex' fontSize='xs' lineHeight='short' w='100%'>
+      <List.Indicator asChild>
+        <Icon
+          as={FaCircle}
+          m={2}
+          mx={1}
+          boxSize={1}
+          fill={`${getMetadataTheme(property)}.400`}
+        />
+      </List.Indicator>
       {children}
-    </ListItem>
+    </List.Item>
   );
 };

@@ -11,7 +11,7 @@ import React, { ReactNode } from 'react';
 import { TypeBanner } from 'src/components/resource-sections/components';
 import { TypeBannerProps } from 'src/components/resource-sections/components/type-banner';
 
-const CARD_HEIGHTS = {
+export const CARD_HEIGHTS = {
   base: '310px',
   sm: '280px',
   md: '305px',
@@ -25,15 +25,9 @@ interface BaseProps extends Omit<CardRootProps, 'children' | 'as'> {
   children: ReactNode;
 }
 
-const Base = ({ isLoading = false, children, ...cardProps }: BaseProps) => {
+const Base = ({ children, ...cardProps }: BaseProps) => {
   return (
-    <Card.Root
-      variant='outline'
-      overflow='hidden'
-      height={CARD_HEIGHTS}
-      size='sm'
-      {...cardProps}
-    >
+    <Card.Root variant='outline' overflow='hidden' size='sm' {...cardProps}>
       {children}
     </Card.Root>
   );
@@ -75,15 +69,9 @@ interface HeaderProps extends BoxProps {
 
 const Header = ({ isLoading = false, children, ...boxProps }: HeaderProps) => {
   return (
-    <Card.Header {...boxProps}>
-      <Skeleton
-        loading={isLoading}
-        minHeight={isLoading ? '50px' : 'auto'}
-        flex={1}
-      >
-        {!isLoading && children}
-      </Skeleton>
-    </Card.Header>
+    <Skeleton loading={isLoading} minHeight={isLoading ? '50px' : 'auto'}>
+      <Card.Header {...boxProps}>{children}</Card.Header>
+    </Skeleton>
   );
 };
 

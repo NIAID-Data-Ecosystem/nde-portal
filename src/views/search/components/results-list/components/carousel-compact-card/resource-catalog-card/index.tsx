@@ -9,7 +9,7 @@ import { FormattedResource } from 'src/utils/api/types';
 import { formatAPIResourceTypeForDisplay } from 'src/utils/formatting/formatResourceType';
 import { isSourceFundedByNiaid } from 'src/utils/helpers/sources';
 
-import { CompactCard } from '../compact-card';
+import { CARD_HEIGHTS, CompactCard } from '../compact-card';
 
 interface ResourceCatalogCardProps {
   data?: FormattedResource | null;
@@ -69,7 +69,7 @@ export const ResourceCatalogCard = ({
     : undefined;
 
   return (
-    <CompactCard.Base isLoading={isLoading}>
+    <CompactCard.Base isLoading={isLoading} height={CARD_HEIGHTS} flex={1}>
       <CompactCard.Banner
         label={formatAPIResourceTypeForDisplay(type || 'ResourceCatalog')}
         type={type || 'ResourceCatalog'}
@@ -102,26 +102,24 @@ export const ResourceCatalogCard = ({
             </Tooltip>
             {(conditionsOfAccess || hasAPI) && (
               <Flex
-                justifyContent={['flex-start']}
+                justifyContent='flex-start'
                 alignItems='center'
                 w={['100%', 'unset']}
                 flex={[1]}
                 p={[0.5, 0.5]}
                 flexWrap='wrap'
                 ml={0.5}
-                gap={0.5}
+                gap={1}
               >
                 <ConditionsOfAccess
                   type={data?.['@type']}
                   conditionsOfAccess={conditionsOfAccess}
-                  mx={0.5}
                   size='sm'
                 />
                 {hasAPI && (
                   <HasAPI
                     type={data?.['@type']}
                     hasAPI={data?.hasAPI}
-                    mx={0.5}
                     size='sm'
                   />
                 )}

@@ -50,6 +50,8 @@ const button = defineRecipe({
     size: {
       '2xs': {
         gap: 2,
+        fontSize: '12px',
+        lineHeight: 'shorter',
         // _icon: {
         //   width: '3',
         //   height: '3',
