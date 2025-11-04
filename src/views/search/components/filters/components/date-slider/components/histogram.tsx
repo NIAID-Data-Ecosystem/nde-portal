@@ -10,6 +10,7 @@ import { formatNumber } from 'src/utils/helpers';
 import { addMissingYears } from '../helpers';
 import { useDateRangeContext } from '../hooks/useDateRangeContext';
 import { FacetTermWithDetails } from '../../../types';
+import { Brush } from './brush';
 
 interface HistogramProps {
   updatedData: FacetTermWithDetails[];
@@ -197,59 +198,76 @@ const Histogram: React.FC<HistogramProps> = ({
       {/* Bars */}
       <Flex ref={containerRef} justifyContent='center'>
         {visibleData.length ? (
-          <Box>
-            <Box
-              as='svg'
-              id='filters-histogram'
-              width={svgWidth + 40}
-              height={height + 30}
-              style={{ overflow: 'visible' }}
-            >
-              <defs>
-                <linearGradient
-                  id='histogram-gradient'
-                  gradientUnits='userSpaceOnUse'
-                  x1='0'
-                  y1='0'
-                  x2='0'
-                  y2='100%'
-                >
-                  <stop offset='0' stopColor='#e05e8f'></stop>
-                  <stop offset='1' stopColor='#241683'></stop>
-                </linearGradient>
-              </defs>
-              <Group left={20}>
-                {visibleData.map((d, i) => {
-                  const { term, count } = d;
-                  /* Updated counts when date has changed */
-                  const updatedCount =
-                    updatedCounts.find(u => u.term === term)?.count || 0;
+          <Box position='relative'>
+            <Flex justifyContent='center'>
+              <Box
+                as='svg'
+                id='filters-histogram'
+                width={svgWidth + 40}
+                height={height + 30}
+                style={{ overflow: 'visible' }}
+              >
+                <defs>
+                  <linearGradient
+                    id='histogram-gradient'
+                    gradientUnits='userSpaceOnUse'
+                    x1='0'
+                    y1='0'
+                    x2='0'
+                    y2='100%'
+                  >
+                    <stop offset='0' stopColor='#e05e8f'></stop>
+                    <stop offset='1' stopColor='#241683'></stop>
+                  </linearGradient>
+                </defs>
+                <Group left={20}>
+                  {visibleData.map((d, i) => {
+                    const { term, count } = d;
+                    /* Updated counts when date has changed */
+                    const updatedCount =
+                      updatedCounts.find(u => u.term === term)?.count || 0;
 
-                  const barWidth = xScale.bandwidth();
-                  const barX = xScale(i);
+                    const barWidth = xScale.bandwidth();
+                    const barX = xScale(i);
 
-                  const barCount =
-                    updatedCount > 0 && updatedCount < count
-                      ? updatedCount
-                      : count;
+                    const barCount =
+                      updatedCount > 0 && updatedCount < count
+                        ? updatedCount
+                        : count;
 
-                  const defaultBarHeight = Math.ceil(height - yScale(count));
-                  const barHeight = Math.ceil(height - yScale(barCount));
-                  const barY = height - barHeight;
+                    const defaultBarHeight = Math.ceil(height - yScale(count));
+                    const barHeight = Math.ceil(height - yScale(barCount));
+                    const barY = height - barHeight;
 
-                  const hovered = term === tooltipData?.term;
-                  let fill = `url("#histogram-gradient")`;
+                    const hovered = term === tooltipData?.term;
+                    let fill = `url("#histogram-gradient")`;
 
-                  if (count === 0 && updatedCount === 0) {
-                    fill = theme.colors.gray[200];
-                  }
+                    if (count === 0 && updatedCount === 0) {
+                      fill = theme.colors.gray[200];
+                    }
 
-                  return (
-                    <React.Fragment key={`bar-${term}`}>
-                      {/* Used only when the bar is selected and the updated count is less than the full count. */}
-                      {updatedCount > 0 && updatedCount < count && (
+                    return (
+                      <React.Fragment key={`bar-${term}`}>
+                        {/* Used only when the bar is selected and the updated count is less than the full count. */}
+                        {updatedCount > 0 && updatedCount < count && (
+                          <Bar
+                            className='partial-bar'
+                            x={barX}
+                            width={barWidth}
+                            opacity={
+                              hovered
+                                ? params.opacity.hover
+                                : params.opacity.active
+                            }
+                            y={height - defaultBarHeight}
+                            height={defaultBarHeight}
+                            fill={params.fill.gray}
+                          />
+                        )}
+
+                        {/* Bars that show the full count.*/}
                         <Bar
-                          className='partial-bar'
+                          className='full-bar'
                           x={barX}
                           width={barWidth}
                           opacity={
@@ -257,99 +275,79 @@ const Histogram: React.FC<HistogramProps> = ({
                               ? params.opacity.hover
                               : params.opacity.active
                           }
-                          y={height - defaultBarHeight}
-                          height={defaultBarHeight}
-                          fill={params.fill.gray}
+                          y={barY}
+                          height={barHeight}
+                          fill={fill}
                         />
-                      )}
-
-                      {/* Bars that show the full count.*/}
-                      <Bar
-                        className='full-bar'
-                        x={barX}
-                        width={barWidth}
-                        opacity={
-                          hovered ? params.opacity.hover : params.opacity.active
-                        }
-                        y={barY}
-                        height={barHeight}
-                        fill={fill}
-                      />
-                    </React.Fragment>
-                  );
-                })}
-              </Group>
-
-              {/* Invisible bars for tooltip triggers */}
-              <Group left={20}>
-                {visibleData.map((d, i) => {
-                  const { term } = d;
-                  /* Updated counts when date has changed */
-                  const updatedCount =
-                    updatedCounts.find(u => u.term === term)?.count || 0;
-
-                  const barWidth = xScale.bandwidth();
-                  const barX = xScale(i);
-
-                  return (
-                    <React.Fragment key={`invisible-bar-${term}`}>
-                      <Bar
-                        className='hover-bar'
-                        x={barX}
-                        y={0}
-                        width={barWidth}
-                        height={height}
-                        fill='transparent'
-                        onMouseOver={e =>
-                          handleMouseOver(e, {
-                            ...d,
-                            updatedCount,
-                          })
-                        }
-                        onMouseOut={hideTooltip}
-                        style={{ cursor: 'pointer' }}
-                        onClick={() => {
-                          const year = term.split('-')[0];
-                          handleClick([`${year}-01-01`, `${year}-12-31`]);
-                        }}
-                      />
-                    </React.Fragment>
-                  );
-                })}
-              </Group>
-
-              {/* x-axis */}
-              <Group left={20}>
-                <AxisBottom
-                  top={height}
-                  scale={xScale}
-                  tickValues={xAxisTickValues}
-                  tickFormat={i => visibleData[i as number]?.label || ''}
-                  stroke={theme.colors.gray[300]}
-                  tickStroke={theme.colors.gray[300]}
-                  tickLabelProps={() => ({
-                    fill: theme.colors.gray[600],
-                    fontSize: 13,
-                    textAnchor: 'middle',
+                      </React.Fragment>
+                    );
                   })}
-                />
-              </Group>
-            </Box>
+                </Group>
 
-            {/* slider */}
-            <Flex w='100%' position='relative' mt={0}>
-              {/*
-                Position slider under bars where
-                [left]  = first bar's x-position + half bar width.
-                [width] = last bar's x-position - half bar width.
-                */}
-              <Box
-                position='absolute'
-                left={`${(xScale(0) || 0) + xScale.bandwidth() / 2 + 20}px`}
-                w={`${xScale(visibleData.length - 1) || 0}px`}
-              >
-                {children}
+                {/* Invisible bars for tooltip triggers */}
+                <Group left={20}>
+                  {visibleData.map((d, i) => {
+                    const { term } = d;
+                    /* Updated counts when date has changed */
+                    const updatedCount =
+                      updatedCounts.find(u => u.term === term)?.count || 0;
+
+                    const barWidth = xScale.bandwidth();
+                    const barX = xScale(i);
+
+                    return (
+                      <React.Fragment key={`invisible-bar-${term}`}>
+                        <Bar
+                          className='hover-bar'
+                          x={barX}
+                          y={0}
+                          width={barWidth}
+                          height={height}
+                          fill='transparent'
+                          onMouseOver={e =>
+                            handleMouseOver(e, {
+                              ...d,
+                              updatedCount,
+                            })
+                          }
+                          onMouseOut={hideTooltip}
+                          style={{ cursor: 'pointer' }}
+                          onClick={() => {
+                            const year = term.split('-')[0];
+                            handleClick([`${year}-01-01`, `${year}-12-31`]);
+                          }}
+                        />
+                      </React.Fragment>
+                    );
+                  })}
+                </Group>
+
+                {/* x-axis */}
+                <Group left={20}>
+                  <AxisBottom
+                    top={height}
+                    scale={xScale}
+                    tickValues={xAxisTickValues}
+                    tickFormat={i => visibleData[i as number]?.label || ''}
+                    stroke={theme.colors.gray[300]}
+                    tickStroke={theme.colors.gray[300]}
+                    tickLabelProps={() => ({
+                      fill: theme.colors.gray[600],
+                      fontSize: 13,
+                      textAnchor: 'middle',
+                    })}
+                  />
+                </Group>
               </Box>
+            </Flex>
+
+            {/* brush */}
+            <Flex w='100%' justifyContent='center' mt={1}>
+              <Brush
+                width={width}
+                maxBarWidth={params.maxBarWidth}
+                padding={params.padding}
+              />
             </Flex>
           </Box>
         ) : (

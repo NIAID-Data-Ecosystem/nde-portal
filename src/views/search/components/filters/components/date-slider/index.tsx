@@ -156,7 +156,7 @@ export const FiltersDateSlider: React.FC<FiltersDateSliderProps> = ({
           )}
         </Flex>
         {/* Calendar Inputs */}
-        <Flex bg='blackAlpha.50' flexDirection='column' p={4}>
+        <Flex bg='blackAlpha.50' flexDirection='column' px={4} py={2}>
           <DatePicker
             colorScheme={colorScheme}
             selectedDates={selectedDates}

@@ -45,7 +45,7 @@ export const DatePicker: React.FC<DatePickerProps> = ({
       id='date-picker'
       as='form'
       w='100%'
-      mt={4}
+      mt={0}
       flexDirection='column'
       onSubmit={e => {
         e.preventDefault();
