@@ -222,7 +222,6 @@ export const BrushComponent = ({
   );
 };
 
-// A custom brush handle that is used to render the left and right handles of the brush.
 function BrushHandle({
   x,
   height,
@@ -235,6 +234,7 @@ function BrushHandle({
   const pathWidth = 8;
   const pathHeight = 15;
   const labelPadding = 6; // Spacing between handle and label
+  const LABEL_VERTICAL_ADJUSTMENT = (height - pathHeight) / 8;
 
   if (!isBrushActive) {
     return null;
@@ -259,21 +259,19 @@ function BrushHandle({
 
   return (
     <Group left={leftPosition} top={(height - pathHeight) / 2}>
-      {/* Handle rectangle */}
+      {/* Handle rectangle with grip lines */}
       <path
-        fill={theme.colors.secondary?.[500]}
-        d={`M -${pathWidth / 2} 0 L ${pathWidth / 2} 0 L ${
-          pathWidth / 2
-        } ${pathHeight} L -${pathWidth / 2} ${pathHeight} Z`}
+        fill='#f2f2f2'
+        d='M -4.5 0.5 L 3.5 0.5 L 3.5 15.5 L -4.5 15.5 L -4.5 0.5 M -1.5 4 L -1.5 12 M 0.5 4 L 0.5 12'
         strokeWidth='1'
-        stroke={theme.colors.white}
+        stroke='#999'
         style={{ cursor: 'ew-resize' }}
       />
 
       {/* Year label positioned next to the handle */}
       <text
         x={labelX}
-        y={pathHeight / 2}
+        y={pathHeight / 2 + LABEL_VERTICAL_ADJUSTMENT}
         textAnchor={labelAnchor}
         dominantBaseline='middle'
         fill={theme.colors.secondary?.[500]}
