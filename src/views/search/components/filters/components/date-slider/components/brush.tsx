@@ -1,7 +1,7 @@
 import React, { useMemo, useRef, useCallback, useState } from 'react';
 import { Box } from '@chakra-ui/react';
 import { Group } from '@visx/group';
-import { scaleLinear } from '@visx/scale';
+import { scaleBand } from '@visx/scale';
 import { AxisBottom } from '@visx/axis';
 import { Brush } from '@visx/brush';
 import { Bounds } from '@visx/brush/lib/types';
@@ -25,10 +25,10 @@ export const BrushComponent = ({
   maxBarWidth,
   padding,
 }: BrushComponentProps) => {
-  const { allData } = useDateRangeContext();
+  const { allData, setDateRange } = useDateRangeContext();
   const brushRef = useRef<BaseBrush | null>(null);
 
-  // Track current brush selection years
+  // Track current brush selection years for handle labels
   const [brushYears, setBrushYears] = useState<{
     startYear: string;
     endYear: string;
@@ -54,52 +54,41 @@ export const BrushComponent = ({
       : availableWidth;
   }, [allData, width, maxBarWidth]);
 
+  // Use band scale with years as domain
   const xScale = useMemo(() => {
     if (!allData || allData.length === 0) return null;
-    return scaleLinear<number>({
-      domain: [0, chartWidth],
+    return scaleBand<string>({
+      domain: allData.map(d => d.label),
       range: [0, chartWidth],
+      padding: 0,
+      paddingOuter: 0,
     });
   }, [allData, chartWidth]);
 
-  // Helper to convert pixel position to data index
-  const pixelToIndex = useCallback(
-    (pixelPos: number): number => {
-      if (!allData || allData.length === 0 || chartWidth === 0) return 0;
-      const ratio = pixelPos / chartWidth;
-      return ratio * (allData.length - 1);
-    },
-    [allData, chartWidth],
-  );
+  // Dummy y-scale for brush (not used for positioning)
+  const yScale = useMemo(() => {
+    return scaleBand<number>({
+      domain: [0, 1],
+      range: [0, BRUSH_HEIGHT],
+    });
+  }, []);
 
-  // Helper to convert data index to pixel position
-  const indexToPixel = useCallback(
-    (index: number): number => {
-      if (!allData || allData.length === 0) return 0;
-      return (index / (allData.length - 1)) * chartWidth;
-    },
-    [allData, chartWidth],
-  );
-
-  // Only show ticks at the extremes (first and last index in pixel space)
+  // Only show ticks at the extremes
   const tickValues = useMemo(() => {
     if (!allData || allData.length === 0) return [];
-    if (allData.length === 1) return [0];
-    return [0, chartWidth];
-  }, [allData, chartWidth]);
+    if (allData.length === 1) return [allData[0].label];
+    return [allData[0].label, allData[allData.length - 1].label];
+  }, [allData]);
 
   // Format ticks to show earliest year and current year
   const tickFormat = useMemo(() => {
     if (!earliestYear) return () => '';
-
-    return (value: number | { valueOf(): number }) => {
-      const pixelPos = typeof value === 'number' ? value : value.valueOf();
-      const index = Math.round(pixelToIndex(pixelPos));
-      if (index === 0) return earliestYear;
-      if (index === allData.length - 1) return currentYear;
+    return (value: string) => {
+      if (value === allData[0]?.label) return earliestYear;
+      if (value === allData[allData.length - 1]?.label) return currentYear;
       return '';
     };
-  }, [earliestYear, currentYear, allData, pixelToIndex]);
+  }, [earliestYear, currentYear, allData]);
 
   // Find the index for year 2000 or the closest year after it
   const initialStartIndex = useMemo(() => {
@@ -116,11 +105,16 @@ export const BrushComponent = ({
     if (!xScale || !allData || allData.length === 0 || chartWidth === 0)
       return null;
 
+    const startYear = allData[initialStartIndex]?.label;
+    const endYear = allData[allData.length - 1]?.label;
+
+    if (!startYear || !endYear) return null;
+
     return {
-      start: { x: indexToPixel(initialStartIndex) },
-      end: { x: indexToPixel(allData.length - 1) },
+      start: { x: xScale(startYear) || 0 },
+      end: { x: (xScale(endYear) || 0) + xScale.bandwidth() },
     };
-  }, [xScale, allData, initialStartIndex, indexToPixel, chartWidth]);
+  }, [xScale, allData, initialStartIndex, chartWidth]);
 
   // Set initial brush years
   React.useEffect(() => {
@@ -134,31 +128,31 @@ export const BrushComponent = ({
 
   const onBrushChange = useCallback(
     (domain: Bounds | null) => {
-      if (!domain || !allData) return;
+      if (!domain || !allData || !xScale) return;
 
-      // Convert pixel positions to data indices
-      const rawStartIndex = pixelToIndex(domain.x0);
-      const rawEndIndex = pixelToIndex(domain.x1);
+      // Get the selected years from xValues
+      const selectedYears = (domain.xValues as string[]) || [];
 
-      // Round to nearest integer and clamp to valid range
-      const startIndex = Math.max(
-        0,
-        Math.min(Math.round(rawStartIndex), allData.length - 1),
-      );
-      const endIndex = Math.max(
-        0,
-        Math.min(Math.round(rawEndIndex), allData.length - 1),
-      );
+      if (selectedYears.length === 0) return;
 
-      const startYear = allData[startIndex]?.label || '';
-      const endYear = allData[endIndex]?.label || '';
+      const startYear = selectedYears[0];
+      const endYear = selectedYears[selectedYears.length - 1];
 
+      // Update brush year labels
       setBrushYears({
         startYear,
         endYear,
       });
+
+      // Find indices in allData
+      const startIndex = allData.findIndex(d => d.label === startYear);
+      const endIndex = allData.findIndex(d => d.label === endYear);
+
+      if (startIndex !== -1 && endIndex !== -1) {
+        setDateRange([startIndex, endIndex]);
+      }
     },
-    [allData, pixelToIndex],
+    [allData, xScale, setDateRange],
   );
 
   if (
@@ -182,7 +176,7 @@ export const BrushComponent = ({
         {/* Brush selection area */}
         <Brush
           xScale={xScale}
-          yScale={scaleLinear({ range: [0, BRUSH_HEIGHT], domain: [0, 1] })}
+          yScale={yScale}
           width={chartWidth}
           height={BRUSH_HEIGHT}
           innerRef={brushRef}
