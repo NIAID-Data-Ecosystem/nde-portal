@@ -131,7 +131,9 @@ export const BrushComponent = ({
       if (!domain || !allData || !xScale) return;
 
       // Get the selected years from xValues
-      const selectedYears = (domain.xValues as string[]) || [];
+      const selectedYears = ((domain.xValues as string[]) || []).filter(
+        (year): year is string => year != null,
+      );
 
       if (selectedYears.length === 0) return;
 
