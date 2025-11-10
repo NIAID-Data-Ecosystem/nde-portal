@@ -14,7 +14,7 @@ import {
   Tooltip,
   UnorderedList,
 } from '@chakra-ui/react';
-import { useLocalStorage } from 'usehooks-ts';
+import { useLocalStorage, useReadLocalStorage } from 'usehooks-ts';
 import {
   DropdownInput,
   DropdownInputProps,
@@ -114,6 +114,7 @@ const SearchBar = ({
   const { isOpen, setIsOpen } = useDropdownContext();
   // Search term entered in search bar.
   const [searchTerm, setSearchTerm] = useState<string>('');
+  const enableAISearch = useReadLocalStorage('enableAISearch');
 
   /****** Handle query filters ******/
   const [queryFilters, setQueryFilters] = useState<
@@ -161,6 +162,7 @@ const SearchBar = ({
           }),
         }),
         ...(tab && { tab }),
+        enableAISearch: enableAISearch ? 'true' : 'false',
       },
     });
   };
