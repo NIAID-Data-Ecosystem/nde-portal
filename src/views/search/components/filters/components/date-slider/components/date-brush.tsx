@@ -10,21 +10,16 @@ import { BrushHandleRenderProps } from '@visx/brush/lib/BrushHandle';
 import { theme } from 'src/theme';
 import { useDateRangeContext } from '../hooks/useDateRangeContext';
 
-interface BrushComponentProps {
+interface DateBrushProps {
   width: number;
   maxBarWidth: number;
-  padding: number;
 }
 
 const BRUSH_HEIGHT = 30;
 const AXIS_HEIGHT = 20;
 const TOTAL_HEIGHT = BRUSH_HEIGHT + AXIS_HEIGHT;
 
-export const BrushComponent = ({
-  width,
-  maxBarWidth,
-  padding,
-}: BrushComponentProps) => {
+export const DateBrush = ({ width, maxBarWidth }: DateBrushProps) => {
   const { allData, setDateRange } = useDateRangeContext();
   const brushRef = useRef<BaseBrush | null>(null);
 
@@ -281,4 +276,4 @@ function BrushHandle({
   );
 }
 
-export { BrushComponent as Brush };
+export default DateBrush;

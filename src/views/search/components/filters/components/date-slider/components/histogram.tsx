@@ -10,7 +10,7 @@ import { formatNumber } from 'src/utils/helpers';
 import { addMissingYears } from '../helpers';
 import { useDateRangeContext } from '../hooks/useDateRangeContext';
 import { FacetTermWithDetails } from '../../../types';
-import { Brush } from './brush';
+import { DateBrush } from './date-brush';
 
 interface HistogramProps {
   updatedData: FacetTermWithDetails[];
@@ -343,11 +343,7 @@ const Histogram: React.FC<HistogramProps> = ({
 
             {/* brush */}
             <Flex w='100%' justifyContent='center' mt={1}>
-              <Brush
-                width={width}
-                maxBarWidth={params.maxBarWidth}
-                padding={params.padding}
-              />
+              <DateBrush width={width} maxBarWidth={params.maxBarWidth} />
             </Flex>
           </Box>
         ) : (
