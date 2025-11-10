@@ -24,7 +24,7 @@ import { Link, LinkProps } from 'src/components/link';
 import SITE_CONFIG from 'configs/site.config.json';
 import { SiteConfig } from '../types';
 import Tooltip from 'src/components/tooltip';
-import { useState } from 'react';
+import { useLocalStorage } from 'usehooks-ts';
 
 const siteConfig = SITE_CONFIG as SiteConfig;
 
@@ -132,7 +132,13 @@ export const AIToggle: React.FC<AIToggleProps> = ({
   ),
   ...rest
 }) => {
-  const [isChecked, setChecked] = useState(false);
+  // Store the whether AI search is enabled in local storage.
+  const [enableAiSearch, setEnableAiSearch] = useLocalStorage<boolean>(
+    'enableAISearch',
+    () => false,
+    { initializeWithValue: false },
+  );
+
   return (
     <HStack
       as={FormControl}
@@ -144,8 +150,8 @@ export const AIToggle: React.FC<AIToggleProps> = ({
       <Switch
         id={id}
         colorScheme={colorScheme}
-        isChecked={isChecked}
-        onChange={e => setChecked(e.target.checked)}
+        isChecked={enableAiSearch}
+        onChange={e => setEnableAiSearch(e.target.checked)}
         {...rest}
       />
       <Tooltip
@@ -170,7 +176,7 @@ export const AIToggle: React.FC<AIToggleProps> = ({
           <Icon as={FaRegCircleQuestion} boxSize={4} color='page.placeholder' />
         </FormLabel>
       </Tooltip>
-      {isChecked && (
+      {enableAiSearch && (
         <Tag
           variant='subtle'
           borderRadius='full'
