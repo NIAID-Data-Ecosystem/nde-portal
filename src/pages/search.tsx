@@ -132,7 +132,10 @@ const Search: NextPage<{
                     />
                   </Flex>
                   {/* Heading: Showing results for... */}
-                  <SearchResultsHeader querystring={queryParams.q} />
+                  <SearchResultsHeader
+                    querystring={queryParams.q}
+                    showAIBanner={router.query.enableAISearch === 'true'}
+                  />
                 </Flex>
 
                 {/* Filter tags : Tags with the names of the currently selected filters */}
