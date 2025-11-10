@@ -14,6 +14,10 @@ export interface ContextProps {
   setIsDragging: React.Dispatch<
     React.SetStateAction<ContextProps['isDragging']>
   >;
+  onBrushChangeEnd: ((startYear: string, endYear: string) => void) | null;
+  setOnBrushChangeEnd: React.Dispatch<
+    React.SetStateAction<((startYear: string, endYear: string) => void) | null>
+  >;
 }
 
 export const defaultContext: ContextProps = {
@@ -26,6 +30,8 @@ export const defaultContext: ContextProps = {
   setDateRange: () => {},
   isDragging: false,
   setIsDragging: () => {},
+  onBrushChangeEnd: null,
+  setOnBrushChangeEnd: () => {},
 };
 
 const DateRangeContext = React.createContext({
@@ -53,6 +59,9 @@ export const DateRangeSlider: React.FC<{
   const [initialData, setInitialData] = useState<FilterItem[]>([]);
   const [isDragging, setIsDragging] = useState(false);
   const [dateRange, setDateRange] = useState<number[]>([]);
+  const [onBrushChangeEnd, setOnBrushChangeEnd] = useState<
+    ((startYear: string, endYear: string) => void) | null
+  >(null);
 
   useEffect(() => {
     if (!isLoading) {
@@ -154,6 +163,8 @@ export const DateRangeSlider: React.FC<{
     setDateRange,
     isDragging,
     setIsDragging,
+    onBrushChangeEnd,
+    setOnBrushChangeEnd,
   };
 
   return (

@@ -1,4 +1,10 @@
-import React, { useMemo, useRef, useCallback, useState } from 'react';
+import React, {
+  useMemo,
+  useRef,
+  useCallback,
+  useState,
+  useEffect,
+} from 'react';
 import { Box } from '@chakra-ui/react';
 import { Group } from '@visx/group';
 import { scaleBand } from '@visx/scale';
@@ -20,7 +26,8 @@ const AXIS_HEIGHT = 20;
 const TOTAL_HEIGHT = BRUSH_HEIGHT + AXIS_HEIGHT;
 
 export const DateBrush = ({ width, maxBarWidth }: DateBrushProps) => {
-  const { allData, setDateRange } = useDateRangeContext();
+  const { allData, setDateRange, onBrushChangeEnd, setIsDragging } =
+    useDateRangeContext();
   const brushRef = useRef<BaseBrush | null>(null);
 
   // Track current brush selection years for handle labels
@@ -112,7 +119,7 @@ export const DateBrush = ({ width, maxBarWidth }: DateBrushProps) => {
   }, [xScale, allData, initialStartIndex, chartWidth]);
 
   // Set initial brush years
-  React.useEffect(() => {
+  useEffect(() => {
     if (allData && allData.length > 0 && !brushYears) {
       setBrushYears({
         startYear: allData[initialStartIndex]?.label || earliestYear || '',
@@ -135,13 +142,13 @@ export const DateBrush = ({ width, maxBarWidth }: DateBrushProps) => {
       const startYear = selectedYears[0];
       const endYear = selectedYears[selectedYears.length - 1];
 
-      // Update brush year labels
+      // Update brush year labels for visual feedback
       setBrushYears({
         startYear,
         endYear,
       });
 
-      // Find indices in allData
+      // Find indices in allData - update dateRange for visual feedback
       const startIndex = allData.findIndex(d => d.label === startYear);
       const endIndex = allData.findIndex(d => d.label === endYear);
 
@@ -151,6 +158,33 @@ export const DateBrush = ({ width, maxBarWidth }: DateBrushProps) => {
     },
     [allData, xScale, setDateRange],
   );
+
+  // Handle brush interaction end
+  const handleBrushEnd = useCallback(
+    (domain: Bounds | null) => {
+      setIsDragging(false);
+
+      if (!domain || !allData || !xScale || !onBrushChangeEnd) return;
+
+      const selectedYears = ((domain.xValues as string[]) || []).filter(
+        (year): year is string => year != null,
+      );
+
+      if (selectedYears.length === 0) return;
+
+      const startYear = selectedYears[0];
+      const endYear = selectedYears[selectedYears.length - 1];
+
+      // Trigger the callback to update filters
+      onBrushChangeEnd(startYear, endYear);
+    },
+    [allData, xScale, onBrushChangeEnd, setIsDragging],
+  );
+
+  // Handle brush interaction start
+  const handleBrushStart = useCallback(() => {
+    setIsDragging(true);
+  }, [setIsDragging]);
 
   if (
     !allData ||
@@ -181,6 +215,8 @@ export const DateBrush = ({ width, maxBarWidth }: DateBrushProps) => {
           brushDirection='horizontal'
           initialBrushPosition={initialBrushPosition}
           onChange={onBrushChange}
+          onBrushEnd={handleBrushEnd}
+          onBrushStart={handleBrushStart}
           onClick={() => {}}
           selectedBoxStyle={{
             fill: theme.colors.secondary?.[500],
