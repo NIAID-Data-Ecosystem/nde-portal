@@ -89,40 +89,7 @@ const Home: NextPage<{
                   <Search.AIToggle />
                   <Search.AdvancedSearchLink />
                 </Flex>
-                <Search.Input
-                  placeholder='Search for resources'
-                  ariaLabel='Search for resources'
-                  size='md'
-                  showOptionsMenu
-                  showSearchHistory
-                  optionMenuProps={{
-                    buttonProps: {
-                      borderRadius: 'full',
-                      colorScheme: 'primary',
-                      my: 2,
-                    },
-                    label: 'Type',
-                    description: SCHEMA_DEFINITIONS['type'].abstract['Dataset'],
-                    showSelectAll: true,
-                    options: [
-                      {
-                        name: 'Computational Tool Repository',
-                        value: 'ComputationalTool',
-                        property: '@type',
-                      },
-                      {
-                        name: 'Dataset Repository',
-                        value: 'Dataset',
-                        property: '@type',
-                      },
-                      {
-                        name: 'Resource Catalog',
-                        value: 'ResourceCatalog',
-                        property: '@type',
-                      },
-                    ],
-                  }}
-                />
+                <Search.Input />
               </Flex>
               <Box>
                 <Text fontWeight='semibold'>Try these searches:</Text>
