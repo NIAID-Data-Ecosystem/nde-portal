@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { addMissingYears } from '../helpers';
+import { addMissingYears, getYear } from '../helpers';
 import { FacetTermWithDetails, FilterItem } from '../../../types';
 
 export interface ContextProps {
@@ -75,15 +75,16 @@ export const DateRangeSlider: React.FC<{
   // All available data
   // Cap at current year to prevent future dates
   const allData = useMemo(() => {
-    const filtered = initialData.filter(d => {
-      // Remove invalid entries
-      if (d.term === '-_exists_' || d.count === 0) return false;
-
-      // Remove future years
-      const year = parseInt(d.term.split('-')[0], 10);
-      return year <= currentYear;
+    const filtered = (initialData ?? []).filter(d => {
+      if (!d || d.term === '-_exists_' || d.count === 0) return false;
+      const y = getYear(d.term);
+      return y !== null && y <= currentYear;
     });
-    return addMissingYears(filtered || []);
+
+    return addMissingYears(filtered, {
+      endYear: currentYear,
+      makeLabel: y => String(y),
+    });
   }, [initialData, currentYear]);
 
   // Filtered data based on selected date range

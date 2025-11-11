@@ -1,26 +1,57 @@
 import { FacetTermWithDetails } from '../../types';
 
-export const addMissingYears = (dates: FacetTermWithDetails[]) => {
-  //  Add in missing years (with a count of 0)
-  dates
-    .sort((a, b) => new Date(a.term).valueOf() - new Date(b.term).valueOf())
-    .forEach(({ term }, i) => {
-      if (term === '-_exists_' || dates[i + 1]?.term === '-_exists_') {
-        return;
-      }
-      const year = term.split('-')[0];
-      const nextYear =
-        i < dates.length ? +dates[i + 1]?.term.split('-')[0] : null;
+export const getYear = (term: string): number | null => {
+  if (!term || term === '-_exists_') return null;
+  const y = parseInt(String(term).split('-')[0], 10);
+  return Number.isFinite(y) ? y : null;
+};
 
-      // Check if the next value in the array is more than 1 year larger than the current value
-      if (nextYear && +nextYear - +year > 1) {
-        dates.splice(i + 1, 0, {
-          count: 0,
-          term: `${+year + 1}-01-01`,
-          label: `${+year + 1}`,
-        });
-      }
-    });
+const normalizeTermForYear = (year: number) => `${year}-01-01`;
 
-  return dates;
+export const addMissingYears = (
+  dates: FacetTermWithDetails[],
+  opts?: {
+    /** If provided, clamp the filled range to this start year(inclusive) or end year (inclusive). */
+    endYear?: number;
+    startYear?: number;
+    makeLabel?: (year: number) => string;
+  },
+): FacetTermWithDetails[] => {
+  const makeLabel = opts?.makeLabel ?? ((y: number) => String(y));
+
+  const valid = dates.filter(
+    d => d && d.term !== '-_exists_' && getYear(d.term) !== null,
+  );
+
+  // Index by year so we can quickly check whether a year already exists.
+  const yearToEntry = new Map<number, FacetTermWithDetails>();
+  for (const d of valid) {
+    const y = getYear(d.term)!;
+    if (!yearToEntry.has(y)) {
+      yearToEntry.set(y, d);
+    }
+  }
+
+  if (yearToEntry.size === 0) return [];
+
+  const sortedYears = Array.from(yearToEntry.keys()).sort((a, b) => a - b);
+  const start = opts?.startYear ?? sortedYears[0];
+  const end = opts?.endYear ?? sortedYears[sortedYears.length - 1];
+
+  const output: FacetTermWithDetails[] = [];
+  for (let y = start; y <= end; y += 1) {
+    const existing = yearToEntry.get(y);
+    if (existing) {
+      output.push(existing);
+    } else {
+      // Create a zero-count placeholder for the missing year.
+      output.push({
+        term: normalizeTermForYear(y),
+        label: makeLabel(y),
+        count: 0,
+      });
+    }
+  }
+
+  return output;
 };
