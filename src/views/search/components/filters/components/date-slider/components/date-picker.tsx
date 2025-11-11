@@ -40,6 +40,17 @@ export const DatePicker: React.FC<DatePickerProps> = ({
     setSelected(selectedDates);
   }, [selectedDates]);
 
+  // Reset filter to use earliest year from dataset
+  const handleReset = () => {
+    const earliestYear =
+      allData && allData.length > 0
+        ? allData[0].label
+        : new Date().getFullYear().toString();
+    const currentYear = new Date().getFullYear();
+
+    handleSelectedFilter([`${earliestYear}-01-01`, `${currentYear}-12-31`]);
+  };
+
   return (
     <Flex
       id='date-picker'
@@ -127,7 +138,7 @@ export const DatePicker: React.FC<DatePickerProps> = ({
           size='sm'
           variant='outline'
           colorScheme={colorScheme as string}
-          onClick={() => resetFilter()}
+          onClick={handleReset}
           isDisabled={isDisabled || !selectedDates.length}
           mx={1}
         >

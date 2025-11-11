@@ -2,7 +2,6 @@ import React, { useMemo, useEffect } from 'react';
 import { omit } from 'lodash';
 import dynamic from 'next/dynamic';
 import { Box, Checkbox, Flex, Heading, Spinner, Text } from '@chakra-ui/react';
-import { Slider } from './components/slider';
 import { DatePicker } from './components/date-picker';
 import { formatNumber } from 'src/utils/helpers';
 import {
@@ -146,14 +145,11 @@ const FiltersDateSliderInner: React.FC<FiltersDateSliderProps> = ({
           </Flex>
         )}
         {showHistogram ? (
-          // Histogram for resources grouped by year
+          // Histogram for resources grouped by year with embedded brush control
           <Histogram
             updatedData={selectedData}
             handleClick={handleSelectedFilter}
-          >
-            {/* Slider for choosing the date range. */}
-            <Slider onChangeEnd={handleSelectedFilter} />
-          </Histogram>
+          />
         ) : (
           !isLoading &&
           !isUpdating &&
@@ -188,7 +184,7 @@ const FiltersDateSliderInner: React.FC<FiltersDateSliderProps> = ({
             else if (selectedDates.includes('_exists_')) {
               updatedDates = selectedDates.filter(d => !d.includes('_exists_'));
             }
-            //user toggles this when dates are selected and they also want to show resources with no dates.
+            // user toggles this when dates are selected and they also want to show resources with no dates.
             else {
               if (updatedDates.includes('-_exists_')) {
                 updatedDates = selectedDates.filter(

@@ -26,7 +26,7 @@ const AXIS_HEIGHT = 20;
 const TOTAL_HEIGHT = BRUSH_HEIGHT + AXIS_HEIGHT;
 
 export const DateBrush = ({ width, maxBarWidth }: DateBrushProps) => {
-  const { allData, setDateRange, onBrushChangeEnd, setIsDragging } =
+  const { allData, dateRange, setDateRange, onBrushChangeEnd, setIsDragging } =
     useDateRangeContext();
   const brushRef = useRef<BaseBrush | null>(null);
 
@@ -35,6 +35,15 @@ export const DateBrush = ({ width, maxBarWidth }: DateBrushProps) => {
     startYear: string;
     endYear: string;
   } | null>(null);
+
+  // Track if user is currently interacting with brush
+  const [isUserInteracting, setIsUserInteracting] = useState(false);
+
+  // Track the external update counter to force remounts
+  const [externalUpdateCounter, setExternalUpdateCounter] = useState(0);
+
+  // Track the last dateRange that was applied from user interaction
+  const lastUserDateRange = useRef<number[] | null>(null);
 
   // Get the earliest year from allData
   const earliestYear = useMemo(() => {
@@ -92,23 +101,19 @@ export const DateBrush = ({ width, maxBarWidth }: DateBrushProps) => {
     };
   }, [earliestYear, currentYear, allData]);
 
-  // Find the index for year 2000 or the closest year after it
-  const initialStartIndex = useMemo(() => {
-    if (!allData || allData.length === 0) return 0;
-    const index = allData.findIndex(d => {
-      const year = parseInt(d.label, 10);
-      return year >= 2000;
-    });
-    return index === -1 ? 0 : index;
-  }, [allData]);
-
-  // Initial brush selection bounds (2000 to current year)
-  const initialBrushPosition = useMemo(() => {
-    if (!xScale || !allData || allData.length === 0 || chartWidth === 0)
+  // Calculate brush position from dateRange
+  const calculatedBrushPosition = useMemo(() => {
+    if (
+      !xScale ||
+      !allData ||
+      allData.length === 0 ||
+      chartWidth === 0 ||
+      dateRange.length !== 2
+    )
       return null;
 
-    const startYear = allData[initialStartIndex]?.label;
-    const endYear = allData[allData.length - 1]?.label;
+    const startYear = allData[dateRange[0]]?.label;
+    const endYear = allData[dateRange[1]]?.label;
 
     if (!startYear || !endYear) return null;
 
@@ -116,17 +121,45 @@ export const DateBrush = ({ width, maxBarWidth }: DateBrushProps) => {
       start: { x: xScale(startYear) || 0 },
       end: { x: (xScale(endYear) || 0) + xScale.bandwidth() },
     };
-  }, [xScale, allData, initialStartIndex, chartWidth]);
+  }, [xScale, allData, dateRange, chartWidth]);
 
-  // Set initial brush years
+  // Detect external changes to dateRange (not from user interaction)
   useEffect(() => {
-    if (allData && allData.length > 0 && !brushYears) {
-      setBrushYears({
-        startYear: allData[initialStartIndex]?.label || earliestYear || '',
-        endYear: allData[allData.length - 1]?.label || currentYear,
-      });
+    if (isUserInteracting) return;
+
+    // Check if dateRange changed from an external source
+    if (lastUserDateRange.current === null) {
+      // First render: set initial state
+      lastUserDateRange.current = [...dateRange];
+      return;
     }
-  }, [allData, initialStartIndex, brushYears, earliestYear, currentYear]);
+
+    const hasChanged =
+      lastUserDateRange.current[0] !== dateRange[0] ||
+      lastUserDateRange.current[1] !== dateRange[1];
+
+    if (hasChanged) {
+      // External change detected: increment counter to force remount
+      setExternalUpdateCounter(prev => prev + 1);
+      lastUserDateRange.current = [...dateRange];
+
+      // Update brush years immediately
+      if (allData && dateRange.length === 2) {
+        const startYear = allData[dateRange[0]]?.label;
+        const endYear = allData[dateRange[1]]?.label;
+
+        if (startYear && endYear) {
+          setBrushYears({
+            startYear,
+            endYear,
+          });
+        }
+      }
+    }
+  }, [dateRange, isUserInteracting, allData]);
+
+  // Key for forcing Brush to remount on external changes only
+  const brushKey = `brush-${externalUpdateCounter}`;
 
   const onBrushChange = useCallback(
     (domain: Bounds | null) => {
@@ -148,7 +181,7 @@ export const DateBrush = ({ width, maxBarWidth }: DateBrushProps) => {
         endYear,
       });
 
-      // Find indices in allData - update dateRange for visual feedback
+      // Find indices in allData / update dateRange for visual feedback
       const startIndex = allData.findIndex(d => d.label === startYear);
       const endIndex = allData.findIndex(d => d.label === endYear);
 
@@ -163,6 +196,7 @@ export const DateBrush = ({ width, maxBarWidth }: DateBrushProps) => {
   const handleBrushEnd = useCallback(
     (domain: Bounds | null) => {
       setIsDragging(false);
+      setIsUserInteracting(false);
 
       if (!domain || !allData || !xScale || !onBrushChangeEnd) return;
 
@@ -175,6 +209,13 @@ export const DateBrush = ({ width, maxBarWidth }: DateBrushProps) => {
       const startYear = selectedYears[0];
       const endYear = selectedYears[selectedYears.length - 1];
 
+      // Update lastUserDateRange to reflect the user's selection
+      const startIndex = allData.findIndex(d => d.label === startYear);
+      const endIndex = allData.findIndex(d => d.label === endYear);
+      if (startIndex !== -1 && endIndex !== -1) {
+        lastUserDateRange.current = [startIndex, endIndex];
+      }
+
       // Trigger the callback to update filters
       onBrushChangeEnd(startYear, endYear);
     },
@@ -184,6 +225,7 @@ export const DateBrush = ({ width, maxBarWidth }: DateBrushProps) => {
   // Handle brush interaction start
   const handleBrushStart = useCallback(() => {
     setIsDragging(true);
+    setIsUserInteracting(true);
   }, [setIsDragging]);
 
   if (
@@ -191,7 +233,7 @@ export const DateBrush = ({ width, maxBarWidth }: DateBrushProps) => {
     allData.length === 0 ||
     !xScale ||
     !earliestYear ||
-    !initialBrushPosition
+    !calculatedBrushPosition
   ) {
     return null;
   }
@@ -204,8 +246,9 @@ export const DateBrush = ({ width, maxBarWidth }: DateBrushProps) => {
       style={{ overflow: 'visible' }}
     >
       <Group left={horizontalPadding / 2}>
-        {/* Brush selection area */}
+        {/* Brush selection area. key forces remount only on external changes.*/}
         <Brush
+          key={brushKey}
           xScale={xScale}
           yScale={yScale}
           width={chartWidth}
@@ -213,7 +256,7 @@ export const DateBrush = ({ width, maxBarWidth }: DateBrushProps) => {
           innerRef={brushRef}
           resizeTriggerAreas={['left', 'right']}
           brushDirection='horizontal'
-          initialBrushPosition={initialBrushPosition}
+          initialBrushPosition={calculatedBrushPosition}
           onChange={onBrushChange}
           onBrushEnd={handleBrushEnd}
           onBrushStart={handleBrushStart}
@@ -249,6 +292,7 @@ export const DateBrush = ({ width, maxBarWidth }: DateBrushProps) => {
   );
 };
 
+// Handle rendering
 function BrushHandle({
   x,
   height,
@@ -260,10 +304,10 @@ function BrushHandle({
 }) {
   const pathWidth = 8;
   const pathHeight = 15;
-  const labelPadding = 6; // Spacing between handle and label
+  const labelPadding = 6;
   const LABEL_VERTICAL_ADJUSTMENT = (height - pathHeight) / 8;
 
-  if (!isBrushActive) {
+  if (!isBrushActive || !brushYears) {
     return null;
   }
 
@@ -271,11 +315,7 @@ function BrushHandle({
   const leftPosition = isLeftHandle ? x + pathWidth / 4 : x + pathWidth / 4;
 
   // Get the year label for the handle
-  const yearLabel = brushYears
-    ? isLeftHandle
-      ? brushYears.startYear
-      : brushYears.endYear
-    : '';
+  const yearLabel = isLeftHandle ? brushYears.startYear : brushYears.endYear;
 
   // Calculate label position
   const labelX = isLeftHandle

@@ -15,14 +15,9 @@ import { DateBrush } from './date-brush';
 interface HistogramProps {
   updatedData: FacetTermWithDetails[];
   handleClick: (args: string[]) => void;
-  children: React.ReactNode;
 }
 
-const Histogram: React.FC<HistogramProps> = ({
-  children,
-  updatedData,
-  handleClick,
-}) => {
+const Histogram: React.FC<HistogramProps> = ({ updatedData, handleClick }) => {
   const { allData, filteredData, dates } = useDateRangeContext();
 
   // Filter updatedData to remove any future years
@@ -135,7 +130,7 @@ const Histogram: React.FC<HistogramProps> = ({
     [visibleData, height],
   );
 
-  // Set svg width to the exact width of the barchart
+  // Set svg width
   const svgWidth = useMemo(
     () => (xScale(visibleData.length - 1) || 0) + xScale.bandwidth(),
     [visibleData.length, xScale],
@@ -151,7 +146,7 @@ const Histogram: React.FC<HistogramProps> = ({
     });
   }, [sanitizedUpdatedData, currentYear]);
 
-  // Calculate tick values for x-axis - only show min and max
+  // Calculate tick values for x-axis. Only show min and max.
   const xAxisTickValues = useMemo(() => {
     if (visibleData.length === 0) return [];
     if (visibleData.length === 1) return [0];
@@ -313,6 +308,7 @@ const Histogram: React.FC<HistogramProps> = ({
                           onMouseOut={hideTooltip}
                           style={{ cursor: 'pointer' }}
                           onClick={() => {
+                            // Set filter to single year
                             const year = term.split('-')[0];
                             handleClick([`${year}-01-01`, `${year}-12-31`]);
                           }}
