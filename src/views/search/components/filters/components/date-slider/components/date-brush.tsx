@@ -71,7 +71,7 @@ export const DateBrush = ({ width, maxBarWidth }: DateBrushProps) => {
     return scaleBand<string>({
       domain: allData.map(d => d.label),
       range: [0, chartWidth],
-      padding: 0,
+      padding: 1,
       paddingOuter: 0,
     });
   }, [allData, chartWidth]);
@@ -248,7 +248,7 @@ export const DateBrush = ({ width, maxBarWidth }: DateBrushProps) => {
       <Group left={horizontalPadding / 2}>
         {/* Brush selection area. key forces remount only on external changes.*/}
         <Brush
-          key={brushKey}
+          // key={brushKey}
           xScale={xScale}
           yScale={yScale}
           width={chartWidth}
@@ -260,7 +260,7 @@ export const DateBrush = ({ width, maxBarWidth }: DateBrushProps) => {
           onChange={onBrushChange}
           onBrushEnd={handleBrushEnd}
           onBrushStart={handleBrushStart}
-          onClick={() => {}}
+          // onClick={() => {}}
           selectedBoxStyle={{
             fill: theme.colors.secondary?.[500],
             fillOpacity: 0.3,
