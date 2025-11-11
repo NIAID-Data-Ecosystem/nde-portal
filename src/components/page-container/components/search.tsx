@@ -60,7 +60,6 @@ const Input: React.FC<Partial<SearchBarWithDropdownProps>> = ({
         buttonProps: {
           borderRadius: 'full',
           colorScheme: 'primary',
-          my: 2,
         },
         label: 'Type',
         description: SCHEMA_DEFINITIONS['type'].abstract['Dataset'],

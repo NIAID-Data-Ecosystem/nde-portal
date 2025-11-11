@@ -52,7 +52,7 @@ const SearchInput = ({
       }}
       renderSubmitButton={() => {
         return (
-          <HStack height='100%'>
+          <HStack height='100%' alignItems='flex-start'>
             {showOptionsMenu && optionMenuProps && (
               <CheckboxList {...optionMenuProps}></CheckboxList>
             )}
@@ -176,6 +176,7 @@ const SearchBar = ({
     <>
       <SearchInput
         id='search-bar'
+        colorScheme={colorScheme}
         ariaLabel={ariaLabel}
         placeholder={placeholder}
         size={size}

@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useCallback, useEffect } from 'react';
 import {
   ButtonProps,
   CloseButton,
@@ -10,6 +10,7 @@ import {
   InputProps,
   InputRightElement,
   Spinner,
+  Textarea,
   VisuallyHidden,
 } from '@chakra-ui/react';
 import { theme } from 'src/theme';
@@ -54,6 +55,8 @@ export const DropdownInput: React.FC<DropdownInputProps> = ({
   onSubmit,
 }) => {
   const inputRightRef = useRef<HTMLDivElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
   const {
     colorScheme,
     cursor,
@@ -62,6 +65,39 @@ export const DropdownInput: React.FC<DropdownInputProps> = ({
     getInputProps,
     setIsOpen,
   } = useDropdownContext();
+
+  // Auto-resize logic: reset to 3rem, then expand to scrollHeight
+  const autoResize = useCallback(() => {
+    const el = textareaRef.current;
+    if (!el) return;
+
+    // reset height to shrink if text is deleted
+    el.style.height = 'auto';
+
+    // compute line height
+    const lineHeight = parseFloat(
+      window.getComputedStyle(el).lineHeight || '20',
+    );
+    const maxHeight = lineHeight * 4; // cap at 4 rows
+
+    // adjust height up to max
+    el.style.height = `${Math.min(el.scrollHeight, maxHeight)}px`;
+
+    // show scroll if exceeding max
+    el.style.overflowY = el.scrollHeight > maxHeight ? 'auto' : 'hidden';
+  }, []);
+
+  // reset height to base size (used when clearing input)
+  const resetHeight = useCallback(() => {
+    const el = textareaRef.current;
+    if (el) el.style.height = '3rem';
+  }, []);
+
+  // Ensure correct height on initial render and whenever value changes externally
+  useEffect(() => {
+    autoResize();
+  }, [inputValue, autoResize]);
+
   return (
     <Flex
       as='form'
@@ -78,11 +114,19 @@ export const DropdownInput: React.FC<DropdownInputProps> = ({
       </VisuallyHidden>
 
       {/* Search input */}
-      <InputGroup size={size} zIndex='dropdown'>
-        {/* Loading spinner/Search icon */}
+      {/* Loading spinner/Search icon */}
+      <InputGroup
+        size={size}
+        zIndex='dropdown'
+        alignItems='flex-start'
+        border='1px solid'
+        borderColor='gray.200'
+        borderRadius='md'
+        bg='white'
+      >
         <InputLeftElement
           pointerEvents='none'
-          h='100%'
+          my={1}
           // eslint-disable-next-line react/no-children-prop
           children={
             isLoading ? (
@@ -98,13 +142,21 @@ export const DropdownInput: React.FC<DropdownInputProps> = ({
           }
         />
 
-        <Input
+        <Textarea
+          ref={textareaRef}
+          variant='unstyled'
+          resize='none'
+          overflow='hidden'
+          // optional, make growth feel smoother
+          onInput={autoResize}
           {...getInputProps({
             id,
             placeholder: placeholder || 'Search',
             tabIndex: 0,
             type,
-            pr: renderSubmitButton ? inputRightRef?.current?.clientWidth : 4,
+            flex: 1,
+            size,
+            mr: renderSubmitButton ? inputRightRef?.current?.clientWidth : 4,
             isDisabled,
             isInvalid,
             onKeyDown: (
@@ -120,9 +172,14 @@ export const DropdownInput: React.FC<DropdownInputProps> = ({
               onChange ? onChange(e.currentTarget.value) : void 0;
             },
           })}
+          rows={1}
+          maxLength={2048}
+          minH='3rem'
+          pl='2.5rem'
+          py={3}
         />
-        {/* Optional submit button. */}
 
+        {/* Optional submit button. */}
         {(renderSubmitButton || onClose) && (
           <InputRightElement
             ref={inputRightRef}
@@ -130,17 +187,20 @@ export const DropdownInput: React.FC<DropdownInputProps> = ({
             w='unset'
             h='100%'
             zIndex={theme.zIndices['dropdown']}
+            alignItems='flex-start'
           >
             {onClose && inputValue.length > 0 && (
               <CloseButton
                 onClick={() => {
                   onClose();
                   setInputValue('');
+                  resetHeight(); // reset height when input is cleared
                 }}
                 mr={2}
                 size='md'
                 colorScheme='primary'
                 aria-label='Clear search input'
+                my={1}
               />
             )}
             {renderSubmitButton &&
