@@ -248,7 +248,7 @@ export const DateBrush = ({ width, maxBarWidth }: DateBrushProps) => {
       <Group left={horizontalPadding / 2}>
         {/* Brush selection area. key forces remount only on external changes.*/}
         <Brush
-          // key={brushKey}
+          key={brushKey}
           xScale={xScale}
           yScale={yScale}
           width={chartWidth}
