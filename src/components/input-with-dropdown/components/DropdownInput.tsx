@@ -93,21 +93,19 @@ export const DropdownInput: React.FC<DropdownInputProps> = ({
     if (el) el.style.height = '3rem';
   }, []);
 
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsOpen(false);
+    onSubmit(inputValue, cursor);
+  };
+
   // Ensure correct height on initial render and whenever value changes externally
   useEffect(() => {
     autoResize();
   }, [inputValue, autoResize]);
 
   return (
-    <Flex
-      as='form'
-      flex={1}
-      onSubmit={e => {
-        e.preventDefault();
-        setIsOpen(false);
-        onSubmit(inputValue, cursor);
-      }}
-    >
+    <Flex as='form' flex={1} onSubmit={handleSubmit}>
       {/* Label for accessibility */}
       <VisuallyHidden>
         <label htmlFor={id}>{ariaLabel}</label>
@@ -160,15 +158,18 @@ export const DropdownInput: React.FC<DropdownInputProps> = ({
             isDisabled,
             isInvalid,
             onKeyDown: (
-              _: React.KeyboardEvent<HTMLInputElement>,
+              e: React.KeyboardEvent<HTMLTextAreaElement>,
               index: number,
             ) => {
-              if (index > -1) {
+              if (index !== null && index > -1) {
                 const updatedInputValue = getInputValue(index);
                 updatedInputValue && setInputValue(updatedInputValue);
               }
+              if (e.key === 'Enter' && !e.shiftKey) {
+                handleSubmit(e);
+              }
             },
-            onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
+            onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => {
               onChange ? onChange(e.currentTarget.value) : void 0;
             },
           })}
