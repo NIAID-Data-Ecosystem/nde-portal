@@ -1,19 +1,19 @@
-import React, { useMemo } from 'react';
+import { List, VStack } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
-import { Collapse, ListItem, UnorderedList, VStack } from '@chakra-ui/react';
-import Card from './components/card';
-import { ErrorMessage } from './components/error';
+import React, { useMemo } from 'react';
+import Banner from 'src/components/banner';
+
+import { usePaginationContext } from '../../context/pagination-context';
+import { useSearchTabsContext } from '../../context/search-tabs-context';
 import { useSearchQueryFromURL } from '../../hooks/useSearchQueryFromURL';
 import { useSearchResultsData } from '../../hooks/useSearchResultsData';
-import { EmptyState } from './components/empty';
-import { MAX_RESULTS, Pagination } from './components/pagination';
 import { TabType } from '../../types';
-import { useSearchTabsContext } from '../../context/search-tabs-context';
-import { usePaginationContext } from '../../context/pagination-context';
 import { updateRoute } from '../../utils/update-route';
+import Card from './components/card';
+import { EmptyState } from './components/empty';
+import { ErrorMessage } from './components/error';
+import { MAX_RESULTS, Pagination } from './components/pagination';
 import { SearchResultsToolbar } from './components/toolbar';
-import Banner from 'src/components/banner';
-import { FetchSearchResultsResponse } from 'src/utils/api/types';
 
 const RESULT_FIELDS = [
   '_meta',
@@ -147,10 +147,10 @@ export const SearchResults = ({
     <>
       <VStack borderRadius='semi' bg='white' px={4} py={2}>
         {/* Toolbar controls: Sort, size, download metadata, and use metadata score (optional) */}
-        <SearchResultsToolbar id={id} params={params} />
+        {/* <SearchResultsToolbar id={id} params={params} /> */}
 
         {/* Pagination controls */}
-        <Pagination
+        {/* <Pagination
           id='pagination-top'
           ariaLabel='Paginate through resources.'
           selectedPage={from}
@@ -163,47 +163,47 @@ export const SearchResults = ({
           }}
           isLoading={isLoading || isRefetching}
           total={data?.total || 0}
-        />
+        /> */}
 
         {/* Display banner on last page if results exceed amount allotted by API */}
-        <Collapse in={from === Math.floor(MAX_RESULTS / size)} animateOpacity>
+        {from === Math.floor(MAX_RESULTS / size) && (
           <Banner status='info'>
             Only the first {MAX_RESULTS.toLocaleString()} results are displayed,
             please limit your query to get better results or use our API to
             download all results.
           </Banner>
-        </Collapse>
+        )}
 
         {/* Search results cards */}
         {numCards > 0 && (
-          <VStack
-            as={UnorderedList}
+          <List.Root
+            as='ul'
             className='search-results-cards'
             alignItems='flex-start'
             flex={3}
             ml={0}
-            spacing={4}
+            gap={4}
             w='100%'
           >
             {Array(numCards)
               .fill(null)
               .map((_, idx) => {
                 return (
-                  <ListItem key={data?.results?.[idx]._id || idx} w='100%'>
+                  <List.Item key={data?.results?.[idx]._id || idx} w='100%'>
                     <Card
                       isLoading={!router.isReady || isLoading}
                       data={data?.results[idx]}
                       referrerPath={router.asPath}
                       querystring={urlQueryParams.q}
                     />
-                  </ListItem>
+                  </List.Item>
                 );
               })}
-          </VStack>
+          </List.Root>
         )}
 
         {/* Pagination controls */}
-        <Pagination
+        {/* <Pagination
           id='pagination-bottom'
           ariaLabel='Paginate through resources.'
           selectedPage={from}
@@ -216,7 +216,7 @@ export const SearchResults = ({
           }}
           isLoading={isLoading || isRefetching}
           total={data?.total || 0}
-        />
+        /> */}
       </VStack>
     </>
   );

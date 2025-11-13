@@ -1,4 +1,4 @@
-import { Flex, Icon } from '@chakra-ui/react';
+import { Flex, FlexProps, Icon } from '@chakra-ui/react';
 import React from 'react';
 import {
   FaCheck,
@@ -7,13 +7,13 @@ import {
   FaXmark,
 } from 'react-icons/fa6';
 
-interface BannerProps {
+interface BannerProps extends FlexProps {
   status?: 'info' | 'success' | 'warning' | 'error';
   children?: React.ReactNode;
 }
 
 // [COMPONENT INFO]: Banner Element to notice user. NIAID design specs: https://designsystem.niaid.nih.gov/components/molecules
-const Banner: React.FC<BannerProps> = ({ children, status }) => {
+const Banner: React.FC<BannerProps> = ({ children, status, ...flexProps }) => {
   let bg = 'info.light';
   let icon_bg = 'info.default';
 
@@ -50,6 +50,7 @@ const Banner: React.FC<BannerProps> = ({ children, status }) => {
       pt={10}
       mt={8}
       position='relative'
+      {...flexProps}
     >
       <Flex
         bg={icon_bg}
