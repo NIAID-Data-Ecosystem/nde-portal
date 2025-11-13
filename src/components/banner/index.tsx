@@ -1,78 +1,32 @@
-import { Flex, FlexProps, Icon } from '@chakra-ui/react';
+import { Alert, AlertRootProps } from '@chakra-ui/react';
 import React from 'react';
-import {
-  FaCheck,
-  FaCircleExclamation,
-  FaTriangleExclamation,
-  FaXmark,
-} from 'react-icons/fa6';
 
-interface BannerProps extends FlexProps {
-  status?: 'info' | 'success' | 'warning' | 'error';
-  children?: React.ReactNode;
+interface BannerProps extends AlertRootProps {
+  description?: string;
 }
 
 // [COMPONENT INFO]: Banner Element to notice user. NIAID design specs: https://designsystem.niaid.nih.gov/components/molecules
-const Banner: React.FC<BannerProps> = ({ children, status, ...flexProps }) => {
-  let bg = 'info.light';
-  let icon_bg = 'info.default';
-
-  if (
-    status === 'info' ||
-    status === 'error' ||
-    status === 'warning' ||
-    status === 'success'
-  ) {
-    bg = `status.${status}_lt`;
-    icon_bg = `status.${status}`;
-  }
-
-  const getIcon = (status: BannerProps['status']) => {
-    if (status === 'error') {
-      return FaXmark;
-    } else if (status === 'success') {
-      return FaCheck;
-    } else if (status === 'warning') {
-      return FaTriangleExclamation;
-    } else if (status === 'info') {
-      return FaCircleExclamation;
-    } else {
-      return FaCircleExclamation;
-    }
-  };
-
+const Banner: React.FC<BannerProps> = ({
+  children,
+  status,
+  title,
+  description,
+  variant = 'surface',
+  ...rest
+}) => {
   return (
-    <Flex
-      bg={bg}
-      borderRadius='semi'
-      boxShadow='low'
-      p={8}
-      pt={10}
-      mt={8}
-      position='relative'
-      {...flexProps}
-    >
-      <Flex
-        bg={icon_bg}
-        w='2.5rem'
-        h='2.5rem'
-        justifyContent='center'
-        alignItems='center'
-        borderRadius='100%'
-        boxShadow='low'
-        position='absolute'
-        top={0}
-        left='1.25rem'
-        transform='translate(0, -50%)'
-      >
-        <Icon
-          as={getIcon(status)}
-          color={status === 'warning' ? '#000' : '#fff'}
-          fontSize='1.5rem'
-        />
-      </Flex>
-      {children}
-    </Flex>
+    <Alert.Root size='md' status={status} variant={variant} {...rest}>
+      <Alert.Indicator />
+      <Alert.Content lineHeight='short'>
+        {title && <Alert.Title lineHeight='inherit'>{title}</Alert.Title>}
+        {description && (
+          <Alert.Description lineHeight='inherit'>
+            {description}
+          </Alert.Description>
+        )}
+        {children}
+      </Alert.Content>
+    </Alert.Root>
   );
 };
 

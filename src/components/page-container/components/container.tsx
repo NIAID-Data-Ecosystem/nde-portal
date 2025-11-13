@@ -1,14 +1,15 @@
-import { useMemo } from 'react';
 import { Flex, FlexProps, Stack } from '@chakra-ui/react';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
+import { useMemo } from 'react';
 import { Footer } from 'src/components/footer';
 import { Navigation } from 'src/components/navigation-bar';
-import { Breadcrumbs } from './breadcrumbs';
+
+import { useBreadcrumbs } from '../hooks/useBreadcrumbs';
 import { Banner } from './banner';
+import { Breadcrumbs } from './breadcrumbs';
 import { SearchBarSection } from './search-bar-section';
 import { SeoMetaFields, SeoMetaFieldsProps } from './seo-meta-fields';
-import { useBreadcrumbs } from '../hooks/useBreadcrumbs';
 
 export interface NoticeProps {
   id: number | string;

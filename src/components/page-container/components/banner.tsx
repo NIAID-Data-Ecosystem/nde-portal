@@ -1,25 +1,28 @@
-import React, { useEffect, useState } from 'react';
 import {
   Box,
   Button,
-  Separator,
   Flex,
-  HStack,
   Heading,
+  HStack,
   Icon,
+  Separator,
 } from '@chakra-ui/react';
-import { useLocalStorage } from 'usehooks-ts';
-import { useMDXComponents } from 'src/components/mdx/hooks/useMDXComponents';
-import ReactMarkdown from 'react-markdown';
-import rehypeRaw from 'rehype-raw';
-import remarkGfm from 'remark-gfm';
-import { NoticeProps } from '..';
+import React, { useEffect, useState } from 'react';
 import {
   FaCircleCheck,
   FaCircleExclamation,
   FaCircleInfo,
   FaCircleXmark,
 } from 'react-icons/fa6';
+import ReactMarkdown from 'react-markdown';
+import rehypeRaw from 'rehype-raw';
+import remarkGfm from 'remark-gfm';
+import { useMDXComponents } from 'src/components/mdx/hooks/useMDXComponents';
+import { useLocalStorage } from 'usehooks-ts';
+
+import { NoticeProps } from '..';
+
+// [TO DO]: Optional. Could leverage the Banner component instead (src/components/banner) which uses the v3 Chakra UI Alert Component.
 
 const getStatusIcon = (status: NoticeProps['state']) => {
   if (status === 'ERROR') {
