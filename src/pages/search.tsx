@@ -1,7 +1,7 @@
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import { getPageSeoConfig, PageContainer } from 'src/components/page-container';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { FetchSearchResultsResponse } from 'src/utils/api/types';
 import { SearchTabsProvider } from 'src/views/search/context/search-tabs-context';
 import { useSearchQueryFromURL } from 'src/views/search/hooks/useSearchQueryFromURL';
@@ -13,7 +13,10 @@ import {
   queryFilterString2Object,
   queryFilterObject2String,
 } from 'src/views/search/components/filters/utils/query-builders';
-import { defaultQuery } from 'src/views/search/config/defaultQuery';
+import {
+  defaultQuery,
+  getDefaultDateRange,
+} from 'src/views/search/config/defaultQuery';
 import { FilterTags } from 'src/views/search/components/filters/components/tag';
 import { SearchResultsHeader } from 'src/views/search/components/search-results-header';
 import { PaginationProvider } from 'src/views/search/context/pagination-context';
@@ -34,6 +37,7 @@ const Search: NextPage<{
   initialData: FetchSearchResultsResponse;
 }> = ({ initialData }) => {
   const router = useRouter();
+  const hasInitialized = useRef(false);
 
   const queryParams = useSearchQueryFromURL();
 
@@ -75,7 +79,6 @@ const Search: NextPage<{
 
   // Set the initial tab based on the router query
   const [initialTab, setInitialTab] = useState<TabType['id'] | null>(null);
-  const [hasSetInitialDateFilter, setHasSetInitialDateFilter] = useState(false);
 
   useEffect(() => {
     if (!router.isReady) return;
@@ -86,34 +89,41 @@ const Search: NextPage<{
     setInitialTab(tab?.id || defaultTab);
   }, [router]);
 
-  // Set initial date filter on first load
+  // Apply default date filter on first load only
   useEffect(() => {
-    if (!router.isReady || hasSetInitialDateFilter) return;
+    if (!router.isReady || hasInitialized.current) return;
 
     const hasDateFilter =
       selectedFilters.date && selectedFilters.date.length > 0;
 
-    // Only set default date filter if no date filter exists
+    // Only apply default on first load when no date filter exists
     if (!hasDateFilter) {
-      const currentYear = new Date().getFullYear();
-      const defaultDateFilter = ['2000-01-01', `${currentYear}-12-31`];
+      const defaultDateRange = getDefaultDateRange();
 
-      // Build the complete filters object with the date filter
       const updatedFilters = {
         ...selectedFilters,
-        date: defaultDateFilter,
+        date: defaultDateRange,
       };
 
-      // Convert to filter string format
       const filterString = queryFilterObject2String(updatedFilters);
 
       handleRouteUpdate({
         filters: filterString,
       });
+    }
 
-      setHasSetInitialDateFilter(true);
-    } else {
-      // Validate existing date filter doesn't exceed current year
+    // Mark as initialized to prevent re-running
+    hasInitialized.current = true;
+  }, [router.isReady, selectedFilters, handleRouteUpdate]);
+
+  // Validate and cap date filter at current year if it exceeds (runtime validation)
+  useEffect(() => {
+    if (!router.isReady || !hasInitialized.current) return;
+
+    const hasDateFilter =
+      selectedFilters.date && selectedFilters.date.length > 0;
+
+    if (hasDateFilter) {
       const currentYear = new Date().getFullYear();
       const existingEndDate = selectedFilters.date?.[1];
 
@@ -140,15 +150,8 @@ const Search: NextPage<{
           });
         }
       }
-
-      setHasSetInitialDateFilter(true);
     }
-  }, [
-    router.isReady,
-    selectedFilters,
-    hasSetInitialDateFilter,
-    handleRouteUpdate,
-  ]);
+  }, [router.isReady, selectedFilters, handleRouteUpdate]);
 
   // If the initial tab is not set, return a loading state.
   if (!initialTab) {
