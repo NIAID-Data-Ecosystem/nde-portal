@@ -10,7 +10,7 @@ import {
 } from '@chakra-ui/react';
 import { useInView } from '@react-spring/web';
 import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
-import NextLink from 'next/link';
+import NextLink, { LinkProps } from 'next/link';
 import React, { useMemo } from 'react';
 import { FaAngleRight, FaRegClock } from 'react-icons/fa6';
 import { SchemaDefinitions } from 'scripts/generate-schema-definitions/types';
