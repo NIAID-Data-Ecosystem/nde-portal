@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [5.1.1](https://github.com/NIAID-Data-Ecosystem/nde-portal/compare/v5.1.0...v5.1.1) (2025-11-13)
+
+
+### 🚀 Features
+
+* **features:** add features content ([4d7322b](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/4d7322b7bf2550ea3ca5d7b14553b6d4bfbe1ffb))
+
+
+### 🐛 Bugfixes
+
+* correct feature list keyed searches ([#358](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/358)) ([f72b915](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/f72b915d786fd839b44d41fd522ae7b1f709c224))
+* **ontology-browser:** taxon term capitalization ([d3e2088](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/d3e2088029eca819b675dbf9eadd6496721a0d1e))
+
 ## [5.1.0](https://github.com/NIAID-Data-Ecosystem/nde-portal/compare/v5.0.0...v5.1.0) (2025-10-16)
 
 
