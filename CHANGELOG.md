@@ -1,8 +1,542 @@
 # Changelog
 
-All notable changes to this project will be documented in this file. See
-[standard-version](https://github.com/conventional-changelog/standard-version)
-for commit guidelines.
+All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
+
+### [5.1.1](https://github.com/NIAID-Data-Ecosystem/nde-portal/compare/v5.1.0...v5.1.1) (2025-11-13)
+
+
+### 🚀 Features
+
+* **features:** add features content ([4d7322b](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/4d7322b7bf2550ea3ca5d7b14553b6d4bfbe1ffb))
+
+
+### 🐛 Bugfixes
+
+* correct feature list keyed searches ([#358](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/358)) ([f72b915](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/f72b915d786fd839b44d41fd522ae7b1f709c224))
+* **ontology-browser:** taxon term capitalization ([d3e2088](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/d3e2088029eca819b675dbf9eadd6496721a0d1e))
+
+## [5.1.0](https://github.com/NIAID-Data-Ecosystem/nde-portal/compare/v5.0.0...v5.1.0) (2025-10-16)
+
+
+### 🚀 Features
+
+* add handling for rate limit ([64072b8](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/64072b8bf93c45b91b51d7b8c333f3e7a4f47b9f))
+* add ontology browser page ([3799480](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/3799480aeebac45518e754b4a1d23e8831c8be39))
+* add ontology browser page ([8ba6467](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/8ba6467ea15f63e2c4a139a544ca0f328c1a813c))
+* **diseases:** Add GA tracking ([#345](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/345)) ([24d7307](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/24d730765df7ec86b24eda47fb46683cf93b98fb))
+* improve loading in ontological browser ([#351](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/351)) ([4e22293](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/4e2229351379227047c60b4c56af0c9927e438ba))
+* **ontology-browser:** add nde flag to biothings search ([973a05b](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/973a05bce55a5b1ee56f85e32befabc19b7a5cef))
+* **search:** add ontology browser linkout ([24cd3bb](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/24cd3bb9c08e6a3c0dfe5d36410e4347a9b4a331))
+
+
+### 🐛 Bugfixes
+
+* **ontology-browser:** add rate limit on portal counts ([c208ec0](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/c208ec05993464e80f9a90df6c42043e7829ef8b))
+* **ontology-browser:** fix typo ([a892483](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/a8924830477fce9d09d446447b6091581174518f))
+* remove temporalInterval property from temporalCoverage ([#353](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/353)) ([317cb1d](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/317cb1d7cfddc47f7458636a439c5831314bc45f))
+* **search:** ensure tab selection works with type filters ([935ca48](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/935ca488e8550494eabd14898b5b4a25364b19c7))
+
+## [5.0.0](https://github.com/NIAID-Data-Ecosystem/nde-portal/compare/v4.2.0...v5.0.0) (2025-08-01)
+
+
+### 🚀 Features
+
+* add features index ([#338](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/338)) ([1140a5d](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/1140a5d699f85e1cd2c5c81f65a54f790d2d2bb6))
+* add search page re-design ([#335](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/335)) ([482046e](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/482046ec18f6393146af47cc11073f6fdc05145d))
+* add search results redesign pagination ([#315](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/315)) ([6a3f8b7](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/6a3f8b7f9c4aa96e6582b7b64853b4d055febf4c))
+* add video support to strapi content ([#317](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/317)) ([e8dc58c](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/e8dc58cfc699c8d0c1e8ba4e4a7be0ceee93178c))
+* **analytics:** add metadata download event trigger ([d52e77b](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/d52e77b6ef34d5596df860d67e85fddf7808e648))
+* disease content type ([#330](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/330)) ([506f166](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/506f166af2f9926cd7bf188137d6d61f9e38d915))
+* enable disease pages in nav bar for production ([63010fe](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/63010fe85d6dc2ce01166450b08dcfd0c681f344))
+* make tabs visually distinguishable ([#334](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/334)) ([a72da07](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/a72da07c1248353191fcd59e87d2c3266db6c98a))
+* **mdx:** add video controls support ([1df65b9](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/1df65b95173388116a6c9ff50e6287fd91d998f3))
+* ontology browser fixes ([#331](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/331)) ([12f133b](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/12f133b9c0d2990c8cd56a41a67da3918c5f602b))
+* **ontology-browser:** add ontology browser tree ([#327](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/327)) ([18728e3](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/18728e3af6aacae463219386472776fe867d2111))
+* **search:** add tab improvements ([758aac4](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/758aac4c2d6b35809ff5fd46de394277030d2851))
+* **search:** add type tabs [#291](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/291) ([#314](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/314)) ([c83b39f](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/c83b39f905ad7b3412b4ad03b7daaa598bbec30f))
+* update mdx components styles ([#324](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/324)) ([ffad462](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/ffad462955471adcdc08c3937c48b5ad8ab758e7))
+
+
+### 🐛 Bugfixes
+
+* **features:** abstract length typo ([ac48b02](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/ac48b021ce6078a683119a3566bb99ad87ac04f8))
+* nav keyboard accessibility ([1638d1d](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/1638d1d0ff15a65c99743fa158408a89b813a58d))
+* **ontology-browser:** add wildcard to search input ([f76f7e6](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/f76f7e65e127c0a440d45d0831a5efd5fb6370d8))
+* search bar type filters ([a07e2c9](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/a07e2c9e8c3c3eb2332a2e2a87a28ab86640bafa))
+* search results page issues ([#337](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/337)) ([3e6e139](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/3e6e139a095b3e4bfa3ee8314855fc548ae2b0aa))
+* **search:** handle includedInDataCatalog.archivedAt array + remove includedInDataCatalog.dataset ([07c73d5](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/07c73d5ec0b63c0f8354e7da26b7e515d213e547))
+* **search:** hydration error ([692a314](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/692a3146db324420038e6fc6a9d7a7b66066a6a0))
+* **search:** types ([e89074e](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/e89074ef769c84c3ac8517f74d6b0f9e8ca6a58d))
+* standardize tag label ([4f142b3](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/4f142b3423a46b45bda1c8019b0a793efb437626))
+* video playback on mobile ([f4b153d](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/f4b153d4e58fc3f4e59b3701e516db5af703ef65))
+
+## [4.2.0](https://github.com/NIAID-Data-Ecosystem/nde-portal/compare/v4.1.0...v4.2.0) (2025-05-15)
+
+### 🐛 Bugfixes
+
+- **diseases:** copy + link fixes
+  ([b85d509](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/b85d50936e4d9ea34519737145d0d3842d141123))
+
+### 🚀 Features
+
+- **programs:** add program collections index page
+  [#284](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/284)
+  ([#307](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/307))
+  ([866479f](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/866479fff8905342e7b2373a40058cea163c7030))
+- **main:** add landing page updates
+  [#287](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/287)
+  ([6231376](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/6231376dfa990f658eb88c3107263b45764e6695))
+- **diseases:** add donut chart
+  ([288d397](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/288d39712648d91c56dce3ce72fba8148a59f111))
+- **diseases:** add legend and links to donut chart
+  ([f8d4286](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/f8d4286fedc2fad26bf7bf336a56150b086e3493))
+- **diseases:** add disease page
+  ([cf3051f](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/cf3051faf9c94d5fe031280ed0b34785ac5ca3ad))
+- **diseases:** add chart accessility + tests
+  ([e9743e0](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/e9743e0af05b50ead36fa72cdb5e10c77b68c526))
+- **diseases:** add contact section
+  ([c5e9dbd](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/c5e9dbdff373fb3107ddf7357f7f5b554a57849d))
+- **diseases:** add index page
+  ([1c0c239](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/1c0c23919f698d0cfa14c682fe99cbd8a7efe03b))
+- **diseases:** add keyboard accessbility
+  ([cb21fe4](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/cb21fe4db8fb0af1d802be571ef88ce1cec9be95))
+- **diseases:** add links to programs+disease pages
+  ([0a6681a](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/0a6681a540591da4018c41cb46cadfe4b39de4b9))
+- **diseases:** add programs + diseases links to nav bar
+  ([378835a](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/378835aff1a3fae20bf5e7ff07052be93d32d507))
+- **diseases:** sources bar chart
+  ([12c559c](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/12c559cc4a52053689523c44e99159d92cff7f3d))
+- **diseases:** update diseases index anchor tags
+  ([5f820ed](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/5f820ed37bf90f79ab5acde457938bc05ed590d4))
+
+## [4.1.0](https://github.com/NIAID-Data-Ecosystem/nde-portal/compare/v4.0.0...v4.1.0) (2025-04-17)
+
+### 🐛 Bugfixes
+
+- add missing base mdx elements
+  ([0502fd6](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/0502fd6341d533b9b9fb255b6c8a7522f874e7c8))
+- add missing onClick to search knowledge center button
+  ([76e913d](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/76e913d464d387a12468215cc3307e83f168fbc8))
+- add redirect from completeness to compatibility page
+  NIAID-Data-Ecosystem/niaid-feedback[#176](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/176)
+  ([bea9f01](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/bea9f01898eff5378f004437d22eb944ec362132))
+- add variable measured name to advanced search
+  ([f22b78b](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/f22b78b869e92424caa70e6567a3c5a8be8d69fb))
+- advanced search issue
+  [#254](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/254)
+  ([509e108](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/509e1083a3d85a027cc66cef8e02755eb0c0f298))
+- change placeholder in search bar for all types
+  [#270](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/270)
+  ([0edd952](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/0edd9521646f6503f7acf5865d7386f507c1e215))
+- change wording from completeness to compatibility badge
+  NIAID-Data-Ecosystem/niaid-feedback[#176](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/176)
+  ([77211ae](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/77211ae42c8750ceaf83d92a565e3aa3a6376a75))
+- description formatting for Markdown rendering
+  ([c8eda56](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/c8eda56e6823f16cf7f858cea335f0448713273b))
+- display full type menu and suggest a source link
+  ([bd5b795](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/bd5b79513f78b7197e86c6033447d693da1ec915))
+- **docs:** markdown spacing
+  ([faa8063](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/faa80638329ad6b180aeb6cdd2cf07e71d3fa7ca))
+- empty results layout
+  ([31fa7bf](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/31fa7bf81cacdae255abc24a7d035b284914b433))
+- handle case with no source info
+  ([6711a73](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/6711a7374161426a1b38470d8a0a634a42dc5c7b))
+- handle empty topic name
+  ([7d37a7c](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/7d37a7cd6263eb1a4db0b8000d21a0f1a092602d))
+- handle funding items with empty or null objects
+  ([1fb42a0](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/1fb42a04223dc53086e7a0337d9a98dfc8d293e0))
+- handling of multiple encoding formats
+  ([86cfbee](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/86cfbee180d6458bd6d4f1f046c9425af8f88ee1))
+- **home:** repository links in table
+  ([f4f43df](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/f4f43df21ea372c075ca71dd544fe627d3007194))
+- **home:** resource table broken search bar
+  ([213209c](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/213209c871cf015fc63c68433daa53a4bd27b434))
+- **home:** update resource table tests
+  ([2714294](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/27142947a52dde75735cf4936fcec0cf3ea4bc48))
+- landing page banner z-index
+  ([b8f1f79](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/b8f1f794907f8cd6b4033ca22fe929e3bd72fd4a))
+- landing page banner z-index
+  ([49ffce0](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/49ffce0b418e3283a28dc06433bf70ac4fdba593))
+- landing page with collections data
+  ([2c7e8f5](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/2c7e8f52782dd458c732fd076ee32308f9f82dad))
+- missing date created for veupath collections
+  ([f18fc32](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/f18fc32d9185dc487b51e9a41989f342dd82367f))
+- missing isAccessibleForFree and usage info
+  ([5c1e025](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/5c1e025245ad1b0b414cff83c583a7b2bd41b69c))
+- noOfLines for tags
+  ([1eed465](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/1eed4656df53f9ceee1c57896b8d865758d9b475))
+- remove multi-term querying for program collections
+  ([5f59cb4](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/5f59cb421e7dce7e16aa5209cb65585721740a62))
+- search bar dropdown typo
+  ([5c25257](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/5c25257fe67f452078abf4d577a54996591ed8e3))
+- **search:** search bar history list
+  ([a793a86](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/a793a863f229a0bf410c4919aa3b68474b5d2766))
+- **search:** show filters for added sources
+  ([3ca39eb](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/3ca39ebd7dfaf86273bd8c75974712ba926bacb5))
+- typo
+  ([89ea0f3](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/89ea0f3e31dbd0783c3731367e0493c5ea970cbe))
+- typo
+  ([6b2bc6b](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/6b2bc6b8724869c797a0bbc242abf57b2c96451d))
+- unnecessary metadata badge pie prop
+  ([bdc2107](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/bdc2107456da10dcfa8fab5133eb79b7bb208b64))
+- variable measured mapping change
+  ([f120c33](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/f120c33a3ece3aedaf640e6d5487f0488189c188))
+- variable measured search button
+  ([986b295](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/986b2954c66fe6a2d84fb799f1aa7b0f4866cf34))
+
+### 🚀 Features
+
+- add additional advanced search fields
+  [#259](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/259)
+  ([c8c738c](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/c8c738c4ad329f71a4e81879cf3f818d383680be))
+- add computational tool metadata compatibility fields
+  ([6ad5597](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/6ad5597b50d0a5b3921fe23367ab00ff13f58d6c))
+- add disambiguatingDescription to advanced search
+  ([ac62e54](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/ac62e54c52a302888437871fd89e26c9e998aa3c))
+- add disclaimer and about pages
+  NIAID-Data-Ecosystem/niaid-feedback[#155](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/155)
+  ([38ca92b](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/38ca92b846cdd88756955ed19b7b2a1dca1a52e2))
+- add funding ror id support
+  ([8205dc3](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/8205dc3564886acaf0f519e406f8d0ebd3b9de56))
+- add funneling user queries based on type to search
+  [#242](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/242)
+  ([8ba0cc5](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/8ba0cc54dd45a5fe98d8b05a40be26fa58c37b58))
+- add improved querying
+  ([9c6e9aa](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/9c6e9aaa99bd451353d782b33952755b81c0f606))
+- add resourceCatalog logo and link to right panel
+  ([#283](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/283))
+  ([48e99d9](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/48e99d974ab0e06c2cd4eed205cb1fb8d9397496))
+- add search bar to 404 page
+  ([5ac5d3b](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/5ac5d3b361b75f410bbf9cf02bd8ba92a23a3158))
+- add search bar to all pages
+  ([c9892e3](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/c9892e305c7a5ede53b823523111faa44b587d53))
+- add sourceOrganization to filters + resource page
+  NIAID-Data-Ecosystem/niaid-feedback[#136](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/136)
+  ([3a92704](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/3a927041627fbba8b12dfb3cb47b562bb1816c82))
+- add topic category name to advanced search
+  ([aa22939](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/aa22939b398b9e1905bd8a0c1ebcf97ca3a5cccb))
+- change view dataset button
+  [#234](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/234)
+  ([fa70cbe](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/fa70cbedce9ed257499f226f737a0cdbca33fc9d))
+- color scheme update
+  ([#297](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/297))
+  ([a221035](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/a221035ec7bbe63cdbacaebfc0b60f33d2e80122))
+- display resource catalogs on landing page
+  [#229](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/229)
+  ([aea27d0](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/aea27d0c15638e17810b838419500ad00f87cca2))
+- **home:** add computational tool type
+  ([e48e3b2](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/e48e3b22277a452fd09ac46b202f39ffdf782fff))
+- **home:** handle sources with multiple types
+  ([4e98a31](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/4e98a31f6e9bcc7e95d8e27d361694470126d3ec))
+- re-design ResourceCatalog resource page view
+  ([#299](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/299))
+  ([b3a4b65](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/b3a4b652600320441b8ea6d3fbc8b75687f7b2f9)),
+  closes [#290](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/290)
+  [#290](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/290)
+  [#290](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/290)
+  [#290](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/290)
+- remove knowledge center link from resources menu
+  ([#289](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/289))
+  ([686656f](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/686656f670cbbf049c26521f78684f93c2cd45e2))
+- reorder csv colums
+  ([#273](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/273))
+  ([4dabf6c](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/4dabf6c718eca24a63d2aa9d9b11b8fc3392ea6f))
+- **resources:** add measurementTechnique properties
+  ([a4ddb28](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/a4ddb281338bf93d9543f4063c06c2cb6ee1ebf8))
+- scrollable list of topic categories
+  ([#276](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/276))
+  ([957f162](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/957f162154090380330bd9891457e53d29e2b8a8))
+- **search:** add computational tool search result card
+  ([6204ae6](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/6204ae66346fc3e0408e97c72dc3d57c67d46bc2))
+- **sources:** add compatibility badge to cards
+  issue[#227](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/227)
+  ([93f39a6](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/93f39a6fd13e25c8e03df6e30c64e7c835f74cd1))
+- standardize resource ids
+  [#235](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/235)
+  ([2126101](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/2126101bfaf562d5356990dda1dbf71f8e5a4058))
+- update metadata compatibility badge
+  ([#304](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/304))
+  ([0471e07](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/0471e07276e6446dc3411dbb658783b1a9b46f7f))
+- updating resource ID in the URL
+  [#235](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/235)
+  ([9f26484](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/9f26484fe22ebb3ee7fc8504c6fc39edcb41da9c))
+- use raw facet fields to normalize casing on filter checkboxes
+  ([0b75fdf](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/0b75fdf6b6da21251aeb3e2db6a6329bff5f69e7))
+
+## [4.0.0](https://github.com/NIAID-Data-Ecosystem/nde-portal/compare/v2.0.0...v4.0.0) (2024-12-12)
+
+### 🐛 Bugfixes
+
+- add missing base mdx elements
+  ([a2d9dae](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/a2d9daea935ef5325c1686fa503836efbd969cc3))
+- add subtotals to metadata completeness badge tooltip issue
+  [#219](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/219)
+  ([3b0978c](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/3b0978c33567e2db2a1d7829299ae55e6668b93b))
+- advanced search issue
+  [#254](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/254)
+  ([49e1ad4](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/49e1ad4001107e20573032c023af95f8b71474c4))
+- basedOn table type + update metadata descriptions
+  ([756b85b](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/756b85b52cc5378a1c488020877b3b5141b8295b))
+- dde logos
+  ([685644f](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/685644f8b170826af099311db333a277019f98e7))
+- **docs:** fetch draft data in dev+staging
+  ([25c28b4](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/25c28b4c4399c21bd42a4af83922d5c4c8ccc225))
+- **docs:** markdown spacing
+  ([fb83daa](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/fb83daaac0c66bdd4271bc92c0fd1112b7249fb3))
+- handle case with no source info
+  ([0c1a674](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/0c1a674ebad115dabd0d6ebc200cd13a4cc3a6f2))
+- handle empty topic name
+  ([343451f](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/343451f70487bb6024443ee629815e1274dfa2cc))
+- handle funding items with empty or null objects
+  ([5494034](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/549403407f7fb135b5a84d940c68473cf71de354))
+- handle temporal coverage undefined properties
+  ([537a96f](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/537a96f6baed052f8a307359ead2b8e6eade28be))
+- **home:** repository links in table
+  ([52e72fc](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/52e72fccda5da90da8a8c73c8bef9de0f60b2d04))
+- **home:** resource table broken search bar
+  ([86d809a](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/86d809a4d24838da0da278f649322c53297a92df))
+- **home:** update resource table tests
+  ([fb2b6fa](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/fb2b6fa0a1b94b14602ce69776743a47c54db884))
+- jest tests
+  ([dbb6a5c](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/dbb6a5c17342c2c9f3caeb0f47b448538424d155))
+- landing page with collections data
+  ([42a51c6](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/42a51c6ba78145c1be600c3fa4fdd76e032a1139))
+- missing date created for veupath collections
+  ([4134ecd](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/4134ecd0dcd0ea0d657d7f692bf2caf75efa3533))
+- missing import
+  ([25f2b0e](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/25f2b0edf6e831e8e997c301c7b51f8d48e76efd))
+- missing prop
+  ([a16a625](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/a16a625ad853879c733f9904b8cfecd43fb2e3d1))
+- noOfLines for tags
+  ([a7893f2](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/a7893f2f6c8377ede8b01d0e5cea181136ee712c))
+- query string handling
+  ([a549204](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/a5492044230d25dbf660c7be5ede6d00d871cd6f))
+- remove Other option for sources
+  ([5bda3d2](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/5bda3d25e778bd6f2dc22f63b00d8da2bbfa2141))
+- **resources:** show spatiotemporal disabled when empty
+  ([6b4c24e](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/6b4c24e7e680b9c1f2c0b16643aaecb890ac9968))
+- **resources:** use \_id for download metadata
+  ([ad66f93](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/ad66f932efe5c81532d9b9c60af999c435f75f1b))
+- **search:** adate
+  ([f6e9a3f](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/f6e9a3f293d2eed5079838555771f5d7fa19cba9))
+- **search:** search bad limit banner + empty state
+  ([adec579](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/adec57987a746d8cc80a0bbe3eeee60457dfdd07))
+- **search:** filters updr history list
+  ([610f97b](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/610f97bfbb477360c6c3872007eafbb4b87e960e))
+- **search:** show filters for added sources
+  ([0d64141](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/0d64141e1ec9c50f1bc338391cd1f06cbf50d851))
+- small a11y fixes
+  ([7addca7](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/7addca7fcc9e4d38fd08eb559b49aef9514184af))
+- small ui fixes
+  ([21a68cd](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/21a68cd313263b270b9d601f18ed6b1ae4ceac1a))
+- typo
+  ([2e3d874](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/2e3d874f0595e743e3b9dd07af249e34350eb812))
+- unnecessary metadata badge pie prop
+  ([7c8b116](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/7c8b1163f9e6c86f54eb24f4361c21e9b5a6dbc1))
+- variable measured mapping change
+  ([2498310](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/249831086747ee9ee9dee42bea0d33289d8f212e))
+- variable measured search button
+  ([3577a7f](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/3577a7f93598d295146f68fc3dca139804a31774))
+
+### 🚀 Features
+
+- add additional advanced search fields
+  [#259](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/259)
+  ([8f81767](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/8f81767cec4e7154da1869b20095646ba1dde159))
+- add card customized theme
+  ([c46996b](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/c46996b41bd4eae4fa4a1e48a38684d53cad3ad9))
+- add disclaimer and about pages
+  NIAID-Data-Ecosystem/niaid-feedback[#155](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/155)
+  ([8d93775](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/8d93775c77c358d03b7163ade464983a818c5784))
+- add featured pages
+  ([808006f](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/808006ff00e3fd00221ee98e5fd67958bb2c9b22))
+- add featured pages components
+  ([f140f47](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/f140f47e711390fcd869137e9888bb70e4faad8e))
+- add funding ror id support
+  ([70300e1](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/70300e1c183756b8141fb6f1a7d335df7bf78f24))
+- add funneling user queries based on type to search
+  [#242](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/242)
+  ([9e0f827](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/9e0f827ff5e7f5f859601b4dd055e3945fe2c6bf))
+- add improved querying
+  ([5edb606](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/5edb6068e0fea7f4dc39aac139923c3182b1785d))
+- add notice banners
+  [#233](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/233)
+  ([5d76f2e](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/5d76f2ed88ad63ea6866eb57cd8bfa1b13863fb5))
+- add repo-level compatibility badges
+  [#227](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/227)
+  ([4676c21](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/4676c21cbd04b23f65d1d130fc3e0081be5a135c))
+- add resource catalogs table to home page
+  ([f759a9f](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/f759a9fc50d8049d5b67284cbf107220f1e7c2f7))
+- add search bar to 404 page
+  ([b29ab81](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/b29ab817db9953e6057816f78b0cee81934ef4d2))
+- add sourceOrganization to filters + resource page
+  NIAID-Data-Ecosystem/niaid-feedback[#136](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/136)
+  ([44990e8](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/44990e87b235afb84f4801826a4f37fb3cb7feef))
+- **advanced-search:** add advanced search fields
+  ([796892f](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/796892f42553988e9c788bf22fff64604780bb00))
+- apply metadata score to search results
+  ([d65c76a](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/d65c76a9973752af719ece4f130fa118d265cb52))
+- apply OCGR
+  NIAID-Data-Ecosystem/niaid-feedback[#129](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/129)
+  NIAID-Data-Ecosystem/niaid-feedback[#130](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/130)
+  ([2ffed7e](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/2ffed7ecdcd6007aeb43901959e9f0f6cf1bbf3a))
+- change view dataset button
+  [#234](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/234)
+  ([0ec0e86](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/0ec0e8671502445f2a426814eb4fc48c620f74d2))
+- computational tool resource page
+  ([#269](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/269))
+  ([dc6e3e5](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/dc6e3e57f840b74c975a6d265db10aa8c7015978))
+- display resource catalogs on landing page
+  [#229](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/229)
+  ([d3e2b18](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/d3e2b189ca5d76f4da44c06dc769a64846648ac0))
+- handle resource catalog properties
+  ([9817303](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/9817303ef89fbc31bd13d574cf9798f85c85ef93))
+- **home:** add computational tool type
+  ([d19f0ff](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/d19f0ff7ec43f95060cd2926e1ea9c113b2f3ef2))
+- **home:** add events to news carousel
+  ([c9f2817](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/c9f28171948d3048efd7232db8a9c24ee26ff66f))
+- **home:** handle sources with multiple types
+  ([2eac1c3](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/2eac1c3012f40c9df83e6f62fd6c577dc59f379b))
+- remove collectionType from display
+  [#239](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/239)
+  ([267afbe](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/267afbe881a8424e2ea5c0a6e5f10e1c931270df))
+- reorder csv colums
+  ([#273](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/273))
+  ([cb70cb4](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/cb70cb4edb73c5c5c753582606026bb3a7cc0762))
+- replace nde-ui package with chakra-ui
+  ([006a005](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/006a005fcc6c8283bb92645d9b861652e87fb652))
+- **resources:** add measurementTechnique properties
+  ([6bf71c1](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/6bf71c1e2c29e76dfc4328ad83452615955d4d52))
+- **search:** add computational tool search result card
+  ([7a856ae](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/7a856aeec34c02563d0e35f325774ffd1537cc7d))
+- standardize resource ids
+  [#235](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/235)
+  ([22110b4](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/22110b471dfc91b409ba951b7a1903098ba8747d))
+- use raw facet fields to normalize casing on filter checkboxes
+  ([9c77dc1](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/9c77dc1c60cdb8151c81f68c664c60af9791a39e))
+- use react-icons/fa6
+  ([a25a64d](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/a25a64d4f63c77921257abf49c6240b1344ceb90))
+
+## [3.0.0](https://github.com/NIAID-Data-Ecosystem/nde-portal/compare/v2.0.0...v3.0.0) (2024-10-04)
+
+### 🐛 Bugfixes
+
+- add missing base mdx elements
+  ([a2d9dae](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/a2d9daea935ef5325c1686fa503836efbd969cc3))
+- add subtotals to metadata completeness badge tooltip issue
+  [#219](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/219)
+  ([7e6a608](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/7e6a608b1e9b23eb109e81c3aba16a975e7a5be8))
+- advanced search issue
+  [#254](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/254)
+  ([49e1ad4](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/49e1ad4001107e20573032c023af95f8b71474c4))
+- basedOn table type + update metadata descriptions
+  ([756b85b](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/756b85b52cc5378a1c488020877b3b5141b8295b))
+- dde logos
+  ([8f306ad](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/8f306ad29e4306130072edd99c059a70740f8427))
+- **docs:** fetch draft data in dev+staging
+  ([8553be2](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/8553be2d79c895c7f7ea40ad8e5adb8d65f24fe7))
+- **docs:** markdown spacing
+  ([fb83daa](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/fb83daaac0c66bdd4271bc92c0fd1112b7249fb3))
+- handle case with no source info
+  ([0c1a674](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/0c1a674ebad115dabd0d6ebc200cd13a4cc3a6f2))
+- handle temporal coverage undefined properties
+  ([537a96f](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/537a96f6baed052f8a307359ead2b8e6eade28be))
+- **home:** repository links in table
+  ([52e72fc](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/52e72fccda5da90da8a8c73c8bef9de0f60b2d04))
+- jest tests
+  ([dbb6a5c](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/dbb6a5c17342c2c9f3caeb0f47b448538424d155))
+- landing page with collections data
+  ([42a51c6](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/42a51c6ba78145c1be600c3fa4fdd76e032a1139))
+- missing date created for veupath collections
+  ([4134ecd](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/4134ecd0dcd0ea0d657d7f692bf2caf75efa3533))
+- missing import
+  ([25f2b0e](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/25f2b0edf6e831e8e997c301c7b51f8d48e76efd))
+- missing prop
+  ([a16a625](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/a16a625ad853879c733f9904b8cfecd43fb2e3d1))
+- noOfLines for tags
+  ([a7893f2](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/a7893f2f6c8377ede8b01d0e5cea181136ee712c))
+- query string handling
+  ([477666d](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/477666df431169bd54ba8b538032c63f00416827))
+- remove Other option for sources
+  ([5bda3d2](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/5bda3d25e778bd6f2dc22f63b00d8da2bbfa2141))
+- **resources:** show spatiotemporal disabled when empty
+  ([6b4c24e](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/6b4c24e7e680b9c1f2c0b16643aaecb890ac9968))
+- **resources:** use \_id for download metadata
+  ([ad66f93](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/ad66f932efe5c81532d9b9c60af999c435f75f1b))
+- **search:** add limit banner + empty state
+  ([adec579](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/adec57987a746d8cc80a0bbe3eeee60457dfdd07))
+- **search:** filters update
+  ([f6e9a3f](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/f6e9a3f293d2eed5079838555771f5d7fa19cba9))
+- **search:** show filters for added sources
+  ([0d64141](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/0d64141e1ec9c50f1bc338391cd1f06cbf50d851))
+- small a11y fixes
+  ([7addca7](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/7addca7fcc9e4d38fd08eb559b49aef9514184af))
+- small ui fixes
+  ([21a68cd](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/21a68cd313263b270b9d601f18ed6b1ae4ceac1a))
+- typo
+  ([2e3d874](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/2e3d874f0595e743e3b9dd07af249e34350eb812))
+- unnecessary metadata badge pie prop
+  ([7c8b116](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/7c8b1163f9e6c86f54eb24f4361c21e9b5a6dbc1))
+- variable measured mapping change
+  ([2498310](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/249831086747ee9ee9dee42bea0d33289d8f212e))
+- variable measured search button
+  ([3577a7f](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/3577a7f93598d295146f68fc3dca139804a31774))
+
+### 🚀 Features
+
+- add additional advanced search fields
+  [#259](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/259)
+  ([8f81767](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/8f81767cec4e7154da1869b20095646ba1dde159))
+- add card customized theme
+  ([c46996b](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/c46996b41bd4eae4fa4a1e48a38684d53cad3ad9))
+- add disclaimer and about pages
+  NIAID-Data-Ecosystem/niaid-feedback[#155](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/155)
+  ([8d93775](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/8d93775c77c358d03b7163ade464983a818c5784))
+- add featured pages
+  ([808006f](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/808006ff00e3fd00221ee98e5fd67958bb2c9b22))
+- add featured pages components
+  ([f140f47](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/f140f47e711390fcd869137e9888bb70e4faad8e))
+- add funding ror id support
+  ([70300e1](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/70300e1c183756b8141fb6f1a7d335df7bf78f24))
+- add improved querying
+  ([5edb606](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/5edb6068e0fea7f4dc39aac139923c3182b1785d))
+- add notice banners
+  [#233](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/233)
+  ([5d76f2e](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/5d76f2ed88ad63ea6866eb57cd8bfa1b13863fb5))
+- add repo-level compatibility badges
+  [#227](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/227)
+  ([4676c21](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/4676c21cbd04b23f65d1d130fc3e0081be5a135c))
+- add resource catalogs table to home page
+  ([f759a9f](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/f759a9fc50d8049d5b67284cbf107220f1e7c2f7))
+- add sourceOrganization to filters + resource page
+  NIAID-Data-Ecosystem/niaid-feedback[#136](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/136)
+  ([44990e8](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/44990e87b235afb84f4801826a4f37fb3cb7feef))
+- **advanced-search:** add advanced search fields
+  ([796892f](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/796892f42553988e9c788bf22fff64604780bb00))
+- apply OCGR
+  NIAID-Data-Ecosystem/niaid-feedback[#129](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/129)
+  NIAID-Data-Ecosystem/niaid-feedback[#130](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/130)
+  ([2ffed7e](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/2ffed7ecdcd6007aeb43901959e9f0f6cf1bbf3a))
+- change view dataset button
+  [#234](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/234)
+  ([0ec0e86](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/0ec0e8671502445f2a426814eb4fc48c620f74d2))
+- display resource catalogs on landing page
+  [#229](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/229)
+  ([d3e2b18](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/d3e2b189ca5d76f4da44c06dc769a64846648ac0))
+- handle resource catalog properties
+  ([6444a74](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/6444a746766c61245663c800fd35810195aa2435))
+- **home:** add events to news carousel
+  ([c9f2817](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/c9f28171948d3048efd7232db8a9c24ee26ff66f))
+- remove collectionType from display
+  [#239](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/239)
+  ([267afbe](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/267afbe881a8424e2ea5c0a6e5f10e1c931270df))
+- replace nde-ui package with chakra-ui
+  ([006a005](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/006a005fcc6c8283bb92645d9b861652e87fb652))
+- standardize resource ids
+  [#235](https://github.com/NIAID-Data-Ecosystem/nde-portal/issues/235)
+  ([22110b4](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/22110b471dfc91b409ba951b7a1903098ba8747d))
+- use react-icons/fa6
+  ([a25a64d](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/a25a64d4f63c77921257abf49c6240b1344ceb90))
 
 ## [2.0.0](https://github.com/NIAID-Data-Ecosystem/nde-portal/compare/v0.0.3...v2.0.0) (2024-01-18)
 

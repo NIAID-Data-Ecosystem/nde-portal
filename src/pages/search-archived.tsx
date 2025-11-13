@@ -100,6 +100,10 @@ const Search: NextPage<{
     }
   }, [router]);
 
+  if (process.env.NEXT_PUBLIC_APP_ENV === 'production') {
+    return null; // Prevent rendering in production
+  }
+
   return (
     <PageContainer
       meta={getPageSeoConfig('/search')}

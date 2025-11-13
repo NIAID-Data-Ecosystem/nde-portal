@@ -9,6 +9,7 @@ import {
   DiseasePageProps,
   DiseaseCollectionApiResponse,
 } from 'src/views/diseases/types';
+import { sendGTMEvent } from '@next/third-parties/google';
 import { getTabIdFromTypeLabel } from '../search/components/filters/utils/tab-filter-utils';
 
 // Color scale for data types.
@@ -16,6 +17,23 @@ export const getFillColor = scaleOrdinal({
   domain: ['Dataset', 'ComputationalTool', 'ResourceCatalog'],
   range: ['#e8c543', '#ff8359', '#6e95fc'],
 });
+
+export const trackDiseasesEvent = (event: {
+  label: string; // e.g., "Dataset"
+  category: string; // e.g., "Data Types Chart"
+  linkType: 'legend' | 'chart'; // 'link' for links, 'chart' for chart segments
+  value?: number; // optional value, e.g., count associated with "Datasets"
+}) => {
+  console.log('Tracking event:', event);
+  // Send the event to Google Tag Manager
+  return sendGTMEvent({
+    event: 'disease_to_search', // required by GTM
+    label: event.label, // clicked item name
+    category: event.category, // chart section or type
+    link_type: event.linkType, // custom param to distinguish whether it's a link or chart segment that was clicked
+    value: event?.value, // optional value associated with the event
+  });
+};
 
 // Helper function to generate a URL object for search results.
 export const getSearchResultsRoute = ({
