@@ -290,7 +290,7 @@ export const fetchLineageFromBioThingsAPI = async (
           commonName: item?.genbank_common_name || item?.common_name || '',
           hasChildren: item?.children.length > 0, // [TO DO]:BioThings API does not provide this information
           iri: formatIRI(taxonId, params.ontology),
-          label: item.scientific_name.toLowerCase(),
+          label: item.scientific_name,
           ontologyName: params.ontology,
           parentTaxonId: isRootNode ? null : item.parent_taxid.toString(),
           rank: item.rank,
@@ -423,7 +423,7 @@ export const fetchChildrenFromBioThingsAPI = async (
           commonName: item?.genbank_common_name || item?.common_name || '',
           hasChildren: item?.children.length > 0, // [TO DO]:BioThings API does not provide this information
           iri: formatIRI(taxonId, params.ontology),
-          label: item.scientific_name.toLowerCase(),
+          label: item.scientific_name,
           ontologyName: params.ontology,
           parentTaxonId: isRootNode ? null : item.parent_taxid.toString(),
           rank: item.rank,
@@ -521,7 +521,7 @@ export const fetchLineageFromOLSAPI = async (
           commonName: item?.synonyms?.[0] || '',
           hasChildren: item.has_children,
           iri: item.iri,
-          label: item.label.toLowerCase(),
+          label: item.label,
           ontologyName: item.ontology_name,
           parentTaxonId,
           state: {
@@ -610,7 +610,7 @@ export const fetchChildrenFromOLSAPI = async (
         commonName: item?.synonyms?.[0] || '',
         hasChildren: item.has_children,
         iri: item.iri,
-        label: item.label.toLowerCase(),
+        label: item.label,
         ontologyName: item.ontology_name,
         parentTaxonId: params.id, // Parent is the current node
         state: {
