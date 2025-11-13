@@ -1,4 +1,5 @@
 import { formatAPIResourceTypeForDisplay } from 'src/utils/formatting/formatResourceType';
+
 import { TabType } from '../types';
 
 // Tab labels

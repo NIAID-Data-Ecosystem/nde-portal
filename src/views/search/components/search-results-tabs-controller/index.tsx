@@ -50,9 +50,7 @@ export const SearchResultsController = ({
     setSelectedIndex(index);
     const selectedTab = tabs[index];
     const paginationState = getPagination(selectedTab.id);
-
     setPagination(selectedTab.id, paginationState);
-
     return router.replace(
       {
         query: {
@@ -199,7 +197,7 @@ export const SearchResultsController = ({
     <>
       <SearchTabs
         value={`${selectedIndex}`}
-        onValueChange={index => handleTabChange(+index)}
+        onValueChange={e => handleTabChange(+e.value)}
         colorPalette={colorPalette}
         tabs={tabsWithFacetCounts}
         renderTabPanels={() =>

@@ -1,41 +1,50 @@
-import React, { useEffect, useState } from 'react';
-import { Flex, Icon, Select, VisuallyHidden } from '@chakra-ui/react';
-import { useMediaQuery } from 'usehooks-ts';
 import {
-  FaAngleRight,
+  ButtonGroup,
+  Icon,
+  IconButton,
+  Pagination as ChakraPagination,
+  PaginationRootProps,
+  Text,
+  useBreakpointValue,
+} from '@chakra-ui/react';
+import React, { useEffect, useState } from 'react';
+import {
   FaAngleLeft,
-  FaAnglesRight,
+  FaAngleRight,
   FaAnglesLeft,
+  FaAnglesRight,
 } from 'react-icons/fa6';
-import { PaginationButton, PaginationButtonGroup } from './components/buttons';
 
 /*
- [COMPONENT INFO]: Pagination
- Handles pagination for search results. Updates pages count based on the total results and the currently selected page.
+ [COMPONENT]: Pagination
+ Provides paginated navigation for search results.
+ Automatically adjusts the visible page count based on the total result size
+ and highlights the currently selected page.
 */
 
-interface PaginationProps {
-  // id for main element
+interface PaginationProps extends PaginationRootProps {
+  // [Accesibility]: Unique identifier for the root pagination element (<nav/>).
   id: string;
-  //  aria-label for nav element.
+  // [Accesibility]: Label for the navigation element.
   ariaLabel: string;
-  // Status of data loading.
+  // Whether data is currently loading.
   isLoading: boolean;
-  // API page index
+  // Currently selected page (1-based index).
   selectedPage: number;
-  // Number of items to display in a page
+  // Number of items displayed per page.
   selectedPerPage: number;
-  // Total number of results for given query
+  // Total number of available results.
   total: number;
-  // Handler fn on page change.
+  // Callback for when the user selects a new page.
   handleSelectedPage: (pageNumber: number) => void;
 }
 
-// Max pages returned from the API.
+// Maximum number of results supported by the API.
 export const MAX_RESULTS = 10000;
 
 export const Pagination: React.FC<PaginationProps> = React.memo(
   ({
+    colorPalette = 'primary',
     id,
     ariaLabel,
     isLoading,
@@ -43,138 +52,87 @@ export const Pagination: React.FC<PaginationProps> = React.memo(
     selectedPerPage,
     total,
     handleSelectedPage,
+    ...rest
   }) => {
-    const [totalPages, setTotalPages] = useState(10);
+    // Determines whether the layout should use desktop-style pagination.
+    const isLargerThanMd =
+      useBreakpointValue({ base: false, md: true }) ?? false;
+
+    // Internal pagination count, clamped to MAX_RESULTS if necessary.
+    const [count, setCount] = useState(total);
 
     useEffect(() => {
-      setTotalPages(prev => {
-        if (!total) {
-          return prev;
-        }
-        const total_pages = Math.ceil(total / selectedPerPage);
-        // max results allotted by api
-        const max = Math.floor(
-          (MAX_RESULTS - selectedPerPage) / selectedPerPage + 1,
-        );
-
-        // If the number of pages exceed the number of allotted pages by the api we return the max allotted by the api.
-        const pages = total_pages > max ? max : total_pages;
-
-        if (!isLoading && pages !== prev) {
-          return pages;
-        }
-        return prev;
-      });
-    }, [total, isLoading, selectedPerPage]);
-
-    // Function to generate options with two before and after the selected value
-    const generateOptions = (selectedVal: number) => {
-      let start = Math.max(1, selectedVal - 2);
-      let end = start + 4 <= totalPages ? start + 4 : totalPages;
-      return Array.from({ length: end - start + 1 }, (_, i) => start + i);
-    };
-
-    const options = generateOptions(selectedPage);
-    const isLargerThanMd = useMediaQuery('(min-width: 48em)');
+      !isLoading && setCount(Math.min(total, MAX_RESULTS));
+    }, [isLoading, total]);
 
     return (
-      <Flex
+      <ChakraPagination.Root
         id={id}
-        as='nav'
-        role='navigation'
         aria-label={ariaLabel}
-        alignItems='center'
-        justifyContent='center'
-        px={{ base: 0, sm: 4 }}
-        w='100%'
+        colorPalette={colorPalette}
+        count={count}
+        pageSize={selectedPerPage}
+        page={selectedPage}
+        onPageChange={e => handleSelectedPage(e.page)}
+        {...rest}
       >
-        <VisuallyHidden>
-          <h2>Pagination</h2>
-        </VisuallyHidden>
-        <Flex w={['100%', 'unset']} justifyContent='center'>
-          <PaginationButton
-            isDisabled={selectedPage - 1 === 0}
-            onClick={() => handleSelectedPage(1)}
-            display={{ base: 'none', sm: 'flex' }}
+        <ButtonGroup variant='ghost' size='sm'>
+          {/* Navigate to the first page. */}
+          <ChakraPagination.Item
+            asChild
+            type='page'
+            value={1}
+            disabled={selectedPage === 1}
           >
-            <VisuallyHidden>First Page</VisuallyHidden>
-            <Icon as={FaAnglesLeft} />
-          </PaginationButton>
-          <PaginationButton
-            isDisabled={selectedPage - 1 === 0}
-            onClick={() => handleSelectedPage(selectedPage - 1)}
-          >
-            <VisuallyHidden>Previous page</VisuallyHidden>
-            <Icon as={FaAngleLeft} />
-          </PaginationButton>
+            <IconButton>
+              <Icon as={FaAnglesLeft} />
+            </IconButton>
+          </ChakraPagination.Item>
 
-          {/* Mobile */}
-          <Select
-            borderColor='gray.200'
-            cursor='pointer'
-            display={{ base: 'block', md: 'none' }}
-            onChange={e => handleSelectedPage(+e.target.value)}
-            p={1}
-            size='md'
-            value={selectedPage}
-          >
-            {options.map((option, idx) => {
-              return (
-                <option key={idx} value={option}>
-                  {option}
-                </option>
-              );
-            })}
-          </Select>
-          {isLargerThanMd && (
-            <Flex display={{ base: 'none', md: 'flex' }}>
-              <PaginationButtonGroup>
-                {options.map(currentPage => {
-                  return (
-                    <PaginationButton
-                      key={currentPage}
-                      isActive={currentPage === selectedPage}
-                      onClick={() => handleSelectedPage(currentPage)}
-                    >
-                      {currentPage}
-                    </PaginationButton>
-                  );
-                })}
-              </PaginationButtonGroup>
-              {totalPages > 5 && selectedPage < totalPages - 1 && (
-                <>
-                  <Flex alignItems='flex-end' mx={4} color='primary.600'>
-                    ...
-                  </Flex>
-                  <PaginationButton
-                    isActive={totalPages === selectedPage}
-                    onClick={() => {
-                      handleSelectedPage(totalPages);
-                    }}
-                  >
-                    {totalPages}
-                  </PaginationButton>
-                </>
+          {/* Navigate to the previous page. */}
+          <ChakraPagination.PrevTrigger asChild>
+            <IconButton>
+              <Icon as={FaAngleLeft} />
+            </IconButton>
+          </ChakraPagination.PrevTrigger>
+
+          {/*
+            On desktop: show individual page buttons with ellipsis when needed.
+            On mobile: show a compact "Page X of Y" label.
+          */}
+          {isLargerThanMd ? (
+            <ChakraPagination.Items
+              render={page => (
+                <IconButton variant={{ base: 'ghost', _selected: 'outline' }}>
+                  {page.value.toLocaleString()}
+                </IconButton>
               )}
-            </Flex>
+              ellipsis={<Text color={`${colorPalette}.fg`}>...</Text>}
+            />
+          ) : (
+            <ChakraPagination.PageText />
           )}
-          <PaginationButton
-            isDisabled={selectedPage === totalPages}
-            onClick={() => handleSelectedPage(selectedPage + 1)}
+
+          {/* Navigate to the next page. */}
+          <ChakraPagination.NextTrigger asChild>
+            <IconButton>
+              <Icon as={FaAngleRight} />
+            </IconButton>
+          </ChakraPagination.NextTrigger>
+
+          {/* Navigate to the last page. */}
+          <ChakraPagination.Item
+            asChild
+            type='page'
+            value={Math.ceil(count / selectedPerPage)}
+            disabled={selectedPage === Math.ceil(count / selectedPerPage)}
           >
-            <VisuallyHidden>Next Page</VisuallyHidden>
-            <Icon as={FaAngleRight} />
-          </PaginationButton>
-          <PaginationButton
-            isDisabled={selectedPage === totalPages}
-            onClick={() => handleSelectedPage(totalPages)}
-            display={{ base: 'none', sm: 'flex' }}
-          >
-            <VisuallyHidden>Last Page</VisuallyHidden>
-            <Icon as={FaAnglesRight} />
-          </PaginationButton>
-        </Flex>
-      </Flex>
+            <IconButton>
+              <Icon as={FaAnglesRight} />
+            </IconButton>
+          </ChakraPagination.Item>
+        </ButtonGroup>
+      </ChakraPagination.Root>
     );
   },
 );

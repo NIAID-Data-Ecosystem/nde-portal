@@ -147,10 +147,10 @@ export const SearchResults = ({
     <>
       <VStack borderRadius='semi' bg='white' px={4} py={2}>
         {/* Toolbar controls: Sort, size, download metadata, and use metadata score (optional) */}
-        {/* <SearchResultsToolbar id={id} params={params} /> */}
+        <SearchResultsToolbar id={id} params={params} />
 
         {/* Pagination controls */}
-        {/* <Pagination
+        <Pagination
           id='pagination-top'
           ariaLabel='Paginate through resources.'
           selectedPage={from}
@@ -163,15 +163,16 @@ export const SearchResults = ({
           }}
           isLoading={isLoading || isRefetching}
           total={data?.total || 0}
-        /> */}
+        />
 
         {/* Display banner on last page if results exceed amount allotted by API */}
         {from === Math.floor(MAX_RESULTS / size) && (
-          <Banner status='info'>
-            Only the first {MAX_RESULTS.toLocaleString()} results are displayed,
+          <Banner
+            status='info'
+            title={`Only the first ${MAX_RESULTS.toLocaleString()} results are displayed,
             please limit your query to get better results or use our API to
-            download all results.
-          </Banner>
+            download all results.`}
+          ></Banner>
         )}
 
         {/* Search results cards */}
@@ -203,7 +204,7 @@ export const SearchResults = ({
         )}
 
         {/* Pagination controls */}
-        {/* <Pagination
+        <Pagination
           id='pagination-bottom'
           ariaLabel='Paginate through resources.'
           selectedPage={from}
@@ -216,7 +217,7 @@ export const SearchResults = ({
           }}
           isLoading={isLoading || isRefetching}
           total={data?.total || 0}
-        /> */}
+        />
       </VStack>
     </>
   );

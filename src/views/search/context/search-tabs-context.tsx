@@ -13,6 +13,8 @@ interface SearchContextValue {
   setFilters: (filters: Record<string, string[]>) => void;
 }
 
+export const DEFAULT_TAB_ID = tabs.find(t => t.isDefault)?.id || 'd';
+
 const SearchContext = createContext<SearchContextValue | undefined>(undefined);
 
 /**
