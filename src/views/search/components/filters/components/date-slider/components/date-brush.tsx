@@ -123,6 +123,26 @@ export const DateBrush = ({ width, maxBarWidth }: DateBrushProps) => {
     };
   }, [xScale, allData, dateRange, chartWidth]);
 
+  // Initialize brushYears when calculatedBrushPosition changes
+  useEffect(() => {
+    if (
+      !isUserInteracting &&
+      calculatedBrushPosition &&
+      allData &&
+      dateRange.length === 2
+    ) {
+      const startYear = allData[dateRange[0]]?.label;
+      const endYear = allData[dateRange[1]]?.label;
+
+      if (startYear && endYear) {
+        setBrushYears({
+          startYear,
+          endYear,
+        });
+      }
+    }
+  }, [calculatedBrushPosition, allData, dateRange, isUserInteracting]);
+
   // Detect external changes to dateRange (not from user interaction)
   useEffect(() => {
     if (isUserInteracting) return;
