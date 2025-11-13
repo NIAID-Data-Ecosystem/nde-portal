@@ -2,26 +2,25 @@ import {
   Box,
   Button,
   ButtonProps,
-  Collapse,
   Flex,
   FlexProps,
+  HStack,
   Icon,
-  ListItem,
+  List,
   Progress,
   Text,
-  UnorderedList,
   useDisclosure,
 } from '@chakra-ui/react';
-import React, { useCallback, useEffect, useState } from 'react';
-import { FaDownload, FaCircleExclamation } from 'react-icons/fa6';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { Params, fetchAllSearchResults } from 'src/utils/api';
-import { DownloadArgs, downloadAsCsv, downloadAsJson } from './helpers';
-import { Disclaimer } from './components/Disclaimer';
-import { FaXmark } from 'react-icons/fa6';
-import { encodeString } from 'src/utils/querystring-helpers';
 import { sendGTMEvent } from '@next/third-parties/google';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/router';
+import React, { useCallback, useEffect, useState } from 'react';
+import { FaCircleExclamation, FaDownload } from 'react-icons/fa6';
+import { FaXmark } from 'react-icons/fa6';
+import { fetchAllSearchResults, Params } from 'src/utils/api';
+
+import { Disclaimer } from './components/Disclaimer';
+import { DownloadArgs, downloadAsCsv, downloadAsJson } from './helpers';
 
 /*
  [COMPONENT INFO]: Download data button that gives JSON or CSV download options.
@@ -167,34 +166,33 @@ export const DownloadMetadata: React.FC<DownloadMetadataProps> = ({
   return (
     <Flex alignItems='flex-end' flexDirection='column' {...props}>
       {/* Error */}
-      <Collapse in={!!error}>
+      {!!error && (
         <Text fontSize='xs' fontStyle='italic' color='error.default'>
           <Icon as={FaCircleExclamation} color='error.default' mr={1}></Icon>
           Something went wrong with the metadata download. Please try again.
         </Text>
-      </Collapse>
+      )}
 
       <Box maxW='300px'>
         {downloadFormat || percentComplete ? (
           <Flex flexDirection='column'>
             <Flex w='200px' alignItems='center'>
-              <Progress
-                w='100%'
-                hasStripe
-                value={percentComplete}
-                colorScheme='primary'
-                isIndeterminate={percentComplete === 0}
-                isAnimated
-              />
-              <Text
-                fontSize='xs'
-                color='page.placeholder'
-                textAlign='end'
-                fontWeight='medium'
-                ml={1}
+              <Progress.Root
+                animated
+                striped
+                colorPalette='primary'
+                width='100%'
+                value={percentComplete || null}
               >
-                {percentComplete}%
-              </Text>
+                <HStack gap='5'>
+                  <Progress.Track flex={1}>
+                    <Progress.Range />
+                  </Progress.Track>
+                  <Progress.ValueText color='page.placeholder'>
+                    {percentComplete}%
+                  </Progress.ValueText>
+                </HStack>
+              </Progress.Root>
             </Flex>
           </Flex>
         ) : (
@@ -204,32 +202,31 @@ export const DownloadMetadata: React.FC<DownloadMetadataProps> = ({
         {isFetching ? (
           // cancel query
           <Button
-            leftIcon={<FaXmark />}
-            colorScheme='primary'
+            colorPalette='primary'
             onClick={() => {
               queryClient.cancelQueries({ queryKey });
               clearDownloadState();
             }}
             variant='solid'
-            size='xs'
-            fontSize='12px'
+            size='sm'
             {...buttonProps}
           >
-            cancel
+            <FaXmark />
+            Cancel
           </Button>
         ) : (
           <Box position='relative'>
             <Button
-              leftIcon={<FaDownload />}
-              colorScheme='primary'
+              colorPalette='primary'
               onClick={onToggle}
               variant='solid'
               size='sm'
-              isLoading={isFetching}
+              loading={isFetching}
               loadingText='Downloading'
               w='100%'
               {...buttonProps}
             >
+              <FaDownload />
               {children}
             </Button>
             <Box
@@ -240,11 +237,11 @@ export const DownloadMetadata: React.FC<DownloadMetadataProps> = ({
               borderRadius='semi'
               bg='white'
             >
-              <Collapse in={open} animateOpacity>
-                <UnorderedList ml={0}>
+              {open && (
+                <List.Root as='ul' ml={0}>
                   {options.map((option, idx) => {
                     return (
-                      <ListItem
+                      <List.Item
                         key={option.name}
                         borderBottom={
                           idx < options.length - 1 ? '1px solid' : 'none'
@@ -259,7 +256,7 @@ export const DownloadMetadata: React.FC<DownloadMetadataProps> = ({
                           py={2}
                           cursor='pointer'
                           _hover={{
-                            bg: `${buttonProps?.colorScheme || 'primary'}.50`,
+                            bg: `${buttonProps?.colorPalette || 'primary'}.50`,
                           }}
                           onClick={async () => {
                             trackDownloadEvent({
@@ -274,11 +271,11 @@ export const DownloadMetadata: React.FC<DownloadMetadataProps> = ({
                         >
                           <Text fontWeight='semibold'>{option.name}</Text>
                         </Box>
-                      </ListItem>
+                      </List.Item>
                     );
                   })}
-                </UnorderedList>
-              </Collapse>
+                </List.Root>
+              )}
             </Box>
           </Box>
         )}

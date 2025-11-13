@@ -3,35 +3,35 @@ import { SearchQueryParams } from '../types';
 // Sorting configuration.
 export const SORT_OPTIONS = [
   {
-    name: 'Best match',
+    label: 'Best match',
     value: '_score',
     sortBy: '_score',
     orderBy: 'asc',
     tooltip: 'Sort by relevancy (field name is boosted).',
   },
   {
-    name: 'Date: Least recent',
+    label: 'Date: Least recent',
     value: 'date',
     sortBy: 'date',
     orderBy: 'asc',
     tooltip: 'Sort by least recent activity (created, published or modified).',
   },
   {
-    name: 'Date: Most recent',
+    label: 'Date: Most recent',
     value: '-date',
     sortBy: 'date',
     orderBy: 'desc',
     tooltip: 'Sort by most recent activity (created, published or modified).',
   },
   {
-    name: 'A-Z',
+    label: 'A-Z',
     value: 'name.raw',
     sortBy: 'name.raw',
     orderBy: 'asc',
     tooltip: 'Sort in alphabetical order (title).',
   },
   {
-    name: 'Z-A',
+    label: 'Z-A',
     value: '-name.raw',
     sortBy: 'name.raw',
     orderBy: 'desc',
@@ -40,9 +40,9 @@ export const SORT_OPTIONS = [
 ];
 
 export const PAGE_SIZE_OPTIONS = [
-  { name: '10', value: 10 },
-  { name: '50', value: 50 },
-  { name: '100', value: 100 },
+  { label: '10', value: 10 },
+  { label: '50', value: 50 },
+  { label: '100', value: 100 },
 ];
 
 // Default parameters for the search query.

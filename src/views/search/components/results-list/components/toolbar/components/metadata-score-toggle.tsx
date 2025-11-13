@@ -1,15 +1,7 @@
+import { Circle, Flex, Icon, Span, Stack, Switch } from '@chakra-ui/react';
 import React from 'react';
-import {
-  Circle,
-  FormControl,
-  FormLabel,
-  Icon,
-  Stack,
-  Switch,
-  Text,
-} from '@chakra-ui/react';
-import Tooltip from 'src/components/tooltip';
 import { FaInfo } from 'react-icons/fa6';
+import { Tooltip } from 'src/components/tooltip';
 
 export const MetadataScoreToggle = React.memo(
   ({
@@ -22,57 +14,49 @@ export const MetadataScoreToggle = React.memo(
     handleToggle: () => void;
   }) => {
     return (
-      <FormControl display='flex' alignItems='center'>
+      <Flex w='100%'>
         <Tooltip
-          bg='white'
-          isDisabled={isDisabled}
-          label={
-            <Stack color='text.body' lineHeight='shorter' p={1}>
-              <Text color='inherit'>
+          disabled={isDisabled}
+          content={
+            <Stack color='text.body' lineHeight='short' p={1}>
+              <Span color='inherit' lineHeight='inherit'>
                 Ranks results based on the presence of unique fields.
-              </Text>
-              <Text color='inherit'>
+              </Span>
+              <Span color='inherit'>
                 First scores by query, then refines rankings with an additional
                 function score.
-              </Text>
-              <Text color='inherit'>
+              </Span>
+              <Span color='inherit'>
                 Adjusts results based on a calculated metadata score.
-              </Text>
+              </Span>
             </Stack>
           }
-          hasArrow
-          gutter={2}
         >
-          <FormLabel
-            htmlFor='metadata-score-toggle'
-            mb='0'
-            mr={2}
-            display='flex'
-            alignItems='start'
-            opacity={isDisabled ? 0.4 : 1}
-            fontWeight='normal'
-            fontSize='sm'
-          >
-            Use Metadata Score?
-            <Circle
-              size={4}
-              borderColor='gray.600'
-              borderWidth='1px'
-              color='gray.600'
-              ml={1}
+          <Flex>
+            <Switch.Root
+              checked={isChecked}
+              onCheckedChange={handleToggle}
+              colorPalette='primary'
+              disabled={isDisabled}
             >
-              <Icon as={FaInfo} boxSize={2} />
-            </Circle>
-          </FormLabel>
+              <Switch.Label display='flex'>
+                Use Metadata Score?
+                <Circle
+                  size={4}
+                  borderColor='gray.600'
+                  borderWidth='1px'
+                  color='gray.600'
+                  ml={1}
+                >
+                  <Icon as={FaInfo} boxSize={2} />
+                </Circle>
+              </Switch.Label>
+              <Switch.HiddenInput />
+              <Switch.Control />
+            </Switch.Root>
+          </Flex>
         </Tooltip>
-        <Switch
-          id='metadata-score-toggle'
-          isChecked={isChecked}
-          onChange={handleToggle}
-          colorScheme='secondary'
-          isDisabled={isDisabled}
-        />
-      </FormControl>
+      </Flex>
     );
   },
 );

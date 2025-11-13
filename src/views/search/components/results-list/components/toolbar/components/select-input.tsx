@@ -1,27 +1,45 @@
-import React from 'react';
-import { Select, SelectProps, VisuallyHidden } from '@chakra-ui/react';
+import {
+  createListCollection,
+  Portal,
+  Select,
+  SelectRootProps,
+  Span,
+  Stack,
+  VisuallyHidden,
+} from '@chakra-ui/react';
+import React, { useMemo } from 'react';
 
-interface SelectWithLabelProps extends SelectProps {
+interface SelectWithLabelProps
+  extends Omit<SelectRootProps, 'collection' | 'items'> {
   id: string;
   label: string;
   handleChange: (value: string | number) => void;
-  options: { name: string; value: string | number; tooltip?: string }[];
-  value: string | number;
+  items: { label: string; value: string | number; tooltip?: string }[];
 }
 
 /*
  [COMPONENT INFO]: SelectWithLabel
   Handles a select input with a label and options and optional tooltips.
 */
+
 export const SelectWithLabel = ({
   id,
   label,
-  options,
+  items,
   size = 'sm',
   value,
   handleChange,
+  colorPalette = 'niaid',
   ...props
 }: SelectWithLabelProps) => {
+  const collection = useMemo(
+    () =>
+      createListCollection({
+        items,
+      }),
+    [items],
+  );
+
   return (
     <>
       <VisuallyHidden>
@@ -29,31 +47,47 @@ export const SelectWithLabel = ({
           {label}
         </label>
       </VisuallyHidden>
-      <Select
-        id={id}
-        aria-label={label}
+      <Select.Root
+        collection={collection}
+        colorPalette={colorPalette}
         size={size}
-        onChange={e => handleChange(e.target.value)}
         value={value}
-        bg='white'
-        borderColor='gray.200'
-        borderRadius='semi'
-        cursor='pointer'
-        _hover={{ boxShadow: 'low' }}
+        onValueChange={e => handleChange(e.value[0])}
         {...props}
       >
-        {options.map(option => {
-          return (
-            <option
-              key={option.value}
-              title={option?.tooltip || ''}
-              value={option.value}
-            >
-              {option.name}
-            </option>
-          );
-        })}
-      </Select>
+        <Select.HiddenSelect />
+        <Select.Control>
+          <Select.Trigger>
+            <Select.ValueText placeholder={label} />
+          </Select.Trigger>
+          <Select.IndicatorGroup>
+            <Select.Indicator />
+          </Select.IndicatorGroup>
+        </Select.Control>
+        <Portal>
+          <Select.Positioner>
+            <Select.Content>
+              {collection.items.map(item => (
+                <Select.Item
+                  item={item}
+                  key={item.value}
+                  _highlighted={{
+                    bg: `${colorPalette}.emphasized`,
+                  }}
+                >
+                  <Stack gap='0'>
+                    <Select.ItemText>{item.label}</Select.ItemText>
+                    <Span color='fg.muted' textStyle='xs'>
+                      {item.tooltip}
+                    </Span>
+                  </Stack>
+                  <Select.ItemIndicator />
+                </Select.Item>
+              ))}
+            </Select.Content>
+          </Select.Positioner>
+        </Portal>
+      </Select.Root>
     </>
   );
 };

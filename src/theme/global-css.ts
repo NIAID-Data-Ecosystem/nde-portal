@@ -15,4 +15,8 @@ export const globalCss = {
   strong: {
     lineHeight: 'inherit',
   },
+  span: {
+    color: 'inherit',
+    lineHeight: 'inherit',
+  },
 };

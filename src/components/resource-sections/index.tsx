@@ -506,7 +506,7 @@ const Sections = ({
                     buttonProps={{
                       colorScheme: 'primary',
                       variant: 'outline',
-                      size: 'sm',
+                      size: 'xs',
                       mb: 1,
                     }}
                     exportFileName={`nde-${data['_id']}`}
