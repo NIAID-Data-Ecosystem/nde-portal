@@ -5,7 +5,7 @@ import { useRouter } from 'next/router';
 import { FiltersSection } from './components/section';
 import { FiltersList } from './components/list';
 import { FiltersContainer } from './components/container';
-import { DateFilter } from './components/date-slider';
+import { DateFilter } from './components/date-filter';
 import { SelectedFilterType } from './types';
 import { queryFilterObject2String } from './utils/query-builders';
 import { updateRoute } from '../../utils/update-route';
