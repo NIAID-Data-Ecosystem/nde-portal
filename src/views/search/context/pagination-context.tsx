@@ -8,7 +8,7 @@ import {
 } from 'react';
 import { useRouter } from 'next/router';
 import { defaultQuery } from '../config/defaultQuery';
-import { useSearchTabsContext } from './search-tabs-context';
+import { DEFAULT_TAB_ID, useSearchTabsContext } from './search-tabs-context';
 
 export type PaginationState = {
   from: number;
@@ -59,7 +59,7 @@ export const PaginationProvider = ({ children }: { children: ReactNode }) => {
     const urlFrom = parseInt(router.query.from as string);
     const urlSize = parseInt(router.query.size as string);
     const urlSort = router.query.sort as string;
-    const urlTab = router.query.tab as string;
+    const urlTab = (router.query.tab || DEFAULT_TAB_ID) as string;
 
     if (!isNaN(urlFrom) && urlTab) {
       setPaginationByTab(prev => ({
