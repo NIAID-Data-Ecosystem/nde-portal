@@ -5,7 +5,7 @@ import { useRouter } from 'next/router';
 import { FiltersSection } from './components/section';
 import { FiltersList } from './components/list';
 import { FiltersContainer } from './components/container';
-import { FiltersDateSlider } from './components/date-slider';
+import { DateFilter } from './components/date-slider';
 import { SelectedFilterType } from './types';
 import { queryFilterObject2String } from './utils/query-builders';
 import { updateRoute } from '../../utils/update-route';
@@ -122,7 +122,7 @@ export const Filters: React.FC<FiltersProps> = React.memo(
                 name={config.name}
                 description={config.description}
               >
-                <FiltersDateSlider
+                <DateFilter
                   colorScheme={colorScheme}
                   handleSelectedFilter={values =>
                     handleSelectedFilters(values, property)

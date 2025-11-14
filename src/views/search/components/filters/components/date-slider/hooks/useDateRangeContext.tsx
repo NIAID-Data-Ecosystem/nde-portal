@@ -40,10 +40,10 @@ const DateRangeContext = React.createContext({
 DateRangeContext.displayName = 'DateRangeContext';
 
 /*
-  HANDLE SLIDER DATE RANGE
-  [DateRangeSlider]: Range controlled by sliders. Indices of resourcesWithDate.
+  HANDLE DATE RANGE
+  [DateRange]: Range controlled by brush. Indices of resourcesWithDate.
 */
-export const DateRangeSlider: React.FC<{
+export const DateRange: React.FC<{
   data: FilterItem[];
   isLoading: boolean;
   selectedDates: string[];
@@ -178,9 +178,7 @@ export const DateRangeSlider: React.FC<{
 export const useDateRangeContext = () => {
   const context = React.useContext(DateRangeContext);
   if (context === undefined) {
-    throw new Error(
-      'useDateRangeContext must be wrapped with <DateRangeSlider/>',
-    );
+    throw new Error('useDateRangeContext must be wrapped with <DateRange/>');
   }
   return context;
 };

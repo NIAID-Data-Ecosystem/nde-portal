@@ -4,10 +4,7 @@ import dynamic from 'next/dynamic';
 import { Box, Checkbox, Flex, Heading, Spinner, Text } from '@chakra-ui/react';
 import { DatePicker } from './components/date-picker';
 import { formatNumber } from 'src/utils/helpers';
-import {
-  DateRangeSlider,
-  useDateRangeContext,
-} from './hooks/useDateRangeContext';
+import { DateRange, useDateRangeContext } from './hooks/useDateRangeContext';
 import { Params } from 'src/utils/api';
 import { useFilterQueries } from '../../hooks/useFilterQueries';
 import { FILTER_CONFIGS } from '../../config';
@@ -20,7 +17,7 @@ const Histogram = dynamic(() => import('./components/histogram'), {
   ssr: false,
 });
 
-interface FiltersDateSliderProps {
+interface DateFilterProps {
   colorScheme: string;
   queryParams: Params;
   // Selected resourcesWithDate [min, max] from router.
@@ -32,7 +29,7 @@ interface FiltersDateSliderProps {
 }
 
 // Inner component that has access to context
-const FiltersDateSliderInner: React.FC<FiltersDateSliderProps> = ({
+const DateFilterInner: React.FC<DateFilterProps> = ({
   colorScheme,
   queryParams,
   selectedDates,
@@ -211,7 +208,7 @@ const FiltersDateSliderInner: React.FC<FiltersDateSliderProps> = ({
   );
 };
 
-export const FiltersDateSlider: React.FC<FiltersDateSliderProps> = props => {
+export const DateFilter: React.FC<DateFilterProps> = props => {
   const { queryParams, selectedDates } = props;
 
   const config = useMemo(
@@ -243,13 +240,13 @@ export const FiltersDateSlider: React.FC<FiltersDateSliderProps> = props => {
   );
 
   return (
-    <DateRangeSlider
+    <DateRange
       data={initialData}
       isLoading={isLoading}
       selectedDates={selectedDates}
       colorScheme='secondary'
     >
-      <FiltersDateSliderInner {...props} />
-    </DateRangeSlider>
+      <DateFilterInner {...props} />
+    </DateRange>
   );
 };
