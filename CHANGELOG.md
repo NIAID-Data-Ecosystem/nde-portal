@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [5.1.2](https://github.com/NIAID-Data-Ecosystem/nde-portal/compare/v5.1.1...v5.1.2) (2025-11-14)
+
+
+### 🐛 Bugfixes
+
+* **search:** preserve pagination on page refresh ([7ced0b4](https://github.com/NIAID-Data-Ecosystem/nde-portal/commit/7ced0b48b02310f8fddf390f537189a229c205a6))
+
 ### [5.1.1](https://github.com/NIAID-Data-Ecosystem/nde-portal/compare/v5.1.0...v5.1.1) (2025-11-13)
 
 
