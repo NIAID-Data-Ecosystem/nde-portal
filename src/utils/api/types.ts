@@ -474,7 +474,7 @@ export interface FormattedResource {
   softwareRequirements: string[] | null;
   softwareVersion: string[] | null;
   sourceOrganization: SourceOrganization[] | null;
-  sdPublisher: SdPublisher[] | null;
+  sdPublisher: SdPublisher | SdPublisher[] | null;
   spatialCoverage: SpatialCoverage[] | null;
   species: Species[] | null;
   temporalCoverage: TemporalCoverage[] | null;

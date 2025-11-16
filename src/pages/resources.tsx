@@ -48,6 +48,7 @@ export interface ResourceData extends FormattedResource {
 const ResourcePage: NextPage = () => {
   const router = useRouter();
   const { id } = router.query;
+
   // Access query client
   const {
     isLoading: loadingData,

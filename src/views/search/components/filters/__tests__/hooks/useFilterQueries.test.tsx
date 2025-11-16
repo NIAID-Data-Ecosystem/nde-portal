@@ -57,6 +57,7 @@ const config = [
         },
       ];
     }),
+    tabIds: ['d'],
   } as FilterConfig,
 ];
 
