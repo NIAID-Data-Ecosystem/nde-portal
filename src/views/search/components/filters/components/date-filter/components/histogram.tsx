@@ -72,6 +72,9 @@ const Histogram: React.FC<HistogramProps> = ({ updatedData, handleClick }) => {
     },
   );
 
+  // Type-cast to fix React 18+ type compatibility issue
+  const TooltipComponent = TooltipInPortal as any;
+
   const width = useMemo(
     () => containerBounds?.width || 0,
     [containerBounds?.width],
@@ -166,28 +169,24 @@ const Histogram: React.FC<HistogramProps> = ({ updatedData, handleClick }) => {
       }}
     >
       {/* Show tooltip when hovering in any vertical space to bar. */}
-      {tooltipOpen && (
-        <TooltipInPortal
+      {tooltipOpen && tooltipData && tooltipData.label && (
+        <TooltipComponent
           // set this to random so it correctly updates with parent bounds
           key={Math.random()}
           top={tooltipTop}
           left={tooltipLeft}
         >
-          {tooltipData && tooltipData.label && (
-            <>
-              {tooltipData.label}:{' '}
-              {/* Show the updated count and initial count when they differ and the bar is selected. */}
-              {range_min &&
-                range_max &&
-                tooltipData.term >= range_min &&
-                tooltipData.term <= range_max &&
-                tooltipData.updatedCount !== tooltipData.count &&
-                tooltipData.updatedCount! > 0 &&
-                `${formatNumber(tooltipData.updatedCount)} of `}
-              {formatNumber(tooltipData.count)}
-            </>
-          )}
-        </TooltipInPortal>
+          {tooltipData.label}:{' '}
+          {/* Show the updated count and initial count when they differ and the bar is selected. */}
+          {range_min &&
+            range_max &&
+            tooltipData.term >= range_min &&
+            tooltipData.term <= range_max &&
+            tooltipData.updatedCount !== tooltipData.count &&
+            tooltipData.updatedCount! > 0 &&
+            `${formatNumber(tooltipData.updatedCount)} of `}
+          {formatNumber(tooltipData.count)}
+        </TooltipComponent>
       )}
 
       {/* Bars */}
