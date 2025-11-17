@@ -17,7 +17,7 @@ interface HistogramProps {
   handleClick: (args: string[]) => void;
 }
 
-const Histogram: React.FC<HistogramProps> = ({ updatedData, handleClick }) => {
+const Histogram = ({ updatedData, handleClick }: HistogramProps) => {
   const { allData, filteredData, dates } = useDateRangeContext();
 
   // Filter updatedData to remove any future years

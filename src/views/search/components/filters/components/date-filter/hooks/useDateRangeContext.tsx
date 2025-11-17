@@ -43,19 +43,21 @@ DateRangeContext.displayName = 'DateRangeContext';
   HANDLE DATE RANGE
   [DateRange]: Range controlled by brush. Indices of resourcesWithDate.
 */
-export const DateRange: React.FC<{
+interface DateRangeProps {
   data: FilterItem[];
   isLoading: boolean;
   selectedDates: string[];
   colorScheme: ContextProps['colorScheme'];
   children: React.ReactNode;
-}> = ({
+}
+
+export const DateRange = ({
   children,
   data: datesData,
   isLoading,
   selectedDates = [],
   colorScheme = 'primary',
-}) => {
+}: DateRangeProps) => {
   const [initialData, setInitialData] = useState<FilterItem[]>([]);
   const [isDragging, setIsDragging] = useState(false);
   const [dateRange, setDateRange] = useState<number[]>([]);

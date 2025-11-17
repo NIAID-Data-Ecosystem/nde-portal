@@ -24,13 +24,13 @@ interface FiltersProps {
 }
 
 // Filters component
-export const Filters: React.FC<FiltersProps> = React.memo(
+export const Filters = React.memo(
   ({
     colorScheme = 'primary',
     isDisabled,
     removeAllFilters,
     selectedFilters,
-  }) => {
+  }: FiltersProps) => {
     const router = useRouter();
     const queryParams = useSearchQueryFromURL();
     const { resetPagination } = usePaginationContext();

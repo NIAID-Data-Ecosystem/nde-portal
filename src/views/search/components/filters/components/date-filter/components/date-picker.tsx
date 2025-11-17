@@ -10,12 +10,12 @@ interface DatePickerProps {
   resetFilter: () => void;
 }
 
-export const DatePicker: React.FC<DatePickerProps> = ({
+export const DatePicker = ({
   colorScheme,
   selectedDates,
   handleSelectedFilter,
   resetFilter,
-}) => {
+}: DatePickerProps) => {
   const [selected, setSelected] = useState(selectedDates);
   const { allData } = useDateRangeContext();
 

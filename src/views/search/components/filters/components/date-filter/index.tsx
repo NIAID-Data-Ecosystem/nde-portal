@@ -29,13 +29,13 @@ interface DateFilterProps {
 }
 
 // Inner component that has access to context
-const DateFilterInner: React.FC<DateFilterProps> = ({
+const DateFilterInner = ({
   colorScheme,
   queryParams,
   selectedDates,
   handleSelectedFilter,
   resetFilter,
-}) => {
+}: DateFilterProps) => {
   const { setOnBrushChangeEnd, allData } = useDateRangeContext();
 
   const config = useMemo(
@@ -208,7 +208,7 @@ const DateFilterInner: React.FC<DateFilterProps> = ({
   );
 };
 
-export const DateFilter: React.FC<DateFilterProps> = props => {
+export const DateFilter = (props: DateFilterProps) => {
   const { queryParams, selectedDates } = props;
 
   const config = useMemo(
