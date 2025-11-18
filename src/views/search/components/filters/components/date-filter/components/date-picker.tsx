@@ -80,7 +80,7 @@ export const DatePicker = ({
             colorScheme={colorScheme as string}
             bg='white'
             min={min}
-            max={selected[1] || max}
+            max={max}
             value={selected[0] === '-_exists_' ? '' : selected[0] || min}
             onChange={e => {
               let newSelection = [e.target.value, selected[1] || max];
@@ -98,14 +98,11 @@ export const DatePicker = ({
             type='date'
             colorScheme={colorScheme as string}
             bg='white'
-            min={selected[0] || min}
+            min={min}
             max={max}
             value={selected[0] === '-_exists_' ? '' : selected[1] || max}
             onChange={e => {
               let newSelection = [selected[0] || min, e.target.value];
-              if (e.target.value > max) {
-                newSelection[1] = max;
-              }
               setSelected(newSelection);
             }}
             isDisabled={isDisabled}
