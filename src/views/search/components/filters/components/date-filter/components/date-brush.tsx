@@ -19,6 +19,7 @@ import { useDateRangeContext } from '../hooks/useDateRangeContext';
 interface DateBrushProps {
   width: number;
   maxBarWidth: number;
+  margin?: { top: number; right: number; bottom: number; left: number };
 }
 
 const BRUSH_HEIGHT = 30;
@@ -26,7 +27,11 @@ const AXIS_HEIGHT = 20;
 const TOTAL_HEIGHT = BRUSH_HEIGHT + AXIS_HEIGHT;
 const BRUSH_STATES = ['brush', 'left', 'right'];
 
-export const DateBrush = ({ width, maxBarWidth }: DateBrushProps) => {
+export const DateBrush = ({
+  width,
+  maxBarWidth,
+  margin = { top: 0, right: 0, bottom: 0, left: 30 },
+}: DateBrushProps) => {
   const { allData, dateRange, setDateRange, onBrushChangeEnd, setIsDragging } =
     useDateRangeContext();
   const brushRef = useRef<BaseBrush | null>(null);
@@ -64,16 +69,19 @@ export const DateBrush = ({ width, maxBarWidth }: DateBrushProps) => {
   // Get current year
   const currentYear = useMemo(() => new Date().getFullYear().toString(), []);
 
+  // Calculate inner dimensions
+  const innerWidth = useMemo(() => {
+    return Math.max(0, width - margin.left - margin.right);
+  }, [width, margin]);
+
   // Calculate the chart width
-  const horizontalPadding = 60;
   const chartWidth = useMemo(() => {
     if (!allData || allData.length === 0) return 0;
 
-    const availableWidth = Math.max(0, width - horizontalPadding);
-    return availableWidth / allData.length > maxBarWidth
+    return innerWidth / allData.length > maxBarWidth
       ? allData.length * maxBarWidth
-      : availableWidth;
-  }, [allData, width, maxBarWidth]);
+      : innerWidth;
+  }, [allData, innerWidth, maxBarWidth]);
 
   // Use band scale with years as domain
   const xScale = useMemo(() => {
@@ -500,7 +508,7 @@ export const DateBrush = ({ width, maxBarWidth }: DateBrushProps) => {
         height={TOTAL_HEIGHT}
         style={{ overflow: 'visible' }}
       >
-        <Group left={horizontalPadding / 2}>
+        <Group left={margin.left} top={margin.top}>
           {/* Brush selection area. key forces remount only on external changes.*/}
           <Brush
             key={brushKey}
