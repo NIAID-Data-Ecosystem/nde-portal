@@ -13,7 +13,7 @@ import { scaleBand, scaleLinear } from '@visx/scale';
 import { Bar } from '@visx/shape';
 import BaseBrush from '@visx/brush/lib/BaseBrush';
 import { BrushProps } from '@visx/brush/lib/Brush';
-import { BrushHandleRenderProps } from '@visx/brush/lib/BrushHandle';
+import { BrushHandle } from 'src/components/brush/components/brush-handle';
 import { Bounds } from '@visx/brush/lib/types';
 import { FacetTerm } from 'src/utils/api/types';
 import { FacetProps } from '../../../types';
@@ -350,44 +350,13 @@ const AccessibleBrush = ({
       useWindowMoveEvents
       renderBrushHandle={props => (
         <BrushHandle
+          {...props}
           isFocused={Boolean(
             activeHandle && props.className.includes(activeHandle),
           )}
-          {...props}
+          strokeColor={isFocused ? 'steelblue' : '#999'}
         />
       )}
     />
   );
 };
-
-// A custom brush handle that is used to render the left and right handles of the brush.
-function BrushHandle({
-  x,
-  height,
-  isBrushActive,
-  className,
-  isFocused,
-}: BrushHandleRenderProps & { isFocused: boolean }) {
-  const pathWidth = 8;
-  const pathHeight = 15;
-  const isLeftHandle = className?.includes('left');
-  if (!isBrushActive) {
-    return null;
-  }
-  return (
-    <Group
-      left={x + pathWidth / 2}
-      top={(height - pathHeight) / 2}
-      role='slider'
-      aria-label={`${isLeftHandle ? 'Left' : 'Right'} brush handle`}
-    >
-      <path
-        fill='#f2f2f2'
-        d='M -4.5 0.5 L 3.5 0.5 L 3.5 15.5 L -4.5 15.5 L -4.5 0.5 M -1.5 4 L -1.5 12 M 0.5 4 L 0.5 12'
-        strokeWidth={isFocused ? '1.5' : '1'}
-        stroke={isFocused ? 'steelblue' : '#999'}
-        style={{ cursor: 'ew-resize' }}
-      />
-    </Group>
-  );
-}

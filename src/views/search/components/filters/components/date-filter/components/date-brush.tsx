@@ -12,7 +12,7 @@ import { AxisBottom } from '@visx/axis';
 import { Brush } from '@visx/brush';
 import { Bounds } from '@visx/brush/lib/types';
 import BaseBrush from '@visx/brush/lib/BaseBrush';
-import { BrushHandleRenderProps } from '@visx/brush/lib/BrushHandle';
+import { BrushHandle } from 'src/components/brush/components/brush-handle';
 import { theme } from 'src/theme';
 import { useDateRangeContext } from '../hooks/useDateRangeContext';
 
@@ -531,15 +531,32 @@ export const DateBrush = ({
               strokeOpacity: isFocused ? 1 : 0.8,
             }}
             useWindowMoveEvents
-            renderBrushHandle={props => (
-              <BrushHandle
-                {...props}
-                brushYears={brushYears}
-                isFocused={Boolean(
-                  activeHandle && props.className?.includes(activeHandle),
-                )}
-              />
-            )}
+            renderBrushHandle={props => {
+              const isLeftHandle = props.className?.includes('left');
+              const label = brushYears
+                ? isLeftHandle
+                  ? brushYears.startYear
+                  : brushYears.endYear
+                : undefined;
+
+              return (
+                <BrushHandle
+                  {...props}
+                  isFocused={Boolean(
+                    activeHandle && props.className?.includes(activeHandle),
+                  )}
+                  label={label}
+                  strokeColor={theme.colors.secondary?.[500]}
+                  labelColor={theme.colors.secondary?.[500]}
+                  labelOptions={{
+                    padding: 6,
+                    fontSize: 13,
+                    fontWeight: 600,
+                    verticalAdjustment: (BRUSH_HEIGHT - 15) / 8,
+                  }}
+                />
+              );
+            }}
           />
 
           {/* x-axis with fixed labels (earliest and current year) */}
@@ -561,72 +578,3 @@ export const DateBrush = ({
     </div>
   );
 };
-
-// Handle rendering
-function BrushHandle({
-  x,
-  height,
-  isBrushActive,
-  className,
-  brushYears,
-  isFocused,
-}: BrushHandleRenderProps & {
-  brushYears: { startYear: string; endYear: string } | null;
-  isFocused: boolean;
-}) {
-  const pathWidth = 8;
-  const pathHeight = 15;
-  const labelPadding = 6;
-  const LABEL_VERTICAL_ADJUSTMENT = (height - pathHeight) / 8;
-
-  if (!isBrushActive || !brushYears) {
-    return null;
-  }
-
-  const isLeftHandle = className?.includes('left');
-  const leftPosition = isLeftHandle ? x + pathWidth / 4 : x + pathWidth / 4;
-
-  // Get the year label for the handle
-  const yearLabel = isLeftHandle ? brushYears.startYear : brushYears.endYear;
-
-  // Calculate label position
-  const labelX = isLeftHandle
-    ? -(pathWidth / 2) - labelPadding
-    : pathWidth / 2 + labelPadding;
-
-  const labelAnchor = isLeftHandle ? 'end' : 'start';
-
-  return (
-    <Group
-      left={leftPosition}
-      top={(height - pathHeight) / 2}
-      role='slider'
-      aria-label={`${isLeftHandle ? 'Left' : 'Right'} brush handle`}
-    >
-      {/* Handle rectangle with grip lines */}
-      <path
-        fill='#f2f2f2'
-        d='M -4.5 0.5 L 3.5 0.5 L 3.5 15.5 L -4.5 15.5 L -4.5 0.5 M -1.5 4 L -1.5 12 M 0.5 4 L 0.5 12'
-        strokeWidth={isFocused ? '1.5' : '1'}
-        stroke={isFocused ? theme.colors.secondary?.[500] : '#999'}
-        style={{ cursor: 'ew-resize' }}
-      />
-
-      {/* Year label positioned next to the handle */}
-      <text
-        x={labelX}
-        y={pathHeight / 2 + LABEL_VERTICAL_ADJUSTMENT}
-        textAnchor={labelAnchor}
-        dominantBaseline='middle'
-        fill={theme.colors.secondary?.[500]}
-        fontSize={13}
-        fontWeight={600}
-        style={{ userSelect: 'none', pointerEvents: 'none' }}
-      >
-        {yearLabel}
-      </text>
-    </Group>
-  );
-}
-
-export default DateBrush;
