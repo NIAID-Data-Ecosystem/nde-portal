@@ -139,9 +139,7 @@ export const Checkbox: React.FC<FilterCheckboxProps> = React.memo(
               flexDirection='column'
               fontWeight={subLabel ? 'semibold' : 'normal'}
             >
-              {label
-                ? label.charAt(0).toUpperCase() + label.slice(1)
-                : 'Loading...'}
+              {label ? label.charAt(0).toUpperCase() + label.slice(1) : ''}
               {subLabel && (
                 <Text
                   as='span'
