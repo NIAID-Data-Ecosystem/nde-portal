@@ -26,6 +26,7 @@ const BRUSH_HEIGHT = 30;
 const AXIS_HEIGHT = 20;
 const TOTAL_HEIGHT = BRUSH_HEIGHT + AXIS_HEIGHT;
 const BRUSH_STATES = ['brush', 'left', 'right'];
+const DRAG_THRESHOLD = 6; // pixels (threshold for distinguishing click from drag)
 
 export const DateBrush = ({
   width,
@@ -59,6 +60,17 @@ export const DateBrush = ({
 
   // Track if keyboard navigation is taking place
   const isKeyboardNavigating = useRef(false);
+
+  // Track drag detection
+  const dragDetection = useRef<{
+    startX: number | null;
+    startY: number | null;
+    isDragging: boolean;
+  }>({
+    startX: null,
+    startY: null,
+    isDragging: false,
+  });
 
   // Get the earliest year from allData
   const earliestYear = useMemo(() => {
@@ -207,6 +219,11 @@ export const DateBrush = ({
         return;
       }
 
+      // Only process changes if actual dragging detected
+      if (!dragDetection.current.isDragging) {
+        return;
+      }
+
       if (!domain || !allData || !xScale) return;
 
       // Get the selected years from xValues
@@ -242,6 +259,21 @@ export const DateBrush = ({
       setIsDragging(false);
       setIsUserInteracting(false);
 
+      // Check if this was actually a drag or just a click
+      const wasDragging = dragDetection.current.isDragging;
+
+      // Reset drag detection
+      dragDetection.current = {
+        startX: null,
+        startY: null,
+        isDragging: false,
+      };
+
+      // Only trigger updates if it was an actual drag
+      if (!wasDragging) {
+        return;
+      }
+
       if (!domain || !allData || !xScale || !onBrushChangeEnd) return;
 
       const selectedYears = ((domain.xValues as string[]) || []).filter(
@@ -267,10 +299,63 @@ export const DateBrush = ({
   );
 
   // Handle brush interaction start
-  const handleBrushStart = useCallback(() => {
-    setIsDragging(true);
-    setIsUserInteracting(true);
-  }, [setIsDragging]);
+  const handleBrushStart = useCallback(
+    (start: { x: number; y: number }) => {
+      setIsDragging(true);
+      setIsUserInteracting(true);
+
+      // Initialize drag detection (record starting position)
+      dragDetection.current = {
+        startX: start.x,
+        startY: start.y,
+        isDragging: false, // Not yet dragging
+      };
+    },
+    [setIsDragging],
+  );
+
+  // Listen to mouse/touch move events to detect actual dragging
+  useEffect(() => {
+    const handleMouseMove = (event: MouseEvent | TouchEvent) => {
+      if (!isUserInteracting) return;
+
+      const { startX, startY, isDragging } = dragDetection.current;
+
+      // If already detected as dragging, no need to check again
+      if (isDragging || startX === null || startY === null) return;
+
+      // Get current position
+      let currentX: number;
+      let currentY: number;
+
+      if (event instanceof MouseEvent) {
+        currentX = event.clientX;
+        currentY = event.clientY;
+      } else {
+        const touch = event.touches[0];
+        if (!touch) return;
+        currentX = touch.clientX;
+        currentY = touch.clientY;
+      }
+
+      // Calculate distance moved
+      const deltaX = Math.abs(currentX - startX);
+      const deltaY = Math.abs(currentY - startY);
+
+      // Check if movement exceeds threshold
+      if (deltaX >= DRAG_THRESHOLD || deltaY >= DRAG_THRESHOLD) {
+        dragDetection.current.isDragging = true;
+      }
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('touchmove', handleMouseMove);
+
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('touchmove', handleMouseMove);
+    };
+  }, [isUserInteracting]);
 
   // Keyboard navigation
   const handleKeyDown = useCallback(
@@ -280,7 +365,7 @@ export const DateBrush = ({
 
       const { key, shiftKey } = event;
 
-      // Get current year indices from dateRange state (more reliable than brush state)
+      // Get current year indices from dateRange state
       let currentStartIndex = dateRange[0] ?? 0;
       let currentEndIndex = dateRange[1] ?? allData.length - 1;
 
