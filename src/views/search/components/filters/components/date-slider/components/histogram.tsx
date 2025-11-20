@@ -1,14 +1,15 @@
-import React, { useCallback, useMemo } from 'react';
 import { Box, Flex, Text } from '@chakra-ui/react';
-import { theme } from 'src/theme';
 import { Group } from '@visx/group';
 import { scaleBand, scaleLinear } from '@visx/scale';
 import { Bar } from '@visx/shape';
 import { useTooltip, useTooltipInPortal } from '@visx/tooltip';
+import React, { useCallback, useMemo } from 'react';
+import { system } from 'src/theme';
 import { formatNumber } from 'src/utils/helpers';
+
+import { FacetTermWithDetails } from '../../../types';
 import { addMissingYears } from '../helpers';
 import { useDateRangeContext } from '../hooks/useDateRangeContext';
-import { FacetTermWithDetails } from '../../../types';
 
 interface HistogramProps {
   updatedData: FacetTermWithDetails[];
@@ -35,11 +36,11 @@ const Histogram: React.FC<HistogramProps> = ({
       height: 150,
       padding: 0.1,
       fill: {
-        inactive: theme.colors.blackAlpha[100],
-        gray: theme.colors.gray[200],
+        inactive: system.tokens.getByName('colors.blackAlpha.100')?.value,
+        gray: system.tokens.getByName('colors.gray.200')?.value,
       },
       hover: {
-        gray: theme.colors.blackAlpha[200],
+        gray: system.tokens.getByName('colors.blackAlpha.200')?.value,
       },
       opacity: { hover: 0.65, active: 1 },
     }),
@@ -236,7 +237,7 @@ const Histogram: React.FC<HistogramProps> = ({
                     // If bar is hovered over, fill with a different color.
                     // if count is zero we fill the bar with a lighter colors
                     if (count === 0 && updatedCount === 0) {
-                      fill = theme.colors.gray[200];
+                      fill = params.fill.gray;
                     }
                   }
 

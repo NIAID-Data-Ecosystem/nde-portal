@@ -161,11 +161,14 @@ export const FiltersContainer: React.FC<FiltersContainerProps> = ({
   // Convert open section properties to accordion indices
   const accordionIndices = useMemo(() => {
     return Array.from(allCurrentOpenSections)
-      .map(property =>
-        filtersList.findIndex(config => config.property === property),
-      )
-      .filter(index => index !== -1)
-      .sort((a, b) => a - b);
+      .map(property => {
+        const filterListIndex = filtersList.findIndex(
+          config => config.property === property,
+        );
+        return String(filterListIndex);
+      })
+      .filter(index => index !== '-1')
+      .sort((a, b) => +a - +b);
   }, [allCurrentOpenSections, filtersList]);
 
   /**
@@ -173,8 +176,9 @@ export const FiltersContainer: React.FC<FiltersContainerProps> = ({
    * Separate common filters from tab-specific filters to maintain
    * appropriate state persistence
    */
-  const handleAccordionChange = (expandedIndex: number | number[]) => {
-    const indices = Array.isArray(expandedIndex)
+  const handleAccordionChange = (value: string | string[]) => {
+    const expandedIndex = value;
+    const string_indices = Array.isArray(expandedIndex)
       ? expandedIndex
       : [expandedIndex];
 
@@ -182,7 +186,8 @@ export const FiltersContainer: React.FC<FiltersContainerProps> = ({
     const newTabSpecificOpenProperties = new Set<string>();
 
     // Categorize each opened section as common or tab-specific
-    indices.forEach(index => {
+    string_indices.forEach(str => {
+      const index = +str;
       if (index >= 0 && index < filtersList.length) {
         const property = filtersList[index].property;
         if (commonFilters.includes(property)) {
@@ -212,9 +217,9 @@ export const FiltersContainer: React.FC<FiltersContainerProps> = ({
   ) : (
     <Accordion.Root
       bg='white'
-      allowMultiple
-      index={accordionIndices}
-      onValueChange={handleAccordionChange}
+      multiple
+      value={accordionIndices}
+      onValueChange={e => handleAccordionChange(e.value)}
     >
       {children}
     </Accordion.Root>

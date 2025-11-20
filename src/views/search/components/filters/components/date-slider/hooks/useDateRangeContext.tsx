@@ -1,9 +1,10 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { addMissingYears } from '../helpers';
+
 import { FacetTermWithDetails, FilterItem } from '../../../types';
+import { addMissingYears } from '../helpers';
 
 export interface ContextProps {
-  colorScheme: string;
+  colorPalette: string;
   data?: FacetTermWithDetails[];
   dates: (string | null)[];
   dateRange: number[];
@@ -15,7 +16,7 @@ export interface ContextProps {
 }
 
 export const defaultContext: ContextProps = {
-  colorScheme: 'primary',
+  colorPalette: 'primary',
   data: [],
   dates: ['', ''],
   dateRange: [],
@@ -37,14 +38,14 @@ export const DateRangeSlider: React.FC<{
   data: FilterItem[];
   isLoading: boolean;
   selectedDates: string[];
-  colorScheme: ContextProps['colorScheme'];
+  colorPalette: ContextProps['colorPalette'];
   children: React.ReactNode;
 }> = ({
   children,
   data: datesData,
   isLoading,
   selectedDates = [],
-  colorScheme = 'primary',
+  colorPalette = 'primary',
 }) => {
   const [initialData, setInitialData] = useState<FilterItem[]>([]);
   const [isDragging, setIsDragging] = useState(false);
@@ -109,7 +110,7 @@ export const DateRangeSlider: React.FC<{
   );
 
   const context = {
-    colorScheme,
+    colorPalette,
     data,
     dates,
     // index values of data.

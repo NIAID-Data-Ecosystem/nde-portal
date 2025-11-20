@@ -18,7 +18,7 @@ import { getTabFilterProperties } from './utils/tab-filter-utils';
 
 // Interface for Filters component props
 interface FiltersProps {
-  colorScheme?: string;
+  colorPalette?: string;
   isDisabled?: boolean;
   selectedFilters: SelectedFilterType;
   removeAllFilters: () => void;
@@ -27,7 +27,7 @@ interface FiltersProps {
 // Filters component
 export const Filters: React.FC<FiltersProps> = React.memo(
   ({
-    colorScheme = 'primary',
+    colorPalette = 'primary',
     isDisabled,
     removeAllFilters,
     selectedFilters,
@@ -106,7 +106,7 @@ export const Filters: React.FC<FiltersProps> = React.memo(
           removeAllFilters();
         }}
       >
-        {filtersForTab.map(config => {
+        {filtersForTab.map((config, idx) => {
           const { _id, name, property } = config;
           const selected = selectedFilters?.[property]?.map(filter => {
             if (typeof filter === 'object') {
@@ -120,11 +120,12 @@ export const Filters: React.FC<FiltersProps> = React.memo(
             return (
               <FiltersSection
                 key={config.name}
+                value={String(idx)}
                 name={config.name}
                 description={config.description}
               >
                 <FiltersDateSlider
-                  colorScheme={colorScheme}
+                  colorPalette={colorPalette}
                   handleSelectedFilter={values =>
                     handleSelectedFilters(values, property)
                   }
@@ -139,15 +140,17 @@ export const Filters: React.FC<FiltersProps> = React.memo(
               </FiltersSection>
             );
           }
+
           return (
             <FiltersSection
               key={config.name}
+              value={String(idx)}
               name={config.name}
               description={config.description}
             >
               <FiltersList
                 config={config}
-                colorScheme={colorScheme}
+                colorPalette={colorPalette}
                 searchPlaceholder={`Search ${name.toLowerCase()} filters`}
                 terms={results?.[_id]?.['data'] || []}
                 selectedFilters={selected || []}
@@ -155,6 +158,7 @@ export const Filters: React.FC<FiltersProps> = React.memo(
                   handleSelectedFilters(values, property)
                 }
                 isLoading={
+                  !results?.[_id] ||
                   results?.[_id]?.['isLoading'] ||
                   results?.[_id]?.['isPlaceholderData'] ||
                   results?.[_id]?.['isPending']

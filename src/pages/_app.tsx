@@ -1,8 +1,8 @@
+import { GoogleTagManager } from '@next/third-parties/google';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { fonts } from 'lib/fonts';
 import type { AppProps } from 'next/app';
 import Head from 'next/head';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { GoogleTagManager } from '@next/third-parties/google';
-import { fonts } from 'lib/fonts';
 import { Provider } from 'src/components/ui/provider';
 import { system } from 'src/theme';
 

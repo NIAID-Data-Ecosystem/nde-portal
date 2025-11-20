@@ -1,25 +1,26 @@
-import React, { useMemo } from 'react';
+import { Box, Checkbox, Flex, Heading, Spinner, Text } from '@chakra-ui/react';
 import { omit } from 'lodash';
 import dynamic from 'next/dynamic';
-import { Box, Checkbox, Flex, Heading, Spinner, Text } from '@chakra-ui/react';
-import { Slider } from './components/slider';
-import { DatePicker } from './components/date-picker';
-import { formatNumber } from 'src/utils/helpers';
-import { DateRangeSlider } from './hooks/useDateRangeContext';
+import React, { useMemo } from 'react';
 import { Params } from 'src/utils/api';
-import { useFilterQueries } from '../../hooks/useFilterQueries';
+import { formatNumber } from 'src/utils/helpers';
+
 import { FILTER_CONFIGS } from '../../config';
+import { useFilterQueries } from '../../hooks/useFilterQueries';
 import {
   queryFilterObject2String,
   queryFilterString2Object,
 } from '../../utils/query-builders';
+import { DatePicker } from './components/date-picker';
+import { Slider } from './components/slider';
+import { DateRangeSlider } from './hooks/useDateRangeContext';
 
 const Histogram = dynamic(() => import('./components/histogram'), {
   ssr: false,
 });
 
 interface FiltersDateSliderProps {
-  colorScheme: string;
+  colorPalette: string;
   queryParams: Params;
   // Selected resourcesWithDate [min, max] from router.
   selectedDates: string[];
@@ -30,7 +31,7 @@ interface FiltersDateSliderProps {
 }
 
 export const FiltersDateSlider: React.FC<FiltersDateSliderProps> = ({
-  colorScheme,
+  colorPalette,
   queryParams,
   selectedDates,
   handleSelectedFilter,
@@ -105,7 +106,7 @@ export const FiltersDateSlider: React.FC<FiltersDateSliderProps> = ({
         data={initialData}
         isLoading={isLoading}
         selectedDates={selectedDates}
-        colorScheme='secondary'
+        colorPalette='secondary'
       >
         <Flex
           w='100%'
@@ -130,10 +131,10 @@ export const FiltersDateSlider: React.FC<FiltersDateSliderProps> = ({
             >
               <Spinner
                 color='accent.600'
-                emptyColor='white'
+                css={{ '--spinner-track-color': '#fff' }}
                 position='absolute'
                 size='md'
-                thickness='2px'
+                borderWidth='2px'
               />
             </Flex>
           )}
@@ -159,18 +160,21 @@ export const FiltersDateSlider: React.FC<FiltersDateSliderProps> = ({
         {/* Calendar Inputs */}
         <Flex bg='blackAlpha.50' flexDirection='column' p={4}>
           <DatePicker
-            colorScheme={colorScheme}
+            colorPalette={colorPalette}
             selectedDates={selectedDates}
             handleSelectedFilter={handleSelectedFilter}
             resetFilter={resetFilter}
           />
           {/* Checkbox to toggle items with/without dates. Default is to show all resources (including those without the date field). */}
-          <Checkbox
+          <Checkbox.Root
             mt={4}
-            isChecked={
+            colorPalette={colorPalette}
+            size='sm'
+            alignItems='flex-start'
+            checked={
               selectedDates.length === 0 || selectedDates.includes('-_exists_')
             }
-            onChange={e => {
+            onCheckedChange={e => {
               let updatedDates = [...selectedDates];
               // if toggled when no selection is made, show resources with dates.
               if (selectedDates.length === 0) {
@@ -194,16 +198,20 @@ export const FiltersDateSlider: React.FC<FiltersDateSliderProps> = ({
               }
               handleSelectedFilter(updatedDates);
             }}
-            isDisabled={!resourcesWithNoDate.length}
+            disabled={!resourcesWithNoDate.length}
           >
-            <Text fontSize='sm' fontWeight='medium' lineHeight='shorter'>
-              Include{' '}
-              {resourcesWithNoDate.length && resourcesWithNoDate[0].count
-                ? `${formatNumber(resourcesWithNoDate[0].count)}`
-                : ''}{' '}
-              resources with no date information.{' '}
-            </Text>
-          </Checkbox>
+            <Checkbox.HiddenInput />
+            <Checkbox.Control mt={0.5} />
+            <Checkbox.Label>
+              <Text fontSize='sm' fontWeight='medium' lineHeight='shorter'>
+                Include{' '}
+                {resourcesWithNoDate.length && resourcesWithNoDate[0].count
+                  ? resourcesWithNoDate[0].count.toLocaleString()
+                  : ''}{' '}
+                resources with no date information.{' '}
+              </Text>
+            </Checkbox.Label>
+          </Checkbox.Root>
         </Flex>
       </DateRangeSlider>
     </Box>

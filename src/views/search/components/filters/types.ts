@@ -1,6 +1,7 @@
 import { UseQueryOptions, UseQueryResult } from '@tanstack/react-query';
-import { FacetParams } from './utils/queries';
+
 import { TabType } from '../../types';
+import { FacetParams } from './utils/queries';
 
 export type SelectedFilterTypeValue = string | { [key: string]: string[] };
 

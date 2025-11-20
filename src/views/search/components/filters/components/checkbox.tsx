@@ -1,45 +1,66 @@
-import React, { useCallback } from 'react';
 import {
+  Box,
   Checkbox as ChakraCheckbox,
-  Skeleton,
+  Stack,
   Tag,
   Text,
 } from '@chakra-ui/react';
 import { sendGTMEvent } from '@next/third-parties/google';
-import Tooltip from 'src/components/tooltip';
+import React from 'react';
+import { Tooltip } from 'src/components/tooltip';
+
 import { FilterItem } from '../types';
 
 // Memoized Checkbox component to prevent unnecessary re-renders
 interface FilterCheckboxProps extends FilterItem {
   isLoading: boolean;
   isUpdating?: boolean;
-  colorScheme?: string;
+  colorPalette?: string;
   filterName: string;
 }
+
+const capitalize = (str: string) =>
+  str ? str.charAt(0).toUpperCase() + str.slice(1) : str;
 
 // Display the tooltip label for the filter term
 const getTooltipLabel = (
   term: FilterItem['term'],
   filterName: FilterCheckboxProps['filterName'],
 ) => {
+  const formattedName = capitalize(filterName.toLowerCase());
+
   if (term === '-_exists_') {
-    const name =
-      filterName.charAt(0).toUpperCase() + filterName.slice(1).toLowerCase();
-    return <>{name} not specified, missing, or unavailable.</>;
-  } else if (term === '_exists_') {
-    return (
-      <>
-        One or more {filterName.toLocaleLowerCase()} is specified, found, or
-        available.
-      </>
-    );
+    return `${formattedName} not specified, missing, or unavailable.`;
   }
-  return '';
+
+  if (term === '_exists_') {
+    return `One or more ${formattedName} is specified, found, or available.`;
+  }
+
+  return null;
+};
+
+// Note: Requested by Andrew to track the usage of this filter option.
+const trackGAEvent = (value: string, filterName: string) => {
+  if (value.includes('_exists_') || value.includes('-_exists_')) {
+    sendGTMEvent({
+      label: filterName || 'unknown_filter',
+      event: 'filter_checkbox_click',
+      value:
+        value === '_exists_'
+          ? `Any Specified: ${filterName}`
+          : `Not Specified: ${filterName}`,
+      eventValue:
+        value === '_exists_'
+          ? `Any Specified: ${filterName}`
+          : `Not Specified: ${filterName}`,
+    });
+  }
 };
 
 export const Checkbox: React.FC<FilterCheckboxProps> = React.memo(
   ({
-    colorScheme,
+    colorPalette,
     count,
     filterName,
     isHeader,
@@ -50,23 +71,8 @@ export const Checkbox: React.FC<FilterCheckboxProps> = React.memo(
   }) => {
     let label = props.label;
     let subLabel = '';
-    // Note: Requested by Andrew to track the usage of this filter option.
-    const trackGAEvent = useCallback((value: string, filterName: string) => {
-      if (value.includes('_exists_') || value.includes('-_exists_')) {
-        sendGTMEvent({
-          label: filterName || 'unknown_filter',
-          event: 'filter_checkbox_click',
-          value:
-            value === '_exists_'
-              ? `Any Specified: ${filterName}`
-              : `Not Specified: ${filterName}`,
-          eventValue:
-            value === '_exists_'
-              ? `Any Specified: ${filterName}`
-              : `Not Specified: ${filterName}`,
-        });
-      }
-    }, []);
+
+    const tooltipContent = getTooltipLabel(term, filterName);
 
     // Display the header label for the group
     if (isHeader) {
@@ -93,9 +99,12 @@ export const Checkbox: React.FC<FilterCheckboxProps> = React.memo(
       label = `${props.label} ${filterName.toLowerCase()}`;
     }
 
+    const isBusy = isLoading || isUpdating;
+
     return (
-      <ChakraCheckbox
-        onChange={() => {
+      <ChakraCheckbox.Root
+        size='sm'
+        onCheckedChange={() => {
           trackGAEvent(term, filterName);
         }}
         value={term}
@@ -105,74 +114,37 @@ export const Checkbox: React.FC<FilterCheckboxProps> = React.memo(
         py={1.5}
         alignItems='flex-start'
         _hover={{
-          bg: `${colorScheme}.50`,
+          bg: `${colorPalette}.50`,
         }}
-        sx={{
-          '>.chakra-checkbox__control': {
-            mt: 1, // to keep checkbox in line with top of text for options with multiple lines
-          },
-          '>.chakra-checkbox__label': {
-            display: 'flex',
-            alignItems: 'center',
-            flex: 1,
-            opacity: count ? 1 : 0.8,
-          },
-        }}
+        cursor={isBusy ? 'not-allowed' : 'pointer'}
       >
+        <ChakraCheckbox.HiddenInput disabled={isBusy} />
+        <ChakraCheckbox.Control mt='0.5' />
         {/* Loading skeleton only on load  */}
-        <Skeleton
-          isLoaded={!isLoading || isUpdating}
-          display='flex'
-          alignItems='center'
-          flex={1}
-        >
-          <Tooltip label={getTooltipLabel(term, filterName)}>
-            <Text
-              as='span'
-              flex={1}
-              wordBreak='break-word'
-              color='text.heading'
-              fontSize='xs'
-              lineHeight='short'
-              mr={0.5}
-              display='flex'
-              flexDirection='column'
-              fontWeight={subLabel ? 'semibold' : 'normal'}
-            >
-              {label
-                ? label.charAt(0).toUpperCase() + label.slice(1)
-                : 'Loading...'}
-              {subLabel && (
-                <Text
-                  as='span'
-                  flex={1}
-                  wordBreak='break-word'
-                  color='text.heading'
-                  fontSize='xs'
-                  lineHeight='short'
-                  fontWeight='normal'
-                  mr={0.5}
-                >
-                  {subLabel.charAt(0).toUpperCase() + subLabel.slice(1)}
-                </Text>
-              )}
-            </Text>
-          </Tooltip>
+        <Tooltip content={tooltipContent}>
+          <Stack gap='0.5' opacity={count ? 1 : 0.8} fontSize='xs' flex={1}>
+            <ChakraCheckbox.Label fontSize='inherit'>
+              {label ? capitalize(label) : 'Loading...'}
+            </ChakraCheckbox.Label>
 
-          {/* Display the count of the filter term */}
-          <Tag
-            as='span'
-            className='tag-count'
-            variant='subtle'
-            size='sm'
-            colorScheme={colorScheme}
-            borderRadius='full'
-            alignSelf='flex-start'
-          >
-            {count?.toLocaleString('en-US')}
-          </Tag>
-        </Skeleton>
-      </ChakraCheckbox>
+            {subLabel && (
+              <Box textStyle='sm' color='fg.muted' fontSize='inherit'>
+                {capitalize(subLabel)}
+              </Box>
+            )}
+          </Stack>
+        </Tooltip>
+
+        {/* Display the count of the filter term */}
+        <Tag.Root
+          as='span'
+          className='tag-count'
+          colorPalette={colorPalette}
+          borderRadius='full'
+        >
+          <Tag.Label>{count?.toLocaleString('en-US')}</Tag.Label>
+        </Tag.Root>
+      </ChakraCheckbox.Root>
     );
   },
 );

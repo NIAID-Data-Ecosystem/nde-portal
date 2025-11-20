@@ -1,17 +1,13 @@
+import { Accordion, Flex, Heading } from '@chakra-ui/react';
 import React from 'react';
-import {
-  AccordionItem,
-  AccordionButton,
-  AccordionPanel,
-  Text,
-} from '@chakra-ui/react';
 import { FaMinus, FaPlus } from 'react-icons/fa6';
-import Tooltip from 'src/components/tooltip';
+import { Tooltip } from 'src/components/tooltip';
 
 interface FiltersSectionProps {
   name: string;
   description: string;
   children: React.ReactNode;
+  value: string;
 }
 
 /*
@@ -19,65 +15,62 @@ interface FiltersSectionProps {
 Filter drawer corresponding to a filter facet.
 */
 export const FiltersSection: React.FC<FiltersSectionProps> = React.memo(
-  ({ name, description, children }) => {
+  ({ name, description, value, children }) => {
     return (
-      <AccordionItem border='none'>
-        {({ isExpanded }) => {
-          return (
-            <>
-              <h2>
-                <AccordionButton
-                  p={4}
-                  py={isExpanded ? 1.5 : 2}
-                  bg={isExpanded ? 'secondary.50' : 'transparent'}
-                  borderLeft='4px solid'
-                  borderBottom='0.5px solid'
-                  borderRadius='sm'
-                  borderTopColor={isExpanded ? 'secondary.100' : 'gray.100'}
-                  borderBottomColor={isExpanded ? 'transparent' : 'gray.100'}
-                  borderLeftColor={isExpanded ? 'secondary.300' : 'transparent'}
-                >
-                  <Tooltip
-                    label={
-                      description.charAt(0).toUpperCase() + description.slice(1)
-                    }
-                  >
-                    <Text
-                      as='span'
-                      flex={1}
-                      textAlign='left'
-                      fontSize='sm'
-                      color='gray.800'
-                      mr={2}
-                      fontWeight='medium'
-                    >
-                      {name}
-                    </Text>
-                  </Tooltip>
-                  {isExpanded ? (
-                    <FaMinus data-testid='minus-icon' fontSize='12px' />
-                  ) : (
-                    <FaPlus data-testid='plus-icon' fontSize='12px' />
-                  )}
-                </AccordionButton>
-              </h2>
-              {isExpanded ? (
-                <AccordionPanel
-                  p={0}
-                  borderLeft='4px solid'
-                  borderLeftColor='secondary.200'
-                  borderBottom='0.25px solid'
-                  borderBottomColor='gray.100'
-                >
-                  {children}
-                </AccordionPanel>
-              ) : (
-                <></>
-              )}
-            </>
-          );
-        }}
-      </AccordionItem>
+      <Accordion.Item value={value}>
+        <Accordion.ItemTrigger
+          p={0}
+          bg='transparent'
+          borderLeft='4px solid'
+          borderRadius='none'
+          borderTopColor='gray.100'
+          borderBottomColor='gray.100'
+          borderLeftColor='transparent'
+          _open={{
+            bg: 'secondary.50',
+            borderTopColor: 'secondary.100',
+            borderBottomColor: 'transparent',
+            borderLeftColor: 'secondary.300',
+          }}
+        >
+          <Tooltip
+            content={description.charAt(0).toUpperCase() + description.slice(1)}
+          >
+            <Flex flex='1' p={4} py={3} alignItems='center'>
+              <Heading
+                as='span'
+                flex='1'
+                textAlign='left'
+                fontSize='sm'
+                fontWeight='medium'
+                color='gray.800'
+                mr={2}
+              >
+                {name}
+              </Heading>
+              <Accordion.ItemIndicator
+                as={FaPlus}
+                fontSize='12px'
+                _open={{ display: 'none' }}
+              />
+              <Accordion.ItemIndicator
+                as={FaMinus}
+                fontSize='12px'
+                _closed={{ display: 'none' }}
+              />
+            </Flex>
+          </Tooltip>
+        </Accordion.ItemTrigger>
+
+        <Accordion.ItemContent bg='#fff' px={0} borderRadius='none'>
+          <Accordion.ItemBody
+            borderLeft='4px solid'
+            borderLeftColor='secondary.200'
+          >
+            {children}
+          </Accordion.ItemBody>
+        </Accordion.ItemContent>
+      </Accordion.Item>
     );
   },
 );

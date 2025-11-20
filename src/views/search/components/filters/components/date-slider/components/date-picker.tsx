@@ -1,17 +1,18 @@
-import React, { useEffect, useState } from 'react';
 import { Box, Button, Flex, Input, Text } from '@chakra-ui/react';
-import { useDateRangeContext } from '../hooks/useDateRangeContext';
+import React, { useEffect, useState } from 'react';
 import { formatISOString } from 'src/utils/api/helpers';
 
+import { useDateRangeContext } from '../hooks/useDateRangeContext';
+
 interface DatePickerProps {
-  colorScheme: string;
+  colorPalette: string;
   selectedDates: string[];
   handleSelectedFilter: (arg: string[]) => void;
   resetFilter: () => void;
 }
 
 export const DatePicker: React.FC<DatePickerProps> = ({
-  colorScheme,
+  colorPalette,
   selectedDates,
   handleSelectedFilter,
   resetFilter,
@@ -58,7 +59,7 @@ export const DatePicker: React.FC<DatePickerProps> = ({
           <Input
             id='start'
             type='date'
-            colorScheme={colorScheme as string}
+            colorPalette={colorPalette}
             bg='white'
             min={min}
             max={selected[1] || max} // set the maximum start date to the end date in the current selection or the end date in the data to prevent setting a start date later than the end date.
@@ -68,7 +69,7 @@ export const DatePicker: React.FC<DatePickerProps> = ({
               let newSelection = [e.target.value, selected[1] || max];
               setSelected(newSelection);
             }}
-            isDisabled={isDisabled}
+            disabled={isDisabled}
           />
         </Box>
         <Box maxW='200px'>
@@ -78,7 +79,7 @@ export const DatePicker: React.FC<DatePickerProps> = ({
           <Input
             id='end'
             type='date'
-            colorScheme={colorScheme as string}
+            colorPalette={colorPalette}
             bg='white'
             min={selected[0] || min} // set the minimum end date to the start date in the current selection or the start date in the data to prevent setting an end date earlier than the start date.
             max={max}
@@ -88,7 +89,7 @@ export const DatePicker: React.FC<DatePickerProps> = ({
               let newSelection = [selected[0] || min, e.target.value];
               setSelected(newSelection);
             }}
-            isDisabled={isDisabled}
+            disabled={isDisabled}
           />
         </Box>
       </Flex>
@@ -97,18 +98,18 @@ export const DatePicker: React.FC<DatePickerProps> = ({
           size='sm'
           variant='solid'
           type='submit'
-          colorScheme={colorScheme as string}
+          colorPalette={colorPalette}
           mr={1}
-          isDisabled={isDisabled}
+          disabled={isDisabled}
         >
           Submit
         </Button>
         <Button
           size='sm'
           variant='outline'
-          colorScheme={colorScheme as string}
+          colorPalette={colorPalette}
           onClick={() => resetFilter()}
-          isDisabled={isDisabled || !selectedDates.length}
+          disabled={isDisabled || !selectedDates.length}
           mx={1}
         >
           Reset

@@ -150,16 +150,13 @@ export const OntologyBrowserPopup = ({
     >
       <Button
         size='sm'
-        variant='link'
-        colorScheme='blue'
-        py={1}
+        variant='ghost'
+        colorPalette='blue'
         px={2}
-        color='link.color'
+        py={1}
+        textDecoration='underline'
         _hover={{
-          color: 'link.color',
           textDecoration: 'none',
-          borderRadius: 'semi',
-          bg: 'blue.50',
         }}
         loading={isLoading}
       >

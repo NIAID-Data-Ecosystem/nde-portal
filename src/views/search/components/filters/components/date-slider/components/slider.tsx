@@ -1,51 +1,90 @@
-import React from 'react';
+import { Slider as RangeSlider } from '@chakra-ui/react';
 import {
-  RangeSlider,
-  RangeSliderFilledTrack,
-  RangeSliderThumb,
-  RangeSliderTrack,
-  Text,
-} from '@chakra-ui/react';
+  DraggingIndicatorProps,
+  ThumbProps,
+} from 'node_modules/@chakra-ui/react/dist/types/components/slider/namespace';
+import React from 'react';
+
 import { useDateRangeContext } from '../hooks/useDateRangeContext';
 
 interface FiltersRangeSliderProps {
   onChangeEnd: (args: string[]) => void;
 }
 
+interface SliderThumbProps {
+  index: number;
+  value: string;
+  thumbProps?: ThumbProps;
+  draggingIndicatorProps?: DraggingIndicatorProps;
+}
+
+const SliderThumb = ({
+  index,
+  value,
+  thumbProps,
+  draggingIndicatorProps,
+}: SliderThumbProps) => {
+  return (
+    <RangeSlider.Thumb
+      index={index}
+      borderColor='colorPalette.400'
+      cursor='pointer'
+      {...thumbProps}
+    >
+      <RangeSlider.DraggingIndicator
+        layerStyle='fill.solid'
+        top='6'
+        rounded='sm'
+        px='1.5'
+        {...draggingIndicatorProps}
+      >
+        {value}
+      </RangeSlider.DraggingIndicator>
+    </RangeSlider.Thumb>
+  );
+};
+
 export const Slider: React.FC<FiltersRangeSliderProps> = React.memo(
   ({ onChangeEnd }) => {
-    const { colorScheme, data, dates, dateRange, setDateRange, setIsDragging } =
-      useDateRangeContext();
+    const {
+      colorPalette,
+      data,
+      dates,
+      dateRange,
+      setDateRange,
+      setIsDragging,
+    } = useDateRangeContext();
 
     // Show as disabled there is no range to the data (i.e. more than one step in range) or if non year data is selected.
     const isDisabled = data && data.length <= 1;
-    // Thumbs share the same value.
-    const thumbsSameValue =
-      data && data[dateRange[0]]?.label === data[dateRange[1]]?.label;
 
     if (!data || dateRange?.length !== 2) {
       return <></>;
     }
 
     return (
-      <RangeSlider
+      <RangeSlider.Root
         id='date-slider'
         w='100%'
-        isDisabled={isDisabled}
+        colorPalette={colorPalette}
+        size='md'
+        disabled={isDisabled}
+        value={dateRange}
         // eslint-disable-next-line jsx-a11y/aria-proptypes
         aria-label={['date-min', 'date-max']}
-        value={dateRange}
-        focusThumbOnChange={false}
+        thumbAlignment='center'
         min={0}
         max={data.length - 1}
-        onChange={values => {
+        onValueChange={e => {
+          const values = e.value;
           // only update if dates have changed
           if (values[0] !== dateRange[0] || values[1] !== dateRange[1]) {
             setDateRange(values);
             setIsDragging(true);
           }
         }}
-        onChangeEnd={values => {
+        onValueChangeEnd={e => {
+          const values = e.value;
           setDateRange(values);
           setIsDragging(false);
 
@@ -57,63 +96,28 @@ export const Slider: React.FC<FiltersRangeSliderProps> = React.memo(
           }
         }}
       >
-        <RangeSliderTrack bg={`${colorScheme}.200`} h={0.4}>
-          <RangeSliderFilledTrack bg={`${colorScheme}.500`} />
-        </RangeSliderTrack>
+        <RangeSlider.Control>
+          <RangeSlider.Track bg='colorPalette.200' h={1}>
+            <RangeSlider.Range bg='colorPalette.400' />
+          </RangeSlider.Track>
 
-        {/* Display a tooltip on hover with values for each slider thumb. */}
-        <RangeSliderThumb
-          id='thumb-slider-1'
-          index={0}
-          borderColor={`${colorScheme}.200`}
-          boxSize={5}
-          left='-0.625rem' // center by displacing by half the size of the thumb.
-        >
-          <Text
-            position='absolute'
-            top={4}
-            right={thumbsSameValue ? 'unset' : 0}
-            bg='white'
-            border='0.5px solid'
-            borderColor='gray.200'
-            fontSize='0.85rem'
-            fontWeight='semibold'
-            lineHeight='shorter'
-            mt={2}
-            px={1}
-            py={0.5}
-            width='unset'
-          >
-            {dateRange?.[0] !== undefined ? data[dateRange[0]]?.label : ''}
-          </Text>
-        </RangeSliderThumb>
-        <RangeSliderThumb
-          id='thumb-slider-2'
-          index={1}
-          borderColor={`${colorScheme}.200`}
-          boxSize={5}
-          left='-0.625rem' // center by displacing by half the size of the thumb.
-        >
-          <Text
-            position='absolute'
-            top={4}
-            left={thumbsSameValue ? 'unset' : 0}
-            bg='white'
-            border='0.5px solid'
-            borderColor='gray.200'
-            fontSize='0.85rem'
-            fontWeight='semibold'
-            lineHeight='shorter'
-            mt={2}
-            opacity={thumbsSameValue ? 0 : 1}
-            px={1}
-            py={0.5}
-            width='unset'
-          >
-            {dateRange?.[1] !== undefined ? data[dateRange[1]]?.label : ''}
-          </Text>
-        </RangeSliderThumb>
-      </RangeSlider>
+          {/* Starting slider thumb */}
+          <SliderThumb
+            index={0}
+            value={
+              dateRange?.[0] !== undefined ? data[dateRange[0]]?.label : ''
+            }
+          />
+
+          {/* Ending slider thumb */}
+          <SliderThumb
+            index={1}
+            value={
+              dateRange?.[1] !== undefined ? data[dateRange[1]]?.label : ''
+            }
+          />
+        </RangeSlider.Control>
+      </RangeSlider.Root>
     );
   },
 );
