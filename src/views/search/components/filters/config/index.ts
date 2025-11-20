@@ -186,6 +186,14 @@ export const FILTER_CONFIGS: FilterConfig[] = [
     createQueries: buildQueries(),
   },
   {
+    _id: 'topicCategory.name.raw',
+    name: 'Topic Category',
+    property: 'topicCategory.name.raw',
+    tabIds: ['d', 'ct'],
+    description: getMetadataDescription('topicCategory') || '',
+    createQueries: buildQueries(),
+  },
+  {
     _id: 'applicationCategory.raw',
     name: 'Application Category',
     property: 'applicationCategory.raw',
