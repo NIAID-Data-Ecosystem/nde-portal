@@ -98,12 +98,13 @@ export const DateBrush = ({
   // Use band scale with years as domain
   const xScale = useMemo(() => {
     if (!allData || allData.length === 0) return null;
-    return scaleBand<string>({
+    const scale = scaleBand<string>({
       domain: allData.map(d => d.label),
       range: [0, chartWidth],
-      padding: 1,
-      paddingOuter: 0,
+      padding: 0.2,
+      paddingOuter: 0.1,
     });
+    return scale;
   }, [allData, chartWidth]);
 
   // Dummy y-scale for brush (not used for positioning)
@@ -147,9 +148,12 @@ export const DateBrush = ({
 
     if (!startYear || !endYear) return null;
 
+    const startPos = xScale(startYear) || 0;
+    const endPos = (xScale(endYear) || 0) + xScale.bandwidth();
+
     return {
-      start: { x: xScale(startYear) || 0 },
-      end: { x: (xScale(endYear) || 0) + xScale.bandwidth() },
+      start: { x: startPos },
+      end: { x: endPos },
     };
   }, [xScale, allData, dateRange, chartWidth]);
 
@@ -224,12 +228,32 @@ export const DateBrush = ({
         return;
       }
 
-      if (!domain || !allData || !xScale) return;
+      if (!domain || !allData || !xScale || !brushRef.current) return;
 
-      // Get the selected years from xValues
-      const selectedYears = ((domain.xValues as string[]) || []).filter(
-        (year): year is string => year != null,
-      );
+      // Get brush extent from brushRef state
+      const brushState = brushRef.current.state;
+      const extent = brushState?.extent;
+      const x0 = extent.x0;
+      const x1 = extent.x1;
+      const bandwidth = xScale.bandwidth();
+
+      // Find all years whose band positions overlap with the brush extent
+      const selectedYears: string[] = [];
+      allData.forEach(d => {
+        const yearPos = xScale(d.label);
+        if (yearPos !== undefined) {
+          const yearStart = yearPos;
+          const yearEnd = yearPos + bandwidth;
+
+          // Check if this year's band overlaps with brush extent
+          // A year is selected if the brush extent overlaps with any part of the year's band
+          const brushOverlapsYear = yearEnd >= x0 && yearStart <= x1;
+
+          if (brushOverlapsYear) {
+            selectedYears.push(d.label);
+          }
+        }
+      });
 
       if (selectedYears.length === 0) return;
 
@@ -274,11 +298,42 @@ export const DateBrush = ({
         return;
       }
 
-      if (!domain || !allData || !xScale || !onBrushChangeEnd) return;
+      if (
+        !domain ||
+        !allData ||
+        !xScale ||
+        !onBrushChangeEnd ||
+        !brushRef.current
+      )
+        return;
 
-      const selectedYears = ((domain.xValues as string[]) || []).filter(
-        (year): year is string => year != null,
-      );
+      // Get brush extent from brushRef state
+      const brushState = brushRef.current.state;
+      const extent = brushState?.extent;
+
+      if (!extent) {
+        return;
+      }
+
+      const x0 = extent.x0;
+      const x1 = extent.x1;
+      const bandwidth = xScale.bandwidth();
+
+      const selectedYears: string[] = [];
+      allData.forEach(d => {
+        const yearPos = xScale(d.label);
+        if (yearPos !== undefined) {
+          const yearStart = yearPos;
+          const yearEnd = yearPos + bandwidth;
+
+          // Catch even tiny brush extents
+          const brushOverlapsYear = yearEnd >= x0 && yearStart <= x1;
+
+          if (brushOverlapsYear) {
+            selectedYears.push(d.label);
+          }
+        }
+      });
 
       if (selectedYears.length === 0) return;
 
