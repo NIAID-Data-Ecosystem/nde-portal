@@ -227,10 +227,10 @@ export const FiltersList: React.FC<FiltersListProps> = React.memo(
     // filter out terms that are undefined or null or empty strings
     const terms = useMemo(
       () =>
-        resultTerms.filter(
+        resultTerms?.filter(
           term =>
             term.term !== undefined && term.term !== null && term.term !== '',
-        ),
+        ) || [],
       [resultTerms],
     );
 
