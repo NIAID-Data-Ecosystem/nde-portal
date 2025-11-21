@@ -1,7 +1,7 @@
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import { getPageSeoConfig, PageContainer } from 'src/components/page-container';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { FetchSearchResultsResponse } from 'src/utils/api/types';
 import { SearchTabsProvider } from 'src/views/search/context/search-tabs-context';
 import { useSearchQueryFromURL } from 'src/views/search/hooks/useSearchQueryFromURL';
@@ -9,8 +9,14 @@ import { Box, Flex, VStack } from '@chakra-ui/react';
 import { Filters } from 'src/views/search/components/filters';
 import { SelectedFilterType } from 'src/views/search/components/filters/types';
 import { FILTER_CONFIGS } from 'src/views/search/components/filters/config';
-import { queryFilterString2Object } from 'src/views/search/components/filters/utils/query-builders';
-import { defaultQuery } from 'src/views/search/config/defaultQuery';
+import {
+  queryFilterString2Object,
+  queryFilterObject2String,
+} from 'src/views/search/components/filters/utils/query-builders';
+import {
+  defaultQuery,
+  getDefaultDateRange,
+} from 'src/views/search/config/defaultQuery';
 import { FilterTags } from 'src/views/search/components/filters/components/tag';
 import { SearchResultsHeader } from 'src/views/search/components/search-results-header';
 import { PaginationProvider } from 'src/views/search/context/pagination-context';
@@ -25,11 +31,13 @@ const defaultFilters = FILTER_CONFIGS.reduce(
   (r, { property }) => ({ ...r, [property]: [] }),
   {},
 );
+
 //  This page renders the search results from the search bar.
 const Search: NextPage<{
   initialData: FetchSearchResultsResponse;
 }> = ({ initialData }) => {
   const router = useRouter();
+  const hasInitialized = useRef(false);
 
   const queryParams = useSearchQueryFromURL();
 
@@ -81,10 +89,75 @@ const Search: NextPage<{
     setInitialTab(tab?.id || defaultTab);
   }, [router]);
 
+  // Apply default date filter on first load only
+  useEffect(() => {
+    if (!router.isReady || hasInitialized.current) return;
+
+    const hasDateFilter =
+      selectedFilters.date && selectedFilters.date.length > 0;
+
+    // Only apply default on first load when no date filter exists
+    if (!hasDateFilter) {
+      const defaultDateRange = getDefaultDateRange();
+
+      const updatedFilters = {
+        ...selectedFilters,
+        date: defaultDateRange,
+      };
+
+      const filterString = queryFilterObject2String(updatedFilters);
+
+      handleRouteUpdate({
+        filters: filterString,
+      });
+    }
+
+    // Mark as initialized to prevent re-running
+    hasInitialized.current = true;
+  }, [router.isReady, selectedFilters, handleRouteUpdate]);
+
+  // Validate and cap date filter at current year if it exceeds (runtime validation)
+  useEffect(() => {
+    if (!router.isReady || !hasInitialized.current) return;
+
+    const hasDateFilter =
+      selectedFilters.date && selectedFilters.date.length > 0;
+
+    if (hasDateFilter) {
+      const currentYear = new Date().getFullYear();
+      const existingEndDate = selectedFilters.date?.[1];
+
+      if (existingEndDate && typeof existingEndDate === 'string') {
+        const endDateParts = existingEndDate.split('-');
+        const endYear = parseInt(endDateParts[0], 10);
+
+        if (endYear > currentYear) {
+          // Cap the end date at current year
+          const cappedDateFilter = [
+            selectedFilters.date[0],
+            `${currentYear}-12-31`,
+          ];
+
+          const updatedFilters = {
+            ...selectedFilters,
+            date: cappedDateFilter,
+          };
+
+          const filterString = queryFilterObject2String(updatedFilters);
+
+          handleRouteUpdate({
+            filters: filterString,
+          });
+        }
+      }
+    }
+  }, [router.isReady, selectedFilters, handleRouteUpdate]);
+
   // If the initial tab is not set, return a loading state.
   if (!initialTab) {
     return null;
   }
+
   return (
     <PageContainer
       meta={getPageSeoConfig('/search')}
