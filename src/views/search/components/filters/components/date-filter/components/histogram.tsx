@@ -18,7 +18,7 @@ interface HistogramProps {
 }
 
 const Histogram = ({ updatedData, handleClick }: HistogramProps) => {
-  const { allData, filteredData, dates } = useDateRangeContext();
+  const { filteredData, dates } = useDateRangeContext();
 
   // Filter updatedData to remove any future years
   const currentYear = new Date().getFullYear();

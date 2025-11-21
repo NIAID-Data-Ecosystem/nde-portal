@@ -6,7 +6,6 @@ export interface ContextProps {
   colorScheme: string;
   allData: FacetTermWithDetails[]; // All data from complete dataset
   filteredData: FacetTermWithDetails[]; // Data within selected date range
-  data?: FacetTermWithDetails[]; // Legacy
   dates: (string | null)[];
   dateRange: number[];
   setDateRange: React.Dispatch<React.SetStateAction<ContextProps['dateRange']>>;
@@ -24,7 +23,6 @@ export const defaultContext: ContextProps = {
   colorScheme: 'primary',
   allData: [],
   filteredData: [],
-  data: [],
   dates: ['', ''],
   dateRange: [],
   setDateRange: () => {},

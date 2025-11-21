@@ -36,7 +36,7 @@ const DateFilterInner = ({
   handleSelectedFilter,
   resetFilter,
 }: DateFilterProps) => {
-  const { setOnBrushChangeEnd, allData } = useDateRangeContext();
+  const { setOnBrushChangeEnd } = useDateRangeContext();
 
   const config = useMemo(
     () => FILTER_CONFIGS.filter(facet => facet.property === 'date'),
