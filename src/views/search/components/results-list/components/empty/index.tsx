@@ -1,4 +1,4 @@
-import { Box, List, Text } from '@chakra-ui/react';
+import { Flex, List, Text } from '@chakra-ui/react';
 import Empty from 'src/components/empty';
 import { Link } from 'src/components/link';
 import { RESERVED_CHARS } from 'src/utils/querystring-helpers';
@@ -7,16 +7,17 @@ export const EmptyState = () => {
   return (
     <Empty message='No results found.' alignSelf='center'>
       <Text>No results found. Please try again.</Text>
-      <Box
+      <Flex
         p={4}
         m={4}
         border='1px solid'
         borderRadius='semi'
         borderColor='page.placeholder'
         bg='niaid.50'
+        flexDirection='column'
       >
         <Text fontWeight='medium'>Suggestions:</Text>
-        <List.Root as='ul' listStyle='disc' gap={1} lineHeight='short'>
+        <List.Root as='ul' listStyle='disc' gap={1} lineHeight='short' m={4}>
           <List.Item listStyleType='inherit'>
             Try using more general keywords.
           </List.Item>
@@ -32,12 +33,12 @@ export const EmptyState = () => {
             preceded by a backslash (\).
           </List.Item>
           <List.Item>
-            <Link href={'/knowledge-center/advanced-searching'} isExternal>
+            <Link href='/knowledge-center/advanced-searching' isExternal>
               For more information, see the documentation.
             </Link>
           </List.Item>
         </List.Root>
-      </Box>
+      </Flex>
     </Empty>
   );
 };

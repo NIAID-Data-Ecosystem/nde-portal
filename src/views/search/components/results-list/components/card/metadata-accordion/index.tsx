@@ -172,11 +172,7 @@ const MetadataAccordion: React.FC<MetadataAccordionProps> = ({ data }) => {
                   ({ img, items, name, url, ...props }) => {
                     const maxItemsCount = 3;
                     return (
-                      <MetadataBlock
-                        key={`property-${props.id}`}
-                        glyph={props.property}
-                        {...props}
-                      >
+                      <MetadataBlock key={`property-${props.id}`} {...props}>
                         {name && (
                           <MetadataContent
                             name={name}
