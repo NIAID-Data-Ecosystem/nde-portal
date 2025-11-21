@@ -63,26 +63,21 @@ export const FiltersContainer: React.FC<FiltersContainerProps> = ({
       md: 'tablet',
       lg: 'desktop',
     },
-    { fallback: 'lg' },
+    { fallback: 'base' },
   );
 
-  const [innerHeight, setInnerHeight] = useState<number>(
-    typeof window !== 'undefined' ? window.innerHeight : 100,
-  );
-
-  const windowResizeHandler = () => {
-    if (typeof window !== 'undefined') {
-      setInnerHeight(window.innerHeight);
-    }
-  };
+  const [innerHeight, setInnerHeight] = useState<number>(100);
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      window.addEventListener('resize', windowResizeHandler);
-      return () => {
-        window.removeEventListener('resize', windowResizeHandler);
-      };
-    }
+    if (typeof window === 'undefined') return;
+
+    const handleResize = () => setInnerHeight(window.innerHeight);
+
+    // set once on mount
+    handleResize();
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   // Get list of filter properties that are common across all tabs
@@ -225,7 +220,7 @@ export const FiltersContainer: React.FC<FiltersContainerProps> = ({
     </Accordion.Root>
   );
 
-  return screenSize && screenSize !== 'desktop' ? (
+  return screenSize !== 'desktop' ? (
     <>
       <Drawer.Root
         placement='start'
@@ -234,36 +229,35 @@ export const FiltersContainer: React.FC<FiltersContainerProps> = ({
       >
         <Drawer.Trigger asChild>
           <Button
+            aria-label={title || 'Open filters'}
             ref={btnRef}
             variant='solid'
-            bg='accent.400'
+            size='xl'
             position='fixed'
             zIndex='docked'
             left={4}
             bottom={50}
-            boxShadow='high'
-            w='3.5rem'
-            h='3.5rem'
+            colorPalette='accent'
+            bg='accent.400'
+            boxShadow='lg'
             p={0}
-            transition='0.3s ease-in-out !important'
             overflow='hidden'
             justifyContent='flex-start'
+            transition='0.3s ease-in-out width !important'
+            width={12}
             _hover={{
               width: '12rem',
             }}
           >
             <Flex
-              w='3.5rem'
-              minW='3.5rem'
-              h='3.5rem'
               alignItems='center'
               justifyContent='center'
+              boxSize={12}
+              minW={12}
             >
-              <Icon as={FaFilter} boxSize={5} ml={1} mr={2} />
+              <Icon as={FaFilter} />
             </Flex>
-            <Text color='white' fontWeight='normal' fontSize='lg'>
-              {title || 'Filters'}
-            </Text>
+            <Text>{title || 'Filters'}</Text>
           </Button>
         </Drawer.Trigger>
         <Portal>
@@ -286,18 +280,7 @@ export const FiltersContainer: React.FC<FiltersContainerProps> = ({
                 <CloseButton size='sm' />
               </Drawer.CloseTrigger>
               <ScrollContainer>
-                <Drawer.Body>
-                  {error ? (
-                    <Flex p={4} bg='error.light'>
-                      <Heading size='sm' color='red.600' fontWeight='normal'>
-                        Something went wrong, unable to load filters. <br />
-                        Try reloading the page.
-                      </Heading>
-                    </Flex>
-                  ) : (
-                    content
-                  )}
-                </Drawer.Body>
+                <Drawer.Body>{content}</Drawer.Body>
               </ScrollContainer>
 
               <Drawer.Footer borderTopWidth='1px'>

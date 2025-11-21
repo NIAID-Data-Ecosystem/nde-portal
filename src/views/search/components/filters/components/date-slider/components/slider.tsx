@@ -56,11 +56,18 @@ export const Slider: React.FC<FiltersRangeSliderProps> = React.memo(
     } = useDateRangeContext();
 
     // Show as disabled there is no range to the data (i.e. more than one step in range) or if non year data is selected.
-    const isDisabled = data && data.length <= 1;
+    const isDisabled = !data || data.length <= 1;
 
-    if (!data || dateRange?.length !== 2) {
-      return <></>;
+    if (!data || data.length <= 1 || dateRange?.length !== 2) {
+      return null;
     }
+    const minIndex = 0;
+    const maxIndex = data.length - 1;
+
+    const clampedRange: [number, number] = [
+      Math.min(Math.max(dateRange[0], minIndex), maxIndex),
+      Math.min(Math.max(dateRange[1], minIndex), maxIndex),
+    ];
 
     return (
       <RangeSlider.Root
@@ -69,7 +76,7 @@ export const Slider: React.FC<FiltersRangeSliderProps> = React.memo(
         colorPalette={colorPalette}
         size='md'
         disabled={isDisabled}
-        value={dateRange}
+        value={clampedRange}
         // eslint-disable-next-line jsx-a11y/aria-proptypes
         aria-label={['date-min', 'date-max']}
         thumbAlignment='center'
