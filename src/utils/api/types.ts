@@ -372,6 +372,73 @@ export interface FeatureListProperties {
   inDefinedTermSet?: string;
 }
 
+export interface Sample {
+  '@type'?: string;
+  associatedGenotype?: string[];
+  associatedPhenotype?: {
+    identifier?: string;
+    name?: string;
+    url?: string;
+  }[];
+  anatomicalStructure?: {
+    identifier?: string;
+    name?: string;
+    url?: string;
+  }[];
+  anatomicalSystem?: {
+    identifier?: string;
+    name?: string;
+    url?: string;
+  }[];
+  cellType?: {
+    identifier?: string;
+    name?: string;
+    url?: string;
+  }[];
+  collectionSize?: {
+    '@type'?: string;
+    maxValue?: number;
+    minValue?: number;
+    unitText?: string;
+    value?: number;
+  };
+  developmentalStage?: {
+    maxValue?: number;
+    minValue?: number;
+    name?: string;
+    unitCode?: string;
+    unitText?: string;
+    value?: number;
+  };
+  identifier?: string;
+  includedInDataCatalog?: {
+    '@type'?: string;
+    archivedAt?: string[];
+    name?: string;
+    url?: string;
+    versionDate?: string;
+  }[];
+  sampleAvailability?: boolean;
+  sampleList?: {
+    _id?: string;
+    identifier?: string;
+    url?: string;
+  }[];
+  sampleQuantity?: {
+    maxValue?: number;
+    minValue?: number;
+    name?: string;
+    unitText?: string;
+    value?: number;
+  };
+  sampleType?: {
+    name?: string;
+    url?: string;
+  }[];
+  sex?: string[];
+  url?: string;
+}
+
 // Formatting standardized resource fields
 export interface FormattedResource {
   [key: string]: any;
@@ -469,6 +536,7 @@ export interface FormattedResource {
   publisher: Publisher | null;
   rawData?: any;
   sameAs: string | null;
+  sample?: Sample | null;
   softwareAddOn: { identifier: string }[] | null;
   softwareHelp: { name?: string; url: string }[] | null;
   softwareRequirements: string[] | null;

@@ -46,6 +46,7 @@ import { FaMagnifyingGlass } from 'react-icons/fa6';
 import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
 import { SchemaDefinitions } from 'scripts/generate-schema-definitions/types';
 import { RelatedResources } from './components/related-resources';
+import { SamplesDisplay } from './components/samples';
 
 const schema = SCHEMA_DEFINITIONS as SchemaDefinitions;
 // Metadata displayed in each section
@@ -88,6 +89,7 @@ export const sectionMetadata: { [key: string]: (keyof FormattedResource)[] } = {
   isBasedOn: ['isBasedOn'],
   citedBy: ['citedBy'],
   relatedResources: ['hasPart', 'isBasisFor', 'isRelatedTo', 'isPartOf'],
+  samples: ['sample'],
   metadata: ['rawData'],
 };
 
@@ -485,6 +487,11 @@ const Sections = ({
                   }
                 }
               />
+            )}
+
+            {/* Show provenance */}
+            {section.hash === 'samples' && (
+              <SamplesDisplay sample={data?.sample} />
             )}
 
             {/* Show raw metadata */}
