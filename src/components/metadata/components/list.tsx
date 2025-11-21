@@ -5,14 +5,7 @@ import { getMetadataTheme } from 'src/components/metadata/helpers';
 
 export const MetadataList = ({ children, ...props }: ListRootProps) => {
   return (
-    <List.Root
-      as='ul'
-      ml={0}
-      my={1.5}
-      display='flex'
-      flexDirection='column'
-      {...props}
-    >
+    <List.Root as='ul' {...props}>
       {children}
     </List.Root>
   );
@@ -26,16 +19,11 @@ export const MetadataListItem = ({
   property: string;
 }) => {
   return (
-    <List.Item mb={3} display='flex' fontSize='xs' lineHeight='short' w='100%'>
-      <List.Indicator asChild>
-        <Icon
-          as={FaCircle}
-          m={2}
-          mx={1}
-          boxSize={1}
-          fill={`${getMetadataTheme(property)}.400`}
-        />
+    <List.Item display='flex' alignItems='flex-start'>
+      <List.Indicator color={`${getMetadataTheme(property)}.400`}>
+        <Icon as={FaCircle} boxSize={1} />
       </List.Indicator>
+
       {children}
     </List.Item>
   );

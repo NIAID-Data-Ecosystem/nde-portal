@@ -1,7 +1,6 @@
 // Global CSS styles.
 export const globalCss = {
   '*': {
-    listStyleType: 'none',
     lineHeight: 'base',
   },
   // sets default color palette for components if not specified
@@ -19,4 +18,5 @@ export const globalCss = {
     color: 'inherit',
     lineHeight: 'inherit',
   },
+  ul: { listStyle: 'none' },
 };
