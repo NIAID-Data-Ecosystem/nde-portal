@@ -338,7 +338,7 @@ const Histogram = ({ updatedData, handleClick }: HistogramProps) => {
 
             {/* brush */}
             <Flex w='100%' justifyContent='center' mt={1}>
-              <DateBrush width={width} maxBarWidth={params.maxBarWidth} />
+              <DateBrush containerWidth={width} />
             </Flex>
           </Box>
         ) : (

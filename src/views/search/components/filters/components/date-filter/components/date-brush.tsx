@@ -18,8 +18,7 @@ import { theme } from 'src/theme';
 import { useDateRangeContext } from '../hooks/useDateRangeContext';
 
 interface DateBrushProps {
-  width: number;
-  maxBarWidth: number;
+  containerWidth: number;
   margin?: { top: number; right: number; bottom: number; left: number };
 }
 
@@ -29,9 +28,8 @@ const TOTAL_HEIGHT = BRUSH_HEIGHT + AXIS_HEIGHT;
 const DRAG_THRESHOLD = 6; // pixels (threshold for distinguishing click from drag)
 
 export const DateBrush = ({
-  width,
-  maxBarWidth,
-  margin = { top: 0, right: 0, bottom: 0, left: 30 },
+  containerWidth,
+  margin = { top: 0, right: 20, bottom: 0, left: 20 },
 }: DateBrushProps) => {
   const { allData, dateRange, setDateRange, onBrushChangeEnd, setIsDragging } =
     useDateRangeContext();
@@ -78,29 +76,20 @@ export const DateBrush = ({
 
   // Calculate inner dimensions
   const innerWidth = useMemo(() => {
-    return Math.max(0, width - margin.left - margin.right);
-  }, [width, margin]);
-
-  // Calculate the chart width
-  const chartWidth = useMemo(() => {
-    if (!allData || allData.length === 0) return 0;
-
-    return innerWidth / allData.length > maxBarWidth
-      ? allData.length * maxBarWidth
-      : innerWidth;
-  }, [allData, innerWidth, maxBarWidth]);
+    return Math.max(0, containerWidth - margin.left - margin.right);
+  }, [containerWidth, margin]);
 
   // Use band scale with years as domain
   const xScale = useMemo(() => {
     if (!allData || allData.length === 0) return null;
     const scale = scaleBand<string>({
       domain: allData.map(d => d.label),
-      range: [0, chartWidth],
+      range: [0, innerWidth],
       padding: 0.2,
       paddingOuter: 0.1,
     });
     return scale;
-  }, [allData, chartWidth]);
+  }, [allData, innerWidth]);
 
   // Dummy y-scale for brush (not used for positioning)
   const yScale = useMemo(() => {
@@ -133,7 +122,7 @@ export const DateBrush = ({
       !xScale ||
       !allData ||
       allData.length === 0 ||
-      chartWidth === 0 ||
+      innerWidth === 0 ||
       dateRange.length !== 2
     )
       return null;
@@ -150,7 +139,7 @@ export const DateBrush = ({
       start: { x: startPos },
       end: { x: endPos },
     };
-  }, [xScale, allData, dateRange, chartWidth]);
+  }, [xScale, allData, dateRange, innerWidth]);
 
   // Initialize brushYears when calculatedBrushPosition changes
   useEffect(() => {
@@ -289,7 +278,7 @@ export const DateBrush = ({
     chartRef,
     brushRef,
     xScale: xScale || undefined,
-    width: chartWidth,
+    width: innerWidth,
     height: BRUSH_HEIGHT,
     isFocused,
     updateStrategy: 'debounced',
@@ -510,12 +499,17 @@ export const DateBrush = ({
       tabIndex={0}
       onFocus={() => setIsFocused(true)}
       onBlur={() => setIsFocused(false)}
-      style={{ width: '100%', outline: 'none' }}
+      style={{
+        width: '100%',
+        outline: 'none',
+        display: 'flex',
+        justifyContent: 'center',
+      }}
       aria-label='Use the arrow keys to move the brush selection. Press Tab to toggle the brush handles.'
     >
       <Box
         as='svg'
-        width={width}
+        width={containerWidth}
         height={TOTAL_HEIGHT}
         style={{ overflow: 'visible' }}
       >
@@ -525,7 +519,7 @@ export const DateBrush = ({
             key={brushKey}
             xScale={xScale}
             yScale={yScale}
-            width={chartWidth}
+            width={innerWidth}
             height={BRUSH_HEIGHT}
             innerRef={brushRef}
             resizeTriggerAreas={['left', 'right']}
