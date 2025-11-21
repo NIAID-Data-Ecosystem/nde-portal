@@ -62,6 +62,12 @@
       "isCollapsible": true
     },
     {
+      "title": "Samples",
+      "hash": "samples",
+      "showEmpty": false,
+      "isCollapsible": true
+    },
+    {
       "title": "Metadata",
       "hash": "metadata",
       "isCollapsible": true
