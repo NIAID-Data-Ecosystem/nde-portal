@@ -85,7 +85,7 @@ const LocalNavigation: React.FC<LocalNavigationProps> = ({
         On This Page
       </Heading>
 
-      <List.Root as='ul' ml={0} mt={2}>
+      <List.Root as='ul' ml={0} mt={2} listStyle='none'>
         {routes &&
           routes.map((route, i) => {
             return (
