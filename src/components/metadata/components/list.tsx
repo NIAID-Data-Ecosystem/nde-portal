@@ -1,7 +1,7 @@
 import { Icon, List, ListRootProps } from '@chakra-ui/react';
 import React from 'react';
 import { FaCircle } from 'react-icons/fa6';
-import { getMetadataTheme } from 'src/components/icon/helpers';
+import { getMetadataTheme } from 'src/components/metadata/helpers';
 
 export const MetadataList = ({ children, ...props }: ListRootProps) => {
   return (

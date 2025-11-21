@@ -12,8 +12,8 @@ import {
 } from '@chakra-ui/react';
 import { uniqueId } from 'lodash';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { getMetadataTheme } from 'src/components/icon/helpers';
 import { Link } from 'src/components/link';
+import { getMetadataTheme } from 'src/components/metadata/helpers';
 import {
   Cell,
   Content,

@@ -6,7 +6,6 @@ import { useRouter } from 'next/router';
 import React from 'react';
 import { FaMinus, FaPlus } from 'react-icons/fa6';
 import { SchemaDefinitions } from 'scripts/generate-schema-definitions/types';
-import { getMetadataTheme } from 'src/components/icon/helpers';
 import { Link } from 'src/components/link';
 import { SORT_ORDER, SORT_ORDER_COMPTOOL } from 'src/components/metadata';
 import {
@@ -14,6 +13,7 @@ import {
   generateMetadataContentforCompToolCard,
   sortMetadataArray,
 } from 'src/components/metadata';
+import { getMetadataTheme } from 'src/components/metadata/helpers';
 import { Tooltip } from 'src/components/tooltip';
 import { FormattedResource } from 'src/utils/api/types';
 

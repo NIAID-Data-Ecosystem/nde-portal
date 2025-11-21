@@ -948,3 +948,36 @@ export const getMetadataDescription = (
     }
   }
 };
+
+// Color theme associated with a given metadata property
+const METADATA_THEME_MAP: Record<string, string> = {
+  availableondevice: 'blue',
+  license: 'blue',
+  usageinfo: 'blue',
+
+  featurelist: 'cyan',
+  variablemeasured: 'cyan',
+
+  measurementtechnique: 'purple',
+  softwarehelp: 'purple',
+
+  infectiousagent: 'pink',
+  output: 'pink',
+
+  softwareversion: 'red',
+  healthcondition: 'red',
+
+  funding: 'orange',
+  softwarerequirements: 'orange',
+
+  input: 'green',
+  species: 'green',
+
+  topiccategory: 'teal',
+};
+
+export const getMetadataTheme = (property?: string) => {
+  if (!property) return 'gray';
+  const key = property.toLowerCase();
+  return METADATA_THEME_MAP[key] ?? 'gray';
+};
