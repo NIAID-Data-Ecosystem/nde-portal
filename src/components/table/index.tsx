@@ -96,7 +96,7 @@ export const Table: React.FC<TableProps<any>> = ({
   const [rows, setRows] = useState(tableData);
 
   useEffect(() => {
-    setSize(hasPagination ? numRows[0] : data.length);
+    setSize(hasPagination ? size : data.length);
     // update rows to display based on current page number and num of rows per page
     setRows(
       hasPagination
