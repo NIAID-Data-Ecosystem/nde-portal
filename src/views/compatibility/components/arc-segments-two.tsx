@@ -524,7 +524,7 @@ export const FieldsArc = ({
                         <Box
                           as='g'
                           className='arc-segment'
-                          onMouseOver={(e: React.MouseEvent) => {
+                          onMouseOver={() => {
                             setHoveredType(type);
 
                             if (tooltipTimeout) clearTimeout(tooltipTimeout);
@@ -539,9 +539,7 @@ export const FieldsArc = ({
                               },
                             });
                           }}
-                          onMouseLeave={e => {
-                            handleMouseLeave();
-                          }}
+                          onMouseLeave={handleMouseLeave}
                         >
                           <path
                             d={path(data) || ''}
