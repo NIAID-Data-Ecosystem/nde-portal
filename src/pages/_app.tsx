@@ -17,6 +17,11 @@ function App({ Component, pageProps }: AppProps) {
           name='viewport'
           content='width=device-width, initial-scale=1.0'
         ></meta>
+        {/* Leave for google search console */}
+        <meta
+          name='google-site-verification'
+          content={process.env.NEXT_PUBLIC_GOOGLE_CONSOLE}
+        />
       </Head>
       <style jsx global>
         {`

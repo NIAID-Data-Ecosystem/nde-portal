@@ -14,9 +14,7 @@ body:
     id: uiIssueName
     attributes:
       label: Issue Name
-      description:
-        Provide a name for the page or documentation meant to be generated in
-        STRAPI
+      description: Provide a name for the page or feature that cannot be generated in STRAPI
       placeholder: ex. Featured Page
     validations:
       required: True
@@ -24,10 +22,8 @@ body:
     id: uiIssueDescription
     attributes:
       label: Issue Description
-      description:
-        Please describe the page or documentation to be generated in STRAPI
-      placeholder:
-        ex- The featured page will highligh NIAID priority repositories
+      description: Provide a name for the page or feature that cannot be generated in STRAPI
+      placeholder: ex- The featured page will highligh NIAID priority repositories
     validations:
       required: true
   - type: textarea

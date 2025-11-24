@@ -199,8 +199,7 @@
       "nav": {
         "label": "Features",
         "description": "Featured content for the portal."
-      },
-      "env": ["development", "staging"]
+      }
     },
     "/ontology-browser": {
       "seo": {

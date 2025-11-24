@@ -71,6 +71,9 @@ interface BarChartProps {
   /** Function to get the route for a given term. */
   getRoute: (term: string) => UrlObject;
 
+  /** Callback for handling click events on a bar. */
+  handleGATracking: (event: { label: string; count: number }) => void;
+
   /** Whether to apply logarithmic scaling to values. @default true */
   useLogScale?: boolean;
 }
@@ -95,6 +98,7 @@ export const BarChart = ({
   defaultDimensions,
   isLoading,
   getRoute,
+  handleGATracking,
   useLogScale = false,
 }: BarChartProps) => {
   // State: whether to apply log scale or raw counts
@@ -224,6 +228,12 @@ export const BarChart = ({
                 return (
                   <NextLink
                     key={`bar-${term}`}
+                    onClick={() =>
+                      handleGATracking({
+                        label: datum?.info?.name || term,
+                        count,
+                      })
+                    }
                     href={getRoute(datum.term)}
                     passHref
                   >
