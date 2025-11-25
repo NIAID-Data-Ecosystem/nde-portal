@@ -21,7 +21,6 @@ import OperatingSystems from './operating-systems';
 import { SearchableItems } from 'src/components/searchable-items';
 import { DisplayHTMLContent } from 'src/components/html-content';
 import { AccessibleForFree, ConditionsOfAccess } from 'src/components/badges';
-import { SourceLogo, SourceLogoWrapper, getSourceDetails } from './source-logo';
 import { CompletenessBadgeCircle } from 'src/components/metadata-completeness-badge/Circular';
 import { ToggleContainer } from 'src/components/toggle-container';
 import { formatAuthorsList2String } from 'src/utils/helpers/authors';
@@ -32,6 +31,11 @@ import { SchemaDefinitions } from 'scripts/generate-schema-definitions/types';
 import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
 import { InfoLabel } from 'src/components/info-label';
 import { formatAPIResourceTypeForDisplay } from 'src/utils/formatting/formatResourceType';
+import {
+  formatSourcesWithLogos,
+  getSourceLogoLinkOut,
+} from 'src/components/source-logo/helpers';
+import { SourceLogo } from 'src/components/source-logo';
 
 interface SearchResultCardProps {
   isLoading?: boolean;
@@ -70,7 +74,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
   const sources =
     isLoading || !includedInDataCatalog
       ? []
-      : getSourceDetails(includedInDataCatalog);
+      : formatSourcesWithLogos(includedInDataCatalog) || [];
 
   const highlightProps = useMemo(
     () =>
@@ -317,25 +321,23 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                   borderRadius='semi'
                   justifyContent='center'
                 >
-                  <SourceLogoWrapper>
+                  <SourceLogo.Wrapper>
                     {sources?.length > 0 &&
                       sources.map(source => {
                         return (
-                          <SourceLogo
+                          <SourceLogo.Component
                             key={source.name}
                             source={source}
                             type={type}
                             url={
                               type === 'ResourceCatalog'
                                 ? ''
-                                : Array.isArray(source?.archivedAt)
-                                ? source?.archivedAt[0]
-                                : source?.archivedAt ?? ''
+                                : getSourceLogoLinkOut(source)
                             }
                           />
                         );
                       })}
-                  </SourceLogoWrapper>
+                  </SourceLogo.Wrapper>
                 </Flex>
 
                 {description && (
@@ -494,28 +496,26 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                 pb={[2, 4]}
                 my={1}
               >
-                <SourceLogoWrapper
+                <SourceLogo.Wrapper
                   display={{ base: 'none', sm: 'flex' }}
                   flex={1}
                 >
                   {sources?.length > 0 &&
                     sources.map(source => {
                       return (
-                        <SourceLogo
+                        <SourceLogo.Component
                           key={source.name}
                           source={source}
                           type={type}
                           url={
                             type === 'ResourceCatalog'
                               ? ''
-                              : Array.isArray(source?.archivedAt)
-                              ? source?.archivedAt[0]
-                              : source?.archivedAt ?? ''
+                              : getSourceLogoLinkOut(source)
                           }
                         />
                       );
                     })}
-                </SourceLogoWrapper>
+                </SourceLogo.Wrapper>
 
                 <Flex
                   flex={{ base: 1, sm: 'unset' }}
