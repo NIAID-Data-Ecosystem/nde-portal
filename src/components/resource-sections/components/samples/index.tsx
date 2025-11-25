@@ -68,10 +68,12 @@ const formatValue = ({
 export const SamplesDisplay = ({ sample }: SamplesDisplayProps) => {
   // Sample Collection
   const sampleCollection = {
-    label: 'Collection Size',
-    unit: sample?.collectionSize?.unitText
-      ? `${formatUnitText(sample.collectionSize.unitText)}(s)`
-      : '',
+    label: 'Number of Samples',
+    // unit: sample?.collectionSize?.unitText
+    //   ? `${formatUnitText(sample.collectionSize.unitText)}${
+    //       sample?.collectionSize?.value !== 1 ? 's' : ''
+    //     }`
+    //   : '',
     value: sample?.collectionSize?.value,
     valueText: formatValue({
       value: sample?.collectionSize?.value,
@@ -120,20 +122,28 @@ export const SamplesDisplay = ({ sample }: SamplesDisplayProps) => {
             borderColor='gray.100'
           >
             <UnorderedList ml={0}>
-              {sampleQuantity.list.data.map((item, idx) => (
-                <ListItem
-                  key={item.name}
-                  wordBreak='break-all'
-                  lineHeight='short'
-                  fontSize='sm'
-                  bg={idx % 2 === 0 ? 'white' : 'page.alt'}
-                  p={2}
-                  borderBottom='0.15px solid'
-                  borderColor='gray.100'
-                >
-                  {item.name}: {item.valueText}
-                </ListItem>
-              ))}
+              {sampleQuantity.list.data.map((item, idx) => {
+                const name = formatUnitText(item.name);
+                return (
+                  <ListItem
+                    key={item.name}
+                    wordBreak='break-all'
+                    lineHeight='short'
+                    fontSize='sm'
+                    bg={idx % 2 === 0 ? 'white' : 'page.alt'}
+                    p={2}
+                    borderBottom='0.15px solid'
+                    borderColor='gray.100'
+                  >
+                    {name && (
+                      <Text as='span' fontWeight='medium'>
+                        {name.charAt(0).toUpperCase() + name.slice(1)}:{' '}
+                      </Text>
+                    )}
+                    {item.valueText}
+                  </ListItem>
+                );
+              })}
             </UnorderedList>
           </ScrollContainer>
         </Box>
@@ -145,7 +155,8 @@ export const SamplesDisplay = ({ sample }: SamplesDisplayProps) => {
           <Heading as='h4' fontSize='sm' mx={1} mb={2} fontWeight='semibold'>
             {sampleCollection.label}:{' '}
             <Text as='span' fontWeight='normal'>
-              {sampleCollection.value.toLocaleString()} {sampleCollection.unit}
+              {sampleCollection.value.toLocaleString()}
+              {/* {sampleCollection?.unit} */}
             </Text>
           </Heading>
 
@@ -179,7 +190,7 @@ export const SamplesDisplay = ({ sample }: SamplesDisplayProps) => {
               hasPagination
               columns={[
                 {
-                  title: 'Sample Identifier',
+                  title: 'Sample ID',
                   property: 'identifier',
                   isSortable: true,
                 },
