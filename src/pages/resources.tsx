@@ -14,7 +14,7 @@ import { getResourceById } from 'src/utils/api';
 import { FormattedResource } from 'src/utils/api/types';
 import Empty from 'src/components/empty';
 import { Error, ErrorCTA } from 'src/components/error';
-import Sections, { sectionMetadata } from 'src/components/resource-sections';
+import Sections from 'src/components/resource-sections';
 import navigationData from 'src/components/resource-sections/resource-sections.json';
 import { Route, showSection } from 'src/components/resource-sections/helpers';
 import { getQueryStatusError } from 'src/components/error/utils';
@@ -103,12 +103,7 @@ const ResourcePage: NextPage = () => {
   };
 
   // Check if the metadata is available for a given section before displaying it in navbar or page.
-  const sections = routes.filter(route =>
-    showSection(
-      { ...route, metadataProperties: sectionMetadata[route.hash] },
-      data,
-    ),
-  );
+  const sections = routes.filter(route => showSection(route, data));
 
   const errorResponse =
     error && getQueryStatusError(error as unknown as { status: string });

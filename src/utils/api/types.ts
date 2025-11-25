@@ -430,7 +430,7 @@ export interface Sample {
     name?: string;
     unitText?: string;
     value?: number;
-  };
+  }[];
   sampleType?: {
     name?: string;
     url?: string;

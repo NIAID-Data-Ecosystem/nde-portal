@@ -49,49 +49,6 @@ import { RelatedResources } from './components/related-resources';
 import { SamplesDisplay } from './components/samples';
 
 const schema = SCHEMA_DEFINITIONS as SchemaDefinitions;
-// Metadata displayed in each section
-export const sectionMetadata: { [key: string]: (keyof FormattedResource)[] } = {
-  overview: [
-    'doi',
-    'healthCondition',
-    'infectiousAgent',
-    'inLanguage',
-    'license',
-    'measurementTechnique',
-    'nctid',
-    'programmingLanguage',
-    'softwareVersion',
-    'spatialCoverage',
-    'species',
-    'temporalCoverage',
-    'topicCategory',
-    'variableMeasured',
-  ],
-  softwareInformation: [
-    'applicationCategory',
-    'discussionUrl',
-    'input',
-    'output',
-    'processorRequirements',
-    'programmingLanguage',
-    'softwareAddOn',
-    'softwareHelp',
-    'softwareRequirements',
-    'softwareVersion',
-  ],
-  keywords: ['keywords'],
-  applicationCategory: ['applicationCategory'],
-  programmingLanguage: ['programmingLanguage'],
-  description: ['description'],
-  provenance: ['includedInDataCatalog', 'url', 'sdPublisher'],
-  downloads: ['distribution', 'downloadUrl'],
-  funding: ['funding'],
-  isBasedOn: ['isBasedOn'],
-  citedBy: ['citedBy'],
-  relatedResources: ['hasPart', 'isBasisFor', 'isRelatedTo', 'isPartOf'],
-  samples: ['sample'],
-  metadata: ['rawData'],
-};
 
 // use config file to show content in sections.
 const Sections = ({
@@ -153,7 +110,7 @@ const Sections = ({
             key={section.hash}
             name={section.title}
             isLoading={isLoading}
-            isCollapsible={section.isCollapsible}
+            isCollapsible={section?.ui?.isCollapsible}
           >
             {/* for mobile viewing */}
             {section.hash === 'overview' && data && (
@@ -384,13 +341,6 @@ const Sections = ({
                     />
                   )}
               </Skeleton>
-            )}
-            {section.hash === 'softwareInformation' && (
-              <SoftwareInformation
-                keys={sectionMetadata[section.hash]}
-                isLoading={isLoading}
-                {...data}
-              />
             )}
 
             {/* Show description */}
