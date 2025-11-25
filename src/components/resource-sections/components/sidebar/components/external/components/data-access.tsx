@@ -12,6 +12,7 @@ import { FaArrowRight } from 'react-icons/fa6';
 import { SourceLogo } from 'src/components/source-logo';
 import {
   formatSourcesWithLogos,
+  getAccessResourceURL,
   getDDECatalog,
   getSourceLogoLinkOut,
 } from 'src/components/source-logo/helpers';
@@ -92,11 +93,11 @@ export const DataAccess: React.FC<DataAccessProps> = ({
               }}
             >
               <AccessResourceButton
-                url={
-                  recordType === 'ResourceCatalog'
-                    ? url ?? ''
-                    : getSourceLogoLinkOut(source)
-                }
+                url={getAccessResourceURL({
+                  recordType,
+                  source,
+                  url,
+                })}
                 colorScheme={colorScheme}
               />
             </Flex>

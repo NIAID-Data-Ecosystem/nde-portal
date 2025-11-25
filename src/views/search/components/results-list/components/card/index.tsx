@@ -33,6 +33,7 @@ import { InfoLabel } from 'src/components/info-label';
 import { formatAPIResourceTypeForDisplay } from 'src/utils/formatting/formatResourceType';
 import {
   formatSourcesWithLogos,
+  getAccessResourceURL,
   getSourceLogoLinkOut,
 } from 'src/components/source-logo/helpers';
 import { SourceLogo } from 'src/components/source-logo';
@@ -329,11 +330,10 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                             key={source.name}
                             source={source}
                             type={type}
-                            url={
-                              type === 'ResourceCatalog'
-                                ? ''
-                                : getSourceLogoLinkOut(source)
-                            }
+                            url={getAccessResourceURL({
+                              recordType: type,
+                              source,
+                            })}
                           />
                         );
                       })}
@@ -507,11 +507,10 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                           key={source.name}
                           source={source}
                           type={type}
-                          url={
-                            type === 'ResourceCatalog'
-                              ? ''
-                              : getSourceLogoLinkOut(source)
-                          }
+                          url={getAccessResourceURL({
+                            recordType: type,
+                            source,
+                          })}
                         />
                       );
                     })}

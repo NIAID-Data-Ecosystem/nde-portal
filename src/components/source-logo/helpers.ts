@@ -49,3 +49,17 @@ export const getDDECatalog = (
   }
   return catalog?.name === 'Data Discovery Engine' ? catalog : null;
 };
+
+export const getAccessResourceURL = ({
+  recordType,
+  source,
+  url,
+}: {
+  recordType: string | null | undefined;
+  source: IncludedInDataCatalog;
+  url?: FormattedResource['url'];
+}) => {
+  return recordType === 'ResourceCatalog'
+    ? url ?? ''
+    : getSourceLogoLinkOut(source);
+};
