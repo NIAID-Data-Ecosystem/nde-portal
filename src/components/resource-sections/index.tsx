@@ -9,6 +9,7 @@ import {
   Skeleton,
   Stack,
   StackDivider,
+  Text,
   UnorderedList,
   VStack,
 } from '@chakra-ui/react';
@@ -266,6 +267,24 @@ const Sections = ({
                     <ResourceCitations citations={data?.citation} />
                   </OverviewSectionWrapper>
                 )}
+
+                {/* Resource credit text */}
+                <OverviewSectionWrapper
+                  isLoading={isLoading}
+                  label='Credit Text'
+                  tooltipLabel={getMetadataDescription(
+                    'creditText',
+                    data?.['@type'],
+                  )}
+                  my={4}
+                  scrollContainerProps={{ maxHeight: 'unset' }}
+                >
+                  {/* If no credit section, visit the actual source */}
+                  <Text>
+                    {data?.creditText ||
+                      'Please consult the resource for complete citation guidance.'}
+                  </Text>
+                </OverviewSectionWrapper>
               </>
             )}
             {/* Show keywords */}
