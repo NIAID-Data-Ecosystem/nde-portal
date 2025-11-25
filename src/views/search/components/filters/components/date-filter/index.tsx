@@ -79,10 +79,13 @@ const DateFilterInner = ({
     [initialData],
   );
 
-  // [showHistogram]: Data used for resources that have a date field.
-  const showHistogram =
-    selectedData?.filter(d => d.term !== '-_exists_' && d.count !== 0).length >
-    0;
+  // Check if there's any date data at all (not just in selected range)
+  const hasAnyDateData = useMemo(
+    () =>
+      initialData?.filter(d => d.term !== '-_exists_' && d.count !== 0).length >
+      0,
+    [initialData],
+  );
 
   // Set up the brush change end callback
   useEffect(() => {
@@ -141,16 +144,16 @@ const DateFilterInner = ({
             />
           </Flex>
         )}
-        {showHistogram ? (
+        {hasAnyDateData ? (
           // Histogram for resources grouped by year with embedded brush control
+          // Always render when there's any date data (not just in selected range)
           <Histogram
-            updatedData={selectedData}
+            updatedData={selectedData || []}
             handleClick={handleSelectedFilter}
           />
         ) : (
           !isLoading &&
-          !isUpdating &&
-          selectedData?.length === 0 && (
+          !isUpdating && (
             <Text fontStyle='italic' color='gray.800' mt={1}>
               No results with date information.
             </Text>

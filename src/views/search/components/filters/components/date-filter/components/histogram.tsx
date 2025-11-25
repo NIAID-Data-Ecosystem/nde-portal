@@ -18,7 +18,7 @@ interface HistogramProps {
 }
 
 const Histogram = ({ updatedData, handleClick }: HistogramProps) => {
-  const { filteredData, dates } = useDateRangeContext();
+  const { filteredData, dates, allData } = useDateRangeContext();
 
   // Filter updatedData to remove any future years
   const currentYear = new Date().getFullYear();
@@ -109,6 +109,15 @@ const Histogram = ({ updatedData, handleClick }: HistogramProps) => {
   // visibleData is filteredData (already filtered by date range in context)
   const visibleData = filteredData;
 
+  // Check if there's any data with count > 0 in the visible range
+  const hasDataInRange = useMemo(
+    () =>
+      visibleData &&
+      visibleData.length > 0 &&
+      visibleData.some(d => d.count > 0),
+    [visibleData],
+  );
+
   // x-axis is date, using index for domain
   const xScale = useMemo(() => {
     const maxW =
@@ -156,8 +165,13 @@ const Histogram = ({ updatedData, handleClick }: HistogramProps) => {
     return [0, visibleData.length - 1];
   }, [visibleData.length]);
 
-  if (!filteredData) {
-    return <></>;
+  // Early return if no data at all in the complete dataset
+  if (!allData || allData.length === 0) {
+    return (
+      <Text fontStyle='italic' color='gray.800' mt={1}>
+        No results with date information.
+      </Text>
+    );
   }
 
   return (
@@ -191,61 +205,81 @@ const Histogram = ({ updatedData, handleClick }: HistogramProps) => {
 
       {/* Bars */}
       <Flex ref={containerRef} justifyContent='center'>
-        {visibleData.length ? (
-          <Box position='relative'>
-            <Flex justifyContent='center'>
-              <Box
-                as='svg'
-                id='filters-histogram'
-                width={svgWidth + 40}
-                height={height + 30}
-                style={{ overflow: 'visible' }}
-              >
-                <defs>
-                  <linearGradient
-                    id='histogram-gradient'
-                    gradientUnits='userSpaceOnUse'
-                    x1='0'
-                    y1='0'
-                    x2='0'
-                    y2='100%'
-                  >
-                    <stop offset='0' stopColor='#e05e8f'></stop>
-                    <stop offset='1' stopColor='#241683'></stop>
-                  </linearGradient>
-                </defs>
-                <Group left={20}>
-                  {visibleData.map((d, i) => {
-                    const { term, count } = d;
-                    /* Updated counts when date has changed */
-                    const updatedCount =
-                      updatedCounts.find(u => u.term === term)?.count || 0;
+        <Box position='relative'>
+          <Flex justifyContent='center'>
+            <Box
+              as='svg'
+              id='filters-histogram'
+              width={svgWidth + 40}
+              height={height + 30}
+              style={{ overflow: 'visible' }}
+            >
+              <defs>
+                <linearGradient
+                  id='histogram-gradient'
+                  gradientUnits='userSpaceOnUse'
+                  x1='0'
+                  y1='0'
+                  x2='0'
+                  y2='100%'
+                >
+                  <stop offset='0' stopColor='#e05e8f'></stop>
+                  <stop offset='1' stopColor='#241683'></stop>
+                </linearGradient>
+              </defs>
+              <Group left={20}>
+                {hasDataInRange ? (
+                  <>
+                    {/* Render bars when there's data */}
+                    {visibleData.map((d, i) => {
+                      const { term, count } = d;
+                      /* Updated counts when date has changed */
+                      const updatedCount =
+                        updatedCounts.find(u => u.term === term)?.count || 0;
 
-                    const barWidth = xScale.bandwidth();
-                    const barX = xScale(i);
+                      const barWidth = xScale.bandwidth();
+                      const barX = xScale(i);
 
-                    const barCount =
-                      updatedCount > 0 && updatedCount < count
-                        ? updatedCount
-                        : count;
+                      const barCount =
+                        updatedCount > 0 && updatedCount < count
+                          ? updatedCount
+                          : count;
 
-                    const defaultBarHeight = Math.ceil(height - yScale(count));
-                    const barHeight = Math.ceil(height - yScale(barCount));
-                    const barY = height - barHeight;
+                      const defaultBarHeight = Math.ceil(
+                        height - yScale(count),
+                      );
+                      const barHeight = Math.ceil(height - yScale(barCount));
+                      const barY = height - barHeight;
 
-                    const hovered = term === tooltipData?.term;
-                    let fill = `url("#histogram-gradient")`;
+                      const hovered = term === tooltipData?.term;
+                      let fill = `url("#histogram-gradient")`;
 
-                    if (count === 0 && updatedCount === 0) {
-                      fill = theme.colors.gray[200];
-                    }
+                      if (count === 0 && updatedCount === 0) {
+                        fill = theme.colors.gray[200];
+                      }
 
-                    return (
-                      <React.Fragment key={`bar-${term}`}>
-                        {/* Used only when the bar is selected and the updated count is less than the full count. */}
-                        {updatedCount > 0 && updatedCount < count && (
+                      return (
+                        <React.Fragment key={`bar-${term}`}>
+                          {/* Used only when the bar is selected and the updated count is less than the full count. */}
+                          {updatedCount > 0 && updatedCount < count && (
+                            <Bar
+                              className='partial-bar'
+                              x={barX}
+                              width={barWidth}
+                              opacity={
+                                hovered
+                                  ? params.opacity.hover
+                                  : params.opacity.active
+                              }
+                              y={height - defaultBarHeight}
+                              height={defaultBarHeight}
+                              fill={params.fill.gray}
+                            />
+                          )}
+
+                          {/* Bars that show the full count. */}
                           <Bar
-                            className='partial-bar'
+                            className='full-bar'
                             x={barX}
                             width={barWidth}
                             opacity={
@@ -253,32 +287,33 @@ const Histogram = ({ updatedData, handleClick }: HistogramProps) => {
                                 ? params.opacity.hover
                                 : params.opacity.active
                             }
-                            y={height - defaultBarHeight}
-                            height={defaultBarHeight}
-                            fill={params.fill.gray}
+                            y={barY}
+                            height={barHeight}
+                            fill={fill}
                           />
-                        )}
+                        </React.Fragment>
+                      );
+                    })}
+                  </>
+                ) : (
+                  <>
+                    {/* Show message when no data in range */}
+                    <text
+                      x={svgWidth / 2}
+                      y={height / 2}
+                      dy='1rem'
+                      textAnchor='middle'
+                      fill={theme.colors.gray[800]}
+                      fontSize='14'
+                    >
+                      No data available. Please use a different date range.
+                    </text>
+                  </>
+                )}
+              </Group>
 
-                        {/* Bars that show the full count.*/}
-                        <Bar
-                          className='full-bar'
-                          x={barX}
-                          width={barWidth}
-                          opacity={
-                            hovered
-                              ? params.opacity.hover
-                              : params.opacity.active
-                          }
-                          y={barY}
-                          height={barHeight}
-                          fill={fill}
-                        />
-                      </React.Fragment>
-                    );
-                  })}
-                </Group>
-
-                {/* Invisible bars for tooltip triggers */}
+              {/* Invisible bars for tooltip triggers */}
+              {hasDataInRange && (
                 <Group left={20}>
                   {visibleData.map((d, i) => {
                     const { term } = d;
@@ -316,8 +351,10 @@ const Histogram = ({ updatedData, handleClick }: HistogramProps) => {
                     );
                   })}
                 </Group>
+              )}
 
-                {/* x-axis */}
+              {/* x-axis */}
+              {hasDataInRange && (
                 <Group left={20}>
                   <AxisBottom
                     top={height}
@@ -333,19 +370,15 @@ const Histogram = ({ updatedData, handleClick }: HistogramProps) => {
                     })}
                   />
                 </Group>
-              </Box>
-            </Flex>
+              )}
+            </Box>
+          </Flex>
 
-            {/* brush */}
-            <Flex w='100%' justifyContent='center' mt={1}>
-              <DateBrush containerWidth={width} />
-            </Flex>
-          </Box>
-        ) : (
-          <Text fontStyle='italic' color='gray.800' mt={1}>
-            No results with date information.
-          </Text>
-        )}
+          {/* brush */}
+          <Flex w='100%' justifyContent='center' mt={1}>
+            <DateBrush containerWidth={width} />
+          </Flex>
+        </Box>
       </Flex>
     </div>
   );
