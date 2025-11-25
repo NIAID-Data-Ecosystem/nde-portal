@@ -27,7 +27,6 @@ import { Route } from './helpers';
 import FilesTable from './components/files-table';
 import { CitedByTable } from './components/cited-by-table';
 import { DisplayHTMLContent } from '../html-content';
-import SoftwareInformation from './components/software-information';
 import {
   ExternalAccess,
   UsageInfo,
@@ -48,6 +47,7 @@ import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
 import { SchemaDefinitions } from 'scripts/generate-schema-definitions/types';
 import { RelatedResources } from './components/related-resources';
 import { SamplesDisplay } from './components/samples';
+import { getAccessResourceURL } from '../source-logo/helpers';
 
 const schema = SCHEMA_DEFINITIONS as SchemaDefinitions;
 
@@ -280,9 +280,30 @@ const Sections = ({
                   scrollContainerProps={{ maxHeight: 'unset' }}
                 >
                   {/* If no credit section, visit the actual source */}
-                  <Text>
-                    {data?.creditText ||
-                      'Please consult the resource for complete citation guidance.'}
+                  <Text px={2}>
+                    {data?.creditText || (
+                      <>
+                        Please{' '}
+                        <Link
+                          href={
+                            data?.includedInDataCatalog &&
+                            getAccessResourceURL({
+                              recordType: data?.['@type'],
+                              source: Array.isArray(data?.includedInDataCatalog)
+                                ? data?.includedInDataCatalog[0]
+                                : data?.includedInDataCatalog,
+                              url: data?.url,
+                            })
+                          }
+                          isExternal
+                          target='_blank'
+                          rel='noopener noreferrer'
+                        >
+                          access the resource
+                        </Link>{' '}
+                        for complete citation guidance.
+                      </>
+                    )}
                   </Text>
                 </OverviewSectionWrapper>
               </>
