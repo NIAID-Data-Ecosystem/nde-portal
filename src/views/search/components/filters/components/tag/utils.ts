@@ -68,6 +68,7 @@ const getDisplayValue = (
   }
 
   // Handle date ranges (skip subsequent values in range)
+
   if (key === DATE_FILTER_KEY && isDateRangeValues(values)) {
     return index === 0 ? formatDateRange(values[0], values[1]) : '';
   }
@@ -89,18 +90,12 @@ const getDisplayValue = (
 };
 
 // Checks if a filter represents a date exists/not exists query
-const isDateExistsQuery = (
-  key: string,
-  values: (string | SelectedFilterTypeValue)[],
-): boolean => {
-  if (key !== DATE_FILTER_KEY || values.length !== 1) {
-    return false;
-  }
-
-  const value = values[0];
-  return (
-    isObjectValue(value) &&
-    (has(value, EXISTS_PREFIX) || has(value, NOT_EXISTS_PREFIX))
+const stripDateExistsQuery = (values: (string | SelectedFilterTypeValue)[]) => {
+  return values.filter(
+    value =>
+      !isObjectValue(value) &&
+      !has(value, EXISTS_PREFIX) &&
+      !has(value, NOT_EXISTS_PREFIX),
   );
 };
 
@@ -165,14 +160,19 @@ export const generateTags = (
     const config = configMap[key];
     const name = generateTagName(key, config);
 
-    // Skip date exists/not exists queries (they don't display as tags)
-    if (isDateExistsQuery(key, values)) {
-      return [];
-    }
-
     // Handle date ranges as a single tag
-    if (key === DATE_FILTER_KEY && isDateRangeValues(values)) {
-      return [createDateRangeTag(key, name, values)];
+    if (key === DATE_FILTER_KEY) {
+      const cleanedDateValues = stripDateExistsQuery(values);
+
+      if (cleanedDateValues?.length === 0) {
+        return [];
+      }
+
+      if (isDateRangeValues(cleanedDateValues)) {
+        return [createDateRangeTag(key, name, cleanedDateValues)];
+      }
+      // If not a range, fall through to create individual tags
+      return createValueTags(key, name, cleanedDateValues, config);
     }
 
     // Handle all other filters
