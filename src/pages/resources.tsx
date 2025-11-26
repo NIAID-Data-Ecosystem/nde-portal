@@ -14,13 +14,14 @@ import { getResourceById } from 'src/utils/api';
 import { FormattedResource } from 'src/utils/api/types';
 import Empty from 'src/components/empty';
 import { Error, ErrorCTA } from 'src/components/error';
-import Sections, { sectionMetadata } from 'src/components/resource-sections';
+import Sections from 'src/components/resource-sections';
 import navigationData from 'src/components/resource-sections/resource-sections.json';
 import { Route, showSection } from 'src/components/resource-sections/helpers';
 import { getQueryStatusError } from 'src/components/error/utils';
 import { Sidebar } from 'src/components/resource-sections/components/sidebar';
 import SITE_CONFIG from 'configs/site.config.json';
 import { SiteConfig } from 'src/components/page-container/types';
+import { SHOULD_HIDE_SAMPLES } from 'src/components/resource-sections/components/samples';
 
 const siteConfig = SITE_CONFIG as SiteConfig;
 
@@ -103,11 +104,8 @@ const ResourcePage: NextPage = () => {
   };
 
   // Check if the metadata is available for a given section before displaying it in navbar or page.
-  const sections = routes.filter(route =>
-    showSection(
-      { ...route, metadataProperties: sectionMetadata[route.hash] },
-      data,
-    ),
+  const sections = routes.filter(
+    route => !SHOULD_HIDE_SAMPLES(route.hash) && showSection(route, data),
   );
 
   const errorResponse =

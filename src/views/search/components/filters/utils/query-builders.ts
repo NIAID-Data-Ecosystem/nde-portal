@@ -87,9 +87,14 @@ export const queryFilterObject2String = (selectedFilters: any) => {
         values = `("${filter_strings
           .map((type: string) => formatResourceTypeForAPI(type))
           .join('" OR "')}")`;
-      } else if (filter_strings.length > 0 && filterName === 'date') {
+      } else if (filterName === 'date') {
+        // If one date is selected we do exact match, if multiple we apply range
+        if (filter_strings.length === 1) {
+          values = filter_strings.join('');
+        } else if (filter_strings.length > 0) {
+          values = `["${filter_strings.join('" TO "')}"]`;
+        }
         // if type is date we join with "TO"
-        values = `["${filter_strings.join('" TO "')}"]`;
       } else if (filter_strings.length > 0) {
         values = `("${filter_strings.join('" OR "')}")`;
       } else {

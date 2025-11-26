@@ -21,7 +21,6 @@ import OperatingSystems from './operating-systems';
 import { SearchableItems } from 'src/components/searchable-items';
 import { DisplayHTMLContent } from 'src/components/html-content';
 import { AccessibleForFree, ConditionsOfAccess } from 'src/components/badges';
-import { SourceLogo, SourceLogoWrapper, getSourceDetails } from './source-logo';
 import { CompletenessBadgeCircle } from 'src/components/metadata-completeness-badge/Circular';
 import { ToggleContainer } from 'src/components/toggle-container';
 import { formatAuthorsList2String } from 'src/utils/helpers/authors';
@@ -32,6 +31,12 @@ import { SchemaDefinitions } from 'scripts/generate-schema-definitions/types';
 import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
 import { InfoLabel } from 'src/components/info-label';
 import { formatAPIResourceTypeForDisplay } from 'src/utils/formatting/formatResourceType';
+import {
+  formatSourcesWithLogos,
+  getAccessResourceURL,
+  getSourceLogoLinkOut,
+} from 'src/components/source-logo/helpers';
+import { SourceLogo } from 'src/components/source-logo';
 
 interface SearchResultCardProps {
   isLoading?: boolean;
@@ -70,7 +75,7 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
   const sources =
     isLoading || !includedInDataCatalog
       ? []
-      : getSourceDetails(includedInDataCatalog);
+      : formatSourcesWithLogos(includedInDataCatalog) || [];
 
   const highlightProps = useMemo(
     () =>
@@ -84,10 +89,16 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
 
   return (
     // {/* Banner with resource type + date of publication */}
-    <Card ref={cardRef} variant='niaid' my={4} mb={8}>
+    <Card
+      ref={cardRef}
+      variant='niaid'
+      boxShadow='none'
+      border='1px solid'
+      borderColor='gray.100'
+    >
       <TypeBanner
-        label={formatAPIResourceTypeForDisplay(type || 'Dataset')}
-        type={type || 'Dataset'}
+        label={formatAPIResourceTypeForDisplay(type)}
+        type={type}
         p={0}
         pl={[2, 4, 6]}
         flexDirection={['column', 'row']}
@@ -227,11 +238,17 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
               </Flex>
             )}
 
-            <CardBody p={0}>
+            <CardBody
+              p={0}
+              sx={{
+                '>*': {
+                  my: 0,
+                },
+              }}
+            >
               {date && (
                 <Flex
                   px={paddingCard}
-                  m={0}
                   flex={1}
                   borderRadius='semi'
                   bg='secondary.50'
@@ -264,7 +281,6 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                 <Flex
                   px={paddingCard}
                   py={1}
-                  m={0}
                   flex={1}
                   borderRadius='semi'
                   bg='secondary.50'
@@ -282,7 +298,6 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
               <Stack
                 px={paddingCard}
                 py={[0, 1]}
-                my={1}
                 flexDirection={{ base: 'column', md: 'row' }}
                 spacing={[1, 3, 4]}
               >
@@ -307,25 +322,22 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                   borderRadius='semi'
                   justifyContent='center'
                 >
-                  <SourceLogoWrapper>
+                  <SourceLogo.Wrapper>
                     {sources?.length > 0 &&
                       sources.map(source => {
                         return (
-                          <SourceLogo
+                          <SourceLogo.Component
                             key={source.name}
                             source={source}
                             type={type}
-                            url={
-                              type === 'ResourceCatalog'
-                                ? ''
-                                : Array.isArray(source?.archivedAt)
-                                ? source?.archivedAt[0]
-                                : source?.archivedAt ?? ''
-                            }
+                            url={getAccessResourceURL({
+                              recordType: type,
+                              source,
+                            })}
                           />
                         );
                       })}
-                  </SourceLogoWrapper>
+                  </SourceLogo.Wrapper>
                 </Flex>
 
                 {description && (
@@ -358,7 +370,6 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                   <Flex
                     borderBottom='1px solid'
                     borderBottomColor='gray.200'
-                    my={0}
                     px={paddingCard}
                     py={1}
                   >
@@ -403,7 +414,6 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                   <Flex
                     borderBottom='1px solid'
                     borderBottomColor='gray.200'
-                    my={0}
                     px={paddingCard}
                     py={1}
                   >
@@ -442,7 +452,6 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                   <Flex
                     borderBottom='1px solid'
                     borderBottomColor='gray.200'
-                    my={0}
                     px={paddingCard}
                     py={1}
                   >
@@ -487,28 +496,25 @@ const SearchResultCard: React.FC<SearchResultCardProps> = ({
                 pb={[2, 4]}
                 my={1}
               >
-                <SourceLogoWrapper
+                <SourceLogo.Wrapper
                   display={{ base: 'none', sm: 'flex' }}
                   flex={1}
                 >
                   {sources?.length > 0 &&
                     sources.map(source => {
                       return (
-                        <SourceLogo
+                        <SourceLogo.Component
                           key={source.name}
                           source={source}
                           type={type}
-                          url={
-                            type === 'ResourceCatalog'
-                              ? ''
-                              : Array.isArray(source?.archivedAt)
-                              ? source?.archivedAt[0]
-                              : source?.archivedAt ?? ''
-                          }
+                          url={getAccessResourceURL({
+                            recordType: type,
+                            source,
+                          })}
                         />
                       );
                     })}
-                </SourceLogoWrapper>
+                </SourceLogo.Wrapper>
 
                 <Flex
                   flex={{ base: 1, sm: 'unset' }}
