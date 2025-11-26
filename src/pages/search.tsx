@@ -91,30 +91,18 @@ const Search: NextPage<{
 
   // Apply default date filter on first load only
   useEffect(() => {
-    if (!router.isReady || hasInitialized.current) return;
+    if (!router.isReady) return;
 
-    const hasDateFilter =
-      selectedFilters.date && selectedFilters.date.length > 0;
+    const hasDateFilter = selectedFilters.date?.length > 0;
+    if (hasDateFilter) return;
 
-    // Only apply default on first load when no date filter exists
-    if (!hasDateFilter) {
-      const defaultDateRange = getDefaultDateRange();
-
-      const updatedFilters = {
+    handleRouteUpdate({
+      filters: queryFilterObject2String({
         ...selectedFilters,
-        date: defaultDateRange,
-      };
-
-      const filterString = queryFilterObject2String(updatedFilters);
-
-      handleRouteUpdate({
-        filters: filterString,
-      });
-    }
-
-    // Mark as initialized to prevent re-running
-    hasInitialized.current = true;
-  }, [router.isReady, selectedFilters, handleRouteUpdate]);
+        date: getDefaultDateRange(),
+      }),
+    });
+  }, [router.isReady]);
 
   // Validate and cap date filter at current year if it exceeds (runtime validation)
   useEffect(() => {
@@ -122,35 +110,22 @@ const Search: NextPage<{
 
     const hasDateFilter =
       selectedFilters.date && selectedFilters.date.length > 0;
+    if (!hasDateFilter) return;
 
-    if (hasDateFilter) {
-      const currentYear = new Date().getFullYear();
-      const existingEndDate = selectedFilters.date?.[1];
+    const [start, end] = selectedFilters.date;
+    if (!end || typeof end !== 'string') return;
 
-      if (existingEndDate && typeof existingEndDate === 'string') {
-        const endDateParts = existingEndDate.split('-');
-        const endYear = parseInt(endDateParts[0], 10);
+    const endYear = parseInt(end.slice(0, 4), 10);
+    const currentYear = new Date().getFullYear();
 
-        if (endYear > currentYear) {
-          // Cap the end date at current year
-          const cappedDateFilter = [
-            selectedFilters.date[0],
-            `${currentYear}-12-31`,
-          ];
+    if (endYear <= currentYear) return;
 
-          const updatedFilters = {
-            ...selectedFilters,
-            date: cappedDateFilter,
-          };
-
-          const filterString = queryFilterObject2String(updatedFilters);
-
-          handleRouteUpdate({
-            filters: filterString,
-          });
-        }
-      }
-    }
+    handleRouteUpdate({
+      filters: queryFilterObject2String({
+        ...selectedFilters,
+        date: [start, `${currentYear}-12-31`],
+      }),
+    });
   }, [router.isReady, selectedFilters, handleRouteUpdate]);
 
   // If the initial tab is not set, return a loading state.
