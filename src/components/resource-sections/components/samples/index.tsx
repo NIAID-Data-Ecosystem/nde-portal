@@ -10,6 +10,7 @@ import { Link } from 'src/components/link';
 import { ScrollContainer } from 'src/components/scroll-container';
 import { Sample } from 'src/utils/api/types';
 import { Table } from 'src/components/table';
+import { formatUnitText, formatValue } from './helpers';
 
 interface SamplesDisplayProps {
   sample: Sample | null | undefined;
@@ -18,56 +19,6 @@ interface SamplesDisplayProps {
 // Hide samples section in production builds until approved.
 export const SHOULD_HIDE_SAMPLES = (hash: string) =>
   hash === 'samples' && process.env.NEXT_PUBLIC_APP_ENV === 'production';
-
-/**
- * Format unit text:
- * - Lowercase all characters.
- * - Replace underscores (e.g., "CELL_COUNT") with spaces.
- */
-const formatUnitText = (unit: string | undefined) => {
-  if (!unit) return '';
-  return unit.toLowerCase().replace(/_/g, ' ');
-};
-
-/**
- * Format a numeric "value" field.
- * Supports:
- * - Exact number.
- * - Min / Max (range).
- * - Only min (>=)
- * - Only max (<=)
- */
-const formatValue = ({
-  value,
-  minValue,
-  maxValue,
-}: {
-  value?: number;
-  minValue?: number;
-  maxValue?: number;
-}) => {
-  if (value != null) {
-    return value.toLocaleString();
-  }
-
-  if (minValue != null && maxValue != null) {
-    // If min == max, show single number
-    if (minValue === maxValue) {
-      return minValue.toLocaleString();
-    }
-    return `${minValue.toLocaleString()} - ${maxValue.toLocaleString()}`;
-  }
-
-  if (minValue != null) {
-    return `>= ${minValue.toLocaleString()}`;
-  }
-
-  if (maxValue != null) {
-    return `<= ${maxValue.toLocaleString()}`;
-  }
-
-  return '';
-};
 
 export const SamplesDisplay = ({ sample }: SamplesDisplayProps) => {
   // Sample Collection
