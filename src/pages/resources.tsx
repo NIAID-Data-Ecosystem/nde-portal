@@ -21,6 +21,7 @@ import { getQueryStatusError } from 'src/components/error/utils';
 import { Sidebar } from 'src/components/resource-sections/components/sidebar';
 import SITE_CONFIG from 'configs/site.config.json';
 import { SiteConfig } from 'src/components/page-container/types';
+import { SHOULD_HIDE_SAMPLES } from 'src/components/resource-sections/components/samples';
 
 const siteConfig = SITE_CONFIG as SiteConfig;
 
@@ -103,7 +104,9 @@ const ResourcePage: NextPage = () => {
   };
 
   // Check if the metadata is available for a given section before displaying it in navbar or page.
-  const sections = routes.filter(route => showSection(route, data));
+  const sections = routes.filter(
+    route => !SHOULD_HIDE_SAMPLES(route.hash) && showSection(route, data),
+  );
 
   const errorResponse =
     error && getQueryStatusError(error as unknown as { status: string });

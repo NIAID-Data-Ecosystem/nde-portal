@@ -46,7 +46,7 @@ import { FaMagnifyingGlass } from 'react-icons/fa6';
 import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
 import { SchemaDefinitions } from 'scripts/generate-schema-definitions/types';
 import { RelatedResources } from './components/related-resources';
-import { SamplesDisplay } from './components/samples';
+import { SamplesDisplay, SHOULD_HIDE_SAMPLES } from './components/samples';
 import { getAccessResourceURL } from '../source-logo/helpers';
 
 const schema = SCHEMA_DEFINITIONS as SchemaDefinitions;
@@ -480,7 +480,7 @@ const Sections = ({
             )}
 
             {/* Show provenance */}
-            {section.hash === 'samples' && (
+            {section.hash === 'samples' && !SHOULD_HIDE_SAMPLES('samples') && (
               <SamplesDisplay sample={data?.sample} />
             )}
 

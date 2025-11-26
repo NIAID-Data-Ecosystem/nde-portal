@@ -15,6 +15,10 @@ interface SamplesDisplayProps {
   sample: Sample | null | undefined;
 }
 
+// Hide samples section in production builds until approved.
+export const SHOULD_HIDE_SAMPLES = (hash: string) =>
+  hash === 'samples' && process.env.NEXT_PUBLIC_APP_ENV === 'production';
+
 /**
  * Format unit text:
  * - Lowercase all characters.
