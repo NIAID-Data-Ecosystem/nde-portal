@@ -4,67 +4,146 @@
     {
       "title": "Overview",
       "hash": "overview",
-      "showEmpty": true,
-      "isCollapsible": true
+      "properties": [
+        "availableOnDevice",
+        "doi",
+        "featureList",
+        "healthCondition",
+        "infectiousAgent",
+        "inLanguage",
+        "input",
+        "license",
+        "locationNames",
+        "measurementTechnique",
+        "nctid",
+        "output",
+        "programmingLanguage",
+        "softwareHelp",
+        "softwareRequirements",
+        "softwareVersion",
+        "spatialCoverage",
+        "species",
+        "temporalCoverage",
+        "topicCategory",
+        "variableMeasured"
+      ],
+      "ui": {
+        "isCollapsible": true,
+        "showInNavigation": true,
+        "showEmptyState": true
+      }
     },
     {
       "title": "Keywords",
       "hash": "keywords",
-      "isCollapsible": true
+      "properties": ["keywords"],
+      "ui": {
+        "isCollapsible": true,
+        "showInNavigation": true
+      }
     },
     {
       "title": "Application Categories",
       "hash": "applicationCategory",
-      "isCollapsible": true
+      "properties": ["applicationCategory"],
+      "ui": {
+        "isCollapsible": true,
+        "showInNavigation": true
+      }
     },
     {
       "title": "Programming Languages",
       "hash": "programmingLanguage",
-      "isCollapsible": true
+      "properties": ["programmingLanguage"],
+      "ui": {
+        "isCollapsible": true,
+        "showInNavigation": true
+      }
     },
 
     {
       "title": "Description",
       "hash": "description",
-      "isCollapsible": true
+      "properties": ["description"],
+      "ui": {
+        "isCollapsible": true,
+        "showInNavigation": true
+      }
     },
     {
       "title": "Provenance",
       "hash": "provenance",
-      "showEmpty": true,
-      "isCollapsible": true
+      "properties": ["includedInDataCatalog", "url", "sdPublisher"],
+      "ui": {
+        "isCollapsible": true,
+        "showInNavigation": true,
+        "showEmptyState": true
+      }
     },
-
     {
       "title": "File Downloads",
       "hash": "downloads",
-      "isCollapsible": true
+      "properties": ["distribution", "downloadUrl"],
+      "ui": {
+        "isCollapsible": true,
+        "showInNavigation": true
+      }
     },
     {
       "title": "Funding",
       "hash": "funding",
-      "showEmpty": true,
-      "isCollapsible": true
+      "properties": ["funding"],
+      "ui": {
+        "isCollapsible": true,
+        "showInNavigation": true,
+        "showEmptyState": true
+      }
     },
     {
       "title": "Based On",
       "hash": "isBasedOn",
-      "isCollapsible": true
+      "properties": ["isBasedOn"],
+      "ui": {
+        "isCollapsible": true,
+        "showInNavigation": true
+      }
     },
     {
       "title": "Cited By",
       "hash": "citedBy",
-      "isCollapsible": true
+      "properties": ["citedBy"],
+      "ui": {
+        "isCollapsible": true,
+        "showInNavigation": true
+      }
     },
     {
       "title": "Related Resources",
       "hash": "relatedResources",
-      "isCollapsible": true
+      "properties": ["hasPart", "isBasisFor", "isRelatedTo", "isPartOf"],
+      "ui": {
+        "isCollapsible": true,
+        "showInNavigation": true
+      }
+    },
+    {
+      "title": "Samples",
+      "hash": "samples",
+      "properties": ["sample.collectionSize", "sample.sampleQuantity"],
+      "ui": {
+        "isCollapsible": true,
+        "showInNavigation": true,
+        "showEmptyState": false
+      }
     },
     {
       "title": "Metadata",
       "hash": "metadata",
-      "isCollapsible": true
+      "properties": ["rawData"],
+      "ui": {
+        "isCollapsible": true,
+        "showInNavigation": true
+      }
     }
   ]
 }

@@ -10,28 +10,12 @@ import {
 } from '@chakra-ui/react';
 import { Link } from 'src/components/link';
 import { FormattedResource, IncludedInDataCatalog } from 'src/utils/api/types';
-import { getRepositoryImage } from 'src/utils/helpers';
-
-export const getSourceDetails = (
-  sources: FormattedResource['includedInDataCatalog'],
-) => {
-  const sources2Array = sources
-    ? Array.isArray(sources)
-      ? sources
-      : [sources]
-    : [];
-  return sources2Array.map(source => ({
-    ...source,
-    logo: getRepositoryImage(source.name),
-  }));
-};
+import { getSourceImagePath } from './helpers';
 
 // Wrapper container for the source logos.
 interface SourceLogoWrapperProps extends StackProps {}
-export const SourceLogoWrapper = ({
-  children,
-  ...props
-}: SourceLogoWrapperProps) => {
+
+const Wrapper = ({ children, ...props }: SourceLogoWrapperProps) => {
   return (
     <Stack
       alignItems='flex-start'
@@ -59,14 +43,14 @@ interface SourceLogoProps extends BoxProps {
 }
 
 // Individual source logo component.
-export const SourceLogo = ({
+const Component = ({
   imageProps,
   source,
   type,
   url,
   ...props
 }: SourceLogoProps) => {
-  const logo = getRepositoryImage(source.name);
+  const logo = getSourceImagePath(source.name);
 
   return (
     <Box key={source.name} maxW={{ base: '200px', sm: '250px' }} {...props}>
@@ -93,7 +77,6 @@ export const SourceLogo = ({
                   </Text>
                 </Flex>
               }
-              // fallbackSrc='/assets/resources/empty-source.png'
               w='100%'
               h='40px'
               mr={4}
@@ -137,3 +120,5 @@ export const SourceLogo = ({
     </Box>
   );
 };
+
+export const SourceLogo = { Wrapper, Component };
