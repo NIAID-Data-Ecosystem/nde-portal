@@ -49,6 +49,9 @@ import { RelatedResources } from './components/related-resources';
 import { SamplesDisplay, SHOULD_HIDE_SAMPLES } from './components/samples';
 import { getAccessResourceURL } from '../source-logo/helpers';
 
+export const SHOW_CREDIT_TEXT_SECTION =
+  process.env.NEXT_PUBLIC_APP_ENV !== 'production';
+
 const schema = SCHEMA_DEFINITIONS as SchemaDefinitions;
 
 // use config file to show content in sections.
@@ -269,43 +272,47 @@ const Sections = ({
                 )}
 
                 {/* Resource credit text */}
-                <OverviewSectionWrapper
-                  isLoading={isLoading}
-                  label='Credit Text'
-                  tooltipLabel={getMetadataDescription(
-                    'creditText',
-                    data?.['@type'],
-                  )}
-                  my={4}
-                  scrollContainerProps={{ maxHeight: 'unset' }}
-                >
-                  {/* If no credit section, visit the actual source */}
-                  <Text px={2}>
-                    {data?.creditText || (
-                      <>
-                        Please{' '}
-                        <Link
-                          href={
-                            data?.includedInDataCatalog &&
-                            getAccessResourceURL({
-                              recordType: data?.['@type'],
-                              source: Array.isArray(data?.includedInDataCatalog)
-                                ? data?.includedInDataCatalog[0]
-                                : data?.includedInDataCatalog,
-                              url: data?.url,
-                            })
-                          }
-                          isExternal
-                          target='_blank'
-                          rel='noopener noreferrer'
-                        >
-                          access the resource
-                        </Link>{' '}
-                        for complete citation guidance.
-                      </>
+                {SHOW_CREDIT_TEXT_SECTION && (
+                  <OverviewSectionWrapper
+                    isLoading={isLoading}
+                    label='Credit Text'
+                    tooltipLabel={getMetadataDescription(
+                      'creditText',
+                      data?.['@type'],
                     )}
-                  </Text>
-                </OverviewSectionWrapper>
+                    my={4}
+                    scrollContainerProps={{ maxHeight: 'unset' }}
+                  >
+                    {/* If no credit section, visit the actual source */}
+                    <Text px={2}>
+                      {data?.creditText || (
+                        <>
+                          Please{' '}
+                          <Link
+                            href={
+                              data?.includedInDataCatalog &&
+                              getAccessResourceURL({
+                                recordType: data?.['@type'],
+                                source: Array.isArray(
+                                  data?.includedInDataCatalog,
+                                )
+                                  ? data?.includedInDataCatalog[0]
+                                  : data?.includedInDataCatalog,
+                                url: data?.url,
+                              })
+                            }
+                            isExternal
+                            target='_blank'
+                            rel='noopener noreferrer'
+                          >
+                            access the resource
+                          </Link>{' '}
+                          for complete citation guidance.
+                        </>
+                      )}
+                    </Text>
+                  </OverviewSectionWrapper>
+                )}
               </>
             )}
             {/* Show keywords */}
