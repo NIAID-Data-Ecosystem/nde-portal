@@ -9,6 +9,7 @@ import {
   Skeleton,
   Stack,
   StackDivider,
+  Text,
   UnorderedList,
   VStack,
 } from '@chakra-ui/react';
@@ -26,7 +27,6 @@ import { Route } from './helpers';
 import FilesTable from './components/files-table';
 import { CitedByTable } from './components/cited-by-table';
 import { DisplayHTMLContent } from '../html-content';
-import SoftwareInformation from './components/software-information';
 import {
   ExternalAccess,
   UsageInfo,
@@ -46,50 +46,10 @@ import { FaMagnifyingGlass } from 'react-icons/fa6';
 import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
 import { SchemaDefinitions } from 'scripts/generate-schema-definitions/types';
 import { RelatedResources } from './components/related-resources';
+import { SamplesDisplay, SHOULD_HIDE_SAMPLES } from './components/samples';
+import { getAccessResourceURL } from '../source-logo/helpers';
 
 const schema = SCHEMA_DEFINITIONS as SchemaDefinitions;
-// Metadata displayed in each section
-export const sectionMetadata: { [key: string]: (keyof FormattedResource)[] } = {
-  overview: [
-    'doi',
-    'healthCondition',
-    'infectiousAgent',
-    'inLanguage',
-    'license',
-    'measurementTechnique',
-    'nctid',
-    'programmingLanguage',
-    'softwareVersion',
-    'spatialCoverage',
-    'species',
-    'temporalCoverage',
-    'topicCategory',
-    'variableMeasured',
-  ],
-  softwareInformation: [
-    'applicationCategory',
-    'discussionUrl',
-    'input',
-    'output',
-    'processorRequirements',
-    'programmingLanguage',
-    'softwareAddOn',
-    'softwareHelp',
-    'softwareRequirements',
-    'softwareVersion',
-  ],
-  keywords: ['keywords'],
-  applicationCategory: ['applicationCategory'],
-  programmingLanguage: ['programmingLanguage'],
-  description: ['description'],
-  provenance: ['includedInDataCatalog', 'url', 'sdPublisher'],
-  downloads: ['distribution', 'downloadUrl'],
-  funding: ['funding'],
-  isBasedOn: ['isBasedOn'],
-  citedBy: ['citedBy'],
-  relatedResources: ['hasPart', 'isBasisFor', 'isRelatedTo', 'isPartOf'],
-  metadata: ['rawData'],
-};
 
 // use config file to show content in sections.
 const Sections = ({
@@ -151,7 +111,7 @@ const Sections = ({
             key={section.hash}
             name={section.title}
             isLoading={isLoading}
-            isCollapsible={section.isCollapsible}
+            isCollapsible={section?.ui?.isCollapsible}
           >
             {/* for mobile viewing */}
             {section.hash === 'overview' && data && (
@@ -307,6 +267,45 @@ const Sections = ({
                     <ResourceCitations citations={data?.citation} />
                   </OverviewSectionWrapper>
                 )}
+
+                {/* Resource credit text */}
+                <OverviewSectionWrapper
+                  isLoading={isLoading}
+                  label='Credit Text'
+                  tooltipLabel={getMetadataDescription(
+                    'creditText',
+                    data?.['@type'],
+                  )}
+                  my={4}
+                  scrollContainerProps={{ maxHeight: 'unset' }}
+                >
+                  {/* If no credit section, visit the actual source */}
+                  <Text px={2}>
+                    {data?.creditText || (
+                      <>
+                        Please{' '}
+                        <Link
+                          href={
+                            data?.includedInDataCatalog &&
+                            getAccessResourceURL({
+                              recordType: data?.['@type'],
+                              source: Array.isArray(data?.includedInDataCatalog)
+                                ? data?.includedInDataCatalog[0]
+                                : data?.includedInDataCatalog,
+                              url: data?.url,
+                            })
+                          }
+                          isExternal
+                          target='_blank'
+                          rel='noopener noreferrer'
+                        >
+                          access the resource
+                        </Link>{' '}
+                        for complete citation guidance.
+                      </>
+                    )}
+                  </Text>
+                </OverviewSectionWrapper>
               </>
             )}
             {/* Show keywords */}
@@ -382,13 +381,6 @@ const Sections = ({
                     />
                   )}
               </Skeleton>
-            )}
-            {section.hash === 'softwareInformation' && (
-              <SoftwareInformation
-                keys={sectionMetadata[section.hash]}
-                isLoading={isLoading}
-                {...data}
-              />
             )}
 
             {/* Show description */}
@@ -485,6 +477,11 @@ const Sections = ({
                   }
                 }
               />
+            )}
+
+            {/* Show provenance */}
+            {section.hash === 'samples' && !SHOULD_HIDE_SAMPLES('samples') && (
+              <SamplesDisplay sample={data?.sample} />
             )}
 
             {/* Show raw metadata */}
