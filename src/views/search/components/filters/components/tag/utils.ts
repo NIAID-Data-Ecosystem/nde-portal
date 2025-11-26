@@ -171,6 +171,8 @@ export const generateTags = (
       if (isDateRangeValues(cleanedDateValues)) {
         return [createDateRangeTag(key, name, cleanedDateValues)];
       }
+      // If not a range, fall through to create individual tags
+      return createValueTags(key, name, cleanedDateValues, config);
     }
 
     // Handle all other filters
