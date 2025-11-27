@@ -471,6 +471,7 @@ export interface FormattedResource {
   collectionType?: CollectionType | null;
   condition: string | null;
   conditionsOfAccess: AccessTypes | null;
+  creditText: string | null;
   date: string | null;
   dateCreated: string | null;
   dateModified: string | null;
