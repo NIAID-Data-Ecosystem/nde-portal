@@ -12,20 +12,39 @@ export interface Route {
 }
 
 // Helper function determines whether to show section in nav based on availability of metadata.
-// Safely get a nested value using a dot-separated path (e.g. "sample.collectionSize")
-const getValueByPath = (obj: unknown, path: string): unknown => {
-  if (!obj || !path) return undefined;
+// Get a nested value using a dot-separated path (e.g. "sample.collectionSize")
+export const getValueByPath = (obj: unknown, path: string): unknown => {
+  if (obj == null || !path) return undefined;
 
   return path.split('.').reduce<unknown>((acc, key) => {
-    if (acc && typeof acc === 'object' && key in acc) {
+    if (acc == null) return undefined;
+
+    // If current value is an array, try to pluck the property from each element
+    if (Array.isArray(acc)) {
+      const mapped = acc
+        .map(item => {
+          if (item && typeof item === 'object' && key in (item as any)) {
+            return (item as any)[key];
+          }
+          return undefined;
+        })
+        .filter(v => v !== undefined);
+
+      if (mapped.length === 0) return undefined;
+      if (mapped.length === 1) return mapped[0]; // unwrap single
+      return mapped;
+    }
+
+    // Normal object case
+    if (typeof acc === 'object' && key in (acc as any)) {
       return (acc as any)[key];
     }
+
     return undefined;
   }, obj);
 };
-
 // Check if value exists and is non-empty
-const hasNonEmptyValue = (value: unknown): boolean => {
+export const hasNonEmptyValue = (value: unknown): boolean => {
   if (value == null) return false; // null or undefined
 
   if (Array.isArray(value)) {

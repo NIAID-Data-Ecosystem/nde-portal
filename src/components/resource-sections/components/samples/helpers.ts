@@ -47,3 +47,6 @@ export const formatValue = ({
 
   return '';
 };
+
+export const formatTerm = (term: string) =>
+  term.charAt(0).toUpperCase() + term.slice(1);

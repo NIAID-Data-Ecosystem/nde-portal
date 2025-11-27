@@ -16,11 +16,16 @@ import { useTableSort } from 'src/components/table/hooks/useTableSort';
 import { Row } from 'src/components/table/components/row';
 import { Cell, Th } from 'src/components/table/components/cell';
 
-interface Column {
+export interface Column {
   title: string;
   property: string;
   isSortable?: boolean;
   props?: any;
+  renderCell?: (props: {
+    column: Column;
+    data: any;
+    isLoading?: boolean;
+  }) => React.ReactNode;
 }
 
 interface TableProps<TData extends Record<string, string | number>> {
