@@ -1,10 +1,4 @@
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import { max } from 'd3-array';
 import { Brush } from '@visx/brush';
 import { Group } from '@visx/group';
@@ -13,7 +7,8 @@ import { scaleBand, scaleLinear } from '@visx/scale';
 import { Bar } from '@visx/shape';
 import BaseBrush from '@visx/brush/lib/BaseBrush';
 import { BrushProps } from '@visx/brush/lib/Brush';
-import { BrushHandleRenderProps } from '@visx/brush/lib/BrushHandle';
+import { BrushHandle } from 'src/components/brush/components/brush-handle';
+import { useBrushKeyboardNavigation } from 'src/components/brush/hooks/useBrushKeyboardNavigation';
 import { Bounds } from '@visx/brush/lib/types';
 import { FacetTerm } from 'src/utils/api/types';
 import { FacetProps } from '../../../types';
@@ -148,8 +143,6 @@ interface AccessibleBrushProps extends Partial<BrushProps> {
   handleSelection: (selection: string[]) => void;
 }
 
-const BRUSH_STATES = ['brush', 'left', 'right'];
-
 // A brush integrating keyboard functionality
 const AccessibleBrush = ({
   chartRef,
@@ -163,8 +156,6 @@ const AccessibleBrush = ({
   handleSelection,
 }: AccessibleBrushProps) => {
   const brushRef = useRef<BaseBrush | null>(null);
-  const animationFrameRef = useRef<number | null>(null);
-  const [activeState, setActiveState] = useState<number | null>(null);
 
   // Brush dimensions
   const xBrushMax = Math.max(width - brushMargin.left - brushMargin.right, 0);
@@ -176,156 +167,19 @@ const AccessibleBrush = ({
     handleSelection(bounds.xValues as string[]);
   };
 
-  const handleKeyDown = useCallback(
-    (event: KeyboardEvent) => {
-      const { key, shiftKey } = event;
-      const step = xScale?.bandwidth() || 1;
-
-      const startX = brushRef.current?.state?.start?.x ?? 0;
-      const endX = brushRef.current?.state?.end?.x ?? 0;
-
-      let newStartX = startX;
-      let newEndX = endX;
-
-      // Pressing Shift + Tab reverses the focus.
-      if (shiftKey) {
-        if (key === 'Tab') {
-          if (isFocused && (activeState === null || activeState === 0)) {
-            return;
-          } else {
-            // Go to the previous state
-            const currentIndex = activeState ?? 0;
-            const nextIndex =
-              (currentIndex - 1 + BRUSH_STATES.length) % BRUSH_STATES.length;
-            setActiveState(nextIndex);
-            event.preventDefault();
-            return;
-          }
-        }
-      } else if (key === 'Tab') {
-        // Pressing tab traps and cycles the focus through the brush states.
-        if (activeState === BRUSH_STATES.length - 1) {
-          setActiveState(null);
-          return;
-        } else {
-          const currentIndex = activeState ?? 0;
-          const nextIndex = (currentIndex + 1) % BRUSH_STATES.length;
-          setActiveState(nextIndex);
-          event.preventDefault();
-          return;
-        }
-      }
-
-      if (isFocused) {
-        //  Pressing the left or right arrow moves the entire brush selection.
-        if (activeState === null || activeState === 0) {
-          if (key === 'ArrowLeft') {
-            newStartX = Math.max(0, startX - step);
-            newEndX = Math.max(step, endX - step);
-          } else if (key === 'ArrowRight') {
-            newStartX = Math.min(endX, startX + step);
-            newEndX = Math.min(xBrushMax, endX + step);
-          }
-        } else if (activeState === 1) {
-          // Pressing the left or right arrow moves the left handle (expands / minimizes the selection).
-          if (key === 'ArrowLeft') {
-            newStartX = Math.max(0, startX - step);
-          } else if (key === 'ArrowRight') {
-            newStartX = Math.min(endX, startX + step);
-          }
-        } else if (activeState === 2) {
-          // Pressing the left or right arrow moves the right handle (expands / minimizes the selection).
-          if (key === 'ArrowLeft') {
-            newEndX = Math.max(startX + step, endX - step);
-          } else if (key === 'ArrowRight') {
-            newEndX = Math.min(xBrushMax, endX + step);
-          }
-        }
-      }
-      // Cancel the previous animation frame if still pending
-      if (animationFrameRef.current) {
-        cancelAnimationFrame(animationFrameRef.current);
-      }
-
-      // Use requestAnimationFrame to batch brush updates and avoid overloading the render loop
-      animationFrameRef.current = requestAnimationFrame(() => {
-        if (!brushRef.current) return;
-        brushRef.current.reset?.();
-
-        const brushY0 = 0;
-        const brushY1 = yBrushMax;
-
-        const newState = {
-          bounds: { x0: 0, x1: xBrushMax, y0: brushY0, y1: brushY1 },
-          start: { x: newStartX, y: brushY0 },
-          end: { x: newEndX, y: brushY1 },
-          isBrushing: false,
-          dragHandle: null,
-          activeHandle: null,
-          extent: { x0: newStartX, x1: newEndX, y0: brushY0, y1: brushY1 },
-        };
-        // Update the brush state. Which will in turn calculate the new xValues.
-        brushRef.current.updateBrush?.(newState);
-
-        // brushRef.current.state = { ...brushRef.current.state, ...newState };
-      });
+  // Use keyboard navigation hook with immediate update strategy
+  const { activeHandle } = useBrushKeyboardNavigation({
+    chartRef,
+    brushRef,
+    xScale,
+    width: xBrushMax,
+    height: yBrushMax,
+    isFocused,
+    updateStrategy: 'immediate',
+    onUpdateImmediate: () => {
+      // Selection update is handled automatically by brush onChange
     },
-    [xScale, isFocused, activeState, xBrushMax, yBrushMax],
-  );
-
-  // Set the initial brush state. Note: We need to manually set this because we are manually updating the brush state in OnKeyDown.
-  useEffect(() => {
-    if (!brushRef.current) return;
-    brushRef.current.reset?.();
-
-    const brushY0 = 0;
-    const brushY1 = yBrushMax;
-    const startX = brushRef.current?.state?.start?.x ?? 0;
-    const endX = brushRef.current?.state?.end?.x ?? 0;
-
-    const newState = {
-      bounds: { x0: 0, x1: xBrushMax, y0: brushY0, y1: brushY1 },
-      start: {
-        x: startX,
-        y: brushY0,
-      },
-      end: { x: endX, y: brushY1 },
-      isBrushing: false,
-      dragHandle: null,
-      activeHandle: null,
-      extent: {
-        x0: startX,
-        x1: endX,
-        y0: brushY0,
-        y1: brushY1,
-      },
-    };
-    // Update the brush state. Which will in turn calculate the new xValues.
-    brushRef.current.updateBrush?.(newState);
-  }, [xBrushMax, yBrushMax]);
-
-  // If the brush is not focused, reset the active state.
-  useEffect(() => {
-    if (!isFocused) {
-      setActiveState(null);
-    }
-  }, [activeState, isFocused]);
-
-  // Add keyboard event listeners to the chartRef
-  useEffect(() => {
-    const node = chartRef.current;
-    if (!node) return;
-    node.addEventListener('keydown', handleKeyDown);
-    return () => {
-      return node.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [chartRef, handleKeyDown]);
-
-  // Used to highlight the active handle when the brush is focused.
-  const activeHandle = useMemo(() => {
-    if (!isFocused || activeState === null || activeState === 0) return null;
-    return BRUSH_STATES[activeState];
-  }, [activeState, isFocused]);
+  });
 
   return (
     <Brush
@@ -350,44 +204,13 @@ const AccessibleBrush = ({
       useWindowMoveEvents
       renderBrushHandle={props => (
         <BrushHandle
+          {...props}
           isFocused={Boolean(
             activeHandle && props.className.includes(activeHandle),
           )}
-          {...props}
+          strokeColor={isFocused ? 'steelblue' : '#999'}
         />
       )}
     />
   );
 };
-
-// A custom brush handle that is used to render the left and right handles of the brush.
-function BrushHandle({
-  x,
-  height,
-  isBrushActive,
-  className,
-  isFocused,
-}: BrushHandleRenderProps & { isFocused: boolean }) {
-  const pathWidth = 8;
-  const pathHeight = 15;
-  const isLeftHandle = className?.includes('left');
-  if (!isBrushActive) {
-    return null;
-  }
-  return (
-    <Group
-      left={x + pathWidth / 2}
-      top={(height - pathHeight) / 2}
-      role='slider'
-      aria-label={`${isLeftHandle ? 'Left' : 'Right'} brush handle`}
-    >
-      <path
-        fill='#f2f2f2'
-        d='M -4.5 0.5 L 3.5 0.5 L 3.5 15.5 L -4.5 15.5 L -4.5 0.5 M -1.5 4 L -1.5 12 M 0.5 4 L 0.5 12'
-        strokeWidth={isFocused ? '1.5' : '1'}
-        stroke={isFocused ? 'steelblue' : '#999'}
-        style={{ cursor: 'ew-resize' }}
-      />
-    </Group>
-  );
-}

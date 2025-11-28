@@ -135,9 +135,11 @@ const transformResults = (
  * It fetches the initial results without any extra filters and then fetches the filtered results with selected filters.
  * The initial and filtered results are merged such that counts from filtered results replace those in initial results.
  * If an item is not present in filtered results, its count is set to 0. The results are sorted by count in descending order.
+ * If initialParams and updateParams have the same extra_filter,
+ * only the initial queries are run.
  *
  * @param config - The filter configuration array.
- * @param initialParams - The parameters used in the update query.
+ * @param initialParams - The parameters used in the initial query.
  * @param updateParams - The parameters used in the update query.
  * @returns The merged initial and filtered results.
  */
@@ -151,7 +153,6 @@ export const useFilterQueries = ({
   updateParams: Params;
 }) => {
   // Memoize the initial queries to avoid unnecessary recalculations
-  // ignore extra_filter and filters in the initial queries to get all the possible results (regardless of filter selection)
   const initialQueries = useMemo(() => {
     return config
       .flatMap(
@@ -211,18 +212,17 @@ export const useFilterQueries = ({
     combine: combineCallback,
   });
 
-  // Determine if filtered queries should be enabled i.e. run when the initial results are available and extra filters are selected.
-  // Used to update the counts in the initial results with the selected filters.
-  const enableUpdate = useMemo(
-    () =>
-      Boolean(
-        updateParams &&
-          updateParams.extra_filter &&
-          initialResults &&
-          Object.keys(initialResults).length > 0,
-      ),
-    [updateParams, initialResults],
-  );
+  // Check if the extra_filter is the same in both params
+  // If they're the same, no need to run update queries (they'd be duplicates)
+  const shouldRunUpdateQueries = useMemo(() => {
+    return Boolean(
+      updateParams &&
+        updateParams.extra_filter &&
+        updateParams.extra_filter !== initialParams.extra_filter &&
+        initialResults &&
+        Object.keys(initialResults).length > 0,
+    );
+  }, [updateParams, initialParams.extra_filter, initialResults]);
 
   const updateQueries = useMemo(() => {
     return config
@@ -235,13 +235,13 @@ export const useFilterQueries = ({
             { ...updateParams, facets: facetConfig.property },
             {
               queryKey: ['filtered'],
-              enabled: enableUpdate,
+              enabled: shouldRunUpdateQueries,
               refetchOnWindowFocus: false,
             },
           ),
       )
       .filter(query => !!query);
-  }, [config, updateParams, enableUpdate]);
+  }, [config, updateParams, shouldRunUpdateQueries]);
 
   // Fetch the updated results with the selected filters
   const {
@@ -259,18 +259,25 @@ export const useFilterQueries = ({
 
   useEffect(() => {
     if (
-      enableUpdate &&
+      shouldRunUpdateQueries &&
       !isUpdating &&
       updatedResults &&
       Object.keys(updatedResults)?.length > 0
     ) {
       const merged = mergeResults(initialResults, updatedResults);
-
       setMergedResults(merged);
     } else if (!isLoading && !isUpdating && initialResults) {
+      // If update queries are disabled (because params are the same),
+      // just use initialResults directly
       setMergedResults(initialResults);
     }
-  }, [initialResults, updatedResults, enableUpdate, isUpdating, isLoading]);
+  }, [
+    initialResults,
+    updatedResults,
+    shouldRunUpdateQueries,
+    isUpdating,
+    isLoading,
+  ]);
 
   // Combine errors from initial and filtered queries
   const error = initialError || updatedError;
@@ -278,7 +285,7 @@ export const useFilterQueries = ({
     error,
     initialResults,
     isLoading: isLoading || isPlaceholderData || isPending,
-    isUpdating: enableUpdate && (isUpdating || updatedPending),
+    isUpdating: shouldRunUpdateQueries && (isUpdating || updatedPending),
     results: mergedResults,
   };
 };
