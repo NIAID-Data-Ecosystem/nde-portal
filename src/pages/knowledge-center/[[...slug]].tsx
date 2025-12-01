@@ -121,8 +121,6 @@ const Docs: NextPage<{
     return r;
   }, {} as SidebarContent['items'][0]);
 
-  const MAX_PAGES_PER_SECTION = 3;
-
   // Redirect to new "compatibility" slug if user is going to old "completeness" slug
   useEffect(() => {
     if (
@@ -272,69 +270,47 @@ const Docs: NextPage<{
                             {doc.name}
                           </Heading>
                           <UnorderedList ml={0}>
-                            {doc.items
-                              .slice(0, MAX_PAGES_PER_SECTION)
-                              .map(item => {
-                                return (
-                                  <ListItem key={item.id} my={2}>
-                                    <SkeletonText
-                                      isLoaded={!isLoading}
-                                      width={isLoading ? '75%' : '100%'}
-                                    >
-                                      <NextLink
-                                        style={{
-                                          display: 'flex',
-                                          width: '100%',
-                                        }}
-                                        href={item.href}
-                                        passHref
-                                      >
-                                        <Link
-                                          as='span'
-                                          w='100%'
-                                          fontSize='sm'
-                                          color='text.body!important'
-                                          bg='transparent'
-                                          lineHeight='tall'
-                                          _selected={{
-                                            color: 'niaid.600!important',
-                                            bg: 'niaid.100',
-                                          }}
-                                          _hover={{
-                                            [`&[aria-selected=false]`]: {
-                                              bg: 'blackAlpha.50',
-                                              borderRadius: 'base',
-                                              transition: 'fast',
-                                            },
-                                          }}
-                                        >
-                                          {item.name}
-                                        </Link>
-                                      </NextLink>
-                                    </SkeletonText>
-                                  </ListItem>
-                                );
-                              })}
-
-                            {/* show view more option when section has a lot of pages */}
-                            {doc.items.length > MAX_PAGES_PER_SECTION && (
-                              <ListItem my={2}>
-                                <NextLink
-                                  style={{ display: 'flex', width: '100%' }}
-                                  href={doc.items[0].href}
-                                  passHref
-                                >
-                                  <Link
-                                    as='span'
-                                    fontSize='sm'
-                                    bg='transparent'
-                                    lineHeight='tall'
+                            {doc.items.map(item => {
+                              return (
+                                <ListItem key={item.id} my={2}>
+                                  <SkeletonText
+                                    isLoaded={!isLoading}
+                                    width={isLoading ? '75%' : '100%'}
                                   >
-                                    View more...
-                                  </Link>
-                                </NextLink>
-                              </ListItem>
-                            )}
+                                    <NextLink
+                                      style={{
+                                        display: 'flex',
+                                        width: '100%',
+                                      }}
+                                      href={item.href}
+                                      passHref
+                                    >
+                                      <Link
+                                        as='span'
+                                        w='100%'
+                                        fontSize='sm'
+                                        color='text.body!important'
+                                        bg='transparent'
+                                        lineHeight='tall'
+                                        _selected={{
+                                          color: 'niaid.600!important',
+                                          bg: 'niaid.100',
+                                        }}
+                                        _hover={{
+                                          [`&[aria-selected=false]`]: {
+                                            bg: 'blackAlpha.50',
+                                            borderRadius: 'base',
+                                            transition: 'fast',
+                                          },
+                                        }}
+                                      >
+                                        {item.name}
+                                      </Link>
+                                    </NextLink>
+                                  </SkeletonText>
+                                </ListItem>
+                              );
+                            })}
                           </UnorderedList>
                         </Box>
                       );
