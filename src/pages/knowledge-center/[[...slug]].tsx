@@ -249,10 +249,11 @@ const Docs: NextPage<{
                 ) : (
                   // {/* List of categories with associated documents. */}
                   <SimpleGrid
-                    columns={{ base: 1, md: 2, lg: 3 }}
+                    columns={{ base: 1, md: 2, lg: 3, xl: 4 }}
                     spacing={{ base: 8, md: 10, lg: '50px' }}
                     margin='0 auto'
-                    w={{ base: '100%', lg: '1000px' }}
+                    w='100%'
+                    maxW='1400px'
                     gridAutoRows='min-content'
                   >
                     {documentationPagesList?.map((doc, i) => {
