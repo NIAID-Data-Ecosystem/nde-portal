@@ -70,7 +70,12 @@ const Home: NextPage<{
         title={HOMEPAGE_COPY.sections.hero.heading}
         subtitle={HOMEPAGE_COPY.sections.hero.subtitle}
       >
-        <Card w='100%' overflow='visible' bg='whiteAlpha.800'>
+        <Card
+          w='100%'
+          overflow='visible'
+          bg='rgba(255, 255, 255, 0.70)'
+          maxWidth='1100px'
+        >
           <CardBody overflow='visible'>
             <Stack
               flexDirection='column'
