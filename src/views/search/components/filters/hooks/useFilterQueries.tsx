@@ -189,7 +189,12 @@ export const useFilterQueries = ({
           ),
       )
       .filter(query => !!query);
-  }, [config, initialParams.q, initialParams.extra_filter]);
+  }, [
+    config,
+    initialParams.q,
+    initialParams.extra_filter,
+    initialParams?.use_ai_search,
+  ]);
 
   // Note: Wrap useQueries combine function in callback because inline functions will run on every render.
   // https://tanstack.com/query/latest/docs/framework/react/reference/useQueries#memoization
@@ -224,9 +229,9 @@ export const useFilterQueries = ({
   const useAiSearchChanged = useMemo(() => {
     return Boolean(
       updateParams?.use_ai_search &&
-        updateParams.use_ai_search !== initialParams.use_ai_search,
+        updateParams.use_ai_search !== initialParams?.use_ai_search,
     );
-  }, [updateParams?.use_ai_search, initialParams.use_ai_search]);
+  }, [updateParams?.use_ai_search, initialParams?.use_ai_search]);
 
   // Determine if we should run the update queries.
   const shouldRunUpdateQueries = useMemo(() => {
