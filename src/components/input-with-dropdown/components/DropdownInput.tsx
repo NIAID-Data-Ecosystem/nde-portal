@@ -69,13 +69,19 @@ export const DropdownInput: React.FC<DropdownInputProps> = ({
   const [rightElWidth, setRightElWidth] = React.useState(0);
 
   useEffect(() => {
-    if (!inputRightRef.current) return;
+    const inputRightEl = inputRightRef.current;
+    if (!inputRightEl) return;
+
+    if (typeof ResizeObserver === 'undefined') {
+      setRightElWidth(inputRightEl.clientWidth);
+      return;
+    }
 
     const observer = new ResizeObserver(() => {
-      setRightElWidth(inputRightRef.current!.clientWidth);
+      setRightElWidth(inputRightEl!.clientWidth);
     });
 
-    observer.observe(inputRightRef.current);
+    observer.observe(inputRightEl);
     return () => observer.disconnect();
   }, []);
 
@@ -114,8 +120,23 @@ export const DropdownInput: React.FC<DropdownInputProps> = ({
 
   // Ensure correct height on initial render and whenever value changes externally
   useEffect(() => {
+    const textareaEl = textareaRef.current;
+    if (!textareaEl) return;
+
+    if (typeof ResizeObserver === 'undefined') {
+      autoResize();
+      return;
+    }
+
+    const observer = new ResizeObserver(() => {
+      autoResize();
+    });
+
+    observer.observe(textareaEl);
     autoResize();
-  }, [inputValue, autoResize]);
+
+    return () => observer.disconnect();
+  }, [autoResize]);
 
   return (
     <Flex as='form' flex={1} onSubmit={handleSubmit}>
