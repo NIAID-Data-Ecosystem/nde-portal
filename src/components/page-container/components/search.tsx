@@ -95,11 +95,13 @@ export const AdvancedSearchLink: React.FC<LinkProps> = props => {
   return (
     <Link
       href={ADVANCED_SEARCH_PATH}
+      color='primary.600'
       colorScheme='primary'
       fontSize='sm'
       fontWeight='medium'
       lineHeight='shorter'
-      _visited={{ color: 'primary.400' }}
+      _visited={{ color: 'primary.600' }}
+      _hover={{ color: 'primary.400' }}
       {...props}
     >
       {siteConfig.pages[ADVANCED_SEARCH_PATH]?.nav?.label || 'Advanced Search'}
