@@ -119,7 +119,8 @@ interface AIToggleProps extends SwitchProps {
   tooltipContent?: React.ReactNode;
 }
 
-const AI_ASSISTED_SEARCH_KC_LINK = '/knowledge-center/ai-assisted-search';
+export const AI_ASSISTED_SEARCH_KC_LINK =
+  '/knowledge-center/ai-assisted-search';
 const DEFAULT_AI_TOOLTIP_CONTENT = (
   <Text fontSize='sm'>
     AI-assisted search uses AI to interpret your query and suggest more relevant

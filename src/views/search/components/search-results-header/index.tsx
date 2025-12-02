@@ -1,5 +1,6 @@
 import { Flex, FlexProps, Text, TextProps, VStack } from '@chakra-ui/react';
 import { Link } from 'src/components/link';
+import { AI_ASSISTED_SEARCH_KC_LINK } from 'src/components/page-container';
 
 export const SearchResultsHeading = ({ children, ...props }: TextProps) => {
   return (
@@ -43,7 +44,13 @@ export const SearchResultsHeader = ({
       {showAIBanner && (
         <AIBanner>
           AI-assisted search is active.{' '}
-          <Link color='inherit' mx={1} _hover={{ color: 'inherit' }}>
+          <Link
+            href={AI_ASSISTED_SEARCH_KC_LINK}
+            color='inherit'
+            mx={1}
+            _hover={{ color: 'inherit' }}
+            _visited={{ color: 'inherit' }}
+          >
             See documentation for more details.
           </Link>
         </AIBanner>
