@@ -19,6 +19,7 @@ import { fetchSearchResults } from 'src/utils/api';
 import { TabType } from 'src/views/search/types';
 import { tabs } from 'src/views/search/config/tabs';
 import { OntologyBrowserPopup } from 'src/views/ontology-browser/components/popup';
+import { SHOW_AI_ASSISTED_SEARCH } from 'src/utils/feature-flags';
 
 // Default filters list.
 const defaultFilters = FILTER_CONFIGS.reduce(
@@ -134,7 +135,10 @@ const Search: NextPage<{
                   {/* Heading: Showing results for... */}
                   <SearchResultsHeader
                     querystring={queryParams.q}
-                    showAIBanner={router.query.use_ai_search === 'true'}
+                    showAIBanner={
+                      SHOW_AI_ASSISTED_SEARCH &&
+                      router.query.use_ai_search === 'true'
+                    }
                   />
                 </Flex>
 

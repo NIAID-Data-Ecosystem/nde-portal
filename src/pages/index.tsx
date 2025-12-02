@@ -40,6 +40,7 @@ import {
   fetchAllFeaturedPages,
   transformFeaturedContentForCarousel,
 } from 'src/views/features/helpers';
+import { SHOW_AI_ASSISTED_SEARCH } from 'src/utils/feature-flags';
 
 const Home: NextPage<{
   data: {
@@ -93,7 +94,7 @@ const Home: NextPage<{
                   flexWrap='wrap-reverse'
                   gap={{ base: 2, md: 0 }}
                 >
-                  <Search.AIToggle />
+                  {SHOW_AI_ASSISTED_SEARCH && <Search.AIToggle />}
                   <Search.AdvancedSearchLink />
                 </Flex>
                 <Search.Input />

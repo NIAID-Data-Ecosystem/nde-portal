@@ -9,6 +9,7 @@ import { Banner } from './banner';
 import { Search } from './search';
 import { SeoMetaFields, SeoMetaFieldsProps } from './seo-meta-fields';
 import { useBreadcrumbs } from '../hooks/useBreadcrumbs';
+import { SHOW_AI_ASSISTED_SEARCH } from 'src/utils/feature-flags';
 
 export interface NoticeProps {
   id: number | string;
@@ -107,7 +108,7 @@ export const PageContainer: React.FC<PageContainerProps> = ({
           {includeSearchBar && (
             <Search.Wrapper>
               <Flex justifyContent='space-between' alignItems='baseline'>
-                <Search.AIToggle />
+                {SHOW_AI_ASSISTED_SEARCH && <Search.AIToggle />}
                 <Search.AdvancedSearchLink />
               </Flex>
               <Search.Input />
