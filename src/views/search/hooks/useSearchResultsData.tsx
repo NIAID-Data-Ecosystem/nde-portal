@@ -6,7 +6,6 @@ import { Params } from 'src/utils/api';
 import { useSearchResultsQuery } from './useSearchResultsQuery';
 import { queryFilterObject2String } from '../components/filters/utils/query-builders';
 
-// [TO DO]: Add handling of ai enabled searches
 export const useSearchResultsData = (
   queryParams: SearchQueryParams,
   options?: Partial<

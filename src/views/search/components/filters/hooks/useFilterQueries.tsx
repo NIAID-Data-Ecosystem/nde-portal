@@ -163,6 +163,7 @@ export const useFilterQueries = ({
               q: initialParams.q,
               extra_filter: initialParams?.extra_filter || '',
               facets: facetConfig.property,
+              use_ai_search: initialParams?.use_ai_search || 'false',
             },
             {
               queryKey: ['search-results'],
@@ -211,18 +212,31 @@ export const useFilterQueries = ({
     combine: combineCallback,
   });
 
-  // Determine if filtered queries should be enabled i.e. run when the initial results are available and extra filters are selected.
-  // Used to update the counts in the initial results with the selected filters.
-  const enableUpdate = useMemo(
-    () =>
-      Boolean(
-        updateParams &&
-          updateParams.extra_filter &&
-          initialResults &&
-          Object.keys(initialResults).length > 0,
-      ),
-    [updateParams, initialResults],
-  );
+  // Check if the extra_filter is the same in both params
+  const filtersChanged = useMemo(() => {
+    return Boolean(
+      updateParams?.extra_filter &&
+        updateParams.extra_filter !== initialParams.extra_filter,
+    );
+  }, [updateParams?.extra_filter, initialParams.extra_filter]);
+
+  // Check if the ai-enabled search is the same in both params.
+  const useAiSearchChanged = useMemo(() => {
+    return Boolean(
+      updateParams?.use_ai_search &&
+        updateParams.use_ai_search !== initialParams.use_ai_search,
+    );
+  }, [updateParams?.use_ai_search, initialParams.use_ai_search]);
+
+  // Determine if we should run the update queries.
+  const shouldRunUpdateQueries = useMemo(() => {
+    return Boolean(
+      updateParams &&
+        (filtersChanged || useAiSearchChanged) &&
+        initialResults &&
+        Object.keys(initialResults).length > 0,
+    );
+  }, [updateParams, filtersChanged, useAiSearchChanged, initialResults]);
 
   const updateQueries = useMemo(() => {
     return config
@@ -235,13 +249,13 @@ export const useFilterQueries = ({
             { ...updateParams, facets: facetConfig.property },
             {
               queryKey: ['filtered'],
-              enabled: enableUpdate,
+              enabled: shouldRunUpdateQueries,
               refetchOnWindowFocus: false,
             },
           ),
       )
       .filter(query => !!query);
-  }, [config, updateParams, enableUpdate]);
+  }, [config, updateParams, shouldRunUpdateQueries]);
 
   // Fetch the updated results with the selected filters
   const {
@@ -259,7 +273,7 @@ export const useFilterQueries = ({
 
   useEffect(() => {
     if (
-      enableUpdate &&
+      shouldRunUpdateQueries &&
       !isUpdating &&
       updatedResults &&
       Object.keys(updatedResults)?.length > 0
@@ -270,7 +284,13 @@ export const useFilterQueries = ({
     } else if (!isLoading && !isUpdating && initialResults) {
       setMergedResults(initialResults);
     }
-  }, [initialResults, updatedResults, enableUpdate, isUpdating, isLoading]);
+  }, [
+    initialResults,
+    updatedResults,
+    shouldRunUpdateQueries,
+    isUpdating,
+    isLoading,
+  ]);
 
   // Combine errors from initial and filtered queries
   const error = initialError || updatedError;
@@ -278,7 +298,7 @@ export const useFilterQueries = ({
     error,
     initialResults,
     isLoading: isLoading || isPlaceholderData || isPending,
-    isUpdating: enableUpdate && (isUpdating || updatedPending),
+    isUpdating: shouldRunUpdateQueries && (isUpdating || updatedPending),
     results: mergedResults,
   };
 };
