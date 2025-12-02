@@ -196,31 +196,37 @@ export const AIToggle: React.FC<AIToggleProps> = ({
         closeOnClick={false}
         {...tooltipProps}
       >
-        <FormLabel
-          htmlFor={id}
-          mb='0'
-          me='0'
-          display='flex'
-          fontSize='inherit'
-          fontWeight='inherit'
-          gap={1}
-        >
-          {label}
-          <Icon as={FaRegCircleQuestion} boxSize={4} color='page.placeholder' />
-        </FormLabel>
+        <Flex alignItems='center' gap={2} cursor='help'>
+          <FormLabel
+            htmlFor={id}
+            mb='0'
+            me='0'
+            display='flex'
+            fontSize='inherit'
+            fontWeight='inherit'
+            gap={1}
+          >
+            {label}
+            <Icon
+              as={FaRegCircleQuestion}
+              boxSize={4}
+              color='page.placeholder'
+            />
+          </FormLabel>
+          {enableAiSearch && (
+            <Tag
+              variant='subtle'
+              borderRadius='full'
+              color={`${colorScheme}.500`}
+              colorScheme={colorScheme}
+              fontWeight='inherit'
+              {...tagProps}
+            >
+              <TagLabel>Active</TagLabel>
+            </Tag>
+          )}
+        </Flex>
       </Tooltip>
-      {enableAiSearch && (
-        <Tag
-          variant='subtle'
-          borderRadius='full'
-          color={`${colorScheme}.500`}
-          colorScheme={colorScheme}
-          fontWeight='inherit'
-          {...tagProps}
-        >
-          <TagLabel>Active</TagLabel>
-        </Tag>
-      )}
     </FormControl>
   );
 };
