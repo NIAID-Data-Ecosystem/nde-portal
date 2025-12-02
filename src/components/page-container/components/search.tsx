@@ -174,6 +174,7 @@ export const AIToggle: React.FC<AIToggleProps> = ({
       fontWeight='semibold'
       width='unset'
       flex={1}
+      minWidth='300px'
     >
       <Switch
         id={id}

@@ -90,6 +90,8 @@ const Home: NextPage<{
                   alignItems='baseline'
                   flex={1}
                   mb={1}
+                  flexWrap='wrap-reverse'
+                  gap={{ base: 2, md: 0 }}
                 >
                   <Search.AIToggle />
                   <Search.AdvancedSearchLink />

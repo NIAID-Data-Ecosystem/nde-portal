@@ -54,7 +54,6 @@ export const DropdownInput: React.FC<DropdownInputProps> = ({
   onClose,
   onSubmit,
 }) => {
-  const inputRightRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const {
@@ -65,6 +64,20 @@ export const DropdownInput: React.FC<DropdownInputProps> = ({
     getInputProps,
     setIsOpen,
   } = useDropdownContext();
+
+  const inputRightRef = useRef<HTMLDivElement>(null);
+  const [rightElWidth, setRightElWidth] = React.useState(0);
+
+  useEffect(() => {
+    if (!inputRightRef.current) return;
+
+    const observer = new ResizeObserver(() => {
+      setRightElWidth(inputRightRef.current!.clientWidth);
+    });
+
+    observer.observe(inputRightRef.current);
+    return () => observer.disconnect();
+  }, []);
 
   // Auto-resize logic: reset to 3rem, then expand to scrollHeight
   const autoResize = useCallback(() => {
@@ -154,7 +167,7 @@ export const DropdownInput: React.FC<DropdownInputProps> = ({
             type,
             flex: 1,
             size,
-            mr: renderSubmitButton ? inputRightRef?.current?.clientWidth : 4,
+            mr: renderSubmitButton ? rightElWidth : 4,
             isDisabled,
             isInvalid,
             onKeyDown: (
