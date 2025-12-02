@@ -21,7 +21,7 @@ export const useSearchResultsData = (
     from,
     size,
     shouldUseMetadataScore,
-    shouldUseAISearch,
+    use_ai_search,
     ...rest
   } = queryParams;
 
@@ -34,7 +34,7 @@ export const useSearchResultsData = (
       size: size ? `${size}` : undefined,
       from: from && size ? `${(from - 1) * size}` : undefined,
       use_metadata_score: shouldUseMetadataScore ? 'true' : 'false',
-      use_ai_search: shouldUseAISearch ? 'true' : 'false',
+      use_ai_search,
     }),
     [
       rest,
@@ -44,7 +44,7 @@ export const useSearchResultsData = (
       size,
       from,
       shouldUseMetadataScore,
-      shouldUseAISearch,
+      use_ai_search,
     ],
   );
 

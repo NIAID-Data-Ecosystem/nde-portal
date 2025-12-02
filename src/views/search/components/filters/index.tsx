@@ -60,7 +60,7 @@ export const Filters: React.FC<FiltersProps> = React.memo(
       updateParams: {
         q: queryParams.q,
         extra_filter: queryFilterObject2String(queryParams.filters) || '',
-        use_ai_search: queryParams.shouldUseAISearch ? 'true' : 'false',
+        use_ai_search: queryParams.use_ai_search,
       },
       config,
     });
