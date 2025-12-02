@@ -134,7 +134,7 @@ const Search: NextPage<{
                   {/* Heading: Showing results for... */}
                   <SearchResultsHeader
                     querystring={queryParams.q}
-                    showAIBanner={router.query.enableAISearch === 'true'}
+                    showAIBanner={router.query.use_ai_search === 'true'}
                   />
                 </Flex>
 

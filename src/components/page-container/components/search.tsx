@@ -25,6 +25,8 @@ import SITE_CONFIG from 'configs/site.config.json';
 import { SiteConfig } from '../types';
 import Tooltip from 'src/components/tooltip';
 import { useLocalStorage } from 'usehooks-ts';
+import { useRouter } from 'next/router';
+import { useEffect } from 'react';
 
 const siteConfig = SITE_CONFIG as SiteConfig;
 
@@ -87,10 +89,12 @@ const Input: React.FC<Partial<SearchBarWithDropdownProps>> = ({
   );
 };
 
+const ADVANCED_SEARCH_PATH = '/advanced-search';
+
 export const AdvancedSearchLink: React.FC<LinkProps> = props => {
   return (
     <Link
-      href='/advanced-search'
+      href={ADVANCED_SEARCH_PATH}
       colorScheme='primary'
       fontSize='sm'
       fontWeight='medium'
@@ -98,7 +102,7 @@ export const AdvancedSearchLink: React.FC<LinkProps> = props => {
       _visited={{ color: 'primary.400' }}
       {...props}
     >
-      {siteConfig.pages['/advanced-search']?.nav?.label || 'Advanced Search'}
+      {siteConfig.pages[ADVANCED_SEARCH_PATH]?.nav?.label || 'Advanced Search'}
     </Link>
   );
 };
@@ -110,37 +114,60 @@ interface AIToggleProps extends SwitchProps {
   tooltipContent?: React.ReactNode;
 }
 
+const DEFAULT_AI_TOOLTIP_CONTENT = (
+  <Text fontSize='sm'>
+    AI-assisted search uses AI to interpret your query and suggest more relevant
+    results. Turn off to see results matched only to your exact keywords. This
+    tool does not act as a chatbot.{' '}
+    <Link href='/knowledge-center/' fontSize='inherit'>
+      Read more here
+    </Link>
+    .
+  </Text>
+);
 export const AIToggle: React.FC<AIToggleProps> = ({
   id = 'ai-search',
   label = 'AI-assisted search',
   colorScheme = 'primary',
   tagProps,
   tooltipProps,
-  tooltipContent = (
-    <>
-      <Text fontSize='sm'>
-        AI-assisted search uses AI to interpret your query and suggest more
-        relevant results. Turn off to see results matched only to your exact
-        keywords. This tool does not act as a chatbot.{' '}
-        <Link href='/knowledge-center/' fontSize='inherit'>
-          Read more here
-        </Link>
-        .
-      </Text>
-    </>
-  ),
+  tooltipContent = DEFAULT_AI_TOOLTIP_CONTENT,
   ...rest
 }) => {
+  const router = useRouter();
+
   // Store the whether AI search is enabled in local storage.
   const [enableAiSearch, setEnableAiSearch] = useLocalStorage<boolean>(
     'enableAISearch',
-    () => false,
+    false,
     { initializeWithValue: false },
   );
 
+  // Sync local storage state with URL query parameter.
+  useEffect(() => {
+    if (!router.isReady) return;
+
+    const queryValue = router.query.use_ai_search;
+    if (typeof queryValue === 'string') {
+      setEnableAiSearch(queryValue === 'true');
+    }
+  }, [router.isReady, router.query.use_ai_search, setEnableAiSearch]);
+
+  const handleToggle = (checked: boolean) => {
+    setEnableAiSearch(checked);
+
+    // Keep url query parameters in sync. Remove this if you don't want instant updates of results (i.e want to press search before ai-enabled results appear).
+    const { use_ai_search, ...rest } = router.query;
+    const nextQuery = checked ? { ...rest, use_ai_search: 'true' } : rest;
+
+    router.replace({ pathname: router.pathname, query: nextQuery }, undefined, {
+      shallow: true,
+    });
+  };
+
   return (
-    <HStack
-      as={FormControl}
+    <FormControl
+      as={HStack}
       fontSize='sm'
       fontWeight='semibold'
       width='unset'
@@ -150,7 +177,7 @@ export const AIToggle: React.FC<AIToggleProps> = ({
         id={id}
         colorScheme={colorScheme}
         isChecked={enableAiSearch}
-        onChange={e => setEnableAiSearch(e.target.checked)}
+        onChange={e => handleToggle(e.target.checked)}
         {...rest}
       />
       <Tooltip
@@ -187,7 +214,7 @@ export const AIToggle: React.FC<AIToggleProps> = ({
           <TagLabel>Active</TagLabel>
         </Tag>
       )}
-    </HStack>
+    </FormControl>
   );
 };
 

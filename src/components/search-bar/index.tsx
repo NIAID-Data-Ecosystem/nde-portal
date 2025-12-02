@@ -162,7 +162,7 @@ const SearchBar = ({
           }),
         }),
         ...(tab && { tab }),
-        enableAISearch: enableAISearch ? 'true' : 'false',
+        use_ai_search: enableAISearch ? 'true' : 'false',
       },
     });
   };

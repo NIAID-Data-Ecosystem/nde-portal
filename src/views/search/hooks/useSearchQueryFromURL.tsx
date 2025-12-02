@@ -47,6 +47,10 @@ export const useSearchQueryFromURL = (): DefaultSearchQueryParams => {
     return router.query.use_metadata_score === 'true';
   }, [router.query.use_metadata_score]);
 
+  const shouldUseAISearch = useMemo(() => {
+    return router.query.use_ai_search === 'true';
+  }, [router.query.use_ai_search]);
+
   const q = useMemo(() => {
     const raw = router.query.q ?? defaultQuery.q;
     const cleaned = Array.isArray(raw)
@@ -63,5 +67,6 @@ export const useSearchQueryFromURL = (): DefaultSearchQueryParams => {
     size,
     sort,
     shouldUseMetadataScore,
+    shouldUseAISearch,
   };
 };

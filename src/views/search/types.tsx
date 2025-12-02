@@ -18,4 +18,5 @@ export interface SearchQueryParams {
   size?: number;
   sort?: string;
   shouldUseMetadataScore?: boolean;
+  shouldUseAISearch?: boolean;
 }
