@@ -45,11 +45,12 @@ import { FaMagnifyingGlass } from 'react-icons/fa6';
 import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
 import { SchemaDefinitions } from 'scripts/generate-schema-definitions/types';
 import { RelatedResources } from './components/related-resources';
-import { SamplesDisplay, SHOULD_HIDE_SAMPLES } from './components/samples';
+import { SamplesDisplay } from './components/samples';
+import { CreditText } from './components/sidebar/components/external/components/credit-text';
 import {
-  CreditText,
   SHOW_CREDIT_TEXT_SECTION,
-} from './components/sidebar/components/external/components/credit-text';
+  SHOULD_HIDE_SAMPLES,
+} from 'src/utils/feature-flags';
 
 const schema = SCHEMA_DEFINITIONS as SchemaDefinitions;
 

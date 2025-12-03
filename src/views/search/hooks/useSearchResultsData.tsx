@@ -15,8 +15,15 @@ export const useSearchResultsData = (
   response: UseQueryResult<FetchSearchResultsResponse | undefined, Error>;
   params: Params;
 } => {
-  const { q, filters, from, size, shouldUseMetadataScore, ...rest } =
-    queryParams;
+  const {
+    q,
+    filters,
+    from,
+    size,
+    shouldUseMetadataScore,
+    use_ai_search,
+    ...rest
+  } = queryParams;
 
   const params = useMemo(
     () => ({
@@ -27,8 +34,18 @@ export const useSearchResultsData = (
       size: size ? `${size}` : undefined,
       from: from && size ? `${(from - 1) * size}` : undefined,
       use_metadata_score: shouldUseMetadataScore ? 'true' : 'false',
+      use_ai_search,
     }),
-    [rest, q, filters, queryParams?.facets, size, from, shouldUseMetadataScore],
+    [
+      rest,
+      q,
+      filters,
+      queryParams?.facets,
+      size,
+      from,
+      shouldUseMetadataScore,
+      use_ai_search,
+    ],
   );
 
   const queryKey = ['search-results-draft', params];

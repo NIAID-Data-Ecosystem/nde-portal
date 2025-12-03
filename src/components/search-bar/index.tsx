@@ -14,7 +14,7 @@ import {
   Tooltip,
   UnorderedList,
 } from '@chakra-ui/react';
-import { useLocalStorage } from 'usehooks-ts';
+import { useLocalStorage, useReadLocalStorage } from 'usehooks-ts';
 import {
   DropdownInput,
   DropdownInputProps,
@@ -52,7 +52,7 @@ const SearchInput = ({
       }}
       renderSubmitButton={() => {
         return (
-          <HStack height='100%'>
+          <HStack height='100%' alignItems='flex-start'>
             {showOptionsMenu && optionMenuProps && (
               <CheckboxList {...optionMenuProps}></CheckboxList>
             )}
@@ -114,6 +114,7 @@ const SearchBar = ({
   const { isOpen, setIsOpen } = useDropdownContext();
   // Search term entered in search bar.
   const [searchTerm, setSearchTerm] = useState<string>('');
+  const enableAISearch = useReadLocalStorage('enableAISearch');
 
   /****** Handle query filters ******/
   const [queryFilters, setQueryFilters] = useState<
@@ -161,6 +162,7 @@ const SearchBar = ({
           }),
         }),
         ...(tab && { tab }),
+        use_ai_search: enableAISearch ? 'true' : 'false',
       },
     });
   };
@@ -174,6 +176,7 @@ const SearchBar = ({
     <>
       <SearchInput
         id='search-bar'
+        colorScheme={colorScheme}
         ariaLabel={ariaLabel}
         placeholder={placeholder}
         size={size}
@@ -255,7 +258,7 @@ interface OptionProps {
   property: string; // Associated property name (e.g., type, domain)
 }
 
-interface SearchBarWithDropdownProps {
+export interface SearchBarWithDropdownProps {
   value?: string;
   ariaLabel: string;
   placeholder: string;
@@ -276,7 +279,7 @@ interface SearchBarWithDropdownProps {
   };
 }
 
-export const SearchBarWithDropdown = (props: SearchBarWithDropdownProps) => {
+export const DropdownSearchInput = (props: SearchBarWithDropdownProps) => {
   const router = useRouter();
   const { q } = router.query;
   const defaultInputValue =
@@ -302,4 +305,8 @@ export const SearchBarWithDropdown = (props: SearchBarWithDropdownProps) => {
       />
     </InputWithDropdown>
   );
+};
+
+export const Search = {
+  Input: DropdownSearchInput,
 };

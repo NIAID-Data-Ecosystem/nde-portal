@@ -16,7 +16,8 @@ import { AssociatedDocumentation } from './components/associated-documentation';
 import { AccessibleForFree, ConditionsOfAccess } from 'src/components/badges';
 import { HasDownload } from 'src/components/badges/components/HasDownload';
 import { HasAPI } from 'src/components/badges/components/HasAPI';
-import { CreditText, SHOW_CREDIT_TEXT_SECTION } from './components/credit-text';
+import { CreditText } from './components/credit-text';
+import { SHOW_CREDIT_TEXT_SECTION } from 'src/utils/feature-flags';
 
 interface ExternalProps extends Omit<WrapperProps, 'children'> {
   data?: FormattedResource;

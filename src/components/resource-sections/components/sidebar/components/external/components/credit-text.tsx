@@ -12,10 +12,6 @@ interface CreditTextProps extends BoxProps {
   noOfLines?: number;
 }
 
-// Show credit text section in non-production environments for testing/review. Remove when ready to go live.
-export const SHOW_CREDIT_TEXT_SECTION =
-  process.env.NEXT_PUBLIC_APP_ENV !== 'production';
-
 export const CreditText = ({
   label,
   tooltipLabel,
