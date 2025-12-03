@@ -41,6 +41,7 @@ import {
   transformFeaturedContentForCarousel,
 } from 'src/views/features/helpers';
 import { SHOW_AI_ASSISTED_SEARCH } from 'src/utils/feature-flags';
+import { useReadLocalStorage } from 'usehooks-ts';
 
 const Home: NextPage<{
   data: {
@@ -50,6 +51,7 @@ const Home: NextPage<{
   };
   error?: { message: string };
 }> = props => {
+  const enableAISearch = useReadLocalStorage('enableAISearch');
   /****** Resource Catalogs Data ******/
   const {
     isLoading: resourceCatalogsIsLoading,
@@ -109,7 +111,14 @@ const Home: NextPage<{
                         as={NextLink}
                         href={{
                           pathname: `/search`,
-                          query: { q: query.searchTerms.join(' OR ') },
+                          query: {
+                            q: query.searchTerms.join(' OR '),
+                            ...(SHOW_AI_ASSISTED_SEARCH && enableAISearch
+                              ? {
+                                  use_ai_search: 'true',
+                                }
+                              : {}),
+                          },
                         }}
                         leftIcon={<FaMagnifyingGlass />}
                         size='sm'
