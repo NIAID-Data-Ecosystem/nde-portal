@@ -25,6 +25,7 @@ import { SearchHistoryItem } from './components/search-history-item';
 import { CheckboxList, CheckboxListProps } from '../checkbox-list';
 import { getTabIdFromTypeLabel } from 'src/views/search/components/filters/utils/tab-filter-utils';
 import { queryFilterObject2String } from 'src/views/search/components/filters/utils/query-builders';
+import { SHOW_AI_ASSISTED_SEARCH } from 'src/utils/feature-flags';
 
 const DropdownContent = dynamic(() =>
   import('src/components/input-with-dropdown/components/DropdownContent').then(
@@ -162,7 +163,9 @@ const SearchBar = ({
           }),
         }),
         ...(tab && { tab }),
-        use_ai_search: enableAISearch ? 'true' : 'false',
+        ...(SHOW_AI_ASSISTED_SEARCH && {
+          use_ai_search: enableAISearch ? 'true' : 'false',
+        }),
       },
     });
   };
