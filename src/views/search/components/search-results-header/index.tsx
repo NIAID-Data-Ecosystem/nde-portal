@@ -1,6 +1,6 @@
 import { Flex, FlexProps, Text, TextProps, VStack } from '@chakra-ui/react';
 import { Link } from 'src/components/link';
-import { AI_ASSISTED_SEARCH_KC_LINK } from 'src/components/page-container';
+import { AI_ASSISTED_SEARCH_KC_LINK } from 'src/components/page-container/components/search/components/ai-toggle';
 
 export const SearchResultsHeading = ({ children, ...props }: TextProps) => {
   return (
