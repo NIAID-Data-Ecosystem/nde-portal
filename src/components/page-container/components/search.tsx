@@ -150,15 +150,47 @@ export const AIToggle: React.FC<AIToggleProps> = ({
     { initializeWithValue: false },
   );
 
-  // Sync local storage state with URL query parameter.
+  // Keep the AI toggle synchronized with the URL when appropriate.
   useEffect(() => {
     if (!router.isReady) return;
 
-    const queryValue = router.query.use_ai_search;
-    if (typeof queryValue === 'string') {
-      setEnableAiSearch(queryValue === 'true');
+    const useAiSearchValue = router.query.use_ai_search;
+
+    /**
+     * On the `/search` page, the URL query parameter is the single source of truth.
+     * - If `use_ai_search=true`, AI search is enabled.
+     * - If `use_ai_search` is missing or anything else, AI search is disabled.
+     *
+     * This ensures that when a user navigates to a search results page via links
+     * that do NOT include the `use_ai_search` flag, the AI toggle correctly shows OFF,
+     * even if they previously had AI enabled in a different session.
+     *
+     * This prevents UI/results mismatch where:
+     *    - results are non-AI (because URL omitted the flag)
+     *    - but toggle incorrectly shows ON (because localStorage remembered it)
+     */
+    if (router.pathname === '/search') {
+      setEnableAiSearch(useAiSearchValue === 'true');
+      return;
     }
-  }, [router.isReady, router.query.use_ai_search, setEnableAiSearch]);
+
+    /**
+     * On all other routes, DO NOT override the user’s saved preference from localStorage.
+     *
+     * However, if a URL explicitly includes `use_ai_search`, honor it.
+     * This allows pages like:
+     *    /something?use_ai_search=true
+     * to intentionally preset the toggle.
+     */
+    if (typeof useAiSearchValue === 'string') {
+      setEnableAiSearch(useAiSearchValue === 'true');
+    }
+  }, [
+    router.isReady,
+    router.query.use_ai_search,
+    router.pathname,
+    setEnableAiSearch,
+  ]);
 
   const handleToggle = (checked: boolean) => {
     setEnableAiSearch(checked);
