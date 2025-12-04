@@ -83,9 +83,8 @@ const ResourceBanner: React.FC<ResourceBannerProps> = ({ data }) => {
       {type === 'ComputationalTool' && (
         <Flex
           alignItems='center'
-          mt={1}
-          mb={1}
-          ml={1}
+          m={1}
+          mr={0}
           bg='secondary.50'
           borderRadius='semi'
         >

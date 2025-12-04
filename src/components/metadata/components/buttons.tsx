@@ -17,7 +17,21 @@ export const MetadataButtonGroup = ({
   ...props
 }: ButtonGroupProps) => {
   return (
-    <ButtonGroup size='xs' attached variant='outline' {...props}>
+    <ButtonGroup
+      size='2xs'
+      attached
+      variant='outline'
+      cursor='pointer'
+      colorPalette='gray'
+      css={{
+        // Override the second buttons left border radius to match the first button
+        '& button:not(:first-of-type), a:not(:first-of-type)': {
+          borderTopLeftRadius: 0,
+          borderBottomLeftRadius: 0,
+        },
+      }}
+      {...props}
+    >
       {children}
     </ButtonGroup>
   );
@@ -40,7 +54,7 @@ export const OntologyButton = ({
 
   return (
     <Tooltip content={ariaLabel || 'See ontology information.'}>
-      <Button asChild variant='outline' size='2xs' colorPalette='gray'>
+      <Button asChild>
         <NextLink href={value} target='_blank'>
           <Icon as={FaSitemap} />
           {label || inDefinedTermSet ? (
@@ -66,76 +80,22 @@ export const SearchButton = ({
   value,
   ...props
 }: SearchButtonProps) => {
-  const router = useRouter();
   if (!value) {
     return <></>;
   }
 
   return (
     <Tooltip content={ariaLabel || `Search the NDE for this property value`}>
-      <Button
-        asChild
-        cursor='pointer'
-        colorPalette='gray'
-        variant='outline'
-        px={0}
-        {...props}
-      >
+      <Button asChild px={0} {...props}>
         <NextLink
           href={{ pathname: `/search`, query: { q: `${property}:"${value}"` } }}
         >
           <VisuallyHidden>
             {ariaLabel || `Search the NDE for this property value`}
           </VisuallyHidden>
-          <Icon as={FaMagnifyingGlass} fontSize='12px' />
+          <Icon as={FaMagnifyingGlass} />
         </NextLink>
       </Button>
     </Tooltip>
   );
 };
-
-// FilterByButton is used to filter the current results by a specific property and value
-// export const FilterByButton = ({
-//   property,
-//   value,
-//   children,
-// }: {
-//   property: string;
-//   value: SelectedFilterTypeValue;
-//   children: React.ReactNode;
-// }) => {
-//   const router = useRouter();
-//   const { filters } = router.query;
-//   const selectedFilters = queryFilterString2Object(filters) || [];
-//   return (
-//     <Flex
-//       alignItems='center'
-//       _hover={{
-//         cursor: 'pointer',
-//         textDecoration: 'underline',
-//         svg: { opacity: 1 },
-//       }}
-//       onClick={() => {
-//         if (value) {
-//           if (selectedFilters[property]) {
-//             if (!selectedFilters[property].includes(value)) {
-//               selectedFilters[property].push(value);
-//             }
-//           } else {
-//             selectedFilters[property] = [value];
-//           }
-//         }
-//         updateRoute(
-//           {
-//             from: 1,
-//             filters: queryFilterObject2String(selectedFilters),
-//           },
-//           router,
-//         );
-//       }}
-//     >
-//       {children}
-//       <Icon as={FaFilter} boxSize={3} mx={1} color='gray.600' opacity={0} />
-//     </Flex>
-//   );
-// };

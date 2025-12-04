@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Card, Heading } from '@chakra-ui/react';
+import { Card, Heading } from '@chakra-ui/react';
 
 interface CardContainerProps {
   heading: string;
@@ -12,8 +12,13 @@ export const CardContainer: React.FC<CardContainerProps> = ({
   heading,
 }) => {
   return (
-    <Card flex={1} ml={[0, 0, 4]} my={2} sx={{ '>*': { p: [2, 4, 4, 6] } }}>
-      <Box w='100%'>
+    <Card.Root
+      flex={1}
+      ml={[0, 0, 4]}
+      my={2}
+      css={{ '>*': { p: [2, 4, 4, 6] } }}
+    >
+      <Card.Body w='100%'>
         <Heading
           as='h2'
           size='sm'
@@ -25,7 +30,7 @@ export const CardContainer: React.FC<CardContainerProps> = ({
         </Heading>
 
         {children}
-      </Box>
-    </Card>
+      </Card.Body>
+    </Card.Root>
   );
 };

@@ -1,6 +1,5 @@
 import { Flex, Heading, Skeleton } from '@chakra-ui/react';
 import React from 'react';
-import { DisplayHTMLString } from 'src/components/html-content';
 import { Tag } from 'src/components/tag';
 import { FormattedResource } from 'src/utils/api/types';
 
@@ -22,7 +21,7 @@ const Header: React.FC<HeaderProps> = ({
   return (
     <>
       <Skeleton
-        isLoaded={!isLoading}
+        loading={isLoading}
         w='100%'
         overflow='unset'
         position={['unset', 'unset', 'sticky']}
@@ -35,21 +34,21 @@ const Header: React.FC<HeaderProps> = ({
         pt={4}
         pb={2}
       >
-        <Heading as='h1' fontSize='2xl' fontWeight='bold' lineHeight='short'>
-          <DisplayHTMLString>{name || alternateName}</DisplayHTMLString>
-          {!!name && alternateName && (
-            <Heading
-              as='span'
-              size='sm'
-              color='gray.800'
-              fontWeight='normal'
-              wordBreak='break-word'
-              my={0}
-            >
-              Alternate name: {alternateName}
-            </Heading>
-          )}
+        <Heading as='h1' fontSize='xl' fontWeight='bold' lineHeight='short'>
+          {name || alternateName}
         </Heading>
+        {!!name && alternateName && (
+          <Heading
+            as='span'
+            size='sm'
+            color='gray.800'
+            fontWeight='normal'
+            wordBreak='break-word'
+            my={0}
+          >
+            Alternate name: {alternateName}
+          </Heading>
+        )}
 
         {(nctid || doi) && (
           <Flex mt={2}>

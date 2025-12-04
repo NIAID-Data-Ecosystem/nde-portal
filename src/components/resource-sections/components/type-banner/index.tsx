@@ -103,7 +103,7 @@ const TypeBanner: React.FC<TypeBannerProps> = ({
         py={0}
         overflow='hidden'
         minW='250px'
-        height='100%'
+        height='2rem'
       >
         <Label bg={colorScheme['lt']}>
           <Tooltip

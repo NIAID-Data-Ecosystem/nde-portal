@@ -1,15 +1,7 @@
 import React from 'react';
-import {
-  Accordion,
-  AccordionButton,
-  AccordionItem,
-  AccordionPanel,
-  BoxProps,
-  Icon,
-  Skeleton,
-} from '@chakra-ui/react';
-import { StyledSectionHead, StyledSectionHeading } from './styles';
+import { Accordion, Box, BoxProps, Heading, Skeleton } from '@chakra-ui/react';
 import { FaMinus, FaPlus } from 'react-icons/fa6';
+import { HeadingProps } from 'node_modules/@chakra-ui/react/dist/types/components/typography/heading';
 
 interface SectionProps extends BoxProps {
   id: string;
@@ -21,7 +13,19 @@ interface SectionProps extends BoxProps {
   isLoading?: boolean;
 }
 
-const Section: React.FC<SectionProps> = ({
+export const SectionHeader = ({ children, ...boxProps }: BoxProps) => (
+  <Box bg='page.alt' {...boxProps}>
+    {children}
+  </Box>
+);
+
+export const SectionTitle = ({ children, ...headingProps }: HeadingProps) => (
+  <Heading as='h3' size='md' {...headingProps}>
+    {children}
+  </Heading>
+);
+
+export const Section: React.FC<SectionProps> = ({
   id,
   isLoading,
   name,
@@ -35,9 +39,10 @@ const Section: React.FC<SectionProps> = ({
   const Content = () => {
     return (
       <Skeleton
-        isLoaded={!isLoading}
+        loading={isLoading}
         height={isLoading ? '200px' : 'unset'}
-        p={{ base: 0, sm: 4 }}
+        px={{ base: 0, sm: 4 }}
+        py={{ base: 0, sm: 2 }}
         {...props}
       >
         {children}
@@ -49,41 +54,43 @@ const Section: React.FC<SectionProps> = ({
   if (isCollapsible) {
     return (
       <section id={id} style={{ padding: 0 }}>
-        <Accordion allowToggle defaultIndex={isDefaultOpen ? 0 : undefined}>
-          <AccordionItem borderColor='transparent' border={'none'}>
-            {({ isExpanded }) => (
+        <Accordion.Root collapsible defaultValue={isDefaultOpen ? [id] : []}>
+          <Accordion.Item value={id} borderColor='gray.100'>
+            <Accordion.ItemTrigger
+              aria-label={`show more details about ${name}`}
+              _open={{
+                bg: bg || 'page.alt',
+                borderColor: 'page.alt',
+              }}
+              px={4}
+              py={2}
+            >
               <>
                 {name && (
-                  <h2>
-                    <AccordionButton
-                      aria-label={`show more details about ${name}`}
-                      bg={bg || isExpanded ? 'page.alt' : 'white'}
-                      color={color}
-                      borderY='0.5px solid'
-                      borderColor='gray.100'
-                      borderLeft='3px solid'
-                      borderLeftColor='accent.400'
-                      _hover={{ bg: props?._hover?.bg || 'page.alt' }}
-                      _expanded={{
-                        borderColor: 'page.alt',
-                      }}
-                    >
-                      {name && (
-                        <StyledSectionHeading flex={1} textAlign='left'>
-                          {name}
-                        </StyledSectionHeading>
-                      )}
-                      <Icon as={isExpanded ? FaMinus : FaPlus} fontSize='xs' />
-                    </AccordionButton>
-                  </h2>
+                  <SectionTitle flex={1} textAlign='left'>
+                    {name}
+                  </SectionTitle>
                 )}
-                <AccordionPanel>
-                  <Content />
-                </AccordionPanel>
+                <Accordion.ItemIndicator
+                  as={FaPlus}
+                  fontSize='12px'
+                  _open={{ display: 'none' }}
+                />
+                <Accordion.ItemIndicator
+                  as={FaMinus}
+                  fontSize='12px'
+                  _closed={{ display: 'none' }}
+                />
               </>
-            )}
-          </AccordionItem>
-        </Accordion>
+            </Accordion.ItemTrigger>
+
+            <Accordion.ItemContent bg='#fff' borderRadius='none'>
+              <Accordion.ItemBody p={0}>
+                <Content />
+              </Accordion.ItemBody>
+            </Accordion.ItemContent>
+          </Accordion.Item>
+        </Accordion.Root>
       </section>
     );
   }
@@ -91,13 +98,14 @@ const Section: React.FC<SectionProps> = ({
   return (
     <section id={id} style={{ padding: 0 }}>
       {name && (
-        <StyledSectionHead color={color} px={4}>
-          <StyledSectionHeading>{name}</StyledSectionHeading>
-        </StyledSectionHead>
+        <SectionHeader color={color}>
+          <SectionTitle px={4} py={2}>
+            {name}
+          </SectionTitle>
+        </SectionHeader>
       )}
 
       <Content />
     </section>
   );
 };
-export default Section;

@@ -1,17 +1,8 @@
 import { FormattedResource } from 'src/utils/api/types';
-import {
-  Button,
-  Flex,
-  Icon,
-  Tag,
-  TagLabel,
-  TagLeftIcon,
-  Text,
-  useDisclosure,
-} from '@chakra-ui/react';
+import { Button, Flex, Icon, Tag, Text, useDisclosure } from '@chakra-ui/react';
 import { FaInfo, FaWandMagicSparkles } from 'react-icons/fa6';
 import { Link } from 'src/components/link';
-import Tooltip from 'src/components/tooltip';
+import { Tooltip } from 'src/components/tooltip';
 
 export const Summary = ({
   description,
@@ -28,13 +19,12 @@ export const Summary = ({
       display='flex'
       alignItems='baseline'
       flexWrap='wrap'
-      // mx={2}
       px={4}
       py={3}
       bg='info.light'
       borderRadius='semi'
     >
-      <Tooltip label='This summary is based on the description field using ChatGPT4.'>
+      <Tooltip content='This summary is based on the description field using ChatGPT4.'>
         <Link
           href='/knowledge-center/ai-generated'
           mx={1}
@@ -66,18 +56,18 @@ export const Summary = ({
         mx={1}
         fontSize='lg'
         verticalAlign='bottom'
-        noOfLines={open ? undefined : 5}
+        lineClamp={open ? undefined : 5}
       >
-        <Tag
+        <Tag.Root
           variant='solid'
           size='sm'
           mr={1.5}
           colorScheme='niaid'
           bg='info.default'
         >
-          <TagLeftIcon as={FaWandMagicSparkles}></TagLeftIcon>
-          <TagLabel>{tagLabel}</TagLabel>
-        </Tag>
+          <Tag.StartElement as={FaWandMagicSparkles}></Tag.StartElement>
+          <Tag.Label>{tagLabel}</Tag.Label>
+        </Tag.Root>
         {description}
       </Text>
       <Flex flex={1} w='100%' justifyContent='flex-end'>

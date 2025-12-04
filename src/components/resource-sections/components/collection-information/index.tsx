@@ -1,5 +1,5 @@
 import { FormattedResource } from 'src/utils/api/types';
-import { Box, Table, Thead, Tbody, Tr, Th, Td } from '@chakra-ui/react';
+import { Box, Table } from '@chakra-ui/react';
 
 interface ResourceCatalogCollectionProps {
   collectionSize?: FormattedResource['collectionSize'];
@@ -48,30 +48,43 @@ export const ResourceCatalogCollection = ({
 
   return (
     <Box>
-      <Table size='sm'>
-        <Thead>
-          <Tr>
-            <Th {...thStyles} textTransform='none' isNumeric>
+      <Table.Root size='sm'>
+        <Table.Header>
+          <Table.Row
+            bg='white'
+            borderBottom='1px solid'
+            borderBottomColor='gray.200'
+          >
+            <Table.ColumnHeader
+              textAlign='end'
+              {...thStyles}
+              textTransform='none'
+            >
               Quantity
-            </Th>
-            <Th {...thStyles} textTransform='none'>
+            </Table.ColumnHeader>
+            <Table.ColumnHeader {...thStyles} textTransform='none'>
               Type
-            </Th>
-          </Tr>
-        </Thead>
-        <Tbody>
+            </Table.ColumnHeader>
+          </Table.Row>
+        </Table.Header>
+        <Table.Body>
           {collectionSizeRows.map((collection, idx) => {
             return (
-              <Tr key={idx}>
-                <Td isNumeric {...tdStyles}>
+              <Table.Row
+                key={idx}
+                borderBottom='1px solid'
+                borderBottomColor='gray.100'
+                bg='white'
+              >
+                <Table.Cell textAlign='end' {...tdStyles}>
                   {collection?.valueText}
-                </Td>
-                <Td {...tdStyles}>{collection?.unitText}</Td>
-              </Tr>
+                </Table.Cell>
+                <Table.Cell {...tdStyles}>{collection?.unitText}</Table.Cell>
+              </Table.Row>
             );
           })}
-        </Tbody>
-      </Table>
+        </Table.Body>
+      </Table.Root>
     </Box>
   );
 };

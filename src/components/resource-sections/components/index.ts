@@ -1,6 +1,6 @@
 import TypeBanner from './type-banner';
 import Navigation from './navigation';
-import Section from './section';
+import { Section } from './section';
 import ResourceCitations from './citations';
 import ResourceHeader from './header';
 import ResourceAuthors from './authors';

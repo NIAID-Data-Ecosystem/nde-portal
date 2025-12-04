@@ -1,12 +1,11 @@
 import React from 'react';
-import { Button, Flex, Stack, ButtonProps } from '@chakra-ui/react';
+import { Flex, Stack, ButtonProps } from '@chakra-ui/react';
 import { FormattedResource } from 'src/utils/api/types';
-import NextLink from 'next/link';
-import { FaArrowRight } from 'react-icons/fa6';
 import {
-  SourceLogo,
   getSourceDetails,
-} from 'src/views/search/components/card/source-logo';
+  SourceLogo,
+} from 'src/views/search/components/results-list/components/card/source-logo';
+import { ArrowButton } from 'src/components/button/arrow-button';
 
 interface DataAccessProps {
   isLoading: boolean;
@@ -14,18 +13,16 @@ interface DataAccessProps {
   url?: FormattedResource['url'];
   recordType?: string | null;
   children?: React.ReactNode;
-  colorScheme?: ButtonProps['colorScheme'];
+  colorPalette?: ButtonProps['colorPalette'];
 }
 
-const AccessResourceButton: React.FC<{ url: string; colorScheme: string }> = ({
-  url,
-  colorScheme,
-}) => (
-  <NextLink href={url} target='_blank'>
-    <Button colorScheme={colorScheme} size='sm' rightIcon={<FaArrowRight />}>
-      Access Resource
-    </Button>
-  </NextLink>
+const AccessResourceButton: React.FC<{
+  url: string;
+  colorPalette: ButtonProps['colorPalette'];
+}> = ({ url, colorPalette }) => (
+  <ArrowButton colorPalette={colorPalette} href={url} isExternal hasArrow>
+    Access Resource
+  </ArrowButton>
 );
 
 export const DataAccess: React.FC<DataAccessProps> = ({
@@ -33,7 +30,7 @@ export const DataAccess: React.FC<DataAccessProps> = ({
   includedInDataCatalog,
   url,
   recordType,
-  colorScheme = 'secondary',
+  colorPalette = 'secondary',
 }) => {
   const sources =
     !isLoading && includedInDataCatalog
@@ -51,7 +48,7 @@ export const DataAccess: React.FC<DataAccessProps> = ({
       : [];
 
   return (
-    <Stack mt={4} flexDirection='column' alignItems='flex-start' spacing={4}>
+    <Stack mt={4} flexDirection='column' alignItems='flex-start' gap={4}>
       {sources.map(source => (
         <React.Fragment key={source.name}>
           <SourceLogo
@@ -69,23 +66,7 @@ export const DataAccess: React.FC<DataAccessProps> = ({
             }
           />
           {source?.archivedAt && (
-            <Flex
-              w='100%'
-              mt={2}
-              justifyContent='flex-end'
-              sx={{
-                svg: {
-                  transform: 'translateX(-2px)',
-                  transition: 'transform 0.2s ease-in-out',
-                },
-              }}
-              _hover={{
-                svg: {
-                  transform: 'translateX(4px)',
-                  transition: 'transform 0.2s ease-in-out',
-                },
-              }}
-            >
+            <Flex w='100%' mt={2} justifyContent='flex-end'>
               <AccessResourceButton
                 url={
                   recordType === 'ResourceCatalog'
@@ -94,7 +75,7 @@ export const DataAccess: React.FC<DataAccessProps> = ({
                     ? source?.archivedAt[0]
                     : source?.archivedAt
                 }
-                colorScheme={colorScheme}
+                colorPalette={colorPalette}
               />
             </Flex>
           )}

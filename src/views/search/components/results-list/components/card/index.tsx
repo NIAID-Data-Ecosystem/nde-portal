@@ -10,12 +10,12 @@ import {
 } from '@chakra-ui/react';
 import { useInView } from '@react-spring/web';
 import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
-import NextLink, { LinkProps } from 'next/link';
+import NextLink from 'next/link';
 import React, { useMemo } from 'react';
 import { FaAngleRight, FaRegClock } from 'react-icons/fa6';
 import { SchemaDefinitions } from 'scripts/generate-schema-definitions/types';
 import { AccessibleForFree, ConditionsOfAccess } from 'src/components/badges';
-import { ArrowButton } from 'src/components/button.tsx/arrow-button';
+import { ArrowButton } from 'src/components/button/arrow-button';
 import { DisplayHTMLContent } from 'src/components/html-content';
 import { InfoLabel } from 'src/components/info-label';
 import { CompletenessBadgeCircle } from 'src/components/metadata-completeness-badge/Circular';

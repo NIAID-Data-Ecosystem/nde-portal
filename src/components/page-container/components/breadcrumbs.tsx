@@ -12,7 +12,7 @@ export const Breadcrumbs: React.FC<BreadcrumbsProps> = ({ segments }) => {
 
   return (
     <Flex px={6} py={2}>
-      <Breadcrumb.Root colorPalette='niaid' width='100%'>
+      <Breadcrumb.Root colorPalette='niaid' width='100%' variant='nav'>
         <Breadcrumb.List width='100%'>
           {/* home */}
           <Breadcrumb.Item key='home-page' overflow='visible'>

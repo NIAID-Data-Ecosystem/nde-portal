@@ -1,5 +1,6 @@
-import { Box, Button, Flex, Icon, Text, TextProps } from '@chakra-ui/react';
+import { Box, Flex, Icon, Text, TextProps } from '@chakra-ui/react';
 import React from 'react';
+import { IconBaseProps } from 'react-icons';
 import { FaInfo } from 'react-icons/fa6';
 import { getMetadataTheme } from 'src/components/metadata/helpers';
 import { Tooltip, TooltipProps } from 'src/components/tooltip';
@@ -74,12 +75,13 @@ export const MetadataLabel = ({
 export const MetadataTooltip = ({
   isDisabled,
   tooltipLabel,
-}: Pick<MetadataBlockProps, 'isDisabled' | 'tooltipLabel'>) => {
+  fontSize = 'xs',
+}: Pick<MetadataBlockProps, 'isDisabled' | 'tooltipLabel'> & {
+  fontSize?: IconBaseProps['fontSize'];
+}) => {
   return (
     <Tooltip content={tooltipLabel}>
       <Flex
-        minW={4}
-        minH={4}
         p={1}
         _hover={{
           '& div': {
@@ -89,18 +91,16 @@ export const MetadataTooltip = ({
           },
         }}
       >
-        <Button
-          as='div'
-          cursor='pointer'
+        <Icon
+          as={FaInfo}
+          border='1px solid'
           borderRadius='full'
-          variant='outline'
-          colorPalette='gray'
-          p={0}
           borderColor={isDisabled ? 'gray.500' : 'gray.600'}
           color={isDisabled ? 'gray.500' : 'gray.600'}
-        >
-          <Icon as={FaInfo} boxSize='0.75rem' p={0.5} />
-        </Button>
+          cursor='pointer'
+          p={0.5}
+          fontSize={fontSize}
+        />
       </Flex>
     </Tooltip>
   );

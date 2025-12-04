@@ -2,7 +2,7 @@ import { ButtonGroup, ButtonGroupProps } from '@chakra-ui/react';
 import {
   ArrowButton,
   ArrowButtonProps,
-} from 'src/components/button.tsx/arrow-button';
+} from 'src/components/button/arrow-button';
 
 export const SectionButtonGroup = ({
   children,

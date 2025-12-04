@@ -1,9 +1,10 @@
 import {
   Box,
-  Divider,
   Flex,
   SimpleGrid,
   Skeleton,
+  Stack,
+  StackSeparator,
   Text,
   VStack,
 } from '@chakra-ui/react';
@@ -105,8 +106,8 @@ const Overview: React.FC<OverviewProps> = ({
       <Flex alignItems='center' w='100%'>
         <SimpleGrid
           minChildWidth={{ base: 'unset', sm: '280px', xl: '300px' }}
-          spacingX={14}
-          spacingY={10}
+          gapX={14}
+          gapY={10}
           p={4}
           border='1px solid'
           borderColor='gray.100'
@@ -132,7 +133,7 @@ const Overview: React.FC<OverviewProps> = ({
             return (
               <Skeleton
                 key={`block-${props.id}-${props.property}`}
-                isLoaded={!isLoading}
+                loading={isLoading}
               >
                 <MetadataBlock
                   tooltipLabel={getMetadataDescription(
@@ -211,7 +212,7 @@ const SpatiotemporalCoverage: React.FC<SpatiotemporalCoverageProps> = ({
     .map(s => s.name);
 
   return (
-    <Skeleton key={`block-${id}-spatioTemporal`} isLoaded={!isLoading}>
+    <Skeleton key={`block-${id}-spatioTemporal`} loading={isLoading}>
       <MetadataBlock
         label='Spatiotemporal Coverage'
         property='spatialCoverage'
@@ -219,19 +220,21 @@ const SpatiotemporalCoverage: React.FC<SpatiotemporalCoverageProps> = ({
         bg='gray.900'
         tooltipLabel={
           <>
-            <Box>
+            <Box lineHeight='inherit'>
               Spatial Coverage:{' '}
               {getMetadataDescription('spatialCoverage', type)}
             </Box>
-            <Box>
+            <Box lineHeight='inherit'>
               Temporal Coverage:{' '}
               {getMetadataDescription('temporalCoverage', type)}
             </Box>
-            <Box>Language: {getMetadataDescription('inLanguage', type)}</Box>
+            <Box lineHeight='inherit'>
+              Language: {getMetadataDescription('inLanguage', type)}
+            </Box>
           </>
         }
       >
-        <VStack alignItems='flex-start' divider={<Divider />}>
+        <Stack alignItems='flex-start' separator={<StackSeparator />}>
           {/* Geographic information of dataset */}
           {spatialInformation && (
             <>
@@ -296,7 +299,7 @@ const SpatiotemporalCoverage: React.FC<SpatiotemporalCoverageProps> = ({
               <MetadataContent name={getLanguageDisplayName(inLanguage.name)} />
             </>
           )}
-        </VStack>
+        </Stack>
       </MetadataBlock>
     </Skeleton>
   );

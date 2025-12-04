@@ -1,6 +1,6 @@
 import { ImageProps } from '@chakra-ui/react';
 import { ReactNode } from 'react';
-import { ArrowButtonProps } from 'src/components/button.tsx/arrow-button';
+import { ArrowButtonProps } from 'src/components/button/arrow-button';
 
 export type LandingPageCardType = {
   image: ImageProps;

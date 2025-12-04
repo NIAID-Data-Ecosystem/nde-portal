@@ -1,5 +1,5 @@
 import { CardFooterProps, CardRootProps, ImageProps } from '@chakra-ui/react';
-import { ArrowButtonProps } from 'src/components/button.tsx/arrow-button';
+import { ArrowButtonProps } from 'src/components/button/arrow-button';
 
 export interface TOCCardProps extends CardRootProps {
   title: string;

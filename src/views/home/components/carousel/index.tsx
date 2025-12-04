@@ -4,7 +4,7 @@ import NextLink from 'next/link';
 import React from 'react';
 import { fetchAllUpdates } from 'src/api/updates';
 import { UpdatesQueryResponse } from 'src/api/updates/types';
-import { ArrowButton } from 'src/components/button.tsx/arrow-button';
+import { ArrowButton } from 'src/components/button/arrow-button';
 import { Carousel } from 'src/components/carousel';
 import { Link } from 'src/components/link';
 

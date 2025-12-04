@@ -3,7 +3,7 @@ import { omit } from 'lodash';
 import type { NextPage } from 'next';
 import NextLink from 'next/link';
 import { useRouter } from 'next/router';
-import { Box, Button, Card, Flex, Link, Text } from '@chakra-ui/react';
+import { Box, Button, Card, Flex, Text } from '@chakra-ui/react';
 import { useQuery } from '@tanstack/react-query';
 import {
   getPageSeoConfig,
@@ -21,20 +21,19 @@ import { getQueryStatusError } from 'src/components/error/utils';
 import { Sidebar } from 'src/components/resource-sections/components/sidebar';
 import SITE_CONFIG from 'configs/site.config.json';
 import { SiteConfig } from 'src/components/page-container/types';
+import { Link } from 'src/components/link';
 
 const siteConfig = SITE_CONFIG as SiteConfig;
 
 // Displays empty message when no data exists.
 const EmptyState = () => {
   return (
-    <Card w='100%'>
-      <Empty message='No data available.' alignSelf='center' h='50vh'>
-        <Text>No information about this dataset is available.</Text>
-        <NextLink href={{ pathname: '/search' }}>
-          <Button mt={4}>Go to search</Button>
-        </NextLink>
-      </Empty>
-    </Card>
+    <Empty message='No data available.' alignSelf='center' h='50vh'>
+      <Text>No information about this dataset is available.</Text>
+      <NextLink href={{ pathname: '/search' }}>
+        <Button mt={4}>Go to search</Button>
+      </NextLink>
+    </Empty>
   );
 };
 
@@ -204,21 +203,23 @@ const ResourcePage: NextPage = () => {
                     p={{ sm: 0, md: 2 }}
                     flexDirection={['column', 'column', 'row']}
                   >
-                    <Card
+                    <Card.Root
                       className='main-content'
                       flex={3}
                       p={0}
                       width='100%'
-                      sx={{ '>*': { p: 0 } }}
+                      css={{ '>*': { p: 0 } }}
                       minW={150}
                       overflow='unset'
                     >
-                      <Sections
-                        isLoading={isLoading}
-                        data={data}
-                        sections={sections}
-                      />
-                    </Card>
+                      <Card.Body p={0}>
+                        <Sections
+                          isLoading={isLoading}
+                          data={data}
+                          sections={sections}
+                        />
+                      </Card.Body>
+                    </Card.Root>
 
                     <Sidebar
                       data={data}

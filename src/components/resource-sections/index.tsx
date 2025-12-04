@@ -1,52 +1,38 @@
-import {
-  Box,
-  Divider,
-  Flex,
-  ListItem,
-  SimpleGrid,
-  Skeleton,
-  Stack,
-  StackDivider,
-  UnorderedList,
-  VStack,
-} from '@chakra-ui/react';
 import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
 import React from 'react';
-import { FaMagnifyingGlass } from 'react-icons/fa6';
 import { SchemaDefinitions } from 'scripts/generate-schema-definitions/types';
-import { Link } from 'src/components/link';
-import { CompletenessBadgeCircle } from 'src/components/metadata-completeness-badge/Circular';
-import { SearchableItems } from 'src/components/searchable-items';
-import { Tag } from 'src/components/tag';
-import { FormattedResource } from 'src/utils/api/types';
 
-import { DownloadMetadata } from '../download-metadata';
-import { DisplayHTMLContent } from '../html-content';
-import { JsonViewer } from '../json-viewer';
-import { getMetadataDescription } from '../metadata';
+import { FormattedResource } from 'src/utils/api/types';
+import { Tag } from 'src/components/tag';
+
+import { Route } from './helpers';
 import {
   ResourceAuthors,
   ResourceBanner,
   ResourceCitations,
   ResourceHeader,
   ResourceOverview,
-  ResourceProvenance,
   Section,
 } from './components';
-import BasedOnTable from './components/based-on';
-import { CitedByTable } from './components/cited-by-table';
-import { ResourceCatalogCollection } from './components/collection-information';
-import FilesTable from './components/files-table';
-import { Funding } from './components/funding';
+import {
+  Box,
+  Flex,
+  SimpleGrid,
+  Skeleton,
+  Stack,
+  StackSeparator,
+} from '@chakra-ui/react';
+import { Summary } from './components/summary';
 import { OverviewSectionWrapper } from './components/overview-section-wrapper';
-import { RelatedResources } from './components/related-resources';
+import { FaMagnifyingGlass } from 'react-icons/fa6';
+import { SearchableItems } from '../searchable-items';
+import { getMetadataDescription } from '../metadata';
+import { ResourceCatalogCollection } from './components/collection-information';
+import { CompletenessBadgeCircle } from '../metadata-completeness-badge/Circular';
 import {
   ExternalAccess,
   UsageInfo,
 } from './components/sidebar/components/external';
-import SoftwareInformation from './components/software-information';
-import { Summary } from './components/summary';
-import { Route } from './helpers';
 
 const schema = SCHEMA_DEFINITIONS as SchemaDefinitions;
 // Metadata displayed in each section
@@ -169,7 +155,7 @@ const Sections = ({
                 <Stack
                   flexWrap='wrap'
                   direction={{ base: 'column', md: 'row' }}
-                  divider={<StackDivider borderColor='gray.100' />}
+                  separator={<StackSeparator />}
                 >
                   {/* Badge indicating completeness of metadata */}
                   {data && data['_meta'] && (
@@ -206,13 +192,13 @@ const Sections = ({
                 {(data?.genre || data?.about || data?.collectionSize) && (
                   <SimpleGrid
                     minChildWidth={{ base: 'unset', sm: '280px', xl: '300px' }}
-                    spacingX={14}
-                    spacingY={10}
+                    gapX={14}
+                    gapY={10}
                     mt={4}
                     w='100%'
                   >
                     {/* Col 1: Genre & Content Types */}
-                    <VStack>
+                    <Stack>
                       {data?.genre && (
                         <OverviewSectionWrapper
                           isLoading={isLoading}
@@ -272,7 +258,7 @@ const Sections = ({
                           </SearchableItems.Wrapper>
                         </OverviewSectionWrapper>
                       )}
-                    </VStack>
+                    </Stack>
                     {/* Col 2: Size of collection */}
                     {data?.collectionSize && (
                       <OverviewSectionWrapper
@@ -314,9 +300,10 @@ const Sections = ({
                 )}
               </>
             )}
+
             {/* Show keywords */}
             {section.hash === 'keywords' && (
-              <Skeleton isLoaded={!isLoading}>
+              <Skeleton loading={isLoading}>
                 {data?.keywords && data?.keywords?.length > 0 && (
                   <SearchableItems.Wrapper>
                     <SearchableItems.List
@@ -340,6 +327,7 @@ const Sections = ({
                 )}
               </Skeleton>
             )}
+
             {/* Show application category */}
             {section.hash === 'applicationCategory' && (
               <Skeleton isLoaded={!isLoading}>

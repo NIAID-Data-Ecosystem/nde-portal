@@ -1,6 +1,6 @@
 import { Card, Flex, Image } from '@chakra-ui/react';
 import React from 'react';
-import { ArrowButton } from 'src/components/button.tsx/arrow-button';
+import { ArrowButton } from 'src/components/button/arrow-button';
 import { Link } from 'src/components/link';
 
 import { LandingPageCardType } from './types';

@@ -9,14 +9,17 @@ const breadcrumb = defineSlotRecipe({
       nav: {
         item: { fontWeight: 'medium' },
         link: {
-          bg: 'blue.50',
           borderRadius: 'semi',
-          color: 'link.default',
+          color: 'niaid.600',
           overflow: 'hidden',
           px: 2,
           textOverflow: 'ellipsis',
           whiteSpace: 'nowrap',
-          _hover: { textDecoration: 'underline' },
+          _hover: {
+            bg: 'blue.50',
+            color: 'link.default',
+            textDecoration: 'underline',
+          },
           _icon: { color: 'niaid.500' },
         },
         currentLink: {
