@@ -282,13 +282,26 @@ const SearchBar = ({
 
   useEffect(() => {
     if (searchTerm.length > 0) {
+      // If user is searching, show results and hide history
       setShowHistory(false);
       setIsOpen(true);
       setCurrentCursorMax(results.length);
-    } else if (!showHistory) {
+    } else if (searchTerm.length === 0 && !showHistory) {
+      // If no search term and history not shown, close dropdown
       setIsOpen(false);
+    } else if (showHistory) {
+      // If history is shown, update cursor max
+      setCurrentCursorMax(historyList.length);
     }
-  }, [searchTerm, results.length, showHistory, setIsOpen, setCurrentCursorMax]);
+    // If searchTerm is empty but showHistory is true, keep dropdown open
+  }, [
+    searchTerm,
+    results.length,
+    showHistory,
+    historyList.length,
+    setIsOpen,
+    setCurrentCursorMax,
+  ]);
 
   const addToHistory = useCallback(
     (term: string) => {
@@ -362,11 +375,16 @@ const SearchBar = ({
   const toggleHistory = () => {
     const newShowHistory = !showHistory;
     setShowHistory(newShowHistory);
-    setIsOpen(newShowHistory);
+
     if (newShowHistory) {
-      setCurrentCursorMax(historyList.length);
-      updateSearchTerm('');
+      // Opening history => clear search term immediately (bypass debounce)
+      setSearchTerm('');
       setInputValue('');
+      setCurrentCursorMax(historyList.length);
+      setIsOpen(true);
+    } else {
+      // Closing history
+      setIsOpen(false);
     }
   };
 
