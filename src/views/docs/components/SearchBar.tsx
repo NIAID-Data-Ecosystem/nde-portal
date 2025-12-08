@@ -272,8 +272,12 @@ const SearchBar = ({
     if (queryResults) {
       setResults(queryResults);
       setCurrentCursorMax(queryResults.length);
+    } else if (searchTerm.length === 0) {
+      // Clear results when search term is empty
+      setResults([]);
+      setCurrentCursorMax(0);
     }
-  }, [queryResults, setCurrentCursorMax]);
+  }, [queryResults, searchTerm.length, setCurrentCursorMax]);
 
   const historyList = useMemo(
     () => [...searchHistory].reverse(),
@@ -286,19 +290,22 @@ const SearchBar = ({
       setShowHistory(false);
       setIsOpen(true);
       setCurrentCursorMax(results.length);
-    } else if (searchTerm.length === 0 && !showHistory) {
-      // If no search term and history not shown, close dropdown
+    } else if (searchTerm.length === 0 && !showHistory && !isOpen) {
+      // If no search term, history not shown, and dropdown closed, keep it closed
       setIsOpen(false);
     } else if (showHistory) {
       // If history is shown, update cursor max
       setCurrentCursorMax(historyList.length);
+    } else if (isOpen && searchTerm.length === 0 && !showHistory) {
+      // If dropdown is open with empty search (from clicking submit), keep it open
+      setCurrentCursorMax(0);
     }
-    // If searchTerm is empty but showHistory is true, keep dropdown open
   }, [
     searchTerm,
     results.length,
     showHistory,
     historyList.length,
+    isOpen,
     setIsOpen,
     setCurrentCursorMax,
   ]);
@@ -326,40 +333,52 @@ const SearchBar = ({
     if (showHistory && idx >= 0 && idx < historyList.length) {
       const historyValue = historyList[idx];
       addToHistory(historyValue);
-      router.push(`/knowledge-center/${historyValue}`);
       setIsOpen(false);
       setShowHistory(false);
       setInputValue('');
       updateSearchTerm('');
+      setSearchTerm('');
+      setResults([]);
+      router.push(`/knowledge-center/${historyValue}`);
       return;
     }
 
     if (!showHistory && idx >= 0 && idx < results.length) {
       const result = results[idx];
       addToHistory(searchTerm);
-      router.push(`/knowledge-center/${result.slug}`);
       setIsOpen(false);
       setInputValue('');
       updateSearchTerm('');
+      setSearchTerm('');
+      setResults([]);
+      router.push(`/knowledge-center/${result.slug}`);
       return;
     }
 
     const trimmedValue = value.trim();
     if (trimmedValue) {
       addToHistory(trimmedValue);
-      router.push(`/knowledge-center/${trimmedValue}`);
       setIsOpen(false);
       setInputValue('');
       updateSearchTerm('');
+      setSearchTerm('');
+      setResults([]);
+      router.push(`/knowledge-center/${trimmedValue}`);
+    } else {
+      // If empty search, open dropdown to show "Start typing to search..." message
+      setIsOpen(true);
+      setShowHistory(false);
     }
   };
 
   const handleResultClick = (slug: string) => {
     addToHistory(searchTerm);
-    router.push(`/knowledge-center/${slug}`);
     setIsOpen(false);
     setInputValue('');
     updateSearchTerm('');
+    setSearchTerm('');
+    setResults([]);
+    router.push(`/knowledge-center/${slug}`);
   };
 
   const handleHistoryClick = useCallback(
