@@ -568,7 +568,7 @@ export const DocsSearchBar = (props: SearchBarWithDropdownProps) => {
 
   return (
     <Flex w='100%' justifyContent='center' px={4}>
-      <Box w='100%' maxW='800px'>
+      <Box w='100%' maxW='1200px'>
         <InputWithDropdown
           inputValue=''
           cursorMax={currentCursorMax}
