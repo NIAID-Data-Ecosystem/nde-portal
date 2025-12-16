@@ -89,8 +89,14 @@ const SidebarContainer: React.FC<DocumentationSidebarProps> = ({
               colorScheme='gray'
               variant='ghost'
               borderRadius='none'
+              display='flex'
+              alignItems='center'
+              gap={2}
             >
               <Icon as={FaAnglesLeft}></Icon>
+              <Text fontSize='sm' fontWeight='semibold'>
+                Hide Menu
+              </Text>
             </Button>
             <ScrollContainer
               as='aside'
