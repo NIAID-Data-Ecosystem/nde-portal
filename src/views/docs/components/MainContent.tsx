@@ -6,7 +6,6 @@ import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
 import remarkGfm from 'remark-gfm';
 import { Box, Divider, Flex, Heading, Text } from '@chakra-ui/react';
-import { remark } from 'remark';
 import { transformString2Hash } from './helpers';
 import { Error } from 'src/components/error';
 import Empty from 'src/components/empty';
@@ -30,47 +29,6 @@ export interface DocumentationProps {
   };
 }
 
-interface ContentHeading {
-  title: string;
-  hash: string;
-  depth: number;
-}
-
-const extractMarkdownHeadings = (
-  content: string,
-  maxDepth: number,
-  ignoreDetailsContent = true,
-): ContentHeading[] => {
-  const headings: ContentHeading[] = [];
-  remark()
-    .use(() => {
-      let isInsideDetailsTag = false;
-      return (root: any) => {
-        root.children.map((child: any) => {
-          if (ignoreDetailsContent && child.type === 'html') {
-            if (child.value.startsWith('<details>')) {
-              isInsideDetailsTag = true;
-            } else if (child.value.startsWith('</details>')) {
-              isInsideDetailsTag = false;
-            }
-          }
-          //ignore headings within <details> html tag
-          if (ignoreDetailsContent && isInsideDetailsTag) return;
-
-          if (child.type === 'heading' && child.depth <= maxDepth) {
-            headings.push({
-              title: child.children[0].value || '',
-              hash: transformString2Hash(child.children[0].value) || '',
-              depth: child.depth,
-            });
-          }
-        });
-      };
-    })
-    .process(content);
-  return headings;
-};
-
 interface MainContentProps {
   id: number;
   slug: string[];
@@ -93,9 +51,6 @@ const fetchDocumentation = async (slug: string[]) => {
     throw err.response;
   }
 };
-
-// used to determine what levels of heading to add to table of contents.
-const MAX_HEADING_DEPTH = 3;
 
 const MainContent = ({ slug, data: initialData }: MainContentProps) => {
   const {
