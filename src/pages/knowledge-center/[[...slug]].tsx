@@ -47,17 +47,18 @@ export interface DocumentationByCategories {
     id: DocumentationProps['id'];
     name: DocumentationProps['name'];
     slug: DocumentationProps['slug'];
+    description: string;
   }[];
 }
 
-// Fetch documentation from API.
+// Fetch documentation from API with full descriptions to extract section and subsection names.
 export const fetchCategories = async () => {
   try {
     const isProd = process.env.NEXT_PUBLIC_APP_ENV === 'production';
     const docs = await axios.get(
       `${
         process.env.NEXT_PUBLIC_STRAPI_API_URL
-      }/api/categories?filters[docs][name][$null]&populate[docs][fields][0]=name&populate[docs][fields][1]=slug&populate[docs][sort][1]=order:asc&pagination[page]=1&pagination[pageSize]=100&sort[0]=order:asc&status=${
+      }/api/categories?filters[docs][name][$null]&populate[docs][fields][0]=name&populate[docs][fields][1]=slug&populate[docs][fields][2]=description&populate[docs][sort][1]=order:asc&pagination[page]=1&pagination[pageSize]=100&sort[0]=order:asc&status=${
         isProd ? 'published' : 'draft'
       }`,
     );
@@ -87,6 +88,7 @@ const Docs: NextPage<{
                 id: doc.id,
                 name: doc.name,
                 slug: doc.slug,
+                description: doc.description,
                 href: {
                   pathname: `/knowledge-center/${doc.slug}`,
                 },
@@ -167,7 +169,7 @@ const Docs: NextPage<{
             <Text fontWeight='light' color='gray.600' fontSize='lg'>
               API Request:{' '}
               {error?.statusText ||
-                'It’s possible that the server is experiencing some issues.'}{' '}
+                "It's possible that the server is experiencing some issues."}{' '}
             </Text>
           </Flex>
         </Error>
