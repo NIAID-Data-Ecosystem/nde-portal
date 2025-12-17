@@ -32,7 +32,7 @@ import {
 import LoadingSpinner from 'src/components/loading';
 import { ScrollContainer } from 'src/components/scroll-container';
 import { extractMarkdownHeadings } from './helpers';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 interface DocumentationSidebarProps extends FlexProps {
   children: React.ReactNode;
@@ -222,6 +222,7 @@ interface DocumentItemProps {
   selectedSlug?: string;
   colorScheme: string;
   isLoading: boolean;
+  activePageSlug?: string; // Track the globally active page
 }
 
 const DocumentItem: React.FC<DocumentItemProps> = ({
@@ -229,6 +230,7 @@ const DocumentItem: React.FC<DocumentItemProps> = ({
   selectedSlug,
   colorScheme,
   isLoading,
+  activePageSlug,
 }) => {
   const isSelected = selectedSlug === item.slug;
   const bg = isSelected ? `${colorScheme}.100` : 'transparent';
@@ -242,8 +244,14 @@ const DocumentItem: React.FC<DocumentItemProps> = ({
     : [];
 
   const hasToc = tocItems.length > 0;
-  // Only expand if this is the selected page
+
+  // Expand only if this is the selected page
   const [isExpanded, setIsExpanded] = useState(isSelected);
+
+  // Update expansion state when activePageSlug changes (force collapse all except active)
+  useEffect(() => {
+    setIsExpanded(isSelected);
+  }, [isSelected, activePageSlug]);
 
   return (
     <ListItem w='100%' display='flex' flexDirection='column'>
@@ -312,8 +320,9 @@ const DocumentItem: React.FC<DocumentItemProps> = ({
                   tocItem={tocItem}
                   pageSlug={item.slug as string}
                   indent={4}
-                  colorScheme={colorScheme}
                   parentTocItems={tocItems}
+                  isParentSelected={isSelected}
+                  activePageSlug={activePageSlug}
                 />
               );
             })}
@@ -327,19 +336,26 @@ interface TocItemProps {
   tocItem: ContentHeading;
   pageSlug: string;
   indent: number;
-  colorScheme: string;
   parentTocItems?: ContentHeading[];
+  isParentSelected?: boolean;
+  activePageSlug?: string; // Track the globally active page
 }
 
 const TocItem: React.FC<TocItemProps> = ({
   tocItem,
   pageSlug,
   indent,
-  colorScheme,
   parentTocItems = [],
+  isParentSelected = false,
+  activePageSlug,
 }) => {
-  // Only expand sections that are part of the active page
-  const [isExpanded, setIsExpanded] = useState(true);
+  // Expand sections when parent page is selected
+  const [isExpanded, setIsExpanded] = useState(isParentSelected);
+
+  // Update expansion state when parent selection changes or active page changes
+  useEffect(() => {
+    setIsExpanded(isParentSelected);
+  }, [isParentSelected, activePageSlug]);
 
   // Find child items (subsections)
   const currentIndex = parentTocItems.findIndex(
@@ -470,6 +486,8 @@ export const SidebarDesktop = ({
   selectedSlug?: string;
   colorScheme?: string;
 }) => {
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+
   const categories = (
     isLoading
       ? [...Array(5)].map((_, i) => {
@@ -489,8 +507,8 @@ export const SidebarDesktop = ({
       : sections
   ) as SidebarContent[];
 
-  // Find which categories contain the selected page
-  const getDefaultExpandedIndices = () => {
+  // Find which category contains the selected page
+  const getExpandedIndices = () => {
     if (!selectedSlug || !categories) return [];
 
     const expandedIndices: number[] = [];
@@ -505,9 +523,28 @@ export const SidebarDesktop = ({
     return expandedIndices;
   };
 
+  const [expandedIndices, setExpandedIndices] = useState<number[]>(
+    getExpandedIndices(),
+  );
+
+  // Update expanded indices when selectedSlug changes
+  useEffect(() => {
+    const newExpandedIndices = getExpandedIndices();
+    setExpandedIndices(newExpandedIndices);
+
+    // Scroll sidebar to top when navigation occurs
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollTop = 0;
+    }
+  }, [selectedSlug]);
+
   return (
     <Accordion
-      defaultIndex={getDefaultExpandedIndices()}
+      index={expandedIndices}
+      onChange={indices => {
+        // Allow manual toggling of categories
+        setExpandedIndices(Array.isArray(indices) ? indices : [indices]);
+      }}
       allowMultiple
       minW='350px'
     >
@@ -568,6 +605,7 @@ export const SidebarDesktop = ({
                             selectedSlug={selectedSlug}
                             colorScheme={colorScheme}
                             isLoading={isLoading}
+                            activePageSlug={selectedSlug}
                           />
                         );
                       })}
