@@ -38,11 +38,11 @@ interface DocumentationSidebarProps extends FlexProps {
   children: React.ReactNode;
 }
 
-const SidebarContainer: React.FC<DocumentationSidebarProps> = ({
+const SidebarContainer = ({
   children,
   bg,
   ...props
-}) => {
+}: DocumentationSidebarProps) => {
   const { isOpen, onOpen, onClose } = useDisclosure({ defaultIsOpen: true });
 
   return (
@@ -142,19 +142,21 @@ export interface SidebarContent {
   }[];
 }
 
+interface SidebarMobileProps {
+  isLoading: boolean;
+  menuTitle?: string;
+  sections?: SidebarContent[];
+  selectedSlug?: string;
+  colorScheme?: string;
+}
+
 export const SidebarMobile = ({
   isLoading,
   menuTitle,
   sections,
   selectedSlug,
   colorScheme = 'niaid',
-}: {
-  isLoading: boolean;
-  menuTitle?: string;
-  sections?: SidebarContent[];
-  selectedSlug?: string;
-  colorScheme?: string;
-}) => {
+}: SidebarMobileProps) => {
   return (
     <Menu matchWidth>
       <Flex bg='white'>
@@ -225,13 +227,13 @@ interface DocumentItemProps {
   activePageSlug?: string; // Track the globally active page
 }
 
-const DocumentItem: React.FC<DocumentItemProps> = ({
+const DocumentItem = ({
   item,
   selectedSlug,
   colorScheme,
   isLoading,
   activePageSlug,
-}) => {
+}: DocumentItemProps) => {
   const isSelected = selectedSlug === item.slug;
   const bg = isSelected ? `${colorScheme}.100` : 'transparent';
   const color = isSelected
@@ -341,14 +343,14 @@ interface TocItemProps {
   activePageSlug?: string; // Track the globally active page
 }
 
-const TocItem: React.FC<TocItemProps> = ({
+const TocItem = ({
   tocItem,
   pageSlug,
   indent,
   parentTocItems = [],
   isParentSelected = false,
   activePageSlug,
-}) => {
+}: TocItemProps) => {
   // Expand sections when parent page is selected
   const [isExpanded, setIsExpanded] = useState(isParentSelected);
 
@@ -475,17 +477,19 @@ const TocItem: React.FC<TocItemProps> = ({
   );
 };
 
+interface SidebarDesktopProps {
+  isLoading: boolean;
+  sections?: SidebarContent[];
+  selectedSlug?: string;
+  colorScheme?: string;
+}
+
 export const SidebarDesktop = ({
   isLoading,
   sections,
   selectedSlug,
   colorScheme = 'niaid',
-}: {
-  isLoading: boolean;
-  sections?: SidebarContent[];
-  selectedSlug?: string;
-  colorScheme?: string;
-}) => {
+}: SidebarDesktopProps) => {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   const categories = (
