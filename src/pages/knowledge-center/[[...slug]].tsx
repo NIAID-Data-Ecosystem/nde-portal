@@ -27,14 +27,14 @@ import {
   SidebarContent,
   SidebarDesktop,
   SidebarMobile,
-} from 'src/views/docs/components/Sidebar';
-import SidebarContainer from 'src/views/docs/components/Sidebar';
+  SidebarContainer,
+} from 'src/views/docs/components/sidebar';
 import MainContent, {
   DocumentationProps,
 } from 'src/views/docs/components/MainContent';
 import Empty from 'src/components/empty';
 import IntegrationMain from 'src/views/integration/components/Main';
-import { DocsSearchBar } from 'src/views/docs/components/SearchBar';
+import { DocsSearchBar } from 'src/views/docs/components/search-bar';
 import { HeroBanner } from 'src/views/docs/components/HeroBanner';
 
 export interface DocumentationByCategories {

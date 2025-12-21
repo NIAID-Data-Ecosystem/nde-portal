@@ -10,8 +10,6 @@ import {
   Box,
   Button,
   Flex,
-  Heading,
-  Highlight,
   HStack,
   Icon,
   IconButton,
@@ -22,186 +20,20 @@ import {
 } from '@chakra-ui/react';
 import {
   DropdownInput,
-  InputWithDropdown,
   useDropdownContext,
 } from 'src/components/input-with-dropdown';
 import { DropdownContent } from 'src/components/input-with-dropdown/components/DropdownContent';
 import { SearchHistoryItem } from 'src/components/search-bar/components/search-history-item';
-import axios from 'axios';
 import { useQuery } from '@tanstack/react-query';
 import { debounce, uniq } from 'lodash';
 import { FaMagnifyingGlass, FaClockRotateLeft } from 'react-icons/fa6';
-import { remark } from 'remark';
-import { useLocalStorage } from 'usehooks-ts';
-import { DocumentationProps } from './MainContent';
+import type { DocumentationProps } from '../MainContent';
+import { searchDocumentation } from './api';
+import { searchInMDX } from './utils';
+import { SearchResultItem } from './SearchResultItem';
+import type { SearchBarProps, SearchResult } from './types';
 
-export const searchDocumentation = async (searchTerm: string) => {
-  try {
-    const isProd = process.env.NEXT_PUBLIC_APP_ENV === 'production';
-    const docs = await axios.get(
-      `${
-        process.env.NEXT_PUBLIC_STRAPI_API_URL
-      }/api/docs?populate[fields][0]=name&populate[fields][1]=slug&populate[fields][2]=publishedAt&populate[fields][3]=updatedAt&populate[fields][4]=subtitle&populate[fields][5]=description&sort[publishedAt]=desc&sort[updatedAt]=desc&paginate[page]=1&paginate[pageSize]=5&status=${
-        isProd ? 'published' : 'draft'
-      }&_q=${searchTerm}`,
-    );
-    return docs.data.data;
-  } catch (err: any) {
-    throw err.response;
-  }
-};
-
-function searchInMDX(
-  mdxString: string,
-  targetWord: string,
-  targetLength = 200,
-) {
-  let nearestHeading = null;
-  let snippet = null;
-
-  // Parse the MDX content into mdast
-  const tree = remark().parse(mdxString);
-  // Helper function to extract text from a node
-  function extractText(node: any) {
-    if (node.type === 'text' || node.type === 'inlineCode') {
-      return node.value;
-    } else if (node.children) {
-      return node.children.map(extractText).join('');
-    }
-    return '';
-  }
-
-  // Traverse the mdast tree. Stop when the target word is found.
-  for (let i = 0; i < tree.children.length; i++) {
-    const node = tree.children[i];
-
-    // Store the nearest preceding heading
-    if (node.type === 'heading') {
-      let rawHeading = extractText(node);
-      nearestHeading = rawHeading
-        .toLowerCase() // convert to lowercase
-        .replace(/[^a-zA-Z\s]/g, '') // remove non-alpha characters
-        .trim() // trim any extra whitespace from start and end
-        .replace(/\s+/g, '-'); // replace sequences of whitespace with dash
-    }
-
-    // Check if the node contains the target word
-    const text = extractText(node);
-    const index = text.toLowerCase().indexOf(targetWord.toLowerCase());
-
-    if (index !== -1) {
-      let startIndex;
-      if (index < targetLength) {
-        startIndex = 0;
-      } else {
-        startIndex = index;
-      }
-
-      snippet = text.substr(startIndex, targetLength);
-      break;
-    }
-  }
-
-  return {
-    heading: nearestHeading,
-    snippet: snippet,
-  };
-}
-
-interface SearchResult {
-  id: DocumentationProps['id'];
-  name: DocumentationProps['name'];
-  slug: string;
-  description: DocumentationProps['description'];
-}
-
-interface SearchResultItemProps {
-  index: number;
-  result: SearchResult;
-  searchTerm: string;
-  colorScheme: string;
-  onClick: () => void;
-}
-
-const SearchResultItem = React.memo(
-  ({
-    index,
-    result,
-    searchTerm,
-    colorScheme,
-    onClick,
-  }: SearchResultItemProps) => {
-    const { cursor, getListItemProps } = useDropdownContext();
-    const isSelected = useMemo(() => cursor === index, [index, cursor]);
-
-    return (
-      <ListItem
-        px={2}
-        mx={2}
-        my={1}
-        borderRadius='base'
-        cursor='pointer'
-        {...getListItemProps({
-          index,
-          value: result.slug,
-          isSelected,
-          onClick,
-        })}
-      >
-        <Heading
-          as='h4'
-          size='sm'
-          lineHeight='short'
-          color='text.body'
-          wordBreak='break-word'
-          textAlign='left'
-        >
-          {result.name && (
-            <Highlight
-              query={searchTerm.split(' ')}
-              styles={{
-                fontWeight: 'bold',
-                textDecoration: 'underline',
-                color: `${colorScheme}.400`,
-                bg: 'transparent',
-              }}
-            >
-              {result.name}
-            </Highlight>
-          )}
-        </Heading>
-        {result.description && (
-          <Text color='gray.600' fontSize='sm'>
-            <Highlight
-              query={searchTerm.split(' ')}
-              styles={{
-                fontWeight: 'bold',
-                textDecoration: 'underline',
-                color: `${colorScheme}.400`,
-                bg: 'transparent',
-              }}
-            >
-              {result.description}
-            </Highlight>
-          </Text>
-        )}
-      </ListItem>
-    );
-  },
-);
-
-interface SearchBarProps {
-  ariaLabel: string;
-  placeholder: string;
-  colorScheme?: string;
-  size?: string;
-  searchHistory: string[];
-  setSearchHistory: React.Dispatch<React.SetStateAction<string[]>>;
-  currentCursorMax: number;
-  setCurrentCursorMax: React.Dispatch<React.SetStateAction<number>>;
-}
-
-const SearchBar = ({
+export const SearchBar = ({
   ariaLabel,
   placeholder,
   colorScheme = 'primary',
@@ -230,18 +62,14 @@ const SearchBar = ({
   }, []);
 
   // Run query every time search term changes.
-  const { isLoading, data: queryResults } = useQuery<
-    DocumentationProps[],
-    Error,
-    SearchResult[]
-  >({
+  const queryResult = useQuery({
     queryKey: ['docs-search', { term: searchTerm }],
     queryFn: () => searchDocumentation(searchTerm),
-    select: data => {
+    select: (data: DocumentationProps[]): SearchResult[] => {
       if (searchTerm.length === 0) {
         return [];
       }
-      return data.map(datum => {
+      return data.map((datum: DocumentationProps) => {
         const slug = Array.isArray(datum.slug) ? datum.slug[0] : datum.slug;
         if (datum.description) {
           const { heading, snippet } = searchInMDX(
@@ -252,7 +80,7 @@ const SearchBar = ({
             id: datum.id,
             name: datum.name,
             slug: heading ? slug + '#' + heading : slug,
-            description: snippet,
+            description: snippet || '',
           };
         }
         return {
@@ -266,6 +94,8 @@ const SearchBar = ({
     refetchOnWindowFocus: false,
     enabled: searchTerm.length > 0,
   });
+
+  const { isLoading, data: queryResults } = queryResult;
 
   // Update results when query results change.
   useEffect(() => {
@@ -539,50 +369,5 @@ const SearchBar = ({
         </DropdownContent>
       )}
     </>
-  );
-};
-
-interface SearchBarWithDropdownProps {
-  ariaLabel: string;
-  placeholder: string;
-  colorScheme?: string;
-  size?: string;
-}
-
-export const DocsSearchBar = (props: SearchBarWithDropdownProps) => {
-  const [searchHistory, setSearchHistory] = useLocalStorage<string[]>(
-    'docs-searches',
-    [],
-  );
-  const [mounted, setMounted] = useState(false);
-  const [currentCursorMax, setCurrentCursorMax] = useState(0);
-
-  useEffect(() => {
-    setMounted(true);
-    setCurrentCursorMax(searchHistory.length);
-  }, [searchHistory.length]);
-
-  if (!mounted) {
-    return null;
-  }
-
-  return (
-    <Flex w='100%' justifyContent='center' px={4}>
-      <Box w='100%' maxW='1200px'>
-        <InputWithDropdown
-          inputValue=''
-          cursorMax={currentCursorMax}
-          colorScheme={props.colorScheme}
-        >
-          <SearchBar
-            searchHistory={searchHistory}
-            setSearchHistory={setSearchHistory}
-            currentCursorMax={currentCursorMax}
-            setCurrentCursorMax={setCurrentCursorMax}
-            {...props}
-          />
-        </InputWithDropdown>
-      </Box>
-    </Flex>
   );
 };
