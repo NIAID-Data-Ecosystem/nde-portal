@@ -11,14 +11,15 @@ import {
 import { FaArrowsUpDown } from 'react-icons/fa6';
 import LoadingSpinner from 'src/components/loading';
 import NextLink from 'next/link';
-import { SidebarMobileProps } from './types';
+import type { SidebarMobileProps } from '../../types';
+import { DEFAULT_COLOR_SCHEME } from '../../constants';
 
 export const SidebarMobile = ({
   isLoading,
   menuTitle,
   sections,
   selectedSlug,
-  colorScheme = 'niaid',
+  colorScheme = DEFAULT_COLOR_SCHEME,
 }: SidebarMobileProps) => {
   return (
     <Menu matchWidth>
@@ -46,35 +47,33 @@ export const SidebarMobile = ({
             <LoadingSpinner isLoading={isLoading} />
           </MenuItem>
         )}
-        {sections?.map(category => {
-          return (
-            <MenuGroup key={category.id} title={category.name}>
-              {category.items.map(item => {
-                if (!item?.slug) return null;
-                const isSelected = selectedSlug === item.slug;
-                return (
-                  <NextLink
-                    key={item.id}
-                    style={{ display: 'flex', width: '100%' }}
-                    href={item.href}
+        {sections?.map(category => (
+          <MenuGroup key={category.id} title={category.name}>
+            {category.items.map(item => {
+              if (!item?.slug) return null;
+              const isSelected = selectedSlug === item.slug;
+              return (
+                <NextLink
+                  key={item.id}
+                  style={{ display: 'flex', width: '100%' }}
+                  href={item.href}
+                >
+                  <MenuItem
+                    pl={6}
+                    color={
+                      isSelected ? `${colorScheme}.600!important` : 'inherit'
+                    }
+                    bg={isSelected ? `${colorScheme}.100` : 'transparent'}
                   >
-                    <MenuItem
-                      pl={6}
-                      color={
-                        isSelected ? `${colorScheme}.600!important` : 'inherit'
-                      }
-                      bg={isSelected ? `${colorScheme}.100` : 'transparent'}
-                    >
-                      <Text fontSize='sm' color='inherit'>
-                        {item.name}
-                      </Text>
-                    </MenuItem>
-                  </NextLink>
-                );
-              })}
-            </MenuGroup>
-          );
-        })}
+                    <Text fontSize='sm' color='inherit'>
+                      {item.name}
+                    </Text>
+                  </MenuItem>
+                </NextLink>
+              );
+            })}
+          </MenuGroup>
+        ))}
       </MenuList>
     </Menu>
   );

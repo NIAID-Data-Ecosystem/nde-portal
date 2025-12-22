@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { Heading, Highlight, ListItem, Text } from '@chakra-ui/react';
 import { useDropdownContext } from 'src/components/input-with-dropdown';
-import { SearchResultItemProps } from './types';
+import type { SearchResultItemProps } from '../../types';
 
 export const SearchResultItem = React.memo(
   ({

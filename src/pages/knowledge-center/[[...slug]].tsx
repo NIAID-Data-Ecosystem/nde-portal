@@ -19,55 +19,30 @@ import {
 } from 'src/components/page-container';
 import DOCUMENTATION_COPY from 'configs/docs.json';
 import { Error } from 'src/components/error';
-import axios from 'axios';
 import { useQuery } from '@tanstack/react-query';
 import NextLink from 'next/link';
 import { useRouter } from 'next/router';
 import {
-  SidebarContent,
   SidebarDesktop,
   SidebarMobile,
   SidebarContainer,
 } from 'src/views/docs/components/sidebar';
-import MainContent, {
-  DocumentationProps,
-} from 'src/views/docs/components/MainContent';
+import MainContent from 'src/views/docs/components/MainContent';
 import Empty from 'src/components/empty';
 import IntegrationMain from 'src/views/integration/components/Main';
 import { DocsSearchBar } from 'src/views/docs/components/search-bar';
 import { HeroBanner } from 'src/views/docs/components/HeroBanner';
+import {
+  fetchCategories,
+  fetchDocumentation,
+  fetchAllDocumentationSlugs,
+} from 'src/views/docs/services/api';
+import type {
+  DocumentationByCategories,
+  DocumentationProps,
+  SidebarContent,
+} from 'src/views/docs/types';
 
-export interface DocumentationByCategories {
-  id: number;
-  name: string;
-  createdAt: string;
-  publishedAt: string;
-  updatedAt: string;
-  docs: {
-    id: DocumentationProps['id'];
-    name: DocumentationProps['name'];
-    slug: DocumentationProps['slug'];
-    description: string;
-  }[];
-}
-
-// Fetch documentation from API with full descriptions to extract section and subsection names.
-export const fetchCategories = async () => {
-  try {
-    const isProd = process.env.NEXT_PUBLIC_APP_ENV === 'production';
-    const docs = await axios.get(
-      `${
-        process.env.NEXT_PUBLIC_STRAPI_API_URL
-      }/api/categories?filters[docs][name][$null]&populate[docs][fields][0]=name&populate[docs][fields][1]=slug&populate[docs][fields][2]=description&populate[docs][sort][1]=order:asc&pagination[page]=1&pagination[pageSize]=100&sort[0]=order:asc&status=${
-        isProd ? 'published' : 'draft'
-      }`,
-    );
-
-    return docs.data.data;
-  } catch (err: any) {
-    throw err.response;
-  }
-};
 const Docs: NextPage<{
   slug: string[];
   data: DocumentationProps;
@@ -83,17 +58,15 @@ const Docs: NextPage<{
       return res
         .map(({ id, name, ...data }) => {
           const docs =
-            data?.docs?.map(doc => {
-              return {
-                id: doc.id,
-                name: doc.name,
-                slug: doc.slug,
-                description: doc.description,
-                href: {
-                  pathname: `/knowledge-center/${doc.slug}`,
-                },
-              };
-            }) || [];
+            data?.docs?.map(doc => ({
+              id: doc.id,
+              name: doc.name,
+              slug: doc.slug,
+              description: doc.description,
+              href: {
+                pathname: `/knowledge-center/${doc.slug}`,
+              },
+            })) || [];
           return {
             id,
             name,
@@ -112,16 +85,20 @@ const Docs: NextPage<{
     fallback: false, // return false on the server, and re-evaluate on the client side
   });
 
-  const selectedPage = documentationPagesList?.reduce((r, page) => {
+  const selectedPage = documentationPagesList?.reduce<
+    SidebarContent['items'][0] | Record<string, never>
+  >((r, page) => {
     const slug = Array.isArray(router.query.slug)
       ? router.query.slug[0]
       : router.query.slug;
-    const currentItem = page.items.find(item => item.slug === slug);
+    const currentItem = page.items.find(
+      (item: SidebarContent['items'][0]) => item.slug === slug,
+    );
     if (currentItem) {
       r = currentItem;
     }
     return r;
-  }, {} as SidebarContent['items'][0]);
+  }, {});
 
   // Redirect to new "compatibility" slug if user is going to old "completeness" slug
   useEffect(() => {
@@ -131,7 +108,7 @@ const Docs: NextPage<{
     ) {
       router.push('/knowledge-center/metadata-compatibility-score');
     }
-  });
+  }, [router]);
 
   const pageTitle = props?.data?.name || 'Knowledge Center';
 
@@ -249,7 +226,7 @@ const Docs: NextPage<{
                     }}
                   />
                 ) : (
-                  // {/* List of categories with associated documents. */}
+                  // List of categories with associated documents
                   <SimpleGrid
                     columns={{ base: 1, md: 2, lg: 3, xl: 4 }}
                     spacing={{ base: 8, md: 10, lg: '50px' }}
@@ -258,66 +235,62 @@ const Docs: NextPage<{
                     maxW='1400px'
                     gridAutoRows='min-content'
                   >
-                    {documentationPagesList?.map((doc, i) => {
-                      return (
-                        <Box h='unset' key={doc.id}>
-                          <Heading
-                            as='h2'
-                            fontSize='md'
-                            color='text.body'
-                            borderBottom='1px solid'
-                            borderColor='gray.200'
-                            pb={1}
-                            mb={4}
-                          >
-                            {doc.name}
-                          </Heading>
-                          <UnorderedList ml={0}>
-                            {doc.items.map(item => {
-                              return (
-                                <ListItem key={item.id} my={2}>
-                                  <SkeletonText
-                                    isLoaded={!isLoading}
-                                    width={isLoading ? '75%' : '100%'}
+                    {documentationPagesList?.map(doc => (
+                      <Box h='unset' key={doc.id}>
+                        <Heading
+                          as='h2'
+                          fontSize='md'
+                          color='text.body'
+                          borderBottom='1px solid'
+                          borderColor='gray.200'
+                          pb={1}
+                          mb={4}
+                        >
+                          {doc.name}
+                        </Heading>
+                        <UnorderedList ml={0}>
+                          {doc.items.map(item => (
+                            <ListItem key={item.id} my={2}>
+                              <SkeletonText
+                                isLoaded={!isLoading}
+                                width={isLoading ? '75%' : '100%'}
+                              >
+                                <NextLink
+                                  style={{
+                                    display: 'flex',
+                                    width: '100%',
+                                  }}
+                                  href={item.href}
+                                  passHref
+                                >
+                                  <Link
+                                    as='span'
+                                    w='100%'
+                                    fontSize='sm'
+                                    color='text.body!important'
+                                    bg='transparent'
+                                    lineHeight='tall'
+                                    _selected={{
+                                      color: 'niaid.600!important',
+                                      bg: 'niaid.100',
+                                    }}
+                                    _hover={{
+                                      [`&[aria-selected=false]`]: {
+                                        bg: 'blackAlpha.50',
+                                        borderRadius: 'base',
+                                        transition: 'fast',
+                                      },
+                                    }}
                                   >
-                                    <NextLink
-                                      style={{
-                                        display: 'flex',
-                                        width: '100%',
-                                      }}
-                                      href={item.href}
-                                      passHref
-                                    >
-                                      <Link
-                                        as='span'
-                                        w='100%'
-                                        fontSize='sm'
-                                        color='text.body!important'
-                                        bg='transparent'
-                                        lineHeight='tall'
-                                        _selected={{
-                                          color: 'niaid.600!important',
-                                          bg: 'niaid.100',
-                                        }}
-                                        _hover={{
-                                          [`&[aria-selected=false]`]: {
-                                            bg: 'blackAlpha.50',
-                                            borderRadius: 'base',
-                                            transition: 'fast',
-                                          },
-                                        }}
-                                      >
-                                        {item.name}
-                                      </Link>
-                                    </NextLink>
-                                  </SkeletonText>
-                                </ListItem>
-                              );
-                            })}
-                          </UnorderedList>
-                        </Box>
-                      );
-                    })}
+                                    {item.name}
+                                  </Link>
+                                </NextLink>
+                              </SkeletonText>
+                            </ListItem>
+                          ))}
+                        </UnorderedList>
+                      </Box>
+                    ))}
                   </SimpleGrid>
                 )}
               </PageContent>
@@ -334,52 +307,14 @@ export const getStaticProps: GetStaticProps = async context => {
     return { props: { slug: '', data: {} } };
   }
   const { slug } = context.params;
-  const isProd = process.env.NEXT_PUBLIC_APP_ENV === 'production';
-  const fetchDocumentation = async () => {
-    try {
-      const docs = await axios.get(
-        `${
-          process.env.NEXT_PUBLIC_STRAPI_API_URL
-        }/api/docs?populate=*&filters[$and][0][slug][$eqi]=${slug}&status=${
-          isProd ? 'published' : 'draft'
-        }`,
-      );
-
-      return docs.data.data;
-    } catch (err: any) {
-      throw err.response;
-    }
-  };
-  // Fetch documentation from API.
-  const [data] = await fetchDocumentation();
+  // Fetch documentation from API
+  const [data] = await fetchDocumentation(slug as string | string[]);
   return { props: { slug, data: data || {} } };
 };
 
 export async function getStaticPaths() {
-  const fetchData = async () => {
-    try {
-      const isProd = process.env.NEXT_PUBLIC_APP_ENV === 'production';
-
-      const docs = await axios.get(
-        `${
-          process.env.NEXT_PUBLIC_STRAPI_API_URL
-        }/api/docs?fields[0]=slug&status=${isProd ? 'published' : 'draft'}`,
-      );
-
-      return {
-        docs: docs.data.data as {
-          id: number;
-          documentId: string;
-          slug: string;
-        }[],
-      };
-    } catch (err) {
-      throw err;
-    }
-  };
-
   // Call an external API endpoint to get documentation
-  const { docs } = await fetchData();
+  const docs = await fetchAllDocumentationSlugs();
   if (!docs.length) {
     return { paths: [], fallback: false };
   }
@@ -387,7 +322,7 @@ export async function getStaticPaths() {
   // In production environments, prerender all pages
   // (slower builds, but faster initial page load)
   const paths = [
-    { params: { slug: undefined } }, // handles /docs (without slug) route.
+    { params: { slug: undefined } }, // handles /docs (without slug) route
     { params: { slug: ['metadata-completeness-score'] } }, // handle removed completeness page
     ...docs
       .filter(doc => !!doc.slug)

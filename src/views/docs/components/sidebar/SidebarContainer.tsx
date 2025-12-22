@@ -37,7 +37,7 @@ export const SidebarContainer = ({
           display='flex'
           alignItems='flex-start'
         >
-          <Icon as={FaAnglesRight} position='sticky' top={4}></Icon>
+          <Icon as={FaAnglesRight} position='sticky' top={4} />
         </Button>
       )}
       <Box
@@ -69,7 +69,7 @@ export const SidebarContainer = ({
               alignItems='center'
               gap={2}
             >
-              <Icon as={FaAnglesLeft}></Icon>
+              <Icon as={FaAnglesLeft} />
               <Text fontSize='sm' fontWeight='semibold'>
                 Hide Menu
               </Text>

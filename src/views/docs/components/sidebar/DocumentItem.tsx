@@ -11,10 +11,10 @@ import {
 import { FaAngleDown, FaAngleRight } from 'react-icons/fa6';
 import { Link } from 'src/components/link';
 import NextLink from 'next/link';
-import { extractMarkdownHeadings } from '../helpers';
+import { extractMarkdownHeadings } from '../../utils/markdown';
 import { TocItem } from './TocItem';
-import { DocumentItemProps, ContentHeading } from './types';
-import { MAX_HEADING_DEPTH } from './constants';
+import type { DocumentItemProps, ContentHeading } from '../../types';
+import { MAX_HEADING_DEPTH } from '../../constants';
 
 export const DocumentItem = ({
   item,
@@ -104,19 +104,17 @@ export const DocumentItem = ({
         <UnorderedList ml={0} mt={1}>
           {tocItems
             .filter(tocItem => tocItem.depth === 2)
-            .map((tocItem, idx) => {
-              return (
-                <TocItem
-                  key={idx}
-                  tocItem={tocItem}
-                  pageSlug={item.slug as string}
-                  indent={4}
-                  parentTocItems={tocItems}
-                  isParentSelected={isSelected}
-                  activePageSlug={activePageSlug}
-                />
-              );
-            })}
+            .map((tocItem, idx) => (
+              <TocItem
+                key={idx}
+                tocItem={tocItem}
+                pageSlug={item.slug as string}
+                indent={4}
+                parentTocItems={tocItems}
+                isParentSelected={isSelected}
+                activePageSlug={activePageSlug}
+              />
+            ))}
         </UnorderedList>
       )}
     </ListItem>

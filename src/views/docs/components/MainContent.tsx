@@ -1,33 +1,15 @@
-import axios from 'axios';
-import { useQuery } from '@tanstack/react-query';
 import React, { useEffect, useState } from 'react';
 import { useMDXComponents } from 'src/components/mdx/hooks/useMDXComponents';
 import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
 import remarkGfm from 'remark-gfm';
 import { Box, Divider, Flex, Heading, Text } from '@chakra-ui/react';
-import { transformString2Hash } from './helpers';
 import { Error } from 'src/components/error';
 import Empty from 'src/components/empty';
 import { MDXComponents as DefaultMDXComponents } from 'src/components/mdx/components';
-
-export interface DocumentationProps {
-  id: number;
-  name: string;
-  description: string;
-  subtitle: string;
-  slug: string | string[];
-  createdAt: string;
-  updatedAt: string;
-  publishedAt: string;
-  category: {
-    id: number;
-    name: string;
-    createdAt: string;
-    updatedAt: string;
-    publishedAt: string;
-  };
-}
+import { transformString2Hash } from '../utils/markdown';
+import { useDocumentation } from '../hooks/useDocumentation';
+import type { DocumentationProps } from '../types';
 
 interface MainContentProps {
   id: number;
@@ -35,47 +17,17 @@ interface MainContentProps {
   data: DocumentationProps;
 }
 
-// Fetch documentation from API.
-const fetchDocumentation = async (slug: string[]) => {
-  try {
-    const isProd = process.env.NEXT_PUBLIC_APP_ENV === 'production';
-    const docs = await axios.get(
-      `${
-        process.env.NEXT_PUBLIC_STRAPI_API_URL
-      }/api/docs?populate=*&filters[$and][0][slug][$eqi]=${slug}&status=${
-        isProd ? 'published' : 'draft'
-      }`,
-    );
-    return docs.data.data as DocumentationProps[];
-  } catch (err: any) {
-    throw err.response;
-  }
-};
-
 const MainContent = ({ slug, data: initialData }: MainContentProps) => {
-  const {
-    data: queryData,
-    isLoading,
-    error,
-  } = useQuery<DocumentationProps[] | null, Error, DocumentationProps>({
-    queryKey: ['doc', { slug }],
-    queryFn: () => fetchDocumentation(slug),
-    placeholderData: [initialData],
-    select: data => {
-      if (!data || !data[0]) {
-        return initialData;
-      }
-      return data[0];
-    },
-    refetchOnWindowFocus: false,
+  const { data, isLoading, error } = useDocumentation({
+    slug,
+    initialData,
   });
 
   const [updatedAt, setUpdatedAt] = useState('');
-  const data = queryData;
 
-  // Date formatting for last content update date.
+  // Date formatting for last content update date
   useEffect(() => {
-    if (data && data.updatedAt) {
+    if (data?.updatedAt) {
       const date = new Date(data.updatedAt).toLocaleString([], {
         day: 'numeric',
         month: 'long',
@@ -83,19 +35,38 @@ const MainContent = ({ slug, data: initialData }: MainContentProps) => {
       });
       setUpdatedAt(date);
     }
-  }, [data]);
+  }, [data?.updatedAt]);
 
   const MDXComponents = useMDXComponents({
     img: (props: any) => {
-      // Add a border to images unless they have the 'unstyled' class.
+      // Add a border to images unless they have the 'unstyled' class
       return DefaultMDXComponents.img({
         ...props,
         className: props?.className?.includes('unstyled')
           ? props.className
-          : props.className + ' border',
+          : `${props.className} border`,
       });
     },
   });
+
+  if (error) {
+    return (
+      <Error>
+        <Flex flexDirection='column' alignItems='center'>
+          <Text fontWeight='light' color='gray.600' fontSize='lg'>
+            API Request:{' '}
+            {error?.message ||
+              "It's possible that the server is experiencing some issues."}{' '}
+          </Text>
+        </Flex>
+      </Error>
+    );
+  }
+
+  if (!data?.id) {
+    return <Empty>No documentation for this page exists.</Empty>;
+  }
+
   return (
     <Flex
       flexDirection='column'
@@ -105,51 +76,28 @@ const MainContent = ({ slug, data: initialData }: MainContentProps) => {
       width='100%'
       m='0 auto'
     >
-      {error ? (
-        <Error>
-          <Flex flexDirection='column' alignItems='center'>
-            <Text fontWeight='light' color='gray.600' fontSize='lg'>
-              API Request:{' '}
-              {error?.message ||
-                "It's possible that the server is experiencing some issues."}{' '}
-            </Text>
-          </Flex>
-        </Error>
-      ) : data?.id ? (
-        <>
-          <Box mt={8} mb={4}>
-            <Heading
-              id={transformString2Hash(data.name)}
-              as='h1'
-              size='xl'
-              mb={2}
-            >
-              {data.name}
-            </Heading>
-            <Text color='gray.700'>{data.subtitle}</Text>
-          </Box>
-          <ReactMarkdown
-            rehypePlugins={[rehypeRaw, remarkGfm]}
-            components={MDXComponents}
-          >
-            {data.description}
-          </ReactMarkdown>
-          <Divider orientation='horizontal' mt={8} mb={4} />
-          <Text
-            fontStyle='italic'
-            fontSize='xs'
-            color='gray.800'
-            textAlign='end'
-          >
-            Last updated on{' '}
-            <Text as='span' fontWeight='semibold'>
-              {updatedAt}
-            </Text>
-          </Text>
-        </>
-      ) : (
-        <Empty>No documentation for this page exists.</Empty>
-      )}
+      <Box mt={8} mb={4}>
+        <Heading id={transformString2Hash(data.name)} as='h1' size='xl' mb={2}>
+          {data.name}
+        </Heading>
+        <Text color='gray.700'>{data.subtitle}</Text>
+      </Box>
+
+      <ReactMarkdown
+        rehypePlugins={[rehypeRaw, remarkGfm]}
+        components={MDXComponents}
+      >
+        {data.description}
+      </ReactMarkdown>
+
+      <Divider orientation='horizontal' mt={8} mb={4} />
+
+      <Text fontStyle='italic' fontSize='xs' color='gray.800' textAlign='end'>
+        Last updated on{' '}
+        <Text as='span' fontWeight='semibold'>
+          {updatedAt}
+        </Text>
+      </Text>
     </Flex>
   );
 };

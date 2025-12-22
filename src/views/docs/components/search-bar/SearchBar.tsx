@@ -24,20 +24,22 @@ import {
 } from 'src/components/input-with-dropdown';
 import { DropdownContent } from 'src/components/input-with-dropdown/components/DropdownContent';
 import { SearchHistoryItem } from 'src/components/search-bar/components/search-history-item';
-import { useQuery } from '@tanstack/react-query';
 import { debounce, uniq } from 'lodash';
 import { FaMagnifyingGlass, FaClockRotateLeft } from 'react-icons/fa6';
-import type { DocumentationProps } from '../MainContent';
-import { searchDocumentation } from './api';
-import { searchInMDX } from './utils';
 import { SearchResultItem } from './SearchResultItem';
-import type { SearchBarProps, SearchResult } from './types';
+import { useDocumentationSearch } from '../../hooks/useDocumentationSearch';
+import type { SearchBarProps, SearchResult } from '../../types';
+import {
+  DEFAULT_SIZE,
+  SEARCH_DEBOUNCE_MS,
+  MAX_SEARCH_HISTORY_ITEMS,
+} from '../../constants';
 
 export const SearchBar = ({
   ariaLabel,
   placeholder,
   colorScheme = 'primary',
-  size = 'md',
+  size = DEFAULT_SIZE,
   searchHistory,
   setSearchHistory,
   currentCursorMax,
@@ -50,54 +52,21 @@ export const SearchBar = ({
   const [results, setResults] = useState<SearchResult[]>([]);
   const [showHistory, setShowHistory] = useState<boolean>(false);
 
-  // debounce search
+  // Debounce search
   const debouncedUpdate = useRef(
     debounce((term: string) => {
       setSearchTerm(term);
-    }, 400),
+    }, SEARCH_DEBOUNCE_MS),
   );
 
   const updateSearchTerm = useCallback((value: string) => {
     debouncedUpdate.current(value);
   }, []);
 
-  // Run query every time search term changes.
-  const queryResult = useQuery({
-    queryKey: ['docs-search', { term: searchTerm }],
-    queryFn: () => searchDocumentation(searchTerm),
-    select: (data: DocumentationProps[]): SearchResult[] => {
-      if (searchTerm.length === 0) {
-        return [];
-      }
-      return data.map((datum: DocumentationProps) => {
-        const slug = Array.isArray(datum.slug) ? datum.slug[0] : datum.slug;
-        if (datum.description) {
-          const { heading, snippet } = searchInMDX(
-            datum.description,
-            searchTerm,
-          );
-          return {
-            id: datum.id,
-            name: datum.name,
-            slug: heading ? slug + '#' + heading : slug,
-            description: snippet || '',
-          };
-        }
-        return {
-          id: datum.id,
-          name: datum.name,
-          slug,
-          description: '',
-        };
-      });
-    },
-    refetchOnWindowFocus: false,
-    enabled: searchTerm.length > 0,
-  });
+  // Run query every time search term changes
+  const { isLoading, data: queryResults } = useDocumentationSearch(searchTerm);
 
-  const { isLoading, data: queryResults } = queryResult;
-
-  // Update results when query results change.
+  // Update results when query results change
   useEffect(() => {
     if (queryResults) {
       setResults(queryResults);
@@ -149,7 +118,7 @@ export const SearchBar = ({
           ),
         );
 
-        if (newSearchHistory.length > 5) {
+        if (newSearchHistory.length > MAX_SEARCH_HISTORY_ITEMS) {
           newSearchHistory.shift();
         }
 
@@ -263,36 +232,34 @@ export const SearchBar = ({
           setIsOpen(false);
           setShowHistory(false);
         }}
-        renderSubmitButton={() => {
-          return (
-            <HStack height='100%'>
-              <Button
-                colorScheme={colorScheme}
-                aria-label={ariaLabel}
-                size={size}
-                type='submit'
-                display={{ base: 'none', md: 'flex' }}
-              >
-                Search Knowledge Center
-              </Button>
-              <Flex borderLeft='1px solid' borderLeftColor='gray.200' pl={1}>
-                <Tooltip label='Toggle search history.'>
-                  <IconButton
-                    variant='ghost'
-                    size={size}
-                    aria-label='Toggle search history.'
-                    icon={
-                      <Flex px={2}>
-                        <Icon as={FaClockRotateLeft} />
-                      </Flex>
-                    }
-                    onClick={toggleHistory}
-                  />
-                </Tooltip>
-              </Flex>
-            </HStack>
-          );
-        }}
+        renderSubmitButton={() => (
+          <HStack height='100%'>
+            <Button
+              colorScheme={colorScheme}
+              aria-label={ariaLabel}
+              size={size}
+              type='submit'
+              display={{ base: 'none', md: 'flex' }}
+            >
+              Search Knowledge Center
+            </Button>
+            <Flex borderLeft='1px solid' borderLeftColor='gray.200' pl={1}>
+              <Tooltip label='Toggle search history.'>
+                <IconButton
+                  variant='ghost'
+                  size={size}
+                  aria-label='Toggle search history.'
+                  icon={
+                    <Flex px={2}>
+                      <Icon as={FaClockRotateLeft} />
+                    </Flex>
+                  }
+                  onClick={toggleHistory}
+                />
+              </Tooltip>
+            </Flex>
+          </HStack>
+        )}
       />
 
       {isOpen && showHistory && (
@@ -322,7 +289,7 @@ export const SearchBar = ({
                 key={`history-${str}-${index}`}
                 index={index}
                 colorScheme={colorScheme}
-                searchTerm={''}
+                searchTerm=''
                 value={str}
                 onClick={handleHistoryClick}
               />

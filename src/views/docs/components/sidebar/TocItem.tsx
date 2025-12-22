@@ -9,7 +9,7 @@ import {
 } from '@chakra-ui/react';
 import { FaAngleDown, FaAngleRight } from 'react-icons/fa6';
 import NextLink from 'next/link';
-import { TocItemProps } from './types';
+import type { TocItemProps } from '../../types';
 
 export const TocItem = ({
   tocItem,
@@ -32,7 +32,7 @@ export const TocItem = ({
     item => item.hash === tocItem.hash,
   );
 
-  let childItems = [];
+  const childItems = [];
   if (currentIndex !== -1) {
     // Get all items after current
     const itemsAfter = parentTocItems.slice(currentIndex + 1);
