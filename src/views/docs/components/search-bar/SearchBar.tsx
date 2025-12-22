@@ -42,7 +42,6 @@ export const SearchBar = ({
   size = DEFAULT_SIZE,
   searchHistory,
   setSearchHistory,
-  currentCursorMax,
   setCurrentCursorMax,
 }: SearchBarProps) => {
   const router = useRouter();
