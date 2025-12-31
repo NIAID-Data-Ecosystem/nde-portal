@@ -44,9 +44,11 @@ export const SearchBar = ({
   setSearchHistory,
   currentCursorMax,
   setCurrentCursorMax,
+  currentInputValue,
+  setCurrentInputValue,
 }: SearchBarProps) => {
   const router = useRouter();
-  const { isOpen, setIsOpen, setInputValue } = useDropdownContext();
+  const { isOpen, setIsOpen, setInputValue, setCursor } = useDropdownContext();
 
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [results, setResults] = useState<SearchResult[]>([]);
@@ -59,9 +61,14 @@ export const SearchBar = ({
     }, SEARCH_DEBOUNCE_MS),
   );
 
-  const updateSearchTerm = useCallback((value: string) => {
-    debouncedUpdate.current(value);
-  }, []);
+  const updateSearchTerm = useCallback(
+    (value: string) => {
+      setCurrentInputValue(value);
+      setInputValue(value);
+      debouncedUpdate.current(value);
+    },
+    [setInputValue, setCurrentInputValue],
+  );
 
   // Run query every time search term changes
   const { isLoading, data: queryResults } = useDocumentationSearch(searchTerm);
@@ -71,12 +78,15 @@ export const SearchBar = ({
     if (queryResults) {
       setResults(queryResults);
       setCurrentCursorMax(queryResults.length);
+      // Auto-highlight first result when results appear
+      setCursor(0);
     } else if (searchTerm.length === 0) {
       // Clear results when search term is empty
       setResults([]);
       setCurrentCursorMax(0);
+      setCursor(-1);
     }
-  }, [queryResults, searchTerm.length, setCurrentCursorMax]);
+  }, [queryResults, searchTerm.length, setCurrentCursorMax, setCursor]);
 
   const historyList = useMemo(
     () => [...searchHistory].reverse(),
@@ -135,9 +145,10 @@ export const SearchBar = ({
       setIsOpen(false);
       setShowHistory(false);
       setInputValue('');
-      updateSearchTerm('');
+      setCurrentInputValue('');
       setSearchTerm('');
       setResults([]);
+      setCursor(-1);
       router.push(`/knowledge-center/${historyValue}`);
       return;
     }
@@ -147,9 +158,10 @@ export const SearchBar = ({
       addToHistory(searchTerm);
       setIsOpen(false);
       setInputValue('');
-      updateSearchTerm('');
+      setCurrentInputValue('');
       setSearchTerm('');
       setResults([]);
+      setCursor(-1);
       router.push(`/knowledge-center/${result.slug}`);
       return;
     }
@@ -159,9 +171,10 @@ export const SearchBar = ({
       addToHistory(trimmedValue);
       setIsOpen(false);
       setInputValue('');
-      updateSearchTerm('');
+      setCurrentInputValue('');
       setSearchTerm('');
       setResults([]);
+      setCursor(-1);
       router.push(`/knowledge-center/${trimmedValue}`);
     } else {
       // If empty search, open dropdown to show "Start typing to search..." message
@@ -174,20 +187,26 @@ export const SearchBar = ({
     addToHistory(searchTerm);
     setIsOpen(false);
     setInputValue('');
-    updateSearchTerm('');
+    setCurrentInputValue('');
     setSearchTerm('');
     setResults([]);
+    setCursor(-1);
     router.push(`/knowledge-center/${slug}`);
   };
 
   const handleHistoryClick = useCallback(
     (value: string) => {
+      // Set all input values
+      setCurrentInputValue(value);
       setInputValue(value);
-      updateSearchTerm(value);
       setSearchTerm(value);
+      // Reset cursor to 0 (first item) when switching from history to results
+      setCursor(0);
+      // Cancel any pending debounced updates
+      debouncedUpdate.current.cancel();
       setShowHistory(false);
     },
-    [setInputValue, updateSearchTerm],
+    [setInputValue, setCurrentInputValue, setCursor],
   );
 
   const toggleHistory = () => {
@@ -198,10 +217,13 @@ export const SearchBar = ({
       // Opening history => clear search term immediately (bypass debounce)
       setSearchTerm('');
       setInputValue('');
+      setCurrentInputValue('');
+      setCursor(0); // Start at first history item
       setCurrentCursorMax(historyList.length);
       setIsOpen(true);
     } else {
       // Closing history
+      setCursor(-1);
       setIsOpen(false);
     }
   };
@@ -218,17 +240,13 @@ export const SearchBar = ({
         onChange={updateSearchTerm}
         onSubmit={handleSubmit}
         getInputValue={(idx: number): string => {
-          if (showHistory && historyList && historyList[idx]) {
-            return historyList[idx] || '';
-          }
-          if (!showHistory && results && results[idx]) {
-            return results[idx].name || '';
-          }
+          // Return empty string to prevent keyboard navigation from changing the input
           return '';
         }}
         onClose={() => {
-          updateSearchTerm('');
           setInputValue('');
+          setCurrentInputValue('');
+          setCursor(-1);
           setIsOpen(false);
           setShowHistory(false);
         }}
@@ -272,6 +290,7 @@ export const SearchBar = ({
               display='flex'
               justifyContent='space-between'
               alignItems='center'
+              listStyleType='none'
             >
               <Text
                 fontSize='xs'

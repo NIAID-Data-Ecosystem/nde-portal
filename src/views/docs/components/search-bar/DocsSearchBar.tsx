@@ -13,6 +13,7 @@ export const DocsSearchBar = (props: DocsSearchBarProps) => {
   );
   const [mounted, setMounted] = useState(false);
   const [currentCursorMax, setCurrentCursorMax] = useState(0);
+  const [currentInputValue, setCurrentInputValue] = useState('');
 
   useEffect(() => {
     setMounted(true);
@@ -27,7 +28,7 @@ export const DocsSearchBar = (props: DocsSearchBarProps) => {
     <Flex w='100%' justifyContent='center' px={4}>
       <Box w='100%' maxW='1200px'>
         <InputWithDropdown
-          inputValue=''
+          inputValue={currentInputValue}
           cursorMax={currentCursorMax}
           colorScheme={props.colorScheme}
         >
@@ -36,6 +37,8 @@ export const DocsSearchBar = (props: DocsSearchBarProps) => {
             setSearchHistory={setSearchHistory}
             currentCursorMax={currentCursorMax}
             setCurrentCursorMax={setCurrentCursorMax}
+            currentInputValue={currentInputValue}
+            setCurrentInputValue={setCurrentInputValue}
             {...props}
           />
         </InputWithDropdown>

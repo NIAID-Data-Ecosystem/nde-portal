@@ -109,6 +109,8 @@ export interface SearchBarProps {
   setSearchHistory: React.Dispatch<React.SetStateAction<string[]>>;
   currentCursorMax: number;
   setCurrentCursorMax: React.Dispatch<React.SetStateAction<number>>;
+  currentInputValue: string;
+  setCurrentInputValue: React.Dispatch<React.SetStateAction<string>>;
 }
 
 export interface DocsSearchBarProps {
