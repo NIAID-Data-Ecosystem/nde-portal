@@ -44,6 +44,8 @@ export const SearchBar = ({
   setSearchHistory,
   currentCursorMax,
   setCurrentCursorMax,
+  currentInputValue,
+  setCurrentInputValue,
 }: SearchBarProps) => {
   const router = useRouter();
   const { isOpen, setIsOpen, setInputValue } = useDropdownContext();
@@ -59,9 +61,14 @@ export const SearchBar = ({
     }, SEARCH_DEBOUNCE_MS),
   );
 
-  const updateSearchTerm = useCallback((value: string) => {
-    debouncedUpdate.current(value);
-  }, []);
+  const updateSearchTerm = useCallback(
+    (value: string) => {
+      setCurrentInputValue(value);
+      setInputValue(value);
+      debouncedUpdate.current(value);
+    },
+    [setInputValue, setCurrentInputValue],
+  );
 
   // Run query every time search term changes
   const { isLoading, data: queryResults } = useDocumentationSearch(searchTerm);
@@ -135,6 +142,7 @@ export const SearchBar = ({
       setIsOpen(false);
       setShowHistory(false);
       setInputValue('');
+      setCurrentInputValue('');
       updateSearchTerm('');
       setSearchTerm('');
       setResults([]);
@@ -147,6 +155,7 @@ export const SearchBar = ({
       addToHistory(searchTerm);
       setIsOpen(false);
       setInputValue('');
+      setCurrentInputValue('');
       updateSearchTerm('');
       setSearchTerm('');
       setResults([]);
@@ -159,6 +168,7 @@ export const SearchBar = ({
       addToHistory(trimmedValue);
       setIsOpen(false);
       setInputValue('');
+      setCurrentInputValue('');
       updateSearchTerm('');
       setSearchTerm('');
       setResults([]);
@@ -174,6 +184,7 @@ export const SearchBar = ({
     addToHistory(searchTerm);
     setIsOpen(false);
     setInputValue('');
+    setCurrentInputValue('');
     updateSearchTerm('');
     setSearchTerm('');
     setResults([]);
@@ -182,12 +193,15 @@ export const SearchBar = ({
 
   const handleHistoryClick = useCallback(
     (value: string) => {
+      // Set all input values
+      setCurrentInputValue(value);
       setInputValue(value);
-      updateSearchTerm(value);
       setSearchTerm(value);
+      // Cancel any pending debounced updates
+      debouncedUpdate.current.cancel();
       setShowHistory(false);
     },
-    [setInputValue, updateSearchTerm],
+    [setInputValue, setCurrentInputValue],
   );
 
   const toggleHistory = () => {
@@ -198,6 +212,7 @@ export const SearchBar = ({
       // Opening history => clear search term immediately (bypass debounce)
       setSearchTerm('');
       setInputValue('');
+      setCurrentInputValue('');
       setCurrentCursorMax(historyList.length);
       setIsOpen(true);
     } else {
@@ -218,17 +233,13 @@ export const SearchBar = ({
         onChange={updateSearchTerm}
         onSubmit={handleSubmit}
         getInputValue={(idx: number): string => {
-          if (showHistory && historyList && historyList[idx]) {
-            return historyList[idx] || '';
-          }
-          if (!showHistory && results && results[idx]) {
-            return results[idx].name || '';
-          }
+          // Return empty string to prevent keyboard navigation from changing the input
           return '';
         }}
         onClose={() => {
           updateSearchTerm('');
           setInputValue('');
+          setCurrentInputValue('');
           setIsOpen(false);
           setShowHistory(false);
         }}
