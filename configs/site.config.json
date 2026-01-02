@@ -254,6 +254,19 @@
         "description": "404 Error: Page Not Found.",
         "keywords": ["404", "page not found", "error"]
       }
+    },
+    "/api": {
+      "seo": {
+        "title": "API",
+        "description": "Programmatically access NIAID Data Ecosystem metadata through a public API.",
+        "keywords": ["NIAID", "data discovery portal", "API"]
+      },
+      "nav": {
+        "label": "API",
+        "description": "Search for resources programmatically",
+        "isExternal": true,
+        "href": "https://api.data.niaid.nih.gov/"
+      }
     }
   },
   "navigation": {
@@ -273,6 +286,9 @@
           },
           {
             "page": "/ontology-browser"
+          },
+          {
+            "page": "/api"
           }
         ]
       },

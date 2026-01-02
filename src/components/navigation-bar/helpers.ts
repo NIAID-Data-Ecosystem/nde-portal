@@ -41,10 +41,14 @@ export const buildNavigationFromConfig = (config: SiteConfig) => {
         navRoutes.push({
           label: item.label,
           routes: item.routes.map(route => {
+            const pageConfig = config.pages[route.page];
+            // For external links, use the href from nav config, otherwise use the page path
+            const itemHref = pageConfig?.nav?.href || route.page;
+
             return {
-              ...config.pages[route.page]?.nav,
-              href: route.page,
-              env: config.pages[route.page]?.env,
+              ...pageConfig?.nav,
+              href: itemHref,
+              env: pageConfig?.env,
             } as TransformedNavigationMenu;
           }),
         });

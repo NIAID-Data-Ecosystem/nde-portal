@@ -10,7 +10,7 @@ import {
   Stack,
   Icon,
 } from '@chakra-ui/react';
-import { FaAngleRight } from 'react-icons/fa6';
+import { FaAngleRight, FaArrowUpRightFromSquare } from 'react-icons/fa6';
 import { TransformedNavigationMenu } from '../types';
 
 // Desktop Navigation sub menu for nested links
@@ -36,6 +36,7 @@ const DesktopSubNavItem = ({
       }}
       _visited={{ color: 'niaid.800' }}
       target={isExternal ? '_blank' : '_self'}
+      rel={isExternal ? 'noopener noreferrer' : undefined}
     >
       <Flex justifyContent='space-between'>
         <Box>
@@ -66,7 +67,7 @@ const DesktopSubNavItem = ({
             }}
             w={3}
             h={3}
-            as={FaAngleRight}
+            as={isExternal ? FaArrowUpRightFromSquare : FaAngleRight}
           />
         </Flex>
       </Flex>

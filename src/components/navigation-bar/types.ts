@@ -8,6 +8,7 @@ export interface NavigationItem {
   label: string;
   description?: string;
   isExternal?: boolean;
+  href?: string;
 }
 
 export interface NavigationRoute {
