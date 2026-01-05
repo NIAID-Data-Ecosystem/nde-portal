@@ -13,22 +13,21 @@ export const SampleQuantity = ({ data }: SampleQuantityProps) => {
     label: formatSampleLabelFromProperty('sampleQuantity'),
     list: {
       caption: 'List of sample quantities.',
-      data:
-        data?.map(item => ({
-          ...item,
-          // Include unit text if available
-          valueText: (() => {
-            const valueStr = formatValue({
-              value: item.value,
-              minValue: item.minValue,
-              maxValue: item.maxValue,
-            });
+      data: (Array.isArray(data) ? data : data ? [data] : []).map(item => ({
+        ...item,
+        // Include unit text if available
+        valueText: (() => {
+          const valueStr = formatValue({
+            value: item.value,
+            minValue: item.minValue,
+            maxValue: item.maxValue,
+          });
 
-            if (!item.unitText) return valueStr;
+          if (!item.unitText) return valueStr;
 
-            return `${valueStr} ${formatUnitText(item.unitText)}(s)`;
-          })(),
-        })) ?? [],
+          return `${valueStr} ${formatUnitText(item.unitText)}(s)`;
+        })(),
+      })),
     },
   };
   if (sampleQuantity.list.data.length === 0) return null;
@@ -48,7 +47,7 @@ export const SampleQuantity = ({ data }: SampleQuantityProps) => {
             const name = formatUnitText(item.name);
             return (
               <ListItem
-                key={item.name}
+                key={item.name ?? item.valueText}
                 wordBreak='break-all'
                 lineHeight='short'
                 fontSize='sm'

@@ -412,7 +412,7 @@ export interface Sample {
     identifier?: string;
     url?: string;
   }[];
-  sampleQuantity?: QuantitativeValue[];
+  sampleQuantity?: QuantitativeValue | QuantitativeValue[];
   sampleType?: {
     name?: string;
     url?: string;
