@@ -46,11 +46,21 @@ export const MobileNavItem = ({
           rel={isExternal ? 'noopener noreferrer' : undefined}
         >
           <Flex opacity={1} justify='space-between' align='center'>
-            <Text className='label' fontWeight={600}>
-              {label}
-            </Text>
+            <Flex alignItems='center' gap={2}>
+              <Text className='label' fontWeight={600}>
+                {label}
+              </Text>
+              {isExternal && (
+                <Icon
+                  as={FaArrowUpRightFromSquare}
+                  w={3}
+                  h={3}
+                  color='niaid.700'
+                />
+              )}
+            </Flex>
             <Icon
-              as={isExternal ? FaArrowUpRightFromSquare : FaAngleRight}
+              as={FaAngleRight}
               className='icon'
               ml='10px'
               transform='translateX(-10px)'
