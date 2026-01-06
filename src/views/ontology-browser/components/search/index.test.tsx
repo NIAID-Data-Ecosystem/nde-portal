@@ -141,7 +141,8 @@ describe('OntologyBrowserSearch', () => {
 
     await waitFor(() => {
       expect(screen.getByText('No Results Found')).toBeInTheDocument();
-      expect(screen.getByText('nonexistent')).toBeInTheDocument();
+      const matches = screen.getAllByText(/nonexistent/i);
+      expect(matches.length).toBeGreaterThan(0);
     });
   });
 

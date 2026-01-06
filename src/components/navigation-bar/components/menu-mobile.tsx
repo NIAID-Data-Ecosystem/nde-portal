@@ -9,7 +9,11 @@ import {
   Text,
   useDisclosure,
 } from '@chakra-ui/react';
-import { FaAngleRight, FaAngleDown } from 'react-icons/fa6';
+import {
+  FaAngleRight,
+  FaAngleDown,
+  FaArrowUpRightFromSquare,
+} from 'react-icons/fa6';
 import { TransformedNavigationMenu } from '../types';
 
 // Mobile Navigation link styles
@@ -39,11 +43,22 @@ export const MobileNavItem = ({
           }}
           _visited={{ color: 'niaid.800' }}
           target={isExternal ? '_blank' : '_self'}
+          rel={isExternal ? 'noopener noreferrer' : undefined}
         >
           <Flex opacity={1} justify='space-between' align='center'>
-            <Text className='label' fontWeight={600}>
-              {label}
-            </Text>
+            <Flex alignItems='center' gap={2}>
+              <Text className='label' fontWeight={600}>
+                {label}
+              </Text>
+              {isExternal && (
+                <Icon
+                  as={FaArrowUpRightFromSquare}
+                  w={3}
+                  h={3}
+                  color='niaid.700'
+                />
+              )}
+            </Flex>
             <Icon
               as={FaAngleRight}
               className='icon'
