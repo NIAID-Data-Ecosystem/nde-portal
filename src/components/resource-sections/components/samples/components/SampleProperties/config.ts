@@ -2,7 +2,7 @@ import {
   getValueByPath,
   hasNonEmptyValue,
 } from 'src/components/resource-sections/helpers';
-import { Sample } from 'src/utils/api/types';
+import { SampleAggregate } from 'src/utils/api/types';
 import { formatSampleLabelFromProperty } from 'src/utils/formatting/formatSample';
 import { CellValue } from './Cells';
 
@@ -22,13 +22,6 @@ export type SamplePropertyRow = {
 };
 
 export const SAMPLE_PROPERTY_CONFIG: SamplePropertyConfig[] = [
-  {
-    key: '@type',
-    includedProperties: ['@type'],
-    transform: (value: string) => {
-      return value === 'SampleCollection' ? 'Sample Collection' : value;
-    },
-  },
   {
     key: 'anatomicalStructure',
     includedProperties: ['anatomicalStructure'],
@@ -51,6 +44,10 @@ export const SAMPLE_PROPERTY_CONFIG: SamplePropertyConfig[] = [
     includedProperties: ['sampleAvailability'],
   },
   {
+    key: 'sampleQuantity',
+    includedProperties: ['sampleQuantity'],
+  },
+  {
     key: 'sampleType',
     includedProperties: ['sampleType'],
   },
@@ -62,9 +59,10 @@ export const SAMPLE_PROPERTY_CONFIG: SamplePropertyConfig[] = [
  * Only includes rows where at least one configured property has a non-empty value.
  */
 export const getSamplePropertyTableRows = (
-  data: Sample,
+  data: SampleAggregate,
+  properties = SAMPLE_PROPERTY_CONFIG,
 ): SamplePropertyRow[] => {
-  return SAMPLE_PROPERTY_CONFIG.flatMap(config => {
+  return properties.flatMap(config => {
     // Get values for all defined paths (allows for dot notation).
     const valuesForProps = config.includedProperties.map(path =>
       getValueByPath(data, path),

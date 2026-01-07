@@ -1,16 +1,16 @@
 import React from 'react';
 import { Column, Table } from 'src/components/table';
-import { Sample } from 'src/utils/api/types';
+import { SampleAggregate } from 'src/utils/api/types';
 import { getSamplePropertyTableRows } from './config';
 import { Cell } from './Cells';
 
 interface SamplePropertiesProps {
-  data: Sample;
+  data: SampleAggregate;
 }
 
 export const SampleProperties = ({ data }: SamplePropertiesProps) => {
   const rows = getSamplePropertyTableRows(data);
-
+  console.log('SampleProperties rows:', rows);
   const columns: Column[] = [
     {
       title: 'Sample Properties',

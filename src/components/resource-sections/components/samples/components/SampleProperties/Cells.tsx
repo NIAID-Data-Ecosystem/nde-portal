@@ -39,7 +39,7 @@ const QuantitativeValueCell = ({
 
   if (!unitText) return <TextCell>{valueStr}</TextCell>;
   const unitStr = formatUnitText(unitText);
-  return <TextCell>{`${valueStr} ${unitStr}(s)`}</TextCell>;
+  return <TextCell>{`${valueStr} ${unitStr}`}</TextCell>;
 };
 
 const renderLabelCell = ({
@@ -82,6 +82,27 @@ export const renderValue = (val: CellValue, key?: React.Key) => {
   return null;
 };
 
+const renderValuesCellRefactor = (props: {
+  column: Column;
+  data: CellValue | CellValue[];
+  isLoading?: boolean;
+}) => {
+  const cellValue = props.data;
+
+  // Array of values (e.g. strings, DefinedTerms, QuantitativeValues)
+  if (Array.isArray(cellValue)) {
+    if (cellValue.length === 0) return null;
+
+    return (
+      <Flex flexDirection='column' gap={2}>
+        {cellValue.map((value, idx) => renderValue(value, idx))}
+      </Flex>
+    );
+  }
+
+  return renderValue(cellValue);
+};
+
 const renderValuesCell = (props: {
   column: Column;
   data: SamplePropertyRow;
@@ -109,4 +130,5 @@ export const Cell = {
   QuantitativeValue: QuantitativeValueCell,
   renderLabel: renderLabelCell,
   renderValues: renderValuesCell,
+  renderValuesCellRefactor,
 };
