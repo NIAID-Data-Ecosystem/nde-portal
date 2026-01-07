@@ -129,7 +129,11 @@
     {
       "title": "Samples",
       "hash": "samples",
-      "properties": ["sample.collectionSize", "sample.sampleQuantity"],
+      "properties": [
+        "sample",
+        "sample.collectionSize",
+        "sample.sampleQuantity"
+      ],
       "ui": {
         "isCollapsible": true,
         "showInNavigation": true,

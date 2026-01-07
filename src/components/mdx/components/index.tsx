@@ -17,7 +17,7 @@ import {
 } from '@chakra-ui/react';
 import { Link } from 'src/components/link';
 import { HeadingWithLink } from 'src/components/heading-with-link/components/HeadingWithLink';
-import { transformString2Hash } from 'src/views/docs/components/helpers';
+import { transformString2Hash } from 'src/views/docs/utils/markdown';
 import { normalizeResponsiveProps } from '../helpers';
 
 const Details = (props: any) => {

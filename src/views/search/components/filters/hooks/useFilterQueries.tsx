@@ -164,6 +164,7 @@ export const useFilterQueries = ({
               q: initialParams.q,
               extra_filter: initialParams?.extra_filter || '',
               facets: facetConfig.property,
+              use_ai_search: initialParams?.use_ai_search || 'false',
             },
             {
               queryKey: ['search-results'],
@@ -189,7 +190,12 @@ export const useFilterQueries = ({
           ),
       )
       .filter(query => !!query);
-  }, [config, initialParams.q, initialParams.extra_filter]);
+  }, [
+    config,
+    initialParams.q,
+    initialParams.extra_filter,
+    initialParams?.use_ai_search,
+  ]);
 
   // Note: Wrap useQueries combine function in callback because inline functions will run on every render.
   // https://tanstack.com/query/latest/docs/framework/react/reference/useQueries#memoization
@@ -213,16 +219,30 @@ export const useFilterQueries = ({
   });
 
   // Check if the extra_filter is the same in both params
-  // If they're the same, no need to run update queries (they'd be duplicates)
+  const filtersChanged = useMemo(() => {
+    return Boolean(
+      updateParams?.extra_filter &&
+        updateParams.extra_filter !== initialParams.extra_filter,
+    );
+  }, [updateParams?.extra_filter, initialParams.extra_filter]);
+
+  // Check if the ai-enabled search is the same in both params.
+  const useAiSearchChanged = useMemo(() => {
+    return Boolean(
+      updateParams?.use_ai_search &&
+        updateParams.use_ai_search !== initialParams?.use_ai_search,
+    );
+  }, [updateParams?.use_ai_search, initialParams?.use_ai_search]);
+
+  // Determine if we should run the update queries.
   const shouldRunUpdateQueries = useMemo(() => {
     return Boolean(
       updateParams &&
-        updateParams.extra_filter &&
-        updateParams.extra_filter !== initialParams.extra_filter &&
+        (filtersChanged || useAiSearchChanged) &&
         initialResults &&
         Object.keys(initialResults).length > 0,
     );
-  }, [updateParams, initialParams.extra_filter, initialResults]);
+  }, [updateParams, filtersChanged, useAiSearchChanged, initialResults]);
 
   const updateQueries = useMemo(() => {
     return config

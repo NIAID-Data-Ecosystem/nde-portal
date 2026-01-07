@@ -9,7 +9,6 @@ import {
   Skeleton,
   Stack,
   StackDivider,
-  Text,
   UnorderedList,
   VStack,
 } from '@chakra-ui/react';
@@ -46,8 +45,12 @@ import { FaMagnifyingGlass } from 'react-icons/fa6';
 import SCHEMA_DEFINITIONS from 'configs/schema-definitions.json';
 import { SchemaDefinitions } from 'scripts/generate-schema-definitions/types';
 import { RelatedResources } from './components/related-resources';
-import { SamplesDisplay, SHOULD_HIDE_SAMPLES } from './components/samples';
-import { getAccessResourceURL } from '../source-logo/helpers';
+import { SamplesDisplay } from './components/samples';
+import { CreditText } from './components/sidebar/components/external/components/credit-text';
+import {
+  SHOW_CREDIT_TEXT_SECTION,
+  SHOULD_HIDE_SAMPLES,
+} from 'src/utils/feature-flags';
 
 const schema = SCHEMA_DEFINITIONS as SchemaDefinitions;
 
@@ -269,43 +272,20 @@ const Sections = ({
                 )}
 
                 {/* Resource credit text */}
-                <OverviewSectionWrapper
-                  isLoading={isLoading}
-                  label='Credit Text'
-                  tooltipLabel={getMetadataDescription(
-                    'creditText',
-                    data?.['@type'],
-                  )}
-                  my={4}
-                  scrollContainerProps={{ maxHeight: 'unset' }}
-                >
-                  {/* If no credit section, visit the actual source */}
-                  <Text px={2}>
-                    {data?.creditText || (
-                      <>
-                        Please{' '}
-                        <Link
-                          href={
-                            data?.includedInDataCatalog &&
-                            getAccessResourceURL({
-                              recordType: data?.['@type'],
-                              source: Array.isArray(data?.includedInDataCatalog)
-                                ? data?.includedInDataCatalog[0]
-                                : data?.includedInDataCatalog,
-                              url: data?.url,
-                            })
-                          }
-                          isExternal
-                          target='_blank'
-                          rel='noopener noreferrer'
-                        >
-                          access the resource
-                        </Link>{' '}
-                        for complete citation guidance.
-                      </>
+                {SHOW_CREDIT_TEXT_SECTION && (
+                  <OverviewSectionWrapper
+                    isLoading={isLoading}
+                    label='Credit Text'
+                    tooltipLabel={getMetadataDescription(
+                      'creditText',
+                      data?.['@type'],
                     )}
-                  </Text>
-                </OverviewSectionWrapper>
+                    my={4}
+                    scrollContainerProps={{ maxHeight: 'unset' }}
+                  >
+                    <CreditText data={data} px={2} />
+                  </OverviewSectionWrapper>
+                )}
               </>
             )}
             {/* Show keywords */}

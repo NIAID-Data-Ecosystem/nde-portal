@@ -83,6 +83,7 @@ export const Filters = React.memo(
       updateParams: {
         q: queryParams.q,
         extra_filter: extraFilterWithDate,
+        use_ai_search: queryParams.use_ai_search,
       },
       config,
     });

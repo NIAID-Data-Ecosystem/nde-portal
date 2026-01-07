@@ -372,44 +372,32 @@ export interface FeatureListProperties {
   inDefinedTermSet?: string;
 }
 
+export interface DefinedTerm {
+  '@type'?: string;
+  identifier?: string;
+  name?: string;
+  url?: string;
+}
+
+export interface QuantitativeValue {
+  '@type'?: string;
+  maxValue?: number;
+  minValue?: number;
+  name?: string;
+  unitCode?: string;
+  unitText?: string;
+  value?: number;
+}
+
 export interface Sample {
   '@type'?: string;
-  associatedGenotype?: string[];
-  associatedPhenotype?: {
-    identifier?: string;
-    name?: string;
-    url?: string;
-  }[];
-  anatomicalStructure?: {
-    identifier?: string;
-    name?: string;
-    url?: string;
-  }[];
-  anatomicalSystem?: {
-    identifier?: string;
-    name?: string;
-    url?: string;
-  }[];
-  cellType?: {
-    identifier?: string;
-    name?: string;
-    url?: string;
-  }[];
-  collectionSize?: {
-    '@type'?: string;
-    maxValue?: number;
-    minValue?: number;
-    unitText?: string;
-    value?: number;
-  };
-  developmentalStage?: {
-    maxValue?: number;
-    minValue?: number;
-    name?: string;
-    unitCode?: string;
-    unitText?: string;
-    value?: number;
-  };
+  anatomicalStructure?: DefinedTerm[];
+  anatomicalSystem?: DefinedTerm[];
+  associatedGenotype?: (string | DefinedTerm)[];
+  associatedPhenotype?: DefinedTerm[];
+  cellType?: DefinedTerm[];
+  collectionSize?: QuantitativeValue;
+  developmentalStage?: (QuantitativeValue | DefinedTerm)[];
   identifier?: string;
   includedInDataCatalog?: {
     '@type'?: string;
@@ -424,13 +412,7 @@ export interface Sample {
     identifier?: string;
     url?: string;
   }[];
-  sampleQuantity?: {
-    maxValue?: number;
-    minValue?: number;
-    name?: string;
-    unitText?: string;
-    value?: number;
-  }[];
+  sampleQuantity?: QuantitativeValue | QuantitativeValue[];
   sampleType?: {
     name?: string;
     url?: string;
@@ -489,6 +471,7 @@ export interface FormattedResource {
   collectionType?: CollectionType | null;
   condition: string | null;
   conditionsOfAccess: AccessTypes | null;
+  creditText: string | null;
   date: string | null;
   dateCreated: string | null;
   dateModified: string | null;

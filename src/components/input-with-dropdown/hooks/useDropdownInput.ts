@@ -4,7 +4,10 @@ import { callAllHandlers } from 'src/utils/functions';
 import { ContextProps } from '../index';
 
 interface DropdownInputProps extends Omit<InputProps, 'onKeyDown'> {
-  onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>, idx: number) => void;
+  onKeyDown?: (
+    e: React.KeyboardEvent<HTMLInputElement>,
+    idx: number | null,
+  ) => void;
 }
 
 interface DropdownListItemProps extends ListItemProps {
@@ -62,6 +65,9 @@ export const useDropdownInput = ({
             input.selectionStart = input.selectionEnd = 10000;
           }, 0);
         }
+      } else {
+        // Call custom keydown function if exists.
+        onKeyDown && onKeyDown(e, null);
       }
     },
     [cursor],

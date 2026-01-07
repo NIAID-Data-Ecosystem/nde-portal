@@ -4,23 +4,23 @@
   "scripts": {
     "dev": "next dev",
     "build:core": "yarn generate-footer-content && yarn generate-metadata-completeness-fields && next build",
-    "build": "env-cmd -f .env.production yarn build:core",
+    "build": "yarn with-prod-env yarn build:core",
     "build:staging": "env-cmd -f .env.staging yarn build:core",
     "build:dev": "env-cmd -f .env.dev  yarn build:core",
-    "postbuild": "env-cmd -f .env.production yarn generate-dataset-sitemaps && next-sitemap",
     "start": "next start",
     "lint": "next lint",
-    "generate-schema-definitions": "env-cmd -f .env.production tsx scripts/generate-schema-definitions/index.ts",
-    "generate-dataset-sitemaps": "env-cmd -f .env.production tsx scripts/generate-dataset-sitemaps.ts",
     "generate-footer-content": "tsx scripts/generate-footer-content.ts",
     "generate-metadata-completeness-fields": "tsx scripts/generate-metadata-completeness-fields.ts",
+    "generate-schema-definitions": "yarn with-prod-env tsx scripts/generate-schema-definitions/index.ts",
+    "generate-sitemaps": "yarn with-prod-env tsx scripts/generate-dataset-sitemaps.ts && yarn with-prod-env next-sitemap",
     "prepare": "husky install",
     "release": "standard-version",
     "release:minor": "standard-version --release-as minor",
     "release:patch": "standard-version --release-as patch",
     "release:major": "standard-version --release-as major",
     "test": "jest",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "with-prod-env": "env-cmd -f .env.production"
   },
   "dependencies": {
     "@chakra-ui/react": "^2.10.7",
@@ -30,7 +30,7 @@
     "@tanstack/react-query": "^5.51.11",
     "bottleneck": "^2.19.5",
     "framer-motion": "^10.18.0",
-    "next": "^15.4.7",
+    "next": "^15.5.8",
     "next-sitemap": "^4.1.8",
     "react": "18.3.1",
     "react-dom": "18.3.1",
@@ -106,6 +106,8 @@
   },
   "resolutions": {
     "cookie": "^0.7.0",
+    "glob": "^10.5.0",
+    "js-yaml": "^4.1.1",
     "micromatch": "^4.0.8"
   },
   "version": "5.1.2"
