@@ -1,11 +1,11 @@
 import { Heading, ListItem, Text, UnorderedList } from '@chakra-ui/react';
 import { ScrollContainer } from 'src/components/scroll-container';
-import { Sample } from 'src/utils/api/types';
+import { SampleAggregate } from 'src/utils/api/types';
 import { formatUnitText, formatValue } from '../helpers';
 import { formatSampleLabelFromProperty } from 'src/utils/formatting/formatSample';
 
 interface SampleQuantityProps {
-  data: Sample['sampleQuantity'];
+  data: SampleAggregate['sampleQuantity'];
 }
 
 export const SampleQuantity = ({ data }: SampleQuantityProps) => {
