@@ -389,14 +389,14 @@ export interface QuantitativeValue {
   value?: number;
 }
 
-export interface Sample {
-  '@type'?: string;
+export interface SampleAggregate {
+  '@type'?: 'Sample';
   anatomicalStructure?: DefinedTerm[];
   anatomicalSystem?: DefinedTerm[];
   associatedGenotype?: (string | DefinedTerm)[];
   associatedPhenotype?: DefinedTerm[];
   cellType?: DefinedTerm[];
-  collectionSize?: QuantitativeValue;
+  collectionMethod?: string[];
   developmentalStage?: (QuantitativeValue | DefinedTerm)[];
   identifier?: string;
   includedInDataCatalog?: {
@@ -407,11 +407,6 @@ export interface Sample {
     versionDate?: string;
   }[];
   sampleAvailability?: boolean;
-  sampleList?: {
-    _id?: string;
-    identifier?: string;
-    url?: string;
-  }[];
   sampleQuantity?: QuantitativeValue | QuantitativeValue[];
   sampleType?: {
     name?: string;
@@ -419,6 +414,17 @@ export interface Sample {
   }[];
   sex?: string[];
   url?: string;
+}
+
+export interface SampleCollection {
+  '@type': 'SampleCollection';
+  aggregateElement?: SampleAggregate;
+  itemListElement?: {
+    _id?: string;
+    identifier?: string;
+    url?: string;
+  }[];
+  numberOfItems?: QuantitativeValue;
 }
 
 // Formatting standardized resource fields
@@ -519,7 +525,7 @@ export interface FormattedResource {
   publisher: Publisher | null;
   rawData?: any;
   sameAs: string | null;
-  sample?: Sample | null;
+  sample?: SampleAggregate | SampleCollection | null;
   softwareAddOn: { identifier: string }[] | null;
   softwareHelp: { name?: string; url: string }[] | null;
   softwareRequirements: string[] | null;
